@@ -53,6 +53,7 @@ const AffiliateDashboardPage = lazy(() =>
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
+import { businessNoAccessPath } from "./utils/whatsappApiPortal";
 import { lazyWithPreload } from "./utils/lazyWithPreload";
 import { clearChunkReloadFlag, lazyWithRetry } from "./utils/lazyWithRetry";
 import {
@@ -1090,7 +1091,7 @@ export default function App() {
                                     replace
                                   />
                                 ) : (
-                                  <Navigate to="/pricing" replace />
+                                  <Navigate to={businessNoAccessPath(user)} replace />
                                 )
                               ) : user.role === "admin" ? (
                                 <Navigate to="/admin/dashboard" replace />

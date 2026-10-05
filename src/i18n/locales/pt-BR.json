@@ -23053,12 +23053,31 @@
       "detail": {
         "active": "Renova em {{date}}.",
         "activeNoDate": "Sua assinatura está ativa.",
-        "cancelsAtPeriodEnd": "Cancelada. O acesso continua até {{date}}; depois a API deixa de funcionar.",
+        "cancelsAtPeriodEnd": "Sua assinatura terminará em {{date}}.",
         "pastDueGrace": "Seu último pagamento falhou. Atualize a forma de pagamento antes de {{date}} para manter o acesso.",
         "expired": "O acesso terminou em {{date}}. Renove para usar a API novamente.",
         "expiredNoDate": "Sua assinatura não está ativa. Renove para usar a API novamente.",
         "none": "Não há assinatura ativa da WhatsApp API nesta conta.",
-        "unknown": "Não foi possível carregar o status da assinatura. Tente novamente mais tarde."
+        "unknown": "Não foi possível carregar o status da assinatura. Tente novamente mais tarde.",
+        "paymentOverdue": "Seu pagamento está em atraso e o acesso à API está pausado. Atualize a forma de pagamento para restaurá-lo."
+      },
+      "actions": {
+        "reactivate": "Reativar por US$ 29/mês",
+        "openingCheckout": "Abrindo o pagamento…",
+        "sameWorkspace": "Reativa este mesmo espaço de trabalho. Suas chaves de API, webhooks e conexão do WhatsApp continuam como estão.",
+        "resume": "Retomar assinatura",
+        "resuming": "Retomando…",
+        "resumeHint": "Mudou de ideia? Retome para continuar renovando por US$ 29/mês sem um novo pagamento.",
+        "updatePayment": "Atualizar forma de pagamento",
+        "updatePaymentHint": "Atualize o cartão da assinatura existente. Nenhuma assinatura nova é criada.",
+        "checkoutInProgress": "Um pagamento já está sendo preparado. Tente novamente em instantes.",
+        "alreadyActive": "Sua assinatura já está ativa. Atualize a página para vê-la.",
+        "error": "Algo deu errado. Tente novamente."
+      },
+      "checkout": {
+        "processing": "Pagamento recebido. Ativando sua assinatura…",
+        "activated": "Sua assinatura da WhatsApp API está ativa novamente.",
+        "delayed": "Ainda estamos aguardando a confirmação do pagamento. Atualize esta página em um minuto."
       }
     },
     "setup": {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import API from "../api";
 
 export type WhatsAppApiSubscriptionSummary = {
@@ -10,12 +10,20 @@ export type WhatsAppApiSubscriptionSummary = {
   graceEndsAt?: string | null;
 };
 
+/** Billing buttons the server allows for the current subscription. */
+export type WhatsAppApiBillingActions = {
+  reactivate: boolean;
+  resume: boolean;
+  updatePayment: boolean;
+};
+
 export type WhatsAppApiSubscriptionAccess = {
   gateEnabled?: boolean;
   allowed: boolean;
   via: "subscription" | "plan" | null;
   reason: string;
   subscription: WhatsAppApiSubscriptionSummary | null;
+  actions?: WhatsAppApiBillingActions;
 };
 
 export type PortalSubscriptionState =
@@ -29,6 +37,22 @@ export type PortalSubscriptionState =
 export async function getWhatsAppApiSubscriptionStatus(businessId: string) {
   const { data } = await API.get("/whatsapp-api/status", { params: { businessId } });
   return data as WhatsAppApiSubscriptionAccess & { success: boolean };
+}
+
+/** Lemon checkout for this same workspace; repeat calls return the same open checkout. */
+export async function startWhatsAppApiCheckout(businessId: string) {
+  const { data } = await API.post("/whatsapp-api/checkout", { businessId });
+  return data as { success: boolean; url: string; reused?: boolean };
+}
+
+export async function resumeWhatsAppApiSubscription(businessId: string) {
+  const { data } = await API.post("/whatsapp-api/resume", { businessId });
+  return data as WhatsAppApiSubscriptionAccess & { success: boolean };
+}
+
+export async function getWhatsAppApiPaymentMethodUrl(businessId: string) {
+  const { data } = await API.post("/whatsapp-api/payment-method", { businessId });
+  return data as { success: boolean; url: string };
 }
 
 /**
@@ -62,6 +86,7 @@ export function useWhatsAppApiSubscription(businessId: string | null | undefined
     access: WhatsAppApiSubscriptionAccess | null;
     unavailable: boolean;
   } | null>(null);
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
     if (!enabled || !businessId) return undefined;
@@ -71,17 +96,27 @@ export function useWhatsAppApiSubscription(businessId: string | null | undefined
         if (!cancelled) setResult({ businessId, access: data, unavailable: false });
       })
       .catch(() => {
-        if (!cancelled) setResult({ businessId, access: null, unavailable: true });
+        if (!cancelled) setResult((prev) => (prev?.businessId === businessId && prev.access ? prev : { businessId, access: null, unavailable: true }));
       });
     return () => {
       cancelled = true;
     };
-  }, [businessId, enabled]);
+  }, [businessId, enabled, version]);
+
+  const reload = useCallback(() => setVersion((v) => v + 1), []);
+  const setAccess = useCallback(
+    (access: WhatsAppApiSubscriptionAccess) => {
+      if (businessId) setResult({ businessId, access, unavailable: false });
+    },
+    [businessId]
+  );
 
   const current = enabled && businessId && result?.businessId === businessId ? result : null;
   return {
     access: current?.access ?? null,
     loading: Boolean(enabled && businessId && !current),
     unavailable: Boolean(current?.unavailable),
+    reload,
+    setAccess,
   };
 }

@@ -42,6 +42,11 @@ import {
   isCompatibleRedirect,
 } from "../utils/safeInternalRedirect";
 import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
+import {
+  businessNoAccessPath,
+  isWhatsAppApiPortalDashboardPath,
+  isWhatsAppApiPortalUser,
+} from "../utils/whatsappApiPortal";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
@@ -934,7 +939,7 @@ export function AuthProvider({ children }) {
             navigate(
               freshUser.hasAccess
                 ? resolveBusinessDashboardPath(freshUser.businessId)
-                : "/pricing",
+                : businessNoAccessPath(freshUser),
               { replace: true }
             );
           } else {
@@ -950,7 +955,13 @@ export function AuthProvider({ children }) {
           } else {
             const savedRedirect = consumePostLoginRedirect() || pendingDeepLink;
             const isPricing = savedRedirect === "/pricing";
-            const shouldSkip = isPricing && freshUser.hasAccess;
+            // A portal page reopened with its own query (e.g. the Lemon checkout
+            // return) must keep that query instead of replaying the bare link.
+            const alreadyOnPortalPage =
+              isWhatsAppApiPortalUser(freshUser) &&
+              (alignRedirectBusinessId(savedRedirect, freshUser.businessId) || savedRedirect).split("?")[0] ===
+                location.pathname;
+            const shouldSkip = (isPricing && freshUser.hasAccess) || alreadyOnPortalPage;
 
             if (!shouldSkip) {
               navigate(
@@ -1016,6 +1027,11 @@ export function AuthProvider({ children }) {
               replace: true,
             });
           } else if (
+            isWhatsAppApiPortalUser(freshUser) &&
+            isWhatsAppApiPortalDashboardPath(location.pathname)
+          ) {
+            return;
+          } else if (
             location.pathname === "/" ||
             location.pathname === "/dashboard" ||
             location.pathname.startsWith("/dashboard/") ||
@@ -1025,7 +1041,7 @@ export function AuthProvider({ children }) {
                 search: location.search,
               }))
           ) {
-            navigate("/pricing", { replace: true });
+            navigate(businessNoAccessPath(freshUser), { replace: true });
           }
         }
       } catch (err) {

@@ -4,6 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import logo from "../images/logo_final.svg";
 import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
+import { businessNoAccessPath } from "../utils/whatsappApiPortal";
 import "./MobileMenu.css";
 
 export default function MobileMenu({ open, onClose, user, onLogout }) {
@@ -11,7 +12,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
   const { t, i18n } = useTranslation();
   const menuDir = getTextDirection(normalizeLanguage(i18n.language));
   const accountPath =
-    user?.role === "business" && !user?.hasAccess ? "/pricing" : "/dashboard";
+    user?.role === "business" && !user?.hasAccess ? businessNoAccessPath(user) : "/dashboard";
 
   const navLinks = [
     { to: "/about", label: t("nav.about") },

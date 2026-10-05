@@ -6,6 +6,11 @@ import TrialExpiredModal from "./TrialExpiredModal";
 import BizuplyLoader from "./ui/BizuplyLoader";
 import { rememberPostLoginRedirect } from "../utils/safeInternalRedirect";
 import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
+import {
+  businessNoAccessPath,
+  isWhatsAppApiPortalDashboardPath,
+  isWhatsAppApiPortalUser,
+} from "../utils/whatsappApiPortal";
 
 type UserRole =
   | "admin"
@@ -179,7 +184,11 @@ export default function ProtectedRoute({
   });
 
   if (isBusiness && !user.hasAccess && !isImpersonating && !isBillingReturn && location.pathname !== "/change-password") {
-    return <Navigate to="/pricing" replace />;
+    const lapsedPortalScreen =
+      isWhatsAppApiPortalUser(user) && isWhatsAppApiPortalDashboardPath(location.pathname);
+    if (!lapsedPortalScreen) {
+      return <Navigate to={businessNoAccessPath(user)} replace />;
+    }
   }
 
   /* ===========================
