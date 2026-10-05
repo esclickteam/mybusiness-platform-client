@@ -29,7 +29,7 @@ type SessionUser = {
   isShowcaseDemo?: boolean;
 };
 
-const PROVIDER_LABEL: Record<string, string> = { google: "Google", facebook: "Facebook", microsoft: "Microsoft" };
+const PROVIDER_LABEL: Record<string, string> = { google: "Google", microsoft: "Microsoft" };
 
 /** Standalone WhatsApp API customers sign in here (`/login?product=whatsapp_api`), never on the CRM login. */
 export default function WhatsAppApiLoginPage() {

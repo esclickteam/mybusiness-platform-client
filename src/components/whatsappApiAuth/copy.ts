@@ -6,10 +6,9 @@ import type { SocialProvider } from "./authConfig";
 export const WA_AUTH_COPY_EN = {
   providers: {
     google: "Continue with Google",
-    facebook: "Continue with Facebook",
     microsoft: "Continue with Microsoft",
   },
-  providerNames: { google: "Google", facebook: "Facebook", microsoft: "Microsoft" },
+  providerNames: { google: "Google", microsoft: "Microsoft" },
   or: "OR",
   email: "Email address",
   password: "Password",
@@ -65,7 +64,7 @@ export function useWaAuthCopy(): WaAuthCopy {
   }, [t, i18n.language]);
 }
 
-const KNOWN_PROVIDERS = new Set(["google", "facebook", "microsoft"]);
+const KNOWN_PROVIDERS = new Set(["google", "microsoft"]);
 
 /** Message for an `oauth_error` code returned by the sign-in callback, or null if unknown. */
 export function oauthErrorMessage(code: string | null, provider: string | null, copy: WaAuthCopy): string | null {

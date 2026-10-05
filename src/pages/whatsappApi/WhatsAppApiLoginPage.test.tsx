@@ -86,12 +86,12 @@ describe("WhatsAppApiLoginPage", () => {
     expect(screen.queryByText("OR")).not.toBeInTheDocument();
   });
 
-  it("shows only the configured providers and starts the login intent on the API", async () => {
-    availability(["google", "microsoft"]);
+  it("shows only Google and Microsoft and starts the login intent on the API", async () => {
+    availability(["google", "microsoft", "facebook"]);
     renderAt("/login?product=whatsapp_api");
     const google = await screen.findByRole("button", { name: "Continue with Google" });
     expect(screen.getByRole("button", { name: "Continue with Microsoft" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Continue with Facebook" })).not.toBeInTheDocument();
+    expect(screen.queryByText(/Facebook/)).not.toBeInTheDocument();
     expect(screen.getByText("OR")).toBeInTheDocument();
     fireEvent.click(google);
     expect(assign).toHaveBeenCalledWith("https://api.test/api/auth/oauth/google/start?intent=login&language=en");

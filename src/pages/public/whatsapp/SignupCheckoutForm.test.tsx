@@ -64,12 +64,13 @@ describe("SignupCheckoutForm", () => {
   });
 
   it("shows configured providers in order and starts the signup intent", () => {
-    renderForm({ providers: ["microsoft", "google", "facebook"] });
+    renderForm({ providers: ["microsoft", "google", "facebook" as any] });
     const labels = screen.getAllByRole("button", { name: /Continue with/ }).map((b) => b.textContent);
-    expect(labels).toEqual(["Continue with Google", "Continue with Facebook", "Continue with Microsoft"]);
+    expect(labels).toEqual(["Continue with Google", "Continue with Microsoft"]);
+    expect(screen.queryByText(/Facebook/)).not.toBeInTheDocument();
     expect(screen.getByText("OR")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Continue with Facebook" }));
-    expect(assign).toHaveBeenCalledWith("https://api.test/api/auth/oauth/facebook/start?intent=signup&language=he");
+    fireEvent.click(screen.getByRole("button", { name: "Continue with Microsoft" }));
+    expect(assign).toHaveBeenCalledWith("https://api.test/api/auth/oauth/microsoft/start?intent=signup&language=he");
   });
 
   it("sends the Turnstile token with the email signup and opens the same $29 checkout", async () => {

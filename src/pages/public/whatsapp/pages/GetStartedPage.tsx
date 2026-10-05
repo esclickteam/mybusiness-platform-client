@@ -74,7 +74,7 @@ const NEEDS = [
 
 const ACTOR_TONE: Record<Actor, string> = { You: "is-info", Meta: "is-warn", Bizuply: "is-ok" };
 
-const PROVIDER_NAMES = { google: "Google", facebook: "Facebook", microsoft: "Microsoft" } as const;
+const PROVIDER_NAMES = { google: "Google", microsoft: "Microsoft" } as const;
 
 function signupMethodsText(providers: Array<keyof typeof PROVIDER_NAMES>): string {
   if (!providers.length) return "Sign up with your email and a password.";

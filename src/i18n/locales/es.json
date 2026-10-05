@@ -23153,7 +23153,6 @@
   "whatsappApiAuth": {
     "providers": {
       "google": "Continuar con Google",
-      "facebook": "Continuar con Facebook",
       "microsoft": "Continuar con Microsoft"
     },
     "or": "O",

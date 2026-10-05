@@ -23473,7 +23473,6 @@
   "whatsappApiAuth": {
     "providers": {
       "google": "המשך עם Google",
-      "facebook": "המשך עם Facebook",
       "microsoft": "המשך עם Microsoft"
     },
     "or": "או",

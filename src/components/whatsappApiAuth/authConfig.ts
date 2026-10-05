@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../../api";
 
-export type SocialProvider = "google" | "facebook" | "microsoft";
+export type SocialProvider = "google" | "microsoft";
 
 export type WhatsAppApiAuthConfig = {
   loaded: boolean;
@@ -11,7 +11,7 @@ export type WhatsAppApiAuthConfig = {
   turnstileSiteKey: string | null;
 };
 
-const KNOWN: SocialProvider[] = ["google", "facebook", "microsoft"];
+const KNOWN: SocialProvider[] = ["google", "microsoft"];
 const EMPTY: WhatsAppApiAuthConfig = { loaded: false, selfServe: false, providers: [], turnstileSiteKey: null };
 
 let pending: Promise<WhatsAppApiAuthConfig> | null = null;
