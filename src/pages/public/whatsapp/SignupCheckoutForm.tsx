@@ -3,27 +3,26 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { ArrowRight, Eye, EyeOff, Loader2, Lock } from "lucide-react";
 import API from "../../../api";
-import { normalizeLanguage } from "../../../i18n/localeUtils";
+import { coerceSupportedLanguage, normalizeLanguage } from "../../../i18n/localeUtils";
 import {
   startSocialAuth,
   type SocialProvider,
   type WhatsAppApiAuthConfig,
 } from "../../../components/whatsappApiAuth/authConfig";
-import { WA_AUTH_COPY_EN, oauthErrorMessage } from "../../../components/whatsappApiAuth/copy";
+import { oauthErrorMessage, useWaAuthCopy } from "../../../components/whatsappApiAuth/copy";
 import SocialAuthButtons from "../../../components/whatsappApiAuth/SocialAuthButtons";
 import TurnstileWidget, { type TurnstileHandle } from "../../../components/whatsappApiAuth/TurnstileWidget";
-import { PRICE_PER_NUMBER_USD, SIGN_IN_URL, SUPPORT_EMAIL } from "./siteConfig";
+import { getStartedCopy, type GetStartedCopy } from "./getStartedCopy";
+import { SIGN_IN_URL, SUPPORT_EMAIL } from "./siteConfig";
 
 type FormState = { email: string; password: string };
 type Errors = Partial<Record<keyof FormState, string>>;
 
-const copy = WA_AUTH_COPY_EN;
-
-function validate(form: FormState): Errors {
+function validate(form: FormState, text: GetStartedCopy["form"]): Errors {
   const errors: Errors = {};
-  if (!form.email.trim()) errors.email = "Enter your email address.";
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = "Enter a valid email address.";
-  if (form.password.length < 8) errors.password = "Use at least 8 characters.";
+  if (!form.email.trim()) errors.email = text.emailRequired;
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) errors.email = text.emailInvalid;
+  if (form.password.length < 8) errors.password = text.passwordShort;
   return errors;
 }
 
@@ -31,6 +30,8 @@ function validate(form: FormState): Errors {
 export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuthConfig }) {
   const id = useId();
   const { i18n } = useTranslation();
+  const copy = useWaAuthCopy();
+  const text = getStartedCopy(coerceSupportedLanguage(i18n.language)).form;
   const { search } = useLocation();
   const [form, setForm] = useState<FormState>({ email: "", password: "" });
   const [errors, setErrors] = useState<Errors>({});
@@ -44,7 +45,7 @@ export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuth
   const providerError = useMemo(() => {
     const params = new URLSearchParams(search);
     return oauthErrorMessage(params.get("oauth_error"), params.get("provider"), copy);
-  }, [search]);
+  }, [search, copy]);
 
   const update = (name: keyof FormState, value: string) => {
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -60,7 +61,7 @@ export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuth
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFailure("");
-    const nextErrors = validate(form);
+    const nextErrors = validate(form, text);
     setErrors(nextErrors);
     const firstInvalid = (Object.keys(nextErrors) as Array<keyof FormState>)[0];
     if (firstInvalid) {
@@ -95,7 +96,7 @@ export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuth
       if (code === "EMAIL_ALREADY_REGISTERED") {
         setFailure(
           <>
-            This email already has an account. <a className="wa-link" href={SIGN_IN_URL}>Log in</a> to continue.
+            {text.emailTakenBefore} <a className="wa-link" href={SIGN_IN_URL}>{text.emailTakenLink}</a> {text.emailTakenAfter}
           </>
         );
       } else if (code === "BOT_CHECK_FAILED") {
@@ -103,9 +104,9 @@ export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuth
       } else if (err?.response?.status === 400 && err.response.data?.error) {
         setFailure(err.response.data.error);
       } else if (code === "RATE_LIMITED") {
-        setFailure("Too many attempts. Try again in a few minutes.");
+        setFailure(text.rateLimited);
       } else {
-        setFailure(`We couldn't open checkout right now. Please try again or email ${SUPPORT_EMAIL}.`);
+        setFailure(text.checkoutFailed(SUPPORT_EMAIL));
       }
       setBusy(null);
     }
@@ -129,8 +130,8 @@ export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuth
 
   return (
     <div className="wa-auth">
-      <h3 className="wa-auth-title">Create your WhatsApp API account</h3>
-      <p className="wa-auth-sub">${PRICE_PER_NUMBER_USD}/month per WhatsApp number. Cancel anytime.</p>
+      <h3 className="wa-auth-title">{text.title}</h3>
+      <p className="wa-auth-sub">{text.sub}</p>
 
       {providerError ? (
         <p className="wa-alert" role="alert" data-testid="wa-oauth-error">
@@ -143,7 +144,7 @@ export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuth
       <form onSubmit={onSubmit} noValidate className="wa-auth-form">
         <div className="wa-field">
           <label htmlFor={`${id}-email`}>{copy.email}</label>
-          <input {...field("email")} type="email" autoComplete="email" maxLength={200} required />
+          <input {...field("email")} type="email" autoComplete="email" maxLength={200} required dir="ltr" />
           {error("email")}
         </div>
         <div className="wa-field">
@@ -179,16 +180,16 @@ export default function SignupCheckoutForm({ config }: { config: WhatsAppApiAuth
         ) : null}
         <button type="submit" className="wa-btn wa-btn-primary wa-auth-submit" disabled={busy !== null}>
           {busy === "email" ? <Loader2 size={16} className="animate-spin" /> : null}
-          {busy === "email" ? (checkingBot ? copy.botChecking : "Opening checkout…") : "Continue"}
+          {busy === "email" ? (checkingBot ? copy.botChecking : text.openingCheckout) : text.continue}
           {busy !== "email" ? <ArrowRight size={16} aria-hidden="true" /> : null}
         </button>
         <p className="wa-auth-note">
-          <Lock size={13} aria-hidden="true" /> Next: secure ${PRICE_PER_NUMBER_USD}/month checkout with Lemon Squeezy.
+          <Lock size={13} aria-hidden="true" /> {text.note}
         </p>
       </form>
 
       <p className="wa-auth-switch">
-        Already have an account? <a className="wa-link" href={SIGN_IN_URL}>Log in</a>
+        {text.haveAccount} <a className="wa-link" href={SIGN_IN_URL}>{text.login}</a>
       </p>
     </div>
   );

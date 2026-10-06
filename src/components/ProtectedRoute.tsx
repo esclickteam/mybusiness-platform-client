@@ -10,6 +10,7 @@ import {
   businessNoAccessPath,
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalUser,
+  loginPathForBrowser,
 } from "../utils/whatsappApiPortal";
 
 type UserRole =
@@ -111,7 +112,7 @@ export default function ProtectedRoute({
     rememberPostLoginRedirect(from);
     return (
       <Navigate
-        to="/login"
+        to={loginPathForBrowser()}
         replace
         state={{
           from,

@@ -46,9 +46,8 @@ import {
   businessNoAccessPath,
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalUser,
-  prefersWhatsAppApiLogin,
+  loginPathForBrowser,
   rememberLoginProduct,
-  WHATSAPP_API_LOGIN_PATH,
 } from "../utils/whatsappApiPortal";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
@@ -269,7 +268,7 @@ export function AuthProvider({ children }) {
     if (user && !localStorage.getItem("impersonatedBy")) rememberLoginProduct(user);
   }, [user]);
 
-  const loginPath = () => (prefersWhatsAppApiLogin() ? WHATSAPP_API_LOGIN_PATH : "/login");
+  const loginPath = loginPathForBrowser;
 
   /* ===========================
      👤 Refresh user

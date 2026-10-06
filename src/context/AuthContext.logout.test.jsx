@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, render, waitFor } from "@testing-library/react";
-import { MemoryRouter, useLocation } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const clearPushEnabledPreferenceCache = vi.fn();
@@ -53,6 +53,7 @@ vi.mock("../components/AdminSoftphone", () => ({
 }));
 
 import { AuthProvider, useAuth } from "./AuthContext";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 function LocationProbe() {
   const location = useLocation();
@@ -201,6 +202,59 @@ describe("AuthContext logout resilience", () => {
     await waitFor(() => {
       expect(getByTestId("path").textContent).toBe("/login");
       expect(getByTestId("search").textContent).toBe("");
+    });
+  });
+
+  it("logging out of the protected WhatsApp API portal lands on the WhatsApp API login, not the generic one", async () => {
+    const apiRef = { current: null };
+    const navRef = { current: null };
+    const NavProbe = () => {
+      navRef.current = useNavigate();
+      return null;
+    };
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const portal = "/business/biz-1/dashboard/whatsapp/overview";
+    const { getByTestId } = render(
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/login"]} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <AuthProvider>
+            <AuthProbe apiRef={apiRef} />
+            <LocationProbe />
+            <NavProbe />
+            <Routes>
+              <Route
+                path="/business/:businessId/dashboard/*"
+                element={
+                  <ProtectedRoute roles={["business"]}>
+                    <div data-testid="portal">portal</div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<div data-testid="login-page" />} />
+            </Routes>
+          </AuthProvider>
+        </MemoryRouter>
+      </QueryClientProvider>
+    );
+    await waitFor(() => expect(apiRef.current?.initialized).toBe(true));
+    await act(async () => {
+      apiRef.current.loginWithToken(
+        { email: "api@example.com", role: "business", businessId: "biz-1", subscriptionPlan: "whatsapp_api", hasAccess: true, hasPaid: true },
+        "access-token-1",
+        { skipRedirect: true }
+      );
+    });
+    await act(async () => {
+      navRef.current(portal);
+    });
+    await waitFor(() => expect(getByTestId("portal")).toBeTruthy());
+
+    await act(async () => {
+      await apiRef.current.logout();
+    });
+    await waitFor(() => {
+      expect(getByTestId("path").textContent).toBe("/login");
+      expect(getByTestId("search").textContent).toBe("?product=whatsapp_api");
     });
   });
 

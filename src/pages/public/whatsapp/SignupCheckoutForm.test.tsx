@@ -8,10 +8,21 @@ const assign = vi.fn();
 const getToken = vi.fn();
 const reset = vi.fn();
 
-vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key, i18n: { language: "he" } }),
-  initReactI18next: { type: "3rdParty", init: () => undefined },
-}));
+const i18nState = vi.hoisted(() => ({ language: "en" }));
+
+vi.mock("react-i18next", async () => {
+  const he = (await import("../../../i18n/locales/he.json")).default as Record<string, unknown>;
+  const lookup = (key: string) =>
+    key.split(".").reduce<unknown>((node, part) => (node && typeof node === "object" ? (node as any)[part] : undefined), he);
+  const t = (key: string, opts?: { defaultValue?: string }) => {
+    const found = i18nState.language === "he" ? lookup(key) : undefined;
+    return typeof found === "string" ? found : opts?.defaultValue ?? key;
+  };
+  return {
+    useTranslation: () => ({ t, i18n: i18nState }),
+    initReactI18next: { type: "3rdParty", init: () => undefined },
+  };
+});
 
 vi.mock("../../../api", () => ({
   default: { post: (...args: unknown[]) => apiPost(...args), defaults: { baseURL: "https://api.test/api" } },
@@ -46,6 +57,7 @@ function fillAndSubmit() {
 }
 
 beforeEach(() => {
+  i18nState.language = "en";
   Object.defineProperty(window, "location", { value: { ...window.location, assign }, writable: true });
 });
 
@@ -70,7 +82,7 @@ describe("SignupCheckoutForm", () => {
     expect(screen.queryByText(/Facebook/)).not.toBeInTheDocument();
     expect(screen.getByText("OR")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Continue with Microsoft" }));
-    expect(assign).toHaveBeenCalledWith("https://api.test/api/auth/oauth/microsoft/start?intent=signup&language=he");
+    expect(assign).toHaveBeenCalledWith("https://api.test/api/auth/oauth/microsoft/start?intent=signup&language=en");
   });
 
   it("sends the Turnstile token with the email signup and opens the same $29 checkout", async () => {
@@ -82,7 +94,7 @@ describe("SignupCheckoutForm", () => {
     expect(apiPost).toHaveBeenCalledWith("/whatsapp-api/signup-checkout", {
       email: "new@example.com",
       password: "Password#123",
-      language: "he",
+      language: "en",
       turnstileToken: "ts-token",
     });
   });
@@ -112,5 +124,47 @@ describe("SignupCheckoutForm", () => {
   it("shows why a provider signup was refused", () => {
     renderForm({ providers: ["google"] }, "/get-started?oauth_error=existing_account&provider=google");
     expect(screen.getByTestId("wa-oauth-error")).toHaveTextContent("This email already has a Bizuply account.");
+  });
+});
+
+describe("SignupCheckoutForm in Hebrew", () => {
+  beforeEach(() => {
+    i18nState.language = "he";
+  });
+
+  it("renders every label, button, divider and link in Hebrew with no English UI copy left", () => {
+    const { container } = renderForm({ providers: ["google", "microsoft"] });
+    expect(screen.getByRole("heading", { name: "יצירת חשבון WhatsApp API" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "המשך עם Google" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "המשך עם Microsoft" })).toBeInTheDocument();
+    expect(screen.getByText("או")).toBeInTheDocument();
+    expect(screen.getByLabelText("כתובת אימייל")).toBeInTheDocument();
+    expect(screen.getByLabelText("סיסמה")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "המשך" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "הצגת סיסמה" })).toBeInTheDocument();
+    expect(screen.getByText("כבר יש לכם חשבון?", { exact: false })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "התחברות" }).getAttribute("href")).toMatch(/\/login\?product=whatsapp_api$/);
+    const visible = container.textContent || "";
+    for (const english of ["Create your", "Continue", "OR", "Email address", "Password", "Already have", "Log in", "Next:", "Cancel anytime"]) {
+      expect(visible).not.toContain(english);
+    }
+  });
+
+  it("validates, reports provider errors and duplicate emails in Hebrew", async () => {
+    renderForm({ providers: ["microsoft"] }, "/get-started?oauth_error=state_invalid&provider=microsoft");
+    expect(screen.getByTestId("wa-oauth-error").textContent).toMatch(/[\u0590-\u05FF]/);
+    expect(screen.getByTestId("wa-oauth-error").textContent).not.toMatch(/session expired/i);
+
+    fireEvent.click(screen.getByRole("button", { name: "המשך" }));
+    expect(await screen.findByText("הזינו כתובת אימייל.")).toBeInTheDocument();
+    expect(screen.getByText("השתמשו בלפחות 8 תווים.")).toBeInTheDocument();
+
+    apiPost.mockRejectedValue({ response: { status: 409, data: { code: "EMAIL_ALREADY_REGISTERED" } } });
+    fireEvent.change(screen.getByLabelText("כתובת אימייל"), { target: { value: "new@example.com" } });
+    fireEvent.change(screen.getByLabelText("סיסמה"), { target: { value: "Password#123" } });
+    fireEvent.click(screen.getByRole("button", { name: "המשך" }));
+    expect(await screen.findByText(/לאימייל הזה כבר יש חשבון/)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "התחברו" }).getAttribute("href")).toMatch(/\/login\?product=whatsapp_api$/);
+    expect(apiPost).toHaveBeenCalledWith("/whatsapp-api/signup-checkout", expect.objectContaining({ language: "he" }));
   });
 });

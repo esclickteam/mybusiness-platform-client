@@ -2666,9 +2666,9 @@ html:has(.wa-page) body {
     padding-top: 20px;
   }
 
-  /* Clears the floating accessibility button in the bottom corner. */
+  /* Keeps every link clear of the floating buttons in both bottom corners. */
   .wa-login-footer {
-    padding-bottom: 88px;
+    padding: 18px 76px 88px;
   }
 
   .wa-login-main {

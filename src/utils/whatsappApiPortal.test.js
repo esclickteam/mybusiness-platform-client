@@ -5,6 +5,7 @@ import {
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalPathAllowed,
   isWhatsAppApiPortalUser,
+  loginPathForBrowser,
   rememberLoginProduct,
   whatsappApiPortalHome,
 } from "./whatsappApiPortal";
@@ -218,5 +219,21 @@ describe("product login", () => {
     rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
     rememberLoginProduct(null);
     expect(isWhatsAppApiLoginSearch("")).toBe(true);
+  });
+
+  it("signed-out WhatsApp API browsers are sent to /login?product=whatsapp_api; everyone else to /login", () => {
+    expect(loginPathForBrowser()).toBe("/login");
+    rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
+    expect(loginPathForBrowser()).toBe("/login?product=whatsapp_api");
+    for (const user of [
+      { role: "business", subscriptionPlan: "monthly" },
+      { role: "business", subscriptionPlan: "crm_only" },
+      { role: "admin" },
+      { role: "partner" },
+    ]) {
+      rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
+      rememberLoginProduct(user);
+      expect(loginPathForBrowser()).toBe("/login");
+    }
   });
 });

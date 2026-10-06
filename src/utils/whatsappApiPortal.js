@@ -56,6 +56,11 @@ export function prefersWhatsAppApiLogin() {
   }
 }
 
+/** Login page for a signed-out browser: WhatsApp API customers never get the generic Bizuply login. */
+export function loginPathForBrowser() {
+  return prefersWhatsAppApiLogin() ? WHATSAPP_API_LOGIN_PATH : "/login";
+}
+
 /**
  * `/login?product=whatsapp_api`, the $29 checkout return, and a plain `/login` on a browser whose
  * account is a WhatsApp API customer render the product login. `product=business` forces the CRM login.

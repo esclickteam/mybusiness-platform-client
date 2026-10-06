@@ -46,7 +46,7 @@ import {
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
-import { isWhatsAppApiPortalUser } from "../../utils/whatsappApiPortal";
+import { isWhatsAppApiPortalUser, loginPathForBrowser } from "../../utils/whatsappApiPortal";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 /* ============================
@@ -418,7 +418,7 @@ export default function BusinessDashboardLayout() {
       // logout() clears auth socket and navigates to /login
       await logout?.();
     } catch {
-      navigate("/login", { replace: true });
+      navigate(loginPathForBrowser(), { replace: true });
     }
   };
 
@@ -887,7 +887,10 @@ export default function BusinessDashboardLayout() {
                   : showTopBanner
                     ? "pt-[120px]"
                     : "pt-16",
+              // Lets the last portal actions scroll clear of the floating assistant launcher.
+              apiPortal && !isWebsiteFullScreen ? "pb-28" : "",
             ].join(" ")}
+            data-testid="business-dashboard-main"
             style={
               isWebsiteFullScreen || isMobile
                 ? undefined
