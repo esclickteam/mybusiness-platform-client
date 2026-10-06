@@ -28,6 +28,12 @@ describe("WhatsApp API login footer on a 390px phone", () => {
     expect(390 - Number(inline) * 2).toBeGreaterThanOrEqual(200);
   });
 
+  it("mirrors forward arrows in RTL with a selector browsers actually match", () => {
+    const rule = css.match(/([^{}\n]*svg\.lucide-arrow-right[^{}\n]*)\{\s*transform:\s*scaleX\(-1\)/)?.[1] ?? "";
+    expect(rule).toContain(":dir(rtl) svg.lucide-arrow-right");
+    expect(rule).not.toMatch(/svg[^\s]*:dir\(/);
+  });
+
   it("lets footer links wrap instead of overflowing", () => {
     const base = css.match(/\n\.wa-login-footer \{([^}]*)\}/)?.[1] ?? "";
     expect(base).toMatch(/flex-wrap:\s*wrap/);

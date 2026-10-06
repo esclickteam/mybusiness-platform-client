@@ -3013,7 +3013,8 @@ html:has(.wa-page) body {
   text-align: center;
 }
 
-.wa-page :is(.wa-btn, .wa-link) svg.lucide-arrow-right:dir(rtl) {
+/* :dir() only matches HTML elements, so it must sit on the button, not the svg. */
+.wa-page :is(.wa-btn, .wa-link):dir(rtl) svg.lucide-arrow-right {
   transform: scaleX(-1);
 }
 
