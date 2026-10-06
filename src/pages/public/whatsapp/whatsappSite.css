@@ -2543,6 +2543,9 @@ html:has(.wa-page) body {
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
+  /* The 1100px ambient backdrop is taller than this page on phones. */
+  overflow: hidden;
+  overflow: clip;
 }
 
 .wa-login-header {

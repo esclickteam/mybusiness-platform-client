@@ -34,6 +34,13 @@ describe("WhatsApp API login footer on a 390px phone", () => {
     expect(rule).not.toMatch(/svg[^\s]*:dir\(/);
   });
 
+  it("clips the tall ambient backdrop so the short login page cannot scroll into empty space", () => {
+    const ambientHeight = Number(css.match(/\n\.wa-ambient \{[^}]*height:\s*(\d+)px/)?.[1]);
+    expect(ambientHeight).toBeGreaterThan(844);
+    const login = css.match(/\n\.wa-login \{([^}]*)\}/)?.[1] ?? "";
+    expect(login).toMatch(/overflow:\s*clip/);
+  });
+
   it("lets footer links wrap instead of overflowing", () => {
     const base = css.match(/\n\.wa-login-footer \{([^}]*)\}/)?.[1] ?? "";
     expect(base).toMatch(/flex-wrap:\s*wrap/);
