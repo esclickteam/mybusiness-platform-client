@@ -377,7 +377,7 @@ export default function WhatsAppExternalApiSettingsCard({
               ) : null}
             </div>
           ) : null}
-          {!linked ? (
+          {!linked && !subscriptionBlocked ? (
             <p className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[12px] font-semibold text-slate-600">
               {t("whatsapp.settings.apiNotConnectedHint", {
                 defaultValue:
@@ -406,7 +406,7 @@ export default function WhatsAppExternalApiSettingsCard({
                 ) : null}
                 <ActionBtn
                   onClick={() => void handleCreateOrRegenerateKey()}
-                  disabled={busy}
+                  disabled={busy || subscriptionBlocked}
                   icon={<RefreshCw className="h-3.5 w-3.5" />}
                   label={
                     settings?.apiKey
