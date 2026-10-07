@@ -139,8 +139,13 @@ function isPreviewHost(hostname) {
   return host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app");
 }
 
+/** The WhatsApp API customer login lives in the main app, where the auth session is. */
+export const WHATSAPP_LOGIN_APP_PATH = `${WHATSAPP_PREVIEW_BASE}/login`;
+export const WHATSAPP_LOGIN_APP_URL = `https://bizuply.com${WHATSAPP_LOGIN_APP_PATH}`;
+
 function isUnderPreviewBase(pathname) {
   const path = String(pathname || "").split("?")[0] || "/";
+  if (normalizeWhatsAppPath(path) === WHATSAPP_LOGIN_APP_PATH) return false;
   return path === WHATSAPP_PREVIEW_BASE || path.startsWith(`${WHATSAPP_PREVIEW_BASE}/`);
 }
 

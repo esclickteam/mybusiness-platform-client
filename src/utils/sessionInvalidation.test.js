@@ -95,7 +95,7 @@ describe("sessionInvalidation", () => {
   it("sends a revoked WhatsApp API session to the WhatsApp API login", () => {
     localStorage.setItem("bizuply_login_product", "whatsapp_api");
     handleSessionInvalidated({ code: "SESSION_REVOKED" });
-    expect(window.location.replace).toHaveBeenCalledWith("/login?product=whatsapp_api");
+    expect(window.location.replace).toHaveBeenCalledWith("/whatsapp-api/login");
   });
 
   it("does not redirect-loop when already on /login", () => {

@@ -9,7 +9,7 @@ import { applyLanguageFromUrl, coerceSupportedLanguage, getTextDirection, normal
 import { clearRefreshDead, refreshAccessTokenOnce } from "../../utils/tokenRefresh";
 import { clearPostLoginRedirect, resolvePostLoginDestination } from "../../utils/safeInternalRedirect";
 import { messageForLoginFailure } from "../../utils/loginFailureMessage";
-import { isWhatsAppApiPortalUser, whatsappApiPortalHome } from "../../utils/whatsappApiPortal";
+import { isWhatsAppApiPortalUser, WHATSAPP_API_LOGIN_PATH, whatsappApiPortalHome } from "../../utils/whatsappApiPortal";
 import { startSocialAuth, useWhatsAppApiAuthConfig, type SocialProvider } from "../../components/whatsappApiAuth/authConfig";
 import { oauthErrorMessage, useWaAuthCopy } from "../../components/whatsappApiAuth/copy";
 import SocialAuthButtons from "../../components/whatsappApiAuth/SocialAuthButtons";
@@ -31,7 +31,7 @@ type SessionUser = {
 
 const PROVIDER_LABEL: Record<string, string> = { google: "Google", microsoft: "Microsoft" };
 
-/** Standalone WhatsApp API customers sign in here (`/login?product=whatsapp_api`), never on the CRM login. */
+/** Standalone WhatsApp API customers sign in here (`/whatsapp-api/login`), never on the CRM login. */
 export default function WhatsAppApiLoginPage() {
   const id = useId();
   const { t, i18n } = useTranslation();
@@ -118,7 +118,7 @@ export default function WhatsAppApiLoginPage() {
       } catch {
         setCompleting(false);
         setError(copy.errors.session);
-        navigate("/login?product=whatsapp_api", { replace: true });
+        navigate(WHATSAPP_API_LOGIN_PATH, { replace: true });
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -319,9 +319,6 @@ export default function WhatsAppApiLoginPage() {
         <a href={PRIVACY_URL}>{t("whatsappApiAuth.login.privacy", { defaultValue: "Privacy" })}</a>
         <a href={TERMS_URL}>{t("whatsappApiAuth.login.terms", { defaultValue: "Terms" })}</a>
         <a href={`${WHATSAPP_SITE_URL}/help`}>{t("whatsappApiAuth.login.help", { defaultValue: "Help" })}</a>
-        <Link to="/login?product=business">
-          {t("whatsappApiAuth.login.businessLogin", { defaultValue: "Bizuply business login" })}
-        </Link>
       </footer>
     </div>
   );

@@ -46,7 +46,7 @@ function renderAt(url: string) {
   return render(
     <MemoryRouter initialEntries={[url]}>
       <Routes>
-        <Route path="/login" element={<WhatsAppApiLoginPage />} />
+        <Route path="/whatsapp-api/login" element={<WhatsAppApiLoginPage />} />
         <Route path="*" element={<Where />} />
       </Routes>
     </MemoryRouter>
@@ -75,7 +75,7 @@ afterEach(() => {
 describe("WhatsAppApiLoginPage", () => {
   it("is the standalone product login: brand, title, email + password, no CRM copy", async () => {
     availability([]);
-    renderAt("/login?product=whatsapp_api");
+    renderAt("/whatsapp-api/login");
     expect(screen.getByRole("heading", { name: "Log in to your WhatsApp API account" })).toBeInTheDocument();
     expect(screen.getByText("Bizuply WhatsApp API")).toBeInTheDocument();
     expect(screen.getByLabelText("Email address")).toBeInTheDocument();
@@ -84,11 +84,15 @@ describe("WhatsAppApiLoginPage", () => {
     await waitFor(() => expect(apiGet).toHaveBeenCalledWith("/whatsapp-api/availability"));
     expect(screen.queryByText(/Continue with/)).not.toBeInTheDocument();
     expect(screen.queryByText("OR")).not.toBeInTheDocument();
+    expect(screen.queryByText("Bizuply business login")).not.toBeInTheDocument();
+    for (const link of screen.getAllByRole("link")) {
+      expect(link.getAttribute("href") || "").not.toMatch(/^\/login/);
+    }
   });
 
   it("shows only Google and Microsoft and starts the login intent on the API", async () => {
     availability(["google", "microsoft", "facebook"]);
-    renderAt("/login?product=whatsapp_api");
+    renderAt("/whatsapp-api/login");
     const google = await screen.findByRole("button", { name: "Continue with Google" });
     expect(screen.getByRole("button", { name: "Continue with Microsoft" })).toBeInTheDocument();
     expect(screen.queryByText(/Facebook/)).not.toBeInTheDocument();
@@ -100,7 +104,7 @@ describe("WhatsAppApiLoginPage", () => {
   it("completes a social sign-in from the refresh cookie and opens the portal overview", async () => {
     availability(["google"]);
     refreshAccessTokenOnce.mockResolvedValue("access-1");
-    renderAt("/login?product=whatsapp_api&oauth=success");
+    renderAt("/whatsapp-api/login?oauth=success");
     expect(screen.getByTestId("wa-oauth-completing")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByTestId("where")).toHaveTextContent(`/business/${BIZ}/dashboard/whatsapp/overview`));
     expect(clearRefreshDead).toHaveBeenCalled();
@@ -111,24 +115,24 @@ describe("WhatsAppApiLoginPage", () => {
   it("shows a retry message when the social session cannot be completed", async () => {
     availability(["google"]);
     refreshAccessTokenOnce.mockRejectedValue(new Error("NO_REFRESH_TOKEN"));
-    renderAt("/login?product=whatsapp_api&oauth=success");
+    renderAt("/whatsapp-api/login?oauth=success");
     expect(await screen.findByTestId("wa-login-error")).toHaveTextContent("We couldn't finish signing you in. Please try again.");
     expect(loginWithToken).not.toHaveBeenCalled();
   });
 
   it("explains provider errors without leaking details", () => {
     availability(["google"]);
-    renderAt("/login?product=whatsapp_api&oauth_error=existing_account&provider=google");
+    renderAt("/whatsapp-api/login?oauth_error=existing_account&provider=google");
     expect(screen.getByTestId("wa-login-error")).toHaveTextContent("This email already has a Bizuply account. Log in with the method you used before");
     cleanup();
-    renderAt("/login?product=whatsapp_api&oauth_error=email_unverified&provider=microsoft");
+    renderAt("/whatsapp-api/login?oauth_error=email_unverified&provider=microsoft");
     expect(screen.getByTestId("wa-login-error")).toHaveTextContent("Microsoft didn't confirm this email address.");
   });
 
   it("email login sends WhatsApp API customers straight to their portal", async () => {
     availability([]);
     login.mockResolvedValue({ user: portalUser });
-    renderAt("/login?product=whatsapp_api");
+    renderAt("/whatsapp-api/login");
     fireEvent.change(screen.getByLabelText("Email address"), { target: { value: " Dana@Example.com " } });
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "Password#123" } });
     fireEvent.click(screen.getByRole("button", { name: "Log in" }));
@@ -139,7 +143,7 @@ describe("WhatsAppApiLoginPage", () => {
   it("other account types keep their own destination", async () => {
     availability([]);
     login.mockResolvedValue({ user: { role: "admin" } });
-    renderAt("/login?product=whatsapp_api");
+    renderAt("/whatsapp-api/login");
     fireEvent.change(screen.getByLabelText("Email address"), { target: { value: "admin@example.com" } });
     fireEvent.change(screen.getByLabelText("Password"), { target: { value: "Password#123" } });
     fireEvent.click(screen.getByRole("button", { name: "Log in" }));
@@ -148,7 +152,7 @@ describe("WhatsAppApiLoginPage", () => {
 
   it("after checkout tells social signups which provider to continue with", async () => {
     availability(["google"]);
-    renderAt(`/login?product=whatsapp_api&checkout=whatsapp_api&email=new%40example.com&ref=${BIZ}`);
+    renderAt(`/whatsapp-api/login?checkout=whatsapp_api&email=new%40example.com&ref=${BIZ}`);
     expect(await screen.findByText("Your WhatsApp API account is ready. Continue with Google to open your portal.")).toBeInTheDocument();
     expect(screen.getByLabelText("Email address")).toHaveValue("new@example.com");
   });

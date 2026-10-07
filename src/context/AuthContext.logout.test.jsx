@@ -184,8 +184,8 @@ describe("AuthContext logout resilience", () => {
       await apiRef.current.logout();
     });
     await waitFor(() => {
-      expect(getByTestId("path").textContent).toBe("/login");
-      expect(getByTestId("search").textContent).toBe("?product=whatsapp_api");
+      expect(getByTestId("path").textContent).toBe("/whatsapp-api/login");
+      expect(getByTestId("search").textContent).toBe("");
     });
 
     await act(async () => {
@@ -253,8 +253,8 @@ describe("AuthContext logout resilience", () => {
       await apiRef.current.logout();
     });
     await waitFor(() => {
-      expect(getByTestId("path").textContent).toBe("/login");
-      expect(getByTestId("search").textContent).toBe("?product=whatsapp_api");
+      expect(getByTestId("path").textContent).toBe("/whatsapp-api/login");
+      expect(getByTestId("search").textContent).toBe("");
     });
   });
 

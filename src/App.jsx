@@ -53,7 +53,7 @@ const AffiliateDashboardPage = lazy(() =>
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
-import { businessNoAccessPath, isWhatsAppApiLoginSearch } from "./utils/whatsappApiPortal";
+import { businessNoAccessPath, WHATSAPP_API_LOGIN_PATH } from "./utils/whatsappApiPortal";
 import { lazyWithPreload } from "./utils/lazyWithPreload";
 import { clearChunkReloadFlag, lazyWithRetry } from "./utils/lazyWithRetry";
 import {
@@ -121,6 +121,7 @@ const BusinessesList = lazy(() => import("./pages/BusinessesList"));
 const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
 const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
 const Login = lazy(() => import("./pages/Login"));
+const WhatsAppApiLoginPage = lazy(() => import("./pages/whatsappApi/WhatsAppApiLoginPage"));
 const AiAutomationTemplatesVisualPage = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/AiAutomationTemplatesVisualPage"))
   : null;
@@ -860,8 +861,7 @@ export default function App() {
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   // The WhatsApp API product login is a standalone page with its own branding.
-  const isWhatsAppApiLogin =
-    location.pathname === "/login" && isWhatsAppApiLoginSearch(location.search);
+  const isWhatsAppApiLogin = location.pathname === WHATSAPP_API_LOGIN_PATH;
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -1061,7 +1061,9 @@ export default function App() {
                       // generic full-screen loader to avoid a large CLS hit
                       // once its lazy chunk finishes loading. All other
                       // routes keep the original PageLoader unchanged.
-                      location.pathname === "/login" ? (
+                      isWhatsAppApiLogin ? (
+                        <div className="min-h-screen bg-[#05070d]" />
+                      ) : location.pathname === "/login" ? (
                         <LoginFormSkeleton />
                       ) : (
                         <PageLoader />
@@ -1208,6 +1210,7 @@ export default function App() {
                         <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
                         <Route path="/login" element={<Login />} />
+                        <Route path={WHATSAPP_API_LOGIN_PATH} element={<WhatsAppApiLoginPage />} />
                         {import.meta.env.DEV && AiAutomationTemplatesVisualPage ? (
                           <Route
                             path="/dev/ai-automation-templates-visual"

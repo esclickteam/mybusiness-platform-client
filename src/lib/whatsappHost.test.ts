@@ -42,6 +42,8 @@ describe("whatsapp host", () => {
     expect(shouldRenderWhatsAppLanding("bizuply-git-feat.vercel.app", "/whatsapp-api/docs")).toBe(true);
     expect(shouldRenderWhatsAppLanding("bizuply-git-feat.vercel.app", "/pricing")).toBe(false);
     expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-apis")).toBe(false);
+    expect(shouldRenderWhatsAppLanding("bizuply-git-feat.vercel.app", "/whatsapp-api/login")).toBe(false);
+    expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-api/login/")).toBe(false);
     expect(whatsappSiteBase("whatsapp.bizuply.com")).toBe("");
     expect(whatsappSiteBase("localhost")).toBe("/whatsapp-api");
   });
@@ -103,6 +105,14 @@ describe("whatsapp host", () => {
       expect(missingHtml).not.toContain("og:url");
       expect(missingHtml).toContain('content="noindex, follow"');
       expect(missingHtml).toContain("Page not found | Bizuply WhatsApp API");
+
+      for (const p of ["/login", "/login/"]) {
+        const login = await call(`${p}?lang=he`);
+        expect(login.status).toBe(302);
+        expect(login.headers.get("location")).toBe("https://bizuply.com/whatsapp-api/login?lang=he");
+      }
+      const bare = await call("/login");
+      expect(bare.headers.get("location")).toBe("https://bizuply.com/whatsapp-api/login");
     } finally {
       globalThis.fetch = realFetch;
     }
