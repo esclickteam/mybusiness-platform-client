@@ -23439,7 +23439,7 @@
       "welcomeText": "Your subscription is ready. Follow these steps to send your first message.",
       "steps": {
         "subscription": {
-          "title": "Subscription active",
+          "title": "WhatsApp API subscription",
           "text": "Your $29/month subscription covers one WhatsApp number.",
           "cta": "View subscription"
         },
