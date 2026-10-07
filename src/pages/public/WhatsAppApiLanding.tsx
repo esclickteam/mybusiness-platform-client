@@ -166,10 +166,13 @@ function SiteRoutes({ lang }: { lang: string }) {
 
   return (
     <Suspense fallback={<PageFallback />}>
-      {path === "/" ? page : <div {...englishOnly(lang)}>{page}</div>}
+      {LOCALIZED_PATHS.has(path) ? page : <div {...englishOnly(lang)}>{page}</div>}
     </Suspense>
   );
 }
+
+/** Pages with copy in every site language; the rest are wrapped as English-only LTR. */
+const LOCALIZED_PATHS = new Set(["/", "/get-started"]);
 
 const FONT_HREF =
   "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap";

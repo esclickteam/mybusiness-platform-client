@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FaGlobe } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { LANGUAGE_META, getShortLanguageLabel } from "../i18n/languages";
@@ -14,6 +14,7 @@ export default function LanguageSwitcher({
   const { i18n, t } = useTranslation();
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
+  const menuRef = useRef(null);
   const menuId = useId();
   const currentLang = coerceSupportedLanguage(i18n.language);
   const shortLabel = getShortLanguageLabel(currentLang);
@@ -43,10 +44,25 @@ export default function LanguageSwitcher({
     };
   }, []);
 
-  const menuAlign =
-    align === "start"
-      ? "inset-inline-start-0"
-      : "inset-inline-end-0";
+  useLayoutEffect(() => {
+    const menu = menuRef.current;
+    if (!open || !menu) return undefined;
+    const fit = () => {
+      menu.style.translate = "";
+      const margin = 8;
+      const rect = menu.getBoundingClientRect();
+      const viewport = document.documentElement.clientWidth || window.innerWidth;
+      let shift = 0;
+      if (rect.right > viewport - margin) shift = viewport - margin - rect.right;
+      if (rect.left + shift < margin) shift = margin - rect.left;
+      if (shift) menu.style.translate = `${shift}px 0`;
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, [open]);
+
+  const menuAlign = align === "start" ? "start-0" : "end-0";
 
   if (readGuidedDemoLocaleLock()) return null;
 
@@ -76,10 +92,11 @@ export default function LanguageSwitcher({
 
       {open && (
         <div
+          ref={menuRef}
           id={menuId}
           role="listbox"
           aria-label={t("common.changeLanguage")}
-          className={`absolute top-[calc(100%+0.45rem)] z-[9999] w-[240px] ${menuAlign} rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]`}
+          className={`absolute top-[calc(100%+0.45rem)] z-[9999] w-[240px] max-w-[calc(100vw-1rem)] ${menuAlign} rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]`}
         >
           {LANGUAGE_META.map((lang) => {
             const isActive = currentLang === lang.code;

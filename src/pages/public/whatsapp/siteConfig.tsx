@@ -11,7 +11,10 @@ const STAGING_CLIENT_URL =
   import.meta.env.VITE_APP_ENV === "staging"
     ? String(import.meta.env.VITE_CLIENT_URL || "").replace(/\/+$/, "")
     : "";
-export const SIGN_IN_URL = `${STAGING_CLIENT_URL || "https://bizuply.com"}/login`;
+/** The WhatsApp API product login (keeps auth on bizuply.com). */
+export const SIGN_IN_URL = `${STAGING_CLIENT_URL || "https://bizuply.com"}/login?product=whatsapp_api`;
+export const WHATSAPP_SITE_URL = STAGING_CLIENT_URL ? `${STAGING_CLIENT_URL}/whatsapp-api` : "https://whatsapp.bizuply.com";
+export const SIGN_UP_URL = `${WHATSAPP_SITE_URL}/get-started#request-access`;
 export const PRIVACY_URL = "https://bizuply.com/privacy";
 export const TERMS_URL = "https://bizuply.com/terms";
 export const ACCESSIBILITY_URL = "https://bizuply.com/accessibility";

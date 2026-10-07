@@ -1,8 +1,7 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 
-import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
@@ -22,6 +21,7 @@ import {
   normalizeLanguage,
 } from "../i18n/localeUtils";
 import { messageForLoginFailure } from "../utils/loginFailureMessage";
+import { isWhatsAppApiLoginSearch } from "../utils/whatsappApiPortal";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -47,7 +47,21 @@ type LoginResponse = {
   redirectUrl?: string;
 };
 
+const WhatsAppApiLoginPage = lazy(() => import("./whatsappApi/WhatsAppApiLoginPage"));
+
 export default function Login() {
+  const location = useLocation();
+  if (isWhatsAppApiLoginSearch(location.search)) {
+    return (
+      <Suspense fallback={<div style={{ minHeight: "100vh", background: "#05070d" }} />}>
+        <WhatsAppApiLoginPage />
+      </Suspense>
+    );
+  }
+  return <BusinessLogin />;
+}
+
+function BusinessLogin() {
   const { login } = useAuth();
   const { fetchNotifications } = useNotifications();
   const { i18n, t } = useTranslation();
@@ -85,44 +99,7 @@ export default function Login() {
     [location.search]
   );
   const checkoutSuccess = searchParams.get("checkout") === "success";
-  const whatsappApiCheckout = searchParams.get("checkout") === "whatsapp_api";
   const checkoutEmail = searchParams.get("email") || "";
-  const signupRef = searchParams.get("ref") || "";
-  const [activation, setActivation] = useState<"pending" | "ready" | "slow">("pending");
-
-  // The account exists only once Lemon's signed webhook has been processed.
-  useEffect(() => {
-    if (!whatsappApiCheckout || !signupRef || !checkoutEmail) return undefined;
-    let cancelled = false;
-    let attempts = 0;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const poll = async () => {
-      attempts += 1;
-      try {
-        const { data } = await API.get("/whatsapp-api/signup-status", {
-          params: { ref: signupRef, email: checkoutEmail },
-        });
-        if (cancelled) return;
-        if (data?.status === "ready") {
-          setActivation("ready");
-          return;
-        }
-      } catch {
-        /* keep polling */
-      }
-      if (cancelled) return;
-      if (attempts >= 40) {
-        setActivation("slow");
-        return;
-      }
-      timer = setTimeout(poll, 3000);
-    };
-    void poll();
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-    };
-  }, [whatsappApiCheckout, signupRef, checkoutEmail]);
   const stateFrom = useMemo(() => {
     const fromState = (location.state as { from?: string } | null)?.from;
     return sanitizeInternalRedirect(fromState);
@@ -200,14 +177,6 @@ export default function Login() {
         return;
       }
 
-      if (whatsappApiCheckout && role === "business" && loggedInUser?.businessId) {
-        clearPostLoginRedirect();
-        navigate(`/business/${loggedInUser.businessId}/dashboard/whatsapp/overview?welcome=whatsapp_api`, {
-          replace: true,
-        });
-        return;
-      }
-
       const finalRedirect = resolvePostLoginDestination({
         role: loggedInUser?.role,
         businessId: loggedInUser?.businessId,
@@ -272,26 +241,6 @@ export default function Login() {
               {t("login.checkoutSuccess")}
             </p>
           ) : null}
-          {whatsappApiCheckout ? (
-            <p
-              className={`rounded-2xl border px-4 py-3 text-sm font-bold leading-6 ${
-                activation === "ready"
-                  ? "border-emerald-100 bg-emerald-50 text-emerald-800"
-                  : "border-sky-100 bg-sky-50 text-sky-900"
-              }`}
-              role="status"
-              aria-live="polite"
-              data-testid="wa-checkout-activation"
-              data-state={signupRef ? activation : "ready"}
-            >
-              {!signupRef || activation === "ready"
-                ? t("login.whatsappApiCheckout.ready")
-                : activation === "slow"
-                ? t("login.whatsappApiCheckout.slow")
-                : t("login.whatsappApiCheckout.pending")}
-            </p>
-          ) : null}
-
           <div className="text-start">
             <label
               htmlFor="email"

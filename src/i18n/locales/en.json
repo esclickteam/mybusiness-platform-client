@@ -23484,5 +23484,52 @@
         "error": "We couldn't save your details. Please try again."
       }
     }
+  },
+  "whatsappApiAuth": {
+    "providers": {
+      "google": "Continue with Google",
+      "microsoft": "Continue with Microsoft"
+    },
+    "or": "OR",
+    "email": "Email address",
+    "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "redirecting": "Redirecting…",
+    "botCheck": "Please complete the security check and try again.",
+    "botChecking": "Checking your browser…",
+    "errors": {
+      "existing_account": "This email already has a Bizuply account. Log in with the method you used before, for example email and password.",
+      "email_unverified": "{{provider}} didn't confirm this email address. Verify it with {{provider}}, or use email and password.",
+      "no_account": "No WhatsApp API account uses this {{provider}} login yet. Create an account to get started.",
+      "provider_mismatch": "This account is linked to a different {{provider}} login. Use that one, or log in with email and password.",
+      "state_invalid": "Your sign-in session expired. Please try again.",
+      "cancelled": "{{provider}} sign-in was cancelled.",
+      "provider_unavailable": "{{provider}} sign-in isn't available right now. Use email and password.",
+      "provider_error": "We couldn't sign you in with {{provider}}. Please try again.",
+      "account_disabled": "This account is disabled. Contact support@bizuply.com.",
+      "rate_limited": "Too many attempts. Try again in a few minutes.",
+      "signup_closed": "Sign-up is temporarily unavailable. Please try again later.",
+      "session": "We couldn't finish signing you in. Please try again."
+    },
+    "login": {
+      "title": "Log in to your WhatsApp API account",
+      "subtitle": "Manage your numbers, API keys and webhooks.",
+      "submit": "Log in",
+      "submitting": "Logging in…",
+      "forgot": "Forgot password?",
+      "noAccount": "New to Bizuply WhatsApp API?",
+      "signupCta": "Create an account",
+      "completing": "Signing you in…",
+      "enterCredentials": "Enter your email and password.",
+      "trust": "Secure sign-in by Bizuply",
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "help": "Help",
+      "businessLogin": "Bizuply business login"
+    },
+    "checkout": {
+      "readyProvider": "Your WhatsApp API account is ready. Continue with {{provider}} to open your portal."
+    }
   }
 }

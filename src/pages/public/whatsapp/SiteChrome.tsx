@@ -202,7 +202,7 @@ export function useChromeCopy(lang: string): ChromeCopy {
   return CHROME_I18N[lang] || EN;
 }
 
-function LanguagePicker({ lang }: { lang: string }) {
+export function LanguagePicker({ lang }: { lang: string }) {
   const { t } = useTranslation();
   return (
     <div className="wa-lang">

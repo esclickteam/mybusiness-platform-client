@@ -46,6 +46,8 @@ import {
   businessNoAccessPath,
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalUser,
+  loginPathForBrowser,
+  rememberLoginProduct,
 } from "../utils/whatsappApiPortal";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
@@ -261,6 +263,12 @@ export function AuthProvider({ children }) {
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+
+  useEffect(() => {
+    if (user && !localStorage.getItem("impersonatedBy")) rememberLoginProduct(user);
+  }, [user]);
+
+  const loginPath = loginPathForBrowser;
 
   /* ===========================
      👤 Refresh user
@@ -691,7 +699,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
 
       if (redirect) {
-        navigate("/login", { replace: true });
+        navigate(loginPath(), { replace: true });
       }
     }
   };
@@ -729,7 +737,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
       setInitialized(true);
       if (!isPublicRoute(location.pathname)) {
-        navigate("/login", { replace: true });
+        navigate(loginPath(), { replace: true });
       }
       return;
     }
@@ -1061,7 +1069,7 @@ export function AuthProvider({ children }) {
           }
 
           if (!isPublicRoute(location.pathname) && !isSessionInvalidated()) {
-            navigate("/login", { replace: true });
+            navigate(loginPath(), { replace: true });
           }
         }
       } finally {

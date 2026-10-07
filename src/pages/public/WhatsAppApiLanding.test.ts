@@ -106,6 +106,13 @@ describe("WhatsApp API site copy", () => {
     }
   });
 
+  it("renders the translated get-started page in the visitor's language and direction, not as English LTR", () => {
+    const shell = read("WhatsAppApiLanding.tsx");
+    const localized = shell.match(/const LOCALIZED_PATHS = new Set\(\[([^\]]*)\]\)/)?.[1] ?? "";
+    expect(localized).toContain('"/get-started"');
+    expect(shell).toMatch(/LOCALIZED_PATHS\.has\(path\) \? page : <div \{\.\.\.englishOnly\(lang\)\}>/);
+  });
+
   it("labels the interactive flow as an illustration, not a live transaction", () => {
     expect(read("whatsapp/ApiFlowDemo.tsx")).toMatch(/not a live API transaction/i);
   });

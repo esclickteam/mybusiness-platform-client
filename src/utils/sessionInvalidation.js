@@ -15,6 +15,7 @@ import {
   markRefreshDead,
 } from "./tokenRefresh";
 import { clearAdminActiveBusinessId } from "./adminTenant";
+import { loginPathForBrowser } from "./whatsappApiPortal";
 
 function getApiBaseUrl() {
   const envApiUrl = String(import.meta.env.VITE_API_URL || "")
@@ -146,11 +147,12 @@ function scheduleLoginRedirect() {
   redirectScheduled = true;
 
   // Hard replace: drop the stale React tree so dashboards stop polling.
+  const target = loginPathForBrowser();
   try {
-    window.location.replace(LOGIN_PATH);
+    window.location.replace(target);
   } catch {
     try {
-      window.location.href = LOGIN_PATH;
+      window.location.href = target;
     } catch {
       /* ignore */
     }

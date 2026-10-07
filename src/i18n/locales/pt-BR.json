@@ -23149,5 +23149,52 @@
         "error": "Não foi possível salvar seus dados. Tente novamente."
       }
     }
+  },
+  "whatsappApiAuth": {
+    "providers": {
+      "google": "Continuar com Google",
+      "microsoft": "Continuar com Microsoft"
+    },
+    "or": "OU",
+    "email": "E-mail",
+    "password": "Senha",
+    "showPassword": "Mostrar senha",
+    "hidePassword": "Ocultar senha",
+    "redirecting": "Redirecionando…",
+    "botCheck": "Conclua a verificação de segurança e tente novamente.",
+    "botChecking": "Verificando seu navegador…",
+    "errors": {
+      "existing_account": "Este e-mail já tem uma conta Bizuply. Entre com o método que você usou antes, por exemplo e-mail e senha.",
+      "email_unverified": "O {{provider}} não confirmou este e-mail. Verifique-o no {{provider}} ou use e-mail e senha.",
+      "no_account": "Nenhuma conta da API do WhatsApp usa este login do {{provider}}. Crie uma conta para começar.",
+      "provider_mismatch": "Esta conta está vinculada a outro login do {{provider}}. Use esse, ou entre com e-mail e senha.",
+      "state_invalid": "Sua sessão de login expirou. Tente novamente.",
+      "cancelled": "O login com {{provider}} foi cancelado.",
+      "provider_unavailable": "O login com {{provider}} não está disponível agora. Use e-mail e senha.",
+      "provider_error": "Não conseguimos fazer seu login com {{provider}}. Tente novamente.",
+      "account_disabled": "Esta conta está desativada. Escreva para support@bizuply.com.",
+      "rate_limited": "Muitas tentativas. Tente novamente em alguns minutos.",
+      "signup_closed": "O cadastro está temporariamente indisponível. Tente mais tarde.",
+      "session": "Não conseguimos concluir seu login. Tente novamente."
+    },
+    "login": {
+      "title": "Entre na sua conta da API do WhatsApp",
+      "subtitle": "Gerencie seus números, chaves de API e webhooks.",
+      "submit": "Entrar",
+      "submitting": "Entrando…",
+      "forgot": "Esqueceu a senha?",
+      "noAccount": "Novo no Bizuply WhatsApp API?",
+      "signupCta": "Criar uma conta",
+      "completing": "Fazendo seu login…",
+      "enterCredentials": "Informe seu e-mail e senha.",
+      "trust": "Login seguro da Bizuply",
+      "privacy": "Privacidade",
+      "terms": "Termos",
+      "help": "Ajuda",
+      "businessLogin": "Login empresarial Bizuply"
+    },
+    "checkout": {
+      "readyProvider": "Sua conta da API do WhatsApp está pronta. Continue com {{provider}} para abrir seu portal."
+    }
   }
 }
