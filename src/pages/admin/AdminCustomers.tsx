@@ -17,6 +17,7 @@ import UpsellPicker from "../../components/pricing/UpsellPicker";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminHeader from "./AdminsHeader";
+import { formatBillingMoney } from "../../components/billing/billingFormat";
 import AdminSendGuidedDemoModal, {
   AdminSendDemoButton,
 } from "./AdminSendGuidedDemoModal";
@@ -25,7 +26,7 @@ type CatalogUpsell = {
   sku: string;
   kind?: string;
   nameHe?: string;
-  amountIls?: number;
+  amount?: number;
   billing?: string;
   descriptionHe?: string;
   active?: boolean;
@@ -85,7 +86,9 @@ type PurchaseLine = {
   name: string;
   kind: string;
   billing: string;
-  amountIls: number;
+  amount?: number;
+  amountIls?: number;
+  currency?: string;
   quantity: number;
 };
 
@@ -95,7 +98,15 @@ type BusinessPurchase = {
   source: string;
   packageSku: string;
   lineItems?: PurchaseLine[];
-  totals?: { packageIls?: number; upsellsIls?: number; totalIls?: number };
+  totals?: {
+    package?: number;
+    upsells?: number;
+    total?: number;
+    currency?: string;
+    packageIls?: number;
+    upsellsIls?: number;
+    totalIls?: number;
+  };
   paidAt?: string | null;
   notes?: string;
   markedPaidBy?: { name?: string; email?: string } | null;
@@ -128,18 +139,34 @@ const PACKAGES = [
   {
     id: "monthly" as const,
     name: "חבילה חודשית",
-    price: "₪149",
+    price: "$99",
     period: "לחודש",
     note: "גמישות מלאה, ביטול בכל עת",
   },
   {
     id: "yearly" as const,
     name: "חבילה שנתית",
-    price: "₪1,490",
+    price: "$990",
     period: "לשנה",
     note: "חיסכון משמעותי לשנה מלאה",
   },
 ];
+
+/** Legacy purchase records carry ILS amounts in *Ils fields; new ones carry amount + currency. */
+function purchaseLineMoney(line: PurchaseLine, fallbackCurrency?: string) {
+  if (line.amount != null) {
+    return formatBillingMoney(Number(line.amount || 0), "he-IL", line.currency || fallbackCurrency || "USD");
+  }
+  return formatBillingMoney(Number(line.amountIls || 0), "he-IL", "ILS");
+}
+
+function purchaseTotalMoney(purchase: BusinessPurchase) {
+  const totals = purchase.totals || {};
+  if (totals.total != null) {
+    return formatBillingMoney(Number(totals.total || 0), "he-IL", totals.currency || "USD");
+  }
+  return formatBillingMoney(Number(totals.totalIls || 0), "he-IL", "ILS");
+}
 
 function formatDate(value?: string | null) {
   if (!value) return "—";
@@ -296,7 +323,7 @@ function AdminCustomers() {
       const amount =
         raw !== "" && raw != null && Number.isFinite(Number(raw))
           ? Number(raw)
-          : Number(catalogItem?.amountIls || 0);
+          : Number(catalogItem?.amount || 0);
       amounts[sku] = amount;
     }
     return {
@@ -317,7 +344,7 @@ function AdminCustomers() {
         set.add(sku);
         const catalogItem = upsells.find((item) => item.sku === sku);
         if (nextAmounts[sku] == null && catalogItem) {
-          nextAmounts[sku] = Number(catalogItem.amountIls || 0);
+          nextAmounts[sku] = Number(catalogItem.amount || 0);
         }
       }
       return {
@@ -1014,7 +1041,7 @@ function AdminCustomers() {
               </div>
 
               <label className="block text-sm font-bold text-slate-700">
-                מחיר חבילה לתשלום (₪)
+                מחיר חבילה לתשלום ($)
                 <input
                   type="number"
                   min={0}
@@ -1160,15 +1187,12 @@ function AdminCustomers() {
                                   : "חודשי מתחדש"}
                             </span>
                           </span>
-                          <span>₪{Number(line.amountIls || 0).toLocaleString("he-IL")}</span>
+                          <span>{purchaseLineMoney(line, purchase.totals?.currency)}</span>
                         </li>
                       ))}
                     </ul>
                     <div className="mt-3 border-t border-purple-100 pt-2 text-sm font-black text-slate-900">
-                      סה״כ: ₪
-                      {Number(purchase.totals?.totalIls || 0).toLocaleString(
-                        "he-IL"
-                      )}
+                      סה״כ: {purchaseTotalMoney(purchase)}
                     </div>
                     {purchase.notes ? (
                       <p className="mt-2 text-xs font-semibold text-slate-500">
@@ -1248,7 +1272,7 @@ function AdminCustomers() {
               </div>
 
               <label className="block text-sm font-bold">
-                מחיר חבילה לתשלום (₪)
+                מחיר חבילה לתשלום ($)
                 <input
                   type="number"
                   min={0}
@@ -1278,7 +1302,7 @@ function AdminCustomers() {
                       set.add(sku);
                       const catalogItem = upsells.find((item) => item.sku === sku);
                       if (nextAmounts[sku] == null && catalogItem) {
-                        nextAmounts[sku] = Number(catalogItem.amountIls || 0);
+                        nextAmounts[sku] = Number(catalogItem.amount || 0);
                       }
                     }
                     return {

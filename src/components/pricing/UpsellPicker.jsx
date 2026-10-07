@@ -5,7 +5,7 @@ import { catalogProductDescription, catalogProductName } from "../../i18n/partne
 
 /**
  * Multi-select catalog upsells.
- * Admin can override each selected price (ILS) — that amount is sent to Stripe.
+ * Admin can override each selected price (USD) — that amount is sent to checkout.
  */
 export default function UpsellPicker({
   upsells = [],
@@ -42,7 +42,7 @@ export default function UpsellPicker({
         amountsBySku?.[item.sku] != null &&
         Number.isFinite(Number(amountsBySku[item.sku]))
           ? Number(amountsBySku[item.sku])
-          : Number(item.amountIls || 0);
+          : Number(item.amount || 0);
       return sum + amount;
     }, 0);
   }, [visibleUpsells, selectedSet, amountsBySku]);
@@ -85,7 +85,7 @@ export default function UpsellPicker({
           const amountValue =
             amountsBySku?.[item.sku] != null
               ? String(amountsBySku[item.sku])
-              : String(item.amountIls ?? "");
+              : String(item.amount ?? "");
 
           return (
             <div
@@ -109,7 +109,7 @@ export default function UpsellPicker({
                   </span>
                   <span className="mt-0.5 block text-[11px] font-bold text-slate-500">
                     {billingLabel(item.billing)}{" "}
-                    · {t("billing.upsell.catalogPrice", { amount: item.amountIls })}
+                    · {t("billing.upsell.catalogPrice", { amount: item.amount })}
                   </span>
                   {item.descriptionHe || item.descriptionEn ? (
                     <span className="mt-1 block text-[11px] font-semibold leading-4 text-slate-500">

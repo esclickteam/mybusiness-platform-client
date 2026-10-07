@@ -18,16 +18,16 @@ function formatDate(value?: string | null, locale = "en") {
   return d.toLocaleDateString(locale);
 }
 
-function formatPrice(value?: number | null, currency = "ILS", locale = "en") {
+function formatPrice(value?: number | null, currency = "USD", locale = "en") {
   if (!(typeof value === "number" && value > 0)) return null;
   try {
     return new Intl.NumberFormat(locale, {
       style: "currency",
-      currency: currency || "ILS",
+      currency: currency || "USD",
       maximumFractionDigits: 0,
     }).format(value);
   } catch {
-    return `${value} ${currency || "ILS"}`;
+    return `${value} ${currency || "USD"}`;
   }
 }
 
@@ -190,7 +190,7 @@ export default function DomainRenewalPanel() {
           formatPrice(
             reg.renewalQuote?.customerRenewalPrice ??
               reg.renewal?.customerRenewalPrice,
-            reg.renewalQuote?.currency || reg.renewal?.currency || "ILS",
+            reg.renewalQuote?.currency || reg.renewal?.currency || "USD",
             intlLocale,
           ) || "—";
         const days =

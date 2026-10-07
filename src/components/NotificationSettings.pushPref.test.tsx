@@ -25,7 +25,7 @@ vi.mock("../api/pushBillingApi", () => ({
   createPushBillingCheckout: vi.fn(),
   reactivatePushBilling: vi.fn(),
   normalizePushPlan: () => "annual",
-  pushPlanAmountIls: () => 228,
+  pushPlanAmount: () => 69,
   pushPlanLabelHe: () => "שנתי",
 }));
 

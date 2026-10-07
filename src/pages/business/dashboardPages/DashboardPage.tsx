@@ -1845,7 +1845,6 @@ export default function DashboardPage() {
           {shouldShowEarlyBirdModal && (
             <div className="mb-4">
               <UpgradeOfferCard
-                expiresAt={user?.earlyBirdExpiresAt}
                 onUpgrade={handleEarlyBirdUpgrade}
                 onClose={handleEarlyBirdClose}
               />

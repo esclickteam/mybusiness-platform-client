@@ -73,40 +73,40 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "We build automatic workflows that keep nurturing leads and clients even when you're offline.",
     category: "setup",
     icon: "sparkles",
-    priceLabel: "החל מ־390 ₪ חד־פעמי",
-    priceLabelEn: "From ₪390 one-time",
+    priceLabel: "החל מ־$129 חד־פעמי",
+    priceLabelEn: "From $129 one-time",
     accent: "#8B5CF6",
     featured: true,
     details: [
-      "אוטומציה אחת פשוטה: 390 ₪",
-      "חבילת 3 אוטומציות: 890 ₪",
-      "חבילת 6 אוטומציות: 1,490 ₪",
+      "אוטומציה אחת פשוטה: $129",
+      "חבילת 3 אוטומציות: $279",
+      "חבילת 6 אוטומציות: $449",
       "תהליך מורכב: הצעה מותאמת",
     ],
     detailsEn: [
-      "One simple automation: ₪390",
-      "3-automation pack: ₪890",
-      "6-automation pack: ₪1,490",
+      "One simple automation: $129",
+      "3-automation pack: $279",
+      "6-automation pack: $449",
       "Complex process: custom quote",
     ],
     tracks: [
       {
         label: "אוטומציה אחת פשוטה",
         labelEn: "One simple automation",
-        price: "390 ₪",
-        priceEn: "₪390",
+        price: "$129",
+        priceEn: "$129",
       },
       {
         label: "חבילת 3 אוטומציות",
         labelEn: "3-automation pack",
-        price: "890 ₪",
-        priceEn: "₪890",
+        price: "$279",
+        priceEn: "$279",
       },
       {
         label: "חבילת 6 אוטומציות",
         labelEn: "6-automation pack",
-        price: "1,490 ₪",
-        priceEn: "₪1,490",
+        price: "$449",
+        priceEn: "$449",
       },
       {
         label: "תהליך מורכב",
@@ -153,8 +153,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "A Bizuply expert builds and launches a professional site from the platform templates and tools.",
     category: "setup",
     icon: "globe",
-    priceLabel: "החל מ־1,490 ₪ חד־פעמי",
-    priceLabelEn: "From ₪1,490 one-time",
+    priceLabel: "החל מ־$699 חד־פעמי",
+    priceLabelEn: "From $699 one-time",
     accent: "#6366F1",
     details: [
       "אתר עד 5 עמודים",
@@ -180,26 +180,26 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "עמוד נוסף",
         labelEn: "Extra page",
-        price: "190 ₪",
-        priceEn: "₪190",
+        price: "$59",
+        priceEn: "$59",
       },
       {
         label: "כתיבת תוכן",
         labelEn: "Content writing",
-        price: "590 ₪",
-        priceEn: "₪590",
+        price: "$179",
+        priceEn: "$179",
       },
       {
         label: "חנות בסיסית",
         labelEn: "Basic store",
-        price: "תוספת 1,490 ₪",
-        priceEn: "+ ₪1,490",
+        price: "תוספת $449",
+        priceEn: "+ $449",
       },
       {
         label: "עיצוב אישי מתקדם",
         labelEn: "Advanced custom design",
-        price: "החל מ־2,990 ₪",
-        priceEn: "From ₪2,990",
+        price: "החל מ־$899",
+        priceEn: "From $899",
       },
     ],
   },
@@ -213,8 +213,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "Especially valuable for customers switching to you — we migrate clients, leads, and statuses, and map fields so the business keeps running smoothly.",
     category: "setup",
     icon: "migrate",
-    priceLabel: "החל מ־790 ₪ חד־פעמי",
-    priceLabelEn: "From ₪790 one-time",
+    priceLabel: "החל מ־$249 חד־פעמי",
+    priceLabelEn: "From $249 one-time",
     accent: "#7C3AED",
     featured: true,
     details: [
@@ -235,8 +235,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "מעבר בסיסי",
         labelEn: "Basic migration",
-        price: "החל מ־790 ₪",
-        priceEn: "From ₪790",
+        price: "החל מ־$249",
+        priceEn: "From $249",
       },
     ],
     note: "היקף המעבר ותמחור סופי נקבעים לפי כמות הרשומות ומורכבות המערכת הקיימת.",
@@ -253,8 +253,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "For customers building a store with you — we upload products with images, descriptions, categories, prices, variations, and shipping settings.",
     category: "setup",
     icon: "package",
-    priceLabel: "החל מ־490 ₪ חד־פעמי",
-    priceLabelEn: "From ₪490 one-time",
+    priceLabel: "החל מ־$149 חד־פעמי",
+    priceLabelEn: "From $149 one-time",
     accent: "#9333EA",
     details: [
       "העלאת מוצרים",
@@ -274,14 +274,14 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "עד 20 מוצרים",
         labelEn: "Up to 20 products",
-        price: "490 ₪",
-        priceEn: "₪490",
+        price: "$149",
+        priceEn: "$149",
       },
       {
         label: "עד 50 מוצרים",
         labelEn: "Up to 50 products",
-        price: "990 ₪",
-        priceEn: "₪990",
+        price: "$299",
+        priceEn: "$299",
       },
       {
         label: "מעבר לכך",
@@ -303,8 +303,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "An expert launches a professional Meta campaign and connects leads straight into Bizuply.",
     category: "growth",
     icon: "megaphone",
-    priceLabel: "החל מ־690 ₪ חד־פעמי",
-    priceLabelEn: "From ₪690 one-time",
+    priceLabel: "הצעה מותאמת",
+    priceLabelEn: "Custom quote",
     accent: "#E11D8C",
     hidden: true,
     details: [
@@ -331,14 +331,14 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "הקמת קמפיין במטא",
         labelEn: "Meta campaign setup",
-        price: "690 ₪",
-        priceEn: "₪690",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
       {
         label: "הקמת קמפיין מתקדם במטא",
         labelEn: "Advanced Meta campaign setup",
-        price: "990 ₪",
-        priceEn: "₪990",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
     ],
     note: "המחיר כולל הקמה בלבד ואינו כולל ניהול שוטף או תקציב פרסום. כרגע השירות זמין למטא בלבד.",
@@ -355,8 +355,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "The Bizuply team creates designed, publish-ready content for Facebook and Instagram.",
     category: "growth",
     icon: "image",
-    priceLabel: "החל מ־990 ₪ לחודש",
-    priceLabelEn: "From ₪990 / month",
+    priceLabel: "הצעה מותאמת",
+    priceLabelEn: "Custom quote",
     accent: "#DB2777",
     hidden: true,
     details: [
@@ -377,20 +377,20 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "8 פוסטים",
         labelEn: "8 posts",
-        price: "990 ₪ לחודש",
-        priceEn: "₪990 / month",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
       {
         label: "12 פוסטים",
         labelEn: "12 posts",
-        price: "1,390 ₪ לחודש",
-        priceEn: "₪1,390 / month",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
       {
         label: "8 פוסטים ו־4 סרטונים מחומרי הלקוח",
         labelEn: "8 posts + 4 videos from client materials",
-        price: "1,790 ₪ לחודש",
-        priceEn: "₪1,790 / month",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
     ],
     note: "צילום מקצועי ותזמון פרסומים אינם כלולים כרגע.",
@@ -407,8 +407,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "A manager who finds relevant businesses, makes introductions, and guides communication between both sides.",
     category: "agents",
     icon: "handshake",
-    priceLabel: "החל מ־790 ₪ לחודש",
-    priceLabelEn: "From ₪790 / month",
+    priceLabel: "החל מ־$249 לחודש",
+    priceLabelEn: "From $249 / month",
     accent: "#0D9488",
     details: [
       "איתור עד 10 עסקים מתאימים",
@@ -430,14 +430,14 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "עד 10 עסקים",
         labelEn: "Up to 10 businesses",
-        price: "החל מ־790 ₪ לחודש",
-        priceEn: "From ₪790 / month",
+        price: "החל מ־$249 לחודש",
+        priceEn: "From $249 / month",
       },
       {
         label: "מסלול מורחב עד 25 פניות",
         labelEn: "Extended track up to 25 outreaches",
-        price: "1,290 ₪ לחודש",
-        priceEn: "₪1,290 / month",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
     ],
     note: "השירות אינו מתחייב לסגירת מספר מסוים של שיתופי פעולה.",
@@ -454,8 +454,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "A human agent calls new leads back, runs an initial discovery, filters the inquiry, and updates every detail in the CRM.",
     category: "agents",
     icon: "headset",
-    priceLabel: "החל מ־690 ₪ לחודש",
-    priceLabelEn: "From ₪690 / month",
+    priceLabel: "החל מ־$199 לחודש",
+    priceLabelEn: "From $199 / month",
     accent: "#059669",
     featured: true,
     details: [
@@ -465,7 +465,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "סינון לידים",
       "עדכון סטטוס וסיכום שיחה",
       "דוח פעילות חודשי",
-      "ליד נוסף: 15 ₪",
     ],
     detailsEn: [
       "Up to 40 leads per month",
@@ -474,7 +473,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "Lead filtering",
       "Status update and call summary",
       "Monthly activity report",
-      "Extra lead: ₪15",
     ],
   },
   {
@@ -487,8 +485,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "A rep who runs sales calls, sends proposals, handles objections, and follows clients through to a decision.",
     category: "agents",
     icon: "user-tie",
-    priceLabel: "1,490 ₪ לחודש + 5% הצלחה",
-    priceLabelEn: "₪1,490 / month + 5% success fee",
+    priceLabel: "$449 לחודש + 5% הצלחה",
+    priceLabelEn: "$449 / month + 5% success fee",
     accent: "#047857",
     details: [
       "עד 40 לידים חמים בחודש",
@@ -497,7 +495,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "שליחת הצעות מחיר מוכנות",
       "עדכון תוצאות ב-CRM",
       "דוח מכירות חודשי",
-      "ליד נוסף: 25 ₪",
     ],
     detailsEn: [
       "Up to 40 hot leads per month",
@@ -506,7 +503,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "Sending ready-made proposals",
       "Results updated in CRM",
       "Monthly sales report",
-      "Extra lead: ₪25",
     ],
   },
   {
@@ -519,8 +515,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "Re-engage unclosed leads — define what counts as an old lead in the CRM, and they move automatically into a dedicated follow-up tab to verify relevance.",
     category: "agents",
     icon: "refresh",
-    priceLabel: "590 ₪ חד־פעמי",
-    priceLabelEn: "₪590 one-time",
+    priceLabel: "$179 חד־פעמי",
+    priceLabelEn: "$179 one-time",
     accent: "#10B981",
     details: [
       "הגדרת ליד ישן לפי ימים ללא פעילות",
@@ -540,14 +536,14 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "חבילת 50 לידים",
         labelEn: "50-lead pack",
-        price: "590 ₪",
-        priceEn: "₪590",
+        price: "$179",
+        priceEn: "$179",
       },
       {
         label: "עד 100 לידים",
         labelEn: "Up to 100 leads",
-        price: "990 ₪",
-        priceEn: "₪990",
+        price: "$299",
+        priceEn: "$299",
       },
     ],
   },
@@ -563,8 +559,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "A manager who reviews leads, organizes statuses, opens tasks, and makes sure no client is forgotten.",
     category: "support",
     icon: "clipboard",
-    priceLabel: "החל מ־490 ₪ לחודש",
-    priceLabelEn: "From ₪490 / month",
+    priceLabel: "הצעה מותאמת",
+    priceLabelEn: "Custom quote",
     accent: "#3B82F6",
     hidden: true,
     details: [
@@ -587,14 +583,14 @@ export const PRICING_ADDONS: PricingAddon[] = [
       {
         label: "בדיקה פעמיים בשבוע",
         labelEn: "Twice-weekly review",
-        price: "החל מ־490 ₪ לחודש",
-        priceEn: "From ₪490 / month",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
       {
         label: "מסלול בדיקה יומית",
         labelEn: "Daily review track",
-        price: "890 ₪ לחודש",
-        priceEn: "₪890 / month",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
       },
     ],
   },
@@ -608,8 +604,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "An agent handles existing-customer inquiries by phone, WhatsApp, or your ticket system.",
     category: "support",
     icon: "message",
-    priceLabel: "החל מ־1,290 ₪ לחודש",
-    priceLabelEn: "From ₪1,290 / month",
+    priceLabel: "הצעה מותאמת",
+    priceLabelEn: "Custom quote",
     accent: "#2563EB",
     hidden: true,
     details: [
@@ -618,7 +614,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "עדכון הפניות במערכת",
       "העברת מקרים מורכבים לבעל העסק",
       "דוח שירות חודשי",
-      "שעה נוספת: 75 ₪",
     ],
     detailsEn: [
       "Up to 10 support hours per month",
@@ -626,7 +621,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "Tickets updated in the system",
       "Complex cases escalated to the owner",
       "Monthly service report",
-      "Extra hour: ₪75",
     ],
   },
 ];
@@ -638,7 +632,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
  * Stripe Live SKUs (PricingCatalog). The client NEVER sends amount / currency /
  * priceId — it sends only serviceKey + selectedAddOnKeys + quantities and the
  * server (POST /api/service-orders/create-checkout) resolves the real Stripe
- * Price. `amountIls` below is display-only for the pre-checkout summary.
+ * Price. `amount` (USD) below is display-only for the pre-checkout summary.
  *
  *  - `trackOptions` align by index with the addon's `tracks[]`.
  *  - `addOnOptions` align by index with the addon's `extras[]`.
@@ -649,7 +643,7 @@ export type ServicePurchaseTrack = {
   /** Server-side managed_service SKU. Omitted for contact-only options. */
   serviceKey?: string;
   /** Display-only amount for the pre-checkout summary (server is source of truth). */
-  amountIls?: number;
+  amount?: number;
   billing?: "one_time" | "recurring_month";
   /** Custom scope with no fixed Stripe price — routes to the contact form. */
   contact?: boolean;
@@ -658,14 +652,14 @@ export type ServicePurchaseTrack = {
 export type ServicePurchaseAddOn = {
   /** Server-side managed_service_addon SKU (only for expert_website_build). */
   addOnKey: string;
-  amountIls: number;
+  amount: number;
   allowQuantity?: boolean;
 };
 
 export type ServicePurchaseConfig = {
   /** Base service SKU for single-option services (no track picker). */
   serviceKey?: string;
-  amountIls?: number;
+  amount?: number;
   billing?: "one_time" | "recurring_month";
   /** Track choices (e.g. automations 1 / 3 / 6), aligned with `tracks[]`. */
   trackOptions?: ServicePurchaseTrack[];
@@ -676,34 +670,34 @@ export type ServicePurchaseConfig = {
 export const PRICING_SERVICE_PURCHASE: Record<string, ServicePurchaseConfig> = {
   "automations-setup": {
     trackOptions: [
-      { serviceKey: "automations_setup_1_390_ils", amountIls: 390, billing: "one_time" },
-      { serviceKey: "automations_setup_3_890_ils", amountIls: 890, billing: "one_time" },
-      { serviceKey: "automations_setup_6_1490_ils", amountIls: 1490, billing: "one_time" },
+      { serviceKey: "automations_setup_1_390_ils", amount: 129, billing: "one_time" },
+      { serviceKey: "automations_setup_3_890_ils", amount: 279, billing: "one_time" },
+      { serviceKey: "automations_setup_6_1490_ils", amount: 449, billing: "one_time" },
       { contact: true },
     ],
   },
   "website-build": {
     serviceKey: "expert_website_build_1490_ils",
-    amountIls: 1490,
+    amount: 699,
     billing: "one_time",
     addOnOptions: [
-      { addOnKey: "expert_website_extra_page_190_ils", amountIls: 190, allowQuantity: true },
-      { addOnKey: "expert_website_content_writing_590_ils", amountIls: 590 },
-      { addOnKey: "expert_website_basic_store_1490_ils", amountIls: 1490 },
-      { addOnKey: "expert_website_advanced_design_2990_ils", amountIls: 2990 },
+      { addOnKey: "expert_website_extra_page_190_ils", amount: 59, allowQuantity: true },
+      { addOnKey: "expert_website_content_writing_590_ils", amount: 179 },
+      { addOnKey: "expert_website_basic_store_1490_ils", amount: 449 },
+      { addOnKey: "expert_website_advanced_design_2990_ils", amount: 899 },
     ],
   },
   "crm-migration": {
     trackOptions: [
-      { serviceKey: "crm_migration_790_ils", amountIls: 790, billing: "one_time" },
+      { serviceKey: "crm_migration_790_ils", amount: 249, billing: "one_time" },
     ],
   },
   "store-products-upload": {
     trackOptions: [
-      { serviceKey: "store_products_upload_490_ils", amountIls: 490, billing: "one_time" },
+      { serviceKey: "store_products_upload_490_ils", amount: 149, billing: "one_time" },
       {
         serviceKey: "store_products_upload_50_990_ils",
-        amountIls: 990,
+        amount: 299,
         billing: "one_time",
       },
       { contact: true },
@@ -713,7 +707,7 @@ export const PRICING_SERVICE_PURCHASE: Record<string, ServicePurchaseConfig> = {
     trackOptions: [
       {
         serviceKey: "collaboration_manager_790_ils_monthly",
-        amountIls: 790,
+        amount: 249,
         billing: "recurring_month",
       },
       { contact: true },
@@ -721,20 +715,20 @@ export const PRICING_SERVICE_PURCHASE: Record<string, ServicePurchaseConfig> = {
   },
   "lead-first-response": {
     serviceKey: "lead_response_690_ils_monthly",
-    amountIls: 690,
+    amount: 199,
     billing: "recurring_month",
   },
   "personal-sales-rep": {
     serviceKey: "personal_sales_rep_1490_ils_monthly",
-    amountIls: 1490,
+    amount: 449,
     billing: "recurring_month",
   },
   "old-leads-followup": {
     trackOptions: [
-      { serviceKey: "old_leads_followup_590_ils", amountIls: 590, billing: "one_time" },
+      { serviceKey: "old_leads_followup_590_ils", amount: 179, billing: "one_time" },
       {
         serviceKey: "old_leads_followup_100_990_ils",
-        amountIls: 990,
+        amount: 299,
         billing: "one_time",
       },
     ],

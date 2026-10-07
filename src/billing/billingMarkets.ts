@@ -1,5 +1,6 @@
 /**
- * Fixed regional price catalogs (not FX conversion).
+ * Billing markets. The Lemon store charges in USD only, so every market uses the
+ * same USD price list (no FX conversion); market ids still gate regional features.
  * billingCountry wins when present; UI locale may seed a public default market.
  */
 
@@ -75,90 +76,62 @@ const LATAM_USD = new Set([
   "PR",
 ]);
 
+const USD_PRICES: RegionalPriceTable = {
+  websiteAnnual: 129,
+  crmMonthly: 49,
+  businessMonthly: 99,
+  websiteStaffBuild: 699,
+};
+
 export const BILLING_MARKETS: Record<BillingMarketId, BillingMarket> = {
   israel: {
     id: "israel",
-    currency: "ILS",
-    stripeCurrency: "ils",
+    currency: "USD",
+    stripeCurrency: "usd",
     labelKey: "billing.markets.israel",
-    prices: {
-      websiteAnnual: 600,
-      crmMonthly: 89,
-      businessMonthly: 149,
-      websiteStaffBuild: 1490,
-    },
+    prices: { ...USD_PRICES },
   },
   usa: {
     id: "usa",
     currency: "USD",
     stripeCurrency: "usd",
     labelKey: "billing.markets.usa",
-    prices: {
-      websiteAnnual: 129,
-      crmMonthly: 49,
-      businessMonthly: 99,
-      websiteStaffBuild: 699,
-    },
+    prices: { ...USD_PRICES },
   },
   europe: {
     id: "europe",
-    currency: "EUR",
-    stripeCurrency: "eur",
+    currency: "USD",
+    stripeCurrency: "usd",
     labelKey: "billing.markets.europe",
-    prices: {
-      websiteAnnual: 99,
-      crmMonthly: 39,
-      businessMonthly: 79,
-      websiteStaffBuild: 599,
-    },
+    prices: { ...USD_PRICES },
   },
   brazil: {
     id: "brazil",
-    currency: "BRL",
-    stripeCurrency: "brl",
+    currency: "USD",
+    stripeCurrency: "usd",
     labelKey: "billing.markets.brazil",
-    prices: {
-      websiteAnnual: 349,
-      crmMonthly: 99,
-      businessMonthly: 199,
-      websiteStaffBuild: 1490,
-    },
+    prices: { ...USD_PRICES },
   },
   uae: {
     id: "uae",
-    currency: "AED",
-    stripeCurrency: "aed",
+    currency: "USD",
+    stripeCurrency: "usd",
     labelKey: "billing.markets.uae",
-    prices: {
-      websiteAnnual: 499,
-      crmMonthly: 149,
-      businessMonthly: 349,
-      websiteStaffBuild: 2490,
-    },
+    prices: { ...USD_PRICES },
   },
   latam: {
     id: "latam",
     currency: "USD",
     stripeCurrency: "usd",
     labelKey: "billing.markets.latam",
-    prices: {
-      websiteAnnual: 79,
-      crmMonthly: 29,
-      businessMonthly: 59,
-      websiteStaffBuild: 399,
-    },
+    prices: { ...USD_PRICES },
   },
   global: {
     id: "global",
     currency: "USD",
     stripeCurrency: "usd",
     labelKey: "billing.markets.global",
-    prices: {
-      websiteAnnual: 129,
-      crmMonthly: 49,
-      businessMonthly: 99,
-      websiteStaffBuild: 699,
-    },
+    prices: { ...USD_PRICES },
   },
 };
 

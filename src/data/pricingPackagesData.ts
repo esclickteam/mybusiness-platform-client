@@ -1,4 +1,4 @@
-/** BizUply service packages for the public pricing page (ILS) */
+/** BizUply service packages for the public pricing page (USD) */
 
 export type PricingPackage = {
   type: "website" | "monthly" | "yearly";
@@ -24,12 +24,13 @@ export type PricingPackage = {
   featuresEn: string[];
 };
 
-/** One-time self-serve website add-on for business packages (ILS) */
+/** One-time self-serve website add-on for business packages (USD) */
 export const WEBSITE_ADDON = {
-  price: 550,
-  labelHe: "550₪ חד־פעמי — בניית אתר עצמאי כתוספת לחבילה העסקית",
+  price: 119,
+  currency: "USD",
+  labelHe: "$119 חד־פעמי — בניית אתר עצמאי כתוספת לחבילה העסקית",
   labelEn:
-    "₪550 one-time — self-serve website as a business-plan add-on",
+    "$119 one-time — self-serve website as a business-plan add-on",
   hintHe:
     "תשלום חד־פעמי, ללא חידוש אוטומטי · תבניות ועורך ויזואלי, מקושר ל-CRM — כולל דומיין חינם לשנה",
   hintEn:
@@ -42,7 +43,7 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     checkoutPlan: "website",
     highlighted: false,
     allowsWebsiteAddon: false,
-    price: 600,
+    price: 129,
     pricePeriodHe: "לשנה",
     pricePeriodEn: "/year",
     nameHe: "בניית אתר בלבד",
@@ -87,7 +88,7 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     checkoutPlan: "monthly",
     highlighted: false,
     allowsWebsiteAddon: true,
-    price: 149,
+    price: 99,
     pricePeriodHe: "לחודש",
     pricePeriodEn: "/month",
     nameHe: "חבילה עסקית חודשית",
@@ -136,7 +137,7 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     checkoutPlan: "yearly",
     highlighted: true,
     allowsWebsiteAddon: true,
-    price: 1490,
+    price: 990,
     pricePeriodHe: "לשנה",
     pricePeriodEn: "/year",
     nameHe: "חבילה עסקית שנתית",
@@ -147,8 +148,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "המערכת העסקית במחיר שנתי משתלם — CRM, תורים, שיתופים ו־AI. ללא אתר כלול.",
     descriptionEn:
       "The business system at a better yearly price — CRM, appointments, collaborations, and AI. Website not included.",
-    noteHe: "חיוב שנתי מתחדש · חיסכון של ₪298 לעומת חודשי",
-    noteEn: "Renewing yearly billing · save ₪298 vs monthly",
+    noteHe: "חיוב שנתי מתחדש · חיסכון של $198 לעומת חודשי",
+    noteEn: "Renewing yearly billing · save $198 vs monthly",
     buttonHe: "התחילו שנתי",
     buttonEn: "Start yearly",
     featuresHe: [

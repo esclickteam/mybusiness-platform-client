@@ -141,7 +141,7 @@ describe("automationBillingApi", () => {
     })).toBe(false);
     expect(api.hasActiveAutomationPlan({
       billingEnabled: true, exempt: false,
-      plan: { key: "automation_basic_39_ils", name: "Basic", status: "active", priceIls: 39, executionLimit: 100 },
+      plan: { key: "automation_basic_39_ils", name: "Basic", status: "active", amount: 12, currency: "usd", executionLimit: 100 },
       usage: null,
       subscription: { cancelAtPeriodEnd: false, pendingDowngradePlanKey: null, paymentGraceEndsAt: null },
       canPublish: true, canExecute: true, blockReason: null,

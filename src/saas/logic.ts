@@ -11,9 +11,7 @@ export type SaasScreenshot = {
 export type SaasQuote = {
   paymentType: "full" | "deposit";
   amountUsd: number;
-  amountIls: number;
-  amountAgorot: number;
-  usdToIlsRate: number;
+  amountMinor: number;
   currency: string;
 };
 
@@ -205,14 +203,6 @@ export function formatUsd(amount: number) {
     currency: "USD",
     maximumFractionDigits: value % 1 ? 2 : 0,
   }).format(value);
-}
-
-export function formatIls(amount: number) {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "ILS",
-    maximumFractionDigits: 0,
-  }).format(Number(amount) || 0);
 }
 
 export function illustrativeMrr(customers: number, monthlyPrice: number) {

@@ -166,7 +166,7 @@ export default function Plans() {
   );
   const formattedWebsiteAddonPrice = formatPlanPrice(
     WEBSITE_ADDON.price,
-    "ILS",
+    WEBSITE_ADDON.currency,
     i18n.language
   );
   const yearlySavings = formatPlanPrice(
@@ -682,7 +682,7 @@ export default function Plans() {
                             period: plan.pricePeriod,
                             websitePrice: formatPlanPrice(
                               WEBSITE_ADDON.price,
-                              "ILS",
+                              WEBSITE_ADDON.currency,
                               i18n.language
                             ),
                           })}

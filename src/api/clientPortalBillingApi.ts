@@ -35,7 +35,7 @@ export type ClientPortalCheckoutResult = {
   url: string;
   sessionId?: string;
   planKey?: string;
-  amountIls?: number;
+  amount?: number;
   currency?: string;
   interval?: string;
   mode?: string;
