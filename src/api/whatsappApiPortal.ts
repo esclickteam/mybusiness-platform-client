@@ -6,6 +6,7 @@ export type WhatsAppApiSubscriptionSummary = {
   active: boolean;
   reason?: string | null;
   currentPeriodEnd?: string | null;
+  endedAt?: string | null;
   cancelAtPeriodEnd?: boolean;
   graceEndsAt?: string | null;
 };
@@ -85,7 +86,11 @@ export function portalSubscriptionState(access: WhatsAppApiSubscriptionAccess | 
   const reason = String(sub.reason || access.reason || "");
   const periodEnd = sub.currentPeriodEnd || null;
 
-  if (!sub.active) return { state: "expired", date: periodEnd };
+  if (!sub.active) {
+    // A refund ends access before the paid period does, so a future period end is not the end date.
+    const lapsedPeriodEnd = periodEnd && new Date(periodEnd).getTime() <= Date.now() ? periodEnd : null;
+    return { state: "expired", date: sub.endedAt || lapsedPeriodEnd };
+  }
   if (reason === "payment_grace") {
     return { state: "pastDueGrace", date: sub.graceEndsAt || null };
   }

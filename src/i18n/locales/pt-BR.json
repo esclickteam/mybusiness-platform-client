@@ -23104,7 +23104,7 @@
       "welcomeText": "Sua assinatura está pronta. Siga estas etapas para enviar sua primeira mensagem.",
       "steps": {
         "subscription": {
-          "title": "Assinatura ativa",
+          "title": "Assinatura do WhatsApp API",
           "text": "Sua assinatura de US$ 29/mês cobre um número de WhatsApp.",
           "cta": "Ver assinatura"
         },

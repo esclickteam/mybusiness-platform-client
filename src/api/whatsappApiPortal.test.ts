@@ -66,6 +66,17 @@ describe("portalSubscriptionState", () => {
     }
   });
 
+  it("dates an expired subscription by when access actually ended", () => {
+    const ENDED = "2026-10-07T09:37:54.497Z";
+    const PAST = "2020-01-01T00:00:00.000Z";
+    const expired = (extra: Partial<NonNullable<WhatsAppApiSubscriptionAccess["subscription"]>>) =>
+      portalSubscriptionState(access({ status: "canceled", active: false, reason: "canceled", ...extra }));
+
+    expect(expired({ currentPeriodEnd: END, endedAt: ENDED })).toEqual({ state: "expired", date: ENDED });
+    expect(expired({ currentPeriodEnd: END })).toEqual({ state: "expired", date: null });
+    expect(expired({ currentPeriodEnd: PAST })).toEqual({ state: "expired", date: PAST });
+  });
+
   it("distinguishes no subscription from an unavailable status API", () => {
     expect(portalSubscriptionState(access(null)).state).toBe("none");
     expect(portalSubscriptionState(null).state).toBe("unknown");
