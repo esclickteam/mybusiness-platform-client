@@ -33,12 +33,23 @@ export function whatsappApiPortalHome(businessId) {
   return `/business/${businessId}/dashboard/whatsapp/overview`;
 }
 
-/** The WhatsApp API product login; the standalone customers' sign-in page. */
-export const WHATSAPP_API_LOGIN_PATH = "/login?product=whatsapp_api";
+/**
+ * The WhatsApp API product login. Customers reach it from https://whatsapp.bizuply.com/login,
+ * which the edge redirects here; plain `/login` is always the Bizuply login.
+ */
+export const WHATSAPP_API_LOGIN_PATH = "/whatsapp-api/login";
+
+export function isLoginPath(pathname) {
+  return pathname === "/login" || pathname === WHATSAPP_API_LOGIN_PATH;
+}
 
 const LOGIN_PRODUCT_KEY = "bizuply_login_product";
 
-/** Remembers which login this browser's last account uses, so logout and expired sessions return there. */
+/**
+ * Remembers that this browser's last account is a WhatsApp API customer, so its logout, expired
+ * session or signed-out portal link returns to the WhatsApp API login. It never changes what
+ * `/login` itself renders.
+ */
 export function rememberLoginProduct(user) {
   try {
     if (isWhatsAppApiPortalUser(user)) localStorage.setItem(LOGIN_PRODUCT_KEY, WHATSAPP_API_PLAN);
@@ -48,7 +59,7 @@ export function rememberLoginProduct(user) {
   }
 }
 
-export function prefersWhatsAppApiLogin() {
+function prefersWhatsAppApiLogin() {
   try {
     return localStorage.getItem(LOGIN_PRODUCT_KEY) === WHATSAPP_API_PLAN;
   } catch {
@@ -56,20 +67,22 @@ export function prefersWhatsAppApiLogin() {
   }
 }
 
-/** Login page for a signed-out browser: WhatsApp API customers never get the generic Bizuply login. */
+/** Where a session that ended (logout or expiry) goes: each product back to its own login. */
 export function loginPathForBrowser() {
   return prefersWhatsAppApiLogin() ? WHATSAPP_API_LOGIN_PATH : "/login";
 }
 
 /**
- * `/login?product=whatsapp_api`, the $29 checkout return, and a plain `/login` on a browser whose
- * account is a WhatsApp API customer render the product login. `product=business` forces the CRM login.
+ * Old product-login links (`/login?product=whatsapp_api`, the $29 checkout return, the social
+ * sign-in callback) name the product explicitly; they move to the WhatsApp API login with the
+ * rest of their query. Returns null for every other `/login` visit.
  */
-export function isWhatsAppApiLoginSearch(search) {
+export function legacyWhatsAppApiLoginRedirect(search) {
   const params = new URLSearchParams(search || "");
-  const product = params.get("product");
-  if (product === WHATSAPP_API_PLAN || params.get("checkout") === WHATSAPP_API_PLAN) return true;
-  return !product && !params.get("checkout") && prefersWhatsAppApiLogin();
+  if (params.get("product") !== WHATSAPP_API_PLAN && params.get("checkout") !== WHATSAPP_API_PLAN) return null;
+  params.delete("product");
+  const rest = params.toString();
+  return `${WHATSAPP_API_LOGIN_PATH}${rest ? `?${rest}` : ""}`;
 }
 
 export function whatsappApiPortalBillingPath(businessId) {

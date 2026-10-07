@@ -18,6 +18,7 @@ import {
   isBizuplyTravelHost,
 } from "./src/lib/travelHost.mjs";
 import {
+  WHATSAPP_LOGIN_APP_URL,
   WHATSAPP_NOT_FOUND_META,
   WHATSAPP_OG_IMAGE,
   WHATSAPP_PRODUCT_SCHEMA,
@@ -530,6 +531,16 @@ function whatsappSeoFile(pathname) {
   return seoResponse(body, { isRobots, status: 200, source: "whatsapp" });
 }
 
+/** The sign-in runs on bizuply.com, where the host-only auth session lives; the query (lang, etc.) carries over. */
+function whatsappLoginRedirect(request) {
+  const target = new URL(WHATSAPP_LOGIN_APP_URL);
+  target.search = new URL(request.url).search;
+  return new Response(null, {
+    status: 302,
+    headers: { location: target.toString(), "cache-control": "no-store" },
+  });
+}
+
 async function handleWhatsAppDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
 
@@ -590,6 +601,9 @@ export default async function middleware(request) {
   if (isBizuplyWhatsAppHost(host)) {
     if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
       return whatsappSeoFile(pathname);
+    }
+    if (pathname === "/login" || pathname === "/login/") {
+      return whatsappLoginRedirect(request);
     }
     return handleWhatsAppDocument(request);
   }

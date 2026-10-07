@@ -1,5 +1,5 @@
-import React, { Suspense, lazy, useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
@@ -21,7 +21,7 @@ import {
   normalizeLanguage,
 } from "../i18n/localeUtils";
 import { messageForLoginFailure } from "../utils/loginFailureMessage";
-import { isWhatsAppApiLoginSearch } from "../utils/whatsappApiPortal";
+import { legacyWhatsAppApiLoginRedirect } from "../utils/whatsappApiPortal";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -47,17 +47,10 @@ type LoginResponse = {
   redirectUrl?: string;
 };
 
-const WhatsAppApiLoginPage = lazy(() => import("./whatsappApi/WhatsAppApiLoginPage"));
-
 export default function Login() {
   const location = useLocation();
-  if (isWhatsAppApiLoginSearch(location.search)) {
-    return (
-      <Suspense fallback={<div style={{ minHeight: "100vh", background: "#05070d" }} />}>
-        <WhatsAppApiLoginPage />
-      </Suspense>
-    );
-  }
+  const whatsappApiLogin = legacyWhatsAppApiLoginRedirect(location.search);
+  if (whatsappApiLogin) return <Navigate to={whatsappApiLogin} replace />;
   return <BusinessLogin />;
 }
 

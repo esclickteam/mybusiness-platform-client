@@ -15,7 +15,7 @@ import {
   markRefreshDead,
 } from "./tokenRefresh";
 import { clearAdminActiveBusinessId } from "./adminTenant";
-import { loginPathForBrowser } from "./whatsappApiPortal";
+import { isLoginPath, loginPathForBrowser } from "./whatsappApiPortal";
 
 function getApiBaseUrl() {
   const envApiUrl = String(import.meta.env.VITE_API_URL || "")
@@ -53,7 +53,7 @@ function safePathname() {
 
 function isAlreadyOnLogin() {
   const path = safePathname();
-  return path === LOGIN_PATH || path.startsWith(`${LOGIN_PATH}/`);
+  return path === LOGIN_PATH || path.startsWith(`${LOGIN_PATH}/`) || isLoginPath(path);
 }
 
 /**

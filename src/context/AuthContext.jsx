@@ -46,8 +46,10 @@ import {
   businessNoAccessPath,
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalUser,
+  isLoginPath,
   loginPathForBrowser,
   rememberLoginProduct,
+  WHATSAPP_API_LOGIN_PATH,
 } from "../utils/whatsappApiPortal";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
@@ -164,6 +166,7 @@ function isPublicRoute(pathname) {
   const publicRoutes = [
     "/",
     "/login",
+    WHATSAPP_API_LOGIN_PATH,
     "/register",
     "/pricing",
     "/features",
@@ -895,7 +898,7 @@ export function AuthProvider({ children }) {
 
         const justRegistered = sessionStorage.getItem("justRegistered");
         const queryRedirect =
-          location.pathname === "/login"
+          isLoginPath(location.pathname)
             ? sanitizeInternalRedirect(
                 new URLSearchParams(location.search).get("redirect")
               )
@@ -1014,7 +1017,7 @@ export function AuthProvider({ children }) {
               return;
             }
 
-            if (location.pathname === "/login") {
+            if (isLoginPath(location.pathname)) {
               const dest = resolvePostLoginDestination({
                 role: freshUser.role,
                 businessId: freshUser.businessId,

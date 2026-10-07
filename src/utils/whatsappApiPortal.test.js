@@ -1,12 +1,14 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
   businessNoAccessPath,
-  isWhatsAppApiLoginSearch,
+  isLoginPath,
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalPathAllowed,
   isWhatsAppApiPortalUser,
+  legacyWhatsAppApiLoginRedirect,
   loginPathForBrowser,
   rememberLoginProduct,
+  WHATSAPP_API_LOGIN_PATH,
   whatsappApiPortalHome,
 } from "./whatsappApiPortal";
 import { resolvePostLoginDestination } from "./safeInternalRedirect";
@@ -191,40 +193,31 @@ describe("no-access landing", () => {
 describe("product login", () => {
   afterEach(() => localStorage.clear());
 
-  it("opens the WhatsApp API login for the product link and the $29 checkout return", () => {
-    expect(isWhatsAppApiLoginSearch("?product=whatsapp_api")).toBe(true);
-    expect(isWhatsAppApiLoginSearch("?product=whatsapp_api&oauth_error=no_account")).toBe(true);
-    expect(isWhatsAppApiLoginSearch("?checkout=whatsapp_api&email=a%40b.c&ref=1")).toBe(true);
-    expect(isWhatsAppApiLoginSearch("")).toBe(false);
-    expect(isWhatsAppApiLoginSearch("?checkout=success")).toBe(false);
-    expect(isWhatsAppApiLoginSearch("?redirect=/pricing")).toBe(false);
+  it("moves old WhatsApp API login links to /whatsapp-api/login, keeping the rest of the query", () => {
+    expect(legacyWhatsAppApiLoginRedirect("?product=whatsapp_api")).toBe("/whatsapp-api/login");
+    expect(legacyWhatsAppApiLoginRedirect("?product=whatsapp_api&oauth=success")).toBe("/whatsapp-api/login?oauth=success");
+    expect(legacyWhatsAppApiLoginRedirect("?product=whatsapp_api&oauth_error=no_account&provider=google")).toBe(
+      "/whatsapp-api/login?oauth_error=no_account&provider=google"
+    );
+    expect(legacyWhatsAppApiLoginRedirect("?product=whatsapp_api&checkout=whatsapp_api&email=a%40b.c&ref=1")).toBe(
+      "/whatsapp-api/login?checkout=whatsapp_api&email=a%40b.c&ref=1"
+    );
+    expect(legacyWhatsAppApiLoginRedirect("?checkout=whatsapp_api&email=a%40b.c&ref=1")).toBe(
+      "/whatsapp-api/login?checkout=whatsapp_api&email=a%40b.c&ref=1"
+    );
   });
 
-  it("remembers WhatsApp API customers so logout and expired sessions return to their login", () => {
+  it("never turns a plain /login into the WhatsApp API login, even after a WhatsApp API session", () => {
     rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
-    expect(isWhatsAppApiLoginSearch("")).toBe(true);
-    expect(isWhatsAppApiLoginSearch("?product=business")).toBe(false);
-    expect(isWhatsAppApiLoginSearch("?checkout=success")).toBe(false);
-
-    for (const user of [
-      { role: "business", subscriptionPlan: "monthly" },
-      { role: "admin" },
-      { role: "partner" },
-    ]) {
-      rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
-      rememberLoginProduct(user);
-      expect(isWhatsAppApiLoginSearch("")).toBe(false);
+    for (const search of ["", "?product=business", "?checkout=success", "?redirect=/pricing", "?lang=he"]) {
+      expect(legacyWhatsAppApiLoginRedirect(search)).toBeNull();
     }
-
-    rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
-    rememberLoginProduct(null);
-    expect(isWhatsAppApiLoginSearch("")).toBe(true);
   });
 
-  it("signed-out WhatsApp API browsers are sent to /login?product=whatsapp_api; everyone else to /login", () => {
+  it("an expired WhatsApp API session returns to the WhatsApp API login; everyone else to /login", () => {
     expect(loginPathForBrowser()).toBe("/login");
     rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
-    expect(loginPathForBrowser()).toBe("/login?product=whatsapp_api");
+    expect(loginPathForBrowser()).toBe(WHATSAPP_API_LOGIN_PATH);
     for (const user of [
       { role: "business", subscriptionPlan: "monthly" },
       { role: "business", subscriptionPlan: "crm_only" },
@@ -236,4 +229,12 @@ describe("product login", () => {
       expect(loginPathForBrowser()).toBe("/login");
     }
   });
+
+  it("recognises both login pages", () => {
+    expect(isLoginPath("/login")).toBe(true);
+    expect(isLoginPath("/whatsapp-api/login")).toBe(true);
+    expect(isLoginPath("/whatsapp-api")).toBe(false);
+    expect(isLoginPath("/register")).toBe(false);
+  });
 });
+

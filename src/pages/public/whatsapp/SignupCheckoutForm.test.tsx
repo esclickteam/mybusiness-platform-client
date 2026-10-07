@@ -118,7 +118,7 @@ describe("SignupCheckoutForm", () => {
     renderForm();
     fillAndSubmit();
     expect(await screen.findByText(/This email already has an account/)).toBeInTheDocument();
-    expect(screen.getAllByRole("link", { name: "Log in" })[0].getAttribute("href")).toMatch(/\/login\?product=whatsapp_api$/);
+    expect(screen.getAllByRole("link", { name: "Log in" })[0].getAttribute("href")).toBe("https://whatsapp.bizuply.com/login");
   });
 
   it("shows why a provider signup was refused", () => {
@@ -143,7 +143,7 @@ describe("SignupCheckoutForm in Hebrew", () => {
     expect(screen.getByRole("button", { name: "המשך" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "הצגת סיסמה" })).toBeInTheDocument();
     expect(screen.getByText("כבר יש לכם חשבון?", { exact: false })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "התחברות" }).getAttribute("href")).toMatch(/\/login\?product=whatsapp_api$/);
+    expect(screen.getByRole("link", { name: "התחברות" }).getAttribute("href")).toBe("https://whatsapp.bizuply.com/login");
     const visible = container.textContent || "";
     for (const english of ["Create your", "Continue", "OR", "Email address", "Password", "Already have", "Log in", "Next:", "Cancel anytime"]) {
       expect(visible).not.toContain(english);
@@ -164,7 +164,7 @@ describe("SignupCheckoutForm in Hebrew", () => {
     fireEvent.change(screen.getByLabelText("סיסמה"), { target: { value: "Password#123" } });
     fireEvent.click(screen.getByRole("button", { name: "המשך" }));
     expect(await screen.findByText(/לאימייל הזה כבר יש חשבון/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "התחברו" }).getAttribute("href")).toMatch(/\/login\?product=whatsapp_api$/);
+    expect(screen.getByRole("link", { name: "התחברו" }).getAttribute("href")).toBe("https://whatsapp.bizuply.com/login");
     expect(apiPost).toHaveBeenCalledWith("/whatsapp-api/signup-checkout", expect.objectContaining({ language: "he" }));
   });
 });
