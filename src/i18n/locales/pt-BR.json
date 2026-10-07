@@ -2598,9 +2598,9 @@
     "alertCheckoutFailed": "Falha ao iniciar o checkout",
     "alertGenericError": "Erro, por favor, tente novamente.",
     "websiteContactMessage": "Oi, gostaria de começar com o pacote Apenas website a {{price}}/ano (autoatendimento a partir do modelo, ligado ao CRM).",
-    "packageWithWebsiteContactMessage": "Oi, eu gostaria de me juntar ao {{package}} no {{price}}{{period}}, incluindo o complemento {{websitePrice}} do site uma vez (construção do site de autoatendimento).",
-    "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + add-on {{websitePrice}} de uma só vez",
-    "websiteAddonStripeNote": "{{packagePrice}}{{period}} + site {{websitePrice}} uma vez (em Stripe)",
+    "packageWithWebsiteContactMessage": "Oi, eu gostaria de entrar no {{package}} por {{price}}{{period}}, com o complemento de site por {{websitePrice}}/ano (site self-serve).",
+    "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + complemento de site {{websitePrice}}/ano",
+    "websiteAddonStripeNote": "{{packagePrice}}{{period}} + complemento de site {{websitePrice}}/ano (assinatura anual separada)",
     "addonsBadge": "12 pacotes prontos",
     "upsellsBadge": "Upsells",
     "upsellsTitle": "Upsells & serviços extras",
@@ -2631,7 +2631,7 @@
     "modalExamples": "Exemplos",
     "platformBadge": "Pacotes de sistema",
     "platformTitle": "Pacotes de sistema",
-    "platformSubtitle": "CRM, compromissos, colaborações e IA. Adicione um upsell único do site o total de atualizações de checkout automaticamente.",
+    "platformSubtitle": "CRM, agendamentos, colaborações e IA. Adicione o complemento de site como assinatura anual separada.",
     "choosePurchase": "Escolher compra",
     "categories": {
       "all": "Tudo",
@@ -2641,15 +2641,15 @@
       "support": "Suporte mensal"
     },
     "websiteAddon": {
-      "label": "{{price}} único — site self-serve como extra do plano Business",
-      "hint": "Pagamento único, sem renovação automática · modelos e editor visual, ligado ao CRM — domínio grátis por 1 ano"
+      "label": "{{price}} por ano — site self-serve como extra do plano Business",
+      "hint": "Renova automaticamente todo ano, cancele quando quiser · modelos e editor visual, ligado ao CRM — domínio grátis por 1 ano"
     },
     "packages": {
       "website": {
         "name": "Apenas website",
         "badge": "Self-service",
         "description": "Crie um site profissional a partir de um modelo — publique, receba contatos e tudo liga ao CRM.",
-        "note": "Pagamento único — sem compromisso e sem renovação automática",
+        "note": "Renova automaticamente todo ano — cancele quando quiser",
         "button": "Começar com um site",
         "pricePeriod": "/ano",
         "features": {
@@ -2710,25 +2710,25 @@
       "automations-setup": {
         "name": "Configuração de automações",
         "description": "Criamos fluxos automáticos que continuam cuidando de leads e clientes mesmo quando você não está no sistema.",
-        "price": "A partir de $129 único",
+        "price": "A partir de $99 único",
         "details": {
-          "0": "Uma automação simples: $129",
-          "1": "Pacote de 3: $279",
-          "2": "Pacote de 6: $449",
+          "0": "Uma automação simples: $99",
+          "1": "Pacote de 3: $249",
+          "2": "Pacote de 6: $399",
           "3": "Processo complexo: orçamento sob medida"
         },
         "tracks": {
           "0": {
             "label": "Uma automação simples",
-            "price": "$129"
+            "price": "$99"
           },
           "1": {
             "label": "Pacote de 3 automações",
-            "price": "$279"
+            "price": "$249"
           },
           "2": {
             "label": "Pacote de 6 automações",
-            "price": "$449"
+            "price": "$399"
           },
           "3": {
             "label": "Processo complexo",
@@ -2752,7 +2752,7 @@
       "website-build": {
         "name": "Site criado por um especialista",
         "description": "Um especialista da Bizuply cria e publica um site profissional com os modelos e ferramentas da plataforma.",
-        "price": "A partir de $699 único",
+        "price": "$399 único",
         "details": {
           "0": "Site de até 5 páginas",
           "1": "Escolha de modelo existente",
@@ -2766,26 +2766,26 @@
         "extras": {
           "0": {
             "label": "Página extra",
-            "price": "$59"
+            "price": "$49"
           },
           "1": {
             "label": "Redação de conteúdo",
-            "price": "$179"
+            "price": "$149"
           },
           "2": {
             "label": "Loja básica",
-            "price": "+ $449"
+            "price": "+ $399"
           },
           "3": {
             "label": "Design personalizado avançado",
-            "price": "A partir de $899"
+            "price": "+ $799"
           }
         }
       },
       "crm-migration": {
         "name": "Migração de outro CRM",
         "description": "Especialmente útil se o cliente muda para você — migramos clientes, leads e status, e mapeamos campos para o negócio seguir fluido.",
-        "price": "A partir de $249 único",
+        "price": "$249 único",
         "details": {
           "0": "Transferência de clientes e leads",
           "1": "Transferência de status",
@@ -2796,10 +2796,10 @@
         "tracks": {
           "0": {
             "label": "Migração básica",
-            "price": "A partir de $249"
+            "price": "$249"
           }
         },
-        "note": "O escopo e o preço final dependem do volume de registros e da complexidade do sistema atual."
+        "note": "Migrações de grande volume ou complexas são orçadas à parte."
       },
       "store-products-upload": {
         "name": "Envio de produtos para a loja",
@@ -2819,7 +2819,7 @@
           },
           "1": {
             "label": "Até 50 produtos",
-            "price": "$299"
+            "price": "$249"
           },
           "2": {
             "label": "Além disso",
@@ -2883,7 +2883,7 @@
       "collab-manager": {
         "name": "Gestor pessoal de colaborações",
         "description": "Um gestor que encontra negócios relevantes, apresenta as partes e acompanha a comunicação.",
-        "price": "A partir de $249 / mês",
+        "price": "$299 / mês",
         "details": {
           "0": "Encontrar até 10 negócios adequados",
           "1": "Primeiro contato",
@@ -2895,7 +2895,7 @@
         "tracks": {
           "0": {
             "label": "Até 10 negócios",
-            "price": "A partir de $249 / mês"
+            "price": "$299 / mês"
           },
           "1": {
             "label": "Percurso ampliado até 25 contatos",
@@ -2907,7 +2907,7 @@
       "lead-first-response": {
         "name": "Primeira resposta a leads",
         "description": "Um agente humano liga para leads novos, faz um filtro inicial e atualiza cada detalhe no CRM.",
-        "price": "A partir de $199 / mês",
+        "price": "$199 / mês",
         "details": {
           "0": "Até 40 leads por mês",
           "1": "Até 3 tentativas de ligação por lead",
@@ -2920,7 +2920,7 @@
       "personal-sales-rep": {
         "name": "Representante de vendas pessoal",
         "description": "Um representante que faz ligações de venda, envia propostas, trata objeções e acompanha até a decisão.",
-        "price": "$449 / mês + 5% de sucesso",
+        "price": "$499 / mês",
         "details": {
           "0": "Até 40 leads quentes por mês",
           "1": "Ligações de venda",
@@ -2933,7 +2933,7 @@
       "old-leads-followup": {
         "name": "Follow-up de leads antigos",
         "description": "Reativar leads não fechados — você define o que é um lead antigo no CRM e eles passam sozinhos para uma aba de follow-up.",
-        "price": "$179 único",
+        "price": "A partir de $149 único",
         "details": {
           "0": "Definir leads antigos por dias sem atividade",
           "1": "Passagem automática para a aba de leads antigos",
@@ -2944,11 +2944,11 @@
         "tracks": {
           "0": {
             "label": "Pacote de 50 leads",
-            "price": "$179"
+            "price": "$149"
           },
           "1": {
             "label": "Até 100 leads",
-            "price": "$299"
+            "price": "$249"
           }
         }
       },
@@ -5860,7 +5860,11 @@
       "loadFailed": "Não carreguei o centro de faturamento. Por favor, tente novamente.",
       "pricingConfiguration": "O pagamento está indisponível no momento. A equipe da BizUply foi avisada.",
       "subscriptionAlreadyActive": "Já existe uma assinatura ativa. Gerencie ou altere em faturamento.",
-      "addonRequiresPlan": "O extra de website só está disponível com um plano de negócio ativo."
+      "addonRequiresPlan": "O extra de website só está disponível com um plano de negócio ativo.",
+      "addonAlreadyActive": "O complemento de site já está ativo para este negócio.",
+      "subscriptionCancelledResume": "Sua assinatura atual está programada para cancelar. Reative-a pelo faturamento em vez de comprar uma nova.",
+      "upgradeAvailable": "Você já tem um plano ativo. Você pode fazer upgrade em vez de iniciar uma nova assinatura.",
+      "downgradeNotSupported": "A mudança para este plano ainda não está disponível online. Fale com a gente e resolvemos."
     },
     "plans": {
       "trial": "Julgamento",
@@ -5934,7 +5938,8 @@
     "website": {
       "accessUntil": "Acesso ao site até",
       "noAutoRenew": "Sem renovação automática",
-      "renewYear": "Renovar por mais um ano"
+      "renewYear": "Renovar por mais um ano",
+      "autoRenew": "Renova automaticamente todo ano"
     },
     "services": {
       "badge": "Serviços",
@@ -6023,7 +6028,7 @@
       "oneTimeItems": "Itens únicos",
       "inPlan": "Plano: {{name}}",
       "standaloneSummary": "Compra avulsa",
-      "includesWebsiteAddon": "Inclui o extra de site {{amount}} único",
+      "includesWebsiteAddon": "Inclui o extra de site {{amount}}/ano",
       "nextRenewal": "Próxima renovação: {{date}}",
       "sequentialCheckout": "Importante: o plano mensal e o serviço mensal são duas assinaturas separadas. Você fará dois checkouts seguros da Stripe, um após o outro.",
       "waitingPlan": "Aguardando a confirmação do plano ativo. O próximo checkout abrirá automaticamente.",
@@ -6072,7 +6077,8 @@
       "client_portal": "Área pessoal",
       "automation_actions": "Plano de ações de automação",
       "site_plugin": "Plugin do site",
-      "whatsapp_usage": "Cobrança de uso do WhatsApp"
+      "whatsapp_usage": "Cobrança de uso do WhatsApp",
+      "website_addon": "Complemento de site"
     },
     "earlyBird": {
       "redirecting": "Levando você ao pagamento…",
@@ -6104,6 +6110,18 @@
       "upgradeCta": "Fazer upgrade agora",
       "contactCta": "Falar com o suporte",
       "footer": "Você pode reativar sua conta a qualquer momento. Seus dados permanecerão seguros por 30 dias após o fim do teste."
+    },
+    "websiteAddonOffer": {
+      "badge": "Complemento de site",
+      "title": "Adicione um site self-serve",
+      "text": "{{price}} por ano — uma assinatura anual separada que renova automaticamente. Cancele quando quiser.",
+      "cta": "Adicionar site — {{price}}/ano",
+      "pendingPlan": "Estamos confirmando o pagamento do seu plano. O pagamento do complemento de site estará disponível em instantes."
+    },
+    "changePlan": {
+      "confirm": "Fazer upgrade do seu plano atual para {{plan}}? A diferença de preço é cobrada agora e o novo preço vale a partir de hoje.",
+      "success": "Seu plano foi atualizado.",
+      "error": "Não conseguimos mudar seu plano. Tente novamente ou fale com a gente."
     }
   },
   "collab": {
@@ -13270,7 +13288,7 @@
     "loginCta": "Entrar",
     "planMonthly": "Plano de negócios - mensal, cobrado todo mês",
     "planYearly": "Plano de negócios - anualmente, faturado uma vez por ano",
-    "planWebsite": "Só site - pagamento anual de uma vez, sem renovação automática",
+    "planWebsite": "Só site — cobrança anual com renovação automática",
     "planCrm": "Somente CRM faturamento mensal",
     "heroOs": "sistema operacional",
     "heroBusiness": "do negócio",
@@ -13281,7 +13299,7 @@
     "accountTypeTitle": "Tipo de conta: dono do negócio",
     "accountTypeHint": "Definido automaticamente — não é preciso escolher. Clientes, CRM, agendamentos, site e ferramentas de negócio",
     "selectedPlan": "Plano selecionado: {{plan}}",
-    "websiteAddonNote": "Inclui o complemento de site (pagamento único)",
+    "websiteAddonNote": "Inclui o complemento anual de site",
     "stripeCheckoutNote": "Depois de enviar, você continua para o checkout seguro do Stripe",
     "checkoutCancelled": "O pagamento foi cancelado. Você pode atualizar os dados e continuar para o pagamento novamente.",
     "namePlaceholder": "Seu nome completo",
@@ -18089,12 +18107,15 @@
     "sevenDaysFree": "7 dias grátis",
     "recommended": "Recomendado",
     "annual": "Anual",
-    "annualCharge": "$69 cobrados por ano",
-    "annualSave": "Economize $39 por ano",
+    "annualCharge": "$99 cobrados por ano",
+    "annualSave": "Economize $45 por ano",
     "startTrial": "Começar 7 dias grátis",
+    "subscribeNow": "Assinar agora",
     "trialDisclaimer": "Você não será cobrado hoje. Após os 7 dias de teste a assinatura renova automaticamente no plano escolhido, a menos que você cancele antes.",
-    "trialDisclaimerMonthly": "Após 7 dias de teste você será cobrado $9. Depois a assinatura renova todo mês até o cancelamento.",
-    "trialDisclaimerAnnual": "Após 7 dias de teste você será cobrado $69 por um ano completo. Depois a assinatura renova uma vez por ano até o cancelamento.",
+    "trialDisclaimerMonthly": "Após 7 dias de teste você será cobrado $12. Depois a assinatura renova todo mês até o cancelamento.",
+    "trialDisclaimerAnnual": "Após 7 dias de teste você será cobrado $99 por um ano completo. Depois a assinatura renova uma vez por ano até o cancelamento.",
+    "noTrialDisclaimerMonthly": "Você será cobrado $12 hoje. A assinatura renova todo mês até o cancelamento.",
+    "noTrialDisclaimerAnnual": "Você será cobrado $99 hoje por um ano completo. A assinatura renova uma vez por ano até o cancelamento.",
     "paymentFailed": "O pagamento falhou — resolva a cobrança para continuar recebendo push no dispositivo",
     "contactBilling": "Fale conosco sobre a cobrança",
     "trialActive": "Período de teste ativo",
@@ -18103,8 +18124,8 @@
     "firstCharge": " · Primeira cobrança: {{date}} · ${{amount}}",
     "firstChargeDate": " · Primeira cobrança: {{date}}",
     "planActive": "A assinatura {{plan}} está ativa",
-    "planAnnualPrice": "$69 / ano",
-    "planMonthlyPrice": "$9 / mês",
+    "planAnnualPrice": "$99 / ano",
+    "planMonthlyPrice": "$12 / mês",
     "planGeneric": "Assinatura Push",
     "nextRenewal": " · Próxima renovação: {{date}}",
     "canceledUntil": "A assinatura foi cancelada e permanecerá ativa até {{date}}",
@@ -19755,7 +19776,7 @@
       "sortNameAsc": "Nome (A–Z)",
       "sortNameDesc": "Nome (Z–A)",
       "sortPriceAsc": "Preço (menor para maior)",
-      "billingNote": "Plugins pagos abrem no Stripe Checkout. Sem assinatura você vê preço e Comprar. A área pessoal custa $59 / mês.",
+      "billingNote": "Plugins pagos abrem no Lemon Squeezy. Sem assinatura você vê preço e Comprar. A área pessoal custa $29 / mês.",
       "empty": "Nenhum plugin encontrado",
       "emptyHint": "Tente outra busca ou filtro",
       "clearFilter": "Limpar filtro",
@@ -20005,16 +20026,16 @@
     "discover": {
       "emptyTitle": "Receba alertas mesmo com o Bizuply fechado",
       "emptyHint": "Leads, reuniões e novidades importantes — direto no seu dispositivo.",
-      "trialThenMonthly": "7 dias grátis • depois $9 / mês",
-      "monthly": "$9 / mês",
+      "trialThenMonthly": "7 dias grátis • depois $12 / mês",
+      "monthly": "$12 / mês",
       "tryPush": "Experimentar alertas Push",
       "enablePush": "Ativar alertas Push",
-      "yearlyTrial": "ou $69 / ano ($5.75 / mês)",
-      "yearly": "ou $69 / ano",
+      "yearlyTrial": "ou $99 / ano ($8.25 / mês)",
+      "yearly": "ou $99 / ano",
       "compactTitle": "Receba alertas em tempo real no dispositivo",
       "free7": "7 dias grátis",
       "whenClosed": "Mesmo com o Bizuply fechado",
-      "whenClosedPaid": "Mesmo com o Bizuply fechado · $9 / mês",
+      "whenClosedPaid": "Mesmo com o Bizuply fechado · $12 / mês",
       "enablePushShort": "Ativar Push",
       "free7Push": "7 dias de alertas Push grátis"
     },

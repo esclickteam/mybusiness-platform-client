@@ -5,7 +5,7 @@ export type PricingPackage = {
   /** Stripe checkout plan key — null means contact / non-Stripe */
   checkoutPlan: "monthly" | "yearly" | "website" | null;
   highlighted: boolean;
-  /** Business packages can optionally add a one-time self-serve website */
+  /** Business packages can optionally add a yearly self-serve website subscription */
   allowsWebsiteAddon: boolean;
   price: number;
   pricePeriodHe: string;
@@ -24,17 +24,17 @@ export type PricingPackage = {
   featuresEn: string[];
 };
 
-/** One-time self-serve website add-on for business packages (USD) */
+/** Yearly self-serve website add-on subscription for business packages (USD) */
 export const WEBSITE_ADDON = {
-  price: 119,
+  price: 99,
   currency: "USD",
-  labelHe: "$119 חד־פעמי — בניית אתר עצמאי כתוספת לחבילה העסקית",
+  labelHe: "$99 לשנה — בניית אתר עצמאי כתוספת לחבילה העסקית",
   labelEn:
-    "$119 one-time — self-serve website as a business-plan add-on",
+    "$99 per year — self-serve website as a business-plan add-on",
   hintHe:
-    "תשלום חד־פעמי, ללא חידוש אוטומטי · תבניות ועורך ויזואלי, מקושר ל-CRM — כולל דומיין חינם לשנה",
+    "מתחדש אוטומטית מדי שנה, ניתן לבטל בכל עת · תבניות ועורך ויזואלי, מקושר ל-CRM — כולל דומיין חינם לשנה",
   hintEn:
-    "One-time payment, no auto-renewal · templates and visual editor, linked to CRM — includes free domain for 1 year",
+    "Renews automatically every year, cancel anytime · templates and visual editor, linked to CRM — includes free domain for 1 year",
 } as const;
 
 export const PRICING_PACKAGES: PricingPackage[] = [
@@ -54,8 +54,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "בונים אתר מקצועי לבד מתבנית — מפרסמים, מקבלים פניות, והכול מקושר ל-CRM.",
     descriptionEn:
       "Build a professional site yourself from a template — publish, get inquiries, and everything links to the CRM.",
-    noteHe: "תשלום חד־פעמי — ללא התחייבות וללא חידוש אוטומטי",
-    noteEn: "One-time payment — no commitment and no auto-renewal",
+    noteHe: "מתחדש אוטומטית מדי שנה — ניתן לבטל בכל עת",
+    noteEn: "Renews automatically every year — cancel anytime",
     buttonHe: "התחילו עם אתר",
     buttonEn: "Start with a website",
     featuresHe: [

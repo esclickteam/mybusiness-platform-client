@@ -32,6 +32,7 @@ import {
   type PushBillingPlan,
   type PushBillingStatus,
 } from "../api/pushBillingApi";
+import { getPushDiscoverabilityState } from "./notifications/pushDiscoverability";
 import {
   getPermission,
   isIos,
@@ -333,6 +334,10 @@ export function NotificationSettingsPanel({
   const periodEndLabel = formatDdMmYyyy(subscription?.currentPeriodEnd);
   const trialDaysLeft = daysRemaining(subscription?.currentPeriodEnd);
   const firstChargeAmount = pushPlanAmount(plan);
+  const monthlyPrice = pushPlanAmount("monthly") ?? 0;
+  const annualPrice = pushPlanAmount("annual") ?? 0;
+  const annualPerMonth = (Math.round((annualPrice / 12) * 100) / 100).toFixed(2);
+  const trialEligible = getPushDiscoverabilityState(billingStatus).trialEligible;
 
   const showPaywall = billingEnabled && !entitled;
   const showSubscriberPanel = billingEnabled && entitled;
@@ -600,11 +605,16 @@ export function NotificationSettingsPanel({
   const iosNeedsInstall = isIos() && !isStandalone();
 
   const paywallDisclaimerExtra = useMemo(() => {
+    if (!trialEligible) {
+      return selectedPlan === "annual"
+        ? t("notificationSettings.noTrialDisclaimerAnnual")
+        : t("notificationSettings.noTrialDisclaimerMonthly");
+    }
     if (selectedPlan === "annual") {
       return t("notificationSettings.trialDisclaimerAnnual");
     }
     return t("notificationSettings.trialDisclaimerMonthly");
-  }, [selectedPlan, t]);
+  }, [selectedPlan, t, trialEligible]);
 
 
   return (
@@ -692,14 +702,16 @@ export function NotificationSettingsPanel({
                 >
                   <p className="text-[11px] font-black text-slate-800">{t("notificationSettings.monthly")}</p>
                   <p className="mt-0.5 text-sm font-black text-slate-900">
-                    $9{" "}
+                    ${monthlyPrice}{" "}
                     <span className="text-[10px] font-bold text-slate-500">
                       {t("notificationSettings.perMonth")}
                     </span>
                   </p>
-                  <p className="mt-1 text-[10px] font-bold text-emerald-600">
-                    {t("notificationSettings.sevenDaysFree")}
-                  </p>
+                  {trialEligible ? (
+                    <p className="mt-1 text-[10px] font-bold text-emerald-600">
+                      {t("notificationSettings.sevenDaysFree")}
+                    </p>
+                  ) : null}
                 </button>
 
                 <button
@@ -717,7 +729,7 @@ export function NotificationSettingsPanel({
                   </span>
                   <p className="text-[11px] font-black text-slate-800">{t("notificationSettings.annual")}</p>
                   <p className="mt-0.5 text-sm font-black text-slate-900">
-                    $5.75{" "}
+                    ${annualPerMonth}{" "}
                     <span className="text-[10px] font-bold text-slate-500">
                       {t("notificationSettings.perMonth")}
                     </span>
@@ -725,9 +737,11 @@ export function NotificationSettingsPanel({
                   <p className="text-[10px] font-semibold text-slate-500">
                     {t("notificationSettings.annualCharge")}
                   </p>
-                  <p className="mt-1 text-[10px] font-bold text-emerald-600">
-                    {t("notificationSettings.sevenDaysFree")}
-                  </p>
+                  {trialEligible ? (
+                    <p className="mt-1 text-[10px] font-bold text-emerald-600">
+                      {t("notificationSettings.sevenDaysFree")}
+                    </p>
+                  ) : null}
                   <p className="mt-1 inline-flex rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700">
                     {t("notificationSettings.annualSave")}
                   </p>
@@ -743,12 +757,16 @@ export function NotificationSettingsPanel({
                 {billingBusy ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : null}
-                {t("notificationSettings.startTrial")}
+                {trialEligible
+                  ? t("notificationSettings.startTrial")
+                  : t("notificationSettings.subscribeNow")}
               </button>
 
-              <p className="mt-2 text-[10px] font-semibold leading-4 text-slate-500">
-                {t("notificationSettings.trialDisclaimer")}
-              </p>
+              {trialEligible ? (
+                <p className="mt-2 text-[10px] font-semibold leading-4 text-slate-500">
+                  {t("notificationSettings.trialDisclaimer")}
+                </p>
+              ) : null}
               <p className="mt-1 text-[10px] font-semibold leading-4 text-slate-500">
                 {paywallDisclaimerExtra}
               </p>

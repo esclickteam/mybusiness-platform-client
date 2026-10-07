@@ -19,7 +19,7 @@ describe("billing markets", () => {
         websiteAnnual: 129,
         crmMonthly: 49,
         businessMonthly: 99,
-        websiteStaffBuild: 699,
+        websiteStaffBuild: 399,
       });
     }
   });

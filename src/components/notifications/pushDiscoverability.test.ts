@@ -101,4 +101,21 @@ describe("getPushDiscoverabilityState", () => {
       })
     ).toEqual({ showUpsell: true, trialEligible: false });
   });
+
+  it("prefers the server trialEligible flag over the local trialUsedAt fallback", () => {
+    expect(
+      getPushDiscoverabilityState({
+        billingEnabled: true,
+        entitled: false,
+        trialEligible: false,
+        subscription: {
+          status: "canceled",
+          planKey: "push_notifications_monthly_29_ils",
+          cancelAtPeriodEnd: false,
+          currentPeriodEnd: "2026-08-01T00:00:00.000Z",
+          trialUsedAt: null,
+        },
+      })
+    ).toEqual({ showUpsell: true, trialEligible: false });
+  });
 });

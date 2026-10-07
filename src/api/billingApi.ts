@@ -46,6 +46,16 @@ export type BillingOverview = {
       quantity: number;
     }>;
   } | null;
+  addOns?: Array<{
+    key: string;
+    productKey: string;
+    active: boolean;
+    status: string | null;
+    amount: number | null;
+    currency: string;
+    currentPeriodEnd: string | null;
+    cancelAtPeriodEnd: boolean;
+  }>;
   websiteAccess: {
     accessUntil: string | null;
     start: string | null;
@@ -175,6 +185,16 @@ export async function fetchBillingOverview(
     params: { businessId },
   });
   return data;
+}
+
+export async function createWebsiteAddonCheckout(
+  language?: string
+): Promise<{ url?: string }> {
+  const { data } = await API.post("/stripe/create-checkout-session", {
+    addOnKey: "website_addon",
+    language,
+  });
+  return data || {};
 }
 
 export async function cancelSubscription(): Promise<void> {

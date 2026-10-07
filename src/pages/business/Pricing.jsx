@@ -290,6 +290,13 @@ export default function Plans() {
     } catch (err) {
       console.error(err);
       const code = err?.response?.data?.code;
+      if (
+        code === "SUBSCRIPTION_UPGRADE_AVAILABLE" &&
+        err?.response?.data?.changePlanAvailable
+      ) {
+        await upgradeExistingPlan(plan);
+        return;
+      }
       alert(
         billingCheckoutErrorMessage(
           t,
@@ -297,6 +304,31 @@ export default function Plans() {
           "pricing.alertGenericError"
         )
       );
+      setLoadingPlan(null);
+    }
+  };
+
+  const upgradeExistingPlan = async (plan) => {
+    const planLabel = t(`billing.planNames.${plan.checkoutPlan}`, {
+      defaultValue: plan.checkoutPlan,
+    });
+    if (!window.confirm(t("billing.changePlan.confirm", { plan: planLabel }))) {
+      setLoadingPlan(null);
+      return;
+    }
+    try {
+      await API.post("/stripe/change-plan", { plan: plan.checkoutPlan });
+      await refreshUser?.(true);
+      alert(t("billing.changePlan.success"));
+    } catch (changeErr) {
+      console.error(changeErr);
+      const changeCode = changeErr?.response?.data?.code;
+      alert(
+        changeCode
+          ? billingCheckoutErrorMessage(t, changeCode, "billing.changePlan.error")
+          : t("billing.changePlan.error")
+      );
+    } finally {
       setLoadingPlan(null);
     }
   };

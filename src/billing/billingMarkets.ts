@@ -80,7 +80,7 @@ const USD_PRICES: RegionalPriceTable = {
   websiteAnnual: 129,
   crmMonthly: 49,
   businessMonthly: 99,
-  websiteStaffBuild: 699,
+  websiteStaffBuild: 399,
 };
 
 export const BILLING_MARKETS: Record<BillingMarketId, BillingMarket> = {
