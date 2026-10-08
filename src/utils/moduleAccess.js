@@ -52,6 +52,12 @@ export function isModuleEnabled(enabledModules, moduleKey) {
   return normalized.includes(moduleKey);
 }
 
+/** Paid Automations require a Business-plan entitlement. */
+export function isAutomationsAccessible(enabledModules, automationsAccessible) {
+  if (automationsAccessible === false) return false;
+  return isModuleEnabled(enabledModules, "automations");
+}
+
 /**
  * Complimentary / sold WhatsApp-only access: dashboard plus WhatsApp,
  * with no other product modules. Those accounts should not see the club.
@@ -79,13 +85,23 @@ export function getDashboardModuleFromPath(pathname) {
   return match?.[1] || null;
 }
 
-export function isDashboardPathAllowed(pathname, enabledModules) {
-  if (hasFullModuleAccess(enabledModules)) return true;
-
+export function isDashboardPathAllowed(
+  pathname,
+  enabledModules,
+  { automationsAccessible } = {}
+) {
   const segment = getDashboardModuleFromPath(pathname);
+  const moduleKey = segment ? NAV_PATH_MODULE_MAP[segment] || segment : null;
+  if (
+    (moduleKey === "automations") &&
+    automationsAccessible === false
+  ) {
+    return false;
+  }
+
+  if (hasFullModuleAccess(enabledModules)) return true;
   if (!segment) return true;
 
-  const moduleKey = NAV_PATH_MODULE_MAP[segment] || segment;
   // Help Center stays reachable for plan-limited business accounts.
   // The Club landing stays reachable too, except on a WhatsApp-only package.
   // Club content itself is gated by Club membership on the API.

@@ -24,6 +24,7 @@ import {
 import { getTextDirection } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
 import {
+  isAutomationsAccessible,
   isModuleEnabled,
   isWhatsappOnlyPackage,
   normalizeEnabledModules,
@@ -231,6 +232,7 @@ export default function BusinessWorkspaceNav({
   const { user } = useAuth() as {
     user?: {
       enabledModules?: string[] | null;
+      automationsAccessible?: boolean;
       email?: string | null;
       _id?: string | null;
       id?: string | null;
@@ -466,6 +468,12 @@ export default function BusinessWorkspaceNav({
       (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
     ) {
       return isModuleEnabled(enabledModules, item.moduleKey);
+    }
+    if (
+      (item.moduleKey === "automations" || item.moduleKey === "integrations") &&
+      !isAutomationsAccessible(enabledModules, user?.automationsAccessible)
+    ) {
+      return false;
     }
     if (item.moduleKey === "website" && showWebsiteUpsell && !user?.isGuidedDemo) return true;
     if (
