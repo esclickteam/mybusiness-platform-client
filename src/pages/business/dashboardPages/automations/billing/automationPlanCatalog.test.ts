@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { AUTOMATION_PLAN_KEYS } from "../../../../../api/automationBillingApi";
 import {
+  AUTOMATION_PLAN_DEFINITIONS,
   isDowngradePlan,
   isUpgradePlan,
   planRank,
@@ -38,5 +39,15 @@ describe("automationPlanCatalog upgrade/downgrade helpers", () => {
     expect(planRank(AUTOMATION_PLAN_KEYS.GROWTH)).toBeLessThan(
       planRank(AUTOMATION_PLAN_KEYS.PRO)
     );
+  });
+
+  it("display prices match the Lemon USD catalog", () => {
+    expect(
+      Object.fromEntries(AUTOMATION_PLAN_DEFINITIONS.map((p) => [p.key, p.price]))
+    ).toEqual({
+      [AUTOMATION_PLAN_KEYS.BASIC]: 19,
+      [AUTOMATION_PLAN_KEYS.GROWTH]: 49,
+      [AUTOMATION_PLAN_KEYS.PRO]: 99,
+    });
   });
 });

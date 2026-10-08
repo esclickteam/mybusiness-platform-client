@@ -17,20 +17,20 @@ export const AUTOMATION_PLAN_DEFINITIONS: AutomationPlanDefinition[] = [
   {
     key: AUTOMATION_PLAN_KEYS.BASIC,
     name: "Automation Basic",
-    price: 12,
+    price: 19,
     executionLimit: 2500,
   },
   {
     key: AUTOMATION_PLAN_KEYS.GROWTH,
     name: "Automation Growth",
-    price: 24,
+    price: 49,
     executionLimit: 10000,
     popular: true,
   },
   {
     key: AUTOMATION_PLAN_KEYS.PRO,
     name: "Automation Pro",
-    price: 45,
+    price: 99,
     executionLimit: 30000,
   },
 ];
