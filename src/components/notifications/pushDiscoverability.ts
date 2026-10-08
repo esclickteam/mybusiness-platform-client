@@ -11,13 +11,20 @@ export type PushDiscoverabilityState = {
  * Soft-cancel with remaining entitlement must NOT show acquisition upsell.
  */
 export function getPushDiscoverabilityState(
-  status: Pick<PushBillingStatus, "billingEnabled" | "entitled" | "subscription"> | null | undefined
+  status:
+    | (Pick<PushBillingStatus, "billingEnabled" | "entitled" | "subscription"> &
+        Partial<Pick<PushBillingStatus, "trialEligible">>)
+    | null
+    | undefined
 ): PushDiscoverabilityState {
   if (!status || !status.billingEnabled) {
     return { showUpsell: false, trialEligible: false };
   }
 
-  const trialEligible = !status.subscription?.trialUsedAt;
+  const trialEligible =
+    typeof status.trialEligible === "boolean"
+      ? status.trialEligible
+      : !status.subscription?.trialUsedAt;
   const showUpsell = !status.entitled;
 
   return { showUpsell, trialEligible };

@@ -8,7 +8,9 @@ export type BillingOverview = {
     nextChargeAmount: number | null;
     nextChargeDate: string | null;
     totalPaid: number;
+    totalPaidByCurrency?: Record<string, number>;
     currency: string;
+    nextChargeCurrency?: string | null;
     activeSubscriptionsCount: number;
     activeServicesCount: number;
     pendingAttentionCount: number;
@@ -17,7 +19,7 @@ export type BillingOverview = {
   primaryPlan: {
     sku: string;
     name: string;
-    priceIls: number;
+    price: number;
     currency: string;
     billingType: string | null;
     status: string | null;
@@ -39,10 +41,21 @@ export type BillingOverview = {
       name: string;
       kind: string;
       billing: string;
-      amountIls: number;
+      amount: number;
+      currency: string;
       quantity: number;
     }>;
   } | null;
+  addOns?: Array<{
+    key: string;
+    productKey: string;
+    active: boolean;
+    status: string | null;
+    amount: number | null;
+    currency: string;
+    currentPeriodEnd: string | null;
+    cancelAtPeriodEnd: boolean;
+  }>;
   websiteAccess: {
     accessUntil: string | null;
     start: string | null;
@@ -60,7 +73,7 @@ export type BillingOverview = {
     serviceName: string;
     category: string;
     billingType: string;
-    pricePaidIls: number;
+    pricePaid: number;
     currency: string;
     paymentStatus: string;
     fulfillmentStatus: string;
@@ -88,6 +101,7 @@ export type BillingOverview = {
     status: string;
     renewalStatus: string;
     lastRenewalPrice: number | null;
+    lastRenewalCurrency?: string | null;
     quoteExpiresAt: string | null;
     renewalPaid: boolean;
     renewalInProgress: boolean;
@@ -171,6 +185,16 @@ export async function fetchBillingOverview(
     params: { businessId },
   });
   return data;
+}
+
+export async function createWebsiteAddonCheckout(
+  language?: string
+): Promise<{ url?: string }> {
+  const { data } = await API.post("/stripe/create-checkout-session", {
+    addOnKey: "website_addon",
+    language,
+  });
+  return data || {};
 }
 
 export async function cancelSubscription(): Promise<void> {

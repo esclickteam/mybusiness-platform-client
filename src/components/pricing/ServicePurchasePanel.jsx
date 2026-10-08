@@ -15,14 +15,13 @@ import {
   clearPendingPurchaseIntent,
   savePendingPurchaseIntent,
 } from "../../utils/pendingPurchaseIntent";
-import { WEBSITE_ADDON } from "../../data/pricingPackagesData";
 import { getIntlLocale } from "../../i18n/localeUtils";
 import { useBillingMarket } from "../../billing/useBillingMarket";
 import { formatMarketMoney, planAmount } from "../../billing/billingMarkets";
 
 const LAUNCH_MARKER_KEY = "bizuply_service_checkout_launch";
 
-function money(value, locale, currency = "ILS") {
+function money(value, locale, currency = "USD") {
   return formatMarketMoney(Number(value || 0), currency, locale);
 }
 
@@ -68,7 +67,6 @@ export default function ServicePurchasePanel({
     { key: "monthly", amount: billingMarket.prices.businessMonthly, billing: "month" },
     { key: "yearly", amount: planAmount("yearly", billingMarket), billing: "year" },
   ];
-  const israelBilling = billingMarket.id === "israel";
   const navigate = useNavigate();
   const planName = (key) =>
     key === "website"
@@ -93,9 +91,6 @@ export default function ServicePurchasePanel({
   const [purchaseMode, setPurchaseMode] = useState(restoredIntent?.purchaseMode || null);
   const [selectedPlanKey, setSelectedPlanKey] = useState(
     restoredIntent?.selectedPlanKey || (activePlan ? "existing" : null)
-  );
-  const [includeWebsiteAddon, setIncludeWebsiteAddon] = useState(
-    () => restoredIntent?.includeWebsiteAddon === true
   );
   const [step, setStep] = useState(restoredIntent ? "summary" : "details");
   const [loading, setLoading] = useState(false);
@@ -124,7 +119,7 @@ export default function ServicePurchasePanel({
   const serviceKey = selectedTrack?.serviceKey || purchase?.serviceKey || restored || "";
   const contactOnly = Boolean(selectedTrack?.contact) || !serviceKey;
   const serviceBilling = selectedTrack?.billing || purchase?.billing || "one_time";
-  const baseAmount = selectedTrack?.amountIls ?? purchase?.amountIls ?? 0;
+  const baseAmount = selectedTrack?.amount ?? purchase?.amount ?? 0;
   const selectedAddOnOptions = useMemo(
     () =>
       (purchase?.addOnOptions || []).filter((option) =>
@@ -143,12 +138,7 @@ export default function ServicePurchasePanel({
             ? "existing"
             : selectedPlanKey
           : null,
-      includeWebsiteAddon:
-        israelBilling &&
-        purchaseMode === "bundle" &&
-        !activePlan &&
-        (selectedPlanKey === "monthly" || selectedPlanKey === "yearly") &&
-        includeWebsiteAddon,
+      includeWebsiteAddon: false,
       selectedAddOnKeys: selectedAddOnOptions.map((option) => option.addOnKey),
       quantities: Object.fromEntries(
         selectedAddOnOptions
@@ -162,8 +152,6 @@ export default function ServicePurchasePanel({
     }),
     [
       activePlan,
-      includeWebsiteAddon,
-      israelBilling,
       purchaseMode,
       quantities,
       selectedAddOnOptions,
@@ -174,38 +162,31 @@ export default function ServicePurchasePanel({
 
   const addOnTotal = selectedAddOnOptions.reduce(
     (sum, option) =>
-      sum + option.amountIls * (quantities[option.addOnKey] || 1),
+      sum + option.amount * (quantities[option.addOnKey] || 1),
     0
   );
   const plan = planOptions.find(
     (option) => option.key === (activePlan?.key || selectedPlanKey)
   );
   const isNewPlan = purchaseMode === "bundle" && !activePlan;
-  const websiteAddonAmount =
-    isNewPlan &&
-    intent.includeWebsiteAddon &&
-    (plan?.key === "monthly" || plan?.key === "yearly")
-      ? WEBSITE_ADDON.price
-      : 0;
   const waitingForActivePlan = Boolean(
     autoContinue &&
       restoredIntent &&
       purchaseMode === "bundle" &&
       !activePlan
   );
-  const planInIlsTotal = israelBilling && isNewPlan ? plan?.amount || 0 : 0;
-  const paymentToday =
-    baseAmount + addOnTotal + websiteAddonAmount + planInIlsTotal;
+  const planTotal = isNewPlan ? plan?.amount || 0 : 0;
+  const paymentToday = baseAmount + addOnTotal + planTotal;
   const monthlyTotal =
     (serviceBilling === "recurring_month" ? baseAmount : 0) +
-    (israelBilling && isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
+    (isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
   const yearlyTotal =
-    israelBilling && isNewPlan && plan?.key === "yearly" ? plan.amount : 0;
+    isNewPlan && (plan?.key === "yearly" || plan?.key === "website")
+      ? plan.amount
+      : 0;
   const oneTimeTotal =
     (serviceBilling === "one_time" ? baseAmount : 0) +
-    addOnTotal +
-    websiteAddonAmount +
-    (israelBilling && isNewPlan && plan?.key === "website" ? plan.amount : 0);
+    addOnTotal;
 
   const goToContact = () => {
     onClose();
@@ -230,19 +211,14 @@ export default function ServicePurchasePanel({
     setPurchaseMode(mode);
     if (mode === "standalone") {
       setSelectedPlanKey(null);
-      setIncludeWebsiteAddon(false);
     } else if (activePlan) {
       setSelectedPlanKey("existing");
-      setIncludeWebsiteAddon(false);
     }
     setStep(getPurchaseModeNextStep(mode, activePlan));
   };
 
   const selectPlan = (key) => {
     setSelectedPlanKey(key);
-    if (key !== "monthly" && key !== "yearly") {
-      setIncludeWebsiteAddon(false);
-    }
   };
 
   const persistIntent = () => savePendingPurchaseIntent(intent);
@@ -470,34 +446,6 @@ export default function ServicePurchasePanel({
                   }
                 />
               ))}
-              {israelBilling &&
-              (selectedPlanKey === "monthly" || selectedPlanKey === "yearly") ? (
-                <label
-                  data-testid="website-addon-toggle"
-                  className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3.5 transition ${
-                    includeWebsiteAddon
-                      ? "border-emerald-300 bg-emerald-50/80 shadow-sm"
-                      : "border-slate-200 bg-slate-50/70 hover:border-indigo-200"
-                  }`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={includeWebsiteAddon}
-                    onChange={() => setIncludeWebsiteAddon((value) => !value)}
-                    className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                  />
-                  <span className="min-w-0">
-                    <span className="block text-sm font-black leading-5 text-slate-900">
-                      {t("pricing.websiteAddon.label", {
-                        price: money(WEBSITE_ADDON.price, locale, "ILS"),
-                      })}
-                    </span>
-                    <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
-                      {t("pricing.websiteAddon.hint")}
-                    </span>
-                  </span>
-                </label>
-              ) : null}
             </div>
           ) : null}
 
@@ -531,14 +479,7 @@ export default function ServicePurchasePanel({
                     ? t("billing.purchase.inPlan", { name: activePlan?.name || planName(plan?.key) })
                     : t("billing.purchase.standaloneSummary")}
                 </p>
-                                {websiteAddonAmount > 0 ? (
-                  <p data-testid="website-addon-summary" className="mt-2 text-xs text-emerald-700">
-                    {t("billing.purchase.includesWebsiteAddon", {
-                      amount: money(WEBSITE_ADDON.price, locale),
-                    })}
-                  </p>
-                ) : null}
-{activePlan?.nextRenewal ? (
+                {activePlan?.nextRenewal ? (
                   <p className="mt-2 text-xs text-slate-500">
                     {t("billing.purchase.nextRenewal", {
                       date: new Date(activePlan.nextRenewal).toLocaleDateString(locale),

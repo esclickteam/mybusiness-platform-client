@@ -28,6 +28,8 @@ export type PushBillingStatus = {
   subscription: PushBillingSubscription | null;
   entitled: boolean;
   entitlementReason?: string | null;
+  trialEligible?: boolean;
+  trialPeriodDays?: number;
   billingEnforced?: boolean;
   evaluation?: {
     enabled?: boolean;
@@ -73,9 +75,10 @@ export function normalizePushPlan(planKey: string | null | undefined): PushBilli
   return null;
 }
 
-export function pushPlanAmountIls(plan: PushBillingPlan | null | undefined): number | null {
-  if (plan === "monthly") return 29;
-  if (plan === "annual") return 228;
+/** Display price in USD (checkout is priced server-side from the Lemon catalog). */
+export function pushPlanAmount(plan: PushBillingPlan | null | undefined): number | null {
+  if (plan === "monthly") return 12;
+  if (plan === "annual") return 99;
   return null;
 }
 
@@ -92,6 +95,11 @@ export async function getPushBillingStatus(): Promise<PushBillingStatus> {
     entitled: Boolean(data?.entitled),
     subscription: data?.subscription || null,
     entitlementReason: data?.entitlementReason ?? null,
+    trialEligible:
+      typeof data?.trialEligible === "boolean" ? data.trialEligible : undefined,
+    trialPeriodDays: Number.isFinite(Number(data?.trialPeriodDays))
+      ? Number(data.trialPeriodDays)
+      : undefined,
     billingEnforced: Boolean(data?.billingEnforced),
     evaluation: data?.evaluation,
     businessId: data?.businessId,

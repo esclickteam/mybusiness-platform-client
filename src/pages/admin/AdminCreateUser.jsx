@@ -241,7 +241,7 @@ export default function AdminCreateUser() {
         set.add(sku);
         const catalogItem = upsells.find((item) => item.sku === sku);
         if (nextAmounts[sku] == null && catalogItem) {
-          nextAmounts[sku] = Number(catalogItem.amountIls || 0);
+          nextAmounts[sku] = Number(catalogItem.amount || 0);
         }
       }
       return {
@@ -299,7 +299,7 @@ export default function AdminCreateUser() {
             const amount =
               raw !== "" && raw != null && Number.isFinite(Number(raw))
                 ? Number(raw)
-                : Number(catalogItem?.amountIls || 0);
+                : Number(catalogItem?.amount || 0);
             return [sku, amount];
           })
         );
@@ -307,7 +307,7 @@ export default function AdminCreateUser() {
           const packageAmount =
             form.packageIls !== "" && form.packageIls != null
               ? Number(form.packageIls)
-              : Number(selectedPackage?.amountIls);
+              : Number(selectedPackage?.amount);
           if (Number.isFinite(packageAmount)) {
             payload.packageIls = packageAmount;
           }
@@ -841,7 +841,7 @@ export default function AdminCreateUser() {
                           {pkg.nameHe || pkg.sku}
                         </span>
                         <span className="mt-1 block text-xs font-bold text-slate-500">
-                          ₪{pkg.amountIls} · {pkg.billing} · {pkg.sku}
+                          ${pkg.amount} · {pkg.billing} · {pkg.sku}
                         </span>
                       </label>
                     ))}
@@ -850,7 +850,7 @@ export default function AdminCreateUser() {
 
                 {selectedPackage ? (
                   <label className="mt-3 block text-sm font-bold">
-                    מחיר חבילה לתשלום (₪) — ניתן לשנות
+                    מחיר חבילה לתשלום ($) — ניתן לשנות
                     <input
                       type="number"
                       min={0}
@@ -858,7 +858,7 @@ export default function AdminCreateUser() {
                       value={
                         form.packageIls !== ""
                           ? form.packageIls
-                          : selectedPackage.amountIls
+                          : selectedPackage.amount
                       }
                       onChange={onChange}
                       className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-black outline-none focus:border-violet-300"

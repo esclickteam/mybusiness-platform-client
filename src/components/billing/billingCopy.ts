@@ -44,6 +44,18 @@ export function billingCheckoutErrorMessage(
   if (code === "ADDON_REQUIRES_BUSINESS_PLAN") {
     return t("billing.errors.addonRequiresPlan");
   }
+  if (code === "ADDON_ALREADY_ACTIVE") {
+    return t("billing.errors.addonAlreadyActive");
+  }
+  if (code === "SUBSCRIPTION_CANCELLED_RESUME") {
+    return t("billing.errors.subscriptionCancelledResume");
+  }
+  if (code === "SUBSCRIPTION_UPGRADE_AVAILABLE") {
+    return t("billing.errors.upgradeAvailable");
+  }
+  if (code === "PLAN_DOWNGRADE_NOT_SUPPORTED") {
+    return t("billing.errors.downgradeNotSupported");
+  }
   if (code === "EMAIL_ALREADY_REGISTERED") {
     return t("register.emailExists");
   }

@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import {
   cancelSubscription,
+  createWebsiteAddonCheckout,
   fetchBillingOverview,
   resumeSubscription,
   type BillingOverview,
@@ -24,6 +25,11 @@ import {
   createDomainRenewalCheckout,
   retryDomainRenewal,
 } from "../services/domainService";
+import { WEBSITE_ADDON } from "../data/pricingPackagesData";
+import { billingCheckoutErrorMessage } from "../components/billing/billingCopy";
+
+const ADDON_PLAN_POLL_MS = 4000;
+const ADDON_PLAN_POLL_LIMIT = 15;
 
 type HistoryFilter =
   | "all"
@@ -145,6 +151,10 @@ export default function BillingPage() {
   const [historyFilter, setHistoryFilter] = useState<HistoryFilter>("all");
   const [message, setMessage] = useState<MessageState>({ type: null, text: "" });
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const websiteAddonRequested = searchParams.get("next") === "website_addon";
+  const [loadingAddon, setLoadingAddon] = useState(false);
+  const [addonPolls, setAddonPolls] = useState(0);
 
   const load = useCallback(async () => {
     if (!businessId) {
@@ -169,6 +179,50 @@ export default function BillingPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const businessPlanActive = Boolean(
+    overview?.primaryPlan &&
+      (overview.primaryPlan.sku === "monthly" || overview.primaryPlan.sku === "yearly") &&
+      overview.primaryPlan.status === "active"
+  );
+  const websiteAddonActive = Boolean(
+    overview?.addOns?.some((a) => a.productKey === "website_addon" && a.active)
+  );
+  const waitingForAddonPlan =
+    websiteAddonRequested && !businessPlanActive && addonPolls < ADDON_PLAN_POLL_LIMIT;
+
+  useEffect(() => {
+    if (!waitingForAddonPlan || loading) return undefined;
+    const timer = window.setTimeout(async () => {
+      try {
+        const data = await fetchBillingOverview(businessId);
+        setOverview(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setAddonPolls((n) => n + 1);
+      }
+    }, ADDON_PLAN_POLL_MS);
+    return () => window.clearTimeout(timer);
+  }, [waitingForAddonPlan, loading, businessId, addonPolls]);
+
+  const handleWebsiteAddonCheckout = async () => {
+    setMessage({ type: null, text: "" });
+    setLoadingAddon(true);
+    try {
+      const data = await createWebsiteAddonCheckout(i18n.language);
+      if (!data.url) throw new Error("no checkout url");
+      window.location.href = data.url;
+    } catch (err) {
+      console.error(err);
+      const code = (err as { response?: { data?: { code?: string } } })?.response?.data?.code;
+      setMessage({
+        type: "error",
+        text: billingCheckoutErrorMessage(t, code, "pricing.alertCheckoutFailed"),
+      });
+      setLoadingAddon(false);
+    }
+  };
 
   const statusLabel = useCallback(
     (status?: string | null) => {
@@ -467,13 +521,19 @@ export default function BillingPage() {
                   label={t("billing.summary.nextCharge")}
                   value={
                     summary?.nextChargeAmount != null
-                      ? `${formatBillingMoney(summary.nextChargeAmount, dateLocale, summary.currency)} · ${formatBillingDate(summary.nextChargeDate, dateLocale)}`
+                      ? `${formatBillingMoney(summary.nextChargeAmount, dateLocale, summary.nextChargeCurrency || summary.currency)} · ${formatBillingDate(summary.nextChargeDate, dateLocale)}`
                       : "—"
                   }
                 />
                 <StatChip
                   label={t("billing.totalPaid")}
-                  value={formatBillingMoney(summary?.totalPaid, dateLocale, summary?.currency)}
+                  value={
+                    Object.keys(summary?.totalPaidByCurrency || {}).length > 1
+                      ? Object.entries(summary?.totalPaidByCurrency || {})
+                          .map(([cur, amt]) => formatBillingMoney(amt, dateLocale, cur))
+                          .join(" + ")
+                      : formatBillingMoney(summary?.totalPaid, dateLocale, summary?.currency)
+                  }
                 />
                 <StatChip
                   label={t("billing.summary.activeSubscriptions")}
@@ -525,7 +585,7 @@ export default function BillingPage() {
                 </Field>
                 <Field label={t("billing.amount")}>
                   {formatBillingMoney(
-                    primaryPlan.priceIls,
+                    primaryPlan.price,
                     dateLocale,
                     primaryPlan.currency
                   )}
@@ -579,7 +639,11 @@ export default function BillingPage() {
                     {t("billing.website.accessUntil")}:{" "}
                     {formatBillingDate(websiteAccess.accessUntil, dateLocale)}
                   </p>
-                  <p className="mt-1">{t("billing.website.noAutoRenew")}</p>
+                  <p className="mt-1">
+                    {websiteAccess.autoRenew
+                      ? t("billing.website.autoRenew")
+                      : t("billing.website.noAutoRenew")}
+                  </p>
                 </div>
               ) : null}
 
@@ -596,9 +660,9 @@ export default function BillingPage() {
                         <li key={li.sku}>
                           {chargeLabel({ sku: li.sku, name: li.name })} ·{" "}
                           {formatBillingMoney(
-                            li.amountIls,
+                            li.amount,
                             dateLocale,
-                            primaryPlan.currency
+                            li.currency || primaryPlan.currency
                           )}
                         </li>
                       ))}
@@ -644,8 +708,7 @@ export default function BillingPage() {
                       : t("billing.resumeSubscription")}
                   </button>
                 ) : null}
-                {primaryPlan.actions.canRenewWebsite ||
-                primaryPlan.sku === "website_only" ? (
+                {primaryPlan.actions.canRenewWebsite ? (
                   <button
                     type="button"
                     onClick={() => navigate("/pricing")}
@@ -665,6 +728,45 @@ export default function BillingPage() {
             </div>
           )}
         </SectionCard>
+
+        {waitingForAddonPlan || (businessPlanActive && !websiteAddonActive) ? (
+          <section
+            data-testid="website-addon-offer"
+            className={[
+              "rounded-[2rem] border bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-8",
+              websiteAddonRequested ? "border-emerald-300 ring-2 ring-emerald-100" : "border-white/70",
+            ].join(" ")}
+          >
+            <div className="inline-flex rounded-full bg-emerald-100 px-4 py-1.5 text-xs font-black text-emerald-700">
+              {t("billing.websiteAddonOffer.badge")}
+            </div>
+            <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-800">
+              {t("billing.websiteAddonOffer.title")}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-slate-600">
+              {t("billing.websiteAddonOffer.text", {
+                price: formatBillingMoney(WEBSITE_ADDON.price, dateLocale, WEBSITE_ADDON.currency),
+              })}
+            </p>
+            {waitingForAddonPlan ? (
+              <p role="status" className="mt-4 flex items-center gap-2 text-sm font-bold text-amber-700">
+                <BizuplyLoader size="sm" compact />
+                {t("billing.websiteAddonOffer.pendingPlan")}
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={() => void handleWebsiteAddonCheckout()}
+                disabled={loadingAddon}
+                className="mt-4 h-12 rounded-2xl bg-emerald-600 px-5 text-sm font-black text-white disabled:opacity-60"
+              >
+                {t("billing.websiteAddonOffer.cta", {
+                  price: formatBillingMoney(WEBSITE_ADDON.price, dateLocale, WEBSITE_ADDON.currency),
+                })}
+              </button>
+            )}
+          </section>
+        ) : null}
 
         {/* Services */}
         <SectionCard
@@ -766,7 +868,7 @@ export default function BillingPage() {
                       <p className="mt-1 text-xs font-bold text-slate-500">
                         {t("billing.domains.renewalStatus")}: {dom.renewalStatus}
                         {dom.lastRenewalPrice
-                          ? ` · ${formatBillingMoney(dom.lastRenewalPrice, dateLocale, "ils")}`
+                          ? ` · ${formatBillingMoney(dom.lastRenewalPrice, dateLocale, dom.lastRenewalCurrency || "usd")}`
                           : ""}
                       </p>
                     </div>
@@ -1051,7 +1153,7 @@ function ServiceOrderCard({
         <div>
           <p className="text-base font-black text-slate-800">{so.serviceName}</p>
           <p className="mt-1 text-sm text-slate-600">
-            {formatBillingMoney(so.pricePaidIls, dateLocale, so.currency)} ·{" "}
+            {formatBillingMoney(so.pricePaid, dateLocale, so.currency)} ·{" "}
             {billingTypeLabel(so.billingType)}
           </p>
           <p className="mt-1 text-xs font-bold text-slate-500">

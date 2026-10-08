@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  BILLING_MARKETS,
   billingMarketFromCountry,
   defaultBillingCountryFromLocale,
   formatMarketMoney,
@@ -10,13 +11,26 @@ import {
 } from "./billingMarkets";
 
 describe("billing markets", () => {
-  it("maps countries to fixed regional catalogs", () => {
-    expect(billingMarketFromCountry("IL").prices.businessMonthly).toBe(149);
-    expect(billingMarketFromCountry("US").prices.businessMonthly).toBe(99);
-    expect(billingMarketFromCountry("ES").currency).toBe("EUR");
-    expect(billingMarketFromCountry("BR").currency).toBe("BRL");
-    expect(billingMarketFromCountry("AE").prices.websiteAnnual).toBe(499);
-    expect(billingMarketFromCountry("AE").prices.businessMonthly).toBe(349);
+  it("prices every market from the same USD list (no FX conversion)", () => {
+    for (const market of Object.values(BILLING_MARKETS)) {
+      expect(market.currency).toBe("USD");
+      expect(market.stripeCurrency).toBe("usd");
+      expect(market.prices).toEqual({
+        websiteAnnual: 129,
+        crmMonthly: 49,
+        businessMonthly: 99,
+        websiteStaffBuild: 399,
+      });
+    }
+  });
+
+  it("maps countries to market ids", () => {
+    expect(billingMarketFromCountry("IL").id).toBe("israel");
+    expect(billingMarketFromCountry("IL").prices.businessMonthly).toBe(99);
+    expect(billingMarketFromCountry("US").id).toBe("usa");
+    expect(billingMarketFromCountry("ES").id).toBe("europe");
+    expect(billingMarketFromCountry("BR").id).toBe("brazil");
+    expect(billingMarketFromCountry("AE").id).toBe("uae");
     expect(billingMarketFromCountry("MX").id).toBe("latam");
     expect(billingMarketFromCountry("GB").id).toBe("global");
   });
@@ -27,8 +41,8 @@ describe("billing markets", () => {
       language: "en",
       geoCountry: "US",
     });
-    expect(englishInIsrael.currency).toBe("ILS");
-    expect(englishInIsrael.prices.businessMonthly).toBe(149);
+    expect(englishInIsrael.id).toBe("israel");
+    expect(englishInIsrael.currency).toBe("USD");
 
     const market = resolveBillingMarket({
       savedBillingCountry: "AE",
@@ -37,7 +51,6 @@ describe("billing markets", () => {
       checkoutCountry: "BR",
     });
     expect(market.id).toBe("uae");
-    expect(market.currency).toBe("AED");
   });
 
   it("uses locale defaults when no billing country is known", () => {
@@ -48,9 +61,8 @@ describe("billing markets", () => {
     expect(defaultBillingCountryFromLocale("ar")).toBe("AE");
 
     expect(resolveBillingCountry({ language: "ar" })).toBe("AE");
-    expect(resolveBillingMarket({ language: "ar" }).currency).toBe("AED");
+    expect(resolveBillingMarket({ language: "ar" }).id).toBe("uae");
     expect(resolveBillingMarket({ language: "en" }).prices.businessMonthly).toBe(99);
-    expect(resolveBillingMarket({ language: "es" }).currency).toBe("EUR");
   });
 
   it("prefers locale default over geo for public pages without billingCountry", () => {
@@ -59,17 +71,14 @@ describe("billing markets", () => {
       geoCountry: "IL",
     });
     expect(market.id).toBe("uae");
-    expect(market.currency).toBe("AED");
   });
 
-  it("builds Stripe lookup keys from the regional amount", () => {
+  it("builds lookup keys and yearly amounts from the USD list", () => {
     const usa = billingMarketFromCountry("US");
     expect(stripeLookupKeyForPlan("monthly", usa)).toBe("bizuply_monthly_99_usd");
     expect(planAmount("website", usa)).toBe(129);
-    expect(stripeLookupKeyForPlan("website", billingMarketFromCountry("AE"))).toBe(
-      "website_only_499_aed",
-    );
+    expect(planAmount("yearly", billingMarketFromCountry("IL"))).toBe(990);
     expect(formatMarketMoney(99, "USD", "en-US")).toContain("99");
-    expect(formatMarketMoney(349, "AED", "ar")).not.toMatch(/₪/);
+    expect(formatMarketMoney(99, "USD", "he-IL")).not.toMatch(/₪/);
   });
 });

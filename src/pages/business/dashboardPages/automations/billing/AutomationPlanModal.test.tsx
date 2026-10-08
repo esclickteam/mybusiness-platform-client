@@ -47,7 +47,8 @@ function baseUsage(
       key: AUTOMATION_PLAN_KEYS.BASIC,
       name: "Automation Basic",
       status: "active",
-      priceIls: 39,
+      amount: 12,
+      currency: "usd",
       executionLimit: 2500,
     },
     usage: {
@@ -171,7 +172,8 @@ describe("AutomationPlanModal", () => {
             key: AUTOMATION_PLAN_KEYS.GROWTH,
             name: "Automation Growth",
             status: "active",
-            priceIls: 79,
+            amount: 24,
+            currency: "usd",
             executionLimit: 10000,
           },
           usage: {

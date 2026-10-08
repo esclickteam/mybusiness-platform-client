@@ -6,7 +6,8 @@ import {
 export type AutomationPlanDefinition = {
   key: AutomationPlanKey;
   name: string;
-  priceIls: number;
+  /** Monthly price in USD (display only; checkout is priced server-side). */
+  price: number;
   executionLimit: number;
   popular?: boolean;
 };
@@ -16,20 +17,20 @@ export const AUTOMATION_PLAN_DEFINITIONS: AutomationPlanDefinition[] = [
   {
     key: AUTOMATION_PLAN_KEYS.BASIC,
     name: "Automation Basic",
-    priceIls: 39,
+    price: 19,
     executionLimit: 2500,
   },
   {
     key: AUTOMATION_PLAN_KEYS.GROWTH,
     name: "Automation Growth",
-    priceIls: 79,
+    price: 49,
     executionLimit: 10000,
     popular: true,
   },
   {
     key: AUTOMATION_PLAN_KEYS.PRO,
     name: "Automation Pro",
-    priceIls: 149,
+    price: 99,
     executionLimit: 30000,
   },
 ];

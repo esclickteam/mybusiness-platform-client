@@ -1468,7 +1468,7 @@
       "switchToThis": "Pasar a este plan",
       "select": "Elegir",
       "mostPopular": "Más popular",
-      "perMonth": "₪ / mes",
+      "perMonth": "/ mes",
       "actionsPerMonth": "{{count}} acciones al mes",
       "quotaWillGrow": "La cuota subirá a {{count}} acciones al mes.",
       "usageKept": "El uso de este mes se conserva.",
@@ -2598,9 +2598,9 @@
     "alertCheckoutFailed": "No se pudo iniciar la comprobación",
     "alertGenericError": "Error, por favor, inténtelo de nuevo.",
     "websiteContactMessage": "Hola, me gustaría empezar con el paquete Solo sitio web a {{price}}/año (autoservicio desde plantilla, vinculado al CRM).",
-    "packageWithWebsiteContactMessage": "Hola, me gustaría unirme al {{package}} en {{price}}{{period}}, incluido el complemento del sitio web {{websitePrice}} una vez (construcción de sitio web de autoservicio).",
-    "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + complemento de sitio web {{websitePrice}} una sola vez",
-    "websiteAddonStripeNote": "{{packagePrice}}{{period}} + sitio web {{websitePrice}} una sola vez (en Stripe)",
+    "packageWithWebsiteContactMessage": "Hola, me gustaría unirme a {{package}} por {{price}}{{period}}, con el complemento de sitio web por {{websitePrice}}/año (sitio de autoservicio).",
+    "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + complemento de sitio web {{websitePrice}}/año",
+    "websiteAddonStripeNote": "{{packagePrice}}{{period}} + complemento de sitio web {{websitePrice}}/año (suscripción anual aparte)",
     "addonsBadge": "12 paquetes listos",
     "upsellsBadge": "Venta al por mayor",
     "upsellsTitle": "Upsells y servicios adicionales",
@@ -2631,7 +2631,7 @@
     "modalExamples": "Ejemplos",
     "platformBadge": "Paquetes de sistema",
     "platformTitle": "Paquetes de sistema",
-    "platformSubtitle": "CRM, citas, colaboraciones e IA. Agregue un upsell único del sitio web: el total de las actualizaciones de pago se actualiza automáticamente.",
+    "platformSubtitle": "CRM, citas, colaboraciones e IA. Añade el complemento de sitio web como suscripción anual aparte.",
     "choosePurchase": "Elegir compra",
     "categories": {
       "all": "Todo",
@@ -2641,15 +2641,15 @@
       "support": "Soporte mensual"
     },
     "websiteAddon": {
-      "label": "{{price}} único — sitio de autoservicio como extra del plan Business",
-      "hint": "Pago único, sin renovación automática · plantillas y editor visual, vinculado al CRM — dominio gratis 1 año"
+      "label": "{{price}} al año — sitio de autoservicio como extra del plan Business",
+      "hint": "Se renueva automáticamente cada año, cancela cuando quieras · plantillas y editor visual, vinculado al CRM — dominio gratis 1 año"
     },
     "packages": {
       "website": {
         "name": "Solo sitio web",
         "badge": "Autoservicio",
         "description": "Crea un sitio profesional desde una plantilla — publica, recibe consultas y todo se conecta al CRM.",
-        "note": "Pago único — sin compromiso ni renovación automática",
+        "note": "Se renueva automáticamente cada año — cancela cuando quieras",
         "button": "Empezar con un sitio",
         "pricePeriod": "/año",
         "features": {
@@ -2710,25 +2710,25 @@
       "automations-setup": {
         "name": "Configuración de automatizaciones",
         "description": "Creamos flujos automáticos que siguen cuidando leads y clientes aunque no estés en el sistema.",
-        "price": "Desde ₪390 único",
+        "price": "Desde $99 único",
         "details": {
-          "0": "Una automatización simple: ₪390",
-          "1": "Paquete de 3: ₪890",
-          "2": "Paquete de 6: ₪1,490",
+          "0": "Una automatización simple: $99",
+          "1": "Paquete de 3: $249",
+          "2": "Paquete de 6: $399",
           "3": "Proceso complejo: presupuesto a medida"
         },
         "tracks": {
           "0": {
             "label": "Una automatización simple",
-            "price": "₪390"
+            "price": "$99"
           },
           "1": {
             "label": "Paquete de 3 automatizaciones",
-            "price": "₪890"
+            "price": "$249"
           },
           "2": {
             "label": "Paquete de 6 automatizaciones",
-            "price": "₪1,490"
+            "price": "$399"
           },
           "3": {
             "label": "Proceso complejo",
@@ -2752,7 +2752,7 @@
       "website-build": {
         "name": "Sitio creado por un experto",
         "description": "Un experto de Bizuply crea y publica un sitio profesional con las plantillas y herramientas de la plataforma.",
-        "price": "Desde ₪1,490 único",
+        "price": "$399 único",
         "details": {
           "0": "Sitio de hasta 5 páginas",
           "1": "Elección de plantilla existente",
@@ -2766,26 +2766,26 @@
         "extras": {
           "0": {
             "label": "Página extra",
-            "price": "₪190"
+            "price": "$49"
           },
           "1": {
             "label": "Redacción de contenido",
-            "price": "₪590"
+            "price": "$149"
           },
           "2": {
             "label": "Tienda básica",
-            "price": "+ ₪1,490"
+            "price": "+ $399"
           },
           "3": {
             "label": "Diseño personalizado avanzado",
-            "price": "Desde ₪2,990"
+            "price": "+ $799"
           }
         }
       },
       "crm-migration": {
         "name": "Migración desde otro CRM",
         "description": "Especialmente útil si el cliente se cambia a ti — migrarmos clientes, leads y estados, y mapeamos campos para que el negocio siga fluido.",
-        "price": "Desde ₪790 único",
+        "price": "$249 único",
         "details": {
           "0": "Traslado de clientes y leads",
           "1": "Traslado de estados",
@@ -2796,15 +2796,15 @@
         "tracks": {
           "0": {
             "label": "Migración básica",
-            "price": "Desde ₪790"
+            "price": "$249"
           }
         },
-        "note": "El alcance y el precio final dependen del volumen de registros y de la complejidad del sistema actual."
+        "note": "Las migraciones de gran volumen o complejas se cotizan aparte."
       },
       "store-products-upload": {
         "name": "Subida de productos a la tienda",
         "description": "Para clientes que montan una tienda contigo — subimos productos con imágenes, descripciones, categorías, precios, variantes y envío.",
-        "price": "Desde ₪490 único",
+        "price": "Desde $149 único",
         "details": {
           "0": "Subida de productos",
           "1": "Imágenes y descripciones",
@@ -2815,11 +2815,11 @@
         "tracks": {
           "0": {
             "label": "Hasta 20 productos",
-            "price": "₪490"
+            "price": "$149"
           },
           "1": {
             "label": "Hasta 50 productos",
-            "price": "₪990"
+            "price": "$249"
           },
           "2": {
             "label": "Más allá",
@@ -2830,7 +2830,7 @@
       "paid-campaign-setup": {
         "name": "Configuración de campaña de pago",
         "description": "Un experto lanza una campaña profesional en Meta y conecta los leads directo a Bizuply.",
-        "price": "Desde ₪690 único",
+        "price": "Presupuesto a medida",
         "details": {
           "0": "Configuración de campaña en Meta",
           "1": "Definición de audiencia",
@@ -2844,11 +2844,11 @@
         "tracks": {
           "0": {
             "label": "Configuración de campaña en Meta",
-            "price": "₪690"
+            "price": "Presupuesto a medida"
           },
           "1": {
             "label": "Campaña avanzada en Meta",
-            "price": "₪990"
+            "price": "Presupuesto a medida"
           }
         },
         "note": "El precio cubre solo la configuración — no incluye gestión continua ni presupuesto publicitario. Ahora solo en Meta."
@@ -2856,7 +2856,7 @@
       "content-creation": {
         "name": "Creación de contenido",
         "description": "El equipo de Bizuply crea contenido diseñado y listo para publicar en Facebook e Instagram.",
-        "price": "Desde ₪990 / mes",
+        "price": "Presupuesto a medida",
         "details": {
           "0": "8 publicaciones al mes",
           "1": "Redacción y diseño",
@@ -2867,15 +2867,15 @@
         "tracks": {
           "0": {
             "label": "8 publicaciones",
-            "price": "₪990 / mes"
+            "price": "Presupuesto a medida"
           },
           "1": {
             "label": "12 publicaciones",
-            "price": "₪1,390 / mes"
+            "price": "Presupuesto a medida"
           },
           "2": {
             "label": "8 publicaciones + 4 vídeos con material del cliente",
-            "price": "₪1,790 / mes"
+            "price": "Presupuesto a medida"
           }
         },
         "note": "La fotografía profesional y la programación de publicaciones no están incluidas ahora."
@@ -2883,7 +2883,7 @@
       "collab-manager": {
         "name": "Gestor personal de colaboraciones",
         "description": "Un gestor que encuentra negocios relevantes, presenta a las partes y acompaña la comunicación.",
-        "price": "Desde ₪790 / mes",
+        "price": "$299 / mes",
         "details": {
           "0": "Encontrar hasta 10 negocios encajados",
           "1": "Primer contacto",
@@ -2895,11 +2895,11 @@
         "tracks": {
           "0": {
             "label": "Hasta 10 negocios",
-            "price": "Desde ₪790 / mes"
+            "price": "$299 / mes"
           },
           "1": {
             "label": "Itinerario ampliado hasta 25 contactos",
-            "price": "₪1,290 / mes"
+            "price": "Presupuesto a medida"
           }
         },
         "note": "El servicio no garantiza un número concreto de colaboraciones cerradas."
@@ -2907,35 +2907,33 @@
       "lead-first-response": {
         "name": "Primera respuesta a leads",
         "description": "Un agente humano llama a leads nuevos, hace un primer filtro y actualiza cada detalle en el CRM.",
-        "price": "Desde ₪690 / mes",
+        "price": "$199 / mes",
         "details": {
           "0": "Hasta 40 leads al mes",
           "1": "Hasta 3 intentos de llamada por lead",
           "2": "Cuestionario inicial adaptado al negocio",
           "3": "Filtrado de leads",
           "4": "Actualización de estado y resumen de llamada",
-          "5": "Informe mensual de actividad",
-          "6": "Lead extra: ₪15"
+          "5": "Informe mensual de actividad"
         }
       },
       "personal-sales-rep": {
         "name": "Comercial personal",
         "description": "Un comercial que hace llamadas de venta, envía propuestas, trata objeciones y acompaña hasta la decisión.",
-        "price": "₪1,490 / mes + 5% de éxito",
+        "price": "$499 / mes",
         "details": {
           "0": "Hasta 40 leads calientes al mes",
           "1": "Llamadas de venta",
           "2": "Seguimientos",
           "3": "Envío de presupuestos listos",
           "4": "Resultados actualizados en el CRM",
-          "5": "Informe mensual de ventas",
-          "6": "Lead extra: ₪25"
+          "5": "Informe mensual de ventas"
         }
       },
       "old-leads-followup": {
         "name": "Seguimiento de leads antiguos",
         "description": "Reactivar leads sin cerrar — defines qué es un lead antiguo en el CRM y pasan solos a una pestaña de seguimiento.",
-        "price": "₪590 único",
+        "price": "Desde $149 único",
         "details": {
           "0": "Definir leads antiguos por días sin actividad",
           "1": "Paso automático a la pestaña de leads antiguos",
@@ -2946,18 +2944,18 @@
         "tracks": {
           "0": {
             "label": "Paquete de 50 leads",
-            "price": "₪590"
+            "price": "$149"
           },
           "1": {
             "label": "Hasta 100 leads",
-            "price": "₪990"
+            "price": "$249"
           }
         }
       },
       "crm-manager": {
         "name": "Gestor personal de CRM",
         "description": "Un gestor que revisa leads, ordena estados, abre tareas y evita que se olvide a ningún cliente.",
-        "price": "Desde ₪490 / mes",
+        "price": "Presupuesto a medida",
         "details": {
           "0": "Revisión del sistema dos veces por semana",
           "1": "Orden de estados",
@@ -2969,25 +2967,24 @@
         "tracks": {
           "0": {
             "label": "Revisión dos veces por semana",
-            "price": "Desde ₪490 / mes"
+            "price": "Presupuesto a medida"
           },
           "1": {
             "label": "Itinerario de revisión diaria",
-            "price": "₪890 / mes"
+            "price": "Presupuesto a medida"
           }
         }
       },
       "external-support": {
         "name": "Atención al cliente externa",
         "description": "Un agente atiende consultas de clientes actuales por teléfono, WhatsApp o tu sistema de tickets.",
-        "price": "Desde ₪1,290 / mes",
+        "price": "Presupuesto a medida",
         "details": {
           "0": "Hasta 10 horas de atención al mes",
           "1": "Respuestas según los procedimientos del negocio",
           "2": "Tickets actualizados en el sistema",
           "3": "Casos complejos derivados al dueño",
-          "4": "Informe mensual de servicio",
-          "5": "Hora extra: ₪75"
+          "4": "Informe mensual de servicio"
         }
       }
     }
@@ -5863,7 +5860,11 @@
       "loadFailed": "No se pudo cargar el centro de facturación. Por favor, inténtalo de nuevo.",
       "pricingConfiguration": "El pago no está disponible ahora. El equipo de BizUply ha sido avisado.",
       "subscriptionAlreadyActive": "Ya hay una suscripción activa. Gestiona o cámbiala desde facturación.",
-      "addonRequiresPlan": "El extra de web solo está disponible con un plan de negocio activo."
+      "addonRequiresPlan": "El extra de web solo está disponible con un plan de negocio activo.",
+      "addonAlreadyActive": "El complemento de sitio web ya está activo para este negocio.",
+      "subscriptionCancelledResume": "Tu suscripción actual está programada para cancelarse. Reactívala desde facturación en lugar de comprar una nueva.",
+      "upgradeAvailable": "Ya tienes un plan activo. Puedes mejorarlo en lugar de iniciar una nueva suscripción.",
+      "downgradeNotSupported": "El cambio a este plan aún no está disponible en línea. Contáctanos y lo gestionamos."
     },
     "plans": {
       "trial": "Juicio",
@@ -5937,7 +5938,8 @@
     "website": {
       "accessUntil": "Acceso a la web hasta",
       "noAutoRenew": "Sin renovación automática",
-      "renewYear": "Renovar por un año más"
+      "renewYear": "Renovar por un año más",
+      "autoRenew": "Se renueva automáticamente cada año"
     },
     "services": {
       "badge": "Servicios",
@@ -6026,7 +6028,7 @@
       "oneTimeItems": "Artículos únicos",
       "inPlan": "Plan: {{name}}",
       "standaloneSummary": "Compra independiente",
-      "includesWebsiteAddon": "Incluye el extra de sitio {{amount}} único",
+      "includesWebsiteAddon": "Incluye el extra de sitio {{amount}}/año",
       "nextRenewal": "Próxima renovación: {{date}}",
       "sequentialCheckout": "Importante: el plan mensual y el servicio mensual son dos suscripciones distintas. Completarás dos pagos seguros de Stripe, uno detrás del otro.",
       "waitingPlan": "Esperando la confirmación del plan activo. El siguiente pago se abrirá solo.",
@@ -6045,12 +6047,12 @@
       "title": "Upsells y servicios extra",
       "hint": "Marca servicios para añadir a la compra",
       "empty": "No hay upsells activos en el catálogo",
-      "selectedCount": "{{count}} seleccionados · ₪{{amount}}",
+      "selectedCount": "{{count}} seleccionados · ${{amount}}",
       "monthly": "Mensual",
       "yearly": "Anual",
       "oneTime": "Único",
-      "catalogPrice": "Catálogo ₪{{amount}}",
-      "customPrice": "Importe a cobrar (₪)"
+      "catalogPrice": "Catálogo ${{amount}}",
+      "customPrice": "Importe a cobrar ($)"
     },
     "upgrade": {
       "title": "Este módulo no está incluido en tu plan",
@@ -6059,11 +6061,11 @@
       "backToWebsite": "Volver a la web"
     },
     "markets": {
-      "israel": "Israel (ILS)",
+      "israel": "Israel (USD)",
       "usa": "Estados Unidos (USD)",
-      "europe": "Europa (EUR)",
-      "brazil": "Brasil (BRL)",
-      "uae": "Emiratos Árabes Unidos (AED)",
+      "europe": "Europa (USD)",
+      "brazil": "Brasil (USD)",
+      "uae": "Emiratos Árabes Unidos (USD)",
       "latam": "Latinoamérica (USD)",
       "global": "Internacional (USD)"
     },
@@ -6075,24 +6077,25 @@
       "client_portal": "Área personal",
       "automation_actions": "Plan de acciones de automatización",
       "site_plugin": "Complemento del sitio",
-      "whatsapp_usage": "Facturación de uso de WhatsApp"
+      "whatsapp_usage": "Facturación de uso de WhatsApp",
+      "website_addon": "Complemento de sitio web"
     },
     "earlyBird": {
-      "redirecting": "Tu oferta exclusiva está lista — te llevamos al pago…",
-      "badge": "Oferta por tiempo limitado",
-      "titleLead": "Solo el primer mes",
-      "save": "Ahorra ₪30 en tu primer mes",
+      "redirecting": "Te llevamos al pago…",
+      "badge": "Plan Business",
+      "titleLead": "Mejora a Business",
+      "save": "$99/mes",
       "endsIn": "La oferta termina en {{time}}",
       "timeLeft": "{{hours}} h {{minutes}} min",
-      "body": "Activa automatizaciones, CRM, mensajería y herramientas de IA de BizUply. Precio especial de acceso anticipado — sin compromiso.",
-      "thenMonthly": "Después ₪149/mes. Cancela cuando quieras.",
-      "cta": "Mejora por ₪119",
+      "body": "Activa automatizaciones, CRM, mensajería y herramientas de IA de BizUply.",
+      "thenMonthly": "Facturación mensual. Cancela cuando quieras.",
+      "cta": "Mejora por $99/mes",
       "checkoutBusy": "Redirigiendo al pago...",
       "closeAria": "Cerrar oferta",
       "checkoutFailed": "No se pudo abrir el pago ahora. Inténtalo de nuevo.",
-      "finePrint": "Tu prueba sigue activa • Sin obligación",
+      "finePrint": "Sin compromiso • Cancela cuando quieras",
       "title": "Solo el primer mes",
-      "savings": "Ahorra ₪{{amount}} en tu primer mes",
+      "savings": "Ahorra ${{amount}} en tu primer mes",
       "endsInPlain": "La oferta termina en {{time}}",
       "hoursUnit": "h",
       "minutesUnit": "m",
@@ -6107,6 +6110,18 @@
       "upgradeCta": "Mejorar ahora",
       "contactCta": "Contactar soporte",
       "footer": "Puedes reactivar tu cuenta en cualquier momento. Tus datos permanecerán seguros durante 30 días tras el fin de la prueba."
+    },
+    "websiteAddonOffer": {
+      "badge": "Complemento de sitio web",
+      "title": "Añade un sitio web de autoservicio",
+      "text": "{{price}} al año — una suscripción anual aparte que se renueva automáticamente. Cancela cuando quieras.",
+      "cta": "Añadir sitio — {{price}}/año",
+      "pendingPlan": "Estamos confirmando el pago de tu plan. El pago del complemento de sitio web estará disponible en un momento."
+    },
+    "changePlan": {
+      "confirm": "¿Mejorar tu plan actual a {{plan}}? La diferencia de precio se cobra ahora y el nuevo precio aplica desde hoy.",
+      "success": "Tu plan se ha mejorado.",
+      "error": "No pudimos cambiar tu plan. Inténtalo de nuevo o contáctanos."
     }
   },
   "collab": {
@@ -9652,6 +9667,57 @@
       "verificationManagedHint": "El estado de verificación puede afectar los límites de uso, pero no bloquea el envío mientras Meta lo permita.",
       "sendAvailableTitle": "El envío está disponible, sujeto a límites de Meta",
       "sendAvailableHint": "El sistema puede enviar mensajes. Meta puede limitar el volumen según el estado de la cuenta."
+    },
+    "apiSetup": {
+      "title": "Empieza con la API de WhatsApp",
+      "progress": "{{done}} de {{total}} pasos completados",
+      "welcomeTitle": "¡Bienvenido! Tu suscripción está activa.",
+      "welcomeText": "Sigue estos pasos para conectar tu número y enviar tu primer mensaje.",
+      "done": "Hecho",
+      "todo": "Pendiente",
+      "subscribe": "Suscribirse · $29/mes",
+      "checkoutError": "No se pudo abrir el pago. Inténtalo de nuevo.",
+      "oneNumber": "Tu suscripción incluye un número de WhatsApp.",
+      "subscription": {
+        "active": "Activa",
+        "renewsOn": "Activa · se renueva el {{date}}",
+        "endsOn": "Cancelada · acceso hasta el {{date}}",
+        "grace": "Problema de pago · actualiza tu tarjeta antes del {{date}} para mantener el acceso",
+        "inactive": "Sin suscripción activa"
+      },
+      "steps": {
+        "subscription": {
+          "title": "Suscripción a la API de WhatsApp",
+          "text": "",
+          "cta": "Ver facturación"
+        },
+        "connect": {
+          "title": "Conecta tu número de WhatsApp",
+          "text": "Inicia sesión con Meta y elige el número de tu empresa.",
+          "cta": "Conectar"
+        },
+        "apiKey": {
+          "title": "Crea una clave de API",
+          "text": "Sirve para autenticar las solicitudes de tu sistema.",
+          "cta": "Crear clave"
+        },
+        "webhook": {
+          "title": "Añade la URL de tu webhook",
+          "text": "Recibe los estados de entrega y lectura de tus mensajes.",
+          "cta": "Configurar webhook"
+        },
+        "firstMessage": {
+          "title": "Envía tu primer mensaje",
+          "text": "Usa una plantilla aprobada para iniciar una conversación.",
+          "cta": "Plantillas"
+        }
+      },
+      "links": {
+        "developers": "Claves de API y webhook",
+        "templates": "Plantillas",
+        "analytics": "Analíticas",
+        "docs": "Documentación de la API"
+      }
     }
   },
   "metaCampaigns": {
@@ -13222,7 +13288,7 @@
     "loginCta": "Iniciar sesión",
     "planMonthly": "Plan de negocios: mensual, facturado todos los meses",
     "planYearly": "Plan de negocios: anual, facturado una vez al año",
-    "planWebsite": "Solo sitio web: pago anual único, sin renovación automática",
+    "planWebsite": "Solo sitio web: facturación anual con renovación automática",
     "planCrm": "Solo CRM facturación mensual",
     "heroOs": "sistema operativo",
     "heroBusiness": "del negocio",
@@ -13233,7 +13299,7 @@
     "accountTypeTitle": "Tipo de cuenta: propietario del negocio",
     "accountTypeHint": "Se configura automáticamente: no hace falta elegir. Clientes, CRM, citas, sitio web y herramientas de negocio",
     "selectedPlan": "Plan seleccionado: {{plan}}",
-    "websiteAddonNote": "Incluye el complemento de sitio web de un solo pago",
+    "websiteAddonNote": "Incluye el complemento anual de sitio web",
     "stripeCheckoutNote": "Después de enviar, continuará al pago seguro de Stripe",
     "checkoutCancelled": "El pago se canceló. Puede actualizar sus datos y volver a continuar al pago.",
     "namePlaceholder": "Su nombre completo",
@@ -17307,7 +17373,7 @@
       "alreadyRegistered": "¿Ya está registrado?",
       "signIn": "Iniciar sesión",
       "freePlan": "Gratis · {{percent}}% de cada trato · equipo {{team}}",
-      "paidPlan": "Alta ₪{{setup}} · mensual ₪{{monthly}} · parte de comisión {{share}}% · equipo {{team}}"
+      "paidPlan": "Alta ${{setup}} · mensual ${{monthly}} · parte de comisión {{share}}% · equipo {{team}}"
     },
     "workboard": {
       "reminders": "Recordatorios",
@@ -18041,22 +18107,25 @@
     "sevenDaysFree": "7 días gratis",
     "recommended": "Recomendado",
     "annual": "Anual",
-    "annualCharge": "₪228 facturados al año",
-    "annualSave": "Ahorre ₪120 al año",
+    "annualCharge": "$99 facturados al año",
+    "annualSave": "Ahorre $45 al año",
     "startTrial": "Empezar 7 días gratis",
+    "subscribeNow": "Suscribirse ahora",
     "trialDisclaimer": "Hoy no se le cobrará. Tras los 7 días de prueba la suscripción se renueva automáticamente en el plan elegido, salvo que cancele antes.",
-    "trialDisclaimerMonthly": "Tras 7 días de prueba se le cobrarán ₪29. Luego la suscripción se renueva cada mes hasta que cancele.",
-    "trialDisclaimerAnnual": "Tras 7 días de prueba se le cobrarán ₪228 por un año completo. Luego la suscripción se renueva una vez al año hasta que cancele.",
+    "trialDisclaimerMonthly": "Tras 7 días de prueba se le cobrarán $12. Luego la suscripción se renueva cada mes hasta que cancele.",
+    "trialDisclaimerAnnual": "Tras 7 días de prueba se le cobrarán $99 por un año completo. Luego la suscripción se renueva una vez al año hasta que cancele.",
+    "noTrialDisclaimerMonthly": "Se le cobrarán $12 hoy. La suscripción se renueva cada mes hasta que cancele.",
+    "noTrialDisclaimerAnnual": "Se le cobrarán $99 hoy por un año completo. La suscripción se renueva una vez al año hasta que cancele.",
     "paymentFailed": "El pago falló — resuelva la facturación para seguir recibiendo push en el dispositivo",
     "contactBilling": "Contáctenos para resolver la facturación",
     "trialActive": "Periodo de prueba activo",
     "trialDaysLeft": "Quedan {{count}} días",
     "trialActiveShort": "La prueba está activa",
-    "firstCharge": " · Primer cobro: {{date}} · ₪{{amount}}",
+    "firstCharge": " · Primer cobro: {{date}} · ${{amount}}",
     "firstChargeDate": " · Primer cobro: {{date}}",
     "planActive": "La suscripción {{plan}} está activa",
-    "planAnnualPrice": "₪228 / año",
-    "planMonthlyPrice": "₪29 / mes",
+    "planAnnualPrice": "$99 / año",
+    "planMonthlyPrice": "$12 / mes",
     "planGeneric": "Suscripción Push",
     "nextRenewal": " · Próxima renovación: {{date}}",
     "canceledUntil": "La suscripción se canceló y seguirá activa hasta {{date}}",
@@ -19707,13 +19776,13 @@
       "sortNameAsc": "Nombre (A–Z)",
       "sortNameDesc": "Nombre (Z–A)",
       "sortPriceAsc": "Precio (menor a mayor)",
-      "billingNote": "Los plugins de pago se abren en Stripe Checkout. Sin suscripción verás precio y Comprar. El área personal cuesta ₪199 / mes.",
+      "billingNote": "Los plugins de pago se abren en Lemon Squeezy. Sin suscripción verás precio y Comprar. El área personal cuesta $29 / mes.",
       "empty": "No se encontraron plugins",
       "emptyHint": "Prueba otro buscador o filtro",
       "clearFilter": "Limpiar filtro",
       "included": "Incluido en el plan",
-      "priceMonth": "₪{{price}} / mes",
-      "priceRange": "₪{{min}}–{{max}} / mes",
+      "priceMonth": "${{price}} / mes",
+      "priceRange": "${{min}}–{{max}} / mes",
       "catCommerce": "Comercio",
       "catScheduling": "Agenda",
       "catFinance": "Finanzas",
@@ -19957,16 +20026,16 @@
     "discover": {
       "emptyTitle": "Recibe avisos aunque Bizuply esté cerrado",
       "emptyHint": "Leads, reuniones y novedades importantes — directo a tu dispositivo.",
-      "trialThenMonthly": "7 días gratis • luego ₪29 / mes",
-      "monthly": "₪29 / mes",
+      "trialThenMonthly": "7 días gratis • luego $12 / mes",
+      "monthly": "$12 / mes",
       "tryPush": "Probar avisos Push",
       "enablePush": "Activar avisos Push",
-      "yearlyTrial": "o ₪228 / año (₪19 / mes)",
-      "yearly": "o ₪228 / año",
+      "yearlyTrial": "o $99 / año ($8.25 / mes)",
+      "yearly": "o $99 / año",
       "compactTitle": "Recibe avisos en tiempo real en tu dispositivo",
       "free7": "7 días gratis",
       "whenClosed": "Aunque Bizuply no esté abierto",
-      "whenClosedPaid": "Aunque Bizuply no esté abierto · ₪29 / mes",
+      "whenClosedPaid": "Aunque Bizuply no esté abierto · $12 / mes",
       "enablePushShort": "Activar Push",
       "free7Push": "7 días de avisos Push gratis"
     },
@@ -21674,8 +21743,8 @@
       "quoteCta": "Envía un mensaje para recibir presupuesto"
     },
     "pluginGeneric": {
-      "priceRange": "₪{{min}}–{{max}}/mes",
-      "priceMonth": "₪{{price}}/mes",
+      "priceRange": "${{min}}–{{max}}/mes",
+      "priceMonth": "${{price}}/mes",
       "included": "Incluido en el plan",
       "installedSoon": "Complemento instalado — ajustes en el editor pronto",
       "openEditor": "Abrir en el editor"

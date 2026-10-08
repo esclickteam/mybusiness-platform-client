@@ -343,7 +343,7 @@ export default function StaffCreateUser() {
                     />
                     <span className="font-black">{pkg.nameHe || pkg.sku}</span>
                     <span className="mt-1 block text-xs font-bold text-slate-500">
-                      ₪{pkg.amountIls} · {pkg.billing} · {pkg.sku}
+                      ${pkg.amount} · {pkg.billing} · {pkg.sku}
                     </span>
                   </label>
                 ))}

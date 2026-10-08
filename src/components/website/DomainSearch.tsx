@@ -88,10 +88,13 @@ const EXTENSIONS_BY_LENGTH = [...DOMAIN_EXTENSIONS].sort(
   (a, b) => b.length - a.length,
 );
 
-function formatIls(amount: number, locale: string) {
+/** Mirrors the server: domain registration and renewal are priced in USD. */
+const DOMAIN_PRICE_CURRENCY = "USD";
+
+function formatDomainMoney(amount: number, locale: string) {
   return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: "ILS",
+    currency: DOMAIN_PRICE_CURRENCY,
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount || 0);
@@ -105,7 +108,7 @@ function formatDomainPrice(
 ) {
   if (free || amount === 0) return freeLabel;
   if (amount == null) return "—";
-  return formatIls(amount, locale);
+  return formatDomainMoney(amount, locale);
 }
 
 function cleanDomainInput(value: string) {
@@ -352,7 +355,7 @@ export default function DomainSearch({
           freeDomainAvailable: Boolean(
             seed.freeDomainAvailable || seed.freeYearApplied,
           ),
-          currency: "ILS",
+          currency: DOMAIN_PRICE_CURRENCY,
           options,
         });
       } catch (requestError) {
@@ -821,7 +824,7 @@ export default function DomainSearch({
                                   price,
                                   freeYearApplied: isFree,
                                   freeDomainAvailable,
-                                  currency: "ILS",
+                                  currency: DOMAIN_PRICE_CURRENCY,
                                   options: yearOptions,
                                 });
                               }

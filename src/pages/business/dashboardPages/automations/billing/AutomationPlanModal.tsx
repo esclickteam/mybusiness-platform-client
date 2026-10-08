@@ -327,7 +327,7 @@ export default function AutomationPlanModal({
                     ) : null}
                     <h3>{getAutomationPlanDisplayName(plan.key, t)}</h3>
                     <p className="ax-billing-plan__price">
-                      <strong>{formatHeNumber(plan.priceIls)}</strong>
+                      <strong>{"$"}{formatHeNumber(plan.price)}</strong>
                       <span> {t("automations.billing.perMonth")}</span>
                     </p>
                     <p className="ax-billing-plan__limit">

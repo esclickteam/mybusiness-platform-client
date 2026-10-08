@@ -77,9 +77,9 @@ export function formatPluginPrice(plugin: SitePluginDefinition) {
   if (plugin.priceLabel) return plugin.priceLabel;
   if (plugin.priceMonthly == null) return "Included in the plan";
   if (plugin.priceMax && plugin.priceMax > (plugin.priceMonthly || 0)) {
-    return `₪${plugin.priceMonthly}–${plugin.priceMax}/month`;
+    return `$${plugin.priceMonthly}–${plugin.priceMax}/month`;
   }
-  return `₪${plugin.priceMonthly}/month`;
+  return `$${plugin.priceMonthly}/month`;
 }
 
 /** Stable visual rating for store cards (4.0–4.9) */

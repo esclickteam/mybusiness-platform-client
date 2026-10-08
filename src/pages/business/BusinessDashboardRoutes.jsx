@@ -308,6 +308,7 @@ function ModuleAccessGuard({
   enabledModules,
   planLimited,
   apiPortal,
+  automationsAccessible,
   children,
 }) {
   const location = useLocation();
@@ -321,12 +322,13 @@ function ModuleAccessGuard({
   }
 
   if (
-    limited &&
-    !isDashboardPathAllowed(location.pathname, limited)
+    !isDashboardPathAllowed(location.pathname, limited || enabledModules, {
+      automationsAccessible,
+    })
   ) {
     // Plan-limited accounts (e.g. website-only buyers) see an upgrade screen
     // instead of a silent redirect.
-    if (planLimited) {
+    if (planLimited || automationsAccessible === false) {
       return <UpgradeRequired businessId={businessId} />;
     }
     const fallback = getDefaultDashboardPath(businessId, limited);
@@ -431,6 +433,7 @@ const BusinessDashboardRoutes = () => {
           enabledModules={enabledModules}
           planLimited={Boolean(user?.planLimited)}
           apiPortal={apiPortal}
+          automationsAccessible={user?.automationsAccessible}
         >
         <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
