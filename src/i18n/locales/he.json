@@ -17693,7 +17693,7 @@
       "alreadyRegistered": "כבר רשומים?",
       "signIn": "התחברות",
       "freePlan": "חינם · {{percent}}% מכל עסקה · צוות {{team}}",
-      "paidPlan": "הקמה ₪{{setup}} · חודשי ₪{{monthly}} · חלק עמלה {{share}}% · צוות {{team}}"
+      "paidPlan": "הקמה ${{setup}} · חודשי ${{monthly}} · חלק עמלה {{share}}% · צוות {{team}}"
     },
     "workboard": {
       "reminders": "תזכורות",

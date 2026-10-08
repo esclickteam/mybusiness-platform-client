@@ -17373,7 +17373,7 @@
       "alreadyRegistered": "Já tem cadastro?",
       "signIn": "Entrar",
       "freePlan": "Grátis · {{percent}}% de cada negócio · equipe {{team}}",
-      "paidPlan": "Setup ₪{{setup}} · mensal ₪{{monthly}} · parte da comissão {{share}}% · equipe {{team}}"
+      "paidPlan": "Setup ${{setup}} · mensal ${{monthly}} · parte da comissão {{share}}% · equipe {{team}}"
     },
     "workboard": {
       "reminders": "Lembretes",

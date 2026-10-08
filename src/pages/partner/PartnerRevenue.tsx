@@ -10,7 +10,7 @@ import { partnerPlanDisplayName } from "../../i18n/partnerCatalogCopy";
 import { localizePartnerDemoText } from "../../i18n/partnerDemoCopy";
 
 function ils(value?: number, locale?: string) {
-  return `₪${Number(value || 0).toLocaleString(locale || "en-US")}`;
+  return `$${Number(value || 0).toLocaleString(locale || "en-US")}`;
 }
 
 export default function PartnerRevenue() {

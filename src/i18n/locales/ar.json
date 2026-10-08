@@ -17373,7 +17373,7 @@
       "alreadyRegistered": "مسجّل بالفعل؟",
       "signIn": "تسجيل الدخول",
       "freePlan": "مجاني · {{percent}}% من كل صفقة · فريق {{team}}",
-      "paidPlan": "إعداد ₪{{setup}} · شهري ₪{{monthly}} · حصة العمولة {{share}}% · فريق {{team}}"
+      "paidPlan": "إعداد ${{setup}} · شهري ${{monthly}} · حصة العمولة {{share}}% · فريق {{team}}"
     },
     "workboard": {
       "reminders": "تذكيرات",

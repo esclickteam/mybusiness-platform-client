@@ -17708,7 +17708,7 @@
       "alreadyRegistered": "Already registered?",
       "signIn": "Sign in",
       "freePlan": "Free · {{percent}}% of every deal · team {{team}}",
-      "paidPlan": "Setup ₪{{setup}} · monthly ₪{{monthly}} · commission share {{share}}% · team {{team}}"
+      "paidPlan": "Setup ${{setup}} · monthly ${{monthly}} · commission share {{share}}% · team {{team}}"
     },
     "workboard": {
       "reminders": "Reminders",
