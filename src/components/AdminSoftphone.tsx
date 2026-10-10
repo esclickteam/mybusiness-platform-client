@@ -208,7 +208,10 @@ function reportClientDiagnostic(code: string, detail?: string) {
   );
 }
 
-function reportPresence(status: "ready" | "busy" | "offline", keepalive = false) {
+function reportPresence(
+  status: "ready" | "busy" | "offline" | "background",
+  keepalive = false
+) {
   if (keepalive) {
     try {
       const base = String(API.defaults?.baseURL || "");
@@ -389,12 +392,29 @@ let lineConnectInFlight: Promise<void> | null = null;
 
 function setTelnyxLineReady(ready: boolean) {
   telnyxReady = ready;
+  const usable = ready && isPageVisible();
   window.dispatchEvent(
-    new CustomEvent("bizuply:softphone-line", { detail: { registered: ready } })
+    new CustomEvent("bizuply:softphone-line", { detail: { registered: usable } })
   );
 }
 
-function currentPresenceStatus(): "ready" | "busy" | "offline" {
+function isIosDevice() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  return (
+    /iPad|iPhone|iPod/.test(ua) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  );
+}
+
+function isPageVisible() {
+  return typeof document === "undefined" || document.visibilityState !== "hidden";
+}
+
+function currentPresenceStatus(): "ready" | "busy" | "offline" | "background" {
+  if (isIosDevice() && !isPageVisible()) {
+    return telnyxClient ? "background" : "offline";
+  }
   if (!telnyxReady) return "offline";
   if (telnyxCall || pendingIncomingTelnyxCall) return "busy";
   return "ready";
@@ -485,7 +505,7 @@ function scheduleSoftphoneLineReconnect() {
 }
 
 async function ensureSoftphoneLine() {
-  if (telnyxReady && telnyxClient) {
+  if (telnyxReady && telnyxClient && isPageVisible()) {
     reportPresence(currentPresenceStatus());
     return;
   }
@@ -503,6 +523,54 @@ async function ensureSoftphoneLine() {
     }
   })();
   return lineConnectInFlight;
+}
+
+async function presentFreshRingingInbound() {
+  try {
+    const res = await API.get("/admin/softphone/calls", { params: { limit: 8 } });
+    const calls = Array.isArray(res.data?.calls) ? res.data.calls : [];
+    const now = Date.now();
+    const ringing = calls.find((call: SoftphoneCallLog & {
+      twilioCallSid?: string;
+      telnyxCallControlId?: string;
+    }) => {
+      if (call.direction !== "inbound" || call.status !== "ringing") return false;
+      const created = new Date(call.createdAt || 0).getTime();
+      return Number.isFinite(created) && now - created < 40_000;
+    });
+    if (!ringing || getAdminSoftphoneState().activeCall) return;
+    presentIncomingSoftphoneCall({
+      phone: ringing.fromNumber || "שיחה נכנסת",
+      contactName: ringing.contactName || "שיחה נכנסת",
+      callSid: ringing.twilioCallSid || ringing.telnyxCallControlId || null,
+      logId: ringing._id,
+      mode: "voip",
+    });
+    setSoftphoneOpen(true);
+  } catch {
+    /* the next heartbeat can try again */
+  }
+}
+
+async function recoverSoftphoneLine() {
+  if (telnyxCall || pendingIncomingTelnyxCall) {
+    reportPresence("busy");
+    setTelnyxLineReady(true);
+    return;
+  }
+  if (isIosDevice() && telnyxClient && !lineConnectInFlight) {
+    const previous = telnyxClient;
+    telnyxClient = null;
+    telnyxReady = false;
+    telnyxIncomingBound = false;
+    try {
+      previous.disconnect?.();
+    } catch {
+      /* ignore */
+    }
+  }
+  await ensureSoftphoneLine();
+  void presentFreshRingingInbound();
 }
 
 /** Hang up calls and disconnect Telnyx/Twilio clients (logout / host unmount). */
@@ -551,6 +619,7 @@ function ensureRemoteAudioElement() {
   const audio = document.createElement("audio");
   audio.id = "bizuply-softphone-remote-audio";
   audio.autoplay = true;
+  audio.playsInline = true;
   audio.setAttribute("playsinline", "true");
   // Keep in DOM (not display:none) — some browsers block playback otherwise.
   audio.style.cssText =
@@ -774,6 +843,7 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
       }
       scheduleTelnyxTokenRefresh(expiresIn);
       startPresenceHeartbeat();
+      void presentFreshRingingInbound();
       resolve();
     });
 
@@ -1791,15 +1861,20 @@ export default function AdminSoftphone({
     })();
 
     const onPageHide = () => {
+      window.dispatchEvent(
+        new CustomEvent("bizuply:softphone-line", { detail: { registered: false } })
+      );
+      if (isIosDevice()) {
+        reportPresence(telnyxClient ? "background" : "offline", true);
+        return;
+      }
       if (telnyxReady) reportPresence(currentPresenceStatus(), true);
     };
     const onPageShow = () => {
-      if (!telnyxReady) void ensureSoftphoneLine();
+      void recoverSoftphoneLine();
     };
     const onVisible = () => {
-      if (document.visibilityState === "visible" && !telnyxReady) {
-        void ensureSoftphoneLine();
-      }
+      if (document.visibilityState === "visible") void recoverSoftphoneLine();
     };
     window.addEventListener("pagehide", onPageHide);
     window.addEventListener("pageshow", onPageShow);
@@ -2074,10 +2149,19 @@ export default function AdminSoftphone({
                     <p className="truncate text-[11px] font-bold text-white/80">
                       {lineRegistered
                         ? `מחובר · ${status.callerId || "הקו העסקי"}`
-                        : status.voipReady
-                          ? "מתחבר לשיחות נכנסות"
-                          : "חיוג · אנשי קשר · שיחות נכנסות"}
+                        : isIosDevice()
+                          ? "לא מחובר — באייפון הקו פעיל רק כשהדף בחזית"
+                          : status.voipReady
+                            ? "מתחבר לשיחות נכנסות"
+                            : "חיוג · אנשי קשר · שיחות נכנסות"}
                     </p>
+                    {isIosDevice() ? (
+                      <p className="mt-1 text-[10px] font-bold leading-4 text-white/75">
+                        מעבר לאפליקציה אחרת או נעילת המסך מנתקים את השיחה. התראה
+                        אפשרית רק מ־Bizuply שמותקן למסך הבית, והיא לא משאירה את
+                        השיחה זמינה למענה. מסך נעול באופן אמין דורש אפליקציית iPhone.
+                      </p>
+                    ) : null}
                   </div>
                 </div>
                 <button
