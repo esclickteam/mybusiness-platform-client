@@ -30,6 +30,7 @@
   align-items: center;
   gap: 12px;
   height: var(--bz-topbar);
+  min-width: 0;
   padding-inline: 16px;
   background: var(--bz-surface);
   border-bottom: 1px solid var(--bz-border);
@@ -71,7 +72,7 @@
 
 .biz-admin-search {
   position: relative;
-  flex: 1 1 280px;
+  flex: 1 1 160px;
   max-width: 420px;
   min-width: 0;
 }
@@ -387,9 +388,11 @@
 
 .biz-admin-crumb {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   min-height: 36px;
+  min-width: 0;
   padding-inline: 24px;
   border-bottom: 1px solid var(--bz-border);
   background: #fff;
@@ -409,6 +412,8 @@
 }
 
 .biz-admin-content {
+  min-width: 0;
+  max-width: 100%;
   padding: 20px 24px 48px;
 }
 
@@ -548,8 +553,10 @@
 
 .biz-row-actions {
   display: inline-flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
+  max-width: 100%;
 }
 
 .biz-row-menu {
@@ -601,6 +608,7 @@
 
 .biz-pager {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
@@ -752,6 +760,35 @@
   gap: 14px;
 }
 
+/* Keep every screen inside the shell, including pages that still carry their own padding. */
+.biz-admin-content > *,
+.biz-admin-content main,
+.biz-admin-content section,
+.biz-admin-content form,
+.biz-admin-content table {
+  max-width: 100%;
+}
+
+.biz-admin-content > main[class*="px-"],
+.biz-admin-content > div[class*="px-"],
+.biz-admin-content > .min-h-screen,
+.biz-admin-content .min-h-screen {
+  padding-inline: 0;
+}
+
+.biz-admin-content img,
+.biz-admin-content video,
+.biz-admin-content canvas,
+.biz-admin-content iframe {
+  max-width: 100%;
+}
+
+.biz-admin-content .overflow-x-auto,
+.biz-admin-content [class*="overflow-x-auto"] {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
 /* Shared surface for every existing admin screen. */
 .biz-admin-content .min-h-screen,
 .biz-admin-content [class*="bg-[#f6f2fb]"],
@@ -893,6 +930,8 @@
     inset-inline-start: 0;
     width: min(280px, 88vw);
     transform: translateX(-100%);
+    visibility: hidden;
+    pointer-events: none;
     transition: transform 0.18s ease;
   }
 
@@ -900,8 +939,11 @@
     transform: translateX(100%);
   }
 
-  .biz-admin-sidebar.is-open {
-    transform: translateX(0);
+  .biz-admin-sidebar.is-open,
+  .biz-admin[dir="rtl"] .biz-admin-sidebar.is-open {
+    transform: none;
+    visibility: visible;
+    pointer-events: auto;
   }
 
   .biz-admin-backdrop {
@@ -933,11 +975,100 @@
 }
 
 @media (max-width: 640px) {
-  .biz-stat-grid {
+  .biz-admin {
+    --bz-topbar: 104px;
+  }
+
+  .biz-stat-grid,
+  .biz-admin-content .grid.grid-cols-2 {
     grid-template-columns: 1fr;
   }
 
+  .biz-admin-topbar {
+    flex-wrap: wrap;
+    align-content: center;
+    height: var(--bz-topbar);
+    gap: 8px;
+    padding-inline: 12px;
+    padding-block: 8px;
+  }
+
+  .biz-admin-logo img {
+    height: 22px;
+    max-width: 96px;
+  }
+
   .biz-admin-search {
+    flex: 1 0 100%;
+    order: 3;
     max-width: none;
+  }
+
+  .biz-admin-search input,
+  .biz-admin-content input,
+  .biz-admin-content select,
+  .biz-admin-content textarea {
+    font-size: 16px;
+  }
+
+  .biz-admin-search input,
+  .biz-input {
+    height: 40px;
+  }
+
+  .biz-admin-menu-btn,
+  .biz-icon-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .biz-admin-topbar .site-header__icon-btn,
+  .biz-admin-profile-btn {
+    height: 40px;
+    min-width: 40px;
+  }
+
+  .biz-admin-profile-btn {
+    width: auto;
+    padding-inline: 4px;
+  }
+
+  .biz-call-chip {
+    max-width: 96px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .biz-admin-crumb,
+  .biz-admin-content {
+    padding-inline: 12px;
+  }
+
+  .biz-page-header h1 {
+    font-size: 20px;
+  }
+
+  .biz-page-header-actions,
+  .biz-page-header-actions .biz-btn {
+    width: 100%;
+  }
+
+  .biz-admin-fill .biz-page-header {
+    margin-bottom: 8px;
+  }
+
+  .biz-admin-fill .biz-page-header p {
+    display: none;
+  }
+
+  .biz-admin-fill main {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .biz-admin-content [class*="min-w-[210mm]"] {
+    min-width: 0;
+    width: 100%;
   }
 }
