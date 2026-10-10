@@ -38,12 +38,53 @@ export default function PublishResultModal({
     UNKNOWN: c("statusUnknown"),
   };
 
-  const ok = Boolean(publish.metaAdId) && publish.publishStatus === "submitted";
+  const outcome = publish.outcome || "";
+  const creationFailed =
+    outcome === "creation_failed" ||
+    publish.publishStatus === "failed" ||
+    publish.publishStatus === "partial_failed";
+  const rejected = outcome === "rejected" || publish.displayStatus === "DISAPPROVED" || publish.displayStatus === "REJECTED";
+  const pending = outcome === "pending_review";
+  const created =
+    outcome === "created_paused" ||
+    outcome === "active" ||
+    (Boolean(publish.metaAdId) &&
+      publish.publishStatus === "submitted" &&
+      !creationFailed &&
+      !rejected &&
+      !pending);
   const statusLabel =
     STATUS_LABELS[publish.displayStatus] ||
+    STATUS_LABELS[publish.metaEffectiveStatus || ""] ||
     publish.metaEffectiveStatus ||
     publish.displayStatus ||
     "—";
+  const title = creationFailed
+    ? c("outcomeCreationFailed")
+    : rejected
+      ? c("outcomeRejected")
+      : pending
+        ? c("outcomePendingReview")
+        : outcome === "active"
+          ? c("outcomeActive")
+          : created
+            ? c("outcomeCreatedPaused")
+            : c("publishIncompleteTitle");
+  const subtitle = creationFailed
+    ? publish.lastMetaErrorMessage || publish.lastError || c("publishFailSubtitle")
+    : rejected
+      ? c("outcomeRejectedHint")
+      : pending
+        ? c("outcomePendingHint")
+        : created
+          ? c("publishOkCustomer")
+          : c("publishFailSubtitle");
+  const createdBits = [
+    publish.metaCampaignId ? `${c("metaCampaignId")}: ${publish.metaCampaignId}` : "",
+    publish.metaAdSetId ? `${c("metaAdSetId")}: ${publish.metaAdSetId}` : "",
+    publish.metaCreativeId ? `${c("metaCreativeId")}: ${publish.metaCreativeId}` : "",
+    publish.metaAdId ? `${c("metaAdId")}: ${publish.metaAdId}` : "",
+  ].filter(Boolean);
 
   return (
     <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
@@ -52,20 +93,14 @@ export default function PublishResultModal({
       >
         <div className="flex items-start justify-between gap-3 border-b border-[#E4E6EB] px-4 py-3">
           <div className="flex items-start gap-2">
-            {ok ? (
-              <CheckCircle2 className="mt-0.5 h-5 w-5 text-[#31A24C]" />
-            ) : (
+            {creationFailed || rejected ? (
               <X className="mt-0.5 h-5 w-5 text-[#FA383E]" />
+            ) : (
+              <CheckCircle2 className="mt-0.5 h-5 w-5 text-[#31A24C]" />
             )}
             <div>
-              <h2 className="text-[17px] font-bold text-[#050505]">
-                {ok ? c("campaignSubmittedTitle") : c("publishIncompleteTitle")}
-              </h2>
-              <p className="mt-0.5 text-[13px] text-[#65676B]">
-                {ok
-                  ? c("publishOkCustomer")
-                  : c("publishFailSubtitle")}
-              </p>
+              <h2 className="text-[17px] font-bold text-[#050505]">{title}</h2>
+              <p className="mt-0.5 text-[13px] text-[#65676B]">{subtitle}</p>
             </div>
           </div>
           <button
@@ -79,6 +114,34 @@ export default function PublishResultModal({
 
         <div className="space-y-2 px-4 py-4 text-[13px]">
           <Row label={c("currentMetaStatus")} value={statusLabel} />
+          {creationFailed && publish.failedStage ? (
+            <Row label={c("failedStage")} value={publish.failedStage} />
+          ) : null}
+          {creationFailed && (publish.lastMetaErrorCode || publish.lastMetaErrorMessage) ? (
+            <Row
+              label={c("metaError")}
+              value={
+                [
+                  publish.lastMetaErrorMessage || publish.lastError,
+                  publish.lastMetaErrorCode
+                    ? `${c("metaErrorCode")} ${publish.lastMetaErrorCode}`
+                    : "",
+                  publish.lastMetaErrorSubcode
+                    ? `${c("metaErrorSubcode")} ${publish.lastMetaErrorSubcode}`
+                    : "",
+                  publish.lastMetaFbtraceId
+                    ? `${c("metaFbtrace")} ${publish.lastMetaFbtraceId}`
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" · ")
+              }
+            />
+          ) : null}
+          <Row
+            label={c("createdObjects")}
+            value={createdBits.length ? createdBits.join(" · ") : c("noneCreated")}
+          />
           <Row
             label={c("submittedTime")}
             value={
@@ -103,7 +166,7 @@ export default function PublishResultModal({
             )}
             {c("syncStatusFromMeta")}
           </button>
-          {!ok && onRetry ? (
+          {creationFailed && onRetry ? (
             <button type="button" className={metaBtnSecondary} onClick={onRetry}>
               {c("retryFailedStage")}
             </button>
@@ -139,7 +202,7 @@ function Row({
       <span className="shrink-0 font-semibold text-[#65676B]">{label}</span>
       <span
         className={[
-          "text-right font-bold text-[#050505]",
+          "max-w-[70%] text-right font-bold text-[#050505] break-words",
           mono ? "break-all font-mono text-[12px]" : "",
         ].join(" ")}
         dir="ltr"

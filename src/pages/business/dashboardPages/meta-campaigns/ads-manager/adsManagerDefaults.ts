@@ -139,12 +139,15 @@ export function createDefaultAdsManagerState(): AdsManagerState {
     adSets: [adSet],
     ads: [ad],
     instantForms: EMPTY_INSTANT_FORMS,
-    // Meta Ads Manager Israel (country) broad estimate baseline.
     audienceEstimate: {
-      lower: 3_800_000,
-      upper: 4_500_000,
-      spectrum: 0.9,
-      ready: true,
+      lower: 0,
+      upper: 0,
+      spectrum: 0.5,
+      ready: false,
+      unavailable: false,
+      message: "",
+      metric: "unavailable",
+      forecast: null,
     },
     campaignScore: 72,
   };

@@ -491,6 +491,17 @@ export type MetaCampaignPublishRecord = {
   lastError?: string;
   lastMetaErrorCode?: string;
   lastMetaErrorMessage?: string;
+  lastMetaErrorSubcode?: string;
+  lastMetaFbtraceId?: string;
+  outcome?:
+    | "creation_failed"
+    | "rejected"
+    | "pending_review"
+    | "active"
+    | "created_paused"
+    | "publishing"
+    | "unknown"
+    | string;
   publishedAt?: string | null;
   lastMetaSyncAt?: string | null;
   adsManagerUrl?: string;
@@ -501,6 +512,8 @@ export type MetaCampaignPublishRecord = {
     responseStatus?: string;
     metaErrorCode?: string;
     metaErrorMessage?: string;
+    metaErrorSubcode?: string;
+    metaFbtraceId?: string;
     success?: boolean;
     at?: string;
   }>;
@@ -949,18 +962,31 @@ export async function estimateMetaAudienceReach(
     suggestAudience?: boolean;
     furtherLimitReach?: boolean;
     estimateWithSuggestions?: boolean;
+    interests?: Array<{ id: string; name?: string }>;
+    objective?: string;
+    optimizationGoal?: string;
+    pageId?: string;
+    advantagePlacements?: boolean;
     strictEstimate?: boolean;
     noGeoFallback?: boolean;
   }
 ) {
   const { data } = await API.post<{
     success: boolean;
-    lower: number;
-    upper: number;
-    spectrum: number;
+    lower: number | null;
+    upper: number | null;
+    spectrum: number | null;
     estimateReady?: boolean;
     source?: string;
+    metric?: string;
     warning?: string;
+    optimizationGoal?: string;
+    forecast?: {
+      metric?: string;
+      reach?: number | null;
+      impressions?: number | null;
+      actions?: number | null;
+    } | null;
   }>("/meta-campaigns/targeting/reach-estimate", payload, withBusiness(businessId));
   return data;
 }
@@ -1068,11 +1094,12 @@ export async function syncMetaPublish(
 
 export async function retryMetaPublish(
   businessId: string,
-  publishId: string
+  publishId: string,
+  payload?: Record<string, unknown>
 ) {
   const { data } = await API.post<MetaPublishResult>(
     `/meta-campaigns/publishes/${publishId}/retry`,
-    { businessId }
+    { businessId, ...(payload || {}) }
   );
   return data;
 }

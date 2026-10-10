@@ -29,6 +29,7 @@ import AdInsightsSidebar from "./sidebars/AdInsightsSidebar";
 import PublishResultModal from "./PublishResultModal";
 import CreateCampaignObjectiveModal from "./CreateCampaignObjectiveModal";
 import {
+  buildAudienceEstimatePayload,
   buildPublishPayloadFromAdsManager,
   validateAdsManagerClient,
 } from "./buildPublishPayload";
@@ -60,7 +61,7 @@ import {
 type OutletCtx = { businessId: string | null };
 
 export default function MetaAdsManagerPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const c = (key: string, opts?: Record<string, unknown>) =>
     t(`metaCampaigns.adsManager.chrome.${key}`, opts);
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ export default function MetaAdsManagerPage() {
   const [leadForms, setLeadForms] = useState<MetaLeadForm[]>([]);
   const [formsLoading, setFormsLoading] = useState(false);
   const [formsError, setFormsError] = useState("");
-  const [estimateLoading, setEstimateLoading] = useState(false);
+  const [estimateLoading, setEstimateLoading] = useState(true);
   const [publishing, setPublishing] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [publishResult, setPublishResult] =
@@ -282,115 +283,87 @@ export default function MetaAdsManagerPage() {
     connection?.selectedPage?.pageId,
   ]);
 
-  // Live Meta reach estimate. Edit uses the loaded Ad Set targeting only —
-  // never IL/18–65 fallbacks that inflate the size vs Ads Manager.
+  // Live Meta potential-audience estimate. Same audience fields as publish.
   useEffect(() => {
     if (!businessId || !selectedAdSet) return;
-    if (!connection?.connected && !connection?.isConnected) return;
-    if (!connection.selectedAdAccount) return;
+    const unavailable = (message: string) => {
+      setAudienceEstimate({
+        lower: 0,
+        upper: 0,
+        spectrum: 0.5,
+        ready: false,
+        unavailable: true,
+        message,
+        metric: "unavailable",
+        forecast: null,
+      });
+    };
+
+    if (!connection?.connected && !connection?.isConnected) {
+      setEstimateLoading(false);
+      unavailable(t("metaCampaigns.adsManager.chrome.estimateUnavailable"));
+      return;
+    }
+    if (!connection.selectedAdAccount) {
+      setEstimateLoading(false);
+      unavailable(t("metaCampaigns.adsManager.chrome.estimateUnavailable"));
+      return;
+    }
     if (isEditSession && (!selectedAdSet.targetingLoaded || selectedAdSet.ageMin == null)) {
-      setAudienceEstimate({ lower: 0, upper: 0, spectrum: 0.5, ready: false });
+      setEstimateLoading(false);
+      unavailable(t("metaCampaigns.adsManager.chrome.estimatePendingEdit"));
       return;
     }
 
+    let cancelled = false;
+    setEstimateLoading(true);
     const timer = window.setTimeout(async () => {
-      setEstimateLoading(true);
       try {
-        const locations = (selectedAdSet.locations || []).filter(
-          (loc) => loc.include !== false
-        );
-        const countries = locations
-          .filter((loc) => loc.type === "country")
-          .map((loc) =>
-            String(loc.key || loc.countryCode || "").toUpperCase()
+        const data = await estimateMetaAudienceReach(
+          businessId,
+          buildAudienceEstimatePayload(
+            { ...state, adSets: [selectedAdSet] },
+            { isEditSession }
           )
-          .filter(Boolean);
-        const genders =
-          selectedAdSet.gender === "male"
-            ? [1]
-            : selectedAdSet.gender === "female"
-              ? [2]
-              : [];
-
-        const hasCityOrPlace = locations.some((loc) =>
-          /city|subcity|neighborhood|region|zip/i.test(loc.type || "")
         );
-
-        const data = await estimateMetaAudienceReach(businessId, {
-          locations: locations.map((loc) => {
-            const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
-            const cityOnly = loc.cityOnly === true;
-            const radiusMiles =
-              isCity && !cityOnly
-                ? Number(loc.radiusMiles != null ? loc.radiusMiles : 25)
-                : null;
-            return {
-              key: loc.key,
-              name: loc.name,
-              type: loc.type,
-              countryCode: loc.countryCode,
-              countryName: loc.countryName,
-              region: loc.region,
-              metaCityKey: loc.metaCityKey || (isCity ? loc.key : undefined),
-              radiusMiles,
-              radiusKm: radiusMiles,
-              distanceUnit: radiusMiles != null ? "mile" : undefined,
-              latitude: loc.latitude,
-              longitude: loc.longitude,
-            };
-          }),
-          countries: hasCityOrPlace
-            ? countries
-            : countries.length
-              ? countries
-              : isEditSession
-                ? []
-                : ["IL"],
-          ageMin: (() => {
-            const range = Array.isArray(selectedAdSet.targetingRaw?.age_range)
-              ? (selectedAdSet.targetingRaw.age_range as number[])
-              : null;
-            return range?.[0] ?? selectedAdSet.ageMin ?? undefined;
-          })(),
-          ageMax: (() => {
-            const range = Array.isArray(selectedAdSet.targetingRaw?.age_range)
-              ? (selectedAdSet.targetingRaw.age_range as number[])
-              : null;
-            const value = range?.[1] ?? selectedAdSet.ageMax;
-            if (value == null) return undefined;
-            return value >= 65 ? 65 : value;
-          })(),
-          genders,
-          locationsSummary: selectedAdSet.locationsSummary,
-          advantageAudience: selectedAdSet.advantageAudience !== false,
-          suggestAudience: selectedAdSet.suggestAudience !== false,
-          furtherLimitReach: Boolean(selectedAdSet.furtherLimitReach),
-          estimateWithSuggestions: isEditSession,
-          strictEstimate: isEditSession,
-          noGeoFallback: isEditSession,
-        });
-
-        if (data.estimateReady === false || data.lower == null || data.upper == null) {
-          setAudienceEstimate({ lower: 0, upper: 0, spectrum: 0.5, ready: false });
+        if (cancelled) return;
+        const valid =
+          data.estimateReady === true &&
+          data.metric !== "unavailable" &&
+          data.lower != null &&
+          data.upper != null &&
+          Number.isFinite(Number(data.lower)) &&
+          Number.isFinite(Number(data.upper));
+        if (!valid) {
+          unavailable(
+            data.warning ||
+              t("metaCampaigns.adsManager.chrome.estimateUnavailable")
+          );
           return;
         }
-
         setAudienceEstimate({
-          lower: Number(data.lower) || 0,
-          upper: Number(data.upper) || 0,
+          lower: Number(data.lower),
+          upper: Number(data.upper),
           spectrum: Number(data.spectrum) || 0.5,
           ready: true,
+          unavailable: false,
+          message: "",
+          metric: data.metric || "potential_audience",
+          forecast: data.forecast || null,
         });
       } catch {
-        if (isEditSession) {
-          setAudienceEstimate({ lower: 0, upper: 0, spectrum: 0.5, ready: false });
+        if (!cancelled) {
+          unavailable(t("metaCampaigns.adsManager.chrome.estimateUnavailable"));
         }
       } finally {
-        setEstimateLoading(false);
+        if (!cancelled) setEstimateLoading(false);
       }
     }, 400);
 
-    return () => window.clearTimeout(timer);
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
   }, [
     businessId,
     connection?.connected,
@@ -401,9 +374,20 @@ export default function MetaAdsManagerPage() {
     selectedAdSet?.ageMin,
     selectedAdSet?.ageMax,
     selectedAdSet?.gender,
+    selectedAdSet?.interests,
+    selectedAdSet?.advantageAudience,
+    selectedAdSet?.furtherLimitReach,
+    selectedAdSet?.suggestAudience,
+    selectedAdSet?.advantagePlacements,
+    selectedAdSet?.optimizationGoal,
     selectedAdSet?.targetingLoaded,
+    selectedAdSet?.targetingRaw,
+    state.campaign.objective,
+    state.campaign.advantagePlusLeads,
+    selectedAd?.facebookPageId,
     isEditSession,
     setAudienceEstimate,
+    i18n.language,
   ]);
 
   const crumbs = useMemo(() => {
@@ -473,7 +457,21 @@ export default function MetaAdsManagerPage() {
           connection.selectedPage?.pageId || payload.pageId;
       }
 
-      const result = await publishMetaCampaign(businessId, payload);
+      const resumeId =
+        publishResult?.id && publishResult.publishStatus !== "submitted"
+          ? publishResult.id
+          : "";
+      if (
+        publishResult?.metaAdId &&
+        publishResult.publishStatus === "submitted"
+      ) {
+        setModalOpen(true);
+        toast.error(t("metaCampaigns.adsManager.chrome.alreadySubmitted"));
+        return;
+      }
+      const result = resumeId
+        ? await retryMetaPublish(businessId, resumeId, payload)
+        : await publishMetaCampaign(businessId, payload);
       if (result?.demoSafe) {
         // The guided tour shows its own localized success toast for this step.
         if (!isGuidedDemoActive()) {
@@ -485,12 +483,25 @@ export default function MetaAdsManagerPage() {
         return;
       }
       if (!result?.adId) {
+        if (result?.publish) {
+          setPublishResult(result.publish);
+          setModalOpen(true);
+        }
         toast.error(t("metaCampaigns.adsToasts.noAdId"));
         return;
       }
       setPublishResult(result.publish);
       setModalOpen(true);
-      toast.success(t("metaCampaigns.adsToasts.campaignSubmitted"));
+      const outcome = result.publish?.outcome;
+      if (outcome === "rejected") {
+        toast.error(t("metaCampaigns.adsManager.chrome.outcomeRejected"));
+      } else if (outcome === "pending_review") {
+        toast.success(t("metaCampaigns.adsManager.chrome.outcomePendingReview"));
+      } else if (outcome === "active") {
+        toast.success(t("metaCampaigns.adsManager.chrome.outcomeActive"));
+      } else {
+        toast.success(t("metaCampaigns.adsManager.chrome.outcomeCreatedPaused"));
+      }
     } catch (error: unknown) {
       const err = error as {
         response?: {
@@ -623,7 +634,11 @@ export default function MetaAdsManagerPage() {
     if (!businessId || !publishResult?.id) return;
     try {
       setPublishing(true);
-      const result = await retryMetaPublish(businessId, publishResult.id);
+      const result = await retryMetaPublish(
+        businessId,
+        publishResult.id,
+        buildPublishPayloadFromAdsManager(state)
+      );
       setPublishResult(result.publish);
       if (result.adId) {
         toast.success(t("metaCampaigns.adsToasts.retryCompleted"));

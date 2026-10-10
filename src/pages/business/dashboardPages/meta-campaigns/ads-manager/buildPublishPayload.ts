@@ -10,6 +10,98 @@ function gendersForMeta(gender: AdsManagerState["adSets"][0]["gender"]) {
   return [];
 }
 
+function selectedAge(adSet: AdsManagerState["adSets"][0]) {
+  const range = Array.isArray(adSet.targetingRaw?.age_range)
+    ? (adSet.targetingRaw.age_range as number[])
+    : null;
+  const ageMin = range?.[0] ?? adSet.ageMin;
+  const ageMaxRaw = range?.[1] ?? adSet.ageMax;
+  return {
+    ageMin: ageMin ?? undefined,
+    ageMax:
+      ageMaxRaw == null ? undefined : ageMaxRaw >= 65 ? 65 : ageMaxRaw,
+  };
+}
+
+/**
+ * Audience fields shared by the delivery estimate and the ad set create payload.
+ */
+export function audienceTargetingFromAdsManager(state: AdsManagerState) {
+  const adSet = state.adSets[0];
+  const locations = (adSet?.locations || [])
+    .filter((loc) => loc.include !== false)
+    .map((loc) => {
+      const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
+      const cityOnly = Boolean(loc.cityOnly) || loc.radiusMiles == null;
+      const radiusMiles =
+        isCity && !cityOnly && loc.radiusMiles != null ? loc.radiusMiles : null;
+      return {
+        key: loc.key,
+        name: loc.name,
+        type: loc.type,
+        countryCode: loc.countryCode,
+        countryName: loc.countryName,
+        region: loc.region,
+        metaCityKey: loc.metaCityKey || (isCity ? loc.key : undefined),
+        radiusKm: radiusMiles,
+        radiusMiles,
+        distanceUnit: radiusMiles != null ? ("mile" as const) : undefined,
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+      };
+    });
+
+  const countries = locations
+    .filter((item) => item.type === "country")
+    .map((item) => String(item.key || item.countryCode || "").toUpperCase())
+    .filter(Boolean);
+
+  const advantageAudience = adSet?.furtherLimitReach
+    ? false
+    : adSet?.advantageAudience !== false;
+
+  const ages = adSet
+    ? selectedAge(adSet)
+    : { ageMin: undefined, ageMax: undefined };
+
+  return {
+    locations,
+    countries: countries.length ? countries : ["IL"],
+    locationsSummary:
+      adSet?.locationsSummary || locations.map((item) => item.name).join(", "),
+    ageMin: ages.ageMin,
+    ageMax: ages.ageMax,
+    genders: gendersForMeta(adSet?.gender || "all"),
+    interests: (adSet?.interests || [])
+      .filter((item) => item?.id)
+      .map((item) => ({ id: item.id, name: item.name })),
+    advantageAudience,
+    advantagePlacements: adSet?.advantagePlacements !== false,
+    furtherLimitReach: Boolean(adSet?.furtherLimitReach),
+    suggestAudience: adSet?.suggestAudience !== false,
+  };
+}
+
+export function buildAudienceEstimatePayload(
+  state: AdsManagerState,
+  options?: { isEditSession?: boolean }
+) {
+  const adSet = state.adSets[0];
+  const ad = state.ads[0];
+  const audience = audienceTargetingFromAdsManager(state);
+  const pageId = ad?.facebookPageId || adSet?.facebookPageId || "";
+  return {
+    ...audience,
+    objective: state.campaign?.objective,
+    advantagePlus: state.campaign?.advantagePlusLeads === true,
+    optimizationGoal: adSet?.optimizationGoal || undefined,
+    pageId:
+      pageId && pageId !== "page_1" && pageId !== "page_2" ? pageId : undefined,
+    strictEstimate: true,
+    noGeoFallback: Boolean(options?.isEditSession) && audience.locations.length === 0,
+  };
+}
+
 /**
  * Maps Ads Manager draft state → Meta Marketing API publish payload.
  * Server validates and creates campaign → ad set → creative → ad for real.
@@ -28,47 +120,8 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     .toLowerCase()
     .includes("instant");
 
-  const locations = (adSet.locations || [])
-    .filter((loc) => loc.include !== false)
-    .map((loc) => {
-      const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
-      const cityOnly = Boolean(loc.cityOnly) || loc.radiusMiles == null;
-      const radiusMiles =
-        isCity && !cityOnly && loc.radiusMiles != null
-          ? loc.radiusMiles
-          : null;
-      return {
-        key: loc.key,
-        name: loc.name,
-        type: loc.type,
-        countryCode: loc.countryCode,
-        countryName: loc.countryName,
-        region: loc.region,
-        metaCityKey: loc.metaCityKey || (isCity ? loc.key : undefined),
-        // Meta API: city only = no radius; otherwise miles (10–50) like Ads Manager.
-        radiusKm: radiusMiles,
-        distanceUnit: radiusMiles != null ? "mile" : undefined,
-        latitude: loc.latitude,
-        longitude: loc.longitude,
-      };
-    });
-
-  const countries = locations
-    .filter((item) => item.type === "country")
-    .map((item) =>
-      String(item.key || item.countryCode || "").toUpperCase()
-    )
-    .filter(Boolean);
-
-  const pageId =
-    ad.facebookPageId ||
-    adSet.facebookPageId ||
-    "";
-
-  // Meta: ages/gender under Advantage+ are suggestions unless "further limit" is on.
-  const advantageAudience = adSet.furtherLimitReach
-    ? false
-    : adSet.advantageAudience !== false;
+  const audience = audienceTargetingFromAdsManager(state);
+  const pageId = ad.facebookPageId || adSet.facebookPageId || "";
 
   return {
     full: true,
@@ -102,15 +155,14 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     endDateEnabled: adSet.endDateEnabled,
     endDate: adSet.endDate,
     endTime: adSet.endTime,
-    locationsSummary:
-      adSet.locationsSummary ||
-      locations.map((l) => l.name).join(", "),
-    locations,
-    countries: countries.length ? countries : ["IL"],
-    ageMin: adSet.ageMin,
-    ageMax: adSet.ageMax >= 65 ? 65 : adSet.ageMax,
-    genders: gendersForMeta(adSet.gender),
-    advantageAudience,
+    locationsSummary: audience.locationsSummary,
+    locations: audience.locations,
+    countries: audience.countries,
+    ageMin: audience.ageMin,
+    ageMax: audience.ageMax,
+    genders: audience.genders,
+    interests: audience.interests,
+    advantageAudience: audience.advantageAudience,
     advantagePlus: campaign.advantagePlusLeads,
     advantagePlacements: adSet.advantagePlacements,
     conversionLocation: adSet.conversionLocation,

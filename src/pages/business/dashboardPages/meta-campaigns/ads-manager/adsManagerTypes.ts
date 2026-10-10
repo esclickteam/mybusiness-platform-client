@@ -175,6 +175,15 @@ export type AdsManagerState = {
     upper: number;
     spectrum: number; // 0 narrow … 1 broad
     ready?: boolean;
+    unavailable?: boolean;
+    message?: string;
+    metric?: string;
+    forecast?: {
+      metric?: string;
+      reach?: number | null;
+      impressions?: number | null;
+      actions?: number | null;
+    } | null;
   };
   campaignScore: number;
 };
