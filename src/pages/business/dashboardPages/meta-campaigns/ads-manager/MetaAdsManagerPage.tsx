@@ -96,6 +96,7 @@ export default function MetaAdsManagerPage() {
   const [formsLoading, setFormsLoading] = useState(false);
   const [formsError, setFormsError] = useState("");
   const [estimateLoading, setEstimateLoading] = useState(true);
+  const [estimateAttempt, setEstimateAttempt] = useState(0);
   const [publishing, setPublishing] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [publishResult, setPublishResult] =
@@ -309,9 +310,14 @@ export default function MetaAdsManagerPage() {
       unavailable(t("metaCampaigns.adsManager.chrome.estimateUnavailable"));
       return;
     }
-    if (isEditSession && (!selectedAdSet.targetingLoaded || selectedAdSet.ageMin == null)) {
+    if (!selectedAdSet.locations?.length) {
       setEstimateLoading(false);
-      unavailable(t("metaCampaigns.adsManager.chrome.estimatePendingEdit"));
+      unavailable(t("metaCampaigns.adsManager.chrome.estimateNeedsLocation"));
+      return;
+    }
+    if (selectedAdSet.ageMin == null || selectedAdSet.ageMax == null) {
+      setEstimateLoading(false);
+      unavailable(t("metaCampaigns.adsManager.chrome.ageNotLoaded"));
       return;
     }
 
@@ -388,6 +394,7 @@ export default function MetaAdsManagerPage() {
     isEditSession,
     setAudienceEstimate,
     i18n.language,
+    estimateAttempt,
   ]);
 
   const crumbs = useMemo(() => {
@@ -583,6 +590,12 @@ export default function MetaAdsManagerPage() {
         await updateMetaCampaign(businessId, campaignId, campaignPatch);
       }
       for (const adSet of state.adSets) {
+        if (adSet.recoveredDraft) {
+          if (buildAdSetUpdateFromDiff(adSet, state.campaign, changes)) {
+            toast.error(c("recoveredDraftNote"));
+          }
+          continue;
+        }
         const patch = buildAdSetUpdateFromDiff(adSet, state.campaign, changes);
         if (patch) await updateMetaAdSet(businessId, adSet.id, patch);
       }
@@ -627,6 +640,36 @@ export default function MetaAdsManagerPage() {
       );
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const resumeRecoveredAdSet = async (publishId: string) => {
+    if (!businessId || !publishId) return;
+    try {
+      setPublishing(true);
+      const result = await retryMetaPublish(
+        businessId,
+        publishId,
+        buildPublishPayloadFromAdsManager(state)
+      );
+      setPublishResult(result.publish);
+      setModalOpen(true);
+      if (result.adId) {
+        toast.success(t("metaCampaigns.adsToasts.retryCompleted"));
+      }
+    } catch (error: unknown) {
+      const err = error as {
+        response?: { data?: { error?: string; publish?: MetaCampaignPublishRecord } };
+      };
+      if (err.response?.data?.publish) {
+        setPublishResult(err.response.data.publish);
+        setModalOpen(true);
+      }
+      toast.error(
+        err.response?.data?.error || t("metaCampaigns.adsToasts.retryFailed")
+      );
+    } finally {
+      setPublishing(false);
     }
   };
 
@@ -969,6 +1012,13 @@ export default function MetaAdsManagerPage() {
               businessId={businessId}
               pages={connectedPages}
               selectedPageId={connection?.selectedPage?.pageId}
+              onResumeDraft={
+                selectedAdSet.recoveredPublishId
+                  ? () => {
+                      void resumeRecoveredAdSet(selectedAdSet.recoveredPublishId || "");
+                    }
+                  : undefined
+              }
               onChange={(patch) => {
                 patchAdSet(selectedAdSet.id, patch);
                 if (patch.facebookPageId && selectedAd) {
@@ -1022,7 +1072,8 @@ export default function MetaAdsManagerPage() {
               ageMax={selectedAdSet.ageMax}
               gender={selectedAdSet.gender}
               estimateLoading={estimateLoading}
-              estimatePending={isEditSession && state.audienceEstimate.ready === false}
+              estimatePending={false}
+              onRetryEstimate={() => setEstimateAttempt((attempt) => attempt + 1)}
             />
           ) : null}
           {state.selectedLevel === "ad" && selectedAd ? (

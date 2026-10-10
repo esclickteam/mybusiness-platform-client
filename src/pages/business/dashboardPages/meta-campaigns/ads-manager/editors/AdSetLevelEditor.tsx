@@ -28,6 +28,7 @@ type Props = {
   businessId: string | null;
   pages: MetaAdsPage[];
   selectedPageId?: string;
+  onResumeDraft?: () => void;
 };
 
 const AGE_MIN_OPTIONS = Array.from({ length: 48 }, (_, i) => 18 + i); // 18..65
@@ -45,6 +46,7 @@ export default function AdSetLevelEditor({
   businessId,
   pages,
   selectedPageId,
+  onResumeDraft,
 }: Props) {
   const { t } = useTranslation();
   const [pageQuery, setPageQuery] = useState("");
@@ -562,10 +564,66 @@ export default function AdSetLevelEditor({
                     <ChevronDown className="h-4 w-4 text-[#65676B]" />
                   )}
                 </button>
+                {adSet.recoveredDraft ? (
+                  <div className="bg-white px-3 py-2">
+                    <p className="text-[13px] leading-snug text-amber-800">
+                      {t("metaCampaigns.adsManager.chrome.recoveredDraftNote")}
+                    </p>
+                    {onResumeDraft ? (
+                      <button
+                        type="button"
+                        className="mt-2 text-[13px] font-semibold text-[#1877F2]"
+                        onClick={onResumeDraft}
+                      >
+                        {t("metaCampaigns.adsManager.chrome.resumeMissingAdSet")}
+                      </button>
+                    ) : null}
+                  </div>
+                ) : null}
                 {adSet.ageMin == null || adSet.ageMax == null ? (
-                  <p className="bg-white px-3 py-2 text-[14px] font-semibold text-amber-800">
-                    {t("metaCampaigns.adsManager.chrome.ageNotLoaded")}
-                  </p>
+                  <div className="bg-white px-3 py-2">
+                    <p className="text-[14px] font-semibold text-amber-800">
+                      {t("metaCampaigns.adsManager.chrome.ageNotLoaded")}
+                    </p>
+                    <div className="mt-2 grid grid-cols-2 gap-2">
+                      <select
+                        className={metaSelectClass}
+                        value={adSet.ageMin ?? 18}
+                        aria-label={t("metaCampaigns.adsManager.chrome.minAge")}
+                        onChange={(e) => {
+                          const ageMin = Number(e.target.value);
+                          onChange({
+                            ageMin,
+                            ageMax: Math.max(ageMin, adSet.ageMax ?? 65),
+                          });
+                        }}
+                      >
+                        {AGE_MIN_OPTIONS.map((age) => (
+                          <option key={age} value={age}>
+                            {age}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        className={metaSelectClass}
+                        value={adSet.ageMax ?? 65}
+                        aria-label={t("metaCampaigns.adsManager.chrome.maxAge")}
+                        onChange={(e) => {
+                          const ageMax = Number(e.target.value);
+                          onChange({
+                            ageMax,
+                            ageMin: Math.min(adSet.ageMin ?? 18, ageMax),
+                          });
+                        }}
+                      >
+                        {AGE_MAX_OPTIONS.map((age) => (
+                          <option key={age} value={age}>
+                            {age === 65 ? "65+" : age}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 ) : adSet.ageExpanded ? (
                   <div className="grid grid-cols-2 gap-2 bg-white px-3 py-3">
                     <select

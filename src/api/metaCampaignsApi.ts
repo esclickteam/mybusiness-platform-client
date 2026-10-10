@@ -202,6 +202,8 @@ export type MetaCampaignAdSet = {
   placementMode?: string;
   targetingRaw?: Record<string, unknown> | null;
   targetingLoaded?: boolean;
+  recoveredDraft?: boolean;
+  recoveredPublishId?: string;
 };
 
 export type MetaLabeledOption = {
