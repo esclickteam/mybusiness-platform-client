@@ -384,6 +384,21 @@ let telnyxRefreshTimer: number | null = null;
 let telnyxHostMountCount = 0;
 let outboundDialInFlight = false;
 let presenceTimer: number | null = null;
+let lineReconnectTimer: number | null = null;
+let lineConnectInFlight: Promise<void> | null = null;
+
+function setTelnyxLineReady(ready: boolean) {
+  telnyxReady = ready;
+  window.dispatchEvent(
+    new CustomEvent("bizuply:softphone-line", { detail: { registered: ready } })
+  );
+}
+
+function currentPresenceStatus(): "ready" | "busy" | "offline" {
+  if (!telnyxReady) return "offline";
+  if (telnyxCall || pendingIncomingTelnyxCall) return "busy";
+  return "ready";
+}
 
 function clearTelnyxRefreshTimer() {
   if (telnyxRefreshTimer != null) {
@@ -425,15 +440,15 @@ async function refreshTelnyxLoginToken() {
         await telnyxClient.login({ login_token: token });
       }
     } catch {
-      // Force reconnect with the new token.
+      const previous = telnyxClient;
+      telnyxClient = null;
+      telnyxIncomingBound = false;
       try {
-        telnyxClient.disconnect?.();
+        previous?.disconnect?.();
       } catch {
         /* ignore */
       }
-      telnyxClient = null;
-      telnyxReady = false;
-      telnyxIncomingBound = false;
+      setTelnyxLineReady(false);
       await ensureTelnyxClient(auth);
       return;
     }
@@ -451,11 +466,43 @@ function stopPresenceHeartbeat(sendOffline: boolean) {
 }
 
 function startPresenceHeartbeat() {
-  reportPresence(telnyxCall ? "busy" : "ready");
+  reportPresence(currentPresenceStatus());
   if (presenceTimer != null) return;
   presenceTimer = window.setInterval(() => {
-    reportPresence(telnyxCall || pendingIncomingTelnyxCall ? "busy" : "ready");
-  }, 20000);
+    reportPresence(currentPresenceStatus());
+  }, 15000);
+}
+
+function scheduleSoftphoneLineReconnect() {
+  if (lineReconnectTimer != null || telnyxReady) return;
+  if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+    return;
+  }
+  lineReconnectTimer = window.setTimeout(() => {
+    lineReconnectTimer = null;
+    if (!telnyxReady) void ensureSoftphoneLine();
+  }, 1200);
+}
+
+async function ensureSoftphoneLine() {
+  if (telnyxReady && telnyxClient) {
+    reportPresence(currentPresenceStatus());
+    return;
+  }
+  if (lineConnectInFlight) return lineConnectInFlight;
+  lineConnectInFlight = (async () => {
+    try {
+      const auth = await fetchSoftphoneAuth();
+      if (auth.provider !== "telnyx" || !auth.login_token) return;
+      await ensureTelnyxClient(auth);
+    } catch {
+      setTelnyxLineReady(false);
+      reportPresence("offline");
+    } finally {
+      lineConnectInFlight = null;
+    }
+  })();
+  return lineConnectInFlight;
 }
 
 /** Hang up calls and disconnect Telnyx/Twilio clients (logout / host unmount). */
@@ -465,14 +512,19 @@ export function disconnectSoftphoneVoip() {
   hangupActiveVoipCall();
   telnyxLoginToken = null;
   telnyxTokenExpiresAt = 0;
+  const previousClient = telnyxClient;
+  telnyxClient = null;
+  if (lineReconnectTimer != null) {
+    window.clearTimeout(lineReconnectTimer);
+    lineReconnectTimer = null;
+  }
 
   try {
-    telnyxClient?.disconnect?.();
+    previousClient?.disconnect?.();
   } catch {
     /* ignore */
   }
-  telnyxClient = null;
-  telnyxReady = false;
+  setTelnyxLineReady(false);
   telnyxIncomingBound = false;
 
   try {
@@ -688,14 +740,15 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
   }
 
   if (telnyxClient) {
-    try {
-      telnyxClient.disconnect?.();
-    } catch {
-      /* ignore */
-    }
+    const previous = telnyxClient;
     telnyxClient = null;
     telnyxReady = false;
     telnyxIncomingBound = false;
+    try {
+      previous.disconnect?.();
+    } catch {
+      /* ignore */
+    }
   }
 
   telnyxLoginToken = loginToken;
@@ -711,7 +764,7 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
 
     client.on?.("telnyx.ready", () => {
       window.clearTimeout(timeout);
-      telnyxReady = true;
+      setTelnyxLineReady(true);
       // Mic is enabled only on Answer / outbound — avoids a prompt on every register.
       try {
         const remote = ensureRemoteAudioElement();
@@ -733,14 +786,18 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
         return;
       }
       window.clearTimeout(timeout);
-      telnyxReady = false;
+      setTelnyxLineReady(false);
+      reportPresence("offline");
       const friendly = friendlyCallError(err);
       reportClientDiagnostic(diagnosticCodeForError(err), friendly);
       reject(new Error(friendly));
     });
 
     client.on?.("telnyx.socket.close", () => {
-      telnyxReady = false;
+      if (telnyxClient !== client) return;
+      setTelnyxLineReady(false);
+      reportPresence("offline");
+      scheduleSoftphoneLineReconnect();
     });
 
     client.on?.("telnyx.notification", (notification: any) => {
@@ -947,6 +1004,7 @@ export default function AdminSoftphone({
   const [simulating, setSimulating] = useState(false);
   const [now, setNow] = useState(Date.now());
   const [error, setError] = useState("");
+  const [lineRegistered, setLineRegistered] = useState(false);
   const handledQueryRef = useRef("");
 
   const elapsedSec = useMemo(() => {
@@ -960,6 +1018,14 @@ export default function AdminSoftphone({
     }
     return Math.floor((now - activeCall.startedAt) / 1000);
   }, [activeCall, now]);
+
+  useEffect(() => {
+    const onLine = (event: Event) => {
+      setLineRegistered(Boolean((event as CustomEvent).detail?.registered));
+    };
+    window.addEventListener("bizuply:softphone-line", onLine);
+    return () => window.removeEventListener("bizuply:softphone-line", onLine);
+  }, []);
 
   useEffect(() => {
     if (!activeCall) return;
@@ -1688,7 +1754,7 @@ export default function AdminSoftphone({
           ) {
             void Notification.requestPermission().catch(() => {});
           }
-          await ensureTelnyxClient(auth);
+          await ensureSoftphoneLine();
           return;
         }
 
@@ -1725,12 +1791,24 @@ export default function AdminSoftphone({
     })();
 
     const onPageHide = () => {
-      disconnectSoftphoneVoip();
+      if (telnyxReady) reportPresence(currentPresenceStatus(), true);
+    };
+    const onPageShow = () => {
+      if (!telnyxReady) void ensureSoftphoneLine();
+    };
+    const onVisible = () => {
+      if (document.visibilityState === "visible" && !telnyxReady) {
+        void ensureSoftphoneLine();
+      }
     };
     window.addEventListener("pagehide", onPageHide);
+    window.addEventListener("pageshow", onPageShow);
+    document.addEventListener("visibilitychange", onVisible);
 
     return () => {
       window.removeEventListener("pagehide", onPageHide);
+      window.removeEventListener("pageshow", onPageShow);
+      document.removeEventListener("visibilitychange", onVisible);
       cancelled = true;
       telnyxHostMountCount = Math.max(0, telnyxHostMountCount - 1);
       if (telnyxHostMountCount === 0) {
@@ -1994,11 +2072,11 @@ export default function AdminSoftphone({
                           : "סופטפון"}
                     </p>
                     <p className="truncate text-[11px] font-bold text-white/80">
-                      {status.voipReady
-                        ? `${
-                            status.provider === "telnyx" ? "Telnyx" : "VoIP"
-                          } פעיל · ${status.callerId || "הקו העסקי"}`
-                        : "חיוג · אנשי קשר · שיחות נכנסות"}
+                      {lineRegistered
+                        ? `מחובר · ${status.callerId || "הקו העסקי"}`
+                        : status.voipReady
+                          ? "מתחבר לשיחות נכנסות"
+                          : "חיוג · אנשי קשר · שיחות נכנסות"}
                     </p>
                   </div>
                 </div>
