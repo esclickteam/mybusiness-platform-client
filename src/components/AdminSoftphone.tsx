@@ -108,7 +108,13 @@ type SoftphoneAuthPayload = {
   fromNumber?: string;
 };
 
-/** Normalize dial input to E.164 without inventing an Israeli prefix. */
+/** Keep a leading + and dial characters. Never drop a plus the user typed or pasted. */
+function sanitizeDialInput(raw: string) {
+  const clean = String(raw || "").replace(/[^\d+*#]/g, "");
+  const hasPlus = clean.includes("+");
+  const body = clean.replace(/\+/g, "");
+  return (hasPlus ? `+${body}` : body).slice(0, 18);
+}
 function normalizeDialNumber(raw: string) {
   let clean = String(raw || "").trim().replace(/[^\d+]/g, "");
   if (!clean) return "";
@@ -1907,10 +1913,38 @@ export default function AdminSoftphone({
     return () => window.clearTimeout(id);
   }, [query, open, tab, loadContacts]);
 
-  const appendDigit = useCallback((digit: string) => {
-    setDigits((prev) => (prev.length >= 18 ? prev : `${prev}${digit}`));
+  const zeroLongPressRef = useRef(false);
+  const zeroTimerRef = useRef<number | null>(null);
+
+  const clearZeroTimer = useCallback(() => {
+    if (zeroTimerRef.current != null) {
+      window.clearTimeout(zeroTimerRef.current);
+      zeroTimerRef.current = null;
+    }
+  }, []);
+
+  const insertPlus = useCallback(() => {
+    setDigits((prev) => sanitizeDialInput(`+${prev}`));
     setError("");
   }, []);
+
+  const appendDigit = useCallback((digit: string) => {
+    setDigits((prev) => sanitizeDialInput(`${prev}${digit}`));
+    setError("");
+  }, []);
+
+  const beginZeroPress = useCallback(() => {
+    clearZeroTimer();
+    zeroLongPressRef.current = false;
+    zeroTimerRef.current = window.setTimeout(() => {
+      zeroLongPressRef.current = true;
+      insertPlus();
+    }, 450);
+  }, [clearZeroTimer, insertPlus]);
+
+  const endZeroPress = useCallback(() => {
+    clearZeroTimer();
+  }, [clearZeroTimer]);
 
   // Physical keyboard dialing while softphone dial pad is open.
   useEffect(() => {
@@ -1935,11 +1969,7 @@ export default function AdminSoftphone({
       }
       if (key === "+") {
         event.preventDefault();
-        setDigits((prev) => {
-          if (prev.includes("+") || prev.length >= 18) return prev;
-          return prev ? prev : "+";
-        });
-        setError("");
+        insertPlus();
         return;
       }
       if (key === "Backspace") {
@@ -1956,7 +1986,7 @@ export default function AdminSoftphone({
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, tab, activeCall, appendDigit, startCall]);
+  }, [open, tab, activeCall, appendDigit, insertPlus, startCall]);
 
   const toggleMute = useCallback(() => {
     const current = getAdminSoftphoneState().activeCall;
@@ -2371,13 +2401,17 @@ export default function AdminSoftphone({
                       data-softphone-digits="true"
                       dir="ltr"
                     >
+                      <button
+                        type="button"
+                        onClick={insertPlus}
+                        aria-label="הוספת פלוס לחיוג בינלאומי"
+                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-violet-200 bg-[#F3EEFF] text-xl font-black leading-none text-[#7C4DFF]"
+                      >
+                        +
+                      </button>
                       <input
                         value={digits}
-                        onChange={(e) =>
-                          setDigits(
-                            e.target.value.replace(/[^\d+*#]/g, "").slice(0, 18)
-                          )
-                        }
+                        onChange={(e) => setDigits(sanitizeDialInput(e.target.value))}
                         placeholder="הזינו מספר לחיוג"
                         dir="ltr"
                         inputMode="tel"
@@ -2416,7 +2450,40 @@ export default function AdminSoftphone({
                       <button
                         key={key.digit}
                         type="button"
-                        onClick={() => appendDigit(key.digit)}
+                        onPointerDown={
+                          key.digit === "0"
+                            ? (event) => {
+                                if (event.button !== 0 && event.pointerType === "mouse") {
+                                  return;
+                                }
+                                try {
+                                  event.currentTarget.setPointerCapture(event.pointerId);
+                                } catch {
+                                  /* older Safari still delivers pointerup */
+                                }
+                                beginZeroPress();
+                              }
+                            : undefined
+                        }
+                        onPointerUp={key.digit === "0" ? endZeroPress : undefined}
+                        onPointerCancel={key.digit === "0" ? endZeroPress : undefined}
+                        onContextMenu={
+                          key.digit === "0"
+                            ? (event) => event.preventDefault()
+                            : undefined
+                        }
+                        onClick={() => {
+                          if (key.digit === "0" && zeroLongPressRef.current) {
+                            zeroLongPressRef.current = false;
+                            return;
+                          }
+                          appendDigit(key.digit);
+                        }}
+                        style={
+                          key.digit === "0"
+                            ? { WebkitTouchCallout: "none", WebkitUserSelect: "none", touchAction: "manipulation" }
+                            : undefined
+                        }
                         className="group flex h-[56px] flex-col items-center justify-center rounded-[20px] border border-slate-100 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_24px_rgba(124,77,255,0.12)] active:scale-[0.98] sm:h-[62px] sm:rounded-[22px]"
                       >
                         <span className="text-2xl font-black text-slate-900">
@@ -2561,7 +2628,7 @@ export default function AdminSoftphone({
                             key={call._id}
                             type="button"
                             onClick={() => {
-                              setDigits(remote);
+                              setDigits(sanitizeDialInput(remote));
                               setContactName(call.contactName || "");
                               setTab("dial");
                             }}
