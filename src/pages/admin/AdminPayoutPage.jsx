@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
 import API from "../../api";
 import "./AdminPayoutPage.css";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 const AdminPayoutPage = () => {
@@ -51,7 +52,7 @@ const AdminPayoutPage = () => {
         setPayouts(res.data.payouts || []);
       } catch (err) {
         console.error("Error fetching payouts:", err);
-        setError("Error loading payout data");
+        setError("לא ניתן לטעון את נתוני התשלום");
       } finally {
         setLoading(false);
       }
@@ -65,18 +66,21 @@ const AdminPayoutPage = () => {
 
   return (
     <div className="admin-payout-page">
-      <h1>Affiliate Payout Report</h1>
+      <AdminPageHeader
+        title="תשלומי שותפים"
+        description="סיכום עמלות לפי חודש וייצוא לקובץ."
+      />
 
       {/* 🔥 סיכום */}
-      <h3>Total Paid: ${totalAmount.toFixed(2)}</h3>
+      <h3>סה״כ שולם: ${totalAmount.toFixed(2)}</h3>
 
-      <label htmlFor="month">Filter by month:</label>
+      <label htmlFor="month">סינון לפי חודש</label>
       <select
         id="month"
         value={month}
         onChange={(e) => setMonth(e.target.value)}
       >
-        <option value="">All time</option> {/* 🔥 הכי חשוב */}
+        <option value="">כל התקופה</option>
 
         {months.map((m) => (
           <option key={m} value={m}>
@@ -85,7 +89,7 @@ const AdminPayoutPage = () => {
         ))}
       </select>
 
-      {loading && <BizuplyLoader size="lg" label="Loading data..." />}
+      {loading && <BizuplyLoader size="lg" label="טוען נתונים" />}
       {error && <p className="error">{error}</p>}
 
       {!loading && !error && (
@@ -93,21 +97,21 @@ const AdminPayoutPage = () => {
           <table>
             <thead>
               <tr>
-                <th>Business Name</th>
-                <th>Email</th>
-                <th>Amount</th>
-                <th>Bank</th>
-                <th>Branch</th>
-                <th>Account</th>
-                <th>ID</th>
-                <th>Receipt</th>
+                <th>עסק</th>
+                <th>אימייל</th>
+                <th>סכום</th>
+                <th>בנק</th>
+                <th>סניף</th>
+                <th>חשבון</th>
+                <th>מזהה</th>
+                <th>קבלה</th>
               </tr>
             </thead>
             <tbody>
               {payouts.length === 0 ? (
                 <tr>
                   <td colSpan="8" style={{ textAlign: "center" }}>
-                    No payout data
+                    אין נתוני תשלום
                   </td>
                 </tr>
               ) : (
@@ -123,10 +127,10 @@ const AdminPayoutPage = () => {
                     <td>
                       {partner.receiptUrl ? (
                         <a href={partner.receiptUrl} target="_blank" rel="noreferrer">
-                          📎 View
+                          צפייה
                         </a>
                       ) : (
-                        "No receipt"
+                        "אין קבלה"
                       )}
                     </td>
                   </tr>
@@ -141,7 +145,7 @@ const AdminPayoutPage = () => {
               headers={headers}
               filename={`payouts-${month || "all"}.csv`} // 🔥 תיקון
             >
-              📤 Export to CSV
+              ייצוא CSV
             </CSVLink>
           </div>
         </>

@@ -9,6 +9,7 @@ import PreLoginBot from "./components/PreLoginBot";
 import SupportChatWidget from "./components/SupportChatWidget";
 import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
 import AdminSoftphoneHost from "./components/AdminSoftphoneHost";
+import AdminShell from "./pages/admin/shell/AdminShell";
 import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
 import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
@@ -1073,14 +1074,16 @@ export default function App() {
                     <motion.div
                       key={location.pathname}
                       initial={
-                        isDevVisualRoute ? false : { opacity: 0, y: 10 }
+                        isDevVisualRoute || isAdminRoute ? false : { opacity: 0, y: 10 }
                       }
                       animate={{ opacity: 1, y: 0 }}
                       exit={
-                        isDevVisualRoute ? undefined : { opacity: 0, y: -10 }
+                        isDevVisualRoute || isAdminRoute
+                          ? { opacity: 1 }
+                          : { opacity: 0, y: -10 }
                       }
                       transition={{
-                        duration: isDevVisualRoute ? 0 : 0.35,
+                        duration: isDevVisualRoute || isAdminRoute ? 0 : 0.35,
                         ease: "easeInOut",
                       }}
                     >
@@ -1450,202 +1453,40 @@ export default function App() {
                         />
 
                         <Route
-                          path="/admin"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <Navigate to="/admin/dashboard" replace />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/dashboard"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminDashboard />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/club"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminClubPage />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/early-access"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminEarlyAccess />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/saas-marketplace"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminSaasMarketplace />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/saas-control-center"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminSaasControlCenter />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/managed-whatsapp"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminManagedWhatsApp />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/calendar"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminBizuplyCalendar />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/automations"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminAutomations />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/system"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminSystemHub />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/withdrawals"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminWithdrawalsPage />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/logs"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminLogs />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/ai-usage"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminAiUsage />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/plans"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPlans />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
                           path="/sign/partner-agreement/:token"
                           element={<PartnerAgreementSign />}
                         />
-                        <Route
-                          path="/admin/settings/legal"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminLegalProfile />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/settings/partner-program"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminSubPartnerPricing />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/settings"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminSettings />
-                            </ProtectedRoute>
-                          }
-                        />
 
                         <Route
-                          path="/admin/users"
+                          path="/admin"
                           element={
                             <ProtectedRoute roles={["admin"]}>
-                              <AdminUsers />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/create-user"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminCreateUser />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/businesses"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminBusinesses />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/customers"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminCustomers />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/crm"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminCrmLayout />
+                              <AdminShell />
                             </ProtectedRoute>
                           }
                         >
+                        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                        <Route path="dashboard" element={<AdminDashboard />} />
+                        <Route path="club" element={<AdminClubPage />} />
+                        <Route path="early-access" element={<AdminEarlyAccess />} />
+                        <Route path="saas-marketplace" element={<AdminSaasMarketplace />} />
+                        <Route path="saas-control-center" element={<AdminSaasControlCenter />} />
+                        <Route path="managed-whatsapp" element={<AdminManagedWhatsApp />} />
+                        <Route path="calendar" element={<AdminBizuplyCalendar />} />
+                        <Route path="automations" element={<AdminAutomations />} />
+                        <Route path="system" element={<AdminSystemHub />} />
+                        <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
+                        <Route path="logs" element={<AdminLogs />} />
+                        <Route path="ai-usage" element={<AdminAiUsage />} />
+                        <Route path="plans" element={<AdminPlans />} />
+                        <Route path="settings/legal" element={<AdminLegalProfile />} />
+                        <Route path="settings/partner-program" element={<AdminSubPartnerPricing />} />
+                        <Route path="settings" element={<AdminSettings />} />
+                        <Route path="users" element={<AdminUsers />} />
+                        <Route path="create-user" element={<AdminCreateUser />} />
+                        <Route path="businesses" element={<AdminBusinesses />} />
+                        <Route path="customers" element={<AdminCustomers />} />
+                        <Route path="crm" element={<AdminCrmLayout />}>
                           <Route index element={<AdminCrmOverview />} />
                           <Route path="customers" element={<AdminCrmCustomers />} />
                           <Route path="customers/:id" element={<AdminCrmCustomer360 />} />
@@ -1655,159 +1496,25 @@ export default function App() {
                           <Route path="activities" element={<AdminCrmActivities />} />
                           <Route path="whatsapp" element={<AdminCrmWhatsAppInbox />} />
                         </Route>
-
-                        <Route
-                          path="/admin/guided-demos"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminGuidedDemos />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/guided-demos/:id"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminGuidedDemoDetail />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/site-edit"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <EditSiteContent />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/roles"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <ManageRoles />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/affiliates"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminAffiliates />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/marketers"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminMarketers />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/partners"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartners />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partner-agreements"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerAgreements />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partner-agreements/new"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerAgreementEditor />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partner-agreements/preview"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerAgreementPreview unsaved />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partner-agreements/:id/preview"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerAgreementPreview />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partner-agreements/:id"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerAgreementEditor />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partner-center"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerCenter />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partners/referrals"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerReferrals />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partners/attention"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerAttentionDeals />
-                            </ProtectedRoute>
-                          }
-                        />
-                        <Route
-                          path="/admin/partners/:partnerId"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPartnerDossier />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/support-chat"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminSupportChat />
-                            </ProtectedRoute>
-                          }
-                        />
-
-                        <Route
-                          path="/admin/affiliate-payouts"
-                          element={
-                            <ProtectedRoute roles={["admin"]}>
-                              <AdminPayoutPage />
-                            </ProtectedRoute>
-                          }
-                        />
+                        <Route path="guided-demos" element={<AdminGuidedDemos />} />
+                        <Route path="guided-demos/:id" element={<AdminGuidedDemoDetail />} />
+                        <Route path="site-edit" element={<EditSiteContent />} />
+                        <Route path="roles" element={<ManageRoles />} />
+                        <Route path="affiliates" element={<AdminAffiliates />} />
+                        <Route path="marketers" element={<AdminMarketers />} />
+                        <Route path="partner-agreements" element={<AdminPartnerAgreements />} />
+                        <Route path="partner-agreements/new" element={<AdminPartnerAgreementEditor />} />
+                        <Route path="partner-agreements/preview" element={<AdminPartnerAgreementPreview unsaved />} />
+                        <Route path="partner-agreements/:id/preview" element={<AdminPartnerAgreementPreview />} />
+                        <Route path="partner-agreements/:id" element={<AdminPartnerAgreementEditor />} />
+                        <Route path="partner-center" element={<AdminPartnerCenter />} />
+                        <Route path="partners/referrals" element={<AdminPartnerReferrals />} />
+                        <Route path="partners/attention" element={<AdminPartnerAttentionDeals />} />
+                        <Route path="partners/:partnerId" element={<AdminPartnerDossier />} />
+                        <Route path="partners" element={<AdminPartners />} />
+                        <Route path="support-chat" element={<AdminSupportChat />} />
+                        <Route path="affiliate-payouts" element={<AdminPayoutPage />} />
+                        </Route>
 
                         <Route
                           path="/affiliate/:affiliateId"

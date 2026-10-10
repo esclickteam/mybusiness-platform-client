@@ -1,5 +1,6 @@
 import React from "react";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import PartnerCenterHub from "../../components/partner/PartnerCenterHub";
 import AdminPartnerOnboarding from "../../components/partner/AdminPartnerOnboarding";
 import { useLocaleDir } from "../../hooks/useLocaleDir";
@@ -10,6 +11,10 @@ export default function AdminPartnerCenter() {
     <div dir={dir} className="min-h-screen bg-[#f6f2fb]">
       <AdminHeader />
       <main className="px-3 py-5 sm:px-4 md:px-8">
+        <AdminPageHeader
+          title="מרכז שותפים"
+          description="צירוף, סטטוס ותפעול תוכנית השותפים."
+        />
         <AdminPartnerOnboarding />
         <PartnerCenterHub admin />
       </main>

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminGuidedDemoActions from "./AdminGuidedDemoActions";
 import { fetchGuidedDemoCatalog, getGuidedDemo } from "../../api/guidedDemoApi";
@@ -64,13 +65,10 @@ export default function AdminGuidedDemoDetail() {
     <div className="min-h-screen bg-[#f5f6fb]" dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-4xl px-4 py-8">
-        <button
-          type="button"
-          onClick={() => navigate("/admin/guided-demos")}
-          className="mb-4 text-sm font-black text-violet-700"
-        >
-          ← חזרה לרשימה
-        </button>
+        <AdminPageHeader
+          title={inv?.fullName || inv?.businessName || "דמו"}
+          description="פרטי ההזמנה, הסטטוס ופעולות השליחה."
+        />
         {loading ? (
           <div className="grid place-items-center py-20">
             <BizuplyLoader />

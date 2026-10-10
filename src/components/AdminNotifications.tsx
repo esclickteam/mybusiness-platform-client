@@ -1019,35 +1019,17 @@ export default function AdminNotifications() {
         ref={bellRef}
         onClick={() => handleBellClick()}
         aria-label="התראות תמיכה"
-        className={[
-          "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",
-          displayBadge > 0
-            ? "border-amber-200 from-amber-50 to-white hover:border-amber-300"
-            : "border-slate-200 from-white to-white hover:border-amber-200 hover:from-amber-50",
-        ].join(" ")}
+        className="biz-icon-btn relative"
       >
         <motion.span
           className="inline-flex"
           style={{ transformOrigin: "50% 4px" }}
-          animate={
-            displayBadge > 0
-              ? { rotate: [0, -16, 13, -11, 9, -6, 4, 0] }
-              : { rotate: 0 }
-          }
-          transition={
-            displayBadge > 0
-              ? {
-                  duration: 1.1,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  repeatDelay: 1.5,
-                }
-              : { duration: 0.2 }
-          }
+          animate={{ rotate: 0 }}
+          transition={{ duration: 0.2 }}
         >
           <Bell
-            className="h-6 w-6 fill-amber-400 text-red-500 drop-shadow-[0_1px_1px_rgba(220,38,38,0.35)]"
-            strokeWidth={2.2}
+            className={displayBadge > 0 ? "h-4 w-4 text-[#6d4aff]" : "h-4 w-4 text-[#475467]"}
+            strokeWidth={2}
           />
         </motion.span>
 

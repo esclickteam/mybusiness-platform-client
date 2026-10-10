@@ -8,6 +8,9 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { setAdminActiveBusinessId } from "../../utils/adminTenant";
 import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
+import AdminRowMenu from "./shell/AdminRowMenu";
+import AdminPager, { paginateRows } from "./shell/AdminPager";
 
 const ROLE_LABELS = {
   all: "הכל",
@@ -44,18 +47,7 @@ function statusLabel(status) {
   return STATUS_LABELS[status] || status || "פעיל";
 }
 
-function actionButtonClass(extra = "") {
-  return [
-    "inline-flex min-h-11 items-center justify-center",
-    "rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100",
-    "border border-violet-200/80 px-3.5 py-2.5 text-xs font-black text-black",
-    "shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5",
-    "disabled:cursor-wait disabled:opacity-60",
-    extra,
-  ]
-    .filter(Boolean)
-    .join(" ");
-}
+const PAGE_SIZE = 20;
 
 function AdminUsers() {
   const { user, loginWithToken } = useAuth();
@@ -67,6 +59,9 @@ function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
+  const [sortKey, setSortKey] = useState("name");
+  const [sortDir, setSortDir] = useState("asc");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -117,6 +112,34 @@ function AdminUsers() {
       return matchSearch && matchRole;
     });
   }, [users, search, filter]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, filter, sortKey, sortDir]);
+
+  const sorted = useMemo(() => {
+    const list = [...filtered];
+    list.sort((a, b) => {
+      const av = String(a?.[sortKey] || "").toLowerCase();
+      const bv = String(b?.[sortKey] || "").toLowerCase();
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filtered, sortKey, sortDir]);
+
+  const table = paginateRows(sorted, page, PAGE_SIZE);
+  const pageRows = table.rows;
+
+  function toggleSort(key) {
+    if (sortKey === key) {
+      setSortDir((current) => (current === "asc" ? "desc" : "asc"));
+      return;
+    }
+    setSortKey(key);
+    setSortDir("asc");
+  }
 
   const handleDelete = async (id) => {
     if (!window.confirm("פעולה בלתי הפיכה\nלמחוק את המשתמש?")) return;
@@ -196,44 +219,65 @@ function AdminUsers() {
     }
   };
 
+  function userActions(rowUser, status) {
+    return [
+      {
+        label: status === "active" ? "חסימה" : "הפעלה",
+        disabled: busyId === rowUser._id,
+        onClick: () => handleStatusToggle(rowUser._id, status),
+      },
+      {
+        label: "מחיקה",
+        danger: true,
+        disabled: busyId === rowUser._id,
+        onClick: () => handleDelete(rowUser._id),
+      },
+      {
+        label: "כניסה כמשתמש",
+        hidden: rowUser.role === "admin",
+        disabled: busyId === rowUser._id,
+        onClick: () => handleImpersonate(rowUser),
+      },
+      {
+        label: "כניסה לעסק",
+        hidden: !(rowUser.role === "business" && rowUser.businessId),
+        disabled: busyId === rowUser._id,
+        onClick: () => handleEnterAsAdmin(rowUser),
+      },
+    ];
+  }
+
   return (
     <>
       <AdminHeader />
 
-      <main
-        dir="rtl"
-        className="min-h-screen bg-[#f6f2fb] px-3 py-5 text-right text-slate-800 sm:px-4 sm:py-7 md:px-8"
-      >
+      <main>
         <section className="mx-auto max-w-[1480px]">
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h1 className="text-2xl font-black text-purple-950 sm:text-3xl md:text-4xl">
-                משתמשים במערכת
-              </h1>
-              <p className="mt-2 text-sm font-bold text-purple-950/55">
-                חיפוש, סינון, חסימה וכניסה למשתמשים במערכת.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <AdminPageHeader
+            title="משתמשים"
+            description="חיפוש, סינון, חסימה וכניסה למשתמשים במערכת."
+            actions={
               <button
                 type="button"
+                className="biz-btn"
                 onClick={() => navigate("/admin/create-user")}
-                className="rounded-2xl bg-[#7C4DFF] px-4 py-3 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0]"
               >
                 יצירת משתמש
               </button>
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="חיפוש לפי שם, אימייל, טלפון..."
-                className="w-full rounded-2xl border border-purple-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 outline-none ring-purple-300 placeholder:text-slate-400 focus:ring-2 sm:w-80"
-              />
-              <span className="rounded-2xl bg-purple-100 px-4 py-3 text-center text-sm font-black text-purple-900">
-                {filtered.length} משתמשים
-              </span>
-            </div>
+            }
+          />
+
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="חיפוש לפי שם, אימייל או טלפון"
+              className="biz-input sm:max-w-sm"
+            />
+            <span className="text-xs font-semibold text-[#667085]">
+              {filtered.length} משתמשים
+            </span>
           </div>
 
           <div className="mb-5 rounded-[28px] border border-purple-200 bg-white p-4 shadow-xl shadow-purple-950/8">
@@ -248,11 +292,7 @@ function AdminUsers() {
                     key={value}
                     type="button"
                     onClick={() => setFilter(value)}
-                    className={`rounded-2xl px-3.5 py-2 text-xs font-black transition ${
-                      active
-                        ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-black shadow-lg shadow-purple-700/20"
-                        : "border border-purple-100 bg-purple-50/60 text-purple-900/70 hover:bg-purple-50"
-                    }`}
+                    className={active ? "biz-chip is-active" : "biz-chip"}
                   >
                     {label}
                   </button>
@@ -280,9 +320,8 @@ function AdminUsers() {
               <>
                 {/* Mobile cards */}
                 <div className="space-y-3 p-3 md:hidden">
-                  {filtered.map((rowUser) => {
+                  {pageRows.map((rowUser) => {
                     const status = rowUser.status || "active";
-                    const isBusy = busyId === rowUser._id;
                     const initials = String(rowUser.name || "מ")
                       .trim()
                       .charAt(0)
@@ -344,51 +383,8 @@ function AdminUsers() {
                           </p>
                         ) : null}
 
-                        <div className="mt-3 grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            disabled={isBusy}
-                            onClick={() =>
-                              handleStatusToggle(rowUser._id, status)
-                            }
-                            className={actionButtonClass()}
-                          >
-                            {status === "active" ? "חסימה" : "הפעלה"}
-                          </button>
-
-                          <button
-                            type="button"
-                            disabled={isBusy}
-                            onClick={() => handleDelete(rowUser._id)}
-                            className={actionButtonClass(
-                              "border-rose-200 from-rose-50 via-rose-50 to-orange-50"
-                            )}
-                          >
-                            מחיקה
-                          </button>
-
-                          {rowUser.role !== "admin" ? (
-                            <button
-                              type="button"
-                              disabled={isBusy}
-                              onClick={() => handleImpersonate(rowUser)}
-                              className={actionButtonClass("col-span-2")}
-                            >
-                              כניסה כמשתמש
-                            </button>
-                          ) : null}
-
-                          {rowUser.role === "business" &&
-                          rowUser.businessId ? (
-                            <button
-                              type="button"
-                              disabled={isBusy}
-                              onClick={() => handleEnterAsAdmin(rowUser)}
-                              className={actionButtonClass("col-span-2")}
-                            >
-                              כניסה לעסק
-                            </button>
-                          ) : null}
+                        <div className="mt-3 flex justify-end">
+                          <AdminRowMenu items={userActions(rowUser, status)} />
                         </div>
                       </article>
                     );
@@ -400,18 +396,29 @@ function AdminUsers() {
                   <table className="min-w-full text-right">
                     <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
                       <tr>
-                        <th className="px-4 py-4">משתמש</th>
+                        <th className="px-4 py-4">
+                          <button type="button" onClick={() => toggleSort("name")}>
+                            משתמש
+                          </button>
+                        </th>
                         <th className="px-4 py-4">שם משתמש</th>
                         <th className="px-4 py-4">טלפון</th>
-                        <th className="px-4 py-4">תפקיד</th>
-                        <th className="px-4 py-4">סטטוס</th>
+                        <th className="px-4 py-4">
+                          <button type="button" onClick={() => toggleSort("role")}>
+                            תפקיד
+                          </button>
+                        </th>
+                        <th className="px-4 py-4">
+                          <button type="button" onClick={() => toggleSort("status")}>
+                            סטטוס
+                          </button>
+                        </th>
                         <th className="px-4 py-4">פעולות</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filtered.map((rowUser) => {
+                      {pageRows.map((rowUser) => {
                         const status = rowUser.status || "active";
-                        const isBusy = busyId === rowUser._id;
                         const initials = String(rowUser.name || "מ")
                           .trim()
                           .charAt(0)
@@ -480,52 +487,7 @@ function AdminUsers() {
                               </span>
                             </td>
                             <td className="px-4 py-4">
-                              <div className="flex flex-wrap items-center justify-start gap-2">
-                                <button
-                                  type="button"
-                                  disabled={isBusy}
-                                  onClick={() =>
-                                    handleStatusToggle(rowUser._id, status)
-                                  }
-                                  className={actionButtonClass()}
-                                >
-                                  {status === "active" ? "חסימה" : "הפעלה"}
-                                </button>
-
-                                <button
-                                  type="button"
-                                  disabled={isBusy}
-                                  onClick={() => handleDelete(rowUser._id)}
-                                  className={actionButtonClass(
-                                    "border-rose-200 from-rose-50 via-rose-50 to-orange-50"
-                                  )}
-                                >
-                                  מחיקה
-                                </button>
-
-                                {rowUser.role !== "admin" ? (
-                                  <button
-                                    type="button"
-                                    disabled={isBusy}
-                                    onClick={() => handleImpersonate(rowUser)}
-                                    className={actionButtonClass()}
-                                  >
-                                    כניסה כמשתמש
-                                  </button>
-                                ) : null}
-
-                                {rowUser.role === "business" &&
-                                rowUser.businessId ? (
-                                  <button
-                                    type="button"
-                                    disabled={isBusy}
-                                    onClick={() => handleEnterAsAdmin(rowUser)}
-                                    className={actionButtonClass()}
-                                  >
-                                    כניסה לעסק
-                                  </button>
-                                ) : null}
-                              </div>
+                              <AdminRowMenu items={userActions(rowUser, status)} />
                             </td>
                           </tr>
                         );
@@ -535,6 +497,16 @@ function AdminUsers() {
                 </div>
               </>
             )}
+            {!loading && filtered.length > 0 ? (
+              <AdminPager
+                page={table.page}
+                pageCount={table.pageCount}
+                from={table.from}
+                to={table.to}
+                total={table.total}
+                onPage={setPage}
+              />
+            ) : null}
           </div>
         </section>
       </main>

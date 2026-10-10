@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import { MARKETPLACE_CATEGORIES } from "../../saas/logic";
 
 type Screenshot = { key: string; label: string; imageUrl: string };
@@ -193,17 +194,15 @@ export default function AdminSaasMarketplace() {
     <div dir="rtl" className="min-h-screen bg-[#f6f7fb]">
       <AdminHeader />
       <main className="mx-auto max-w-6xl px-4 py-8">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900">SaaS Marketplace</h1>
-            <p className="mt-1 text-sm font-semibold text-slate-500">
-              Published כאן לא מוסיף קישור לעמוד הבית. העמודים נשארים unlisted עד השקה נפרדת.
-            </p>
-          </div>
-          <button type="button" onClick={openNew} className="rounded-2xl bg-[#7C4DFF] px-4 py-3 text-sm font-black text-white">
-            Create SaaS product
-          </button>
-        </div>
+        <AdminPageHeader
+          title="SaaS Marketplace"
+          description="פרסום כאן לא מוסיף קישור לעמוד הבית. העמודים נשארים לא מפורסמים עד השקה נפרדת."
+          actions={
+            <button type="button" onClick={openNew} className="biz-btn">
+              מוצר חדש
+            </button>
+          }
+        />
         {notice ? <p className="mt-4 text-sm font-bold text-emerald-700">{notice}</p> : null}
         {error ? <p className="mt-4 text-sm font-bold text-rose-600">{error}</p> : null}
 

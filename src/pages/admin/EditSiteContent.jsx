@@ -1,5 +1,6 @@
 import React from "react";
 import "./EditSiteContent.css";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import { Link } from "react-router-dom";
 
 function EditSiteContent() {
@@ -18,15 +19,14 @@ function EditSiteContent() {
 
   return (
     <div className="edit-site-content">
-      <Link to="/admin/dashboard" className="back-dashboard">🔙 Back to Dashboard</Link>
-      <h1>✍️ Site Content Management</h1>
+      <AdminPageHeader title="תוכן האתר" description="עמודים שניתן לערוך באתר הציבורי." />
 
       <table className="content-table">
         <thead>
           <tr>
-            <th>Page Name</th>
-            <th>Path</th>
-            <th>Edit</th>
+            <th>עמוד</th>
+            <th>נתיב</th>
+            <th>עריכה</th>
           </tr>
         </thead>
         <tbody>
@@ -36,7 +36,7 @@ function EditSiteContent() {
               <td>{page.path}</td>
               <td>
                 {page.editable ? (
-                  <Link to={page.path} className="edit-btn">✏️ Edit</Link>
+                  <Link to={page.path} className="edit-btn">עריכה</Link>
                 ) : (
                   <span className="disabled">⛔</span>
                 )}

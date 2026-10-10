@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import API from "../../api";
 import { useLocaleDir } from "../../hooks/useLocaleDir";
 
@@ -104,37 +104,36 @@ export default function AdminLegalProfile() {
     <div className="min-h-screen bg-[#F7F8FA]" dir={dir}>
       <AdminHeader />
       <main className="mx-auto max-w-[900px] px-4 py-6">
-        <Link to="/admin/settings" className="text-sm font-black text-[#6D28D9]">Settings</Link>
-        <h1 className="mt-3 text-3xl font-black">Bizuply Legal Profile</h1>
-        <p className="mt-2 text-sm font-semibold text-slate-600">
-          These details are copied into each Partner Agreement when that version is generated. EIN / Tax ID is stored encrypted and appears in an agreement only when display is turned on.
-        </p>
+        <AdminPageHeader
+          title="פרופיל משפטי"
+          description="הפרטים האלה מועתקים לכל הסכם פרטנר בעת יצירת הגרסה. מספר המס מוצפן ומופיע בהסכם רק כשהתצוגה מופעלת."
+        />
         <form onSubmit={save} className="mt-5 grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 md:grid-cols-2" data-testid="legal-profile-form">
-          {field("Legal company name", "legalCompanyName")}
-          {field("Brand / display name", "brandName")}
-          {field("Entity type", "entityType")}
-          {field("Country of incorporation", "incorporationCountryCode")}
-          {field("State / jurisdiction of formation", "formationJurisdiction")}
-          {field("Company registration / Delaware file number", "registrationNumber")}
-          {field("Formation date", "formationDate")}
+          {field("שם חברה משפטי", "legalCompanyName")}
+          {field("שם מותג לתצוגה", "brandName")}
+          {field("סוג ישות", "entityType")}
+          {field("מדינת התאגדות", "incorporationCountryCode")}
+          {field("מדינה / סמכות התאגדות", "formationJurisdiction")}
+          {field("מספר רישום", "registrationNumber")}
+          {field("תאריך התאגדות", "formationDate")}
           {field("EIN", "ein")}
           <label className="block text-sm font-bold text-slate-800">
-            EIN / Tax ID
-            <input className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold" value={taxId} placeholder={profile.taxIdOnFile ? `On file ${profile.taxIdMasked}` : "Not stored"} onChange={(e) => setTaxId(e.target.value)} />
+            מספר מס
+            <input className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold" value={taxId} placeholder={profile.taxIdOnFile ? `שמור ${profile.taxIdMasked}` : "לא נשמר"} onChange={(e) => setTaxId(e.target.value)} />
           </label>
-          {field("Show tax ID in agreements", "displayTaxIdInAgreements", "checkbox")}
-          {field("Registered legal address", "registeredAddress")}
-          {field("Business address if different", "businessAddress")}
-          {field("Legal contact email", "legalEmail")}
-          {field("Legal contact phone", "legalPhone")}
-          {field("Authorized signatory full name", "signatoryName")}
-          {field("Authorized signatory title", "signatoryTitle")}
-          {field("Authorized signatory email", "signatoryEmail")}
-          {field("Authorized signatory phone", "signatoryPhone")}
-          {field("Governing law", "governingLaw")}
-          {field("Courts / jurisdiction", "courtsJurisdiction")}
+          {field("הצגת מספר מס בהסכמים", "displayTaxIdInAgreements", "checkbox")}
+          {field("כתובת משפטית רשומה", "registeredAddress")}
+          {field("כתובת עסק אם שונה", "businessAddress")}
+          {field("אימייל ליצירת קשר משפטי", "legalEmail")}
+          {field("טלפון ליצירת קשר משפטי", "legalPhone")}
+          {field("שם מורשה חתימה", "signatoryName")}
+          {field("תפקיד מורשה חתימה", "signatoryTitle")}
+          {field("אימייל מורשה חתימה", "signatoryEmail")}
+          {field("טלפון מורשה חתימה", "signatoryPhone")}
+          {field("הדין החל", "governingLaw")}
+          {field("בתי משפט / סמכות שיפוט", "courtsJurisdiction")}
           <div className="md:col-span-2">
-            <button className="rounded-xl bg-[#6D28D9] px-4 py-2 text-sm font-black text-white" type="submit">Save legal profile</button>
+            <button className="biz-btn" type="submit">שמירת פרופיל</button>
             {message ? <p className="mt-3 text-sm font-bold text-emerald-800">{message}</p> : null}
             {error ? <p className="mt-3 text-sm font-bold text-rose-800">{error}</p> : null}
           </div>

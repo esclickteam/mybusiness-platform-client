@@ -4,7 +4,6 @@ import {
   CheckCircle2,
   CreditCard,
   Package,
-  UserPlus,
   Users,
 } from "lucide-react";
 
@@ -13,6 +12,7 @@ import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import UpsellPicker from "../../components/pricing/UpsellPicker";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 
 const USER_TYPES = [
   { id: "business", label: "עסק / לקוח SaaS", needsPackage: true },
@@ -394,25 +394,19 @@ export default function AdminCreateUser() {
       <AdminHeader />
 
       <main className="mx-auto max-w-5xl px-4 py-8 md:px-8">
-        <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="flex items-center gap-2 text-2xl font-black text-slate-900">
-              <UserPlus className="h-6 w-6 text-[#7C4DFF]" />
-              יצירת משתמש
-            </h1>
-            <p className="mt-1 text-sm font-bold text-slate-500">
-              בחירת סוג משתמש, חבילה מהקטלוג (כולל אפסיילים), שיוך לשותף, ותשלום
-              ידני או Stripe
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigate("/admin/users")}
-            className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-600"
-          >
-            לרשימת משתמשים
-          </button>
-        </div>
+        <AdminPageHeader
+          title="יצירת משתמש"
+          description="בחירת סוג משתמש, חבילה מהקטלוג (כולל אפסיילים), שיוך לשותף, ותשלום ידני או Stripe."
+          actions={
+            <button
+              type="button"
+              onClick={() => navigate("/admin/users")}
+              className="biz-btn biz-btn-secondary"
+            >
+              לרשימת משתמשים
+            </button>
+          }
+        />
 
         {error ? (
           <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">

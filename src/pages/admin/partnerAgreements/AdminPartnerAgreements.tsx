@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../../../api";
 import AdminHeader from "../AdminsHeader";
+import AdminPageHeader from "../shell/AdminPageHeader";
 import {
   agreementError,
   fetchTerritoryAvailability,
@@ -102,19 +103,15 @@ export default function AdminPartnerAgreements() {
     <div className="min-h-screen bg-[#F7F8FA]">
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] space-y-6 px-4 py-6" dir={dir} lang={locale}>
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-black uppercase tracking-wide text-[#7C4DFF]">{copy.eyebrow}</p>
-            <h1 className="text-3xl font-black text-slate-900">{copy.title}</h1>
-            <p className="mt-1 max-w-2xl text-sm font-semibold text-slate-600">{copy.intro}</p>
-          </div>
-          <Link
-            to="/admin/partner-agreements/new"
-            className="rounded-2xl bg-[#7C4DFF] px-4 py-2.5 text-sm font-black text-white"
-          >
-            {copy.create}
-          </Link>
-        </div>
+        <AdminPageHeader
+          title={copy.title}
+          description={copy.intro}
+          actions={
+            <Link to="/admin/partner-agreements/new" className="biz-btn">
+              {copy.create}
+            </Link>
+          }
+        />
 
         {error ? <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">{error}</p> : null}
 

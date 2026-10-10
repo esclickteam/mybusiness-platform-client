@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 
 const KIND_LABEL = {
   package: "חבילת מערכת",
@@ -232,23 +233,15 @@ export default function AdminPlans() {
     <>
       <AdminHeader />
       <div className="px-3 py-5 sm:px-4 sm:py-7 md:px-8" dir="rtl">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">
-              תמחור חבילות ואפסיילים
-            </h1>
-            <p className="mt-1 text-sm text-slate-600">
-              שינוי ידני נשמר במונגו ומשפיע על הצ׳קאאוט ($ / USD).
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={load}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm hover:bg-slate-50"
-          >
-            רענון
-          </button>
-        </div>
+        <AdminPageHeader
+          title="חבילות ומחירים"
+          description="שינוי ידני נשמר ומשפיע על הצ׳קאאוט."
+          actions={
+            <button type="button" onClick={load} className="biz-btn biz-btn-secondary">
+              רענון
+            </button>
+          }
+        />
 
         {banner ? (
           <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">

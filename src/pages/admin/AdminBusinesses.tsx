@@ -5,6 +5,8 @@ import API from "../../api";
 import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
+import AdminPager, { paginateRows } from "./shell/AdminPager";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 
@@ -57,6 +59,9 @@ function AdminBusinesses() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [enteringId, setEnteringId] = useState<string | null>(null);
+  const [sortKey, setSortKey] = useState<"businessName" | "createdAt">("businessName");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -114,6 +119,24 @@ function AdminBusinesses() {
     });
   }, [businesses, search]);
 
+  const sorted = useMemo(() => {
+    const list = [...filtered];
+    list.sort((a, b) => {
+      const av = String(a[sortKey] || "").toLowerCase();
+      const bv = String(b[sortKey] || "").toLowerCase();
+      if (av < bv) return sortDir === "asc" ? -1 : 1;
+      if (av > bv) return sortDir === "asc" ? 1 : -1;
+      return 0;
+    });
+    return list;
+  }, [filtered, sortKey, sortDir]);
+
+  const table = paginateRows(sorted, page, 20);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, sortKey, sortDir]);
+
   async function handleEnterBusiness(business: AdminBusiness) {
     const label = business.businessName || "העסק";
     if (
@@ -157,29 +180,22 @@ function AdminBusinesses() {
         className="min-h-screen bg-[#f6f2fb] px-3 py-5 text-right text-slate-800 sm:px-4 sm:py-7 md:px-8"
       >
         <section className="mx-auto max-w-[1480px]">
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h1 className="text-2xl font-black text-purple-950 sm:text-3xl md:text-4xl">
-                עסקים במערכת
-              </h1>
-              <p className="mt-2 text-sm font-bold text-purple-950/55">
-                כניסה לכל עסק לפי הרשאות החבילה שלו (חודשי/שנתי או בניית אתר
-                בלבד).
-              </p>
-            </div>
+          <AdminPageHeader
+            title="עסקים"
+            description="כניסה לכל עסק לפי הרשאות החבילה שלו."
+          />
 
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="חיפוש לפי שם עסק, בעלים, אימייל..."
-                className="w-full rounded-2xl border border-purple-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 outline-none ring-purple-300 placeholder:text-slate-400 focus:ring-2 sm:w-80"
-              />
-              <span className="rounded-2xl bg-purple-100 px-4 py-3 text-center text-sm font-black text-purple-900">
-                {filtered.length} עסקים
-              </span>
-            </div>
+          <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="חיפוש לפי שם עסק, בעלים או אימייל"
+              className="biz-input sm:max-w-sm"
+            />
+            <span className="text-xs font-semibold text-[#667085]">
+              {filtered.length} עסקים
+            </span>
           </div>
 
           {error ? (
@@ -201,7 +217,7 @@ function AdminBusinesses() {
               <>
                 {/* Mobile cards */}
                 <div className="space-y-3 p-3 md:hidden">
-                  {filtered.map((biz) => {
+                  {table.rows.map((biz) => {
                     const phone = biz.phone || biz.owner?.phone;
 
                     return (
@@ -256,7 +272,7 @@ function AdminBusinesses() {
                           type="button"
                           disabled={enteringId === biz._id}
                           onClick={() => handleEnterBusiness(biz)}
-                          className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-xs font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                          className="biz-btn biz-btn-secondary mt-3 w-full"
                         >
                           {enteringId === biz._id ? "נכנס..." : "כניסה לעסק"}
                         </button>
@@ -270,17 +286,31 @@ function AdminBusinesses() {
                   <table className="min-w-full text-right">
                     <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
                       <tr>
-                        <th className="px-4 py-4">עסק</th>
+                        <th className="px-4 py-4">
+                          <button type="button" onClick={() => {
+                            if (sortKey === "businessName") setSortDir((d) => d === "asc" ? "desc" : "asc");
+                            else { setSortKey("businessName"); setSortDir("asc"); }
+                          }}>
+                            עסק
+                          </button>
+                        </th>
                         <th className="px-4 py-4">קטגוריה</th>
                         <th className="px-4 py-4">בעלים</th>
                         <th className="px-4 py-4">טלפון</th>
                         <th className="px-4 py-4">עיר</th>
-                        <th className="px-4 py-4">נוצר</th>
+                        <th className="px-4 py-4">
+                          <button type="button" onClick={() => {
+                            if (sortKey === "createdAt") setSortDir((d) => d === "asc" ? "desc" : "asc");
+                            else { setSortKey("createdAt"); setSortDir("desc"); }
+                          }}>
+                            נוצר
+                          </button>
+                        </th>
                         <th className="px-4 py-4">פעולה</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filtered.map((biz) => (
+                      {table.rows.map((biz) => (
                         <tr
                           key={biz._id}
                           className="border-t border-purple-100 text-sm font-bold text-slate-800"
@@ -344,7 +374,7 @@ function AdminBusinesses() {
                               type="button"
                               disabled={enteringId === biz._id}
                               onClick={() => handleEnterBusiness(biz)}
-                              className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                              className="biz-btn biz-btn-secondary"
                             >
                               {enteringId === biz._id
                                 ? "נכנס..."
@@ -358,6 +388,16 @@ function AdminBusinesses() {
                 </div>
               </>
             )}
+            {!loading && filtered.length > 0 ? (
+              <AdminPager
+                page={table.page}
+                pageCount={table.pageCount}
+                from={table.from}
+                to={table.to}
+                total={table.total}
+                onPage={setPage}
+              />
+            ) : null}
           </div>
         </section>
       </main>

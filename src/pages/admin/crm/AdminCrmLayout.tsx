@@ -1,8 +1,7 @@
 import React from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import { ADMIN_PAGE_SHELL_CLASS } from "../../../utils/adminResponsive";
-import AdminHeader from "../AdminsHeader";
+import AdminPageHeader from "../shell/AdminPageHeader";
 
 const TABS = [
   { to: "/admin/crm", label: "סקירה", end: true },
@@ -38,35 +37,15 @@ export default function AdminCrmLayout() {
   }, [socket]);
 
   return (
-    <div
-      className={
-        isWhatsApp
-          ? "flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-[#f6f2fb] px-3 py-3 text-right text-slate-800 sm:px-4 sm:py-4 md:px-8"
-          : ADMIN_PAGE_SHELL_CLASS
-      }
-      dir="rtl"
-      style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
-    >
-      <div className="shrink-0">
-        <AdminHeader />
-      </div>
-      <main
-        className={
-          isWhatsApp
-            ? "mx-auto mt-3 flex min-h-0 w-full flex-1 flex-col overflow-hidden"
-            : "mx-auto mt-5 max-w-[1480px]"
-        }
-      >
-        <div className={isWhatsApp ? "mb-2 hidden shrink-0 flex-col gap-3 lg:mb-3 lg:flex sm:flex-row sm:items-end sm:justify-between" : "mb-3 flex shrink-0 flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between"}>
-          <div>
-            <p className="text-xs font-black text-[#7C4DFF]">פאנל ניהול</p>
-            <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">CRM וניהול לקוחות</h1>
-            <p className="mt-1 text-sm font-bold text-slate-500">
-              ניהול לידים ולקוחות BizUply לכל אורך מחזור החיים. נפרד לחלוטין מ-CRM של העסק.
-            </p>
-          </div>
+    <div className={isWhatsApp ? "biz-admin-fill" : undefined}>
+      <div className={isWhatsApp ? "shrink-0 px-4 pt-3" : undefined}>
+        <div className={isWhatsApp ? "hidden lg:block" : undefined}>
+          <AdminPageHeader
+            title="CRM"
+            description="לידים ולקוחות של Bizuply, בנפרד מה-CRM של העסק."
+          />
         </div>
-        <nav className={isWhatsApp ? "mb-2 flex shrink-0 gap-2 overflow-x-auto pb-1" : "mb-3 flex shrink-0 gap-2 overflow-x-auto pb-1 sm:mb-5"}>
+        <nav className="mb-3 flex shrink-0 gap-1 overflow-x-auto border-b border-[#e6e8ee] pb-0">
           {TABS.map((tab) => (
             <NavLink
               key={tab.to}
@@ -74,10 +53,10 @@ export default function AdminCrmLayout() {
               end={tab.end}
               className={({ isActive }) =>
                 [
-                  "min-h-11 shrink-0 rounded-2xl px-4 py-2 text-sm font-black transition",
+                  "shrink-0 border-b-2 px-3 py-2 text-sm font-semibold transition",
                   isActive
-                    ? "bg-[#7C4DFF] text-white shadow-lg shadow-[#7C4DFF]/25"
-                    : "bg-white text-slate-600 border border-purple-100 hover:text-[#7C4DFF]",
+                    ? "border-[#6d4aff] text-[#5b3de6]"
+                    : "border-transparent text-[#667085] hover:text-[#1c1f27]",
                 ].join(" ")
               }
             >
@@ -85,6 +64,14 @@ export default function AdminCrmLayout() {
             </NavLink>
           ))}
         </nav>
+      </div>
+      <main
+        className={
+          isWhatsApp
+            ? "mx-auto flex min-h-0 w-full flex-1 flex-col overflow-hidden px-4 pb-4"
+            : "mx-auto max-w-[1480px]"
+        }
+      >
         {isWhatsApp ? (
           <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
             <Outlet />

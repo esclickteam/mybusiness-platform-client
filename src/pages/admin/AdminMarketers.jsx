@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 const emptyForm = {
@@ -80,13 +81,10 @@ export default function AdminMarketers() {
       <AdminHeader />
 
       <main className="mx-auto max-w-5xl px-4 py-8 md:px-8">
-        <h1 className="mb-2 text-2xl font-black text-slate-900">
-          משווקי קמפיינים
-        </h1>
-        <p className="mb-6 text-sm font-bold text-slate-500">
-          משווק יכול לפתוח לקוחות עם CRM וניהול קמפיינים בלבד, ולהיכנס לחשבונות
-          שלהם לביצוע פעולות.
-        </p>
+        <AdminPageHeader
+          title="משווקי קמפיינים"
+          description="משווק יכול לפתוח לקוחות עם CRM וניהול קמפיינים בלבד, ולהיכנס לחשבונות שלהם לביצוע פעולות."
+        />
 
         {message ? (
           <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-800">

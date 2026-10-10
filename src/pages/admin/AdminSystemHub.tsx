@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
-import { CrmCard } from "./crm/AdminCrmUi";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import { ADMIN_PAGE_SHELL_CLASS } from "../../utils/adminResponsive";
 
 const LINKS = [
@@ -26,25 +26,20 @@ export default function AdminSystemHub() {
     <div className={ADMIN_PAGE_SHELL_CLASS} dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] space-y-4 px-3 py-6 sm:px-6">
-        <div>
-          <p className="text-xs font-black text-[#7C4DFF]">ניהול מערכת</p>
-          <h1 className="text-2xl font-black text-purple-950">כלים טכניים</h1>
-          <p className="font-bold text-slate-500">
-            קיצור דרך לאותם מסכים שמופיעים גם בתפריט האדמין הראשי.
-          </p>
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <AdminPageHeader
+          title="כלים"
+          description="קיצורי דרך למסכי הניהול."
+        />
+        <div className="biz-shortcut-grid">
           {LINKS.map((item) => (
             <button
               key={item.to}
               type="button"
               onClick={() => navigate(item.to)}
-              className="text-right"
+              className="biz-shortcut"
             >
-              <CrmCard>
-                <h2 className="text-lg font-black text-purple-950">{item.title}</h2>
-                <p className="mt-1 font-bold text-slate-600">{item.text}</p>
-              </CrmCard>
+              <strong>{item.title}</strong>
+              <small>{item.text}</small>
             </button>
           ))}
         </div>
