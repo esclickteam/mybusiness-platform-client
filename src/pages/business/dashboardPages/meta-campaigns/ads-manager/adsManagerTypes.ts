@@ -107,6 +107,9 @@ export type AdSetDraft = {
   excludedAudiences: AdSetInterest[];
   targetingLoaded: boolean;
   targetingRaw: Record<string, unknown> | null;
+  /** Audience restored from a failed publish because Meta has no ad set yet. */
+  recoveredDraft?: boolean;
+  recoveredPublishId?: string;
   suggestAudience: boolean;
   furtherLimitReach: boolean;
   advertiserId: string;

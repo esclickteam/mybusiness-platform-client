@@ -141,6 +141,8 @@ function mapAdSet(
       !(adSet.publisherPlatforms || campaign.publisherPlatforms || []).length,
     targetingLoaded,
     targetingRaw: adSet.targetingRaw || null,
+    recoveredDraft: adSet.recoveredDraft === true,
+    recoveredPublishId: adSet.recoveredPublishId || "",
     startDate: start.date || "",
     startTime: start.time || "",
     endDateEnabled: Boolean(end.date),

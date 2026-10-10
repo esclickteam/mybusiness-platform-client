@@ -13,6 +13,7 @@ type Props = {
   gender: AdsManagerGender;
   estimateLoading?: boolean;
   estimatePending?: boolean;
+  onRetryEstimate?: () => void;
 };
 
 function ageLabel(ageMin: number | null, ageMax: number | null, missing: string) {
@@ -33,6 +34,7 @@ export default function AdSetInsightsSidebar({
   gender,
   estimateLoading = false,
   estimatePending = false,
+  onRetryEstimate,
 }: Props) {
   const { t } = useTranslation();
   const cc = (key: string, opts?: Record<string, unknown>) =>
@@ -95,11 +97,20 @@ export default function AdSetInsightsSidebar({
                 : cc("audienceNarrowMsg")}
           </p>
         ) : (
-          <p className="text-[13px] leading-snug text-[#65676B]">
+          <div className="text-[13px] leading-snug text-[#65676B]">
             {estimateLoading
               ? cc("updating")
               : estimate.message || cc("estimateUnavailable")}
-          </p>
+            {!estimateLoading && onRetryEstimate ? (
+              <button
+                type="button"
+                className="mt-2 block text-[13px] font-semibold text-[#1877F2]"
+                onClick={onRetryEstimate}
+              >
+                {cc("estimateRetry")}
+              </button>
+            ) : null}
+          </div>
         )}
 
         {hasEstimate ? (

@@ -66,6 +66,11 @@ export function mergeLoadedTargeting(
       targeting.age_min = adSet.ageMin;
       if (adSet.ageMax != null && adSet.ageMax < 65) targeting.age_max = adSet.ageMax;
       else delete targeting.age_max;
+      delete targeting.age_range;
+    } else {
+      targeting.age_range = [adSet.ageMin, adSet.ageMax];
+      targeting.age_min = Math.min(18, Number(adSet.ageMin) || 18);
+      targeting.age_max = 65;
     }
   }
   if (labels.has("changeGender")) {
