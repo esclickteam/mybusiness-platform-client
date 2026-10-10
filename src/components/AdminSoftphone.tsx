@@ -1944,6 +1944,10 @@ export default function AdminSoftphone({
 
   const endZeroPress = useCallback(() => {
     clearZeroTimer();
+    if (!zeroLongPressRef.current) return;
+    window.setTimeout(() => {
+      zeroLongPressRef.current = false;
+    }, 700);
   }, [clearZeroTimer]);
 
   // Physical keyboard dialing while softphone dial pad is open.
