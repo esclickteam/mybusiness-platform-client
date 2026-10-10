@@ -41,6 +41,7 @@ vi.mock("../../../../../api/metaCampaignsApi", () => ({
   updateMetaCampaign: vi.fn(),
   updateMetaAdSet: vi.fn(),
   updateMetaAd: vi.fn(),
+  saveMetaEditorDraft: vi.fn(),
   duplicateMetaCampaign: vi.fn(),
 }));
 

@@ -140,6 +140,10 @@ export type AdDraft = {
   websiteUrl: string;
   displayLink: string;
   instantFormId: string;
+  instantFormName?: string;
+  formPageId?: string;
+  /** True only when this form id is already on a Meta creative. */
+  formLinkedOnMeta?: boolean;
   formTab: "active" | "archived";
   requireSmsVerification: boolean;
   requireWorkEmail: boolean;
@@ -167,7 +171,8 @@ export type AdsManagerState = {
   mode: AdsManagerMode;
   selectedLevel: AdsManagerLevel;
   selectedId: string;
-  saveStatus: "saving" | "saved" | "error";
+  saveStatus: "unsaved" | "saving" | "saved" | "error";
+  publishRecordId?: string;
   lastSavedAt: string | null;
   campaign: CampaignDraft;
   adSets: AdSetDraft[];

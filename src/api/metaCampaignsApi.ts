@@ -53,6 +53,9 @@ export type MetaCampaign = {
   effectiveStatus: string;
   deliveryStatus?: string;
   campaignEffectiveStatus?: string;
+  editorDraft?: { ads?: Array<Record<string, string>> } | null;
+  publishRecordId?: string;
+  creativeLinkedOnMeta?: boolean;
   objective: string;
   dailyBudget: number;
   lifetimeBudget: number;
@@ -745,6 +748,40 @@ export async function updateMetaAd(
     { ...payload, businessId },
     withBusiness(businessId)
   );
+  return data;
+}
+
+export type MetaEditorDraftSaveResult = {
+  success: boolean;
+  publishId: string;
+  editorDraft?: { ads?: Array<Record<string, string>> } | null;
+  publishStatus?: string;
+  displayStatus?: string;
+  metaCampaignId?: string;
+  metaAdSetId?: string;
+  metaCreativeId?: string;
+  metaAdId?: string;
+  creativeOnMeta?: boolean;
+  error?: string;
+};
+
+export async function saveMetaEditorDraft(
+  businessId: string,
+  body: {
+    publishId?: string;
+    metaCampaignId?: string;
+    localName?: string;
+    objective?: string;
+    editorDraft: unknown;
+  }
+) {
+  const path = body.publishId
+    ? `/meta-campaigns/publishes/${body.publishId}/editor-draft`
+    : "/meta-campaigns/publishes/editor-draft";
+  const { data } = await API.post<MetaEditorDraftSaveResult>(path, {
+    businessId,
+    ...body,
+  });
   return data;
 }
 

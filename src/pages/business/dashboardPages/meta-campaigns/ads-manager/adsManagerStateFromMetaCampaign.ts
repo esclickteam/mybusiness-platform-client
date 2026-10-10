@@ -15,6 +15,7 @@ import type {
   CampaignDraft,
   CampaignObjective,
 } from "./adsManagerTypes";
+import { applyEditorDraft } from "./editorDraft";
 
 function splitDateTime(value?: string | null): { date: string; time: string } {
   if (!value) return { date: "", time: "" };
@@ -295,7 +296,7 @@ export function adsManagerStateFromMetaCampaign(
           ),
         ];
 
-  return {
+  const loaded: AdsManagerState = {
     ...base,
     sessionMode: "edit",
     mode: "edit",
@@ -308,4 +309,8 @@ export function adsManagerStateFromMetaCampaign(
     ads,
     audienceEstimate: { lower: 0, upper: 0, spectrum: 0.5, ready: false },
   };
+  return applyEditorDraft(loaded, campaign.editorDraft, {
+    creativeOnMeta: campaign.creativeLinkedOnMeta === true,
+    publishRecordId: campaign.publishRecordId,
+  });
 }

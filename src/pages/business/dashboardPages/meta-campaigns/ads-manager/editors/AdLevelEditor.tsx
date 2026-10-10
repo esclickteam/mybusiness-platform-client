@@ -277,6 +277,21 @@ export default function AdLevelEditor({
               ))}
             </div>
 
+            {ad.instantFormId ? (
+              <p className="mt-3 text-[12px] font-semibold text-[#65676B]">
+                {ad.formLinkedOnMeta ? c("formLinkedOnMeta") : c("formSavedInDraft")}
+              </p>
+            ) : null}
+            {ad.instantFormId &&
+            ad.facebookPageId &&
+            !formsLoading &&
+            forms.length > 0 &&
+            !forms.some((form) => form.id === ad.instantFormId) ? (
+              <p className="mt-2 text-[12px] font-semibold text-[#B45309]">
+                {c("formPageMismatch")}
+              </p>
+            ) : null}
+
             <div className="mt-2 max-h-56 space-y-1 overflow-y-auto">
               {formsLoading ? (
                 <p className="inline-flex w-full items-center justify-center gap-2 px-2 py-6 text-[13px] font-semibold text-[#65676B]">
@@ -314,7 +329,14 @@ export default function AdLevelEditor({
                     <button
                       key={form.id}
                       type="button"
-                      onClick={() => onChange({ instantFormId: form.id })}
+                      onClick={() =>
+                        onChange({
+                          instantFormId: form.id,
+                          instantFormName: form.name,
+                          formPageId: ad.facebookPageId,
+                          formLinkedOnMeta: false,
+                        })
+                      }
                       className={[
                         "flex w-full items-center justify-between rounded-md border px-3 py-2.5 text-left transition",
                         selected
@@ -562,7 +584,12 @@ export default function AdLevelEditor({
         pageName={ad.facebookPageName}
         onClose={() => setCreateFormOpen(false)}
         onCreated={async (formId) => {
-          onChange({ instantFormId: formId, formTab: "active" });
+          onChange({
+            instantFormId: formId,
+            formPageId: ad.facebookPageId,
+            formLinkedOnMeta: false,
+            formTab: "active",
+          });
           await onFormsRefresh?.();
         }}
       />
