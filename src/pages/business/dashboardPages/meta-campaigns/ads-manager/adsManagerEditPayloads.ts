@@ -155,24 +155,36 @@ export function buildAdUpdateFromDiff(
   const payload: Record<string, unknown> = {};
   if (relevant.some((row) => row.labelKey === "changeAdName")) payload.name = ad.name.trim();
   const creativeChanged = relevant.some((row) =>
-    ["changeHeadline", "changePrimaryText", "changeCta", "changeMedia", "changeLeadForm", "changeWebsite"].includes(
-      row.labelKey
-    )
+    [
+      "changeHeadline",
+      "changeDescription",
+      "changePrimaryText",
+      "changeCta",
+      "changeMedia",
+      "changeLeadForm",
+      "changeWebsite",
+      "changeFacebookPage",
+      "changeInstagram",
+    ].includes(row.labelKey)
   );
   if (creativeChanged) {
-    payload.primaryText = ad.primaryText;
-    payload.headline = ad.headline;
-    payload.description = ad.description;
-    payload.callToAction = ad.callToAction;
-    payload.link = ad.websiteUrl;
-    payload.displayLink = ad.displayLink;
-    payload.pageId = ad.facebookPageId;
-    payload.instagramUserId = ad.instagramAccountId.startsWith("ig_")
-      ? undefined
-      : ad.instagramAccountId;
-    payload.leadFormId = ad.instantFormId;
-    payload.imageHash = ad.imageHash;
-    payload.videoId = ad.videoId;
+    const put = (key: string, value: string) => {
+      const trimmed = String(value || "").trim();
+      if (trimmed) payload[key] = trimmed;
+    };
+    put("primaryText", ad.primaryText);
+    put("headline", ad.headline);
+    put("description", ad.description);
+    put("callToAction", ad.callToAction);
+    put("link", ad.websiteUrl);
+    put("displayLink", ad.displayLink);
+    put("pageId", ad.facebookPageId);
+    if (ad.instagramAccountId && !ad.instagramAccountId.startsWith("ig_")) {
+      put("instagramUserId", ad.instagramAccountId);
+    }
+    put("leadFormId", ad.instantFormId);
+    put("imageHash", ad.imageHash);
+    put("videoId", ad.videoId);
   }
   return Object.keys(payload).length ? payload : null;
 }

@@ -12,6 +12,7 @@ import {
   publishMetaCampaign,
   retryMetaPublish,
   syncMetaPublish,
+  saveMetaEditorDraft,
   updateMetaAd,
   updateMetaAdSet,
   updateMetaCampaign,
@@ -38,14 +39,18 @@ import { adsManagerStateFromMetaCampaign } from "./adsManagerStateFromMetaCampai
 import {
   diffAdsManagerState,
   isAdsManagerDirty,
-  type AdsManagerChange,
 } from "./adsManagerDiff";
 import {
   buildAdSetUpdateFromDiff,
   buildAdUpdateFromDiff,
   buildCampaignUpdateFromDiff,
 } from "./adsManagerEditPayloads";
-import AdsManagerChangeReviewModal from "./AdsManagerChangeReviewModal";
+import {
+  applyEditorDraft,
+  buildEditorDraft,
+  editorDraftHasUnstoredImage,
+  isRealMetaObjectId,
+} from "./editorDraft";
 import type { AdsManagerState } from "./adsManagerTypes";
 import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
 import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
@@ -86,6 +91,7 @@ export default function MetaAdsManagerPage() {
     setAudienceEstimate,
     applyCreateChoice,
     replaceState,
+    markServerSaved,
     canPublish,
   } = ctrl;
 
@@ -110,10 +116,11 @@ export default function MetaAdsManagerPage() {
     Boolean(aiHandoff?.proposal || isEditSession)
   );
   const [editLoading, setEditLoading] = useState(isEditSession);
-  const [pendingChanges, setPendingChanges] = useState<AdsManagerChange[]>([]);
-  const [reviewOpen, setReviewOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
+  const publishRecordIdRef = useRef("");
 
   const loadLeadForms = async (pageId?: string | null) => {
     if (!businessId || !pageId || pageId.startsWith("page_")) {
@@ -153,6 +160,8 @@ export default function MetaAdsManagerPage() {
         });
         replaceState(hydrated);
         baselineRef.current = hydrated;
+        publishRecordIdRef.current = hydrated.publishRecordId || "";
+        setServerAck(false);
       } catch (error: unknown) {
         const err = error as { response?: { data?: { error?: string } }; message?: string };
         toast.error(
@@ -169,16 +178,25 @@ export default function MetaAdsManagerPage() {
   }, [businessId, campaignId, isEditSession, navigate, replaceState, t]);
 
   const dirty = isAdsManagerDirty(baselineRef.current, state);
+  const reviewErrors = useMemo(
+    () => (state.mode === "review" ? validateAdsManagerClient(state) : []),
+    [state]
+  );
 
   useEffect(() => {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      if (!isEditSession || !dirty) return;
+      if (!dirty) return;
       event.preventDefault();
       event.returnValue = "";
     };
     window.addEventListener("beforeunload", onBeforeUnload);
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [dirty, isEditSession]);
+  }, [dirty]);
+
+  useEffect(() => {
+    if (isEditSession || !campaignStarted || baselineRef.current) return;
+    baselineRef.current = state;
+  }, [campaignStarted, isEditSession, state]);
 
   useEffect(() => {
     if (!businessId) return;
@@ -465,9 +483,15 @@ export default function MetaAdsManagerPage() {
       }
 
       const resumeId =
-        publishResult?.id && publishResult.publishStatus !== "submitted"
+        publishRecordIdRef.current ||
+        (publishResult?.id && publishResult.publishStatus !== "submitted"
           ? publishResult.id
-          : "";
+          : "");
+      if (isEditSession && !resumeId) {
+        toast.error(c("noPublishRecord"));
+        return;
+      }
+      if (resumeId) payload.resumePublishId = resumeId;
       if (
         publishResult?.metaAdId &&
         publishResult.publishStatus === "submitted"
@@ -561,59 +585,110 @@ export default function MetaAdsManagerPage() {
     }
   };
 
-  const openChangeReview = () => {
-    const clientErrors = validateAdsManagerClient(state);
-    if (clientErrors.length) {
-      toast.error(clientErrors[0]);
-      setMode("review");
-      return;
+  const persistEditorDraft = async (snapshot: AdsManagerState) => {
+    if (!businessId) throw new Error(c("saveFailed"));
+    const result = await saveMetaEditorDraft(businessId, {
+      publishId: publishRecordIdRef.current || snapshot.publishRecordId || undefined,
+      metaCampaignId: isEditSession ? campaignId : undefined,
+      localName: snapshot.campaign.name,
+      objective: snapshot.campaign.objective,
+      editorDraft: buildEditorDraft(snapshot),
+    });
+    if (!result?.success || !result.publishId) {
+      throw new Error(result?.error || c("saveFailed"));
     }
-    if (!baselineRef.current) return;
-    const changes = diffAdsManagerState(baselineRef.current, state);
-    if (!changes.length) {
-      toast.success(c("noChanges"));
-      return;
+    publishRecordIdRef.current = result.publishId;
+    return result;
+  };
+
+  const reloadSavedState = async (snapshot: AdsManagerState) => {
+    if (!businessId || !campaignId) {
+      const next: AdsManagerState = {
+        ...snapshot,
+        publishRecordId: publishRecordIdRef.current || snapshot.publishRecordId,
+        saveStatus: "saved",
+        lastSavedAt: new Date().toISOString(),
+      };
+      replaceState(next);
+      baselineRef.current = next;
+      return next;
     }
-    setPendingChanges(changes);
-    setReviewOpen(true);
+    const readBack = await getMetaCampaign(businessId, campaignId);
+    if (!readBack?.campaign) return snapshot;
+    const hydrated = applyEditorDraft(
+      adsManagerStateFromMetaCampaign(readBack.campaign, {
+        currency: readBack.currency,
+      }),
+      buildEditorDraft(snapshot),
+      {
+        creativeOnMeta: readBack.campaign.creativeLinkedOnMeta === true,
+        publishRecordId: publishRecordIdRef.current || snapshot.publishRecordId,
+      }
+    );
+    replaceState(hydrated);
+    baselineRef.current = hydrated;
+    return hydrated;
+  };
+
+  const handleSaveDraft = async () => {
+    if (!businessId) return;
+    try {
+      setPublishing(true);
+      const result = await persistEditorDraft(state);
+      await reloadSavedState({ ...state, publishRecordId: result.publishId });
+      markServerSaved(result.publishId);
+      setServerAck(true);
+      if (editorDraftHasUnstoredImage(state)) toast.error(c("imageNotStored"));
+      else toast.success(c("draftSavedServer"));
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } }; message?: string };
+      toast.error(err.response?.data?.error || err.message || c("saveFailed"));
+    } finally {
+      setPublishing(false);
+    }
   };
 
   const handleSaveChanges = async () => {
-    if (!businessId || !campaignId || !baselineRef.current) return;
-    const changes = pendingChanges.length
-      ? pendingChanges
-      : diffAdsManagerState(baselineRef.current, state);
+    if (!businessId) return;
+    const snapshot = state;
+    const changes = baselineRef.current
+      ? diffAdsManagerState(baselineRef.current, snapshot)
+      : [];
     try {
       setPublishing(true);
-      const campaignPatch = buildCampaignUpdateFromDiff(state, changes);
-      if (campaignPatch) {
-        await updateMetaCampaign(businessId, campaignId, campaignPatch);
-      }
-      for (const adSet of state.adSets) {
-        if (adSet.recoveredDraft) {
-          if (buildAdSetUpdateFromDiff(adSet, state.campaign, changes)) {
-            toast.error(c("recoveredDraftNote"));
+      const draftResult = await persistEditorDraft(snapshot);
+      let metaError = "";
+      if (isEditSession && campaignId) {
+        try {
+          const campaignPatch = buildCampaignUpdateFromDiff(snapshot, changes);
+          if (campaignPatch && isRealMetaObjectId(campaignId)) {
+            await updateMetaCampaign(businessId, campaignId, campaignPatch);
           }
-          continue;
+          for (const adSet of snapshot.adSets) {
+            if (!isRealMetaObjectId(adSet.id) || adSet.recoveredDraft) continue;
+            const patch = buildAdSetUpdateFromDiff(adSet, snapshot.campaign, changes);
+            if (patch) await updateMetaAdSet(businessId, adSet.id, patch);
+          }
+          for (const ad of snapshot.ads) {
+            if (!isRealMetaObjectId(ad.id)) continue;
+            const patch = buildAdUpdateFromDiff(ad, changes);
+            if (patch) await updateMetaAd(businessId, ad.id, patch);
+          }
+        } catch (error: unknown) {
+          const err = error as { response?: { data?: { error?: string } }; message?: string };
+          metaError = err.response?.data?.error || err.message || c("saveFailed");
         }
-        const patch = buildAdSetUpdateFromDiff(adSet, state.campaign, changes);
-        if (patch) await updateMetaAdSet(businessId, adSet.id, patch);
       }
-      for (const ad of state.ads) {
-        const patch = buildAdUpdateFromDiff(ad, changes);
-        if (patch) await updateMetaAd(businessId, ad.id, patch);
+      await reloadSavedState({ ...snapshot, publishRecordId: draftResult.publishId });
+      markServerSaved(draftResult.publishId);
+      setServerAck(true);
+      if (editorDraftHasUnstoredImage(snapshot)) toast.error(c("imageNotStored"));
+      if (metaError) {
+        toast.error(c("metaUpdateFailedDraftKept", { error: metaError }));
+        return;
       }
-      const readBack = await getMetaCampaign(businessId, campaignId);
-      if (readBack?.campaign) {
-        const hydrated = adsManagerStateFromMetaCampaign(readBack.campaign, {
-          currency: readBack.currency,
-        });
-        replaceState(hydrated);
-        baselineRef.current = hydrated;
-      }
-      setReviewOpen(false);
-      setPendingChanges([]);
-      toast.success(c("saveSuccess"));
+      if (!draftResult.metaAdId) toast.success(c("draftSavedNotOnMeta"));
+      else toast.success(c("saveSuccess"));
     } catch (error: unknown) {
       const err = error as { response?: { data?: { error?: string } }; message?: string };
       toast.error(err.response?.data?.error || err.message || c("saveFailed"));
@@ -839,41 +914,48 @@ export default function MetaAdsManagerPage() {
           ))}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
+          {dirty ? (
+            <span className="rounded-full bg-[#FFF8E5] px-2 py-1 text-[12px] font-bold text-[#8A6D1D]">
+              {c("unsavedChanges")}
+            </span>
+          ) : null}
           {isEditSession ? (
-            <button type="button" className={metaBtnSecondary} onClick={requestLeave}>
-              {c("back")}
-            </button>
+            <span className="rounded-full bg-[#E4E6EB] px-2 py-1 text-[12px] font-bold text-[#050505]">
+              {c("campaignStatusLabel")}: {state.campaign.status || "DRAFT"}
+            </span>
           ) : null}
           <button
             type="button"
-            className={
-              state.mode === "edit" ? metaBtnPrimary : metaBtnSecondary
-            }
+            className={metaBtnSecondary}
+            disabled={publishing}
+            onClick={() => void handleSaveDraft()}
+          >
+            {publishing ? c("savingDraft") : c("saveDraft")}
+          </button>
+          <button
+            type="button"
+            className={metaBtnSecondary}
+            disabled={publishing}
+            onClick={() => void handleSaveChanges()}
+          >
+            {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {publishing ? c("savingChanges") : c("saveChanges")}
+          </button>
+          <button
+            type="button"
+            className={state.mode === "edit" ? metaBtnPrimary : metaBtnSecondary}
             onClick={() => setMode("edit")}
           >
             {c("edit")}
           </button>
           <button
             type="button"
-            className={
-              state.mode === "review" ? metaBtnPrimary : metaBtnSecondary
-            }
+            className={state.mode === "review" ? metaBtnPrimary : metaBtnSecondary}
             onClick={() => setMode("review")}
           >
             {c("review")}
           </button>
-          {isEditSession ? (
-            <button
-              type="button"
-              className={metaBtnPrimary}
-              disabled={publishing || !canPublish || !connected}
-              onClick={openChangeReview}
-            >
-              {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              {publishing ? c("savingChanges") : c("saveChanges")}
-            </button>
-          ) : (
           <button
             type="button"
             className={metaBtnPrimary}
@@ -886,14 +968,16 @@ export default function MetaAdsManagerPage() {
                   ? c("publishTitleReady")
                   : c("publishTitleBlocked")
             }
-            onClick={() => void handlePublish()}
+            onClick={() => setPublishConfirmOpen(true)}
           >
-            {publishing ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : null}
-            {publishing ? c("publishing") : c("publish")}
+            {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {publishing ? c("publishing") : c("publishAction")}
           </button>
-          )}
+          {isEditSession ? (
+            <button type="button" className={metaBtnSecondary} onClick={requestLeave}>
+              {c("back")}
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -979,17 +1063,83 @@ export default function MetaAdsManagerPage() {
                     {selectedAd?.name}
                   </dd>
                 </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewPrimaryText")}</dt>
+                  <dd className="max-w-[60%] text-end font-semibold text-[#050505]">
+                    {selectedAd?.primaryText || c("notSet")}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewHeadline")}</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAd?.headline || c("notSet")}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewDescription")}</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAd?.description || c("notSet")}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewCta")}</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAd?.callToAction || c("notSet")}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewMedia")}</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAd?.imageHash || selectedAd?.videoId || c("notSet")}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewDestination")}</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAd?.websiteUrl || c("notSet")}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewPage")}</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAd?.facebookPageName || selectedAd?.facebookPageId || c("notSet")}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">{c("reviewInstagram")}</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAd?.instagramAccountId || c("notSet")}
+                  </dd>
+                </div>
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#65676B]">{c("reviewInstantForm")}</dt>
-                  <dd className="font-semibold text-[#050505]">
-                    {liveForms.find((f) => f.id === selectedAd?.instantFormId)
-                      ?.name || c("notSelected")}
+                  <dd className="text-end font-semibold text-[#050505]">
+                    {liveForms.find((f) => f.id === selectedAd?.instantFormId)?.name ||
+                      selectedAd?.instantFormName ||
+                      c("notSelected")}
+                    {selectedAd?.instantFormId ? (
+                      <span className="mt-1 block text-[12px] font-semibold text-[#65676B]">
+                        {selectedAd.formLinkedOnMeta
+                          ? c("formLinkedOnMeta")
+                          : c("formSavedInDraft")}
+                      </span>
+                    ) : null}
                   </dd>
                 </div>
               </dl>
-              {!canPublish ? (
-                <p className="mt-4 rounded-md border border-[#F5D78E] bg-[#FFF8E5] px-3 py-2 text-[13px]">
-                  {c("reviewBlocked")}
+              {reviewErrors.length ? (
+                <div className="mt-4 rounded-md border border-[#F5D78E] bg-[#FFF8E5] px-3 py-2 text-[13px]">
+                  <p className="font-bold text-[#8A6D1D]">{c("reviewMissing")}</p>
+                  <ul className="mt-2 list-disc space-y-1 ps-5">
+                    {reviewErrors.map((error) => (
+                      <li key={error}>{error}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {!isRealMetaObjectId(selectedAd?.creativeId) ? (
+                <p className="mt-3 text-[13px] font-semibold text-[#8A6D1D]">
+                  {c("adNotOnMeta")}
                 </p>
               ) : null}
             </div>
@@ -1092,15 +1242,15 @@ export default function MetaAdsManagerPage() {
 
       <div className="flex items-center justify-between gap-3 border-t border-[#CED0D4] bg-white px-4 py-2 text-[12px] text-[#65676B]">
         <div className="inline-flex items-center gap-1.5 font-semibold">
-          {state.saveStatus === "saved" ? (
+          {dirty ? (
+            c("unsavedChanges")
+          ) : serverAck ? (
             <>
               <Check className="h-3.5 w-3.5 text-[#31A24C]" />
-              {c("draftSaved")}
+              {c("serverConfirmedSave")}
             </>
-          ) : state.saveStatus === "saving" ? (
-            c("draftSaving")
           ) : (
-            c("draftFailed")
+            c("notYetSaved")
           )}
         </div>
         <span>
@@ -1110,13 +1260,58 @@ export default function MetaAdsManagerPage() {
         </span>
       </div>
 
-      <AdsManagerChangeReviewModal
-        open={reviewOpen}
-        saving={publishing}
-        changes={pendingChanges}
-        onCancel={() => setReviewOpen(false)}
-        onConfirm={() => void handleSaveChanges()}
-      />
+      {publishConfirmOpen ? (
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-4 sm:items-center">
+          <div className="w-full max-w-lg rounded-xl bg-white p-5 shadow-2xl" dir="auto">
+            <h2 className="text-[18px] font-black">{c("publishConfirmTitle")}</h2>
+            <p className="mt-2 text-[14px] font-semibold text-[#65676B]">{c("publishConfirmBody")}</p>
+            <dl className="mt-4 space-y-2 text-[14px]">
+              <div className="flex justify-between gap-3">
+                <dt className="text-[#65676B]">{c("publishConfirmBudget")}</dt>
+                <dd className="font-bold">{state.campaign.currency} {state.campaign.budgetAmount}</dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-[#65676B]">{c("publishConfirmAudience")}</dt>
+                <dd className="text-end font-bold">
+                  {selectedAdSet?.locationsSummary || c("notSet")} · {selectedAdSet?.ageMin ?? "—"}-{selectedAdSet?.ageMax ?? "—"}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-[#65676B]">{c("publishConfirmPlacements")}</dt>
+                <dd className="font-bold">
+                  {selectedAdSet?.advantagePlacements ? "Advantage+" : c("notSet")}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-[#65676B]">{c("publishConfirmForm")}</dt>
+                <dd className="text-end font-bold">
+                  {selectedAd?.instantFormName || selectedAd?.instantFormId || c("notSelected")}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-3">
+                <dt className="text-[#65676B]">{c("publishConfirmCreative")}</dt>
+                <dd className="text-end font-bold">{selectedAd?.headline || c("notSet")}</dd>
+              </div>
+            </dl>
+            <div className="mt-5 flex flex-wrap justify-end gap-2">
+              <button type="button" className={metaBtnSecondary} onClick={() => setPublishConfirmOpen(false)}>
+                {c("cancel")}
+              </button>
+              <button
+                type="button"
+                className={metaBtnPrimary}
+                disabled={publishing}
+                onClick={() => {
+                  setPublishConfirmOpen(false);
+                  void handlePublish();
+                }}
+              >
+                {c("confirmPublish")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       {leaveOpen ? (
         <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
           <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-2xl">

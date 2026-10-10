@@ -200,6 +200,14 @@ export function diffAdsManagerState(
       entityId: ad.id,
     });
     pushChange(changes, {
+      labelKey: "changeDescription",
+      oldValue: text(prev.description),
+      newValue: text(ad.description),
+      spendImpact: false,
+      entity: "ad",
+      entityId: ad.id,
+    });
+    pushChange(changes, {
       labelKey: "changePrimaryText",
       oldValue: text(prev.primaryText),
       newValue: text(ad.primaryText),
@@ -235,6 +243,22 @@ export function diffAdsManagerState(
       labelKey: "changeWebsite",
       oldValue: text(prev.websiteUrl),
       newValue: text(ad.websiteUrl),
+      spendImpact: false,
+      entity: "ad",
+      entityId: ad.id,
+    });
+    pushChange(changes, {
+      labelKey: "changeFacebookPage",
+      oldValue: text(prev.facebookPageId),
+      newValue: text(ad.facebookPageId),
+      spendImpact: false,
+      entity: "ad",
+      entityId: ad.id,
+    });
+    pushChange(changes, {
+      labelKey: "changeInstagram",
+      oldValue: text(prev.instagramAccountId),
+      newValue: text(ad.instagramAccountId),
       spendImpact: false,
       entity: "ad",
       entityId: ad.id,

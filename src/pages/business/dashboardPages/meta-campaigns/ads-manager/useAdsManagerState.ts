@@ -77,15 +77,19 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const markDirty = useCallback(() => {
-    setState((prev) => ({ ...prev, saveStatus: "saving" }));
     if (saveTimer.current) clearTimeout(saveTimer.current);
-    saveTimer.current = setTimeout(() => {
-      setState((prev) => ({
-        ...prev,
-        saveStatus: "saved",
-        lastSavedAt: new Date().toISOString(),
-      }));
-    }, 650);
+    setState((prev) =>
+      prev.saveStatus === "unsaved" ? prev : { ...prev, saveStatus: "unsaved" }
+    );
+  }, []);
+
+  const markServerSaved = useCallback((publishRecordId?: string) => {
+    setState((prev) => ({
+      ...prev,
+      saveStatus: "saved",
+      lastSavedAt: new Date().toISOString(),
+      ...(publishRecordId ? { publishRecordId } : {}),
+    }));
   }, []);
 
   useEffect(
@@ -267,8 +271,8 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
                 }
               : row
           ),
-          saveStatus: "saved",
-          lastSavedAt: new Date().toISOString(),
+          saveStatus: "unsaved",
+          lastSavedAt: null,
         };
         return isGuidedDemoActive() ? applyGuidedDemoCampaignDraft(next) : next;
       });
@@ -304,6 +308,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
     resetDraft,
     replaceState,
     applyCreateChoice,
+    markServerSaved,
     canPublish,
   };
 }
