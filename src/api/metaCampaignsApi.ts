@@ -536,6 +536,12 @@ export type MetaPublishResult = {
   adsManagerUrl?: string;
   publish: MetaCampaignPublishRecord;
   demoSafe?: boolean;
+  activationBlockers?: Array<{
+    component: string;
+    id?: string;
+    configuredStatus: string;
+    effectiveStatus: string;
+  }>;
 };
 
 function withBusiness(businessId?: string, extra?: Record<string, unknown>) {

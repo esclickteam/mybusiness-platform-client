@@ -106,7 +106,10 @@ export function buildAudienceEstimatePayload(
  * Maps Ads Manager draft state → Meta Marketing API publish payload.
  * Server validates and creates campaign → ad set → creative → ad for real.
  */
-export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
+export function buildPublishPayloadFromAdsManager(
+  state: AdsManagerState,
+  options?: { activate?: boolean }
+) {
   const campaign = state.campaign;
   const adSet = state.adSets[0];
   const ad = state.ads[0];
@@ -128,9 +131,9 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     mode: "full",
     name: campaign.name.trim(),
     objective: campaign.objective,
-    // New objects stay PAUSED until the user explicitly turns them on.
-    status: "PAUSED",
-    activateAfterPublish: false,
+    // Drafts and estimates stay PAUSED. Only a confirmed publish asks to go live.
+    status: options?.activate === true ? "ACTIVE" : "PAUSED",
+    activateAfterPublish: options?.activate === true,
     specialAdCategories: [],
     pageId,
     adSetName: adSet.name.trim(),

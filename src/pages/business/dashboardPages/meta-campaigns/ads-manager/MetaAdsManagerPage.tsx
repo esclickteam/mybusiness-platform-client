@@ -469,7 +469,7 @@ export default function MetaAdsManagerPage() {
     try {
       setPublishing(true);
       const payload = {
-        ...buildPublishPayloadFromAdsManager(state),
+        ...buildPublishPayloadFromAdsManager(state, { activate: true }),
         ...(isGuidedDemoActive() ? guidedDemoPublishExtras() : {}),
       };
       // Prefer connected page when draft still has placeholder.
@@ -523,15 +523,26 @@ export default function MetaAdsManagerPage() {
       }
       setPublishResult(result.publish);
       setModalOpen(true);
+      const blockers = result.activationBlockers || [];
       const outcome = result.publish?.outcome;
-      if (outcome === "rejected") {
+      if (blockers.length) {
+        toast.error(
+          c("publishLeftPaused", {
+            component: blockers.map((row) => row.component).join(", "),
+            status: blockers.map((row) => row.configuredStatus).join(", "),
+          })
+        );
+      } else if (outcome === "rejected") {
         toast.error(t("metaCampaigns.adsManager.chrome.outcomeRejected"));
-      } else if (outcome === "pending_review") {
+      } else if (
+        outcome === "pending_review" &&
+        result.publish?.metaConfiguredStatus === "ACTIVE"
+      ) {
         toast.success(t("metaCampaigns.adsManager.chrome.outcomePendingReview"));
       } else if (outcome === "active") {
         toast.success(t("metaCampaigns.adsManager.chrome.outcomeActive"));
       } else {
-        toast.success(t("metaCampaigns.adsManager.chrome.outcomeCreatedPaused"));
+        toast.error(t("metaCampaigns.adsManager.chrome.outcomeCreatedPaused"));
       }
     } catch (error: unknown) {
       const err = error as {
@@ -755,10 +766,17 @@ export default function MetaAdsManagerPage() {
       const result = await retryMetaPublish(
         businessId,
         publishResult.id,
-        buildPublishPayloadFromAdsManager(state)
+        buildPublishPayloadFromAdsManager(state, { activate: true })
       );
       setPublishResult(result.publish);
-      if (result.adId) {
+      if (result.activationBlockers?.length) {
+        toast.error(
+          c("publishLeftPaused", {
+            component: result.activationBlockers.map((row) => row.component).join(", "),
+            status: result.activationBlockers.map((row) => row.configuredStatus).join(", "),
+          })
+        );
+      } else if (result.adId) {
         toast.success(t("metaCampaigns.adsToasts.retryCompleted"));
       }
     } catch (error: unknown) {
