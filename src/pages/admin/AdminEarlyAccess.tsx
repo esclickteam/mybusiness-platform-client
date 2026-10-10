@@ -5,6 +5,8 @@ import { MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
+import AdminRowMenu from "./shell/AdminRowMenu";
 import AdminSendGuidedDemoModal, {
   AdminSendDemoButton,
 } from "./AdminSendGuidedDemoModal";
@@ -226,20 +228,11 @@ function SummaryCard({
   value: number;
   color: "purple" | "amber" | "green" | "pink";
 }) {
-  const colors = {
-    purple: "border-purple-200 bg-white text-purple-950",
-    amber: "border-amber-200 bg-amber-50 text-amber-900",
-    green: "border-emerald-200 bg-emerald-50 text-emerald-900",
-    pink: "border-fuchsia-200 bg-fuchsia-50 text-fuchsia-900",
-  };
-
   return (
-    <div
-      className={`rounded-3xl border p-5 text-right shadow-sm ${colors[color]}`}
-    >
-      <p className="text-sm font-black opacity-60">{title}</p>
-      <strong className="mt-2 block text-4xl font-black">{value}</strong>
-    </div>
+    <article className={color === "amber" || color === "pink" ? "biz-stat-card is-alert" : "biz-stat-card"}>
+      <p>{title}</p>
+      <strong>{value}</strong>
+    </article>
   );
 }
 
@@ -631,54 +624,32 @@ function AdminEarlyAccess() {
         className="min-h-screen bg-[#f7f2ff] px-3 py-5 text-right text-purple-950 sm:px-4 sm:py-7 md:px-8"
       >
         <section className="mx-auto max-w-[1480px]">
-          <div className="rounded-[34px] border border-purple-200 bg-white p-5 shadow-xl shadow-purple-950/8 sm:p-6 md:p-8">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-              <div>
+          <AdminPageHeader
+            title="הרשמה מוקדמת"
+            description="שם, מייל, טלפון, תחום, תחומי עניין ותקציב חודשי משוער."
+            actions={
+              <>
                 <button
                   type="button"
-                  onClick={() => navigate("/admin/dashboard")}
-                  className="mb-5 inline-flex min-h-11 items-center rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-black text-purple-800 transition hover:bg-purple-100"
-                >
-                  ← חזרה לדשבורד
-                </button>
-
-                <div className="mb-3 inline-flex rounded-full bg-fuchsia-50 px-4 py-2 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200">
-                  הרשמה מוקדמת
-                </div>
-
-                <h1 className="text-3xl font-black tracking-tight text-purple-950 sm:text-4xl md:text-5xl">
-                  רשימת הנרשמים מהטופס
-                </h1>
-
-                <p className="mt-4 max-w-3xl text-base font-bold leading-8 text-purple-950/60 md:text-lg">
-                  כאן מופיעים בדיוק השדות שהגולשים מילאו בטופס: שם מלא, מייל, טלפון,
-                  תחום העסק, תחומי עניין ותקציב חודשי משוער.
-                </p>
-              </div>
-
-              <div className="grid gap-3 sm:grid-cols-2 lg:min-w-[340px]">
-                <button
-                  type="button"
-                  onClick={loadRegistrations}
-                  disabled={loading}
-                  className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  {loading ? "טוען..." : "רענון רשימה"}
-                </button>
-
-                <button
-                  type="button"
+                  className="biz-btn biz-btn-secondary"
                   onClick={exportCsv}
                   disabled={!filteredRegistrations.length}
-                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-purple-200 bg-white px-5 py-4 text-sm font-black text-purple-800 shadow-sm transition hover:-translate-y-1 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   ייצוא CSV
                 </button>
-              </div>
-            </div>
-          </div>
+                <button
+                  type="button"
+                  className="biz-btn"
+                  onClick={loadRegistrations}
+                  disabled={loading}
+                >
+                  {loading ? "טוען..." : "רענון"}
+                </button>
+              </>
+            }
+          />
 
-          <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+          <div className="biz-stat-grid">
             <SummaryCard
               title="סה״כ נרשמים"
               value={summary.total}
@@ -838,86 +809,34 @@ function AdminEarlyAccess() {
                           </p>
                         ) : null}
 
-                        <div className="mt-3 grid gap-2">
+                        <div className="biz-row-actions mt-3">
                           <button
                             type="button"
+                            className="biz-btn biz-btn-secondary"
                             onClick={() => void toggleLeadDetails(item)}
-                            className="inline-flex min-h-11 items-center justify-center gap-1 rounded-2xl border border-purple-200 bg-white px-3 text-xs font-black text-purple-800"
                           >
-                            {expandedLeadId === id ? (
-                              <>
-                                <ChevronUp className="h-3.5 w-3.5" />
-                                הסתר פרטים
-                              </>
-                            ) : (
-                              <>
-                                <ChevronDown className="h-3.5 w-3.5" />
-                                פרטי ליד
-                              </>
-                            )}
+                            {expandedLeadId === id ? "הסתר" : "פרטים"}
                           </button>
-
-                          {whatsappPhone ? (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                window.open(
-                                  `https://wa.me/${whatsappPhone}`,
-                                  "_blank",
-                                  "noopener,noreferrer",
-                                )
-                              }
-                              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-50 px-3 text-xs font-black text-emerald-700 ring-1 ring-emerald-200"
-                            >
-                              <MessageCircle className="h-3.5 w-3.5" />
-                              וואטסאפ
-                            </button>
-                          ) : null}
-
-                          <AdminSendDemoButton
-                            onClick={() => setDemoLead(item)}
+                          <AdminRowMenu
+                            items={[
+                              {
+                                label: chatOpeningId === id ? "פותח..." : "פתיחת שיחת WhatsApp",
+                                disabled: chatOpeningId === id,
+                                onClick: () => void openWhatsAppSupportChat(item),
+                              },
+                              {
+                                label: "וואטסאפ",
+                                hidden: !whatsappPhone,
+                                onClick: () =>
+                                  window.open(`https://wa.me/${whatsappPhone}`, "_blank", "noopener,noreferrer"),
+                              },
+                              { label: "שליחת דמו", onClick: () => setDemoLead(item) },
+                              { label: "סמן כטופל", disabled: isActionLoading, onClick: () => handleStatusChange(id, "contacted") },
+                              { label: "צורף לקבוצה", disabled: isActionLoading, onClick: () => handleStatusChange(id, "joined_group") },
+                              { label: "לא רלוונטי", disabled: isActionLoading, onClick: () => handleStatusChange(id, "not_relevant") },
+                              { label: "מחיקה", danger: true, disabled: isActionLoading, onClick: () => handleDelete(id) },
+                            ]}
                           />
-
-                          <div className="grid grid-cols-2 gap-2">
-                            <button
-                              type="button"
-                              disabled={isActionLoading}
-                              onClick={() =>
-                                handleStatusChange(id, "contacted")
-                              }
-                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-purple-50 px-3 text-xs font-black text-purple-700 ring-1 ring-purple-200 disabled:opacity-50"
-                            >
-                              סמן כטופל
-                            </button>
-                            <button
-                              type="button"
-                              disabled={isActionLoading}
-                              onClick={() =>
-                                handleStatusChange(id, "joined_group")
-                              }
-                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-fuchsia-50 px-3 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200 disabled:opacity-50"
-                            >
-                              צורף לקבוצה
-                            </button>
-                            <button
-                              type="button"
-                              disabled={isActionLoading}
-                              onClick={() =>
-                                handleStatusChange(id, "not_relevant")
-                              }
-                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-slate-50 px-3 text-xs font-black text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
-                            >
-                              לא רלוונטי
-                            </button>
-                            <button
-                              type="button"
-                              disabled={isActionLoading}
-                              onClick={() => handleDelete(id)}
-                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-rose-50 px-3 text-xs font-black text-rose-700 ring-1 ring-rose-200 disabled:opacity-50"
-                            >
-                              מחיקה
-                            </button>
-                          </div>
                         </div>
 
                         {expandedLeadId === id ? <LeadDetailPanel item={item} /> : null}
@@ -1063,15 +982,14 @@ function AdminEarlyAccess() {
                             </td>
 
                             <td className="px-5 py-4 text-right">
-                              <div className="flex flex-wrap justify-start gap-2">
+                              <div className="biz-row-actions">
                                 <button
                                   type="button"
+                                  className="biz-btn biz-btn-ghost"
                                   onClick={() => void toggleLeadDetails(item)}
-                                  className="rounded-full bg-white px-3 py-2 text-xs font-black text-purple-800 ring-1 ring-purple-200"
                                 >
                                   {expandedLeadId === id ? "הסתר" : "פרטים"}
                                 </button>
-
                                 {phone && phone !== "לא צוין" ? (
                                   <AdminDialButton
                                     phone={phone}
@@ -1082,69 +1000,25 @@ function AdminEarlyAccess() {
                                     label="חייג"
                                   />
                                 ) : null}
-
-                                {whatsappPhone ? (
-                                  <button
-                                    type="button"
-                                    onClick={() =>
-                                      window.open(
-                                        `https://wa.me/${whatsappPhone}`,
-                                        "_blank",
-                                        "noopener,noreferrer",
-                                      )
-                                    }
-                                    className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700 ring-1 ring-emerald-200 transition hover:-translate-y-0.5"
-                                  >
-                                    <MessageCircle className="h-3.5 w-3.5" />
-                                    וואטסאפ
-                                  </button>
-                                ) : null}
-
-                                <AdminSendDemoButton
-                                  onClick={() => setDemoLead(item)}
+                                <AdminRowMenu
+                                  items={[
+                                    {
+                                      label: "פתיחת שיחת WhatsApp",
+                                      onClick: () => void openWhatsAppSupportChat(item),
+                                    },
+                                    {
+                                      label: "וואטסאפ",
+                                      hidden: !whatsappPhone,
+                                      onClick: () =>
+                                        window.open(`https://wa.me/${whatsappPhone}`, "_blank", "noopener,noreferrer"),
+                                    },
+                                    { label: "שליחת דמו", onClick: () => setDemoLead(item) },
+                                    { label: "סמן כטופל", disabled: isActionLoading, onClick: () => handleStatusChange(id, "contacted") },
+                                    { label: "צורף לקבוצה", disabled: isActionLoading, onClick: () => handleStatusChange(id, "joined_group") },
+                                    { label: "לא רלוונטי", disabled: isActionLoading, onClick: () => handleStatusChange(id, "not_relevant") },
+                                    { label: "מחיקה", danger: true, disabled: isActionLoading, onClick: () => handleDelete(id) },
+                                  ]}
                                 />
-
-                                <button
-                                  type="button"
-                                  disabled={isActionLoading}
-                                  onClick={() =>
-                                    handleStatusChange(id, "contacted")
-                                  }
-                                  className="rounded-full bg-purple-50 px-3 py-2 text-xs font-black text-purple-700 ring-1 ring-purple-200 disabled:opacity-50"
-                                >
-                                  סמן כטופל
-                                </button>
-
-                                <button
-                                  type="button"
-                                  disabled={isActionLoading}
-                                  onClick={() =>
-                                    handleStatusChange(id, "joined_group")
-                                  }
-                                  className="rounded-full bg-fuchsia-50 px-3 py-2 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200 disabled:opacity-50"
-                                >
-                                  צורף לקבוצה
-                                </button>
-
-                                <button
-                                  type="button"
-                                  disabled={isActionLoading}
-                                  onClick={() =>
-                                    handleStatusChange(id, "not_relevant")
-                                  }
-                                  className="rounded-full bg-slate-50 px-3 py-2 text-xs font-black text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
-                                >
-                                  לא רלוונטי
-                                </button>
-
-                                <button
-                                  type="button"
-                                  disabled={isActionLoading}
-                                  onClick={() => handleDelete(id)}
-                                  className="rounded-full bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 ring-1 ring-rose-200 disabled:opacity-50"
-                                >
-                                  מחיקה
-                                </button>
                               </div>
                             </td>
                           </tr>

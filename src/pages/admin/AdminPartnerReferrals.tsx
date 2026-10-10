@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import {
   adminPartnerReferralAction,
   fetchAdminPartnerReferrals,
@@ -44,12 +45,10 @@ export default function AdminPartnerReferrals() {
     <div dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-[1400px] px-4 py-6">
-        <div className="mb-4 flex items-center justify-between gap-3">
-          <h1 className="text-2xl font-black">צירופי פרטנרים</h1>
-          <Link to="/admin/partners" className="text-sm font-black text-violet-700">
-            חזרה לפרטנרים
-          </Link>
-        </div>
+        <AdminPageHeader
+          title="צירופי פרטנרים"
+          description="פניות הצטרפות לתוכנית הפרטנרים."
+        />
         {error ? <p className="mb-4 font-bold text-rose-700">{error}</p> : null}
         <div className="overflow-x-auto rounded-3xl border bg-white">
           <table className="min-w-full text-right text-sm">

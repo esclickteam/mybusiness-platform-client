@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./AdminLogs.css";
-import { Link } from "react-router-dom";
+import AdminPageHeader from "./shell/AdminPageHeader";
 
 function AdminLogs() {
   const [search, setSearch] = useState("");
@@ -19,12 +19,11 @@ function AdminLogs() {
 
   return (
     <div className="admin-logs">
-      <Link to="/admin/dashboard" className="back-dashboard">🔙 Back to Dashboard</Link>
-      <h1>🕐 System Actions (Logs)</h1>
+      <AdminPageHeader title="יומן מערכת" description="פעולות אחרונות במערכת." />
 
       <input
         type="text"
-        placeholder="🔍 Search by user / action / description"
+        placeholder="חיפוש לפי משתמש, פעולה או תיאור"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="log-search"
@@ -33,11 +32,11 @@ function AdminLogs() {
       <table className="logs-table">
         <thead>
           <tr>
-            <th>ID</th>
-            <th>User</th>
-            <th>Action</th>
-            <th>Description</th>
-            <th>Date</th>
+            <th>מזהה</th>
+            <th>משתמש</th>
+            <th>פעולה</th>
+            <th>תיאור</th>
+            <th>תאריך</th>
           </tr>
         </thead>
         <tbody>

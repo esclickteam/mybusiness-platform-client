@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import API from "../../api";
 import {
   adminActivateSetup,
@@ -73,19 +74,10 @@ export default function AdminPartners() {
     <div dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] px-4 py-6">
-        <h1 className="mb-4 text-2xl font-black">פרטנרים</h1>
-        <div className="mb-4">
-          <Link className="rounded-2xl bg-violet-100 px-4 py-2 text-sm font-black text-violet-900" to="/admin/partner-agreements">
-            הסכמי פרטנר
-          </Link>
-        </div>
-        <div className="mb-4 flex flex-wrap gap-3">
-          <Link className="rounded-2xl bg-amber-100 px-4 py-2 text-sm font-black text-amber-900" to="/admin/partners/attention">
-            שולם – נדרש טיפול בהפעלת הלקוח
-          </Link>
-          <Link className="rounded-2xl bg-violet-100 px-4 py-2 text-sm font-black text-violet-900" to="/admin/partners/referrals">
-            צירופי פרטנרים
-          </Link>
+        <AdminPageHeader
+          title="פרטנרים"
+          description="עמלות, משיכות וחשבונות דמו להצגה. הסכמים, צירופים וטיפול נדרש נמצאים בתפריט."
+          actions={
           <button
             type="button"
             disabled={showcaseBusy}
@@ -102,11 +94,12 @@ export default function AdminPartners() {
                 setShowcaseBusy(false);
               }
             }}
-            className="rounded-2xl bg-emerald-100 px-4 py-2 text-sm font-black text-emerald-900 disabled:opacity-60"
+            className="biz-btn biz-btn-secondary"
           >
             {showcaseBusy ? "יוצר חשבונות דמו..." : "יצירת חשבונות דמו להצגה"}
           </button>
-        </div>
+          }
+        />
         {showcaseResult ? (
           <section className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-950">
             <p className="font-black">חשבונות דמו מוכנים להצגה לפרטנרים:</p>

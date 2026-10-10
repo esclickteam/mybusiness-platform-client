@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Link2, MessageSquare, RefreshCw, Shield } from "lucide-react";
+import { Link2, RefreshCw, Shield } from "lucide-react";
 
 import {
   completeAdminManagedEmbeddedSignup,
@@ -30,6 +30,7 @@ import {
 } from "../../api/whatsappBillingApi";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 
 const DEFAULT_CONNECTION_ID = "IL_MANAGED";
 const US_CONNECTION_ID = "US_MANAGED";
@@ -751,17 +752,10 @@ export default function AdminManagedWhatsApp() {
     <div dir="rtl" style={{ minHeight: "100vh", background: "#f6f7fb" }}>
       <AdminHeader />
       <main style={{ maxWidth: 960, margin: "0 auto", padding: "24px 16px 48px" }}>
-        <header style={{ marginBottom: 20 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <MessageSquare size={22} />
-            <h1 style={{ margin: 0, fontSize: 26 }}>WhatsApp Managed Mode</h1>
-          </div>
-          <p style={{ margin: "8px 0 0", color: "#64748b", maxWidth: 640 }}>
-            חיבורי WhatsApp מרכזיים של Bizuply (ישראל / USA) לעסקים מורשים.
-            לכל חיבור הגדרות, סטטוס ותבניות נפרדים. ההגדרה וה-token נשמרים
-            בשרת בלבד (מוצפנים) — Admin only.
-          </p>
-        </header>
+        <AdminPageHeader
+          title="WhatsApp API"
+          description="חיבורי WhatsApp מרכזיים של Bizuply (ישראל / USA) לעסקים מורשים. לכל חיבור הגדרות, סטטוס ותבניות נפרדים. ההגדרה וה-token נשמרים בשרת בלבד."
+        />
 
         {status ? (
           <div

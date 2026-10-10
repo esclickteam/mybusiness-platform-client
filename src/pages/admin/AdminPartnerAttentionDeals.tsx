@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import {
   adminLinkDealBusiness,
   adminRetryDealActivation,
@@ -29,12 +30,10 @@ export default function AdminPartnerAttentionDeals() {
     <div dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-[1400px] px-4 py-6">
-        <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-2xl font-black">שולם – נדרש טיפול בהפעלת הלקוח</h1>
-          <Link to="/admin/partners" className="text-sm font-black text-violet-700">
-            חזרה לפרטנרים
-          </Link>
-        </div>
+        <AdminPageHeader
+          title="טיפול נדרש"
+          description="עסקאות ששולמו ועדיין דורשות הפעלת לקוח."
+        />
         {error ? <p className="mb-4 font-bold text-rose-700">{error}</p> : null}
         <div className="overflow-x-auto rounded-3xl border bg-white">
           <table className="min-w-full text-right text-sm">

@@ -1,6 +1,7 @@
 import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import API from "../../api";
 import { useLocaleDir } from "../../hooks/useLocaleDir";
 import { ClubMemberText, formatCount } from "../business/dashboardPages/global-club/clubUi";
@@ -70,8 +71,7 @@ export default function AdminClubPage() {
     <div className="min-h-screen bg-[#f6f2fb] text-slate-800" dir={dir}>
       <AdminHeader />
       <main className="mx-auto max-w-6xl px-3 py-5 sm:px-6">
-        <h1 className="text-2xl font-bold text-slate-900">{t("club.admin.title")}</h1>
-        <p className="mt-1 text-sm text-slate-500">{t("club.admin.subtitle")}</p>
+        <AdminPageHeader title={t("club.admin.title")} description={t("club.admin.subtitle")} />
         {notice ? <p className="mt-3 text-sm text-emerald-700">{notice}</p> : null}
         <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
           {TAB_KEYS.map((item) => (

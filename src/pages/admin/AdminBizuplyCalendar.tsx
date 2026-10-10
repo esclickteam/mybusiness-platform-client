@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import adminCrmApi from "../../api/adminCrmApi";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import {
   CrmCard,
   EmptyState,
@@ -175,12 +176,10 @@ export default function AdminBizuplyCalendar() {
     <div className={ADMIN_PAGE_SHELL_CLASS} dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] space-y-4 px-3 py-6 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <p className="text-xs font-black text-[#7C4DFF]">יומן BizUply</p>
-            <h1 className="text-2xl font-black text-purple-950">כל התיאומים מול לקוחות Admin CRM</h1>
-            <p className="font-bold text-slate-500">שעון ישראל · כל פגישה שייכת ללקוח · חסימות פנימיות בלבד ללא לקוח</p>
-          </div>
+        <AdminPageHeader
+          title="יומן"
+          description="שעון ישראל. כל פגישה שייכת ללקוח, וחסימות פנימיות נשארות בלי לקוח."
+          actions={
           <div className="flex flex-wrap gap-2">
             <PrimaryButton onClick={() => setBookOpen(true)}>+ קביעת שיחה</PrimaryButton>
             <SecondaryButton
@@ -201,7 +200,8 @@ export default function AdminBizuplyCalendar() {
             </SecondaryButton>
             <SecondaryButton onClick={() => load()}>רענון</SecondaryButton>
           </div>
-        </div>
+          }
+        />
 
         <div className="flex flex-wrap gap-2">
           {views.map((key) => (

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import { fetchAdminPartnerWithdrawalsPending } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
 import "./AdminPayoutPage.css";
@@ -78,9 +79,12 @@ const AdminWithdrawalsPage = () => {
     <>
       <AdminHeader />
       <div className="admin-payout-page px-3 py-5 sm:px-4 sm:py-7 md:px-8" dir="rtl">
-      <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">משיכות ממתינות</h1>
+      <AdminPageHeader
+        title="משיכות ממתינות"
+        description="בקשות משיכה של שותפים ופרטנרים."
+      />
 
-      {loading && <p>Loading withdrawals...</p>}
+      {loading && <p>טוען משיכות...</p>}
       {error && <p className="error">{error}</p>}
 
       <section className="mt-6">

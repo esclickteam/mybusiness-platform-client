@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import API from "../../api";
 import { MARKETPLACE_CATEGORIES } from "../../saas/logic";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import { ADMIN_PAGE_SHELL_CLASS } from "../../utils/adminResponsive";
 
 type ShotDraft = {
@@ -162,11 +163,10 @@ export default function AdminSaasControlCenter() {
       <AdminHeader />
       <main className="mx-auto grid max-w-[1480px] gap-6 px-3 py-6 sm:px-6 lg:grid-cols-[0.8fr_1.2fr]">
         <section>
-          <p className="text-xs font-black text-[#7C4DFF]">Admin</p>
-          <h1 className="text-2xl font-black text-purple-950">SaaS Control Center</h1>
-          <p className="mt-1 max-w-2xl font-bold text-slate-500">
-            תבניות עם סטטוס ACTIVE מופיעות אוטומטית ב־/saas. מדיה, וידאו וקישורי דמו נשמרים על התבנית.
-          </p>
+          <AdminPageHeader
+            title="SaaS Control Center"
+            description="תבניות בסטטוס פעיל מופיעות ב־/saas. מדיה, וידאו וקישורי דמו נשמרים על התבנית."
+          />
           {error ? <p className="mt-3 font-bold text-rose-600">{error}</p> : null}
           <div className="mt-4 grid gap-3">
             {rows.map((row) => (

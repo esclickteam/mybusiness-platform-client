@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import "./AdminAffiliates.css";
 
 function AdminAffiliates() {
@@ -76,27 +77,30 @@ function AdminAffiliates() {
     <>
       <AdminHeader />
       <div className="admin-affiliates-container px-3 py-5 sm:px-4 sm:py-7 md:px-8" dir="rtl">
-      <h2 className="title text-2xl font-black text-purple-950 sm:text-3xl">יצירת משווק חדש</h2>
+      <AdminPageHeader
+        title="אפיליאייטים"
+        description="יצירת משווק, סיסמה וקישור הפניה."
+      />
 
       {message && <div className="message success">{message}</div>}
       {error && <div className="message error">{error}</div>}
 
       <form onSubmit={handleSubmit} className="affiliate-form">
         <label>
-          Marketer Name*:
+          שם המשווק *
           <input
             type="text"
             name="name"
             value={form.name}
             onChange={handleChange}
             required
-            placeholder="e.g., Yael Ben-Ari"
+            placeholder="לדוגמה: יעל בן ארי"
             autoComplete="off"
           />
         </label>
 
         <label>
-          Email (optional):
+          אימייל (אופציונלי)
           <input
             type="email"
             name="email"
@@ -108,33 +112,33 @@ function AdminAffiliates() {
         </label>
 
         <label>
-          Unique ID (affiliateId)*:
+          מזהה ייחודי *
           <input
             type="text"
             name="affiliateId"
             value={form.affiliateId}
             onChange={handleChange}
             required
-            placeholder="e.g., yael123"
+            placeholder="yael123"
             autoComplete="off"
           />
         </label>
 
         <label>
-          Password*:
+          סיסמה *
           <input
             type="password"
             name="password"
             value={form.password}
             onChange={handleChange}
             required
-            placeholder="Enter password"
+            placeholder="סיסמה"
             autoComplete="new-password"
           />
         </label>
 
         <label>
-          Commission Rate:
+          שיעור עמלה
           <input
             type="text"
             value="20%"
@@ -143,14 +147,14 @@ function AdminAffiliates() {
         </label>
 
         <button type="submit" disabled={loading} className="submit-btn">
-          {loading ? "Saving..." : "Create Marketer"}
+          {loading ? "שומר..." : "יצירת משווק"}
         </button>
       </form>
 
       {affiliateLinks && (
         <div className="affiliate-url-container">
 
-          <p><strong>🔑 Marketer Login:</strong></p>
+          <p><strong>כניסת משווק</strong></p>
           <a
             href={affiliateLinks.login}
             target="_blank"
@@ -161,7 +165,7 @@ function AdminAffiliates() {
           </a>
 
           <p style={{ marginTop: "15px" }}>
-            <strong>🔗 Referral Link:</strong>
+            <strong>קישור הפניה</strong>
           </p>
 
           <a

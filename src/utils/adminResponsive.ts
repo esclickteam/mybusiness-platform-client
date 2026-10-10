@@ -66,7 +66,7 @@ export function getAdminAnchoredPanelStyle(
 }
 
 export const ADMIN_PAGE_SHELL_CLASS =
-  "min-h-screen bg-[#f6f2fb] px-3 py-5 text-right text-slate-800 sm:px-4 sm:py-7 md:px-8";
+  "min-h-0 bg-transparent px-0 py-0 text-start text-slate-800";
 
 export const ADMIN_MOBILE_BACKDROP_CLASS =
   "fixed inset-0 z-[9998] bg-slate-950/35 backdrop-blur-[2px] sm:hidden";

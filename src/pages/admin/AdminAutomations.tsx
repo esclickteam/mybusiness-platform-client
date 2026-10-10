@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import adminCrmApi from "../../api/adminCrmApi";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import {
   CrmCard,
   ErrorState,
@@ -76,13 +77,10 @@ export default function AdminAutomations() {
     <div className={ADMIN_PAGE_SHELL_CLASS} dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] space-y-4 px-3 py-6 sm:px-6">
-        <div>
-          <p className="text-xs font-black text-[#7C4DFF]">אוטומציות אדמין</p>
-          <h1 className="text-2xl font-black text-purple-950">ניהול לידים של BizUply</h1>
-          <p className="font-bold text-slate-500">
-            אוטומציות אלה שייכות ל-CRM האדמין בלבד, לא לאוטומציות של לקוחות.
-          </p>
-        </div>
+        <AdminPageHeader
+          title="אוטומציות"
+          description="אוטומציות של CRM האדמין בלבד, לא האוטומציות של הלקוחות."
+        />
 
         {loading ? <LoadingState /> : null}
         {error ? <ErrorState message={error} onRetry={load} /> : null}

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminSendGuidedDemoModal, {
   AdminSendDemoButton,
@@ -98,15 +99,11 @@ export default function AdminGuidedDemos() {
     <div className="min-h-screen bg-[#f5f6fb]" dir="rtl">
       <AdminHeader />
       <main className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900">דמואים ללקוחות</h1>
-            <p className="mt-1 text-sm font-semibold text-slate-500">
-              יצירת קישור אישי לדמו אינטראקטיבי מבודד, בלי תלות ב-WhatsApp.
-            </p>
-          </div>
-          <AdminSendDemoButton onClick={() => setModalOpen(true)} className="px-4 py-3 text-sm" />
-        </div>
+        <AdminPageHeader
+          title="דמואים ללקוחות"
+          description="יצירת קישור אישי לדמו אינטראקטיבי מבודד, בלי תלות ב-WhatsApp."
+          actions={<AdminSendDemoButton onClick={() => setModalOpen(true)} className="px-4 py-3 text-sm" />}
+        />
 
         {analytics ? (
           <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">

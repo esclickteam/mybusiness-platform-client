@@ -1,12 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
-  Building2,
   CheckCircle2,
   CreditCard,
   Plus,
-  Search,
-  Sparkles,
   UserPlus,
   X,
 } from "lucide-react";
@@ -17,10 +14,10 @@ import UpsellPicker from "../../components/pricing/UpsellPicker";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
+import AdminRowMenu from "./shell/AdminRowMenu";
 import { formatBillingMoney } from "../../components/billing/billingFormat";
-import AdminSendGuidedDemoModal, {
-  AdminSendDemoButton,
-} from "./AdminSendGuidedDemoModal";
+import AdminSendGuidedDemoModal from "./AdminSendGuidedDemoModal";
 
 type CatalogUpsell = {
   sku: string;
@@ -506,6 +503,45 @@ function AdminCustomers() {
     }
   }
 
+  function renderCustomerActions(customer: AdminCustomer, ownerId: string) {
+    const paying = checkoutUserId === ownerId;
+    const marking = markingUserId === ownerId;
+    return (
+      <div className="biz-row-actions">
+        <button
+          type="button"
+          className="biz-btn biz-btn-secondary"
+          disabled={!ownerId || paying}
+          onClick={() => openPayModal(customer, "stripe")}
+        >
+          {paying
+            ? "פותח Stripe..."
+            : customer.owner?.hasPaid
+              ? "שדרוג / חידוש"
+              : "תשלום"}
+        </button>
+        <AdminRowMenu
+          items={[
+            {
+              label: "שליחת דמו",
+              onClick: () => setDemoCustomer(customer),
+            },
+            {
+              label: marking ? "מסמן..." : "סמן שולם ידני",
+              disabled: !ownerId || marking,
+              onClick: () => openPayModal(customer, "manual"),
+            },
+            {
+              label: "פירוט רכישות",
+              disabled: !ownerId,
+              onClick: () => openPurchases(customer),
+            },
+          ]}
+        />
+      </div>
+    );
+  }
+
   return (
     <>
       <AdminHeader />
@@ -516,88 +552,48 @@ function AdminCustomers() {
         style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
       >
         <section className="mx-auto max-w-[1480px]">
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div>
-              <h1 className="text-2xl font-black text-purple-950 sm:text-3xl md:text-4xl">
-                ניהול לקוחות
-              </h1>
-              <p className="mt-2 max-w-2xl text-sm font-bold text-purple-950/55">
-                חיפוש ברשימת העסקים במערכת, יצירת לקוח חדש, בחירת חבילה ותשלום
-                מאובטח ב־Stripe.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-              <div className="relative">
-                <Search className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                <input
-                  type="search"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="חיפוש לפי שם עסק, בעלים, אימייל, טלפון..."
-                  className="w-full rounded-2xl border border-purple-200 bg-white py-3 pe-4 ps-10 text-sm font-bold text-slate-900 outline-none ring-purple-300 placeholder:text-slate-400 focus:ring-2 sm:w-96"
-                />
-              </div>
-              <span className="rounded-2xl bg-purple-100 px-4 py-3 text-center text-sm font-black text-purple-900">
-                {filteredCountLabel}
-              </span>
+          <AdminPageHeader
+            title="לקוחות"
+            description="חיפוש ברשימת העסקים, יצירת לקוח, בחירת חבילה ותשלום ב-Stripe."
+            actions={
               <button
                 type="button"
                 onClick={() => {
                   setShowCreate(true);
                   setError("");
                 }}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-4 py-3 text-sm font-black text-white shadow-lg shadow-[#7C4DFF]/25 transition hover:-translate-y-0.5 hover:bg-[#6B3FE0]"
+                className="biz-btn"
               >
                 <Plus className="h-4 w-4" />
                 לקוח חדש
               </button>
-            </div>
+            }
+          />
+          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="חיפוש לפי שם עסק, בעלים, אימייל או טלפון"
+              className="biz-input sm:max-w-sm"
+            />
+            <span className="text-sm font-semibold text-slate-500">{filteredCountLabel}</span>
           </div>
 
-          <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="biz-stat-grid mb-6">
             {[
-              {
-                label: "סה״כ עסקים",
-                value: summary.total,
-                icon: <Building2 className="h-4 w-4" />,
-                tone: "bg-white text-slate-900",
-              },
-              {
-                label: "משלמים",
-                value: summary.paid,
-                icon: <CheckCircle2 className="h-4 w-4" />,
-                tone: "bg-emerald-50 text-emerald-800",
-              },
-              {
-                label: "בניסיון",
-                value: summary.trial,
-                icon: <Sparkles className="h-4 w-4" />,
-                tone: "bg-violet-50 text-violet-800",
-              },
-              {
-                label: "ממתינים לתשלום",
-                value: summary.pending,
-                icon: <CreditCard className="h-4 w-4" />,
-                tone: "bg-amber-50 text-amber-800",
-              },
+              { label: "סה״כ עסקים", value: summary.total },
+              { label: "משלמים", value: summary.paid },
+              { label: "בניסיון", value: summary.trial },
+              { label: "ממתינים לתשלום", value: summary.pending, alert: true },
             ].map((card) => (
-              <div
+              <article
                 key={card.label}
-                className={`rounded-[22px] border border-purple-100 p-4 shadow-sm ${card.tone}`}
+                className={card.alert ? "biz-stat-card is-alert" : "biz-stat-card"}
               >
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <p className="text-xs font-bold opacity-70">{card.label}</p>
-                    <strong className="mt-1 block text-2xl font-black">
-                      {loading ? "…" : card.value}
-                    </strong>
-                  </div>
-                  <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/80 shadow-sm">
-                    {card.icon}
-                  </span>
-                </div>
-              </div>
+                <p>{card.label}</p>
+                <strong>{loading ? "…" : card.value}</strong>
+              </article>
             ))}
           </div>
 
@@ -702,42 +698,8 @@ function AdminCustomers() {
                           </p>
                         ) : null}
 
-                        <div className="mt-3 grid gap-2">
-                          <AdminSendDemoButton
-                            onClick={() => setDemoCustomer(customer)}
-                          />
-                          <button
-                            type="button"
-                            disabled={!ownerId || checkoutUserId === ownerId}
-                            onClick={() => openPayModal(customer, "stripe")}
-                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 text-xs font-black text-black"
-                          >
-                            <CreditCard className="h-3.5 w-3.5" />
-                            {checkoutUserId === ownerId
-                              ? "פותח Stripe..."
-                              : customer.owner?.hasPaid
-                                ? "שדרוג / חידוש"
-                                : "תשלום ב־Stripe"}
-                          </button>
-                          <div className="grid grid-cols-2 gap-2">
-                            <button
-                              type="button"
-                              disabled={!ownerId || markingUserId === ownerId}
-                              onClick={() => openPayModal(customer, "manual")}
-                              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 text-xs font-black text-emerald-800 disabled:opacity-60"
-                            >
-                              <CheckCircle2 className="h-3.5 w-3.5" />
-                              {markingUserId === ownerId ? "מסמן..." : "שולם ידני"}
-                            </button>
-                            <button
-                              type="button"
-                              disabled={!ownerId}
-                              onClick={() => openPurchases(customer)}
-                              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
-                            >
-                              רכישות
-                            </button>
-                          </div>
+                        <div className="mt-3">
+                          {renderCustomerActions(customer, ownerId)}
                         </div>
                       </article>
                     );
@@ -849,47 +811,7 @@ function AdminCustomers() {
                               )}
                             </td>
                             <td className="px-4 py-4">
-                              <div className="flex min-w-[220px] flex-col gap-2">
-                                <AdminSendDemoButton
-                                  onClick={() => setDemoCustomer(customer)}
-                                />
-                                <button
-                                  type="button"
-                                  disabled={
-                                    !ownerId || checkoutUserId === ownerId
-                                  }
-                                  onClick={() => openPayModal(customer, "stripe")}
-                                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/15 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
-                                >
-                                  <CreditCard className="h-3.5 w-3.5" />
-                                  {checkoutUserId === ownerId
-                                    ? "פותח Stripe..."
-                                    : customer.owner?.hasPaid
-                                      ? "שדרוג / חידוש"
-                                      : "תשלום ב־Stripe"}
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={
-                                    !ownerId || markingUserId === ownerId
-                                  }
-                                  onClick={() => openPayModal(customer, "manual")}
-                                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-black text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60"
-                                >
-                                  <CheckCircle2 className="h-3.5 w-3.5" />
-                                  {markingUserId === ownerId
-                                    ? "מסמן..."
-                                    : "סמן שולם ידני"}
-                                </button>
-                                <button
-                                  type="button"
-                                  disabled={!ownerId}
-                                  onClick={() => openPurchases(customer)}
-                                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
-                                >
-                                  פירוט רכישות
-                                </button>
-                              </div>
+                              {renderCustomerActions(customer, ownerId)}
                             </td>
                           </tr>
                         );

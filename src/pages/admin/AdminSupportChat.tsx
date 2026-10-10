@@ -16,6 +16,7 @@ import { useAuth } from "../../context/AuthContext";
 import { preferredLocaleFromConnectionCountry } from "../../guidedDemo/adminSendForm";
 import { notifyAdminSupportEvent } from "../../utils/adminStaffAlerts";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
 import { AdminSendDemoButton } from "./AdminSendGuidedDemoModal";
 import AdminInteractiveDemoFollowupModal from "./AdminInteractiveDemoFollowupModal";
 import AdminSupportChatSendTemplateModal from "./AdminSupportChatSendTemplateModal";
@@ -1117,43 +1118,37 @@ export default function AdminSupportChat() {
   return (
     <div
       dir="rtl"
-      className="flex h-[100dvh] flex-col overflow-hidden bg-[#F8F9FA] text-slate-900"
+      className="biz-admin-fill text-slate-900"
       style={{ fontFamily: '"Assistant", "Inter", "Rubik", sans-serif' }}
     >
       <AdminHeader />
 
       <main className="mx-auto flex min-h-0 w-full max-w-[1480px] flex-1 flex-col overflow-hidden px-3 py-5 sm:px-4 sm:py-6 md:px-8">
-        <div className="mb-5 flex shrink-0 flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 sm:text-3xl">
-              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#7C4DFF] text-white shadow-lg shadow-[#7C4DFF]/25">
-                <Headphones size={20} />
-              </span>
-              צ׳אט שירות לקוחות
-            </h1>
-            <p className="mt-2 text-sm font-semibold text-slate-500">
-              שיחות אתר ו-WhatsApp באותו צ׳אט תמיכה — כולל הזמנות דמו מודרך
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+        <div className="mb-4 shrink-0">
+          <AdminPageHeader
+            title="תמיכה"
+            description="שיחות אתר ו-WhatsApp באותו צ׳אט, כולל הזמנות דמו."
+            actions={
+              <>
+            <span className="biz-chip">
               נציגים מחוברים: {onlineAgents.length || (socket?.connected ? 1 : 0)}
             </span>
             {waitingCount > 0 && (
-              <span className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-black text-amber-800 ring-1 ring-amber-100">
+              <span className="biz-chip">
                 ממתינות: {waitingCount}
               </span>
             )}
             <button
               type="button"
               onClick={() => void loadConversations()}
-              className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-[#7C4DFF]"
+              className="biz-btn biz-btn-secondary"
             >
               <RefreshCw size={14} />
               רענון
             </button>
-          </div>
+              </>
+            }
+          />
         </div>
 
         {toast && (
