@@ -373,7 +373,9 @@ export default function MetaCampaignsCampaignsPage() {
                     setPending(null);
                     await load();
                   } catch (error) {
-                    toast.error(t("metaCampaigns.errors.updateStatus"));
+                    const message = (error as { response?: { data?: { error?: string } } })
+                      ?.response?.data?.error;
+                    toast.error(message || t("metaCampaigns.errors.updateStatus"));
                   } finally {
                     setBusyId("");
                   }

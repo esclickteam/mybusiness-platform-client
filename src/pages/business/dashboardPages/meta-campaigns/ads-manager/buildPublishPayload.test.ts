@@ -56,5 +56,17 @@ describe("audience estimate and publish use the same targeting", () => {
     expect(publish.locations).toEqual(estimate.locations);
     expect(state.audienceEstimate.ready).toBe(false);
     expect(state.audienceEstimate.lower).toBe(0);
+    expect(publish.status).toBe("PAUSED");
+    expect(publish.activateAfterPublish).toBe(false);
+  });
+
+  it("turns the campaign on only when publish is explicitly confirmed", () => {
+    const state = createDefaultAdsManagerState();
+    const draft = buildPublishPayloadFromAdsManager(state);
+    const live = buildPublishPayloadFromAdsManager(state, { activate: true });
+    expect(draft.status).toBe("PAUSED");
+    expect(draft.activateAfterPublish).toBe(false);
+    expect(live.status).toBe("ACTIVE");
+    expect(live.activateAfterPublish).toBe(true);
   });
 });
