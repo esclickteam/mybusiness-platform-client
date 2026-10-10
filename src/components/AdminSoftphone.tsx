@@ -108,7 +108,7 @@ type SoftphoneAuthPayload = {
   fromNumber?: string;
 };
 
-/** Normalize dial input to E.164. US 10-digit numbers become +1XXXXXXXXXX. */
+/** Normalize dial input to E.164 without inventing an Israeli prefix. */
 function normalizeDialNumber(raw: string) {
   let clean = String(raw || "").trim().replace(/[^\d+]/g, "");
   if (!clean) return "";
@@ -118,15 +118,25 @@ function normalizeDialNumber(raw: string) {
     return rest ? `+${rest}` : "";
   }
   const digits = clean.replace(/\D/g, "");
-  if (!digits) return "";
+  if (!digits || digits.startsWith("0")) return "";
   if (digits.startsWith("972")) return `+${digits}`;
-  if (digits.startsWith("0") && digits.length >= 9) {
-    return `+972${digits.slice(1)}`;
-  }
   if (digits.length === 10) return `+1${digits}`;
   if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
   if (digits.length >= 8 && digits.length <= 15) return `+${digits}`;
   return "";
+}
+
+function isTelnyxInboundCall(call: any, notification: any) {
+  const direction = String(
+    call?.direction || notification?.direction || notification?.call?.direction || ""
+  ).toLowerCase();
+  if (direction === "outbound" || direction === "outgoing") return false;
+  if (call && telnyxCall && call === telnyxCall) return false;
+  const current = getAdminSoftphoneState().activeCall;
+  if (current?.direction === "outbound" && current.status !== "incoming") {
+    return false;
+  }
+  return direction === "inbound" || direction === "incoming";
 }
 
 function friendlyCallError(err: any) {
@@ -738,19 +748,10 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
       if (!call) return;
 
       const state = String(call.state || notification?.state || "").toLowerCase();
-      const direction = String(
-        call.direction ||
-          notification?.direction ||
-          notification?.call?.direction ||
-          ""
-      ).toLowerCase();
+      const isInbound = isTelnyxInboundCall(call, notification);
+      if (!isInbound) return;
 
-      const isInbound =
-        direction === "inbound" ||
-        direction === "incoming" ||
-        Boolean(call.options?.remoteCallerNumber);
-
-      if (isInbound && (state === "ringing" || state === "new")) {
+      if (state === "ringing" || state === "new") {
         pendingIncomingTelnyxCall = call;
         const from =
           call.options?.remoteCallerNumber ||
@@ -1263,7 +1264,12 @@ export default function AdminSoftphone({
       const phone = normalizeDialNumber(opts?.phone || digits || "");
       if (!phone || phone.replace(/\D/g, "").length < 8) {
         outboundDialInFlight = false;
-        setError("הזינו מספר טלפון תקין");
+        const rawDial = String(opts?.phone || digits || "").replace(/\D/g, "");
+        setError(
+          rawDial.startsWith("0")
+            ? "לחיוג לישראל הזינו את המספר עם קידומת +972"
+            : "הזינו מספר בינלאומי מלא, למשל +1 או +972 או +44"
+        );
         reportClientDiagnostic("invalid_phone_number", "dial_input");
         setSoftphoneOpen(true);
         setTab("dial");
@@ -1838,11 +1844,11 @@ export default function AdminSoftphone({
     setSimulating(true);
     try {
       const res = await API.post("/admin/softphone/simulate-incoming", {
-        fromNumber: digits || "+972501234567",
+        fromNumber: digits || "+12105551234",
         contactName: contactName || "בדיקת שיחה נכנסת",
       });
       presentIncomingSoftphoneCall({
-        phone: res.data?.call?.fromNumber || digits || "+972501234567",
+        phone: res.data?.call?.fromNumber || digits || "+12105551234",
         contactName:
           res.data?.call?.contactName || contactName || "בדיקת שיחה נכנסת",
         callSid: res.data?.notify?.payload?.callSid || null,
@@ -1981,7 +1987,11 @@ export default function AdminSoftphone({
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-base font-black">
-                      {isIncoming ? "שיחה נכנסת" : "סופטפון"}
+                      {isIncoming
+                        ? "שיחה נכנסת"
+                        : activeCall?.direction === "outbound"
+                          ? "שיחה יוצאת"
+                          : "סופטפון"}
                     </p>
                     <p className="truncate text-[11px] font-bold text-white/80">
                       {status.voipReady
@@ -2425,6 +2435,18 @@ export default function AdminSoftphone({
                                 {formatDisplayPhone(remote)}
                               </span>
                               <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                                <span
+                                  className={[
+                                    "inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ring-1",
+                                    call.direction === "inbound"
+                                      ? "bg-sky-50 text-sky-700 ring-sky-100"
+                                      : "bg-emerald-50 text-emerald-700 ring-emerald-100",
+                                  ].join(" ")}
+                                >
+                                  {call.direction === "inbound"
+                                    ? "שיחה נכנסת"
+                                    : "שיחה יוצאת"}
+                                </span>
                                 <span
                                   className={[
                                     "inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ring-1",
