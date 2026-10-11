@@ -4,7 +4,7 @@
  */
 import type { CSSProperties } from "react";
 export const ADMIN_FLOATING_PANEL_CLASS = [
-  "fixed z-[9999] flex flex-col overflow-hidden border border-slate-200/90 bg-white text-slate-900",
+  "pointer-events-auto fixed z-[10050] flex flex-col overflow-hidden border border-slate-200/90 bg-white text-slate-900",
   // Mobile: bottom sheet
   "inset-x-0 bottom-0 top-auto h-[min(92dvh,720px)] w-full rounded-t-[28px] rounded-b-none",
   "pb-[env(safe-area-inset-bottom)]",
@@ -69,7 +69,7 @@ export const ADMIN_PAGE_SHELL_CLASS =
   "min-h-0 bg-transparent px-0 py-0 text-start text-slate-800";
 
 export const ADMIN_MOBILE_BACKDROP_CLASS =
-  "fixed inset-0 z-[9998] bg-slate-950/35 backdrop-blur-[2px] sm:hidden";
+  "fixed inset-0 z-[10040] bg-slate-950/35 backdrop-blur-[2px] sm:hidden";
 
 export const ADMIN_PANEL_BACKDROP_CLASS =
   "fixed inset-0 z-[9998] bg-slate-950/35 backdrop-blur-[2px]";
