@@ -60,6 +60,15 @@ import {
   ensureMicrophoneAccess,
   markMicrophoneGranted,
 } from "../utils/softphoneMicrophone";
+import {
+  buildTelnyxOutboundInvite,
+  isE164,
+  isLiveCallStatus,
+  normalizeDialNumber,
+  outboundUpdateFromTelnyxState,
+  sanitizeDialInput,
+  telnyxLegIsOngoing,
+} from "../utils/softphoneDial";
 
 type SoftphoneTab = "dial" | "contacts" | "history";
 
@@ -108,29 +117,6 @@ type SoftphoneAuthPayload = {
   fromNumber?: string;
 };
 
-/** Keep a leading + and dial characters. Never drop a plus the user typed or pasted. */
-function sanitizeDialInput(raw: string) {
-  const clean = String(raw || "").replace(/[^\d+*#]/g, "");
-  const hasPlus = clean.includes("+");
-  const body = clean.replace(/\+/g, "");
-  return (hasPlus ? `+${body}` : body).slice(0, 18);
-}
-function normalizeDialNumber(raw: string) {
-  let clean = String(raw || "").trim().replace(/[^\d+]/g, "");
-  if (!clean) return "";
-  if (clean.startsWith("00")) clean = `+${clean.slice(2)}`;
-  if (clean.startsWith("+")) {
-    const rest = clean.slice(1).replace(/\D/g, "");
-    return rest ? `+${rest}` : "";
-  }
-  const digits = clean.replace(/\D/g, "");
-  if (!digits || digits.startsWith("0")) return "";
-  if (digits.startsWith("972")) return `+${digits}`;
-  if (digits.length === 10) return `+1${digits}`;
-  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
-  if (digits.length >= 8 && digits.length <= 15) return `+${digits}`;
-  return "";
-}
 
 function isTelnyxInboundCall(call: any, notification: any) {
   const direction = String(
@@ -392,9 +378,97 @@ let telnyxTokenExpiresAt = 0;
 let telnyxRefreshTimer: number | null = null;
 let telnyxHostMountCount = 0;
 let outboundDialInFlight = false;
+let outboundAnswered = false;
+let outboundWatchTimer: number | null = null;
 let presenceTimer: number | null = null;
 let lineReconnectTimer: number | null = null;
 let lineConnectInFlight: Promise<void> | null = null;
+/** Component bridge so a Telnyx failure can re-enable the dial button with a message. */
+let publishDialFailure: (message: string) => void = () => {};
+
+function clearOutboundWatch() {
+  if (outboundWatchTimer != null) {
+    window.clearTimeout(outboundWatchTimer);
+    outboundWatchTimer = null;
+  }
+}
+
+function abortOutboundDial(
+  message: string,
+  status: "failed" | "busy" | "no-answer" | "canceled" = "failed"
+) {
+  clearOutboundWatch();
+  const current = getAdminSoftphoneState().activeCall;
+  const logId = current?.direction === "outbound" ? current.logId : null;
+  const call = telnyxCall;
+  telnyxCall = null;
+  outboundDialInFlight = false;
+  outboundAnswered = false;
+  if (call) closeTelnyxCall(call);
+  if (logId) {
+    void API.patch(`/admin/softphone/calls/${logId}`, {
+      status,
+      endedAt: new Date().toISOString(),
+      telnyxErrorMessage: String(message || "").slice(0, 240),
+    }).catch(() => {});
+  }
+  if (current?.direction === "outbound") clearActiveSoftphoneCall();
+  if (telnyxReady) reportPresence("ready");
+  publishDialFailure(message);
+}
+
+function applyOutboundTelnyxState(call: any, state: string) {
+  if (!telnyxCall || call !== telnyxCall) return;
+  const cause = String(call.cause || call.sipCode || call.causeCode || "");
+  const update = outboundUpdateFromTelnyxState(state, cause, outboundAnswered);
+  if (!update) return;
+
+  if (!update.terminal) {
+    if (update.status === "in-progress") outboundAnswered = true;
+    if (update.status === "ringing" || update.status === "in-progress") {
+      clearOutboundWatch();
+    }
+    patchActiveSoftphoneCall({ status: update.status, error: null });
+    const logId = getAdminSoftphoneState().activeCall?.logId;
+    if (logId) {
+      const ids = readTelnyxIds(call);
+      void API.patch(`/admin/softphone/calls/${logId}`, {
+        status: update.status === "in-progress" ? "in-progress" : "ringing",
+        ...(update.status === "in-progress"
+          ? { answeredAt: new Date().toISOString() }
+          : { ringingAt: new Date().toISOString() }),
+        ...ids,
+      }).catch(() => {});
+    }
+    return;
+  }
+
+  if (update.error) {
+    const status =
+      update.status === "busy" ||
+      update.status === "no-answer" ||
+      update.status === "canceled"
+        ? update.status
+        : "failed";
+    abortOutboundDial(update.error, status);
+    return;
+  }
+
+  clearOutboundWatch();
+  outboundAnswered = false;
+  outboundDialInFlight = false;
+  if (telnyxCall === call) telnyxCall = null;
+  const current = getAdminSoftphoneState().activeCall;
+  if (current?.direction === "outbound" && current.logId) {
+    void API.patch(`/admin/softphone/calls/${current.logId}`, {
+      status: update.status,
+      endedAt: new Date().toISOString(),
+      ...readTelnyxIds(call),
+    }).catch(() => {});
+  }
+  if (current?.direction === "outbound") clearActiveSoftphoneCall();
+  if (telnyxReady) reportPresence("ready");
+}
 
 function setTelnyxLineReady(ready: boolean) {
   telnyxReady = ready;
@@ -861,12 +935,23 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
         void refreshTelnyxLoginToken().catch(() => {});
         return;
       }
-      window.clearTimeout(timeout);
-      setTelnyxLineReady(false);
-      reportPresence("offline");
       const friendly = friendlyCallError(err);
       reportClientDiagnostic(diagnosticCodeForError(err), friendly);
-      reject(new Error(friendly));
+      const stillConnecting = telnyxClient === client && !telnyxReady;
+      if (stillConnecting) {
+        window.clearTimeout(timeout);
+        setTelnyxLineReady(false);
+        reportPresence("offline");
+        reject(new Error(friendly));
+        return;
+      }
+      const outbound = getAdminSoftphoneState().activeCall;
+      if (
+        outbound?.direction === "outbound" &&
+        (outbound.status === "connecting" || outbound.status === "ringing")
+      ) {
+        abortOutboundDial(friendly, "failed");
+      }
     });
 
     client.on?.("telnyx.socket.close", () => {
@@ -882,7 +967,12 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
 
       const state = String(call.state || notification?.state || "").toLowerCase();
       const isInbound = isTelnyxInboundCall(call, notification);
-      if (!isInbound) return;
+      if (!isInbound) {
+        if (telnyxCall && call === telnyxCall) {
+          applyOutboundTelnyxState(call, state);
+        }
+        return;
+      }
 
       if (state === "ringing" || state === "new") {
         pendingIncomingTelnyxCall = call;
@@ -1081,6 +1171,17 @@ export default function AdminSoftphone({
   const [now, setNow] = useState(Date.now());
   const [error, setError] = useState("");
   const [lineRegistered, setLineRegistered] = useState(false);
+
+  useEffect(() => {
+    publishDialFailure = (message: string) => {
+      outboundDialInFlight = false;
+      setBusy(false);
+      setError(message);
+    };
+    return () => {
+      publishDialFailure = () => {};
+    };
+  }, []);
   const handledQueryRef = useRef("");
 
   const elapsedSec = useMemo(() => {
@@ -1113,7 +1214,13 @@ export default function AdminSoftphone({
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      if (target?.closest?.("[data-softphone-launcher]")) return;
+      if (
+        target?.closest?.(
+          "[data-softphone-panel], [data-softphone-launcher]"
+        )
+      ) {
+        return;
+      }
       if (!rootRef.current?.contains(target as Node)) {
         setSoftphoneOpen(false);
       }
@@ -1183,6 +1290,8 @@ export default function AdminSoftphone({
       const current = getAdminSoftphoneState().activeCall;
       stopHoldMusic();
       mutedBeforeHold = false;
+      clearOutboundWatch();
+      outboundAnswered = false;
       hangupActiveVoipCall();
 
       if (current?.logId) {
@@ -1392,19 +1501,43 @@ export default function AdminSoftphone({
       source?: string;
       refId?: string;
     }) => {
-      if (
-        outboundDialInFlight ||
-        telnyxCall ||
-        twilioCall ||
-        busy ||
-        getAdminSoftphoneState().activeCall
-      ) {
+      const active = getAdminSoftphoneState().activeCall;
+      const liveUi = Boolean(active) && isLiveCallStatus(active?.status);
+      const liveLeg =
+        telnyxLegIsOngoing(telnyxCall?.state) || Boolean(twilioCall);
+      if (liveUi || liveLeg) {
+        setError("כבר מתבצעת שיחה. נתקו אותה לפני חיוג חדש.");
+        setSoftphoneOpen(true);
         return;
       }
+      if (outboundDialInFlight || busy) {
+        setError("החיוג הקודם עדיין מתחיל. המתינו רגע ונסו שוב.");
+        setSoftphoneOpen(true);
+        return;
+      }
+      if (active) clearActiveSoftphoneCall();
+      if (telnyxCall) {
+        closeTelnyxCall(telnyxCall);
+        telnyxCall = null;
+      }
       outboundDialInFlight = true;
+      outboundAnswered = false;
+      const setupTimer = window.setTimeout(() => {
+        if (!outboundDialInFlight) return;
+        const status = getAdminSoftphoneState().activeCall?.status;
+        if (status === "ringing" || status === "in-progress") return;
+        outboundDialInFlight = false;
+        if (status === "connecting") {
+          abortOutboundDial("החיוג לא יצא בזמן. נסו שוב.");
+          return;
+        }
+        setBusy(false);
+        setError("החיוג לא יצא בזמן. נסו שוב.");
+      }, 20000);
 
       const phone = normalizeDialNumber(opts?.phone || digits || "");
-      if (!phone || phone.replace(/\D/g, "").length < 8) {
+      if (!phone || !isE164(phone)) {
+        window.clearTimeout(setupTimer);
         outboundDialInFlight = false;
         const rawDial = String(opts?.phone || digits || "").replace(/\D/g, "");
         setError(
@@ -1444,8 +1577,10 @@ export default function AdminSoftphone({
 
         voipProvider = provider;
         const mode: SoftphoneMode = "voip";
-        const callerNumber = String(auth.callerId || "").trim();
-        if (provider === "telnyx" && !callerNumber) {
+        const callerNumber = normalizeDialNumber(
+          String(auth.callerId || auth.callerNumber || auth.fromNumber || "")
+        );
+        if (provider === "telnyx" && !isE164(callerNumber)) {
           throw new Error("מספר היוצא לא מוגדר בשרת");
         }
 
@@ -1490,63 +1625,48 @@ export default function AdminSoftphone({
             /* ignore */
           }
 
+          // Progress comes from telnyx.notification (call.state). Call has no on("state").
+          const invite = buildTelnyxOutboundInvite(phone, callerNumber);
+          if (!invite.ok) {
+            throw new Error(
+              invite.reason === "invalid_caller"
+                ? "מספר היוצא לא מוגדר בשרת"
+                : "מספר הטלפון אינו תקין"
+            );
+          }
           const call = client.newCall({
-            destinationNumber: phone,
-            callerNumber,
+            ...invite.invite,
             ...getTelnyxCallMediaOptions(),
           });
           telnyxCall = call;
           reportPresence("busy");
           void attachTelnyxRemoteAudio(call);
-
-          call.on?.("state", (nextState: string) => {
-            const state = String(nextState || "").toLowerCase();
-            const ids = readTelnyxIds(call);
-            if (state === "ringing" || state === "trying") {
-              patchActiveSoftphoneCall({ status: "ringing" });
-              if (logId) {
-                void API.patch(`/admin/softphone/calls/${logId}`, {
-                  status: "ringing",
-                  ringingAt: new Date().toISOString(),
-                  ...ids,
-                });
+          const immediate = String(call.state || "").toLowerCase();
+          if (immediate && immediate !== "new") {
+            applyOutboundTelnyxState(call, immediate);
+          }
+          if (
+            telnyxCall === call &&
+            getAdminSoftphoneState().activeCall?.status === "connecting"
+          ) {
+            clearOutboundWatch();
+            outboundWatchTimer = window.setTimeout(() => {
+              const current = getAdminSoftphoneState().activeCall;
+              if (
+                telnyxCall === call &&
+                current?.direction === "outbound" &&
+                current.status === "connecting"
+              ) {
+                reportClientDiagnostic(
+                  "webrtc_connection_failure",
+                  "outbound_invite_timeout"
+                );
+                abortOutboundDial(
+                  "החיוג לא יצא ל-Telnyx. בדקו מיקרופון ורשת ונסו שוב."
+                );
               }
-            }
-            if (state === "active" || state === "answered") {
-              patchActiveSoftphoneCall({ status: "in-progress" });
-              void attachTelnyxRemoteAudio(call);
-              if (logId) {
-                void API.patch(`/admin/softphone/calls/${logId}`, {
-                  status: "in-progress",
-                  answeredAt: new Date().toISOString(),
-                  ...ids,
-                });
-              }
-            }
-            if (["hangup", "destroy", "purge", "done"].includes(state)) {
-              if (telnyxCall === call) telnyxCall = null;
-              const cause = String(call.cause || call.sipCode || "").toLowerCase();
-              const failed =
-                cause.includes("fail") ||
-                cause.includes("busy") ||
-                cause.includes("reject") ||
-                cause.includes("unallocated") ||
-                cause.includes("invalid");
-              if (failed && logId) {
-                void API.patch(`/admin/softphone/calls/${logId}`, {
-                  status: cause.includes("busy") ? "busy" : "failed",
-                  telnyxErrorCode: String(call.sipCode || call.causeCode || "").slice(0, 80),
-                  telnyxErrorMessage: friendlyCallError(call),
-                  ...ids,
-                });
-              }
-              void endCall(
-                cause.includes("busy") ? "busy" : failed ? "failed" : "completed"
-              );
-            }
-          });
-
-          patchActiveSoftphoneCall({ status: "ringing" });
+            }, 12000);
+          }
         } else {
           const device = await ensureTwilioDevice(String(auth.token || ""));
           const call = await device.connect({
@@ -1579,15 +1699,17 @@ export default function AdminSoftphone({
           });
 
           call.on("error", (err: any) => {
-            patchActiveSoftphoneCall({
-              status: "failed",
-              error: err?.message || "שגיאת שיחה",
-            });
+            const message = err?.message || "שגיאת שיחה";
+            setError(message);
+            twilioCall = null;
             if (logId) {
               void API.patch(`/admin/softphone/calls/${logId}`, {
                 status: "failed",
+                telnyxErrorMessage: message,
               });
             }
+            clearActiveSoftphoneCall();
+            setBusy(false);
           });
 
           patchActiveSoftphoneCall({ status: "ringing" });
@@ -1607,13 +1729,17 @@ export default function AdminSoftphone({
           : message;
         setError(safeMessage);
         reportClientDiagnostic(diagnosticCodeForError(err), safeMessage);
-        patchActiveSoftphoneCall({
-          status: "failed",
-          error: safeMessage,
-        });
+        clearOutboundWatch();
+        outboundAnswered = false;
+        if (telnyxCall) {
+          const failedCall = telnyxCall;
+          telnyxCall = null;
+          closeTelnyxCall(failedCall);
+        }
         clearActiveSoftphoneCall();
         if (telnyxReady) reportPresence("ready");
       } finally {
+        window.clearTimeout(setupTimer);
         outboundDialInFlight = false;
         setBusy(false);
       }
@@ -2141,6 +2267,8 @@ export default function AdminSoftphone({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 40 }}
             transition={{ duration: 0.2 }}
+            data-softphone-panel="true"
+            onMouseDown={(event) => event.stopPropagation()}
             className={ADMIN_FLOATING_PANEL_CLASS}
             dir="rtl"
             style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
@@ -2437,7 +2565,10 @@ export default function AdminSoftphone({
                   </div>
 
                   {error ? (
-                    <p className="mb-2 text-center text-xs font-bold text-rose-600">
+                    <p
+                      role="alert"
+                      className="mb-2 text-center text-xs font-bold text-rose-600"
+                    >
                       {error}
                     </p>
                   ) : (
@@ -2507,8 +2638,15 @@ export default function AdminSoftphone({
                   <div className="mt-3 flex items-center gap-2">
                     <button
                       type="button"
+                      data-softphone-dial="true"
                       disabled={busy}
-                      onClick={() => void startCall()}
+                      aria-busy={busy}
+                      onMouseDown={(event) => event.stopPropagation()}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        void startCall();
+                      }}
                       className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-[22px] bg-gradient-to-l from-emerald-500 to-teal-500 text-base font-black text-white shadow-lg shadow-emerald-500/25 transition hover:brightness-105 disabled:opacity-60"
                     >
                       {busy ? (
@@ -2516,7 +2654,7 @@ export default function AdminSoftphone({
                       ) : (
                         <Phone className="h-5 w-5" />
                       )}
-                      חיוג
+                      {busy ? "מחייג..." : "חיוג"}
                     </button>
                     <button
                       type="button"
