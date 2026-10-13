@@ -160,7 +160,12 @@ export function templateDemoLinks(
   if (product.supportsAdminDemo && admin) links.push({ id: "admin", href: admin });
   if (product.supportsCustomerDemo && customer) links.push({ id: "customer", href: customer });
   if (explore) links.push({ id: "explore", href: explore });
-  return links;
+  const seen = new Set<string>();
+  return links.filter((link) => {
+    if (seen.has(link.href)) return false;
+    seen.add(link.href);
+    return true;
+  });
 }
 
 export type SaasCategory = { id: string; label: string };
