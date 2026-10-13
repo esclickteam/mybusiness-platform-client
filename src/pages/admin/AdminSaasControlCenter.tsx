@@ -1,9 +1,12 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import API from "../../api";
 import { MARKETPLACE_CATEGORIES } from "../../saas/logic";
 import AdminHeader from "./AdminsHeader";
+import AdminDataTable, { type AdminTableColumn } from "./shell/AdminDataTable";
+import { AdminBadge, AdminEllipsis } from "./shell/adminCells";
 import AdminPageHeader from "./shell/AdminPageHeader";
+import AdminRowMenu from "./shell/AdminRowMenu";
 import { ADMIN_PAGE_SHELL_CLASS } from "../../utils/adminResponsive";
 
 type ShotDraft = {
@@ -114,6 +117,8 @@ export default function AdminSaasControlCenter() {
   const [draft, setDraft] = useState<TemplateDraft>(EMPTY);
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   async function load() {
     const { data } = await API.get("/admin/saas-templates");
@@ -148,6 +153,43 @@ export default function AdminSaasControlCenter() {
     }
   }
 
+  const visibleRows = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    return rows.filter((row) => {
+      if (statusFilter && row.status !== statusFilter) return false;
+      if (!term) return true;
+      return [row.name, row.slug, row.category, row.status].join(" ").toLowerCase().includes(term);
+    });
+  }, [rows, query, statusFilter]);
+
+  const columns: AdminTableColumn<TemplateDraft>[] = [
+    {
+      key: "name",
+      header: "תבנית",
+      render: (row) => (
+        <span className="biz-identity-copy">
+          <strong title={row.name}>{row.name || "—"}</strong>
+          <small dir="ltr">/saas/{row.slug || "—"}</small>
+        </span>
+      ),
+    },
+    {
+      key: "category",
+      header: "קטגוריה",
+      secondary: true,
+      render: (row) => <AdminEllipsis>{row.category}</AdminEllipsis>,
+    },
+    {
+      key: "status",
+      header: "סטטוס",
+      render: (row) => (
+        <AdminBadge tone={row.status === "ACTIVE" ? "success" : row.status === "ARCHIVED" ? "warning" : "neutral"}>
+          {row.status}
+        </AdminBadge>
+      ),
+    },
+  ];
+
   async function setStatus(id: string, status: string) {
     setError("");
     try {
@@ -167,41 +209,54 @@ export default function AdminSaasControlCenter() {
             title="SaaS Control Center"
             description="תבניות בסטטוס פעיל מופיעות ב־/saas. מדיה, וידאו וקישורי דמו נשמרים על התבנית."
           />
-          {error ? <p className="mt-3 font-bold text-rose-600">{error}</p> : null}
-          <div className="mt-4 grid gap-3">
-            {rows.map((row) => (
-              <article key={row.id || row.slug} className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <h2 className="text-lg font-black text-purple-950">{row.name}</h2>
-                    <p className="text-sm font-bold text-slate-500">
-                      {row.category} · {row.status} · /saas/{row.slug}
-                    </p>
-                    <p className="mt-2 text-sm font-semibold text-slate-600">{row.description}</p>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    <button type="button" className="rounded-full bg-slate-100 px-3 py-2 text-xs font-black" onClick={() => setDraft(row)}>
-                      עריכה
-                    </button>
-                    {row.slug ? (
-                      <Link className="rounded-full bg-white px-3 py-2 text-xs font-black ring-1 ring-slate-200" to={`/saas/${row.slug}`} target="_blank">
-                        תצוגת עמוד
-                      </Link>
-                    ) : null}
-                    {row.status !== "ACTIVE" ? (
-                      <button type="button" className="rounded-full bg-[#24124d] px-3 py-2 text-xs font-black text-white" onClick={() => setStatus(row.id, "ACTIVE")}>
-                        ACTIVE
-                      </button>
-                    ) : (
-                      <button type="button" className="rounded-full bg-white px-3 py-2 text-xs font-black ring-1 ring-slate-200" onClick={() => setStatus(row.id, "DRAFT")}>
-                        DRAFT
-                      </button>
-                    )}
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
+          <AdminDataTable
+            tableId="admin-saas-control"
+            rows={visibleRows}
+            columns={columns}
+            rowKey={(row) => row.id || row.slug}
+            error={error}
+            emptyTitle="אין תבניות להצגה"
+            searchValue={query}
+            onSearchChange={setQuery}
+            searchPlaceholder="חיפוש לפי שם, slug או קטגוריה"
+            resetKey={`${query}|${statusFilter}`}
+            countLabel={`${visibleRows.length} תבניות`}
+            filters={
+              <select
+                className="biz-input biz-input-auto"
+                aria-label="סינון לפי סטטוס"
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
+                <option value="">כל הסטטוסים</option>
+                <option value="DRAFT">DRAFT</option>
+                <option value="ACTIVE">ACTIVE</option>
+                <option value="ARCHIVED">ARCHIVED</option>
+              </select>
+            }
+            mobileTitle={(row) => row.name}
+            mobileMeta={(row) => `${row.category || "—"} · ${row.status || "—"}`}
+            rowActions={(row) => (
+              <div className="biz-row-actions">
+                <button type="button" className="biz-btn biz-btn-secondary biz-btn-row" onClick={() => setDraft(row)}>
+                  עריכה
+                </button>
+                <AdminRowMenu
+                  items={[
+                    {
+                      label: "תצוגת עמוד",
+                      hidden: !row.slug,
+                      onClick: () => window.open(`/saas/${row.slug}`, "_blank", "noopener,noreferrer"),
+                    },
+                    {
+                      label: row.status === "ACTIVE" ? "העברה לטיוטה" : "הפעלה",
+                      onClick: () => void setStatus(row.id, row.status === "ACTIVE" ? "DRAFT" : "ACTIVE"),
+                    },
+                  ]}
+                />
+              </div>
+            )}
+          />
         </section>
         <form onSubmit={onSubmit} className="h-fit rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
           <div className="flex items-center justify-between gap-3">

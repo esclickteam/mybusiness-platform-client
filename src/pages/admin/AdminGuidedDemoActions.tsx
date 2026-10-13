@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import AdminRowMenu from "./shell/AdminRowMenu";
 import {
   copyGuidedDemoLink,
   duplicateGuidedDemo,
@@ -65,13 +66,107 @@ export default function AdminGuidedDemoActions({
     }
   }
 
+  const menuItems = [
+    linkAvailable
+      ? {
+          label: busy === "copy" ? "מעתיק..." : "העתקת קישור",
+          disabled: Boolean(busy),
+          testId: "admin-demo-copy-link",
+          onClick: () =>
+            void run("copy", async () => {
+              const url = await resolveLiveLink();
+              await navigator.clipboard?.writeText(url);
+              setMessage("הקישור הועתק");
+            }),
+        }
+      : null,
+    linkAvailable
+      ? {
+          label: "שליחה ידנית ב-WhatsApp",
+          disabled: Boolean(busy),
+          testId: "admin-demo-manual-whatsapp",
+          onClick: () =>
+            void run("manual", async () => {
+              const url = await resolveLiveLink();
+              const share = buildManualWhatsAppUrl({
+                phone: invitationPhone(invitation),
+                customerName: invitation.customerName,
+                demoUrl: url,
+              });
+              openExternalUrl(share);
+              void recordGuidedDemoManualShare(id).catch(() => null);
+              setMessage("WhatsApp נפתח — שלחו ידנית מהאפליקציה");
+            }),
+        }
+      : null,
+    {
+      label: "שליחה אוטומטית ב-WhatsApp",
+      disabled: Boolean(busy) || !whatsAppApiAvailable,
+      testId: "admin-demo-api-whatsapp",
+      title: whatsAppApiAvailable ? undefined : "שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע",
+      onClick: () =>
+        void run("api", async () => {
+          const result = await resendGuidedDemo(id);
+          if (result?.delivery && result.delivery.ok === false) {
+            throw Object.assign(new Error(result.delivery.error || "שליחת WhatsApp נכשלה"), {
+              response: { data: { error: result.delivery.error } },
+            });
+          }
+          setMessage("ההודעה נשלחה ב-WhatsApp");
+        }),
+    },
+    invitation.status !== "revoked"
+      ? {
+          label: "הארכת תוקף",
+          disabled: Boolean(busy),
+          onClick: () =>
+            void run("extend", async () => {
+              await extendGuidedDemo(id, 24);
+              setMessage("התוקף הוארך");
+            }),
+        }
+      : null,
+    invitation.status !== "revoked"
+      ? {
+          label: "ביטול קישור",
+          danger: true,
+          disabled: Boolean(busy),
+          onClick: () =>
+            void run("revoke", async () => {
+              await revokeGuidedDemo(id);
+              setMessage("הקישור בוטל");
+            }),
+        }
+      : null,
+    needsNew
+      ? {
+          label: "יצירת קישור חדש",
+          disabled: Boolean(busy),
+          testId: "admin-demo-new-link",
+          onClick: () =>
+            void run("duplicate", async () => {
+              const result = await duplicateGuidedDemo(id, { send: false });
+              setMessage("נוצר קישור חדש");
+              onCreated?.(result);
+            }),
+        }
+      : null,
+  ].filter(Boolean) as {
+    label: string;
+    onClick: () => void;
+    danger?: boolean;
+    disabled?: boolean;
+    testId?: string;
+    title?: string;
+  }[];
+
   return (
     <div onClick={(event) => event.stopPropagation()}>
-      <div className="flex flex-wrap gap-1">
+      <div className="biz-row-actions">
         {invitation.status !== "revoked" ? (
           <button
             type="button"
-            className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
+            className="biz-btn biz-btn-secondary biz-btn-row"
             disabled={Boolean(busy)}
             data-testid="admin-demo-open"
             title="פותח תצוגת אדמין — לא משפיע על קישור הלקוח"
@@ -90,122 +185,7 @@ export default function AdminGuidedDemoActions({
             {busy === "open" ? "פותח..." : "פתיחת הדמו"}
           </button>
         ) : null}
-
-        {linkAvailable ? (
-          <>
-            <button
-              type="button"
-              className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
-              disabled={Boolean(busy)}
-              data-testid="admin-demo-copy-link"
-              onClick={() =>
-                void run("copy", async () => {
-                  const url = await resolveLiveLink();
-                  await navigator.clipboard?.writeText(url);
-                  setMessage("הקישור הועתק");
-                })
-              }
-            >
-              {busy === "copy" ? "מעתיק..." : "העתקת קישור"}
-            </button>
-            <button
-              type="button"
-              className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
-              disabled={Boolean(busy)}
-              data-testid="admin-demo-manual-whatsapp"
-              onClick={() =>
-                void run("manual", async () => {
-                  const url = await resolveLiveLink();
-                  const share = buildManualWhatsAppUrl({
-                    phone: invitationPhone(invitation),
-                    customerName: invitation.customerName,
-                    demoUrl: url,
-                  });
-                  openExternalUrl(share);
-                  void recordGuidedDemoManualShare(id).catch(() => null);
-                  setMessage("WhatsApp נפתח — שלחו ידנית מהאפליקציה");
-                })
-              }
-            >
-              שליחה ידנית ב-WhatsApp
-            </button>
-          </>
-        ) : null}
-
-        <button
-          type="button"
-          className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
-          disabled={Boolean(busy) || !whatsAppApiAvailable}
-          title={
-            whatsAppApiAvailable
-              ? ""
-              : "שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע"
-          }
-          data-testid="admin-demo-api-whatsapp"
-          onClick={() =>
-            void run("api", async () => {
-              const result = await resendGuidedDemo(id);
-              if (result?.delivery && result.delivery.ok === false) {
-                throw Object.assign(new Error(result.delivery.error || "שליחת WhatsApp נכשלה"), {
-                  response: { data: { error: result.delivery.error } },
-                });
-              }
-              setMessage("ההודעה נשלחה ב-WhatsApp");
-            })
-          }
-        >
-          שליחה אוטומטית ב-WhatsApp
-        </button>
-
-        {invitation.status !== "revoked" ? (
-          <button
-            type="button"
-            className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
-            disabled={Boolean(busy)}
-            onClick={() =>
-              void run("extend", async () => {
-                await extendGuidedDemo(id, 24);
-                setMessage("התוקף הוארך");
-              })
-            }
-          >
-            הארכת תוקף
-          </button>
-        ) : null}
-
-        {invitation.status !== "revoked" ? (
-          <button
-            type="button"
-            className="rounded-lg border border-rose-200 px-2 py-1 text-[11px] font-black text-rose-700 disabled:opacity-40"
-            disabled={Boolean(busy)}
-            onClick={() =>
-              void run("revoke", async () => {
-                await revokeGuidedDemo(id);
-                setMessage("הקישור בוטל");
-              })
-            }
-          >
-            ביטול קישור
-          </button>
-        ) : null}
-
-        {needsNew ? (
-          <button
-            type="button"
-            className="rounded-lg border border-violet-200 bg-violet-50 px-2 py-1 text-[11px] font-black text-violet-800 disabled:opacity-40"
-            disabled={Boolean(busy)}
-            data-testid="admin-demo-new-link"
-            onClick={() =>
-              void run("duplicate", async () => {
-                const result = await duplicateGuidedDemo(id, { send: false });
-                setMessage("נוצר קישור חדש");
-                onCreated?.(result);
-              })
-            }
-          >
-            יצירת קישור חדש
-          </button>
-        ) : null}
+        <AdminRowMenu items={menuItems} />
       </div>
       {message ? <p className="mt-1 text-[11px] font-bold text-emerald-700">{message}</p> : null}
       {error ? <p className="mt-1 text-[11px] font-bold text-rose-600">{error}</p> : null}

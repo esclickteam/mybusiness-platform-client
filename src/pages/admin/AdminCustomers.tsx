@@ -9,11 +9,12 @@ import {
 } from "lucide-react";
 
 import API from "../../api";
-import AdminDialButton from "../../components/AdminDialButton";
 import UpsellPicker from "../../components/pricing/UpsellPicker";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminHeader from "./AdminsHeader";
+import AdminDataTable, { type AdminTableColumn } from "./shell/AdminDataTable";
+import { AdminBadge, AdminDateText, AdminIdentity, AdminPhone } from "./shell/adminCells";
 import AdminPageHeader from "./shell/AdminPageHeader";
 import AdminRowMenu from "./shell/AdminRowMenu";
 import { formatBillingMoney } from "../../components/billing/billingFormat";
@@ -176,27 +177,6 @@ function formatDate(value?: string | null) {
   }).format(date);
 }
 
-function statusTone(status?: string, hasPaid?: boolean) {
-  if (hasPaid || status === "active") {
-    return "bg-emerald-50 text-emerald-700 border-emerald-200";
-  }
-  if (status === "pending") {
-    return "bg-amber-50 text-amber-700 border-amber-200";
-  }
-  if (status === "past_due" || status === "canceled") {
-    return "bg-rose-50 text-rose-700 border-rose-200";
-  }
-  return "bg-slate-50 text-slate-600 border-slate-200";
-}
-
-function planTone(plan?: string) {
-  if (plan === "yearly") return "bg-indigo-50 text-indigo-700 border-indigo-200";
-  if (plan === "monthly" || plan === "earlybird") {
-    return "bg-sky-50 text-sky-700 border-sky-200";
-  }
-  if (plan === "trial") return "bg-violet-50 text-violet-700 border-violet-200";
-  return "bg-slate-50 text-slate-600 border-slate-200";
-}
 
 function AdminCustomers() {
   const navigate = useNavigate();
@@ -226,6 +206,8 @@ function AdminCustomers() {
   const [purchases, setPurchases] = useState<BusinessPurchase[]>([]);
   const [purchasesLoading, setPurchasesLoading] = useState(false);
   const [demoCustomer, setDemoCustomer] = useState<AdminCustomer | null>(null);
+  const [planFilter, setPlanFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -300,10 +282,40 @@ function AdminCustomers() {
     loadCustomers();
   }, [loadCustomers]);
 
+  const planOptions = useMemo(() => {
+    return Array.from(
+      new Set(
+        customers
+          .map((customer) => customer.owner?.planLabel || customer.owner?.subscriptionPlan)
+          .filter((value): value is string => Boolean(value))
+      )
+    );
+  }, [customers]);
+
+  const statusOptions = useMemo(() => {
+    return Array.from(
+      new Set(
+        customers
+          .map((customer) => customer.owner?.statusLabel || customer.owner?.subscriptionStatus)
+          .filter((value): value is string => Boolean(value))
+      )
+    );
+  }, [customers]);
+
+  const visibleCustomers = useMemo(() => {
+    return customers.filter((customer) => {
+      const plan = customer.owner?.planLabel || customer.owner?.subscriptionPlan || "";
+      const status = customer.owner?.statusLabel || customer.owner?.subscriptionStatus || "";
+      if (planFilter && plan !== planFilter) return false;
+      if (statusFilter && status !== statusFilter) return false;
+      return true;
+    });
+  }, [customers, planFilter, statusFilter]);
+
   const filteredCountLabel = useMemo(() => {
-    if (debouncedSearch) return `${customers.length} תוצאות`;
+    if (debouncedSearch || planFilter || statusFilter) return `${visibleCustomers.length} תוצאות`;
     return `${summary.total} לקוחות`;
-  }, [customers.length, debouncedSearch, summary.total]);
+  }, [visibleCustomers.length, debouncedSearch, planFilter, statusFilter, summary.total]);
 
   function updateForm<K extends keyof CreateForm>(key: K, value: CreateForm[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -542,6 +554,84 @@ function AdminCustomers() {
     );
   }
 
+  const customerColumns: AdminTableColumn<AdminCustomer>[] = [
+    {
+      key: "business",
+      header: "עסק / לקוח",
+      render: (customer) => (
+        <AdminIdentity
+          name={customer.businessName || "ללא שם"}
+          subtitle={customer.email}
+          image={customer.logo}
+        />
+      ),
+    },
+    {
+      key: "owner",
+      header: "בעלים",
+      render: (customer) => (
+        <span className="biz-identity-copy">
+          <strong title={customer.owner?.name || ""}>{customer.owner?.name || "—"}</strong>
+          {customer.owner?.email ? (
+            <small dir="ltr" title={customer.owner.email}>
+              {customer.owner.email}
+            </small>
+          ) : null}
+        </span>
+      ),
+    },
+    {
+      key: "phone",
+      header: "טלפון",
+      render: (customer) => (
+        <AdminPhone
+          phone={customer.phone}
+          name={customer.businessName || customer.owner?.name}
+          source="customer"
+          refId={customer._id}
+        />
+      ),
+    },
+    {
+      key: "plan",
+      header: "חבילה",
+      render: (customer) => (
+        <AdminBadge tone={customer.owner?.subscriptionPlan === "yearly" ? "info" : "neutral"}>
+          {customer.owner?.planLabel || customer.owner?.subscriptionPlan}
+        </AdminBadge>
+      ),
+    },
+    {
+      key: "status",
+      header: "סטטוס",
+      render: (customer) => {
+        const status = customer.owner?.subscriptionStatus;
+        const tone =
+          customer.owner?.hasPaid || status === "active"
+            ? "success"
+            : status === "pending" || status === "trial"
+              ? "warning"
+              : status === "past_due" || status === "canceled"
+                ? "danger"
+                : "neutral";
+        return (
+          <AdminBadge tone={tone}>
+            {customer.owner?.statusLabel || customer.owner?.subscriptionStatus}
+          </AdminBadge>
+        );
+      },
+    },
+    {
+      key: "until",
+      header: "תוקף",
+      numeric: true,
+      secondary: true,
+      render: (customer) => (
+        <AdminDateText value={customer.owner?.subscriptionEnd || customer.owner?.trialEndsAt} />
+      ),
+    },
+  ];
+
   return (
     <>
       <AdminHeader />
@@ -569,17 +659,6 @@ function AdminCustomers() {
               </button>
             }
           />
-          <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center">
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="חיפוש לפי שם עסק, בעלים, אימייל או טלפון"
-              className="biz-input sm:max-w-sm"
-            />
-            <span className="text-sm font-semibold text-slate-500">{filteredCountLabel}</span>
-          </div>
-
           <div className="biz-stat-grid mb-6">
             {[
               { label: "סה״כ עסקים", value: summary.total },
@@ -603,225 +682,57 @@ function AdminCustomers() {
             </div>
           ) : null}
 
-          {error ? (
-            <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
-              {error}
-            </div>
-          ) : null}
-
-          <div className="overflow-hidden rounded-[28px] border border-purple-200 bg-white shadow-xl shadow-purple-950/8">
-            {loading ? (
-              <div className="flex min-h-[240px] items-center justify-center">
-                <BizuplyLoader size="xl" />
-              </div>
-            ) : customers.length === 0 ? (
-              <div className="px-6 py-16 text-center">
-                <UserPlus className="mx-auto h-10 w-10 text-purple-300" />
-                <p className="mt-4 text-sm font-bold text-slate-500">
-                  לא נמצאו לקוחות ברשימת העסקים
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowCreate(true)}
-                  className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#7C4DFF] px-4 py-2.5 text-sm font-black text-white"
-                >
-                  <Plus className="h-4 w-4" />
-                  יצירת לקוח ראשון
-                </button>
-              </div>
-            ) : (
+          <AdminDataTable
+            tableId="admin-customers"
+            rows={visibleCustomers}
+            columns={customerColumns}
+            rowKey={(customer) => customer._id}
+            loading={loading}
+            error={error}
+            onRetry={() => void loadCustomers()}
+            emptyTitle={debouncedSearch || planFilter || statusFilter ? "לא נמצאו לקוחות תואמים" : "לא נמצאו לקוחות ברשימת העסקים"}
+            emptyAction={
+              <button type="button" className="biz-btn biz-btn-row" onClick={() => setShowCreate(true)}>
+                <Plus className="h-3.5 w-3.5" />
+                יצירת לקוח
+              </button>
+            }
+            searchValue={search}
+            onSearchChange={setSearch}
+            searchPlaceholder="חיפוש לפי שם עסק, בעלים, אימייל או טלפון"
+            resetKey={`${debouncedSearch}|${planFilter}|${statusFilter}`}
+            countLabel={filteredCountLabel}
+            filters={
               <>
-                {/* Mobile cards */}
-                <div className="space-y-3 p-3 md:hidden">
-                  {customers.map((customer) => {
-                    const ownerId = customer.owner?._id || "";
-
-                    return (
-                      <article
-                        key={`m-${customer._id}`}
-                        className="rounded-[24px] border border-purple-100 bg-white p-4 shadow-sm"
-                      >
-                        <div className="flex items-start gap-3">
-                          <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-purple-100 text-lg">
-                            {customer.logo ? (
-                              <img
-                                src={customer.logo}
-                                alt=""
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              "🏢"
-                            )}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <h3 className="truncate text-base font-black text-purple-950">
-                              {customer.businessName || "ללא שם"}
-                            </h3>
-                            <p className="truncate text-xs font-bold text-slate-400">
-                              {customer.owner?.name || "—"} · {customer.email || "—"}
-                            </p>
-                            <div className="mt-2 flex flex-wrap gap-1.5">
-                              <span
-                                className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-black ${planTone(
-                                  customer.owner?.subscriptionPlan
-                                )}`}
-                              >
-                                {customer.owner?.planLabel ||
-                                  customer.owner?.subscriptionPlan ||
-                                  "—"}
-                              </span>
-                              <span
-                                className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-black ${statusTone(
-                                  customer.owner?.subscriptionStatus,
-                                  customer.owner?.hasPaid
-                                )}`}
-                              >
-                                {customer.owner?.statusLabel ||
-                                  customer.owner?.subscriptionStatus ||
-                                  "—"}
-                              </span>
-                            </div>
-                          </div>
-                          {customer.phone ? (
-                            <AdminDialButton
-                              phone={customer.phone}
-                              name={customer.businessName || customer.owner?.name}
-                              source="customer"
-                              refId={customer._id}
-                            />
-                          ) : null}
-                        </div>
-
-                        {customer.phone ? (
-                          <p className="mt-3 text-sm font-bold text-slate-600" dir="ltr">
-                            {customer.phone}
-                          </p>
-                        ) : null}
-
-                        <div className="mt-3">
-                          {renderCustomerActions(customer, ownerId)}
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-
-                {/* Desktop table */}
-                <div className="hidden overflow-x-auto md:block">
-                  <table className="min-w-full text-right">
-                    <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
-                      <tr>
-                        <th className="px-4 py-4">עסק / לקוח</th>
-                        <th className="px-4 py-4">בעלים</th>
-                        <th className="px-4 py-4">טלפון</th>
-                        <th className="px-4 py-4">חבילה</th>
-                        <th className="px-4 py-4">סטטוס</th>
-                        <th className="px-4 py-4">תוקף</th>
-                        <th className="px-4 py-4">תשלום</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {customers.map((customer) => {
-                        const ownerId = customer.owner?._id || "";
-
-                        return (
-                          <tr
-                            key={customer._id}
-                            className="border-t border-purple-100 text-sm font-bold text-slate-800"
-                          >
-                            <td className="px-4 py-4">
-                              <div className="flex items-center justify-start gap-3">
-                                <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl bg-purple-100 text-lg">
-                                  {customer.logo ? (
-                                    <img
-                                      src={customer.logo}
-                                      alt=""
-                                      className="h-full w-full object-cover"
-                                    />
-                                  ) : (
-                                    "🏢"
-                                  )}
-                                </div>
-                                <div>
-                                  <div className="font-black text-purple-950">
-                                    {customer.businessName || "ללא שם"}
-                                  </div>
-                                  <div className="text-xs text-slate-400">
-                                    {customer.email || "—"}
-                                  </div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className="px-4 py-4">
-                              <div>{customer.owner?.name || "—"}</div>
-                              <div className="text-xs font-bold text-slate-400">
-                                {customer.owner?.email || ""}
-                              </div>
-                            </td>
-                            <td className="px-4 py-4">
-                              {customer.phone ? (
-                                <div className="flex items-center justify-start gap-2">
-                                  <span
-                                    dir="ltr"
-                                    className="text-sm font-bold text-slate-700"
-                                  >
-                                    {customer.phone}
-                                  </span>
-                                  <AdminDialButton
-                                    phone={customer.phone}
-                                    name={
-                                      customer.businessName ||
-                                      customer.owner?.name
-                                    }
-                                    source="customer"
-                                    refId={customer._id}
-                                  />
-                                </div>
-                              ) : (
-                                "—"
-                              )}
-                            </td>
-                            <td className="px-4 py-4">
-                              <span
-                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${planTone(
-                                  customer.owner?.subscriptionPlan
-                                )}`}
-                              >
-                                {customer.owner?.planLabel ||
-                                  customer.owner?.subscriptionPlan ||
-                                  "—"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-4">
-                              <span
-                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusTone(
-                                  customer.owner?.subscriptionStatus,
-                                  customer.owner?.hasPaid
-                                )}`}
-                              >
-                                {customer.owner?.statusLabel ||
-                                  customer.owner?.subscriptionStatus ||
-                                  "—"}
-                              </span>
-                            </td>
-                            <td className="px-4 py-4 text-xs text-slate-500">
-                              {formatDate(
-                                customer.owner?.subscriptionEnd ||
-                                  customer.owner?.trialEndsAt
-                              )}
-                            </td>
-                            <td className="px-4 py-4">
-                              {renderCustomerActions(customer, ownerId)}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                <select
+                  className="biz-input biz-input-auto"
+                  aria-label="סינון לפי חבילה"
+                  value={planFilter}
+                  onChange={(event) => setPlanFilter(event.target.value)}
+                >
+                  <option value="">כל החבילות</option>
+                  {planOptions.map((item) => (
+                    <option key={item} value={item}>{item}</option>
+                  ))}
+                </select>
+                <select
+                  className="biz-input biz-input-auto"
+                  aria-label="סינון לפי סטטוס"
+                  value={statusFilter}
+                  onChange={(event) => setStatusFilter(event.target.value)}
+                >
+                  <option value="">כל הסטטוסים</option>
+                  {statusOptions.map((item) => (
+                    <option key={item} value={item}>{item}</option>
+                  ))}
+                </select>
               </>
-            )}
-          </div>
+            }
+            mobileTitle={(customer) => customer.businessName || "ללא שם"}
+            mobileMeta={(customer) => customer.owner?.name || customer.email || "—"}
+            rowActions={(customer) => renderCustomerActions(customer, customer.owner?._id || "")}
+          />
+
         </section>
       </main>
 
