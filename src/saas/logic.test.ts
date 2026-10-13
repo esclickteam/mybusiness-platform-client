@@ -167,6 +167,16 @@ describe("marketplace stays unlisted", () => {
       "https://web-production-923d7.up.railway.app/ar/demo/enter?role=customer",
       "https://web-production-923d7.up.railway.app/ar/demo",
     ]);
+    expect(
+      templateDemoLinks({
+        supportsCustomerDemo: true,
+        customerDemoUrl: "https://dinevo.bizuply.com/demo",
+        demoSelectorUrl: "https://dinevo.bizuply.com/demo",
+      }).map((link) => link.href)
+    ).toEqual(["https://dinevo.bizuply.com/demo"]);
+    expect(saasMarketCopy.en.products.tableflow.headline.length).toBeGreaterThan(10);
+    expect(saasMarketCopy.he.products.tableflow.headline.length).toBeGreaterThan(10);
+    expect(saasMarketCopy.en.products.tableflow.features.length).toBeGreaterThanOrEqual(6);
     expect(templateExperienceHref("northwind-desk", "customer")).toBe("/saas/northwind-desk/demo?mode=customer");
     expect(isInAppDemo("/saas/northwind-desk/demo?mode=full")).toBe(true);
     expect(isInAppDemo("https://demo.example/admin")).toBe(false);
