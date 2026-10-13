@@ -176,7 +176,7 @@ const products: SaasMarketCopy["products"] = {
       faq: [
         {
           q: "Is there a live demo?",
-          a: "Yes. The guest menu demo opens the real Dinevo guest experience. Talk with Bizuply for partner or license access to the full operator stack.",
+          a: "The public demo hub is online. Talk with Bizuply for partner or license access to the full operator stack and guided guest walkthrough.",
         },
         {
           q: "Which commercial models are available?",
@@ -251,6 +251,68 @@ const products: SaasMarketCopy["products"] = {
       ],
       ctaTitle: "Request a field-service license",
       ctaBody: "Talk with Bizuply about partnership, white-label licensing, or a country license for Cliny.",
+    },
+  },
+  tableflow: {
+    headline: "QR table ordering you can brand and license",
+    subtitle: "Guests scan, order, call a waiter, and request the bill — no app download.",
+    short: "A shared restaurant showroom for guest ordering, admin floor control, and staff boards.",
+    full: "TableFlow is a ready-to-launch QR table-ordering SaaS. Guests scan a table, build an order with modifiers, call a waiter, and request the bill without installing an app.\n\nYou brand it as your own restaurant platform and offer White Label, Partner License, or Exclusive Country License models with Bizuply.",
+    why: "Restaurants already pay monthly for ordering tools at the table. A branded QR ordering product is clearer than a custom build for every venue.",
+    seoTitle: "TableFlow QR Table Ordering SaaS | White Label | Bizuply",
+    seoDescription: "Preview TableFlow — ready-to-launch QR table ordering — then talk with Bizuply about partnership, white-label licensing, or country exclusivity.",
+    features: [
+      "QR table ordering with no app download",
+      "Guest modifiers, notes, waiter call, and bill request",
+      "Admin floor control for tickets and menu",
+      "Staff waiter and kitchen boards",
+      "White-label branding",
+      "Partner and country license models",
+    ],
+    useCases: ["Restaurant groups", "QR ordering brands", "Hospitality operators", "Partners seeking country exclusivity"],
+    showcase: {
+      overviewTitle: "Overview",
+      overview:
+        "One Levant Room showroom lets partners try guest ordering, admin floor control, and staff boards in the real product.",
+      audienceTitle: "Who it is for",
+      audience: [
+        "Operators that want a branded QR ordering platform",
+        "Partners looking at a country license",
+        "Teams that need guest and floor tools together",
+      ],
+      storyTitle: "From scan to kitchen",
+      storySubtitle: "The guest table path is live in the showroom.",
+      storySteps: ["Guest scans the table QR", "Order joins the table visit", "Admin and staff pick up the ticket"],
+      publicPreviewTitle: "Guest table",
+      publicPreviewBody: "Open the live Levant Room table demo to order without a slideshow.",
+      adminPreviewTitle: "Admin / Staff",
+      adminPreviewBody: "Demo hub opens admin and staff modes for the same showroom.",
+      ownerTitle: "Owner self-service",
+      ownerBody: "Restaurant brands run menus, tables, and floor flow under their own name.",
+      ownerPoints: ["Menus and tables", "Tickets and bills", "QR codes for each table"],
+      whiteLabelTitle: "White label",
+      whiteLabelBody: "Put your name on TableFlow and offer it under a Bizuply partnership, license, or country model.",
+      whiteLabelPoints: ["Your brand on the product", "Partner model", "Exclusive country license"],
+      brandingTitle: "What operators can run",
+      brandingBody: "Menus, QR tables, tickets, and floor boards are meant for the restaurant brand.",
+      brandingPoints: ["Menus", "Tables", "Tickets", "Staff boards", "QR codes"],
+      faqTitle: "Questions",
+      faq: [
+        {
+          q: "Is there a live demo?",
+          a: "Yes. The guest table demo opens a real ordering session, and the demo hub covers admin and staff modes.",
+        },
+        {
+          q: "Which commercial models are available?",
+          a: "White Label, Partner License, and Exclusive Country License.",
+        },
+        {
+          q: "Can it run under my brand?",
+          a: "Yes. TableFlow is built to be offered as a white-label restaurant ordering platform.",
+        },
+      ],
+      ctaTitle: "Request a restaurant license",
+      ctaBody: "Open the live demos, or talk with Bizuply about partnership, white-label licensing, or a country license.",
     },
   },
 };
