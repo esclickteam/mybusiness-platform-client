@@ -173,7 +173,7 @@ export const MARKETPLACE_CATEGORIES: SaasCategory[] = [
   { id: "education", label: "Education" },
   { id: "real_estate", label: "Real Estate" },
   { id: "hospitality", label: "Hospitality & Travel" },
-  { id: "restaurants", label: "Restaurants" },
+  { id: "restaurants", label: "Restaurants & Hospitality" },
   { id: "ecommerce", label: "E-commerce" },
   { id: "productivity", label: "Productivity" },
   { id: "other", label: "Other" },
