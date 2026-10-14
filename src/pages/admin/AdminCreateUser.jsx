@@ -851,6 +851,7 @@ export default function AdminCreateUser() {
               ) : null}
 
               {needsPackage ? (
+              <>
               <section>
                 <h2 className="mb-3 flex items-center gap-2 text-base font-black">
                   <Package className="h-4 w-4" />
@@ -997,6 +998,7 @@ export default function AdminCreateUser() {
                   </p>
                 )}
               </section>
+              </>
               ) : null}
             </>
           ) : null}
