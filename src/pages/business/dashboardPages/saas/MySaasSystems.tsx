@@ -56,6 +56,9 @@ export default function MySaasSystems() {
               <Link className="rounded-full border px-3 py-2 text-sm font-bold" to={`/business/${businessId}/dashboard/saas/${tenant.id}`}>
                 עריכת מערכת
               </Link>
+              <Link className="rounded-full border px-3 py-2 text-sm font-bold" to={`/business/${businessId}/dashboard/saas/${tenant.id}/builder`}>
+                בונה המערכת
+              </Link>
               <Link className="rounded-full border px-3 py-2 text-sm font-bold" to={`/business/${businessId}/dashboard/saas/${tenant.id}?panel=hosting`}>
                 ניהול אחסון ודומיין
               </Link>
