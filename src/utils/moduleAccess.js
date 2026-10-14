@@ -25,6 +25,7 @@ export const NAV_PATH_MODULE_MAP = {
   automations: "automations",
   // Gmail/integrations belong to the automations module ACL
   integrations: "automations",
+  "saas-bridge": "automations",
   whatsapp: "whatsapp",
   "meta-campaigns": "meta-campaigns",
   "social-schedule": "social-schedule",

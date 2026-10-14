@@ -131,6 +131,7 @@ const AutomationsAiResultsPage = lazy(() =>
 const AutomationsEditorPage = lazy(() =>
   import("./dashboardPages/automations/AutomationsEditorPage")
 );
+const SaasBridgePage = lazy(() => import("./dashboardPages/SaasBridgePage"));
 
 /* Integrations (Gmail OAuth, etc.) */
 const IntegrationsMain = lazy(() =>
@@ -587,6 +588,7 @@ const BusinessDashboardRoutes = () => {
             />
             <Route path=":workflowId" element={<AutomationsEditorPage />} />
           </Route>
+          <Route path="saas-bridge" element={<SaasBridgePage />} />
           <Route path="integrations" element={<IntegrationsMain />} />
 
           {/* WhatsApp messaging — test user only */}
