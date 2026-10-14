@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import API from "../../../../api";
 import BusinessContentEditor from "../../../../saas/BusinessContentEditor";
 import TableflowGuest from "../../../../saas/TableflowGuest";
@@ -38,7 +38,7 @@ function asList(value: unknown) {
 }
 
 export default function SaasOwnerConsole() {
-  const { tenantId = "" } = useParams();
+  const { businessId = "", tenantId = "" } = useParams();
   const [params] = useSearchParams();
   const [content, setContent] = useState<Content | null>(null);
   const [meta, setMeta] = useState<Record<string, unknown> | null>(null);
@@ -170,6 +170,7 @@ export default function SaasOwnerConsole() {
     <div dir="rtl" className="grid min-h-[80vh] gap-4 p-4 lg:grid-cols-[360px_minmax(0,1fr)]">
       <aside className="max-h-[85vh] space-y-4 overflow-y-auto rounded-2xl border bg-white p-4">
         <h1 className="text-lg font-black">עריכת המערכת</h1>
+        <Link className="inline-block text-sm font-bold underline" to={`/business/${businessId}/dashboard/saas/${tenantId}/builder`}>בונה נתונים, מסכים ותהליכים</Link>
         {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
         {message ? <p className="text-sm font-bold text-emerald-700">{message}</p> : null}
         <section>

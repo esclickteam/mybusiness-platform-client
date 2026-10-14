@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import API from "../../../../api";
+import SaasStudio from "./SaasStudio";
 
 type Field = {
   id: string;
@@ -51,6 +52,10 @@ export default function SaasSystemBuilder() {
   const [draft, setDraft] = useState<Schema | null>(null);
   const [published, setPublished] = useState<Schema | null>(null);
   const [events, setEvents] = useState<{ at: string; kind: string }[]>([]);
+  const [section, setSection] = useState("data");
+  const [versions, setVersions] = useState<{ revision: number; summary?: string; hasSnapshot?: boolean }[]>([]);
+  const [roles, setRoles] = useState<{ name: string; permissions: string[] }[]>([]);
+  const [bridge, setBridge] = useState<{ connected?: boolean; reason?: string } | null>(null);
   const [typeLabel, setTypeLabel] = useState("");
   const [fieldDraft, setFieldDraft] = useState({ recordTypeId: "", label: "", type: "text", required: false, unique: false, visibility: "internal", options: "" });
   const [recordTypeId, setRecordTypeId] = useState("");
@@ -65,6 +70,9 @@ export default function SaasSystemBuilder() {
     setFieldTypes(data.fieldTypes || []);
     setDraft(data.draft);
     setPublished(data.published);
+    setVersions(data.versions || []);
+    setRoles(data.roles || []);
+    setBridge(data.templateBridge || null);
     const activity = await API.get(`/saas-owner/${tenantId}/builder/activity`);
     setEvents(activity.data.events || []);
   }
@@ -162,7 +170,7 @@ export default function SaasSystemBuilder() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-500">System Builder</p>
-          <h1 className="text-2xl font-black">{lang === "he" ? "בונה המערכת — נתונים ושדות" : "System Builder — data and fields"}</h1>
+          <h1 className="text-2xl font-black">{lang === "he" ? "בונה המערכת" : "System Builder"}</h1>
         </div>
         <div className="flex gap-2">
           <button type="button" className="rounded-full border bg-white px-3 py-1 text-sm font-bold" onClick={() => setLang(lang === "he" ? "en" : "he")}>{lang === "he" ? "EN" : "עב"}</button>
@@ -171,7 +179,19 @@ export default function SaasSystemBuilder() {
       </div>
       {error ? <p className="mb-3 rounded-xl bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">{error}</p> : null}
       {message ? <p className="mb-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-800">{message}</p> : null}
-      <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
+      <SaasStudio
+        tenantId={tenantId}
+        lang={lang}
+        section={section}
+        onSection={setSection}
+        draft={draft}
+        published={published}
+        versions={versions}
+        roles={roles}
+        bridge={bridge}
+        onReload={load}
+      />
+      {section === "data" ? <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="space-y-4 rounded-2xl border bg-white p-4">
           <h2 className="font-black">{lang === "he" ? "סוג רשומה" : "Record type"}</h2>
           <input className="w-full rounded-xl border px-3 py-2" value={typeLabel} onChange={(event) => setTypeLabel(event.target.value)} placeholder={lang === "he" ? "לדוגמה: לקוחות" : "Example: Customers"} />
@@ -241,7 +261,7 @@ export default function SaasSystemBuilder() {
             </ul>
           </article>
         </section>
-      </div>
+      </div> : null}
     </div>
   );
 }
