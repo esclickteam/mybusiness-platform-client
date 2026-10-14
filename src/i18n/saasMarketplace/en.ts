@@ -606,7 +606,7 @@ export const en: SaasMarketCopy = {
     education: "Education",
     real_estate: "Real Estate",
     hospitality: "Hospitality & Travel",
-    restaurants: "Restaurants",
+    restaurants: "Restaurants & Hospitality",
     ecommerce: "E-commerce",
     productivity: "Productivity",
     other: "Other",

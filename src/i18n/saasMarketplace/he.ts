@@ -271,7 +271,7 @@ export const he: SaasMarketCopy = {
     education: "חינוך",
     real_estate: "נדל״ן",
     hospitality: "אירוח ותיירות",
-    restaurants: "מסעדות",
+    restaurants: "מסעדות ואירוח",
     ecommerce: "מסחר אלקטרוני",
     productivity: "פרודוקטיביות",
     other: "אחר",
