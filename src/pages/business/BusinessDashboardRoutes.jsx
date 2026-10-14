@@ -103,6 +103,7 @@ const HelpCenter = lazy(() => import("../HelpCenter"));
 const AutomationsMain = lazy(() =>
   import("./dashboardPages/automations/AutomationsMain")
 );
+const SaasBridgePage = lazy(() => import("./dashboardPages/SaasBridgePage"));
 
 /* Integrations (Gmail OAuth, etc.) */
 const IntegrationsMain = lazy(() =>
@@ -496,6 +497,7 @@ const BusinessDashboardRoutes = () => {
 
           {/* Automations — visible to all business users */}
           <Route path="automations" element={<AutomationsMain />} />
+          <Route path="saas-bridge" element={<SaasBridgePage />} />
           <Route path="integrations" element={<IntegrationsMain />} />
 
           {/* WhatsApp messaging — test user only */}

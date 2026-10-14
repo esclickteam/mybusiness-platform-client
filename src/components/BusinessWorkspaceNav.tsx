@@ -198,6 +198,13 @@ export default function BusinessWorkspaceNav({
       icon: Plug,
       moduleKey: "automations",
     },
+    {
+      labelKey: "businessNav.saasBridge",
+      fallback: "מערכות SaaS",
+      to: `${basePath}/dashboard/saas-bridge`,
+      icon: Workflow,
+      moduleKey: "automations",
+    },
     ...(showWhatsappAndMeta
       ? ([
           {
