@@ -26,6 +26,7 @@ import UpgradeRequired from "../../components/UpgradeRequired";
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
 const MySaasSystems = lazy(() => import("./dashboardPages/saas/MySaasSystems"));
 const SaasOwnerConsole = lazy(() => import("./dashboardPages/saas/SaasOwnerConsole"));
+const SaasSystemBuilder = lazy(() => import("./dashboardPages/saas/SaasSystemBuilder"));
 
 /* OLD Website Builder - keep only for compatibility routes */
 const BusinessMiniSiteBuilder = lazy(() =>
@@ -458,6 +459,7 @@ const BusinessDashboardRoutes = () => {
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="saas" element={<MySaasSystems />} />
           <Route path="saas/:tenantId" element={<SaasOwnerConsole />} />
+          <Route path="saas/:tenantId/builder" element={<SaasSystemBuilder />} />
           <Route path="dashboard/profile" element={<BusinessProfilePage />} />
 
           <Route path="collab" element={<Collab />}>
