@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import AdminDialButton from "../../../components/AdminDialButton";
 import API from "../../../api";
 import adminCrmApi from "../../../api/adminCrmApi";
 import {
@@ -10,12 +9,14 @@ import {
   SOURCE_LABELS,
   STAGE_LABELS,
   formatIsraelDate,
-  healthTone,
   lifecycleTone,
   stageTone,
   statusTone,
 } from "./adminCrmLabels";
-import { CrmCard, EmptyState, ErrorState, LoadingState, PrimaryButton, SecondaryButton, DangerButton } from "./AdminCrmUi";
+import AdminDataTable, { type AdminTableColumn } from "../shell/AdminDataTable";
+import AdminRowMenu from "../shell/AdminRowMenu";
+import { AdminEllipsis, AdminIdentity, AdminMoney, AdminPhone } from "../shell/adminCells";
+import { CrmCard, PrimaryButton, SecondaryButton, DangerButton } from "./AdminCrmUi";
 import { AdminModal } from "./AdminModal";
 import MetaLeadAdsIntegration from "../../business/dashboardPages/crmpages/MetaLeadAdsIntegration";
 import AdNetworkPickerModal, {
@@ -73,7 +74,6 @@ export default function AdminCrmCustomers() {
   const [items, setItems] = useState<Row[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [pages, setPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [q, setQ] = useState("");
@@ -88,7 +88,18 @@ export default function AdminCrmCustomers() {
   const [health, setHealth] = useState("");
   const [sort, setSort] = useState("createdAt");
   const [selected, setSelected] = useState<string[]>([]);
-  const [columns, setColumns] = useState<string[]>(ALL_COLUMNS.map((c) => c.key));
+  const [columns, setColumns] = useState<string[]>(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem("biz-admin-table:crm-leads:columns") || "null");
+      const allowed = new Set(ALL_COLUMNS.map((column) => column.key));
+      if (Array.isArray(stored) && stored.every((key) => allowed.has(key)) && stored.length) {
+        return stored as string[];
+      }
+    } catch {
+      /* display preference only */
+    }
+    return ALL_COLUMNS.map((column) => column.key);
+  });
   const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
@@ -141,6 +152,14 @@ export default function AdminCrmCustomers() {
     return () => clearTimeout(t);
   }, [q]);
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem("biz-admin-table:crm-leads:columns", JSON.stringify(columns));
+    } catch {
+      /* display preference only */
+    }
+  }, [columns]);
+
   const query = useMemo(
     () => ({
       q: debounced,
@@ -165,7 +184,6 @@ export default function AdminCrmCustomers() {
       const { data } = await adminCrmApi.customers(query);
       setItems(data.items || []);
       setTotal(data.total || 0);
-      setPages(data.pages || 1);
     } catch (err: any) {
       setError(err?.response?.data?.error || "טעינת הלקוחות נכשלה");
     } finally {
@@ -285,20 +303,33 @@ export default function AdminCrmCustomers() {
     if (key === "subscriptionStatus") {
       return <Badge tone={statusTone(row.subscriptionStatus)}>{row.subscriptionStatus || "—"}</Badge>;
     }
-    if (key === "mrr") return row.mrr ? `₪${row.mrr}` : "—";
-    if (key === "addons") return (row.addons || []).join(", ") || "—";
+    if (key === "companyName") {
+      return (
+        <AdminIdentity
+          name={row.companyName || row.contactName || "ללא שם"}
+          subtitle={row.email}
+        />
+      );
+    }
+    if (key === "mrr") return <AdminMoney amount={row.mrr || null} currency="ILS" />;
+    if (key === "addons") return <AdminEllipsis>{(row.addons || []).join(", ")}</AdminEllipsis>;
     if (key === "lastActivityAt" || key === "nextFollowUpAt" || key === "createdAt") {
       return formatIsraelDate((row as any)[key], key !== "createdAt");
     }
     if (key === "phone") {
       return (
-        <span className="inline-flex items-center gap-2" dir="ltr">
-          {row.phone || "—"}
-          <AdminDialButton phone={row.phone} name={row.contactName} source="admin-crm" refId={row.adminCustomerId} />
-        </span>
+        <AdminPhone
+          phone={row.phone}
+          name={row.contactName || row.companyName}
+          source="admin-crm"
+          refId={row.adminCustomerId}
+        />
       );
     }
-    return (row as any)[key] || "—";
+    if (key === "email") {
+      return <AdminEllipsis dir="ltr" muted>{row.email}</AdminEllipsis>;
+    }
+    return <AdminEllipsis>{(row as any)[key]}</AdminEllipsis>;
   }
 
   function closeMetaSetup() {
@@ -355,6 +386,16 @@ export default function AdminCrmCustomers() {
     );
   }
 
+  const secondaryKeys = new Set(["email", "addons", "lastActivityAt", "assignedAdminName"]);
+  const leadColumns: AdminTableColumn<Row>[] = ALL_COLUMNS.filter((col) => columns.includes(col.key)).map((col) => ({
+    key: col.key,
+    header: col.label,
+    sortable: true,
+    numeric: col.key === "mrr",
+    secondary: secondaryKeys.has(col.key),
+    render: (row: Row) => cell(row, col.key),
+  }));
+
   return (
     <div className="space-y-4">
       {banner ? (
@@ -371,20 +412,20 @@ export default function AdminCrmCustomers() {
               setQ(e.target.value);
             }}
             placeholder="חיפוש שם, עסק, טלפון, אימייל, מזהה..."
-            className="min-h-11 flex-1 rounded-2xl border border-purple-200 px-4 text-sm font-bold"
+            className="biz-input"
           />
-          <select value={assigned} onChange={(e) => { setAssigned(e.target.value); setPage(1); }} className="min-h-11 rounded-2xl border border-purple-200 px-3 text-sm font-bold">
+          <select value={assigned} onChange={(e) => { setAssigned(e.target.value); setPage(1); }} className="biz-input biz-input-auto">
             <option value="">כל הלקוחות</option>
             <option value="me">משויך אלי</option>
             <option value="unassigned">לא משויך</option>
           </select>
-          <select value={lifecycle} onChange={(e) => { setLifecycle(e.target.value); setPage(1); }} className="min-h-11 rounded-2xl border border-purple-200 px-3 text-sm font-bold">
+          <select value={lifecycle} onChange={(e) => { setLifecycle(e.target.value); setPage(1); }} className="biz-input biz-input-auto">
             <option value="">כל מעגלי החיים</option>
             {Object.entries(LIFECYCLE_LABELS).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
             ))}
           </select>
-          <select value={salesStage} onChange={(e) => { setSalesStage(e.target.value); setPage(1); }} className="min-h-11 rounded-2xl border border-purple-200 px-3 text-sm font-bold">
+          <select value={salesStage} onChange={(e) => { setSalesStage(e.target.value); setPage(1); }} className="biz-input biz-input-auto">
             <option value="">כל שלבי המכירה</option>
             {Object.entries(STAGE_LABELS).map(([k, v]) => (
               <option key={k} value={k}>{v}</option>
@@ -416,25 +457,25 @@ export default function AdminCrmCustomers() {
         </div>
         {showAdvanced ? (
           <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-            <select value={leadSource} onChange={(e) => setLeadSource(e.target.value)} className="min-h-11 rounded-2xl border px-3 text-sm font-bold">
+            <select value={leadSource} onChange={(e) => setLeadSource(e.target.value)} className="biz-input">
               <option value="">כל המקורות</option>
               {Object.entries(SOURCE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
-            <select value={pack} onChange={(e) => setPack(e.target.value)} className="min-h-11 rounded-2xl border px-3 text-sm font-bold">
+            <select value={pack} onChange={(e) => setPack(e.target.value)} className="biz-input">
               <option value="">כל החבילות</option>
               <option value="monthly">חודשי</option>
               <option value="yearly">שנתי</option>
               <option value="website_only">אתר בלבד</option>
               <option value="crm_only">CRM בלבד</option>
             </select>
-            <select value={subStatus} onChange={(e) => setSubStatus(e.target.value)} className="min-h-11 rounded-2xl border px-3 text-sm font-bold">
+            <select value={subStatus} onChange={(e) => setSubStatus(e.target.value)} className="biz-input">
               <option value="">סטטוס מנוי</option>
               <option value="active">פעיל</option>
               <option value="pending">ממתין</option>
               <option value="past_due">בפיגור</option>
               <option value="canceled">בוטל</option>
             </select>
-            <select value={health} onChange={(e) => setHealth(e.target.value)} className="min-h-11 rounded-2xl border px-3 text-sm font-bold">
+            <select value={health} onChange={(e) => setHealth(e.target.value)} className="biz-input">
               <option value="">בריאות</option>
               {Object.entries(HEALTH_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
             </select>
@@ -459,102 +500,60 @@ export default function AdminCrmCustomers() {
         </div>
       </CrmCard>
 
-      {error ? <ErrorState message={error} onRetry={load} /> : null}
-      {loading ? (
-        <LoadingState />
-      ) : items.length === 0 ? (
-        <EmptyState title="אין לקוחות להצגה" action={<PrimaryButton onClick={() => setShowCreate(true)}>יצירת לקוח</PrimaryButton>} />
-      ) : (
-        <>
-          <div className="space-y-3 md:hidden">
-            {items.map((row) => (
-              <button
-                key={row.adminCustomerId}
-                type="button"
-                onClick={() => navigate(`/admin/crm/customers/${row.adminCustomerId}`)}
-                className="w-full rounded-[24px] border border-purple-100 bg-white p-4 text-right shadow-sm"
-              >
-                <div className="font-black text-purple-950">{row.companyName || row.contactName || "ללא שם"}</div>
-                <div className="mt-1 text-sm font-bold text-slate-500">{row.contactName} · {row.phone}</div>
-                {row.metaLead?.formName ? (
-                  <p className="mt-1 text-xs font-black text-[#7C4DFF]">טופס ליד · {row.metaLead.formName}</p>
-                ) : null}
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <Badge tone={lifecycleTone(row.lifecycle)}>{LIFECYCLE_LABELS[row.lifecycle || ""]}</Badge>
-                  <Badge tone={stageTone(row.salesStage)}>{STAGE_LABELS[row.salesStage || ""]}</Badge>
-                  {row.health ? <Badge tone={healthTone(row.health)}>{HEALTH_LABELS[row.health]}</Badge> : null}
-                </div>
-              </button>
-            ))}
-          </div>
-          <CrmCard className="hidden overflow-x-auto md:block">
-            {selected.length ? (
-              <div className="mb-3 flex gap-2">
-                <SecondaryButton onClick={bulkAssign}>שייך נבחרים</SecondaryButton>
-                <span className="self-center text-sm font-bold text-slate-500">{selected.length} נבחרו</span>
-              </div>
-            ) : null}
-            <table className="w-full min-w-[1100px] text-right text-sm">
-              <thead>
-                <tr className="border-b border-purple-100 text-xs font-black text-slate-500">
-                  <th className="p-2"><input type="checkbox" onChange={(e) => setSelected(e.target.checked ? items.map((i) => i.adminCustomerId) : [])} /></th>
-                  {ALL_COLUMNS.filter((c) => columns.includes(c.key)).map((col) => (
-                    <th key={col.key} className="cursor-pointer p-2" onClick={() => setSort(col.key)}>
-                      {col.label}
-                    </th>
-                  ))}
-                  {canDelete ? <th className="p-2">פעולות</th> : null}
-                </tr>
-              </thead>
-              <tbody>
-                {items.map((row) => (
-                  <tr
-                    key={row.adminCustomerId}
-                    className="cursor-pointer border-b border-slate-100 hover:bg-[#faf7ff]"
-                    onClick={() => navigate(`/admin/crm/customers/${row.adminCustomerId}`)}
-                  >
-                    <td className="p-2" onClick={(e) => e.stopPropagation()}>
-                      <input
-                        type="checkbox"
-                        checked={selected.includes(row.adminCustomerId)}
-                        onChange={(e) =>
-                          setSelected((prev) =>
-                            e.target.checked
-                              ? [...prev, row.adminCustomerId]
-                              : prev.filter((id) => id !== row.adminCustomerId)
-                          )
-                        }
-                      />
-                    </td>
-                    {ALL_COLUMNS.filter((c) => columns.includes(c.key)).map((col) => (
-                      <td key={col.key} className="p-2 align-top font-bold text-slate-700">
-                        {cell(row, col.key)}
-                      </td>
-                    ))}
-                    {canDelete ? (
-                      <td className="p-2 align-top" onClick={(e) => e.stopPropagation()}>
-                        {rowCanDelete(row) ? (
-                          <DangerButton compact onClick={() => setDeleteTarget(row)}>
-                            מחיקת ליד
-                          </DangerButton>
-                        ) : null}
-                      </td>
-                    ) : null}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CrmCard>
-          <div className="flex items-center justify-between text-sm font-bold text-slate-500">
-            <span>{total} רשומות</span>
-            <div className="flex gap-2">
-              <SecondaryButton disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>הקודם</SecondaryButton>
-              <span className="self-center">{page} / {pages}</span>
-              <SecondaryButton disabled={page >= pages} onClick={() => setPage((p) => p + 1)}>הבא</SecondaryButton>
-            </div>
-          </div>
-        </>
-      )}
+      <AdminDataTable
+        tableId="admin-crm-leads"
+        rows={items}
+        columns={leadColumns}
+        rowKey={(row) => row.adminCustomerId}
+        loading={loading}
+        error={error}
+        onRetry={load}
+        emptyTitle="אין לקוחות להצגה"
+        emptyAction={<PrimaryButton onClick={() => setShowCreate(true)}>יצירת לקוח</PrimaryButton>}
+        clientPagination={false}
+        page={page}
+        onPageChange={setPage}
+        pageSize={25}
+        pageSizeOptions={[]}
+        total={total}
+        sortKey={sort}
+        onSort={(key) => {
+          setSort(key);
+          setPage(1);
+        }}
+        selectable
+        selectedKeys={selected}
+        onSelectedKeysChange={setSelected}
+        onToggleAll={(checked) =>
+          setSelected(checked ? items.map((item) => item.adminCustomerId) : [])
+        }
+        bulkBar={
+          <>
+            <SecondaryButton onClick={bulkAssign}>שייך נבחרים</SecondaryButton>
+            <span className="biz-table-count">{selected.length} נבחרו</span>
+          </>
+        }
+        countLabel={`${total} רשומות`}
+        onRowClick={(row) => navigate(`/admin/crm/customers/${row.adminCustomerId}`)}
+        mobileTitle={(row) => row.companyName || row.contactName || "ללא שם"}
+        mobileMeta={(row) => [row.contactName, row.phone].filter(Boolean).join(" · ")}
+        rowActions={
+          canDelete
+            ? (row) =>
+                rowCanDelete(row) ? (
+                  <AdminRowMenu
+                    items={[
+                      {
+                        label: "מחיקת ליד",
+                        danger: true,
+                        onClick: () => setDeleteTarget(row),
+                      },
+                    ]}
+                  />
+                ) : null
+            : undefined
+        }
+      />
 
       {showCreate ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4">

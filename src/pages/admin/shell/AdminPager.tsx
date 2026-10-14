@@ -4,7 +4,10 @@ type AdminPagerProps = {
   from: number;
   to: number;
   total: number;
+  pageSize?: number;
+  pageSizeOptions?: number[];
   onPage: (page: number) => void;
+  onPageSize?: (size: number) => void;
 };
 
 export function paginateRows<T>(rows: T[], page: number, pageSize: number) {
@@ -29,7 +32,10 @@ export default function AdminPager({
   from,
   to,
   total,
+  pageSize,
+  pageSizeOptions,
   onPage,
+  onPageSize,
 }: AdminPagerProps) {
   if (total === 0) return null;
 
@@ -39,6 +45,22 @@ export default function AdminPager({
         {from}–{to} מתוך {total}
       </span>
       <div className="biz-pager-controls">
+        {onPageSize && pageSize && pageSizeOptions?.length ? (
+          <label className="biz-page-size">
+            <span>שורות</span>
+            <select
+              aria-label="מספר שורות בעמוד"
+              value={pageSize}
+              onChange={(event) => onPageSize(Number(event.target.value))}
+            >
+              {pageSizeOptions.map((size) => (
+                <option key={size} value={size}>
+                  {size}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
         <button type="button" disabled={page <= 1} onClick={() => onPage(page - 1)}>
           הקודם
         </button>

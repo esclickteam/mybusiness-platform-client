@@ -208,7 +208,7 @@ export default function AdminPlans() {
                       type="button"
                       disabled={savingSku === item.sku}
                       onClick={() => saveItem(item.sku)}
-                      className="rounded-lg bg-indigo-600 px-3 py-1.5 text-white hover:bg-indigo-700 disabled:opacity-60"
+                      className="biz-btn biz-btn-row"
                     >
                       {savingSku === item.sku ? "שומר…" : "שמור"}
                     </button>

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import adminCrmApi from "../../../api/adminCrmApi";
 import { FOLLOW_UP_TYPE_LABELS, formatIsraelDate } from "./adminCrmLabels";
-import { CrmCard, EmptyState, ErrorState, LoadingState, SecondaryButton } from "./AdminCrmUi";
+import AdminDataTable from "../shell/AdminDataTable";
+import { AdminBadge, AdminEllipsis, AdminPhone } from "../shell/adminCells";
 
 type FollowUpRow = {
   adminCustomerId: string;
@@ -53,52 +54,82 @@ export default function AdminCrmFollowUps() {
             key={key}
             type="button"
             onClick={() => setScope(key)}
-            className={`min-h-11 rounded-2xl px-4 text-sm font-black ${
-              scope === key ? "bg-[#7C4DFF] text-white" : "bg-white border border-purple-100 text-slate-600"
-            }`}
+            className={scope === key ? "biz-chip is-active" : "biz-chip"}
           >
             {label}
           </button>
         ))}
       </div>
-      {error ? <ErrorState message={error} onRetry={() => load()} /> : null}
-      {loading ? (
-        <LoadingState />
-      ) : items.length === 0 ? (
-        <EmptyState title="אין מעקבים בתצוגה זו" />
-      ) : (
-        <div className="space-y-3">
-          {items.map((row) => (
-            <CrmCard key={row.adminCustomerId}>
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h3 className="font-black text-purple-950">
-                    {row.companyName || row.contactName || "לקוח"}
-                  </h3>
-                  <p className="text-sm font-bold text-slate-500">
-                    {row.contactName} · {row.phone || "אין טלפון"}
-                  </p>
-                  <p className={`mt-1 text-sm font-black ${row.overdue ? "text-rose-700" : "text-[#7C4DFF]"}`}>
-                    מעקב הבא: {formatIsraelDate(row.nextFollowUpAt, true)}
-                    {row.nextFollowUpType
-                      ? ` · ${FOLLOW_UP_TYPE_LABELS[row.nextFollowUpType] || row.nextFollowUpType}`
-                      : ""}
-                  </p>
-                  {row.nextFollowUpNote ? (
-                    <p className="text-sm font-bold text-slate-600">{row.nextFollowUpNote}</p>
-                  ) : null}
-                  <p className="text-xs font-bold text-slate-400">
-                    מטפל: {row.assignedAdminName || "לא משויך"}
-                  </p>
-                </div>
-                <SecondaryButton onClick={() => navigate(`/admin/crm/customers/${row.adminCustomerId}?tab=tasks`)}>
-                  לתיק הלקוח
-                </SecondaryButton>
-              </div>
-            </CrmCard>
-          ))}
-        </div>
-      )}
+      <AdminDataTable
+        tableId="admin-crm-follow-ups"
+        rows={items}
+        rowKey={(row) => row.adminCustomerId}
+        loading={loading}
+        error={error}
+        onRetry={() => load()}
+        emptyTitle="אין מעקבים בתצוגה זו"
+        resetKey={scope}
+        countLabel={`${items.length} מעקבים`}
+        mobileTitle={(row) => row.companyName || row.contactName || "לקוח"}
+        mobileMeta={(row) => formatIsraelDate(row.nextFollowUpAt, true)}
+        columns={[
+          {
+            key: "customer",
+            header: "לקוח",
+            render: (row) => (
+              <span className="biz-identity-copy">
+                <strong>{row.companyName || row.contactName || "לקוח"}</strong>
+                {row.contactName ? <small>{row.contactName}</small> : null}
+              </span>
+            ),
+          },
+          {
+            key: "phone",
+            header: "טלפון",
+            render: (row) => (
+              <AdminPhone phone={row.phone} name={row.contactName || row.companyName} source="admin-crm" refId={row.adminCustomerId} />
+            ),
+          },
+          {
+            key: "when",
+            header: "מעקב הבא",
+            numeric: true,
+            render: (row) => (
+              <span className="biz-nowrap">{formatIsraelDate(row.nextFollowUpAt, true)}</span>
+            ),
+          },
+          {
+            key: "type",
+            header: "סוג",
+            render: (row) => (
+              <AdminBadge tone={row.overdue ? "danger" : "info"}>
+                {FOLLOW_UP_TYPE_LABELS[row.nextFollowUpType || ""] || row.nextFollowUpType || "מעקב"}
+              </AdminBadge>
+            ),
+          },
+          {
+            key: "note",
+            header: "הערה",
+            secondary: true,
+            render: (row) => <AdminEllipsis>{row.nextFollowUpNote}</AdminEllipsis>,
+          },
+          {
+            key: "owner",
+            header: "מטפל",
+            secondary: true,
+            render: (row) => <AdminEllipsis>{row.assignedAdminName || "לא משויך"}</AdminEllipsis>,
+          },
+        ]}
+        rowActions={(row) => (
+          <button
+            type="button"
+            className="biz-btn biz-btn-secondary biz-btn-row"
+            onClick={() => navigate(`/admin/crm/customers/${row.adminCustomerId}?tab=tasks`)}
+          >
+            לתיק הלקוח
+          </button>
+        )}
+      />
     </div>
   );
 }

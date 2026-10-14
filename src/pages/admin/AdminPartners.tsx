@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import AdminPageHeader from "./shell/AdminPageHeader";
+import AdminRowMenu from "./shell/AdminRowMenu";
 import API from "../../api";
 import {
   adminActivateSetup,
@@ -17,7 +18,7 @@ import {
   fetchAdminWithdrawalMonth,
   fetchAdminPartnerPaymentsRecent,
 } from "../../lib/partnerApi";
-import type { AdminPartnerRow, PartnerPlanKey } from "../../types/partner";
+import type { AdminPartnerRow } from "../../types/partner";
 
 function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
@@ -230,109 +231,104 @@ export default function AdminPartners() {
                       : "—"}
                   </td>
                   <td className="px-3 py-3">
-                    <div className="flex flex-col gap-1">
+                    <div className="biz-row-actions">
                       <button
                         type="button"
-                        onClick={async () => {
-                          await adminActivateSetup(row.partnerId);
-                          await refresh();
-                        }}
-                        className="rounded-lg bg-slate-900 px-2 py-1 text-xs font-bold text-white"
-                      >
-                        הפעל הקמה
-                      </button>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          await adminPostMonthly(row.partnerId);
-                          await refresh();
-                        }}
-                        className="rounded-lg border px-2 py-1 text-xs font-bold"
-                      >
-                        חיוב חודשי
-                      </button>
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          const amount = Number(window.prompt("סכום תשלום", "499"));
-                          if (!amount) return;
-                          await adminRecordPayment(row.partnerId, amount);
-                          await refresh();
-                        }}
-                        className="rounded-lg border px-2 py-1 text-xs font-bold"
-                      >
-                        רשום תשלום
-                      </button>
-                      <select
-                        defaultValue=""
-                        onChange={async (event) => {
-                          const planKey = event.target.value as PartnerPlanKey;
-                          if (!planKey) return;
-                          await adminChangePartnerPlan(row.partnerId, planKey);
-                          event.target.value = "";
-                          await refresh();
-                        }}
-                        className="rounded-lg border px-2 py-1 text-xs font-bold"
-                      >
-                        <option value="">שינוי מסלול</option>
-                        <option value="partner_basic">Partner</option>
-                        <option value="partner_pro">Pro</option>
-                        <option value="partner_premium">Premium</option>
-                        <option value="partner_percent">אחוזים בלבד</option>
-                      </select>
-                      <button
-                        type="button"
+                        className="biz-btn biz-btn-secondary biz-btn-row"
                         onClick={async () => {
                           setFinancePartnerId(row.partnerId);
                           const data = await fetchAdminPartnerTransactions(row.partnerId);
                           setFinanceRows(data.items || []);
                         }}
-                        className="rounded-lg border px-2 py-1 text-xs font-bold"
                       >
                         עסקאות
                       </button>
-                      <a
-                        href={`/api/admin/partners/${row.partnerId}/transactions.csv`}
-                        className="rounded-lg border px-2 py-1 text-center text-xs font-bold"
-                        onClick={async (event) => {
-                          event.preventDefault();
-                          const { data } = await API.get(
-                            `/admin/partners/${row.partnerId}/transactions.csv`,
-                            { responseType: "blob" }
-                          );
-                          const url = URL.createObjectURL(data);
-                          const link = document.createElement("a");
-                          link.href = url;
-                          link.download = `partner-${row.partnerId}.csv`;
-                          link.click();
-                          URL.revokeObjectURL(url);
-                        }}
-                      >
-                        ייצוא
-                      </a>
-                      {row.status === "suspended" ? (
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            await adminSuspendPartner(row.partnerId, true);
-                            await refresh();
-                          }}
-                          className="rounded-lg border px-2 py-1 text-xs font-bold"
-                        >
-                          שחרר השעיה
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            await adminSuspendPartner(row.partnerId, false);
-                            await refresh();
-                          }}
-                          className="rounded-lg border border-rose-200 px-2 py-1 text-xs font-bold text-rose-700"
-                        >
-                          השעה
-                        </button>
-                      )}
+                      <AdminRowMenu
+                        items={[
+                          {
+                            label: "הפעל הקמה",
+                            onClick: async () => {
+                              await adminActivateSetup(row.partnerId);
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "חיוב חודשי",
+                            onClick: async () => {
+                              await adminPostMonthly(row.partnerId);
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "רשום תשלום",
+                            onClick: async () => {
+                              const amount = Number(window.prompt("סכום תשלום", "499"));
+                              if (!amount) return;
+                              await adminRecordPayment(row.partnerId, amount);
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "מסלול Partner",
+                            onClick: async () => {
+                              await adminChangePartnerPlan(row.partnerId, "partner_basic");
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "מסלול Pro",
+                            onClick: async () => {
+                              await adminChangePartnerPlan(row.partnerId, "partner_pro");
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "מסלול Premium",
+                            onClick: async () => {
+                              await adminChangePartnerPlan(row.partnerId, "partner_premium");
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "מסלול אחוזים בלבד",
+                            onClick: async () => {
+                              await adminChangePartnerPlan(row.partnerId, "partner_percent");
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "ייצוא",
+                            onClick: async () => {
+                              const { data } = await API.get(
+                                `/admin/partners/${row.partnerId}/transactions.csv`,
+                                { responseType: "blob" }
+                              );
+                              const url = URL.createObjectURL(data);
+                              const link = document.createElement("a");
+                              link.href = url;
+                              link.download = `partner-${row.partnerId}.csv`;
+                              link.click();
+                              URL.revokeObjectURL(url);
+                            },
+                          },
+                          row.status === "suspended"
+                            ? {
+                                label: "שחרר השעיה",
+                                onClick: async () => {
+                                  await adminSuspendPartner(row.partnerId, true);
+                                  await refresh();
+                                },
+                              }
+                            : {
+                                label: "השעה",
+                                danger: true,
+                                onClick: async () => {
+                                  await adminSuspendPartner(row.partnerId, false);
+                                  await refresh();
+                                },
+                              },
+                        ]}
+                      />
                     </div>
                   </td>
                 </tr>
@@ -383,10 +379,10 @@ export default function AdminPartners() {
                     <td className="px-3 py-2">{ils(row.partnerCommissionAmount)}</td>
                     <td className="px-3 py-2">{row.commissionStatus}</td>
                     <td className="px-3 py-2">
-                      <div className="flex gap-1">
+                      <div className="biz-row-actions">
                         <button
                           type="button"
-                          className="rounded border px-2 py-1 text-xs font-bold"
+                          className="biz-btn biz-btn-secondary biz-btn-row"
                           onClick={async () => {
                             await adminMarkCommissionPaid(financePartnerId, row._id);
                             const data = await fetchAdminPartnerTransactions(financePartnerId);
@@ -396,18 +392,20 @@ export default function AdminPartners() {
                         >
                           סמן שולם
                         </button>
-                        <button
-                          type="button"
-                          className="rounded border px-2 py-1 text-xs font-bold"
-                          onClick={async () => {
-                            await adminReverseCommission(financePartnerId, row._id, "refund");
-                            const data = await fetchAdminPartnerTransactions(financePartnerId);
-                            setFinanceRows(data.items || []);
-                            await refresh();
-                          }}
-                        >
-                          החזר
-                        </button>
+                        <AdminRowMenu
+                          items={[
+                            {
+                              label: "החזר",
+                              danger: true,
+                              onClick: async () => {
+                                await adminReverseCommission(financePartnerId, row._id, "refund");
+                                const data = await fetchAdminPartnerTransactions(financePartnerId);
+                                setFinanceRows(data.items || []);
+                                await refresh();
+                              },
+                            },
+                          ]}
+                        />
                       </div>
                     </td>
                   </tr>

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import adminCrmApi from "../../../api/adminCrmApi";
-import { TASK_STATUS_LABELS, formatIsraelDate, statusTone, Badge } from "./adminCrmLabels";
-import { EmptyState, ErrorState, LoadingState, SecondaryButton } from "./AdminCrmUi";
+import { TASK_STATUS_LABELS, formatIsraelDate } from "./adminCrmLabels";
+import AdminDataTable from "../shell/AdminDataTable";
+import AdminRowMenu from "../shell/AdminRowMenu";
+import { AdminBadge, AdminEllipsis } from "../shell/adminCells";
 
 export default function AdminCrmTasks() {
   const navigate = useNavigate();
@@ -51,46 +53,68 @@ export default function AdminCrmTasks() {
             key={key}
             type="button"
             onClick={() => setView(key)}
-            className={`min-h-11 rounded-2xl px-4 text-sm font-black ${view === key ? "bg-[#7C4DFF] text-white" : "bg-white border border-purple-100 text-slate-600"}`}
+            className={view === key ? "biz-chip is-active" : "biz-chip"}
           >
             {label}
           </button>
         ))}
       </div>
-      {error ? <ErrorState message={error} onRetry={load} /> : null}
-      {loading ? (
-        <LoadingState />
-      ) : tasks.length === 0 ? (
-        <EmptyState title="אין משימות בתצוגה זו" />
-      ) : (
-        <div className="space-y-3">
-          {tasks.map((task) => (
-            <article key={task._id} className="rounded-[24px] border border-purple-100 bg-white p-4">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h3 className="font-black text-purple-950">{task.title}</h3>
-                  <p className="text-sm font-bold text-slate-500">
-                    {task.customer?.companyName || task.customer?.contactName || "ללא לקוח"} · יעד {formatIsraelDate(task.dueAt, true)}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Badge tone={statusTone(task.status === "done" ? "active" : "pending")}>
-                    {TASK_STATUS_LABELS[task.status] || task.status}
-                  </Badge>
-                  {task.adminCustomerId ? (
-                    <SecondaryButton onClick={() => navigate(`/admin/crm/customers/${task.adminCustomerId}`)}>
-                      ללקוח
-                    </SecondaryButton>
-                  ) : null}
-                  {task.status !== "done" ? (
-                    <SecondaryButton onClick={() => complete(task._id)}>סימון כהושלם</SecondaryButton>
-                  ) : null}
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      )}
+      <AdminDataTable
+        tableId="admin-crm-tasks"
+        rows={tasks}
+        rowKey={(task) => task._id}
+        loading={loading}
+        error={error}
+        onRetry={load}
+        emptyTitle="אין משימות בתצוגה זו"
+        resetKey={view}
+        countLabel={`${tasks.length} משימות`}
+        mobileTitle={(task) => task.title}
+        mobileMeta={(task) => task.customer?.companyName || task.customer?.contactName || "ללא לקוח"}
+        columns={[
+          { key: "title", header: "משימה", render: (task) => <AdminEllipsis>{task.title}</AdminEllipsis> },
+          {
+            key: "customer",
+            header: "לקוח",
+            render: (task) => (
+              <AdminEllipsis>{task.customer?.companyName || task.customer?.contactName || "ללא לקוח"}</AdminEllipsis>
+            ),
+          },
+          {
+            key: "due",
+            header: "יעד",
+            numeric: true,
+            render: (task) => <span className="biz-nowrap">{formatIsraelDate(task.dueAt, true)}</span>,
+          },
+          {
+            key: "status",
+            header: "סטטוס",
+            render: (task) => (
+              <AdminBadge tone={task.status === "done" ? "success" : "warning"}>
+                {TASK_STATUS_LABELS[task.status] || task.status}
+              </AdminBadge>
+            ),
+          },
+        ]}
+        rowActions={(task) => (
+          <div className="biz-row-actions">
+            {task.adminCustomerId ? (
+              <button
+                type="button"
+                className="biz-btn biz-btn-secondary biz-btn-row"
+                onClick={() => navigate(`/admin/crm/customers/${task.adminCustomerId}`)}
+              >
+                ללקוח
+              </button>
+            ) : null}
+            {task.status !== "done" ? (
+              <AdminRowMenu
+                items={[{ label: "סימון כהושלם", onClick: () => complete(task._id) }]}
+              />
+            ) : null}
+          </div>
+        )}
+      />
     </div>
   );
 }

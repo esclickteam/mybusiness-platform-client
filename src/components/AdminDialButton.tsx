@@ -30,23 +30,20 @@ export default function AdminDialButton({
   return (
     <button
       type="button"
-      onClick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
         requestSoftphoneDial({ phone: value, name, source, refId });
       }}
       title={`חייג אל ${name || value}`}
       aria-label={`חייג אל ${name || value}`}
       className={[
-        "inline-flex items-center justify-center gap-1.5 font-black transition hover:-translate-y-0.5 active:scale-95",
-        compact
-          ? "h-11 w-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/25 hover:shadow-lg"
-          : "min-h-11 rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-4 text-xs text-white shadow-md shadow-emerald-500/25 hover:shadow-lg",
+        compact ? "biz-phone-link" : "biz-btn biz-btn-secondary biz-btn-row",
         className,
       ].join(" ")}
     >
-      <Phone className={compact ? "h-4 w-4" : "h-3.5 w-3.5"} strokeWidth={2.4} />
-      {!compact && (label || "חייג")}
+      <Phone size={14} strokeWidth={2} />
+      {compact ? <span dir="ltr">{value}</span> : label || "חייג"}
     </button>
   );
 }

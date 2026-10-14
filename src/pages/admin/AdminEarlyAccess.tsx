@@ -800,15 +800,6 @@ function AdminEarlyAccess() {
                           ) : null}
                         </div>
 
-                        {hasPhone ? (
-                          <p
-                            className="mt-3 text-sm font-bold text-slate-600"
-                            dir="ltr"
-                          >
-                            {phone}
-                          </p>
-                        ) : null}
-
                         <div className="biz-row-actions mt-3">
                           <button
                             type="button"
@@ -925,15 +916,12 @@ function AdminEarlyAccess() {
 
                             <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
                               {phone && phone !== "לא צוין" ? (
-                                <div className="flex items-center justify-start gap-2">
-                                  <span>{phone}</span>
-                                  <AdminDialButton
-                                    phone={phone}
-                                    name={fullName}
-                                    source="early-access"
-                                    refId={id}
-                                  />
-                                </div>
+                                <AdminDialButton
+                                  phone={phone}
+                                  name={fullName}
+                                  source="early-access"
+                                  refId={id}
+                                />
                               ) : (
                                 phone
                               )}

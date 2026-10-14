@@ -2,6 +2,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
 import AdminPageHeader from "./shell/AdminPageHeader";
+import AdminRowMenu from "./shell/AdminRowMenu";
+import { AdminBadge, AdminEllipsis, AdminMoney } from "./shell/adminCells";
 import { MARKETPLACE_CATEGORIES } from "../../saas/logic";
 
 type Screenshot = { key: string; label: string; imageUrl: string };
@@ -289,42 +291,64 @@ export default function AdminSaasMarketplace() {
           </ul>
         </form>
 
-        <div className="mt-6 overflow-x-auto rounded-3xl bg-white shadow-sm">
-          <table className="min-w-full text-right text-sm">
-            <thead className="text-xs font-bold text-slate-400">
+        <div className="biz-table-shell mt-6" dir="rtl">
+          <div className="biz-table-scroll">
+          <table className="biz-data-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3">שם</th>
-                <th className="px-4 py-3">סטטוס</th>
-                <th className="px-4 py-3">מחיר</th>
-                <th className="px-4 py-3">פעולות</th>
+                <th>שם</th>
+                <th>סטטוס</th>
+                <th className="is-numeric">מחיר</th>
+                <th>פעולות</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => (
-                <tr key={product.id} className="border-t">
-                  <td className="px-4 py-3">
-                    <p className="font-black">{product.name}</p>
-                    <p className="text-xs text-slate-400">/saas/{product.slug}</p>
-                    {product.archivedAt ? <p className="text-xs font-bold text-amber-600">בארכיון</p> : null}
+                <tr key={product.id}>
+                  <td>
+                    <span className="biz-identity-copy">
+                      <strong title={product.name}>{product.name || "—"}</strong>
+                      <small dir="ltr">/saas/{product.slug}</small>
+                    </span>
+                    {product.archivedAt ? <AdminBadge tone="warning">בארכיון</AdminBadge> : null}
                   </td>
-                  <td className="px-4 py-3 font-bold">{STATUS_LABEL[product.status] || product.status}</td>
-                  <td className="px-4 py-3">${product.priceUsd}</td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-wrap gap-2">
-                      <Action onClick={() => openEdit(product)}>Edit</Action>
-                      <Action onClick={() => act(product.id, "duplicate")}>Duplicate</Action>
-                      <Action onClick={() => act(product.id, "publish")}>Publish</Action>
-                      <Action onClick={() => act(product.id, "unpublish")}>Unpublish</Action>
-                      <Action onClick={() => act(product.id, product.archivedAt ? "unarchive" : "archive")}>
-                        {product.archivedAt ? "Unarchive" : "Archive"}
-                      </Action>
-                      <Action onClick={() => act(product.id, "delete")}>Delete</Action>
+                  <td>
+                    <AdminBadge>{STATUS_LABEL[product.status] || product.status}</AdminBadge>
+                  </td>
+                  <td className="is-numeric">
+                    <AdminMoney amount={product.priceUsd} currency="USD" />
+                  </td>
+                  <td>
+                    <div className="biz-row-actions">
+                      <button type="button" className="biz-btn biz-btn-secondary biz-btn-row" onClick={() => openEdit(product)}>
+                        עריכה
+                      </button>
+                      <AdminRowMenu
+                        items={[
+                          { label: "Duplicate", onClick: () => act(product.id, "duplicate") },
+                          { label: "Publish", onClick: () => act(product.id, "publish") },
+                          { label: "Unpublish", onClick: () => act(product.id, "unpublish") },
+                          {
+                            label: product.archivedAt ? "Unarchive" : "Archive",
+                            onClick: () => act(product.id, product.archivedAt ? "unarchive" : "archive"),
+                          },
+                          { label: "Delete", danger: true, onClick: () => act(product.id, "delete") },
+                        ]}
+                      />
                     </div>
                   </td>
                 </tr>
               ))}
+              {!products.length ? (
+                <tr>
+                  <td colSpan={4}>
+                    <AdminEllipsis>אין מערכות להצגה</AdminEllipsis>
+                  </td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
+          </div>
         </div>
 
         {draft ? (
@@ -470,10 +494,3 @@ function Area({
   );
 }
 
-function Action({ children, onClick }: { children: string; onClick: () => void }) {
-  return (
-    <button type="button" onClick={onClick} className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-700">
-      {children}
-    </button>
-  );
-}

@@ -206,7 +206,7 @@ const AdminWithdrawalsPage = () => {
                   </td>
                   <td>{w.status || "Pending"}</td>
                   <td>
-                    <button onClick={() => handleApprove(w.id)}>Approve Withdrawal</button>
+                    <button type="button" className="biz-btn biz-btn-row" onClick={() => handleApprove(w.id)}>Approve Withdrawal</button>
                   </td>
                 </tr>
               ))}

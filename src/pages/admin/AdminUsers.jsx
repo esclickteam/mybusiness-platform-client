@@ -374,15 +374,6 @@ function AdminUsers() {
                           ) : null}
                         </div>
 
-                        {rowUser.phone ? (
-                          <p
-                            className="mt-3 text-sm font-bold text-slate-600"
-                            dir="ltr"
-                          >
-                            {rowUser.phone}
-                          </p>
-                        ) : null}
-
                         <div className="mt-3 flex justify-end">
                           <AdminRowMenu items={userActions(rowUser, status)} />
                         </div>
@@ -452,20 +443,12 @@ function AdminUsers() {
                             </td>
                             <td className="px-4 py-4">
                               {rowUser.phone ? (
-                                <div className="flex items-center justify-start gap-2">
-                                  <span
-                                    dir="ltr"
-                                    className="text-sm font-bold text-slate-700"
-                                  >
-                                    {rowUser.phone}
-                                  </span>
-                                  <AdminDialButton
-                                    phone={rowUser.phone}
-                                    name={rowUser.name || rowUser.username}
-                                    source="user"
-                                    refId={rowUser._id}
-                                  />
-                                </div>
+                                <AdminDialButton
+                                  phone={rowUser.phone}
+                                  name={rowUser.name || rowUser.username}
+                                  source="user"
+                                  refId={rowUser._id}
+                                />
                               ) : (
                                 "—"
                               )}

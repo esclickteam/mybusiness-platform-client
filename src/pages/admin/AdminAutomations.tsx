@@ -160,7 +160,7 @@ export default function AdminAutomations() {
                     </td>
                     <td className="py-3">
                       {run.status === "failed" ? (
-                        <SecondaryButton onClick={() => retry(run.id)}>נסה שוב</SecondaryButton>
+                        <SecondaryButton compact onClick={() => retry(run.id)}>נסה שוב</SecondaryButton>
                       ) : null}
                     </td>
                   </tr>
