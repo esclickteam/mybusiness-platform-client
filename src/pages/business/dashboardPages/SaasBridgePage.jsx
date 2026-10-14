@@ -10,6 +10,7 @@ const emptyDefinition = () => ({
   recordTypes: [],
   permissions: [],
   views: [],
+  processes: [],
 });
 
 export default function SaasBridgePage() {
@@ -20,6 +21,9 @@ export default function SaasBridgePage() {
   const [definition, setDefinition] = useState(emptyDefinition());
   const [form, setForm] = useState({ systemKey: "beautyflow", externalTenantId: "" });
   const [field, setField] = useState({ entity: "client", label: "", type: "text" });
+  const [permission, setPermission] = useState({ role: "", permission: "", allowed: true });
+  const [processDraft, setProcessDraft] = useState({ title: "", steps: "" });
+  const [releases, setReleases] = useState([]);
   const [message, setMessage] = useState("");
   const [log, setLog] = useState([]);
   const [disabled, setDisabled] = useState(false);
@@ -34,6 +38,14 @@ export default function SaasBridgePage() {
       setCatalog(catalogRes.data.systems || []);
       setSystems(systemsRes.data.systems || []);
       setLinks(linksRes.data.links || []);
+      const first = linksRes.data.links?.[0];
+      if (first) {
+        setLinkId(first.id);
+        const releaseRes = await API.get(`/saas-bridge/links/${first.id}/releases`);
+        const published = (releaseRes.data.releases || []).find((item) => item.status === "published");
+        setReleases(releaseRes.data.releases || []);
+        if (published?.definition) setDefinition({ ...emptyDefinition(), ...published.definition });
+      }
       setDisabled(false);
     } catch (error) {
       if (error?.response?.status === 404) setDisabled(true);
@@ -77,6 +89,31 @@ export default function SaasBridgePage() {
       ...current,
       [bucket]: [...current[bucket], { key, title, entity: field.entity, fieldKeys: current.fields.map((item) => item.key || item.label) }],
     }));
+  }
+
+  function addProcess() {
+    const steps = processDraft.steps.split(",").map((label) => ({ label: label.trim() })).filter((step) => step.label);
+    if (!processDraft.title || !steps.length) return;
+    setDefinition((current) => ({
+      ...current,
+      processes: [...(current.processes || []), { key: processDraft.title, title: processDraft.title, entity: field.entity, steps }],
+    }));
+    setProcessDraft({ title: "", steps: "" });
+  }
+
+  function addPermission() {
+    if (!permission.role || !permission.permission) return;
+    setDefinition((current) => ({
+      ...current,
+      permissions: [...current.permissions, { ...permission, allowed: permission.allowed !== false }],
+    }));
+  }
+
+  async function restore(version) {
+    if (!selected) return;
+    const response = await API.post(`/saas-bridge/links/${selected.id}/restore`, { version });
+    setMessage(`שוחזרה גרסה ${response.data.version} במערכת האמיתית`);
+    setDefinition(response.data.definition || emptyDefinition());
   }
 
   async function publish() {
@@ -138,6 +175,22 @@ export default function SaasBridgePage() {
               {FIELD_TYPES.map((type) => <option key={type}>{type}</option>)}
             </select>
           </div>
+          <div className="grid gap-2 sm:grid-cols-3">
+            <select className="rounded border p-2" value={permission.role} onChange={(event) => setPermission({ ...permission, role: event.target.value })}>
+              <option value="">תפקיד</option>
+              {(system?.roles || []).map((role) => <option key={role}>{role}</option>)}
+            </select>
+            <select className="rounded border p-2" value={permission.permission} onChange={(event) => setPermission({ ...permission, permission: event.target.value })}>
+              <option value="">הרשאה</option>
+              {(system?.permissions || []).map((item) => <option key={item}>{item}</option>)}
+            </select>
+            <button type="button" className="rounded border px-3 py-2" onClick={addPermission}>הוספת הרשאה</button>
+          </div>
+          <div className="grid gap-2 sm:grid-cols-[1fr_2fr_auto]">
+            <input className="rounded border p-2" placeholder="שם תהליך" value={processDraft.title} onChange={(event) => setProcessDraft({ ...processDraft, title: event.target.value })} />
+            <input className="rounded border p-2" placeholder="שלבים מופרדים בפסיק" value={processDraft.steps} onChange={(event) => setProcessDraft({ ...processDraft, steps: event.target.value })} />
+            <button type="button" className="rounded border px-3 py-2" onClick={addProcess}>תהליך</button>
+          </div>
           <div className="flex flex-wrap gap-2">
             <button type="button" className="rounded border px-3 py-2" onClick={addField}>הוספת שדה</button>
             <button type="button" className="rounded border px-3 py-2" onClick={() => addBlock("screens", "מסך חדש")}>מסך</button>
@@ -149,7 +202,16 @@ export default function SaasBridgePage() {
           </div>
           <ul className="text-sm">
             {definition.fields.map((item) => <li key={`${item.entity}-${item.label}`}>{item.entity}: {item.label}</li>)}
+            {(definition.processes || []).map((item) => <li key={item.title}>תהליך {item.title}</li>)}
+            {definition.permissions.map((item) => <li key={`${item.role}-${item.permission}`}>{item.role}: {item.permission}</li>)}
           </ul>
+          <div className="flex flex-wrap gap-2">
+            {releases.filter((item) => item.status === "published").map((item) => (
+              <button key={item.version} type="button" className="rounded border px-3 py-2 text-sm" onClick={() => restore(item.version)}>
+                שחזור גרסה {item.version}
+              </button>
+            ))}
+          </div>
         </div>
       ) : null}
       {message ? <p>{message}</p> : null}
