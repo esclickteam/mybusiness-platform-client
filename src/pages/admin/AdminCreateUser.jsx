@@ -13,6 +13,7 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import UpsellPicker from "../../components/pricing/UpsellPicker";
 import AdminHeader from "./AdminsHeader";
 import AdminPageHeader from "./shell/AdminPageHeader";
+import SaasAccountSetup, { EMPTY_SAAS_DRAFT } from "./SaasAccountSetup";
 
 const USER_TYPES = [
   { id: "business", label: "עסק / לקוח SaaS", needsPackage: true },
@@ -100,6 +101,9 @@ const EMPTY = {
   fullAccess: true,
   enabledModules: ["crm", "meta-campaigns"],
   notes: "",
+  accountKind: "bizuply",
+  status: "active",
+  saas: EMPTY_SAAS_DRAFT,
   partnerPlanKey: "partner_pro",
   partnerStatus: "pending_setup",
   legalCompanyName: "",
@@ -217,7 +221,8 @@ export default function AdminCreateUser() {
   );
 
   const selectedType = USER_TYPES.find((t) => t.id === form.userType);
-  const needsPackage = Boolean(selectedType?.needsPackage);
+  const accountKind = form.userType === "business" ? form.accountKind : "bizuply";
+  const needsPackage = Boolean(selectedType?.needsPackage) && accountKind !== "saas_only";
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -288,7 +293,19 @@ export default function AdminCreateUser() {
       };
 
       if (form.userType === "business") {
+        payload.accountKind = form.accountKind || "bizuply";
         payload.businessName = form.businessName.trim();
+        if (form.accountKind === "saas_only" || form.accountKind === "bizuply_saas") {
+          const idempotencyKey = [
+            form.email.trim().toLowerCase(),
+            form.saas.templateSlug,
+            form.saas.subdomain,
+          ].join("|");
+          payload.saas = { ...form.saas, idempotencyKey, businessName: form.businessName.trim() };
+          payload.country = form.saas.country;
+          payload.language = form.saas.language;
+          payload.status = form.status || "active";
+        }
         payload.category = form.category.trim() || "general";
         payload.packageSku = form.packageSku;
         payload.upsellSkus = form.upsellSkus || [];
@@ -490,6 +507,20 @@ export default function AdminCreateUser() {
                 </label>
               ))}
             </div>
+            {form.userType === "business" ? (
+              <div className="mt-3 grid gap-2 md:grid-cols-3">
+                {[
+                  ["bizuply", "משתמש רגיל של Bizuply"],
+                  ["saas_only", "משתמש SaaS בלבד"],
+                  ["bizuply_saas", "משתמש Bizuply + SaaS"],
+                ].map(([id, label]) => (
+                  <label key={id} className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold ${form.accountKind === id ? "border-[#7C4DFF] bg-violet-50" : "border-slate-200"}`}>
+                    <input type="radio" name="accountKind" value={id} checked={form.accountKind === id} onChange={onChange} className="me-2" />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            ) : null}
           </section>
 
           <section className="grid gap-4 md:grid-cols-2">
@@ -750,6 +781,18 @@ export default function AdminCreateUser() {
           {form.userType === "business" ? (
             <>
               <section className="grid gap-4 md:grid-cols-2">
+                {accountKind !== "bizuply" ? (
+                  <>
+                    <label className="block text-sm font-bold">
+                      סטטוס משתמש
+                      <select name="status" value={form.status} onChange={onChange} className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm">
+                        <option value="active">פעיל</option>
+                        <option value="inactive">לא פעיל</option>
+                      </select>
+                    </label>
+                    <p className="self-end text-sm font-bold">אמצעי כניסה: סיסמה לחשבון Bizuply</p>
+                  </>
+                ) : null}
                 <label className="block text-sm font-bold">
                   שם העסק *
                   <input
@@ -803,6 +846,11 @@ export default function AdminCreateUser() {
                 </label>
               </section>
 
+              {accountKind !== "bizuply" ? (
+                <SaasAccountSetup value={form.saas} onChange={(saas) => setForm((prev) => ({ ...prev, saas }))} />
+              ) : null}
+
+              {needsPackage ? (
               <section>
                 <h2 className="mb-3 flex items-center gap-2 text-base font-black">
                   <Package className="h-4 w-4" />
@@ -949,6 +997,7 @@ export default function AdminCreateUser() {
                   </p>
                 )}
               </section>
+              ) : null}
             </>
           ) : null}
 
@@ -964,6 +1013,7 @@ export default function AdminCreateUser() {
                   ? "צור משתמש ופתח Stripe"
                   : "צור משתמש"}
             </button>
+            {needsPackage ? (
             <button
               type="button"
               onClick={() => navigate("/admin/plans")}
@@ -971,6 +1021,7 @@ export default function AdminCreateUser() {
             >
               ניהול מחירי חבילות
             </button>
+            ) : null}
           </div>
         </form>
       </main>
