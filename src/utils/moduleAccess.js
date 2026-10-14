@@ -33,6 +33,7 @@ export const NAV_PATH_MODULE_MAP = {
   build: "build",
   website: "website",
   billing: "billing",
+  saas: "saas",
 };
 
 export function normalizeEnabledModules(enabledModules) {

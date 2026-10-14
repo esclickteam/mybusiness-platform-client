@@ -137,6 +137,7 @@ const PublicSalesProposalPage = lazy(() => import("./pages/PublicSalesProposalPa
 const Register = lazy(() => import("./pages/Register"));
 const CrmOfferPage = lazy(() => import("./pages/offer/CrmOfferPage"));
 const SaasMarketplacePage = lazy(() => import("./pages/saas/SaasMarketplacePage"));
+const SaasPublicSite = lazy(() => import("./pages/saas/SaasPublicSite"));
 const SaasProductPage = lazy(() => import("./pages/saas/SaasProductPage"));
 const SaasTemplateDemoPage = lazy(() => import("./pages/saas/SaasTemplateDemoPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -178,6 +179,7 @@ const AdminSubPartnerPricing = lazy(() => import("./pages/admin/AdminSubPartnerP
 const PartnerAgreementSign = lazy(() => import("./pages/sign/PartnerAgreementSign"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
+const AdminSaasTenants = lazy(() => import("./pages/admin/AdminSaasTenants"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const AdminCrmLayout = lazy(() => import("./pages/admin/crm/AdminCrmLayout"));
@@ -853,6 +855,7 @@ export default function App() {
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
+  const isSaasPublicSite = location.pathname.startsWith("/s/");
   // Dev-only visual QA pages — no public chrome so screenshots stay clean.
   const isDevVisualRoute = location.pathname.startsWith("/dev/");
   // Hidden private offers (e.g. /offer/crm) are clean landing pages: no
@@ -1011,7 +1014,7 @@ export default function App() {
       <div className="app-layout" dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
-          !isSaasMarketplaceRoute &&
+          !isSaasMarketplaceRoute && !isSaasPublicSite &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
@@ -1120,6 +1123,7 @@ export default function App() {
                           path="/early-access"
                           element={<BizuplyEarlyAccessLanding />}
                         />
+                        <Route path="/s/:slug" element={<SaasPublicSite />} />
                         <Route path="/saas" element={<SaasMarketplacePage />} />
                         <Route path="/saas/:slug/demo" element={<SaasTemplateDemoPage />} />
                         <Route path="/saas/:slug" element={<SaasProductPage />} />
@@ -1484,6 +1488,7 @@ export default function App() {
                         <Route path="settings" element={<AdminSettings />} />
                         <Route path="users" element={<AdminUsers />} />
                         <Route path="create-user" element={<AdminCreateUser />} />
+                        <Route path="saas-tenants" element={<AdminSaasTenants />} />
                         <Route path="businesses" element={<AdminBusinesses />} />
                         <Route path="customers" element={<AdminCustomers />} />
                         <Route path="crm" element={<AdminCrmLayout />}>
@@ -1582,7 +1587,7 @@ export default function App() {
         {!isDashboardRoute &&
           !isPublicBusinessProfile &&
           !isEarlyAccessLanding &&
-          !isSaasMarketplaceRoute &&
+          !isSaasMarketplaceRoute && !isSaasPublicSite &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isGuidedDemoRoute &&
@@ -1596,7 +1601,7 @@ export default function App() {
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && (
+      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && (
         <PreLoginBot />
       )}
 
@@ -1607,7 +1612,7 @@ export default function App() {
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
-        !isSaasMarketplaceRoute &&
+        !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
         !isBusinessChatRoute &&
         !isHiddenOffer &&
@@ -1629,7 +1634,7 @@ export default function App() {
       {!isDashboardRoute &&
         !isBusinessChatRoute &&
         !isEarlyAccessLanding &&
-        !isSaasMarketplaceRoute &&
+        !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&

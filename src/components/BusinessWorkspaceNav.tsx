@@ -12,6 +12,7 @@ import {
   CreditCard,
   HelpCircle,
   LayoutTemplate,
+  AppWindow,
   Megaphone,
   MessageCircle,
   Workflow,
@@ -241,6 +242,7 @@ export default function BusinessWorkspaceNav({
       isGuidedDemo?: boolean;
       isShowcaseDemo?: boolean;
       role?: string | null;
+      accountKind?: string | null;
       subscriptionPlan?: string | null;
     } | null;
   };
@@ -280,8 +282,17 @@ export default function BusinessWorkspaceNav({
   const explicitlyEnabled = (moduleKey: string) =>
     Boolean(enabledModules) && isModuleEnabled(enabledModules, moduleKey);
   const hideGlobalClub = isWhatsappOnlyPackage(enabledModules);
+  const accountKind = user?.accountKind || "bizuply";
 
   const items: NavItemConfig[] = [
+    {
+      labelKey: "businessNav.mySaas",
+      fallback: "המערכות שלי — My SaaS Systems",
+      to: `${basePath}/dashboard/saas`,
+      icon: AppWindow,
+      moduleKey: accountKind === "bizuply" ? "__hidden__" : "saas",
+      demoTarget: "nav-saas",
+    },
     {
       labelKey: "businessNav.dashboard",
       fallback: "Dashboard",
@@ -451,6 +462,12 @@ export default function BusinessWorkspaceNav({
   ];
 
   const visibleItems = isWhatsAppApiPortalUser(user) ? apiPortalItems : items.filter((item) => {
+    if (accountKind === "saas_only") {
+      return item.moduleKey === "saas" || item.labelKey === "businessNav.helpCenter";
+    }
+    if (item.moduleKey === "saas") {
+      return accountKind === "bizuply_saas";
+    }
     if (!item.moduleKey) {
       if (
         user?.isGuidedDemo &&

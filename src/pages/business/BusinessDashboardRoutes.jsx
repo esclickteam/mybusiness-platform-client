@@ -24,6 +24,8 @@ import UpgradeRequired from "../../components/UpgradeRequired";
 
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
+const MySaasSystems = lazy(() => import("./dashboardPages/saas/MySaasSystems"));
+const SaasOwnerConsole = lazy(() => import("./dashboardPages/saas/SaasOwnerConsole"));
 
 /* OLD Website Builder - keep only for compatibility routes */
 const BusinessMiniSiteBuilder = lazy(() =>
@@ -328,6 +330,11 @@ function ModuleAccessGuard({
   ) {
     // Plan-limited accounts (e.g. website-only buyers) see an upgrade screen
     // instead of a silent redirect.
+    const saasOnlySurface =
+      Array.isArray(limited) && limited.length > 0 && limited.every((key) => key === "saas");
+    if (saasOnlySurface) {
+      return <Navigate to={`/business/${businessId}/dashboard/saas`} replace />;
+    }
     if (planLimited || automationsAccessible === false) {
       return <UpgradeRequired businessId={businessId} />;
     }
@@ -449,6 +456,8 @@ const BusinessDashboardRoutes = () => {
           />
 
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="saas" element={<MySaasSystems />} />
+          <Route path="saas/:tenantId" element={<SaasOwnerConsole />} />
           <Route path="dashboard/profile" element={<BusinessProfilePage />} />
 
           <Route path="collab" element={<Collab />}>
@@ -720,9 +729,7 @@ const BusinessDashboardRoutes = () => {
                 to={
                   apiPortal
                     ? whatsappApiPortalHome(businessId)
-                    : normalizeEnabledModules(enabledModules)
-                      ? `/business/${businessId}/dashboard/crm`
-                      : `/business/${businessId}/dashboard/dashboard`
+                    : getDefaultDashboardPath(businessId, enabledModules)
                 }
                 replace
               />
