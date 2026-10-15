@@ -73,21 +73,7 @@ const SEO_HEAD_TIMEOUT_MS = Math.max(
 );
 
 export const config = {
-  matcher: [
-    "/sitemap.xml",
-    "/robots.txt",
-    /*
-      Google Search Console HTML verification files at site root.
-      Must be listed explicitly — the catch-all below skips extensions.
-    */
-    "/:googleFile(google[a-z0-9]+\\.html)",
-    "/",
-    /*
-      Document navigations only — skip APIs, assets, and files with extensions.
-      Marketing hosts still hit this matcher but are passed through untouched.
-    */
-    "/((?!api/|assets/|.*\\.[a-zA-Z0-9]+$).+)",
-  ],
+  matcher: ["/(.*)"],
 };
 
 function isStagingCustomerHost(host) {
@@ -594,9 +580,61 @@ async function handleTravelDocument(request) {
   }
 }
 
+const SAAS_PRODUCT_ORIGINS = [
+  {
+    matches: (host) =>
+      host.endsWith("-globalproperties.bizuply.com") ||
+      host.endsWith(".globalproperties.bizuply.com"),
+    origin: "https://web-production-923d7.up.railway.app",
+  },
+];
+
+function isSaasProductHost(host) {
+  return SAAS_PRODUCT_ORIGINS.some((product) => product.matches(host));
+}
+
+function isStaticAsset(pathname) {
+  return (
+    pathname.startsWith("/assets/") ||
+    pathname.startsWith("/api/") ||
+    /\.[a-zA-Z0-9]+$/.test(pathname)
+  );
+}
+
+async function proxySaasProduct(request, host) {
+  const product = SAAS_PRODUCT_ORIGINS.find((item) => item.matches(host));
+  const secret = String(process.env.BIZUPLY_INTEGRATION_SECRET || "");
+  if (!product || !secret) {
+    return new Response("This customer site is not routed yet.", {
+      status: 404,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+  }
+  const incoming = new URL(request.url);
+  const target = new URL(`${incoming.pathname}${incoming.search}`, product.origin);
+  const headers = new Headers(request.headers);
+  headers.delete("host");
+  headers.delete("x-forwarded-host");
+  headers.delete("x-vercel-forwarded-host");
+  headers.set("x-tenant-host", host);
+  headers.set("x-bizuply-integration-key", secret);
+  const response = await fetch(target, {
+    method: request.method,
+    headers,
+    redirect: "manual",
+    body: request.method === "GET" || request.method === "HEAD" ? undefined : request.body,
+  });
+  const outgoing = new Headers(response.headers);
+  outgoing.delete("content-encoding");
+  outgoing.delete("content-length");
+  return new Response(response.body, { status: response.status, headers: outgoing });
+}
+
 export default async function middleware(request) {
   const host = getHost(request);
+  if (isSaasProductHost(host)) return proxySaasProduct(request, host);
   const pathname = getPathname(request);
+  if (isStaticAsset(pathname) && !getGoogleHtmlVerificationFile(pathname)) return passThrough();
 
   if (isBizuplyWhatsAppHost(host)) {
     if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
