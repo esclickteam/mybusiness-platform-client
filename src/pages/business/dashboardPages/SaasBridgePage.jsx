@@ -52,6 +52,7 @@ const COPY = {
     published: "פורסם במערכת האמיתית",
     publishFailed: "הפרסום נכשל",
     draftSaved: "הטיוטה נשמרה",
+    draftFailed: "שמירת הטיוטה נכשלה",
     restored: "שוחזרה גרסה במערכת האמיתית",
     automationSaved: "האוטומציה נשמרה כטיוטה",
   },
@@ -93,6 +94,7 @@ const COPY = {
     published: "Published to the real system",
     publishFailed: "Publish failed",
     draftSaved: "Draft saved",
+    draftFailed: "Draft save failed",
     restored: "Previous version restored in the real system",
     automationSaved: "Automation saved as a draft",
   },
@@ -178,12 +180,21 @@ export default function SaasBridgePage() {
   }
 
   function addBlock(bucket, title) {
-    const key = title.trim().toLowerCase().replace(/\s+/g, "_");
-    if (!key) return;
-    setDefinition((current) => ({
-      ...current,
-      [bucket]: [...current[bucket], { key, title, entity: field.entity, fieldKeys: current.fields.map((item) => item.key || item.label) }],
-    }));
+    const base = title.trim().toLowerCase().replace(/\s+/g, "_");
+    if (!base) return;
+    setDefinition((current) => {
+      const used = new Set((current[bucket] || []).map((item) => item.key));
+      let key = base;
+      let suffix = 2;
+      while (used.has(key)) {
+        key = `${base}_${suffix}`;
+        suffix += 1;
+      }
+      return {
+        ...current,
+        [bucket]: [...current[bucket], { key, title, entity: field.entity, fieldKeys: current.fields.map((item) => item.key || item.label) }],
+      };
+    });
   }
 
   function addProcess() {
@@ -214,9 +225,13 @@ export default function SaasBridgePage() {
 
   async function saveDraft() {
     if (!selected) return;
-    const response = await API.post(`/saas-bridge/links/${selected.id}/draft`, { definition });
-    setMessage(`${text.draftSaved} ${response.data.version}`);
-    await selectLink(selected.id);
+    try {
+      const response = await API.post(`/saas-bridge/links/${selected.id}/draft`, { definition });
+      setMessage(`${text.draftSaved} ${response.data.version}`);
+      await selectLink(selected.id);
+    } catch (error) {
+      setMessage(error?.response?.data?.error || text.draftFailed);
+    }
   }
 
   async function publish() {
