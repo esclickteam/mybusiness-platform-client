@@ -28,6 +28,7 @@ type TenantRow = {
     error?: string;
     syncError?: string;
   };
+  shared?: { brandName?: string; primaryColor?: string; phone?: string };
 };
 
 type CatalogTemplate = { slug: string; name: string };
@@ -127,6 +128,8 @@ export default function AdminSaasTenants() {
                     {row.product?.syncedAt ? new Date(row.product.syncedAt).toLocaleString() : "אין סנכרון"}
                     <br />
                     {row.product?.error || row.product?.syncError || "ללא שגיאה"}
+                    {row.shared?.brandName ? <><br />{row.shared.brandName}</> : null}
+                    {row.shared?.primaryColor ? <><br />{row.shared.primaryColor}</> : null}
                     {row.product?.sharedRevision ? <><br />rev {row.product.sharedRevision}</> : null}
                   </td>
                   <td className="px-3 py-2">{row.domain?.host}</td>
