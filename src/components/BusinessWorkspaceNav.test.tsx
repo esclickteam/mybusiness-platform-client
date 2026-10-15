@@ -272,6 +272,34 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(navLink(OTHER_BUSINESS_ID, "help-center")).not.toBeNull();
   });
 
+  it("shows campaigns for a WhatsApp package that also includes Meta campaigns", async () => {
+    const eventlyBusinessId = "6abcdba96130a8de386dfc86";
+    await renderNav({
+      user: {
+        businessId: eventlyBusinessId,
+        role: "business",
+        enabledModules: ["dashboard", "whatsapp", "meta-campaigns"],
+      },
+      urlBusinessId: eventlyBusinessId,
+    });
+
+    const hrefs = Array.from(document.querySelectorAll("nav a")).map((a) =>
+      a.getAttribute("href")
+    );
+    expect(hrefs.indexOf(`/business/${eventlyBusinessId}/dashboard/whatsapp`)).toBeGreaterThan(
+      hrefs.indexOf(`/business/${eventlyBusinessId}/dashboard/dashboard`)
+    );
+    expect(hrefs.indexOf(`/business/${eventlyBusinessId}/dashboard/meta-campaigns`)).toBe(
+      hrefs.indexOf(`/business/${eventlyBusinessId}/dashboard/whatsapp`) + 1
+    );
+    expect(metaCampaignsLink(eventlyBusinessId)).toHaveTextContent("Meta Campaigns");
+    expect(whatsappLink(eventlyBusinessId)).not.toBeNull();
+    expect(navLink(eventlyBusinessId, "crm")).toBeNull();
+    expect(navLink(eventlyBusinessId, "automations")).toBeNull();
+    expect(navLink(eventlyBusinessId, "global-club")).toBeNull();
+    expect(navLink(eventlyBusinessId, "website")).toBeNull();
+  });
+
   it("shows campaigns when a limited package explicitly includes them", async () => {
     await renderNav({
       user: {
