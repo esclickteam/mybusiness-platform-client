@@ -20,6 +20,13 @@ const STAFF_PERMISSIONS = [
   ["content.publish", "פרסום"],
   ["staff.manage", "ניהול עובדים"],
 ] as const;
+const PRODUCT_HOSTS: Record<string, string> = {
+  beautyflow: "beautyflow-production-9f07.up.railway.app",
+  "global-properties": "web-production-923d7.up.railway.app",
+  tableflow: "tableflow.bizuply.com",
+  dinevo: "dinevo.bizuply.com",
+  cliny: "cliny.bizuply.com",
+};
 
 function apiError(err: unknown, fallback: string) {
   if (err && typeof err === "object" && "response" in err) {
@@ -152,7 +159,9 @@ export default function SaasOwnerConsole() {
   if (!content) return <p className="p-6">{error || "טוען את אזור העריכה…"}</p>;
   const tenant = (meta?.tenant || {}) as {
     hosting?: { planId?: string; quotaMb?: number; usedMb?: number };
-    domain?: { host?: string; status?: string; ssl?: string };
+    domain?: { host?: string; status?: string; ssl?: string; mode?: string };
+    product?: { loginUrl?: string; tenantId?: string };
+    templateSlug?: string;
     database?: { status?: string; backup?: string; retentionDays?: number };
     services?: { id: string; status: string; label?: string }[];
     quote?: { dueNow?: number; renewal?: number; currency?: string };
@@ -309,8 +318,16 @@ export default function SaasOwnerConsole() {
           <h2 className="font-black">אחסון, מסד ודומיין</h2>
           <p className="text-xs">חבילה {tenant.hosting?.planId} · {tenant.hosting?.usedMb}/{tenant.hosting?.quotaMb} MB</p>
           <p className="text-xs">מסד: {tenant.database?.status}. גיבוי פר־לקוח: {tenant.database?.backup}. שמירה: {tenant.database?.retentionDays || 30} יום</p>
-          <p className="text-xs">כתובת: {tenant.domain?.host} · {tenant.domain?.status} · SSL {tenant.domain?.ssl}</p>
-          <p className="text-xs">כניסה: {tenant.accessPath}</p>
+          <p className="text-xs">כתובת ברירת מחדל: {tenant.domain?.host || tenant.accessPath} · סטטוס {tenant.domain?.status || "platform_path"} · SSL {tenant.domain?.ssl || "platform_only"}</p>
+          <p className="text-xs">כניסה למערכת: {tenant.product?.loginUrl || tenant.accessPath}</p>
+          {tenant.domain?.status === "pending_connection" ? (
+            <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs">
+              <p className="font-black">הדומיין עדיין לא פעיל. יש לאמת בעלות אצל רשם הדומיין לפני שהוא יסומן כמחובר.</p>
+              <p className="mt-1">רשומת DNS נדרשת:</p>
+              <p className="mt-1 font-mono" dir="ltr">CNAME {tenant.domain.host} → {PRODUCT_HOSTS[tenant.templateSlug || templateSlug] || "הכתובת הציבורית של המערכת"}</p>
+              <p className="mt-1">אחרי שהרשומה מתפרסמת, סטטוס SSL נשאר ממתין לאישור ולא משתנה לפעיל לפני אימות.</p>
+            </div>
+          ) : null}
           <button type="button" className="mt-2 text-sm font-bold underline" onClick={requestUpgrade}>בקשת שדרוג</button>
           <ul className="mt-2 text-xs">
             {(tenant.services || []).map((service) => (
