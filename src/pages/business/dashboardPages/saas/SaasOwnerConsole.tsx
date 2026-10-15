@@ -119,6 +119,17 @@ export default function SaasOwnerConsole() {
     setMessage("בקשת השדרוג נשמרה. לא בוצע חיוב.");
   }
 
+  async function verifyDomain() {
+    setError("");
+    try {
+      const { data } = await API.post(`/saas-owner/${tenantId}/domain/verify`);
+      setMeta((prev) => (prev?.tenant ? { ...prev, tenant: { ...prev.tenant, domain: data.domain } } : prev));
+      setMessage(data.domain?.verified ? "ה-DNS אומת. תעודת SSL עדיין ממתינה." : "הרשומה עדיין לא מצביעה על המערכת. הדומיין לא סומן כפעיל.");
+    } catch (err) {
+      setError(apiError(err, "בדיקת ה-DNS נכשלה"));
+    }
+  }
+
   async function uploadImage(field: string, file: File | undefined) {
     if (!file) return;
     setError("");
@@ -326,6 +337,7 @@ export default function SaasOwnerConsole() {
               <p className="mt-1">רשומת DNS נדרשת:</p>
               <p className="mt-1 font-mono" dir="ltr">CNAME {tenant.domain.host} → {PRODUCT_HOSTS[tenant.templateSlug || templateSlug] || "הכתובת הציבורית של המערכת"}</p>
               <p className="mt-1">אחרי שהרשומה מתפרסמת, סטטוס SSL נשאר ממתין לאישור ולא משתנה לפעיל לפני אימות.</p>
+              <button type="button" className="mt-2 font-black underline" onClick={verifyDomain}>בדיקת DNS</button>
             </div>
           ) : null}
           <button type="button" className="mt-2 text-sm font-bold underline" onClick={requestUpgrade}>בקשת שדרוג</button>
