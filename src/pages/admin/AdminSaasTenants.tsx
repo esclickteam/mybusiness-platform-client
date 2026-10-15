@@ -19,6 +19,15 @@ type TenantRow = {
   owner?: { name?: string; email?: string } | null;
   steps?: { step: string; ok?: boolean }[];
   failure?: string;
+  product?: {
+    tenantId?: string;
+    authorized?: boolean;
+    linkStatus?: string;
+    sharedRevision?: number;
+    syncedAt?: string | null;
+    error?: string;
+    syncError?: string;
+  };
 };
 
 type CatalogTemplate = { slug: string; name: string };
@@ -100,7 +109,7 @@ export default function AdminSaasTenants() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b text-start">
-                {["מערכת", "בעלים", "Tenant", "דומיין", "אחסון", "מסד", "שירותים", "חיוב", "חידוש", ""].map((head) => (
+                {["מערכת", "בעלים", "Tenant", "סנכרון", "דומיין", "אחסון", "מסד", "שירותים", "חיוב", "חידוש", ""].map((head) => (
                   <th key={head} className="px-3 py-2 text-start">{head}</th>
                 ))}
               </tr>
@@ -111,6 +120,15 @@ export default function AdminSaasTenants() {
                   <td className="px-3 py-2">{row.templateSlug}<br />{row.businessName}<br />{row.status}<br />{(row.steps || []).map((step) => step.step).join(" · ")}</td>
                   <td className="px-3 py-2">{row.owner?.name}<br />{row.owner?.email}</td>
                   <td className="px-3 py-2">{row.id}<br />{row.publicSlug}{row.failure ? <><br />{row.failure}</> : null}</td>
+                  <td className="px-3 py-2">
+                    {row.product?.linkStatus || "—"}
+                    {row.product?.authorized ? " · מקושר" : ""}
+                    <br />
+                    {row.product?.syncedAt ? new Date(row.product.syncedAt).toLocaleString() : "אין סנכרון"}
+                    <br />
+                    {row.product?.error || row.product?.syncError || "ללא שגיאה"}
+                    {row.product?.sharedRevision ? <><br />rev {row.product.sharedRevision}</> : null}
+                  </td>
                   <td className="px-3 py-2">{row.domain?.host}</td>
                   <td className="px-3 py-2">{row.hosting?.planId} · {row.hosting?.usedMb}/{row.hosting?.quotaMb}MB</td>
                   <td className="px-3 py-2">{row.database?.status}</td>
