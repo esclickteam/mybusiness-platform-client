@@ -3,6 +3,7 @@ import API from "../../api";
 
 export type SaasDraft = {
   templateSlug: string;
+  templateSlugs: string[];
   subdomain: string;
   domainMode: "subdomain" | "existing" | "purchase";
   existingDomain: string;
@@ -44,6 +45,7 @@ type TemplateOption = {
 
 const EMPTY: SaasDraft = {
   templateSlug: "",
+  templateSlugs: [],
   subdomain: "",
   domainMode: "subdomain",
   existingDomain: "",
@@ -83,14 +85,28 @@ export default function SaasAccountSetup({
   const draft = value || EMPTY;
   const [templates, setTemplates] = useState<TemplateOption[]>([]);
   const [quote, setQuote] = useState<Record<string, unknown> | null>(null);
-  const selected = templates.find((item) => item.slug === draft.templateSlug) || null;
+  const selectedSlugs = draft.templateSlugs?.length ? draft.templateSlugs : draft.templateSlug ? [draft.templateSlug] : [];
+  const selected = templates.find((item) => item.slug === selectedSlugs[0]) || null;
+
+  function toggleTemplate(slug: string) {
+    const set = new Set(selectedSlugs);
+    if (set.has(slug)) set.delete(slug);
+    else set.add(slug);
+    const templateSlugs = templates.map((item) => item.slug).filter((item) => set.has(item));
+    patch({ templateSlugs, templateSlug: templateSlugs[0] || "" });
+  }
 
   useEffect(() => {
     API.get("/admin/saas-tenants/catalog")
       .then((res) => {
         const list = res.data.templates || [];
         setTemplates(list);
-        if (!draft.templateSlug && list[0]) onChange({ ...draft, templateSlug: list[0].slug });
+        const selected = draft.templateSlugs?.length ? draft.templateSlugs : draft.templateSlug ? [draft.templateSlug] : [];
+        if (!selected.length && list[0]) {
+          onChange({ ...draft, templateSlug: list[0].slug, templateSlugs: [list[0].slug] });
+        } else if (selected.length && selected.join() !== (draft.templateSlugs || []).join()) {
+          onChange({ ...draft, templateSlug: selected[0], templateSlugs: selected });
+        }
       })
       .catch(() => setTemplates([]));
     // Catalog load is once per open.
@@ -117,14 +133,15 @@ export default function SaasAccountSetup({
   return (
     <section className="space-y-4 rounded-2xl border border-violet-200 bg-violet-50/40 p-4">
       <h2 className="text-base font-black">הקמת מערכת SaaS</h2>
-      <label className="block text-sm font-bold">
-        מערכת
-        <select className="mt-1 w-full rounded-xl border px-3 py-2" value={draft.templateSlug} onChange={(event) => patch({ templateSlug: event.target.value, serviceIds: ["license", "hosting", "database", "subdomain"] })}>
-          {templates.map((template) => (
-            <option key={template.slug} value={template.slug}>{template.name}</option>
-          ))}
-        </select>
-      </label>
+      <fieldset className="grid gap-2 md:grid-cols-2">
+        <legend className="text-sm font-bold">מערכות — אפשר לבחור יותר מאחת</legend>
+        {templates.map((template) => (
+          <label key={template.slug} className="flex items-center gap-2 rounded-xl border bg-white px-3 py-2 text-sm font-bold">
+            <input type="checkbox" checked={selectedSlugs.includes(template.slug)} onChange={() => toggleTemplate(template.slug)} />
+            {template.name}
+          </label>
+        ))}
+      </fieldset>
       <div className="grid gap-3 md:grid-cols-2">
         <label className="text-sm font-bold">מדינה
           <input className="mt-1 w-full rounded-xl border px-3 py-2" value={draft.country} onChange={(event) => patch({ country: event.target.value })} />

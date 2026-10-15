@@ -167,8 +167,32 @@ export default function SaasOwnerConsole() {
   const versions = (meta?.versions || []) as VersionRow[];
 
   return (
-    <div dir="rtl" className="grid min-h-[80vh] gap-4 p-4 lg:grid-cols-[360px_minmax(0,1fr)]">
-      <aside className="max-h-[85vh] space-y-4 overflow-y-auto rounded-2xl border bg-white p-4">
+    <div dir="rtl" className="flex w-full min-w-0 flex-col gap-4 p-4">
+      <section className="min-w-0 w-full">
+        <div className="mb-3 flex flex-wrap gap-2">
+          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("100%")}>Desktop</button>
+          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("768px")}>Tablet</button>
+          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("375px")}>Mobile</button>
+        </div>
+        <div className="mx-auto w-full overflow-x-auto rounded-2xl border bg-white" style={{ width, maxWidth: "100%" }}>
+          {templateSlug === "tableflow" || templateSlug === "dinevo" ? (
+            <TableflowGuest content={preview as never} />
+          ) : (
+            <div className="p-6" style={{ background: content.branding.background || "#fff", color: content.branding.primaryColor }}>
+              {content.branding.logo ? <img src={content.branding.logo} alt="" style={{ height: 48 }} /> : null}
+              <h2 className="text-2xl font-black">{content.branding.businessName}</h2>
+              <p>{String(content.site.homeBody || content.branding.tagline || "")}</p>
+              {sections.filter((section) => !section.hidden).map((section) => (
+                <article key={section.id || section.title}>
+                  <h3 className="font-black">{section.title}</h3>
+                  <p>{section.body}</p>
+                </article>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+      <aside className="w-full min-w-0 space-y-4 rounded-2xl border bg-white p-4">
         <h1 className="text-lg font-black">עריכת המערכת</h1>
         <Link className="inline-block text-sm font-bold underline" to={`/business/${businessId}/dashboard/saas/${tenantId}/builder`}>בונה נתונים, מסכים ותהליכים</Link>
         {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
@@ -311,30 +335,6 @@ export default function SaasOwnerConsole() {
           <button type="button" className="rounded-full border px-3 py-2 text-sm font-bold" onClick={discard}>ביטול טיוטה</button>
         </div>
       </aside>
-      <section className="min-w-0">
-        <div className="mb-3 flex gap-2">
-          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("100%")}>Desktop</button>
-          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("768px")}>Tablet</button>
-          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("375px")}>Mobile</button>
-        </div>
-        <div className="mx-auto overflow-hidden rounded-2xl border bg-white" style={{ width, maxWidth: "100%" }}>
-          {templateSlug === "tableflow" || templateSlug === "dinevo" ? (
-            <TableflowGuest content={preview as never} />
-          ) : (
-            <div className="p-6" style={{ background: content.branding.background || "#fff", color: content.branding.primaryColor }}>
-              {content.branding.logo ? <img src={content.branding.logo} alt="" style={{ height: 48 }} /> : null}
-              <h2 className="text-2xl font-black">{content.branding.businessName}</h2>
-              <p>{String(content.site.homeBody || content.branding.tagline || "")}</p>
-              {sections.filter((section) => !section.hidden).map((section) => (
-                <article key={section.id || section.title}>
-                  <h3 className="font-black">{section.title}</h3>
-                  <p>{section.body}</p>
-                </article>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
     </div>
   );
 }
