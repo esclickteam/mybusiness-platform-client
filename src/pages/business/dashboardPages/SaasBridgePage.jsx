@@ -3,6 +3,12 @@ import API from "../../../api";
 
 const FIELD_TYPES = ["text", "textarea", "number", "date", "select", "checkbox", "email", "phone"];
 
+function bridgeError(error, text, fallback) {
+  const raw = error?.response?.data?.error || "";
+  if (/entity is not in this system/.test(raw)) return text.wrongSystem;
+  return raw || fallback;
+}
+
 const emptyDefinition = () => ({
   fields: [],
   screens: [],
@@ -51,6 +57,7 @@ const COPY = {
     linkFailed: "הקישור נכשל",
     published: "פורסם במערכת האמיתית",
     publishFailed: "הפרסום נכשל",
+    wrongSystem: "אי אפשר לפרסם שדה, מסך או תהליך מישות של מערכת אחרת",
     draftSaved: "הטיוטה נשמרה",
     draftFailed: "שמירת הטיוטה נכשלה",
     restored: "שוחזרה גרסה במערכת האמיתית",
@@ -93,6 +100,7 @@ const COPY = {
     linkFailed: "Link failed",
     published: "Published to the real system",
     publishFailed: "Publish failed",
+    wrongSystem: "A field, screen, or process from another system cannot be published",
     draftSaved: "Draft saved",
     draftFailed: "Draft save failed",
     restored: "Previous version restored in the real system",
@@ -230,7 +238,7 @@ export default function SaasBridgePage() {
       setMessage(`${text.draftSaved} ${response.data.version}`);
       await selectLink(selected.id);
     } catch (error) {
-      setMessage(error?.response?.data?.error || text.draftFailed);
+      setMessage(bridgeError(error, text, text.draftFailed));
     }
   }
 
@@ -244,7 +252,7 @@ export default function SaasBridgePage() {
       setLog(logRes.data.entries || []);
       await selectLink(selected.id);
     } catch (error) {
-      setMessage(error?.response?.data?.error || text.publishFailed);
+      setMessage(bridgeError(error, text, text.publishFailed));
     }
   }
 
