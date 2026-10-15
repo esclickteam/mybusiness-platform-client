@@ -61,8 +61,9 @@ export function isAutomationsAccessible(enabledModules, automationsAccessible) {
 }
 
 /**
- * Complimentary / sold WhatsApp-only access: dashboard plus WhatsApp,
- * with no other product modules. Those accounts should not see the club.
+ * Complimentary / sold WhatsApp access: dashboard plus WhatsApp, optionally
+ * with Meta campaigns, and no other product modules. Those accounts should
+ * not see the club or the rest of the business suite.
  */
 export function isWhatsappOnlyPackage(enabledModules) {
   const normalized = normalizeEnabledModules(enabledModules);
@@ -70,9 +71,9 @@ export function isWhatsappOnlyPackage(enabledModules) {
   const productModules = normalized.filter(
     (key) => key !== "dashboard" && key !== "help-center" && key !== "billing"
   );
-  return (
-    productModules.length > 0 &&
-    productModules.every((key) => key === "whatsapp")
+  if (!productModules.includes("whatsapp")) return false;
+  return productModules.every(
+    (key) => key === "whatsapp" || key === "meta-campaigns"
   );
 }
 

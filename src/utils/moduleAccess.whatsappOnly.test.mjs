@@ -30,9 +30,23 @@ test("WhatsApp-only accounts cannot open the club route", () => {
   assert.equal(isDashboardPathAllowed(crm, modules), false);
 });
 
+test("WhatsApp plus Meta campaigns stays off the club and other modules", () => {
+  const modules = ["dashboard", "whatsapp", "meta-campaigns"];
+  const base = `/business/${businessId}/dashboard`;
+  assert.equal(isWhatsappOnlyPackage(modules), true);
+  assert.equal(isDashboardPathAllowed(`${base}/global-club`, modules), false);
+  assert.equal(isDashboardPathAllowed(`${base}/meta-campaigns/overview`, modules), true);
+  assert.equal(isDashboardPathAllowed(`${base}/meta-campaigns/campaigns`, modules), true);
+  assert.equal(isDashboardPathAllowed(`${base}/meta-campaigns/settings`, modules), true);
+  assert.equal(isDashboardPathAllowed(`${base}/whatsapp`, modules), true);
+  assert.equal(isDashboardPathAllowed(`${base}/crm`, modules), false);
+  assert.equal(isDashboardPathAllowed(`${base}/automations`, modules), false);
+});
+
 test("other limited packages can still open the club", () => {
   const club = `/business/${businessId}/dashboard/global-club`;
   assert.equal(isDashboardPathAllowed(club, ["crm"]), true);
   assert.equal(isDashboardPathAllowed(club, null), true);
   assert.equal(isDashboardPathAllowed(club, ["dashboard", "meta-campaigns"]), true);
+  assert.equal(isWhatsappOnlyPackage(["dashboard", "meta-campaigns"]), false);
 });
