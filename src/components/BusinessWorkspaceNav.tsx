@@ -342,6 +342,13 @@ export default function BusinessWorkspaceNav({
       demoTarget: "nav-meta-campaigns",
     },
     {
+      labelKey: "businessNav.saasBridge",
+      fallback: "מערכות SaaS",
+      to: `${basePath}/dashboard/saas-bridge`,
+      icon: Workflow,
+      moduleKey: "automations",
+    },
+    {
       labelKey: "businessNav.collaborations",
       fallback: "Collaborations",
       to: `${basePath}/dashboard/collab`,
