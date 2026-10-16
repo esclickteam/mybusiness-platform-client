@@ -54,8 +54,8 @@ export default function SaasOwnerConsole() {
   const [error, setError] = useState("");
   const [staffName, setStaffName] = useState("");
   const [staffEmail, setStaffEmail] = useState("");
-  const [preview, setPreview] = useState<Content | null>(null);
-  const [previewLabel, setPreviewLabel] = useState("");
+  const [historyPreview, setHistoryPreview] = useState<Content | null>(null);
+  const [historyLabel, setHistoryLabel] = useState("");
 
   useEffect(() => {
     API.get(`/saas-owner/${tenantId}`)
@@ -118,8 +118,8 @@ export default function SaasOwnerConsole() {
   async function previewVersion(revision: number) {
     setError("");
     const { data } = await API.get(`/saas-owner/${tenantId}/versions/${revision}`);
-    setPreview(data.preview);
-    setPreviewLabel(`גרסה ${revision}`);
+    setHistoryPreview(data.preview);
+    setHistoryLabel(`גרסה ${revision}`);
   }
 
   async function restoreVersion(revision: number) {
@@ -127,7 +127,7 @@ export default function SaasOwnerConsole() {
     try {
       const { data } = await API.post(`/saas-owner/${tenantId}/versions/${revision}/restore`);
       setContent(data.draft);
-      setPreview(null);
+      setHistoryPreview(null);
       setMeta((prev) => (prev ? { ...prev, versions: data.versions || [], contentRevision: data.contentRevision } : prev));
       setMessage(`גרסה ${revision} שוחזרה ופורסמה. הגרסה האחרונה נשארה בהיסטוריה.`);
     } catch (err) {
@@ -373,12 +373,12 @@ export default function SaasOwnerConsole() {
         <section>
           <h2 className="font-black">גרסאות</h2>
           <p className="text-xs">כל פרסום שומר עותק של התוכן והמיתוג של המערכת הזו בלבד. שחזור מפרסם את העותק ואינו מוחק את הגרסה האחרונה.</p>
-          {preview ? (
-            <div className="mt-2 rounded-lg border p-2 text-xs" style={{ borderColor: preview.branding.primaryColor || "#24124d" }}>
-              <p className="font-black">{previewLabel}</p>
-              <p>{preview.branding.businessName}</p>
-              <p>{preview.branding.tagline || String(preview.site.homeTitle || "")}</p>
-              <p dir="ltr">{preview.branding.primaryColor}</p>
+          {historyPreview ? (
+            <div className="mt-2 rounded-lg border p-2 text-xs" style={{ borderColor: historyPreview.branding.primaryColor || "#24124d" }}>
+              <p className="font-black">{historyLabel}</p>
+              <p>{historyPreview.branding.businessName}</p>
+              <p>{historyPreview.branding.tagline || String(historyPreview.site.homeTitle || "")}</p>
+              <p dir="ltr">{historyPreview.branding.primaryColor}</p>
             </div>
           ) : null}
           <ul className="mt-2 space-y-2 text-xs">
