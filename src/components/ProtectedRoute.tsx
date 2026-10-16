@@ -187,7 +187,11 @@ export default function ProtectedRoute({
   if (isBusiness && !user.hasAccess && !isImpersonating && !isBillingReturn && location.pathname !== "/change-password") {
     const lapsedPortalScreen =
       isWhatsAppApiPortalUser(user) && isWhatsAppApiPortalDashboardPath(location.pathname);
-    if (!lapsedPortalScreen) {
+    const saasConsole =
+      user.accountKind === "saas_only" &&
+      Boolean(user.businessId) &&
+      location.pathname.startsWith(`/business/${user.businessId}/dashboard/saas`);
+    if (!lapsedPortalScreen && !saasConsole) {
       return <Navigate to={businessNoAccessPath(user)} replace />;
     }
   }

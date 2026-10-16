@@ -156,6 +156,7 @@ export function resolvePostLoginDestination({
   hasAccess = true,
   enabledModules = null,
   subscriptionPlan = null,
+  accountKind = null,
   queryRedirect = null,
   storedRedirect = null,
 } = {}) {
@@ -187,7 +188,12 @@ export function resolvePostLoginDestination({
     if (portalAccount) {
       return hasAccess ? whatsappApiPortalHome(businessId) : whatsappApiPortalBillingPath(businessId);
     }
-    if (!hasAccess) return "/pricing";
+    if (!hasAccess) {
+      if (accountKind === "saas_only" && businessId) {
+        return `/business/${businessId}/dashboard/saas`;
+      }
+      return "/pricing";
+    }
     if (!businessId) return "/dashboard";
     const limited = Array.isArray(enabledModules) ? enabledModules : null;
     const isWebsiteOnly =

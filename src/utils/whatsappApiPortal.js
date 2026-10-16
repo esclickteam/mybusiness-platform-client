@@ -95,6 +95,9 @@ export function whatsappApiPortalBillingPath(businessId) {
  * the Business Plan pricing page.
  */
 export function businessNoAccessPath(user) {
+  if (user?.accountKind === "saas_only" && user.businessId) {
+    return `/business/${user.businessId}/dashboard/saas`;
+  }
   return isWhatsAppApiPortalUser(user) && user.businessId
     ? whatsappApiPortalBillingPath(user.businessId)
     : "/pricing";
