@@ -127,10 +127,26 @@ export function roleHomePath(role) {
   return null;
 }
 
+const ROLE_HOME_PREFIX = {
+  admin: "/admin",
+  marketer: "/marketer",
+  partner: "/partner",
+  affiliate: "/affiliate",
+  customer: "/client",
+  worker: "/staff",
+  manager: "/manager",
+};
+
 export function isCompatibleRedirect(role, path) {
   const safe = sanitizeInternalRedirect(path);
   if (!safe || safe === "/") return false;
   const normalizedRole = String(role || "").toLowerCase();
+  const pathname = safe.split(/[?#]/)[0];
+  for (const [owner, prefix] of Object.entries(ROLE_HOME_PREFIX)) {
+    if ((pathname === prefix || pathname.startsWith(`${prefix}/`)) && normalizedRole !== owner) {
+      return false;
+    }
+  }
   if (normalizedRole === "partner") {
     // Generic homes from login-from-public-page or stale sessionStorage
     // must never keep a partner on the marketing site / client CRM.

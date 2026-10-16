@@ -37,6 +37,17 @@ test("partner login home is /partner/dashboard for every partner role", () => {
   assert.equal(isCompatibleRedirect("partner", "/dashboard"), false);
   assert.equal(isCompatibleRedirect("partner", "/client/dashboard"), false);
   assert.equal(isCompatibleRedirect("partner", "/partner/dashboard"), true);
+  assert.equal(isCompatibleRedirect("business", "/admin/dashboard"), false);
+  assert.equal(
+    resolvePostLoginDestination({
+      role: "business",
+      businessId: "507f1f77bcf86cd799439011",
+      hasAccess: false,
+      accountKind: "saas_only",
+      queryRedirect: "/admin/dashboard",
+    }),
+    "/business/507f1f77bcf86cd799439011/dashboard/saas"
+  );
 });
 
 test("other role homes stay unchanged", () => {

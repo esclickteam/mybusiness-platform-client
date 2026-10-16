@@ -55,7 +55,7 @@ const EMPTY: SaasDraft = {
   paymentMode: "none",
   country: "IL",
   language: "he",
-  currency: "ILS",
+  currency: "USD",
   pricing: {
     setup: 0,
     licenseOnce: 0,

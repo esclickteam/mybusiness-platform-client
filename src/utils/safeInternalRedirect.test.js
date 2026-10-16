@@ -112,6 +112,21 @@ describe("resolvePostLoginDestination", () => {
     );
   });
 
+  it("does not send a business user to another role's home", () => {
+    expect(isCompatibleRedirect("business", "/admin/dashboard")).toBe(false);
+    expect(isCompatibleRedirect("business", `/business/${BIZ}/dashboard/saas`)).toBe(true);
+    expect(isCompatibleRedirect("admin", "/admin/dashboard")).toBe(true);
+    expect(
+      resolvePostLoginDestination({
+        role: "business",
+        businessId: BIZ,
+        hasAccess: false,
+        accountKind: "saas_only",
+        queryRedirect: "/admin/dashboard",
+      })
+    ).toBe(`/business/${BIZ}/dashboard/saas`);
+  });
+
   it("does not change admin / business / affiliate / marketer homes", () => {
     expect(resolvePostLoginDestination({ role: "admin" })).toBe(
       "/admin/dashboard"
