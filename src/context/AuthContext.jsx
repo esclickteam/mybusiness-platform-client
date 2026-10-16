@@ -1043,6 +1043,12 @@ export function AuthProvider({ children }) {
           ) {
             return;
           } else if (
+            freshUser.accountKind === "saas_only" &&
+            freshUser.businessId &&
+            location.pathname.startsWith(`/business/${freshUser.businessId}/dashboard/saas`)
+          ) {
+            return;
+          } else if (
             location.pathname === "/" ||
             location.pathname === "/dashboard" ||
             location.pathname.startsWith("/dashboard/") ||
