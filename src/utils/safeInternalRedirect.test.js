@@ -230,6 +230,17 @@ describe("resolvePostLoginDestination", () => {
     ).toBe(`/business/${BIZ}/dashboard/crm/leads`);
   });
 
+  it("drops a foreign SaaS tenant id when aligning the business", () => {
+    const other = "aaaaaaaaaaaaaaaaaaaaaaaa";
+    const foreignTenant = "bbbbbbbbbbbbbbbbbbbbbbbb";
+    expect(
+      alignRedirectBusinessId(
+        `/business/${other}/dashboard/saas/${foreignTenant}?probe=1`,
+        BIZ
+      )
+    ).toBe(`/business/${BIZ}/dashboard/saas?probe=1`);
+  });
+
   it("preserves matching businessId", () => {
     expect(
       alignRedirectBusinessId(`/business/${BIZ}/dashboard/automations`, BIZ)

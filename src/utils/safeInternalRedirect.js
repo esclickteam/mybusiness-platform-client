@@ -64,7 +64,13 @@ export function alignRedirectBusinessId(path, businessId) {
   const match = safe.match(/^\/business\/([^/]+)(\/.*)?$/);
   if (!match) return safe;
   if (String(match[1]) === String(businessId)) return safe;
-  return `/business/${businessId}${match[2] || ""}`;
+  // A SaaS tenant id belongs to one owner. Carrying it onto another
+  // business opens the previous customer's system.
+  const rest = String(match[2] || "").replace(
+    /^\/dashboard\/saas\/[^/?#]+(?:\/[^?#]*)?/,
+    "/dashboard/saas"
+  );
+  return `/business/${businessId}${rest}`;
 }
 
 export function rememberPostLoginRedirect(raw) {

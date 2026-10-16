@@ -109,7 +109,13 @@ export default function ProtectedRoute({
     const from = `${location.pathname}${location.search || ""}${
       location.hash || ""
     }`;
-    rememberPostLoginRedirect(from);
+    let explicitLogout = false;
+    try {
+      explicitLogout = sessionStorage.getItem("bizuplyExplicitLogout") === "1";
+    } catch {
+      explicitLogout = false;
+    }
+    if (!explicitLogout) rememberPostLoginRedirect(from);
     return (
       <Navigate
         to={loginPathForBrowser()}
@@ -124,6 +130,12 @@ export default function ProtectedRoute({
   /* ===========================
      👑 Admin – send to admin panel, never client/business dashboards
   =========================== */
+  try {
+    sessionStorage.removeItem("bizuplyExplicitLogout");
+  } catch {
+    /* ignore */
+  }
+
   if (isAdmin) {
     const path = location.pathname || "";
     const isAlreadyOnAdmin = path.startsWith("/admin");
