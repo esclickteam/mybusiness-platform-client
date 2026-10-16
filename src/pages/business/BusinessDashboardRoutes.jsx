@@ -388,19 +388,19 @@ const BusinessDashboardRoutes = () => {
       return;
     }
 
-    const nextPath = `${location.pathname.replace(
-      `/business/${routeBusinessId}`,
-      `/business/${currentBusinessId}`
-    )}${location.search}`;
+    let suffix = location.pathname.slice(
+      `/business/${routeBusinessId}`.length
+    );
+    if (/^\/dashboard\/saas\/[^/]+/.test(suffix)) {
+      suffix = "/dashboard/saas";
+    }
+    const nextPath = `/business/${currentBusinessId}${suffix}${location.search}`;
 
     if (lastBusinessRedirectRef.current === nextPath) return;
 
     lastBusinessRedirectRef.current = nextPath;
 
-    navigate(nextPath, {
-      replace: true,
-      state: location.state,
-    });
+    navigate(nextPath, { replace: true });
   }, [
     isAdmin,
     user?.businessId,

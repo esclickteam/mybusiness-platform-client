@@ -660,6 +660,7 @@ export function AuthProvider({ children }) {
 
       try {
         clearPostLoginRedirect();
+        sessionStorage.setItem("bizuplyExplicitLogout", "1");
       } catch (err) {
         console.warn("clearPostLoginRedirect failed:", err?.message || err);
       }

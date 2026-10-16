@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  alignRedirectBusinessId,
   isCompatibleRedirect,
   resolvePostLoginDestination,
   roleHomePath,
@@ -49,5 +50,22 @@ test("other role homes stay unchanged", () => {
       hasAccess: true,
     }),
     "/business/507f1f77bcf86cd799439011/dashboard"
+  );
+});
+
+test("a foreign SaaS tenant id is not carried onto the signed-in business", () => {
+  const mine = "507f1f77bcf86cd799439011";
+  const other = "aaaaaaaaaaaaaaaaaaaaaaaa";
+  const foreignTenant = "bbbbbbbbbbbbbbbbbbbbbbbb";
+  assert.equal(
+    alignRedirectBusinessId(
+      `/business/${other}/dashboard/saas/${foreignTenant}/builder?probe=1`,
+      mine
+    ),
+    `/business/${mine}/dashboard/saas?probe=1`
+  );
+  assert.equal(
+    alignRedirectBusinessId(`/business/${mine}/dashboard/saas/${foreignTenant}`, mine),
+    `/business/${mine}/dashboard/saas/${foreignTenant}`
   );
 });
