@@ -492,6 +492,7 @@ export function AuthProvider({ children }) {
         role: normalizedUser.role,
         businessId: normalizedUser.businessId,
         hasAccess: normalizedUser.hasAccess,
+        accountKind: normalizedUser.accountKind,
         enabledModules: normalizedUser.enabledModules,
         subscriptionPlan: normalizedUser.subscriptionPlan,
         queryRedirect: urlRedirect,
@@ -1023,6 +1024,7 @@ export function AuthProvider({ children }) {
                 role: freshUser.role,
                 businessId: freshUser.businessId,
                 hasAccess: freshUser.hasAccess,
+                accountKind: freshUser.accountKind,
                 enabledModules: freshUser.enabledModules,
                 subscriptionPlan: freshUser.subscriptionPlan,
                 queryRedirect: sanitizeInternalRedirect(
