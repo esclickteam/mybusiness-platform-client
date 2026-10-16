@@ -40,6 +40,7 @@ type LoginUser = {
   mustChangePassword?: boolean;
   isTempPassword?: boolean;
   subscriptionPlan?: string | null;
+  accountKind?: string | null;
 };
 
 type LoginResponse = {
@@ -174,6 +175,7 @@ function BusinessLogin() {
         role: loggedInUser?.role,
         businessId: loggedInUser?.businessId,
         hasAccess: loggedInUser?.hasAccess !== false,
+        accountKind: loggedInUser?.accountKind ?? null,
         enabledModules: loggedInUser?.enabledModules ?? null,
         subscriptionPlan: loggedInUser?.subscriptionPlan ?? null,
         queryRedirect,
