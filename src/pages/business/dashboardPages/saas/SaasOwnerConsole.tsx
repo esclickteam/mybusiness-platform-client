@@ -54,6 +54,7 @@ export default function SaasOwnerConsole() {
   const [error, setError] = useState("");
   const [staffName, setStaffName] = useState("");
   const [staffEmail, setStaffEmail] = useState("");
+  const [staffPermissions, setStaffPermissions] = useState<string[]>(["content.edit"]);
   const [historyPreview, setHistoryPreview] = useState<Content | null>(null);
   const [historyLabel, setHistoryLabel] = useState("");
 
