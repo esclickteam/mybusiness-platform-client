@@ -11,7 +11,7 @@ type Content = {
 };
 
 type StaffMember = { email: string; name?: string; active?: boolean; permissions?: string[] };
-type VersionRow = { at?: string; summary?: string };
+type VersionRow = { revision?: number; at?: string; summary?: string; hasSnapshot?: boolean };
 
 const BRAND_FIELDS = ["businessName", "logo", "favicon", "primaryColor", "secondaryColor", "font", "heroImage", "background", "banner", "tagline", "icon", "mobileDensity", "desktopDensity"];
 const SITE_FIELDS = ["homeTitle", "homeBody", "footer", "seoTitle", "seoDescription"];
@@ -54,7 +54,8 @@ export default function SaasOwnerConsole() {
   const [error, setError] = useState("");
   const [staffName, setStaffName] = useState("");
   const [staffEmail, setStaffEmail] = useState("");
-  const [staffPermissions, setStaffPermissions] = useState<string[]>(["content.edit"]);
+  const [preview, setPreview] = useState<Content | null>(null);
+  const [previewLabel, setPreviewLabel] = useState("");
 
   useEffect(() => {
     API.get(`/saas-owner/${tenantId}`)
@@ -89,7 +90,7 @@ export default function SaasOwnerConsole() {
   async function saveDraft() {
     setError("");
     try {
-      await API.put(`/saas-owner/${tenantId}/draft`, { content });
+      await API.put(`/saas-owner/${tenantId}/draft`, { content, baseRevision: meta?.contentRevision });
       setMessage("הטיוטה נשמרה");
     } catch (err) {
       setError(apiError(err, "השמירה נכשלה"));
@@ -99,9 +100,9 @@ export default function SaasOwnerConsole() {
   async function publish() {
     setError("");
     try {
-      await API.put(`/saas-owner/${tenantId}/draft`, { content });
-      const { data } = await API.post(`/saas-owner/${tenantId}/publish`, { summary: "publish" });
-      setMeta((prev) => (prev ? { ...prev, versions: data.versions || [] } : prev));
+      await API.put(`/saas-owner/${tenantId}/draft`, { content, baseRevision: meta?.contentRevision });
+      const { data } = await API.post(`/saas-owner/${tenantId}/publish`, { summary: "publish", baseRevision: meta?.contentRevision });
+      setMeta((prev) => (prev ? { ...prev, versions: data.versions || [], contentRevision: data.contentRevision } : prev));
       setMessage("השינויים פורסמו");
     } catch (err) {
       setError(apiError(err, "הפרסום נכשל"));
@@ -114,6 +115,25 @@ export default function SaasOwnerConsole() {
     setMessage("הטיוטה בוטלה");
   }
 
+  async function previewVersion(revision: number) {
+    setError("");
+    const { data } = await API.get(`/saas-owner/${tenantId}/versions/${revision}`);
+    setPreview(data.preview);
+    setPreviewLabel(`גרסה ${revision}`);
+  }
+
+  async function restoreVersion(revision: number) {
+    setError("");
+    try {
+      const { data } = await API.post(`/saas-owner/${tenantId}/versions/${revision}/restore`);
+      setContent(data.draft);
+      setPreview(null);
+      setMeta((prev) => (prev ? { ...prev, versions: data.versions || [], contentRevision: data.contentRevision } : prev));
+      setMessage(`גרסה ${revision} שוחזרה ופורסמה. הגרסה האחרונה נשארה בהיסטוריה.`);
+    } catch (err) {
+      setError(apiError(err, "השחזור נכשל"));
+    }
+  }
   async function requestUpgrade() {
     await API.post(`/saas-owner/${tenantId}/upgrade-request`, { note: "upgrade" });
     setMessage("בקשת השדרוג נשמרה. לא בוצע חיוב.");
@@ -352,9 +372,26 @@ export default function SaasOwnerConsole() {
         </section>
         <section>
           <h2 className="font-black">גרסאות</h2>
-          <ul className="text-xs">
+          <p className="text-xs">כל פרסום שומר עותק של התוכן והמיתוג של המערכת הזו בלבד. שחזור מפרסם את העותק ואינו מוחק את הגרסה האחרונה.</p>
+          {preview ? (
+            <div className="mt-2 rounded-lg border p-2 text-xs" style={{ borderColor: preview.branding.primaryColor || "#24124d" }}>
+              <p className="font-black">{previewLabel}</p>
+              <p>{preview.branding.businessName}</p>
+              <p>{preview.branding.tagline || String(preview.site.homeTitle || "")}</p>
+              <p dir="ltr">{preview.branding.primaryColor}</p>
+            </div>
+          ) : null}
+          <ul className="mt-2 space-y-2 text-xs">
             {versions.map((version) => (
-              <li key={version.at}>{version.at} · {version.summary}</li>
+              <li key={version.revision || version.at} className="flex min-w-0 flex-wrap items-center gap-2">
+                <span className="min-w-0 break-words">{version.revision} · {version.at} · {version.summary}</span>
+                {version.hasSnapshot && version.revision ? (
+                  <>
+                    <button type="button" className="font-bold underline" onClick={() => previewVersion(version.revision || 0)}>תצוגה</button>
+                    <button type="button" className="font-bold underline" onClick={() => restoreVersion(version.revision || 0)}>שחזור</button>
+                  </>
+                ) : <span>אין עותק</span>}
+              </li>
             ))}
           </ul>
         </section>
