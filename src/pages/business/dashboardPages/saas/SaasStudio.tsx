@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import API from "../../../../api";
 
 type Field = {
@@ -37,15 +37,18 @@ type Screen = {
 };
 
 type Widget = {
-  id: string;
+  id?: string;
   kind: string;
-  recordTypeId: string;
+  recordTypeId?: string;
+  formId?: string;
+  title?: string;
   fieldIds?: string[];
   titleFieldId?: string;
   dateFieldId?: string;
   statusFieldId?: string;
   valueFieldId?: string;
   searchFieldIds?: string[];
+  layout?: { span?: number; order?: number; mobileSpan?: number; tabletSpan?: number };
 };
 
 type FormDef = { id: string; name: string; recordTypeId: string; steps: { title: string; fieldIds: string[] }[]; questions?: { fieldId: string; visibleWhen?: { fieldId: string; op: string; value: string } | null }[] };
@@ -114,7 +117,7 @@ export default function SaasStudio({
   const he = lang === "he";
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [previewWidth, setPreviewWidth] = useState<"100%" | "375px">("100%");
+  const [previewWidth, setPreviewWidth] = useState<"390px" | "768px" | "1440px" | "100%">("100%");
   const types = activeTypes(draft);
 
   async function save(path: string, body: unknown, ok: string) {
@@ -175,6 +178,9 @@ function DataTools({ tenantId, he, types, publishedTypes, versions, onReload, on
   const [whenValue, setWhenValue] = useState("");
   const [defaultValue, setDefaultValue] = useState("");
   const [preset, setPreset] = useState("");
+  const [viewPermission, setViewPermission] = useState("records.view");
+  const [editPermission, setEditPermission] = useState("records.edit");
+  const [relationType, setRelationType] = useState("");
   const [csv, setCsv] = useState("");
   const [importType, setImportType] = useState("");
   const [bulkType, setBulkType] = useState("");
@@ -195,6 +201,9 @@ function DataTools({ tenantId, he, types, publishedTypes, versions, onReload, on
     if (whenField) body.visibleWhen = { fieldId: whenField, op: whenOp, value: whenValue };
     if (defaultValue !== "") body.defaultValue = defaultValue;
     if (preset) body.validation = { preset };
+    if (viewPermission) body.viewPermission = viewPermission;
+    if (editPermission) body.editPermission = editPermission;
+    if (relationType) body.relation = { recordTypeId: relationType, cardinality: "one" };
     try {
       await API.post(`/saas-owner/${tenantId}/builder/fields/${fieldId}/configure`, body);
       await onReload();
@@ -309,6 +318,16 @@ function DataTools({ tenantId, he, types, publishedTypes, versions, onReload, on
           <option value="digits">{he ? "ספרות בלבד" : "Digits"}</option>
           <option value="slug">slug</option>
         </select>
+        <select className="mt-2 w-full rounded-xl border px-3 py-2" value={viewPermission} onChange={(event) => setViewPermission(event.target.value)}>
+          {ROLE_KEYS.map((key) => <option key={key} value={key}>{he ? `צפייה · ${key}` : `View · ${key}`}</option>)}
+        </select>
+        <select className="mt-2 w-full rounded-xl border px-3 py-2" value={editPermission} onChange={(event) => setEditPermission(event.target.value)}>
+          {ROLE_KEYS.map((key) => <option key={key} value={key}>{he ? `עריכה · ${key}` : `Edit · ${key}`}</option>)}
+        </select>
+        <select className="mt-2 w-full rounded-xl border px-3 py-2" value={relationType} onChange={(event) => setRelationType(event.target.value)}>
+          <option value="">{he ? "יעד קשר (לשדה relation)" : "Relation target"}</option>
+          {types.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+        </select>
         <button type="button" className="mt-3 rounded-full bg-[#24124d] px-4 py-2 text-sm font-bold text-white" onClick={configure}>{he ? "שמירת הגדרה" : "Save settings"}</button>
       </article>
       <article className="space-y-3 rounded-2xl border bg-white p-4">
@@ -341,10 +360,21 @@ function DataTools({ tenantId, he, types, publishedTypes, versions, onReload, on
           {versions.map((item) => <option key={item.revision} value={item.revision}>{item.revision} · {item.summary} · {item.hasSnapshot ? "snapshot" : he ? "בלי תצלום" : "no snapshot"}</option>)}
         </select>
         <button type="button" className="rounded-full border px-4 py-2 text-sm font-bold" onClick={restore}>{he ? "שחזור טיוטה" : "Restore draft"}</button>
+        <button type="button" className="rounded-full border px-4 py-2 text-sm font-bold" onClick={async () => {
+          onError("");
+          try {
+            const { data } = await API.post(`/saas-owner/${tenantId}/builder/backups`, { summary: "owner logical backup" });
+            onMessage(he ? `גיבוי לוגי נשמר (${data.backup?.records || 0} רשומות). לא נמחק דבר.` : `Logical backup saved (${data.backup?.records || 0} records). Nothing was deleted.`);
+          } catch (err) {
+            onError(apiError(err, "Backup failed"));
+          }
+        }}>{he ? "גיבוי לוגי" : "Logical backup"}</button>
       </article>
     </div>
   );
 }
+
+const WIDGET_PALETTE = ["table", "cards", "list", "kanban", "calendar", "chart", "stat", "dashboard", "form", "modal"];
 
 function ScreenTools({ tenantId, he, types, screens, published, previewWidth, setPreviewWidth, onSave, onError }: {
   tenantId: string;
@@ -352,93 +382,162 @@ function ScreenTools({ tenantId, he, types, screens, published, previewWidth, se
   types: RecordType[];
   screens: Screen[];
   published: Schema | null;
-  previewWidth: "100%" | "375px";
-  setPreviewWidth: (value: "100%" | "375px") => void;
+  previewWidth: "390px" | "768px" | "1440px" | "100%";
+  setPreviewWidth: (value: "390px" | "768px" | "1440px" | "100%") => void;
   onSave: (path: string, body: unknown, ok: string) => Promise<void>;
   onError: (value: string) => void;
 }) {
   const [name, setName] = useState("");
   const [audience, setAudience] = useState("staff");
-  const [kind, setKind] = useState("table");
+  const [screenId, setScreenId] = useState("");
+  const [widgets, setWidgets] = useState<Widget[]>([]);
   const [recordTypeId, setRecordTypeId] = useState("");
   const [fieldIds, setFieldIds] = useState<string[]>([]);
-  const [rows, setRows] = useState<{ id: string; values: Record<string, unknown> }[]>([]);
-  const [search, setSearch] = useState("");
+  const [formId, setFormId] = useState("");
+  const [rowsByType, setRowsByType] = useState<Record<string, { id: string; values: Record<string, unknown> }[]>>({});
+  const [liveOpen, setLiveOpen] = useState(false);
   const recordType = types.find((item) => item.id === recordTypeId);
-  const live = useMemo(() => [...screens].reverse().find((item) => !item.archived), [screens]);
+  const forms = published?.forms || [];
 
-  function toggle(id: string) {
-    setFieldIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]));
+  function addWidget(kind: string) {
+    const needsForm = kind === "form" || kind === "modal";
+    if (needsForm && !formId) return;
+    if (!needsForm && !recordTypeId) return;
+    setWidgets((prev) => [
+      ...prev,
+      {
+        id: `wdg_${prev.length + 1}`,
+        kind,
+        recordTypeId: needsForm ? forms.find((item) => item.id === formId)?.recordTypeId : recordTypeId,
+        formId: needsForm ? formId : undefined,
+        fieldIds,
+        titleFieldId: fieldIds[0] || "",
+        searchFieldIds: fieldIds.slice(0, 1),
+        dateFieldId: kind === "calendar" ? fieldIds[0] : "",
+        statusFieldId: kind === "kanban" ? fieldIds[0] : "",
+        valueFieldId: kind === "chart" || kind === "stat" ? fieldIds[0] : "",
+        layout: { span: kind === "stat" ? 4 : 12, order: prev.length, mobileSpan: 12, tabletSpan: kind === "stat" ? 6 : 12 },
+      },
+    ]);
   }
 
-  async function loadRows() {
-    const typeId = live?.widgets?.[0]?.recordTypeId || recordTypeId;
-    if (!typeId) return;
-    const { data } = await API.get(`/saas-owner/${tenantId}/builder/records`, { params: { type: typeId, search } });
-    setRows(data.records || []);
+  function moveWidget(from: number, to: number) {
+    setWidgets((prev) => {
+      const next = prev.slice();
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return next.map((widget, index) => ({ ...widget, layout: { ...widget.layout, order: index } }));
+    });
   }
 
-  const widget = live?.widgets?.[0];
-  const previewType = (published?.recordTypes || []).find((item) => item.id === widget?.recordTypeId);
+  function loadScreen(screen: Screen) {
+    setScreenId(screen.id);
+    setName(screen.name);
+    setAudience(screen.audience);
+    setWidgets(screen.widgets || []);
+  }
+
+  async function loadLive() {
+    const { data } = await API.get(`/saas-owner/${tenantId}/builder/runtime/screens`);
+    const next: Record<string, { id: string; values: Record<string, unknown> }[]> = {};
+    for (const entry of Object.values(data.types || {}) as { recordType?: { id: string }; records?: { id: string; values: Record<string, unknown> }[] }[]) {
+      if (entry.recordType?.id) next[entry.recordType.id] = entry.records || [];
+    }
+    setRowsByType(next);
+    setLiveOpen(true);
+  }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1fr)]">
+    <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
       <article className="rounded-2xl border bg-white p-4">
-        <h2 className="font-black">{he ? "מסך" : "Screen"}</h2>
+        <h2 className="font-black">{he ? "קנבס מסכים" : "Screen canvas"}</h2>
         <input className="mt-2 w-full rounded-xl border px-3 py-2" value={name} onChange={(event) => setName(event.target.value)} placeholder={he ? "שם המסך" : "Screen name"} />
         <select className="mt-2 w-full rounded-xl border px-3 py-2" value={audience} onChange={(event) => setAudience(event.target.value)}>
           <option value="staff">{he ? "עובדים" : "Staff"}</option>
           <option value="customer">{he ? "לקוחות" : "Customers"}</option>
         </select>
-        <select className="mt-2 w-full rounded-xl border px-3 py-2" value={kind} onChange={(event) => setKind(event.target.value)}>
-          {["table", "cards", "calendar", "chart", "list", "kanban"].map((item) => <option key={item}>{item}</option>)}
-        </select>
         <select className="mt-2 w-full rounded-xl border px-3 py-2" value={recordTypeId} onChange={(event) => { setRecordTypeId(event.target.value); setFieldIds([]); }}>
-          <option value="">{he ? "סוג רשומה" : "Record type"}</option>
+          <option value="">{he ? "סוג רשומה לרכיב" : "Record type"}</option>
           {types.map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
         </select>
-        <div className="mt-2 space-y-1">
+        <select className="mt-2 w-full rounded-xl border px-3 py-2" value={formId} onChange={(event) => setFormId(event.target.value)}>
+          <option value="">{he ? "טופס לרכיב טופס/חלון" : "Form for form/modal"}</option>
+          {forms.map((item) => <option key={item.id} value={item.id}>{item.name}</option>)}
+        </select>
+        <div className="mt-2 max-h-32 space-y-1 overflow-auto">
           {(recordType?.fields || []).filter((item) => !item.archived).map((item) => (
-            <label key={item.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={fieldIds.includes(item.id)} onChange={() => toggle(item.id)} />{item.label}</label>
+            <label key={item.id} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={fieldIds.includes(item.id)} onChange={() => setFieldIds((prev) => prev.includes(item.id) ? prev.filter((id) => id !== item.id) : [...prev, item.id])} />{item.label}</label>
+          ))}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {WIDGET_PALETTE.map((kind) => (
+            <button key={kind} type="button" className="rounded-full border px-3 py-1 text-xs font-bold" onClick={() => addWidget(kind)}>{kind}</button>
           ))}
         </div>
         <button type="button" className="mt-3 rounded-full bg-[#24124d] px-4 py-2 text-sm font-bold text-white" onClick={() => onSave("screens", {
+          id: screenId || undefined,
           name,
           audience,
+          routePath: name.toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40),
           viewPermission: "records.view",
           editPermission: "records.edit",
-          widgets: [{
-            kind,
-            recordTypeId,
-            fieldIds,
-            titleFieldId: fieldIds[0] || "",
-            searchFieldIds: fieldIds.slice(0, 1),
-            dateFieldId: kind === "calendar" ? fieldIds[0] : "",
-            statusFieldId: kind === "kanban" ? fieldIds[0] : "",
-            valueFieldId: kind === "chart" ? fieldIds[0] : "",
-          }],
-        }, he ? "המסך נשמר בטיוטה" : "Screen saved")} disabled={!name || !recordTypeId}>{he ? "שמירת מסך" : "Save screen"}</button>
+          widgets,
+        }, he ? "המסך נשמר בטיוטה" : "Screen saved")} disabled={!name || widgets.length === 0}>{he ? "שמירת מסך" : "Save screen"}</button>
       </article>
       <article className="min-w-0 rounded-2xl border bg-white p-4">
         <div className="mb-3 flex flex-wrap items-center gap-2">
-          <h2 className="font-black">{he ? "תצוגה מקדימה" : "Preview"}</h2>
-          <button type="button" className="rounded-full border px-3 py-1 text-sm font-bold" onClick={() => setPreviewWidth("100%")}>{he ? "מחשב" : "Desktop"}</button>
-          <button type="button" className="rounded-full border px-3 py-1 text-sm font-bold" onClick={() => setPreviewWidth("375px")}>{he ? "נייד" : "Mobile"}</button>
-          <input className="rounded-xl border px-2 py-1 text-sm" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={he ? "חיפוש" : "Search"} />
-          <button type="button" className="rounded-full border px-3 py-1 text-sm font-bold" onClick={() => loadRows().catch((err) => onError(apiError(err, "Load failed")))}>{he ? "טעינה" : "Load"}</button>
+          <h2 className="font-black">{he ? "תצוגה מקדימה חיה" : "Live preview"}</h2>
+          {(["390px", "768px", "1440px", "100%"] as const).map((width) => (
+            <button key={width} type="button" className={`rounded-full border px-3 py-1 text-sm font-bold ${previewWidth === width ? "bg-[#24124d] text-white" : ""}`} onClick={() => setPreviewWidth(width)}>{width === "100%" ? (he ? "מלא" : "Full") : width.replace("px", "")}</button>
+          ))}
+          <button type="button" className="rounded-full border px-3 py-1 text-sm font-bold" onClick={() => loadLive().catch((err) => onError(apiError(err, "Load failed")))}>{he ? "נתונים שפורסמו" : "Published data"}</button>
         </div>
-        <div className="overflow-x-hidden rounded-xl border bg-slate-50 p-3" style={{ width: previewWidth, maxWidth: "100%" }}>
-          <p className="mb-2 text-sm font-black">{live?.name || (he ? "אין מסך שמור" : "No saved screen")} · {live?.audience}</p>
-          <RecordView widget={widget} recordType={previewType} rows={rows} />
+        <div className="overflow-x-auto rounded-xl border bg-slate-50 p-3" style={{ width: previewWidth === "100%" ? "100%" : previewWidth, maxWidth: "100%" }}>
+          <div className="grid grid-cols-12 gap-2">
+            {widgets.map((widget, index) => (
+              <div
+                key={widget.id || index}
+                className="rounded-xl bg-white p-2"
+                style={{ gridColumn: `span ${previewWidth === "390px" ? widget.layout?.mobileSpan || 12 : previewWidth === "768px" ? widget.layout?.tabletSpan || 12 : widget.layout?.span || 12}` }}
+                draggable
+                onDragStart={(event) => event.dataTransfer.setData("text/plain", String(index))}
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  moveWidget(Number(event.dataTransfer.getData("text/plain")), index);
+                }}
+              >
+                <div className="mb-1 flex items-center justify-between text-xs font-bold">
+                  <span>{widget.kind}</span>
+                  <button type="button" onClick={() => setWidgets((prev) => prev.filter((_, itemIndex) => itemIndex !== index))}>×</button>
+                </div>
+                <RecordView
+                  widget={widget}
+                  recordType={(published?.recordTypes || types).find((item) => item.id === widget.recordTypeId)}
+                  rows={rowsByType[widget.recordTypeId || ""] || []}
+                  live={liveOpen}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-        <ul className="mt-3 text-sm">{screens.filter((item) => !item.archived).map((item) => <li key={item.id}>{item.name} · {item.audience} · {item.widgets.map((widgetItem) => widgetItem.kind).join(", ")}</li>)}</ul>
+        <ul className="mt-3 text-sm">{screens.filter((item) => !item.archived).map((item) => (
+          <li key={item.id}><button type="button" className="font-bold" onClick={() => loadScreen(item)}>{item.name}</button> · {item.audience} · {item.widgets.map((widgetItem) => widgetItem.kind).join(", ")}</li>
+        ))}</ul>
       </article>
     </div>
   );
 }
 
-function RecordView({ widget, recordType, rows }: { widget?: Widget; recordType?: RecordType; rows: { id: string; values: Record<string, unknown> }[] }) {
-  if (!widget || !recordType) return null;
+function RecordView({ widget, recordType, rows, live }: { widget?: Widget; recordType?: RecordType; rows: { id: string; values: Record<string, unknown> }[]; live?: boolean }) {
+  if (!widget) return null;
+  if (widget.kind === "form" || widget.kind === "modal") {
+    return <p className="text-sm">{widget.title || widget.kind}{live ? "" : ""}</p>;
+  }
+  if (!recordType) return <p className="text-xs text-slate-500">{widget.kind}</p>;
+  if (widget.kind === "stat" || widget.kind === "dashboard") {
+    return <p className="text-2xl font-black">{rows.length}</p>;
+  }
   const label = (id?: string) => recordType.fields.find((item) => item.id === id)?.label || "";
   const text = (row: { values: Record<string, unknown> }, id?: string) => String(row.values[id || ""] ?? "");
   if (widget.kind === "cards") {
@@ -472,7 +571,7 @@ function FormTools({ tenantId, he, types, forms, publishedForms, previewWidth, o
   types: RecordType[];
   forms: FormDef[];
   publishedForms: FormDef[];
-  previewWidth: "100%" | "375px";
+  previewWidth: "390px" | "768px" | "1440px" | "100%";
   onSave: (path: string, body: unknown, ok: string) => Promise<void>;
 }) {
   const [name, setName] = useState("");
@@ -533,7 +632,7 @@ function FormTools({ tenantId, he, types, forms, publishedForms, previewWidth, o
           buttons: [{ label: he ? "שמירה" : "Save", action: "save_record" }],
         }, he ? "הטופס נשמר בטיוטה" : "Form saved")}>{he ? "שמירת טופס" : "Save form"}</button>
       </article>
-      <article className="rounded-2xl border bg-white p-4" style={{ maxWidth: previewWidth === "375px" ? 375 : undefined }}>
+      <article className="rounded-2xl border bg-white p-4" style={{ maxWidth: previewWidth === "390px" ? 390 : previewWidth === "768px" ? 768 : undefined }}>
         <h2 className="font-black">{saved?.name || (he ? "תצוגת טופס" : "Form preview")}</h2>
         <p className="text-xs">{he ? "שליחה יוצרת רשומה רק אחרי פרסום הטופס." : "Submit creates a record only after the form is published."}</p>
         {((step === 0 ? stepA : stepB).length ? (step === 0 ? stepA : stepB) : fields.map((item) => item.id)).filter((id) => id !== question || visibleQuestion).map((id) => (
@@ -609,7 +708,7 @@ function AutomationTools({ tenantId, he, types, workflows, automations, onSave, 
   return (
     <article className="rounded-2xl border bg-white p-4">
       <h2 className="font-black">{he ? "אוטומציה" : "Automation"}</h2>
-      <p className="text-xs">{he ? "רק פעולות מאושרות. אין קוד חופשי ואין שליחה חיצונית. תזמון נשמר ונבדק ידנית; אין מנוע רקע פעיל." : "Approved actions only. Schedule is stored and checked manually."}</p>
+      <p className="text-xs">{he ? "רק פעולות מאושרות בתוך המערכת. יצירה ועדכון של רשומה מפעילים אוטומציה שפורסמה. אין שליחה חיצונית." : "Approved in-tenant actions only. Published automations run on create/update. Nothing is sent outside."}</p>
       <input className="mt-2 w-full rounded-xl border px-3 py-2" value={name} onChange={(event) => setName(event.target.value)} placeholder={he ? "שם" : "Name"} />
       <select className="mt-2 w-full rounded-xl border px-3 py-2" value={trigger} onChange={(event) => setTrigger(event.target.value)}>
         <option value="record.created">record.created</option>
