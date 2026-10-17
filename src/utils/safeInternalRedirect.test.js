@@ -125,6 +125,16 @@ describe("resolvePostLoginDestination", () => {
         queryRedirect: "/admin/dashboard",
       })
     ).toBe(`/business/${BIZ}/dashboard/saas`);
+    expect(
+      resolvePostLoginDestination({
+        role: "business",
+        businessId: BIZ,
+        hasAccess: true,
+        accountKind: "saas_only",
+        storedRedirect: "/admin/dashboard",
+        queryRedirect: `/business/${BIZ}/dashboard`,
+      })
+    ).toBe(`/business/${BIZ}/dashboard/saas`);
   });
 
   it("does not change admin / business / affiliate / marketer homes", () => {

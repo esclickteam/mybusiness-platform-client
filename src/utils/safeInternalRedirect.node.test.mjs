@@ -48,6 +48,17 @@ test("partner login home is /partner/dashboard for every partner role", () => {
     }),
     "/business/507f1f77bcf86cd799439011/dashboard/saas"
   );
+  assert.equal(
+    resolvePostLoginDestination({
+      role: "business",
+      businessId: "507f1f77bcf86cd799439011",
+      hasAccess: true,
+      accountKind: "saas_only",
+      storedRedirect: "/admin/dashboard",
+      queryRedirect: "/business/507f1f77bcf86cd799439011/dashboard",
+    }),
+    "/business/507f1f77bcf86cd799439011/dashboard/saas"
+  );
 });
 
 test("other role homes stay unchanged", () => {
