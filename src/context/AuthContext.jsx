@@ -405,7 +405,14 @@ export function AuthProvider({ children }) {
     if (normalizedUser.role === "business" && normalizedUser.businessId) {
       clearLastDashboardRoute(normalizedUser.businessId);
       navigate(
-        `/business/${normalizedUser.businessId}/dashboard/dashboard`,
+        resolvePostLoginDestination({
+          role: normalizedUser.role,
+          businessId: normalizedUser.businessId,
+          hasAccess: normalizedUser.hasAccess,
+          accountKind: normalizedUser.accountKind,
+          enabledModules: normalizedUser.enabledModules,
+          subscriptionPlan: normalizedUser.subscriptionPlan,
+        }),
         { replace: true }
       );
       return;
@@ -950,9 +957,14 @@ export function AuthProvider({ children }) {
 
           if (freshUser.role === "business" && freshUser.businessId) {
             navigate(
-              freshUser.hasAccess
-                ? resolveBusinessDashboardPath(freshUser.businessId)
-                : businessNoAccessPath(freshUser),
+              resolvePostLoginDestination({
+                role: freshUser.role,
+                businessId: freshUser.businessId,
+                hasAccess: freshUser.hasAccess,
+                accountKind: freshUser.accountKind,
+                enabledModules: freshUser.enabledModules,
+                subscriptionPlan: freshUser.subscriptionPlan,
+              }),
               { replace: true }
             );
           } else {
@@ -1037,9 +1049,12 @@ export function AuthProvider({ children }) {
               return;
             }
 
-            navigate(resolveBusinessDashboardPath(freshUser.businessId), {
-              replace: true,
-            });
+            navigate(
+              freshUser.accountKind === "saas_only"
+                ? `/business/${freshUser.businessId}/dashboard/saas`
+                : resolveBusinessDashboardPath(freshUser.businessId),
+              { replace: true }
+            );
           } else if (
             isWhatsAppApiPortalUser(freshUser) &&
             isWhatsAppApiPortalDashboardPath(location.pathname)

@@ -301,11 +301,20 @@ export default function AdminCreateUser() {
             form.saas.templateSlug,
             form.saas.subdomain,
           ].join("|");
-          payload.saas = { ...form.saas, idempotencyKey, businessName: form.businessName.trim() };
+          payload.saas = {
+            ...form.saas,
+            idempotencyKey,
+            businessName: form.businessName.trim(),
+            currency: form.saas.currency || "USD",
+            paymentMode: form.saas.paymentMode === "manual_paid" ? "manual_paid" : "none",
+          };
           payload.country = form.saas.country;
           payload.language = form.saas.language;
           payload.status = form.status || "active";
         }
+        if (form.accountKind === "saas_only") {
+          payload.paymentMode = form.saas.paymentMode === "manual_paid" ? "manual_paid" : "none";
+        } else {
         payload.category = form.category.trim() || "general";
         payload.packageSku = form.packageSku;
         payload.upsellSkus = form.upsellSkus || [];
@@ -333,6 +342,7 @@ export default function AdminCreateUser() {
           "website_addon"
         );
         payload.paymentMode = form.paymentMode;
+        }
         payload.notes = form.notes.trim() || undefined;
         if (form.affiliateId) payload.affiliateId = form.affiliateId;
         if (form.marketerId) {

@@ -194,26 +194,31 @@ export function resolvePostLoginDestination({
 
   if (preferred && isCompatibleRedirect(role, preferred)) {
     const aligned = alignRedirectBusinessId(preferred, businessId) || preferred;
-    const keep = !portalAccount
-      ? true
-      : hasAccess
-        ? !isGenericAppPath(aligned) ||
-          (aligned.startsWith("/business/") && isWhatsAppApiPortalPathAllowed(aligned))
-        : isWhatsAppApiPortalDashboardPath(aligned);
-    if (keep) return aligned;
+    if (accountKind === "saas_only") {
+      const pathname = String(aligned).split(/[?#]/)[0];
+      if (pathname.includes("/dashboard/saas")) return aligned;
+    } else {
+      const keep = !portalAccount
+        ? true
+        : hasAccess
+          ? !isGenericAppPath(aligned) ||
+            (aligned.startsWith("/business/") && isWhatsAppApiPortalPathAllowed(aligned))
+          : isWhatsAppApiPortalDashboardPath(aligned);
+      if (keep) return aligned;
+    }
   }
 
   const roleHome = roleHomePath(normalizedRole);
   if (roleHome) return roleHome;
 
   if (normalizedRole === "business") {
+    if (accountKind === "saas_only" && businessId) {
+      return `/business/${businessId}/dashboard/saas`;
+    }
     if (portalAccount) {
       return hasAccess ? whatsappApiPortalHome(businessId) : whatsappApiPortalBillingPath(businessId);
     }
     if (!hasAccess) {
-      if (accountKind === "saas_only" && businessId) {
-        return `/business/${businessId}/dashboard/saas`;
-      }
       return "/pricing";
     }
     if (!businessId) return "/dashboard";
