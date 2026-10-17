@@ -43,6 +43,7 @@ export default function AdminSaasTenants() {
   const [monthly, setMonthly] = useState(0);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [ops, setOps] = useState<{ logs?: { at?: string; action?: string; message?: string; systemKey?: string }[]; failing?: { id: string; slug?: string; error?: string }[] } | null>(null);
 
   async function load() {
     const { data } = await API.get("/admin/saas-tenants");
@@ -51,6 +52,7 @@ export default function AdminSaasTenants() {
 
   useEffect(() => {
     load().catch(() => setError("לא ניתן לטעון מופעי SaaS"));
+    API.get("/admin/saas-tenants/ops").then((res) => setOps(res.data)).catch(() => setOps(null));
     API.get("/admin/saas-tenants/catalog")
       .then((res) => {
         const list = res.data.templates || [];
@@ -106,6 +108,16 @@ export default function AdminSaasTenants() {
         <h1 className="mb-4 text-2xl font-black">ניהול מערכות SaaS</h1>
         {error ? <p className="text-rose-700">{error}</p> : null}
         {notice ? <p className="text-emerald-800">{notice}</p> : null}
+        {ops?.failing?.length ? (
+          <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm">
+            <h2 className="mb-2 font-black">כשלי סנכרון</h2>
+            <ul className="space-y-1 text-sm">
+              {ops.failing.map((item) => (
+                <li key={item.id}>{item.slug} · {item.error || "שגיאה"} <button type="button" className="font-bold" onClick={() => API.post(`/admin/saas-tenants/${item.id}/bridge-retry`).then(load)}>ניסיון חוזר</button></li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
         <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
           <table className="w-full text-sm">
             <thead>
@@ -144,6 +156,8 @@ export default function AdminSaasTenants() {
                     ) : row.status === "suspended" ? (
                       <button type="button" className="font-bold" onClick={() => act(row.id, "resume")}>הפעלה מחדש</button>
                     ) : null}
+                    <button type="button" className="mt-1 block font-bold" onClick={() => API.post(`/admin/saas-tenants/${row.id}/backup`, { summary: "admin logical backup" }).then(() => setNotice("גיבוי לוגי נשמר. לא נמחק דבר."))}>גיבוי לוגי</button>
+                    <button type="button" className="mt-1 block font-bold" onClick={() => API.post(`/admin/saas-tenants/${row.id}/isolation`, { isolationMode: "dedicated_schema" }).then(() => { setNotice("בקשת בידוד נשמרה. המסד הקיים לא פוצל."); load(); })}>בקשת Schema נפרד</button>
                     <button type="button" className="mt-1 block font-bold" onClick={() => setExtraFor(row.id)}>מערכת נוספת</button>
                     {extraFor === row.id ? (
                       <div className="mt-2 space-y-1">

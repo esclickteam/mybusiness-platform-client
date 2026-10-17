@@ -35,6 +35,7 @@ const TYPE_LABELS: Record<string, string> = {
   image: "תמונה",
   file: "קובץ",
   signature: "חתימה",
+  relation: "קשר",
 };
 
 function apiError(err: unknown, fallback: string) {
@@ -57,7 +58,7 @@ export default function SaasSystemBuilder() {
   const [roles, setRoles] = useState<{ name: string; permissions: string[] }[]>([]);
   const [bridge, setBridge] = useState<{ connected?: boolean; reason?: string } | null>(null);
   const [typeLabel, setTypeLabel] = useState("");
-  const [fieldDraft, setFieldDraft] = useState({ recordTypeId: "", label: "", type: "text", required: false, unique: false, visibility: "internal", options: "" });
+  const [fieldDraft, setFieldDraft] = useState({ recordTypeId: "", label: "", type: "text", required: false, unique: false, visibility: "internal", options: "", relationRecordTypeId: "" });
   const [recordTypeId, setRecordTypeId] = useState("");
   const [recordValues, setRecordValues] = useState<Record<string, string>>({});
   const [records, setRecords] = useState<{ id: string; values: Record<string, unknown> }[]>([]);
@@ -104,6 +105,9 @@ export default function SaasSystemBuilder() {
         unique: fieldDraft.unique,
         visibility: fieldDraft.visibility,
         options: fieldDraft.options.split(",").map((item) => item.trim()).filter(Boolean),
+        relation: fieldDraft.type === "relation" && fieldDraft.relationRecordTypeId
+          ? { recordTypeId: fieldDraft.relationRecordTypeId, cardinality: "one" }
+          : undefined,
       });
       setDraft(data.draft);
       setFieldDraft((prev) => ({ ...prev, label: "", options: "" }));
@@ -207,6 +211,12 @@ export default function SaasSystemBuilder() {
           </select>
           {fieldDraft.type === "select" || fieldDraft.type === "multiselect" ? (
             <input className="w-full rounded-xl border px-3 py-2" value={fieldDraft.options} onChange={(event) => setFieldDraft((prev) => ({ ...prev, options: event.target.value }))} placeholder={lang === "he" ? "אפשרויות מופרדות בפסיק" : "Options, comma separated"} />
+          ) : null}
+          {fieldDraft.type === "relation" ? (
+            <select className="w-full rounded-xl border px-3 py-2" value={fieldDraft.relationRecordTypeId} onChange={(event) => setFieldDraft((prev) => ({ ...prev, relationRecordTypeId: event.target.value }))}>
+              <option value="">{lang === "he" ? "סוג רשומה מקושר" : "Related record type"}</option>
+              {types.filter((item) => !item.archived).map((item) => <option key={item.id} value={item.id}>{item.label}</option>)}
+            </select>
           ) : null}
           <label className="flex items-center gap-2 text-sm font-bold"><input type="checkbox" checked={fieldDraft.required} onChange={(event) => setFieldDraft((prev) => ({ ...prev, required: event.target.checked }))} />{lang === "he" ? "שדה חובה" : "Required"}</label>
           <label className="flex items-center gap-2 text-sm font-bold"><input type="checkbox" checked={fieldDraft.unique} onChange={(event) => setFieldDraft((prev) => ({ ...prev, unique: event.target.checked }))} />{lang === "he" ? "ערך ייחודי" : "Unique"}</label>
