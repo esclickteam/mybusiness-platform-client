@@ -130,9 +130,15 @@ export default function SaasSystemBuilder() {
   async function publish() {
     setError("");
     try {
-      await API.post(`/saas-owner/${tenantId}/builder/publish`, { summary: "publish", idempotencyKey: `${tenantId}-${Date.now()}` });
+      const { data } = await API.post(`/saas-owner/${tenantId}/builder/publish`, { summary: "publish", idempotencyKey: `${tenantId}-${Date.now()}` });
       await load();
-      setMessage(lang === "he" ? "מבנה הנתונים פורסם" : "Data structure published");
+      if (data?.live?.screens) {
+        setMessage(lang === "he" ? "המסכים אושרו במערכת החיה" : "The live system confirmed the screens");
+      } else if (data?.live?.fields) {
+        setMessage(lang === "he" ? "השדות נשמרו. המערכת החיה לא אישרה שהמסכים מוצגים." : "Fields saved. The live system did not confirm that screens are visible.");
+      } else {
+        setMessage(lang === "he" ? "המבנה נשמר בביזאפלי. אין חיבור מאושר למערכת החיה." : "Saved in Bizuply. No confirmed live-system connection.");
+      }
     } catch (err) {
       setError(apiError(err, "Publish failed"));
     }
