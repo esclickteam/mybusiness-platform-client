@@ -3838,6 +3838,30 @@
         "subtitle": "قم بتوصيل صفحة Facebook الخاصة بك واستلم إعلانات Meta Lead مباشرة داخل CRM.",
         "refresh": "تحديث",
         "status": "الحالة",
+        "panel": {
+          "title": "حالة اتصال Lead Ads",
+          "metaConnection": "اتصال Meta",
+          "connected": "متصل",
+          "notConnected": "غير متصل",
+          "permissions": "الأذونات",
+          "permissionsOk": "تم منح كل الأذونات المطلوبة",
+          "permissionsMissing": "أذونات ناقصة: {{scopes}}",
+          "reviewNote": "يتطلب leads_retrieval وpages_manage_metadata موافقة Meta للوصول المتقدم إذا لم يكن مستخدم فيسبوك مسؤولاً أو مطوراً أو مختبراً لتطبيق Bizuply. إعادة الاتصال تطلب من فيسبوك منحهما. إذا لم يظهرا في النافذة، أضيفوهما إلى Use Case للتطبيق في Meta.",
+          "webhook": "Webhook",
+          "webhookOn": "مشترك في أحداث leadgen",
+          "webhookOff": "غير مشترك في أحداث leadgen",
+          "webhookUnknown": "لم يتم الفحص بعد",
+          "lastLead": "آخر عميل محتمل تم استلامه",
+          "never": "لا يوجد بعد",
+          "leadCount": "العملاء المحتملون المستلمون",
+          "errors": "أخطاء الاتصال أو المزامنة",
+          "noErrors": "لا توجد أخطاء",
+          "failedCount": "عمليات استلام فشلت: {{count}}",
+          "retryFailed": "إعادة مزامنة عمليات الاستلام الفاشلة",
+          "retrying": "تجري إعادة مزامنة العمليات الفاشلة...",
+          "retryDone": "انتهت إعادة المزامنة. تم استرداد {{resolved}} وفشل {{failed}}.",
+          "retryRateLimit": "قيّدت Meta المعدل. حاولوا مرة أخرى بعد بضع دقائق."
+        },
         "connected": "متصل",
         "reconnectRequired": "يلزم إعادة ربط Meta",
         "reconnectRequiredDesc": "لا يزال يتم حفظ الصفحة، ولكن رمز الوصول إلى الصفحة غير صالح، أو إذن الإعلانات الرئيسية مفقود (بما في ذلك leads_retrieval)، أو أن هذا التطبيق غير مشترك في leadgen على الصفحة نفسها. أعد الاتصال وحدد صفحة BizUply في Facebook بشكل صريح - وليس فقط Invistimo.",
@@ -3955,7 +3979,8 @@
           "selectForm": "لم يمكن تحديد نموذج عميل محتمل هذا",
           "connectBeforeSync": "يرجى توصيل صفحة Facebook قبل مزامنة العملاء المتوقعين.",
           "selectFormBeforeSync": "الرجاء تحديد نموذج قيادة نشط قبل المزامنة.",
-          "syncFailed": "لا يمكن مزامنة العملاء المحتملون من Meta. تحقق من مدير الوصول الرئيسي."
+          "syncFailed": "لا يمكن مزامنة العملاء المحتملون من Meta. تحقق من مدير الوصول الرئيسي.",
+          "retryFailed": "تعذرت إعادة مزامنة عمليات الاستلام الفاشلة"
         }
       },
       "detailLabels": {

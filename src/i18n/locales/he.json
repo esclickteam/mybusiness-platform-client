@@ -3838,6 +3838,30 @@
         "subtitle": "מחברים את עמוד הפייסבוק של העסק ומקבלים לידים ממודעות Meta ישירות לתוך ה-CRM.",
         "refresh": "רענון",
         "status": "סטטוס",
+        "panel": {
+          "title": "סטטוס חיבור Lead Ads",
+          "metaConnection": "חיבור Meta",
+          "connected": "מחובר",
+          "notConnected": "לא מחובר",
+          "permissions": "הרשאות",
+          "permissionsOk": "כל ההרשאות הנדרשות אושרו",
+          "permissionsMissing": "חסרות הרשאות: {{scopes}}",
+          "reviewNote": "leads_retrieval ו-pages_manage_metadata דורשות אישור Meta לגישה מתקדמת עבור משתמשים שאינם מנהלים של אפליקציית Bizuply. בחיבור מחדש Facebook יבקש לאשר אותן. אם הן לא מופיעות בחלון, יש להוסיף אותן ל-Use Case של האפליקציה ב-Meta.",
+          "webhook": "Webhook",
+          "webhookOn": "רשום לאירועי leadgen",
+          "webhookOff": "לא רשום לאירועי leadgen",
+          "webhookUnknown": "עדיין לא נבדק",
+          "lastLead": "קליטת ליד אחרונה",
+          "never": "עדיין אין",
+          "leadCount": "לידים שהתקבלו",
+          "errors": "שגיאות חיבור או סנכרון",
+          "noErrors": "אין שגיאות",
+          "failedCount": "קליטות שנכשלו: {{count}}",
+          "retryFailed": "סנכרון מחדש של קליטות שנכשלו",
+          "retrying": "מסנכרן קליטות שנכשלו...",
+          "retryDone": "הסנכרון מחדש הסתיים. שוחזרו {{resolved}}, נכשלו {{failed}}.",
+          "retryRateLimit": "Meta הגבילה את הקצב. נסו שוב בעוד כמה דקות."
+        },
         "connected": "מחובר",
         "reconnectRequired": "נדרש חיבור מחדש ל-Meta",
         "reconnectRequiredDesc": "העמוד שמור, אבל Page Access Token אינו תקף או שחסרות הרשאות Lead Ads (כולל leads_retrieval) או הרשמה ל־leadgen על העמוד עצמו. חברו מחדש ובפייסבוק סמנו במפורש את עמוד BizUply — לא רק את Invistimo.",
@@ -3955,7 +3979,8 @@
           "selectForm": "לא ניתן לבחור את טופס הלידים הזה",
           "connectBeforeSync": "יש לחבר עמוד פייסבוק לפני סנכרון לידים.",
           "selectFormBeforeSync": "יש לבחור טופס לידים פעיל לפני הסנכרון.",
-          "syncFailed": "לא ניתן לסנכרן לידים מ-Meta. בדקו את Lead Access Manager."
+          "syncFailed": "לא ניתן לסנכרן לידים מ-Meta. בדקו את Lead Access Manager.",
+          "retryFailed": "לא ניתן לסנכרן מחדש את הקליטות שנכשלו"
         }
       },
       "detailLabels": {

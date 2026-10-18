@@ -3838,6 +3838,30 @@
         "subtitle": "Connect your Facebook Page and receive Meta Lead Ads directly inside the CRM.",
         "refresh": "Refresh",
         "status": "Status",
+        "panel": {
+          "title": "Lead Ads connection status",
+          "metaConnection": "Meta connection",
+          "connected": "Connected",
+          "notConnected": "Not connected",
+          "permissions": "Permissions",
+          "permissionsOk": "All required permissions are granted",
+          "permissionsMissing": "Missing permissions: {{scopes}}",
+          "reviewNote": "leads_retrieval and pages_manage_metadata need Meta App Review for Advanced Access when the Facebook user is not an admin, developer, or tester of the Bizuply app. Reconnect asks Facebook to grant them. If they are missing from the dialog, add them to the app use case in Meta.",
+          "webhook": "Webhook",
+          "webhookOn": "Subscribed to leadgen events",
+          "webhookOff": "Not subscribed to leadgen events",
+          "webhookUnknown": "Not checked yet",
+          "lastLead": "Last lead received",
+          "never": "None yet",
+          "leadCount": "Leads received",
+          "errors": "Connection or sync errors",
+          "noErrors": "No errors",
+          "failedCount": "Failed intakes: {{count}}",
+          "retryFailed": "Retry failed intakes",
+          "retrying": "Retrying failed intakes...",
+          "retryDone": "Retry finished. Recovered {{resolved}}, failed {{failed}}.",
+          "retryRateLimit": "Meta rate-limited the retry. Try again in a few minutes."
+        },
         "connected": "Connected",
         "reconnectRequired": "Meta reconnect required",
         "reconnectRequiredDesc": "The Page is still saved, but the Page Access Token is invalid, Lead Ads permission is missing (including leads_retrieval), or this app is not subscribed to leadgen on the Page itself. Reconnect and in Facebook explicitly select the BizUply Page — not only Invistimo.",
@@ -3955,7 +3979,8 @@
           "selectForm": "Could not select this lead form",
           "connectBeforeSync": "Please connect a Facebook Page before syncing leads.",
           "selectFormBeforeSync": "Please select an active lead form before syncing.",
-          "syncFailed": "Could not sync leads from Meta. Check Lead Access Manager."
+          "syncFailed": "Could not sync leads from Meta. Check Lead Access Manager.",
+          "retryFailed": "Could not retry failed lead intakes"
         }
       },
       "detailLabels": {
