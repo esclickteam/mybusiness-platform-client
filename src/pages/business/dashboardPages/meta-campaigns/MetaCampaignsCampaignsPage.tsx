@@ -3,7 +3,6 @@ import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Copy, Eye, Loader2, Pause, Pencil, Play, Trash2 } from "lucide-react";
 import {
-  deleteLocalCampaignDraft,
   duplicateLocalCampaignDraft,
   getMetaCampaignsOverview,
   setMetaCampaignStatus,
@@ -25,6 +24,9 @@ import {
   statusTone,
 } from "./metaCampaignUtils";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
+import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
+import { removeCampaignFromList } from "./campaignListDeletion";
+import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
 
 type OutletCtx = { businessId: string | null };
 
@@ -60,8 +62,10 @@ export default function MetaCampaignsCampaignsPage() {
   const [sortKey, setSortKey] = useState<"name" | "spend" | "results" | "cpl">("spend");
   const [details, setDetails] = useState<MetaCampaign | null>(null);
   const [pending, setPending] = useState<MetaCampaign | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<MetaCampaign | null>(null);
   const [busyId, setBusyId] = useState("");
+  const deletion = useCampaignDraftDelete(businessId, (id) => {
+    setCampaigns((current) => removeCampaignFromList(current, id));
+  });
 
   async function load() {
     if (!businessId) return;
@@ -149,6 +153,15 @@ export default function MetaCampaignsCampaignsPage() {
         <div>
           <h2 className="text-lg font-black">{t("metaCampaigns.nav.campaigns")}</h2>
           <p className="text-sm font-semibold text-slate-500">{t("metaCampaigns.ux.campaignsSubtitle")}</p>
+          {!loading ? (
+            <p
+              className="text-sm font-black text-slate-700"
+              data-testid="meta-campaign-count"
+              data-count={rows.length}
+            >
+              {t("metaCampaigns.table.subtitle", { count: rows.length })}
+            </p>
+          ) : null}
         </div>
         <CreateCampaignButton basePath={basePath} />
       </div>
@@ -274,11 +287,17 @@ export default function MetaCampaignsCampaignsPage() {
                   >
                     {t("metaCampaigns.actions.duplicateDraft")}
                   </button>
-                  {campaign.localOnly ? (
-                    <button type="button" className={btnSecondary} onClick={() => setDeleteTarget(campaign)}>
-                      {t("metaCampaigns.actions.deleteDraft")}
-                    </button>
-                  ) : null}
+                  <button
+                    type="button"
+                    className={`${btnSecondary} inline-flex min-h-11 min-w-11 items-center justify-center gap-1`}
+                    aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                    data-testid={`meta-campaign-delete-${campaign.id}`}
+                    disabled={deletion.busy}
+                    onClick={() => deletion.ask(campaign)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t("metaCampaigns.actions.delete")}
+                  </button>
                   {canToggleLive ? (
                     <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
                       {listStatus === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
@@ -372,16 +391,16 @@ export default function MetaCampaignsCampaignsPage() {
                         >
                           <Copy className="h-3.5 w-3.5" />
                         </button>
-                        {campaign.localOnly ? (
-                          <button
-                            type="button"
-                            className={btnSecondary}
-                            aria-label={t("metaCampaigns.actions.deleteDraft")}
-                            onClick={() => setDeleteTarget(campaign)}
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
-                        ) : null}
+                        <button
+                          type="button"
+                          className={`${btnSecondary} inline-flex min-h-11 min-w-11 items-center justify-center`}
+                          aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                          data-testid={`meta-campaign-delete-${campaign.id}`}
+                          disabled={deletion.busy}
+                          onClick={() => deletion.ask(campaign)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
                         {canToggleLive ? (
                           <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
                             {listStatus === "ACTIVE" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
@@ -414,44 +433,13 @@ export default function MetaCampaignsCampaignsPage() {
         />
       ) : null}
 
-      {deleteTarget ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4" role="dialog" aria-modal="true">
-          <div className={`${cardBase} w-full max-w-md p-5`}>
-            <h3 className="text-lg font-black">{t("metaCampaigns.actions.confirmDeleteDraftTitle")}</h3>
-            <p className="mt-2 text-sm font-semibold text-slate-600">
-              {t("metaCampaigns.actions.confirmDeleteDraftBody", { name: deleteTarget.name })}
-            </p>
-            <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-              <button type="button" className={`${btnSecondary} w-full sm:w-auto`} onClick={() => setDeleteTarget(null)}>
-                {t("common.cancel", { defaultValue: "Cancel" })}
-              </button>
-              <button
-                type="button"
-                className={`${btnPrimary} w-full sm:w-auto`}
-                disabled={Boolean(busyId)}
-                onClick={async () => {
-                  if (!businessId) return;
-                  const publishId = deleteTarget.publishRecordId || deleteTarget.id;
-                  setBusyId(deleteTarget.id);
-                  try {
-                    await deleteLocalCampaignDraft(businessId, publishId);
-                    setDeleteTarget(null);
-                    toast.success(t("metaCampaigns.actions.draftDeleted"));
-                    await load();
-                  } catch (error) {
-                    const message = (error as { response?: { data?: { error?: string } } })?.response?.data?.error;
-                    toast.error(message || t("metaCampaigns.errors.updateStatus"));
-                  } finally {
-                    setBusyId("");
-                  }
-                }}
-              >
-                {busyId ? <Loader2 className="h-4 w-4 animate-spin" /> : t("metaCampaigns.actions.deleteDraft")}
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <MetaCampaignDeleteDialog
+        campaign={deletion.target}
+        busy={deletion.busy}
+        error={deletion.error}
+        onClose={deletion.close}
+        onConfirm={() => void deletion.confirm()}
+      />
 
       {pending ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4" role="dialog" aria-modal="true">

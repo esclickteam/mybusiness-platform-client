@@ -32,6 +32,7 @@ import {
   Play,
   RefreshCw,
   Target,
+  Trash2,
   TrendingDown,
   TrendingUp,
   X,
@@ -66,6 +67,9 @@ import {
   statusTone,
 } from "./metaCampaignUtils";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
+import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
+import { removeCampaignFromList } from "./campaignListDeletion";
+import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
 
 type OutletCtx = { businessId: string | null };
 
@@ -228,6 +232,13 @@ export default function MetaCampaignsOverviewTab() {
   const [pendingStatusCampaign, setPendingStatusCampaign] =
     useState<MetaCampaign | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const deletion = useCampaignDraftDelete(businessId, (id) => {
+    setData((current) =>
+      current
+        ? { ...current, campaigns: removeCampaignFromList(current.campaigns || [], id) }
+        : current
+    );
+  });
   const loadInFlightRef = useRef(false);
   const backoffUntilRef = useRef(0);
   const lastStartedAtRef = useRef(0);
@@ -919,7 +930,11 @@ export default function MetaCampaignsOverviewTab() {
                 <p className="text-sm font-black text-slate-900">
                   {t("metaCampaigns.table.title")}
                 </p>
-                <p className="text-xs font-semibold text-slate-500">
+                <p
+                  className="text-xs font-semibold text-slate-500"
+                  data-testid="meta-campaign-count"
+                  data-count={campaigns.length}
+                >
                   {t("metaCampaigns.table.subtitle", {
                     count: campaigns.length,
                   })}
@@ -930,7 +945,67 @@ export default function MetaCampaignsOverviewTab() {
               </Link>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="space-y-3 p-3 md:hidden">
+              {campaigns.length ? (
+                campaigns.map((campaign) => {
+                  const deliveryStatus =
+                    campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
+                  const tone = statusTone(deliveryStatus);
+                  const isConfiguredActive =
+                    String(campaign.configuredStatus || campaign.status || "").toUpperCase() === "ACTIVE";
+                  return (
+                    <article key={campaign.id} className="rounded-xl border border-slate-100 p-3">
+                      <p className="break-words font-black text-slate-900">{campaign.name}</p>
+                      <span className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
+                        {t(`metaCampaigns.status.${metaDeliveryStatusKey(deliveryStatus)}`, { defaultValue: deliveryStatus })}
+                      </span>
+                      <div className="mt-3 flex flex-wrap items-center gap-1">
+                        <button
+                          type="button"
+                          aria-label={t("metaCampaigns.actions.viewDetails")}
+                          onClick={() => setDetailsCampaign(campaign)}
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={t("metaCampaigns.actions.edit")}
+                          onClick={() => navigate(`${basePath}/edit/${campaign.id}`)}
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                          data-testid={`meta-campaign-delete-${campaign.id}`}
+                          disabled={deletion.busy}
+                          onClick={() => deletion.ask(campaign)}
+                          className="grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busyId === campaign.id}
+                          onClick={() => setPendingStatusCampaign(campaign)}
+                          className="inline-flex h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 disabled:opacity-50"
+                        >
+                          {isConfiguredActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                          {isConfiguredActive ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })
+              ) : (
+                <p className="py-6 text-center text-sm font-semibold text-slate-400">
+                  {t("metaCampaigns.empty.noCampaignsInRange")}
+                </p>
+              )}
+            </div>
+            <div className="hidden overflow-x-auto md:block">
               <table className="min-w-full text-sm">
                 <thead className="bg-slate-50/80 text-xs font-black uppercase tracking-wide text-slate-500">
                   <tr>
@@ -1181,9 +1256,20 @@ export default function MetaCampaignsOverviewTab() {
                                 }
                                 className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700"
                               >
-                                <Pencil className="h-3.5 w-3.5" />
-                              </button>
-                              <button
+                              <Pencil className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                              title={t("metaCampaigns.actions.deleteCampaign")}
+                              data-testid={`meta-campaign-delete-${campaign.id}`}
+                              disabled={deletion.busy}
+                              onClick={() => deletion.ask(campaign)}
+                              className="grid h-11 w-11 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-rose-200 hover:text-rose-700 disabled:opacity-50"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                            <button
                                 type="button"
                                 title={
                                   isConfiguredActive
@@ -1242,6 +1328,14 @@ export default function MetaCampaignsOverviewTab() {
         />
       ) : null}
 
+
+      <MetaCampaignDeleteDialog
+        campaign={deletion.target}
+        busy={deletion.busy}
+        error={deletion.error}
+        onClose={deletion.close}
+        onConfirm={() => void deletion.confirm()}
+      />
 
       {pendingStatusCampaign ? (
         <div
