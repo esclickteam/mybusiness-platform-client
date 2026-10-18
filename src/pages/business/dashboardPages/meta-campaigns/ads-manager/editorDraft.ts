@@ -1,4 +1,5 @@
-import type { AdDraft, AdsManagerState } from "./adsManagerTypes";
+import type { AdDraft, AdsManagerLevel, AdsManagerState, AdSetDraft, CampaignDraft } from "./adsManagerTypes";
+import { createDefaultAdsManagerState } from "./adsManagerDefaults";
 
 export type EditorDraftAd = {
   id?: string;
@@ -22,10 +23,23 @@ export type EditorDraftAd = {
   mediaLabel?: string;
 };
 
+export type EditorWorkspace = {
+  campaign?: CampaignDraft | null;
+  adSets?: AdSetDraft[];
+  ads?: AdDraft[];
+  selectedLevel?: string;
+  selectedId?: string;
+};
+
 export type EditorDraft = {
   savedAt?: string;
+  revision?: number;
+  hasUnpublishedChanges?: boolean;
   ads?: EditorDraftAd[];
   ad?: EditorDraftAd;
+  workspace?: EditorWorkspace | null;
+  publishedSnapshot?: EditorWorkspace | null;
+  metaBaseline?: EditorWorkspace | null;
 };
 
 export function isRealMetaObjectId(id: string | undefined | null): boolean {
@@ -36,9 +50,30 @@ function text(value: unknown): string {
   return String(value ?? "").trim();
 }
 
-export function buildEditorDraft(state: AdsManagerState): EditorDraft {
+export function workspaceFromState(state: AdsManagerState): EditorWorkspace {
+  const ads = state.ads.map((ad) => {
+    const preview = text(ad.imagePreviewUrl);
+    const instagram = text(ad.instagramAccountId);
+    return {
+      ...ad,
+      imagePreviewUrl: preview.startsWith("blob:") ? "" : preview,
+      instagramAccountId: instagram.startsWith("ig_") ? "" : instagram,
+    };
+  });
   return {
-    ads: state.ads.map((ad) => {
+    campaign: state.campaign,
+    adSets: state.adSets,
+    ads,
+    selectedLevel: state.selectedLevel,
+    selectedId: state.selectedId,
+  };
+}
+
+export function buildEditorDraft(state: AdsManagerState): EditorDraft {
+  const workspace = workspaceFromState(state);
+  return {
+    workspace,
+    ads: workspace.ads?.map((ad) => {
       const preview = text(ad.imagePreviewUrl);
       const instagram = text(ad.instagramAccountId);
       return {
@@ -113,11 +148,70 @@ function mergeAd(
   };
 }
 
+function asLevel(value: string | undefined): AdsManagerLevel {
+  if (value === "adset" || value === "ad") return value;
+  return "campaign";
+}
+
+export function stateFromSavedDraft(
+  draft: EditorDraft | null | undefined,
+  options?: {
+    currency?: string;
+    publishRecordId?: string;
+    sessionMode?: AdsManagerState["sessionMode"];
+  }
+): AdsManagerState {
+  const base = createDefaultAdsManagerState();
+  const workspace = draft?.workspace;
+  const publishRecordId = options?.publishRecordId || "";
+  if (!workspace?.campaign) {
+    return applyEditorDraft(
+      { ...base, sessionMode: options?.sessionMode || "edit" },
+      draft,
+      { publishRecordId }
+    );
+  }
+  const campaign = {
+    ...base.campaign,
+    ...workspace.campaign,
+    currency: workspace.campaign.currency || options?.currency || base.campaign.currency,
+  };
+  const adSets = workspace.adSets?.length
+    ? workspace.adSets.map((row) => ({ ...base.adSets[0], ...row }))
+    : base.adSets;
+  const ads = workspace.ads?.length
+    ? workspace.ads.map((row) => ({ ...base.ads[0], ...row }))
+    : base.ads;
+  const selectedLevel = asLevel(workspace.selectedLevel);
+  return {
+    ...base,
+    sessionMode: options?.sessionMode || "edit",
+    mode: "edit",
+    selectedLevel,
+    selectedId: workspace.selectedId || campaign.id,
+    saveStatus: "saved",
+    lastSavedAt: draft?.savedAt || new Date().toISOString(),
+    publishRecordId,
+    draftRevision: Number(draft?.revision || 0) || undefined,
+    hasUnpublishedChanges: Boolean(draft?.hasUnpublishedChanges),
+    campaign,
+    adSets,
+    ads,
+  };
+}
+
 export function applyEditorDraft(
   state: AdsManagerState,
   draft: EditorDraft | null | undefined,
   options?: { creativeOnMeta?: boolean; publishRecordId?: string }
 ): AdsManagerState {
+  if (draft?.workspace?.campaign) {
+    return stateFromSavedDraft(draft, {
+      currency: state.campaign.currency,
+      publishRecordId: options?.publishRecordId || state.publishRecordId,
+      sessionMode: state.sessionMode,
+    });
+  }
   const savedAds = Array.isArray(draft?.ads)
     ? draft.ads
     : draft?.ad

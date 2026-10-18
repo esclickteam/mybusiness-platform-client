@@ -61,6 +61,9 @@ export function snapshotAdsManager(state: AdsManagerState) {
       dailyBudget: adSet.dailyBudget,
       lifetimeBudget: adSet.lifetimeBudget,
       interests: (adSet.interests || []).map((row) => row.name || row.id).join(", "),
+      advantagePlacements: adSet.advantagePlacements,
+      customAudiences: (adSet.customAudiences || []).map((row) => row.name || row.id).join(", "),
+      excludedAudiences: (adSet.excludedAudiences || []).map((row) => row.name || row.id).join(", "),
     })),
     ads: state.ads.map((ad) => ({
       id: ad.id,
@@ -78,7 +81,10 @@ export function snapshotAdsManager(state: AdsManagerState) {
       imageHash: ad.imageHash,
       videoId: ad.videoId,
       creativeFormat: ad.creativeFormat,
+      mediaToken: ad.imageHash || ad.videoId || (String(ad.imagePreviewUrl || "").startsWith("blob:") ? "local-file" : ad.imagePreviewUrl),
     })),
+    selectedLevel: state.selectedLevel,
+    selectedId: state.selectedId,
   };
 }
 
@@ -119,17 +125,6 @@ export function diffAdsManagerState(
   after.adSets.forEach((adSet) => {
     const prev = before.adSets.find((row) => row.id === adSet.id);
     if (!prev) return;
-    if (!adSet.targetingLoaded || !prev.targetingLoaded) {
-      pushChange(changes, {
-        labelKey: "changeAdSetName",
-        oldValue: text(prev.name),
-        newValue: text(adSet.name),
-        spendImpact: false,
-        entity: "adset",
-        entityId: adSet.id,
-      });
-      return;
-    }
     pushChange(changes, {
       labelKey: "changeAdSetName",
       oldValue: text(prev.name),
@@ -174,6 +169,22 @@ export function diffAdsManagerState(
       labelKey: "changeSchedule",
       oldValue: `${prev.startDate} ${prev.startTime}`,
       newValue: `${adSet.startDate} ${adSet.startTime}`,
+      spendImpact: true,
+      entity: "adset",
+      entityId: adSet.id,
+    });
+    pushChange(changes, {
+      labelKey: "changePlacements",
+      oldValue: text(prev.advantagePlacements),
+      newValue: text(adSet.advantagePlacements),
+      spendImpact: false,
+      entity: "adset",
+      entityId: adSet.id,
+    });
+    pushChange(changes, {
+      labelKey: "changeAudiences",
+      oldValue: text(prev.customAudiences || prev.excludedAudiences),
+      newValue: text(adSet.customAudiences || adSet.excludedAudiences),
       spendImpact: true,
       entity: "adset",
       entityId: adSet.id,
@@ -225,8 +236,8 @@ export function diffAdsManagerState(
     });
     pushChange(changes, {
       labelKey: "changeMedia",
-      oldValue: text(prev.imageHash || prev.videoId),
-      newValue: text(ad.imageHash || ad.videoId),
+      oldValue: text(prev.mediaToken),
+      newValue: text(ad.mediaToken),
       spendImpact: false,
       entity: "ad",
       entityId: ad.id,
@@ -263,6 +274,15 @@ export function diffAdsManagerState(
       entity: "ad",
       entityId: ad.id,
     });
+  });
+
+  pushChange(changes, {
+    labelKey: "changeSelection",
+    oldValue: `${before.selectedLevel}:${before.selectedId}`,
+    newValue: `${after.selectedLevel}:${after.selectedId}`,
+    spendImpact: false,
+    entity: "campaign",
+    entityId: campaignId,
   });
 
   return changes;

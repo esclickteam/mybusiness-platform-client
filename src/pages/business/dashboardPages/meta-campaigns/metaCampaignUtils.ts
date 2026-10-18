@@ -120,6 +120,8 @@ export function metaDeliveryStatusKey(status: string) {
   if (value === "ARCHIVED") return "archived";
   if (value === "DELETED") return "deleted";
   if (value === "DRAFT") return "draft";
+  if (value === "PENDING_PUBLISH") return "pending_publish";
+  if (value === "FAILED" || value === "PARTIAL_FAILED") return "failed";
   return value.toLowerCase();
 }
 
@@ -172,6 +174,22 @@ export function statusTone(status: string) {
       border: "border-emerald-200",
       // Hollow-style ring to mirror Meta "In review"
       dot: "bg-transparent ring-2 ring-emerald-500",
+    };
+  }
+  if (value === "DRAFT" || value === "PENDING_PUBLISH") {
+    return {
+      bg: "bg-amber-50",
+      text: "text-amber-800",
+      border: "border-amber-200",
+      dot: "bg-amber-400",
+    };
+  }
+  if (value === "FAILED" || value === "PARTIAL_FAILED") {
+    return {
+      bg: "bg-rose-50",
+      text: "text-rose-700",
+      border: "border-rose-100",
+      dot: "bg-rose-500",
     };
   }
   if (

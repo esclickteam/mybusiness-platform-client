@@ -173,6 +173,8 @@ export type AdsManagerState = {
   selectedId: string;
   saveStatus: "unsaved" | "saving" | "saved" | "error";
   publishRecordId?: string;
+  draftRevision?: number;
+  hasUnpublishedChanges?: boolean;
   lastSavedAt: string | null;
   campaign: CampaignDraft;
   adSets: AdSetDraft[];
