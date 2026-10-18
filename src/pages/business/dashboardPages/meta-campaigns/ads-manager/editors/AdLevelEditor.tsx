@@ -18,6 +18,7 @@ import {
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdsManagerCreateLeadFormModal from "../AdsManagerCreateLeadFormModal";
 import { metaCtaLabel, metaCtaOptions } from "../metaAdCtas";
+import LeadgenTosCard from "../LeadgenTosCard";
 import {
   MetaField,
   MetaLinkButton,
@@ -38,6 +39,7 @@ type Props = {
   pages: MetaAdsPage[];
   businessId: string | null;
   sessionMode?: "create" | "edit";
+  showLeadgenTos?: boolean;
   publishId?: string;
   onChange: (patch: Partial<AdDraft>) => void;
   onFormsRefresh?: () => Promise<void> | void;
@@ -52,6 +54,7 @@ export default function AdLevelEditor({
   pages,
   businessId,
   sessionMode = "create",
+  showLeadgenTos = false,
   publishId,
   onChange,
   onFormsRefresh,
@@ -182,9 +185,13 @@ export default function AdLevelEditor({
             ))}
           </select>
         </MetaField>
-        <MetaNotice tone="success">
-          {c("leadAdsTermsAccepted")}
-        </MetaNotice>
+        {showLeadgenTos ? (
+          <LeadgenTosCard
+            businessId={businessId}
+            pageId={ad.facebookPageId}
+            pageName={ad.facebookPageName}
+          />
+        ) : null}
       </MetaSection>
 
       <MetaSection
