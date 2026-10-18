@@ -3838,6 +3838,30 @@
         "subtitle": "Conecte sua página do Facebook e receba anúncios Meta Lead diretamente no CRM.",
         "refresh": "Atualizar",
         "status": "Status",
+        "panel": {
+          "title": "Status da conexão Lead Ads",
+          "metaConnection": "Conexão Meta",
+          "connected": "Conectado",
+          "notConnected": "Não conectado",
+          "permissions": "Permissões",
+          "permissionsOk": "Todas as permissões necessárias foram concedidas",
+          "permissionsMissing": "Permissões ausentes: {{scopes}}",
+          "reviewNote": "leads_retrieval e pages_manage_metadata exigem análise da Meta para acesso avançado quando o usuário do Facebook não é admin, desenvolvedor ou testador do app Bizuply. A reconexão pede essas permissões. Se elas não aparecerem, adicione-as ao caso de uso do app na Meta.",
+          "webhook": "Webhook",
+          "webhookOn": "Inscrito em eventos leadgen",
+          "webhookOff": "Não inscrito em eventos leadgen",
+          "webhookUnknown": "Ainda não verificado",
+          "lastLead": "Último lead recebido",
+          "never": "Ainda nenhum",
+          "leadCount": "Leads recebidos",
+          "errors": "Erros de conexão ou sincronização",
+          "noErrors": "Sem erros",
+          "failedCount": "Recebimentos com falha: {{count}}",
+          "retryFailed": "Sincronizar de novo os recebimentos com falha",
+          "retrying": "Sincronizando recebimentos com falha...",
+          "retryDone": "A nova sincronização terminou. Recuperados {{resolved}}, falharam {{failed}}.",
+          "retryRateLimit": "A Meta limitou a taxa. Tente de novo em alguns minutos."
+        },
         "connected": "Conectado",
         "reconnectRequired": "Meta reconectar necessário",
         "reconnectRequiredDesc": "A Página ainda está salva, mas o Token de Acesso à Página é inválido, a permissão de Anúncios de Lead está ausente (incluindo leads_retrieval), ou este aplicativo não está inscrito para leadgen na própria Página. Reconecte-se e no Facebook selecione explicitamente a Página BizUply não apenas o Invistimo.",
@@ -3955,7 +3979,8 @@
           "selectForm": "Não foi possível selecionar este formulário principal",
           "connectBeforeSync": "Por favor, conecte uma página do Facebook antes de sincronizar leads.",
           "selectFormBeforeSync": "Por favor, selecione um formulário de lead ativo antes de sincronizar.",
-          "syncFailed": "Não foi possível sincronizar ligações do Meta. Verifique o Gerenciador de Acesso ao Lead."
+          "syncFailed": "Não foi possível sincronizar ligações do Meta. Verifique o Gerenciador de Acesso ao Lead.",
+          "retryFailed": "Não foi possível sincronizar de novo os recebimentos com falha"
         }
       },
       "detailLabels": {
