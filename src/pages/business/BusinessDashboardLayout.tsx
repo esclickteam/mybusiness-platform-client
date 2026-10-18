@@ -908,7 +908,6 @@ export default function BusinessDashboardLayout() {
             </div>
           </main>
           <ToastContainer
-            containerId={DEMO_ACTION_TOAST_CONTAINER}
             position="top-center"
             autoClose={4000}
             newestOnTop
@@ -923,6 +922,24 @@ export default function BusinessDashboardLayout() {
               width: "min(480px, calc(100vw - 32px))",
               transform: "translateX(-50%)",
               zIndex: 2147483647,
+            }}
+          />
+          <ToastContainer
+            containerId={DEMO_ACTION_TOAST_CONTAINER}
+            position="top-center"
+            autoClose={4000}
+            newestOnTop
+            closeOnClick
+            pauseOnHover
+            theme="colored"
+            style={{
+              position: "fixed",
+              top: "16px",
+              left: "50%",
+              right: "auto",
+              width: "min(480px, calc(100vw - 32px))",
+              transform: "translateX(-50%)",
+              zIndex: 2147483646,
             }}
           />
         </div>
