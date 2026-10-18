@@ -133,6 +133,7 @@ export default function MetaAdsManagerPage() {
     try {
       const formsRes = await listMetaLeadForms(businessId, pageId);
       setLeadForms(formsRes?.forms || []);
+      if (formsRes?.warning) toast.error(formsRes.warning);
     } catch (error: any) {
       setLeadForms([]);
       const message =
@@ -1211,7 +1212,40 @@ export default function MetaAdsManagerPage() {
               pages={connectedPages}
               businessId={businessId}
               sessionMode={isEditSession ? "edit" : "create"}
+              publishId={publishRecordIdRef.current || state.publishRecordId || ""}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
+              onFormReady={async (form) => {
+                if (!businessId) return;
+                const snapshot: AdsManagerState = {
+                  ...state,
+                  ads: state.ads.map((ad) =>
+                    ad.id === selectedAd.id
+                      ? {
+                          ...ad,
+                          instantFormId: form.id,
+                          instantFormName: form.name,
+                          formPageId: form.pageId || ad.facebookPageId,
+                          formLinkedOnMeta: false,
+                          formTab: "active",
+                        }
+                      : ad
+                  ),
+                };
+                try {
+                  const result = await persistEditorDraft(snapshot);
+                  markServerSaved(result.publishId);
+                } catch (error: unknown) {
+                  const err = error as {
+                    response?: { data?: { error?: string } };
+                    message?: string;
+                  };
+                  toast.error(
+                    err.response?.data?.error ||
+                      err.message ||
+                      t("metaCampaigns.adsToasts.formAssociationFailed")
+                  );
+                }
+              }}
               onFormsRefresh={async () => {
                 const pageId =
                   selectedAd.facebookPageId ||

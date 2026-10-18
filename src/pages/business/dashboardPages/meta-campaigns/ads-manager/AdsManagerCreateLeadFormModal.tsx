@@ -1,9 +1,13 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Check, Loader2, MessageCircle, Settings, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import { createMetaLeadForm } from "../../../../../api/metaCampaignsApi";
+import {
+  createMetaLeadForm,
+  syncMetaLeadForm,
+  type MetaLeadFormWriteResult,
+} from "../../../../../api/metaCampaignsApi";
 import { getWhatsAppStatus } from "../../../../../api/whatsappApi";
 import LeadFormQuestionBuilder from "../LeadFormQuestionBuilder";
 import MetaLeadFormLivePreview from "../MetaLeadFormLivePreview";
@@ -53,13 +57,28 @@ const STEP_KEYS: Record<Step, string> = {
   ending: "stepEnding",
 };
 
+type CreatedLeadForm = {
+  id: string;
+  name: string;
+  pageId: string;
+};
+
+type FormBanner = {
+  tone: "success" | "error" | "progress";
+  text: string;
+  detail?: string;
+  recoverFormId?: string;
+};
+
 type Props = {
   open: boolean;
   businessId: string | null;
   pageId: string;
   pageName: string;
+  publishId?: string;
+  adDraftId?: string;
   onClose: () => void;
-  onCreated: (formId: string) => void;
+  onCreated: (form: CreatedLeadForm) => void | Promise<void>;
 };
 
 export default function AdsManagerCreateLeadFormModal({
@@ -67,6 +86,8 @@ export default function AdsManagerCreateLeadFormModal({
   businessId,
   pageId,
   pageName,
+  publishId,
+  adDraftId,
   onClose,
   onCreated,
 }: Props) {
@@ -91,6 +112,10 @@ export default function AdsManagerCreateLeadFormModal({
   );
   const [step, setStep] = useState<Step>("type");
   const [busy, setBusy] = useState(false);
+  const [banner, setBanner] = useState<FormBanner | null>(null);
+  const submitLock = useRef(false);
+  const idempotencyKeyRef = useRef("");
+  const wasOpenRef = useRef(false);
   const [formType, setFormType] = useState<"volume" | "intent" | "rich">(
     "volume"
   );
@@ -142,6 +167,16 @@ export default function AdsManagerCreateLeadFormModal({
   const [trackingParameters, setTrackingParameters] = useState<
     FormTrackingParam[]
   >([]);
+
+  useEffect(() => {
+    if (open && !wasOpenRef.current) {
+      setBanner(null);
+      setBusy(false);
+      submitLock.current = false;
+      idempotencyKeyRef.current = "";
+    }
+    wasOpenRef.current = open;
+  }, [open]);
 
   useEffect(() => {
     if (!open || !businessId) return;
@@ -201,21 +236,120 @@ export default function AdsManagerCreateLeadFormModal({
     if (prev) setStep(prev.id);
   };
 
+  const showBanner = (next: FormBanner) => {
+    setBanner(next);
+    if (next.tone === "success") toast.success(next.text);
+    if (next.tone === "error") toast.error(next.text);
+  };
+
+  const requestErrorMessage = (error: unknown) => {
+    const err = error as {
+      response?: { data?: { error?: string; message?: string } };
+      message?: string;
+    };
+    return (
+      err.response?.data?.error ||
+      err.response?.data?.message ||
+      (err.response ? "" : t("metaCampaigns.adsToasts.leadFormNetwork")) ||
+      err.message ||
+      t("metaCampaigns.adsToasts.leadFormFailed")
+    );
+  };
+
+  const metaConfirmed = (result: MetaLeadFormWriteResult) => {
+    const formId = result.form?.id;
+    if (!formId) return false;
+    if (result.demoSafe) return result.savedLocally !== false;
+    if (result.confirmedByMeta === false) return false;
+    return result.confirmedByMeta === true || result.confirmedByMeta == null;
+  };
+
+  const finishCreated = async (result: MetaLeadFormWriteResult) => {
+    const formId = result.form?.id || "";
+    const formName = result.form?.name || name.trim();
+    const savedPageId = result.form?.pageId || pageId;
+    if (!metaConfirmed(result) || !formId) {
+      showBanner({
+        tone: "error",
+        text: t("metaCampaigns.adsToasts.noFormId"),
+      });
+      return false;
+    }
+    if (!result.demoSafe && result.savedLocally === false) {
+      showBanner({
+        tone: "error",
+        text: t("metaCampaigns.adsToasts.leadFormLocalSaveFailed"),
+        recoverFormId: formId,
+      });
+      return false;
+    }
+    const text = result.recovered
+      ? t("metaCampaigns.adsToasts.leadFormRecovered")
+      : t("metaCampaigns.adsToasts.leadFormCreated");
+    showBanner({
+      tone: "success",
+      text,
+      detail:
+        !result.demoSafe && result.leadIntake && result.leadIntake.active === false
+          ? t("metaCampaigns.adsToasts.leadFormIntakeOff")
+          : undefined,
+    });
+    await onCreated({ id: formId, name: formName, pageId: savedPageId });
+    return true;
+  };
+
+  const handleSync = async (formId: string) => {
+    if (!businessId || !formId || submitLock.current) return;
+    submitLock.current = true;
+    setBusy(true);
+    setBanner({
+      tone: "progress",
+      text: t("metaCampaigns.adsToasts.leadFormSyncing"),
+    });
+    try {
+      const result = await syncMetaLeadForm(businessId, {
+        pageId,
+        formId,
+        name: name.trim(),
+        idempotencyKey: idempotencyKeyRef.current || undefined,
+        publishId: publishId || undefined,
+        adDraftId: adDraftId || undefined,
+      });
+      await finishCreated(result);
+    } catch (error: unknown) {
+      showBanner({
+        tone: "error",
+        text: requestErrorMessage(error),
+        recoverFormId: formId,
+      });
+    } finally {
+      submitLock.current = false;
+      setBusy(false);
+    }
+  };
+
   const handleSave = async () => {
+    if (submitLock.current) return;
+    submitLock.current = true;
+    const fail = (text: string, nextStep?: Step) => {
+      showBanner({ tone: "error", text });
+      if (nextStep) setStep(nextStep);
+      submitLock.current = false;
+    };
     if (!businessId) {
-      toast.error(cc("identifyBusiness"));
+      fail(cc("identifyBusiness"));
       return;
     }
     if (!pageId) {
-      toast.error(t("metaCampaigns.adsToasts.selectPageFirst"));
+      fail(t("metaCampaigns.adsToasts.selectPageFirst"));
       return;
     }
     if (!name.trim()) {
-      toast.error(t("metaCampaigns.adsToasts.formNameRequired"));
+      fail(t("metaCampaigns.adsToasts.formNameRequired"));
       return;
     }
     if (!introTitle.trim()) {
-      toast.error(t("metaCampaigns.adsToasts.introRequired"));
+      fail(t("metaCampaigns.adsToasts.introRequired"));
       return;
     }
     const validationError = validateLeadFormBuilder({
@@ -223,36 +357,43 @@ export default function AdsManagerCreateLeadFormModal({
       customQuestions,
     });
     if (validationError) {
-      toast.error(t("metaCampaigns.adsToasts.needQuestion"));
-      setStep("questions");
+      fail(t("metaCampaigns.adsToasts.needQuestion"), "questions");
       return;
     }
     if (!thankYouTitle.trim()) {
-      toast.error(t("metaCampaigns.adsToasts.thankYouRequired"));
-      setStep("ending");
+      fail(t("metaCampaigns.adsToasts.thankYouRequired"), "ending");
       return;
     }
     if (additionalAction === "whatsapp" && !whatsappPhone.replace(/\D/g, "")) {
-      toast.error(t("metaCampaigns.adsToasts.needWhatsapp"));
-      setStep("ending");
+      fail(t("metaCampaigns.adsToasts.needWhatsapp"), "ending");
       return;
     }
     if (
       (additionalAction === "website" || additionalAction === "file") &&
       !thankYouLink.trim()
     ) {
-      toast.error(t("metaCampaigns.adsToasts.needActionLink"));
-      setStep("ending");
+      fail(t("metaCampaigns.adsToasts.needActionLink"), "ending");
       return;
     }
     if (additionalAction === "call" && !callPhone.replace(/\D/g, "")) {
-      toast.error(t("metaCampaigns.adsToasts.needCallPhone"));
-      setStep("ending");
+      fail(t("metaCampaigns.adsToasts.needCallPhone"), "ending");
       return;
     }
 
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `form-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
+    let succeeded = false;
     try {
       setBusy(true);
+      setBanner({
+        tone: "progress",
+        text: t("metaCampaigns.adsManager.chrome.creatingForm"),
+      });
       const questions = buildMetaLeadFormQuestionsPayload({
         contactTypes,
         customQuestions,
@@ -282,19 +423,15 @@ export default function AdsManagerCreateLeadFormModal({
         additionalAction,
         whatsappPhone: whatsappPhone.trim() || undefined,
         callPhone: callPhone.trim() || undefined,
+        idempotencyKey: idempotencyKeyRef.current,
+        publishId: publishId || undefined,
+        adDraftId: adDraftId || undefined,
       });
-      const formId = result.form?.id;
-      if (!formId) {
-        toast.error(t("metaCampaigns.adsToasts.noFormId"));
-        return;
-      }
-      toast.success(t("metaCampaigns.adsToasts.leadFormCreated"));
-      onCreated(formId);
-      onClose();
+      succeeded = await finishCreated(result);
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } } };
-      toast.error(err.response?.data?.error || t("metaCampaigns.adsToasts.leadFormFailed"));
+      showBanner({ tone: "error", text: requestErrorMessage(error) });
     } finally {
+      if (!succeeded) submitLock.current = false;
       setBusy(false);
     }
   };
@@ -718,9 +855,41 @@ export default function AdsManagerCreateLeadFormModal({
           }}
         />
 
-        <footer className="flex items-center justify-between gap-3 border-t border-[#CED0D4] px-4 py-3">
-          <button type="button" className={metaBtnSecondary} onClick={onClose}>
-            {cc("cancel")}
+        <footer className="flex flex-col gap-3 border-t border-[#CED0D4] px-4 py-3">
+          {banner ? (
+            <div
+              role="status"
+              data-testid="instant-form-status"
+              className={[
+                "rounded-lg border px-3 py-2 text-[13px] font-semibold",
+                banner.tone === "success"
+                  ? "border-[#A6D9B3] bg-[#E7F6EC] text-[#0E7A32]"
+                  : banner.tone === "error"
+                    ? "border-[#F3C1C1] bg-[#FDECEC] text-[#B42318]"
+                    : "border-[#BFD7F5] bg-[#E7F3FF] text-[#1877F2]",
+              ].join(" ")}
+            >
+              <p>{banner.text}</p>
+              {banner.detail ? (
+                <p className="mt-1 text-[12px] font-medium text-[#65676B]">
+                  {banner.detail}
+                </p>
+              ) : null}
+              {banner.recoverFormId ? (
+                <button
+                  type="button"
+                  className="mt-2 text-[13px] font-bold text-[#1877F2] hover:underline"
+                  onClick={() => void handleSync(banner.recoverFormId || "")}
+                  disabled={busy}
+                >
+                  {t("metaCampaigns.adsToasts.leadFormSync")}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+          <div className="flex items-center justify-between gap-3">
+          <button type="button" className={metaBtnSecondary} onClick={onClose} disabled={busy}>
+            {banner?.tone === "success" ? cc("close") : cc("cancel")}
           </button>
           <div className="flex gap-2">
             {stepIndex > 0 ? (
@@ -728,7 +897,7 @@ export default function AdsManagerCreateLeadFormModal({
                 type="button"
                 className={metaBtnSecondary}
                 onClick={goBack}
-                disabled={busy}
+                disabled={busy || banner?.tone === "success"}
               >
                 {cc("back")}
               </button>
@@ -745,14 +914,16 @@ export default function AdsManagerCreateLeadFormModal({
             ) : (
               <button
                 type="button"
+                data-testid="create-instant-form"
                 className={metaBtnPrimary}
                 onClick={() => void handleSave()}
-                disabled={busy}
+                disabled={busy || banner?.tone === "success" || Boolean(banner?.recoverFormId)}
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 {busy ? cc("creatingForm") : cc("createFormCta")}
               </button>
             )}
+          </div>
           </div>
         </footer>
       </div>

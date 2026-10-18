@@ -928,9 +928,27 @@ export async function listMetaLeadForms(
     pageId: string;
     forms: MetaLeadForm[];
     questionTypes?: MetaLeadFormQuestionType[];
+    warning?: string;
+    metaUnavailable?: boolean;
   }>("/meta-campaigns/lead-forms", withBusiness(businessId, { pageId }));
   return data;
 }
+
+export type MetaLeadFormWriteResult = {
+  success: boolean;
+  form?: MetaLeadForm & { pageId?: string };
+  confirmedByMeta?: boolean;
+  demoSafe?: boolean;
+  savedLocally?: boolean;
+  recovered?: boolean;
+  campaignLinked?: boolean;
+  leadIntake?: {
+    active?: boolean;
+    webhookSubscribed?: boolean;
+    reason?: string;
+  };
+  error?: string;
+};
 
 export async function createMetaLeadForm(
   businessId: string | undefined,
@@ -955,10 +973,32 @@ export async function createMetaLeadForm(
     additionalAction?: "website" | "file" | "call" | "whatsapp";
     whatsappPhone?: string;
     callPhone?: string;
+    idempotencyKey?: string;
+    publishId?: string;
+    adDraftId?: string;
   }
 ) {
-  const { data } = await API.post<{ success: boolean; form: MetaLeadForm }>(
+  const { data } = await API.post<MetaLeadFormWriteResult>(
     "/meta-campaigns/lead-forms",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function syncMetaLeadForm(
+  businessId: string | undefined,
+  payload: {
+    pageId?: string;
+    formId: string;
+    name?: string;
+    idempotencyKey?: string;
+    publishId?: string;
+    adDraftId?: string;
+  }
+) {
+  const { data } = await API.post<MetaLeadFormWriteResult>(
+    "/meta-campaigns/lead-forms/sync",
     { ...payload, businessId },
     withBusiness(businessId)
   );
