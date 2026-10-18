@@ -53,8 +53,22 @@ export type MetaCampaign = {
   effectiveStatus: string;
   deliveryStatus?: string;
   campaignEffectiveStatus?: string;
-  editorDraft?: { ads?: Array<Record<string, string>> } | null;
+  editorDraft?: {
+    ads?: Array<Record<string, string>>;
+    workspace?: Record<string, unknown> | null;
+    revision?: number;
+    hasUnpublishedChanges?: boolean;
+    savedAt?: string;
+    publishedSnapshot?: Record<string, unknown> | null;
+    metaBaseline?: Record<string, unknown> | null;
+  } | null;
   publishRecordId?: string;
+  localOnly?: boolean;
+  localDraft?: boolean;
+  hasUnpublishedChanges?: boolean;
+  publishFailed?: boolean;
+  lastError?: string;
+  localUpdatedAt?: string | null;
   creativeLinkedOnMeta?: boolean;
   objective: string;
   dailyBudget: number;
@@ -760,7 +774,16 @@ export async function updateMetaAd(
 export type MetaEditorDraftSaveResult = {
   success: boolean;
   publishId: string;
-  editorDraft?: { ads?: Array<Record<string, string>> } | null;
+  editorDraft?: {
+    ads?: Array<Record<string, string>>;
+    workspace?: Record<string, unknown> | null;
+    revision?: number;
+    savedAt?: string;
+  } | null;
+  revision?: number;
+  savedAt?: string | null;
+  hasUnpublishedChanges?: boolean;
+  localOnly?: boolean;
   publishStatus?: string;
   displayStatus?: string;
   metaCampaignId?: string;
@@ -769,6 +792,7 @@ export type MetaEditorDraftSaveResult = {
   metaAdId?: string;
   creativeOnMeta?: boolean;
   error?: string;
+  code?: string;
 };
 
 export async function saveMetaEditorDraft(
@@ -779,6 +803,11 @@ export async function saveMetaEditorDraft(
     localName?: string;
     objective?: string;
     editorDraft: unknown;
+    expectedRevision?: number;
+    differsFromMeta?: boolean;
+    markPublished?: boolean;
+    restorePublished?: boolean;
+    metaBaseline?: unknown;
   }
 ) {
   const path = body.publishId
@@ -788,6 +817,23 @@ export async function saveMetaEditorDraft(
     businessId,
     ...body,
   });
+  return data;
+}
+
+export async function deleteLocalCampaignDraft(businessId: string | undefined, publishId: string) {
+  const { data } = await API.delete<{ success: boolean; publishId: string }>(
+    `/meta-campaigns/publishes/${publishId}/draft`,
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function duplicateLocalCampaignDraft(businessId: string | undefined, publishId: string) {
+  const { data } = await API.post<MetaEditorDraftSaveResult>(
+    `/meta-campaigns/publishes/${publishId}/duplicate-draft`,
+    { businessId },
+    withBusiness(businessId)
+  );
   return data;
 }
 
