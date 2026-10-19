@@ -70,6 +70,13 @@ import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { removeCampaignFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
+import {
+  compareByDeliveryMetric,
+  formatCampaignDeliveryMetric,
+  mergeOverviewPreservingMetrics,
+  metricSortFromValue,
+  type CampaignMetricSort,
+} from "./campaignDeliveryMetrics";
 
 type OutletCtx = { businessId: string | null };
 
@@ -232,6 +239,7 @@ export default function MetaCampaignsOverviewTab() {
   const [pendingStatusCampaign, setPendingStatusCampaign] =
     useState<MetaCampaign | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
+  const [metricSort, setMetricSort] = useState<CampaignMetricSort | null>(null);
   const deletion = useCampaignDraftDelete(businessId, (id) => {
     setData((current) =>
       current
@@ -268,6 +276,7 @@ export default function MetaCampaignsOverviewTab() {
     }
     if (
       options?.silent &&
+      !options?.successToast &&
       lastStartedAtRef.current &&
       now - lastStartedAtRef.current < 15000
     ) {
@@ -281,10 +290,20 @@ export default function MetaCampaignsOverviewTab() {
     setLoadError(null);
     try {
       const overview = await getMetaCampaignsOverview(businessId, rangeQuery);
-      setData(overview);
-      setLastUpdatedAt(new Date());
+      setData((current) => mergeOverviewPreservingMetrics(current, overview));
+      const insightsFailed = overview.insightsSync?.ok === false;
+      if (!insightsFailed) {
+        setLastUpdatedAt(new Date());
+      }
+      if (insightsFailed && (options?.successToast || !silent)) {
+        toast.error(
+          overview.insightsSync?.error === "rate_limit"
+            ? t("metaCampaigns.actions.rateLimited")
+            : t("metaCampaigns.errors.loadOverview")
+        );
+      }
       backoffUntilRef.current = 0;
-      if (options?.successToast) {
+      if (options?.successToast && !insightsFailed) {
         toast.success(t("metaCampaigns.toasts.overviewRefreshed"));
       }
     } catch (error: any) {
@@ -320,24 +339,28 @@ export default function MetaCampaignsOverviewTab() {
 
   const campaigns = useMemo(() => {
     const list = data?.campaigns || [];
-    if (segment === "all") return list;
-    return list.filter((campaign) => {
-      const objective = String(campaign.objective || "").toUpperCase();
-      if (segment === "leads") return objective.includes("LEAD");
-      if (segment === "sales")
-        return (
-          objective.includes("SALES") ||
-          objective.includes("PURCHASE") ||
-          objective.includes("CONVERSION")
-        );
-      if (segment === "traffic")
-        return objective.includes("TRAFFIC") || objective.includes("LINK");
-      if (segment === "awareness")
-        return objective.includes("AWARENESS") || objective.includes("REACH");
-      if (segment === "engagement") return objective.includes("ENGAGEMENT");
-      return true;
-    });
-  }, [data?.campaigns, segment]);
+    const filtered =
+      segment === "all"
+        ? list
+        : list.filter((campaign) => {
+            const objective = String(campaign.objective || "").toUpperCase();
+            if (segment === "leads") return objective.includes("LEAD");
+            if (segment === "sales")
+              return (
+                objective.includes("SALES") ||
+                objective.includes("PURCHASE") ||
+                objective.includes("CONVERSION")
+              );
+            if (segment === "traffic")
+              return objective.includes("TRAFFIC") || objective.includes("LINK");
+            if (segment === "awareness")
+              return objective.includes("AWARENESS") || objective.includes("REACH");
+            if (segment === "engagement") return objective.includes("ENGAGEMENT");
+            return true;
+          });
+    if (!metricSort) return filtered;
+    return compareByDeliveryMetric(filtered, metricSort.key, metricSort.direction);
+  }, [data?.campaigns, metricSort, segment]);
 
   useEffect(() => {
     if (!queryCampaignId) return;
@@ -925,7 +948,7 @@ export default function MetaCampaignsOverviewTab() {
           </div>
 
           <div className={`${cardBase} overflow-hidden`}>
-            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+            <div className="flex flex-col gap-3 border-b border-slate-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm font-black text-slate-900">
                   {t("metaCampaigns.table.title")}
@@ -939,10 +962,40 @@ export default function MetaCampaignsOverviewTab() {
                     count: campaigns.length,
                   })}
                 </p>
+                <p
+                  className="text-xs font-semibold text-slate-400"
+                  data-testid="meta-campaign-insights-synced"
+                >
+                  {data?.insightsSync?.ok === false
+                    ? data.insightsSync.error === "rate_limit"
+                      ? t("metaCampaigns.actions.rateLimited")
+                      : t("metaCampaigns.ux.attentionNoData")
+                    : t("metaCampaigns.overview.lastSynced", {
+                        time: formatDateTimeHe(
+                          data?.insightsSync?.syncedAt || lastUpdatedAt,
+                          locale
+                        ),
+                      })}
+                </p>
               </div>
-              <Link to={`${basePath}/campaigns`} className={btnSecondary}>
-                {t("metaCampaigns.ux.viewCampaigns")}
-              </Link>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  className="min-h-11 rounded-lg border border-slate-200 bg-white px-2 text-sm font-bold text-slate-700"
+                  aria-label={t("metaCampaigns.ux.sort")}
+                  data-testid="meta-campaign-metric-sort"
+                  value={metricSort ? `${metricSort.key}:${metricSort.direction}` : ""}
+                  onChange={(event) => setMetricSort(metricSortFromValue(event.target.value))}
+                >
+                  <option value="">{t("metaCampaigns.table.spend")}</option>
+                  <option value="impressions:desc">{t("metaCampaigns.table.impressions")} ↓</option>
+                  <option value="impressions:asc">{t("metaCampaigns.table.impressions")} ↑</option>
+                  <option value="reach:desc">{t("metaCampaigns.table.reach")} ↓</option>
+                  <option value="reach:asc">{t("metaCampaigns.table.reach")} ↑</option>
+                </select>
+                <Link to={`${basePath}/campaigns`} className={btnSecondary}>
+                  {t("metaCampaigns.ux.viewCampaigns")}
+                </Link>
+              </div>
             </div>
 
             <div className="space-y-3 p-3 md:hidden">
@@ -954,11 +1007,25 @@ export default function MetaCampaignsOverviewTab() {
                   const isConfiguredActive =
                     String(campaign.configuredStatus || campaign.status || "").toUpperCase() === "ACTIVE";
                   return (
-                    <article key={campaign.id} className="rounded-xl border border-slate-100 p-3">
+                    <article key={campaign.id} className="rounded-xl border border-slate-100 p-3" data-testid={`campaign-row-${campaign.id}`}>
                       <p className="break-words font-black text-slate-900">{campaign.name}</p>
                       <span className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
                         {t(`metaCampaigns.status.${metaDeliveryStatusKey(deliveryStatus)}`, { defaultValue: deliveryStatus })}
                       </span>
+                      <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.impressions")}</dt>
+                          <dd className="font-bold tabular-nums" data-testid={`campaign-impressions-${campaign.id}`}>
+                            {formatCampaignDeliveryMetric(campaign, "impressions")}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.reach")}</dt>
+                          <dd className="font-bold tabular-nums" data-testid={`campaign-reach-${campaign.id}`}>
+                            {formatCampaignDeliveryMetric(campaign, "reach")}
+                          </dd>
+                        </div>
+                      </dl>
                       <div className="mt-3 flex flex-wrap items-center gap-1">
                         <button
                           type="button"
@@ -1033,11 +1100,71 @@ export default function MetaCampaignsOverviewTab() {
                     <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.spend")}
                     </th>
-                    <th className="hidden px-3 py-3 text-start">
-                      {t("metaCampaigns.table.impressions")}
+                    <th
+                      className="px-3 py-3 text-start"
+                      aria-sort={
+                        metricSort?.key === "impressions"
+                          ? metricSort.direction === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
+                    >
+                      <button
+                        type="button"
+                        className="inline-flex min-h-11 items-center gap-1"
+                        data-testid="sort-impressions"
+                        onClick={() =>
+                          setMetricSort((current) =>
+                            current?.key === "impressions"
+                              ? {
+                                  key: "impressions",
+                                  direction: current.direction === "desc" ? "asc" : "desc",
+                                }
+                              : { key: "impressions", direction: "desc" }
+                          )
+                        }
+                      >
+                        {t("metaCampaigns.table.impressions")}
+                        {metricSort?.key === "impressions"
+                          ? metricSort.direction === "asc"
+                            ? " ↑"
+                            : " ↓"
+                          : ""}
+                      </button>
                     </th>
-                    <th className="hidden px-3 py-3 text-start">
-                      {t("metaCampaigns.table.reach")}
+                    <th
+                      className="px-3 py-3 text-start"
+                      aria-sort={
+                        metricSort?.key === "reach"
+                          ? metricSort.direction === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
+                    >
+                      <button
+                        type="button"
+                        className="inline-flex min-h-11 items-center gap-1"
+                        data-testid="sort-reach"
+                        onClick={() =>
+                          setMetricSort((current) =>
+                            current?.key === "reach"
+                              ? {
+                                  key: "reach",
+                                  direction: current.direction === "desc" ? "asc" : "desc",
+                                }
+                              : { key: "reach", direction: "desc" }
+                          )
+                        }
+                      >
+                        {t("metaCampaigns.table.reach")}
+                        {metricSort?.key === "reach"
+                          ? metricSort.direction === "asc"
+                            ? " ↑"
+                            : " ↓"
+                          : ""}
+                      </button>
                     </th>
                     <th className="hidden px-3 py-3 text-start">
                       {t("metaCampaigns.table.clicks")}
@@ -1088,6 +1215,7 @@ export default function MetaCampaignsOverviewTab() {
                       return (
                         <tr
                           key={campaign.id}
+                          data-testid={`campaign-row-${campaign.id}`}
                           className="border-t border-slate-100 hover:bg-slate-50/70"
                         >
                           <td className="px-4 py-3">
@@ -1172,19 +1300,11 @@ export default function MetaCampaignsOverviewTab() {
                               }
                             )}
                           </td>
-                          <td className="hidden px-3 py-3 font-bold text-slate-700">
-                            {formatMetricOrDash(
-                              campaign.metrics?.impressions,
-                              formatNumber,
-                              { treatZeroAsEmpty: true }
-                            )}
+                          <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums text-slate-700" data-testid={`campaign-impressions-${campaign.id}`}>
+                            {formatCampaignDeliveryMetric(campaign, "impressions")}
                           </td>
-                          <td className="hidden px-3 py-3 font-bold text-slate-700">
-                            {formatMetricOrDash(
-                              campaign.metrics?.reach,
-                              formatNumber,
-                              { treatZeroAsEmpty: true }
-                            )}
+                          <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums text-slate-700" data-testid={`campaign-reach-${campaign.id}`}>
+                            {formatCampaignDeliveryMetric(campaign, "reach")}
                           </td>
                           <td className="hidden px-3 py-3 font-bold text-slate-700">
                             {formatMetricOrDash(

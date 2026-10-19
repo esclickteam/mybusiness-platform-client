@@ -30,14 +30,16 @@ export type MetaCampaignMetrics = {
   results?: number;
   clicks: number;
   linkClicks?: number;
-  impressions: number;
+  impressions: number | null;
   ctr: number;
   cpc: number;
   cpm?: number;
   costPerLead: number;
   costPerResult?: number;
   roas: number;
-  reach?: number;
+  reach?: number | null;
+  /** False when Meta did not return a campaign insight for this range. */
+  insightsAvailable?: boolean;
   frequency?: number;
   dateStart?: string | null;
   dateStop?: string | null;
@@ -371,6 +373,12 @@ export type MetaCampaignsOverview = {
     previousRange?: { since: string; until: string };
   } | null;
   demoData?: boolean;
+  insightsSync?: {
+    ok: boolean;
+    level?: string;
+    syncedAt?: string | null;
+    error?: "rate_limit" | "unavailable" | null;
+  } | null;
 };
 
 export type MetaCarouselCard = {
