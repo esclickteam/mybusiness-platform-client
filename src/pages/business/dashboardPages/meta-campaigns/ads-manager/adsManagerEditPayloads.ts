@@ -1,6 +1,7 @@
 import type { MetaCampaignPayload } from "../../../../../api/metaCampaignsApi";
 import type { AdsManagerChange } from "./adsManagerDiff";
-import type { AdsManagerState, AdDraft, AdSetDraft } from "./adsManagerTypes";
+import type { AdsManagerState, AdDraft, AdSetDraft, MetaObjectIds } from "./adsManagerTypes";
+import { isRealMetaObjectId } from "./editorDraft";
 
 function gendersForMeta(gender: AdSetDraft["gender"]) {
   if (gender === "male") return [1];
@@ -189,22 +190,43 @@ export function buildAdUpdateFromDiff(
   return Object.keys(payload).length ? payload : null;
 }
 
+function realMetaId(value: unknown): string {
+  const id = String(value ?? "").trim();
+  return isRealMetaObjectId(id) ? id : "";
+}
+
+export function existingMetaIdsForPublish(
+  current: AdsManagerState,
+  routeId?: string
+): MetaObjectIds & { publishRecordId?: string } {
+  const stored = current.metaObjectIds;
+  return {
+    publishRecordId: current.publishRecordId || undefined,
+    campaignId: realMetaId(stored?.campaignId) || realMetaId(routeId) || realMetaId(current.campaign.id),
+    adSetId: realMetaId(stored?.adSetId) || realMetaId(current.adSets[0]?.id),
+    adId: realMetaId(stored?.adId) || realMetaId(current.ads[0]?.id),
+    creativeId: realMetaId(stored?.creativeId) || realMetaId(current.ads[0]?.creativeId),
+  };
+}
+
 export function buildExistingPublishPayload(
   current: AdsManagerState,
   changes: AdsManagerChange[],
-  options?: { confirmCreateAd?: boolean }
+  options?: { confirmCreateAd?: boolean; routeId?: string }
 ) {
   const adSet = current.adSets[0];
   const ad = current.ads[0];
+  const ids = existingMetaIdsForPublish(current, options?.routeId);
   const allowBudgetChange = changes.some(
     (row) => row.labelKey === "changeBudget" || row.labelKey === "changeAdSetBudget"
   );
   const leadFormChanged = changes.some((row) => row.labelKey === "changeLeadForm");
   return {
-    metaCampaignId: current.campaign.id,
-    metaAdSetId: adSet?.id,
-    metaAdId: ad?.id,
-    metaCreativeId: ad?.creativeId || undefined,
+    publishRecordId: ids.publishRecordId,
+    metaCampaignId: ids.campaignId || undefined,
+    metaAdSetId: ids.adSetId || undefined,
+    metaAdId: ids.adId || undefined,
+    metaCreativeId: ids.creativeId || undefined,
     pageId: ad?.facebookPageId || adSet?.facebookPageId || undefined,
     campaign: buildCampaignUpdateFromDiff(current, changes) || undefined,
     adSet: adSet

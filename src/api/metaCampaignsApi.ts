@@ -91,6 +91,11 @@ export type MetaCampaign = {
   creativeId?: string;
   adId?: string;
   adSetId?: string;
+  /** Graph ids stored on the publish record. Distinct from the local editor id. */
+  metaCampaignId?: string;
+  metaAdSetId?: string;
+  metaAdId?: string;
+  metaCreativeId?: string;
   locations?: MetaLocationTarget[];
   locationMode?: "places" | "radius";
   interests?: MetaInterestTarget[];
@@ -1348,6 +1353,8 @@ export type MetaLeadFormUpdatePlan = {
   adSetId?: string;
   adId?: string;
   creativeId?: string;
+  publishRecordId?: string;
+  recovered?: Record<string, boolean>;
 };
 
 export type MetaExistingPublishResult = {
@@ -1378,7 +1385,14 @@ export type MetaExistingPublishResult = {
 export async function planMetaCampaignChanges(
   businessId: string,
   campaignId: string,
-  payload: { metaAdSetId?: string; metaAdId?: string; leadFormId?: string }
+  payload: {
+    publishRecordId?: string;
+    metaCampaignId?: string;
+    metaAdSetId?: string;
+    metaAdId?: string;
+    metaCreativeId?: string;
+    leadFormId?: string;
+  }
 ) {
   const { data } = await API.post<MetaLeadFormUpdatePlan>(
     `/meta-campaigns/campaigns/${campaignId}/publish-changes/plan`,
