@@ -34,10 +34,13 @@ export type MetaCampaignMetrics = {
   ctr: number;
   cpc: number;
   cpm?: number;
-  costPerLead: number;
-  costPerResult?: number;
-  roas: number;
+  costPerLead: number | null;
+  costPerResult?: number | null;
+  roas: number | null;
   reach?: number | null;
+  landingPageViews?: number | null;
+  purchases?: number | null;
+  resultIndicator?: string;
   /** False when Meta did not return a campaign insight for this range. */
   insightsAvailable?: boolean;
   frequency?: number;
@@ -133,10 +136,18 @@ export type MetaCampaign = {
 
 export type MetaCampaignSeriesPoint = {
   date: string;
-  leads: number;
-  spend: number;
-  clicks: number;
-  impressions: number;
+  leads: number | null;
+  spend: number | null;
+  clicks: number | null;
+  impressions: number | null;
+  reach?: number | null;
+  linkClicks?: number | null;
+  landingPageViews?: number | null;
+  purchases?: number | null;
+  results?: number | null;
+  ctr?: number | null;
+  cpc?: number | null;
+  frequency?: number | null;
   sales?: number;
   traffic?: number;
   engagement?: number;
@@ -736,6 +747,115 @@ export async function setMetaCampaignStatus(
     },
     withBusiness(businessId)
   );
+  return data;
+}
+
+export type MetaManagerLevel = "campaign" | "adset" | "ad";
+
+export type MetaManagerRow = {
+  id: string;
+  name: string;
+  level: MetaManagerLevel;
+  campaignId?: string;
+  campaignName?: string;
+  adSetId?: string;
+  adSetName?: string;
+  status?: string;
+  configuredStatus?: string;
+  effectiveStatus?: string;
+  objective?: string;
+  optimizationGoal?: string;
+  dailyBudget?: number;
+  lifetimeBudget?: number;
+  createdTime?: string | null;
+  updatedTime?: string | null;
+  startTime?: string | null;
+  endTime?: string | null;
+  headline?: string;
+  primaryText?: string;
+  imageUrl?: string;
+  localOnly?: boolean;
+  metrics?: MetaCampaignMetrics | null;
+};
+
+export type MetaManagerQuery = {
+  level?: MetaManagerLevel;
+  limit?: number;
+  after?: string;
+  campaignId?: string;
+  adSetId?: string;
+  status?: string;
+  q?: string;
+  createdSince?: string;
+  createdUntil?: string;
+  datePreset?: string;
+  since?: string;
+  until?: string;
+  days?: number;
+  refresh?: number;
+  grain?: "day" | "week" | "month";
+  ids?: string;
+  breakdown?: string;
+};
+
+export async function getMetaAdsManager(businessId: string | undefined, query: MetaManagerQuery) {
+  const { data } = await API.get<{
+    success: boolean;
+    level: MetaManagerLevel;
+    rows: MetaManagerRow[];
+    paging?: { limit: number; after: string; hasNext: boolean };
+    account?: { adAccountId?: string; currency?: string; timezoneName?: string };
+    insightsSync?: { ok: boolean; cached?: boolean; error?: string | null; syncedAt?: string | null; attribution?: string };
+    reporting?: { reachSummed?: boolean };
+  }>("/meta-campaigns/manager", withBusiness(businessId, query));
+  return data;
+}
+
+export async function getMetaAdsManagerSeries(businessId: string | undefined, query: MetaManagerQuery) {
+  const { data } = await API.get<{
+    success: boolean;
+    grain: string;
+    series: Array<{ id: string; points: Array<MetaCampaignMetrics & { date?: string }> }>;
+    insightsSync?: { ok: boolean; error?: string | null; syncedAt?: string | null };
+  }>("/meta-campaigns/manager/series", withBusiness(businessId, query));
+  return data;
+}
+
+export async function getMetaAdsManagerBreakdown(businessId: string | undefined, query: MetaManagerQuery) {
+  const { data } = await API.get<{
+    success: boolean;
+    breakdown: string;
+    slices: Array<{ label: string; metrics: MetaCampaignMetrics }>;
+    totals?: MetaCampaignMetrics;
+    reporting?: { reachSummed?: boolean; note?: string };
+    insightsSync?: { ok: boolean; error?: string | null };
+  }>("/meta-campaigns/manager/breakdowns", withBusiness(businessId, query));
+  return data;
+}
+
+export async function getMetaAdsManagerCompare(businessId: string | undefined, query: MetaManagerQuery) {
+  const { data } = await API.get<{
+    success: boolean;
+    rows: Array<{ id: string; metrics: MetaCampaignMetrics }>;
+    reporting?: { reachSummed?: boolean };
+  }>("/meta-campaigns/manager/compare", withBusiness(businessId, query));
+  return data;
+}
+
+export async function listMetaChangeHistory(businessId: string | undefined, entityId: string) {
+  const { data } = await API.get<{
+    success: boolean;
+    changes: Array<{
+      id: string;
+      action: string;
+      entityType: string;
+      metaEntityId: string;
+      field?: string;
+      success: boolean;
+      errorMessage?: string;
+      createdAt?: string | null;
+    }>;
+  }>("/meta-campaigns/changes", withBusiness(businessId, { entityId }));
   return data;
 }
 
