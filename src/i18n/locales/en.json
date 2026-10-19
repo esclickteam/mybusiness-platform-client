@@ -4077,6 +4077,7 @@
     "workspace": {
       "searchPlaceholder": "Search by name, phone, email or lead ID",
       "columns": "Columns",
+      "compactView": "Compact table",
       "saveView": "Save view...",
       "duplicates": "Duplicates",
       "selected": "{{count}} selected",

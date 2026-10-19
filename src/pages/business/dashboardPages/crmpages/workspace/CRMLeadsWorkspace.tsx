@@ -276,13 +276,28 @@ export default function CRMLeadsWorkspace({
         <button type="button" className="icon-btn" onClick={() => setShowFilters((value) => !value)}>
           <Filter className="h-4 w-4" /> {t("crm.common.filter")}
         </button>
-        <button type="button" className="icon-btn" onClick={() => setState((prev) => ({ ...prev, viewMode: "table" }))}>
+        <button
+          type="button"
+          className="icon-btn"
+          aria-label={t("crm.leads.listView")}
+          onClick={() => setState((prev) => ({ ...prev, viewMode: "table" }))}
+        >
           <LayoutList className="h-4 w-4" />
         </button>
-        <button type="button" className="icon-btn" onClick={() => setState((prev) => ({ ...prev, viewMode: "compact" }))}>
+        <button
+          type="button"
+          className="icon-btn"
+          aria-label={t("crm.workspace.compactView")}
+          onClick={() => setState((prev) => ({ ...prev, viewMode: "compact" }))}
+        >
           <Columns3 className="h-4 w-4" />
         </button>
-        <button type="button" className="icon-btn" onClick={() => setState((prev) => ({ ...prev, viewMode: "kanban" }))}>
+        <button
+          type="button"
+          className="icon-btn"
+          aria-label={t("crm.leads.boardView")}
+          onClick={() => setState((prev) => ({ ...prev, viewMode: "kanban" }))}
+        >
           <LayoutGrid className="h-4 w-4" />
         </button>
         <button type="button" className="icon-btn" onClick={() => setShowColumns((value) => !value)}>

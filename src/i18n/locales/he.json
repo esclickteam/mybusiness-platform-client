@@ -4077,6 +4077,7 @@
     "workspace": {
       "searchPlaceholder": "חיפוש לפי שם, טלפון, אימייל או מזהה ליד",
       "columns": "עמודות",
+      "compactView": "טבלה קומפקטית",
       "saveView": "שמירת תצוגה...",
       "duplicates": "כפילויות",
       "selected": "{{count}} נבחרו",
