@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Copy, Eye, Loader2, Pause, Pencil, Play, Trash2 } from "lucide-react";
+import { Copy, Eye, Loader2, Pause, Pencil, Play, RefreshCw, Trash2 } from "lucide-react";
 import {
   duplicateLocalCampaignDraft,
   getMetaCampaignsOverview,
@@ -27,6 +27,11 @@ import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { removeCampaignFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
+import {
+  campaignDeliveryMetric,
+  formatCampaignDeliveryMetric,
+  type DeliveryMetricKey,
+} from "./campaignDeliveryMetrics";
 
 type OutletCtx = { businessId: string | null };
 
@@ -59,7 +64,9 @@ export default function MetaCampaignsCampaignsPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const { query: rangeQuery, labelKey: rangeLabelKey } = useMetaAdsDateRange();
-  const [sortKey, setSortKey] = useState<"name" | "spend" | "results" | "cpl">("spend");
+  const [sortKey, setSortKey] = useState<"name" | "spend" | "results" | "cpl" | DeliveryMetricKey>("spend");
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  const [insightsError, setInsightsError] = useState<string | null>(null);
   const [details, setDetails] = useState<MetaCampaign | null>(null);
   const [pending, setPending] = useState<MetaCampaign | null>(null);
   const [busyId, setBusyId] = useState("");
@@ -74,6 +81,13 @@ export default function MetaCampaignsCampaignsPage() {
       const data = await getMetaCampaignsOverview(businessId, rangeQuery);
       setCampaigns(data.campaigns || []);
       setCurrency(resolveCampaignCurrency(data.connection?.selectedAdAccount?.currency));
+      setInsightsError(data.insightsSync?.ok === false ? data.insightsSync.error || "unavailable" : null);
+      const syncedAt = data.insightsSync?.syncedAt || data.connection?.lastSyncAt;
+      if (!data.insightsSync || data.insightsSync.ok !== false) {
+        setLastSynced(syncedAt ? new Date(syncedAt) : new Date());
+      } else if (syncedAt) {
+        setLastSynced(new Date(syncedAt));
+      }
     } catch (error) {
       const kind = metaAdsFriendlyMessage(error, "LOAD");
       toast.error(
@@ -104,6 +118,14 @@ export default function MetaCampaignsCampaignsPage() {
       return true;
     });
     return filtered.sort((a, b) => {
+      if (sortKey === "impressions" || sortKey === "reach") {
+        const av = campaignDeliveryMetric(a, sortKey);
+        const bv = campaignDeliveryMetric(b, sortKey);
+        if (av == null && bv == null) return 0;
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        return bv - av;
+      }
       const aDraft = campaignListStatus(a) === "DRAFT" ? 1 : 0;
       const bDraft = campaignListStatus(b) === "DRAFT" ? 1 : 0;
       if (aDraft !== bDraft) return bDraft - aDraft;
@@ -198,9 +220,25 @@ export default function MetaCampaignsCampaignsPage() {
         >
           <option value="spend">{t("metaCampaigns.table.spend")}</option>
           <option value="results">{t("metaCampaigns.table.results")}</option>
+          <option value="impressions">{t("metaCampaigns.table.impressions")}</option>
+          <option value="reach">{t("metaCampaigns.table.reach")}</option>
           <option value="cpl">{t("metaCampaigns.kpis.cpl")}</option>
           <option value="name">{t("metaCampaigns.table.name")}</option>
         </select>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs font-semibold text-slate-500" data-testid="meta-campaign-insights-synced">
+          {insightsError === "rate_limit"
+            ? t("metaCampaigns.actions.rateLimited")
+            : insightsError
+              ? t("metaCampaigns.ux.attentionNoData")
+              : t("metaCampaigns.overview.lastSynced", { time: formatDateTimeHe(lastSynced) })}
+        </p>
+        <button type="button" className={btnSecondary} onClick={() => void load()} data-testid="meta-campaign-refresh">
+          <RefreshCw className="h-4 w-4" />
+          {t("metaCampaigns.actions.refresh")}
+        </button>
       </div>
 
       {loading ? (
@@ -230,7 +268,7 @@ export default function MetaCampaignsCampaignsPage() {
             const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
             const editId = campaign.localOnly ? draftId : campaign.id;
             return (
-              <article key={campaign.id} className={`${cardBase} space-y-3 p-4`}>
+              <article key={campaign.id} className={`${cardBase} space-y-3 p-4`} data-testid={`campaign-row-${campaign.id}`}>
                 <button type="button" className="w-full text-start" onClick={() => setDetails(campaign)}>
                   <p className="break-words font-black text-slate-900">{campaign.name}</p>
                   <p className="text-xs font-semibold text-slate-400">
@@ -269,6 +307,18 @@ export default function MetaCampaignsCampaignsPage() {
                     <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.kpis.cpl")}</dt>
                     <dd className="font-bold">
                       {formatMetricOrDash((results || 0) > 0 ? cpl : null, (n) => formatCurrency(n, currency))}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.impressions")}</dt>
+                    <dd className="font-bold tabular-nums" data-testid={`campaign-impressions-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "impressions")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.reach")}</dt>
+                    <dd className="font-bold tabular-nums" data-testid={`campaign-reach-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "reach")}
                     </dd>
                   </div>
                 </dl>
@@ -318,6 +368,8 @@ export default function MetaCampaignsCampaignsPage() {
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.spend")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.results")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.kpis.cpl")}</th>
+                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.impressions")}</th>
+                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.reach")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.ctr")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.ux.lastUpdatedLabel")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.actions")}</th>
@@ -334,7 +386,7 @@ export default function MetaCampaignsCampaignsPage() {
                 const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
                 const editId = campaign.localOnly ? draftId : campaign.id;
                 return (
-                  <tr key={campaign.id} className="border-t border-slate-100">
+                  <tr key={campaign.id} className="border-t border-slate-100" data-testid={`campaign-row-${campaign.id}`}>
                     <td className="px-3 py-3">
                       <button type="button" className="text-start font-black text-slate-900" onClick={() => setDetails(campaign)}>
                         {campaign.name}
@@ -359,6 +411,12 @@ export default function MetaCampaignsCampaignsPage() {
                     <td className="px-3 py-3 font-bold">{formatMetricOrDash(results, formatNumber, { treatZeroAsEmpty: true })}</td>
                     <td className="px-3 py-3 font-bold">
                       {formatMetricOrDash((results || 0) > 0 ? cpl : null, (n) => formatCurrency(n, currency))}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums" data-testid={`campaign-impressions-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "impressions")}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums" data-testid={`campaign-reach-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "reach")}
                     </td>
                     <td className="px-3 py-3 font-bold">
                       {formatMetricOrDash(campaign.metrics?.ctr, (n) => formatPercent(n), { treatZeroAsEmpty: true })}

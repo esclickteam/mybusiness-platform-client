@@ -100,6 +100,9 @@ describe("Meta campaign list delete", () => {
     renderPage();
 
     expect(await screen.findByTestId("meta-campaign-count")).toHaveAttribute("data-count", "2");
+    expect(screen.getAllByTestId("campaign-impressions-draft-1")[0]).toHaveTextContent("—");
+    expect(screen.getAllByTestId("campaign-reach-draft-1")[0]).toHaveTextContent("—");
+    expect(screen.getAllByTestId("campaign-impressions-120251822243990469")[0]).toHaveTextContent("200");
     const buttons = screen.getAllByTestId("meta-campaign-delete-draft-1");
     expect(buttons).toHaveLength(2);
     expect(screen.getAllByTestId("meta-campaign-delete-120251822243990469")).toHaveLength(2);

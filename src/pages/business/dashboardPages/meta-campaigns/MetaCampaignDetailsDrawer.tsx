@@ -30,6 +30,7 @@ import {
   metaObjectiveLabel,
   statusTone,
 } from "./metaCampaignUtils";
+import { formatCampaignDeliveryMetric } from "./campaignDeliveryMetrics";
 
 type Props = {
   open: boolean;
@@ -293,8 +294,8 @@ export default function MetaCampaignDetailsDrawer({
               <Field label={t("metaCampaigns.table.spend")} value={formatMetricOrDash(metrics?.spend, (n) => formatCurrency(n, currency))} />
               <Field label={t("metaCampaigns.table.results")} value={formatMetricOrDash(metrics?.results || metrics?.leads, formatNumber)} />
               <Field label={t("metaCampaigns.table.costPerResult")} value={formatMetricOrDash(metrics?.costPerResult || metrics?.costPerLead, (n) => formatCurrency(n, currency))} />
-              <Field label={t("metaCampaigns.table.reach")} value={formatMetricOrDash(metrics?.reach, formatNumber)} />
-              <Field label={t("metaCampaigns.table.impressions")} value={formatMetricOrDash(metrics?.impressions, formatNumber)} />
+              <Field label={t("metaCampaigns.table.reach")} value={formatCampaignDeliveryMetric(detail || campaign, "reach")} />
+              <Field label={t("metaCampaigns.table.impressions")} value={formatCampaignDeliveryMetric(detail || campaign, "impressions")} />
               <Field label={t("metaCampaigns.table.frequency")} value={formatMetricOrDash(metrics?.frequency, (n) => n.toFixed(2))} />
               <Field label={t("metaCampaigns.table.clicks")} value={formatMetricOrDash(metrics?.clicks, formatNumber)} />
               <Field label={t("metaCampaigns.table.linkClicks")} value={formatMetricOrDash(metrics?.linkClicks, formatNumber)} />
