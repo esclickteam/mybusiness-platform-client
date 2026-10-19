@@ -1333,6 +1333,72 @@ export async function syncMetaPublish(
   return data;
 }
 
+export type MetaLeadFormUpdatePlan = {
+  success: boolean;
+  readOnly?: boolean;
+  strategy: "replace_creative_on_existing_ad" | "new_ad_required" | string;
+  reason: string;
+  message: string;
+  createsNewAd: boolean;
+  createsNewCreative: boolean;
+  canUpdateExistingAd: boolean;
+  currentLeadFormId?: string;
+  requestedLeadFormId?: string;
+  campaignId?: string;
+  adSetId?: string;
+  adId?: string;
+  creativeId?: string;
+};
+
+export type MetaExistingPublishResult = {
+  success: boolean;
+  verified: boolean;
+  verifiedOnExistingAd: boolean;
+  verifiedLeadFormId?: string;
+  previousLeadFormId?: string;
+  message?: string;
+  strategy?: string;
+  reason?: string;
+  campaignId: string;
+  adSetId: string;
+  adId: string;
+  previousAdId?: string;
+  creativeId?: string;
+  createdNewCampaign: boolean;
+  createdNewAdSet: boolean;
+  createdNewAd: boolean;
+  createdNewCreative: boolean;
+  publish?: MetaCampaignPublishRecord | null;
+  code?: string;
+  error?: string;
+  plan?: MetaLeadFormUpdatePlan | null;
+  draftPreserved?: boolean;
+};
+
+export async function planMetaCampaignChanges(
+  businessId: string,
+  campaignId: string,
+  payload: { metaAdSetId?: string; metaAdId?: string; leadFormId?: string }
+) {
+  const { data } = await API.post<MetaLeadFormUpdatePlan>(
+    `/meta-campaigns/campaigns/${campaignId}/publish-changes/plan`,
+    { businessId, ...payload }
+  );
+  return data;
+}
+
+export async function publishMetaCampaignChanges(
+  businessId: string,
+  campaignId: string,
+  payload: Record<string, unknown>
+) {
+  const { data } = await API.post<MetaExistingPublishResult>(
+    `/meta-campaigns/campaigns/${campaignId}/publish-changes`,
+    { businessId, ...payload }
+  );
+  return data;
+}
+
 export async function retryMetaPublish(
   businessId: string,
   publishId: string,

@@ -4,6 +4,7 @@ import { diffAdsManagerState } from "./adsManagerDiff";
 import {
   buildAdSetUpdateFromDiff,
   buildAdUpdateFromDiff,
+  buildExistingPublishPayload,
 } from "./adsManagerEditPayloads";
 import { isRealMetaObjectId } from "./editorDraft";
 import type { MetaCampaign } from "../../../../../api/metaCampaignsApi";
@@ -172,5 +173,24 @@ describe("adsManagerEditPayloads", () => {
     });
     expect(linked.ads[0].formLinkedOnMeta).toBe(true);
     expect(linked.ads[0].instantFormId).toBe("form-9");
+  });
+
+  it("sends a lead-form change without a budget or status change", () => {
+    const baseline = adsManagerStateFromMetaCampaign(campaign);
+    const current = {
+      ...baseline,
+      ads: baseline.ads.map((ad) => ({ ...ad, instantFormId: "form-new" })),
+    };
+    const changes = diffAdsManagerState(baseline, current);
+    const payload = buildExistingPublishPayload(current, changes);
+    expect(payload.leadFormId).toBe("form-new");
+    expect(payload.allowBudgetChange).toBe(false);
+    expect(payload.allowStatusChange).toBe(false);
+    expect(payload.confirmCreateAd).toBe(false);
+    expect(payload.campaign).toBeUndefined();
+    expect(payload.adSet).toBeUndefined();
+    expect(payload.ad).toEqual(expect.objectContaining({ leadFormId: "form-new" }));
+    expect(payload.ad).not.toHaveProperty("dailyBudget");
+    expect(payload.ad).not.toHaveProperty("status");
   });
 });
