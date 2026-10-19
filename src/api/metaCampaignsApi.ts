@@ -1073,6 +1073,40 @@ export async function createMetaLeadForm(
   return data;
 }
 
+export async function duplicateMetaLeadForm(
+  businessId: string | undefined,
+  payload: {
+    pageId?: string;
+    sourceFormId: string;
+    confirmDuplicate: true;
+    idempotencyKey?: string;
+  }
+) {
+  const { data } = await API.post<MetaLeadFormWriteResult>(
+    "/meta-campaigns/lead-forms/duplicate",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function setMetaLeadFormStatus(
+  businessId: string | undefined,
+  payload: {
+    pageId?: string;
+    formId: string;
+    status: "ARCHIVED" | "ACTIVE";
+    confirmStatus: true;
+  }
+) {
+  const { data } = await API.post<MetaLeadFormWriteResult>(
+    "/meta-campaigns/lead-forms/status",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
 export async function syncMetaLeadForm(
   businessId: string | undefined,
   payload: {

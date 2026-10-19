@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import {
   Check,
   ChevronDown,
+  Copy,
+  Folder,
   Image as ImageIcon,
   Info,
   Loader2,
@@ -12,6 +14,8 @@ import {
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import {
+  duplicateMetaLeadForm,
+  setMetaLeadFormStatus,
   uploadMetaMedia,
   type MetaAdsPage,
 } from "../../../../../../api/metaCampaignsApi";
@@ -72,6 +76,7 @@ export default function AdLevelEditor({
   const [uploading, setUploading] = useState(false);
   const [formSearch, setFormSearch] = useState("");
   const [createFormOpen, setCreateFormOpen] = useState(false);
+  const [formActionKey, setFormActionKey] = useState("");
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -81,6 +86,57 @@ export default function AdLevelEditor({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
+
+  const readActionError = (error: unknown) => {
+    const response = (error as { response?: { data?: { error?: string; message?: string } } })
+      ?.response?.data;
+    return response?.error || response?.message || c("formActionFailed");
+  };
+
+  const duplicateForm = async (form: InstantFormItem) => {
+    if (!businessId || !ad.facebookPageId || formActionKey) return;
+    const key = `${form.id}:duplicate`;
+    try {
+      setFormActionKey(key);
+      await duplicateMetaLeadForm(businessId, {
+        pageId: ad.facebookPageId,
+        sourceFormId: form.id,
+        confirmDuplicate: true,
+        idempotencyKey: `dup-${form.id}-${Date.now()}`,
+      });
+      toast.success(c("duplicateFormDone"));
+      await onFormsRefresh?.();
+    } catch (error) {
+      toast.error(readActionError(error));
+    } finally {
+      setFormActionKey("");
+    }
+  };
+
+  const changeFormStatus = async (form: InstantFormItem, status: "ARCHIVED" | "ACTIVE") => {
+    if (!businessId || !ad.facebookPageId || formActionKey) return;
+    if (status === "ARCHIVED") {
+      const confirmed = window.confirm(c("archiveFormConfirm", { name: form.name }));
+      if (!confirmed) return;
+    }
+    const key = `${form.id}:${status}`;
+    try {
+      setFormActionKey(key);
+      await setMetaLeadFormStatus(businessId, {
+        pageId: ad.facebookPageId,
+        formId: form.id,
+        status,
+        confirmStatus: true,
+      });
+      toast.success(status === "ARCHIVED" ? c("archiveFormDone") : c("restoreFormDone"));
+      onChange({ formTab: status === "ARCHIVED" ? "archived" : "active" });
+      await onFormsRefresh?.();
+    } catch (error) {
+      toast.error(readActionError(error));
+    } finally {
+      setFormActionKey("");
+    }
+  };
 
   const filteredForms = visibleForms.filter((form) => {
     const q = formSearch.trim().toLowerCase();
@@ -336,26 +392,30 @@ export default function AdLevelEditor({
               ) : (
                 filteredForms.map((form) => {
                   const selected = ad.instantFormId === form.id;
+                  const busy = formActionKey.startsWith(`${form.id}:`);
                   return (
-                    <button
+                    <div
                       key={form.id}
-                      type="button"
-                      onClick={() =>
-                        onChange({
-                          instantFormId: form.id,
-                          instantFormName: form.name,
-                          formPageId: ad.facebookPageId,
-                          formLinkedOnMeta: false,
-                        })
-                      }
+                      data-testid={`lead-form-row-${form.id}`}
                       className={[
-                        "flex w-full items-center justify-between rounded-md border px-3 py-2.5 text-left transition",
+                        "group flex w-full items-center justify-between gap-2 rounded-md border px-3 py-2.5 text-left transition",
                         selected
                           ? "border-[#1877F2] bg-[#E7F3FF]"
                           : "border-transparent hover:bg-[#F0F2F5]",
                       ].join(" ")}
                     >
-                      <span>
+                      <button
+                        type="button"
+                        className="min-w-0 flex-1 text-left"
+                        onClick={() =>
+                          onChange({
+                            instantFormId: form.id,
+                            instantFormName: form.name,
+                            formPageId: ad.facebookPageId,
+                            formLinkedOnMeta: false,
+                          })
+                        }
+                      >
                         <span className="block text-[14px] font-semibold text-[#050505]">
                           {form.name}
                         </span>
@@ -367,18 +427,74 @@ export default function AdLevelEditor({
                               })}`
                             : ""}
                         </span>
-                      </span>
+                      </button>
                       <span
                         className={[
-                          "flex h-4 w-4 items-center justify-center rounded-full border-2",
-                          selected ? "border-[#1877F2]" : "border-[#8A8D91]",
+                          "flex shrink-0 items-center gap-1",
+                          selected ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus-within:opacity-100",
                         ].join(" ")}
                       >
-                        {selected ? (
-                          <span className="h-2 w-2 rounded-full bg-[#1877F2]" />
-                        ) : null}
+                        <button
+                          type="button"
+                          data-testid={`lead-form-archive-${form.id}`}
+                          title={form.status === "active" ? c("archiveForm") : c("restoreForm")}
+                          aria-label={form.status === "active" ? c("archiveForm") : c("restoreForm")}
+                          disabled={Boolean(formActionKey)}
+                          className="relative flex h-8 w-8 items-center justify-center rounded-md text-[#65676B] hover:bg-white hover:text-[#050505] disabled:opacity-50"
+                          onClick={() =>
+                            void changeFormStatus(
+                              form,
+                              form.status === "active" ? "ARCHIVED" : "ACTIVE"
+                            )
+                          }
+                        >
+                          {busy && formActionKey.endsWith(form.status === "active" ? ":ARCHIVED" : ":ACTIVE") ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Folder className="h-4 w-4" />
+                          )}
+                        </button>
+                        <button
+                          type="button"
+                          data-testid={`lead-form-duplicate-${form.id}`}
+                          title={c("duplicateForm")}
+                          aria-label={c("duplicateForm")}
+                          disabled={Boolean(formActionKey)}
+                          className="relative flex h-8 w-8 items-center justify-center rounded-md text-[#65676B] hover:bg-white hover:text-[#050505] disabled:opacity-50"
+                          onClick={() => void duplicateForm(form)}
+                        >
+                          {busy && formActionKey.endsWith(":duplicate") ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                          ) : (
+                            <Copy className="h-4 w-4" />
+                          )}
+                        </button>
                       </span>
-                    </button>
+                      <button
+                        type="button"
+                        aria-label={form.name}
+                        className="shrink-0"
+                        onClick={() =>
+                          onChange({
+                            instantFormId: form.id,
+                            instantFormName: form.name,
+                            formPageId: ad.facebookPageId,
+                            formLinkedOnMeta: false,
+                          })
+                        }
+                      >
+                        <span
+                          className={[
+                            "flex h-4 w-4 items-center justify-center rounded-full border-2",
+                            selected ? "border-[#1877F2]" : "border-[#8A8D91]",
+                          ].join(" ")}
+                        >
+                          {selected ? (
+                            <span className="h-2 w-2 rounded-full bg-[#1877F2]" />
+                          ) : null}
+                        </span>
+                      </button>
+                    </div>
                   );
                 })
               )}
