@@ -5,9 +5,13 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   createMetaLeadForm,
+  saveMetaLeadFormDraft,
   syncMetaLeadForm,
   type MetaLeadFormWriteResult,
 } from "../../../../../api/metaCampaignsApi";
+import {
+  type LeadFormDuplicateSeed,
+} from "./leadFormDuplicateSeed";
 import { getWhatsAppStatus } from "../../../../../api/whatsappApi";
 import LeadFormQuestionBuilder from "../LeadFormQuestionBuilder";
 import MetaLeadFormLivePreview from "../MetaLeadFormLivePreview";
@@ -68,6 +72,8 @@ type FormBanner = {
   text: string;
   detail?: string;
   recoverFormId?: string;
+  /** A saved local draft stays editable and can still be created. */
+  blocksCreate?: boolean;
 };
 
 type Props = {
@@ -77,8 +83,11 @@ type Props = {
   pageName: string;
   publishId?: string;
   adDraftId?: string;
+  mode?: "create" | "duplicate";
+  initialDraft?: LeadFormDuplicateSeed | null;
   onClose: () => void;
   onCreated: (form: CreatedLeadForm) => void | Promise<void>;
+  onDraftSaved?: () => void | Promise<void>;
 };
 
 export default function AdsManagerCreateLeadFormModal({
@@ -88,8 +97,11 @@ export default function AdsManagerCreateLeadFormModal({
   pageName,
   publishId,
   adDraftId,
+  mode = "create",
+  initialDraft = null,
   onClose,
   onCreated,
+  onDraftSaved,
 }: Props) {
   const { t } = useTranslation();
   const cc = React.useCallback(
@@ -167,16 +179,90 @@ export default function AdsManagerCreateLeadFormModal({
   const [trackingParameters, setTrackingParameters] = useState<
     FormTrackingParam[]
   >([]);
+  const [sourceFormId, setSourceFormId] = useState("");
+  const initialDraftRef = useRef(initialDraft);
+  initialDraftRef.current = initialDraft;
+
+  const blankName = () =>
+    t("metaCampaigns.adsManager.chrome.untitledForm", {
+      when: new Date().toLocaleString(),
+    });
+
+  const applyDuplicateSeed = (seed: LeadFormDuplicateSeed) => {
+    setStep("type");
+    setFormType(seed.formType || "volume");
+    setRequireSms(Boolean(seed.requireSms));
+    setName(seed.name ?? blankName());
+    setIntroTitle(seed.introTitle || "");
+    setIntroDescription(seed.introDescription || "");
+    setPrivacyUrl(seed.privacyUrl || "");
+    setThankYouTitle(seed.thankYouTitle || "");
+    setThankYouBody(seed.thankYouBody || "");
+    setThankYouButton(seed.thankYouButton || "");
+    setAdditionalAction(seed.additionalAction || "website");
+    setThankYouLink(seed.thankYouLink || "");
+    setCallPhone(seed.callPhone || "");
+    setWhatsappPhone(seed.whatsappPhone || "");
+    setContactTypes(seed.contactTypes?.length ? [...seed.contactTypes] : []);
+    setCustomQuestions(
+      seed.customQuestions?.length
+        ? seed.customQuestions.map((question) => createLeadFormCustomQuestion(question))
+        : []
+    );
+    setLocale(seed.locale || defaultLeadFormLocale());
+    setSharing(seed.sharing || "restricted");
+    setContactFieldKeys(seed.contactFieldKeys ? { ...seed.contactFieldKeys } : {});
+    setTrackingParameters(
+      (seed.trackingParameters || []).map((row, index) => ({
+        id: row.id || `track_${index + 1}`,
+        key: row.key,
+        value: row.value,
+      }))
+    );
+    setSourceFormId(seed.sourceFormId || "");
+    idempotencyKeyRef.current = seed.idempotencyKey || "";
+  };
+
+  const resetBlankForm = () => {
+    setStep("type");
+    setFormType("volume");
+    setRequireSms(false);
+    setName(blankName());
+    setIntroTitle(t("metaCampaigns.adsManager.chrome.defaultIntroTitle"));
+    setIntroDescription(t("metaCampaigns.adsManager.chrome.defaultIntroBody"));
+    setPrivacyUrl("");
+    setThankYouTitle(t("metaCampaigns.adsManager.chrome.defaultThanksTitle"));
+    setThankYouBody(t("metaCampaigns.adsManager.chrome.defaultThanksBody"));
+    setThankYouButton(
+      t("leftover.instantForm.quoteCta", "Send a message to get a quote")
+    );
+    setAdditionalAction("website");
+    setThankYouLink("");
+    setCallPhone("");
+    setWhatsappPhone("");
+    setContactTypes(defaultSelectedLeadContactTypes());
+    setCustomQuestions([createLeadFormCustomQuestion()]);
+    setLocale(defaultLeadFormLocale());
+    setSharing("restricted");
+    setContactFieldKeys({});
+    setTrackingParameters([]);
+    setSourceFormId("");
+    idempotencyKeyRef.current = "";
+  };
 
   useEffect(() => {
     if (open && !wasOpenRef.current) {
       setBanner(null);
       setBusy(false);
       submitLock.current = false;
-      idempotencyKeyRef.current = "";
+      if (mode === "duplicate" && initialDraftRef.current) {
+        applyDuplicateSeed(initialDraftRef.current);
+      } else {
+        resetBlankForm();
+      }
     }
     wasOpenRef.current = open;
-  }, [open]);
+  }, [open, mode]);
 
   useEffect(() => {
     if (!open || !businessId) return;
@@ -312,8 +398,8 @@ export default function AdsManagerCreateLeadFormModal({
         formId,
         name: name.trim(),
         idempotencyKey: idempotencyKeyRef.current || undefined,
-        publishId: publishId || undefined,
-        adDraftId: adDraftId || undefined,
+        publishId: mode === "duplicate" ? undefined : publishId || undefined,
+        adDraftId: mode === "duplicate" ? undefined : adDraftId || undefined,
       });
       await finishCreated(result);
     } catch (error: unknown) {
@@ -322,6 +408,74 @@ export default function AdsManagerCreateLeadFormModal({
         text: requestErrorMessage(error),
         recoverFormId: formId,
       });
+    } finally {
+      submitLock.current = false;
+      setBusy(false);
+    }
+  };
+
+  const ensureIdempotencyKey = () => {
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current =
+        typeof crypto !== "undefined" && crypto.randomUUID
+          ? crypto.randomUUID()
+          : `form-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+    return idempotencyKeyRef.current;
+  };
+
+  const editorSnapshot = (): LeadFormDuplicateSeed => ({
+    sourceFormId,
+    idempotencyKey: ensureIdempotencyKey(),
+    name: name.trim(),
+    formType,
+    requireSms,
+    introTitle,
+    introDescription,
+    privacyUrl,
+    thankYouTitle,
+    thankYouBody,
+    thankYouButton,
+    additionalAction,
+    thankYouLink,
+    callPhone,
+    whatsappPhone,
+    locale,
+    sharing,
+    contactTypes: [...contactTypes],
+    customQuestions: customQuestions.map((question) => ({ ...question })),
+    contactFieldKeys: { ...contactFieldKeys },
+    trackingParameters: trackingParameters.map((row) => ({ ...row })),
+  });
+
+  const handleSaveDraft = async () => {
+    if (mode !== "duplicate" || submitLock.current) return;
+    if (!businessId) {
+      showBanner({ tone: "error", text: cc("identifyBusiness") });
+      return;
+    }
+    if (!pageId || !sourceFormId) {
+      showBanner({ tone: "error", text: t("metaCampaigns.adsToasts.selectPageFirst") });
+      return;
+    }
+    submitLock.current = true;
+    setBusy(true);
+    try {
+      const editor = editorSnapshot();
+      await saveMetaLeadFormDraft(businessId, {
+        pageId,
+        sourceFormId,
+        name: editor.name,
+        editor,
+      });
+      showBanner({
+        tone: "success",
+        text: cc("formDraftSaved"),
+        blocksCreate: false,
+      });
+      await onDraftSaved?.();
+    } catch (error: unknown) {
+      showBanner({ tone: "error", text: requestErrorMessage(error) });
     } finally {
       submitLock.current = false;
       setBusy(false);
@@ -380,12 +534,7 @@ export default function AdsManagerCreateLeadFormModal({
       return;
     }
 
-    if (!idempotencyKeyRef.current) {
-      idempotencyKeyRef.current =
-        typeof crypto !== "undefined" && crypto.randomUUID
-          ? crypto.randomUUID()
-          : `form-${Date.now()}-${Math.random().toString(36).slice(2)}`;
-    }
+    ensureIdempotencyKey();
 
     let succeeded = false;
     try {
@@ -424,10 +573,26 @@ export default function AdsManagerCreateLeadFormModal({
         whatsappPhone: whatsappPhone.trim() || undefined,
         callPhone: callPhone.trim() || undefined,
         idempotencyKey: idempotencyKeyRef.current,
-        publishId: publishId || undefined,
-        adDraftId: adDraftId || undefined,
+        ...(mode === "duplicate"
+          ? {}
+          : {
+              publishId: publishId || undefined,
+              adDraftId: adDraftId || undefined,
+            }),
       });
-      succeeded = await finishCreated(result);
+      const createdId = result.form?.id || "";
+      if (mode === "duplicate" && sourceFormId && createdId === sourceFormId) {
+        showBanner({ tone: "error", text: cc("duplicateNeedsNewName") });
+      } else {
+        succeeded = await finishCreated(result);
+        if (succeeded && mode === "duplicate" && sourceFormId) {
+          await saveMetaLeadFormDraft(businessId, {
+            pageId,
+            sourceFormId,
+            discard: true,
+          }).catch(() => undefined);
+        }
+      }
     } catch (error: unknown) {
       showBanner({ tone: "error", text: requestErrorMessage(error) });
     } finally {
@@ -444,7 +609,7 @@ export default function AdsManagerCreateLeadFormModal({
       >
         <header className="flex items-center justify-between border-b border-[#CED0D4] px-4 py-3">
           <h2 className="text-[17px] font-bold text-[#050505]">
-            {cc("createFormTitle")}
+            {mode === "duplicate" ? cc("duplicateFormTitle") : cc("createFormTitle")}
           </h2>
           <div className="flex items-center gap-1">
             <button
@@ -480,6 +645,7 @@ export default function AdsManagerCreateLeadFormModal({
                   <li key={item.id}>
                     <button
                       type="button"
+                      data-testid={`lead-form-step-${item.id}`}
                       onClick={() => setStep(item.id)}
                       className={[
                         "flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-[13px] font-semibold",
@@ -507,12 +673,16 @@ export default function AdsManagerCreateLeadFormModal({
           </nav>
 
           {/* Center config */}
-          <div className="min-h-0 overflow-y-auto px-4 py-4 sm:px-6">
+          <div
+            className="min-h-0 overflow-y-auto px-4 py-4 sm:px-6"
+            dir={isRtlLeadFormLocale(locale) ? "rtl" : "ltr"}
+          >
             {step === "type" ? (
               <div className="space-y-4">
                 <MetaFieldLike label={cc("formName")}>
                   <input
                     className={metaInputClass}
+                    data-testid="lead-form-name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                   />
@@ -588,6 +758,7 @@ export default function AdsManagerCreateLeadFormModal({
                 <MetaFieldLike label={cc("headline")}>
                   <input
                     className={metaInputClass}
+                    data-testid="lead-form-intro-title"
                     value={introTitle}
                     onChange={(e) => setIntroTitle(e.target.value)}
                   />
@@ -778,6 +949,7 @@ export default function AdsManagerCreateLeadFormModal({
                   >
                     <input
                       className={metaInputClass}
+                      data-testid="lead-form-thank-you-url"
                       dir="ltr"
                       value={thankYouLink}
                       onChange={(e) => setThankYouLink(e.target.value)}
@@ -804,7 +976,10 @@ export default function AdsManagerCreateLeadFormModal({
           </div>
 
           {/* Sticky right preview */}
-          <aside className="hidden overflow-y-auto border-l border-[#E4E6EB] bg-[#F7F8FA] px-3 py-4 md:block">
+          <aside
+            className="overflow-y-auto border-t border-[#E4E6EB] bg-[#F7F8FA] px-3 py-4 md:border-l md:border-t-0"
+            dir={isRtlLeadFormLocale(locale) ? "rtl" : "ltr"}
+          >
             <p className="mb-3 text-[13px] font-bold text-[#050505]">
               {cc("formPreview")} · {pageName || cc("pageFallback")}
             </p>
@@ -889,15 +1064,28 @@ export default function AdsManagerCreateLeadFormModal({
           ) : null}
           <div className="flex items-center justify-between gap-3">
           <button type="button" className={metaBtnSecondary} onClick={onClose} disabled={busy}>
-            {banner?.tone === "success" ? cc("close") : cc("cancel")}
+            {banner?.tone === "success" && banner.blocksCreate !== false
+              ? cc("close")
+              : cc("cancel")}
           </button>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-end gap-2">
+            {mode === "duplicate" ? (
+              <button
+                type="button"
+                data-testid="save-lead-form-draft"
+                className={metaBtnSecondary}
+                onClick={() => void handleSaveDraft()}
+                disabled={busy || (banner?.tone === "success" && banner.blocksCreate !== false)}
+              >
+                {cc("saveDraft")}
+              </button>
+            ) : null}
             {stepIndex > 0 ? (
               <button
                 type="button"
                 className={metaBtnSecondary}
                 onClick={goBack}
-                disabled={busy || banner?.tone === "success"}
+                disabled={busy || (banner?.tone === "success" && banner.blocksCreate !== false)}
               >
                 {cc("back")}
               </button>
@@ -907,22 +1095,31 @@ export default function AdsManagerCreateLeadFormModal({
                 type="button"
                 className={metaBtnPrimary}
                 onClick={goNext}
-                disabled={busy}
+                disabled={busy || (banner?.tone === "success" && banner.blocksCreate !== false)}
               >
                 {cc("next")}
               </button>
-            ) : (
+            ) : null}
+            {mode === "duplicate" || stepIndex === STEPS.length - 1 ? (
               <button
                 type="button"
                 data-testid="create-instant-form"
                 className={metaBtnPrimary}
                 onClick={() => void handleSave()}
-                disabled={busy || banner?.tone === "success" || Boolean(banner?.recoverFormId)}
+                disabled={
+                  busy ||
+                  Boolean(banner?.recoverFormId) ||
+                  (banner?.tone === "success" && banner.blocksCreate !== false)
+                }
               >
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {busy ? cc("creatingForm") : cc("createFormCta")}
+                {busy
+                  ? cc("creatingForm")
+                  : mode === "duplicate"
+                    ? cc("createForm")
+                    : cc("createFormCta")}
               </button>
-            )}
+            ) : null}
           </div>
           </div>
         </footer>

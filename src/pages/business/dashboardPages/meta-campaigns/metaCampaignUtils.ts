@@ -459,13 +459,19 @@ export function suggestLeadFieldKey(label: string, fallback: string) {
 export function createLeadFormCustomQuestion(
   partial?: Partial<LeadFormCustomQuestionDraft>
 ): LeadFormCustomQuestionDraft {
+  const answerType = partial?.answerType || "multiple_choice";
   return {
     id:
       partial?.id ||
       `custom_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`,
     label: partial?.label || "",
-    answerType: partial?.answerType || "multiple_choice",
-    options: partial?.options?.length ? [...partial.options] : ["", ""],
+    answerType,
+    options:
+      answerType === "short_answer"
+        ? []
+        : partial?.options?.length
+          ? [...partial.options]
+          : ["", ""],
     key: partial?.key,
     optionKeys: partial?.optionKeys ? [...partial.optionKeys] : undefined,
   };

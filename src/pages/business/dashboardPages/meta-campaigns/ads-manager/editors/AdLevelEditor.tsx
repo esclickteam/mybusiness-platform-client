@@ -14,13 +14,18 @@ import {
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import {
-  duplicateMetaLeadForm,
   setMetaLeadFormStatus,
   uploadMetaMedia,
   type MetaAdsPage,
+  type MetaLeadFormDraft,
 } from "../../../../../../api/metaCampaignsApi";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdsManagerCreateLeadFormModal from "../AdsManagerCreateLeadFormModal";
+import {
+  leadFormDuplicateSeedFromMeta,
+  leadFormDuplicateSeedFromSavedEditor,
+  type LeadFormDuplicateSeed,
+} from "../leadFormDuplicateSeed";
 import { metaCtaLabel, metaCtaOptions } from "../metaAdCtas";
 import LeadgenTosCard from "../LeadgenTosCard";
 import {
@@ -38,6 +43,7 @@ import {
 type Props = {
   ad: AdDraft;
   forms: InstantFormItem[];
+  formDrafts?: MetaLeadFormDraft[];
   formsLoading?: boolean;
   formsError?: string;
   pages: MetaAdsPage[];
@@ -53,6 +59,7 @@ type Props = {
 export default function AdLevelEditor({
   ad,
   forms,
+  formDrafts = [],
   formsLoading = false,
   formsError = "",
   pages,
@@ -76,6 +83,8 @@ export default function AdLevelEditor({
   const [uploading, setUploading] = useState(false);
   const [formSearch, setFormSearch] = useState("");
   const [createFormOpen, setCreateFormOpen] = useState(false);
+  const [editorMode, setEditorMode] = useState<"create" | "duplicate">("create");
+  const [duplicateSeed, setDuplicateSeed] = useState<LeadFormDuplicateSeed | null>(null);
   const [formActionKey, setFormActionKey] = useState("");
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
@@ -93,24 +102,22 @@ export default function AdLevelEditor({
     return response?.error || response?.message || c("formActionFailed");
   };
 
-  const duplicateForm = async (form: InstantFormItem) => {
-    if (!businessId || !ad.facebookPageId || formActionKey) return;
-    const key = `${form.id}:duplicate`;
-    try {
-      setFormActionKey(key);
-      await duplicateMetaLeadForm(businessId, {
-        pageId: ad.facebookPageId,
-        sourceFormId: form.id,
-        confirmDuplicate: true,
-        idempotencyKey: `dup-${form.id}-${Date.now()}`,
-      });
-      toast.success(c("duplicateFormDone"));
-      await onFormsRefresh?.();
-    } catch (error) {
-      toast.error(readActionError(error));
-    } finally {
-      setFormActionKey("");
-    }
+  const duplicateForm = (form: InstantFormItem) => {
+    const fromMeta = leadFormDuplicateSeedFromMeta({
+      id: form.id,
+      name: form.name,
+      locale: form.locale,
+      privacyPolicyUrl: form.privacyPolicyUrl,
+      questions: form.questions,
+      contextCard: form.contextCard,
+      thankYouPage: form.thankYouPage,
+      followUpActionUrl: form.followUpActionUrl,
+    });
+    const saved = formDrafts.find((draft) => draft.sourceFormId === form.id);
+    const fromDraft = leadFormDuplicateSeedFromSavedEditor(form.id, saved?.editor);
+    setEditorMode("duplicate");
+    setDuplicateSeed(fromDraft || fromMeta);
+    setCreateFormOpen(true);
   };
 
   const changeFormStatus = async (form: InstantFormItem, status: "ARCHIVED" | "ACTIVE") => {
@@ -295,6 +302,8 @@ export default function AdLevelEditor({
                     toast.error(t("metaCampaigns.adsToasts.selectPageFirst"));
                     return;
                   }
+                  setEditorMode("create");
+                  setDuplicateSeed(null);
                   setCreateFormOpen(true);
                 }}
               >
@@ -461,7 +470,7 @@ export default function AdLevelEditor({
                           aria-label={c("duplicateForm")}
                           disabled={Boolean(formActionKey)}
                           className="relative flex h-8 w-8 items-center justify-center rounded-md text-[#65676B] hover:bg-white hover:text-[#050505] disabled:opacity-50"
-                          onClick={() => void duplicateForm(form)}
+                          onClick={() => duplicateForm(form)}
                         >
                           {busy && formActionKey.endsWith(":duplicate") ? (
                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -709,10 +718,19 @@ export default function AdLevelEditor({
         businessId={businessId}
         pageId={ad.facebookPageId}
         pageName={ad.facebookPageName}
-        publishId={publishId}
-        adDraftId={ad.id}
+        publishId={editorMode === "duplicate" ? undefined : publishId}
+        adDraftId={editorMode === "duplicate" ? undefined : ad.id}
+        mode={editorMode}
+        initialDraft={editorMode === "duplicate" ? duplicateSeed : null}
         onClose={() => setCreateFormOpen(false)}
+        onDraftSaved={async () => {
+          await onFormsRefresh?.();
+        }}
         onCreated={async (form) => {
+          if (editorMode === "duplicate") {
+            await onFormsRefresh?.();
+            return;
+          }
           onChange({
             instantFormId: form.id,
             instantFormName: form.name,
