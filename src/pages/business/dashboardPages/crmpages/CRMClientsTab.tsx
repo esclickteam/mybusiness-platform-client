@@ -8,6 +8,8 @@ import {
   Download,
   Filter,
   Grid2X2,
+  LayoutGrid,
+  LayoutList,
   Layers3,
   LockKeyhole,
   Mail,
@@ -20,6 +22,7 @@ import {
   ShieldCheck,
   Sparkles,
   Trash2,
+  Upload,
   UserRound,
   UsersRound,
   X,
@@ -59,6 +62,7 @@ import {
   saveConfiguredClientFields,
   uid,
 } from "./clientCustomFieldsApi";
+import { downloadText, toCsv } from "./crmUi";
 
 type CustomFieldSource =
   | "business_input"
@@ -538,6 +542,13 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   >([]);
   const [fieldsManagerOpen, setFieldsManagerOpen] = useState(false);
   const [fieldsLoading, setFieldsLoading] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<"all" | ClientStatus>("all");
+  const [sortNewest, setSortNewest] = useState(true);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [page, setPage] = useState(1);
+  const [duplicates, setDuplicates] = useState<Array<{ matchType: string; key: string; leads: CRMClient[] }>>([]);
+  const PAGE_SIZE = 20;
 
   const {
     data: clients = [],
@@ -618,18 +629,25 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
   const filteredClients = useMemo(() => {
     const query = search.trim().toLowerCase();
-
-    if (!query) return clients;
-
-    return clients.filter((client) => {
+    const next = clients.filter((client) => {
+      const status = getClientStatus(client);
+      if (statusFilter !== "all" && status !== statusFilter) return false;
+      if (!query) return true;
       return (
         client.fullName.toLowerCase().includes(query) ||
         client.phone.includes(query) ||
         client.email.toLowerCase().includes(query) ||
-        client.address.toLowerCase().includes(query)
+        client.address.toLowerCase().includes(query) ||
+        String(client._id).toLowerCase().includes(query)
       );
     });
-  }, [clients, search]);
+    next.sort((a, b) => {
+      const aTime = new Date(a.updatedAt || a.createdAt || 0).getTime();
+      const bTime = new Date(b.updatedAt || b.createdAt || 0).getTime();
+      return sortNewest ? bTime - aTime : aTime - bTime;
+    });
+    return next;
+  }, [clients, search, statusFilter, sortNewest]);
 
   const activeClients = useMemo(() => {
     return clients.filter((client) => getClientStatus(client) === "Active")
@@ -647,6 +665,12 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   }, [clients]);
 
   const inactiveClients = Math.max(clients.length - activeClients, 0);
+  const pageCount = Math.max(1, Math.ceil(filteredClients.length / PAGE_SIZE));
+  const pagedClients = filteredClients.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, sortNewest]);
 
   const totalAppointments = useMemo(() => {
     return clients.reduce((sum, client) => {
@@ -837,6 +861,75 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       console.error("Delete client error:", err);
       alert(t("crm.clients.alerts.deleteFailed"));
     }
+  };
+
+  const exportClientsCsv = () => {
+    const rows = [
+      ["id", "fullName", "phone", "email", "address", "status"],
+      ...filteredClients.map((client) => [
+        client._id,
+        client.fullName,
+        client.phone,
+        client.email,
+        client.address,
+        getClientStatus(client),
+      ]),
+    ];
+    downloadText("crm-clients.csv", toCsv(rows));
+  };
+
+  const importClientsCsv = async (file: File) => {
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).filter((line) => line.trim());
+    if (lines.length < 2) return;
+    const header = lines[0].split(",").map((item) => item.trim().replace(/^"|"$/g, "").toLowerCase());
+    let imported = 0;
+    for (const line of lines.slice(1)) {
+      const cols = line.split(",").map((item) => item.trim().replace(/^"|"$/g, ""));
+      const row: Record<string, string> = {};
+      header.forEach((key, index) => {
+        row[key] = cols[index] || "";
+      });
+      const fullName = row.fullname || row.name || row.full_name || "";
+      const phone = row.phone || row.tel || "";
+      if (!fullName || !phone) continue;
+      await API.post("/crm-clients", {
+        fullName,
+        phone,
+        email: row.email || "",
+        address: row.address || "",
+        businessId,
+      });
+      imported += 1;
+    }
+    await invalidateClients();
+    alert(t("crm.clients.imported", { count: imported }));
+  };
+
+  const bulkDeleteSelected = async () => {
+    if (!selectedIds.length) return;
+    if (!window.confirm(t("crm.clients.confirmBulk", { count: selectedIds.length }))) return;
+    for (const id of selectedIds) {
+      await API.delete(`/crm-clients/${id}`);
+    }
+    setSelectedIds([]);
+    await invalidateClients();
+  };
+
+  const loadDuplicates = async () => {
+    const { data } = await API.get("/crm-clients/duplicates");
+    setDuplicates(data.groups || []);
+  };
+
+  const mergeDuplicate = async (primaryId: string, secondaryId: string) => {
+    if (!window.confirm(t("crm.workspace.confirmMerge"))) return;
+    await API.post("/crm-clients/merge", {
+      confirm: true,
+      primaryClientId: primaryId,
+      secondaryClientId: secondaryId,
+    });
+    await loadDuplicates();
+    await invalidateClients();
   };
 
   const validateForm = () => {
@@ -1066,13 +1159,20 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
             {t("crm.clients.addClient")}
           </button>
 
-          <button
-            type="button"
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
-          >
-            <Download className="h-4 w-4" />
+          <label className="inline-flex h-10 cursor-pointer items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50">
+            <Upload className="h-4 w-4" />
             {t("crm.clients.importClients")}
-          </button>
+            <input
+              type="file"
+              accept=".csv,text/csv"
+              className="hidden"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void importClientsCsv(file);
+                event.target.value = "";
+              }}
+            />
+          </label>
         </div>
       </section>
 
@@ -1097,7 +1197,6 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           label={t("crm.clients.stats.totalClients")}
           value={clients.length.toLocaleString()}
           icon={UsersRound}
-          trend="12.5%"
           tone="sky"
           featured
         />
@@ -1105,28 +1204,24 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           label={t("crm.clients.stats.activeClients")}
           value={activeClients.toLocaleString()}
           icon={UserRound}
-          trend="8.2%"
           tone="emerald"
         />
         <StatCard
           label={t("crm.clients.stats.appointments")}
           value={totalAppointments.toLocaleString()}
           icon={CalendarDays}
-          trend="15.3%"
           tone="blue"
         />
         <StatCard
           label={t("crm.clients.stats.monthlyRevenue")}
           value={formatCrmMoney(revenue)}
           icon={Building2}
-          trend="16.7%"
           tone="sky"
         />
         <StatCard
           label={t("crm.clients.stats.clientDataFields")}
           value={customDataCount.toLocaleString()}
           icon={Layers3}
-          trend={t("crm.clients.stats.trendReady")}
           tone="amber"
         />
         {SHOW_BUSINESS_MINI_SAAS && (
@@ -1134,7 +1229,6 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
             label={t("crm.clients.stats.portalAccess")}
             value={portalAccessCount.toLocaleString()}
             icon={ShieldCheck}
-            trend={t("crm.clients.stats.trendActive")}
             tone="emerald"
           />
         )}
@@ -1154,21 +1248,27 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <ToolbarButton icon={Filter} label={t("crm.clients.toolbar.segment")} />
-              <ToolbarButton icon={Filter} label={t("crm.clients.toolbar.status")} />
-              <ToolbarButton icon={Filter} label={t("crm.clients.toolbar.moreFilters")} />
-              <ToolbarButton icon={ArrowDownUp} label={t("crm.clients.toolbar.sortNewest")} />
-              <IconButton icon={Download} label={t("crm.clients.toolbar.export")} />
-              <IconButton icon={Grid2X2} label={t("crm.clients.toolbar.view")} />
+              <ToolbarButton
+                icon={ArrowDownUp}
+                label={sortNewest ? t("crm.clients.toolbar.sortNewest") : t("crm.clients.toolbar.sortOldest")}
+                onClick={() => setSortNewest((prev) => !prev)}
+              />
+              <IconButton icon={Download} label={t("crm.clients.toolbar.export")} onClick={exportClientsCsv} />
+              <IconButton
+                icon={viewMode === "table" ? LayoutGrid : LayoutList}
+                label={t("crm.clients.toolbar.view")}
+                onClick={() => setViewMode((prev) => (prev === "table" ? "cards" : "table"))}
+              />
+              <ToolbarButton icon={Filter} label={t("crm.workspace.duplicates")} onClick={() => void loadDuplicates()} />
             </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <FilterPill active label={t("crm.clients.filters.all", { count: clients.length })} />
-            <FilterPill label={t("crm.clients.filters.active", { count: activeClients })} />
-            <FilterPill label={t("crm.clients.filters.inactive", { count: inactiveClients })} />
-            <FilterPill label={t("crm.clients.filters.prospects", { count: prospectClients })} />
-            <FilterPill label={t("crm.clients.filters.customers", { count: customerClients })} />
+            <FilterPill active={statusFilter === "all"} label={t("crm.clients.filters.all", { count: clients.length })} onClick={() => setStatusFilter("all")} />
+            <FilterPill active={statusFilter === "Active"} label={t("crm.clients.filters.active", { count: activeClients })} onClick={() => setStatusFilter("Active")} />
+            <FilterPill active={statusFilter === "Inactive"} label={t("crm.clients.filters.inactive", { count: inactiveClients })} onClick={() => setStatusFilter("Inactive")} />
+            <FilterPill active={statusFilter === "Prospect"} label={t("crm.clients.filters.prospects", { count: prospectClients })} onClick={() => setStatusFilter("Prospect")} />
+            <FilterPill active={statusFilter === "Customer"} label={t("crm.clients.filters.customers", { count: customerClients })} onClick={() => setStatusFilter("Customer")} />
           </div>
         </div>
 
@@ -1188,41 +1288,85 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           </div>
         ) : filteredClients.length === 0 ? (
           <EmptyClientsState onCreate={openCreate} />
+        ) : viewMode === "cards" ? (
+          <div className="grid gap-3 p-4 sm:grid-cols-2 xl:grid-cols-3">
+            {pagedClients.map((client) => (
+              <button
+                key={client._id}
+                type="button"
+                onClick={() => openView(client)}
+                className="rounded-xl border border-slate-200/80 bg-white p-3 text-start"
+              >
+                <p className="font-black text-slate-900">{client.fullName}</p>
+                <p className="mt-1 text-xs font-semibold text-slate-500">{client.phone}</p>
+                <p className="text-xs text-slate-400">{client.email}</p>
+              </button>
+            ))}
+          </div>
         ) : (
           <ClientsTable
-            clients={filteredClients}
+            clients={pagedClients}
+            selectedIds={selectedIds}
+            onToggle={(id) =>
+              setSelectedIds((prev) => (prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]))
+            }
+            onToggleAll={(checked) => setSelectedIds(checked ? pagedClients.map((client) => client._id) : [])}
             onOpen={openView}
             onDelete={handleDelete}
           />
         )}
+        {selectedIds.length > 0 && (
+          <div className="flex items-center gap-2 border-t border-violet-100 bg-violet-50 px-4 py-3 text-xs font-black">
+            <span>{t("crm.workspace.selected", { count: selectedIds.length })}</span>
+            <button type="button" className="crm-btn text-rose-700" onClick={() => void bulkDeleteSelected()}>
+              {t("crm.common.delete")}
+            </button>
+          </div>
+        )}
+        {duplicates.length > 0 && (
+          <div className="space-y-2 border-t border-slate-100 p-4 text-sm">
+            {duplicates.map((group) => (
+              <div key={`${group.matchType}-${group.key}`} className="rounded-xl border border-slate-200 p-3">
+                <p className="font-black">{group.matchType}: {group.key}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(group.leads || []).map((client) => (
+                    <button
+                      key={client._id}
+                      type="button"
+                      className="crm-btn"
+                      onClick={() => {
+                        const other = (group.leads || []).find((item) => item._id !== client._id);
+                        if (other) void mergeDuplicate(client._id, other._id);
+                      }}
+                    >
+                      {t("crm.workspace.merge")} {client.fullName}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-slate-500">
-            {t("crm.clients.showing", { from: filteredClients.length, total: clients.length })}
+            {t("crm.workspace.showing", { count: pagedClients.length, total: filteredClients.length })}
           </p>
 
           <div className="flex items-center justify-center gap-2">
-            <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50">
+            <button
+              type="button"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
+              onClick={() => setPage((prev) => Math.max(1, prev - 1))}
+            >
               <ChevronLeft className="h-4 w-4" />
             </button>
-
-            {[1, 2, 3, 4, 5].map((page) => (
-              <button
-                key={page}
-                className={[
-                  "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-black transition",
-                  page === 1
-                    ? "bg-[#6D28D9] text-white"
-                    : "bg-white text-slate-600 hover:bg-slate-50",
-                ].join(" ")}
-              >
-                {page}
-              </button>
-            ))}
-
-            <span className="px-2 text-sm font-black text-slate-400">...</span>
-
-            <button className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50">
+            <span className="text-sm font-black">{page} / {pageCount}</span>
+            <button
+              type="button"
+              className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
+              onClick={() => setPage((prev) => Math.min(pageCount, prev + 1))}
+            >
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
@@ -2530,10 +2674,16 @@ function SummaryBox({
 
 function ClientsTable({
   clients,
+  selectedIds,
+  onToggle,
+  onToggleAll,
   onOpen,
   onDelete,
 }: {
   clients: CRMClient[];
+  selectedIds: string[];
+  onToggle: (id: string) => void;
+  onToggleAll: (checked: boolean) => void;
   onOpen: (client: CRMClient) => void;
   onDelete: (
     client: CRMClient,
@@ -2550,6 +2700,8 @@ function ClientsTable({
             <th className="w-12 px-4 py-4">
               <input
                 type="checkbox"
+                checked={selectedIds.length > 0 && selectedIds.length === clients.length}
+                onChange={(event) => onToggleAll(event.target.checked)}
                 className="h-4 w-4 rounded border-slate-300 text-slate-800 focus:ring-sky-500"
               />
             </th>
@@ -2594,6 +2746,8 @@ function ClientsTable({
                 >
                   <input
                     type="checkbox"
+                    checked={selectedIds.includes(client._id)}
+                    onChange={() => onToggle(client._id)}
                     className="h-4 w-4 rounded border-slate-300 text-slate-800 focus:ring-sky-500"
                   />
                 </td>
@@ -2883,20 +3037,15 @@ function StatCard({
   label,
   value,
   icon: Icon,
-  trend,
   tone,
-  negative,
   featured,
 }: {
   label: string;
   value: React.ReactNode;
   icon: React.ElementType;
-  trend: string;
   tone: "sky" | "emerald" | "blue" | "amber";
-  negative?: boolean;
   featured?: boolean;
 }) {
-  const { t } = useTranslation();
   const iconClass =
     tone === "emerald"
       ? "bg-emerald-50 text-emerald-600"
@@ -2908,16 +3057,13 @@ function StatCard({
 
   if (featured) {
     return (
-      <div className="rounded-2xl border border-transparent bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-4 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]">
+      <div className="crm-kpi bg-gradient-to-br from-[#6D28D9] to-[#2563EB] text-white">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold text-white/80">{label}</p>
-            <p className="mt-2 text-3xl font-black tracking-tight">{value}</p>
-            <p className="mt-2 text-xs font-bold text-white/75">
-              {negative ? "▼" : "▲"} {trend}
-            </p>
+            <h3 className="text-white/80">{label}</h3>
+            <p className="text-white">{value}</p>
           </div>
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15">
             <Icon className="h-5 w-5" />
           </div>
         </div>
@@ -2926,31 +3072,13 @@ function StatCard({
   }
 
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
+    <div className="crm-kpi">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-black tracking-tight text-slate-900">
-            {value}
-          </p>
-          <div className="mt-2 flex items-center gap-2">
-            <span
-              className={[
-                "text-xs font-black",
-                negative ? "text-rose-600" : "text-emerald-600",
-              ].join(" ")}
-            >
-              {negative ? "▼" : "▲"} {trend}
-            </span>
-          </div>
-          <p className="mt-1 text-xs font-semibold text-slate-400">
-            {t("crm.clients.stats.comparedToLast30Days")}
-          </p>
+          <h3>{label}</h3>
+          <p>{value}</p>
         </div>
-
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconClass}`}
-        >
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconClass}`}>
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -2961,12 +3089,14 @@ function StatCard({
 function ToolbarButton({
   icon: Icon,
   label,
+  onClick,
 }: {
   icon: React.ElementType;
   label: string;
+  onClick?: () => void;
 }) {
   return (
-    <button className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-600 transition hover:bg-slate-50">
+    <button type="button" onClick={onClick} className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-600 transition hover:bg-slate-50">
       <Icon className="h-4 w-4" />
       {label}
     </button>
@@ -2976,23 +3106,29 @@ function ToolbarButton({
 function IconButton({
   icon: Icon,
   label,
+  onClick,
 }: {
   icon: React.ElementType;
   label: string;
+  onClick?: () => void;
 }) {
   return (
     <button
+      type="button"
       aria-label={label}
-      className="flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
+      onClick={onClick}
+      className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
     >
       <Icon className="h-4 w-4" />
     </button>
   );
 }
 
-function FilterPill({ label, active }: { label: string; active?: boolean }) {
+function FilterPill({ label, active, onClick }: { label: string; active?: boolean; onClick?: () => void }) {
   return (
     <button
+      type="button"
+      onClick={onClick}
       className={[
         "rounded-xl px-4 py-2 text-xs font-black transition",
         active
@@ -3048,7 +3184,7 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
   const { t } = useTranslation();
 
   return (
-    <div className="m-5 rounded-2xl border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
+    <div className="crm-empty">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-800 shadow-sm">
         <UsersRound className="h-7 w-7" />
       </div>

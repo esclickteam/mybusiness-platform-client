@@ -14,11 +14,13 @@ vi.mock("react-i18next", async (importOriginal) => {
 });
 
 const fetchReports = vi.fn();
+const fetchFunnel = vi.fn();
 vi.mock("./crmWorkspaceApi", async () => {
   const actual = await vi.importActual<typeof import("./crmWorkspaceApi")>("./crmWorkspaceApi");
   return {
     ...actual,
     fetchReports: (...args: unknown[]) => fetchReports(...args),
+    fetchFunnel: (...args: unknown[]) => fetchFunnel(...args),
   };
 });
 
@@ -39,6 +41,7 @@ import CRMReportsPage from "./CRMReportsPage";
 
 describe("CRMReportsPage", () => {
   beforeEach(() => {
+    fetchFunnel.mockResolvedValue({ funnel: [] });
     fetchReports.mockResolvedValue({
       metrics: {
         totals: {

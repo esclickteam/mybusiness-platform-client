@@ -125,6 +125,7 @@ export default function CRMServicesTab() {
   const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState<ServiceFormState>(emptyForm);
+  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -256,6 +257,21 @@ export default function CRMServicesTab() {
     }
   };
 
+  const duplicateService = async (service: ServiceItem) => {
+    const data = new FormData();
+    data.append("name", `${service.name} ${t("crm.services.copySuffix")}`);
+    data.append("description", service.description || "");
+    data.append("duration", String(service.duration || 30));
+    data.append("price", String(service.price || 0));
+    try {
+      const res = await API.post("/business/my/services", data);
+      setServices(extractServicesFromResponse(res.data, services));
+    } catch (err) {
+      console.error("Duplicate service error:", err);
+      alert(t("crm.services.saveFailed"));
+    }
+  };
+
   const deleteService = async (id: string) => {
     if (!window.confirm(t("crm.services.deleteConfirm"))) return;
 
@@ -291,6 +307,13 @@ export default function CRMServicesTab() {
             {t("crm.services.addService")}
           </button>
 
+          <button
+            type="button"
+            onClick={() => setViewMode((prev) => (prev === "cards" ? "table" : "cards"))}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            {viewMode === "cards" ? t("crm.services.tableView") : t("crm.services.cardsView")}
+          </button>
           <button
             type="button"
             onClick={() => setShowForm((prev) => !prev)}
@@ -383,6 +406,32 @@ export default function CRMServicesTab() {
           <LoadingState />
         ) : filteredServices.length === 0 ? (
           <EmptyServicesState onCreate={openAdd} />
+        ) : viewMode === "table" ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="border-b border-slate-100 text-start text-xs font-black text-slate-400">
+                  <th className="p-3">{t("crm.services.name")}</th>
+                  <th className="p-3">{t("crm.services.duration")}</th>
+                  <th className="p-3">{t("crm.services.price")}</th>
+                  <th className="p-3" />
+                </tr>
+              </thead>
+              <tbody>
+                {filteredServices.map((service) => (
+                  <tr key={service._id} className="border-t border-slate-100">
+                    <td className="p-3 font-black">{service.name}</td>
+                    <td className="p-3">{formatDuration(Number(service.duration) || 0, t)}</td>
+                    <td className="p-3">{formatCrmMoney(Number(service.price) || 0)}</td>
+                    <td className="p-3">
+                      <button type="button" className="crm-btn" onClick={() => openEdit(service)}>{t("crm.common.edit")}</button>
+                      <button type="button" className="crm-btn ms-2" onClick={() => void duplicateService(service)}>{t("crm.services.duplicate")}</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="grid min-w-0 gap-3 p-3 sm:grid-cols-2 sm:gap-4 sm:p-4 xl:grid-cols-3">
             {filteredServices.map((service) => (
@@ -390,6 +439,7 @@ export default function CRMServicesTab() {
                 key={service._id}
                 service={service}
                 onEdit={() => openEdit(service)}
+                onDuplicate={() => void duplicateService(service)}
                 onDelete={() => deleteService(service._id)}
               />
             ))}
@@ -582,10 +632,12 @@ function ServiceFormPanel({
 function ServiceCard({
   service,
   onEdit,
+  onDuplicate,
   onDelete,
 }: {
   service: ServiceItem;
   onEdit: () => void;
+  onDuplicate?: () => void;
   onDelete: () => void;
 }) {
   const { t } = useTranslation();
@@ -620,6 +672,16 @@ function ServiceCard({
           >
             <Edit3 className="h-4 w-4" />
           </button>
+          {onDuplicate && (
+            <button
+              type="button"
+              onClick={onDuplicate}
+              className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/95 text-slate-700 shadow-sm ring-1 ring-slate-200"
+              aria-label={t("crm.services.duplicate")}
+            >
+              <Sparkles className="h-4 w-4" />
+            </button>
+          )}
 
           <button
             type="button"
@@ -749,7 +811,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
   const { t } = useTranslation();
 
   return (
-    <div className="m-4 rounded-2xl border border-dashed border-violet-200 bg-violet-50/40 px-6 py-14 text-center">
+    <div className="crm-empty">
       <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6D28D9] shadow-sm ring-1 ring-violet-100">
         <Wrench className="h-6 w-6" />
       </div>

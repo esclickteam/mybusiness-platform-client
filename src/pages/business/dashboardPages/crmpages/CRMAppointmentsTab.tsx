@@ -44,6 +44,7 @@ import {
   applyClientSessionConsumption,
   isAppointmentTreatmentCompleted,
 } from "./clientSessionConsumption";
+import { findAppointmentConflict } from "./appointmentOverlap";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
@@ -639,6 +640,7 @@ export default function CRMAppointmentsTab() {
   const [selectedDate, setSelectedDate] = useState(getTodayIso());
   const [monthDate, setMonthDate] = useState(() => new Date());
   const [listMode, setListMode] = useState<ListMode>("all");
+  const [calendarView, setCalendarView] = useState<"month" | "week" | "day">("month");
 
   const [newAppointment, setNewAppointment] =
     useState<AppointmentFormState>(emptyAppointmentForm);
@@ -1052,6 +1054,19 @@ export default function CRMAppointmentsTab() {
       return;
     }
 
+    const conflict = findAppointmentConflict(
+      {
+        _id: editId || "new",
+        date: newAppointment.date,
+        time: newAppointment.time,
+        duration: Number(newAppointment.duration) || 30,
+      },
+      appointments
+    );
+    if (conflict && !window.confirm(t("crm.appointments.conflictWarning"))) {
+      return;
+    }
+
     const selectedService = services.find(
       (service) => service._id === newAppointment.serviceId
     );
@@ -1267,6 +1282,21 @@ export default function CRMAppointmentsTab() {
             </div>
 
             <div className="flex items-center gap-2">
+              {(["month", "week", "day"] as const).map((view) => (
+                <button
+                  key={view}
+                  type="button"
+                  onClick={() => setCalendarView(view)}
+                  className={[
+                    "h-11 rounded-xl border px-3 text-xs font-black",
+                    calendarView === view
+                      ? "border-violet-200 bg-violet-50 text-[#6D28D9]"
+                      : "border-slate-200 bg-white text-slate-600",
+                  ].join(" ")}
+                >
+                  {t(`crm.appointments.views.${view}`)}
+                </button>
+              ))}
               <button
                 type="button"
                 onClick={goPrevMonth}
@@ -1298,7 +1328,47 @@ export default function CRMAppointmentsTab() {
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-2 text-center">
+          {calendarView !== "month" && (
+            <div className="mb-3 max-h-[420px] overflow-auto rounded-xl border border-slate-200/80">
+              {Array.from({ length: 13 }, (_, index) => 8 + index).map((hour) => {
+                const label = `${String(hour).padStart(2, "0")}:00`;
+                const days = calendarView === "day"
+                  ? [selectedDate]
+                  : Array.from({ length: 7 }, (_, day) => {
+                      const start = new Date(monthDate);
+                      start.setDate(start.getDate() - start.getDay() + day);
+                      return toIsoDate(start);
+                    });
+                return (
+                  <div key={label} className="grid grid-cols-[56px_repeat(7,minmax(0,1fr))] border-t border-slate-100 text-xs">
+                    <div className="p-2 font-black text-slate-400">{label}</div>
+                    {(calendarView === "day" ? days.slice(0, 1) : days).map((day) => {
+                      const items = (appointmentsByDate[day] || []).filter((item) => (item.time || "").startsWith(String(hour).padStart(2, "0")));
+                      return (
+                        <button
+                          key={`${day}-${label}`}
+                          type="button"
+                          className="min-h-[44px] border-s border-slate-100 p-1 text-start hover:bg-violet-50"
+                          onClick={() => {
+                            setSelectedDate(day);
+                            setNewAppointment((prev) => ({ ...prev, date: day, time: label }));
+                            setShowAddForm(true);
+                          }}
+                        >
+                          {items.map((item) => (
+                            <div key={item._id} className="truncate rounded bg-violet-50 px-1 py-0.5 font-bold text-violet-800">
+                              {item.time} {item.serviceName || ""}
+                            </div>
+                          ))}
+                        </button>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+          <div className={`grid grid-cols-7 gap-2 text-center ${calendarView === "month" ? "" : "hidden"}`}>
             {weekdayLabels.map((day) => (
               <div
                 key={day}

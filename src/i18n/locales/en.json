@@ -3307,6 +3307,12 @@
       "subtitle": "All appointments are synced from the CRM, services, business hours, and client records. Create, edit, cancel, and open a client file directly from each booking.",
       "refreshSync": "Refresh sync",
       "createAppointment": "Create appointment",
+      "conflictWarning": "This overlaps another appointment. Continue anyway?",
+      "views": {
+        "month": "Month",
+        "week": "Week",
+        "day": "Day"
+      },
       "metricTotal": "Total appointments",
       "metricToday": "Today",
       "metricUpcoming": "Upcoming",
@@ -3386,6 +3392,13 @@
       "title": "Services, prices, and durations",
       "subtitle": "Manage your service catalog, prices, appointment durations, descriptions, and images from one clean CRM workspace.",
       "addService": "Add Service",
+      "tableView": "Table",
+      "cardsView": "Cards",
+      "duplicate": "Duplicate",
+      "copySuffix": "(copy)",
+      "name": "Name",
+      "duration": "Duration",
+      "price": "Price",
       "closeForm": "Close Form",
       "quickAdd": "Quick Add",
       "statTotal": "Total Services",
@@ -4177,14 +4190,20 @@
         "revenue": "Recorded revenue",
         "openTasks": "Open tasks",
         "upcomingMeetings": "Upcoming meetings",
-        "byAgent": "Performance by agent"
+        "byAgent": "Performance by agent",
+        "activeClients": "Active clients",
+        "meetings": "Meetings"
       },
       "charts": {
         "leadsOverTime": "Leads over time",
         "status": "Status distribution",
         "sources": "Leads by ad source",
-        "deals": "Deals by month"
-      }
+        "deals": "Deals by month",
+        "funnel": "Sales funnel"
+      },
+      "vsPreviousPeriod": "vs previous period",
+      "metric": "Metric",
+      "value": "Value"
     },
     "clients": {
       "badge": "CRM Clients",
@@ -4203,12 +4222,15 @@
         "trendActive": "Active",
         "comparedToLast30Days": "compared to the last 30 days"
       },
-      "searchPlaceholder": "Search clients by name, phone, or email...",
+      "searchPlaceholder": "Search by name, phone, email, or ID...",
+      "imported": "{{count}} clients imported",
+      "confirmBulk": "Delete {{count}} selected clients?",
       "toolbar": {
         "segment": "Segment",
         "status": "Status",
         "moreFilters": "More Filters",
         "sortNewest": "Sort: Newest",
+        "sortOldest": "Sort: Oldest",
         "export": "Export",
         "view": "View"
       },

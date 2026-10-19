@@ -3307,6 +3307,12 @@
       "subtitle": "כל הפגישות מסונכרנות מה-CRM, השירותים, שעות הפעילות ותיקי הלקוחות. אפשר ליצור, לערוך, לבטל ולפתוח תיק לקוח ישירות מכל הזמנה.",
       "refreshSync": "רענון סנכרון",
       "createAppointment": "יצירת פגישה",
+      "conflictWarning": "יש התנגשות שעות עם פגישה אחרת. להמשיך בכל זאת?",
+      "views": {
+        "month": "חודש",
+        "week": "שבוע",
+        "day": "יום"
+      },
       "metricTotal": "סה״כ פגישות",
       "metricToday": "היום",
       "metricUpcoming": "קרובות",
@@ -3386,6 +3392,13 @@
       "title": "שירותים, מחירים ומשכים",
       "subtitle": "נהלו את קטלוג השירותים, המחירים, משכי הפגישות, התיאורים והתמונות מסביבת CRM אחת ונקייה.",
       "addService": "הוספת שירות",
+      "tableView": "טבלה",
+      "cardsView": "כרטיסים",
+      "duplicate": "שכפול",
+      "copySuffix": "(עותק)",
+      "name": "שם",
+      "duration": "משך",
+      "price": "מחיר",
       "closeForm": "סגירת טופס",
       "quickAdd": "הוספה מהירה",
       "statTotal": "סה״כ שירותים",
@@ -4177,14 +4190,20 @@
         "revenue": "הכנסות שנרשמו",
         "openTasks": "משימות פתוחות",
         "upcomingMeetings": "פגישות קרובות",
-        "byAgent": "ביצועים לפי נציג"
+        "byAgent": "ביצועים לפי נציג",
+        "activeClients": "לקוחות פעילים",
+        "meetings": "פגישות"
       },
       "charts": {
         "leadsOverTime": "כניסת לידים לאורך זמן",
         "status": "התפלגות סטטוסים",
         "sources": "לידים לפי מקורות פרסום",
-        "deals": "עסקאות לפי חודש"
-      }
+        "deals": "עסקאות לפי חודש",
+        "funnel": "משפך מכירות"
+      },
+      "vsPreviousPeriod": "מול התקופה הקודמת",
+      "metric": "מדד",
+      "value": "ערך"
     },
     "clients": {
       "badge": "לקוחות CRM",
@@ -4203,12 +4222,15 @@
         "trendActive": "פעיל",
         "comparedToLast30Days": "בהשוואה ל-30 הימים האחרונים"
       },
-      "searchPlaceholder": "חיפוש לקוחות לפי שם, טלפון או אימייל...",
+      "searchPlaceholder": "חיפוש לפי שם, טלפון, אימייל או מזהה...",
+      "imported": "יובאו {{count}} לקוחות",
+      "confirmBulk": "למחוק {{count}} לקוחות שנבחרו?",
       "toolbar": {
         "segment": "סגמנט",
         "status": "סטטוס",
         "moreFilters": "עוד מסננים",
         "sortNewest": "מיון: החדשים ביותר",
+        "sortOldest": "מיון: הישנים ביותר",
         "export": "ייצוא",
         "view": "תצוגה"
       },

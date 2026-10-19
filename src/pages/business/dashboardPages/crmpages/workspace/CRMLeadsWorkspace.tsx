@@ -481,7 +481,7 @@ export default function CRMLeadsWorkspace({
       {state.viewMode === "kanban" ? (
         <div className="grid gap-3 overflow-x-auto md:grid-cols-4 xl:grid-cols-8">
           {(funnel.length ? funnel : stages.map((stage) => ({ ...stage, count: 0, amount: 0 }))).map((column) => (
-            <section key={column.key} className="min-w-[180px] rounded-2xl border bg-slate-50 p-2">
+            <section key={column.key} className="min-w-[180px] rounded-xl border border-slate-200/80 bg-slate-50 p-2">
               <header className="mb-2 text-xs font-black">
                 {column.label} · {column.count}
                 {column.amount ? ` · ${column.amount}` : ""}
@@ -505,10 +505,13 @@ export default function CRMLeadsWorkspace({
                         setState((prev) => ({ ...prev, scrollTop: tableRef.current?.scrollTop || 0 }));
                         setOpenLeadId(lead._id);
                       }}
-                      className="cursor-pointer rounded-xl border bg-white p-2 text-xs font-bold"
+                      className="crm-kanban-card cursor-pointer text-xs font-bold"
                     >
-                      <p>{lead.fullName || lead.name}</p>
+                      <p className="line-clamp-1">{lead.fullName || lead.name}</p>
                       <p className="text-slate-400">{lead.phone}</p>
+                      <p className="mt-1 text-[10px] font-semibold text-slate-400">
+                        {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source || "—"}
+                      </p>
                     </article>
                   ))}
               </div>
@@ -559,7 +562,7 @@ export default function CRMLeadsWorkspace({
               {loading && !leads.length ? (
                 <tr>
                   <td className="p-4 font-bold text-slate-500" colSpan={visibleColumns.length + 1}>
-                    {t("crm.common.loading")}
+                    <div className="h-8 animate-pulse rounded bg-slate-100" />
                   </td>
                 </tr>
               ) : leads.length ? (

@@ -22,6 +22,7 @@ import {
   SHOW_BUSINESS_MINI_SAAS,
   SHOW_CRM_PAYMENTS,
 } from "./crmFeatureFlags";
+import "./crmUi.css";
 
 type CrmTab = {
   path: string;
@@ -210,7 +211,7 @@ export default function CRMMain() {
   return (
     <section
       dir={dir}
-      className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
+      className="crm-surface min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-3 text-start text-slate-900 sm:px-5 sm:py-4 lg:px-6"
     >
       <div className="mx-auto w-full max-w-[1920px]">
         <header className="mb-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.05)]">

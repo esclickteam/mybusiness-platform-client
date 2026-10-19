@@ -1,0 +1,83 @@
+.crm-surface {
+  --crm-border: rgba(15, 23, 42, 0.12);
+  --crm-violet: #6d28d9;
+  --crm-text: #0f172a;
+}
+
+.crm-kpi {
+  border: 1px solid var(--crm-border);
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-height: 84px;
+}
+
+.crm-kpi h3 {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.crm-kpi p {
+  margin: 6px 0 0;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--crm-text);
+}
+
+.crm-kpi .crm-delta {
+  margin-top: 4px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.crm-btn,
+.crm-page button.crm-btn {
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid var(--crm-border);
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 800;
+  background: #fff;
+}
+
+.crm-btn-primary {
+  background: var(--crm-violet);
+  color: #fff;
+  border-color: transparent;
+}
+
+.crm-empty {
+  margin: 12px;
+  padding: 16px;
+  text-align: center;
+  border: 1px dashed rgba(109, 40, 217, 0.28);
+  border-radius: 12px;
+  background: #faf7ff;
+}
+
+.crm-kanban-card {
+  min-height: 72px;
+  border: 1px solid var(--crm-border);
+  border-radius: 10px;
+  background: #fff;
+  padding: 8px;
+}
+
+.crm-chart-card {
+  border: 1px solid var(--crm-border);
+  border-radius: 12px;
+  background: #fff;
+  padding: 12px 14px;
+}
+
+@media (max-width: 640px) {
+  .crm-kpi p {
+    font-size: 18px;
+  }
+}
