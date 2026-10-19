@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { AdsManagerState } from "../ads-manager/adsManagerTypes";
 import { applyColumnPreset, moveColumn, sanitizeColumnPrefs, visibleColumns } from "./columnPrefs";
 import { draftContainsMetaObjectId, duplicateManagerDraft } from "./duplicateManagerDraft";
-import { bucketPoints, readManagerMetric } from "./managerMetrics";
+import { bucketPoints, mergeChartSeries, readManagerMetric } from "./managerMetrics";
 import { bulkLivePlan, matchesManagerQuery, runBulkStatus } from "./managerSelection";
 
 const state = {
@@ -80,6 +80,39 @@ describe("meta ads manager board", () => {
     );
     expect(rows[0].reach).toBeNull();
     expect(rows[0].spend).toBe(9);
+  });
+
+  it("keeps one campaign's reach and recomputes a combined CTR", () => {
+    const point = {
+      insightsAvailable: true,
+      leads: 1,
+      clicks: 10,
+      impressions: 100,
+      ctr: 9,
+      cpc: 2,
+      costPerLead: null,
+      roas: null,
+    };
+    const single = mergeChartSeries(
+      [{ id: "120257519669290405", points: [{ date: "2026-10-01", ...point, reach: 40, spend: 20 }] }],
+      ["spend", "impressions", "reach", "ctr", "cpc", "clicks"]
+    );
+    expect(single[0].reach).toBe(40);
+    expect(single[0].ctr).toBe(9);
+    const combined = mergeChartSeries(
+      [
+        { id: "120257519669290405", points: [{ date: "2026-10-01", ...point, reach: 40, spend: 20 }] },
+        { id: "120200000000000002", points: [{ date: "2026-10-01", ...point, reach: 15, spend: 5, clicks: 5, impressions: 50, ctr: 4 }] },
+      ],
+      ["spend", "impressions", "reach", "ctr", "cpc", "clicks"]
+    );
+    expect(combined[0].reach).toBeUndefined();
+    expect(combined[0]["120257519669290405:reach"]).toBe(40);
+    expect(combined[0]["120200000000000002:reach"]).toBe(15);
+    expect(combined[0].spend).toBe(25);
+    expect(combined[0].impressions).toBe(150);
+    expect(combined[0].ctr).toBe(10);
+    expect(combined[0].cpc).toBeCloseTo(25 / 15);
   });
 
   it("searches by name or Meta id and plans a live bulk action", () => {

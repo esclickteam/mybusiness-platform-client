@@ -21,14 +21,14 @@ import {
   statusTone,
 } from "../metaCampaignUtils";
 import {
-  applyColumnPreset,
   loadColumnPrefs,
-  moveColumn,
   saveColumnPrefs,
   visibleColumns,
   type ColumnPrefs,
   type ManagerColumnId,
 } from "./columnPrefs";
+import { COLUMN_LABEL } from "./columnLabels";
+import ManagerColumnMenu, { beginColumnResize } from "./ManagerColumnMenu";
 import { readManagerMetric } from "./managerMetrics";
 import { bulkLivePlan, runBulkStatus, selectVisible, toggleSelected } from "./managerSelection";
 
@@ -43,28 +43,6 @@ type Props = {
   onDuplicate: (row: MetaManagerRow) => void;
   onOpenCampaign: (row: MetaManagerRow) => void;
   onOpenAdSet: (row: MetaManagerRow) => void;
-};
-
-const COLUMN_LABEL: Record<ManagerColumnId, string> = {
-  name: "metaCampaigns.table.name",
-  status: "metaCampaigns.table.status",
-  budget: "metaCampaigns.table.budget",
-  spend: "metaCampaigns.table.spend",
-  results: "metaCampaigns.table.results",
-  leads: "metaCampaigns.table.leads",
-  impressions: "metaCampaigns.table.impressions",
-  reach: "metaCampaigns.table.reach",
-  frequency: "metaCampaigns.table.frequency",
-  linkClicks: "metaCampaigns.table.linkClicks",
-  landingPageViews: "metaCampaigns.levels.landingPageViews",
-  clicks: "metaCampaigns.table.clicks",
-  ctr: "metaCampaigns.table.ctr",
-  cpc: "metaCampaigns.table.cpc",
-  cpm: "metaCampaigns.table.cpm",
-  cpl: "metaCampaigns.table.cpl",
-  costPerResult: "metaCampaigns.table.costPerResult",
-  purchases: "metaCampaigns.levels.purchases",
-  updated: "metaCampaigns.overview.lastUpdatedLabel",
 };
 
 function cellText(row: MetaManagerRow, column: ManagerColumnId, currency: string) {
@@ -270,42 +248,7 @@ export default function MetaAdsLevelPanel({
           </button>
         </div>
       </div>
-      {columnsOpen ? (
-        <div className={`${cardBase} space-y-2 p-3`}>
-          <div className="flex flex-wrap gap-2">
-            {(["performance", "leads", "engagement", "spend"] as const).map((preset) => (
-              <button key={preset} type="button" className={btnSecondary} onClick={() => updatePrefs(applyColumnPreset(preset))}>
-                {t(`metaCampaigns.levels.preset${preset[0].toUpperCase()}${preset.slice(1)}`)}
-              </button>
-            ))}
-            <button type="button" className={btnSecondary} onClick={() => updatePrefs(applyColumnPreset("performance"))}>
-              {t("metaCampaigns.levels.resetColumns")}
-            </button>
-          </div>
-          {prefs.order.map((id) => (
-            <label key={id} className="flex items-center justify-between gap-2 text-sm font-bold">
-              <span className="inline-flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={!prefs.hidden.includes(id)}
-                  disabled={id === "name" || id === "status"}
-                  onChange={() =>
-                    updatePrefs({
-                      ...prefs,
-                      hidden: prefs.hidden.includes(id) ? prefs.hidden.filter((item) => item !== id) : [...prefs.hidden, id],
-                    })
-                  }
-                />
-                {t(COLUMN_LABEL[id])}
-              </span>
-              <span className="flex gap-1">
-                <button type="button" className={btnSecondary} onClick={() => updatePrefs(moveColumn(prefs, id, -1))}>↑</button>
-                <button type="button" className={btnSecondary} onClick={() => updatePrefs(moveColumn(prefs, id, 1))}>↓</button>
-              </span>
-            </label>
-          ))}
-        </div>
-      ) : null}
+      {columnsOpen ? <ManagerColumnMenu prefs={prefs} onChange={updatePrefs} /> : null}
       {selected.length ? (
         <div className="flex flex-wrap gap-2">
           <button type="button" className={btnSecondary} onClick={() => setPending("PAUSED")}>{t("metaCampaigns.actions.pause")}</button>
@@ -351,25 +294,7 @@ export default function MetaAdsLevelPanel({
                       role="separator"
                       aria-orientation="vertical"
                       className="absolute inset-y-0 end-0 w-1 cursor-col-resize"
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        const startX = event.clientX;
-                        const start = prefs.widths[column] || 140;
-                        const dir = event.currentTarget.closest("[dir]")?.getAttribute("dir") || "rtl";
-                        const onMove = (move: MouseEvent) => {
-                          const delta = dir === "rtl" ? startX - move.clientX : move.clientX - startX;
-                          updatePrefs({
-                            ...prefs,
-                            widths: { ...prefs.widths, [column]: Math.max(90, start + delta) },
-                          });
-                        };
-                        const onUp = () => {
-                          window.removeEventListener("mousemove", onMove);
-                          window.removeEventListener("mouseup", onUp);
-                        };
-                        window.addEventListener("mousemove", onMove);
-                        window.addEventListener("mouseup", onUp);
-                      }}
+                      onMouseDown={(event) => beginColumnResize(event, column, prefs, updatePrefs)}
                     />
                   </th>
                 ))}

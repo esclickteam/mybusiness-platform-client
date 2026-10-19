@@ -14,6 +14,10 @@ import {
 import { adsManagerStateFromMetaCampaign } from "./ads-manager/adsManagerStateFromMetaCampaign";
 import { buildEditorDraft } from "./ads-manager/editorDraft";
 import { duplicateManagerDraft } from "./manager/duplicateManagerDraft";
+import { campaignColumnText, campaignSortValue } from "./manager/campaignColumnValue";
+import { COLUMN_LABEL } from "./manager/columnLabels";
+import { loadColumnPrefs, saveColumnPrefs, visibleColumns, type ColumnPrefs, type ManagerColumnId } from "./manager/columnPrefs";
+import ManagerColumnMenu, { beginColumnResize } from "./manager/ManagerColumnMenu";
 import MetaAdsAnalytics from "./manager/MetaAdsAnalytics";
 import MetaAdsLevelPanel from "./manager/MetaAdsLevelPanel";
 import { bulkLivePlan, runBulkStatus, selectVisible, toggleSelected } from "./manager/managerSelection";
@@ -23,11 +27,7 @@ import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
 import CreateCampaignButton from "./CreateCampaignButton";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
-  formatCurrency,
   formatDateTimeHe,
-  formatMetricOrDash,
-  formatNumber,
-  formatPercent,
   metaDeliveryStatusKey,
   resolveCampaignCurrency,
   statusTone,
@@ -36,11 +36,6 @@ import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { removeCampaignFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
-import {
-  campaignDeliveryMetric,
-  formatCampaignDeliveryMetric,
-  type DeliveryMetricKey,
-} from "./campaignDeliveryMetrics";
 
 type OutletCtx = { businessId: string | null };
 
@@ -73,7 +68,10 @@ export default function MetaCampaignsCampaignsPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const { query: rangeQuery, labelKey: rangeLabelKey } = useMetaAdsDateRange();
-  const [sortKey, setSortKey] = useState<"name" | "spend" | "results" | "cpl" | DeliveryMetricKey>("spend");
+  const [sortKey, setSortKey] = useState<ManagerColumnId>("spend");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [columnPrefs, setColumnPrefs] = useState<ColumnPrefs>(() => loadColumnPrefs(window.localStorage, "campaign", "campaign"));
+  const [columnsOpen, setColumnsOpen] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const [insightsError, setInsightsError] = useState<string | null>(null);
   const [details, setDetails] = useState<MetaCampaign | null>(null);
@@ -121,6 +119,10 @@ export default function MetaCampaignsCampaignsPage() {
   }
 
   useEffect(() => {
+    setColumnPrefs(loadColumnPrefs(window.localStorage, businessId || "campaign", "campaign"));
+  }, [businessId]);
+
+  useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId, rangeQuery.datePreset, rangeQuery.days, rangeQuery.since, rangeQuery.until]);
@@ -134,33 +136,18 @@ export default function MetaCampaignsCampaignsPage() {
       return true;
     });
     return filtered.sort((a, b) => {
-      if (sortKey === "impressions" || sortKey === "reach") {
-        const av = campaignDeliveryMetric(a, sortKey);
-        const bv = campaignDeliveryMetric(b, sortKey);
-        if (av == null && bv == null) return 0;
-        if (av == null) return 1;
-        if (bv == null) return -1;
-        return bv - av;
+      const av = campaignSortValue(a, sortKey);
+      const bv = campaignSortValue(b, sortKey);
+      if (typeof av === "string" || typeof bv === "string") {
+        const base = String(av || "").localeCompare(String(bv || ""), "he");
+        return sortDir === "asc" ? base : -base;
       }
-      const aDraft = campaignListStatus(a) === "DRAFT" ? 1 : 0;
-      const bDraft = campaignListStatus(b) === "DRAFT" ? 1 : 0;
-      if (aDraft !== bDraft) return bDraft - aDraft;
-      if (sortKey === "name") return String(a.name).localeCompare(String(b.name));
-      const av =
-        sortKey === "spend"
-          ? Number(a.metrics?.spend || 0)
-          : sortKey === "results"
-            ? Number(a.metrics?.results || a.metrics?.leads || 0)
-            : Number(a.metrics?.costPerResult || a.metrics?.costPerLead || 0);
-      const bv =
-        sortKey === "spend"
-          ? Number(b.metrics?.spend || 0)
-          : sortKey === "results"
-            ? Number(b.metrics?.results || b.metrics?.leads || 0)
-            : Number(b.metrics?.costPerResult || b.metrics?.costPerLead || 0);
-      return bv - av;
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return sortDir === "asc" ? av - bv : bv - av;
     });
-  }, [campaigns, query, sortKey, statusFilter]);
+  }, [campaigns, query, sortDir, sortKey, statusFilter]);
 
   const activate = pending
     ? String(pending.configuredStatus || pending.status || "").toUpperCase() !== "ACTIVE"
@@ -207,6 +194,19 @@ export default function MetaCampaignsCampaignsPage() {
       toast.error(message || t("metaCampaigns.actions.noDraftToDuplicate"));
     } finally {
       setBusyId("");
+    }
+  }
+
+  const columns = visibleColumns(columnPrefs);
+  function updateColumnPrefs(next: ColumnPrefs) {
+    setColumnPrefs(next);
+    saveColumnPrefs(window.localStorage, businessId || "campaign", "campaign", next);
+  }
+  function toggleColumnSort(column: ManagerColumnId) {
+    if (sortKey === column) setSortDir((dir) => (dir === "desc" ? "asc" : "desc"));
+    else {
+      setSortKey(column);
+      setSortDir(column === "name" ? "asc" : "desc");
     }
   }
 
@@ -366,11 +366,15 @@ export default function MetaCampaignsCampaignsPage() {
               ? t("metaCampaigns.ux.attentionNoData")
               : t("metaCampaigns.overview.lastSynced", { time: formatDateTimeHe(lastSynced) })}
         </p>
+        <button type="button" className={btnSecondary} onClick={() => setColumnsOpen((open) => !open)} data-testid="meta-campaign-columns">
+          {t("metaCampaigns.levels.columns")}
+        </button>
         <button type="button" className={btnSecondary} onClick={() => void load()} data-testid="meta-campaign-refresh">
           <RefreshCw className="h-4 w-4" />
           {t("metaCampaigns.actions.refresh")}
         </button>
       </div>
+      {columnsOpen ? <ManagerColumnMenu prefs={columnPrefs} onChange={updateColumnPrefs} /> : null}
 
       {loading ? (
         <div className={`${cardBase} space-y-2 p-4`} aria-busy="true">
@@ -393,8 +397,6 @@ export default function MetaCampaignsCampaignsPage() {
             const listStatus = campaignListStatus(campaign);
             const delivery = listStatus || campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
             const tone = statusTone(delivery);
-            const results = campaign.metrics?.results ?? campaign.metrics?.leads;
-            const cpl = campaign.metrics?.costPerResult ?? campaign.metrics?.costPerLead;
             const canToggleLive = !campaign.localOnly && listStatus !== "DRAFT";
             const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
             const editId = campaign.localOnly ? draftId : campaign.id;
@@ -426,40 +428,24 @@ export default function MetaCampaignsCampaignsPage() {
                   ) : null}
                 </div>
                 <dl className="grid grid-cols-2 gap-2 text-sm">
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.budget")}</dt>
-                    <dd className="font-bold">{campaign.dailyBudget ? formatCurrency(campaign.dailyBudget, currency) : "—"}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.spend")}</dt>
-                    <dd className="font-bold">
-                      {formatMetricOrDash(campaign.metrics?.spend, (n) => formatCurrency(n, currency), {
-                        treatZeroAsEmpty: campaign.metrics?.insightsAvailable !== true,
-                      })}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.results")}</dt>
-                    <dd className="font-bold">{formatMetricOrDash(results, formatNumber, { treatZeroAsEmpty: true })}</dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.kpis.cpl")}</dt>
-                    <dd className="font-bold">
-                      {formatMetricOrDash((results || 0) > 0 ? cpl : null, (n) => formatCurrency(n, currency))}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.impressions")}</dt>
-                    <dd className="font-bold tabular-nums" data-testid={`campaign-impressions-${campaign.id}`}>
-                      {formatCampaignDeliveryMetric(campaign, "impressions")}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.reach")}</dt>
-                    <dd className="font-bold tabular-nums" data-testid={`campaign-reach-${campaign.id}`}>
-                      {formatCampaignDeliveryMetric(campaign, "reach")}
-                    </dd>
-                  </div>
+                  {columns.filter((column) => column !== "name").map((column) => (
+                    <div key={column}>
+                      <dt className="text-xs font-semibold text-slate-500">{t(COLUMN_LABEL[column])}</dt>
+                      <dd
+                        className="font-bold tabular-nums"
+                        data-testid={column === "impressions" || column === "reach" ? `campaign-${column}-${campaign.id}` : undefined}
+                        title={campaignColumnText(campaign, column, currency) === "—" ? t("metaCampaigns.levels.missingMetric") : undefined}
+                      >
+                        {column === "status" ? (
+                          <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
+                            {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
+                          </span>
+                        ) : (
+                          campaignColumnText(campaign, column, currency)
+                        )}
+                      </dd>
+                    </div>
+                  ))}
                 </dl>
                 <div className="flex flex-wrap gap-2">
                   <button type="button" className={btnSecondary} onClick={() => setDetails(campaign)}>
@@ -522,16 +508,19 @@ export default function MetaCampaignsCampaignsPage() {
                     }
                   />
                 </th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.name")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.status")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.budget")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.spend")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.results")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.kpis.cpl")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.impressions")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.reach")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.ctr")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.ux.lastUpdatedLabel")}</th>
+                {columns.map((column) => (
+                  <th key={column} className="relative px-3 py-3 text-start" style={{ minWidth: columnPrefs.widths[column] || 120 }}>
+                    <button type="button" className="font-black" onClick={() => toggleColumnSort(column)}>
+                      {t(COLUMN_LABEL[column])}
+                    </button>
+                    <span
+                      role="separator"
+                      aria-orientation="vertical"
+                      className="absolute inset-y-0 end-0 w-1 cursor-col-resize"
+                      onMouseDown={(event) => beginColumnResize(event, column, columnPrefs, updateColumnPrefs)}
+                    />
+                  </th>
+                ))}
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.actions")}</th>
               </tr>
             </thead>
@@ -540,8 +529,6 @@ export default function MetaCampaignsCampaignsPage() {
                 const listStatus = campaignListStatus(campaign);
                 const delivery = listStatus || campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
                 const tone = statusTone(delivery);
-                const results = campaign.metrics?.results ?? campaign.metrics?.leads;
-                const cpl = campaign.metrics?.costPerResult ?? campaign.metrics?.costPerLead;
                 const canToggleLive = !campaign.localOnly && listStatus !== "DRAFT";
                 const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
                 const editId = campaign.localOnly ? draftId : campaign.id;
@@ -555,54 +542,50 @@ export default function MetaCampaignsCampaignsPage() {
                         onChange={() => setChecked((current) => toggleSelected(current, campaign.id))}
                       />
                     </td>
-                    <td className="px-3 py-3">
-                      <button
-                        type="button"
-                        className="text-start font-black text-slate-900"
-                        onClick={() => {
-                          setPinnedCampaign({ id: campaign.id, name: campaign.name });
-                          setPinnedAdSet(null);
-                          setDetails(campaign);
-                        }}
-                      >
-                        {campaign.name}
-                      </button>
-                      <p className="text-xs font-semibold text-slate-400">
-                        {t(`metaCampaigns.objectives.${objectiveKey(campaign.objective)}`)}
-                      </p>
-                    </td>
-                    <td className="px-3 py-3">
-                      <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
-                        {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 font-bold">
-                      {campaign.dailyBudget ? formatCurrency(campaign.dailyBudget, currency) : "—"}
-                    </td>
-                    <td className="px-3 py-3 font-bold">
-                      {formatMetricOrDash(campaign.metrics?.spend, (n) => formatCurrency(n, currency), {
-                        treatZeroAsEmpty: campaign.metrics?.insightsAvailable !== true,
-                      })}
-                    </td>
-                    <td className="px-3 py-3 font-bold">{formatMetricOrDash(results, formatNumber, { treatZeroAsEmpty: true })}</td>
-                    <td className="px-3 py-3 font-bold">
-                      {formatMetricOrDash((results || 0) > 0 ? cpl : null, (n) => formatCurrency(n, currency))}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums" data-testid={`campaign-impressions-${campaign.id}`}>
-                      {formatCampaignDeliveryMetric(campaign, "impressions")}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums" data-testid={`campaign-reach-${campaign.id}`}>
-                      {formatCampaignDeliveryMetric(campaign, "reach")}
-                    </td>
-                    <td className="px-3 py-3 font-bold">
-                      {formatMetricOrDash(campaign.metrics?.ctr, (n) => formatPercent(n), { treatZeroAsEmpty: true })}
-                    </td>
-                    <td className="px-3 py-3 text-xs font-semibold text-slate-500">
-                      <div>{formatDateTimeHe(campaign.localUpdatedAt || campaign.updatedTime)}</div>
-                      {campaign.hasUnpublishedChanges ? (
-                        <div className="font-bold text-sky-700">{t("metaCampaigns.adsManager.chrome.unpublishedChanges")}</div>
-                      ) : null}
-                    </td>
+                    {columns.map((column) => {
+                      const text = campaignColumnText(campaign, column, currency);
+                      return (
+                        <td
+                          key={column}
+                          className="whitespace-nowrap px-3 py-3 font-bold tabular-nums"
+                          style={{ minWidth: columnPrefs.widths[column] || 120 }}
+                          data-testid={column === "impressions" || column === "reach" ? `campaign-${column}-${campaign.id}` : undefined}
+                          title={text === "—" ? t("metaCampaigns.levels.missingMetric") : undefined}
+                        >
+                          {column === "name" ? (
+                            <>
+                              <button
+                                type="button"
+                                className="text-start font-black text-slate-900"
+                                onClick={() => {
+                                  setPinnedCampaign({ id: campaign.id, name: campaign.name });
+                                  setPinnedAdSet(null);
+                                  setDetails(campaign);
+                                }}
+                              >
+                                {campaign.name}
+                              </button>
+                              <p className="text-xs font-semibold text-slate-400">
+                                {t(`metaCampaigns.objectives.${objectiveKey(campaign.objective)}`)}
+                              </p>
+                            </>
+                          ) : column === "status" ? (
+                            <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
+                              {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
+                            </span>
+                          ) : column === "updated" ? (
+                            <div className="text-xs font-semibold text-slate-500">
+                              <div>{text}</div>
+                              {campaign.hasUnpublishedChanges ? (
+                                <div className="font-bold text-sky-700">{t("metaCampaigns.adsManager.chrome.unpublishedChanges")}</div>
+                              ) : null}
+                            </div>
+                          ) : (
+                            text
+                          )}
+                        </td>
+                      );
+                    })}
                     <td className="px-3 py-3">
                       <div className="flex flex-wrap gap-1">
                         <button type="button" className={btnSecondary} aria-label={t("metaCampaigns.actions.viewDetails")} onClick={() => setDetails(campaign)}>

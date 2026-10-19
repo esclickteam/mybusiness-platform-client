@@ -37,8 +37,84 @@ export function readManagerMetric(
 }
 
 export function chartAxisFor(keys: string[]): "single" | "dual" {
-  const units = new Set(keys.map((key) => METRIC_UNITS[key] || "count"));
+  const units = new Set(keys.map((key) => chartMetricUnit(key)));
   return units.size > 1 ? "dual" : "single";
+}
+
+export function chartMetricUnit(key: string): MetricUnit {
+  const base = key.includes(":") ? key.slice(key.lastIndexOf(":") + 1) : key;
+  return METRIC_UNITS[base] || "count";
+}
+
+const ADDITIVE_CHART_METRICS = new Set([
+  "spend",
+  "impressions",
+  "leads",
+  "clicks",
+  "linkClicks",
+  "landingPageViews",
+  "purchases",
+  "results",
+]);
+
+/**
+ * One chart row per date. Additive metrics add across campaigns.
+ * Reach and frequency stay on their own series. Rates are Meta's value for
+ * one campaign, or recomputed from the summed clicks for several campaigns.
+ */
+export function mergeChartSeries(
+  series: Array<{ id: string; points: Array<Record<string, unknown> & { date?: string }> }>,
+  metricKeys: string[]
+): Array<Record<string, number | string | null>> {
+  const single = series.length <= 1;
+  const merged = new Map<string, Record<string, number | string | null>>();
+  series.forEach((row) => {
+    row.points.forEach((point) => {
+      const date = String(point.date || "");
+      const current = merged.get(date) || { date };
+      metricKeys.forEach((key) => {
+        const value = readManagerMetric(point as MetaCampaignMetrics, key);
+        if (key === "reach" || key === "frequency") {
+          current[single ? key : `${row.id}:${key}`] = value;
+          return;
+        }
+        if (!ADDITIVE_CHART_METRICS.has(key)) {
+          if (single) current[key] = value;
+          return;
+        }
+        if (value == null) {
+          if (current[key] == null) current[key] = null;
+          return;
+        }
+        current[key] = Number(current[key] || 0) + value;
+      });
+      const clicks = readManagerMetric(point as MetaCampaignMetrics, "clicks");
+      if (clicks != null) current._clicks = Number(current._clicks || 0) + clicks;
+      merged.set(date, current);
+    });
+  });
+  return [...merged.values()].map((row) => {
+    const clicks = typeof row._clicks === "number" ? row._clicks : null;
+    if (!single) {
+      if (metricKeys.includes("ctr")) {
+        row.ctr =
+          typeof row.impressions === "number" && row.impressions > 0 && clicks != null
+            ? (clicks / row.impressions) * 100
+            : null;
+      }
+      if (metricKeys.includes("cpc")) {
+        row.cpc = typeof row.spend === "number" && clicks != null && clicks > 0 ? row.spend / clicks : null;
+      }
+      if (metricKeys.includes("cpm")) {
+        row.cpm =
+          typeof row.spend === "number" && typeof row.impressions === "number" && row.impressions > 0
+            ? (row.spend / row.impressions) * 1000
+            : null;
+      }
+    }
+    delete row._clicks;
+    return row;
+  });
 }
 
 export function weeklyBucket(isoDate: string): string {

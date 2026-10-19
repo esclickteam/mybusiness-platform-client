@@ -88,6 +88,7 @@ function renderPage() {
 describe("Meta campaign list delete", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    window.localStorage.clear();
   });
 
   it("shows a trash button on desktop and mobile, then deletes only the local draft", async () => {
@@ -153,5 +154,17 @@ describe("Meta campaign list delete", () => {
     expect(screen.queryByTestId("meta-campaign-delete-confirm")).toBeNull();
     expect(api.deleteLocalCampaignDraft).not.toHaveBeenCalled();
     expect(screen.getByTestId("meta-campaign-count")).toHaveAttribute("data-count", "2");
+  });
+
+  it("hides and restores campaign columns from the same menu as the other levels", async () => {
+    renderPage();
+    expect((await screen.findAllByTestId("campaign-impressions-120251822243990469")).length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByTestId("meta-campaign-columns"));
+    expect(screen.getByTestId("meta-column-menu")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("meta-column-preset-leads"));
+    expect(screen.queryByTestId("campaign-impressions-120251822243990469")).toBeNull();
+    expect(screen.getAllByText("לידים").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByTestId("meta-column-reset"));
+    expect(screen.getAllByTestId("campaign-impressions-120251822243990469").length).toBeGreaterThan(0);
   });
 });

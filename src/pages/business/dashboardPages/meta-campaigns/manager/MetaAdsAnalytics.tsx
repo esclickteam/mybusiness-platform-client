@@ -19,7 +19,7 @@ import {
 } from "../../../../../api/metaCampaignsApi";
 import { btnSecondary, cardBase } from "../../../../../styles/bizuplyUi";
 import { formatCurrency, formatNumber, formatPercent } from "../metaCampaignUtils";
-import { chartAxisFor, METRIC_UNITS, readManagerMetric } from "./managerMetrics";
+import { chartAxisFor, chartMetricUnit, mergeChartSeries } from "./managerMetrics";
 
 const CHART_METRICS = ["spend", "impressions", "reach", "leads", "ctr", "cpc"] as const;
 const BREAKDOWNS = ["age", "gender", "country", "region", "device", "platform", "placement"] as const;
@@ -32,8 +32,10 @@ type Props = {
   selectedIds: string[];
 };
 
+const LINE_COLORS = ["#7c3aed", "#0f766e", "#b45309", "#0369a1", "#be123c", "#4338ca"];
+
 function formatPoint(key: string, value: number, currency: string) {
-  const unit = METRIC_UNITS[key] || "count";
+  const unit = chartMetricUnit(key);
   if (unit === "money") return formatCurrency(value, currency);
   if (unit === "rate") return formatPercent(value);
   return formatNumber(value);
@@ -61,9 +63,16 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
     cpc: point.cpc ?? null,
   }));
   const chartData = remoteSeries || daily;
-  const axis = chartAxisFor(metrics);
-  const moneyKeys = metrics.filter((key) => METRIC_UNITS[key] === "money" || METRIC_UNITS[key] === "rate");
-  const countKeys = metrics.filter((key) => !moneyKeys.includes(key));
+  const lineKeys = (remoteSeries
+    ? [...new Set(remoteSeries.flatMap((row) => Object.keys(row).filter((key) => key !== "date")))]
+    : [...metrics]
+  ).filter((key) => {
+    const base = key.includes(":") ? key.slice(key.lastIndexOf(":") + 1) : key;
+    return metrics.includes(base) && base !== "clicks";
+  });
+  const axis = chartAxisFor(lineKeys);
+  const moneyKeys = lineKeys.filter((key) => chartMetricUnit(key) === "money" || chartMetricUnit(key) === "rate");
+  const countKeys = lineKeys.filter((key) => !moneyKeys.includes(key));
 
   async function loadGrain(next: "day" | "week" | "month") {
     setGrain(next);
@@ -80,24 +89,7 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
         grain: next,
         ids: selectedIds.join(","),
       });
-      const merged = new Map<string, Record<string, number | string | null>>();
-      (data.series || []).forEach((row) => {
-        row.points.forEach((point) => {
-          const date = String(point.date || "");
-          const current = merged.get(date) || { date };
-          metrics.forEach((key) => {
-            const value = readManagerMetric(point, key);
-            if (key === "reach" || key === "frequency") {
-              current[`${row.id}:${key}`] = value;
-              return;
-            }
-            const previous = current[key];
-            current[key] = value == null ? previous ?? null : Number(previous || 0) + value;
-          });
-          merged.set(date, current);
-        });
-      });
-      setRemoteSeries([...merged.values()]);
+      setRemoteSeries(mergeChartSeries(data.series || [], [...CHART_METRICS, "clicks"]));
     } catch {
       setError(t("metaCampaigns.levels.loadError"));
     } finally {
@@ -191,12 +183,12 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
               {axis === "dual" ? <YAxis yAxisId="right" orientation="right" /> : null}
               <Tooltip />
               <Legend />
-              {(axis === "dual" ? countKeys : metrics).map((key) => (
-                <Line key={key} yAxisId="left" type="monotone" dataKey={key} stroke="#7c3aed" dot={false} connectNulls={false} />
+              {(axis === "dual" ? countKeys : lineKeys).map((key, index) => (
+                <Line key={key} yAxisId="left" type="monotone" dataKey={key} stroke={LINE_COLORS[index % LINE_COLORS.length]} dot={false} connectNulls={false} />
               ))}
               {axis === "dual"
-                ? moneyKeys.map((key) => (
-                    <Line key={key} yAxisId="right" type="monotone" dataKey={key} stroke="#0f766e" dot={false} connectNulls={false} />
+                ? moneyKeys.map((key, index) => (
+                    <Line key={key} yAxisId="right" type="monotone" dataKey={key} stroke={LINE_COLORS[(index + 1) % LINE_COLORS.length]} dot={false} connectNulls={false} />
                   ))
                 : null}
             </LineChart>
