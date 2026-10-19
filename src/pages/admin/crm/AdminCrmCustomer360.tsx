@@ -822,8 +822,9 @@ export default function AdminCrmCustomer360() {
                 <div>
                   <div className="font-black">{row.name}</div>
                   <div className="text-xs text-slate-500">
-                    {row.included ? "כלול בחבילה" : row.paid ? "תוסף בתשלום" : "לא פעיל"}
-                    {row.enabled ? " · פעיל" : " · לא פעיל"}
+                    {row.displayStatusHe
+                      ? row.displayStatusHe
+                      : `${row.included ? "כלול בחבילה" : row.paid ? "תוסף בתשלום" : "לא פעיל"}${row.enabled ? " · פעיל" : " · לא פעיל"}`}
                   </div>
                 </div>
                 <Badge tone={statusTone(row.enabled ? "active" : "inactive")}>{row.status}</Badge>
@@ -933,6 +934,22 @@ export default function AdminCrmCustomer360() {
             <p>סטטוס: {tabData?.overview?.summary?.primaryPlanStatus || "—"}</p>
             <p>חיוב הבא: {formatIsraelDate(tabData?.overview?.summary?.nextChargeDate)} · {tabData?.overview?.summary?.nextChargeAmount ?? "—"}</p>
           </CrmCard>
+          {(tabData?.overview?.addOns || []).length ? (
+            <CrmCard>
+              <h3 className="mb-2 font-black">תוספים</h3>
+              {(tabData.overview.addOns || []).map((row: any) => (
+                <p key={row.key} data-testid={`admin-addon-${row.productKey}`}>
+                  {row.name || row.productKey}:{" "}
+                  {row.displayStatusHe || row.status || "—"}
+                  {row.complimentary || row.billingType === "complimentary"
+                    ? ""
+                    : row.amount != null
+                      ? ` · ${row.amount}`
+                      : ""}
+                </p>
+              ))}
+            </CrmCard>
+          ) : null}
           <CrmCard>
             <h3 className="mb-2 font-black">שינוי חבילה</h3>
             <p className="mb-2 text-sm text-slate-500">משתמש בתשתית החיוב הקיימת בלבד. חבילות נסתרות לא מוצגות.</p>

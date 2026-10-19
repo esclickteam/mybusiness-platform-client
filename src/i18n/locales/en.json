@@ -18589,6 +18589,8 @@
     "firstCharge": " · First charge: {{date}} · ${{amount}}",
     "firstChargeDate": " · First charge: {{date}}",
     "planActive": "{{plan}} subscription is active",
+    "complimentaryActive": "פעיל – ללא חיוב",
+    "complimentaryDetail": "Personal benefit. No charge, no trial, and no expiration date.",
     "planAnnualPrice": "$99 / year",
     "planMonthlyPrice": "$12 / month",
     "planGeneric": "Push subscription",

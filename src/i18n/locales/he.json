@@ -18574,6 +18574,8 @@
     "firstCharge": " · החיוב הראשון: {{date}} · ${{amount}}",
     "firstChargeDate": " · החיוב הראשון: {{date}}",
     "planActive": "מנוי {{plan}} פעיל",
+    "complimentaryActive": "פעיל – ללא חיוב",
+    "complimentaryDetail": "הטבה אישית. ללא חיוב, ללא ניסיון וללא תאריך תפוגה.",
     "planAnnualPrice": "$99 לשנה",
     "planMonthlyPrice": "$12 לחודש",
     "planGeneric": "מנוי Push",
