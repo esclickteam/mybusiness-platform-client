@@ -10,15 +10,19 @@ import {
   getMetaCampaignsStatus,
   getMetaLeadgenTos,
   listMetaLeadForms,
+  planMetaCampaignChanges,
   publishMetaCampaign,
+  publishMetaCampaignChanges,
   retryMetaPublish,
   syncMetaPublish,
   saveMetaEditorDraft,
   type MetaAdsConnectionStatus,
   type MetaCampaignPublishRecord,
   type MetaEditorDraftSaveResult,
+  type MetaExistingPublishResult,
   type MetaLeadForm,
   type MetaLeadFormDraft,
+  type MetaLeadFormUpdatePlan,
 } from "../../../../../api/metaCampaignsApi";
 import MetaAdsManagerTree from "./MetaAdsManagerTree";
 import CampaignLevelEditor from "./editors/CampaignLevelEditor";
@@ -40,6 +44,7 @@ import {
   diffAdsManagerState,
   isAdsManagerDirty,
 } from "./adsManagerDiff";
+import { buildExistingPublishPayload } from "./adsManagerEditPayloads";
 import {
   buildEditorDraft,
   editorDraftHasUnstoredImage,
@@ -55,6 +60,12 @@ import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessi
 import { getTextDirection } from "@/i18n/localeUtils";
 import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
 import type { AiProposalHandoff } from "./adsManagerFromAiProposal";
+import {
+  CREATIVE_CHANGE_KEYS,
+  publishableAdsManagerChanges,
+  publishIntentLabelKey,
+  resolvePublishIntent,
+} from "./publishIntent";
 import {
   metaBtnPrimary,
   metaBtnSecondary,
@@ -118,6 +129,11 @@ export default function MetaAdsManagerPage() {
   const [leaveOpen, setLeaveOpen] = useState(false);
   const [discardPublishedOpen, setDiscardPublishedOpen] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
+  const [leadFormPlan, setLeadFormPlan] = useState<MetaLeadFormUpdatePlan | null>(null);
+  const [planLoading, setPlanLoading] = useState(false);
+  const [planError, setPlanError] = useState("");
+  const [approveNewAd, setApproveNewAd] = useState(false);
+  const [updateSummary, setUpdateSummary] = useState<MetaExistingPublishResult | null>(null);
   const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
   const publishedBaselineRef = useRef<AdsManagerState | null>(null);
@@ -216,6 +232,14 @@ export default function MetaAdsManagerPage() {
     if (!publishedBaselineRef.current || !isRealMetaObjectId(campaignId)) return [];
     return diffAdsManagerState(publishedBaselineRef.current, state);
   }, [campaignId, state]);
+  const publishableChanges = useMemo(
+    () => publishableAdsManagerChanges(unpublishedChanges),
+    [unpublishedChanges]
+  );
+  const publishIntent = resolvePublishIntent({
+    existingCampaign: isRealMetaObjectId(campaignId),
+    publishableChangeCount: publishableChanges.length,
+  });
   const reviewErrors = useMemo(
     () => (state.mode === "review" ? validateAdsManagerClient(state) : []),
     [state]
@@ -488,6 +512,38 @@ export default function MetaAdsManagerPage() {
     return items;
   }, [state, selectedAdSet, selectedAd]);
 
+  const openPublishConfirm = async () => {
+    if (publishIntent === "noop") return;
+    setApproveNewAd(false);
+    setLeadFormPlan(null);
+    setPlanError("");
+    const needsPlan =
+      publishIntent === "update" &&
+      publishableChanges.some((change) => CREATIVE_CHANGE_KEYS.has(change.labelKey));
+    if (!needsPlan || !businessId || !campaignId) {
+      setPublishConfirmOpen(true);
+      return;
+    }
+    setPlanLoading(true);
+    setPublishConfirmOpen(true);
+    try {
+      const plan = await planMetaCampaignChanges(businessId, campaignId, {
+        metaAdSetId: stateRef.current.adSets[0]?.id,
+        metaAdId: stateRef.current.ads[0]?.id,
+        leadFormId: stateRef.current.ads[0]?.instantFormId,
+      });
+      setLeadFormPlan(plan);
+    } catch (error: unknown) {
+      const err = error as {
+        response?: { data?: { error?: string } };
+        message?: string;
+      };
+      setPlanError(err.response?.data?.error || err.message || c("changesNotPublished"));
+    } finally {
+      setPlanLoading(false);
+    }
+  };
+
   const handlePublish = async () => {
     if (!businessId) return;
     if (!connection?.connected && !connection?.isConnected) {
@@ -505,8 +561,104 @@ export default function MetaAdsManagerPage() {
       setMode("review");
       return;
     }
-    if (!canPublish) {
+    if (publishIntent === "noop") {
+      toast.error(c("noChangesToPublish"));
+      return;
+    }
+    if (publishIntent === "create" && !canPublish) {
       toast.error(t("metaCampaigns.adsToasts.resolveValidation"));
+      return;
+    }
+    if (publishIntent === "update" && !canPublish) {
+      toast.error(t("metaCampaigns.adsToasts.resolveValidation"));
+      return;
+    }
+
+    if (publishIntent === "update") {
+      let savedUpdate: MetaEditorDraftSaveResult | null = null;
+      try {
+        setPublishing(true);
+        savedUpdate = await persistEditorDraft(state);
+        rememberSaved(stateRef.current, savedUpdate);
+        const changes = publishableAdsManagerChanges(
+          publishedBaselineRef.current
+            ? diffAdsManagerState(publishedBaselineRef.current, stateRef.current)
+            : []
+        );
+        if (!changes.length || !campaignId) {
+          toast.error(c("noChangesToPublish"));
+          return;
+        }
+        const result = await publishMetaCampaignChanges(
+          businessId,
+          campaignId,
+          buildExistingPublishPayload(stateRef.current, changes, {
+            confirmCreateAd: approveNewAd,
+          })
+        );
+        const requestedForm = changes.some((row) => row.labelKey === "changeLeadForm")
+          ? stateRef.current.ads[0]?.instantFormId || ""
+          : "";
+        const formMatches =
+          !requestedForm || result?.verifiedLeadFormId === requestedForm;
+        const publishedToExisting =
+          result?.verified === true &&
+          result.verifiedOnExistingAd === true &&
+          formMatches &&
+          result.createdNewCampaign !== true &&
+          result.createdNewAdSet !== true &&
+          result.createdNewAd !== true;
+        const approvedNewAd =
+          result?.verified === true &&
+          result.createdNewAd === true &&
+          approveNewAd &&
+          formMatches &&
+          result.createdNewCampaign !== true &&
+          result.createdNewAdSet !== true;
+        if (!publishedToExisting && !approvedNewAd) {
+          toast.error(result?.message || result?.error || c("changesNotPublished"));
+          return;
+        }
+        if (result.publish) setPublishResult(result.publish);
+        setUpdateSummary(result);
+        setModalOpen(true);
+        if (publishedToExisting) {
+          try {
+            const published = await persistEditorDraft(stateRef.current, {
+              markPublished: true,
+            });
+            rememberSaved(stateRef.current, published);
+            publishedBaselineRef.current = stateRef.current;
+          } catch {
+            /* Meta accepted the update. The next local save can clear the unpublished flag. */
+          }
+          toast.success(requestedForm ? c("leadFormPublished") : c("changesPublished"));
+        } else {
+          toast.success(c("newPausedAdCreated"));
+        }
+      } catch (error: unknown) {
+        const err = error as {
+          response?: {
+            data?: {
+              error?: string;
+              code?: string;
+              plan?: MetaLeadFormUpdatePlan | null;
+            };
+          };
+          message?: string;
+        };
+        if (err.response?.data?.code === "NEW_AD_REQUIRED" && err.response.data.plan) {
+          setLeadFormPlan(err.response.data.plan);
+          setApproveNewAd(false);
+          setPublishConfirmOpen(true);
+        }
+        if (savedUpdate?.publishId) rememberSaved(stateRef.current, savedUpdate);
+        toast.error(
+          err.response?.data?.error || err.message || c("changesNotPublished")
+        );
+      } finally {
+        setPublishing(false);
+      }
       return;
     }
 
@@ -567,14 +719,6 @@ export default function MetaAdsManagerPage() {
         return;
       }
       if (resumeId) payload.resumePublishId = resumeId;
-      if (
-        publishResult?.metaAdId &&
-        publishResult.publishStatus === "submitted"
-      ) {
-        setModalOpen(true);
-        toast.error(t("metaCampaigns.adsManager.chrome.alreadySubmitted"));
-        return;
-      }
       const result = resumeId
         ? await retryMetaPublish(businessId, resumeId, payload)
         : await publishMetaCampaign(businessId, payload);
@@ -589,13 +733,10 @@ export default function MetaAdsManagerPage() {
         return;
       }
       if (!result?.adId) {
-        if (result?.publish) {
-          setPublishResult(result.publish);
-          setModalOpen(true);
-        }
         toast.error(t("metaCampaigns.adsToasts.noAdId"));
         return;
       }
+      setUpdateSummary(null);
       setPublishResult(result.publish);
       setModalOpen(true);
       try {
@@ -638,7 +779,13 @@ export default function MetaAdsManagerPage() {
         message?: string;
       };
       const publish = err.response?.data?.publish;
-      if (publish) {
+      if (
+        publish &&
+        (publish.publishStatus === "failed" ||
+          publish.publishStatus === "partial_failed" ||
+          publish.outcome === "creation_failed")
+      ) {
+        setUpdateSummary(null);
         setPublishResult(publish);
         setModalOpen(true);
       }
@@ -1087,7 +1234,7 @@ export default function MetaAdsManagerPage() {
               {c("unsavedChanges")}
             </span>
           ) : null}
-          {state.hasUnpublishedChanges || unpublishedChanges.length ? (
+          {state.hasUnpublishedChanges || publishableChanges.length ? (
             <span className="rounded-full bg-[#E7F3FF] px-2 py-1 text-[12px] font-bold text-[#1877F2]">
               {c("unpublishedChanges")}
             </span>
@@ -1109,7 +1256,7 @@ export default function MetaAdsManagerPage() {
               {c("discardUnsaved")}
             </button>
           ) : null}
-          {isRealMetaObjectId(campaignId) && (state.hasUnpublishedChanges || unpublishedChanges.length) ? (
+          {isRealMetaObjectId(campaignId) && (state.hasUnpublishedChanges || publishableChanges.length) ? (
             <button
               type="button"
               className={metaBtnSecondary}
@@ -1154,18 +1301,25 @@ export default function MetaAdsManagerPage() {
             type="button"
             className={metaBtnPrimary}
             data-demo-target="meta-publish"
-            disabled={publishing || !canPublish || !connected}
+            disabled={
+              publishing ||
+              !connected ||
+              publishIntent === "noop" ||
+              (publishIntent === "create" && !canPublish)
+            }
             title={
               !connected
                 ? c("connectMetaFirst")
-                : canPublish
-                  ? c("publishTitleReady")
-                  : c("publishTitleBlocked")
+                : publishIntent === "noop"
+                  ? c("noChangesToPublish")
+                  : canPublish
+                    ? c("publishTitleReady")
+                    : c("publishTitleBlocked")
             }
-            onClick={() => setPublishConfirmOpen(true)}
+            onClick={() => void openPublishConfirm()}
           >
             {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            {publishing ? c("publishing") : c("publishAction")}
+            {publishing ? c("publishing") : c(publishIntentLabelKey(publishIntent))}
           </button>
           {campaignStarted ? (
             <button type="button" className={metaBtnSecondary} onClick={requestLeave}>
@@ -1477,8 +1631,8 @@ export default function MetaAdsManagerPage() {
           )}
         </div>
         <span>
-          {unpublishedChanges.length
-            ? unpublishedChanges.map((change) => c(change.labelKey)).join(" · ")
+          {publishableChanges.length
+            ? publishableChanges.map((change) => c(change.labelKey)).join(" · ")
             : isEditSession
               ? c("editFooterNote")
               : c(isGuidedDemoActive() ? "publishFooterNoteDemo" : "publishFooterNote")}
@@ -1488,8 +1642,45 @@ export default function MetaAdsManagerPage() {
       {publishConfirmOpen ? (
         <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/40 p-4 sm:items-center">
           <div className="w-full max-w-lg rounded-xl bg-white p-5 shadow-2xl" dir="auto">
-            <h2 className="text-[18px] font-black">{c("publishConfirmTitle")}</h2>
-            <p className="mt-2 text-[14px] font-semibold text-[#65676B]">{c("publishConfirmBody")}</p>
+            <h2 className="text-[18px] font-black">
+              {publishIntent === "update" ? c("publishChangesConfirmTitle") : c("publishConfirmTitle")}
+            </h2>
+            <p className="mt-2 text-[14px] font-semibold text-[#65676B]">
+              {publishIntent === "update" ? c("publishChangesConfirmBody") : c("publishConfirmBody")}
+            </p>
+            {publishIntent === "update" && publishableChanges.length ? (
+              <ul className="mt-3 space-y-1 text-[13px] font-semibold text-[#050505]">
+                {publishableChanges.map((change) => (
+                  <li key={change.id}>
+                    {c(change.labelKey)}: {change.oldValue} → {change.newValue}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+            {planLoading ? (
+              <p className="mt-3 text-[13px] font-semibold text-[#65676B]">{c("planLoading")}</p>
+            ) : null}
+            {planError ? (
+              <p className="mt-3 rounded-md bg-[#FFF0F0] px-3 py-2 text-[13px] font-semibold text-[#A31414]">
+                {planError}
+              </p>
+            ) : null}
+            {leadFormPlan?.message ? (
+              <p className="mt-3 rounded-md bg-[#E7F3FF] px-3 py-2 text-[13px] font-semibold text-[#050505]">
+                {leadFormPlan.message}
+              </p>
+            ) : null}
+            {leadFormPlan?.createsNewAd ? (
+              <label className="mt-3 flex items-start gap-2 text-[13px] font-semibold text-[#050505]">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={approveNewAd}
+                  onChange={(event) => setApproveNewAd(event.target.checked)}
+                />
+                <span>{c("approveNewAd")}</span>
+              </label>
+            ) : null}
             <dl className="mt-4 space-y-2 text-[14px]">
               <div className="flex justify-between gap-3">
                 <dt className="text-[#65676B]">{c("publishConfirmBudget")}</dt>
@@ -1525,13 +1716,18 @@ export default function MetaAdsManagerPage() {
               <button
                 type="button"
                 className={metaBtnPrimary}
-                disabled={publishing}
+                disabled={
+                  publishing ||
+                  planLoading ||
+                  Boolean(planError) ||
+                  (leadFormPlan?.createsNewAd === true && !approveNewAd)
+                }
                 onClick={() => {
                   setPublishConfirmOpen(false);
                   void handlePublish();
                 }}
               >
-                {c("confirmPublish")}
+                {publishIntent === "update" ? c("publishChanges") : c("confirmPublish")}
               </button>
             </div>
           </div>
@@ -1595,6 +1791,7 @@ export default function MetaAdsManagerPage() {
             ? () => void handleRetry()
             : undefined
         }
+        updateSummary={updateSummary}
       />
     </div>
   );

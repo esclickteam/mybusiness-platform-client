@@ -1,7 +1,10 @@
 import React from "react";
 import { CheckCircle2, ExternalLink, Loader2, RefreshCw, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { MetaCampaignPublishRecord } from "../../../../../api/metaCampaignsApi";
+import type {
+  MetaCampaignPublishRecord,
+  MetaExistingPublishResult,
+} from "../../../../../api/metaCampaignsApi";
 import { metaBtnPrimary, metaBtnSecondary } from "./metaAdsUi";
 
 type Props = {
@@ -11,6 +14,7 @@ type Props = {
   onClose: () => void;
   onSync: () => void;
   onRetry?: () => void;
+  updateSummary?: MetaExistingPublishResult | null;
 };
 
 export default function PublishResultModal({
@@ -20,6 +24,7 @@ export default function PublishResultModal({
   onClose,
   onSync,
   onRetry,
+  updateSummary,
 }: Props) {
   const { t } = useTranslation();
 
@@ -59,7 +64,14 @@ export default function PublishResultModal({
     publish.metaEffectiveStatus ||
     publish.displayStatus ||
     "—";
-  const title = creationFailed
+  const updateVerified = updateSummary?.verified === true;
+  const title = updateSummary
+    ? updateSummary.createdNewAd
+      ? c("outcomeNewPausedAd")
+      : updateSummary.verifiedLeadFormId
+        ? c("outcomeUpdatedForm")
+        : c("outcomeUpdated")
+    : creationFailed
     ? c("outcomeCreationFailed")
     : rejected
       ? c("outcomeRejected")
@@ -70,7 +82,10 @@ export default function PublishResultModal({
           : created
             ? c("outcomeCreatedPaused")
             : c("publishIncompleteTitle");
-  const subtitle = creationFailed
+  const subtitle = updateSummary
+    ? updateSummary.message ||
+      (updateVerified ? c("changesPublished") : c("changesNotPublished"))
+    : creationFailed
     ? publish.lastMetaErrorMessage || publish.lastError || c("publishFailSubtitle")
     : rejected
       ? c("outcomeRejectedHint")
@@ -79,7 +94,23 @@ export default function PublishResultModal({
         : created
           ? c("publishOkCustomer")
           : c("publishFailSubtitle");
-  const createdBits = [
+  const createdBits = updateSummary
+    ? [
+        updateSummary.createdNewCampaign ||
+        updateSummary.createdNewAdSet ||
+        updateSummary.createdNewAd
+          ? [
+              updateSummary.createdNewCampaign ? c("metaCampaignId") : "",
+              updateSummary.createdNewAdSet ? c("metaAdSetId") : "",
+              updateSummary.createdNewAd
+                ? `${c("metaAdId")}: ${updateSummary.adId}`
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" · ")
+          : c("noNewObjects"),
+      ]
+    : [
     publish.metaCampaignId ? `${c("metaCampaignId")}: ${publish.metaCampaignId}` : "",
     publish.metaAdSetId ? `${c("metaAdSetId")}: ${publish.metaAdSetId}` : "",
     publish.metaCreativeId ? `${c("metaCreativeId")}: ${publish.metaCreativeId}` : "",
@@ -93,7 +124,7 @@ export default function PublishResultModal({
       >
         <div className="flex items-start justify-between gap-3 border-b border-[#E4E6EB] px-4 py-3">
           <div className="flex items-start gap-2">
-            {creationFailed || rejected ? (
+            {creationFailed || rejected || (updateSummary && !updateVerified) ? (
               <X className="mt-0.5 h-5 w-5 text-[#FA383E]" />
             ) : (
               <CheckCircle2 className="mt-0.5 h-5 w-5 text-[#31A24C]" />
@@ -142,6 +173,13 @@ export default function PublishResultModal({
             label={c("createdObjects")}
             value={createdBits.length ? createdBits.join(" · ") : c("noneCreated")}
           />
+          {updateSummary?.verifiedLeadFormId ? (
+            <Row
+              label={c("verifiedLeadForm")}
+              value={updateSummary.verifiedLeadFormId}
+              mono
+            />
+          ) : null}
           <Row
             label={c("submittedTime")}
             value={

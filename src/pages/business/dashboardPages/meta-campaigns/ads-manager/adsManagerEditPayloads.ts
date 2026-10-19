@@ -188,3 +188,32 @@ export function buildAdUpdateFromDiff(
   }
   return Object.keys(payload).length ? payload : null;
 }
+
+export function buildExistingPublishPayload(
+  current: AdsManagerState,
+  changes: AdsManagerChange[],
+  options?: { confirmCreateAd?: boolean }
+) {
+  const adSet = current.adSets[0];
+  const ad = current.ads[0];
+  const allowBudgetChange = changes.some(
+    (row) => row.labelKey === "changeBudget" || row.labelKey === "changeAdSetBudget"
+  );
+  const leadFormChanged = changes.some((row) => row.labelKey === "changeLeadForm");
+  return {
+    metaCampaignId: current.campaign.id,
+    metaAdSetId: adSet?.id,
+    metaAdId: ad?.id,
+    metaCreativeId: ad?.creativeId || undefined,
+    pageId: ad?.facebookPageId || adSet?.facebookPageId || undefined,
+    campaign: buildCampaignUpdateFromDiff(current, changes) || undefined,
+    adSet: adSet
+      ? buildAdSetUpdateFromDiff(adSet, current.campaign, changes) || undefined
+      : undefined,
+    ad: ad ? buildAdUpdateFromDiff(ad, changes) || undefined : undefined,
+    leadFormId: leadFormChanged ? ad?.instantFormId || undefined : undefined,
+    allowBudgetChange,
+    allowStatusChange: false,
+    confirmCreateAd: options?.confirmCreateAd === true,
+  };
+}

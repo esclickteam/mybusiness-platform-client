@@ -44,6 +44,8 @@ vi.mock("../../../../../api/metaCampaignsApi", () => ({
   }),
   estimateMetaAudienceReach: vi.fn(),
   publishMetaCampaign: vi.fn(),
+  publishMetaCampaignChanges: vi.fn(),
+  planMetaCampaignChanges: vi.fn(),
   retryMetaPublish: vi.fn(),
   syncMetaPublish: vi.fn(),
   updateMetaCampaign: vi.fn(),
@@ -132,6 +134,17 @@ describe("MetaAdsManagerPage manual create", () => {
     });
     expect(screen.queryByText("Create new campaign")).toBeNull();
     expect(screen.getAllByDisplayValue("Facial — לידים").length).toBeGreaterThan(0);
+  });
+
+  it("does not treat an existing campaign as a successful duplicate-free no-op", () => {
+    const source = fs.readFileSync(
+      path.resolve(__dirname, "./MetaAdsManagerPage.tsx"),
+      "utf8"
+    );
+    expect(source).not.toMatch(/alreadySubmitted/);
+    expect(source).toMatch(/publishMetaCampaignChanges/);
+    expect(source).toMatch(/publishIntentLabelKey/);
+    expect(source).toMatch(/verifiedOnExistingAd/);
   });
 
   it("does not import AI session APIs", () => {
