@@ -38,6 +38,16 @@ export default function MySaasSystems() {
   return (
     <div dir="rtl" className="space-y-4 p-4 md:p-6">
       <h1 className="text-2xl font-black">המערכות שלי — My SaaS Systems</h1>
+      <section className="rounded-2xl border border-violet-200 bg-violet-50/50 p-4 text-sm">
+        <h2 className="font-black">התחלה ראשונה</h2>
+        <ol className="mt-2 list-decimal space-y-1 pe-5">
+          <li>החליפו את הסיסמה הזמנית בכניסה הראשונה.</li>
+          <li>פתחו את המערכת ולחצו «עריכת מערכת».</li>
+          <li>עדכנו שם עסק, לוגו וצבעים.</li>
+          <li>מלאו שירותים, תפריט או נכסים לפי המוצר.</li>
+          <li>פרסמו, ואז בדקו את קישור הלקוח לפני שיתוף.</li>
+        </ol>
+      </section>
       {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
       {!error && tenants.length === 0 ? <p className="text-sm">עדיין אין מערכת משויכת לחשבון.</p> : null}
       <div className="grid gap-4 md:grid-cols-2">
