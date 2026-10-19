@@ -8,6 +8,7 @@ import {
   estimateMetaAudienceReach,
   getMetaCampaign,
   getMetaCampaignsStatus,
+  getMetaLeadgenTos,
   listMetaLeadForms,
   publishMetaCampaign,
   retryMetaPublish,
@@ -48,6 +49,7 @@ import {
 import type { AdsManagerState } from "./adsManagerTypes";
 import type { EditorDraft, EditorWorkspace } from "./editorDraft";
 import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
+import { leadgenTosBlocksPublish } from "./leadgenTos";
 import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import { getTextDirection } from "@/i18n/localeUtils";
 import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
@@ -515,6 +517,34 @@ export default function MetaAdsManagerPage() {
       }
 
       savedDraft = await persistEditorDraft(state);
+      const usesInstantForms = String(state.adSets[0]?.conversionLocation || "")
+        .toLowerCase()
+        .includes("instant");
+      if (usesInstantForms && payload.pageId && !isGuidedDemoActive()) {
+        try {
+          const tos = await getMetaLeadgenTos(businessId, payload.pageId);
+          if (leadgenTosBlocksPublish(tos)) {
+            if (savedDraft) rememberSaved(stateRef.current, savedDraft);
+            const pageLabel =
+              state.adSets[0]?.facebookPageName ||
+              state.ads[0]?.facebookPageName ||
+              payload.pageId;
+            toast.error(
+              tos.status === "missing_permission"
+                ? t("metaCampaigns.adsManager.chrome.leadgenTosMissingPermission", {
+                    page: pageLabel,
+                  })
+                : tos.message ||
+                    t("metaCampaigns.adsManager.chrome.leadgenTosRequired", {
+                      page: pageLabel,
+                    })
+            );
+            return;
+          }
+        } catch {
+          /* The server checks again and does not create Meta objects if terms are unverified. */
+        }
+      }
       const resumeId =
         savedDraft.publishId ||
         publishRecordIdRef.current ||
@@ -1346,6 +1376,9 @@ export default function MetaAdsManagerPage() {
               pages={connectedPages}
               businessId={businessId}
               sessionMode={isEditSession ? "edit" : "create"}
+              showLeadgenTos={String(selectedAdSet?.conversionLocation || "")
+                .toLowerCase()
+                .includes("instant")}
               publishId={publishRecordIdRef.current || state.publishRecordId || ""}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
               onFormReady={async (form) => {

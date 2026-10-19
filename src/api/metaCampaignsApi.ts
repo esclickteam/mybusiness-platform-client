@@ -965,6 +965,39 @@ export async function uploadMetaMedia(
   return data;
 }
 
+export type MetaLeadgenTosStatusName =
+  | "accepted"
+  | "required"
+  | "missing_permission"
+  | "unavailable"
+  | "demo"
+  | "partnership";
+
+export type MetaLeadgenTosStatus = {
+  success: boolean;
+  pageId: string;
+  pageName?: string;
+  accepted: boolean;
+  verified: boolean;
+  status: MetaLeadgenTosStatusName;
+  tosUrl: string;
+  acceptanceTime?: string | null;
+  checkedAt?: string;
+  message?: string;
+  demoSafe?: boolean;
+};
+
+export async function getMetaLeadgenTos(
+  businessId: string | undefined,
+  pageId: string
+) {
+  const { data } = await API.get<MetaLeadgenTosStatus>(
+    "/meta-campaigns/leadgen-tos",
+    withBusiness(businessId, { pageId })
+  );
+  return data;
+}
+
 export async function listMetaLeadForms(
   businessId: string | undefined,
   pageId?: string
