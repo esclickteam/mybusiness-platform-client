@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Eye, Loader2, Pause, Pencil, Play } from "lucide-react";
+import { Copy, Eye, Loader2, Pause, Pencil, Play, RefreshCw, Trash2 } from "lucide-react";
 import {
+  duplicateLocalCampaignDraft,
   getMetaCampaignsOverview,
   setMetaCampaignStatus,
   type MetaCampaign,
@@ -14,6 +15,7 @@ import CreateCampaignButton from "./CreateCampaignButton";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
   formatCurrency,
+  formatDateTimeHe,
   formatMetricOrDash,
   formatNumber,
   formatPercent,
@@ -22,8 +24,24 @@ import {
   statusTone,
 } from "./metaCampaignUtils";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
+import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
+import { removeCampaignFromList } from "./campaignListDeletion";
+import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
+import {
+  campaignDeliveryMetric,
+  formatCampaignDeliveryMetric,
+  type DeliveryMetricKey,
+} from "./campaignDeliveryMetrics";
 
 type OutletCtx = { businessId: string | null };
+
+function campaignListStatus(campaign: MetaCampaign) {
+  const raw = String(campaign.configuredStatus || campaign.status || "").toUpperCase();
+  if (campaign.publishFailed || raw === "FAILED" || raw === "PARTIAL_FAILED") return "FAILED";
+  if (campaign.localOnly || raw === "DRAFT") return "DRAFT";
+  if (campaign.hasUnpublishedChanges) return "PENDING_PUBLISH";
+  return raw;
+}
 
 function objectiveKey(objective?: string | null) {
   const value = String(objective || "").toLowerCase();
@@ -46,10 +64,15 @@ export default function MetaCampaignsCampaignsPage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const { query: rangeQuery, labelKey: rangeLabelKey } = useMetaAdsDateRange();
-  const [sortKey, setSortKey] = useState<"name" | "spend" | "results" | "cpl">("spend");
+  const [sortKey, setSortKey] = useState<"name" | "spend" | "results" | "cpl" | DeliveryMetricKey>("spend");
+  const [lastSynced, setLastSynced] = useState<Date | null>(null);
+  const [insightsError, setInsightsError] = useState<string | null>(null);
   const [details, setDetails] = useState<MetaCampaign | null>(null);
   const [pending, setPending] = useState<MetaCampaign | null>(null);
   const [busyId, setBusyId] = useState("");
+  const deletion = useCampaignDraftDelete(businessId, (id) => {
+    setCampaigns((current) => removeCampaignFromList(current, id));
+  });
 
   async function load() {
     if (!businessId) return;
@@ -58,6 +81,13 @@ export default function MetaCampaignsCampaignsPage() {
       const data = await getMetaCampaignsOverview(businessId, rangeQuery);
       setCampaigns(data.campaigns || []);
       setCurrency(resolveCampaignCurrency(data.connection?.selectedAdAccount?.currency));
+      setInsightsError(data.insightsSync?.ok === false ? data.insightsSync.error || "unavailable" : null);
+      const syncedAt = data.insightsSync?.syncedAt || data.connection?.lastSyncAt;
+      if (!data.insightsSync || data.insightsSync.ok !== false) {
+        setLastSynced(syncedAt ? new Date(syncedAt) : new Date());
+      } else if (syncedAt) {
+        setLastSynced(new Date(syncedAt));
+      }
     } catch (error) {
       const kind = metaAdsFriendlyMessage(error, "LOAD");
       toast.error(
@@ -83,11 +113,22 @@ export default function MetaCampaignsCampaignsPage() {
     const filtered = campaigns.filter((row) => {
       const hay = `${row.name || ""}`.toLowerCase();
       if (query && !hay.includes(query.toLowerCase())) return false;
-      const status = String(row.configuredStatus || row.status || "").toUpperCase();
+      const status = campaignListStatus(row);
       if (statusFilter !== "all" && status !== statusFilter) return false;
       return true;
     });
     return filtered.sort((a, b) => {
+      if (sortKey === "impressions" || sortKey === "reach") {
+        const av = campaignDeliveryMetric(a, sortKey);
+        const bv = campaignDeliveryMetric(b, sortKey);
+        if (av == null && bv == null) return 0;
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        return bv - av;
+      }
+      const aDraft = campaignListStatus(a) === "DRAFT" ? 1 : 0;
+      const bDraft = campaignListStatus(b) === "DRAFT" ? 1 : 0;
+      if (aDraft !== bDraft) return bDraft - aDraft;
       if (sortKey === "name") return String(a.name).localeCompare(String(b.name));
       const av =
         sortKey === "spend"
@@ -109,12 +150,40 @@ export default function MetaCampaignsCampaignsPage() {
     ? String(pending.configuredStatus || pending.status || "").toUpperCase() !== "ACTIVE"
     : false;
 
+  async function duplicateDraft(campaign: MetaCampaign, publishId: string) {
+    if (!businessId || !publishId) {
+      toast.error(t("metaCampaigns.actions.noDraftToDuplicate"));
+      return;
+    }
+    setBusyId(campaign.id);
+    try {
+      const copy = await duplicateLocalCampaignDraft(businessId, publishId);
+      toast.success(t("metaCampaigns.actions.duplicateDraftDone"));
+      if (copy.publishId) navigate(`${basePath}/edit/${copy.publishId}`);
+      else await load();
+    } catch (error) {
+      const message = (error as { response?: { data?: { error?: string } } })?.response?.data?.error;
+      toast.error(message || t("metaCampaigns.actions.noDraftToDuplicate"));
+    } finally {
+      setBusyId("");
+    }
+  }
+
   return (
     <div className="space-y-4" data-testid="meta-campaigns-list">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h2 className="text-lg font-black">{t("metaCampaigns.nav.campaigns")}</h2>
           <p className="text-sm font-semibold text-slate-500">{t("metaCampaigns.ux.campaignsSubtitle")}</p>
+          {!loading ? (
+            <p
+              className="text-sm font-black text-slate-700"
+              data-testid="meta-campaign-count"
+              data-count={rows.length}
+            >
+              {t("metaCampaigns.table.subtitle", { count: rows.length })}
+            </p>
+          ) : null}
         </div>
         <CreateCampaignButton basePath={basePath} />
       </div>
@@ -136,6 +205,9 @@ export default function MetaCampaignsCampaignsPage() {
           <option value="all">{t("metaCampaigns.segments.all")}</option>
           <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
           <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
+          <option value="DRAFT">{t("metaCampaigns.status.draft")}</option>
+          <option value="PENDING_PUBLISH">{t("metaCampaigns.status.pending_publish")}</option>
+          <option value="FAILED">{t("metaCampaigns.status.failed")}</option>
         </select>
         <p className="self-center text-xs font-black uppercase tracking-wide text-slate-500">
           {t("metaCampaigns.ux.showingRange", { range: t(rangeLabelKey) })}
@@ -148,9 +220,25 @@ export default function MetaCampaignsCampaignsPage() {
         >
           <option value="spend">{t("metaCampaigns.table.spend")}</option>
           <option value="results">{t("metaCampaigns.table.results")}</option>
+          <option value="impressions">{t("metaCampaigns.table.impressions")}</option>
+          <option value="reach">{t("metaCampaigns.table.reach")}</option>
           <option value="cpl">{t("metaCampaigns.kpis.cpl")}</option>
           <option value="name">{t("metaCampaigns.table.name")}</option>
         </select>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <p className="text-xs font-semibold text-slate-500" data-testid="meta-campaign-insights-synced">
+          {insightsError === "rate_limit"
+            ? t("metaCampaigns.actions.rateLimited")
+            : insightsError
+              ? t("metaCampaigns.ux.attentionNoData")
+              : t("metaCampaigns.overview.lastSynced", { time: formatDateTimeHe(lastSynced) })}
+        </p>
+        <button type="button" className={btnSecondary} onClick={() => void load()} data-testid="meta-campaign-refresh">
+          <RefreshCw className="h-4 w-4" />
+          {t("metaCampaigns.actions.refresh")}
+        </button>
       </div>
 
       {loading ? (
@@ -171,13 +259,16 @@ export default function MetaCampaignsCampaignsPage() {
         <>
         <div className="space-y-3 md:hidden">
           {rows.map((campaign) => {
-            const delivery = campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
+            const listStatus = campaignListStatus(campaign);
+            const delivery = listStatus || campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
             const tone = statusTone(delivery);
             const results = campaign.metrics?.results ?? campaign.metrics?.leads;
             const cpl = campaign.metrics?.costPerResult ?? campaign.metrics?.costPerLead;
-            const configured = String(campaign.configuredStatus || campaign.status || "").toUpperCase();
+            const canToggleLive = !campaign.localOnly && listStatus !== "DRAFT";
+            const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
+            const editId = campaign.localOnly ? draftId : campaign.id;
             return (
-              <article key={campaign.id} className={`${cardBase} space-y-3 p-4`}>
+              <article key={campaign.id} className={`${cardBase} space-y-3 p-4`} data-testid={`campaign-row-${campaign.id}`}>
                 <button type="button" className="w-full text-start" onClick={() => setDetails(campaign)}>
                   <p className="break-words font-black text-slate-900">{campaign.name}</p>
                   <p className="text-xs font-semibold text-slate-400">
@@ -189,10 +280,11 @@ export default function MetaCampaignsCampaignsPage() {
                     {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
                   </span>
                   <span className="text-xs font-semibold text-slate-500">
-                    {configured !== String(campaign.effectiveStatus || "").toUpperCase()
-                      ? t("metaCampaigns.ux.statusMismatch")
-                      : t("metaCampaigns.ux.deliveryOk")}
+                    {formatDateTimeHe(campaign.localUpdatedAt || campaign.updatedTime)}
                   </span>
+                  {campaign.hasUnpublishedChanges ? (
+                    <span className="text-xs font-bold text-sky-700">{t("metaCampaigns.adsManager.chrome.unpublishedChanges")}</span>
+                  ) : null}
                 </div>
                 <dl className="grid grid-cols-2 gap-2 text-sm">
                   <div>
@@ -217,17 +309,50 @@ export default function MetaCampaignsCampaignsPage() {
                       {formatMetricOrDash((results || 0) > 0 ? cpl : null, (n) => formatCurrency(n, currency))}
                     </dd>
                   </div>
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.impressions")}</dt>
+                    <dd className="font-bold tabular-nums" data-testid={`campaign-impressions-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "impressions")}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-semibold text-slate-500">{t("metaCampaigns.table.reach")}</dt>
+                    <dd className="font-bold tabular-nums" data-testid={`campaign-reach-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "reach")}
+                    </dd>
+                  </div>
                 </dl>
                 <div className="flex flex-wrap gap-2">
                   <button type="button" className={btnSecondary} onClick={() => setDetails(campaign)}>
                     {t("metaCampaigns.actions.viewDetails")}
                   </button>
-                  <button type="button" className={btnSecondary} onClick={() => navigate(`${basePath}/edit/${campaign.id}`)}>
+                  <button type="button" className={btnSecondary} onClick={() => navigate(`${basePath}/edit/${editId || campaign.id}`)}>
                     {t("metaCampaigns.actions.edit")}
                   </button>
-                  <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
-                    {configured === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                  <button
+                    type="button"
+                    className={btnSecondary}
+                    disabled={!draftId || busyId === campaign.id}
+                    onClick={() => void duplicateDraft(campaign, draftId)}
+                  >
+                    {t("metaCampaigns.actions.duplicateDraft")}
                   </button>
+                  <button
+                    type="button"
+                    className={`${btnSecondary} inline-flex min-h-11 min-w-11 items-center justify-center gap-1`}
+                    aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                    data-testid={`meta-campaign-delete-${campaign.id}`}
+                    disabled={deletion.busy}
+                    onClick={() => deletion.ask(campaign)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    {t("metaCampaigns.actions.delete")}
+                  </button>
+                  {canToggleLive ? (
+                    <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
+                      {listStatus === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                    </button>
+                  ) : null}
                 </div>
               </article>
             );
@@ -243,20 +368,25 @@ export default function MetaCampaignsCampaignsPage() {
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.spend")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.results")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.kpis.cpl")}</th>
+                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.impressions")}</th>
+                <th className="px-3 py-3 text-start">{t("metaCampaigns.table.reach")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.ctr")}</th>
-                <th className="px-3 py-3 text-start">{t("metaCampaigns.ux.delivery")}</th>
+                <th className="px-3 py-3 text-start">{t("metaCampaigns.ux.lastUpdatedLabel")}</th>
                 <th className="px-3 py-3 text-start">{t("metaCampaigns.table.actions")}</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((campaign) => {
-                const delivery = campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
+                const listStatus = campaignListStatus(campaign);
+                const delivery = listStatus || campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
                 const tone = statusTone(delivery);
                 const results = campaign.metrics?.results ?? campaign.metrics?.leads;
                 const cpl = campaign.metrics?.costPerResult ?? campaign.metrics?.costPerLead;
-                const configured = String(campaign.configuredStatus || campaign.status || "").toUpperCase();
+                const canToggleLive = !campaign.localOnly && listStatus !== "DRAFT";
+                const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
+                const editId = campaign.localOnly ? draftId : campaign.id;
                 return (
-                  <tr key={campaign.id} className="border-t border-slate-100">
+                  <tr key={campaign.id} className="border-t border-slate-100" data-testid={`campaign-row-${campaign.id}`}>
                     <td className="px-3 py-3">
                       <button type="button" className="text-start font-black text-slate-900" onClick={() => setDetails(campaign)}>
                         {campaign.name}
@@ -282,13 +412,20 @@ export default function MetaCampaignsCampaignsPage() {
                     <td className="px-3 py-3 font-bold">
                       {formatMetricOrDash((results || 0) > 0 ? cpl : null, (n) => formatCurrency(n, currency))}
                     </td>
+                    <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums" data-testid={`campaign-impressions-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "impressions")}
+                    </td>
+                    <td className="whitespace-nowrap px-3 py-3 font-bold tabular-nums" data-testid={`campaign-reach-${campaign.id}`}>
+                      {formatCampaignDeliveryMetric(campaign, "reach")}
+                    </td>
                     <td className="px-3 py-3 font-bold">
                       {formatMetricOrDash(campaign.metrics?.ctr, (n) => formatPercent(n), { treatZeroAsEmpty: true })}
                     </td>
                     <td className="px-3 py-3 text-xs font-semibold text-slate-500">
-                      {configured !== String(campaign.effectiveStatus || "").toUpperCase()
-                        ? t("metaCampaigns.ux.statusMismatch")
-                        : t("metaCampaigns.ux.deliveryOk")}
+                      <div>{formatDateTimeHe(campaign.localUpdatedAt || campaign.updatedTime)}</div>
+                      {campaign.hasUnpublishedChanges ? (
+                        <div className="font-bold text-sky-700">{t("metaCampaigns.adsManager.chrome.unpublishedChanges")}</div>
+                      ) : null}
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex flex-wrap gap-1">
@@ -299,14 +436,35 @@ export default function MetaCampaignsCampaignsPage() {
                           type="button"
                           className={btnSecondary}
                           aria-label={t("metaCampaigns.actions.edit")}
-                          onClick={() => navigate(`${basePath}/edit/${campaign.id}`)}
+                          onClick={() => navigate(`${basePath}/edit/${editId || campaign.id}`)}
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </button>
-                        <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
-                          {configured === "ACTIVE" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-                          {configured === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                        <button
+                          type="button"
+                          className={btnSecondary}
+                          aria-label={t("metaCampaigns.actions.duplicateDraft")}
+                          disabled={!draftId || busyId === campaign.id}
+                          onClick={() => void duplicateDraft(campaign, draftId)}
+                        >
+                          <Copy className="h-3.5 w-3.5" />
                         </button>
+                        <button
+                          type="button"
+                          className={`${btnSecondary} inline-flex min-h-11 min-w-11 items-center justify-center`}
+                          aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                          data-testid={`meta-campaign-delete-${campaign.id}`}
+                          disabled={deletion.busy}
+                          onClick={() => deletion.ask(campaign)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                        {canToggleLive ? (
+                          <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
+                            {listStatus === "ACTIVE" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                            {listStatus === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                          </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
@@ -332,6 +490,14 @@ export default function MetaCampaignsCampaignsPage() {
           onChanged={() => void load()}
         />
       ) : null}
+
+      <MetaCampaignDeleteDialog
+        campaign={deletion.target}
+        busy={deletion.busy}
+        error={deletion.error}
+        onClose={deletion.close}
+        onConfirm={() => void deletion.confirm()}
+      />
 
       {pending ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4" role="dialog" aria-modal="true">

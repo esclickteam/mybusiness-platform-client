@@ -83,12 +83,23 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
     );
   }, []);
 
-  const markServerSaved = useCallback((publishRecordId?: string) => {
+  const markServerSaved = useCallback((
+    publishRecordId?: string,
+    extra?: {
+      draftRevision?: number;
+      hasUnpublishedChanges?: boolean;
+      lastSavedAt?: string | null;
+    }
+  ) => {
     setState((prev) => ({
       ...prev,
       saveStatus: "saved",
-      lastSavedAt: new Date().toISOString(),
+      lastSavedAt: extra?.lastSavedAt || new Date().toISOString(),
       ...(publishRecordId ? { publishRecordId } : {}),
+      ...(extra?.draftRevision != null ? { draftRevision: extra.draftRevision } : {}),
+      ...(extra?.hasUnpublishedChanges != null
+        ? { hasUnpublishedChanges: extra.hasUnpublishedChanges }
+        : {}),
     }));
   }, []);
 

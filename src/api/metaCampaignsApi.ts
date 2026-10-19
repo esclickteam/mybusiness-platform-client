@@ -30,14 +30,16 @@ export type MetaCampaignMetrics = {
   results?: number;
   clicks: number;
   linkClicks?: number;
-  impressions: number;
+  impressions: number | null;
   ctr: number;
   cpc: number;
   cpm?: number;
   costPerLead: number;
   costPerResult?: number;
   roas: number;
-  reach?: number;
+  reach?: number | null;
+  /** False when Meta did not return a campaign insight for this range. */
+  insightsAvailable?: boolean;
   frequency?: number;
   dateStart?: string | null;
   dateStop?: string | null;
@@ -53,8 +55,22 @@ export type MetaCampaign = {
   effectiveStatus: string;
   deliveryStatus?: string;
   campaignEffectiveStatus?: string;
-  editorDraft?: { ads?: Array<Record<string, string>> } | null;
+  editorDraft?: {
+    ads?: Array<Record<string, string>>;
+    workspace?: Record<string, unknown> | null;
+    revision?: number;
+    hasUnpublishedChanges?: boolean;
+    savedAt?: string;
+    publishedSnapshot?: Record<string, unknown> | null;
+    metaBaseline?: Record<string, unknown> | null;
+  } | null;
   publishRecordId?: string;
+  localOnly?: boolean;
+  localDraft?: boolean;
+  hasUnpublishedChanges?: boolean;
+  publishFailed?: boolean;
+  lastError?: string;
+  localUpdatedAt?: string | null;
   creativeLinkedOnMeta?: boolean;
   objective: string;
   dailyBudget: number;
@@ -357,6 +373,12 @@ export type MetaCampaignsOverview = {
     previousRange?: { since: string; until: string };
   } | null;
   demoData?: boolean;
+  insightsSync?: {
+    ok: boolean;
+    level?: string;
+    syncedAt?: string | null;
+    error?: "rate_limit" | "unavailable" | null;
+  } | null;
 };
 
 export type MetaCarouselCard = {
@@ -760,7 +782,16 @@ export async function updateMetaAd(
 export type MetaEditorDraftSaveResult = {
   success: boolean;
   publishId: string;
-  editorDraft?: { ads?: Array<Record<string, string>> } | null;
+  editorDraft?: {
+    ads?: Array<Record<string, string>>;
+    workspace?: Record<string, unknown> | null;
+    revision?: number;
+    savedAt?: string;
+  } | null;
+  revision?: number;
+  savedAt?: string | null;
+  hasUnpublishedChanges?: boolean;
+  localOnly?: boolean;
   publishStatus?: string;
   displayStatus?: string;
   metaCampaignId?: string;
@@ -769,6 +800,7 @@ export type MetaEditorDraftSaveResult = {
   metaAdId?: string;
   creativeOnMeta?: boolean;
   error?: string;
+  code?: string;
 };
 
 export async function saveMetaEditorDraft(
@@ -779,6 +811,11 @@ export async function saveMetaEditorDraft(
     localName?: string;
     objective?: string;
     editorDraft: unknown;
+    expectedRevision?: number;
+    differsFromMeta?: boolean;
+    markPublished?: boolean;
+    restorePublished?: boolean;
+    metaBaseline?: unknown;
   }
 ) {
   const path = body.publishId
@@ -788,6 +825,23 @@ export async function saveMetaEditorDraft(
     businessId,
     ...body,
   });
+  return data;
+}
+
+export async function deleteLocalCampaignDraft(businessId: string | undefined, publishId: string) {
+  const { data } = await API.delete<{ success: boolean; publishId: string }>(
+    `/meta-campaigns/publishes/${publishId}/draft`,
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function duplicateLocalCampaignDraft(businessId: string | undefined, publishId: string) {
+  const { data } = await API.post<MetaEditorDraftSaveResult>(
+    `/meta-campaigns/publishes/${publishId}/duplicate-draft`,
+    { businessId },
+    withBusiness(businessId)
+  );
   return data;
 }
 
@@ -919,6 +973,39 @@ export async function uploadMetaMedia(
   return data;
 }
 
+export type MetaLeadgenTosStatusName =
+  | "accepted"
+  | "required"
+  | "missing_permission"
+  | "unavailable"
+  | "demo"
+  | "partnership";
+
+export type MetaLeadgenTosStatus = {
+  success: boolean;
+  pageId: string;
+  pageName?: string;
+  accepted: boolean;
+  verified: boolean;
+  status: MetaLeadgenTosStatusName;
+  tosUrl: string;
+  acceptanceTime?: string | null;
+  checkedAt?: string;
+  message?: string;
+  demoSafe?: boolean;
+};
+
+export async function getMetaLeadgenTos(
+  businessId: string | undefined,
+  pageId: string
+) {
+  const { data } = await API.get<MetaLeadgenTosStatus>(
+    "/meta-campaigns/leadgen-tos",
+    withBusiness(businessId, { pageId })
+  );
+  return data;
+}
+
 export async function listMetaLeadForms(
   businessId: string | undefined,
   pageId?: string
@@ -928,9 +1015,27 @@ export async function listMetaLeadForms(
     pageId: string;
     forms: MetaLeadForm[];
     questionTypes?: MetaLeadFormQuestionType[];
+    warning?: string;
+    metaUnavailable?: boolean;
   }>("/meta-campaigns/lead-forms", withBusiness(businessId, { pageId }));
   return data;
 }
+
+export type MetaLeadFormWriteResult = {
+  success: boolean;
+  form?: MetaLeadForm & { pageId?: string };
+  confirmedByMeta?: boolean;
+  demoSafe?: boolean;
+  savedLocally?: boolean;
+  recovered?: boolean;
+  campaignLinked?: boolean;
+  leadIntake?: {
+    active?: boolean;
+    webhookSubscribed?: boolean;
+    reason?: string;
+  };
+  error?: string;
+};
 
 export async function createMetaLeadForm(
   businessId: string | undefined,
@@ -955,10 +1060,32 @@ export async function createMetaLeadForm(
     additionalAction?: "website" | "file" | "call" | "whatsapp";
     whatsappPhone?: string;
     callPhone?: string;
+    idempotencyKey?: string;
+    publishId?: string;
+    adDraftId?: string;
   }
 ) {
-  const { data } = await API.post<{ success: boolean; form: MetaLeadForm }>(
+  const { data } = await API.post<MetaLeadFormWriteResult>(
     "/meta-campaigns/lead-forms",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function syncMetaLeadForm(
+  businessId: string | undefined,
+  payload: {
+    pageId?: string;
+    formId: string;
+    name?: string;
+    idempotencyKey?: string;
+    publishId?: string;
+    adDraftId?: string;
+  }
+) {
+  const { data } = await API.post<MetaLeadFormWriteResult>(
+    "/meta-campaigns/lead-forms/sync",
     { ...payload, businessId },
     withBusiness(businessId)
   );

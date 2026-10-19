@@ -102,6 +102,7 @@ import {
   type LeadFormCustomQuestionDraft,
   type MetaPreviewFormat,
 } from "./metaCampaignUtils";
+import { formatCampaignDeliveryMetric } from "./campaignDeliveryMetrics";
 
 type OutletCtx = { businessId: string | null };
 
@@ -2443,16 +2444,16 @@ export default function MetaCampaignEditorPage() {
                 <dt className="font-semibold text-slate-500">
                   {t("metaCampaigns.table.impressions")}
                 </dt>
-                <dd className="font-black text-slate-900">
-                  {formatNumber(campaign?.metrics?.impressions || 0)}
+                <dd className="font-black tabular-nums text-slate-900">
+                  {campaign ? formatCampaignDeliveryMetric(campaign, "impressions") : "—"}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-3">
                 <dt className="font-semibold text-slate-500">
                   {t("metaCampaigns.table.reach")}
                 </dt>
-                <dd className="font-black text-slate-900">
-                  {formatNumber(campaign?.metrics?.reach || 0)}
+                <dd className="font-black tabular-nums text-slate-900">
+                  {campaign ? formatCampaignDeliveryMetric(campaign, "reach") : "—"}
                 </dd>
               </div>
               <div className="flex items-center justify-between gap-3">

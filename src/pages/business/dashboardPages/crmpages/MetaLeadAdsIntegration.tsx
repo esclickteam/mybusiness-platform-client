@@ -73,6 +73,25 @@ type MetaLeadAdsIntegrationProps = {
   onLeadsSynced?: (summary: AdminMetaSyncSummary) => void;
 };
 
+type IntakePanel = {
+  metaConnected?: boolean;
+  leadAdsConnected?: boolean;
+  pageName?: string;
+  permissions?: {
+    ok?: boolean;
+    missing?: string[];
+    advancedAccessScopes?: string[];
+  };
+  webhook?: {
+    status?: "subscribed" | "not_subscribed" | "unknown" | string;
+    lastEventAt?: string | null;
+  };
+  lastLeadAt?: string | null;
+  leadCount?: number;
+  failedCount?: number;
+  lastError?: string;
+};
+
 type StatusPayload = {
   success: boolean;
   connectedPage: ConnectedPage | null;
@@ -88,6 +107,7 @@ type StatusPayload = {
   reconnectRequired?: boolean;
   healthReasons?: string[];
   lastError?: string;
+  intake?: IntakePanel;
 };
 
 const T = "crm.leads.metaIntegration";
@@ -129,6 +149,8 @@ export default function MetaLeadAdsIntegration({
   const [syncing, setSyncing] = useState(false);
   const [syncSummary, setSyncSummary] = useState<AdminMetaSyncSummary | null>(null);
   const [statusSnapshot, setStatusSnapshot] = useState<MetaLeadWizardSnapshot>({});
+  const [intake, setIntake] = useState<IntakePanel | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
   const isAdminCrm = destination === "admin_crm";
   const reconnectRequired = Boolean(statusSnapshot.reconnectRequired);
@@ -209,6 +231,7 @@ export default function MetaLeadAdsIntegration({
     setSelectedForm(nextSelectedForm);
     setSelectedForms(nextSelectedForms);
     setSelectedPageId(nextConnectedPage?.pageId || "");
+    setIntake(data.intake || null);
     setStatusSnapshot({
       metaAccountConnected:
         data.metaAccountConnected ??
@@ -486,6 +509,44 @@ export default function MetaLeadAdsIntegration({
     return summary;
   };
 
+  const formatWhen = (value?: string | null) => {
+    if (!value) return t(`${T}.panel.never`);
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return t(`${T}.panel.never`);
+    return date.toLocaleString();
+  };
+
+  const retryFailed = async () => {
+    try {
+      setBusy(true);
+      setRetrying(true);
+      setError("");
+      setSuccess("");
+      const { data } = await API.post<{
+        resolved?: number;
+        failed?: number;
+        stoppedForRateLimit?: boolean;
+      }>("/meta-leads/retry-failed", {}, { params: tenantParams, timeout: 180000 });
+      if (data.stoppedForRateLimit) {
+        setError(t(`${T}.panel.retryRateLimit`));
+      } else {
+        setSuccess(
+          t(`${T}.panel.retryDone`, {
+            resolved: data.resolved || 0,
+            failed: data.failed || 0,
+          })
+        );
+      }
+      window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+      await loadStatus();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t(`${T}.errors.retryFailed`));
+    } finally {
+      setBusy(false);
+      setRetrying(false);
+    }
+  };
+
   const syncLeads = async () => {
     if (!isAdminCrm) return;
     if (!hasForm) {
@@ -676,6 +737,115 @@ export default function MetaLeadAdsIntegration({
                     <p>{success}</p>
                   </div>
                 )}
+
+                {intake ? (
+                  <section
+                    data-testid="meta-lead-intake-panel"
+                    className="mb-4 rounded-2xl border border-slate-200 bg-white p-4"
+                  >
+                    <h2 className="text-sm font-black text-slate-900">
+                      {t(`${T}.panel.title`)}
+                    </h2>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      <div className="rounded-xl border border-slate-200 bg-[#F4F5F8] p-3">
+                        <p className="text-[11px] font-bold text-slate-500">
+                          {t(`${T}.panel.metaConnection`)}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-slate-900">
+                          {intake.metaConnected
+                            ? t(`${T}.panel.connected`)
+                            : t(`${T}.panel.notConnected`)}
+                          {intake.pageName ? ` · ${intake.pageName}` : ""}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 bg-[#F4F5F8] p-3">
+                        <p className="text-[11px] font-bold text-slate-500">
+                          {t(`${T}.panel.permissions`)}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-slate-900">
+                          {intake.permissions?.ok
+                            ? t(`${T}.panel.permissionsOk`)
+                            : t(`${T}.panel.permissionsMissing`, {
+                                scopes: (intake.permissions?.missing || []).join(", ") || emDash,
+                              })}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 bg-[#F4F5F8] p-3">
+                        <p className="text-[11px] font-bold text-slate-500">
+                          {t(`${T}.panel.webhook`)}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-slate-900">
+                          {intake.webhook?.status === "subscribed"
+                            ? t(`${T}.panel.webhookOn`)
+                            : intake.webhook?.status === "not_subscribed"
+                              ? t(`${T}.panel.webhookOff`)
+                              : t(`${T}.panel.webhookUnknown`)}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 bg-[#F4F5F8] p-3">
+                        <p className="text-[11px] font-bold text-slate-500">
+                          {t(`${T}.panel.lastLead`)}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-slate-900">
+                          {formatWhen(intake.lastLeadAt || intake.webhook?.lastEventAt)}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 bg-[#F4F5F8] p-3">
+                        <p className="text-[11px] font-bold text-slate-500">
+                          {t(`${T}.panel.leadCount`)}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-slate-900">
+                          {intake.leadCount || 0}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-slate-200 bg-[#F4F5F8] p-3">
+                        <p className="text-[11px] font-bold text-slate-500">
+                          {t(`${T}.panel.errors`)}
+                        </p>
+                        <p className="mt-1 text-sm font-black text-slate-900">
+                          {intake.lastError
+                            ? intake.lastError
+                            : Number(intake.failedCount || 0) > 0
+                              ? t(`${T}.panel.failedCount`, {
+                                  count: intake.failedCount,
+                                })
+                              : t(`${T}.panel.noErrors`)}
+                        </p>
+                      </div>
+                    </div>
+                    {(intake.permissions?.advancedAccessScopes || []).length > 0 ? (
+                      <p className="mt-3 text-xs font-bold leading-5 text-slate-500">
+                        {t(`${T}.panel.reviewNote`)}
+                      </p>
+                    ) : null}
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {Number(intake.failedCount || 0) > 0 && isConnected ? (
+                        <button
+                          type="button"
+                          onClick={retryFailed}
+                          disabled={busy}
+                          className="inline-flex h-10 items-center gap-2 rounded-xl bg-violet-600 px-4 text-xs font-black text-white transition hover:bg-violet-500 disabled:opacity-60"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                          {retrying
+                            ? t(`${T}.panel.retrying`)
+                            : t(`${T}.panel.retryFailed`)}
+                        </button>
+                      ) : null}
+                      {connectedPage?.pageId ? (
+                        <button
+                          type="button"
+                          onClick={disconnect}
+                          disabled={busy}
+                          className="inline-flex h-10 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-black text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
+                        >
+                          <Unplug className="h-4 w-4" />
+                          {t(`${T}.disconnect`)}
+                        </button>
+                      ) : null}
+                    </div>
+                  </section>
+                ) : null}
 
                 {reconnectRequired ? (
                   <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">

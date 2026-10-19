@@ -18,6 +18,7 @@ import {
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdsManagerCreateLeadFormModal from "../AdsManagerCreateLeadFormModal";
 import { metaCtaLabel, metaCtaOptions } from "../metaAdCtas";
+import LeadgenTosCard from "../LeadgenTosCard";
 import {
   MetaField,
   MetaLinkButton,
@@ -38,8 +39,11 @@ type Props = {
   pages: MetaAdsPage[];
   businessId: string | null;
   sessionMode?: "create" | "edit";
+  showLeadgenTos?: boolean;
+  publishId?: string;
   onChange: (patch: Partial<AdDraft>) => void;
   onFormsRefresh?: () => Promise<void> | void;
+  onFormReady?: (form: { id: string; name: string; pageId: string }) => Promise<void> | void;
 };
 
 export default function AdLevelEditor({
@@ -50,8 +54,11 @@ export default function AdLevelEditor({
   pages,
   businessId,
   sessionMode = "create",
+  showLeadgenTos = false,
+  publishId,
   onChange,
   onFormsRefresh,
+  onFormReady,
 }: Props) {
   const { t } = useTranslation();
   const c = (key: string, opts?: Record<string, unknown>) =>
@@ -178,9 +185,13 @@ export default function AdLevelEditor({
             ))}
           </select>
         </MetaField>
-        <MetaNotice tone="success">
-          {c("leadAdsTermsAccepted")}
-        </MetaNotice>
+        {showLeadgenTos ? (
+          <LeadgenTosCard
+            businessId={businessId}
+            pageId={ad.facebookPageId}
+            pageName={ad.facebookPageName}
+          />
+        ) : null}
       </MetaSection>
 
       <MetaSection
@@ -582,14 +593,18 @@ export default function AdLevelEditor({
         businessId={businessId}
         pageId={ad.facebookPageId}
         pageName={ad.facebookPageName}
+        publishId={publishId}
+        adDraftId={ad.id}
         onClose={() => setCreateFormOpen(false)}
-        onCreated={async (formId) => {
+        onCreated={async (form) => {
           onChange({
-            instantFormId: formId,
-            formPageId: ad.facebookPageId,
+            instantFormId: form.id,
+            instantFormName: form.name,
+            formPageId: form.pageId || ad.facebookPageId,
             formLinkedOnMeta: false,
             formTab: "active",
           });
+          await onFormReady?.(form);
           await onFormsRefresh?.();
         }}
       />

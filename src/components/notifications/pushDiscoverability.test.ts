@@ -102,6 +102,25 @@ describe("getPushDiscoverabilityState", () => {
     ).toEqual({ showUpsell: true, trialEligible: false });
   });
 
+  it("does not offer a trial or upsell for a complimentary grant", () => {
+    expect(
+      getPushDiscoverabilityState({
+        billingEnabled: true,
+        entitled: true,
+        trialEligible: true,
+        subscription: {
+          status: "active",
+          planKey: "push_complimentary",
+          cancelAtPeriodEnd: false,
+          currentPeriodEnd: null,
+          complimentary: true,
+          billingProvider: "complimentary",
+          displayStatusHe: "פעיל \u2013 ללא חיוב",
+        },
+      })
+    ).toEqual({ showUpsell: false, trialEligible: false });
+  });
+
   it("prefers the server trialEligible flag over the local trialUsedAt fallback", () => {
     expect(
       getPushDiscoverabilityState({

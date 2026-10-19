@@ -4,20 +4,19 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import {
-  duplicateMetaCampaign,
+  duplicateLocalCampaignDraft,
   estimateMetaAudienceReach,
   getMetaCampaign,
   getMetaCampaignsStatus,
+  getMetaLeadgenTos,
   listMetaLeadForms,
   publishMetaCampaign,
   retryMetaPublish,
   syncMetaPublish,
   saveMetaEditorDraft,
-  updateMetaAd,
-  updateMetaAdSet,
-  updateMetaCampaign,
   type MetaAdsConnectionStatus,
   type MetaCampaignPublishRecord,
+  type MetaEditorDraftSaveResult,
   type MetaLeadForm,
 } from "../../../../../api/metaCampaignsApi";
 import MetaAdsManagerTree from "./MetaAdsManagerTree";
@@ -41,18 +40,16 @@ import {
   isAdsManagerDirty,
 } from "./adsManagerDiff";
 import {
-  buildAdSetUpdateFromDiff,
-  buildAdUpdateFromDiff,
-  buildCampaignUpdateFromDiff,
-} from "./adsManagerEditPayloads";
-import {
-  applyEditorDraft,
   buildEditorDraft,
   editorDraftHasUnstoredImage,
   isRealMetaObjectId,
+  stateFromSavedDraft,
+  workspaceFromState,
 } from "./editorDraft";
 import type { AdsManagerState } from "./adsManagerTypes";
+import type { EditorDraft, EditorWorkspace } from "./editorDraft";
 import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
+import { leadgenTosBlocksPublish } from "./leadgenTos";
 import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import { getTextDirection } from "@/i18n/localeUtils";
 import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
@@ -117,10 +114,19 @@ export default function MetaAdsManagerPage() {
   );
   const [editLoading, setEditLoading] = useState(isEditSession);
   const [leaveOpen, setLeaveOpen] = useState(false);
+  const [discardPublishedOpen, setDiscardPublishedOpen] = useState(false);
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false);
   const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
+  const publishedBaselineRef = useRef<AdsManagerState | null>(null);
   const publishRecordIdRef = useRef("");
+  const revisionRef = useRef<number | undefined>(undefined);
+  const metaBaselineRef = useRef<ReturnType<typeof workspaceFromState> | null>(null);
+  const stateRef = useRef(ctrl.state);
+  const autosaveLock = useRef(false);
+  const conflictRef = useRef(false);
+  const saveQueue = useRef(Promise.resolve());
+  stateRef.current = ctrl.state;
 
   const loadLeadForms = async (pageId?: string | null) => {
     if (!businessId || !pageId || pageId.startsWith("page_")) {
@@ -133,6 +139,7 @@ export default function MetaAdsManagerPage() {
     try {
       const formsRes = await listMetaLeadForms(businessId, pageId);
       setLeadForms(formsRes?.forms || []);
+      if (formsRes?.warning) toast.error(formsRes.warning);
     } catch (error: any) {
       setLeadForms([]);
       const message =
@@ -161,7 +168,29 @@ export default function MetaAdsManagerPage() {
         replaceState(hydrated);
         baselineRef.current = hydrated;
         publishRecordIdRef.current = hydrated.publishRecordId || "";
-        setServerAck(false);
+        revisionRef.current = hydrated.draftRevision;
+        conflictRef.current = false;
+        const savedDraft = data.campaign.editorDraft;
+        const publishedSource = savedDraft?.publishedSnapshot || savedDraft?.metaBaseline;
+        if (publishedSource && typeof publishedSource === "object") {
+          publishedBaselineRef.current = stateFromSavedDraft(
+            { workspace: publishedSource as EditorWorkspace },
+            {
+              currency: data.currency,
+              publishRecordId: hydrated.publishRecordId,
+            }
+          );
+          metaBaselineRef.current = null;
+        } else if (isRealMetaObjectId(campaignId)) {
+          publishedBaselineRef.current = hydrated;
+          metaBaselineRef.current = savedDraft?.workspace
+            ? null
+            : workspaceFromState(hydrated);
+        } else {
+          publishedBaselineRef.current = null;
+          metaBaselineRef.current = null;
+        }
+        setServerAck(Boolean(hydrated.lastSavedAt));
       } catch (error: unknown) {
         const err = error as { response?: { data?: { error?: string } }; message?: string };
         toast.error(
@@ -178,6 +207,10 @@ export default function MetaAdsManagerPage() {
   }, [businessId, campaignId, isEditSession, navigate, replaceState, t]);
 
   const dirty = isAdsManagerDirty(baselineRef.current, state);
+  const unpublishedChanges = useMemo(() => {
+    if (!publishedBaselineRef.current || !isRealMetaObjectId(campaignId)) return [];
+    return diffAdsManagerState(publishedBaselineRef.current, state);
+  }, [campaignId, state]);
   const reviewErrors = useMemo(
     () => (state.mode === "review" ? validateAdsManagerClient(state) : []),
     [state]
@@ -466,6 +499,7 @@ export default function MetaAdsManagerPage() {
       return;
     }
 
+    let savedDraft: MetaEditorDraftSaveResult | null = null;
     try {
       setPublishing(true);
       const payload = {
@@ -482,7 +516,37 @@ export default function MetaAdsManagerPage() {
           connection.selectedPage?.pageId || payload.pageId;
       }
 
+      savedDraft = await persistEditorDraft(state);
+      const usesInstantForms = String(state.adSets[0]?.conversionLocation || "")
+        .toLowerCase()
+        .includes("instant");
+      if (usesInstantForms && payload.pageId && !isGuidedDemoActive()) {
+        try {
+          const tos = await getMetaLeadgenTos(businessId, payload.pageId);
+          if (leadgenTosBlocksPublish(tos)) {
+            if (savedDraft) rememberSaved(stateRef.current, savedDraft);
+            const pageLabel =
+              state.adSets[0]?.facebookPageName ||
+              state.ads[0]?.facebookPageName ||
+              payload.pageId;
+            toast.error(
+              tos.status === "missing_permission"
+                ? t("metaCampaigns.adsManager.chrome.leadgenTosMissingPermission", {
+                    page: pageLabel,
+                  })
+                : tos.message ||
+                    t("metaCampaigns.adsManager.chrome.leadgenTosRequired", {
+                      page: pageLabel,
+                    })
+            );
+            return;
+          }
+        } catch {
+          /* The server checks again and does not create Meta objects if terms are unverified. */
+        }
+      }
       const resumeId =
+        savedDraft.publishId ||
         publishRecordIdRef.current ||
         (publishResult?.id && publishResult.publishStatus !== "submitted"
           ? publishResult.id
@@ -523,6 +587,13 @@ export default function MetaAdsManagerPage() {
       }
       setPublishResult(result.publish);
       setModalOpen(true);
+      try {
+        const published = await persistEditorDraft(stateRef.current, { markPublished: true });
+        rememberSaved(stateRef.current, published);
+        publishedBaselineRef.current = stateRef.current;
+      } catch {
+        /* Meta accepted the publish. The next local save can clear the unpublished flag. */
+      }
       const blockers = result.activationBlockers || [];
       const outcome = result.publish?.outcome;
       if (blockers.length) {
@@ -560,6 +631,7 @@ export default function MetaAdsManagerPage() {
         setPublishResult(publish);
         setModalOpen(true);
       }
+      if (savedDraft?.publishId) rememberSaved(stateRef.current, savedDraft);
       toast.error(
         err.response?.data?.error ||
           err.message ||
@@ -571,89 +643,126 @@ export default function MetaAdsManagerPage() {
   };
 
   const requestLeave = () => {
-    if (isEditSession && dirty) {
+    if (dirty) {
       setLeaveOpen(true);
       return;
     }
     navigate("../campaigns");
   };
 
-  const handleDuplicate = async () => {
-    if (!businessId || !campaignId) return;
-    try {
-      setPublishing(true);
-      const result = await duplicateMetaCampaign(businessId, campaignId);
-      const newId =
-        (result?.result as { campaignId?: string } | undefined)?.campaignId ||
-        "";
-      toast.success(c("duplicateStarted"));
-      if (newId) navigate(`../edit/${newId}`);
-    } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } }; message?: string };
-      toast.error(err.response?.data?.error || err.message || c("saveFailed"));
-    } finally {
-      setPublishing(false);
-    }
-  };
-
-  const persistEditorDraft = async (snapshot: AdsManagerState) => {
+  const persistEditorDraft = async (
+    snapshot: AdsManagerState,
+    options?: { markPublished?: boolean; restorePublished?: boolean }
+  ) => {
+    const run = async () => {
     if (!businessId) throw new Error(c("saveFailed"));
+    const metaCampaignId = isRealMetaObjectId(campaignId) ? campaignId : undefined;
     const result = await saveMetaEditorDraft(businessId, {
       publishId: publishRecordIdRef.current || snapshot.publishRecordId || undefined,
-      metaCampaignId: isEditSession ? campaignId : undefined,
+      metaCampaignId,
       localName: snapshot.campaign.name,
       objective: snapshot.campaign.objective,
-      editorDraft: buildEditorDraft(snapshot),
+      editorDraft: options?.restorePublished ? { workspace: workspaceFromState(snapshot) } : buildEditorDraft(snapshot),
+      expectedRevision: revisionRef.current,
+      differsFromMeta: Boolean(metaCampaignId),
+      markPublished: options?.markPublished,
+      restorePublished: options?.restorePublished,
+      metaBaseline: metaBaselineRef.current || undefined,
     });
     if (!result?.success || !result.publishId) {
       throw new Error(result?.error || c("saveFailed"));
     }
     publishRecordIdRef.current = result.publishId;
+    revisionRef.current = result.revision;
+    if (metaBaselineRef.current) metaBaselineRef.current = null;
     return result;
+    };
+    const queued = saveQueue.current.then(run, run);
+    saveQueue.current = queued.then(
+      () => undefined,
+      () => undefined
+    );
+    return queued;
   };
 
-  const reloadSavedState = async (snapshot: AdsManagerState) => {
-    if (!businessId || !campaignId) {
-      const next: AdsManagerState = {
-        ...snapshot,
-        publishRecordId: publishRecordIdRef.current || snapshot.publishRecordId,
-        saveStatus: "saved",
-        lastSavedAt: new Date().toISOString(),
-      };
-      replaceState(next);
-      baselineRef.current = next;
-      return next;
+  const rememberSaved = (snapshot: AdsManagerState, result: MetaEditorDraftSaveResult) => {
+    const newer = isAdsManagerDirty(snapshot, stateRef.current);
+    const savedAt = result.savedAt || new Date().toISOString();
+    revisionRef.current = result.revision;
+    publishRecordIdRef.current = result.publishId;
+    const savedSnapshot: AdsManagerState = {
+      ...snapshot,
+      publishRecordId: result.publishId,
+      draftRevision: result.revision,
+      hasUnpublishedChanges: Boolean(result.hasUnpublishedChanges),
+      saveStatus: "saved",
+      lastSavedAt: savedAt,
+    };
+    baselineRef.current = savedSnapshot;
+    if (!newer) {
+      replaceState(savedSnapshot);
     }
-    const readBack = await getMetaCampaign(businessId, campaignId);
-    if (!readBack?.campaign) return snapshot;
-    const hydrated = applyEditorDraft(
-      adsManagerStateFromMetaCampaign(readBack.campaign, {
-        currency: readBack.currency,
-      }),
-      buildEditorDraft(snapshot),
-      {
-        creativeOnMeta: readBack.campaign.creativeLinkedOnMeta === true,
-        publishRecordId: publishRecordIdRef.current || snapshot.publishRecordId,
+    markServerSaved(result.publishId, {
+      draftRevision: result.revision,
+      hasUnpublishedChanges: Boolean(result.hasUnpublishedChanges),
+      lastSavedAt: savedAt,
+    });
+    setServerAck(true);
+    if (
+      !newer &&
+      !isRealMetaObjectId(campaignId) &&
+      result.publishId &&
+      campaignId !== result.publishId
+    ) {
+      navigate(`../edit/${result.publishId}`, { replace: true });
+    }
+  };
+
+  const readSaveError = (error: unknown) => {
+    const err = error as {
+      response?: { data?: { error?: string; code?: string } };
+      message?: string;
+    };
+    if (err.response?.data?.code === "DRAFT_CONFLICT") {
+      conflictRef.current = true;
+      return c("draftConflict");
+    }
+    return err.response?.data?.error || err.message || c("saveFailed");
+  };
+
+  const handleDuplicate = async () => {
+    if (!businessId) return;
+    try {
+      setPublishing(true);
+      let publishId =
+        publishRecordIdRef.current ||
+        (!isRealMetaObjectId(campaignId) ? campaignId || "" : "");
+      if (!publishId) {
+        const saved = await persistEditorDraft(stateRef.current);
+        rememberSaved(stateRef.current, saved);
+        publishId = saved.publishId;
       }
-    );
-    replaceState(hydrated);
-    baselineRef.current = hydrated;
-    return hydrated;
+      const copy = await duplicateLocalCampaignDraft(businessId, publishId);
+      toast.success(c("duplicateLocalDone"));
+      if (copy.publishId) navigate(`../edit/${copy.publishId}`);
+    } catch (error: unknown) {
+      toast.error(readSaveError(error));
+    } finally {
+      setPublishing(false);
+    }
   };
 
   const handleSaveDraft = async () => {
     if (!businessId) return;
+    const snapshot = stateRef.current;
     try {
       setPublishing(true);
-      const result = await persistEditorDraft(state);
-      await reloadSavedState({ ...state, publishRecordId: result.publishId });
-      markServerSaved(result.publishId);
-      setServerAck(true);
-      if (editorDraftHasUnstoredImage(state)) toast.error(c("imageNotStored"));
+      const result = await persistEditorDraft(snapshot);
+      rememberSaved(snapshot, result);
+      if (editorDraftHasUnstoredImage(snapshot)) toast.error(c("imageNotStored"));
       else toast.success(c("draftSavedServer"));
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } }; message?: string };
-      toast.error(err.response?.data?.error || err.message || c("saveFailed"));
+      toast.error(readSaveError(error));
     } finally {
       setPublishing(false);
     }
@@ -661,52 +770,81 @@ export default function MetaAdsManagerPage() {
 
   const handleSaveChanges = async () => {
     if (!businessId) return;
-    const snapshot = state;
-    const changes = baselineRef.current
-      ? diffAdsManagerState(baselineRef.current, snapshot)
-      : [];
+    const snapshot = stateRef.current;
     try {
       setPublishing(true);
-      const draftResult = await persistEditorDraft(snapshot);
-      let metaError = "";
-      if (isEditSession && campaignId) {
-        try {
-          const campaignPatch = buildCampaignUpdateFromDiff(snapshot, changes);
-          if (campaignPatch && isRealMetaObjectId(campaignId)) {
-            await updateMetaCampaign(businessId, campaignId, campaignPatch);
-          }
-          for (const adSet of snapshot.adSets) {
-            if (!isRealMetaObjectId(adSet.id) || adSet.recoveredDraft) continue;
-            const patch = buildAdSetUpdateFromDiff(adSet, snapshot.campaign, changes);
-            if (patch) await updateMetaAdSet(businessId, adSet.id, patch);
-          }
-          for (const ad of snapshot.ads) {
-            if (!isRealMetaObjectId(ad.id)) continue;
-            const patch = buildAdUpdateFromDiff(ad, changes);
-            if (patch) await updateMetaAd(businessId, ad.id, patch);
-          }
-        } catch (error: unknown) {
-          const err = error as { response?: { data?: { error?: string } }; message?: string };
-          metaError = err.response?.data?.error || err.message || c("saveFailed");
-        }
-      }
-      await reloadSavedState({ ...snapshot, publishRecordId: draftResult.publishId });
-      markServerSaved(draftResult.publishId);
-      setServerAck(true);
+      const result = await persistEditorDraft(snapshot);
+      rememberSaved(snapshot, result);
       if (editorDraftHasUnstoredImage(snapshot)) toast.error(c("imageNotStored"));
-      if (metaError) {
-        toast.error(c("metaUpdateFailedDraftKept", { error: metaError }));
-        return;
-      }
-      if (!draftResult.metaAdId) toast.success(c("draftSavedNotOnMeta"));
-      else toast.success(c("saveSuccess"));
+      else toast.success(result.metaCampaignId ? c("changesSavedLocal") : c("draftSavedNotOnMeta"));
     } catch (error: unknown) {
-      const err = error as { response?: { data?: { error?: string } }; message?: string };
-      toast.error(err.response?.data?.error || err.message || c("saveFailed"));
+      toast.error(readSaveError(error));
     } finally {
       setPublishing(false);
     }
   };
+
+  const handleDiscardUnsaved = () => {
+    if (!baselineRef.current) return;
+    replaceState(baselineRef.current);
+  };
+
+  const handleDiscardUnpublished = async () => {
+    if (!businessId) return;
+    try {
+      setPublishing(true);
+      const result = await persistEditorDraft(stateRef.current, { restorePublished: true });
+      const restored = result.editorDraft?.workspace
+        ? stateFromSavedDraft(result.editorDraft as EditorDraft, {
+            publishRecordId: result.publishId,
+            currency: stateRef.current.campaign.currency,
+          })
+        : stateRef.current;
+      const next = {
+        ...restored,
+        publishRecordId: result.publishId,
+        draftRevision: result.revision,
+        hasUnpublishedChanges: false,
+        saveStatus: "saved" as const,
+        lastSavedAt: result.savedAt || new Date().toISOString(),
+      };
+      replaceState(next);
+      baselineRef.current = next;
+      publishedBaselineRef.current = next;
+      revisionRef.current = result.revision;
+      toast.success(c("unpublishedDiscarded"));
+    } catch (error: unknown) {
+      toast.error(readSaveError(error));
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!campaignStarted || !dirty || publishing || editLoading || conflictRef.current || !businessId) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      if (autosaveLock.current || conflictRef.current) return;
+      const snapshot = stateRef.current;
+      autosaveLock.current = true;
+      void persistEditorDraft(snapshot)
+        .then((result) => {
+          rememberSaved(snapshot, result);
+        })
+        .catch((error: unknown) => {
+          const err = error as { response?: { data?: { code?: string } } };
+          if (err.response?.data?.code === "DRAFT_CONFLICT") {
+            conflictRef.current = true;
+            toast.error(c("draftConflict"));
+          }
+        })
+        .finally(() => {
+          autosaveLock.current = false;
+        });
+    }, 2500);
+    return () => window.clearTimeout(timer);
+  }, [businessId, campaignStarted, dirty, editLoading, publishing, state]);
 
   const handleSync = async () => {
     if (!businessId || !publishResult?.id) return;
@@ -938,10 +1076,37 @@ export default function MetaAdsManagerPage() {
               {c("unsavedChanges")}
             </span>
           ) : null}
+          {state.hasUnpublishedChanges || unpublishedChanges.length ? (
+            <span className="rounded-full bg-[#E7F3FF] px-2 py-1 text-[12px] font-bold text-[#1877F2]">
+              {c("unpublishedChanges")}
+            </span>
+          ) : null}
+          {state.lastSavedAt ? (
+            <span className="text-[12px] font-semibold text-[#65676B]">
+              {c("lastSavedAt", {
+                time: new Date(state.lastSavedAt).toLocaleString(i18n.language || "he"),
+              })}
+            </span>
+          ) : null}
           {isEditSession ? (
             <span className="rounded-full bg-[#E4E6EB] px-2 py-1 text-[12px] font-bold text-[#050505]">
               {c("campaignStatusLabel")}: {state.campaign.status || "DRAFT"}
             </span>
+          ) : null}
+          {dirty ? (
+            <button type="button" className={metaBtnSecondary} disabled={publishing} onClick={handleDiscardUnsaved}>
+              {c("discardUnsaved")}
+            </button>
+          ) : null}
+          {isRealMetaObjectId(campaignId) && (state.hasUnpublishedChanges || unpublishedChanges.length) ? (
+            <button
+              type="button"
+              className={metaBtnSecondary}
+              disabled={publishing}
+              onClick={() => setDiscardPublishedOpen(true)}
+            >
+              {c("discardUnpublished")}
+            </button>
           ) : null}
           <button
             type="button"
@@ -991,7 +1156,7 @@ export default function MetaAdsManagerPage() {
             {publishing ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             {publishing ? c("publishing") : c("publishAction")}
           </button>
-          {isEditSession ? (
+          {campaignStarted ? (
             <button type="button" className={metaBtnSecondary} onClick={requestLeave}>
               {c("back")}
             </button>
@@ -1211,7 +1376,35 @@ export default function MetaAdsManagerPage() {
               pages={connectedPages}
               businessId={businessId}
               sessionMode={isEditSession ? "edit" : "create"}
+              showLeadgenTos={String(selectedAdSet?.conversionLocation || "")
+                .toLowerCase()
+                .includes("instant")}
+              publishId={publishRecordIdRef.current || state.publishRecordId || ""}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
+              onFormReady={async (form) => {
+                if (!businessId) return;
+                const snapshot: AdsManagerState = {
+                  ...state,
+                  ads: state.ads.map((ad) =>
+                    ad.id === selectedAd.id
+                      ? {
+                          ...ad,
+                          instantFormId: form.id,
+                          instantFormName: form.name,
+                          formPageId: form.pageId || ad.facebookPageId,
+                          formLinkedOnMeta: false,
+                          formTab: "active",
+                        }
+                      : ad
+                  ),
+                };
+                try {
+                  const result = await persistEditorDraft(snapshot);
+                  rememberSaved(snapshot, result);
+                } catch (error: unknown) {
+                  toast.error(readSaveError(error));
+                }
+              }}
               onFormsRefresh={async () => {
                 const pageId =
                   selectedAd.facebookPageId ||
@@ -1272,9 +1465,11 @@ export default function MetaAdsManagerPage() {
           )}
         </div>
         <span>
-          {isEditSession
-            ? c("editFooterNote")
-            : c(isGuidedDemoActive() ? "publishFooterNoteDemo" : "publishFooterNote")}
+          {unpublishedChanges.length
+            ? unpublishedChanges.map((change) => c(change.labelKey)).join(" · ")
+            : isEditSession
+              ? c("editFooterNote")
+              : c(isGuidedDemoActive() ? "publishFooterNoteDemo" : "publishFooterNote")}
         </span>
       </div>
 
@@ -1325,6 +1520,30 @@ export default function MetaAdsManagerPage() {
                 }}
               >
                 {c("confirmPublish")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {discardPublishedOpen ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-2xl">
+            <h2 className="text-[18px] font-black">{c("discardUnpublished")}</h2>
+            <p className="mt-2 text-[14px] font-semibold text-[#65676B]">{c("discardUnpublishedBody")}</p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button type="button" className={metaBtnSecondary} onClick={() => setDiscardPublishedOpen(false)}>
+                {c("cancel")}
+              </button>
+              <button
+                type="button"
+                className={metaBtnPrimary}
+                disabled={publishing}
+                onClick={() => {
+                  setDiscardPublishedOpen(false);
+                  void handleDiscardUnpublished();
+                }}
+              >
+                {c("discardUnpublished")}
               </button>
             </div>
           </div>

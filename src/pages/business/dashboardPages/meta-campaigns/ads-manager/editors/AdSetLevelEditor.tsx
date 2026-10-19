@@ -21,6 +21,7 @@ import {
   metaSelectClass,
 } from "../metaAdsUi";
 import AdsManagerLocationsSection from "./AdsManagerLocationsSection";
+import LeadgenTosCard from "../LeadgenTosCard";
 
 type Props = {
   adSet: AdSetDraft;
@@ -277,6 +278,14 @@ export default function AdSetLevelEditor({
               </div>
             ) : null}
           </div>
+        ) : null}
+
+        {usesInstantForms ? (
+          <LeadgenTosCard
+            businessId={businessId}
+            pageId={adSet.facebookPageId}
+            pageName={selectedPage?.name || adSet.facebookPageName}
+          />
         ) : null}
 
         <div className="relative">
