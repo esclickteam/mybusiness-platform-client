@@ -67,6 +67,7 @@ import {
   statusTone,
 } from "./metaCampaignUtils";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
+import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { removeCampaignFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
@@ -87,6 +88,19 @@ function objectiveKey(objective?: string | null) {
   if (value.includes("aware")) return "awareness";
   if (value.includes("engage")) return "engagement";
   return "leads";
+}
+
+function metricTrend(
+  changes: Partial<Record<string, number | null>> | undefined,
+  key: string,
+  lowerIsBetter: boolean
+) {
+  const value = changes?.[key];
+  if (typeof value !== "number" || !Number.isFinite(value)) return {};
+  return {
+    trend: `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`,
+    trendPositive: lowerIsBetter ? value <= 0 : value >= 0,
+  };
 }
 
 function KpiCard({
@@ -224,8 +238,18 @@ export default function MetaCampaignsOverviewTab() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [switchingAccount, setSwitchingAccount] = useState(false);
-  const { preset: rangePreset, customSince, customUntil, query: rangeQuery, labelKey: rangeLabelKey } =
+  const { preset: rangePreset, customSince, customUntil, query: rangeQuery, labelKey: rangeLabelKey, compare } =
     useMetaAdsDateRange();
+  const { setTimeZone } = useMetaAdsTimeZone();
+  const rangeKey = [
+    rangeQuery.datePreset,
+    rangeQuery.since,
+    rangeQuery.until,
+    rangeQuery.compare,
+    rangeQuery.compareSince,
+    rangeQuery.compareUntil,
+    rangeQuery.timezone,
+  ].join("|");
   const [segment, setSegment] = useState("all");
   const [data, setData] = useState<MetaCampaignsOverview | null>(null);
   const [busyId, setBusyId] = useState("");
@@ -290,6 +314,9 @@ export default function MetaCampaignsOverviewTab() {
     setLoadError(null);
     try {
       const overview = await getMetaCampaignsOverview(businessId, rangeQuery);
+      if (overview.connection?.selectedAdAccount?.timezoneName) {
+        setTimeZone(overview.connection.selectedAdAccount.timezoneName);
+      }
       setData((current) => mergeOverviewPreservingMetrics(current, overview));
       const insightsFailed = overview.insightsSync?.ok === false;
       if (!insightsFailed) {
@@ -335,7 +362,7 @@ export default function MetaCampaignsOverviewTab() {
     if (rangePreset === "custom" && (!customSince || !customUntil)) return;
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessId, rangePreset, customSince, customUntil]);
+  }, [businessId, rangePreset, customSince, customUntil, rangeKey]);
 
   const campaigns = useMemo(() => {
     const list = data?.campaigns || [];
@@ -378,17 +405,37 @@ export default function MetaCampaignsOverviewTab() {
       (kpis?.reach || 0) > 0
   );
 
-  const chartSeries = data?.series || [];
-  const chartHasData = chartSeries.some(
-    (point) =>
-      (point.leads || 0) > 0 ||
-      (point.spend || 0) > 0 ||
-      (point.clicks || 0) > 0 ||
-      (point.impressions || 0) > 0 ||
-      (point.sales || 0) > 0 ||
-      (point.traffic || 0) > 0 ||
-      (point.engagement || 0) > 0
+  const chartSeries = React.useMemo(() => {
+    const current = data?.series || [];
+    const previous = compare ? data?.comparisonSeries || [] : [];
+    if (!previous.length) return current;
+    const length = Math.max(current.length, previous.length, 1);
+    return Array.from({ length }, (_, index) => {
+      const point = current[index];
+      const earlier = previous[index];
+      return {
+        date: point?.date || earlier?.date || String(index + 1),
+        leads: point?.leads ?? null,
+        spend: point?.spend ?? null,
+        clicks: point?.clicks ?? null,
+        impressions: point?.impressions ?? null,
+        sales: point?.sales,
+        traffic: point?.traffic,
+        engagement: point?.engagement,
+        compareDate: earlier?.date || "",
+        compareLeads: earlier?.leads ?? null,
+        compareSpend: earlier?.spend ?? null,
+        compareClicks: earlier?.clicks ?? null,
+        compareImpressions: earlier?.impressions ?? null,
+      };
+    });
+  }, [compare, data?.comparisonSeries, data?.series]);
+  const chartHasData = chartSeries.some((point) =>
+    ["leads", "spend", "clicks", "impressions", "sales", "traffic", "engagement", "compareLeads", "compareSpend", "compareClicks", "compareImpressions"].some(
+      (key) => Number((point as Record<string, unknown>)[key] || 0) > 0
+    )
   );
+  const showComparisonLines = compare && chartSeries.some((point) => "compareSpend" in point);
 
   const showChartLeads = segment === "all" || segment === "leads";
   const showChartSpend =
@@ -445,7 +492,7 @@ export default function MetaCampaignsOverviewTab() {
       document.removeEventListener("visibilitychange", onVisible);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessId, connected, rangePreset, customSince, customUntil]);
+  }, [businessId, connected, rangePreset, customSince, customUntil, rangeKey]);
   const tokenLinked = Boolean(
     demoSandbox ||
       (data?.connection?.isConnected && data?.connection?.hasAccessToken)
@@ -720,6 +767,9 @@ export default function MetaCampaignsOverviewTab() {
 
       <p className="text-xs font-black uppercase tracking-wide text-slate-500" data-testid="overview-range-label">
         {t("metaCampaigns.ux.showingRange", { range: t(rangeLabelKey) })}
+        {compare && data?.comparison?.previousRange
+          ? ` · ${t("metaCampaigns.ranges.compare")}: ${data.comparison.previousRange.since} – ${data.comparison.previousRange.until}`
+          : ""}
       </p>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-demo-target="meta-overview">
         <KpiCard
@@ -728,12 +778,7 @@ export default function MetaCampaignsOverviewTab() {
             formatCurrency(n, currency)
           , { treatZeroAsEmpty: !hasInsightSignal })}
           hint={t("metaCampaigns.kpis.spendHint")}
-          trend={
-            data?.comparison?.changes?.spend == null
-              ? undefined
-              : `${data.comparison.changes.spend >= 0 ? "+" : ""}${data.comparison.changes.spend.toFixed(1)}%`
-          }
-          trendPositive={(data?.comparison?.changes?.spend || 0) <= 0}
+          {...(compare ? metricTrend(data?.comparison?.changes, "spend", true) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.kpis.leads")}
@@ -747,6 +792,7 @@ export default function MetaCampaignsOverviewTab() {
             treatZeroAsEmpty: !hasInsightSignal,
           })}
           hint={t("metaCampaigns.kpis.leadsHint")}
+          {...(compare ? metricTrend(data?.comparison?.changes, "leads", false) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.kpis.cpl")}
@@ -755,6 +801,7 @@ export default function MetaCampaignsOverviewTab() {
             (n) => formatCurrency(n, currency)
           )}
           hint={t("metaCampaigns.kpis.cplHint")}
+          {...(compare ? metricTrend(data?.comparison?.changes, "costPerLead", true) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.table.ctr")}
@@ -762,22 +809,27 @@ export default function MetaCampaignsOverviewTab() {
             treatZeroAsEmpty: true,
           })}
           hint={t("metaCampaigns.kpis.ctrHint")}
+          {...(compare ? metricTrend(data?.comparison?.changes, "ctr", false) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.table.reach")}
           value={formatMetricOrDash(kpis?.reach, formatNumber, { treatZeroAsEmpty: !hasInsightSignal })}
+          {...(compare ? metricTrend(data?.comparison?.changes, "reach", false) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.table.impressions")}
           value={formatMetricOrDash(kpis?.impressions, formatNumber, { treatZeroAsEmpty: !hasInsightSignal })}
+          {...(compare ? metricTrend(data?.comparison?.changes, "impressions", false) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.table.cpc")}
           value={formatMetricOrDash(kpis?.cpc, (n) => formatCurrency(n, currency), { treatZeroAsEmpty: true })}
+          {...(compare ? metricTrend(data?.comparison?.changes, "cpc", true) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.table.cpm")}
           value={formatMetricOrDash(kpis?.cpm, (n) => formatCurrency(n, currency), { treatZeroAsEmpty: true })}
+          {...(compare ? metricTrend(data?.comparison?.changes, "cpm", true) : {})}
         />
         <KpiCard
           label={t("metaCampaigns.ux.activePaused")}
@@ -935,6 +987,32 @@ export default function MetaCampaignsOverviewTab() {
                         stroke="#DB2777"
                         strokeWidth={1.5}
                         dot={false}
+                      />
+                    ) : null}
+                    {showComparisonLines && showChartLeads ? (
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="compareLeads"
+                        name={`${t("metaCampaigns.ranges.compare")} ${t("metaCampaigns.chart.leads")}`}
+                        stroke="#3B82F6"
+                        strokeDasharray="5 4"
+                        strokeWidth={1.5}
+                        dot={false}
+                        connectNulls={false}
+                      />
+                    ) : null}
+                    {showComparisonLines && showChartSpend ? (
+                      <Line
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="compareSpend"
+                        name={`${t("metaCampaigns.ranges.compare")} ${t("metaCampaigns.chart.spend")}`}
+                        stroke="#7C3AED"
+                        strokeDasharray="5 4"
+                        strokeWidth={1.5}
+                        dot={false}
+                        connectNulls={false}
                       />
                     ) : null}
                   </AreaChart>

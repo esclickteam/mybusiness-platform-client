@@ -21,6 +21,7 @@ export type MetaSelectedAdAccount = {
   name: string;
   currency?: string;
   accountStatus?: number;
+  timezoneName?: string;
   selectedAt?: string | null;
 };
 
@@ -382,6 +383,7 @@ export type MetaCampaignsOverview = {
     cpm?: number;
   };
   series: MetaCampaignSeriesPoint[];
+  comparisonSeries?: MetaCampaignSeriesPoint[];
   campaigns: MetaCampaign[];
   insights: MetaCampaignInsight[];
   comparison?: {
@@ -662,7 +664,7 @@ export async function disconnectMetaAds(businessId?: string) {
 
 export async function getMetaCampaignsOverview(
   businessId?: string,
-  range?: { since?: string; until?: string; days?: number; datePreset?: string; compare?: number }
+  range?: { since?: string; until?: string; days?: number; datePreset?: string; compare?: number; compareSince?: string; compareUntil?: string; timezone?: string }
 ) {
   const { data } = await API.get<MetaCampaignsOverview>(
     "/meta-campaigns/overview",

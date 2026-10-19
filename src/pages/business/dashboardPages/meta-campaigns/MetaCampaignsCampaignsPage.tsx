@@ -33,6 +33,7 @@ import {
   statusTone,
 } from "./metaCampaignUtils";
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
+import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { removeCampaignFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
@@ -67,7 +68,8 @@ export default function MetaCampaignsCampaignsPage() {
   const [currency, setCurrency] = useState("ILS");
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const { query: rangeQuery, labelKey: rangeLabelKey } = useMetaAdsDateRange();
+  const { query: rangeQuery, labelKey: rangeLabelKey, comparison, compare } = useMetaAdsDateRange();
+  const { setTimeZone } = useMetaAdsTimeZone();
   const [sortKey, setSortKey] = useState<ManagerColumnId>("spend");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [columnPrefs, setColumnPrefs] = useState<ColumnPrefs>(() => loadColumnPrefs(window.localStorage, "campaign", "campaign"));
@@ -79,6 +81,7 @@ export default function MetaCampaignsCampaignsPage() {
   const [busyId, setBusyId] = useState("");
   const [level, setLevel] = useState<"campaign" | "adset" | "ad">("campaign");
   const [series, setSeries] = useState<MetaCampaignSeriesPoint[]>([]);
+  const [comparisonSeries, setComparisonSeries] = useState<MetaCampaignSeriesPoint[]>([]);
   const [pinnedCampaign, setPinnedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [pinnedAdSet, setPinnedAdSet] = useState<{ id: string; name: string } | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
@@ -94,6 +97,8 @@ export default function MetaCampaignsCampaignsPage() {
       const data = await getMetaCampaignsOverview(businessId, rangeQuery);
       setCampaigns(data.campaigns || []);
       setSeries(data.series || []);
+      setComparisonSeries(compare ? data.comparisonSeries || [] : []);
+      if (data.connection?.selectedAdAccount?.timezoneName) setTimeZone(data.connection.selectedAdAccount.timezoneName);
       setCurrency(resolveCampaignCurrency(data.connection?.selectedAdAccount?.currency));
       setInsightsError(data.insightsSync?.ok === false ? data.insightsSync.error || "unavailable" : null);
       const syncedAt = data.insightsSync?.syncedAt || data.connection?.lastSyncAt;
@@ -125,7 +130,7 @@ export default function MetaCampaignsCampaignsPage() {
   useEffect(() => {
     void load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessId, rangeQuery.datePreset, rangeQuery.days, rangeQuery.since, rangeQuery.until]);
+  }, [businessId, rangeQuery.datePreset, rangeQuery.days, rangeQuery.since, rangeQuery.until, rangeQuery.compare, rangeQuery.compareSince, rangeQuery.compareUntil, rangeQuery.timezone]);
 
   const rows = useMemo(() => {
     const filtered = campaigns.filter((row) => {
@@ -258,6 +263,7 @@ export default function MetaCampaignsCampaignsPage() {
           {t("metaCampaigns.levels.context", { level: levelLabel })}
           {pinnedCampaign ? ` · ${t("metaCampaigns.levels.selectedCampaign", { name: pinnedCampaign.name })}` : ""}
           {pinnedAdSet ? ` · ${t("metaCampaigns.levels.selectedAdSet", { name: pinnedAdSet.name })}` : ""}
+          {compare && comparison ? ` · ${t("metaCampaigns.ranges.compare")}: ${comparison.since} – ${comparison.until}` : ""}
         </p>
         {pinnedCampaign || pinnedAdSet ? (
           <button
@@ -278,6 +284,8 @@ export default function MetaCampaignsCampaignsPage() {
         currency={currency}
         rangeQuery={rangeQuery}
         series={series}
+        comparisonSeries={comparisonSeries}
+        comparisonRange={comparison}
         selectedIds={checked.filter((id) => /^\d{8,}$/.test(id))}
       />
 
@@ -336,6 +344,7 @@ export default function MetaCampaignsCampaignsPage() {
         </select>
         <p className="self-center text-xs font-black uppercase tracking-wide text-slate-500">
           {t("metaCampaigns.ux.showingRange", { range: t(rangeLabelKey) })}
+          {compare && comparison ? ` · ${t("metaCampaigns.ranges.compare")}: ${comparison.since} – ${comparison.until}` : ""}
         </p>
         <select
           className={inputBase}
