@@ -7,5 +7,7 @@ describe("presetToServerWindow", () => {
     expect(presetToServerWindow("last_7")).toBe("LAST_7D");
     expect(presetToServerWindow("last_30")).toBe("LAST_30D");
     expect(presetToServerWindow("custom")).toBe("CUSTOM");
+    expect(presetToServerWindow("rolling_7")).toBe("CUSTOM");
+    expect(presetToServerWindow("last_7")).toBe("LAST_7D");
   });
 });

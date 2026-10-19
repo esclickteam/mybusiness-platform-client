@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
@@ -29,6 +29,8 @@ type Props = {
   currency: string;
   rangeQuery: MetaManagerQuery;
   series: MetaCampaignSeriesPoint[];
+  comparisonSeries?: MetaCampaignSeriesPoint[];
+  comparisonRange?: { since: string; until: string } | null;
   selectedIds: string[];
 };
 
@@ -41,11 +43,33 @@ function formatPoint(key: string, value: number, currency: string) {
   return formatNumber(value);
 }
 
-export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, series, selectedIds }: Props) {
+function alignPeriods(
+  current: Array<Record<string, number | string | null>>,
+  previous: Array<Record<string, number | string | null>>,
+  keys: readonly string[]
+) {
+  const length = Math.max(current.length, previous.length, 1);
+  return Array.from({ length }, (_, index) => {
+    const row: Record<string, number | string | null> = {
+      date: String(current[index]?.date || previous[index]?.date || index + 1),
+      compareDate: String(previous[index]?.date || ""),
+    };
+    keys.forEach((key) => {
+      const currentValue = current[index]?.[key];
+      const previousValue = previous[index]?.[key];
+      row[key] = typeof currentValue === "number" ? currentValue : null;
+      row[`compare:${key}`] = typeof previousValue === "number" ? previousValue : null;
+    });
+    return row;
+  });
+}
+
+export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, series, comparisonSeries = [], comparisonRange = null, selectedIds }: Props) {
   const { t } = useTranslation();
   const [metrics, setMetrics] = useState<string[]>(["spend", "leads"]);
   const [grain, setGrain] = useState<"day" | "week" | "month">("day");
   const [remoteSeries, setRemoteSeries] = useState<Array<Record<string, number | string | null>> | null>(null);
+  const [remoteComparison, setRemoteComparison] = useState<Array<Record<string, number | string | null>> | null>(null);
   const [breakdown, setBreakdown] = useState("");
   const [slices, setSlices] = useState<Array<{ label: string; metrics: Record<string, number | null | undefined> }>>([]);
   const [breakdownNote, setBreakdownNote] = useState("");
@@ -62,11 +86,32 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
     ctr: point.ctr ?? null,
     cpc: point.cpc ?? null,
   }));
-  const chartData = remoteSeries || daily;
-  const lineKeys = (remoteSeries
-    ? [...new Set(remoteSeries.flatMap((row) => Object.keys(row).filter((key) => key !== "date")))]
-    : [...metrics]
-  ).filter((key) => {
+  const currentRows = remoteSeries || daily;
+  const dailyComparison = comparisonSeries.map((point) => ({
+    date: point.date,
+    spend: point.spend,
+    impressions: point.impressions,
+    reach: point.reach ?? null,
+    leads: point.leads,
+    ctr: point.ctr ?? null,
+    cpc: point.cpc ?? null,
+  }));
+  const comparisonRows = grain === "day" || !remoteSeries ? dailyComparison : remoteComparison || [];
+  const chartData = comparisonRows.length
+    ? alignPeriods(currentRows, comparisonRows, CHART_METRICS)
+    : currentRows;
+  const rangeSignature = [
+    rangeQuery.datePreset || "",
+    rangeQuery.since || "",
+    rangeQuery.until || "",
+    rangeQuery.days || "",
+    comparisonRange?.since || "",
+    comparisonRange?.until || "",
+    selectedIds.join(","),
+    series.map((point) => point.date).join(","),
+  ].join("|");
+  const lineKeys = [...new Set(chartData.flatMap((row) => Object.keys(row)))].filter((key) => {
+    if (key === "date" || key === "compareDate") return false;
     const base = key.includes(":") ? key.slice(key.lastIndexOf(":") + 1) : key;
     return metrics.includes(base) && base !== "clicks";
   });
@@ -74,28 +119,59 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
   const moneyKeys = lineKeys.filter((key) => chartMetricUnit(key) === "money" || chartMetricUnit(key) === "rate");
   const countKeys = lineKeys.filter((key) => !moneyKeys.includes(key));
 
-  async function loadGrain(next: "day" | "week" | "month") {
-    setGrain(next);
-    if (!businessId || next === "day") {
-      setRemoteSeries(null);
-      return;
+  useEffect(() => {
+    let cancelled = false;
+    async function loadGrain() {
+      if (!businessId || grain === "day" || series.length <= 1) {
+        setRemoteSeries(null);
+        setRemoteComparison(null);
+        return;
+      }
+      setBusy("grain");
+      setError("");
+      try {
+        const currentRequest = getMetaAdsManagerSeries(businessId, {
+          ...rangeQuery,
+          level: "campaign",
+          grain,
+          ids: selectedIds.join(","),
+        });
+        const compareRequest =
+          comparisonRange?.since && comparisonRange?.until
+            ? getMetaAdsManagerSeries(businessId, {
+                since: comparisonRange.since,
+                until: comparisonRange.until,
+                level: "campaign",
+                grain,
+                ids: selectedIds.join(","),
+              })
+            : Promise.resolve(null);
+        const [data, compared] = await Promise.all([currentRequest, compareRequest]);
+        if (cancelled) return;
+        const merged = mergeChartSeries(data.series || [], [...CHART_METRICS, "clicks"]);
+        setRemoteSeries(merged.length ? merged : null);
+        if (!compared) {
+          setRemoteComparison(null);
+        } else {
+          const comparedRows = mergeChartSeries(compared.series || [], [...CHART_METRICS, "clicks"]);
+          setRemoteComparison(comparedRows);
+        }
+      } catch {
+        if (cancelled) return;
+        setError(t("metaCampaigns.levels.loadError"));
+        setRemoteSeries(null);
+        setRemoteComparison(null);
+      } finally {
+        if (!cancelled) setBusy("");
+      }
     }
-    setBusy("grain");
-    setError("");
-    try {
-      const data = await getMetaAdsManagerSeries(businessId, {
-        ...rangeQuery,
-        level: "campaign",
-        grain: next,
-        ids: selectedIds.join(","),
-      });
-      setRemoteSeries(mergeChartSeries(data.series || [], [...CHART_METRICS, "clicks"]));
-    } catch {
-      setError(t("metaCampaigns.levels.loadError"));
-    } finally {
-      setBusy("");
-    }
-  }
+    void loadGrain();
+    return () => {
+      cancelled = true;
+    };
+    // The signature already includes the range, comparison window, and daily dates.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId, grain, series.length, rangeSignature, t]);
 
   async function loadBreakdown(next: string) {
     setBreakdown(next);
@@ -155,7 +231,7 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
               type="button"
               className={grain === item ? btnSecondary : btnSecondary}
               aria-pressed={grain === item}
-              onClick={() => void loadGrain(item)}
+              onClick={() => setGrain(item)}
             >
               {t(`metaCampaigns.levels.grain${item === "day" ? "Day" : item === "week" ? "Week" : "Month"}`)}
             </button>
@@ -170,6 +246,11 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
           </label>
         ))}
       </div>
+      {comparisonRange ? (
+        <p className="text-xs font-bold text-slate-500" data-testid="meta-chart-comparison">
+          {t("metaCampaigns.ranges.compare")}: {comparisonRange.since} – {comparisonRange.until}
+        </p>
+      ) : null}
       {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
       {chartData.length === 0 ? (
         <p className="py-6 text-center text-sm font-semibold text-slate-500">{t("metaCampaigns.chart.empty")}</p>
@@ -184,11 +265,11 @@ export default function MetaAdsAnalytics({ businessId, currency, rangeQuery, ser
               <Tooltip />
               <Legend />
               {(axis === "dual" ? countKeys : lineKeys).map((key, index) => (
-                <Line key={key} yAxisId="left" type="monotone" dataKey={key} stroke={LINE_COLORS[index % LINE_COLORS.length]} dot={false} connectNulls={false} />
+                <Line key={key} yAxisId="left" type="monotone" dataKey={key} name={key.startsWith("compare:") ? `${t("metaCampaigns.ranges.compare")} ${key.slice(key.indexOf(":") + 1)}` : key} stroke={LINE_COLORS[index % LINE_COLORS.length]} strokeDasharray={key.startsWith("compare:") ? "5 4" : undefined} dot={false} connectNulls={false} />
               ))}
               {axis === "dual"
                 ? moneyKeys.map((key, index) => (
-                    <Line key={key} yAxisId="right" type="monotone" dataKey={key} stroke={LINE_COLORS[(index + 1) % LINE_COLORS.length]} dot={false} connectNulls={false} />
+                    <Line key={key} yAxisId="right" type="monotone" dataKey={key} name={key.startsWith("compare:") ? `${t("metaCampaigns.ranges.compare")} ${key.slice(key.indexOf(":") + 1)}` : key} stroke={LINE_COLORS[(index + 1) % LINE_COLORS.length]} strokeDasharray={key.startsWith("compare:") ? "5 4" : undefined} dot={false} connectNulls={false} />
                   ))
                 : null}
             </LineChart>

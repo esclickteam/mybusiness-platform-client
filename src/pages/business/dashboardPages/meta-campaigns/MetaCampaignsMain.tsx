@@ -17,6 +17,7 @@ import LanguageSwitcher from "../../../../components/LanguageSwitcher";
 import { applyLanguageFromUrl, normalizeLanguage } from "../../../../i18n/localeUtils";
 import { isMetaCampaignsKnownChildPath } from "./campaignCreationMode";
 import MetaAdsDateRangeBar from "./MetaAdsDateRangeBar";
+import { MetaAdsTimeZoneProvider } from "./metaAdsTimeZone";
 
 type MetaCampaignsTab = {
   path: string;
@@ -99,6 +100,7 @@ export default function MetaCampaignsMain() {
   }, [currentTab, isKnownTab, location.pathname, location.search, navigate, searchParams]);
 
   return (
+    <MetaAdsTimeZoneProvider>
     <section
       dir={dir}
       className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
@@ -208,5 +210,6 @@ export default function MetaCampaignsMain() {
         </main>
       </div>
     </section>
+    </MetaAdsTimeZoneProvider>
   );
 }
