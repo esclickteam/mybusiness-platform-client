@@ -1,4 +1,7 @@
-import type { PushBillingStatus } from "../../api/pushBillingApi";
+import {
+  isComplimentaryPushStatus,
+  type PushBillingStatus,
+} from "../../api/pushBillingApi";
 
 export type PushDiscoverabilityState = {
   showUpsell: boolean;
@@ -18,6 +21,10 @@ export function getPushDiscoverabilityState(
     | undefined
 ): PushDiscoverabilityState {
   if (!status || !status.billingEnabled) {
+    return { showUpsell: false, trialEligible: false };
+  }
+
+  if (isComplimentaryPushStatus(status)) {
     return { showUpsell: false, trialEligible: false };
   }
 

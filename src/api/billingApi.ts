@@ -49,11 +49,16 @@ export type BillingOverview = {
   addOns?: Array<{
     key: string;
     productKey: string;
+    name?: string;
     active: boolean;
     status: string | null;
+    displayStatusHe?: string | null;
+    billingType?: string | null;
+    complimentary?: boolean;
     amount: number | null;
     currency: string;
     currentPeriodEnd: string | null;
+    nextBillingDate?: string | null;
     cancelAtPeriodEnd: boolean;
   }>;
   websiteAccess: {

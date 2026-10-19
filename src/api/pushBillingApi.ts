@@ -18,6 +18,9 @@ export type PushBillingSubscription = {
   currentPeriodEnd: string | null;
   trialUsedAt?: string | null;
   stripeSubscriptionId?: string | null;
+  complimentary?: boolean;
+  billingProvider?: string | null;
+  displayStatusHe?: string | null;
 };
 
 export type PushBillingStatus = {
@@ -64,6 +67,23 @@ export type PushBillingReactivateResult = {
 
 const MONTHLY_KEY = "push_notifications_monthly_29_ils";
 const ANNUAL_KEY = "push_notifications_annual_228_ils";
+export const PUSH_COMPLIMENTARY_PLAN_KEY = "push_complimentary";
+export const PUSH_COMPLIMENTARY_STATUS_HE = "פעיל \u2013 ללא חיוב";
+
+export function isComplimentaryPushStatus(
+  status:
+    | (Pick<PushBillingStatus, "entitled" | "subscription"> & {
+        subscription?: PushBillingSubscription | null;
+      })
+    | null
+    | undefined
+): boolean {
+  const subscription = status?.subscription;
+  if (!status?.entitled || !subscription) return false;
+  if (subscription.complimentary === true) return true;
+  if (subscription.billingProvider === "complimentary") return true;
+  return subscription.planKey === PUSH_COMPLIMENTARY_PLAN_KEY;
+}
 
 export function normalizePushPlan(planKey: string | null | undefined): PushBillingPlan | null {
   const raw = String(planKey || "").trim().toLowerCase();
@@ -93,7 +113,14 @@ export async function getPushBillingStatus(): Promise<PushBillingStatus> {
   return {
     billingEnabled: Boolean(data?.billingEnabled),
     entitled: Boolean(data?.entitled),
-    subscription: data?.subscription || null,
+    subscription: data?.subscription
+      ? {
+          ...data.subscription,
+          complimentary: Boolean(data.subscription.complimentary),
+          billingProvider: data.subscription.billingProvider || null,
+          displayStatusHe: data.subscription.displayStatusHe || null,
+        }
+      : null,
     entitlementReason: data?.entitlementReason ?? null,
     trialEligible:
       typeof data?.trialEligible === "boolean" ? data.trialEligible : undefined,

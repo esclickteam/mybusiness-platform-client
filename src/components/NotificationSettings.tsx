@@ -26,6 +26,7 @@ import {
   cancelPushBilling,
   createPushBillingCheckout,
   getPushBillingStatus,
+  isComplimentaryPushStatus,
   normalizePushPlan,
   pushPlanAmount,
   reactivatePushBilling,
@@ -338,6 +339,7 @@ export function NotificationSettingsPanel({
   const annualPrice = pushPlanAmount("annual") ?? 0;
   const annualPerMonth = (Math.round((annualPrice / 12) * 100) / 100).toFixed(2);
   const trialEligible = getPushDiscoverabilityState(billingStatus).trialEligible;
+  const complimentary = isComplimentaryPushStatus(billingStatus);
 
   const showPaywall = billingEnabled && !entitled;
   const showSubscriberPanel = billingEnabled && entitled;
@@ -780,7 +782,16 @@ export function NotificationSettingsPanel({
 
           {showSubscriberPanel && (
             <div className="mb-2 rounded-2xl border border-amber-100 bg-gradient-to-l from-amber-50/70 to-white p-3">
-              {subStatus === "past_due" ? (
+              {complimentary ? (
+                <div className="mb-2" data-testid="push-complimentary-status">
+                  <p className="text-sm font-black text-slate-900">
+                    {t("notificationSettings.complimentaryActive")}
+                  </p>
+                  <p className="text-[11px] font-semibold text-slate-500">
+                    {t("notificationSettings.complimentaryDetail")}
+                  </p>
+                </div>
+              ) : subStatus === "past_due" ? (
                 <div className="mb-2 rounded-xl border border-red-200 bg-red-50 p-2.5">
                   <p className="text-xs font-black text-red-700">
                     {t("notificationSettings.paymentFailed")}
@@ -794,7 +805,7 @@ export function NotificationSettingsPanel({
                 </div>
               ) : null}
 
-              {subStatus === "trialing" ? (
+              {!complimentary && subStatus === "trialing" ? (
                 <div className="mb-2">
                   <p className="text-sm font-black text-slate-900">
                     {t("notificationSettings.trialActive")}
@@ -810,7 +821,7 @@ export function NotificationSettingsPanel({
                         : ""}
                   </p>
                 </div>
-              ) : (
+              ) : !complimentary ? (
                 <div className="mb-2">
                   <p className="text-sm font-black text-slate-900">
                     {t("notificationSettings.planActive", {
@@ -833,7 +844,7 @@ export function NotificationSettingsPanel({
                       : ""}
                   </p>
                 </div>
-              )}
+              ) : null}
 
               {cancelAtPeriodEnd && periodEndLabel ? (
                 <div className="mb-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-[11px] font-bold text-amber-800">
@@ -873,6 +884,7 @@ export function NotificationSettingsPanel({
                 />
               </div>
 
+              {!complimentary ? (
               <div className="flex flex-wrap gap-2">
                 {cancelAtPeriodEnd ? (
                   <button
@@ -900,6 +912,7 @@ export function NotificationSettingsPanel({
                   </button>
                 ) : null}
               </div>
+              ) : null}
 
               {billingMessage ? (
                 <p className="mt-2 text-[11px] font-bold text-slate-600">

@@ -27,6 +27,7 @@ vi.mock("../api/pushBillingApi", () => ({
   normalizePushPlan: () => "annual",
   pushPlanAmount: () => 69,
   pushPlanLabelHe: () => "שנתי",
+  isComplimentaryPushStatus: () => false,
 }));
 
 vi.mock("../utils/push", () => ({
