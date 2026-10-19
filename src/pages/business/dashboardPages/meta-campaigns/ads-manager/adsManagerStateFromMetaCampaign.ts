@@ -14,8 +14,43 @@ import type {
   AdSetDraft,
   CampaignDraft,
   CampaignObjective,
+  MetaObjectIds,
 } from "./adsManagerTypes";
-import { applyEditorDraft } from "./editorDraft";
+import { applyEditorDraft, isRealMetaObjectId } from "./editorDraft";
+
+function realMetaId(value: unknown): string {
+  const id = String(value ?? "").trim();
+  return isRealMetaObjectId(id) ? id : "";
+}
+
+export function metaObjectIdsFromCampaign(campaign: {
+  id?: string;
+  metaCampaignId?: string;
+  metaAdSetId?: string;
+  metaAdId?: string;
+  metaCreativeId?: string;
+  adId?: string;
+  adSetId?: string;
+  creativeId?: string;
+  ads?: Array<{ id?: string; creativeId?: string; adSetId?: string }>;
+  adSets?: Array<{ id?: string }>;
+}): MetaObjectIds {
+  const ad = (campaign.ads || []).find((row) => realMetaId(row.id));
+  const adSet = (campaign.adSets || []).find((row) => realMetaId(row.id));
+  return {
+    campaignId: realMetaId(campaign.metaCampaignId) || realMetaId(campaign.id),
+    adSetId:
+      realMetaId(campaign.metaAdSetId) ||
+      realMetaId(campaign.adSetId) ||
+      realMetaId(adSet?.id) ||
+      realMetaId(ad?.adSetId),
+    adId: realMetaId(campaign.metaAdId) || realMetaId(campaign.adId) || realMetaId(ad?.id),
+    creativeId:
+      realMetaId(campaign.metaCreativeId) ||
+      realMetaId(campaign.creativeId) ||
+      realMetaId(ad?.creativeId),
+  };
+}
 
 function splitDateTime(value?: string | null): { date: string; time: string } {
   if (!value) return { date: "", time: "" };
@@ -309,8 +344,12 @@ export function adsManagerStateFromMetaCampaign(
     ads,
     audienceEstimate: { lower: 0, upper: 0, spectrum: 0.5, ready: false },
   };
-  return applyEditorDraft(loaded, campaign.editorDraft, {
+  const drafted = applyEditorDraft(loaded, campaign.editorDraft, {
     creativeOnMeta: campaign.creativeLinkedOnMeta === true,
     publishRecordId: campaign.publishRecordId,
   });
+  return {
+    ...drafted,
+    metaObjectIds: metaObjectIdsFromCampaign(campaign),
+  };
 }

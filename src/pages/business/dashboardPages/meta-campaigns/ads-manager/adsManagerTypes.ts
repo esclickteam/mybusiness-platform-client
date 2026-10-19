@@ -189,12 +189,21 @@ export type AdsManagerTreeNode = {
   validation: ValidationSeverity;
 };
 
+export type MetaObjectIds = {
+  campaignId: string;
+  adSetId: string;
+  adId: string;
+  creativeId: string;
+};
+
 export type AdsManagerState = {
   sessionMode: AdsManagerSessionMode;
   mode: AdsManagerMode;
   selectedLevel: AdsManagerLevel;
   selectedId: string;
   saveStatus: "unsaved" | "saving" | "saved" | "error";
+  /** Real Meta object ids. Editor row ids may be local and must not be sent to Meta. */
+  metaObjectIds?: MetaObjectIds;
   publishRecordId?: string;
   draftRevision?: number;
   hasUnpublishedChanges?: boolean;

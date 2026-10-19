@@ -44,7 +44,7 @@ import {
   diffAdsManagerState,
   isAdsManagerDirty,
 } from "./adsManagerDiff";
-import { buildExistingPublishPayload } from "./adsManagerEditPayloads";
+import { buildExistingPublishPayload, existingMetaIdsForPublish } from "./adsManagerEditPayloads";
 import {
   buildEditorDraft,
   editorDraftHasUnstoredImage,
@@ -527,9 +527,13 @@ export default function MetaAdsManagerPage() {
     setPlanLoading(true);
     setPublishConfirmOpen(true);
     try {
+      const ids = existingMetaIdsForPublish(stateRef.current, campaignId);
       const plan = await planMetaCampaignChanges(businessId, campaignId, {
-        metaAdSetId: stateRef.current.adSets[0]?.id,
-        metaAdId: stateRef.current.ads[0]?.id,
+        publishRecordId: ids.publishRecordId,
+        metaCampaignId: ids.campaignId || undefined,
+        metaAdSetId: ids.adSetId || undefined,
+        metaAdId: ids.adId || undefined,
+        metaCreativeId: ids.creativeId || undefined,
         leadFormId: stateRef.current.ads[0]?.instantFormId,
       });
       setLeadFormPlan(plan);
@@ -594,6 +598,7 @@ export default function MetaAdsManagerPage() {
           campaignId,
           buildExistingPublishPayload(stateRef.current, changes, {
             confirmCreateAd: approveNewAd,
+            routeId: campaignId,
           })
         );
         const requestedForm = changes.some((row) => row.labelKey === "changeLeadForm")
@@ -1668,6 +1673,11 @@ export default function MetaAdsManagerPage() {
             {leadFormPlan?.message ? (
               <p className="mt-3 rounded-md bg-[#E7F3FF] px-3 py-2 text-[13px] font-semibold text-[#050505]">
                 {leadFormPlan.message}
+              </p>
+            ) : null}
+            {leadFormPlan?.adId ? (
+              <p className="mt-3 text-[13px] font-semibold text-[#050505]">
+                {c("metaAdId")}: {leadFormPlan.adId}
               </p>
             ) : null}
             {leadFormPlan?.createsNewAd ? (

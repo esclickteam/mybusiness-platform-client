@@ -184,6 +184,9 @@ describe("adsManagerEditPayloads", () => {
     const changes = diffAdsManagerState(baseline, current);
     const payload = buildExistingPublishPayload(current, changes);
     expect(payload.leadFormId).toBe("form-new");
+    expect(payload.metaCampaignId).toBe("120251467028970469");
+    expect(payload.metaAdId).toBeUndefined();
+    expect(payload.metaAdSetId).toBeUndefined();
     expect(payload.allowBudgetChange).toBe(false);
     expect(payload.allowStatusChange).toBe(false);
     expect(payload.confirmCreateAd).toBe(false);
@@ -192,5 +195,88 @@ describe("adsManagerEditPayloads", () => {
     expect(payload.ad).toEqual(expect.objectContaining({ leadFormId: "form-new" }));
     expect(payload.ad).not.toHaveProperty("dailyBudget");
     expect(payload.ad).not.toHaveProperty("status");
+  });
+
+  it("keeps a local editor id out of the Meta payload", () => {
+    const localId = "6ad522a0026119f4b42a2cdb";
+    const metaCampaignId = "120257519669290405";
+    const metaAdSetId = "120257524329420405";
+    const metaAdId = "120257524330680405";
+    const state = adsManagerStateFromMetaCampaign({
+      ...campaign,
+      id: metaCampaignId,
+      metaCampaignId,
+      metaAdSetId,
+      metaAdId,
+      metaCreativeId: "4611120585773478",
+      publishRecordId: localId,
+      adSets: [
+        {
+          id: metaAdSetId,
+          name: "Main ad set",
+          ageMin: 24,
+          ageMax: 38,
+        },
+      ],
+      ads: [
+        {
+          id: metaAdId,
+          name: "Main ad",
+          adSetId: metaAdSetId,
+          headline: "Headline from Meta",
+          primaryText: "Primary",
+          leadFormId: "1503689644979003",
+          creativeId: "4611120585773478",
+        },
+      ],
+      editorDraft: {
+        workspace: {
+          campaign: {
+            id: localId,
+            name: "Live",
+            objective: "OUTCOME_LEADS",
+            budgetAmount: "50",
+            budgetType: "daily",
+            status: "ACTIVE",
+          },
+          adSets: [{ id: `${localId}-adset`, name: "Main ad set", ageMin: 24, ageMax: 38 }],
+          ads: [
+            {
+              id: `${localId}-ad`,
+              name: "Main ad",
+              instantFormId: "1503689644979003",
+              headline: "Headline from Meta",
+              primaryText: "Primary",
+            },
+          ],
+        },
+      },
+    });
+    expect(state.ads[0].id).toBe(`${localId}-ad`);
+    expect(state.metaObjectIds).toEqual({
+      campaignId: metaCampaignId,
+      adSetId: metaAdSetId,
+      adId: metaAdId,
+      creativeId: "4611120585773478",
+    });
+    const current = {
+      ...state,
+      ads: state.ads.map((ad) => ({ ...ad, instantFormId: "1087067970773980" })),
+    };
+    const changes = diffAdsManagerState(state, current);
+    const payload = buildExistingPublishPayload(current, changes, { routeId: metaCampaignId });
+    expect(changes.some((row) => row.labelKey === "changeLeadForm")).toBe(true);
+    expect(payload.metaAdId).toBe(metaAdId);
+    expect(payload.metaAdSetId).toBe(metaAdSetId);
+    expect(payload.metaCampaignId).toBe(metaCampaignId);
+    expect(payload.metaCreativeId).toBe("4611120585773478");
+    expect(payload.publishRecordId).toBe(localId);
+    expect(payload.leadFormId).toBe("1087067970773980");
+    expect(JSON.stringify({
+      metaCampaignId: payload.metaCampaignId,
+      metaAdSetId: payload.metaAdSetId,
+      metaAdId: payload.metaAdId,
+      metaCreativeId: payload.metaCreativeId,
+    })).not.toContain(localId);
   });
 });
