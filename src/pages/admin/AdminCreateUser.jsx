@@ -460,6 +460,44 @@ export default function AdminCreateUser() {
                 {result.invitationError ? ` (${result.invitationError})` : ""}. Send it from the partner dossier.
               </p>
             ) : null}
+            {result.accountKind === "saas_only" || result.accountKind === "bizuply_saas" ? (
+              <div className="mt-3 space-y-1 font-bold">
+                <p>מסירה מאובטחת — אל תשלחו באימייל או בוואטסאפ ציבורי. העתיקו והעבירו באופן פרטי.</p>
+                <p>כניסה ל־Bizuply: <code dir="ltr">{result.loginUrl || "https://bizuply.com/login"}</code></p>
+                {result.user?.email ? <p>אימייל: {result.user.email}</p> : null}
+                {result.temporaryPassword ? (
+                  <p>
+                    סיסמה זמנית: <code>{result.temporaryPassword}</code>
+                    <button
+                      type="button"
+                      className="ms-2 underline"
+                      onClick={() => {
+                        const text = [
+                          `כניסה: ${result.loginUrl || "https://bizuply.com/login"}`,
+                          `אימייל: ${result.user?.email || ""}`,
+                          `סיסמה זמנית: ${result.temporaryPassword}`,
+                          "בכניסה הראשונה יש להחליף סיסמה.",
+                          "לאחר מכן: לוגו, צבעים, פרטי העסק, ואז פתיחת המערכת ללקוחות.",
+                        ].join("\n");
+                        navigator.clipboard?.writeText(text);
+                      }}
+                    >
+                      העתקת פרטי כניסה
+                    </button>
+                  </p>
+                ) : (
+                  <p>החשבון כבר היה קיים — לא הונפקה סיסמה חדשה.</p>
+                )}
+                {result.tenant?.accessPath || result.tenant?.product?.loginUrl ? (
+                  <p>
+                    כתובת המערכת:{" "}
+                    <code dir="ltr">{result.tenant.product?.loginUrl || result.tenant.accessPath}</code>
+                  </p>
+                ) : null}
+                <p>הלקוח מחליף סיסמה בכניסה הראשונה, נכנס ל־«המערכות שלי», ומעדכן מיתוג ותוכן.</p>
+              </div>
+            ) : (
+              <>
             {result.temporaryPassword && result.userType !== "partner" ? (
               <p className="mt-2 font-bold">
                 סיסמה: <code>{result.temporaryPassword}</code>
@@ -468,6 +506,8 @@ export default function AdminCreateUser() {
             {result.user?.email ? (
               <p className="mt-1 font-bold">אימייל: {result.user.email}</p>
             ) : null}
+              </>
+            )}
             {result.packageSku ? (
               <p className="mt-1 font-bold">
                 חבילה: {result.packageSku}
