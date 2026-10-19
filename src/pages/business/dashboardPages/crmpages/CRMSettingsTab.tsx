@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import API from "@api";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
 import WorkHoursTab from "./WorkHoursTab";
+import CRMPipelineFieldsSettings from "./workspace/CRMPipelineFieldsSettings";
 
 type CRMSettingsState = {
   businessName: string;
@@ -44,6 +45,7 @@ type SettingsTabKey =
   | "special-dates"
   | "booking-rules"
   | "old-leads"
+  | "pipeline"
   | "notifications"
   | "branding"
   | "security";
@@ -141,6 +143,11 @@ const settingsTabMeta: {
     key: "old-leads",
     labelKey: "crm.settings.tabs.oldLeads.label",
     icon: History,
+  },
+  {
+    key: "pipeline",
+    labelKey: "crm.settings.tabs.pipeline.label",
+    icon: SlidersHorizontal,
   },
   {
     key: "notifications",
@@ -535,6 +542,8 @@ export default function CRMSettingsTab() {
               notice={oldLeadsNotice}
             />
           )}
+
+          {activeTab === "pipeline" && <CRMPipelineFieldsSettings />}
 
           {activeTab === "notifications" && (
             <NotificationsSettings

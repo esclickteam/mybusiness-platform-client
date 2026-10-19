@@ -3217,6 +3217,8 @@
     "nav": {
       "leads": "Leads",
       "leadsDesc": "New opportunities",
+      "reports": "Reports",
+      "reportsDesc": "Live CRM metrics",
       "oldLeads": "Old leads",
       "oldLeadsDesc": "Follow-up and relevance check",
       "clients": "Clients",
@@ -3478,6 +3480,9 @@
           "label": "Old leads",
           "description": "Automatic follow-up rules"
         },
+        "pipeline": {
+          "label": "Funnel and lead fields"
+        },
         "notifications": {
           "label": "Notifications",
           "description": "Reminders & messages"
@@ -3738,7 +3743,10 @@
         "interested": "Interested",
         "converted": "Converted",
         "lost": "Lost",
-        "old": "Old lead"
+        "old": "Old lead",
+        "in_progress": "In progress",
+        "quote": "Quote",
+        "negotiation": "Negotiation"
       },
       "oldLeads": {
         "title": "Old leads",
@@ -4065,6 +4073,117 @@
         "paymentsEmptyDemo": "No payments for this lead yet. After conversion to a client and booking appointments, payments will appear here in dollars."
       },
       "activityStatusChanged": "Lead status updated to: {{status}}"
+    },
+    "workspace": {
+      "searchPlaceholder": "Search by name, phone, email or lead ID",
+      "columns": "Columns",
+      "saveView": "Save view...",
+      "duplicates": "Duplicates",
+      "selected": "{{count}} selected",
+      "applyStatus": "Update status",
+      "applyAgent": "Assign agent",
+      "archive": "Archive",
+      "confirmBulk": "Apply this action to {{count}} leads?",
+      "confirmMerge": "Merge these records manually? Nothing will be deleted.",
+      "bulkDone": "Action completed",
+      "imported": "Imported {{count}} leads",
+      "merged": "Records merged",
+      "merge": "Manual merge",
+      "saved": "Saved",
+      "statusUpdated": "Status updated",
+      "assigned": "Agent updated",
+      "callLogged": "Call logged",
+      "logCall": "Log call",
+      "callNote": "Call summary",
+      "meeting": "Meeting",
+      "meetingTitle": "Meeting title",
+      "addMeeting": "Add meeting",
+      "addTask": "Add task",
+      "addDocument": "Add document",
+      "documentName": "Document name",
+      "dealName": "Deal name",
+      "dealAmount": "Amount",
+      "addDeal": "Create deal",
+      "addField": "Add field",
+      "newField": "New field",
+      "customFields": "Lead custom fields",
+      "pipelineSettings": "Sales funnel stages",
+      "hideStage": "Hide",
+      "showInTable": "Show in table",
+      "showInFilter": "Show in filters",
+      "allStages": "All stages",
+      "clearFilters": "Clear filters",
+      "showing": "Showing {{count}} of {{total}}",
+      "next": "Next",
+      "from": "From",
+      "to": "To",
+      "adPlatform": "Ad platform",
+      "adset": "Ad set",
+      "ad": "Ad",
+      "adId": "Ad ID",
+      "receivedAt": "Lead received at",
+      "openCampaign": "Open campaign",
+      "byAgent": "Performance by agent",
+      "callOutcomes": {
+        "answered": "Answered",
+        "no_answer": "No answer",
+        "interested": "Interested",
+        "not_interested": "Not interested"
+      },
+      "tabs": {
+        "overview": "Overview",
+        "personal": "Details and custom fields",
+        "source": "Source and campaign",
+        "form": "Form answers",
+        "activity": "Notes and activity",
+        "tasks": "Tasks",
+        "meetings": "Meetings",
+        "documents": "Documents",
+        "deals": "Quotes and deals",
+        "payments": "Payments"
+      },
+      "cols": {
+        "name": "Name",
+        "phone": "Phone",
+        "email": "Email",
+        "status": "Status",
+        "source": "Source",
+        "campaign": "Campaign",
+        "form": "Form",
+        "assignedToName": "Agent",
+        "createdAt": "Created",
+        "updatedAt": "Updated"
+      },
+      "fieldTypes": {
+        "text": "Text",
+        "number": "Number",
+        "date": "Date",
+        "time": "Time",
+        "select": "Dropdown",
+        "multiselect": "Multi-select",
+        "boolean": "Yes/No",
+        "url": "URL",
+        "money": "Money"
+      },
+      "metrics": {
+        "leads": "Total leads",
+        "newLeads": "New leads",
+        "inProgress": "Leads in progress",
+        "closed": "Closed leads",
+        "lost": "Lost leads",
+        "conversionRate": "Conversion rate",
+        "dealSum": "Deal amount",
+        "revenue": "Recorded revenue",
+        "openTasks": "Open tasks",
+        "upcomingMeetings": "Upcoming meetings",
+        "byAgent": "Performance by agent"
+      },
+      "charts": {
+        "leadsOverTime": "Leads over time",
+        "status": "Status distribution",
+        "sources": "Leads by ad source",
+        "deals": "Deals by month"
+      }
     },
     "clients": {
       "badge": "CRM Clients",

@@ -3217,6 +3217,8 @@
     "nav": {
       "leads": "לידים",
       "leadsDesc": "הזדמנויות חדשות",
+      "reports": "דוחות",
+      "reportsDesc": "מדדי CRM בפועל",
       "oldLeads": "לידים ישנים",
       "oldLeadsDesc": "פולואפ ובדיקת רלוונטיות",
       "clients": "לקוחות",
@@ -3478,6 +3480,9 @@
           "label": "לידים ישנים",
           "description": "הגדרת פולואפ אוטומטי"
         },
+        "pipeline": {
+          "label": "משפך ושדות ליד"
+        },
         "notifications": {
           "label": "התראות",
           "description": "תזכורות והודעות"
@@ -3738,7 +3743,10 @@
         "interested": "מעוניין",
         "converted": "הומר",
         "lost": "אבוד",
-        "old": "ליד ישן"
+        "old": "ליד ישן",
+        "in_progress": "בטיפול",
+        "quote": "הצעת מחיר",
+        "negotiation": "משא ומתן"
       },
       "oldLeads": {
         "title": "לידים ישנים",
@@ -4065,6 +4073,117 @@
         "paymentsEmptyDemo": "עדיין אין תשלומים לליד זה. לאחר המרה ללקוח ותיאום תורים — התשלומים יופיעו כאן בשקלים."
       },
       "activityStatusChanged": "סטטוס הליד עודכן ל: {{status}}"
+    },
+    "workspace": {
+      "searchPlaceholder": "חיפוש לפי שם, טלפון, אימייל או מזהה ליד",
+      "columns": "עמודות",
+      "saveView": "שמירת תצוגה...",
+      "duplicates": "כפילויות",
+      "selected": "{{count}} נבחרו",
+      "applyStatus": "עדכון סטטוס",
+      "applyAgent": "שיוך נציג",
+      "archive": "ארכוב",
+      "confirmBulk": "לבצע את הפעולה על {{count}} לידים?",
+      "confirmMerge": "למזג את הרשומות ידנית? המידע לא יימחק.",
+      "bulkDone": "הפעולה בוצעה",
+      "imported": "יובאו {{count}} לידים",
+      "merged": "הרשומות מוזגו",
+      "merge": "מיזוג ידני",
+      "saved": "נשמר",
+      "statusUpdated": "הסטטוס עודכן",
+      "assigned": "הנציג עודכן",
+      "callLogged": "השיחה תועדה",
+      "logCall": "תיעוד שיחה",
+      "callNote": "סיכום שיחה",
+      "meeting": "פגישה",
+      "meetingTitle": "כותרת פגישה",
+      "addMeeting": "הוספת פגישה",
+      "addTask": "הוספת משימה",
+      "addDocument": "הוספת מסמך",
+      "documentName": "שם המסמך",
+      "dealName": "שם העסקה",
+      "dealAmount": "סכום",
+      "addDeal": "יצירת עסקה",
+      "addField": "הוספת שדה",
+      "newField": "שדה חדש",
+      "customFields": "שדות מותאמים ללידים",
+      "pipelineSettings": "שלבי משפך המכירות",
+      "hideStage": "הסתרה",
+      "showInTable": "הצג בטבלה",
+      "showInFilter": "הצג בסינון",
+      "allStages": "כל השלבים",
+      "clearFilters": "ניקוי סינון",
+      "showing": "מוצגים {{count}} מתוך {{total}}",
+      "next": "הבא",
+      "from": "מתאריך",
+      "to": "עד תאריך",
+      "adPlatform": "פלטפורמת פרסום",
+      "adset": "קבוצת מודעות",
+      "ad": "מודעה",
+      "adId": "מזהה מודעה",
+      "receivedAt": "זמן קבלת הליד",
+      "openCampaign": "פתיחת קמפיין",
+      "byAgent": "ביצועים לפי נציג",
+      "callOutcomes": {
+        "answered": "נענה",
+        "no_answer": "לא נענה",
+        "interested": "מעוניין",
+        "not_interested": "לא מעוניין"
+      },
+      "tabs": {
+        "overview": "סקירה כללית",
+        "personal": "פרטים ושדות מותאמים",
+        "source": "מקור וקמפיין",
+        "form": "תשובות לטפסים",
+        "activity": "הערות ופעילות",
+        "tasks": "משימות",
+        "meetings": "פגישות",
+        "documents": "מסמכים",
+        "deals": "הצעות מחיר ועסקאות",
+        "payments": "תשלומים"
+      },
+      "cols": {
+        "name": "שם",
+        "phone": "טלפון",
+        "email": "אימייל",
+        "status": "סטטוס",
+        "source": "מקור",
+        "campaign": "קמפיין",
+        "form": "טופס",
+        "assignedToName": "נציג",
+        "createdAt": "נוצר",
+        "updatedAt": "עודכן"
+      },
+      "fieldTypes": {
+        "text": "טקסט",
+        "number": "מספר",
+        "date": "תאריך",
+        "time": "שעה",
+        "select": "רשימה נפתחת",
+        "multiselect": "בחירה מרובה",
+        "boolean": "כן/לא",
+        "url": "כתובת URL",
+        "money": "סכום כספי"
+      },
+      "metrics": {
+        "leads": "מספר לידים כולל",
+        "newLeads": "לידים חדשים",
+        "inProgress": "לידים בטיפול",
+        "closed": "לידים שנסגרו",
+        "lost": "לידים אבודים",
+        "conversionRate": "יחס המרה",
+        "dealSum": "סכום עסקאות",
+        "revenue": "הכנסות שנרשמו",
+        "openTasks": "משימות פתוחות",
+        "upcomingMeetings": "פגישות קרובות",
+        "byAgent": "ביצועים לפי נציג"
+      },
+      "charts": {
+        "leadsOverTime": "כניסת לידים לאורך זמן",
+        "status": "התפלגות סטטוסים",
+        "sources": "לידים לפי מקורות פרסום",
+        "deals": "עסקאות לפי חודש"
+      }
     },
     "clients": {
       "badge": "לקוחות CRM",

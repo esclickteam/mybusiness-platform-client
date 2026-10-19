@@ -101,6 +101,9 @@ const WorkHoursTab = lazy(() =>
 const CRMLeadsTab = lazy(() =>
   import("./dashboardPages/crmpages/CRMLeadsTab")
 );
+const CRMReportsPage = lazy(() =>
+  import("./dashboardPages/crmpages/workspace/CRMReportsPage")
+);
 
 /* Mini SaaS / Client Portal */
 const MiniSaaSManager = lazy(() =>
@@ -705,6 +708,11 @@ const BusinessDashboardRoutes = () => {
             <Route
               path="services"
               element={<CRMServicesTab businessId={businessId} />}
+            />
+
+            <Route
+              path="reports"
+              element={<CRMReportsPage />}
             />
 
             <Route

@@ -11,6 +11,7 @@ import {
   Sparkles,
   UsersRound,
   Wrench,
+  BarChart3,
 } from "lucide-react";
 import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -91,6 +92,12 @@ const crmTabs: CrmTab[] = [
     badgeKey: "crm.nav.newBadge",
     // Keep Mini SaaS in the catalog; hide from business UI for now.
     hidden: !SHOW_BUSINESS_MINI_SAAS,
+  },
+  {
+    path: "reports",
+    labelKey: "crm.nav.reports",
+    descriptionKey: "crm.nav.reportsDesc",
+    icon: BarChart3,
   },
   {
     path: "settings",
