@@ -32,6 +32,22 @@ import { metaBtnPrimary, metaBtnSecondary, metaInputClass } from "./metaAdsUi";
 
 type AdditionalAction = "website" | "file" | "call" | "whatsapp";
 
+function isLeadFormHttpsUrl(value: string) {
+  const raw = value.trim();
+  if (!raw) return false;
+  try {
+    const url = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+    return url.protocol === "http:" || url.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function isLeadFormPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 8 && digits.length <= 15;
+}
+
 const ADDITIONAL_ACTION_IDS: AdditionalAction[] = [
   "website",
   "file",
@@ -518,18 +534,19 @@ export default function AdsManagerCreateLeadFormModal({
       fail(t("metaCampaigns.adsToasts.thankYouRequired"), "ending");
       return;
     }
-    if (additionalAction === "whatsapp" && !whatsappPhone.replace(/\D/g, "")) {
+    if (additionalAction === "whatsapp" && !isLeadFormPhone(whatsappPhone)) {
       fail(t("metaCampaigns.adsToasts.needWhatsapp"), "ending");
       return;
     }
-    if (
-      (additionalAction === "website" || additionalAction === "file") &&
-      !thankYouLink.trim()
-    ) {
-      fail(t("metaCampaigns.adsToasts.needActionLink"), "ending");
+    if (additionalAction === "website" && !isLeadFormHttpsUrl(thankYouLink)) {
+      fail(t("metaCampaigns.adsToasts.needWebsiteUrl"), "ending");
       return;
     }
-    if (additionalAction === "call" && !callPhone.replace(/\D/g, "")) {
+    if (additionalAction === "file" && !isLeadFormHttpsUrl(thankYouLink)) {
+      fail(t("metaCampaigns.adsToasts.needFileUrl"), "ending");
+      return;
+    }
+    if (additionalAction === "call" && !isLeadFormPhone(callPhone)) {
       fail(t("metaCampaigns.adsToasts.needCallPhone"), "ending");
       return;
     }
@@ -835,6 +852,7 @@ export default function AdsManagerCreateLeadFormModal({
                     {ADDITIONAL_ACTIONS.map((action) => (
                       <label
                         key={action.id}
+                        data-testid={`lead-form-action-${action.id}`}
                         className={[
                           "flex cursor-pointer gap-3 rounded-lg border px-3 py-3",
                           additionalAction === action.id
@@ -916,6 +934,7 @@ export default function AdsManagerCreateLeadFormModal({
                     <MetaFieldLike label={cc("whatsappNumber")}>
                       <input
                         className={metaInputClass}
+                        data-testid="lead-form-whatsapp-phone"
                         dir="ltr"
                         value={whatsappPhone}
                         onChange={(e) => setWhatsappPhone(e.target.value)}
@@ -929,6 +948,7 @@ export default function AdsManagerCreateLeadFormModal({
                   <MetaFieldLike label={cc("businessPhone")}>
                     <input
                       className={metaInputClass}
+                      data-testid="lead-form-call-phone"
                       dir="ltr"
                       value={callPhone}
                       onChange={(e) => setCallPhone(e.target.value)}
@@ -1003,6 +1023,22 @@ export default function AdsManagerCreateLeadFormModal({
               thankYouTitle={thankYouTitle}
               thankYouBody={thankYouBody}
               thankYouButton={thankYouButton}
+              thankYouActionLabel={
+                additionalAction === "call"
+                  ? cc("callBusiness")
+                  : additionalAction === "file"
+                    ? cc("viewFile")
+                    : additionalAction === "whatsapp"
+                      ? cc("chatWhatsapp")
+                      : cc("goToWebsite")
+              }
+              thankYouDestination={
+                additionalAction === "call"
+                  ? callPhone
+                  : additionalAction === "whatsapp"
+                    ? whatsappPhone
+                    : thankYouLink
+              }
               screen={previewScreenForStep}
               platform={previewPlatform}
               locale={locale}

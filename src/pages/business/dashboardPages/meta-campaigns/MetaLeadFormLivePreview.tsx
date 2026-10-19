@@ -21,6 +21,8 @@ type Props = {
   thankYouTitle: string;
   thankYouBody: string;
   thankYouButton: string;
+  thankYouActionLabel?: string;
+  thankYouDestination?: string;
   screen: "intro" | "questions" | "privacy" | "thanks";
   platform: "facebook" | "instagram";
   /** Meta form locale — drives RTL and contact field labels */
@@ -46,6 +48,8 @@ export default function MetaLeadFormLivePreview({
   thankYouTitle,
   thankYouBody,
   thankYouButton,
+  thankYouActionLabel = "",
+  thankYouDestination = "",
   screen,
   platform,
   locale = "he_IL",
@@ -263,6 +267,19 @@ export default function MetaLeadFormLivePreview({
               {ctaLabel}
               {screen !== "thanks" && screen !== "privacy" ? " →" : ""}
             </button>
+            {screen === "thanks" && (thankYouActionLabel || thankYouDestination) ? (
+              <p
+                data-testid="lead-form-preview-action"
+                className="mt-2 text-center text-[11px] font-semibold text-slate-500"
+              >
+                <span>{thankYouActionLabel}</span>
+                {thankYouDestination.trim() ? (
+                  <span className="mt-0.5 block" dir="ltr">
+                    {thankYouDestination.trim()}
+                  </span>
+                ) : null}
+              </p>
+            ) : null}
           </div>
         </div>
 
