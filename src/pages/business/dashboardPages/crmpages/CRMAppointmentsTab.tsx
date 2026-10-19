@@ -6,8 +6,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock3,
-  CreditCard,
-  DollarSign,
   Edit3,
   Eye,
   Loader2,
@@ -45,6 +43,13 @@ import {
   isAppointmentTreatmentCompleted,
 } from "./clientSessionConsumption";
 import { findAppointmentConflict } from "./appointmentOverlap";
+import AppointmentCalendarBoard from "./AppointmentCalendarBoard";
+import {
+  shiftAnchor,
+  toIsoDate,
+  type CalendarView,
+} from "./appointmentCalendarLayout";
+import "./crmWorkspace.css";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
@@ -595,30 +600,6 @@ function getServiceName(appointment: AppointmentItem, fallback = "Appointment") 
   return appointment.serviceName || fallback;
 }
 
-function getMonthCells(monthDate: Date) {
-  const year = monthDate.getFullYear();
-  const month = monthDate.getMonth();
-  const first = new Date(year, month, 1);
-  const totalDays = new Date(year, month + 1, 0).getDate();
-  const leadingEmptyCells = first.getDay();
-
-  const cells: Array<Date | null> = [];
-
-  for (let i = 0; i < leadingEmptyCells; i += 1) {
-    cells.push(null);
-  }
-
-  for (let day = 1; day <= totalDays; day += 1) {
-    cells.push(new Date(year, month, day));
-  }
-
-  while (cells.length % 7 !== 0) {
-    cells.push(null);
-  }
-
-  return cells;
-}
-
 export default function CRMAppointmentsTab() {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
@@ -639,8 +620,13 @@ export default function CRMAppointmentsTab() {
 
   const [selectedDate, setSelectedDate] = useState(getTodayIso());
   const [monthDate, setMonthDate] = useState(() => new Date());
-  const [listMode, setListMode] = useState<ListMode>("all");
-  const [calendarView, setCalendarView] = useState<"month" | "week" | "day">("month");
+  const [listMode, setListMode] = useState<ListMode>("upcoming");
+  const [calendarView, setCalendarView] = useState<CalendarView>(() => {
+    const saved = window.localStorage.getItem("crm.appointments.view");
+    return saved === "week" || saved === "day" || saved === "month" ? saved : "month";
+  });
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
 
   const [newAppointment, setNewAppointment] =
     useState<AppointmentFormState>(emptyAppointmentForm);
@@ -665,6 +651,21 @@ export default function CRMAppointmentsTab() {
       return acc;
     }, {});
   }, [clients]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 640px)");
+    const apply = () => {
+      setIsMobile(media.matches);
+      if (media.matches) setSidebarOpen(false);
+    };
+    apply();
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem("crm.appointments.view", calendarView);
+  }, [calendarView]);
 
   useEffect(() => {
     if (!businessId) return;
@@ -846,14 +847,7 @@ export default function CRMAppointmentsTab() {
     unnamedClient,
   ]);
 
-  const totalRevenue = useMemo(() => {
-    return appointments.reduce((sum, appointment) => {
-      return sum + (Number(appointment.price) || 0);
-    }, 0);
-  }, [appointments]);
-
   const todayAppointments = appointmentsByDate[getTodayIso()] || [];
-  const selectedDayAppointments = appointmentsByDate[selectedDate] || [];
 
   const unpaidCount = useMemo(() => {
     return appointments.filter((appointment) => !appointment.paid).length;
@@ -894,7 +888,7 @@ export default function CRMAppointmentsTab() {
     });
   };
 
-  const openCreateModal = () => {
+  const openCreateModal = (date = selectedDate, time = "") => {
     if (!hasOpenDays) {
       const go = window.confirm(t("crm.appointments.noWorkHoursConfirm"));
 
@@ -905,7 +899,13 @@ export default function CRMAppointmentsTab() {
       return;
     }
 
-    resetForm();
+    setEditId(null);
+    previousCompletedRef.current = false;
+    setNewAppointment({
+      ...emptyAppointmentForm,
+      date: date || selectedDate || getTodayIso(),
+      time,
+    });
     setShowAddForm(true);
   };
 
@@ -1162,15 +1162,42 @@ export default function CRMAppointmentsTab() {
     ]);
   };
 
-  const goPrevMonth = () => {
-    setMonthDate((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+  const goByView = (direction: -1 | 1) => {
+    setMonthDate((prev) => {
+      const next = shiftAnchor(prev, calendarView, direction);
+      if (calendarView !== "month") {
+        setSelectedDate(toIsoDate(next));
+      }
+      return next;
+    });
   };
 
-  const goNextMonth = () => {
-    setMonthDate((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+  const handleMoveAppointment = async (id: string, target: { date: string; time: string }) => {
+    const appointment = appointments.find((item) => item._id === id);
+    if (!appointment) return;
+    if (appointment.date === target.date && appointment.time === target.time) return;
+    if (!window.confirm(t("crm.appointments.moveConfirm", { date: target.date, time: target.time }))) {
+      return;
+    }
+    const conflict = findAppointmentConflict(
+      { _id: id, date: target.date, time: target.time, duration: appointment.duration },
+      appointments
+    );
+    if (conflict && !window.confirm(t("crm.appointments.conflictWarning"))) {
+      return;
+    }
+    try {
+      await API.patch(`/appointments/${id}`, {
+        date: target.date,
+        time: target.time,
+        duration: appointment.duration,
+      });
+      await queryClient.invalidateQueries({ queryKey: ["appointments", businessId] });
+    } catch (err) {
+      console.error("Move appointment error:", err);
+      alert(t("crm.appointments.saveFailed"));
+    }
   };
-
-  const monthCells = getMonthCells(monthDate);
 
   if (isLoading) {
     return <BizuplyLoadingState label={t("crm.appointments.loading")} />;
@@ -1199,409 +1226,178 @@ export default function CRMAppointmentsTab() {
     t("crm.appointments.weekdaySat"),
   ];
 
+  const boardAppointments = sortedAppointments.map((appointment) => ({
+    _id: appointment._id,
+    date: appointment.date,
+    time: appointment.time,
+    duration: appointment.duration,
+    serviceName: appointment.serviceName,
+    status: appointment.status,
+    paid: appointment.paid,
+    completed: appointment.completed,
+    label: getAppointmentClientName(appointment, clientsById, clients, unnamedClient),
+  }));
+
   return (
-    <div dir={dir} className="space-y-4 bg-[#F7F8FC] text-start text-slate-800">
-      <section className="space-y-4">
-        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
-          <div>
-            <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-              {t("crm.appointments.title")}
-            </h2>
-            <p className="mt-1 max-w-3xl text-sm font-semibold leading-6 text-slate-500">
-              {t("crm.appointments.subtitle")}
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-2 sm:flex-row">
-            <button
-              type="button"
-              onClick={refreshAll}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
-            >
-              {isFetching ? (
-                <BizuplyLoader size="xs" compact />
-              ) : (
-                <RefreshCw className="h-4 w-4" />
-              )}
-              {t("crm.appointments.refreshSync")}
-            </button>
-
-            <button
-              type="button"
-              onClick={openCreateModal}
-              data-demo-target="calendar-create-appointment"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
-            >
-              <Plus className="h-4 w-4" />
-              {t("crm.appointments.createAppointment")}
-            </button>
+    <div dir={dir} className="crm-ops space-y-2 bg-[#F7F8FC] text-start text-slate-800">
+      <header className="crm-ops-toolbar">
+        <div className="min-w-0 flex-1">
+          <h2>{t("crm.appointments.title")}</h2>
+          <div className="crm-ops-stats mt-1">
+            <span>{t("crm.appointments.metricTotal")}: <b>{appointments.length}</b></span>
+            <span>{t("crm.appointments.metricToday")}: <b>{todayAppointments.length}</b></span>
+            <span>{t("crm.appointments.metricUpcoming")}: <b>{upcomingCount}</b></span>
+            <span>{t("crm.appointments.metricUnpaid")}: <b>{unpaidCount}</b></span>
           </div>
         </div>
-
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-          <MetricCard
-            label={t("crm.appointments.metricTotal")}
-            value={appointments.length}
-            icon={CalendarDays}
-            featured
-          />
-          <MetricCard
-            label={t("crm.appointments.metricToday")}
-            value={todayAppointments.length}
-            icon={Clock3}
-          />
-          <MetricCard
-            label={t("crm.appointments.metricUpcoming")}
-            value={upcomingCount}
-            icon={CheckCircle2}
-          />
-          <MetricCard
-            label={t("crm.appointments.metricRevenue")}
-            value={formatMoney(totalRevenue, user)}
-            icon={DollarSign}
-          />
-          <MetricCard
-            label={t("crm.appointments.metricUnpaid")}
-            value={unpaidCount}
-            icon={CreditCard}
-          />
+        <div className="flex flex-wrap items-center gap-1">
+          {(["month", "week", "day"] as const).map((view) => (
+            <button
+              key={view}
+              type="button"
+              onClick={() => setCalendarView(view)}
+              className={[
+                "h-8 rounded-lg border px-2.5 text-xs font-black",
+                calendarView === view
+                  ? "border-violet-300 bg-violet-50 text-[#6D28D9]"
+                  : "border-slate-200 bg-white text-slate-600",
+              ].join(" ")}
+            >
+              {t(`crm.appointments.views.${view}`)}
+            </button>
+          ))}
+          <button type="button" onClick={() => goByView(-1)} className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white" aria-label={t("crm.appointments.prevRange")}>
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              const now = new Date();
+              setMonthDate(now);
+              setSelectedDate(getTodayIso());
+              setListMode("today");
+              if (isMobile) setCalendarView("day");
+            }}
+            className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-black"
+          >
+            {t("crm.common.today")}
+          </button>
+          <button type="button" onClick={() => goByView(1)} className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white" aria-label={t("crm.appointments.nextRange")}>
+            <ChevronRight className="h-4 w-4" />
+          </button>
+          <strong className="px-1 text-sm">{formatMonthTitle(monthDate, dateLocale)}</strong>
+          <button type="button" onClick={() => setSidebarOpen((open) => !open)} className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-black">
+            {sidebarOpen ? t("crm.appointments.hideSidebar") : t("crm.appointments.showSidebar")}
+          </button>
+          <button type="button" onClick={refreshAll} className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white" aria-label={t("crm.appointments.refreshSync")}>
+            {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+          </button>
+          <button
+            type="button"
+            onClick={() => openCreateModal()}
+            data-demo-target="calendar-create-appointment"
+            className="inline-flex h-8 items-center gap-1 rounded-lg bg-[#6D28D9] px-3 text-xs font-black text-white"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            {t("crm.appointments.createAppointment")}
+          </button>
         </div>
-      </section>
+      </header>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_440px]">
-        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)] sm:p-5">
-          <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <div>
-              <h3 className="text-2xl font-black text-slate-800">
-                {formatMonthTitle(monthDate, dateLocale)}
-              </h3>
+      <div className={`crm-cal-shell ${sidebarOpen ? "" : "is-collapsed"}`}>
+        <AppointmentCalendarBoard
+          view={calendarView}
+          isMobile={isMobile}
+          anchor={monthDate}
+          selectedDate={selectedDate}
+          weekdayLabels={weekdayLabels}
+          todayIso={getTodayIso()}
+          appointments={boardAppointments}
+          onSelectDate={(iso) => {
+            setSelectedDate(iso);
+            setListMode("selected");
+            setMonthDate(new Date(`${iso}T12:00:00`));
+          }}
+          onOpenAppointment={(id) => {
+            const appointment = appointments.find((item) => item._id === id);
+            if (appointment) handleEditAppointment(appointment);
+          }}
+          onCreateAt={(date, time) => openCreateModal(date, time)}
+          onDropAppointment={handleMoveAppointment}
+        />
 
-              <p className="mt-1 text-sm font-bold text-slate-500">
-                {t("crm.appointments.calendarHint")}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              {(["month", "week", "day"] as const).map((view) => (
-                <button
-                  key={view}
-                  type="button"
-                  onClick={() => setCalendarView(view)}
-                  className={[
-                    "h-11 rounded-xl border px-3 text-xs font-black",
-                    calendarView === view
-                      ? "border-violet-200 bg-violet-50 text-[#6D28D9]"
-                      : "border-slate-200 bg-white text-slate-600",
-                  ].join(" ")}
-                >
-                  {t(`crm.appointments.views.${view}`)}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={goPrevMonth}
-                className="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  const now = new Date();
-                  setMonthDate(now);
-                  setSelectedDate(getTodayIso());
-                  setListMode("today");
-                }}
-                className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
-              >
-                {t("crm.common.today")}
-              </button>
-
-              <button
-                type="button"
-                onClick={goNextMonth}
-                className="grid h-11 w-11 place-items-center rounded-2xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-50"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-
-          {calendarView !== "month" && (
-            <div className="mb-3 max-h-[420px] overflow-auto rounded-xl border border-slate-200/80">
-              {Array.from({ length: 13 }, (_, index) => 8 + index).map((hour) => {
-                const label = `${String(hour).padStart(2, "0")}:00`;
-                const days = calendarView === "day"
-                  ? [selectedDate]
-                  : Array.from({ length: 7 }, (_, day) => {
-                      const start = new Date(monthDate);
-                      start.setDate(start.getDate() - start.getDay() + day);
-                      return toIsoDate(start);
-                    });
-                return (
-                  <div key={label} className="grid grid-cols-[56px_repeat(7,minmax(0,1fr))] border-t border-slate-100 text-xs">
-                    <div className="p-2 font-black text-slate-400">{label}</div>
-                    {(calendarView === "day" ? days.slice(0, 1) : days).map((day) => {
-                      const items = (appointmentsByDate[day] || []).filter((item) => (item.time || "").startsWith(String(hour).padStart(2, "0")));
-                      return (
-                        <button
-                          key={`${day}-${label}`}
-                          type="button"
-                          className="min-h-[44px] border-s border-slate-100 p-1 text-start hover:bg-violet-50"
-                          onClick={() => {
-                            setSelectedDate(day);
-                            setNewAppointment((prev) => ({ ...prev, date: day, time: label }));
-                            setShowAddForm(true);
-                          }}
-                        >
-                          {items.map((item) => (
-                            <div key={item._id} className="truncate rounded bg-violet-50 px-1 py-0.5 font-bold text-violet-800">
-                              {item.time} {item.serviceName || ""}
-                            </div>
-                          ))}
-                        </button>
-                      );
-                    })}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-          <div className={`grid grid-cols-7 gap-2 text-center ${calendarView === "month" ? "" : "hidden"}`}>
-            {weekdayLabels.map((day) => (
-              <div
-                key={day}
-                className="rounded-2xl bg-slate-50 px-2 py-3 text-xs font-black text-slate-400"
-              >
-                {day}
-              </div>
-            ))}
-
-            {monthCells.map((cell, index) => {
-              if (!cell) {
-                return (
-                  <div
-                    key={`empty-${index}`}
-                    className="min-h-[116px] rounded-2xl bg-slate-50/60"
-                  />
-                );
-              }
-
-              const key = toIsoDate(cell);
-              const dayAppointments = appointmentsByDate[key] || [];
-              const isToday = key === getTodayIso();
-              const isSelected = key === selectedDate;
-
-              return (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => {
-                    setSelectedDate(key);
-                    setListMode("selected");
-                  }}
-                  className={[
-                    "min-h-[116px] rounded-2xl border p-3 text-start transition",
-                    isSelected
-                      ? "border-[#6D28D9]/40 bg-violet-50 shadow-[0_12px_28px_rgba(109,40,217,0.12)]"
-                      : "border-slate-100 bg-white hover:border-violet-200 hover:bg-violet-50/40",
-                  ].join(" ")}
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={[
-                        "grid h-8 w-8 place-items-center rounded-xl text-sm font-black",
-                        isToday
-                          ? "bg-[#6D28D9] text-white"
-                          : "bg-slate-50 text-slate-800",
-                      ].join(" ")}
-                    >
-                      {cell.getDate()}
-                    </span>
-
-                    {dayAppointments.length > 0 && (
-                      <span className="rounded-full bg-violet-50 px-2 py-1 text-[11px] font-black text-violet-700 ring-1 ring-violet-100">
-                        {dayAppointments.length}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-3 space-y-1.5">
-                    {dayAppointments.slice(0, 3).map((appointment) => (
-                      <div
-                        key={appointment._id}
-                        className="truncate rounded-xl bg-sky-50 px-2 py-1.5 text-[11px] font-black text-sky-700"
-                      >
-                        {appointment.time || emDash} ·{" "}
-                        {getAppointmentClientName(
-                          appointment,
-                          clientsById,
-                          clients,
-                          unnamedClient
-                        )}
-                      </div>
-                    ))}
-
-                    {dayAppointments.length > 3 && (
-                      <div className="text-[11px] font-black text-slate-400">
-                        {t("crm.appointments.moreCount", {
-                          count: dayAppointments.length - 3,
-                        })}
-                      </div>
-                    )}
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        <aside className="space-y-5">
-          <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-            <div className="flex items-start justify-between gap-3">
+        {sidebarOpen && (
+          <aside className="crm-side">
+            <div className="flex items-center justify-between gap-2 border-b border-slate-200 px-3 py-2">
               <div>
-                <h3 className="text-2xl font-black text-slate-800">
-                  {t("crm.appointments.syncedListTitle")}
-                </h3>
-
-                <p className="mt-1 text-sm font-bold text-slate-500">
-                  {listMode === "selected"
-                    ? t("crm.appointments.syncedListSelected", {
-                        count: selectedDayAppointments.length,
-                        date: formatDate(selectedDate, dateLocale, emDash),
-                      })
-                    : t("crm.appointments.syncedListAll")}
-                </p>
+                <h3 className="text-sm font-black">{t("crm.appointments.upcomingTitle")}</h3>
+                <p className="text-[11px] font-semibold text-slate-500">{workHoursLabel}</p>
               </div>
-
-              {isFetching && (
-                <BizuplyLoader size="sm" compact />
-              )}
-            </div>
-
-            <div className="relative mt-4">
-              <Search
-                size={17}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-              />
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={t("crm.appointments.searchPlaceholder")}
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
-              />
-            </div>
-
-            <div className="mt-4 grid grid-cols-4 gap-2">
-              <FilterButton
-                active={listMode === "all"}
-                onClick={() => setListMode("all")}
-              >
-                {t("crm.appointments.filterAll")}
-              </FilterButton>
-              <FilterButton
-                active={listMode === "today"}
-                onClick={() => setListMode("today")}
-              >
-                {t("crm.appointments.filterToday")}
-              </FilterButton>
-              <FilterButton
-                active={listMode === "selected"}
-                onClick={() => setListMode("selected")}
-              >
-                {t("crm.appointments.filterDay")}
-              </FilterButton>
-              <FilterButton
-                active={listMode === "upcoming"}
-                onClick={() => setListMode("upcoming")}
-              >
-                {t("crm.appointments.filterUpcoming")}
-              </FilterButton>
-            </div>
-
-            <div className="mt-4 max-h-[720px] space-y-3 overflow-y-auto pr-1">
-              {filteredAppointments.length === 0 ? (
-                <div
-                  className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-7 text-center"
-                  data-demo-target={
-                    isGuidedDemoActive() ? "calendar-existing-appointments" : undefined
-                  }
-                >
-                  <CalendarDays className="mx-auto h-9 w-9 text-slate-300" />
-
-                  <h3 className="mt-3 text-base font-black text-slate-800">
-                    {t("crm.appointments.emptyTitle")}
-                  </h3>
-
-                  <p className="mt-1 text-sm font-bold text-slate-500">
-                    {t("crm.appointments.emptyText")}
-                  </p>
-                </div>
-              ) : (
-                filteredAppointments.map((appointment, index) => (
-                  <AppointmentCard
-                    key={appointment._id}
-                    appointment={appointment}
-                    clients={clients}
-                    clientsById={clientsById}
-                    user={user}
-                    emailMenuOpenId={emailMenuOpenId}
-                    setEmailMenuOpenId={setEmailMenuOpenId}
-                    onEmail={openEmail}
-                    onEdit={() => handleEditAppointment(appointment)}
-                    onCancel={() => handleCancelAppointment(appointment._id)}
-                    onOpenClient={() => openClientFile(appointment)}
-                    demoTarget={
-                      isGuidedDemoActive() && index === 0
-                        ? "calendar-existing-appointments"
-                        : undefined
-                    }
-                  />
-                ))
-              )}
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
-                  <Clock3 className="h-5 w-5" />
-                </div>
-
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-sky-600">
-                    {t("crm.appointments.workHoursLabel")}
-                  </p>
-                  <p
-                    className={`text-sm font-black ${
-                      hasOpenDays ? "text-slate-800" : "text-amber-700"
-                    }`}
-                  >
-                    {workHoursLabel}
-                  </p>
-                </div>
-              </div>
-
               <button
                 type="button"
-                onClick={() =>
-                  navigate(`/business/${businessId}/dashboard/crm/work-hours`)
-                }
-                className="rounded-xl border border-sky-200 bg-white px-3 py-2 text-xs font-black text-sky-700 transition hover:bg-sky-50"
+                onClick={() => navigate(`/business/${businessId}/dashboard/crm/work-hours`)}
+                className="text-[11px] font-black text-[#6D28D9]"
               >
                 {t("crm.appointments.updateHours")}
               </button>
             </div>
-
-            <p className="mt-4 text-sm font-bold leading-6 text-slate-500">
-              {hasOpenDays
-                ? t("crm.appointments.workHoursSynced")
-                : t("crm.appointments.workHoursNeeded")}
-            </p>
-          </section>
-        </aside>
+            <div className="px-3 py-2">
+              <div className="relative">
+                <Search size={14} className="pointer-events-none absolute start-2 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder={t("crm.appointments.searchPlaceholder")}
+                  className="h-8 w-full rounded-lg border border-slate-200 bg-slate-50 pe-2 ps-7 text-xs font-semibold outline-none"
+                />
+              </div>
+              <div className="mt-2 grid grid-cols-4 gap-1">
+                <FilterButton active={listMode === "all"} onClick={() => setListMode("all")}>
+                  {t("crm.appointments.filterAll")}
+                </FilterButton>
+                <FilterButton active={listMode === "today"} onClick={() => setListMode("today")}>
+                  {t("crm.appointments.filterToday")}
+                </FilterButton>
+                <FilterButton active={listMode === "selected"} onClick={() => setListMode("selected")}>
+                  {t("crm.appointments.filterDay")}
+                </FilterButton>
+                <FilterButton active={listMode === "upcoming"} onClick={() => setListMode("upcoming")}>
+                  {t("crm.appointments.filterUpcoming")}
+                </FilterButton>
+              </div>
+            </div>
+            <div className="crm-side-list overflow-y-auto" data-demo-target={isGuidedDemoActive() ? "calendar-existing-appointments" : undefined}>
+              {filteredAppointments.length === 0 ? (
+                <p className="px-3 py-6 text-center text-xs font-semibold text-slate-500">
+                  {t("crm.appointments.emptyText")}
+                </p>
+              ) : (
+                filteredAppointments.slice(0, 40).map((appointment) => (
+                  <button
+                    key={appointment._id}
+                    type="button"
+                    className="crm-side-row"
+                    onClick={() => handleEditAppointment(appointment)}
+                  >
+                    <span className="text-[11px] font-black text-slate-500">
+                      {appointment.time || emDash}
+                      <br />
+                      {appointment.date}
+                    </span>
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-black">
+                        {getAppointmentClientName(appointment, clientsById, clients, unnamedClient)}
+                      </span>
+                      <span className="block truncate text-[11px] font-semibold text-slate-500">
+                        {getServiceName(appointment, t("crm.appointments.defaultServiceName"))}
+                      </span>
+                    </span>
+                  </button>
+                ))
+              )}
+            </div>
+          </aside>
+        )}
       </div>
 
       {showAddForm && (
@@ -1626,51 +1422,6 @@ export default function CRMAppointmentsTab() {
   );
 }
 
-function MetricCard({
-  label,
-  value,
-  icon: Icon,
-  featured,
-}: {
-  label: string;
-  value: React.ReactNode;
-  icon: React.ElementType;
-  featured?: boolean;
-}) {
-  if (featured) {
-    return (
-      <div className="rounded-2xl border border-transparent bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-4 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold text-white/80">{label}</p>
-            <p className="mt-2 text-3xl font-black tracking-tight">{value}</p>
-          </div>
-          <div className="grid h-11 w-11 place-items-center rounded-xl bg-white/15">
-            <Icon className="h-5 w-5" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold text-slate-500">{label}</p>
-          <p className="mt-2 text-3xl font-black tracking-tight text-slate-900">
-            {value}
-          </p>
-        </div>
-
-        <div className="grid h-11 w-11 place-items-center rounded-xl bg-violet-100 text-[#6D28D9]">
-          <Icon className="h-5 w-5" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function FilterButton({
   active,
   onClick,
@@ -1685,7 +1436,7 @@ function FilterButton({
       type="button"
       onClick={onClick}
       className={[
-        "h-10 rounded-xl px-3 text-xs font-black transition",
+        "h-8 rounded-lg px-2 text-[11px] font-black transition",
         active
           ? "bg-[#6D28D9] text-white shadow-[0_10px_24px_rgba(109,40,217,0.22)]"
           : "bg-slate-50 text-slate-600 hover:bg-slate-100",
