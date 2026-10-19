@@ -360,4 +360,43 @@ describe("AdsManagerCreateLeadFormModal", () => {
     expect(onCreated).not.toHaveBeenCalled();
     expect(saveMetaLeadFormDraft).not.toHaveBeenCalled();
   });
+
+  it("shows the fields Meta accepts for each thank-you action", () => {
+    renderModal();
+    fireEvent.click(screen.getByTestId("lead-form-step-ending"));
+
+    expect(screen.getByTestId("lead-form-thank-you-url")).toBeTruthy();
+    expect(screen.queryByTestId("lead-form-call-phone")).toBeNull();
+    fireEvent.change(screen.getByTestId("lead-form-thank-you-url"), {
+      target: { value: "https://evently360.com/hello" },
+    });
+    expect(screen.getByTestId("lead-form-preview-action").textContent).toContain(
+      "Go to website"
+    );
+    expect(screen.getByTestId("lead-form-preview-action").textContent).toContain(
+      "https://evently360.com/hello"
+    );
+
+    fireEvent.click(screen.getByTestId("lead-form-action-call"));
+    expect(screen.getByTestId("lead-form-call-phone")).toBeTruthy();
+    expect(screen.queryByTestId("lead-form-thank-you-url")).toBeNull();
+    fireEvent.change(screen.getByTestId("lead-form-call-phone"), {
+      target: { value: "+972501234567" },
+    });
+    expect(screen.getByTestId("lead-form-preview-action").textContent).toContain(
+      "Call business"
+    );
+    expect(screen.getByTestId("lead-form-preview-action").textContent).toContain(
+      "+972501234567"
+    );
+
+    fireEvent.click(screen.getByTestId("lead-form-action-file"));
+    expect(screen.getByTestId("lead-form-thank-you-url")).toBeTruthy();
+    expect(screen.getByText(/not previewed inside the form/)).toBeTruthy();
+
+    fireEvent.click(screen.getByTestId("lead-form-action-whatsapp"));
+    expect(screen.getByTestId("lead-form-whatsapp-phone")).toBeTruthy();
+    expect(screen.getByText(/connected to the Facebook Page/)).toBeTruthy();
+    expect(screen.queryByTestId("lead-form-thank-you-url")).toBeNull();
+  });
 });
