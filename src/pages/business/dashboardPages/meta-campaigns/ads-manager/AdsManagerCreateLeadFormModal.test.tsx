@@ -6,6 +6,7 @@ import en from "../../../../../i18n/locales/en.json";
 
 const createMetaLeadForm = vi.fn();
 const syncMetaLeadForm = vi.fn();
+const saveMetaLeadFormDraft = vi.fn();
 
 vi.mock("react-toastify", () => ({
   toast: { error: vi.fn(), success: vi.fn() },
@@ -18,6 +19,7 @@ vi.mock("../../../../../api/whatsappApi", () => ({
 vi.mock("../../../../../api/metaCampaignsApi", () => ({
   createMetaLeadForm: (...args: unknown[]) => createMetaLeadForm(...args),
   syncMetaLeadForm: (...args: unknown[]) => syncMetaLeadForm(...args),
+  saveMetaLeadFormDraft: (...args: unknown[]) => saveMetaLeadFormDraft(...args),
 }));
 
 vi.mock("../../../../../i18n/i18n", () => ({
@@ -38,6 +40,7 @@ vi.mock("react-i18next", () => ({
 }));
 
 import AdsManagerCreateLeadFormModal from "./AdsManagerCreateLeadFormModal";
+import type { LeadFormDuplicateSeed } from "./leadFormDuplicateSeed";
 
 function resolveKey(locale: unknown, key: string) {
   return key.split(".").reduce<unknown>(
@@ -74,10 +77,41 @@ async function reachSubmit() {
   fireEvent.change(link, { target: { value: "https://eventy360.com" } });
 }
 
+const duplicateSeed: LeadFormDuplicateSeed = {
+  sourceFormId: "1503689644979003",
+  name: "טופס לידים - עותק",
+  formType: "volume",
+  requireSms: false,
+  introTitle: "כותרת מקור",
+  introDescription: "תיאור מקור",
+  privacyUrl: "https://evently360.com/privacy-policy",
+  thankYouTitle: "תודה",
+  thankYouBody: "הפרטים התקבלו",
+  thankYouButton: "בואו להכיר את Evently360",
+  additionalAction: "website",
+  thankYouLink: "https://evently360.com/",
+  callPhone: "",
+  whatsappPhone: "",
+  locale: "he_IL",
+  sharing: "restricted",
+  contactTypes: ["FULL_NAME", "PHONE"],
+  customQuestions: [
+    {
+      id: "q1",
+      label: "במה אתם מתעניינים?",
+      answerType: "short_answer",
+      options: [],
+    },
+  ],
+  contactFieldKeys: {},
+};
+
 describe("AdsManagerCreateLeadFormModal", () => {
   beforeEach(() => {
     createMetaLeadForm.mockReset();
     syncMetaLeadForm.mockReset();
+    saveMetaLeadFormDraft.mockReset();
+    saveMetaLeadFormDraft.mockResolvedValue({ success: true, savedOnMeta: false });
   });
 
   it("shows a loading state and a success message only after Meta confirms the form", async () => {
@@ -196,5 +230,134 @@ describe("AdsManagerCreateLeadFormModal", () => {
       name: "Leads",
       pageId: "page-1",
     });
+  });
+
+  it("keeps a duplicate editable and sends the website only when creating the form", async () => {
+    createMetaLeadForm.mockResolvedValue({
+      success: true,
+      confirmedByMeta: true,
+      savedLocally: true,
+      form: { id: "form_new", name: "טופס לידים - עותק", pageId: "page-1" },
+    });
+    const onCreated = vi.fn();
+    const view = render(
+      <MemoryRouter>
+        <AdsManagerCreateLeadFormModal
+          open
+          mode="duplicate"
+          initialDraft={duplicateSeed}
+          businessId="biz-1"
+          pageId="page-1"
+          pageName="Evently360"
+          publishId="pub-1"
+          adDraftId="ad-1"
+          onClose={vi.fn()}
+          onCreated={onCreated}
+        />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("heading", { name: "Duplicate form" })).toBeTruthy();
+    expect(screen.getByTestId("lead-form-name")).toHaveValue("טופס לידים - עותק");
+    expect(screen.getByText(/Form preview/)).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Instagram" })).toBeTruthy();
+    fireEvent.click(screen.getByTestId("lead-form-step-intro"));
+    expect(screen.getByTestId("lead-form-intro-title")).toHaveValue("כותרת מקור");
+    fireEvent.change(screen.getByTestId("lead-form-intro-title"), {
+      target: { value: "כותרת חדשה" },
+    });
+    expect(screen.getByText("כותרת חדשה")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("lead-form-step-ending"));
+    expect(screen.getByTestId("lead-form-thank-you-url")).toHaveValue(
+      "https://evently360.com/"
+    );
+    fireEvent.change(screen.getByTestId("lead-form-thank-you-url"), {
+      target: { value: "https://evently360.com/hello" },
+    });
+
+    fireEvent.click(screen.getByTestId("save-lead-form-draft"));
+    expect(createMetaLeadForm).not.toHaveBeenCalled();
+    expect(await screen.findByText(/The draft was saved in Bizuply/)).toBeTruthy();
+    expect(screen.getByTestId("create-instant-form")).not.toBeDisabled();
+    const saved = saveMetaLeadFormDraft.mock.calls[0][1] as {
+      editor: LeadFormDuplicateSeed;
+    };
+
+    view.unmount();
+    render(
+      <MemoryRouter>
+        <AdsManagerCreateLeadFormModal
+          open
+          mode="duplicate"
+          initialDraft={saved.editor}
+          businessId="biz-1"
+          pageId="page-1"
+          pageName="Evently360"
+          publishId="pub-1"
+          onClose={vi.fn()}
+          onCreated={onCreated}
+        />
+      </MemoryRouter>
+    );
+    fireEvent.click(screen.getByTestId("lead-form-step-intro"));
+    expect(screen.getByTestId("lead-form-intro-title")).toHaveValue("כותרת חדשה");
+    fireEvent.click(screen.getByTestId("lead-form-step-ending"));
+    expect(screen.getByTestId("lead-form-thank-you-url")).toHaveValue(
+      "https://evently360.com/hello"
+    );
+
+    fireEvent.click(screen.getByTestId("create-instant-form"));
+    fireEvent.click(screen.getByTestId("create-instant-form"));
+    expect(createMetaLeadForm).toHaveBeenCalledTimes(1);
+    const payload = createMetaLeadForm.mock.calls[0][1] as {
+      thankYouUrl: string;
+      additionalAction: string;
+      introTitle: string;
+      publishId?: string;
+      adDraftId?: string;
+    };
+    expect(payload.thankYouUrl).toBe("https://evently360.com/hello");
+    expect(payload.additionalAction).toBe("website");
+    expect(payload.introTitle).toBe("כותרת חדשה");
+    expect(payload.publishId).toBeUndefined();
+    expect(payload.adDraftId).toBeUndefined();
+    expect(await screen.findByText("The form was created and saved")).toBeTruthy();
+    expect(onCreated).toHaveBeenCalledWith({
+      id: "form_new",
+      name: "טופס לידים - עותק",
+      pageId: "page-1",
+    });
+    expect(saveMetaLeadFormDraft).toHaveBeenCalledWith(
+      "biz-1",
+      expect.objectContaining({ sourceFormId: "1503689644979003", discard: true })
+    );
+  });
+
+  it("does not treat the original form as a successful duplicate", async () => {
+    createMetaLeadForm.mockResolvedValue({
+      success: true,
+      confirmedByMeta: true,
+      savedLocally: true,
+      form: { id: "1503689644979003", name: "טופס לידים", pageId: "page-1" },
+    });
+    const onCreated = vi.fn();
+    render(
+      <MemoryRouter>
+        <AdsManagerCreateLeadFormModal
+          open
+          mode="duplicate"
+          initialDraft={duplicateSeed}
+          businessId="biz-1"
+          pageId="page-1"
+          pageName="Evently360"
+          onClose={vi.fn()}
+          onCreated={onCreated}
+        />
+      </MemoryRouter>
+    );
+    fireEvent.click(screen.getByTestId("create-instant-form"));
+    expect(await screen.findByText(/matches the original form/)).toBeTruthy();
+    expect(onCreated).not.toHaveBeenCalled();
+    expect(saveMetaLeadFormDraft).not.toHaveBeenCalled();
   });
 });

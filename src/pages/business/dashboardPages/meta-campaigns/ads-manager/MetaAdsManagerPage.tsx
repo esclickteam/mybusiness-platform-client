@@ -18,6 +18,7 @@ import {
   type MetaCampaignPublishRecord,
   type MetaEditorDraftSaveResult,
   type MetaLeadForm,
+  type MetaLeadFormDraft,
 } from "../../../../../api/metaCampaignsApi";
 import MetaAdsManagerTree from "./MetaAdsManagerTree";
 import CampaignLevelEditor from "./editors/CampaignLevelEditor";
@@ -96,6 +97,7 @@ export default function MetaAdsManagerPage() {
     null
   );
   const [leadForms, setLeadForms] = useState<MetaLeadForm[]>([]);
+  const [leadFormDrafts, setLeadFormDrafts] = useState<MetaLeadFormDraft[]>([]);
   const [formsLoading, setFormsLoading] = useState(false);
   const [formsError, setFormsError] = useState("");
   const [estimateLoading, setEstimateLoading] = useState(true);
@@ -131,6 +133,7 @@ export default function MetaAdsManagerPage() {
   const loadLeadForms = async (pageId?: string | null) => {
     if (!businessId || !pageId || pageId.startsWith("page_")) {
       setLeadForms([]);
+      setLeadFormDrafts([]);
       setFormsError("");
       return;
     }
@@ -139,9 +142,11 @@ export default function MetaAdsManagerPage() {
     try {
       const formsRes = await listMetaLeadForms(businessId, pageId);
       setLeadForms(formsRes?.forms || []);
+      setLeadFormDrafts(formsRes?.drafts || []);
       if (formsRes?.warning) toast.error(formsRes.warning);
     } catch (error: any) {
       setLeadForms([]);
+      setLeadFormDrafts([]);
       const message =
         error?.response?.data?.error ||
         error?.response?.data?.message ||
@@ -272,6 +277,12 @@ export default function MetaAdsManagerPage() {
         updatedAt: form.createdTime
           ? String(form.createdTime).slice(0, 10)
           : "",
+        locale: form.locale,
+        privacyPolicyUrl: form.privacyPolicyUrl,
+        questions: form.questions,
+        contextCard: form.contextCard,
+        thankYouPage: form.thankYouPage,
+        followUpActionUrl: form.followUpActionUrl,
       };
     });
   }, [leadForms]);
@@ -1371,6 +1382,7 @@ export default function MetaAdsManagerPage() {
             <AdLevelEditor
               ad={selectedAd}
               forms={liveForms}
+              formDrafts={leadFormDrafts}
               formsLoading={formsLoading}
               formsError={formsError}
               pages={connectedPages}

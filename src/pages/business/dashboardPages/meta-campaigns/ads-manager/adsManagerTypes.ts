@@ -21,6 +21,29 @@ export type InstantFormItem = {
   status: "active" | "archived";
   customQuestions: number;
   updatedAt: string;
+  locale?: string;
+  privacyPolicyUrl?: string;
+  questions?: Array<{
+    id?: string;
+    key?: string;
+    label?: string;
+    type: string;
+    options?: Array<string | { key?: string; value?: string }>;
+  }>;
+  contextCard?: {
+    title?: string;
+    content?: string;
+    style?: string;
+  };
+  thankYouPage?: {
+    title?: string;
+    body?: string;
+    buttonText?: string;
+    buttonType?: string;
+    websiteUrl?: string;
+    businessPhoneNumber?: string;
+  };
+  followUpActionUrl?: string;
 };
 
 export type CampaignDraft = {

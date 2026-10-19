@@ -270,7 +270,9 @@ export type MetaLeadForm = {
     buttonText?: string;
     buttonType?: string;
     websiteUrl?: string;
+    businessPhoneNumber?: string;
   };
+  followUpActionUrl?: string;
 };
 
 /** Marketing API Ad Account billing health (separate from WABA). */
@@ -1014,6 +1016,7 @@ export async function listMetaLeadForms(
     success: boolean;
     pageId: string;
     forms: MetaLeadForm[];
+    drafts?: MetaLeadFormDraft[];
     questionTypes?: MetaLeadFormQuestionType[];
     warning?: string;
     metaUnavailable?: boolean;
@@ -1067,6 +1070,38 @@ export async function createMetaLeadForm(
 ) {
   const { data } = await API.post<MetaLeadFormWriteResult>(
     "/meta-campaigns/lead-forms",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export type MetaLeadFormDraft = {
+  draftId: string;
+  sourceFormId: string;
+  pageId?: string;
+  name?: string;
+  editor?: Record<string, unknown>;
+  updatedAt?: string | null;
+};
+
+export async function saveMetaLeadFormDraft(
+  businessId: string | undefined,
+  payload: {
+    pageId?: string;
+    sourceFormId: string;
+    name?: string;
+    editor?: Record<string, unknown>;
+    discard?: boolean;
+  }
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    savedOnMeta?: boolean;
+    discarded?: boolean;
+    draft?: MetaLeadFormDraft | null;
+  }>(
+    "/meta-campaigns/lead-forms/drafts",
     { ...payload, businessId },
     withBusiness(businessId)
   );
