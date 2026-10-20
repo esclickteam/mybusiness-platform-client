@@ -1,12 +1,13 @@
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
   Clock3,
+  Copy,
   Edit3,
   ImageIcon,
+  MoreHorizontal,
   Plus,
   Save,
   Search,
-  Sparkles,
   Trash2,
   Wrench,
   X,
@@ -21,6 +22,7 @@ import { crmCurrencySymbol, formatCrmMoney } from "../../../../utils/crmCurrency
 import { getDemoFixture } from "../../../../guidedDemo/demoLocale";
 import { isGuidedDemoActive } from "../../../../guidedDemo/sessionStore";
 import type { DemoServiceFixture } from "../../../../guidedDemo/fixtures/demoFixtures";
+import "./crmWorkspace.css";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
@@ -44,7 +46,11 @@ type ServiceItem = {
   duration?: number;
   price?: number | string;
   imageUrl?: string;
+  category?: string;
+  active?: boolean;
 };
+
+type SortKey = "name" | "price" | "duration";
 
 type ServiceFormState = {
   name: string;
@@ -79,6 +85,8 @@ function normalizeServices(value: unknown): ServiceItem[] {
       duration: Number(service?.duration) || 0,
       price: service?.price ?? "",
       imageUrl: String(service?.imageUrl || service?.image || ""),
+      category: String(service?.category || service?.group || ""),
+      active: service?.active !== false && service?.isActive !== false,
     }))
     .filter((service) => service._id || service.name);
 }
@@ -118,6 +126,9 @@ export default function CRMServicesTab() {
   const dir = useLocaleDir();
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [search, setSearch] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("name");
+  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [menuId, setMenuId] = useState<string | null>(null);
 
   const [showForm, setShowForm] = useState(false);
   const [editingService, setEditingService] = useState<ServiceItem | null>(null);
@@ -125,7 +136,9 @@ export default function CRMServicesTab() {
   const [loading, setLoading] = useState(true);
 
   const [form, setForm] = useState<ServiceFormState>(emptyForm);
-  const [viewMode, setViewMode] = useState<"cards" | "table">("cards");
+  const [viewMode, setViewMode] = useState<"cards" | "table">(() => {
+    return window.localStorage.getItem("crm.services.view") === "cards" ? "cards" : "table";
+  });
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -146,22 +159,34 @@ export default function CRMServicesTab() {
     fetchServices();
   }, []);
 
+  useEffect(() => {
+    window.localStorage.setItem("crm.services.view", viewMode);
+  }, [viewMode]);
+
   const filteredServices = useMemo(() => {
     const query = search.trim().toLowerCase();
-
-    if (!query) return services;
-
-    return services.filter((service) => {
+    const rows = services.filter((service) => {
+      if (statusFilter === "active" && service.active === false) return false;
+      if (statusFilter === "inactive" && service.active !== false) return false;
+      if (!query) return true;
+      const category = service.category || t("crm.services.generalCategory");
       return (
         service.name?.toLowerCase().includes(query) ||
         service.description?.toLowerCase().includes(query) ||
+        category.toLowerCase().includes(query) ||
         String(service.price || "").toLowerCase().includes(query) ||
         formatDuration(Number(service.duration) || 0, t)
           .toLowerCase()
           .includes(query)
       );
     });
-  }, [services, search, t]);
+    const sorted = [...rows].sort((a, b) => {
+      if (sortKey === "price") return (Number(a.price) || 0) - (Number(b.price) || 0);
+      if (sortKey === "duration") return (Number(a.duration) || 0) - (Number(b.duration) || 0);
+      return String(a.name || "").localeCompare(String(b.name || ""), undefined, { sensitivity: "base" });
+    });
+    return sorted;
+  }, [services, search, t, sortKey, statusFilter]);
 
   const totalRevenuePotential = useMemo(() => {
     return services.reduce((sum, service) => {
@@ -177,10 +202,6 @@ export default function CRMServicesTab() {
     }, 0);
 
     return Math.round(total / services.length);
-  }, [services]);
-
-  const servicesWithImage = useMemo(() => {
-    return services.filter((service) => Boolean(service.imageUrl)).length;
   }, [services]);
 
   const resetForm = () => {
@@ -285,147 +306,111 @@ export default function CRMServicesTab() {
   };
 
   return (
-    <div dir={dir} className="min-w-0 space-y-4 overflow-x-hidden bg-[#F7F8FC] text-start">
-      <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0">
-          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-            {t("crm.services.title")}
-          </h2>
-          <p className="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
-            {t("crm.services.subtitle")}
-          </p>
-        </div>
-
-        <div className="flex shrink-0 flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={openAdd}
-            data-demo-target="services-add-button"
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
-          >
-            <Plus className="h-4 w-4" />
-            {t("crm.services.addService")}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setViewMode((prev) => (prev === "cards" ? "table" : "cards"))}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
-          >
-            {viewMode === "cards" ? t("crm.services.tableView") : t("crm.services.cardsView")}
-          </button>
-          <button
-            type="button"
-            onClick={() => setShowForm((prev) => !prev)}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
-          >
-            <Sparkles className="h-4 w-4" />
-            {showForm ? t("crm.services.closeForm") : t("crm.services.quickAdd")}
-          </button>
-        </div>
-      </section>
-
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          label={t("crm.services.statTotal")}
-          value={services.length.toLocaleString()}
-          icon={Wrench}
-          helper={t("crm.services.statTotalHelper")}
-          featured
-        />
-
-        <StatCard
-          label={t("crm.services.statAvgDuration")}
-          value={
-            averageDuration
-              ? formatDuration(averageDuration, t)
-              : t("crm.services.durationZero")
-          }
-          icon={Clock3}
-          helper={t("crm.services.statAvgDurationHelper")}
-          tone="blue"
-        />
-
-        <StatCard
-          label={t("crm.services.statCatalogValue")}
-          value={formatCrmMoney(totalRevenuePotential)}
-          icon={ShekelIcon}
-          helper={t("crm.services.statCatalogValueHelper")}
-          tone="emerald"
-        />
-
-        <StatCard
-          label={t("crm.services.statWithImage")}
-          value={servicesWithImage.toLocaleString()}
-          icon={ImageIcon}
-          helper={t("crm.services.statWithImageHelper")}
-          tone="violet"
-        />
-      </section>
-
-      <section className="min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-        <div className="border-b border-slate-100 p-3 sm:p-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="min-w-0">
-              <h3 className="text-lg font-black text-slate-900 sm:text-xl">
-                {t("crm.services.listTitle")}
-              </h3>
-              <p className="mt-0.5 text-sm font-semibold text-slate-500">
-                {t("crm.services.listCount", {
-                  shown: filteredServices.length,
-                  total: services.length,
-                })}
-              </p>
-            </div>
-
-            <div className="relative w-full lg:max-w-[320px]">
-              <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="text"
-                placeholder={t("crm.services.searchPlaceholder")}
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                className="h-10 w-full rounded-xl border border-slate-200 bg-slate-50 pe-3 ps-9 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#6D28D9]/40 focus:bg-white focus:ring-4 focus:ring-violet-100"
-              />
-            </div>
+    <div dir={dir} className="crm-ops min-w-0 space-y-2 overflow-x-hidden bg-[#F7F8FC] text-start">
+      <header className="crm-ops-toolbar">
+        <div className="min-w-0 flex-1">
+          <h2>{t("crm.services.title")}</h2>
+          <div className="crm-ops-stats mt-1">
+            <span>{t("crm.services.statTotal")}: <b>{services.length}</b></span>
+            <span>{t("crm.services.statAvgDuration")}: <b>{averageDuration ? formatDuration(averageDuration, t) : t("crm.services.durationZero")}</b></span>
+            <span>{t("crm.services.statCatalogValue")}: <b>{formatCrmMoney(totalRevenuePotential)}</b></span>
           </div>
         </div>
-
-        {showForm && (
-          <ServiceFormPanel
-            form={form}
-            setForm={setForm}
-            editingService={editingService}
-            saving={saving}
-            onCancel={closeForm}
-            onSave={saveService}
+        <div className="relative w-full max-w-xs">
+          <Search className="pointer-events-none absolute start-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            placeholder={t("crm.services.searchPlaceholder")}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="h-8 w-full rounded-lg border border-slate-200 bg-white pe-2 ps-8 text-sm font-semibold outline-none"
           />
-        )}
+        </div>
+        <select
+          value={statusFilter}
+          onChange={(event) => setStatusFilter(event.target.value as "all" | "active" | "inactive")}
+          className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-bold"
+        >
+          <option value="all">{t("crm.common.all")}</option>
+          <option value="active">{t("crm.common.active")}</option>
+          <option value="inactive">{t("crm.services.inactive")}</option>
+        </select>
+        <select
+          value={sortKey}
+          onChange={(event) => setSortKey(event.target.value as SortKey)}
+          className="h-8 rounded-lg border border-slate-200 bg-white px-2 text-xs font-bold"
+        >
+          <option value="name">{t("crm.services.sortName")}</option>
+          <option value="price">{t("crm.services.sortPrice")}</option>
+          <option value="duration">{t("crm.services.sortDuration")}</option>
+        </select>
+        <button
+          type="button"
+          onClick={() => setViewMode("table")}
+          className={`h-8 rounded-lg border px-2.5 text-xs font-black ${viewMode === "table" ? "border-violet-300 bg-violet-50 text-[#6D28D9]" : "border-slate-200 bg-white"}`}
+        >
+          {t("crm.services.tableView")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setViewMode("cards")}
+          className={`h-8 rounded-lg border px-2.5 text-xs font-black ${viewMode === "cards" ? "border-violet-300 bg-violet-50 text-[#6D28D9]" : "border-slate-200 bg-white"}`}
+        >
+          {t("crm.services.cardsView")}
+        </button>
+        <button
+          type="button"
+          onClick={openAdd}
+          data-demo-target="services-add-button"
+          className="inline-flex h-8 items-center gap-1 rounded-lg bg-[#6D28D9] px-3 text-xs font-black text-white"
+        >
+          <Plus className="h-3.5 w-3.5" />
+          {t("crm.services.addService")}
+        </button>
+      </header>
 
+      <section className="overflow-hidden rounded-[10px] border border-slate-200 bg-white">
         {loading ? (
           <LoadingState />
         ) : filteredServices.length === 0 ? (
           <EmptyServicesState onCreate={openAdd} />
         ) : viewMode === "table" ? (
           <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
+            <table className="crm-table">
               <thead>
-                <tr className="border-b border-slate-100 text-start text-xs font-black text-slate-400">
-                  <th className="p-3">{t("crm.services.name")}</th>
-                  <th className="p-3">{t("crm.services.duration")}</th>
-                  <th className="p-3">{t("crm.services.price")}</th>
-                  <th className="p-3" />
+                <tr>
+                  <th>{t("crm.services.name")}</th>
+                  <th>{t("crm.services.category")}</th>
+                  <th>{t("crm.services.duration")}</th>
+                  <th>{t("crm.services.price")}</th>
+                  <th>{t("crm.common.status")}</th>
+                  <th>{t("crm.common.actions")}</th>
                 </tr>
               </thead>
               <tbody>
                 {filteredServices.map((service) => (
-                  <tr key={service._id} className="border-t border-slate-100">
-                    <td className="p-3 font-black">{service.name}</td>
-                    <td className="p-3">{formatDuration(Number(service.duration) || 0, t)}</td>
-                    <td className="p-3">{formatCrmMoney(Number(service.price) || 0)}</td>
-                    <td className="p-3">
-                      <button type="button" className="crm-btn" onClick={() => openEdit(service)}>{t("crm.common.edit")}</button>
-                      <button type="button" className="crm-btn ms-2" onClick={() => void duplicateService(service)}>{t("crm.services.duplicate")}</button>
+                  <tr key={service._id}>
+                    <td className="font-extrabold">{service.name}</td>
+                    <td>{service.category || t("crm.services.generalCategory")}</td>
+                    <td>{formatDuration(Number(service.duration) || 0, t)}</td>
+                    <td>{formatCrmMoney(Number(service.price) || 0)}</td>
+                    <td>{service.active === false ? t("crm.services.inactive") : t("crm.common.active")}</td>
+                    <td className="relative">
+                      <button
+                        type="button"
+                        className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200"
+                        aria-label={t("crm.common.actions")}
+                        onClick={() => setMenuId((current) => (current === service._id ? null : service._id))}
+                      >
+                        <MoreHorizontal className="h-4 w-4" />
+                      </button>
+                      {menuId === service._id && (
+                        <div className="crm-menu end-2 top-10">
+                          <button type="button" className="block w-full rounded-md px-3 py-1.5 text-start text-xs font-bold" onClick={() => { setMenuId(null); openEdit(service); }}>{t("crm.common.edit")}</button>
+                          <button type="button" className="block w-full rounded-md px-3 py-1.5 text-start text-xs font-bold" onClick={() => { setMenuId(null); void duplicateService(service); }}>{t("crm.services.duplicate")}</button>
+                          <button type="button" className="block w-full rounded-md px-3 py-1.5 text-start text-xs font-bold text-rose-700" onClick={() => { setMenuId(null); void deleteService(service._id); }}>{t("crm.common.delete")}</button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -433,7 +418,7 @@ export default function CRMServicesTab() {
             </table>
           </div>
         ) : (
-          <div className="grid min-w-0 gap-3 p-3 sm:grid-cols-2 sm:gap-4 sm:p-4 xl:grid-cols-3">
+          <div className="crm-svc-grid">
             {filteredServices.map((service) => (
               <ServiceCard
                 key={service._id}
@@ -446,6 +431,17 @@ export default function CRMServicesTab() {
           </div>
         )}
       </section>
+
+      {showForm && (
+        <ServiceFormPanel
+          form={form}
+          setForm={setForm}
+          editingService={editingService}
+          saving={saving}
+          onCancel={closeForm}
+          onSave={saveService}
+        />
+      )}
     </div>
   );
 }
@@ -476,9 +472,12 @@ function ServiceFormPanel({
     }));
   };
 
+  const dir = useLocaleDir();
+
   return (
-    <div className="border-b border-slate-100 bg-slate-50/50 p-3 sm:p-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+    <div className="crm-drawer" dir={dir} role="dialog" aria-modal="true">
+      <button type="button" className="flex-1" aria-label={t("crm.services.closeFormAria")} onClick={onCancel} />
+      <div className="crm-drawer-panel">
         <div className="mb-4 flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="min-w-0">
             <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#6D28D9]">
@@ -645,165 +644,43 @@ function ServiceCard({
   const price = Number(service.price) || 0;
 
   return (
-    <article className="group flex min-w-0 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.05)] transition hover:border-[#6D28D9]/25 hover:shadow-[0_14px_36px_rgba(109,40,217,0.10)]">
-      <div className="relative h-40 overflow-hidden bg-slate-100">
-        {service.imageUrl ? (
-          <img
-            src={service.imageUrl}
-            alt={service.name || t("crm.common.service")}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-violet-50 text-[#6D28D9]">
-            <ImageIcon className="h-9 w-9" />
-          </div>
-        )}
-
-        <span className="absolute start-3 top-3 rounded-lg bg-white/95 px-2.5 py-1 text-[11px] font-black text-[#6D28D9] shadow-sm ring-1 ring-violet-100">
-          {t("crm.services.serviceBadge")}
-        </span>
-
-        <div className="absolute end-3 top-3 flex gap-1.5">
-          <button
-            type="button"
-            onClick={onEdit}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/95 text-slate-700 shadow-sm ring-1 ring-slate-200 transition hover:bg-[#6D28D9] hover:text-white hover:ring-[#6D28D9]"
-            aria-label={t("crm.services.editAria")}
-          >
-            <Edit3 className="h-4 w-4" />
+    <article className="crm-svc-card">
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h4 className="truncate text-sm font-black text-slate-900">
+            {service.name || t("crm.services.unnamedService")}
+          </h4>
+          <p className="truncate text-[11px] font-semibold text-slate-500">
+            {service.category || t("crm.services.generalCategory")}
+            {" · "}
+            {service.active === false ? t("crm.services.inactive") : t("crm.common.active")}
+          </p>
+        </div>
+        <div className="flex gap-1">
+          <button type="button" onClick={onEdit} className="grid h-7 w-7 place-items-center rounded-md border border-slate-200" aria-label={t("crm.services.editAria")}>
+            <Edit3 className="h-3.5 w-3.5" />
           </button>
           {onDuplicate && (
-            <button
-              type="button"
-              onClick={onDuplicate}
-              className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/95 text-slate-700 shadow-sm ring-1 ring-slate-200"
-              aria-label={t("crm.services.duplicate")}
-            >
-              <Sparkles className="h-4 w-4" />
+            <button type="button" onClick={onDuplicate} className="grid h-7 w-7 place-items-center rounded-md border border-slate-200" aria-label={t("crm.services.duplicate")}>
+              <Copy className="h-3.5 w-3.5" />
             </button>
           )}
-
-          <button
-            type="button"
-            onClick={onDelete}
-            className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/95 text-rose-600 shadow-sm ring-1 ring-slate-200 transition hover:bg-rose-600 hover:text-white hover:ring-rose-600"
-            aria-label={t("crm.services.deleteAria")}
-          >
-            <Trash2 className="h-4 w-4" />
+          <button type="button" onClick={onDelete} className="grid h-7 w-7 place-items-center rounded-md border border-slate-200 text-rose-600" aria-label={t("crm.services.deleteAria")}>
+            <Trash2 className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
-
-      <div className="flex min-w-0 flex-1 flex-col p-4">
-        <h4 className="truncate text-base font-black text-slate-900">
-          {service.name || t("crm.services.unnamedService")}
-        </h4>
-
-        <p className="mt-1.5 line-clamp-2 min-h-[40px] text-sm font-semibold leading-5 text-slate-500">
-          {service.description || t("crm.services.noDescription")}
-        </p>
-
-        <div className="mt-auto grid grid-cols-2 gap-2 pt-4">
-          <InfoTile
-            icon={Clock3}
-            label={t("crm.common.duration")}
-            value={duration ? formatDuration(duration, t) : t("crm.common.emDash")}
-          />
-
-          <InfoTile
-            icon={ShekelIcon}
-            label={t("crm.common.price")}
-            value={formatCrmMoney(price)}
-          />
-        </div>
+      <p className="line-clamp-2 text-xs font-semibold text-slate-500">
+        {service.description || t("crm.services.noDescription")}
+      </p>
+      <div className="mt-auto flex items-center justify-between text-xs font-black">
+        <span className="inline-flex items-center gap-1 text-slate-600">
+          <Clock3 className="h-3.5 w-3.5" />
+          {duration ? formatDuration(duration, t) : t("crm.common.emDash")}
+        </span>
+        <span>{formatCrmMoney(price)}</span>
       </div>
     </article>
-  );
-}
-
-function StatCard({
-  label,
-  value,
-  icon: Icon,
-  helper,
-  tone = "sky",
-  featured,
-}: {
-  label: string;
-  value: React.ReactNode;
-  icon: React.ElementType;
-  helper: string;
-  tone?: "sky" | "blue" | "emerald" | "violet";
-  featured?: boolean;
-}) {
-  if (featured) {
-    return (
-      <div className="rounded-2xl border border-transparent bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-4 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-xs font-bold text-white/80">{label}</p>
-            <p className="mt-2 truncate text-3xl font-black tracking-tight">
-              {value}
-            </p>
-            <p className="mt-2 text-xs font-semibold text-white/75">{helper}</p>
-          </div>
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/15">
-            <Icon className="h-5 w-5" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const iconClass =
-    tone === "emerald"
-      ? "bg-emerald-50 text-emerald-600"
-      : tone === "violet"
-        ? "bg-violet-50 text-violet-600"
-        : tone === "blue"
-          ? "bg-blue-50 text-blue-600"
-          : "bg-sky-50 text-sky-700";
-
-  return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-xs font-bold text-slate-500">{label}</p>
-          <p className="mt-2 truncate text-3xl font-black tracking-tight text-slate-900">
-            {value}
-          </p>
-          <p className="mt-2 text-xs font-semibold text-slate-400">{helper}</p>
-        </div>
-
-        <div
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconClass}`}
-        >
-          <Icon className="h-5 w-5" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function InfoTile({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="min-w-0 rounded-xl bg-slate-50 px-3 py-2.5 ring-1 ring-slate-100">
-      <div className="mb-1 flex items-center gap-1.5 text-[#6D28D9]">
-        <Icon className="h-3.5 w-3.5 shrink-0" />
-        <p className="truncate text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
-          {label}
-        </p>
-      </div>
-      <p className="truncate text-sm font-black text-slate-900">{value}</p>
-    </div>
   );
 }
 

@@ -1,0 +1,296 @@
+.crm-ops {
+  --crm-line: rgba(15, 23, 42, 0.12);
+  --crm-violet: #6d28d9;
+  color: #0f172a;
+}
+
+.crm-ops-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 10px;
+  border: 1px solid var(--crm-line);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.crm-ops-toolbar h2 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.crm-ops-toolbar p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.crm-ops-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+}
+
+.crm-ops-stats b {
+  color: #0f172a;
+}
+
+.crm-cal-shell {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 10px;
+  align-items: start;
+}
+
+.crm-cal-shell.is-collapsed {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.crm-cal-board,
+.crm-side {
+  border: 1px solid var(--crm-line);
+  border-radius: 10px;
+  background: #fff;
+  min-width: 0;
+}
+
+.crm-cal-month {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-top: 1px solid var(--crm-line);
+}
+
+.crm-cal-month .head,
+.crm-cal-month .cell {
+  min-width: 0;
+  border-inline-end: 1px solid var(--crm-line);
+  border-bottom: 1px solid var(--crm-line);
+}
+
+.crm-cal-month .head {
+  padding: 6px 8px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+.crm-cal-month .cell {
+  min-height: 92px;
+  padding: 4px;
+  text-align: start;
+  background: #fff;
+}
+
+.crm-cal-month .cell.is-muted {
+  background: #f8fafc;
+}
+
+.crm-cal-month .cell.is-today {
+  background: #f5f3ff;
+}
+
+.crm-cal-month .cell.is-selected {
+  outline: 1px solid var(--crm-violet);
+  outline-offset: -1px;
+}
+
+.crm-chip {
+  display: block;
+  width: 100%;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  border: 0;
+  border-radius: 4px;
+  padding: 2px 5px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+  cursor: grab;
+}
+
+.crm-chip.tone-open { background: #e0f2fe; color: #075985; }
+.crm-chip.tone-paid { background: #ede9fe; color: #5b21b6; }
+.crm-chip.tone-done { background: #dcfce7; color: #166534; }
+.crm-chip.tone-busy { background: #ffe4e6; color: #9f1239; }
+
+.crm-timegrid {
+  display: grid;
+  border-top: 1px solid var(--crm-line);
+  overflow: auto;
+  max-height: min(70vh, 720px);
+}
+
+.crm-timegrid.is-week {
+  grid-template-columns: 52px repeat(7, minmax(0, 1fr));
+}
+
+.crm-timegrid.is-day {
+  grid-template-columns: 52px minmax(0, 1fr);
+}
+
+.crm-timegrid .gutter,
+.crm-timegrid .lane {
+  position: relative;
+  border-inline-end: 1px solid var(--crm-line);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 47px,
+    rgba(15, 23, 42, 0.1) 47px,
+    rgba(15, 23, 42, 0.1) 48px
+  );
+  min-height: calc(14 * 48px);
+}
+
+.crm-timegrid .gutter {
+  background-color: #f8fafc;
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.crm-timegrid .hour-label {
+  height: 48px;
+  padding: 2px 6px;
+}
+
+.crm-event {
+  position: absolute;
+  overflow: hidden;
+  border: 0;
+  border-radius: 5px;
+  padding: 3px 6px;
+  text-align: start;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  cursor: grab;
+}
+
+.crm-side-list {
+  display: flex;
+  flex-direction: column;
+  max-height: min(70vh, 720px);
+}
+
+.crm-side-row {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--crm-line);
+  background: #fff;
+  padding: 8px 10px;
+  text-align: start;
+}
+
+.crm-side-row:hover {
+  background: #f8fafc;
+}
+
+.crm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.crm-table th,
+.crm-table td {
+  border-bottom: 1px solid var(--crm-line);
+  padding: 8px 10px;
+  text-align: start;
+  vertical-align: middle;
+}
+
+.crm-table th {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+.crm-table tr:hover td {
+  background: #fafafa;
+}
+
+.crm-svc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  padding: 8px;
+}
+
+.crm-svc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 118px;
+  border: 1px solid var(--crm-line);
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px;
+}
+
+.crm-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(15, 23, 42, 0.35);
+}
+
+.crm-drawer[dir="rtl"] {
+  justify-content: flex-start;
+}
+
+.crm-drawer-panel {
+  width: min(420px, 100%);
+  height: 100%;
+  overflow: auto;
+  background: #fff;
+  border-inline-start: 1px solid var(--crm-line);
+  padding: 16px;
+}
+
+.crm-menu {
+  position: absolute;
+  z-index: 20;
+  min-width: 140px;
+  border: 1px solid var(--crm-line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 4px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.12);
+}
+
+@media (max-width: 1024px) {
+  .crm-cal-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .crm-cal-month .cell {
+    min-height: 44px;
+  }
+
+  .crm-timegrid.is-week,
+  .crm-timegrid.is-day {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+}
