@@ -7,7 +7,14 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en", changeLanguage: vi.fn() } }),
   initReactI18next: { type: "3rdParty", init: () => undefined },
 }));
-vi.mock("../context/AuthContext", () => ({ useAuth: () => ({ login: vi.fn() }) }));
+vi.mock("../api", () => ({
+  default: { get: vi.fn().mockRejectedValue(new Error("offline")), defaults: { baseURL: "/api" } },
+}));
+vi.mock("../context/AuthContext", () => ({ useAuth: () => ({ login: vi.fn(), loginWithToken: vi.fn() }) }));
+vi.mock("../utils/tokenRefresh", () => ({
+  refreshAccessTokenOnce: vi.fn(),
+  clearRefreshDead: vi.fn(),
+}));
 vi.mock("../context/NotificationsContext", () => ({ useNotifications: () => ({ fetchNotifications: vi.fn() }) }));
 vi.mock("../hooks/usePartnerHostBranding", () => ({ usePartnerHostBranding: () => ({ whiteLabelEnabled: false }) }));
 vi.mock("../utils/lazyWithPreload", () => ({ lazyWithPreload: () => ({ preload: () => Promise.resolve() }) }));

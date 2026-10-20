@@ -7,6 +7,7 @@ import en from "./locales/en.json";
 import es from "./locales/es.json";
 import ptBR from "./locales/pt-BR.json";
 import ar from "./locales/ar.json";
+import { OAUTH_ERROR_KEYS } from "../components/auth/socialAuth";
 
 const LOGIN_PAGE_SOURCES = [
   "src/pages/Login.tsx",
@@ -16,6 +17,7 @@ const LOGIN_PAGE_SOURCES = [
   "src/pages/ChangePassword.jsx",
   "src/components/auth/AuthShell.tsx",
   "src/components/auth/LoginFormSkeleton.tsx",
+  "src/components/auth/socialAuth.ts",
 ];
 
 const repoRoot = path.resolve(__dirname, "../..");
@@ -31,6 +33,8 @@ function collectTranslationKeys(): string[] {
       keys.add(match[1]);
     }
   }
+
+  for (const key of Object.values(OAUTH_ERROR_KEYS)) keys.add(key);
 
   return [...keys].sort();
 }

@@ -16,6 +16,13 @@ import { persistBillingCountry } from "../billing/billingMarkets";
 import { useBillingMarket } from "../billing/useBillingMarket";
 import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
+import SocialAuthButtons from "../components/auth/SocialAuthButtons";
+import {
+  fetchBizuplyAuthProviders,
+  oauthErrorMessage,
+  startBizuplySocialAuth,
+  type SocialProvider,
+} from "../components/auth/socialAuth";
 
 declare global {
   interface Window {
@@ -96,6 +103,8 @@ export default function Register() {
     };
   }, []);
   const [loading, setLoading] = useState(false);
+  const [socialProviders, setSocialProviders] = useState<SocialProvider[]>([]);
+  const [socialBusy, setSocialBusy] = useState<SocialProvider | null>(null);
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -112,6 +121,11 @@ export default function Register() {
     (selectedPlan === "monthly" || selectedPlan === "yearly");
   const checkoutCancelled = searchParams.get("checkout") === "cancel";
   const isPaidSignupFlow = Boolean(selectedPlan);
+  const oauthQueryError = oauthErrorMessage(
+    searchParams.get("oauth_error"),
+    searchParams.get("provider"),
+    t
+  );
 
   // Normal registrations remain plan-first. The staged upsell flow is the
   // only exception: create an unpaid business account, restore the
@@ -134,6 +148,16 @@ export default function Register() {
     searchParams,
     selectedPlan,
   ]);
+
+  useEffect(() => {
+    let alive = true;
+    void fetchBizuplyAuthProviders().then((list) => {
+      if (alive) setSocialProviders(list);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     const refFromUrl = searchParams.get("ref");
@@ -161,6 +185,22 @@ export default function Register() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSocialStart = (provider: SocialProvider) => {
+    setError("");
+    setSocialBusy(provider);
+    startBizuplySocialAuth(provider, {
+      intent: "signup",
+      language: getManualLanguageChoice() || i18n.language,
+      plan: selectedPlan,
+      websiteAddon: includeWebsiteAddon,
+      referralCode:
+        formData.referralCode ||
+        searchParams.get("ref") ||
+        localStorage.getItem("affiliate_referral"),
+      purchaseIntent: pendingPurchaseSignup,
+    });
   };
 
   const isValidPhone = (phone: string) => {
@@ -342,6 +382,18 @@ export default function Register() {
         }
       >
         <form onSubmit={handleSubmit} className="space-y-4">
+          <SocialAuthButtons
+            providers={socialProviders}
+            labels={{
+              google: t("login.continueGoogle"),
+              microsoft: t("login.continueMicrosoft"),
+            }}
+            orLabel={t("login.or")}
+            redirectingLabel={t("login.redirecting")}
+            busy={socialBusy || (loading ? "email" : null)}
+            onStart={handleSocialStart}
+          />
+
           <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-start">
             <p className="text-sm font-black text-violet-800">
               {t("register.accountTypeTitle")}
@@ -535,18 +587,18 @@ export default function Register() {
             </div>
           </div>
 
-          {error ? (
+          {error || oauthQueryError ? (
             <p
               className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-600"
               role="alert"
             >
-              {error}
+              {error || oauthQueryError}
             </p>
           ) : null}
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || socialBusy !== null}
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {loading

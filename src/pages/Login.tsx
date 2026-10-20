@@ -22,6 +22,15 @@ import {
 } from "../i18n/localeUtils";
 import { messageForLoginFailure } from "../utils/loginFailureMessage";
 import { legacyWhatsAppApiLoginRedirect } from "../utils/whatsappApiPortal";
+import API from "../api";
+import { clearRefreshDead, refreshAccessTokenOnce } from "../utils/tokenRefresh";
+import SocialAuthButtons from "../components/auth/SocialAuthButtons";
+import {
+  fetchBizuplyAuthProviders,
+  oauthErrorMessage,
+  startBizuplySocialAuth,
+  type SocialProvider,
+} from "../components/auth/socialAuth";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -56,7 +65,14 @@ export default function Login() {
 }
 
 function BusinessLogin() {
-  const { login } = useAuth();
+  const { login, loginWithToken } = useAuth() as {
+    login: (...args: unknown[]) => Promise<LoginResponse>;
+    loginWithToken: (
+      user: unknown,
+      token: string,
+      opts?: { skipRedirect?: boolean }
+    ) => void;
+  };
   const { fetchNotifications } = useNotifications();
   const { i18n, t } = useTranslation();
   const { whiteLabelEnabled } = usePartnerHostBranding();
@@ -74,6 +90,10 @@ function BusinessLogin() {
   const [loginError, setLoginError] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
+  const [socialProviders, setSocialProviders] = useState<SocialProvider[]>([]);
+  const [socialBusy, setSocialBusy] = useState<SocialProvider | "oauth" | "link" | null>(null);
+  const [linkEmail, setLinkEmail] = useState<string>("");
+  const [linkProvider, setLinkProvider] = useState<string>("");
 
   useEffect(() => {
     DashboardPage.preload().finally(() => {
@@ -93,6 +113,9 @@ function BusinessLogin() {
     [location.search]
   );
   const checkoutSuccess = searchParams.get("checkout") === "success";
+  const oauthSuccess = searchParams.get("oauth") === "success";
+  const linkRequired = searchParams.get("oauth") === "link_required";
+  const oauthProvider = searchParams.get("provider");
   const checkoutEmail = searchParams.get("email") || "";
   const stateFrom = useMemo(() => {
     const fromState = (location.state as { from?: string } | null)?.from;
@@ -109,6 +132,100 @@ function BusinessLogin() {
       rememberPostLoginRedirect(queryRedirect);
     }
   }, [queryRedirect]);
+
+  useEffect(() => {
+    let alive = true;
+    void fetchBizuplyAuthProviders().then((list) => {
+      if (alive) setSocialProviders(list);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    const fromQuery = oauthErrorMessage(
+      searchParams.get("oauth_error"),
+      oauthProvider,
+      t
+    );
+    if (fromQuery) setLoginError(fromQuery);
+  }, [oauthProvider, searchParams, t]);
+
+  const finishOauthSession = async () => {
+    clearRefreshDead();
+    const accessToken = await refreshAccessTokenOnce();
+    const { data } = await API.get("/auth/me", {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    loginWithToken(data, accessToken, { skipRedirect: true });
+    const loggedInUser = data as LoginUser;
+    const role = String(loggedInUser?.role || "").toLowerCase();
+    if (
+      role === "business" &&
+      (loggedInUser?.mustChangePassword || loggedInUser?.isTempPassword)
+    ) {
+      clearPostLoginRedirect();
+      navigate("/change-password", { replace: true });
+      return;
+    }
+    const finalRedirect = resolvePostLoginDestination({
+      role: loggedInUser?.role,
+      businessId: loggedInUser?.businessId,
+      hasAccess: loggedInUser?.hasAccess !== false,
+      accountKind: loggedInUser?.accountKind ?? null,
+      enabledModules: loggedInUser?.enabledModules ?? null,
+      subscriptionPlan: loggedInUser?.subscriptionPlan ?? null,
+      queryRedirect,
+      storedRedirect: null,
+    });
+    if (queryRedirect && isCompatibleRedirect(role, queryRedirect)) {
+      rememberPostLoginRedirect(queryRedirect);
+    } else {
+      clearPostLoginRedirect();
+    }
+    navigate(finalRedirect, { replace: true });
+  };
+
+  useEffect(() => {
+    if (!oauthSuccess) return;
+    let cancelled = false;
+    setSocialBusy("oauth");
+    (async () => {
+      try {
+        await finishOauthSession();
+      } catch {
+        if (!cancelled) {
+          setSocialBusy(null);
+          setLoginError(t("login.oauth.errors.session"));
+          navigate("/login", { replace: true });
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [oauthSuccess]);
+
+  useEffect(() => {
+    if (!linkRequired) return;
+    let alive = true;
+    (async () => {
+      try {
+        const { data } = await API.get("/auth/oauth/link-preview");
+        if (!alive) return;
+        setLinkEmail(String(data?.email || ""));
+        setLinkProvider(String(data?.provider || oauthProvider || ""));
+      } catch {
+        if (!alive) return;
+        setLoginError(t("login.oauth.errors.state_invalid"));
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [linkRequired, oauthProvider, t]);
 
   useEffect(() => {
     const remembered = localStorage.getItem("bizuply_remember_email");
@@ -215,6 +332,39 @@ function BusinessLogin() {
     }
   };
 
+  const handleSocialStart = (provider: SocialProvider) => {
+    setLoginError("");
+    setSocialBusy(provider);
+    startBizuplySocialAuth(provider, {
+      intent: "login",
+      language: normalizeLanguage(i18n.language) || "en",
+      redirect: queryRedirect,
+    });
+  };
+
+  const handleLinkSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoginError("");
+    const formData = new FormData(e.currentTarget);
+    const passwordValue = String(formData.get("password") || form.password || "");
+    if (!passwordValue) {
+      setLoginError(t("login.oauth.errors.incorrect_password"));
+      return;
+    }
+    setSocialBusy("link");
+    try {
+      await API.post("/auth/oauth/link", { password: passwordValue });
+      await finishOauthSession();
+    } catch (err) {
+      const apiErr = err as { response?: { data?: { code?: string } } };
+      setLoginError(
+        oauthErrorMessage(apiErr.response?.data?.code || "incorrect_password", linkProvider, t) ||
+          t("login.oauth.errors.incorrect_password")
+      );
+      setSocialBusy(null);
+    }
+  };
+
   // Keep the form mounted while submitting so API errors stay visible.
   // Skeleton is only for the initial dashboard-chunk preload.
   if (!dashPreloadDone) {
@@ -227,7 +377,11 @@ function BusinessLogin() {
         title={t("login.cardTitle")}
         subtitle={t("login.cardSubtitle")}
       >
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <form
+          onSubmit={linkRequired ? handleLinkSubmit : handleSubmit}
+          noValidate
+          className="space-y-4"
+        >
           {checkoutSuccess ? (
             <p
               className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-bold leading-6 text-emerald-800"
@@ -236,6 +390,41 @@ function BusinessLogin() {
               {t("login.checkoutSuccess")}
             </p>
           ) : null}
+          {oauthSuccess || socialBusy === "oauth" ? (
+            <p
+              className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-bold leading-6 text-violet-800"
+              role="status"
+            >
+              {t("login.oauth.completing")}
+            </p>
+          ) : null}
+          {linkRequired ? (
+            <p
+              className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-bold leading-6 text-amber-800"
+              role="status"
+            >
+              {t("login.oauth.linkSubtitle", {
+                provider:
+                  linkProvider === "microsoft"
+                    ? t("login.providerMicrosoft")
+                    : t("login.providerGoogle"),
+                email: linkEmail || t("login.emailLabel"),
+              })}
+            </p>
+          ) : (
+            <SocialAuthButtons
+              providers={socialProviders}
+              labels={{
+                google: t("login.continueGoogle"),
+                microsoft: t("login.continueMicrosoft"),
+              }}
+              orLabel={t("login.or")}
+              redirectingLabel={t("login.redirecting")}
+              busy={socialBusy}
+              onStart={handleSocialStart}
+            />
+          )}
+          {linkRequired ? null : (
           <div className="text-start">
             <label
               htmlFor="email"
@@ -260,6 +449,7 @@ function BusinessLogin() {
               />
             </div>
           </div>
+          )}
 
           <div className="text-start">
             <label
@@ -324,11 +514,17 @@ function BusinessLogin() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || socialBusy !== null}
             className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? t("login.loggingIn") : t("login.signIn")}
-            {!loading ? <span aria-hidden className="rtl-flip">←</span> : null}
+            {linkRequired
+              ? socialBusy === "link"
+                ? t("login.oauth.linking")
+                : t("login.oauth.linkSubmit")
+              : loading
+                ? t("login.loggingIn")
+                : t("login.signIn")}
+            {!loading && socialBusy !== "link" ? <span aria-hidden className="rtl-flip">←</span> : null}
           </button>
 
           <p className="pt-2 text-center text-sm font-semibold text-slate-600">
