@@ -59,6 +59,9 @@ describe("auth locale coverage", () => {
     expect(keys).toContain("login.rememberMe");
     expect(keys).toContain("login.forgotTitle");
     expect(keys).toContain("register.submit");
+    expect(keys).toContain("login.continueGoogle");
+    expect(keys).toContain("login.continueMicrosoft");
+    expect(keys).toContain("login.or");
     expect(keys).toContain("changePassword.title");
   });
 
