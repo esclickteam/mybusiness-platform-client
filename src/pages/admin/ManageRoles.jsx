@@ -19,9 +19,11 @@ function ManageRoles() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const res = await API.get("/admin/users");
-        console.log("📦 Users from server:", res.data);
-        setUsers(res.data);
+        const res = await API.get("/admin/users", {
+          params: { limit: 50 },
+        });
+        const payload = res.data;
+        setUsers(Array.isArray(payload) ? payload : payload?.users || []);
       } catch (err) {
         console.error("❌ Error loading users:", err);
         alert("לא ניתן לטעון את המשתמשים");
