@@ -112,6 +112,9 @@ describe("BizUply social login", () => {
     renderAt("/login");
     const google = await screen.findByRole("button", { name: "login.continueGoogle" });
     const microsoft = screen.getByRole("button", { name: "login.continueMicrosoft" });
+    expect(apiGet).toHaveBeenCalledWith("/auth/oauth/providers", {
+      params: { product: "bizuply" },
+    });
     expect(screen.getByText("login.or")).toBeInTheDocument();
     expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
     expect(microsoft).toBeEnabled();

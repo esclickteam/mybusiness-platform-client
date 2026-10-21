@@ -15,7 +15,7 @@ function advertisedProviders(data: { providers?: unknown } | undefined): SocialP
 
 export function fetchBizuplyAuthProviders(): Promise<SocialProvider[]> {
   if (!pending) {
-    pending = API.get("/auth/oauth/providers")
+    pending = API.get("/auth/oauth/providers", { params: { product: "bizuply" } })
       .then(({ data }) => advertisedProviders(data) ?? [...KNOWN])
       .catch(() => {
         pending = null;
