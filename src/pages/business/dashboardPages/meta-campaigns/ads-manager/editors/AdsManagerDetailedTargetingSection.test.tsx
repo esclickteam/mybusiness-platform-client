@@ -118,7 +118,9 @@ describe("AdsManagerDetailedTargetingSection", () => {
       </I18nextProvider>
     );
 
-    fireEvent.click(screen.getAllByLabelText(/remove/i)[0]);
+    fireEvent.click(
+      screen.getByLabelText(new RegExp(`remove:.*${selected[0].name}`, "i"))
+    );
     await waitFor(() => expect(selected.length).toBe(1));
   });
 });

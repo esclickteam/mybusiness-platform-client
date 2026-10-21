@@ -421,7 +421,9 @@ export default function AdsManagerDetailedTargetingSection({
             >
               <Check className="h-3 w-3" />
             </button>
-          ) : null}
+          ) : (
+            <span className="h-4 w-4 shrink-0" aria-hidden />
+          )}
 
           <button
             type="button"
@@ -487,6 +489,32 @@ export default function AdsManagerDetailedTargetingSection({
       <p className="mt-2 text-[13px] font-semibold text-[#65676B]">
         {t("metaCampaigns.adsManager.chrome.includePeopleMatching")}
       </p>
+
+      <div className="mt-2 flex flex-wrap gap-2">
+        {selected.length ? (
+          selected.map((item) => (
+            <span
+              key={item.id}
+              className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-[#1877F2]/30 bg-[#E7F3FF] px-2.5 py-1 text-[12px] font-semibold text-[#1877F2]"
+            >
+              <span className="truncate">{item.name}</span>
+              <button
+                type="button"
+                className="rounded-full p-0.5 hover:bg-white/70"
+                aria-label={`${t("metaCampaigns.form.remove")}: ${item.name}`}
+                data-remove-id={item.id}
+                onClick={() => removeItem(item.id)}
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </span>
+          ))
+        ) : (
+          <p className="text-[14px] font-semibold text-[#050505]">
+            {t("metaCampaigns.adsManager.chrome.allDemographics")}
+          </p>
+        )}
+      </div>
 
       <div className="relative mt-2" ref={boxRef}>
         <div
@@ -670,31 +698,6 @@ export default function AdsManagerDetailedTargetingSection({
           {t("metaCampaigns.adsManager.chrome.connectToSearchTargeting")}
         </p>
       ) : null}
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {selected.length ? (
-          selected.map((item) => (
-            <span
-              key={item.id}
-              className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-[#1877F2]/30 bg-[#E7F3FF] px-2.5 py-1 text-[12px] font-semibold text-[#1877F2]"
-            >
-              <span className="truncate">{item.name}</span>
-              <button
-                type="button"
-                className="rounded-full p-0.5 hover:bg-white/70"
-                aria-label={t("metaCampaigns.form.remove")}
-                onClick={() => removeItem(item.id)}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
-          ))
-        ) : (
-          <p className="text-[14px] font-semibold text-[#050505]">
-            {t("metaCampaigns.adsManager.chrome.allDemographics")}
-          </p>
-        )}
-      </div>
     </div>
   );
 }
