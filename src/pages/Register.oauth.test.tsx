@@ -70,7 +70,7 @@ describe("BizUply social register", () => {
     fireEvent.click(google);
     expect(assign).toHaveBeenCalledWith(
       expect.stringMatching(
-        /\/auth\/oauth\/google\/start\?.*intent=signup.*product=bizuply.*plan=monthly.*websiteAddon=1.*ref=aff1/
+        /\/auth\/oauth\/google\/start\?.*intent=signup.*product=bizuply.*plan=monthly.*websiteAddon=1.*ref=aff1.*clientOrigin=/
       )
     );
   });

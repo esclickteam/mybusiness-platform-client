@@ -107,7 +107,7 @@ describe("BizUply social login", () => {
     expect(microsoft).toBeEnabled();
     fireEvent.click(google);
     expect(assign).toHaveBeenCalledWith(
-      "https://api.test/api/auth/oauth/google/start?intent=login&product=bizuply&language=en"
+      `https://api.test/api/auth/oauth/google/start?intent=login&product=bizuply&language=en&clientOrigin=${encodeURIComponent(window.location.origin)}`
     );
   });
 

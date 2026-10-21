@@ -47,6 +47,9 @@ export function startBizuplySocialAuth(provider: SocialProvider, opts: BizuplySo
   if (opts.referralCode) params.set("ref", opts.referralCode);
   if (opts.redirect) params.set("redirect", opts.redirect);
   if (opts.purchaseIntent) params.set("purchaseIntent", "1");
+  if (typeof window !== "undefined" && window.location?.origin) {
+    params.set("clientOrigin", window.location.origin);
+  }
   window.location.assign(`${base}/auth/oauth/${provider}/start?${params.toString()}`);
 }
 
