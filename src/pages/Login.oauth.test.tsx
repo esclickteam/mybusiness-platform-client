@@ -98,6 +98,16 @@ afterEach(() => {
 });
 
 describe("BizUply social login", () => {
+  it("keeps Google and Microsoft visible when the providers request fails", async () => {
+    apiGet.mockImplementation(async (url: string) => {
+      if (url === "/auth/oauth/providers") throw new Error("network");
+      throw new Error(`unexpected GET ${url}`);
+    });
+    renderAt("/login");
+    expect(await screen.findByRole("button", { name: "login.continueGoogle" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "login.continueMicrosoft" })).toBeInTheDocument();
+  });
+
   it("shows Google and Microsoft buttons above email/password with an OR divider", async () => {
     renderAt("/login");
     const google = await screen.findByRole("button", { name: "login.continueGoogle" });

@@ -18,6 +18,7 @@ import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
 import SocialAuthButtons from "../components/auth/SocialAuthButtons";
 import {
+  DEFAULT_BIZUPLY_AUTH_PROVIDERS,
   fetchBizuplyAuthProviders,
   oauthErrorMessage,
   startBizuplySocialAuth,
@@ -103,7 +104,7 @@ export default function Register() {
     };
   }, []);
   const [loading, setLoading] = useState(false);
-  const [socialProviders, setSocialProviders] = useState<SocialProvider[]>([]);
+  const [socialProviders, setSocialProviders] = useState<SocialProvider[]>(DEFAULT_BIZUPLY_AUTH_PROVIDERS);
   const [socialBusy, setSocialBusy] = useState<SocialProvider | null>(null);
 
   const navigate = useNavigate();

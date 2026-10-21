@@ -26,6 +26,7 @@ import API from "../api";
 import { clearRefreshDead, refreshAccessTokenOnce } from "../utils/tokenRefresh";
 import SocialAuthButtons from "../components/auth/SocialAuthButtons";
 import {
+  DEFAULT_BIZUPLY_AUTH_PROVIDERS,
   fetchBizuplyAuthProviders,
   oauthErrorMessage,
   startBizuplySocialAuth,
@@ -90,7 +91,7 @@ function BusinessLogin() {
   const [loginError, setLoginError] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
-  const [socialProviders, setSocialProviders] = useState<SocialProvider[]>([]);
+  const [socialProviders, setSocialProviders] = useState<SocialProvider[]>(DEFAULT_BIZUPLY_AUTH_PROVIDERS);
   const [socialBusy, setSocialBusy] = useState<SocialProvider | "oauth" | "link" | null>(null);
   const [linkEmail, setLinkEmail] = useState<string>("");
   const [linkProvider, setLinkProvider] = useState<string>("");

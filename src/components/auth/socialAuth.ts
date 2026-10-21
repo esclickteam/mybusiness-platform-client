@@ -4,17 +4,22 @@ export type SocialProvider = "google" | "microsoft";
 
 const KNOWN: SocialProvider[] = ["google", "microsoft"];
 
+export const DEFAULT_BIZUPLY_AUTH_PROVIDERS: SocialProvider[] = [...KNOWN];
+
 let pending: Promise<SocialProvider[]> | null = null;
+
+function advertisedProviders(data: { providers?: unknown } | undefined): SocialProvider[] | null {
+  if (!Array.isArray(data?.providers)) return null;
+  return KNOWN.filter((p) => data.providers.includes(p));
+}
 
 export function fetchBizuplyAuthProviders(): Promise<SocialProvider[]> {
   if (!pending) {
     pending = API.get("/auth/oauth/providers")
-      .then(({ data }) =>
-        KNOWN.filter((p) => Array.isArray(data?.providers) && data.providers.includes(p))
-      )
+      .then(({ data }) => advertisedProviders(data) ?? [...KNOWN])
       .catch(() => {
         pending = null;
-        return [] as SocialProvider[];
+        return [...KNOWN];
       });
   }
   return pending;
