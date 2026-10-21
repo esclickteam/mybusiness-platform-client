@@ -110,9 +110,49 @@ function mapAdSet(
   const start = splitDateTime(adSet.startTime || campaign.startTime);
   const end = splitDateTime(adSet.endTime || campaign.stopTime);
   const locations = locationsFromMeta(adSet, campaign);
-  const interests = (adSet.interests?.length ? adSet.interests : campaign.interests || []).map(
-    (row) => ({ id: String(row.id), name: String(row.name || row.id) })
+  const detailedFromAdSet = [
+    ...(adSet.detailedTargets || []),
+    ...(adSet.interests || []),
+    ...(adSet.behaviors || []),
+  ];
+  const detailedFromCampaign = [
+    ...(campaign.detailedTargets || []),
+    ...(campaign.interests || []),
+    ...(campaign.behaviors || []),
+  ];
+  const sourceDetailed = detailedFromAdSet.length
+    ? detailedFromAdSet
+    : detailedFromCampaign;
+  const behaviorIds = new Set(
+    [...(adSet.behaviors || []), ...(campaign.behaviors || [])].map((row) =>
+      String(row.id)
+    )
   );
+  const seenInterestIds = new Set<string>();
+  const interests = sourceDetailed
+    .map((row) => {
+      const id = String(row?.id || "").trim();
+      if (!id || seenInterestIds.has(id)) return null;
+      seenInterestIds.add(id);
+      const explicitType = String((row as { type?: string }).type || "").trim();
+      const type =
+        explicitType ||
+        (behaviorIds.has(id) ? "behaviors" : "interests");
+      return {
+        id,
+        name: String(row.name || id),
+        type,
+        path: Array.isArray((row as { path?: string[] }).path)
+          ? ((row as { path?: string[] }).path as string[])
+          : [],
+      };
+    })
+    .filter(Boolean) as Array<{
+    id: string;
+    name: string;
+    type: string;
+    path?: string[];
+  }>;
   const targetingLoaded = adSet.targetingLoaded !== false && Boolean(
     adSet.targetingRaw ||
       locations.length ||
