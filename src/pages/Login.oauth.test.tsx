@@ -130,6 +130,23 @@ describe("BizUply social login", () => {
     expect(screen.getByRole("alert").textContent).toContain("login.oauth.errors.cancelled");
   });
 
+  it("keeps BizUply existing_account on /login and never moves to WhatsApp API login", async () => {
+    renderAt("/login?oauth_error=existing_account&provider=google");
+    await screen.findByRole("alert");
+    expect(screen.getByRole("alert").textContent).toContain("login.oauth.errors.existing_account");
+    expect(screen.getByRole("button", { name: "login.continueGoogle" })).toBeInTheDocument();
+    expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
+    expect(screen.queryByText(/whatsapp/i)).not.toBeInTheDocument();
+  });
+
+  it("keeps Microsoft cancelled on main /login with social buttons still available", async () => {
+    renderAt("/login?oauth_error=cancelled&provider=microsoft");
+    await screen.findByRole("alert");
+    expect(screen.getByRole("alert").textContent).toContain("login.oauth.errors.cancelled");
+    expect(screen.getByRole("button", { name: "login.continueMicrosoft" })).toBeInTheDocument();
+    expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
+  });
+
   it("exchanges the refresh cookie after oauth=success", async () => {
     refreshAccessTokenOnce.mockResolvedValue("access-1");
     renderAt("/login?oauth=success");
