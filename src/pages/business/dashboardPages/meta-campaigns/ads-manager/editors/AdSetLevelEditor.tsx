@@ -21,6 +21,7 @@ import {
   metaSelectClass,
 } from "../metaAdsUi";
 import AdsManagerLocationsSection from "./AdsManagerLocationsSection";
+import AdsManagerDetailedTargetingSection from "./AdsManagerDetailedTargetingSection";
 import LeadgenTosCard from "../LeadgenTosCard";
 
 type Props = {
@@ -714,14 +715,11 @@ export default function AdSetLevelEditor({
                 </div>
               </div>
 
-              <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
-                <p className="text-[15px] font-bold text-[#050505]">
-                  {t("metaCampaigns.adsManager.chrome.detailedTargeting")}
-                </p>
-                <p className="mt-1 text-[14px] font-semibold text-[#050505]">
-                  {t("metaCampaigns.adsManager.chrome.allDemographics")}
-                </p>
-              </div>
+              <AdsManagerDetailedTargetingSection
+                businessId={businessId}
+                selected={adSet.interests || []}
+                onChange={(interests) => onChange({ interests })}
+              />
             </div>
           ) : null}
         </div>

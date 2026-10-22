@@ -103,6 +103,8 @@ export type MetaCampaign = {
   locations?: MetaLocationTarget[];
   locationMode?: "places" | "radius";
   interests?: MetaInterestTarget[];
+  behaviors?: MetaInterestTarget[];
+  detailedTargets?: MetaDetailedTarget[];
   ageMin?: number | null;
   ageMax?: number | null;
   genders?: number[];
@@ -223,6 +225,8 @@ export type MetaCampaignAdSet = {
   excludedLocations?: MetaLocationTarget[];
   interests?: MetaInterestTarget[];
   behaviors?: MetaInterestTarget[];
+  /** All flexible_spec entries (interests + behaviors + demographics). */
+  detailedTargets?: MetaDetailedTarget[];
   customAudiences?: MetaInterestTarget[];
   excludedAudiences?: MetaInterestTarget[];
   locales?: Array<string | number>;
@@ -435,7 +439,15 @@ export type MetaInterestTarget = {
   path?: string[];
   topic?: string;
   description?: string;
+  /** Meta flexible_spec key: interests | behaviors | life_events | … */
+  type?: string;
+  /** Browse root: demographics | interests | behaviors */
+  branch?: string;
+  selectable?: boolean;
+  parent?: string;
 };
+
+export type MetaDetailedTarget = MetaInterestTarget;
 
 export type MetaCampaignPayload = {
   name: string;
@@ -1429,6 +1441,44 @@ export async function browseMetaInterestCategories(
   }>(
     "/meta-campaigns/targeting/interest-browse",
     withBusiness(businessId, { locale: query?.locale })
+  );
+  return data;
+}
+
+/** Account-scoped Meta targetingbrowse catalog (demographics / interests / behaviors). */
+export async function browseMetaDetailedTargeting(
+  businessId: string | undefined,
+  query?: { locale?: string; limit?: number }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaDetailedTarget[];
+  }>(
+    "/meta-campaigns/targeting/detailed-browse",
+    withBusiness(businessId, {
+      locale: query?.locale,
+      limit: query?.limit,
+    })
+  );
+  return data;
+}
+
+/** Account-scoped Meta targetingsearch across detailed targeting types. */
+export async function searchMetaDetailedTargeting(
+  businessId: string | undefined,
+  query: { q: string; locale?: string; limit?: number; limitType?: string }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaDetailedTarget[];
+  }>(
+    "/meta-campaigns/targeting/detailed-search",
+    withBusiness(businessId, {
+      q: query.q,
+      locale: query.locale,
+      limit: query.limit,
+      limit_type: query.limitType,
+    })
   );
   return data;
 }

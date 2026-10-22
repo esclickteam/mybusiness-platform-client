@@ -129,6 +129,9 @@ const AiAutomationTemplatesVisualPage = import.meta.env.DEV
 const WhatsAppHubVisualQaPage = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/WhatsAppHubVisualQaPage"))
   : null;
+const DetailedTargetingVisualQaPage = import.meta.env.DEV
+  ? lazy(() => import("./pages/dev/DetailedTargetingVisualQaPage"))
+  : null;
 const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
@@ -1228,6 +1231,12 @@ export default function App() {
                           <Route
                             path="/dev/whatsapp-hub-qa"
                             element={<WhatsAppHubVisualQaPage />}
+                          />
+                        ) : null}
+                        {import.meta.env.DEV && DetailedTargetingVisualQaPage ? (
+                          <Route
+                            path="/dev/detailed-targeting-qa"
+                            element={<DetailedTargetingVisualQaPage />}
                           />
                         ) : null}
                         <Route

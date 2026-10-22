@@ -15,7 +15,14 @@ describe("audience estimate and publish use the same targeting", () => {
     state.adSets[0].gender = "female";
     state.adSets[0].advantageAudience = true;
     state.adSets[0].furtherLimitReach = false;
-    state.adSets[0].interests = [{ id: "6003139266461", name: "Beauty" }];
+    state.adSets[0].interests = [
+      { id: "6003139266461", name: "Beauty", type: "interests" },
+      {
+        id: "6002714895372",
+        name: "Engaged shoppers",
+        type: "behaviors",
+      },
+    ];
     state.adSets[0].locations = [
       {
         key: "IL",

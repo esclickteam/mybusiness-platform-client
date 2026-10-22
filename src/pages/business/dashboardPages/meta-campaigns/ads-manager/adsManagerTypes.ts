@@ -91,6 +91,18 @@ export type AdsManagerLocation = {
 
 export type AdSetInterest = { id: string; name: string };
 
+/** Detailed targeting row with original Meta ID + flexible_spec type. */
+export type AdSetDetailedTarget = {
+  id: string;
+  name: string;
+  /** Meta flexible_spec key (interests, behaviors, life_events, …). */
+  type?: string;
+  path?: string[];
+  description?: string;
+  audienceSize?: number | null;
+  audienceSizeLower?: number | null;
+};
+
 export type AdSetDraft = {
   id: string;
   name: string;
@@ -120,7 +132,11 @@ export type AdSetDraft = {
   ageMin: number | null;
   ageMax: number | null;
   gender: AdsManagerGender;
-  interests: AdSetInterest[];
+  /**
+   * All detailed targeting selections (interests, behaviors, demographics).
+   * Each row keeps the original Meta ID and flexible_spec type.
+   */
+  interests: AdSetDetailedTarget[];
   optimizationGoal: string;
   billingEvent: string;
   dailyBudget: string;

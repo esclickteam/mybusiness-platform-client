@@ -74,7 +74,13 @@ export function audienceTargetingFromAdsManager(state: AdsManagerState) {
     genders: gendersForMeta(adSet?.gender || "all"),
     interests: (adSet?.interests || [])
       .filter((item) => item?.id)
-      .map((item) => ({ id: item.id, name: item.name })),
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        type: item.type || "interests",
+        path: item.path,
+        description: item.description,
+      })),
     advantageAudience,
     advantagePlacements: adSet?.advantagePlacements !== false,
     furtherLimitReach: Boolean(adSet?.furtherLimitReach),
