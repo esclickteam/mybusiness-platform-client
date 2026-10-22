@@ -32,8 +32,11 @@ import {
   buildMarketingDocumentHead,
   buildMarketingRobotsTxt,
   buildMarketingSitemapXml,
+  buildNotFoundHtml,
   isSeoDiscoveryPath,
+  isUnknownMarketingPath,
   marketingLegacyRedirectPath,
+  normalizeMarketingPath,
 } from "./src/lib/marketingSeo.mjs";
 
 const PUBLIC_SITE_DOMAIN =
@@ -658,7 +661,20 @@ async function handleMarketingDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   const pathname = getPathname(request);
   const headHtml = buildMarketingDocumentHead(pathname);
-  if (!headHtml) return passThrough();
+  if (!headHtml) {
+    if (isUnknownMarketingPath(pathname)) {
+      return new Response(buildNotFoundHtml(), {
+        status: 404,
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "x-robots-tag": "noindex, nofollow",
+          "x-bizuply-seo-edge": "marketing-not-found",
+        },
+      });
+    }
+    return passThrough();
+  }
 
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
@@ -671,7 +687,14 @@ async function handleMarketingDocument(request) {
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();
     const noindex = headHtml.includes("noindex");
-    return new Response(injectSeoHead(html, headHtml), {
+    let documentHtml = injectSeoHead(html, headHtml);
+    if (normalizeMarketingPath(pathname) === "/") {
+      documentHtml = documentHtml.replace(
+        '<div id="root"></div>',
+        '<div id="root"><main><h1>Bizuply</h1><p>Run your business in one place.</p></main></div>',
+      );
+    }
+    return new Response(documentHtml, {
       status: 200,
       headers: {
         "content-type": "text/html; charset=utf-8",

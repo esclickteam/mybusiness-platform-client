@@ -309,6 +309,7 @@ function organizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     name: "Bizuply",
+    alternateName: ["ביזאפלי", "BizUply"],
     url: `${MARKETING_ORIGIN}/`,
     logo: `${MARKETING_ORIGIN}/favicon-v2.png`,
     sameAs: [
@@ -432,4 +433,88 @@ ${urls}
 
 export function buildMarketingRobotsTxt() {
   return MARKETING_ROBOTS_TXT;
+}
+
+const EXACT_APP_PATHS = new Set([
+  "/login",
+  "/register",
+  "/forgot-password",
+  "/reset-password",
+  "/change-password",
+  "/staff-login",
+  "/support",
+  "/early-access",
+  "/trial-ended",
+  "/unsubscribe",
+  "/plans",
+  "/checkout",
+  "/checkout/success",
+  "/quick-jobs",
+  "/quick-jobs/new",
+  "/businesses",
+  "/business-support",
+]);
+
+const APP_PREFIXES = [
+  "/admin",
+  "/staff",
+  "/client",
+  "/manager",
+  "/marketer",
+  "/business",
+  "/book",
+  "/bizuply",
+  "/p",
+  "/s",
+  "/saas",
+  "/partner",
+  "/partner-materials",
+  "/affiliate",
+  "/embed",
+  "/dev",
+  "/offer",
+  "/store",
+  "/integrations",
+  "/sign",
+  "/demo",
+  "/guided-demo",
+  "/proposal",
+  "/website-invite",
+  "/quick-jobs",
+  "/invistimo",
+  "/whatsapp-api",
+  "/checkout",
+];
+
+function matchesAppPrefix(path, prefix) {
+  return path === prefix || path.startsWith(`${prefix}/`);
+}
+
+/** True when the marketing host should return a real HTTP 404. */
+export function isUnknownMarketingPath(pathname) {
+  const path = normalizeMarketingPath(pathname);
+  if (findMarketingPage(path) || marketingLegacyRedirectPath(path)) return false;
+  if (isMarketingNoindexPath(path) || EXACT_APP_PATHS.has(path)) return false;
+  if (APP_PREFIXES.some((prefix) => matchesAppPrefix(path, prefix))) return false;
+  return true;
+}
+
+export function buildNotFoundHtml() {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Page not found | Bizuply</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="googlebot" content="noindex, nofollow" />
+</head>
+<body>
+  <main>
+    <h1>Page not found</h1>
+    <p>This address is not a Bizuply page.</p>
+    <p><a href="https://bizuply.com/">Bizuply</a></p>
+  </main>
+</body>
+</html>
+`;
 }

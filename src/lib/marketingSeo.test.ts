@@ -9,6 +9,7 @@ import {
   findMarketingPage,
   isMarketingNoindexPath,
   isSeoDiscoveryPath,
+  isUnknownMarketingPath,
   marketingLegacyRedirectPath,
 } from "./marketingSeo.mjs";
 
@@ -75,6 +76,12 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/business/123/dashboard")).toContain("noindex, nofollow");
     expect(isMarketingNoindexPath("/business")).toBe(false);
     expect(buildMarketingDocumentHead("/book/abc")).toBeNull();
+    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
+    expect(isUnknownMarketingPath("/this-page-does-not-exist-xyz")).toBe(true);
+    expect(isUnknownMarketingPath("/crm")).toBe(false);
+    expect(isUnknownMarketingPath("/login")).toBe(false);
+    expect(isUnknownMarketingPath("/book/abc")).toBe(false);
+    expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
     expect(buildMarketingDocumentHead("/p/acme")).toBeNull();
     expect(buildMarketingDocumentHead("/s/northwind")).toBeNull();
   });
