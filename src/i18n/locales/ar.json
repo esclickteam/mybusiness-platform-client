@@ -100,7 +100,8 @@
     "viewPricing": "عرض الأسعار",
     "trustNoCard": "لا يلزم استخدام بطاقة الائتمان",
     "trustTrial": "التسجيل السريع",
-    "trustCancel": "إلغاء في أي وقت"
+    "trustCancel": "إلغاء في أي وقت",
+    "brandLocal": ""
   },
   "live": {
     "crumb": "CRM · إدارة العملاء المحتملين",

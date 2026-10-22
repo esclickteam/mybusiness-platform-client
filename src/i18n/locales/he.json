@@ -100,7 +100,8 @@
     "viewPricing": "צפו במחירים",
     "trustNoCard": "ללא צורך בכרטיס אשראי",
     "trustTrial": "הרשמה מהירה",
-    "trustCancel": "אפשר לבטל בכל זמן"
+    "trustCancel": "אפשר לבטל בכל זמן",
+    "brandLocal": "ביזאפלי"
   },
   "live": {
     "crumb": "CRM · ניהול לידים",

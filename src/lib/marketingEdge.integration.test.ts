@@ -65,6 +65,16 @@ describe("marketing edge integration", () => {
     expect(crm.body).toContain("<title>CRM &amp; Meta Leads | BizUply — Meta App Review Developers</title>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
+    const hebrewCrm = await read(await middleware(request("https://bizuply.com/he/crm", "bizuply.com")));
+    expect(hebrewCrm.status).toBe(200);
+    expect(hebrewCrm.body).toContain('lang="he" dir="rtl"');
+    expect(hebrewCrm.body).toContain("<h1>כל ליד, כל לקוח, כל פגישה במקום אחד</h1>");
+    expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
+    const whatsappHebrew = await read(await middleware(request("https://bizuply.com/he/whatsapp-api", "bizuply.com")));
+    expect(whatsappHebrew.body).toContain("29 דולר");
+    const whatsappEnglish = await middleware(request("https://bizuply.com/whatsapp-api", "bizuply.com"));
+    expect(whatsappEnglish.status).toBe(301);
+    expect(whatsappEnglish.headers.get("location")).toBe("https://whatsapp.bizuply.com/");
     expect(booking.headers.get("x-middleware-next")).toBe("1");
     expect(login.status).toBe(200);
     expect(login.headers.get("x-robots-tag")).toBe("noindex, nofollow");

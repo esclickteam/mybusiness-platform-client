@@ -4,7 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 
-import { Buffer } from "buffer";
+import { marketingLocaleBasename } from "./lib/localePath.mjs";
 
 /* i18n */
 import "./i18n/i18n";
@@ -146,6 +146,7 @@ ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HelmetProvider>
       <BrowserRouter
+        basename={marketingLocaleBasename(window.location.pathname)}
         future={{
           v7_startTransition: true,
           v7_relativeSplatPath: true,

@@ -100,7 +100,8 @@
     "viewPricing": "View pricing",
     "trustNoCard": "No credit card required",
     "trustTrial": "Quick registration",
-    "trustCancel": "Cancel anytime"
+    "trustCancel": "Cancel anytime",
+    "brandLocal": ""
   },
   "live": {
     "crumb": "CRM · Lead management",

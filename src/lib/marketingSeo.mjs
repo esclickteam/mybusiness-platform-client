@@ -6,6 +6,13 @@
  * Hebrew and other UI languages stay client-side until dedicated locale URLs exist.
  */
 
+import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+import {
+  hebrewPublicUrl,
+  hreflangTags,
+  splitMarketingLocale,
+} from "./localePath.mjs";
+
 export const MARKETING_ORIGIN = "https://bizuply.com";
 
 export const MARKETING_ROBOTS_TXT = `User-agent: *
@@ -320,14 +327,14 @@ function organizationSchema() {
   };
 }
 
-function pageSchema(page, canonical) {
+function pageSchema(page, canonical, language = "en") {
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: page.title,
     description: page.description,
     url: canonical,
-    inLanguage: "en",
+    inLanguage: language,
     isPartOf: {
       "@type": "WebSite",
       name: "Bizuply",
@@ -387,25 +394,40 @@ function sharedSocialTags(title, description, canonical) {
  * (dynamic public routes such as bookings and partner storefronts).
  */
 export function buildMarketingDocumentHead(pathname) {
-  const found = findMarketingPage(pathname);
-  if (found) {
-    const { page, canonicalPath } = found;
-    const canonical = marketingCanonicalUrl(canonicalPath);
+  const { locale, path } = splitMarketingLocale(pathname);
+  const hebrew = locale === "he" ? getHebrewMarketingPage(path) : null;
+  const found = findMarketingPage(path);
+  if (locale === "he" && !hebrew && found) {
+    return [
+      `<title>Bizuply</title>`,
+      `<meta name="robots" content="noindex, follow" />`,
+      `<link rel="canonical" href="${escapeHtml(hebrewPublicUrl(found.canonicalPath))}" />`,
+    ].join("\n");
+  }
+
+  if ((locale === "en" && found) || hebrew) {
+    const page = hebrew
+      ? { path, title: hebrew.title, description: hebrew.description, crumb: hebrew.crumb }
+      : found.page;
+    const canonicalPath = hebrew ? path : found.canonicalPath;
+    const canonical = locale === "he" ? hebrewPublicUrl(canonicalPath) : marketingCanonicalUrl(canonicalPath);
     const title = escapeHtml(page.title);
     const description = escapeHtml(page.description);
+    const language = locale === "he" ? "he" : "en";
     return [
       `<title>${title}</title>`,
       `<meta name="description" content="${description}" />`,
       `<meta name="robots" content="index, follow" />`,
       `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+      hreflangTags(canonicalPath),
       ...sharedSocialTags(page.title, page.description, canonical),
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
-      `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical))}</script>`,
+      `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, language))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
     ].join("\n");
   }
 
-  if (!isMarketingNoindexPath(pathname)) return null;
+  if (!isMarketingNoindexPath(path)) return null;
 
   return [
     `<title>Bizuply</title>`,
@@ -414,18 +436,51 @@ export function buildMarketingDocumentHead(pathname) {
   ].join("\n");
 }
 
+function hreflangXml(path) {
+  if (path === "/whatsapp-api") {
+    return `
+    <xhtml:link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/whatsapp-api"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/"/>`;
+  }
+  const english = marketingCanonicalUrl(path);
+  const hebrew = hebrewPublicUrl(path);
+  return `
+    <xhtml:link rel="alternate" hreflang="en" href="${english}"/>
+    <xhtml:link rel="alternate" hreflang="he" href="${hebrew}"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="${english}"/>`;
+}
+
 export function buildMarketingSitemapXml() {
-  const urls = MARKETING_PAGES.map((page) => {
+  const pages = [
+    ...MARKETING_PAGES.map((page) => ({ path: page.path, lastmod: page.lastmod, changefreq: page.changefreq, priority: page.priority })),
+    ...MARKETING_PAGES.map((page) => ({
+      path: page.path,
+      loc: hebrewPublicUrl(page.path),
+      lastmod: "2026-10-23",
+      changefreq: page.changefreq,
+      priority: page.priority,
+    })),
+    {
+      path: "/whatsapp-api",
+      loc: hebrewPublicUrl("/whatsapp-api"),
+      lastmod: "2026-10-23",
+      changefreq: "monthly",
+      priority: "0.8",
+    },
+  ];
+  const urls = pages.map((page) => {
+    const loc = page.loc || marketingCanonicalUrl(page.path);
     return `  <url>
-    <loc>${marketingCanonicalUrl(page.path)}</loc>
+    <loc>${loc}</loc>
     <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
+    <priority>${page.priority}</priority>${hreflangXml(page.path)}
   </url>`;
   }).join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls}
 </urlset>
 `;
@@ -492,11 +547,47 @@ function matchesAppPrefix(path, prefix) {
 
 /** True when the marketing host should return a real HTTP 404. */
 export function isUnknownMarketingPath(pathname) {
-  const path = normalizeMarketingPath(pathname);
+  const { path } = splitMarketingLocale(pathname);
+  if (path === "/whatsapp-api") return false;
   if (findMarketingPage(path) || marketingLegacyRedirectPath(path)) return false;
   if (isMarketingNoindexPath(path) || EXACT_APP_PATHS.has(path)) return false;
   if (APP_PREFIXES.some((prefix) => matchesAppPrefix(path, prefix))) return false;
   return true;
+}
+
+export function marketingPublicRedirect(pathname) {
+  const { locale, path } = splitMarketingLocale(pathname);
+  if (locale === "en" && path === "/whatsapp-api") return "https://whatsapp.bizuply.com/";
+  const legacy = marketingLegacyRedirectPath(path);
+  if (!legacy) return "";
+  if (locale === "he") return legacy === "/" ? "/he/" : `/he${legacy}`;
+  return legacy;
+}
+
+function escapeText(value) {
+  return escapeHtml(value);
+}
+
+export function buildMarketingPrerender(pathname) {
+  const { locale, path } = splitMarketingLocale(pathname);
+  if (locale === "he") {
+    const hebrew = getHebrewMarketingPage(path);
+    if (!hebrew?.h1) return null;
+    const paragraphs = (hebrew.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("");
+    return {
+      lang: "he",
+      dir: "rtl",
+      inner: `<main lang="he" dir="rtl"><h1>${escapeText(hebrew.h1)}</h1>${paragraphs}</main>`,
+    };
+  }
+  if (path === "/") {
+    return {
+      lang: "en",
+      dir: "ltr",
+      inner: `<main lang="en" dir="ltr"><h1>Bizuply</h1><p>Run your business in one place.</p></main>`,
+    };
+  }
+  return null;
 }
 
 export function buildNotFoundHtml() {

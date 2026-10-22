@@ -100,7 +100,8 @@
     "viewPricing": "Ver precios",
     "trustNoCard": "No se requiere tarjeta de crédito",
     "trustTrial": "Registro rápido",
-    "trustCancel": "Cancelar en cualquier momento"
+    "trustCancel": "Cancelar en cualquier momento",
+    "brandLocal": ""
   },
   "live": {
     "crumb": "CRM  Gestión de leads",

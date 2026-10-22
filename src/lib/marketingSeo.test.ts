@@ -82,6 +82,16 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/login")).toBe(false);
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
+    const hebrew = buildMarketingDocumentHead("/he/crm") || "";
+    expect(hebrew).toContain("<title>CRM ולידים מ־Meta | Bizuply</title>");
+    expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
+    expect(hebrew).toContain('hreflang="en" href="https://bizuply.com/crm"');
+    expect(hebrew).toContain('hreflang="x-default" href="https://bizuply.com/crm"');
+    expect(hebrew).toContain('"inLanguage":"he"');
+    const english = buildMarketingDocumentHead("/crm") || "";
+    expect(english).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
+    expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/crm</loc>");
+    expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/whatsapp-api</loc>");
     expect(buildMarketingDocumentHead("/p/acme")).toBeNull();
     expect(buildMarketingDocumentHead("/s/northwind")).toBeNull();
   });
