@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { MetaCampaign } from "../../../../../api/metaCampaignsApi";
 import { adsManagerStateFromMetaCampaign } from "./adsManagerStateFromMetaCampaign";
 import { diffAdsManagerState } from "./adsManagerDiff";
+import { audienceTargetingFromAdsManager } from "./buildPublishPayload";
 
 const campaign: MetaCampaign = {
   id: "120251467028970469",
@@ -112,6 +113,66 @@ describe("adsManagerStateFromMetaCampaign", () => {
     expect(state.ads[0].callToAction).toBe("SIGN_UP");
     expect(state.ads[0].adSetId).toBe("adset-1");
     expect(state.ads[0].facebookPageId).toBe("1222199210985216");
+  });
+
+  it("loads mixed detailed targeting for edit and keeps Meta ids/types after add/remove", () => {
+    const withDetailed: MetaCampaign = {
+      ...campaign,
+      adSets: [
+        {
+          ...campaign.adSets![0],
+          interests: [{ id: "6003139266461", name: "Beauty", type: "interests" }],
+          behaviors: [
+            { id: "6002714895372", name: "Engaged Shoppers", type: "behaviors" },
+          ],
+          detailedTargets: [
+            { id: "6003139266461", name: "Beauty", type: "interests" },
+            { id: "6002714895372", name: "Engaged Shoppers", type: "behaviors" },
+            {
+              id: "6005149512172",
+              name: "Newlywed (1 year)",
+              type: "life_events",
+            },
+          ],
+        },
+      ],
+    };
+    const state = adsManagerStateFromMetaCampaign(withDetailed);
+    expect(state.sessionMode).toBe("edit");
+    expect(state.adSets[0].interests.map((row) => row.id).sort()).toEqual([
+      "6002714895372",
+      "6003139266461",
+      "6005149512172",
+    ]);
+    expect(
+      state.adSets[0].interests.find((row) => row.id === "6005149512172")?.type
+    ).toBe("life_events");
+
+    // Simulate Ads Manager edit: remove life event, add another interest.
+    const next = state.adSets[0].interests
+      .filter((row) => row.id !== "6005149512172")
+      .concat([
+        {
+          id: "6003107902433",
+          name: "Weddings",
+          type: "interests",
+        },
+      ]);
+    const publish = audienceTargetingFromAdsManager({
+      ...state,
+      adSets: [{ ...state.adSets[0], interests: next }],
+    } as never);
+    expect(publish.interests.map((row) => row.id).sort()).toEqual([
+      "6002714895372",
+      "6003107902433",
+      "6003139266461",
+    ]);
+    expect(
+      publish.interests.find((row) => row.id === "6002714895372")?.type
+    ).toBe("behaviors");
+    expect(
+      publish.interests.every((row) => /^\d+$/.test(row.id) && Boolean(row.type))
+    ).toBe(true);
   });
 
   it("diffs only changed fields such as headline", () => {
