@@ -39,7 +39,7 @@ export default function Footer() {
   const supportLinks: FooterLink[] = [
     { label: t("footer.faq"), to: "/faq" },
     { label: t("footer.terms"), to: "/terms" },
-    { label: t("footer.privacy"), to: "/privacy-policy" },
+    { label: t("footer.privacy"), to: "/privacy" },
     { label: t("footer.accessibility"), to: "/accessibility" },
   ];
 

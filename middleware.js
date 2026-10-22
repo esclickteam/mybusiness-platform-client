@@ -28,6 +28,13 @@ import {
   isBizuplyWhatsAppHost,
   whatsappCanonicalUrl,
 } from "./src/lib/whatsappHost.mjs";
+import {
+  buildMarketingDocumentHead,
+  buildMarketingRobotsTxt,
+  buildMarketingSitemapXml,
+  isSeoDiscoveryPath,
+  marketingLegacyRedirectPath,
+} from "./src/lib/marketingSeo.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -227,16 +234,9 @@ async function handleRobotsOrSitemap(request, pathname) {
 
   try {
     if (!isCustomerSiteHost(host)) {
-      const marketingPath = isRobots
-        ? "/marketing-robots.txt"
-        : "/marketing-sitemap.xml";
-
-      const assetRes = await fetch(new URL(marketingPath, request.url));
-      const body = await assetRes.text();
-
-      return seoResponse(body, {
+      return seoResponse(isRobots ? buildMarketingRobotsTxt() : buildMarketingSitemapXml(), {
         isRobots,
-        status: assetRes.ok ? 200 : assetRes.status,
+        status: 200,
         source: "marketing",
       });
     }
@@ -630,11 +630,75 @@ async function proxySaasProduct(request, host) {
   return new Response(response.body, { status: response.status, headers: outgoing });
 }
 
+function isPlatformMarketingHost(host) {
+  if (!host) return false;
+  if (isBizuplyWhatsAppHost(host) || isBizuplyTravelHost(host)) return false;
+  if (isCustomerSiteHost(host) || isSaasProductHost(host)) return false;
+  return MARKETING_HOSTS.has(host) || host === "127.0.0.1" || host.endsWith(".vercel.app");
+}
+
+function marketingLegacyRedirect(request, host, pathname) {
+  const dest = marketingLegacyRedirectPath(pathname);
+  if (!dest || !isPlatformMarketingHost(host)) return null;
+  const location =
+    host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app")
+      ? new URL(dest, request.url).toString()
+      : `https://bizuply.com${dest}`;
+  return new Response(null, {
+    status: 301,
+    headers: {
+      location,
+      "cache-control": "public, max-age=3600",
+      "x-bizuply-seo-edge": "marketing-redirect",
+    },
+  });
+}
+
+async function handleMarketingDocument(request) {
+  if (!isDocumentNavigation(request)) return passThrough();
+  const pathname = getPathname(request);
+  const headHtml = buildMarketingDocumentHead(pathname);
+  if (!headHtml) return passThrough();
+
+  try {
+    const htmlRes = await fetch(new URL("/index.html", request.url), {
+      headers: {
+        accept: "text/html",
+        "x-bizuply-seo-middleware": "1",
+      },
+    });
+    if (!htmlRes.ok) return passThrough();
+    const html = await htmlRes.text();
+    if (!html || !/<html[\s>]/i.test(html)) return passThrough();
+    const noindex = headHtml.includes("noindex");
+    return new Response(injectSeoHead(html, headHtml), {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-bizuply-seo-edge": "marketing",
+        ...(noindex ? { "x-robots-tag": "noindex, nofollow" } : {}),
+      },
+    });
+  } catch {
+    return passThrough();
+  }
+}
+
 export default async function middleware(request) {
   const host = getHost(request);
   if (isSaasProductHost(host)) return proxySaasProduct(request, host);
   const pathname = getPathname(request);
-  if (isStaticAsset(pathname) && !getGoogleHtmlVerificationFile(pathname)) return passThrough();
+  if (
+    isStaticAsset(pathname) &&
+    !getGoogleHtmlVerificationFile(pathname) &&
+    !isSeoDiscoveryPath(pathname)
+  ) {
+    return passThrough();
+  }
+
+  const legacyRedirect = marketingLegacyRedirect(request, host, pathname);
+  if (legacyRedirect) return legacyRedirect;
 
   if (isBizuplyWhatsAppHost(host)) {
     if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
@@ -664,6 +728,10 @@ export default async function middleware(request) {
   const googleFile = getGoogleHtmlVerificationFile(pathname);
   if (googleFile) {
     return handleGoogleHtmlVerification(request, googleFile);
+  }
+
+  if (isPlatformMarketingHost(host)) {
+    return handleMarketingDocument(request);
   }
 
   return handleHtmlSeoInjection(request);
