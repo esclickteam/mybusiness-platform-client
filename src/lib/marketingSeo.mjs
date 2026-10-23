@@ -450,17 +450,19 @@ function hreflangXml(path) {
     <xhtml:link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/"/>`;
   }
   const english = marketingCanonicalUrl(path);
-  const hebrew = hebrewPublicUrl(path);
+  const hebrew = getHebrewMarketingPage(path)
+    ? `
+    <xhtml:link rel="alternate" hreflang="he" href="${hebrewPublicUrl(path)}"/>`
+    : "";
   return `
-    <xhtml:link rel="alternate" hreflang="en" href="${english}"/>
-    <xhtml:link rel="alternate" hreflang="he" href="${hebrew}"/>
+    <xhtml:link rel="alternate" hreflang="en" href="${english}"/>${hebrew}
     <xhtml:link rel="alternate" hreflang="x-default" href="${english}"/>`;
 }
 
 export function buildMarketingSitemapXml() {
   const pages = [
     ...MARKETING_PAGES.map((page) => ({ path: page.path, lastmod: page.lastmod, changefreq: page.changefreq, priority: page.priority })),
-    ...MARKETING_PAGES.map((page) => ({
+    ...MARKETING_PAGES.filter((page) => getHebrewMarketingPage(page.path)).map((page) => ({
       path: page.path,
       loc: hebrewPublicUrl(page.path),
       lastmod: "2026-10-23",
@@ -586,6 +588,8 @@ export function buildMarketingPrerender(pathname) {
       inner: `<main lang="he" dir="rtl"><h1>${escapeText(hebrew.h1)}</h1>${paragraphs}</main>`,
     };
   }
+  const found = findMarketingPage(path);
+  if (!found?.page) return null;
   if (path === "/") {
     return {
       lang: "en",
@@ -593,7 +597,12 @@ export function buildMarketingPrerender(pathname) {
       inner: `<main lang="en" dir="ltr"><h1>Bizuply</h1><p>Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp.</p><p>The official website is bizuply.com. In Hebrew, the brand name is ביזאפלי.</p></main>`,
     };
   }
-  return null;
+  const heading = found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply";
+  return {
+    lang: "en",
+    dir: "ltr",
+    inner: `<main lang="en" dir="ltr"><h1>${escapeText(heading)}</h1><p>${escapeText(found.page.description)}</p></main>`,
+  };
 }
 
 export function buildNotFoundHtml() {

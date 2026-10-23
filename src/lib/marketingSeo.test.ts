@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   MARKETING_PAGES,
   buildMarketingDocumentHead,
+  buildMarketingPrerender,
   buildMarketingRobotsTxt,
   buildMarketingSitemapXml,
   findMarketingPage,
@@ -96,8 +97,12 @@ describe("marketing crawl files", () => {
     expect(hebrew).toContain('"inLanguage":"he"');
     const english = buildMarketingDocumentHead("/crm") || "";
     expect(english).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
+    expect(buildMarketingDocumentHead("/about") || "").not.toContain('hreflang="he"');
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/crm</loc>");
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/whatsapp-api</loc>");
+    expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/he/about</loc>");
+    expect(buildMarketingPrerender("/crm")?.inner).toContain("Meta App Review");
+    expect(buildMarketingPrerender("/he/about")).toBeNull();
     expect(buildMarketingDocumentHead("/p/acme")).toBeNull();
     expect(buildMarketingDocumentHead("/s/northwind")).toBeNull();
   });

@@ -15,7 +15,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/about"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/about"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/about"/>
   </url>
   <url>
@@ -24,7 +23,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/contact"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/contact"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/contact"/>
   </url>
   <url>
@@ -33,7 +31,6 @@
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/terms"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/terms"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/terms"/>
   </url>
   <url>
@@ -42,7 +39,6 @@
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/privacy"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/privacy"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/privacy"/>
   </url>
   <url>
@@ -51,7 +47,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/faq"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/faq"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/faq"/>
   </url>
   <url>
@@ -60,7 +55,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/how-it-works"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/how-it-works"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/how-it-works"/>
   </url>
   <url>
@@ -69,7 +63,6 @@
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/search"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/search"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/search"/>
   </url>
   <url>
@@ -78,7 +71,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/pricing"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/pricing"/>
   </url>
   <url>
@@ -87,7 +79,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/features"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/features"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/features"/>
   </url>
   <url>
@@ -96,7 +87,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/solutions"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/solutions"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/solutions"/>
   </url>
   <url>
@@ -114,7 +104,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/collaborations"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/collaborations"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/collaborations"/>
   </url>
   <url>
@@ -141,7 +130,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/agents"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/agents"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/agents"/>
   </url>
   <url>
@@ -159,7 +147,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/business"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/business"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/business"/>
   </url>
   <url>
@@ -168,7 +155,6 @@
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/accessibility"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/accessibility"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/accessibility"/>
   </url>
   <url>
@@ -181,96 +167,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/"/>
   </url>
   <url>
-    <loc>https://bizuply.com/he/about</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/about"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/about"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/about"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/contact</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/contact"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/contact"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/contact"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/terms</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/terms"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/terms"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/terms"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/privacy</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/privacy"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/privacy"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/privacy"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/faq</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/faq"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/faq"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/faq"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/how-it-works</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/how-it-works"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/how-it-works"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/how-it-works"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/search</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/search"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/search"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/search"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/pricing</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/pricing"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/pricing"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/pricing"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/features</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/features"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/features"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/features"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/solutions</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/solutions"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/solutions"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/solutions"/>
-  </url>
-  <url>
     <loc>https://bizuply.com/he/crm</loc>
     <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -278,15 +174,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/crm"/>
     <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/crm"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/crm"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/collaborations</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/collaborations"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/collaborations"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/collaborations"/>
   </url>
   <url>
     <loc>https://bizuply.com/he/website-builder</loc>
@@ -307,15 +194,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/automations"/>
   </url>
   <url>
-    <loc>https://bizuply.com/he/agents</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/agents"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/agents"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/agents"/>
-  </url>
-  <url>
     <loc>https://bizuply.com/he/appointments</loc>
     <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
@@ -323,24 +201,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/appointments"/>
     <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/appointments"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/appointments"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/business</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/business"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/business"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/business"/>
-  </url>
-  <url>
-    <loc>https://bizuply.com/he/accessibility</loc>
-    <lastmod>2026-10-23</lastmod>
-    <changefreq>yearly</changefreq>
-    <priority>0.4</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://bizuply.com/accessibility"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/accessibility"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://bizuply.com/accessibility"/>
   </url>
   <url>
     <loc>https://bizuply.com/he/whatsapp-api</loc>

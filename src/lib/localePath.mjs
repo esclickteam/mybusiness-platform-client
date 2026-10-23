@@ -3,6 +3,8 @@
  * English keeps the existing URLs. Hebrew lives under /he/.
  */
 
+import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+
 export function splitMarketingLocale(pathname) {
   const clean = String(pathname || "/").split(/[?#]/)[0] || "/";
   const path = clean.length > 1 && clean.endsWith("/") ? clean.slice(0, -1) : clean;
@@ -42,10 +44,12 @@ export function hreflangTags(path) {
     ].join("\n");
   }
   const english = path === "/" ? "https://bizuply.com/" : `https://bizuply.com${path}`;
-  const hebrew = hebrewPublicUrl(path);
-  return [
+  const tags = [
     `<link rel="alternate" hreflang="en" href="${english}" />`,
-    `<link rel="alternate" hreflang="he" href="${hebrew}" />`,
     `<link rel="alternate" hreflang="x-default" href="${english}" />`,
-  ].join("\n");
+  ];
+  if (getHebrewMarketingPage(path)) {
+    tags.splice(1, 0, `<link rel="alternate" hreflang="he" href="${hebrewPublicUrl(path)}" />`);
+  }
+  return tags.join("\n");
 }
