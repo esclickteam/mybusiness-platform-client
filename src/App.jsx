@@ -104,6 +104,15 @@ const AppointmentsProductPage = lazy(() =>
 const AutomationsProductPage = lazy(() =>
   import("./pages/product/AutomationsProductPage")
 );
+const MetaCampaignsProductPage = lazy(() =>
+  import("./pages/product/MetaCampaignsProductPage")
+);
+const GuidesIndexPage = lazy(() =>
+  import("./pages/public/GuidesPage").then((mod) => ({ default: mod.GuidesIndexPage }))
+);
+const GuideArticlePage = lazy(() =>
+  import("./pages/public/GuidesPage").then((mod) => ({ default: mod.GuideArticlePage }))
+);
 const AgentsProductPage = lazy(() =>
   import("./pages/product/AgentsProductPage")
 );
@@ -1166,6 +1175,12 @@ export default function App() {
                           path="/automations"
                           element={<AutomationsProductPage />}
                         />
+                        <Route
+                          path="/meta-campaigns"
+                          element={<MetaCampaignsProductPage />}
+                        />
+                        <Route path="/guides" element={<GuidesIndexPage />} />
+                        <Route path="/guides/:slug" element={<GuideArticlePage />} />
                         <Route path="/agents" element={<AgentsProductPage />} />
                         <Route path="/whatsapp-api" element={<WhatsAppApiProductPage />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />

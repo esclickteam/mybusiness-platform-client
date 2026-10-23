@@ -781,10 +781,13 @@ async function handleMarketingDocument(request) {
     let documentHtml = injectSeoHead(html, headHtml);
     const prerender = buildMarketingPrerender(pathname);
     const locale = splitMarketingLocale(pathname);
-    if (locale.locale === "he") {
+    if (locale.locale !== "en") {
+      const meta = prerender || {};
+      const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale);
+      const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,
-        '<html lang="he" dir="rtl">',
+        `<html lang="${lang}" dir="${dir}">`,
       );
     }
     if (prerender) {

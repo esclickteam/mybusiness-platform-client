@@ -173,7 +173,7 @@ if (
   !isBizuplyWhatsAppHost(window.location.hostname)
 ) {
   void fetchGeoLanguage().then((geoLanguage) => {
-    if (splitMarketingLocale(window.location.pathname).locale === "he") return;
+    if (splitMarketingLocale(window.location.pathname).locale !== "en") return;
     if (!geoLanguage || hasManualLanguageChoice() || readGuidedDemoLocaleLock()) return;
     if (getManualLanguageChoice()) return;
     if (i18n.language === geoLanguage) return;

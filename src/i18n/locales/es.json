@@ -3079,7 +3079,7 @@
   },
   "about": {
     "seoTitle": "Acerca de Bizuply  La plataforma que crece contigo",
-    "seoDescription": "Conoce a Bizuply, una empresa estadounidense de tecnología para gestión empresarial, CRM, leads, sitios web, automatizaciones, agentes y colaboraciones en un solo lugar Meta App Review Developers",
+    "seoDescription": "Conoce a Bizuply, una empresa estadounidense de tecnología para gestión empresarial, CRM, leads, sitios web, automatizaciones, agentes y colaboraciones en un solo lugar",
     "ogTitle": "Acerca de Bizuply",
     "ogDescription": "La plataforma que crece contigo: tu negocio en un solo lugar",
     "twitterTitle": "Acerca de Bizuply",
@@ -3104,7 +3104,7 @@
     "value3Text": "Somos desarrolladores de Meta App Review. Nuestra aplicación pasó el proceso de revisión de aplicaciones de Meta para que las empresas puedan conectar CRM a Lead Ads de forma segura y con aprobación oficial",
     "value4Title": "Sencillo y profesional",
     "value4Text": "Una interfaz clara que funciona desde el primer día: sin una curva de aprendizaje pesada, sin complejidad innecesaria, con la sensación de un sistema de negocios serio",
-    "metaBadge": "Desarrolladores de Meta App Review",
+    "metaBadge": "Meta Tech Provider",
     "whoBrand": "BizUply",
     "whoTitle": "Quienes somos",
     "whoLead": "Una empresa de tecnología estadounidense que construye una plataforma de gestión empresarial para empresas que desean crecer con orden",
@@ -7871,7 +7871,7 @@
     "benefitsBadge": "Por qué importa",
     "stepsBadge": "Cómo funciona",
     "crm": {
-      "seoTitle": "CRM y Meta Leads  Bizuply Meta App Review Desarrolladores",
+      "seoTitle": "Software CRM para empresas | Bizuply",
       "seoDescription": "Bizuply son desarrolladores de Meta App Review. Conecta Facebook Lead Ads a tu CRM y gestiona los leads en un solo lugar.",
       "badge": "CRM y Meta Leads",
       "heroDisplayTitle": "CRM y leads",
@@ -7939,10 +7939,10 @@
       "step4Text": "Convierte leads en clientes y mantente gestionándolos en el mismo sistema",
       "ctaTitle": "Organiza tu canalización de leads",
       "ctaText": "Comience con Bizuply CRM una aplicación Meta que aprobó la Revisión de la Aplicación",
-      "metaBadge": "Desarrolladores de Meta App Review",
+      "metaBadge": "Meta Tech Provider",
       "metaTrustLine": "Somos desarrolladores de Meta App Review: la aplicación Bizuply pasó el proceso de revisión de aplicaciones de Meta para conectar los anuncios de leads con las empresas",
       "metaSectionBadge": "Revisión de la aplicación Meta",
-      "metaSectionTitle": "Desarrolladores de Meta App Review",
+      "metaSectionTitle": "Meta Tech Provider",
       "metaSectionText": "Bizuply es una aplicación Meta que permite a las empresas conectar su página de Facebook y recibir anuncios de leads directamente en el CRM, después de completar el proceso de revisión de la aplicación de Meta.",
       "metaPoint1": "Conexión segura y aprobada de Facebook Lead Ads",
       "metaPoint2": "Cada empresa conecta su propia página y otorga permisos",
@@ -12205,12 +12205,12 @@
   },
   "crmPage": {
     "seo": {
-      "title": "CRM y Meta Leads  Bizuply Meta App Review Desarrolladores",
+      "title": "Software CRM para empresas | Bizuply",
       "description": "Bizuply son desarrolladores aprobados por Meta App Review. Conecte Facebook Lead Ads a su CRM y administre leads, clientes y citas en un solo lugar."
     },
     "hero": {
       "ariaLabel": "CRM y leads",
-      "badgeMeta": "Desarrolladores de Meta App Review",
+      "badgeMeta": "Meta Tech Provider",
       "badgeRealtime": "Leads en tiempo real",
       "badgeCalendar": "Calendario de citas sincronizado",
       "titleLine1": "Cada cliente, cada cliente, cada cita",

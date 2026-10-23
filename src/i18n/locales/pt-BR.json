@@ -3079,7 +3079,7 @@
   },
   "about": {
     "seoTitle": "Sobre o Bizuply  A plataforma que cresce com você",
-    "seoDescription": "Conheça a Bizuply uma empresa de tecnologia americana para gerenciamento de negócios, CRM, leads, sites, automações, agentes e colaborações em um só lugar Meta App Review Developers",
+    "seoDescription": "Conheça a Bizuply uma empresa de tecnologia americana para gerenciamento de negócios, CRM, leads, sites, automações, agentes e colaborações em um só lugar",
     "ogTitle": "Sobre Bizuply",
     "ogDescription": "A plataforma que cresce com você - seu negócio em um só lugar",
     "twitterTitle": "Sobre Bizuply",
@@ -3104,7 +3104,7 @@
     "value3Text": "Somos desenvolvedores de Meta App Review. Nosso aplicativo passou no processo de Revisão de Aplicativos da Meta para que as empresas possam conectar o CRM ao Lead Ads com segurança e aprovação oficial",
     "value4Title": "Simples e profissional.",
     "value4Text": "Uma interface clara que funciona desde o primeiro dia - sem curva de aprendizado pesado, sem complexidade desnecessária, com a sensação de um sistema de negócios sério",
-    "metaBadge": "Desenvolvedores de Meta App Review",
+    "metaBadge": "Meta Tech Provider",
     "whoBrand": "Bizuply",
     "whoTitle": "Quem somos nós",
     "whoLead": "Uma empresa de tecnologia americana construindo uma plataforma de gerenciamento de negócios para empresas que querem crescer com a ordem",
@@ -7939,10 +7939,10 @@
       "step4Text": "Transforme leads em clientes e continue gerenciando-os no mesmo sistema",
       "ctaTitle": "Organize seu pipeline de lead",
       "ctaText": "Comece com o Bizuply CRM um aplicativo Meta que passou na Revisão de Aplicativos",
-      "metaBadge": "Desenvolvedores de Meta App Review",
+      "metaBadge": "Meta Tech Provider",
       "metaTrustLine": "Somos desenvolvedores de análise de aplicativos Meta o aplicativo Bizuply passou no processo de revisão de aplicativos da Meta para conectar anúncios de leads a empresas",
       "metaSectionBadge": "Meta App Review",
-      "metaSectionTitle": "Desenvolvedores de Meta App Review",
+      "metaSectionTitle": "Meta Tech Provider",
       "metaSectionText": "O Bizuply é um aplicativo Meta que permite que as empresas conectem sua página do Facebook e recebam anúncios de leads diretamente no CRM depois de concluir o processo de revisão de aplicativos da Meta",
       "metaPoint1": "Conexão segura e aprovada do Facebook Lead Ads",
       "metaPoint2": "Cada empresa conecta sua própria página e concede permissões",
@@ -12206,11 +12206,11 @@
   "crmPage": {
     "seo": {
       "title": "CRM e Meta Leads  Bizuply Desenvolvedores de Revisão de Aplicativos Meta",
-      "description": "O Bizuply é desenvolvedor aprovado pela Meta App Review. Conecte o Facebook Lead Ads ao seu CRM e gerencie leads, clientes e compromissos em um só lugar."
+      "description": "A Bizuply é Meta Tech Provider e o aplicativo passou no Meta App Review para Lead Ads. Conecte o Facebook Lead Ads ao seu CRM e gerencie leads, clientes e compromissos em um só lugar. CRM sozinho: 49 dólares por mês."
     },
     "hero": {
       "ariaLabel": "CRM e Leads",
-      "badgeMeta": "Desenvolvedores de Meta App Review",
+      "badgeMeta": "Meta Tech Provider",
       "badgeRealtime": "Leads em tempo real",
       "badgeCalendar": "Calendário de compromissos sincronizados",
       "titleLine1": "Cada líder, cada cliente, cada compromisso",
