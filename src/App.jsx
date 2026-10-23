@@ -1015,6 +1015,20 @@ export default function App() {
     return <Navigate to="/plans" replace />;
   }
 
+  const showPublicWidgets =
+    !isDashboardRoute &&
+    !isBusinessChatRoute &&
+    !isEarlyAccessLanding &&
+    !isSaasMarketplaceRoute &&
+    !isSaasPublicSite &&
+    !isDevVisualRoute &&
+    !isMiniSiteHost &&
+    !isPublicProposalRoute &&
+    !isPartnerSignRoute &&
+    !isPublicPartnerDeal &&
+    !isPublicPartnerSales &&
+    !isBizuplyPublicBookingRoute;
+
   return (
     <NotificationsProvider>
       <div className="app-layout" dir={appDir} lang={appLang}>
@@ -1059,7 +1073,7 @@ export default function App() {
               className={
                 isPublicBusinessProfile
                   ? "app-scroll-area app-scroll-area--profile"
-                  : "app-scroll-area"
+                  : `app-scroll-area${showPublicWidgets ? " has-public-widgets" : ""}`
               }
             >
               <AiProvider>
@@ -1657,6 +1671,13 @@ export default function App() {
         !isBizuplyPublicBookingRoute && (
           <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}
+
+      {showPublicWidgets && (
+        <div
+          className={`bizuply-widget-lane${whatsappLanding ? " is-dark" : ""}`}
+          aria-hidden="true"
+        />
+      )}
     </NotificationsProvider>
   );
 }

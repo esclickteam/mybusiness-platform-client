@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, ArrowRight, CalendarClock, Facebook, ShieldCheck, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarClock, ShieldCheck, Zap } from "lucide-react";
 import { StatStrip, WordReveal } from "../product-marketing";
 import { getCrmHeroStats } from "./crmMarketingData";
 import "./CrmProductHero.css";
@@ -38,8 +38,12 @@ export default function CrmProductHero() {
           transition={{ duration: 0.6, ease }}
         >
           <span className="pm-badge pm-badge--meta">
-            <Facebook size={13} aria-hidden="true" />
-            {t("crmPage.hero.badgeMeta")}
+            <ShieldCheck size={13} aria-hidden="true" />
+            {t("crmPage.hero.badgeTech")}
+          </span>
+          <span className="pm-badge pm-badge--meta">
+            <ShieldCheck size={13} aria-hidden="true" />
+            {t("crmPage.hero.badgeReview")}
           </span>
           <span className="pm-badge">
             <span className="pm-badge__dot" />
@@ -100,6 +104,7 @@ export default function CrmProductHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.88, duration: 0.7, ease }}
         >
+          <p className="crm-hero__stats-note">{t("crmPage.stats.caption")}</p>
           <StatStrip stats={getCrmHeroStats(t)} />
         </motion.div>
       </div>

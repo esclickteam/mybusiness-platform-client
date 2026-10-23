@@ -3100,11 +3100,11 @@
     "value1Text": "Behind the product are people ready to help — onboarding guidance, professional support, and hands-on lead handling when a human touch is needed",
     "value2Title": "Smart and automatic",
     "value2Text": "Automations that work in the background: lead follow-ups, reminders, repeating workflows, and real time saved every workday",
-    "value3Title": "Meta App Review",
-    "value3Text": "We are Meta App Review Developers. Our app passed Meta’s App Review process so businesses can connect CRM to Lead Ads securely and with official approval",
+    "value3Title": "Meta Tech Provider",
+    "value3Text": "Bizuply is a Meta Tech Provider. The app passed Meta App Review, so a business can connect Lead Ads to the CRM",
     "value4Title": "Simple and professional",
     "value4Text": "A clear interface that works from day one — no heavy learning curve, no unnecessary complexity, with the feel of a serious business system",
-    "metaBadge": "Meta App Review Developers",
+    "metaBadge": "Meta Tech Provider",
     "whoBrand": "Bizuply",
     "whoTitle": "Who we are",
     "whoLead": "An American technology company building a business management platform for businesses that want to grow with order",
@@ -8093,11 +8093,11 @@
       "step4Text": "Turn leads into clients and keep managing them in the same system",
       "ctaTitle": "Organize your lead pipeline",
       "ctaText": "Start with Bizuply CRM — a Meta app that passed App Review",
-      "metaBadge": "Meta App Review Developers",
-      "metaTrustLine": "We are Meta App Review Developers — the Bizuply app passed Meta’s App Review process for connecting Lead Ads to businesses",
+      "metaBadge": "Meta Tech Provider",
+      "metaTrustLine": "Bizuply is a Meta Tech Provider. The app passed Meta App Review for connecting Lead Ads to a business CRM",
       "metaSectionBadge": "Meta App Review",
-      "metaSectionTitle": "Meta App Review Developers",
-      "metaSectionText": "Bizuply is a Meta app that lets businesses connect their Facebook Page and receive Lead Ads directly into the CRM — after completing Meta’s App Review process",
+      "metaSectionTitle": "App Review approved for Lead Ads",
+      "metaSectionText": "Bizuply is a Meta Tech Provider. A business connects its own Facebook Page and receives Lead Ads directly in the CRM after Meta App Review",
       "metaPoint1": "Secure, approved Facebook Lead Ads connection",
       "metaPoint2": "Each business connects its own Page and grants permissions",
       "metaPoint3": "Leads land automatically in the CRM pipeline with source and status"
@@ -12882,17 +12882,20 @@
     },
     "hero": {
       "ariaLabel": "CRM & Leads",
-      "badgeMeta": "Meta App Review Developers",
+      "badgeMeta": "Meta Tech Provider",
+      "badgeTech": "Meta Tech Provider",
+      "badgeReview": "App Review approved",
       "badgeRealtime": "Real-time leads",
       "badgeCalendar": "Synced appointment calendar",
       "titleLine1": "Every lead, every client, every appointment",
       "titleLine2": "in one place",
       "lead": "Inquiries from Facebook, Instagram, Google Ads and your own website flow automatically into a single pipeline with status, notes and tasks. From there you continue to the client file, the appointment calendar and the service catalog — all in the same system.",
-      "trust": "We are Meta App Review Developers — the Bizuply app has passed Meta's App Review process for connecting Lead Ads to businesses.",
+      "trust": "A business connects its own Facebook page, and new Lead Ads enter this CRM with their source and status.",
       "ctaAutomations": "Automations",
       "ctaStartFree": "See plans"
     },
     "stats": {
+      "caption": "Product facts, not performance results",
       "pipelineStatuses": "statuses in the lead pipeline",
       "autoChannels": "automated lead channels",
       "docTypes": "record types in the client file",
@@ -12909,7 +12912,7 @@
     },
     "pipelineSection": {
       "eyebrow": "Lead pipeline",
-      "titleA": "Five statuses, ",
+      "titleA": "Six statuses, ",
       "titleHighlight": "one clear picture",
       "lead": "Every lead holds a single status, and every status change is logged automatically on its timeline — so you can see when it moved and where to."
     },
@@ -12928,7 +12931,7 @@
         "title": "Filter by status and source",
         "text": "Narrow the list to a single status or a single channel — Meta, Google or your own website.",
         "tags": [
-          "5 statuses",
+          "6 statuses",
           "Meta",
           "Google",
           "Website"
@@ -13003,7 +13006,7 @@
     "integrationSources": {
       "meta": {
         "name": "Facebook & Instagram Lead Ads",
-        "badge": "Meta App Review",
+        "badge": "App Review approved",
         "steps": [
           "Sign in with your Facebook account and approve permissions",
           "Choose the business page to sync",
@@ -13095,9 +13098,9 @@
       }
     },
     "metaTrust": {
-      "eyebrow": "Meta App Review",
-      "title": "Meta developers who passed App Review",
-      "lead": "Bizuply is a Meta app that lets businesses connect their Facebook page and receive Lead Ads directly into the CRM — after passing Meta's App Review process.",
+      "eyebrow": "Meta Tech Provider",
+      "title": "App Review approved for Lead Ads",
+      "lead": "Bizuply is a Meta Tech Provider. The app passed Meta App Review, so a business can connect its own Facebook page and receive Lead Ads in this CRM.",
       "points": [
         "Secure and approved Facebook Lead Ads connection",
         "The business connects its own page and approves permissions itself",
@@ -13112,7 +13115,7 @@
     "faq": {
       "statuses": {
         "q": "What statuses can a lead have?",
-        "a": "Five: New, Contacted, Interested, Converted and Lost. Every status change is logged automatically on the lead's timeline, so you can see when it moved and where to."
+        "a": "Six: New, Contacted, Interested, Converted, Lost and Old lead. Every status change is logged automatically on the lead's timeline, so you can see when it moved and where to."
       },
       "sources": {
         "q": "Where do the leads come from?",
@@ -13120,7 +13123,7 @@
       },
       "approved": {
         "q": "Is Bizuply really approved by Meta?",
-        "a": "Yes. The Bizuply app has passed Meta's App Review process for connecting Lead Ads. The business connects its own Facebook page and approves the permissions, and from that moment the leads flow directly into the CRM."
+        "a": "Yes. Bizuply is a Meta Tech Provider, and the app passed Meta App Review for Lead Ads. The business connects its own Facebook page and approves the permissions, and from that moment the leads flow directly into the CRM."
       },
       "followup": {
         "q": "How do you avoid missing follow-ups?",

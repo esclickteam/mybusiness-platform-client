@@ -3100,11 +3100,11 @@
     "value1Text": "מאחורי המערכת עומדים אנשים שזמינים לעזור — ליווי בהטמעה, מענה מקצועי וטיפול בלידים כשצריך יד אנושית",
     "value2Title": "חכם ואוטומטי",
     "value2Text": "אוטומציות שעובדות ברקע: מעקב אחרי לידים, תזכורות, תהליכים חוזרים וחיסכון בזמן יקר בכל יום עבודה",
-    "value3Title": "‏Meta App Review",
-    "value3Text": "אנחנו מפתחי ⁨Meta App Review Developers⁩. האפליקציה שלנו עברה את תהליך ה־⁨App Review⁩ של ⁨Meta⁩, כדי לחבר ⁨CRM⁩ ל־⁨Lead Ads⁩ בצורה מאובטחת ומאושרת",
+    "value3Title": "ספק טכנולוגיה של Meta",
+    "value3Text": "Bizuply היא ספק טכנולוגיה של Meta. האפליקציה עברה App Review, כך שעסק יכול לחבר Lead Ads ל־CRM",
     "value4Title": "פשוט ומקצועי",
     "value4Text": "ממשק ברור שעובד מהיום הראשון — בלי עקומת למידה כבדה, בלי סיבוך מיותר, עם מראה ותחושה של מערכת עסקית רצינית",
-    "metaBadge": "‏Meta App Review Developers",
+    "metaBadge": "ספק טכנולוגיה של Meta",
     "whoBrand": "‏Bizuply",
     "whoTitle": "מי אנחנו",
     "whoLead": "חברת טכנולוגיה אמריקאית שבונה פלטפורמת ניהול עסקית לעסקים שרוצים לגדול בסדר",
@@ -8082,11 +8082,11 @@
       "step4Text": "הופכים לידים ללקוחות וממשיכים לנהל אותם באותה מערכת",
       "ctaTitle": "סדרו את צינור הלידים",
       "ctaText": "התחילו עם CRM של Bizuply — באפליקציית Meta שעברה App Review",
-      "metaBadge": "Meta App Review Developers",
-      "metaTrustLine": "אנחנו Meta App Review Developers — אפליקציית BizUply עברה את תהליך ה־App Review של Meta לחיבור Lead Ads לעסקים",
-      "metaSectionBadge": "Meta App Review",
-      "metaSectionTitle": "מפתחי Meta שעברו App Review",
-      "metaSectionText": "Bizuply היא אפליקציית Meta שמאפשרת לעסקים לחבר את דף הפייסבוק שלהם ולקבל Lead Ads ישירות ל־CRM — אחרי שעברנו את תהליך ה־App Review של Meta",
+      "metaBadge": "ספק טכנולוגיה של Meta",
+      "metaTrustLine": "Bizuply היא ספק טכנולוגיה של Meta. האפליקציה עברה App Review לחיבור Lead Ads ל־CRM של העסק",
+      "metaSectionBadge": "App Review מאושר",
+      "metaSectionTitle": "App Review מאושר לחיבור Lead Ads",
+      "metaSectionText": "Bizuply היא ספק טכנולוגיה של Meta. עסק מחבר את דף הפייסבוק שלו ומקבל Lead Ads ישירות ל־CRM אחרי App Review",
       "metaPoint1": "חיבור Facebook Lead Ads בצורה מאובטחת ומאושרת",
       "metaPoint2": "העסק מחבר את הדף שלו ומאשר הרשאות בעצמו",
       "metaPoint3": "הלידים נכנסים אוטומטית לצינור ה־CRM עם מקור וסטטוס"
@@ -12867,17 +12867,20 @@
     },
     "hero": {
       "ariaLabel": "CRM ולידים",
-      "badgeMeta": "Meta App Review Developers",
+      "badgeMeta": "ספק טכנולוגיה של Meta",
+      "badgeTech": "ספק טכנולוגיה של Meta",
+      "badgeReview": "App Review מאושר",
       "badgeRealtime": "לידים בזמן אמת",
       "badgeCalendar": "יומן תורים מסונכרן",
       "titleLine1": "כל ליד, כל לקוח, כל פגישה",
       "titleLine2": "במקום אחד",
       "lead": "פניות מ־Facebook, מ־Instagram, מ־Google Ads ומהאתר שלכם נכנסות אוטומטית לצינור אחד עם סטטוס, תיעוד ומשימות. ומשם ממשיכים לתיק לקוח, ליומן תורים ולקטלוג שירותים — באותה מערכת.",
-      "trust": "אנחנו Meta App Review Developers — אפליקציית BizUply עברה את תהליך ה־App Review של Meta לחיבור Lead Ads לעסקים",
+      "trust": "העסק מחבר את דף הפייסבוק שלו, ולידים חדשים ממודעות לידים נכנסים ל־CRM עם מקור וסטטוס.",
       "ctaAutomations": "אוטומציות",
       "ctaStartFree": "למחירון"
     },
     "stats": {
+      "caption": "נתוני מוצר, לא תוצאות ביצועים",
       "pipelineStatuses": "סטטוסים בצינור הלידים",
       "autoChannels": "ערוצי לידים אוטומטיים",
       "docTypes": "סוגי תיעוד בתיק הלקוח",
@@ -12894,7 +12897,7 @@
     },
     "pipelineSection": {
       "eyebrow": "צינור הלידים",
-      "titleA": "חמישה סטטוסים, ",
+      "titleA": "שישה סטטוסים, ",
       "titleHighlight": "תמונה אחת ברורה",
       "lead": "כל ליד מחזיק סטטוס אחד, וכל שינוי סטטוס נרשם אוטומטית בציר הזמן שלו — כך שרואים מתי הוא זז ולאן."
     },
@@ -12913,7 +12916,7 @@
         "title": "סינון לפי סטטוס ומקור",
         "text": "מצמצמים את הרשימה לסטטוס אחד או לערוץ אחד — Meta, Google או האתר שלכם.",
         "tags": [
-          "5 סטטוסים",
+          "6 סטטוסים",
           "Meta",
           "Google",
           "אתר"
@@ -12988,7 +12991,7 @@
     "integrationSources": {
       "meta": {
         "name": "Facebook & Instagram Lead Ads",
-        "badge": "Meta App Review",
+        "badge": "App Review מאושר",
         "steps": [
           "מתחברים עם חשבון הפייסבוק ומאשרים הרשאות",
           "בוחרים את דף העסק שיסונכרן",
@@ -13080,9 +13083,9 @@
       }
     },
     "metaTrust": {
-      "eyebrow": "Meta App Review",
-      "title": "מפתחי Meta שעברו App Review",
-      "lead": "Bizuply היא אפליקציית Meta שמאפשרת לעסקים לחבר את דף הפייסבוק שלהם ולקבל Lead Ads ישירות ל־CRM — אחרי שעברנו את תהליך ה־App Review של Meta.",
+      "eyebrow": "ספק טכנולוגיה של Meta",
+      "title": "App Review מאושר לחיבור Lead Ads",
+      "lead": "Bizuply היא ספק טכנולוגיה של Meta. האפליקציה עברה App Review, כך שעסק יכול לחבר את דף הפייסבוק שלו ולקבל Lead Ads ישירות ל־CRM.",
       "points": [
         "חיבור Facebook Lead Ads בצורה מאובטחת ומאושרת",
         "העסק מחבר את הדף שלו ומאשר הרשאות בעצמו",
@@ -13097,7 +13100,7 @@
     "faq": {
       "statuses": {
         "q": "אילו סטטוסים יש לליד?",
-        "a": "חמישה: חדש, נוצר קשר, מעוניין, הומר ואבוד. כל שינוי סטטוס נרשם אוטומטית בציר הזמן של הליד, כך שרואים מתי הוא זז ולאן."
+        "a": "שישה: חדש, נוצר קשר, מעוניין, הומר, אבוד וליד ישן. כל שינוי סטטוס נרשם אוטומטית בציר הזמן של הליד, כך שרואים מתי הוא זז ולאן."
       },
       "sources": {
         "q": "מאיפה הלידים מגיעים למערכת?",
@@ -13105,7 +13108,7 @@
       },
       "approved": {
         "q": "האם Bizuply באמת מאושרת על ידי Meta?",
-        "a": "כן. אפליקציית Bizuply עברה את תהליך ה־App Review של Meta לחיבור Lead Ads. העסק מחבר את דף הפייסבוק שלו בעצמו ומאשר את ההרשאות, ומאותו רגע הלידים זורמים ישירות ל־CRM."
+        "a": "כן. Bizuply היא ספק טכנולוגיה של Meta, והאפליקציה עברה App Review לחיבור Lead Ads. העסק מחבר את דף הפייסבוק שלו בעצמו ומאשר את ההרשאות, ומאותו רגע הלידים זורמים ישירות ל־CRM."
       },
       "followup": {
         "q": "איך לא מפספסים מעקב?",

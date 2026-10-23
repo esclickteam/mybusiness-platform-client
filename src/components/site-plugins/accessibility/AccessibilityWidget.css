@@ -300,12 +300,12 @@
 
   .bizuply-a11y-trigger--left {
     left: 1rem;
-    bottom: 1rem;
+    bottom: calc(0.7rem + env(safe-area-inset-bottom));
   }
 
   .bizuply-a11y-trigger--right {
     right: 1rem;
-    bottom: 1rem;
+    bottom: calc(0.7rem + env(safe-area-inset-bottom));
   }
 
   .bizuply-a11y-tile {
