@@ -27,6 +27,12 @@ export function hebrewPublicUrl(path) {
   return path === "/" ? "https://bizuply.com/he/" : `https://bizuply.com/he${path}`;
 }
 
+export function marketingPublicUrl(path, locale) {
+  const { path: bare } = splitMarketingLocale(path);
+  if (String(locale || "").toLowerCase().startsWith("he")) return hebrewPublicUrl(bare);
+  return bare === "/" ? "https://bizuply.com/" : `https://bizuply.com${bare}`;
+}
+
 export function hreflangTags(path) {
   if (path === "/whatsapp-api") {
     return [

@@ -72,7 +72,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
           <meta property="og:title" content={t(`${base}.seoTitle`)} />
           <meta property="og:description" content={t(`${base}.seoDescription`)} />
           <meta property="og:type" content="website" />
-          <meta property="og:site_name" content="BizUply" />
+          <meta property="og:site_name" content="Bizuply" />
         </Helmet>
       ) : null}
 

@@ -29,7 +29,8 @@ Disallow: /api/
 Sitemap: https://bizuply.com/sitemap.xml
 `;
 
-const OG_IMAGE = "https://bizuply.com/social-preview.png";
+const OG_IMAGE = "https://bizuply.com/bizuply%20logo.png";
+const ORGANIZATION_LOGO = "https://bizuply.com/android-chrome-512x512.png";
 const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 
 /**
@@ -41,7 +42,7 @@ export const MARKETING_PAGES = [
     path: "/",
     title: "Bizuply — Run your business. All in one place.",
     description:
-      "A modern business platform with a professional business page, collaborations, CRM and AI.",
+      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
@@ -49,9 +50,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/about",
-    title: "About BizUply | The platform that grows with you",
+    title: "About Bizuply | The platform that grows with you",
     description:
-      "Meet BizUply — an American technology company for business management, CRM, leads, websites, automations, agents, and collaborations in one place Meta App Review Developers",
+      "Meet Bizuply (ביזאפלי) — an American technology company for business management, CRM, leads, websites, automations, agents, and collaborations in one place.",
     crumb: "About",
     lastmod: "2025-07-01",
     changefreq: "monthly",
@@ -68,9 +69,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/terms",
-    title: "Terms of Service - BizUply",
+    title: "Terms of Service - Bizuply",
     description:
-      "Read BizUply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
+      "Read Bizuply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
     crumb: "Terms",
     lastmod: "2025-06-25",
     changefreq: "yearly",
@@ -78,9 +79,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/privacy",
-    title: "Privacy Policy - BizUply",
+    title: "Privacy Policy - Bizuply",
     description:
-      "Read BizUply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
+      "Read Bizuply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
     crumb: "Privacy",
     lastmod: "2026-08-09",
     changefreq: "yearly",
@@ -118,9 +119,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/pricing",
-    title: "Service Packages | BizUply",
+    title: "Service Packages | Bizuply",
     description:
-      "BizUply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
+      "Bizuply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
     crumb: "Pricing",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -128,9 +129,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/features",
-    title: "BizUply — All the Tools Your Business Needs in One Place",
+    title: "Bizuply — All the Tools Your Business Needs in One Place",
     description:
-      "Explore BizUply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses.",
+      "Explore Bizuply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses.",
     crumb: "Features",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -138,9 +139,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/solutions",
-    title: "BizUply — Smart Solutions for Every Type of Business",
+    title: "Bizuply — Smart Solutions for Every Type of Business",
     description:
-      "Discover BizUply's tailored solutions for every business type — from service providers and freelancers to shops and collaborations. Manage clients, communication, and growth in one smart place.",
+      "Discover Bizuply's tailored solutions for every business type — from service providers and freelancers to shops and collaborations. Manage clients, communication, and growth in one smart place.",
     crumb: "Solutions",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -148,9 +149,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/crm",
-    title: "CRM & Meta Leads | BizUply — Meta App Review Developers",
+    title: "CRM & Meta Leads | Bizuply — Meta App Review Developers",
     description:
-      "BizUply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place.",
+      "Bizuply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place.",
     crumb: "CRM",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -158,9 +159,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/collaborations",
-    title: "Business Collaborations | BizUply",
+    title: "Business Collaborations | Bizuply",
     description:
-      "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with BizUply.",
+      "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with Bizuply.",
     crumb: "Collaborations",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -168,7 +169,7 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/website-builder",
-    title: "Professional Website Builder | BizUply",
+    title: "Professional Website Builder | Bizuply",
     description:
       "Build a website, store, or booking-enabled site from 205 templates, edit in a visual editor, and publish to your own domain — with every inquiry from the site flowing straight into your CRM.",
     crumb: "Website builder",
@@ -178,7 +179,7 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/automations",
-    title: "Automations for Your Business | BizUply",
+    title: "Automations for Your Business | Bizuply",
     description:
       "Reminders, follow-ups, tasks, and alerts that run in the background and stay connected to your CRM — so fewer leads slip through the cracks.",
     crumb: "Automations",
@@ -188,9 +189,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/agents",
-    title: "Human Agents for Your Business | BizUply",
+    title: "Human Agents for Your Business | Bizuply",
     description:
-      "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your BizUply CRM.",
+      "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your Bizuply CRM.",
     crumb: "Agents",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -198,9 +199,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/appointments",
-    title: "Appointment Scheduling | BizUply",
+    title: "Appointment Scheduling | Bizuply",
     description:
-      "Manage your appointment calendar, reminders, and client follow-up with BizUply Appointments.",
+      "Manage your appointment calendar, reminders, and client follow-up with Bizuply Appointments.",
     crumb: "Appointments",
     lastmod: "2026-10-22",
     changefreq: "monthly",
@@ -318,11 +319,13 @@ function organizationSchema() {
     name: "Bizuply",
     alternateName: ["ביזאפלי", "BizUply"],
     url: `${MARKETING_ORIGIN}/`,
-    logo: `${MARKETING_ORIGIN}/favicon-v2.png`,
+    logo: ORGANIZATION_LOGO,
+    image: OG_IMAGE,
+    description:
+      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
     sameAs: [
       "https://www.facebook.com/bizuply",
       "https://www.instagram.com/bizuply",
-      "https://www.linkedin.com/company/bizuply",
     ],
   };
 }
@@ -367,9 +370,11 @@ function breadcrumbSchema(page, canonical) {
   };
 }
 
-function sharedSocialTags(title, description, canonical) {
+function sharedSocialTags(title, description, canonical, language = "en") {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
+  const ogLocale = language === "he" ? "he_IL" : "en_US";
+  const ogAlternate = language === "he" ? "en_US" : "he_IL";
   return [
     `<meta property="og:title" content="${safeTitle}" />`,
     `<meta property="og:description" content="${safeDescription}" />`,
@@ -377,7 +382,8 @@ function sharedSocialTags(title, description, canonical) {
     `<meta property="og:site_name" content="Bizuply" />`,
     `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
     `<meta property="og:image" content="${OG_IMAGE}" />`,
-    `<meta property="og:locale" content="en_US" />`,
+    `<meta property="og:locale" content="${ogLocale}" />`,
+    `<meta property="og:locale:alternate" content="${ogAlternate}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${safeTitle}" />`,
     `<meta name="twitter:description" content="${safeDescription}" />`,
@@ -420,7 +426,7 @@ export function buildMarketingDocumentHead(pathname) {
       `<meta name="robots" content="index, follow" />`,
       `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
       hreflangTags(canonicalPath),
-      ...sharedSocialTags(page.title, page.description, canonical),
+      ...sharedSocialTags(page.title, page.description, canonical, language),
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, language))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
@@ -584,7 +590,7 @@ export function buildMarketingPrerender(pathname) {
     return {
       lang: "en",
       dir: "ltr",
-      inner: `<main lang="en" dir="ltr"><h1>Bizuply</h1><p>Run your business in one place.</p></main>`,
+      inner: `<main lang="en" dir="ltr"><h1>Bizuply</h1><p>Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp.</p><p>The official website is bizuply.com. In Hebrew, the brand name is ביזאפלי.</p></main>`,
     };
   }
   return null;

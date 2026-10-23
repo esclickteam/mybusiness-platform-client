@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { marketingPublicUrl } from "../../lib/localePath.mjs";
 import {
   BellRing,
   CalendarClock,
@@ -68,12 +69,12 @@ export default function CrmProductPage() {
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
-        <link rel="canonical" href="https://bizuply.com/crm" />
+        <link rel="canonical" href={marketingPublicUrl("/crm", i18n.language)} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="BizUply" />
+        <meta property="og:site_name" content="Bizuply" />
         <link rel="preload" as="image" href="/leads1.jpeg" />
       </Helmet>
 

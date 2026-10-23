@@ -77,6 +77,12 @@ describe("marketing crawl files", () => {
     expect(isMarketingNoindexPath("/business")).toBe(false);
     expect(buildMarketingDocumentHead("/book/abc")).toBeNull();
     expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
+    expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
+    expect(buildMarketingDocumentHead("/he/") || "").toContain("<title>ביזאפלי (Bizuply)");
+    for (const page of MARKETING_PAGES) {
+      expect(page.title).not.toContain("BizUply");
+      expect(page.description).not.toContain("BizUply");
+    }
     expect(isUnknownMarketingPath("/this-page-does-not-exist-xyz")).toBe(true);
     expect(isUnknownMarketingPath("/crm")).toBe(false);
     expect(isUnknownMarketingPath("/login")).toBe(false);

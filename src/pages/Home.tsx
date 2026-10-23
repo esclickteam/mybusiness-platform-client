@@ -4,6 +4,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { marketingPublicUrl } from "../lib/localePath.mjs";
 
 import HeroSection from "../components/HeroSection";
 import ProductsGrid from "../components/ProductsGrid";
@@ -13,6 +14,7 @@ import FAQMini from "../components/FAQMini";
 
 export default function Home() {
   const { t, i18n } = useTranslation();
+  const canonical = marketingPublicUrl("/", i18n.language);
 
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir={getTextDirection(i18n.language)}>
@@ -21,7 +23,7 @@ export default function Home() {
 
         <meta name="description" content={t("seo.homeDescription")} />
 
-        <link rel="canonical" href="https://bizuply.com/" />
+        <link rel="canonical" href={canonical} />
 
         <meta property="og:title" content={t("seo.homeTitle")} />
 
@@ -29,7 +31,7 @@ export default function Home() {
 
         <meta property="og:type" content="website" />
 
-        <meta property="og:url" content="https://bizuply.com/" />
+        <meta property="og:url" content={canonical} />
       </Helmet>
 
       <HeroSection />

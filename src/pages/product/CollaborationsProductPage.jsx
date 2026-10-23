@@ -61,7 +61,7 @@ export default function CollaborationsProductPage() {
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="BizUply" />
+        <meta property="og:site_name" content="Bizuply" />
       </Helmet>
 
       <ScrollProgress />

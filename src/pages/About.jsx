@@ -80,7 +80,7 @@ function About() {
         <meta property="og:description" content={t("about.ogDescription")} />
         <meta property="og:url" content="https://bizuply.com/about" />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="BizUply" />
+        <meta property="og:site_name" content="Bizuply" />
       </Helmet>
 
       <div className="about-orb about-orb-a" aria-hidden="true" />
