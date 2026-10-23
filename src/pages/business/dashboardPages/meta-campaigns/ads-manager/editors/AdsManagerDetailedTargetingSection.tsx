@@ -41,6 +41,7 @@ type TreeNode = {
   type: string;
   id: string;
   selectable: boolean;
+  unsupportedReason?: string;
   description: string;
   audienceSize?: number | null;
   audienceSizeLower?: number | null;
@@ -89,7 +90,7 @@ function branchOf(item: MetaDetailedTarget): BrowseBranch {
   if (type === "interests" || type === "interest") return "interests";
   if (type === "behaviors" || type === "behavior") return "behaviors";
   if (
-    /life_events|family_statuses|relationship_statuses|education_statuses|work_|industries|income|politics|demographic/.test(
+    /life_events|family_statuses|relationship_statuses|education_statuses|college_years|work_|industries|income|politics|demographic/.test(
       type
     )
   ) {
@@ -133,6 +134,7 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
       type: "demographics",
       id: "",
       selectable: false,
+      unsupportedReason: "category",
       description: "",
       children: [],
     },
@@ -144,6 +146,7 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
       type: "interests",
       id: "",
       selectable: false,
+      unsupportedReason: "category",
       description: "",
       children: [],
     },
@@ -155,6 +158,7 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
       type: "behaviors",
       id: "",
       selectable: false,
+      unsupportedReason: "category",
       description: "",
       children: [],
     },
@@ -168,6 +172,7 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
   ): TreeNode => {
     const key = fullPath.join("›");
     let child = parent.children.find((c) => c.key === key || c.name === name);
+    const seedSelectable = Boolean(seed?.id && seed.selectable !== false);
     if (!child) {
       child = {
         key,
@@ -175,21 +180,27 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
         path: fullPath,
         branch: parent.branch,
         type: seed?.type || parent.type,
-        id: seed?.id && seed.selectable !== false ? String(seed.id) : "",
-        selectable: Boolean(seed?.id && seed.selectable !== false),
+        id: seedSelectable ? String(seed!.id) : "",
+        selectable: seedSelectable,
+        unsupportedReason: seed?.unsupportedReason || (seedSelectable ? "" : "category"),
         description: seed?.description || "",
         audienceSize: seed?.audienceSize ?? null,
         audienceSizeLower: seed?.audienceSizeLower ?? null,
         children: [],
       };
       parent.children.push(child);
-    } else if (seed?.id && seed.selectable !== false) {
-      child.id = String(seed.id);
+    } else if (seedSelectable) {
+      child.id = String(seed!.id);
       child.selectable = true;
+      child.unsupportedReason = "";
+      child.type = seed!.type || child.type;
+      child.description = seed!.description || child.description;
+      child.audienceSize = seed!.audienceSize ?? child.audienceSize;
+      child.audienceSizeLower = seed!.audienceSizeLower ?? child.audienceSizeLower;
+    } else if (seed?.unsupportedReason && !child.selectable) {
+      child.unsupportedReason = seed.unsupportedReason;
       child.type = seed.type || child.type;
       child.description = seed.description || child.description;
-      child.audienceSize = seed.audienceSize ?? child.audienceSize;
-      child.audienceSizeLower = seed.audienceSizeLower ?? child.audienceSizeLower;
     }
     return child;
   };
@@ -322,7 +333,11 @@ export default function AdsManagerDetailedTargetingSection({
           limit: 25,
         });
         if (reqId.current !== id) return;
-        setSearchResults((data.results || []).filter((row) => row.id));
+        setSearchResults(
+          (data.results || []).filter(
+            (row) => row.id && row.selectable !== false
+          )
+        );
         setSearchOpen(true);
         setBrowseOpen(false);
       } catch (err) {
@@ -361,6 +376,16 @@ export default function AdsManagerDetailedTargetingSection({
     onChange(selected.filter((item) => item.id !== id));
   };
 
+  const unsupportedLabel = (reason?: string) => {
+    if (reason === "unsupported_flexible_spec") {
+      return t("metaCampaigns.adsManager.chrome.targetingUnsupportedFlexible");
+    }
+    if (reason === "category_not_selectable") {
+      return t("metaCampaigns.adsManager.chrome.targetingCategoryNotSelectable");
+    }
+    return "";
+  };
+
   const toggleSelect = (node: TreeNode) => {
     if (!node.selectable || !node.id) return;
     if (selectedIds.has(node.id)) {
@@ -381,11 +406,15 @@ export default function AdsManagerDetailedTargetingSection({
     const selected = node.id ? selectedIds.has(node.id) : false;
     const size = formatAudienceSize(node.audienceSize);
     const showInfo = infoKey === node.key;
+    const blockedHint = !node.selectable ? unsupportedLabel(node.unsupportedReason) : "";
 
     return (
       <div key={node.key}>
         <div
-          className="flex items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5 hover:bg-[#F7F8FA]"
+          className={[
+            "flex items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5",
+            node.selectable || hasChildren ? "hover:bg-[#F7F8FA]" : "bg-white",
+          ].join(" ")}
           style={{ paddingInlineStart: 12 + depth * 14 }}
         >
           {hasChildren ? (
@@ -427,10 +456,14 @@ export default function AdsManagerDetailedTargetingSection({
 
           <button
             type="button"
-            className="min-w-0 flex-1 text-start"
+            className={[
+              "min-w-0 flex-1 text-start",
+              !node.selectable && !hasChildren ? "cursor-default opacity-80" : "",
+            ].join(" ")}
             onClick={() => {
               if (hasChildren) toggleExpand(node.key);
               else if (node.selectable) toggleSelect(node);
+              else setInfoKey((prev) => (prev === node.key ? null : node.key));
             }}
           >
             <span className="block truncate text-[13px] font-semibold text-[#050505]">
@@ -439,6 +472,11 @@ export default function AdsManagerDetailedTargetingSection({
             {size ? (
               <span className="block truncate text-[11px] text-[#65676B]">
                 {t("metaCampaigns.form.audienceSize", { size })}
+              </span>
+            ) : null}
+            {blockedHint && !hasChildren ? (
+              <span className="mt-0.5 block text-[11px] font-semibold text-[#8A8D91]">
+                {blockedHint}
               </span>
             ) : null}
           </button>
@@ -460,7 +498,8 @@ export default function AdsManagerDetailedTargetingSection({
             className="border-b border-[#F0F2F5] bg-[#F7F8FA] px-3 py-2 text-[12px] leading-snug text-[#65676B]"
             style={{ paddingInlineStart: 28 + depth * 14 }}
           >
-            {node.description ||
+            {blockedHint ||
+              node.description ||
               (node.path.length
                 ? node.path.join(" › ")
                 : t("metaCampaigns.adsManager.chrome.targetingInfoFallback"))}
@@ -576,7 +615,10 @@ export default function AdsManagerDetailedTargetingSection({
         </div>
 
         {panelOpen ? (
-          <div className="absolute inset-x-0 top-full z-[1300] mt-1 max-h-[min(420px,55vh)] overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+          <div
+            className="absolute inset-x-0 top-full z-[1300] mt-1 max-h-[min(420px,55vh)] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
+            dir={isRtl ? "rtl" : "ltr"}
+          >
             {browseOpen ? (
               browseBusy && !browseRows.length ? (
                 <p className="px-3 py-3 text-[13px] text-[#65676B]">

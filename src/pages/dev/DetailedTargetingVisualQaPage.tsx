@@ -121,6 +121,33 @@ const FIXTURE: MetaDetailedTarget[] = [
     path: ["Behaviors", "Travel", "Frequent travelers"],
     audienceSize: 210000000,
   },
+  {
+    id: "",
+    name: "College years",
+    type: "college_years",
+    branch: "demographics",
+    selectable: false,
+    unsupportedReason: "category_not_selectable",
+    path: ["Demographics", "Education", "College years"],
+  },
+  {
+    id: "999001",
+    name: "Legacy demographic cluster",
+    type: "demographics",
+    branch: "demographics",
+    selectable: false,
+    unsupportedReason: "unsupported_flexible_spec",
+    path: ["Demographics", "Other", "Legacy demographic cluster"],
+  },
+  {
+    id: "6002867432822",
+    name: "יופי (קונספט חברתי)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["Interests", "Shopping and fashion", "יופי (קונספט חברתי)"],
+    audienceSize: 500000000,
+  },
 ];
 
 async function mockBrowse() {
