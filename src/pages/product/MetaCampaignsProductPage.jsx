@@ -37,6 +37,7 @@ const COPY = {
     budget: "Budget on the campaign or the ad set",
     leads: "Lead Ads can enter the CRM",
     spend: "Meta bills the ad spend",
+    planLabel: "Business plan",
     primary: "See pricing",
     secondary: "Open the CRM guide",
     faqTitle: "Questions",
@@ -52,6 +53,7 @@ const COPY = {
     budget: "תקציב בקמפיין או בקבוצה",
     leads: "לידים ממודעות יכולים להיכנס ל־CRM",
     spend: "את הוצאת המדיה גובה Meta",
+    planLabel: "חבילה עסקית",
     primary: "למחירון",
     secondary: "למדריך על הקמפיינים",
     faqTitle: "שאלות",
@@ -67,6 +69,7 @@ const COPY = {
     budget: "Presupuesto en la campaña o en el conjunto",
     leads: "Los Lead Ads pueden entrar al CRM",
     spend: "Meta cobra el gasto",
+    planLabel: "Plan de negocio",
     primary: "Ver precios",
     secondary: "Abrir la guía",
     faqTitle: "Preguntas",
@@ -82,6 +85,7 @@ const COPY = {
     budget: "Orçamento na campanha ou no conjunto",
     leads: "Lead Ads podem entrar no CRM",
     spend: "A Meta cobra a mídia",
+    planLabel: "Plano de negócios",
     primary: "Ver preços",
     secondary: "Abrir o guia",
     faqTitle: "Perguntas",
@@ -97,6 +101,7 @@ const COPY = {
     budget: "ميزانية على الحملة أو المجموعة",
     leads: "إعلانات العملاء المحتملين يمكن أن تدخل CRM",
     spend: "Meta تحصّل الإنفاق",
+    planLabel: "الخطة التجارية",
     primary: "الأسعار",
     secondary: "افتحوا الدليل",
     faqTitle: "أسئلة",
@@ -146,7 +151,7 @@ export default function MetaCampaignsProductPage() {
           { value: 3, label: ui.levels },
           { value: 2, label: ui.budget },
           { value: 49, prefix: "$", label: "CRM" },
-          { value: 99, prefix: "$", label: "Business" },
+          { value: 99, prefix: "$", label: ui.planLabel },
         ]}
         primaryLabel={ui.primary}
         primaryTo="/pricing"

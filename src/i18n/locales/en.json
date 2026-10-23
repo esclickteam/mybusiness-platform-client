@@ -13673,16 +13673,16 @@
   "websitePage": {
     "seo": {
       "title": "Professional Website Builder | Bizuply",
-      "description": "Build a website, store, or booking-enabled site from 205 templates, edit in a visual editor, and publish to your own domain — with every inquiry from the site flowing straight into your CRM."
+      "description": "Build a website, store, or booking site in the visual editor and publish it to your own domain — with every inquiry from the site flowing straight into your CRM."
     },
     "hero": {
       "aria": "Website builder",
-      "badgeTemplates": "205 ready-made templates",
+      "badgeTemplates": "Ready-made template library",
       "badgeEditor": "Visual editor",
       "badgeStore": "Store & booking",
       "titleLead": "Build a professional website",
       "titleHighlight": "that brings in customers",
-      "lead": "Pick a template from 205 designs by industry, edit every element in place, add a store, calendar, and plugins — then publish to your own address. Every inquiry from the site flows straight into your CRM lead pipeline.",
+      "lead": "Pick a template from the library by industry, edit every element in place, add a store, calendar, and plugins — then publish to your own address. Every inquiry from the site flows straight into your CRM lead pipeline.",
       "ctaPackages": "View plans"
     },
     "heroActions": {
@@ -13710,7 +13710,7 @@
     },
     "library": {
       "eyebrow": "Template library",
-      "titleLead": "205 templates built",
+      "titleLead": "Templates built",
       "titleHighlight": "for your industry",
       "lead": "Every template ships with ready-made pages, a color palette, and sample content — from there you edit each element in place until the site speaks in your business's voice."
     },
@@ -14043,7 +14043,7 @@
     "faq": {
       "code": {
         "q": "Do I need to know how to code to build a site on Bizuply?",
-        "a": "No. Choose one of the 205 templates, click any element, and change it in place — text, color, image, and spacing. Anyone who does want to go deeper can add their own CSS and HTML tags to the site's head and body."
+        "a": "No. Choose a template from the library, click any element, and change it in place — text, color, image, and spacing. Anyone who does want to go deeper can add their own CSS and HTML tags to the site's head and body."
       },
       "structure": {
         "q": "Can I change the site's structure and not just the content?",

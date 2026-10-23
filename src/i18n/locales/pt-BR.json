@@ -12919,16 +12919,16 @@
   "websitePage": {
     "seo": {
       "title": "Construtor de Sites Profissional  Bizuply",
-      "description": "Crie um site, loja ou site habilitado para reservas a partir de 205 modelos, edite em um editor visual e publique em seu próprio domínio com cada consulta do site fluindo diretamente para o seu CRM."
+      "description": "Crie um site, uma loja ou uma página com agendamento no editor visual e publique no seu domínio. Cada contato do site entra no CRM."
     },
     "hero": {
       "aria": "Criador de sites",
-      "badgeTemplates": "205 modelos prontos",
+      "badgeTemplates": "Biblioteca de modelos",
       "badgeEditor": "Editor visual",
       "badgeStore": "Armazenar e reservar",
       "titleLead": "Crie um site profissional",
       "titleHighlight": "que traz clientes",
-      "lead": "Escolha um modelo de 205 designs por setor, edite todos os elementos no lugar, adicione uma loja, calendário e plugins - e depois publique no seu próprio endereço. Cada consulta do site flui direto para o seu pipeline de CRM.",
+      "lead": "Escolha um modelo da biblioteca por setor, edite cada elemento no lugar, adicione uma loja, uma agenda e plugins, e publique no seu endereço. Cada contato do site entra no CRM.",
       "ctaPackages": "Ver planos"
     },
     "heroActions": {
@@ -12956,7 +12956,7 @@
     },
     "library": {
       "eyebrow": "Biblioteca de modelos",
-      "titleLead": "205 modelos construídos",
+      "titleLead": "Modelos prontos",
       "titleHighlight": "para a sua indústria",
       "lead": "Cada modelo vem com páginas prontas, uma paleta de cores e conteúdo de amostra. A partir daí, você edita cada elemento no lugar até que o site fale na voz da sua empresa."
     },
@@ -13289,7 +13289,7 @@
     "faq": {
       "code": {
         "q": "Preciso saber como codificar para construir um site no Bizuply?",
-        "a": "Não. Escolha um dos 205 modelos, clique em qualquer elemento e altere-o no lugar - texto, cor, imagem e espaçamento. Qualquer um que queira ir mais fundo pode adicionar suas próprias tags CSS e HTML à cabeça e ao corpo do site."
+        "a": "Não. Escolha um modelo da biblioteca, clique em qualquer elemento e altere-o no lugar: texto, cor, imagem e espaçamento. Quem quiser ir mais fundo pode adicionar CSS e HTML."
       },
       "structure": {
         "q": "Posso mudar a estrutura do site e não apenas o conteúdo?",

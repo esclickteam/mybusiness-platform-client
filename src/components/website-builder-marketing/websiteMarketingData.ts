@@ -1,4 +1,5 @@
 import type { MarketingFaq, MarketingStat } from "../product-marketing";
+import { getStudioGalleryCatalog } from "../site-builder/studio/data/templates/galleryCatalog";
 
 type TFn = (key: string, options?: Record<string, unknown>) => any;
 
@@ -10,7 +11,7 @@ type TFn = (key: string, options?: Record<string, unknown>) => any;
 
 export function getWebsiteHeroStats(t: TFn): MarketingStat[] {
   return [
-    { value: 205, label: t("websitePage.heroStats.templates") },
+    { value: getStudioGalleryCatalog().length, label: t("websitePage.heroStats.templates") },
     { value: 140, label: t("websitePage.heroStats.pages") },
     { value: 59, label: t("websitePage.heroStats.plugins") },
     { value: 80, label: t("websitePage.heroStats.undo") },
@@ -19,21 +20,23 @@ export function getWebsiteHeroStats(t: TFn): MarketingStat[] {
 
 export type TemplateCategoryStat = {
   label: string;
-  count: number;
   accent: string;
 };
 
-/** Real category distribution across the template library. */
+/**
+ * Industry names only. The old per-category counts did not match the gallery
+ * catalog, so they are not shown.
+ */
 export function getTemplateCategories(t: TFn): TemplateCategoryStat[] {
   return [
-    { label: t("websitePage.categories.commerce"), count: 32, accent: "#9a6f3b" },
-    { label: t("websitePage.categories.landing"), count: 27, accent: "#2563eb" },
-    { label: t("websitePage.categories.portfolio"), count: 26, accent: "#0f172a" },
-    { label: t("websitePage.categories.beauty"), count: 26, accent: "#e11d8c" },
-    { label: t("websitePage.categories.realEstate"), count: 25, accent: "#c9a962" },
-    { label: t("websitePage.categories.food"), count: 24, accent: "#8b1e3f" },
-    { label: t("websitePage.categories.tourism"), count: 10, accent: "#0891b2" },
-    { label: t("websitePage.categories.education"), count: 10, accent: "#7c3aed" },
+    { label: t("websitePage.categories.commerce"), accent: "#9a6f3b" },
+    { label: t("websitePage.categories.landing"), accent: "#2563eb" },
+    { label: t("websitePage.categories.portfolio"), accent: "#0f172a" },
+    { label: t("websitePage.categories.beauty"), accent: "#e11d8c" },
+    { label: t("websitePage.categories.realEstate"), accent: "#c9a962" },
+    { label: t("websitePage.categories.food"), accent: "#8b1e3f" },
+    { label: t("websitePage.categories.tourism"), accent: "#0891b2" },
+    { label: t("websitePage.categories.education"), accent: "#7c3aed" },
   ];
 }
 

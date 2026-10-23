@@ -12919,16 +12919,16 @@
   "websitePage": {
     "seo": {
       "title": "Creador de sitios web profesional  Bizuply",
-      "description": "Crea un sitio web, tienda o sitio habilitado para reservas a partir de 205 plantillas, edita en un editor visual y publica en tu propio dominio, con cada consulta del sitio fluyendo directamente a tu CRM."
+      "description": "Crea un sitio, una tienda o una página con reservas en el editor visual y publícala en tu dominio. Cada consulta del sitio entra al CRM."
     },
     "hero": {
       "aria": "Creador de sitios web",
-      "badgeTemplates": "205 plantillas listas para usar",
+      "badgeTemplates": "Biblioteca de plantillas",
       "badgeEditor": "Editor visual",
       "badgeStore": "Tienda & reserva",
       "titleLead": "Crea un sitio web profesional",
       "titleHighlight": "que trae clientes",
-      "lead": "Elige una plantilla de 205 diseños por industria, edita cada elemento en su lugar, agrega una tienda, calendario y complementos, y luego publica en tu propia dirección. Cada consulta del sitio fluye directamente a su canalización de leads de CRM.",
+      "lead": "Elige una plantilla de la biblioteca según el sector, edita cada elemento en su lugar, agrega una tienda, un calendario y complementos, y publícala en tu dirección. Cada consulta del sitio entra al CRM.",
       "ctaPackages": "Ver planos"
     },
     "heroActions": {
@@ -12956,7 +12956,7 @@
     },
     "library": {
       "eyebrow": "Biblioteca de plantillas",
-      "titleLead": "205 plantillas construidas",
+      "titleLead": "Plantillas preparadas",
       "titleHighlight": "para su industria",
       "lead": "Cada plantilla se envía con páginas listas para usar, una paleta de colores y contenido de muestra: desde allí, edita cada elemento en su lugar hasta que el sitio hable con la voz de tu empresa."
     },
@@ -13289,7 +13289,7 @@
     "faq": {
       "code": {
         "q": "¿Necesito saber cómo codificar para construir un sitio en Bizuply?",
-        "a": "No. Elija una de las 205 plantillas, haga clic en cualquier elemento y cámbielo en su lugar: texto, color, imagen y espaciado. Cualquiera que quiera profundizar puede agregar sus propias etiquetas CSS y HTML a la cabeza y el cuerpo del sitio."
+        "a": "No. Elija una plantilla de la biblioteca, haga clic en cualquier elemento y cámbielo en su lugar: texto, color, imagen y espaciado. Quien quiera profundizar puede agregar sus propias etiquetas CSS y HTML."
       },
       "structure": {
         "q": "¿Puedo cambiar la estructura del sitio y no solo el contenido?",
