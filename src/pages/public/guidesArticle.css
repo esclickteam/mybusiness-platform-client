@@ -12,9 +12,27 @@
   margin: 0.4rem 0 0.8rem;
 }
 
+.guide-page {
+  counter-reset: guide-step;
+}
+
 .guide-page h2 {
   margin-top: 2.2rem;
   font-size: 1.35rem;
+}
+
+.guide-page section h2::before {
+  counter-increment: guide-step;
+  content: counter(guide-step);
+  display: inline-grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  margin-inline-end: 0.5rem;
+  border-radius: 999px;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 0.8rem;
 }
 
 .guide-kicker {
