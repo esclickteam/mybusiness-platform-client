@@ -326,3 +326,46 @@ a.cta-soft {
 .react-tel-input .selected-flag {
   border-radius: 1rem 0 0 1rem !important;
 }
+
+/* Mobile public pages: keep the assistant and accessibility buttons
+   in a bottom lane so they do not sit on cards or calls to action. */
+.bizuply-widget-lane {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .app-scroll-area.has-public-widgets {
+    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+  }
+
+  .bizuply-widget-lane {
+    display: block;
+    position: fixed;
+    inset-inline: 0;
+    bottom: 0;
+    height: calc(4.85rem + env(safe-area-inset-bottom));
+    z-index: 9000;
+    pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(248, 250, 252, 0.98) 58%,
+      rgba(248, 250, 252, 0)
+    );
+  }
+
+  .bizuply-widget-lane.is-dark {
+    background: linear-gradient(
+      to top,
+      rgba(5, 7, 13, 0.97) 62%,
+      rgba(5, 7, 13, 0)
+    );
+  }
+
+  .bizuply-chat-launcher {
+    bottom: calc(0.7rem + env(safe-area-inset-bottom)) !important;
+    right: 1rem !important;
+    left: auto !important;
+    width: 2.85rem !important;
+    height: 2.85rem !important;
+  }
+}

@@ -26,7 +26,9 @@ import {
   buildWhatsAppSitemapXml,
   getWhatsAppPageMeta,
   isBizuplyWhatsAppHost,
+  normalizeWhatsAppPath,
   whatsappCanonicalUrl,
+  whatsappHomepagePrerender,
 } from "./src/lib/whatsappHost.mjs";
 import {
   buildMarketingDocumentHead,
@@ -569,6 +571,13 @@ function whatsappHeadHtml(pathname) {
     `<meta name="keywords" content="${escapeHtmlAttr(WHATSAPP_SEO_KEYWORDS)}" />`,
     `<meta name="robots" content="${page ? "index, follow" : "noindex, follow"}" />`,
     canonical ? `<link rel="canonical" href="${canonical}" />` : "",
+    normalizeWhatsAppPath(pathname) === "/"
+      ? [
+          `<link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/" />`,
+          `<link rel="alternate" hreflang="he" href="https://bizuply.com/he/whatsapp-api" />`,
+          `<link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/" />`,
+        ].join("\n")
+      : "",
     `<meta property="og:title" content="${title}" />`,
     `<meta property="og:description" content="${description}" />`,
     `<meta property="og:type" content="website" />`,
@@ -623,7 +632,15 @@ async function handleWhatsAppDocument(request) {
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();
     const pathname = getPathname(request);
-    return new Response(injectSeoHead(html, whatsappHeadHtml(pathname)), {
+    let documentHtml = injectSeoHead(html, whatsappHeadHtml(pathname));
+    const prerender = whatsappHomepagePrerender(pathname);
+    if (prerender) {
+      documentHtml = documentHtml.replace(
+        '<div id="root"></div>',
+        `<div id="root">${prerender}</div>`,
+      );
+    }
+    return new Response(documentHtml, {
       status: getWhatsAppPageMeta(pathname) ? 200 : 404,
       headers: {
         "content-type": "text/html; charset=utf-8",

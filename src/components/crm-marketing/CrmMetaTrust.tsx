@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Facebook, ShieldCheck } from "lucide-react";
+import { CheckCircle2, ShieldCheck } from "lucide-react";
 import { Reveal } from "../product-marketing";
 import "./crmSections.css";
 
@@ -24,8 +24,8 @@ export default function CrmMetaTrust() {
       <div className="pm-shell">
         <Reveal from="scale" duration={0.85}>
           <div className="crx-meta">
-            <p className="pm-eyebrow" style={{ color: "#1877f2" }}>
-              <Facebook size={14} aria-hidden="true" />
+            <p className="pm-eyebrow">
+              <ShieldCheck size={14} aria-hidden="true" />
               {t("crmPage.metaTrust.eyebrow")}
             </p>
             <h2 className="pm-title">{t("crmPage.metaTrust.title")}</h2>

@@ -62,7 +62,7 @@ describe("marketing edge integration", () => {
     const booking = await middleware(request("https://bizuply.com/book/example-business", "bizuply.com"));
     const login = await read(await middleware(request("https://bizuply.com/login", "bizuply.com")));
     expect(crm.status).toBe(200);
-    expect(crm.body).toContain("<title>CRM &amp; Meta Leads | Bizuply — Meta App Review Developers</title>");
+    expect(crm.body).toContain("<title>CRM Software with Meta Lead Ads Integration | Bizuply</title>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
     const hebrewCrm = await read(await middleware(request("https://bizuply.com/he/crm", "bizuply.com")));
@@ -101,7 +101,7 @@ describe("marketing edge integration", () => {
       await middleware(request("https://idoeshet.sites.bizuply.com/", "idoeshet.sites.bizuply.com")),
     );
     expect(customer.status).not.toBe(404);
-    expect(customer.body).not.toContain("CRM &amp; Meta Leads");
+    expect(customer.body).not.toContain("CRM Software with Meta Lead Ads Integration");
     expect(customer.body).not.toContain('href="https://bizuply.com/crm"');
     expect(customer.headers.get("x-bizuply-seo-edge")).not.toBe("marketing");
   });

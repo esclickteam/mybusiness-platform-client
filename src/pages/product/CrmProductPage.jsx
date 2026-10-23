@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
@@ -237,6 +238,96 @@ export default function CrmProductPage() {
 
       <CrmMetaTrust />
 
+      {t("crmPage.audiences.eyebrow") !== "crmPage.audiences.eyebrow" ? (
+        <>
+          <section className="pm-section crx">
+            <div className="pm-shell">
+              <SectionHeading
+                eyebrow={t("crmPage.audiences.eyebrow")}
+                title={
+                  <>
+                    {t("crmPage.audiences.titleA")}
+                    <span className="pm-grad">{t("crmPage.audiences.titleHighlight")}</span>
+                  </>
+                }
+                lead={t("crmPage.audiences.lead")}
+              />
+              <Stagger className="pm-grid pm-grid--3" gap={0.07}>
+                {["services", "ads", "sites"].map((key, index) => (
+                  <StaggerItem key={key}>
+                    <SpotlightCard accent={["#7c3aed", "#2563eb", "#0891b2"][index]} goldIndex={index}>
+                      <h3 className="pm-spot__title">{t(`crmPage.audiences.cards.${key}.title`)}</h3>
+                      <p className="pm-spot__text">{t(`crmPage.audiences.cards.${key}.text`)}</p>
+                    </SpotlightCard>
+                  </StaggerItem>
+                ))}
+              </Stagger>
+            </div>
+          </section>
+
+          <section className="pm-section pm-section--tight crx">
+            <div className="pm-shell">
+              <SectionHeading eyebrow={t("crmPage.useCases.eyebrow")} title={t("crmPage.useCases.title")} />
+              <div className="crx-sources">
+                {["leadAd", "website", "client", "booking"].map((key) => (
+                  <article key={key} className="crx-source" style={{ textAlign: "start" }}>
+                    <h3 className="crx-source__name">{t(`crmPage.useCases.items.${key}.title`)}</h3>
+                    <p className="crx-source__note">{t(`crmPage.useCases.items.${key}.text`)}</p>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+
+          <section className="pm-section pm-section--tight crx">
+            <div className="pm-shell">
+              <SectionHeading eyebrow={t("crmPage.start.eyebrow")} title={t("crmPage.start.title")} />
+              <ol className="crx-sources">
+                {["account", "source", "work"].map((key, index) => (
+                  <li key={key} className="crx-source" style={{ textAlign: "start" }}>
+                    <h3 className="crx-source__name">{index + 1}. {t(`crmPage.start.steps.${key}.title`)}</h3>
+                    <p className="crx-source__note">{t(`crmPage.start.steps.${key}.text`)}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+
+          <section className="pm-section pm-section--tight crx">
+            <div className="pm-shell">
+              <SectionHeading
+                eyebrow={t("crmPage.pricingNote.eyebrow")}
+                title={t("crmPage.pricingNote.title")}
+                lead={t("crmPage.pricingNote.text")}
+              />
+              <div className="crm-hero__actions">
+                <Link className="pm-cta pm-cta--primary" to="/register?plan=crm_only">{t("crmPage.pricingNote.crmOnly")}</Link>
+                <Link className="pm-cta pm-cta--ghost" to="/pricing">{t("crmPage.pricingNote.plans")}</Link>
+              </div>
+            </div>
+          </section>
+
+          <section className="pm-section pm-section--tight crx">
+            <div className="pm-shell">
+              <SectionHeading eyebrow={t("crmPage.related.eyebrow")} title={t("crmPage.related.title")} />
+              <div className="crx-sources">
+                {[
+                  ["/automations", "automations"],
+                  ["/appointments", "appointments"],
+                  ["/website-builder", "websites"],
+                  ["/whatsapp-api", "whatsapp"],
+                ].map(([to, key]) => (
+                  <Link key={key} to={to} className="crx-source" style={{ textAlign: "start", textDecoration: "none" }}>
+                    <h3 className="crx-source__name">{t(`crmPage.related.${key}`)}</h3>
+                    <p className="crx-source__note">{t(`crmPage.related.${key}Text`)}</p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        </>
+      ) : null}
+
       {/* FAQ + closing */}
       <section className="pm-section pm-section--tight crx">
         <div className="pm-shell">
@@ -252,7 +343,7 @@ export default function CrmProductPage() {
               title={t("crmPage.finalCta.title")}
               text={t("crmPage.finalCta.text")}
               primaryLabel={t("crmPage.finalCta.primaryLabel")}
-              primaryTo="/pricing"
+              primaryTo="/business"
             />
           </div>
         </div>

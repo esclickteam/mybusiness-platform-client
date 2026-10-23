@@ -117,5 +117,9 @@ export function getCrmFaq(t: TFn): MarketingFaq[] {
       q: t("crmPage.faq.dashboard.q"),
       a: t("crmPage.faq.dashboard.a"),
     },
+    {
+      q: t("crmPage.faq.price.q"),
+      a: t("crmPage.faq.price.a"),
+    },
   ];
 }

@@ -44,6 +44,8 @@ describe("whatsapp host", () => {
     expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-apis")).toBe(false);
     expect(shouldRenderWhatsAppLanding("bizuply-git-feat.vercel.app", "/whatsapp-api/login")).toBe(false);
     expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-api/login/")).toBe(false);
+    expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-api", "?marketing-page=1")).toBe(false);
+    expect(shouldRenderWhatsAppLanding("whatsapp.bizuply.com", "/", "?marketing-page=1")).toBe(true);
     expect(whatsappSiteBase("whatsapp.bizuply.com")).toBe("");
     expect(whatsappSiteBase("localhost")).toBe("/whatsapp-api");
   });
@@ -82,7 +84,7 @@ describe("whatsapp host", () => {
   });
 
   it("serves page heads with og:image, and unknown paths as noindex 404s without a canonical", async () => {
-    const shell = '<!doctype html><html><head><title>BizUply</title><link rel="canonical" href="https://bizuply.com" /></head><body></body></html>';
+    const shell = '<!doctype html><html><head><title>BizUply</title><link rel="canonical" href="https://bizuply.com" /></head><body><div id="root"></div></body></html>';
     const realFetch = globalThis.fetch;
     globalThis.fetch = (async () => new Response(shell, { status: 200, headers: { "content-type": "text/html" } })) as typeof fetch;
     try {
@@ -97,6 +99,15 @@ describe("whatsapp host", () => {
       expect(pageHtml).toContain(`<meta property="og:image" content="${WHATSAPP_OG_IMAGE.url}" />`);
       expect(pageHtml).toContain('<meta name="twitter:image"');
       expect(pageHtml).not.toContain('href="https://bizuply.com"');
+      expect(pageHtml).not.toContain("hreflang");
+
+      const home = await call("/");
+      const homeHtml = await home.text();
+      expect(homeHtml).toContain('<link rel="canonical" href="https://whatsapp.bizuply.com/" />');
+      expect(homeHtml).toContain('hreflang="he" href="https://bizuply.com/he/whatsapp-api"');
+      expect(homeHtml).toContain('hreflang="x-default" href="https://whatsapp.bizuply.com/"');
+      expect(homeHtml).toContain("$29 per month for one connected WhatsApp number");
+      expect(homeHtml).toContain("There is no free trial.");
 
       const missing = await call("/no-such-page");
       const missingHtml = await missing.text();

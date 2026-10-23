@@ -12218,7 +12218,7 @@
       "lead": "As consultas do Facebook, Instagram, Google Ads e seu próprio site fluem automaticamente para um único pipeline com status, anotações e tarefas. De lá, você continua até o arquivo do cliente, o calendário de compromissos e o catálogo de serviços, tudo no mesmo sistema.",
       "trust": "Somos desenvolvedores de análise de aplicativos Meta o aplicativo Bizuply passou no processo de revisão de aplicativos da Meta para conectar anúncios de leads a empresas.",
       "ctaAutomations": "Automações",
-      "ctaStartFree": "Comece de graça"
+      "ctaStartFree": "Ver planos"
     },
     "stats": {
       "pipelineStatuses": "status no pipeline de lead",
@@ -12469,6 +12469,10 @@
       "dashboard": {
         "q": "Posso ver um instantâneo sem abrir o CRM?",
         "a": "- Sim. O painel de negócios mostra novos leads, leads não tratados, a mudança em relação ao período anterior, uma tabela dos leads mais recentes com origem e status e os próximos compromissos."
+      },
+      "price": {
+        "q": "Quanto custa o CRM?",
+        "a": "O plano só de CRM custa US$ 49 por mês e renova mensalmente. O plano de negócios, que inclui CRM junto com agendamentos, colaborações e automações, custa US$ 99 por mês ou US$ 990 por ano."
       }
     },
     "finalCta": {

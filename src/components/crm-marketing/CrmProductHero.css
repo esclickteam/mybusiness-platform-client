@@ -178,6 +178,14 @@
   margin: 2.25rem auto 0;
 }
 
+.crm-hero__stats-note {
+  margin: 0 0 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #64748b;
+}
+
 @keyframes crm-orb {
   0%,
   100% {
@@ -185,6 +193,61 @@
   }
   50% {
     transform: translate3d(0, -12px, 0);
+  }
+}
+
+@media (max-width: 760px) {
+  .crm-hero__inner {
+    padding-top: 0.85rem;
+    padding-bottom: 5.5rem;
+  }
+
+  .crm-hero__title {
+    font-size: 1.32rem;
+    line-height: 1.12;
+  }
+
+  .crm-hero__lead {
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .crm-hero__trust p {
+    font-size: 0.78rem;
+    line-height: 1.4;
+  }
+
+  .crm-hero__badges {
+    margin-bottom: 0.5rem;
+  }
+
+  .crm-hero__trust {
+    margin-top: 0.55rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .crm-hero__actions {
+    margin-top: 0.7rem;
+  }
+
+  .crm-hero__stats {
+    margin-top: 0.55rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .crm-hero .pm-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.35rem;
+  }
+
+  .crm-hero .pm-stat {
+    padding: 0.55rem 0.25rem 0.6rem;
+  }
+
+  .crm-hero .pm-stat__label {
+    font-size: 0.62rem;
+    line-height: 1.25;
   }
 }
 
