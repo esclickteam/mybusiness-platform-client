@@ -44,6 +44,8 @@ describe("whatsapp host", () => {
     expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-apis")).toBe(false);
     expect(shouldRenderWhatsAppLanding("bizuply-git-feat.vercel.app", "/whatsapp-api/login")).toBe(false);
     expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-api/login/")).toBe(false);
+    expect(shouldRenderWhatsAppLanding("localhost", "/whatsapp-api", "?marketing-page=1")).toBe(false);
+    expect(shouldRenderWhatsAppLanding("whatsapp.bizuply.com", "/", "?marketing-page=1")).toBe(true);
     expect(whatsappSiteBase("whatsapp.bizuply.com")).toBe("");
     expect(whatsappSiteBase("localhost")).toBe("/whatsapp-api");
   });

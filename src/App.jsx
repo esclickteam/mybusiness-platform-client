@@ -856,7 +856,7 @@ export default function App() {
   const isMiniSiteHost = isPublicMiniSiteHost();
   const hostname = getCurrentHostname();
   const travelHost = isBizuplyTravelHost(hostname);
-  const whatsappLanding = shouldRenderWhatsAppLanding(hostname, location.pathname);
+  const whatsappLanding = shouldRenderWhatsAppLanding(hostname, location.pathname, location.search);
   const publicMarketingHost = travelHost || whatsappLanding;
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isSaasMarketplaceRoute =

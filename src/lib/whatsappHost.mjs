@@ -150,8 +150,10 @@ function isUnderPreviewBase(pathname) {
 }
 
 /** Preview path (localhost and Vercel previews) so the site can be reviewed without the public host. */
-export function shouldRenderWhatsAppLanding(hostname, pathname) {
+export function shouldRenderWhatsAppLanding(hostname, pathname, search = "") {
   if (isBizuplyWhatsAppHost(hostname)) return true;
+  // Lets a preview host open the main-site /whatsapp-api page. The public WhatsApp host is unchanged.
+  if (new URLSearchParams(String(search || "")).get("marketing-page") === "1") return false;
   return isPreviewHost(hostname) && isUnderPreviewBase(pathname);
 }
 

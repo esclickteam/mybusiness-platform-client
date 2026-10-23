@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, CalendarClock, Facebook, ShieldCheck, Zap } from "lucide-react";
+import { ArrowLeft, ArrowRight, CalendarClock, Facebook, ShieldCheck, Zap } from "lucide-react";
 import { StatStrip, WordReveal } from "../product-marketing";
 import { getCrmHeroStats } from "./crmMarketingData";
 import "./CrmProductHero.css";
@@ -13,6 +13,8 @@ const ease = [0.16, 1, 0.3, 1] as const;
 export default function CrmProductHero() {
   const reduceMotion = useReducedMotion();
   const { t, i18n } = useTranslation();
+  const rtl = getTextDirection(i18n.language) === "rtl";
+  const Arrow = rtl ? ArrowLeft : ArrowRight;
 
   return (
     <section
@@ -81,10 +83,10 @@ export default function CrmProductHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.76, duration: 0.65, ease }}
         >
-          <Link to="/automations" className="pm-cta pm-cta--primary">
+          <Link to="/business" className="pm-cta pm-cta--primary">
             <Zap size={17} aria-hidden="true" />
-            {t("crmPage.hero.ctaAutomations")}
-            <ArrowLeft size={17} aria-hidden="true" />
+            {t("crmPage.finalCta.primaryLabel")}
+            <Arrow size={17} aria-hidden="true" />
           </Link>
 
           <Link to="/pricing" className="pm-cta pm-cta--ghost">

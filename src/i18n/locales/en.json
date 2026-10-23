@@ -12878,7 +12878,7 @@
   "crmPage": {
     "seo": {
       "title": "CRM & Meta Leads | Bizuply — Meta App Review Developers",
-      "description": "Bizuply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place."
+      "description": "Bizuply are Meta App Review–approved developers. Leads from Facebook, Instagram, Google Ads and your website enter one pipeline with status, a client file and an appointment calendar."
     },
     "hero": {
       "ariaLabel": "CRM & Leads",
@@ -12890,7 +12890,7 @@
       "lead": "Inquiries from Facebook, Instagram, Google Ads and your own website flow automatically into a single pipeline with status, notes and tasks. From there you continue to the client file, the appointment calendar and the service catalog — all in the same system.",
       "trust": "We are Meta App Review Developers — the Bizuply app has passed Meta's App Review process for connecting Lead Ads to businesses.",
       "ctaAutomations": "Automations",
-      "ctaStartFree": "Start for free"
+      "ctaStartFree": "See plans"
     },
     "stats": {
       "pipelineStatuses": "statuses in the lead pipeline",
@@ -13143,11 +13143,90 @@
         "a": "Yes. The business dashboard shows new leads, untreated leads, the change versus the previous period, a table of the most recent leads with source and status, and the upcoming appointments."
       }
     },
+    "audiences": {
+      "eyebrow": "Who it is for",
+      "titleA": "Teams that already receive inquiries ",
+      "titleHighlight": "and need one place to work them",
+      "lead": "The CRM is for businesses that collect leads from ads or a website and then need a status, a follow-up and, when it is relevant, an appointment.",
+      "cards": {
+        "services": {
+          "title": "Service businesses",
+          "text": "Clinics, salons, studios and field teams that turn an inquiry into a client file and a booked time."
+        },
+        "ads": {
+          "title": "Businesses running lead ads",
+          "text": "Teams that buy Facebook, Instagram or Google lead forms and want each submission in the pipeline with its source."
+        },
+        "sites": {
+          "title": "Businesses on a Bizuply website",
+          "text": "A form published in the website builder saves the inquiry with the Website source and can send an email alert."
+        }
+      }
+    },
+    "useCases": {
+      "eyebrow": "Use cases",
+      "title": "What happens after the inquiry arrives",
+      "items": {
+        "leadAd": {
+          "title": "A Lead Ad becomes a pipeline card",
+          "text": "After the Facebook page is connected and the form is selected, a new Meta lead enters with status New. The source and form fields stay on the card."
+        },
+        "website": {
+          "title": "A website form joins the same list",
+          "text": "A lead form on a Bizuply site is saved with the Website source. The business can receive an email alert, and the visitor can see a thank-you message."
+        },
+        "client": {
+          "title": "A converted lead continues as a client",
+          "text": "The client file keeps contact details, a log, files and appointment history, so the work does not stop when the status changes to Converted."
+        },
+        "booking": {
+          "title": "The next step can be a time on the calendar",
+          "text": "Business hours and service duration define 15-minute windows. A booking from the customer page sends a confirmation email and appears on the calendar."
+        }
+      }
+    },
+    "start": {
+      "eyebrow": "Getting started",
+      "title": "From an account to the first lead",
+      "steps": {
+        "account": {
+          "title": "Create the business account",
+          "text": "Open a Bizuply account and enter the CRM from the business dashboard."
+        },
+        "source": {
+          "title": "Connect one source",
+          "text": "Connect a Facebook page and lead form, a Google Ads lead form, or a form on your Bizuply website."
+        },
+        "work": {
+          "title": "Work the card",
+          "text": "Set the status, add a note, call or WhatsApp log, and create a task with a date and time."
+        }
+      }
+    },
+    "pricingNote": {
+      "eyebrow": "Pricing",
+      "title": "Current plans are on the pricing page",
+      "text": "This page does not add a separate CRM price. Compare the current Bizuply plans, then create an account when you are ready.",
+      "plans": "See plans",
+      "account": "Create an account"
+    },
+    "related": {
+      "eyebrow": "Works with the rest of Bizuply",
+      "title": "The CRM is not a separate inbox",
+      "automations": "Automations",
+      "automationsText": "Reminders, follow-ups, tasks and alerts connected to the CRM.",
+      "appointments": "Appointments",
+      "appointmentsText": "The calendar, services and customer booking page.",
+      "websites": "Website builder",
+      "websitesText": "A site whose inquiries enter the same pipeline.",
+      "whatsapp": "WhatsApp API",
+      "whatsappText": "A connected WhatsApp number for systems that send approved templates."
+    },
     "finalCta": {
       "eyebrow": "Start organizing your pipeline",
       "title": "Organize your lead pipeline — and never miss an inquiry",
       "text": "Connect your lead sources, work with statuses and tasks, and continue to the client file and appointment calendar. All in a Meta app that passed App Review.",
-      "primaryLabel": "Sign up now"
+      "primaryLabel": "Create an account"
     }
   },
   "privacyPage": {

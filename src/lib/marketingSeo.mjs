@@ -151,7 +151,7 @@ export const MARKETING_PAGES = [
     path: "/crm",
     title: "CRM & Meta Leads | Bizuply — Meta App Review Developers",
     description:
-      "Bizuply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place.",
+      "Bizuply are Meta App Review–approved developers. Leads from Facebook, Instagram, Google Ads and your website enter one pipeline with status, a client file and an appointment calendar.",
     crumb: "CRM",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -330,6 +330,38 @@ function organizationSchema() {
   };
 }
 
+function faqSchemaTag(path, language) {
+  const faqs = {
+    "/crm": language === "he"
+      ? [
+          ["אילו סטטוסים יש לליד?", "חדש, נוצר קשר, מעוניין, הומר ואבד. ליד ישן מופיע בלשונית נפרדת. כל שינוי נרשם על ציר הזמן."],
+          ["מאין מגיעים הלידים?", "מטפסי Facebook ו־Instagram אחרי App Review, מטפסי Google Ads, ומטפסים באתר שנבנה בביזאפלי."],
+          ["יש מחיר נפרד ל־CRM?", "לא בעמוד הזה. המסלולים העדכניים מופיעים בעמוד המחירים של ביזאפלי."],
+        ]
+      : [
+          ["What statuses can a lead have?", "New, Contacted, Interested, Converted and Lost. Old leads appear on a separate tab. Every change is logged on the timeline."],
+          ["Where do leads come from?", "Facebook and Instagram lead forms after App Review, Google Ads lead forms, and forms on a site built in Bizuply."],
+          ["Is there a separate CRM price on this page?", "No. Current Bizuply plans are listed on the pricing page."],
+        ],
+    "/whatsapp-api": [
+      ["כמה עולה WhatsApp API בביזאפלי?", "29 דולר לחודש למספר וואטסאפ מחובר אחד. חיובי ההודעות של Meta נפרדים, ואין ניסיון חינם."],
+      ["מי מאשר את התבניות?", "Meta מאשרת כל תבנית. ביזאפלי לא מפעילה תור אישור נפרד."],
+    ],
+  };
+  const items = faqs[path];
+  if (!items || (path === "/whatsapp-api" && language !== "he")) return "";
+  return `<script type="application/ld+json">${jsonLd({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    inLanguage: language,
+    mainEntity: items.map(([name, text]) => ({
+      "@type": "Question",
+      name,
+      acceptedAnswer: { "@type": "Answer", text },
+    })),
+  })}</script>`;
+}
+
 function pageSchema(page, canonical, language = "en") {
   return {
     "@context": "https://schema.org",
@@ -430,7 +462,8 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, language))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
-    ].join("\n");
+      faqSchemaTag(path, language),
+    ].filter(Boolean).join("\n");
   }
 
   if (!isMarketingNoindexPath(path)) return null;
@@ -598,10 +631,13 @@ export function buildMarketingPrerender(pathname) {
     };
   }
   const heading = found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply";
+  const extra = path === "/crm"
+    ? "<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>Current Bizuply plans are on the pricing page. This page does not add a separate CRM price.</p>"
+    : "";
   return {
     lang: "en",
     dir: "ltr",
-    inner: `<main lang="en" dir="ltr"><h1>${escapeText(heading)}</h1><p>${escapeText(found.page.description)}</p></main>`,
+    inner: `<main lang="en" dir="ltr"><h1>${escapeText(heading)}</h1><p>${escapeText(found.page.description)}</p>${extra}</main>`,
   };
 }
 
