@@ -34,6 +34,16 @@ export default defineConfig({
     ],
   },
 
+  preview: {
+    host: "127.0.0.1",
+    port: 4173,
+    strictPort: true,
+    allowedHosts: true,
+    headers: {
+      "X-Robots-Tag": "noindex, nofollow",
+    },
+  },
+
   server: {
     port: 3000,
     allowedHosts: [

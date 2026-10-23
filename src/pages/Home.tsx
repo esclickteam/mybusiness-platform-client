@@ -7,6 +7,7 @@ import { getTextDirection } from "../i18n/localeUtils";
 import { marketingPublicUrl } from "../lib/localePath.mjs";
 
 import HeroSection from "../components/HeroSection";
+import PlatformDomains from "../components/PlatformDomains";
 import ProductsGrid from "../components/ProductsGrid";
 import ScrollStory from "../components/ScrollStory";
 import WhyBizuply from "../components/WhyBizuply";
@@ -35,6 +36,8 @@ export default function Home() {
       </Helmet>
 
       <HeroSection />
+
+      <PlatformDomains />
 
       <ProductsGrid />
 

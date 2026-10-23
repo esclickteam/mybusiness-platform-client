@@ -88,14 +88,25 @@
     "mainAria": "Navegación principal"
   },
   "seo": {
-    "homeTitle": "Bizuply — Administra tu negocio. Todo en un solo lugar.",
-    "homeDescription": "Una plataforma de negocios moderna con una página de negocios profesional, colaboraciones, CRM e IA."
+    "homeTitle": "Bizuply — Crear, gestionar, comercializar y crecer",
+    "homeDescription": "Bizuply es software que usted opera: CRM, sitios, automatizaciones, campañas de Meta y WhatsApp, más el trabajo de puesta en marcha que figura en precios. El sitio oficial es bizuply.com."
   },
   "home": {
-    "badge": "Plataforma de gestión empresarial todo en uno",
-    "headlineTop": "Dirige tu negocio",
-    "headlineHighlight": "en un solo lugar",
-    "subtitle": "Una plataforma inteligente para gestionar clientes, citas, CRM, colaboraciones, propuestas e IA, todo conectado en un espacio de trabajo premium.",
+    "badge": "Software, sitios y puesta en marcha",
+    "headlineTop": "Crear, gestionar,",
+    "headlineHighlight": "comercializar y crecer",
+    "subtitle": "Bizuply es la plataforma y el trabajo de puesta en marcha que la rodea. El CRM, el constructor de sitios, las automatizaciones, las campañas de Meta y WhatsApp los opera usted. Si quiere que lo hagamos por usted, la página de precios lista la creación del sitio, la puesta en marcha de automatizaciones y el seguimiento humano.",
+    "contactCta": "Hablar con Bizuply",
+    "domainsTitle": "Cuatro formas de trabajar con Bizuply",
+    "domainsLead": "El software de autoservicio y el trabajo que hacemos por usted quedan separados. Cada enlace abre una página que ya existe.",
+    "domainSoftware": "Software",
+    "domainSoftwareBody": "CRM, citas, automatizaciones y WhatsApp, dentro del producto al que entra.",
+    "domainWeb": "Sitios web",
+    "domainWebBody": "Construya el sitio en el editor, o encargue una creación profesional desde la página de precios.",
+    "domainMarket": "Herramientas de marketing",
+    "domainMarketBody": "Conecte la cuenta de anuncios de Meta del negocio, edite campañas y haga llegar los Lead Ads al CRM. Meta cobra la inversión publicitaria.",
+    "domainSetup": "Puesta en marcha",
+    "domainSetupBody": "Automatizaciones, un sitio profesional, migración desde otro CRM y agentes humanos. Los precios son solo los impresos en la página de precios.",
     "startTrial": "Regístrese ahora",
     "viewPricing": "Ver precios",
     "trustNoCard": "No se requiere tarjeta de crédito",

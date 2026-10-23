@@ -88,14 +88,25 @@
     "mainAria": "Navegação principal"
   },
   "seo": {
-    "homeTitle": "Bizuply — Administre seu negócio. Tudo em um só lugar.",
-    "homeDescription": "Uma plataforma de negócios moderna com uma página de negócios profissional, colaborações, CRM e IA."
+    "homeTitle": "Bizuply — Criar, gerir, divulgar e crescer",
+    "homeDescription": "A Bizuply é um software que você opera: CRM, sites, automações, campanhas da Meta e WhatsApp, além da implantação listada na página de preços. O site oficial é bizuply.com."
   },
   "home": {
-    "badge": "Plataforma de gestão de negócios tudo em um",
-    "headlineTop": "Administre seu negócio",
-    "headlineHighlight": "em um só lugar",
-    "subtitle": "Uma plataforma inteligente para gerenciar clientes, compromissos, CRM, colaborações, propostas e IA – tudo conectado em um espaço de trabalho premium.",
+    "badge": "Software, sites e implantação",
+    "headlineTop": "Criar, gerir,",
+    "headlineHighlight": "divulgar e crescer",
+    "subtitle": "A Bizuply é a plataforma e o trabalho de implantação ao redor dela. O CRM, o construtor de sites, as automações, as campanhas da Meta e o WhatsApp você opera. Quando quiser que a gente faça o trabalho, a página de preços lista a criação do site, a implantação de automações e o acompanhamento humano.",
+    "contactCta": "Falar com a Bizuply",
+    "domainsTitle": "Quatro formas de trabalhar com a Bizuply",
+    "domainsLead": "O software de autoatendimento e o trabalho feito para você ficam separados. Cada link abre uma página que já existe.",
+    "domainSoftware": "Software",
+    "domainSoftwareBody": "CRM, agenda, automações e WhatsApp, dentro do produto em que você entra.",
+    "domainWeb": "Sites",
+    "domainWebBody": "Monte o site no editor ou encomende uma criação profissional na página de preços.",
+    "domainMarket": "Ferramentas de marketing",
+    "domainMarketBody": "Conecte a conta de anúncios da Meta do negócio, edite campanhas e leve os Lead Ads ao CRM. A Meta cobra o investimento em mídia.",
+    "domainSetup": "Implantação",
+    "domainSetupBody": "Automações, um site profissional, migração de outro CRM e atendentes humanos. Os preços são só os impressos na página de preços.",
     "startTrial": "Registre-se agora",
     "viewPricing": "Ver preços",
     "trustNoCard": "Nenhum cartão de crédito necessário",

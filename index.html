@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script>
       (function () {
+        var host = String(location.hostname || "");
+        if (/trycloudflare\.com$|ngrok|\.loca\.lt$/.test(host)) {
+          var robots = document.createElement("meta");
+          robots.name = "robots";
+          robots.content = "noindex, nofollow";
+          document.head.appendChild(robots);
+        }
+      })();
+    </script>
+    <script>
+      (function () {
         try {
           function normalize(raw) {
             if (!raw) return null;

@@ -132,6 +132,15 @@ function isCustomerSiteHost(host) {
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
   if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app")) return false;
+  if (
+    host.endsWith(".trycloudflare.com") ||
+    host.endsWith(".loca.lt") ||
+    host.endsWith(".ngrok-free.app") ||
+    host.endsWith(".ngrok.io") ||
+    host.endsWith(".ngrok.app")
+  ) {
+    return false;
+  }
   return true;
 }
 
@@ -730,7 +739,16 @@ function isPlatformMarketingHost(host) {
   if (!host) return false;
   if (isBizuplyWhatsAppHost(host) || isBizuplyTravelHost(host)) return false;
   if (isCustomerSiteHost(host) || isSaasProductHost(host)) return false;
-  return MARKETING_HOSTS.has(host) || host === "127.0.0.1" || host.endsWith(".vercel.app");
+  return (
+    MARKETING_HOSTS.has(host) ||
+    host === "127.0.0.1" ||
+    host.endsWith(".vercel.app") ||
+    host.endsWith(".trycloudflare.com") ||
+    host.endsWith(".loca.lt") ||
+    host.endsWith(".ngrok-free.app") ||
+    host.endsWith(".ngrok.io") ||
+    host.endsWith(".ngrok.app")
+  );
 }
 
 function marketingLegacyRedirect(request, host, pathname) {

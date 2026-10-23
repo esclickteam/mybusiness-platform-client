@@ -46,9 +46,9 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply — Run your business. All in one place.",
+    title: "Bizuply — Build, manage, market and grow",
     description:
-      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי.",
+      "Bizuply is software you run yourself — CRM, websites, automations, Meta campaigns and WhatsApp — plus setup work listed on the pricing page. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",

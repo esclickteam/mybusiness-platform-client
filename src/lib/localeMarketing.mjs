@@ -68,13 +68,13 @@ const WHATSAPP_FAQ = {
 const PAGES = {
   es: {
     "/": page(
-      "Bizuply — Gestione su negocio en un solo lugar",
-      "Bizuply es una plataforma para CRM, leads, citas, sitios web, automatizaciones y WhatsApp. El sitio oficial es bizuply.com. En hebreo la marca es ביזאפלי.",
+      "Bizuply — Crear, gestionar, comercializar y crecer",
+      "Bizuply es software que usted opera: CRM, sitios, automatizaciones, campañas de Meta y WhatsApp, más el trabajo de puesta en marcha que figura en precios. El sitio oficial es bizuply.com.",
       "Bizuply",
-      "Gestione su negocio en un solo lugar",
+      "Crear, gestionar, comercializar y crecer",
       [
-        "Bizuply reúne CRM, citas, sitios web, automatizaciones y WhatsApp Cloud API para negocios de servicios y equipos que generan leads.",
-        "El sitio oficial es bizuply.com. Esta página en español describe los mismos productos y precios que la versión en inglés.",
+        "Usted opera el CRM, el constructor de sitios, las automatizaciones, las campañas de Meta y WhatsApp.",
+        "La creación profesional de un sitio y la puesta en marcha de automatizaciones están en la página de precios, separadas del software de autoservicio.",
       ],
     ),
     "/about": page(
@@ -236,13 +236,13 @@ function cloneShape(locale, dict) {
 
 cloneShape("pt-BR", {
   "/": page(
-    "Bizuply — Administre o negócio em um só lugar",
-    "A Bizuply é uma plataforma de CRM, leads, agenda, sites, automações e WhatsApp. O site oficial é bizuply.com. Em hebraico a marca é ביזאפלי.",
+    "Bizuply — Criar, gerir, divulgar e crescer",
+    "A Bizuply é um software que você opera: CRM, sites, automações, campanhas da Meta e WhatsApp, além da implantação listada na página de preços. O site oficial é bizuply.com.",
     "Bizuply",
-    "Administre o negócio em um só lugar",
+    "Criar, gerir, divulgar e crescer",
     [
-      "A Bizuply reúne CRM, agenda, sites, automações e WhatsApp Cloud API para negócios de serviço e equipes que geram leads.",
-      "O site oficial é bizuply.com. Esta página em português descreve os mesmos produtos e preços da versão em inglês.",
+      "Você opera o CRM, o construtor de sites, as automações, as campanhas da Meta e o WhatsApp.",
+      "A criação profissional de um site e a implantação de automações ficam na página de preços, separadas do software de autoatendimento.",
     ],
   ),
   "/about": page(
@@ -345,13 +345,13 @@ cloneShape("pt-BR", {
 
 cloneShape("ar", {
   "/": page(
-    "Bizuply — أدروا النشاط من مكان واحد",
-    "Bizuply منصة لإدارة العملاء والمواعيد والمواقع والأتمتة وواتساب. الموقع الرسمي bizuply.com. الاسم بالعبرية ביזאפלי.",
+    "Bizuply — للبناء والإدارة والتسويق والنمو",
+    "Bizuply برنامج تشغّلونه بأنفسكم: CRM والمواقع والأتمتة وحملات Meta وواتساب، إضافة إلى أعمال التهيئة المذكورة في صفحة الأسعار. الموقع الرسمي bizuply.com.",
     "Bizuply",
-    "أدروا النشاط من مكان واحد",
+    "للبناء والإدارة والتسويق والنمو",
     [
-      "تجمع Bizuply إدارة العملاء والمواعيد وبناء المواقع والأتمتة وواجهة واتساب السحابية لأنشطة الخدمات والفرق التي تستقبل عملاء محتملين.",
-      "الموقع الرسمي هو bizuply.com. هذه الصفحة العربية تصف المنتجات والأسعار نفسها الواردة في الصفحة الإنجليزية.",
+      "تشغّلون CRM ومنشئ المواقع والأتمتة وحملات Meta وواتساب بأنفسكم.",
+      "بناء الموقع الاحترافي وتهيئة الأتمتة يظهران في صفحة الأسعار، منفصلين عن البرنامج ذاتي الخدمة.",
     ],
   ),
   "/about": page(

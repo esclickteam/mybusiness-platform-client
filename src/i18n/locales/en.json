@@ -88,14 +88,25 @@
     "mainAria": "Main navigation"
   },
   "seo": {
-    "homeTitle": "Bizuply — Run your business. All in one place.",
-    "homeDescription": "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי."
+    "homeTitle": "Bizuply — Build, manage, market and grow",
+    "homeDescription": "Bizuply is software you run yourself — CRM, websites, automations, Meta campaigns and WhatsApp — plus setup work listed on the pricing page. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי."
   },
   "home": {
-    "badge": "All-in-one business management platform",
-    "headlineTop": "Run your business",
-    "headlineHighlight": "in one place",
-    "subtitle": "One smart platform to manage clients, appointments, CRM, collaborations, proposals and AI — everything connected in one premium workspace.",
+    "badge": "Software, websites, and setup for businesses",
+    "headlineTop": "Build, manage,",
+    "headlineHighlight": "market and grow",
+    "subtitle": "Bizuply is the platform and the setup work around it. You run the CRM, website builder, automations, Meta campaigns and WhatsApp yourself. When you want the work done for you, the pricing page lists website builds, automation setup and human follow-up.",
+    "contactCta": "Talk to Bizuply",
+    "domainsTitle": "Four ways to work with Bizuply",
+    "domainsLead": "Self-serve software and work we do for you stay separate. Each link opens a page that already exists.",
+    "domainSoftware": "Software",
+    "domainSoftwareBody": "CRM, appointments, automations and WhatsApp, in the product you log into.",
+    "domainWeb": "Websites",
+    "domainWebBody": "Build a site yourself in the editor, or order an expert website build from the pricing page.",
+    "domainMarket": "Marketing tools",
+    "domainMarketBody": "Connect your own Meta ad account, edit campaigns, and send Lead Ads into the CRM. Meta bills the ad spend.",
+    "domainSetup": "Setup for you",
+    "domainSetupBody": "Automation setup, an expert website, CRM migration and human agents. Prices are only the ones printed on the pricing page.",
     "startTrial": "Register now",
     "viewPricing": "View pricing",
     "trustNoCard": "No credit card required",
