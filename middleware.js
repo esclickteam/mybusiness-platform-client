@@ -318,7 +318,9 @@ function customerNeutralDocument(html, { indexable }) {
 function customerNeutralResponse(html, status, started, reason, indexable) {
   const headers = {
     "content-type": "text/html; charset=utf-8",
-    "cache-control": "public, max-age=0, must-revalidate",
+    "cache-control": indexable
+      ? "private, no-store"
+      : "public, max-age=0, must-revalidate",
     "x-bizuply-seo-edge": indexable ? "customer-unavailable" : "customer-absent",
     "x-bizuply-seo-edge-reason": reason,
     "x-bizuply-seo-edge-ms": String(Date.now() - started),
@@ -328,6 +330,29 @@ function customerNeutralResponse(html, status, started, reason, indexable) {
     status,
     headers,
   });
+}
+
+/**
+ * The application shell itself could not be read. Do not pass the request
+ * through to the platform index.html: that document carries Bizuply titles,
+ * og:url, and Organization schema. 503 asks crawlers to keep the previous
+ * customer snapshot and retry.
+ */
+function customerSiteUnavailableResponse(started, reason) {
+  return new Response(
+    '<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>',
+    {
+      status: 503,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "private, no-store",
+        "retry-after": "120",
+        "x-bizuply-seo-edge": "site-unavailable",
+        "x-bizuply-seo-edge-reason": reason,
+        "x-bizuply-seo-edge-ms": String(Date.now() - started),
+      },
+    },
+  );
 }
 
 async function handleHtmlSeoInjection(request) {
@@ -373,12 +398,12 @@ async function handleHtmlSeoInjection(request) {
     const htmlRes = await htmlPromise;
 
     if (!htmlRes.ok) {
-      return passThrough();
+      return customerSiteUnavailableResponse(started, `shell-${htmlRes.status}`);
     }
 
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) {
-      return passThrough();
+      return customerSiteUnavailableResponse(started, "shell-empty");
     }
 
     let headHtml = "";
@@ -423,8 +448,8 @@ async function handleHtmlSeoInjection(request) {
       },
     });
   } catch {
-    // Last resort: never return 500 from SEO middleware.
-    return passThrough();
+    // Never fall through to the platform shell on a customer host.
+    return customerSiteUnavailableResponse(started, "shell-error");
   }
 }
 
