@@ -132,6 +132,16 @@ function isCustomerSiteHost(host) {
   return true;
 }
 
+function shellDocumentHeaders() {
+  const headers = {
+    accept: "text/html",
+    "x-bizuply-seo-middleware": "1",
+  };
+  const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+  if (bypass) headers["x-vercel-protection-bypass"] = bypass;
+  return headers;
+}
+
 function passThrough() {
   return new Response(null, {
     headers: {
@@ -303,10 +313,7 @@ async function handleHtmlSeoInjection(request) {
       `&path=${encodeURIComponent(pathname)}&_t=${Date.now()}`;
 
     const htmlPromise = fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
 
     let seoRes = null;
@@ -422,10 +429,7 @@ async function handleSaasMarketplaceDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
@@ -535,10 +539,7 @@ async function handleWhatsAppDocument(request) {
 
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
@@ -562,10 +563,7 @@ async function handleTravelDocument(request) {
 
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
@@ -678,10 +676,7 @@ async function handleMarketingDocument(request) {
 
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
