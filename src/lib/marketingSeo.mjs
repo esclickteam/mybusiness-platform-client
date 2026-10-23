@@ -6,6 +6,13 @@
  * Hebrew and other UI languages stay client-side until dedicated locale URLs exist.
  */
 
+import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+import {
+  hebrewPublicUrl,
+  hreflangTags,
+  splitMarketingLocale,
+} from "./localePath.mjs";
+
 export const MARKETING_ORIGIN = "https://bizuply.com";
 
 export const MARKETING_ROBOTS_TXT = `User-agent: *
@@ -22,7 +29,8 @@ Disallow: /api/
 Sitemap: https://bizuply.com/sitemap.xml
 `;
 
-const OG_IMAGE = "https://bizuply.com/social-preview.png";
+const OG_IMAGE = "https://bizuply.com/bizuply%20logo.png";
+const ORGANIZATION_LOGO = "https://bizuply.com/android-chrome-512x512.png";
 const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 
 /**
@@ -34,7 +42,7 @@ export const MARKETING_PAGES = [
     path: "/",
     title: "Bizuply — Run your business. All in one place.",
     description:
-      "A modern business platform with a professional business page, collaborations, CRM and AI.",
+      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
@@ -42,9 +50,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/about",
-    title: "About BizUply | The platform that grows with you",
+    title: "About Bizuply | The platform that grows with you",
     description:
-      "Meet BizUply — an American technology company for business management, CRM, leads, websites, automations, agents, and collaborations in one place Meta App Review Developers",
+      "Meet Bizuply (ביזאפלי) — an American technology company for business management, CRM, leads, websites, automations, agents, and collaborations in one place.",
     crumb: "About",
     lastmod: "2025-07-01",
     changefreq: "monthly",
@@ -61,9 +69,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/terms",
-    title: "Terms of Service - BizUply",
+    title: "Terms of Service - Bizuply",
     description:
-      "Read BizUply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
+      "Read Bizuply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
     crumb: "Terms",
     lastmod: "2025-06-25",
     changefreq: "yearly",
@@ -71,9 +79,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/privacy",
-    title: "Privacy Policy - BizUply",
+    title: "Privacy Policy - Bizuply",
     description:
-      "Read BizUply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
+      "Read Bizuply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
     crumb: "Privacy",
     lastmod: "2026-08-09",
     changefreq: "yearly",
@@ -111,9 +119,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/pricing",
-    title: "Service Packages | BizUply",
+    title: "Service Packages | Bizuply",
     description:
-      "BizUply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
+      "Bizuply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
     crumb: "Pricing",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -121,9 +129,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/features",
-    title: "BizUply — All the Tools Your Business Needs in One Place",
+    title: "Bizuply — All the Tools Your Business Needs in One Place",
     description:
-      "Explore BizUply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses.",
+      "Explore Bizuply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses.",
     crumb: "Features",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -131,9 +139,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/solutions",
-    title: "BizUply — Smart Solutions for Every Type of Business",
+    title: "Bizuply — Smart Solutions for Every Type of Business",
     description:
-      "Discover BizUply's tailored solutions for every business type — from service providers and freelancers to shops and collaborations. Manage clients, communication, and growth in one smart place.",
+      "Discover Bizuply's tailored solutions for every business type — from service providers and freelancers to shops and collaborations. Manage clients, communication, and growth in one smart place.",
     crumb: "Solutions",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -141,9 +149,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/crm",
-    title: "CRM & Meta Leads | BizUply — Meta App Review Developers",
+    title: "CRM & Meta Leads | Bizuply — Meta App Review Developers",
     description:
-      "BizUply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place.",
+      "Bizuply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place.",
     crumb: "CRM",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -151,9 +159,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/collaborations",
-    title: "Business Collaborations | BizUply",
+    title: "Business Collaborations | Bizuply",
     description:
-      "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with BizUply.",
+      "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with Bizuply.",
     crumb: "Collaborations",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -161,7 +169,7 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/website-builder",
-    title: "Professional Website Builder | BizUply",
+    title: "Professional Website Builder | Bizuply",
     description:
       "Build a website, store, or booking-enabled site from 205 templates, edit in a visual editor, and publish to your own domain — with every inquiry from the site flowing straight into your CRM.",
     crumb: "Website builder",
@@ -171,7 +179,7 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/automations",
-    title: "Automations for Your Business | BizUply",
+    title: "Automations for Your Business | Bizuply",
     description:
       "Reminders, follow-ups, tasks, and alerts that run in the background and stay connected to your CRM — so fewer leads slip through the cracks.",
     crumb: "Automations",
@@ -181,9 +189,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/agents",
-    title: "Human Agents for Your Business | BizUply",
+    title: "Human Agents for Your Business | Bizuply",
     description:
-      "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your BizUply CRM.",
+      "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your Bizuply CRM.",
     crumb: "Agents",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -191,9 +199,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/appointments",
-    title: "Appointment Scheduling | BizUply",
+    title: "Appointment Scheduling | Bizuply",
     description:
-      "Manage your appointment calendar, reminders, and client follow-up with BizUply Appointments.",
+      "Manage your appointment calendar, reminders, and client follow-up with Bizuply Appointments.",
     crumb: "Appointments",
     lastmod: "2026-10-22",
     changefreq: "monthly",
@@ -311,23 +319,25 @@ function organizationSchema() {
     name: "Bizuply",
     alternateName: ["ביזאפלי", "BizUply"],
     url: `${MARKETING_ORIGIN}/`,
-    logo: `${MARKETING_ORIGIN}/favicon-v2.png`,
+    logo: ORGANIZATION_LOGO,
+    image: OG_IMAGE,
+    description:
+      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
     sameAs: [
       "https://www.facebook.com/bizuply",
       "https://www.instagram.com/bizuply",
-      "https://www.linkedin.com/company/bizuply",
     ],
   };
 }
 
-function pageSchema(page, canonical) {
+function pageSchema(page, canonical, language = "en") {
   return {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: page.title,
     description: page.description,
     url: canonical,
-    inLanguage: "en",
+    inLanguage: language,
     isPartOf: {
       "@type": "WebSite",
       name: "Bizuply",
@@ -360,9 +370,11 @@ function breadcrumbSchema(page, canonical) {
   };
 }
 
-function sharedSocialTags(title, description, canonical) {
+function sharedSocialTags(title, description, canonical, language = "en") {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
+  const ogLocale = language === "he" ? "he_IL" : "en_US";
+  const ogAlternate = language === "he" ? "en_US" : "he_IL";
   return [
     `<meta property="og:title" content="${safeTitle}" />`,
     `<meta property="og:description" content="${safeDescription}" />`,
@@ -370,7 +382,8 @@ function sharedSocialTags(title, description, canonical) {
     `<meta property="og:site_name" content="Bizuply" />`,
     `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
     `<meta property="og:image" content="${OG_IMAGE}" />`,
-    `<meta property="og:locale" content="en_US" />`,
+    `<meta property="og:locale" content="${ogLocale}" />`,
+    `<meta property="og:locale:alternate" content="${ogAlternate}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${safeTitle}" />`,
     `<meta name="twitter:description" content="${safeDescription}" />`,
@@ -387,25 +400,40 @@ function sharedSocialTags(title, description, canonical) {
  * (dynamic public routes such as bookings and partner storefronts).
  */
 export function buildMarketingDocumentHead(pathname) {
-  const found = findMarketingPage(pathname);
-  if (found) {
-    const { page, canonicalPath } = found;
-    const canonical = marketingCanonicalUrl(canonicalPath);
+  const { locale, path } = splitMarketingLocale(pathname);
+  const hebrew = locale === "he" ? getHebrewMarketingPage(path) : null;
+  const found = findMarketingPage(path);
+  if (locale === "he" && !hebrew && found) {
+    return [
+      `<title>Bizuply</title>`,
+      `<meta name="robots" content="noindex, follow" />`,
+      `<link rel="canonical" href="${escapeHtml(hebrewPublicUrl(found.canonicalPath))}" />`,
+    ].join("\n");
+  }
+
+  if ((locale === "en" && found) || hebrew) {
+    const page = hebrew
+      ? { path, title: hebrew.title, description: hebrew.description, crumb: hebrew.crumb }
+      : found.page;
+    const canonicalPath = hebrew ? path : found.canonicalPath;
+    const canonical = locale === "he" ? hebrewPublicUrl(canonicalPath) : marketingCanonicalUrl(canonicalPath);
     const title = escapeHtml(page.title);
     const description = escapeHtml(page.description);
+    const language = locale === "he" ? "he" : "en";
     return [
       `<title>${title}</title>`,
       `<meta name="description" content="${description}" />`,
       `<meta name="robots" content="index, follow" />`,
       `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
-      ...sharedSocialTags(page.title, page.description, canonical),
+      hreflangTags(canonicalPath),
+      ...sharedSocialTags(page.title, page.description, canonical, language),
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
-      `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical))}</script>`,
+      `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, language))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
     ].join("\n");
   }
 
-  if (!isMarketingNoindexPath(pathname)) return null;
+  if (!isMarketingNoindexPath(path)) return null;
 
   return [
     `<title>Bizuply</title>`,
@@ -414,18 +442,53 @@ export function buildMarketingDocumentHead(pathname) {
   ].join("\n");
 }
 
+function hreflangXml(path) {
+  if (path === "/whatsapp-api") {
+    return `
+    <xhtml:link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/"/>
+    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/whatsapp-api"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/"/>`;
+  }
+  const english = marketingCanonicalUrl(path);
+  const hebrew = getHebrewMarketingPage(path)
+    ? `
+    <xhtml:link rel="alternate" hreflang="he" href="${hebrewPublicUrl(path)}"/>`
+    : "";
+  return `
+    <xhtml:link rel="alternate" hreflang="en" href="${english}"/>${hebrew}
+    <xhtml:link rel="alternate" hreflang="x-default" href="${english}"/>`;
+}
+
 export function buildMarketingSitemapXml() {
-  const urls = MARKETING_PAGES.map((page) => {
+  const pages = [
+    ...MARKETING_PAGES.map((page) => ({ path: page.path, lastmod: page.lastmod, changefreq: page.changefreq, priority: page.priority })),
+    ...MARKETING_PAGES.filter((page) => getHebrewMarketingPage(page.path)).map((page) => ({
+      path: page.path,
+      loc: hebrewPublicUrl(page.path),
+      lastmod: "2026-10-23",
+      changefreq: page.changefreq,
+      priority: page.priority,
+    })),
+    {
+      path: "/whatsapp-api",
+      loc: hebrewPublicUrl("/whatsapp-api"),
+      lastmod: "2026-10-23",
+      changefreq: "monthly",
+      priority: "0.8",
+    },
+  ];
+  const urls = pages.map((page) => {
+    const loc = page.loc || marketingCanonicalUrl(page.path);
     return `  <url>
-    <loc>${marketingCanonicalUrl(page.path)}</loc>
+    <loc>${loc}</loc>
     <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
-    <priority>${page.priority}</priority>
+    <priority>${page.priority}</priority>${hreflangXml(page.path)}
   </url>`;
   }).join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls}
 </urlset>
 `;
@@ -492,11 +555,54 @@ function matchesAppPrefix(path, prefix) {
 
 /** True when the marketing host should return a real HTTP 404. */
 export function isUnknownMarketingPath(pathname) {
-  const path = normalizeMarketingPath(pathname);
+  const { path } = splitMarketingLocale(pathname);
+  if (path === "/whatsapp-api") return false;
   if (findMarketingPage(path) || marketingLegacyRedirectPath(path)) return false;
   if (isMarketingNoindexPath(path) || EXACT_APP_PATHS.has(path)) return false;
   if (APP_PREFIXES.some((prefix) => matchesAppPrefix(path, prefix))) return false;
   return true;
+}
+
+export function marketingPublicRedirect(pathname) {
+  const { locale, path } = splitMarketingLocale(pathname);
+  if (locale === "en" && path === "/whatsapp-api") return "https://whatsapp.bizuply.com/";
+  const legacy = marketingLegacyRedirectPath(path);
+  if (!legacy) return "";
+  if (locale === "he") return legacy === "/" ? "/he/" : `/he${legacy}`;
+  return legacy;
+}
+
+function escapeText(value) {
+  return escapeHtml(value);
+}
+
+export function buildMarketingPrerender(pathname) {
+  const { locale, path } = splitMarketingLocale(pathname);
+  if (locale === "he") {
+    const hebrew = getHebrewMarketingPage(path);
+    if (!hebrew?.h1) return null;
+    const paragraphs = (hebrew.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("");
+    return {
+      lang: "he",
+      dir: "rtl",
+      inner: `<main lang="he" dir="rtl"><h1>${escapeText(hebrew.h1)}</h1>${paragraphs}</main>`,
+    };
+  }
+  const found = findMarketingPage(path);
+  if (!found?.page) return null;
+  if (path === "/") {
+    return {
+      lang: "en",
+      dir: "ltr",
+      inner: `<main lang="en" dir="ltr"><h1>Bizuply</h1><p>Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp.</p><p>The official website is bizuply.com. In Hebrew, the brand name is ביזאפלי.</p></main>`,
+    };
+  }
+  const heading = found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply";
+  return {
+    lang: "en",
+    dir: "ltr",
+    inner: `<main lang="en" dir="ltr"><h1>${escapeText(heading)}</h1><p>${escapeText(found.page.description)}</p></main>`,
+  };
 }
 
 export function buildNotFoundHtml() {

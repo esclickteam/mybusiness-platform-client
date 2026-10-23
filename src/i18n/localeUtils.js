@@ -19,6 +19,7 @@ import {
   normalizeLanguage,
 } from "./languages";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
+import { splitMarketingLocale } from "../lib/localePath.mjs";
 
 export {
   FALLBACK_LANGUAGE,
@@ -176,6 +177,7 @@ export function detectLanguageFromTimezone() {
 export function languageFromUrl() {
   if (typeof window === "undefined") return null;
   try {
+    if (splitMarketingLocale(window.location.pathname).locale === "he") return "he";
     const raw = new URLSearchParams(window.location.search).get("lang");
     if (!raw) return null;
     return normalizeLanguage(raw, { fallback: null });

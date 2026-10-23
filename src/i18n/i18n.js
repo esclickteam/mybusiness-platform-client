@@ -24,6 +24,7 @@ import {
   hasManualLanguageChoice,
   resolvePreferredLanguage,
 } from "./localeUtils";
+import { splitMarketingLocale } from "../lib/localePath.mjs";
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
 import { isBizuplyWhatsAppHost } from "../lib/whatsappHost.mjs";
 import { SUPPORTED_LANGUAGES } from "./languages";
@@ -172,6 +173,7 @@ if (
   !isBizuplyWhatsAppHost(window.location.hostname)
 ) {
   void fetchGeoLanguage().then((geoLanguage) => {
+    if (splitMarketingLocale(window.location.pathname).locale === "he") return;
     if (!geoLanguage || hasManualLanguageChoice() || readGuidedDemoLocaleLock()) return;
     if (getManualLanguageChoice()) return;
     if (i18n.language === geoLanguage) return;

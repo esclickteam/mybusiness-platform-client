@@ -1,7 +1,7 @@
 {
-  "name": "BizUply — Business Platform",
-  "short_name": "BizUply",
-  "description": "Manage clients, bookings, payments, and automation — all in one smart platform.",
+  "name": "Bizuply — Business Platform",
+  "short_name": "Bizuply",
+  "description": "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp.",
   "lang": "en-US",
   "dir": "ltr",
   "start_url": "/",

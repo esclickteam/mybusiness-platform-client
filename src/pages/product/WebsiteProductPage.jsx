@@ -114,7 +114,7 @@ export default function WebsiteProductPage() {
         <meta property="og:title" content={SEO_TITLE} />
         <meta property="og:description" content={SEO_DESCRIPTION} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="BizUply" />
+        <meta property="og:site_name" content="Bizuply" />
         <link rel="preload" as="image" href="/floriquedesk.webp" />
         <link rel="preload" as="image" href="/Adiondesk.webp" />
         <link rel="preload" as="image" href="/PulseCoredesk.webp" />

@@ -107,6 +107,9 @@ const AutomationsProductPage = lazy(() =>
 const AgentsProductPage = lazy(() =>
   import("./pages/product/AgentsProductPage")
 );
+const WhatsAppApiProductPage = lazy(() =>
+  import("./pages/product/WhatsAppApiProductPage")
+);
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -1150,6 +1153,7 @@ export default function App() {
                           element={<AutomationsProductPage />}
                         />
                         <Route path="/agents" element={<AgentsProductPage />} />
+                        <Route path="/whatsapp-api" element={<WhatsAppApiProductPage />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 

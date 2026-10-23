@@ -30,14 +30,15 @@ import {
 } from "./src/lib/whatsappHost.mjs";
 import {
   buildMarketingDocumentHead,
+  buildMarketingPrerender,
   buildMarketingRobotsTxt,
   buildMarketingSitemapXml,
   buildNotFoundHtml,
   isSeoDiscoveryPath,
   isUnknownMarketingPath,
-  marketingLegacyRedirectPath,
-  normalizeMarketingPath,
+  marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
+import { splitMarketingLocale } from "./src/lib/localePath.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -639,10 +640,11 @@ function isPlatformMarketingHost(host) {
 }
 
 function marketingLegacyRedirect(request, host, pathname) {
-  const dest = marketingLegacyRedirectPath(pathname);
+  const dest = marketingPublicRedirect(pathname);
   if (!dest || !isPlatformMarketingHost(host)) return null;
-  const location =
-    host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app")
+  const location = dest.startsWith("http")
+    ? dest
+    : host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app")
       ? new URL(dest, request.url).toString()
       : `https://bizuply.com${dest}`;
   return new Response(null, {
@@ -683,10 +685,18 @@ async function handleMarketingDocument(request) {
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();
     const noindex = headHtml.includes("noindex");
     let documentHtml = injectSeoHead(html, headHtml);
-    if (normalizeMarketingPath(pathname) === "/") {
+    const prerender = buildMarketingPrerender(pathname);
+    const locale = splitMarketingLocale(pathname);
+    if (locale.locale === "he") {
+      documentHtml = documentHtml.replace(
+        /<html\b[^>]*>/i,
+        '<html lang="he" dir="rtl">',
+      );
+    }
+    if (prerender) {
       documentHtml = documentHtml.replace(
         '<div id="root"></div>',
-        '<div id="root"><main><h1>Bizuply</h1><p>Run your business in one place.</p></main></div>',
+        `<div id="root">${prerender.inner}</div>`,
       );
     }
     return new Response(documentHtml, {
