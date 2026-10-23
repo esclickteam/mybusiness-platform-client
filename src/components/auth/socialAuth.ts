@@ -73,6 +73,14 @@ const ERROR_KEYS: Record<string, string> = {
   session: "login.oauth.errors.session",
   plan_required: "login.oauth.errors.plan_required",
   incorrect_password: "login.oauth.errors.incorrect_password",
+  verification_required: "login.oauth.errors.verification_required",
+  otp_invalid: "login.oauth.errors.otp_invalid",
+  otp_expired: "login.oauth.errors.otp_expired",
+  otp_required: "login.oauth.errors.otp_required",
+  otp_locked: "login.oauth.errors.otp_locked",
+  otp_cooldown: "login.oauth.errors.otp_cooldown",
+  otp_send_limited: "login.oauth.errors.otp_send_limited",
+  otp_send_failed: "login.oauth.errors.otp_send_failed",
 };
 
 type Translate = (key: string, opts?: Record<string, string>) => string;

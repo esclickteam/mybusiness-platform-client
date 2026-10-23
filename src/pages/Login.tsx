@@ -92,9 +92,15 @@ function BusinessLogin() {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
   const [socialProviders, setSocialProviders] = useState<SocialProvider[]>(DEFAULT_BIZUPLY_AUTH_PROVIDERS);
-  const [socialBusy, setSocialBusy] = useState<SocialProvider | "oauth" | "link" | null>(null);
+  const [socialBusy, setSocialBusy] = useState<SocialProvider | "oauth" | "link" | "otp" | null>(null);
   const [linkEmail, setLinkEmail] = useState<string>("");
+  const [linkEmailMasked, setLinkEmailMasked] = useState<string>("");
   const [linkProvider, setLinkProvider] = useState<string>("");
+  const [linkHasPassword, setLinkHasPassword] = useState<boolean>(true);
+  const [linkMethod, setLinkMethod] = useState<"otp" | "password">("otp");
+  const [linkOtp, setLinkOtp] = useState<string>("");
+  const [otpSent, setOtpSent] = useState<boolean>(false);
+  const [otpCooldown, setOtpCooldown] = useState<number>(0);
 
   useEffect(() => {
     DashboardPage.preload().finally(() => {
@@ -217,7 +223,14 @@ function BusinessLogin() {
         const { data } = await API.get("/auth/oauth/link-preview");
         if (!alive) return;
         setLinkEmail(String(data?.email || ""));
+        setLinkEmailMasked(String(data?.emailMasked || data?.email || ""));
         setLinkProvider(String(data?.provider || oauthProvider || ""));
+        const hasPassword = data?.hasPassword !== false;
+        setLinkHasPassword(hasPassword);
+        const methods = Array.isArray(data?.methods) ? data.methods : [];
+        const preferOtp = methods.includes("otp") || !hasPassword;
+        setLinkMethod(preferOtp ? "otp" : "password");
+        setOtpCooldown(Number(data?.otpCooldownSeconds || 0) || 0);
       } catch {
         if (!alive) return;
         setLoginError(t("login.oauth.errors.state_invalid"));
@@ -227,6 +240,14 @@ function BusinessLogin() {
       alive = false;
     };
   }, [linkRequired, oauthProvider, t]);
+
+  useEffect(() => {
+    if (otpCooldown <= 0) return;
+    const id = window.setInterval(() => {
+      setOtpCooldown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+    return () => window.clearInterval(id);
+  }, [otpCooldown]);
 
   useEffect(() => {
     const remembered = localStorage.getItem("bizuply_remember_email");
@@ -343,24 +364,61 @@ function BusinessLogin() {
     });
   };
 
+  const providerLabel =
+    linkProvider === "microsoft" ? t("login.providerMicrosoft") : t("login.providerGoogle");
+
+  const handleSendLinkOtp = async () => {
+    setLoginError("");
+    setSocialBusy("otp");
+    try {
+      const { data } = await API.post("/auth/oauth/link-otp/send", {});
+      setOtpSent(true);
+      setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);
+      if (data?.emailMasked) setLinkEmailMasked(String(data.emailMasked));
+    } catch (err) {
+      const apiErr = err as {
+        response?: { data?: { code?: string; cooldownSeconds?: number } };
+      };
+      const code = apiErr.response?.data?.code || "otp_send_failed";
+      if (code === "otp_cooldown") {
+        setOtpCooldown(Number(apiErr.response?.data?.cooldownSeconds || 60) || 60);
+      }
+      setLoginError(oauthErrorMessage(code, linkProvider, t) || t("login.oauth.errors.otp_send_failed"));
+    } finally {
+      setSocialBusy(null);
+    }
+  };
+
   const handleLinkSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginError("");
     const formData = new FormData(e.currentTarget);
-    const passwordValue = String(formData.get("password") || form.password || "");
-    if (!passwordValue) {
-      setLoginError(t("login.oauth.errors.incorrect_password"));
-      return;
-    }
     setSocialBusy("link");
     try {
-      await API.post("/auth/oauth/link", { password: passwordValue });
+      if (linkMethod === "otp") {
+        const code = String(formData.get("otp") || linkOtp || "").replace(/\D/g, "");
+        if (code.length !== 6) {
+          setLoginError(t("login.oauth.errors.otp_invalid"));
+          setSocialBusy(null);
+          return;
+        }
+        await API.post("/auth/oauth/link", { code });
+      } else {
+        const passwordValue = String(formData.get("password") || form.password || "");
+        if (!passwordValue) {
+          setLoginError(t("login.oauth.errors.incorrect_password"));
+          setSocialBusy(null);
+          return;
+        }
+        await API.post("/auth/oauth/link", { password: passwordValue });
+      }
       await finishOauthSession();
     } catch (err) {
       const apiErr = err as { response?: { data?: { code?: string } } };
+      const fallback = linkMethod === "otp" ? "otp_invalid" : "incorrect_password";
       setLoginError(
-        oauthErrorMessage(apiErr.response?.data?.code || "incorrect_password", linkProvider, t) ||
-          t("login.oauth.errors.incorrect_password")
+        oauthErrorMessage(apiErr.response?.data?.code || fallback, linkProvider, t) ||
+          t(`login.oauth.errors.${fallback}`)
       );
       setSocialBusy(null);
     }
@@ -400,109 +458,235 @@ function BusinessLogin() {
             </p>
           ) : null}
           {linkRequired ? (
-            <p
-              className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-bold leading-6 text-amber-800"
-              role="status"
-            >
-              {t("login.oauth.linkSubtitle", {
-                provider:
-                  linkProvider === "microsoft"
-                    ? t("login.providerMicrosoft")
-                    : t("login.providerGoogle"),
-                email: linkEmail || t("login.emailLabel"),
-              })}
-            </p>
-          ) : (
-            <SocialAuthButtons
-              providers={socialProviders}
-              labels={{
-                google: t("login.continueGoogle"),
-                microsoft: t("login.continueMicrosoft"),
-              }}
-              orLabel={t("login.or")}
-              redirectingLabel={t("login.redirecting")}
-              busy={socialBusy}
-              onStart={handleSocialStart}
-            />
-          )}
-          {linkRequired ? null : (
-          <div className="text-start">
-            <label
-              htmlFor="email"
-              className="mb-2 block text-sm font-bold text-slate-700"
-            >
-              {t("login.emailLabel")}
-            </label>
-            <div className="relative">
-              <Mail className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                disabled={loading}
-                required
-                autoComplete="email"
-                placeholder="name@company.com"
-                dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-11 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
-              />
-            </div>
-          </div>
-          )}
-
-          <div className="text-start">
-            <label
-              htmlFor="password"
-              className="mb-2 block text-sm font-bold text-slate-700"
-            >
-              {t("login.passwordLabel")}
-            </label>
-            <div className="relative">
-              <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              <input
-                type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                disabled={loading}
-                required
-                autoComplete="current-password"
-                placeholder="••••••••"
-                dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-12 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
-                className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+            <>
+              <p
+                className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-bold leading-6 text-amber-800"
+                role="status"
               >
-                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-              </button>
-            </div>
-          </div>
+                {t("login.oauth.linkFound", { provider: providerLabel })}
+              </p>
+              {linkHasPassword ? (
+                <div
+                  className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1"
+                  role="tablist"
+                  aria-label={t("login.oauth.verifyMethods")}
+                >
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={linkMethod === "otp"}
+                    onClick={() => {
+                      setLinkMethod("otp");
+                      setLoginError("");
+                    }}
+                    className={`h-10 rounded-xl text-sm font-bold transition ${
+                      linkMethod === "otp"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    {t("login.oauth.methodOtp")}
+                  </button>
+                  <button
+                    type="button"
+                    role="tab"
+                    aria-selected={linkMethod === "password"}
+                    onClick={() => {
+                      setLinkMethod("password");
+                      setLoginError("");
+                    }}
+                    className={`h-10 rounded-xl text-sm font-bold transition ${
+                      linkMethod === "password"
+                        ? "bg-white text-slate-900 shadow-sm"
+                        : "text-slate-500 hover:text-slate-800"
+                    }`}
+                  >
+                    {t("login.oauth.methodPassword")}
+                  </button>
+                </div>
+              ) : null}
 
-          <div className="flex items-center justify-between gap-3 pt-1 text-sm font-semibold">
-            <Link
-              to="/forgot-password"
-              className="text-slate-500 transition hover:text-violet-700"
-            >
-              {t("login.forgotPassword")}
-            </Link>
-
-            <label className="inline-flex cursor-pointer items-center gap-2 text-slate-600">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
+              {linkMethod === "otp" ? (
+                <div className="space-y-3 text-start">
+                  <p className="text-sm font-semibold leading-6 text-slate-600">
+                    {t("login.oauth.otpHint", {
+                      email: linkEmailMasked || linkEmail || t("login.emailLabel"),
+                    })}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => void handleSendLinkOtp()}
+                    disabled={socialBusy !== null || otpCooldown > 0}
+                    className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-800 transition hover:border-violet-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
+                  >
+                    {socialBusy === "otp"
+                      ? t("login.oauth.otpSending")
+                      : otpCooldown > 0
+                        ? t("login.oauth.otpResendIn", { seconds: String(otpCooldown) })
+                        : otpSent
+                          ? t("login.oauth.otpResend")
+                          : t("login.oauth.otpSend")}
+                  </button>
+                  <div>
+                    <label
+                      htmlFor="otp"
+                      className="mb-2 block text-sm font-bold text-slate-700"
+                    >
+                      {t("login.oauth.otpLabel")}
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      id="otp"
+                      name="otp"
+                      value={linkOtp}
+                      onChange={(e) =>
+                        setLinkOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      }
+                      disabled={loading || socialBusy === "link"}
+                      required={linkMethod === "otp"}
+                      maxLength={6}
+                      placeholder="••••••"
+                      dir="ltr"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-center text-lg font-bold tracking-[0.35em] text-slate-900 outline-none transition placeholder:tracking-[0.35em] placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                    />
+                  </div>
+                </div>
+              ) : (
+                <div className="text-start">
+                  <label
+                    htmlFor="password"
+                    className="mb-2 block text-sm font-bold text-slate-700"
+                  >
+                    {t("login.passwordLabel")}
+                  </label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      name="password"
+                      value={form.password}
+                      onChange={handleChange}
+                      disabled={loading || socialBusy === "link"}
+                      required={linkMethod === "password"}
+                      autoComplete="current-password"
+                      placeholder="••••••••"
+                      dir="ltr"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-12 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                      className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+                    >
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                  <div className="pt-2 text-sm font-semibold">
+                    <Link
+                      to="/forgot-password"
+                      className="text-slate-500 transition hover:text-violet-700"
+                    >
+                      {t("login.forgotPassword")}
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <SocialAuthButtons
+                providers={socialProviders}
+                labels={{
+                  google: t("login.continueGoogle"),
+                  microsoft: t("login.continueMicrosoft"),
+                }}
+                orLabel={t("login.or")}
+                redirectingLabel={t("login.redirecting")}
+                busy={socialBusy}
+                onStart={handleSocialStart}
               />
-              {t("login.rememberMe")}
-            </label>
-          </div>
+              <div className="text-start">
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  {t("login.emailLabel")}
+                </label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                    autoComplete="email"
+                    placeholder="name@company.com"
+                    dir="ltr"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-11 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                  />
+                </div>
+              </div>
+
+              <div className="text-start">
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  {t("login.passwordLabel")}
+                </label>
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    dir="ltr"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-12 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                    className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+                  >
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3 pt-1 text-sm font-semibold">
+                <Link
+                  to="/forgot-password"
+                  className="text-slate-500 transition hover:text-violet-700"
+                >
+                  {t("login.forgotPassword")}
+                </Link>
+
+                <label className="inline-flex cursor-pointer items-center gap-2 text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
+                  />
+                  {t("login.rememberMe")}
+                </label>
+              </div>
+            </>
+          )}
 
           {loginError ? (
             <p
@@ -525,18 +709,28 @@ function BusinessLogin() {
               : loading
                 ? t("login.loggingIn")
                 : t("login.signIn")}
-            {!loading && socialBusy !== "link" ? <span aria-hidden className="rtl-flip">←</span> : null}
+            {!loading && socialBusy !== "link" && socialBusy !== "otp" ? (
+              <span aria-hidden className="rtl-flip">
+                ←
+              </span>
+            ) : null}
           </button>
 
-          <p className="pt-2 text-center text-sm font-semibold text-slate-600">
-            {t("login.noAccount")}{" "}
-            <Link
-              to={whiteLabelEnabled ? "/plans" : "/pricing"}
-              className="font-black text-violet-700 transition hover:text-indigo-700"
-            >
-              {t("login.registerCta")}
-            </Link>
-          </p>
+          {linkRequired ? (
+            <p className="pt-2 text-center text-sm font-semibold text-slate-600">
+              {t("login.oauth.linkKeepData")}
+            </p>
+          ) : (
+            <p className="pt-2 text-center text-sm font-semibold text-slate-600">
+              {t("login.noAccount")}{" "}
+              <Link
+                to={whiteLabelEnabled ? "/plans" : "/pricing"}
+                className="font-black text-violet-700 transition hover:text-indigo-700"
+              >
+                {t("login.registerCta")}
+              </Link>
+            </p>
+          )}
         </form>
       </AuthCard>
     </AuthShell>

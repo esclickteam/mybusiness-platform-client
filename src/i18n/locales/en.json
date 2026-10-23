@@ -2585,9 +2585,20 @@
     "providerMicrosoft": "Microsoft",
     "oauth": {
       "completing": "Signing you in…",
-      "linkSubmit": "Link and sign in",
-      "linking": "Linking…",
+      "linkSubmit": "Verify and continue",
+      "linking": "Connecting…",
       "linkSubtitle": "This {{provider}} email matches {{email}}. Enter your BizUply password to link it. Your packages and data stay on this account.",
+      "linkFound": "We found your existing BizUply account. Verify it's yours to connect {{provider}}.",
+      "linkKeepData": "Your businesses, plans, and data stay on this account.",
+      "verifyMethods": "Verification methods",
+      "methodOtp": "Email code",
+      "methodPassword": "Password",
+      "otpHint": "We'll send a 6-digit code to {{email}}.",
+      "otpSend": "Send code",
+      "otpResend": "Send a new code",
+      "otpResendIn": "Resend in {{seconds}}s",
+      "otpSending": "Sending…",
+      "otpLabel": "Verification code",
       "errors": {
         "existing_account": "This email already has a BizUply account that cannot use {{provider}} here. Sign in with email and password.",
         "email_unverified": "{{provider}} did not confirm this email address. Verify it with {{provider}}, or use email and password.",
@@ -2602,7 +2613,15 @@
         "signup_closed": "Sign-up is temporarily unavailable. Please try again later.",
         "session": "We could not finish signing you in. Please try again.",
         "plan_required": "Choose a plan on the pricing page before signing up with {{provider}}.",
-        "incorrect_password": "Incorrect password. Try again, or reset your password to link {{provider}}."
+        "incorrect_password": "Incorrect password. Try again, or use the email code.",
+        "verification_required": "Enter the email code or your BizUply password to continue.",
+        "otp_invalid": "That code is incorrect. Try again.",
+        "otp_expired": "That code expired. Send a new one.",
+        "otp_required": "Send a verification code first.",
+        "otp_locked": "Too many incorrect codes. Start again with {{provider}}.",
+        "otp_cooldown": "Please wait a moment before requesting another code.",
+        "otp_send_limited": "Too many code requests. Try again later or use your password.",
+        "otp_send_failed": "We could not send the code right now. Try again, or use your password."
       }
     },
     "whatsappApiCheckout": {

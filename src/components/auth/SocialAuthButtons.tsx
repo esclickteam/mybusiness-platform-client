@@ -36,7 +36,7 @@ type Props = {
   labels: Record<SocialProvider, string>;
   orLabel: string;
   redirectingLabel: string;
-  busy: SocialProvider | "email" | "link" | "oauth" | null;
+  busy: SocialProvider | "email" | "link" | "oauth" | "otp" | null;
   onStart: (provider: SocialProvider) => void;
 };
 

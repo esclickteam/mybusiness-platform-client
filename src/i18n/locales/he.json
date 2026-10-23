@@ -2585,8 +2585,8 @@
     "providerMicrosoft": "Microsoft",
     "oauth": {
       "completing": "מתחברים…",
-      "linkSubmit": "קישור והתחברות",
-      "linking": "מקשרים…",
+      "linkSubmit": "אימות והמשך",
+      "linking": "מחברים…",
       "linkSubtitle": "כתובת {{provider}} הזו תואמת ל־{{email}}. הזינו את סיסמת BizUply כדי לקשר אותה. החבילות והנתונים נשארים בחשבון הזה.",
       "errors": {
         "existing_account": "לאימייל הזה כבר יש חשבון BizUply שאי אפשר לחבר כאן ל־{{provider}}. התחברו עם אימייל וסיסמה.",
@@ -2602,8 +2602,27 @@
         "signup_closed": "ההרשמה אינה זמינה כרגע. נסו שוב מאוחר יותר.",
         "session": "לא הצלחנו להשלים את ההתחברות. נסו שוב.",
         "plan_required": "בחרו חבילה בדף המחירים לפני הרשמה עם {{provider}}.",
-        "incorrect_password": "סיסמה שגויה. נסו שוב, או אפסו סיסמה כדי לקשר את {{provider}}."
-      }
+        "incorrect_password": "סיסמה שגויה. נסו שוב, או השתמשו בקוד למייל.",
+        "verification_required": "הזינו את הקוד מהמייל או את סיסמת BizUply כדי להמשיך.",
+        "otp_invalid": "הקוד שגוי. נסו שוב.",
+        "otp_expired": "פג תוקף הקוד. שלחו קוד חדש.",
+        "otp_required": "שלחו קודם קוד אימות.",
+        "otp_locked": "יותר מדי קודים שגויים. התחילו מחדש עם {{provider}}.",
+        "otp_cooldown": "המתינו רגע לפני בקשת קוד נוסף.",
+        "otp_send_limited": "יותר מדי בקשות לקוד. נסו מאוחר יותר או השתמשו בסיסמה.",
+        "otp_send_failed": "לא הצלחנו לשלוח את הקוד כרגע. נסו שוב, או השתמשו בסיסמה."
+      },
+      "linkFound": "מצאנו את חשבון ה־BizUply הקיים שלכם. אמתו שזה אתם כדי לחבר את {{provider}}.",
+      "linkKeepData": "העסקים, החבילות והנתונים נשארים בחשבון הזה.",
+      "verifyMethods": "דרכי אימות",
+      "methodOtp": "קוד למייל",
+      "methodPassword": "סיסמה",
+      "otpHint": "נשלח קוד בן 6 ספרות אל {{email}}.",
+      "otpSend": "שליחת קוד",
+      "otpResend": "שליחת קוד חדש",
+      "otpResendIn": "שליחה מחדש בעוד {{seconds}} שנ׳",
+      "otpSending": "שולחים…",
+      "otpLabel": "קוד אימות"
     },
     "whatsappApiCheckout": {
       "pending": "התשלום התקבל. אנחנו מפעילים את חשבון ה-WhatsApp API שלכם. זה לוקח בדרך כלל כמה שניות.",

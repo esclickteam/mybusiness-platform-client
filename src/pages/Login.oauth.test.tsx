@@ -81,7 +81,16 @@ beforeEach(() => {
       };
     }
     if (url === "/auth/oauth/link-preview") {
-      return { data: { email: "owner@bizuply.test", provider: "google" } };
+      return {
+        data: {
+          email: "owner@bizuply.test",
+          emailMasked: "o***@bizuply.test",
+          provider: "google",
+          methods: ["otp", "password"],
+          hasPassword: true,
+          otpCooldownSeconds: 0,
+        },
+      };
     }
     throw new Error(`unexpected GET ${url}`);
   });
@@ -155,12 +164,30 @@ describe("BizUply social login", () => {
     expect(apiGet).toHaveBeenCalledWith("/auth/me", expect.any(Object));
   });
 
-  it("asks for the existing password before linking", async () => {
+  it("asks for password or email code before linking an existing account", async () => {
+    apiPost.mockResolvedValue({ data: { success: true, oauth: "success", cooldownSeconds: 60 } });
+    refreshAccessTokenOnce.mockResolvedValue("access-1");
+    renderAt("/login?oauth=link_required&provider=google");
+    expect(await screen.findByText(/login.oauth.linkFound/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "login.continueGoogle" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "login.oauth.methodOtp" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "login.oauth.methodPassword" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "login.oauth.otpSend" }));
+    await waitFor(() => expect(apiPost).toHaveBeenCalledWith("/auth/oauth/link-otp/send", {}));
+
+    fireEvent.change(screen.getByLabelText("login.oauth.otpLabel"), { target: { value: "424242" } });
+    fireEvent.click(screen.getByRole("button", { name: "login.oauth.linkSubmit" }));
+    await waitFor(() => expect(apiPost).toHaveBeenCalledWith("/auth/oauth/link", { code: "424242" }));
+    await waitFor(() => expect(loginWithToken).toHaveBeenCalled());
+  });
+
+  it("can link with the existing BizUply password instead of OTP", async () => {
     apiPost.mockResolvedValue({ data: { success: true, oauth: "success" } });
     refreshAccessTokenOnce.mockResolvedValue("access-1");
     renderAt("/login?oauth=link_required&provider=google");
-    expect(await screen.findByText(/login.oauth.linkSubtitle/)).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "login.continueGoogle" })).not.toBeInTheDocument();
+    await screen.findByText(/login.oauth.linkFound/);
+    fireEvent.click(screen.getByRole("tab", { name: "login.oauth.methodPassword" }));
     fireEvent.change(screen.getByLabelText("login.passwordLabel"), { target: { value: "Password#123" } });
     fireEvent.click(screen.getByRole("button", { name: "login.oauth.linkSubmit" }));
     await waitFor(() => expect(apiPost).toHaveBeenCalledWith("/auth/oauth/link", { password: "Password#123" }));

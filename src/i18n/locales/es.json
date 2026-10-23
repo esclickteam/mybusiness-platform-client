@@ -2585,8 +2585,8 @@
     "providerMicrosoft": "Microsoft",
     "oauth": {
       "completing": "Iniciando sesión…",
-      "linkSubmit": "Vincular e iniciar sesión",
-      "linking": "Vinculando…",
+      "linkSubmit": "Verificar y continuar",
+      "linking": "Conectando…",
       "linkSubtitle": "Este correo de {{provider}} coincide con {{email}}. Introduce tu contraseña de BizUply para vincularlo. Tus planes y datos permanecen en esta cuenta.",
       "errors": {
         "existing_account": "Este correo ya tiene una cuenta de BizUply que no puede usar {{provider}} aquí. Inicia sesión con correo y contraseña.",
@@ -2602,8 +2602,27 @@
         "signup_closed": "El registro no está disponible temporalmente. Inténtalo más tarde.",
         "session": "No pudimos terminar el inicio de sesión. Inténtalo de nuevo.",
         "plan_required": "Elige un plan en la página de precios antes de registrarte con {{provider}}.",
-        "incorrect_password": "Contraseña incorrecta. Inténtalo de nuevo o restablece la contraseña para vincular {{provider}}."
-      }
+        "incorrect_password": "Contraseña incorrecta. Inténtalo de nuevo o usa el código por email.",
+        "verification_required": "Introduce el código del email o tu contraseña de BizUply para continuar.",
+        "otp_invalid": "Ese código es incorrecto. Inténtalo de nuevo.",
+        "otp_expired": "Ese código caducó. Envía uno nuevo.",
+        "otp_required": "Envía primero un código de verificación.",
+        "otp_locked": "Demasiados códigos incorrectos. Empieza de nuevo con {{provider}}.",
+        "otp_cooldown": "Espera un momento antes de pedir otro código.",
+        "otp_send_limited": "Demasiadas solicitudes de código. Prueba más tarde o usa tu contraseña.",
+        "otp_send_failed": "No pudimos enviar el código ahora. Inténtalo de nuevo o usa tu contraseña."
+      },
+      "linkFound": "Encontramos tu cuenta BizUply existente. Verifica que es tuya para conectar {{provider}}.",
+      "linkKeepData": "Tus negocios, planes y datos permanecen en esta cuenta.",
+      "verifyMethods": "Métodos de verificación",
+      "methodOtp": "Código por email",
+      "methodPassword": "Contraseña",
+      "otpHint": "Enviaremos un código de 6 dígitos a {{email}}.",
+      "otpSend": "Enviar código",
+      "otpResend": "Enviar un código nuevo",
+      "otpResendIn": "Reenviar en {{seconds}} s",
+      "otpSending": "Enviando…",
+      "otpLabel": "Código de verificación"
     },
     "whatsappApiCheckout": {
       "pending": "Pago recibido. Estamos activando tu cuenta de la API de WhatsApp. Suele tardar unos segundos.",
