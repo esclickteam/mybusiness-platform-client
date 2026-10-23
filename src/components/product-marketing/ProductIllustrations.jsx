@@ -1,4 +1,4 @@
-import { CAMPAIGN_FIXTURE } from "../../guidedDemo/fixtures/demoFixtures";
+import { CAMPAIGN_FIXTURE, SERVICE_FIXTURE, STEP_SUCCESS, STEP_SUGGESTED } from "../../guidedDemo/fixtures/demoFixtures";
 import "./productIllustrations.css";
 
 const FLAGS = {
@@ -50,6 +50,68 @@ export function CampaignIllustration({ locale = "en" }) {
               <p>{detail}</p>
             </div>
           ))}
+        </div>
+      </div>
+    </figure>
+  );
+}
+
+const FLOW_LABELS = {
+  en: ["Trigger", "Action", "Demo limit"],
+  he: ["טריגר", "פעולה", "מגבלת הדמו"],
+  es: ["Disparador", "Acción", "Límite de la demo"],
+  "pt-BR": ["Gatilho", "Ação", "Limite da demo"],
+  ar: ["المحفز", "الإجراء", "حد العرض"],
+};
+
+const SITE_LABELS = {
+  en: ["Headline", "Service", "Duration", "Demo price"],
+  he: ["כותרת", "שירות", "משך", "מחיר בדמו"],
+  es: ["Titular", "Servicio", "Duración", "Precio de demo"],
+  "pt-BR": ["Título", "Serviço", "Duração", "Preço da demo"],
+  ar: ["العنوان", "الخدمة", "المدة", "سعر العرض"],
+};
+
+export function AutomationIllustration({ locale = "en" }) {
+  const labels = FLOW_LABELS[locale] || FLOW_LABELS.en;
+  const rows = [
+    STEP_SUCCESS["auto-trigger"][locale] || STEP_SUCCESS["auto-trigger"].en,
+    STEP_SUCCESS["auto-action-email"][locale] || STEP_SUCCESS["auto-action-email"].en,
+    STEP_SUCCESS["auto-save"][locale] || STEP_SUCCESS["auto-save"].en,
+  ];
+  return (
+    <figure className="illu">
+      <figcaption className="illu__flag">{flag(locale)}</figcaption>
+      <div className="illu__frame">
+        <div className="illu__bar" aria-hidden="true"><i /><i /><i /></div>
+        <ol className="illu__stack">
+          {rows.map((text, index) => (
+            <li key={labels[index]}>
+              <b>{labels[index]}</b>
+              <span>{text}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </figure>
+  );
+}
+
+export function WebsiteFixtureIllustration({ locale = "en" }) {
+  const labels = SITE_LABELS[locale] || SITE_LABELS.en;
+  const headline = STEP_SUGGESTED["site-headline"][locale] || STEP_SUGGESTED["site-headline"].en;
+  const service = SERVICE_FIXTURE[locale] || SERVICE_FIXTURE.en;
+  const minutes = locale === "he" || locale === "ar" ? `${service.duration}′` : `${service.duration} min`;
+  return (
+    <figure className="illu">
+      <figcaption className="illu__flag">{flag(locale)}</figcaption>
+      <div className="illu__frame">
+        <div className="illu__bar" aria-hidden="true"><i /><i /><i /></div>
+        <div className="illu__site">
+          <p><b>{labels[0]}</b>{headline}</p>
+          <p><b>{labels[1]}</b>{service.name}</p>
+          <p><b>{labels[2]}</b>{minutes}</p>
+          <p><b>{labels[3]}</b>{service.price}</p>
         </div>
       </div>
     </figure>
