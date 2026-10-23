@@ -205,6 +205,14 @@ function stripShellSeoTags(html) {
   next = next.replace(/<meta\b[^>]*\bname=["']author["'][^>]*>/gi, "");
   next = next.replace(/<meta\b[^>]*\bname=["']robots["'][^>]*>/gi, "");
   next = next.replace(
+    /<meta\b[^>]*\bname=["']apple-mobile-web-app-title["'][^>]*>/gi,
+    "",
+  );
+  next = next.replace(
+    /<meta\b[^>]*\bname=["']application-name["'][^>]*>/gi,
+    "",
+  );
+  next = next.replace(
     /<meta\b[^>]*\bname=["']google-site-verification["'][^>]*>/gi,
     "",
   );
@@ -282,16 +290,43 @@ async function handleRobotsOrSitemap(request, pathname) {
   }
 }
 
-function fallbackHtmlResponse(html, status, started, reason) {
-  return new Response(html, {
+function insertHeadBlock(html, block) {
+  if (/<head\b[^>]*>/i.test(html)) {
+    return html.replace(/<head\b[^>]*>/i, (match) => `${match}${block}`);
+  }
+  if (/<\/head>/i.test(html)) {
+    return html.replace(/<\/head>/i, `${block}</head>`);
+  }
+  return `${block}${html}`;
+}
+
+/**
+ * Customer host with no usable SEO head.
+ * A completed 404 means the published site does not exist, so the shell must
+ * not be indexed as Bizuply. Timeout, 5xx, and unreadable JSON are temporary:
+ * strip the platform brand, but do not noindex a site that may be valid.
+ * Never invent a title from the hostname.
+ */
+function customerNeutralDocument(html, { indexable }) {
+  const clean = stripShellSeoTags(html);
+  const robots = indexable ? "index, follow" : "noindex, nofollow";
+  const block =
+    `\n<meta name="robots" content="${robots}" data-bizuply-edge-seo="1" />\n`;
+  return insertHeadBlock(clean, block);
+}
+
+function customerNeutralResponse(html, status, started, reason, indexable) {
+  const headers = {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "x-bizuply-seo-edge": indexable ? "customer-unavailable" : "customer-absent",
+    "x-bizuply-seo-edge-reason": reason,
+    "x-bizuply-seo-edge-ms": String(Date.now() - started),
+  };
+  if (!indexable) headers["x-robots-tag"] = "noindex, nofollow";
+  return new Response(customerNeutralDocument(html, { indexable }), {
     status,
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=0, must-revalidate",
-      "x-bizuply-seo-edge": "fallback",
-      "x-bizuply-seo-edge-reason": reason,
-      "x-bizuply-seo-edge-ms": String(Date.now() - started),
-    },
+    headers,
   });
 }
 
@@ -317,16 +352,22 @@ async function handleHtmlSeoInjection(request) {
       headers: shellDocumentHeaders(),
     });
 
-    let seoRes = null;
-    let seoReason = "empty";
-    try {
-      seoRes = await fetchWithTimeout(
-        seoUrl,
-        { headers: { accept: "application/json" } },
-        SEO_HEAD_TIMEOUT_MS,
-      );
-    } catch {
-      seoReason = "timeout";
+    const requestSeo = async () => {
+      try {
+        return await fetchWithTimeout(
+          seoUrl,
+          { headers: { accept: "application/json" } },
+          SEO_HEAD_TIMEOUT_MS,
+        );
+      } catch {
+        return null;
+      }
+    };
+
+    let seoRes = await requestSeo();
+    const temporaryFailure = !seoRes || seoRes.status >= 500;
+    if (temporaryFailure) {
+      seoRes = await requestSeo();
     }
 
     const htmlRes = await htmlPromise;
@@ -341,7 +382,10 @@ async function handleHtmlSeoInjection(request) {
     }
 
     let headHtml = "";
-    if (seoRes && seoRes.ok) {
+    let seoReason = "empty";
+    if (!seoRes) {
+      seoReason = "timeout";
+    } else if (seoRes.ok) {
       try {
         const payload = await seoRes.json();
         headHtml = String(payload?.headHtml || "").trim();
@@ -350,13 +394,21 @@ async function handleHtmlSeoInjection(request) {
         headHtml = "";
         seoReason = "parse";
       }
-    } else if (seoRes && !seoRes.ok) {
+    } else {
       seoReason = `seo-${seoRes.status}`;
     }
 
-    // Safe fallback: never break the SPA if SEO fetch/parse fails.
+    // Keep the SPA body. Only the platform head is removed when the
+    // customer SEO API cannot supply a real head.
     if (!headHtml) {
-      return fallbackHtmlResponse(html, htmlRes.status, started, seoReason);
+      const siteConfirmedMissing = seoRes?.status === 404;
+      return customerNeutralResponse(
+        html,
+        htmlRes.status,
+        started,
+        seoReason,
+        !siteConfirmedMissing,
+      );
     }
 
     const injected = injectSeoHead(html, headHtml);
