@@ -8025,8 +8025,8 @@
     "benefitsBadge": "Why it matters",
     "stepsBadge": "How it works",
     "crm": {
-      "seoTitle": "CRM & Meta Leads | Bizuply — Meta App Review Developers",
-      "seoDescription": "Bizuply are Meta App Review Developers. Connect Facebook Lead Ads to your CRM and manage leads in one place.",
+      "seoTitle": "CRM Software with Meta Lead Ads Integration | Bizuply",
+      "seoDescription": "Manage leads and customers in one CRM. Meta Lead Ads, Google Ads, and your website feed one pipeline, with a client file and appointments. CRM only is $49/month.",
       "badge": "CRM & Meta Leads",
       "heroDisplayTitle": "CRM & Leads",
       "heroTitle": "Manage leads and clients",
@@ -12877,8 +12877,8 @@
   },
   "crmPage": {
     "seo": {
-      "title": "CRM & Meta Leads | Bizuply — Meta App Review Developers",
-      "description": "Bizuply are Meta App Review–approved developers. Leads from Facebook, Instagram, Google Ads and your website enter one pipeline with status, a client file and an appointment calendar."
+      "title": "CRM Software with Meta Lead Ads Integration | Bizuply",
+      "description": "Manage leads and customers in one CRM. Meta Lead Ads, Google Ads, and your website feed one pipeline, with a client file and appointments. CRM only is $49/month."
     },
     "hero": {
       "ariaLabel": "CRM & Leads",
@@ -13141,6 +13141,10 @@
       "dashboard": {
         "q": "Can I see a snapshot without opening the CRM?",
         "a": "Yes. The business dashboard shows new leads, untreated leads, the change versus the previous period, a table of the most recent leads with source and status, and the upcoming appointments."
+      },
+      "price": {
+        "q": "What does the CRM cost?",
+        "a": "CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year."
       }
     },
     "audiences": {
@@ -13205,10 +13209,10 @@
     },
     "pricingNote": {
       "eyebrow": "Pricing",
-      "title": "Current plans are on the pricing page",
-      "text": "This page does not add a separate CRM price. Compare the current Bizuply plans, then create an account when you are ready.",
-      "plans": "See plans",
-      "account": "Create an account"
+      "title": "CRM only is $49 per month",
+      "text": "The CRM-only plan is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.",
+      "plans": "See all plans",
+      "crmOnly": "Start CRM only"
     },
     "related": {
       "eyebrow": "Works with the rest of Bizuply",

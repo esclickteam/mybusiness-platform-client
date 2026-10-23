@@ -301,8 +301,8 @@ export default function CrmProductPage() {
                 lead={t("crmPage.pricingNote.text")}
               />
               <div className="crm-hero__actions">
-                <Link className="pm-cta pm-cta--primary" to="/pricing">{t("crmPage.pricingNote.plans")}</Link>
-                <Link className="pm-cta pm-cta--ghost" to="/business">{t("crmPage.pricingNote.account")}</Link>
+                <Link className="pm-cta pm-cta--primary" to="/register?plan=crm_only">{t("crmPage.pricingNote.crmOnly")}</Link>
+                <Link className="pm-cta pm-cta--ghost" to="/pricing">{t("crmPage.pricingNote.plans")}</Link>
               </div>
             </div>
           </section>

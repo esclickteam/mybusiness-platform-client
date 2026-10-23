@@ -116,11 +116,20 @@ export function whatsappCanonicalUrl(pathname) {
   return path === "/" ? WHATSAPP_CANONICAL_URL : `https://${WHATSAPP_CANONICAL_HOST}${path}`;
 }
 
+export function whatsappHomepagePrerender(pathname) {
+  if (normalizeWhatsAppPath(pathname) !== "/") return "";
+  return `<main lang="en" dir="ltr"><h1>WhatsApp API. Built for Your Business.</h1><p>${WHATSAPP_SEO_DESCRIPTION}</p><p>$29 per month for one connected WhatsApp number. Meta messaging fees are billed separately. There is no free trial.</p><p><a href="https://bizuply.com/he/whatsapp-api">WhatsApp API בעברית</a></p></main>`;
+}
+
 export function buildWhatsAppSitemapXml() {
-  const urls = WHATSAPP_PAGE_PATHS.map(
-    (path) => `  <url><loc>${whatsappCanonicalUrl(path)}</loc></url>`,
-  ).join("\n");
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+  const urls = WHATSAPP_PAGE_PATHS.map((path) => {
+    const loc = whatsappCanonicalUrl(path);
+    const alternates = path === "/"
+      ? `<xhtml:link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/"/><xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/whatsapp-api"/><xhtml:link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/"/>`
+      : "";
+    return `  <url><loc>${loc}</loc>${alternates}</url>`;
+  }).join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`;
 }
 
 function bareHost(hostname) {

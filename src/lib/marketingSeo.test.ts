@@ -90,7 +90,7 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
-    expect(hebrew).toContain("<title>CRM ולידים מ־Meta | Bizuply</title>");
+    expect(hebrew).toContain("<title>מערכת CRM לניהול לקוחות ולידים | ביזאפלי</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
     expect(hebrew).toContain('hreflang="en" href="https://bizuply.com/crm"');
     expect(hebrew).toContain('hreflang="x-default" href="https://bizuply.com/crm"');
@@ -101,7 +101,11 @@ describe("marketing crawl files", () => {
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/crm</loc>");
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/whatsapp-api</loc>");
     expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/he/about</loc>");
-    expect(buildMarketingPrerender("/crm")?.inner).toContain("Meta App Review");
+    expect(buildMarketingPrerender("/crm")?.inner).toContain("CRM only is $49 per month");
+    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>Every lead, every client, every appointment in one place</h1>");
+    expect(buildMarketingPrerender("/he/crm")?.inner).toContain("49 דולר");
+    expect(buildMarketingDocumentHead("/he/whatsapp-api") || "").toContain("מה כוללים 29 הדולר?");
+    expect(buildMarketingDocumentHead("/crm") || "").toContain("What does the CRM cost?");
     expect(buildMarketingPrerender("/he/about")).toBeNull();
     expect(buildMarketingDocumentHead("/p/acme")).toBeNull();
     expect(buildMarketingDocumentHead("/s/northwind")).toBeNull();

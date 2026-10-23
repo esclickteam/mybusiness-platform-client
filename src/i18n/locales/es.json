@@ -12469,6 +12469,10 @@
       "dashboard": {
         "q": "¿Puedo ver una instantánea sin abrir el CRM?",
         "a": "Sí. El panel de control de la empresa muestra nuevos leads, leads no tratados, el cambio en comparación con el período anterior, una tabla de los leads más recientes con origen y estado, y las próximas citas."
+      },
+      "price": {
+        "q": "¿Cuánto cuesta el CRM?",
+        "a": "El plan de solo CRM cuesta $49 al mes y se renueva cada mes. El plan de negocio, que incluye CRM junto con citas, colaboraciones y automatizaciones, cuesta $99 al mes o $990 al año."
       }
     },
     "finalCta": {
