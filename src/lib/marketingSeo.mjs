@@ -789,10 +789,11 @@ export function buildMarketingPrerender(pathname) {
   const found = findMarketingPage(path);
   if (!found?.page) return null;
   if (path === "/") {
+    const faqs = faqItems("/", "en");
     return {
       lang: "en",
       dir: "ltr",
-      inner: `<main lang="en" dir="ltr"><h1>Bizuply</h1><p>Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp.</p><p>The official website is bizuply.com. In Hebrew, the brand name is ביזאפלי.</p></main>`,
+      inner: `<main lang="en" dir="ltr"><h1>Everything your business needs to grow in one place</h1><p>${escapeText(found.page.description)}</p><h2>FAQ</h2>${faqBodyHtml(faqs)}</main>`,
     };
   }
   const heading = path === "/crm"
