@@ -60,6 +60,8 @@ export function startBizuplySocialAuth(provider: SocialProvider, opts: BizuplySo
 
 const ERROR_KEYS: Record<string, string> = {
   existing_account: "login.oauth.errors.existing_account",
+  whatsapp_account: "login.oauth.errors.whatsapp_account",
+  partner_account: "login.oauth.errors.partner_account",
   email_unverified: "login.oauth.errors.email_unverified",
   no_account: "login.oauth.errors.no_account",
   provider_mismatch: "login.oauth.errors.provider_mismatch",

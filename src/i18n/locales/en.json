@@ -2601,6 +2601,8 @@
       "otpLabel": "Verification code",
       "errors": {
         "existing_account": "This email already has a BizUply account that cannot use {{provider}} here. Sign in with email and password.",
+        "whatsapp_account": "This Google/Microsoft login belongs to a WhatsApp API account, not a BizUply business workspace. Open WhatsApp API login, or use a different email that has a BizUply business plan.",
+        "partner_account": "This email belongs to a partner account, which cannot link {{provider}} on the business login. Use the partner portal or email and password.",
         "email_unverified": "{{provider}} did not confirm this email address. Verify it with {{provider}}, or use email and password.",
         "no_account": "No BizUply account is linked to this {{provider}} login yet. Choose a plan to create one.",
         "provider_mismatch": "This account is already linked to a different {{provider}} login. Use that one, or sign in with email and password.",

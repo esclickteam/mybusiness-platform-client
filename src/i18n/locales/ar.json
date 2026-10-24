@@ -2590,6 +2590,8 @@
       "linkSubtitle": "بريد {{provider}} هذا يطابق {{email}}. أدخل كلمة مرور BizUply لربطه. تبقى باقاتك وبياناتك في هذا الحساب.",
       "errors": {
         "existing_account": "هذا البريد لديه حساب BizUply لا يمكنه استخدام {{provider}} هنا. سجّل الدخول بالبريد وكلمة المرور.",
+        "whatsapp_account": "تسجيل الدخول عبر Google/Microsoft هذا يخص حساب WhatsApp API وليس مساحة عمل BizUply للأعمال. استخدم دخول WhatsApp API، أو بريدًا لديه خطة أعمال BizUply.",
+        "partner_account": "هذا البريد يخص حساب شريك ولا يمكن ربط {{provider}} من دخول الأعمال. استخدم بوابة الشريك أو البريد وكلمة المرور.",
         "email_unverified": "لم يؤكد {{provider}} هذا البريد. فعِّله لدى {{provider}} أو استخدم البريد وكلمة المرور.",
         "no_account": "لا يوجد حساب BizUply مرتبط بدخول {{provider}} بعد. اختر باقة لإنشاء حساب.",
         "provider_mismatch": "هذا الحساب مرتبط بدخول {{provider}} مختلف. استخدم ذلك، أو سجّل الدخول بالبريد وكلمة المرور.",

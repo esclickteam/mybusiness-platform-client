@@ -148,6 +148,14 @@ describe("BizUply social login", () => {
     expect(screen.queryByText(/whatsapp/i)).not.toBeInTheDocument();
   });
 
+  it("explains WhatsApp-only accounts instead of showing the OTP link screen", async () => {
+    renderAt("/login?oauth_error=whatsapp_account&provider=google");
+    await screen.findByRole("alert");
+    expect(screen.getByRole("alert").textContent).toContain("login.oauth.errors.whatsapp_account");
+    expect(screen.queryByText(/login.oauth.linkFound/)).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "login.continueGoogle" })).toBeInTheDocument();
+  });
+
   it("keeps Microsoft cancelled on main /login with social buttons still available", async () => {
     renderAt("/login?oauth_error=cancelled&provider=microsoft");
     await screen.findByRole("alert");
