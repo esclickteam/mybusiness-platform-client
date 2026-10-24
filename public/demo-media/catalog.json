@@ -35,7 +35,7 @@
     {
       "id": "automations",
       "module": "automations",
-      "action": "Create a workflow and save it",
+      "action": "Publish a workflow and run it",
       "uiLanguage": "en",
       "captionLanguages": [
         "en",
@@ -64,7 +64,7 @@
     {
       "id": "websites",
       "module": "websites",
-      "action": "Edit a template and preview it",
+      "action": "Change a headline and its color",
       "uiLanguage": "en",
       "captionLanguages": [
         "en",
@@ -93,7 +93,7 @@
     {
       "id": "campaigns",
       "module": "campaigns",
-      "action": "Open a campaign inside Bizuply",
+      "action": "Review demo campaign data",
       "uiLanguage": "en",
       "captionLanguages": [
         "en",
@@ -108,7 +108,7 @@
       "burnedCaptions": false,
       "playerCaptions": "WebVTT",
       "mockedExternalService": true,
-      "note": "Showcase campaign metrics inside Bizuply. No campaign was published and no spend was made.",
+      "note": "Showcase campaign metrics inside Bizuply. Demo data only. No live Meta call, no publish, and no spend.",
       "recordedAt": "2026-10-24",
       "poster": "/demo-media/campaigns/poster.jpg",
       "files": [
@@ -122,7 +122,7 @@
     {
       "id": "whatsapp",
       "module": "whatsapp",
-      "action": "Templates and the inbox",
+      "action": "Prepare a demo reply",
       "uiLanguage": "en",
       "captionLanguages": [
         "en",
@@ -137,7 +137,7 @@
       "burnedCaptions": false,
       "playerCaptions": "WebVTT",
       "mockedExternalService": true,
-      "note": "Showcase demo number and inbox. No WhatsApp message was sent.",
+      "note": "Template preview and a locally saved demo reply. The product says it was not sent. WhatsApp was not called.",
       "recordedAt": "2026-10-24",
       "poster": "/demo-media/whatsapp/poster.jpg",
       "files": [
@@ -151,7 +151,7 @@
     {
       "id": "appointments",
       "module": "appointments",
-      "action": "Create a booking on the calendar",
+      "action": "Create a booking and change the time",
       "uiLanguage": "en",
       "captionLanguages": [
         "en",

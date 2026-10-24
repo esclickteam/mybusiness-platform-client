@@ -22,14 +22,12 @@ const INDEX = {
 const GUIDE_VIDEO = {
   "what-is-a-crm": "crm",
   "follow-up-on-leads": "crm",
-  "crm-and-business-platform": "crm",
   "meta-lead-ads-to-crm": "campaigns",
   "manage-meta-campaigns": "campaigns",
   "business-automation": "automations",
   "build-a-website-without-code": "websites",
-  "whatsapp-cloud-api-cost": "whatsapp",
   "appointments-for-a-service-business": "appointments",
-  "from-ad-to-follow-up": "campaigns",
+  "from-ad-to-follow-up": "crm",
 };
 
 const CAPTURES = {

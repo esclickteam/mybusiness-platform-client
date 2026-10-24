@@ -1,10 +1,10 @@
 WEBVTT
 
-00:00:02.200 --> 00:00:06.389
-Escolher o gatilho de novo lead.
+00:00:02.200 --> 00:00:09.544
+O gatilho é mudança de status para Contacted.
 
-00:00:06.389 --> 00:00:10.454
-Adicionar uma condição de status e uma tarefa de CRM.
+00:00:09.544 --> 00:00:16.672
+Adicionar uma tarefa de CRM, salvar e publicar.
 
-00:00:10.454 --> 00:00:14.520
-Salvar o rascunho e abrir o histórico.
+00:00:16.672 --> 00:00:23.800
+Mudar o lead de demo. A execução aparece como Success.

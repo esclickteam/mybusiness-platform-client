@@ -735,6 +735,20 @@ async function proxySaasProduct(request, host) {
   return new Response(response.body, { status: response.status, headers: outgoing });
 }
 
+function isUnindexedPreviewHost(host) {
+  return Boolean(
+    host &&
+      (host.endsWith(".vercel.app") || host.endsWith(".trycloudflare.com"))
+  );
+}
+
+function withPreviewNoindex(response, host) {
+  if (!isUnindexedPreviewHost(host)) return response;
+  const headers = new Headers(response.headers);
+  headers.set("x-robots-tag", "noindex, nofollow");
+  return new Response(response.body, { status: response.status, headers });
+}
+
 function isPlatformMarketingHost(host) {
   if (!host) return false;
   if (isBizuplyWhatsAppHost(host) || isBizuplyTravelHost(host)) return false;
@@ -820,7 +834,9 @@ async function handleMarketingDocument(request) {
         "content-type": "text/html; charset=utf-8",
         "cache-control": "public, max-age=0, must-revalidate",
         "x-bizuply-seo-edge": "marketing",
-        ...(noindex ? { "x-robots-tag": "noindex, nofollow" } : {}),
+        ...(noindex || isUnindexedPreviewHost(getHost(request))
+          ? { "x-robots-tag": "noindex, nofollow" }
+          : {}),
       },
     });
   } catch {
@@ -837,7 +853,7 @@ export default async function middleware(request) {
     !getGoogleHtmlVerificationFile(pathname) &&
     !isSeoDiscoveryPath(pathname)
   ) {
-    return passThrough();
+    return withPreviewNoindex(passThrough(), host);
   }
 
   const legacyRedirect = marketingLegacyRedirect(request, host, pathname);
