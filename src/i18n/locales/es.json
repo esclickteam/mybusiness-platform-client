@@ -13414,7 +13414,22 @@
     "purchaseIntentExpired": "La solicitud de compra falta o caducó. Vuelva a precios y elija el servicio otra vez.",
     "registerFailed": "El registro falló. Inténtelo de nuevo.",
     "emailExists": "Este correo ya está registrado",
-    "genericError": "Algo salió mal. Inténtelo más tarde."
+    "genericError": "Algo salió mal. Inténtelo más tarde.",
+    "identity": {
+      "title": "Continuar al pago",
+      "subtitlePaid": "Verifica con Google, Microsoft o correo — luego paga. Los datos del negocio se completan después del pago.",
+      "subtitleFree": "Crea tu cuenta de BizUply",
+      "checkoutNote": "Pago seguro con Lemon Squeezy. Sin contraseña antes del pago.",
+      "continueEmail": "Continuar con correo",
+      "sendCode": "Enviar código de verificación",
+      "sendingCode": "Enviando código…",
+      "otpHint": "Introduce el código de 6 dígitos enviado a {{email}}.",
+      "verifyAndPay": "Verificar y continuar al pago",
+      "changeEmail": "Usar otro correo",
+      "emailInvalid": "Introduce un correo válido.",
+      "sendFailed": "No se pudo enviar el código. Inténtalo de nuevo.",
+      "useSocialForIntent": "Continúa con Google o Microsoft para este registro."
+    }
   },
   "studio": {
     "back": "Volver",

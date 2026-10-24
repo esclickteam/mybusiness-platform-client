@@ -13414,7 +13414,22 @@
     "purchaseIntentExpired": "طلب الشراء مفقود أو منتهٍ. عد إلى الأسعار واختر الخدمة مرة أخرى.",
     "registerFailed": "فشل التسجيل. يُرجى المحاولة مرة أخرى.",
     "emailExists": "هذا البريد مسجّل بالفعل",
-    "genericError": "حدث خطأ. يُرجى المحاولة لاحقًا."
+    "genericError": "حدث خطأ. يُرجى المحاولة لاحقًا.",
+    "identity": {
+      "title": "المتابعة إلى الدفع",
+      "subtitlePaid": "تحقق عبر Google أو Microsoft أو البريد — ثم ادفع. تُستكمل بيانات النشاط بعد الدفع.",
+      "subtitleFree": "أنشئ حساب BizUply",
+      "checkoutNote": "دفع آمن عبر Lemon Squeezy. بدون كلمة مرور قبل الدفع.",
+      "continueEmail": "المتابعة بالبريد الإلكتروني",
+      "sendCode": "إرسال رمز التحقق",
+      "sendingCode": "جارٍ إرسال الرمز…",
+      "otpHint": "أدخل الرمز المكوّن من 6 أرقام المُرسل إلى {{email}}.",
+      "verifyAndPay": "تحقق والمتابعة إلى الدفع",
+      "changeEmail": "استخدام بريد آخر",
+      "emailInvalid": "أدخل عنوان بريد إلكتروني صالحًا.",
+      "sendFailed": "تعذّر إرسال الرمز. حاول مرة أخرى.",
+      "useSocialForIntent": "تابع عبر Google أو Microsoft لهذا التسجيل."
+    }
   },
   "studio": {
     "back": "رجوع",
