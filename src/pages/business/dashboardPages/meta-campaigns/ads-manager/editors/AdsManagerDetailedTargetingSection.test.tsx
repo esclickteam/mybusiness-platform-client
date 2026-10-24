@@ -1,9 +1,11 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { I18nextProvider } from "react-i18next";
 import i18n from "../../../../../../i18n/i18n";
-import AdsManagerDetailedTargetingSection from "./AdsManagerDetailedTargetingSection";
+import AdsManagerDetailedTargetingSection, {
+  __resetDetailedTargetingBrowseCacheForTests,
+} from "./AdsManagerDetailedTargetingSection";
 import type { AdSetDetailedTarget } from "../adsManagerTypes";
 
 const FIXTURE = [
@@ -63,6 +65,10 @@ const FIXTURE = [
 ];
 
 describe("AdsManagerDetailedTargetingSection", () => {
+  beforeEach(() => {
+    __resetDetailedTargetingBrowseCacheForTests();
+  });
+
   it("opens browse, selects multiple Meta targets, and removes one", async () => {
     await i18n.changeLanguage("en");
     const onChange = vi.fn();
@@ -166,6 +172,47 @@ describe("AdsManagerDetailedTargetingSection", () => {
     // Document click outside should close; click inside must not.
     fireEvent.click(screen.getByTestId("detailed-targeting-panel"));
     expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
+  });
+
+  it("restores browse panel after a full remount (dashboard loader swap)", async () => {
+    await i18n.changeLanguage("he");
+    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
+    const view = render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+        />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("detailed-targeting-browse"));
+    await waitFor(() => expect(browseFn).toHaveBeenCalledTimes(1));
+    expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
+
+    view.unmount();
+    render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+        />
+      </I18nextProvider>
+    );
+
+    expect(screen.getByTestId("detailed-targeting-browse").getAttribute("aria-expanded")).toBe(
+      "true"
+    );
+    expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /דמוגרפיה|Demographics/i })).toBeTruthy();
+    // Cache hit — no second Meta browse call.
+    expect(browseFn).toHaveBeenCalledTimes(1);
   });
 
   it("shows why unsupported Meta types cannot be selected", async () => {
