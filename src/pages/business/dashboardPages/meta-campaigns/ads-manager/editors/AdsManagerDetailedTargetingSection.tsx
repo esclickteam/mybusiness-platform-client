@@ -325,17 +325,59 @@ type BrowseUiCache = {
   browseFolderKey: string | null;
   browseRows: MetaDetailedTarget[];
   suggestSort: SuggestSort;
+  suggestResults: MetaDetailedTarget[];
+  suggestSource: string;
+  suggestApiGap: string;
+  suggestSeedKey: string;
+  query: string;
+  searchResults: MetaDetailedTarget[];
+  infoKey: string | null;
 };
 
+type SuggestFetchCache = {
+  key: string;
+  results: MetaDetailedTarget[];
+  source: string;
+  apiGap: string;
+};
+
+/** Survives remounts (wizard level switches / responsive layout remounts). */
 let browseUiCache: BrowseUiCache | null = null;
+/** Last successful Meta browse payload for business+locale. */
+let browseFetchCache: { key: string; rows: MetaDetailedTarget[] } | null = null;
+/** Last successful Meta suggestions payload for business+locale+sort+seeds. */
+let suggestFetchCache: SuggestFetchCache | null = null;
+/** In-flight dedupe — concurrent mounts share one Meta call per cache key. */
+let browseInflight: {
+  key: string;
+  promise: Promise<MetaDetailedTarget[]>;
+} | null = null;
+const suggestInflight = new Map<string, Promise<SuggestFetchCache>>();
 
 function localeForLang(language?: string) {
   return language?.startsWith("he") ? "he_IL" : "en_US";
 }
 
+function makeBrowseFetchKey(businessId: string, locale: string) {
+  return `${businessId}|${locale}`;
+}
+
+function makeSuggestFetchKey(
+  businessId: string,
+  locale: string,
+  sort: SuggestSort,
+  seedKey: string
+) {
+  return `${businessId}|${locale}|${sort}|${seedKey}`;
+}
+
 /** Test helper — clears in-memory browse UI between cases. */
 export function __resetDetailedTargetingBrowseCacheForTests() {
   browseUiCache = null;
+  browseFetchCache = null;
+  suggestFetchCache = null;
+  browseInflight = null;
+  suggestInflight.clear();
 }
 
 export default function AdsManagerDetailedTargetingSection({
@@ -363,20 +405,28 @@ export default function AdsManagerDetailedTargetingSection({
       ? browseUiCache
       : null;
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState(() => cached?.query || "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [panelMode, setPanelMode] = useState<PanelMode>(
     () => cached?.panelMode || "closed"
   );
-  const [searchResults, setSearchResults] = useState<MetaDetailedTarget[]>([]);
-  const [suggestResults, setSuggestResults] = useState<MetaDetailedTarget[]>([]);
+  const [searchResults, setSearchResults] = useState<MetaDetailedTarget[]>(
+    () => cached?.searchResults || []
+  );
+  const [suggestResults, setSuggestResults] = useState<MetaDetailedTarget[]>(
+    () => cached?.suggestResults || []
+  );
   const [suggestSort, setSuggestSort] = useState<SuggestSort>(
     () => cached?.suggestSort || "relevance"
   );
   const [suggestBusy, setSuggestBusy] = useState(false);
-  const [suggestSource, setSuggestSource] = useState("");
-  const [suggestApiGap, setSuggestApiGap] = useState("");
+  const [suggestSource, setSuggestSource] = useState(
+    () => cached?.suggestSource || ""
+  );
+  const [suggestApiGap, setSuggestApiGap] = useState(
+    () => cached?.suggestApiGap || ""
+  );
   const [infoTarget, setInfoTarget] = useState<MetaDetailedTarget | null>(null);
   const [browseRows, setBrowseRows] = useState<MetaDetailedTarget[]>(
     () => cached?.browseRows || []
@@ -389,7 +439,9 @@ export default function AdsManagerDetailedTargetingSection({
   const [browseFolderKey, setBrowseFolderKey] = useState<string | null>(
     () => cached?.browseFolderKey || null
   );
-  const [infoKey, setInfoKey] = useState<string | null>(null);
+  const [infoKey, setInfoKey] = useState<string | null>(
+    () => cached?.infoKey || null
+  );
 
   const selectedIds = useMemo(
     () => new Set(selected.map((item) => item.id).filter(Boolean)),
@@ -430,22 +482,30 @@ export default function AdsManagerDetailedTargetingSection({
       setBrowseStack(hit.browseStack);
       setBrowseFolderKey(hit.browseFolderKey);
       setSuggestSort(hit.suggestSort);
+      setSuggestResults(hit.suggestResults);
+      setSuggestSource(hit.suggestSource);
+      setSuggestApiGap(hit.suggestApiGap);
+      setQuery(hit.query);
+      setSearchResults(hit.searchResults);
+      setInfoKey(hit.infoKey);
       return;
     }
+    // Different business/locale — drop session UI, keep fetch caches only if keys differ.
     setPanelMode("closed");
     setBrowseRows([]);
     setBrowseStack([]);
     setBrowseFolderKey(null);
     setSearchResults([]);
     setSuggestResults([]);
+    setSuggestSource("");
+    setSuggestApiGap("");
+    setQuery("");
     setInfoKey(null);
   }, [scopeKey, businessId, locale]);
 
   useEffect(() => {
-    if (!businessId) {
-      browseUiCache = null;
-      return;
-    }
+    // Never wipe the session cache on a transient null businessId (wizard remounts).
+    if (!businessId) return;
     browseUiCache = {
       businessId,
       locale,
@@ -454,6 +514,13 @@ export default function AdsManagerDetailedTargetingSection({
       browseFolderKey,
       browseRows,
       suggestSort,
+      suggestResults,
+      suggestSource,
+      suggestApiGap,
+      suggestSeedKey: selectedSeedKey,
+      query,
+      searchResults,
+      infoKey,
     };
   }, [
     businessId,
@@ -463,6 +530,13 @@ export default function AdsManagerDetailedTargetingSection({
     browseFolderKey,
     browseRows,
     suggestSort,
+    suggestResults,
+    suggestSource,
+    suggestApiGap,
+    selectedSeedKey,
+    query,
+    searchResults,
+    infoKey,
   ]);
 
   const tRef = useRef(t);
@@ -470,13 +544,32 @@ export default function AdsManagerDetailedTargetingSection({
 
   const loadBrowse = useCallback(async () => {
     if (!businessId) return;
+    const fetchKey = makeBrowseFetchKey(businessId, locale);
+    if (browseFetchCache?.key === fetchKey && browseFetchCache.rows.length) {
+      setBrowseRows(browseFetchCache.rows);
+      setBrowseBusy(false);
+      return;
+    }
     const id = ++browseReqId.current;
     setBrowseBusy(true);
     setError("");
     try {
-      const data = await browseFn(businessId, { locale });
+      if (!browseInflight || browseInflight.key !== fetchKey) {
+        const promise = (async () => {
+          const data = await browseFn(businessId, { locale });
+          const rows = (data.results || []).filter(
+            (row) => !isSyntheticName(row.name)
+          );
+          browseFetchCache = { key: fetchKey, rows };
+          return rows;
+        })().finally(() => {
+          if (browseInflight?.key === fetchKey) browseInflight = null;
+        });
+        browseInflight = { key: fetchKey, promise };
+      }
+      const rows = await browseInflight.promise;
       if (browseReqId.current !== id) return;
-      setBrowseRows((data.results || []).filter((row) => !isSyntheticName(row.name)));
+      setBrowseRows(rows);
     } catch (err) {
       if (browseReqId.current !== id) return;
       setError(
@@ -491,28 +584,64 @@ export default function AdsManagerDetailedTargetingSection({
 
   const loadSuggestions = useCallback(async () => {
     if (!businessId) return;
-    const id = ++suggestReqId.current;
     const seedList = selectedRef.current
       .filter((row) => row.id)
       .map((row) => ({ id: row.id, type: row.type || "interests" }));
+    const seedKey = seedList
+      .map((row) => `${row.type}:${row.id}`)
+      .join("|");
+    const fetchKey = makeSuggestFetchKey(
+      businessId,
+      locale,
+      suggestSort,
+      seedKey
+    );
     const excludeIds = selectedIdsRef.current;
-    setSuggestBusy(true);
-    setError("");
-    try {
-      const data = await suggestFn(businessId, {
-        locale,
-        sort: suggestSort,
-        limit: 30,
-        targetingList: seedList,
-      });
-      if (suggestReqId.current !== id) return;
-      setSuggestSource(String(data.source || ""));
-      setSuggestApiGap(String(data.apiGap || ""));
+    const applyCached = (hit: SuggestFetchCache) => {
+      setSuggestSource(hit.source);
+      setSuggestApiGap(hit.apiGap);
       setSuggestResults(
-        (data.results || []).filter(
+        hit.results.filter(
           (row) => row.id && row.selectable !== false && !excludeIds.has(row.id)
         )
       );
+      setSuggestBusy(false);
+    };
+    if (suggestFetchCache?.key === fetchKey) {
+      applyCached(suggestFetchCache);
+      return;
+    }
+    const id = ++suggestReqId.current;
+    setSuggestBusy(true);
+    setError("");
+    try {
+      let inflight = suggestInflight.get(fetchKey);
+      if (!inflight) {
+        inflight = (async () => {
+          const data = await suggestFn(businessId, {
+            locale,
+            sort: suggestSort,
+            limit: 30,
+            targetingList: seedList,
+          });
+          const payload: SuggestFetchCache = {
+            key: fetchKey,
+            results: (data.results || []).filter(
+              (row) => row.id && row.selectable !== false
+            ),
+            source: String(data.source || ""),
+            apiGap: String(data.apiGap || ""),
+          };
+          suggestFetchCache = payload;
+          return payload;
+        })().finally(() => {
+          suggestInflight.delete(fetchKey);
+        });
+        suggestInflight.set(fetchKey, inflight);
+      }
+      const payload = await inflight;
+      if (suggestReqId.current !== id) return;
+      applyCached(payload);
     } catch (err) {
       if (suggestReqId.current !== id) return;
       setSuggestResults([]);
@@ -525,21 +654,57 @@ export default function AdsManagerDetailedTargetingSection({
               "metaCampaigns.adsManager.chrome.detailedSuggestionsFailed"
             )
       );
-    } finally {
-      if (suggestReqId.current === id) setSuggestBusy(false);
+      setSuggestBusy(false);
     }
   }, [businessId, suggestFn, locale, suggestSort]);
 
   useEffect(() => {
     if (panelMode !== "browse") return;
     if (browseRows.length || browseBusy) return;
+    const fetchKey =
+      businessId && locale ? makeBrowseFetchKey(businessId, locale) : "";
+    if (
+      fetchKey &&
+      browseFetchCache?.key === fetchKey &&
+      browseFetchCache.rows.length
+    ) {
+      setBrowseRows(browseFetchCache.rows);
+      return;
+    }
     void loadBrowse();
-  }, [panelMode, browseRows.length, browseBusy, loadBrowse]);
+  }, [panelMode, browseRows.length, browseBusy, loadBrowse, businessId, locale]);
 
   useEffect(() => {
     if (panelMode !== "suggestions") return;
+    if (!businessId) return;
+    const fetchKey = makeSuggestFetchKey(
+      businessId,
+      locale,
+      suggestSort,
+      selectedSeedKey
+    );
+    if (suggestFetchCache?.key === fetchKey) {
+      // Remount / focus reopen — reuse Meta payload; still filter current selection.
+      const excludeIds = selectedIdsRef.current;
+      setSuggestSource(suggestFetchCache.source);
+      setSuggestApiGap(suggestFetchCache.apiGap);
+      setSuggestResults(
+        suggestFetchCache.results.filter(
+          (row) => row.id && row.selectable !== false && !excludeIds.has(row.id)
+        )
+      );
+      setSuggestBusy(false);
+      return;
+    }
     void loadSuggestions();
-  }, [panelMode, suggestSort, selectedSeedKey, loadSuggestions]);
+  }, [
+    panelMode,
+    suggestSort,
+    selectedSeedKey,
+    loadSuggestions,
+    businessId,
+    locale,
+  ]);
 
   useEffect(() => {
     if (!businessId) return;
@@ -648,8 +813,7 @@ export default function AdsManagerDetailedTargetingSection({
   }, [browseBranch, browseFolderKey, forest, t]);
 
   const openSuggestions = () => {
-    setBrowseStack([]);
-    setBrowseFolderKey(null);
+    // Keep browse drill path so remount / toggling back does not lose hierarchy.
     setInfoKey(null);
     setPanelMode("suggestions");
   };
@@ -657,9 +821,8 @@ export default function AdsManagerDetailedTargetingSection({
   const openBrowse = () => {
     setQuery("");
     setSearchResults([]);
-    setBrowseStack([]);
-    setBrowseFolderKey(null);
     setInfoKey(null);
+    // Preserve browseStack/folderKey across close→open and wizard remounts.
     setPanelMode((prev) => (prev === "browse" ? "closed" : "browse"));
   };
 
@@ -1017,13 +1180,21 @@ export default function AdsManagerDetailedTargetingSection({
               onFocus={() => {
                 if (query.trim().length >= 2) {
                   setPanelMode("search");
-                } else {
-                  openSuggestions();
+                  return;
                 }
+                // Layout reflow / scrollIntoView can refocus the input — do not
+                // yank the user out of an open browse panel or force a Meta reload.
+                if (panelMode === "closed") openSuggestions();
               }}
               onClick={(event) => {
                 event.stopPropagation();
-                if (query.trim().length < 2) openSuggestions();
+                if (query.trim().length >= 2) {
+                  setPanelMode("search");
+                  return;
+                }
+                // Explicit click may switch from browse → suggestions; cache
+                // prevents a duplicate Meta round-trip when seeds are unchanged.
+                openSuggestions();
               }}
             />
             {busy || suggestBusy ? (
