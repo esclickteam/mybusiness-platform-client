@@ -2605,7 +2605,7 @@
       "linkSubtitle": "Este e-mail do {{provider}} corresponde a {{email}}. Digite sua senha da BizUply para vincular. Seus planos e dados permanecem nesta conta.",
       "errors": {
         "existing_account": "Este e-mail já tem uma conta BizUply que não pode usar {{provider}} aqui. Entre com e-mail e senha.",
-        "whatsapp_account": "Este login do Google/Microsoft pertence a uma conta WhatsApp API, não a um workspace de negócios BizUply. Use o login WhatsApp API, ou um e-mail com plano de negócios BizUply.",
+        "whatsapp_account": "Este e-mail pertence a uma conta WhatsApp API ainda não vinculada a este Google/Microsoft no BizUply. Entre pelo login WhatsApp API para vincular o provedor (depois o login principal também funciona), ou use um e-mail com plano de negócios BizUply.",
         "partner_account": "Este e-mail pertence a uma conta de parceiro e não pode vincular {{provider}} no login de negócios. Use o portal do parceiro ou e-mail e senha.",
         "email_unverified": "O {{provider}} não confirmou este e-mail. Verifique no {{provider}} ou use e-mail e senha.",
         "no_account": "Ainda não há uma conta BizUply vinculada a este login do {{provider}}. Escolha um plano para criar uma.",

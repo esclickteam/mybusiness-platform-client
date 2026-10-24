@@ -2605,7 +2605,7 @@
       "linkSubtitle": "כתובת {{provider}} הזו תואמת ל־{{email}}. הזינו את סיסמת BizUply כדי לקשר אותה. החבילות והנתונים נשארים בחשבון הזה.",
       "errors": {
         "existing_account": "לאימייל הזה כבר יש חשבון BizUply שאי אפשר לחבר כאן ל־{{provider}}. התחברו עם אימייל וסיסמה.",
-        "whatsapp_account": "ההתחברות עם Google/Microsoft שייכת לחשבון WhatsApp API, לא לסביבת עסק BizUply. התחברו דרך כניסת WhatsApp API, או השתמשו באימייל עם חבילת עסק של BizUply.",
+        "whatsapp_account": "האימייל שייך לחשבון WhatsApp API שעדיין לא מקושר לספק הזה במסך BizUply. התחברו דרך כניסת WhatsApp API כדי לקשר Google/Microsoft, ואז אפשר להיכנס גם מכאן — או השתמשו באימייל עם חבילת עסק של BizUply.",
         "partner_account": "האימייל הזה שייך לחשבון שותף, שאי אפשר לקשר כאן ל־{{provider}}. השתמשו בפורטל השותפים או באימייל וסיסמה.",
         "email_unverified": "{{provider}} לא אימת את כתובת האימייל. אמתו אותה ב־{{provider}}, או השתמשו באימייל וסיסמה.",
         "no_account": "עדיין אין חשבון BizUply שמקושר להתחברות {{provider}} הזו. בחרו חבילה כדי ליצור אחד.",

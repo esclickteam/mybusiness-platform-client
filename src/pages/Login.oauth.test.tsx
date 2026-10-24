@@ -148,7 +148,8 @@ describe("BizUply social login", () => {
     expect(screen.queryByText(/whatsapp/i)).not.toBeInTheDocument();
   });
 
-  it("explains WhatsApp-only accounts instead of showing the OTP link screen", async () => {
+  it("explains unlinked WhatsApp-only email matches instead of showing the OTP link screen", async () => {
+    // Linked WA Google/Microsoft identities succeed server-side; this error is email-only.
     renderAt("/login?oauth_error=whatsapp_account&provider=google");
     await screen.findByRole("alert");
     expect(screen.getByRole("alert").textContent).toContain("login.oauth.errors.whatsapp_account");
