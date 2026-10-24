@@ -111,6 +111,9 @@ export type AdSetDraft = {
   /** Facebook Page used for Instant forms / lead conversion */
   facebookPageId: string;
   facebookPageName: string;
+  /** WhatsApp number linked to the selected Facebook Page (E.164 digits). */
+  whatsappPhone: string;
+  whatsappDisplayNumber: string;
   performanceGoal: string;
   costPerResultGoal: string;
   dataset: string;

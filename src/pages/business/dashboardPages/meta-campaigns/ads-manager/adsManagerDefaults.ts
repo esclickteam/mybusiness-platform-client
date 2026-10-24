@@ -35,6 +35,8 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
     conversionLocation: "Instant forms",
     facebookPageId: "",
     facebookPageName: "",
+    whatsappPhone: "",
+    whatsappDisplayNumber: "",
     performanceGoal: "Maximize number of leads",
     costPerResultGoal: "None",
     dataset: "BizUply Pixel",

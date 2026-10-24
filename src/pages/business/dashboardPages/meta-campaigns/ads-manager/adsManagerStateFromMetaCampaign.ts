@@ -192,6 +192,8 @@ function mapAdSet(
     name: adSet.name || fallback.name,
     status: adSet.status || fallback.status,
     facebookPageId: adSet.pageId || campaign.pageId || "",
+    whatsappPhone: fallback.whatsappPhone || "",
+    whatsappDisplayNumber: fallback.whatsappDisplayNumber || "",
     facebookPageName: fallback.facebookPageName,
     locationsSummary: locations.map((loc) => loc.name).join(", "),
     locations,
