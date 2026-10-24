@@ -9,6 +9,7 @@ import {
   findTractionClaims,
   formatUsd,
   illustrativeMrr,
+  isWithdrawnFromPublicSale,
   partnerEntryUsd,
   cardFilm,
   isInAppDemo,
@@ -22,17 +23,25 @@ import {
 
 describe("marketplace filters and calculator", () => {
   const products = [
+    { slug: "cliny", category: "home_services" },
+    { slug: "beautyflow", category: "beauty_wellness" },
+    { slug: "dinevo", category: "restaurants" },
     { slug: "serviceflow", category: "home_services" },
-    { slug: "reviewpilot", category: "sales_marketing" },
     { slug: "salonflow", category: "beauty_wellness" },
   ];
 
-  it("filters by category and returns every system for All", () => {
-    expect(filterProducts(products, "all")).toHaveLength(3);
-    expect(filterProducts(products, "beauty_wellness").map((item) => item.slug)).toEqual([
-      "salonflow",
+  it("filters by category and hides withdrawn platforms", () => {
+    expect(isWithdrawnFromPublicSale("serviceflow")).toBe(true);
+    expect(isWithdrawnFromPublicSale("beautyflow")).toBe(false);
+    expect(filterProducts(products, "all").map((item) => item.slug)).toEqual([
+      "cliny",
+      "beautyflow",
+      "dinevo",
     ]);
-    expect(filterProducts(products, "restaurants")).toEqual([]);
+    expect(filterProducts(products, "beauty_wellness").map((item) => item.slug)).toEqual([
+      "beautyflow",
+    ]);
+    expect(filterProducts(products, "home_services").map((item) => item.slug)).toEqual(["cliny"]);
   });
 
   it("calculates illustrative MRR and keeps the disclaimer", () => {

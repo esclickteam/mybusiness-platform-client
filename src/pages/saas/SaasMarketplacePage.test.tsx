@@ -14,8 +14,8 @@ import i18n from "../../i18n/i18n";
 const products = [
   {
     id: "1",
-    name: "ServiceFlow",
-    slug: "serviceflow",
+    name: "Cliny",
+    slug: "cliny",
     category: "home_services",
     categoryLabel: "Home Services",
     headline: "Complete Field Service Management SaaS",
@@ -29,7 +29,7 @@ const products = [
     screenshots: [],
     features: [],
     included: [],
-    demoUrl: "https://example.com/serviceflow-demo",
+    demoUrl: "https://example.com/cliny-demo",
     status: "published",
     badge: "Ready to launch",
     seoTitle: "Field Service SaaS for Sale | Ready-to-Launch Platform | Bizuply",
@@ -40,8 +40,8 @@ const products = [
   },
   {
     id: "2",
-    name: "SalonFlow",
-    slug: "salonflow",
+    name: "BeautyFlow",
+    slug: "beautyflow",
     category: "beauty_wellness",
     categoryLabel: "Beauty & Wellness",
     headline: "Beauty & Wellness Management SaaS",
@@ -100,6 +100,32 @@ const products = [
     partnerModel: false,
     exclusiveCountry: true,
   },
+  {
+    id: "4",
+    name: "ServiceFlow",
+    slug: "serviceflow",
+    category: "home_services",
+    categoryLabel: "Home Services",
+    headline: "Complete Field Service Management SaaS",
+    subtitle: "Launch your own SaaS for home service businesses.",
+    shortDescription: "For plumbers and electricians.",
+    fullDescription: "A ready platform.",
+    priceUsd: 14900,
+    estimatedDevCostLabel: "$50,000+",
+    accent: "#4F46E5",
+    accentSecondary: "#38BDF8",
+    screenshots: [],
+    features: [],
+    included: [],
+    demoUrl: "",
+    status: "published",
+    badge: "Ready to launch",
+    seoTitle: "Field Service",
+    seoDescription: "Field Service",
+    whatsappBlurb: "",
+    whatsappMessage: "Hi",
+    purchasable: true,
+  },
 ];
 
 function named(expected: string) {
@@ -141,18 +167,19 @@ describe("SaaS marketplace page", () => {
     expect(screen.getByRole("heading", { name: named("What is SaaS?") })).toBeTruthy();
     expect(screen.getAllByText("Illustrative example only. Revenue is not guaranteed.").length).toBeGreaterThan(0);
     expect(document.body.textContent || "").not.toMatch(/Buy Now/i);
-    expect(screen.getByRole("heading", { name: "ServiceFlow" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "SalonFlow" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Cliny" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "BeautyFlow" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "ServiceFlow" })).toBeNull();
     expect(document.querySelector('meta[name="robots"]')?.getAttribute("content")).toBe(
       "noindex, follow"
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Beauty & Wellness" }));
-    expect(screen.queryByRole("heading", { name: "ServiceFlow" })).toBeNull();
-    expect(screen.getByRole("heading", { name: "SalonFlow" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Cliny" })).toBeNull();
+    expect(screen.getByRole("heading", { name: "BeautyFlow" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "All Systems" }));
-    expect(screen.getByRole("heading", { name: "ServiceFlow" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Cliny" })).toBeTruthy();
   });
 
   it("opens a template demo from the published demo fields", async () => {
@@ -179,7 +206,7 @@ describe("SaaS marketplace page", () => {
 
   it("does not present fake traction", async () => {
     renderPage();
-    await screen.findByRole("heading", { name: "ServiceFlow" });
+    await screen.findByRole("heading", { name: "Cliny" });
     const text = document.body.textContent || "";
     expect(text).not.toMatch(/existing customers/i);
     expect(text).not.toMatch(/active subscribers/i);
