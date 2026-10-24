@@ -16,6 +16,7 @@ type DealRow = {
   payment?: { recorded?: boolean; reference?: string; amount?: number | null };
   delivery?: { approved?: boolean };
   tenantId?: string;
+  passwordSetupUrl?: string;
   audit?: { at?: string; action?: string; note?: string; actorEmail?: string }[];
 };
 
@@ -149,6 +150,11 @@ export default function AdminSaasDeals() {
                     ) : null}
                     {row.status !== "provisioned" && row.status !== "cancelled" ? (
                       <button type="button" className="mt-1 block font-bold" onClick={() => act(row.id, "cancel", { note: "בוטל" }, "העסקה בוטלה")}>ביטול</button>
+                    ) : null}
+                    {row.passwordSetupUrl ? (
+                      <a className="mt-1 block text-xs font-bold underline" href={row.passwordSetupUrl} target="_blank" rel="noreferrer">
+                        קישור הגדרת סיסמה
+                      </a>
                     ) : null}
                     {(row.audit || []).slice(-4).reverse().map((entry) => (
                       <p key={`${entry.at}-${entry.action}`} className="text-xs">{entry.action} · {entry.note || ""}</p>
