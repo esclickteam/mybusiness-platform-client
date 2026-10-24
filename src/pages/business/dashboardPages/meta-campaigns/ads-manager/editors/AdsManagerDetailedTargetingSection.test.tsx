@@ -130,6 +130,61 @@ describe("AdsManagerDetailedTargetingSection", () => {
     __resetDetailedTargetingBrowseCacheForTests();
   });
 
+  it("applies suggestion results even when parent recreates selected=[] each render", async () => {
+    await i18n.changeLanguage("he");
+    let release!: (value: unknown) => void;
+    const gate = new Promise((resolve) => {
+      release = resolve;
+    });
+    const suggestFn = vi.fn(async () => {
+      await gate;
+      return {
+        success: true,
+        results: SUGGESTIONS,
+        source: "targetingsuggestions",
+        seedSource: "page_category",
+        sort: "relevance",
+      };
+    });
+
+    const Parent = () => {
+      // New array identity every render — mirrors AdSetLevelEditor.
+      const selected: AdSetDetailedTarget[] = [];
+      const [, bump] = React.useState(0);
+      React.useEffect(() => {
+        const id = window.setInterval(() => bump((n) => n + 1), 20);
+        return () => window.clearInterval(id);
+      }, []);
+      return (
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={selected}
+          onChange={() => {}}
+          browseFn={async () => ({ success: true, results: FIXTURE })}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={suggestFn as never}
+        />
+      );
+    };
+
+    render(
+      <I18nextProvider i18n={i18n}>
+        <Parent />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("detailed-targeting-search"));
+    await waitFor(() => expect(suggestFn).toHaveBeenCalled());
+    // Let parent churn while request is in flight.
+    await new Promise((r) => setTimeout(r, 80));
+    release({});
+    await waitFor(() => expect(screen.getByText("יופי")).toBeTruthy());
+    // Must not keep calling forever for identical empty selection.
+    const callsAfter = suggestFn.mock.calls.length;
+    await new Promise((r) => setTimeout(r, 80));
+    expect(suggestFn.mock.calls.length).toBe(callsAfter);
+  });
+
   it("opens suggestions on empty search click with Relevance/Size tabs", async () => {
     await i18n.changeLanguage("he");
     const suggestFn = vi.fn(async () => ({

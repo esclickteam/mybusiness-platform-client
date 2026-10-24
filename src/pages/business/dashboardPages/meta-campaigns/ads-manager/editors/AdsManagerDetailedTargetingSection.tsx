@@ -395,6 +395,19 @@ export default function AdsManagerDetailedTargetingSection({
     () => new Set(selected.map((item) => item.id).filter(Boolean)),
     [selected]
   );
+  /** Stable seed key — parent often recreates `selected` arrays every render. */
+  const selectedSeedKey = useMemo(
+    () =>
+      selected
+        .filter((row) => row.id)
+        .map((row) => `${row.type || "interests"}:${row.id}`)
+        .join("|"),
+    [selected]
+  );
+  const selectedRef = useRef(selected);
+  const selectedIdsRef = useRef(selectedIds);
+  selectedRef.current = selected;
+  selectedIdsRef.current = selectedIds;
 
   const forest = useMemo(() => buildBrowseForest(browseRows), [browseRows]);
 
@@ -476,6 +489,10 @@ export default function AdsManagerDetailedTargetingSection({
   const loadSuggestions = useCallback(async () => {
     if (!businessId) return;
     const id = ++suggestReqId.current;
+    const seedList = selectedRef.current
+      .filter((row) => row.id)
+      .map((row) => ({ id: row.id, type: row.type || "interests" }));
+    const excludeIds = selectedIdsRef.current;
     setSuggestBusy(true);
     setError("");
     try {
@@ -483,16 +500,14 @@ export default function AdsManagerDetailedTargetingSection({
         locale,
         sort: suggestSort,
         limit: 30,
-        targetingList: selected
-          .filter((row) => row.id)
-          .map((row) => ({ id: row.id, type: row.type || "interests" })),
+        targetingList: seedList,
       });
       if (suggestReqId.current !== id) return;
       setSuggestSource(String(data.source || ""));
       setSuggestApiGap(String(data.apiGap || ""));
       setSuggestResults(
         (data.results || []).filter(
-          (row) => row.id && row.selectable !== false && !selectedIds.has(row.id)
+          (row) => row.id && row.selectable !== false && !excludeIds.has(row.id)
         )
       );
     } catch (err) {
@@ -508,7 +523,7 @@ export default function AdsManagerDetailedTargetingSection({
     } finally {
       if (suggestReqId.current === id) setSuggestBusy(false);
     }
-  }, [businessId, suggestFn, locale, suggestSort, selected, selectedIds, t]);
+  }, [businessId, suggestFn, locale, suggestSort, t]);
 
   useEffect(() => {
     if (panelMode !== "browse") return;
@@ -519,7 +534,7 @@ export default function AdsManagerDetailedTargetingSection({
   useEffect(() => {
     if (panelMode !== "suggestions") return;
     void loadSuggestions();
-  }, [panelMode, suggestSort, loadSuggestions]);
+  }, [panelMode, suggestSort, selectedSeedKey, loadSuggestions]);
 
   useEffect(() => {
     if (!businessId) return;
