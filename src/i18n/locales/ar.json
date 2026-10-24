@@ -474,7 +474,14 @@
     "ariaLabel": "الملاحة مساحة العمل",
     "whatsapp": "WhatsApp عبر Meta",
     "metaCampaigns": "الحملات",
-    "socialSchedule": "جدولة المشاركات والقصص"
+    "socialSchedule": "جدولة المشاركات والقصص",
+    "products": {
+      "title": "منتجاتك",
+      "business": "نظام الأعمال",
+      "crm": "CRM",
+      "website": "الموقع",
+      "whatsappApi": "WhatsApp API"
+    }
   },
   "automations": {
     "shell": {
@@ -2560,7 +2567,15 @@
       "serverError": "خطأ في الخادم. يُرجى المحاولة مرة أخرى.",
       "staffCredentials": "اسم المستخدم أو كلمة المرور غير صحيحة",
       "generic": "حدث خطأ. يُرجى المحاولة مرة أخرى.",
-      "permission": "خطأ في الصلاحية — يُرجى المحاولة مرة أخرى"
+      "permission": "خطأ في الصلاحية — يُرجى المحاولة مرة أخرى",
+      "enterEmail": "يرجى إدخال البريد الإلكتروني",
+      "otp_invalid": "رمز غير صالح أو منتهٍ. حاول مرة أخرى.",
+      "otp_expired": "انتهت صلاحية الرمز. اطلب رمزًا جديدًا.",
+      "otp_locked": "محاولات كثيرة. اطلب رمزًا جديدًا.",
+      "otp_required": "اطلب رمز تسجيل الدخول أولًا.",
+      "otp_send_failed": "تعذر إرسال الرمز. حاول مرة أخرى.",
+      "otp_cooldown": "يرجى الانتظار قبل طلب رمز آخر.",
+      "state_invalid": "انتهت جلسة تسجيل الدخول. ابدأ من جديد."
     },
     "forgotTitle": "نسيت كلمة المرور",
     "forgotSubtitle": "أدخل بريدك الإلكتروني وسنرسل رابط إعادة تعيين آمن",
@@ -2578,11 +2593,74 @@
     "resetInvalidLink": "رابط إعادة تعيين كلمة المرور غير صحيح",
     "newPassword": "كلمة المرور الجديدة",
     "confirmPassword": "تأكيد كلمة المرور",
+    "continueGoogle": "المتابعة مع Google",
+    "continueMicrosoft": "المتابعة مع Microsoft",
+    "or": "أو",
+    "redirecting": "جارٍ التحويل…",
+    "providerGoogle": "Google",
+    "providerMicrosoft": "Microsoft",
+    "oauth": {
+      "completing": "جارٍ تسجيل الدخول…",
+      "linkSubmit": "تحقق والمتابعة",
+      "linking": "جارٍ الربط…",
+      "linkSubtitle": "بريد {{provider}} هذا يطابق {{email}}. أدخل كلمة مرور BizUply لربطه. تبقى باقاتك وبياناتك في هذا الحساب.",
+      "errors": {
+        "existing_account": "هذا البريد لديه حساب BizUply لا يمكنه استخدام {{provider}} هنا. سجّل الدخول بالبريد وكلمة المرور.",
+        "whatsapp_account": "هذا البريد يخص حساب WhatsApp API غير مرتبط بعد بهوية Google/Microsoft هذه في BizUply. سجّل الدخول عبر WhatsApp API لربط المزود (ثم يعمل الدخول من هنا أيضًا)، أو استخدم بريدًا لديه خطة أعمال BizUply.",
+        "partner_account": "هذا البريد يخص حساب شريك ولا يمكن ربط {{provider}} من دخول الأعمال. استخدم بوابة الشريك أو البريد وكلمة المرور.",
+        "email_unverified": "لم يؤكد {{provider}} هذا البريد. فعِّله لدى {{provider}} أو استخدم البريد وكلمة المرور.",
+        "no_account": "لا يوجد حساب BizUply مرتبط بدخول {{provider}} بعد. اختر باقة لإنشاء حساب.",
+        "provider_mismatch": "هذا الحساب مرتبط بدخول {{provider}} مختلف. استخدم ذلك، أو سجّل الدخول بالبريد وكلمة المرور.",
+        "state_invalid": "انتهت صلاحية جلسة الدخول. حاول مرة أخرى.",
+        "cancelled": "تم إلغاء الدخول عبر {{provider}}.",
+        "provider_unavailable": "الدخول عبر {{provider}} غير متاح الآن. استخدم البريد وكلمة المرور.",
+        "provider_error": "تعذر تسجيل الدخول عبر {{provider}}. حاول مرة أخرى.",
+        "account_disabled": "هذا الحساب معطّل. تواصل مع support@bizuply.com.",
+        "rate_limited": "محاولات كثيرة. حاول بعد دقائق.",
+        "signup_closed": "التسجيل غير متاح مؤقتًا. حاول لاحقًا.",
+        "session": "تعذر إكمال تسجيل الدخول. حاول مرة أخرى.",
+        "plan_required": "اختر باقة من صفحة الأسعار قبل التسجيل عبر {{provider}}.",
+        "incorrect_password": "كلمة المرور غير صحيحة. حاول مرة أخرى أو استخدم رمز البريد.",
+        "verification_required": "أدخل رمز البريد أو كلمة مرور BizUply للمتابعة.",
+        "otp_invalid": "الرمز غير صحيح. حاول مرة أخرى.",
+        "otp_expired": "انتهت صلاحية الرمز. أرسل رمزًا جديدًا.",
+        "otp_required": "أرسل رمز التحقق أولًا.",
+        "otp_locked": "محاولات كثيرة بأكواد خاطئة. ابدأ من جديد مع {{provider}}.",
+        "otp_cooldown": "انتظر قليلًا قبل طلب رمز آخر.",
+        "otp_send_limited": "طلبات كثيرة للرمز. حاول لاحقًا أو استخدم كلمة المرور.",
+        "otp_send_failed": "تعذر إرسال الرمز الآن. حاول مرة أخرى أو استخدم كلمة المرور.",
+        "link_session": "تم ربط الحساب، لكن تعذر إكمال تسجيل الدخول. حدّث الصفحة وجرّب Google أو Microsoft مرة أخرى — لا حاجة لرمز جديد.",
+        "link_failed": "تعذر ربط هذا الحساب. ابدأ من جديد مع {{provider}}."
+      },
+      "linkFound": "وجدنا حساب BizUply الحالي الخاص بك. أكّد أنه لك لربط {{provider}}.",
+      "linkKeepData": "تبقى أعمالك وباقاتك وبياناتك في هذا الحساب.",
+      "verifyMethods": "طرق التحقق",
+      "methodOtp": "رمز البريد",
+      "methodPassword": "كلمة المرور",
+      "otpHint": "سنرسل رمزًا من 6 أرقام إلى {{email}}.",
+      "otpSend": "إرسال الرمز",
+      "otpResend": "إرسال رمز جديد",
+      "otpResendIn": "إعادة الإرسال خلال {{seconds}} ث",
+      "otpSending": "جارٍ الإرسال…",
+      "otpLabel": "رمز التحقق"
+    },
     "whatsappApiCheckout": {
       "pending": "تم استلام الدفع. نقوم الآن بتفعيل حساب WhatsApp API الخاص بك، ويستغرق ذلك عادةً بضع ثوانٍ.",
       "ready": "حساب WhatsApp API جاهز. سجّل الدخول بالبريد الإلكتروني وكلمة المرور اللذين اخترتهما.",
       "slow": "تم استلام الدفع، لكن التفعيل يستغرق وقتًا أطول من المعتاد. حاول تسجيل الدخول بعد دقيقة أو راسل support@bizuply.com."
-    }
+    },
+    "methodOtp": "رمز البريد",
+    "methodPassword": "كلمة المرور",
+    "otpHint": "سنرسل رمزًا من 6 أرقام إلى {{email}}. لا حاجة لكلمة مرور.",
+    "otpSend": "إرسال الرمز",
+    "otpResend": "إرسال رمز جديد",
+    "otpResendIn": "إعادة الإرسال خلال {{seconds}} ث",
+    "otpSending": "جارٍ الإرسال…",
+    "otpLabel": "رمز تسجيل الدخول",
+    "otpVerify": "تسجيل الدخول بالرمز",
+    "otpVerifying": "جارٍ تسجيل الدخول…",
+    "usePasswordInstead": "استخدم كلمة المرور",
+    "useCodeInstead": "استخدم رمز البريد"
   },
   "pricing": {
     "seoTitle": "باقات الخدمات  Bizuply",
@@ -13397,7 +13475,29 @@
     "purchaseIntentExpired": "طلب الشراء مفقود أو منتهٍ. عد إلى الأسعار واختر الخدمة مرة أخرى.",
     "registerFailed": "فشل التسجيل. يُرجى المحاولة مرة أخرى.",
     "emailExists": "هذا البريد مسجّل بالفعل",
-    "genericError": "حدث خطأ. يُرجى المحاولة لاحقًا."
+    "genericError": "حدث خطأ. يُرجى المحاولة لاحقًا.",
+    "identity": {
+      "title": "المتابعة إلى الدفع",
+      "subtitlePaid": "تحقق عبر Google أو Microsoft أو البريد — ثم ادفع. تُستكمل بيانات النشاط بعد الدفع.",
+      "subtitleFree": "أنشئ حساب BizUply",
+      "checkoutNote": "دفع آمن عبر Lemon Squeezy. بدون كلمة مرور قبل الدفع.",
+      "continueEmail": "المتابعة بالبريد الإلكتروني",
+      "sendCode": "إرسال رمز التحقق",
+      "sendingCode": "جارٍ إرسال الرمز…",
+      "otpHint": "أدخل الرمز المكوّن من 6 أرقام المُرسل إلى {{email}}.",
+      "verifyAndPay": "تحقق والمتابعة إلى الدفع",
+      "changeEmail": "استخدام بريد آخر",
+      "emailInvalid": "أدخل عنوان بريد إلكتروني صالحًا.",
+      "sendFailed": "تعذّر إرسال الرمز. حاول مرة أخرى.",
+      "useSocialForIntent": "تابع عبر Google أو Microsoft لهذا التسجيل."
+    },
+    "setup": {
+      "title": "أكمل إعداد نشاطك التجاري",
+      "subtitle": "أضف اسم النشاط لتخصيص مساحة العمل. تم حفظ بريد تسجيل الدخول بالفعل.",
+      "optional": "اختياري",
+      "continue": "المتابعة إلى لوحة التحكم",
+      "saving": "جارٍ الحفظ…"
+    }
   },
   "studio": {
     "back": "رجوع",

@@ -474,7 +474,14 @@
     "ariaLabel": "Navegação no espaço de trabalho comercial",
     "whatsapp": "WhatsApp via Meta",
     "metaCampaigns": "Campanhas",
-    "socialSchedule": "Agendar Posts e Histórias"
+    "socialSchedule": "Agendar Posts e Histórias",
+    "products": {
+      "title": "Seus produtos",
+      "business": "Negócio",
+      "crm": "CRM",
+      "website": "Site",
+      "whatsappApi": "WhatsApp API"
+    }
   },
   "automations": {
     "shell": {
@@ -2560,7 +2567,15 @@
       "serverError": "Erro no servidor. Tente novamente.",
       "staffCredentials": "Usuário ou senha incorretos",
       "generic": "Algo deu errado. Tente novamente.",
-      "permission": "Erro de permissão — tente novamente"
+      "permission": "Erro de permissão — tente novamente",
+      "enterEmail": "Informe seu e-mail",
+      "otp_invalid": "Código inválido ou expirado. Tente novamente.",
+      "otp_expired": "Este código expirou. Solicite um novo.",
+      "otp_locked": "Muitas tentativas. Solicite um novo código.",
+      "otp_required": "Solicite primeiro um código de acesso.",
+      "otp_send_failed": "Não foi possível enviar o código. Tente novamente.",
+      "otp_cooldown": "Aguarde antes de solicitar outro código.",
+      "state_invalid": "A sessão de acesso expirou. Comece de novo."
     },
     "forgotTitle": "Esqueci minha senha",
     "forgotSubtitle": "Digite seu e-mail e nós enviaremos um link de redefinição seguro",
@@ -2578,11 +2593,74 @@
     "resetInvalidLink": "Link de redefinição de senha inválido",
     "newPassword": "Nova senha",
     "confirmPassword": "Confirmar senha",
+    "continueGoogle": "Continuar com o Google",
+    "continueMicrosoft": "Continuar com a Microsoft",
+    "or": "OU",
+    "redirecting": "Redirecionando…",
+    "providerGoogle": "Google",
+    "providerMicrosoft": "Microsoft",
+    "oauth": {
+      "completing": "Entrando…",
+      "linkSubmit": "Verificar e continuar",
+      "linking": "Conectando…",
+      "linkSubtitle": "Este e-mail do {{provider}} corresponde a {{email}}. Digite sua senha da BizUply para vincular. Seus planos e dados permanecem nesta conta.",
+      "errors": {
+        "existing_account": "Este e-mail já tem uma conta BizUply que não pode usar {{provider}} aqui. Entre com e-mail e senha.",
+        "whatsapp_account": "Este e-mail pertence a uma conta WhatsApp API ainda não vinculada a este Google/Microsoft no BizUply. Entre pelo login WhatsApp API para vincular o provedor (depois o login principal também funciona), ou use um e-mail com plano de negócios BizUply.",
+        "partner_account": "Este e-mail pertence a uma conta de parceiro e não pode vincular {{provider}} no login de negócios. Use o portal do parceiro ou e-mail e senha.",
+        "email_unverified": "O {{provider}} não confirmou este e-mail. Verifique no {{provider}} ou use e-mail e senha.",
+        "no_account": "Ainda não há uma conta BizUply vinculada a este login do {{provider}}. Escolha um plano para criar uma.",
+        "provider_mismatch": "Esta conta já está vinculada a outro login do {{provider}}. Use esse, ou entre com e-mail e senha.",
+        "state_invalid": "A sessão de login expirou. Tente novamente.",
+        "cancelled": "O login com {{provider}} foi cancelado.",
+        "provider_unavailable": "O login com {{provider}} não está disponível agora. Use e-mail e senha.",
+        "provider_error": "Não foi possível entrar com {{provider}}. Tente novamente.",
+        "account_disabled": "Esta conta está desativada. Contate support@bizuply.com.",
+        "rate_limited": "Muitas tentativas. Tente de novo em alguns minutos.",
+        "signup_closed": "O cadastro está temporariamente indisponível. Tente mais tarde.",
+        "session": "Não foi possível concluir o login. Tente novamente.",
+        "plan_required": "Escolha um plano na página de preços antes de se cadastrar com {{provider}}.",
+        "incorrect_password": "Senha incorreta. Tente de novo ou use o código por e-mail.",
+        "verification_required": "Digite o código do e-mail ou sua senha da BizUply para continuar.",
+        "otp_invalid": "Esse código está incorreto. Tente de novo.",
+        "otp_expired": "Esse código expirou. Envie um novo.",
+        "otp_required": "Envie um código de verificação primeiro.",
+        "otp_locked": "Muitos códigos incorretos. Comece de novo com {{provider}}.",
+        "otp_cooldown": "Aguarde um momento antes de pedir outro código.",
+        "otp_send_limited": "Muitos pedidos de código. Tente mais tarde ou use sua senha.",
+        "otp_send_failed": "Não foi possível enviar o código agora. Tente de novo ou use sua senha.",
+        "link_session": "A conta foi vinculada, mas não concluímos o login. Atualize e tente de novo com Google ou Microsoft — não precisa de um código novo.",
+        "link_failed": "Não foi possível vincular esta conta. Comece de novo com {{provider}}."
+      },
+      "linkFound": "Encontramos sua conta BizUply existente. Confirme que é você para conectar o {{provider}}.",
+      "linkKeepData": "Seus negócios, planos e dados permanecem nesta conta.",
+      "verifyMethods": "Métodos de verificação",
+      "methodOtp": "Código por e-mail",
+      "methodPassword": "Senha",
+      "otpHint": "Enviaremos um código de 6 dígitos para {{email}}.",
+      "otpSend": "Enviar código",
+      "otpResend": "Enviar um novo código",
+      "otpResendIn": "Reenviar em {{seconds}}s",
+      "otpSending": "Enviando…",
+      "otpLabel": "Código de verificação"
+    },
     "whatsappApiCheckout": {
       "pending": "Pagamento recebido. Estamos ativando sua conta da API do WhatsApp. Isso costuma levar alguns segundos.",
       "ready": "Sua conta da API do WhatsApp está pronta. Entre com o e-mail e a senha que você escolheu.",
       "slow": "Pagamento recebido, mas a ativação está demorando mais que o normal. Tente entrar em um minuto ou escreva para support@bizuply.com."
-    }
+    },
+    "methodOtp": "Código por e-mail",
+    "methodPassword": "Senha",
+    "otpHint": "Enviaremos um código de 6 dígitos para {{email}}. Sem necessidade de senha.",
+    "otpSend": "Enviar código",
+    "otpResend": "Enviar um novo código",
+    "otpResendIn": "Reenviar em {{seconds}}s",
+    "otpSending": "Enviando…",
+    "otpLabel": "Código de acesso",
+    "otpVerify": "Entrar com código",
+    "otpVerifying": "Entrando…",
+    "usePasswordInstead": "Usar senha",
+    "useCodeInstead": "Usar código por e-mail"
   },
   "pricing": {
     "seoTitle": "Pacotes de Serviço  Bizuply",
@@ -13397,7 +13475,29 @@
     "purchaseIntentExpired": "A solicitação de compra está ausente ou expirou. Volte aos preços e escolha o serviço novamente.",
     "registerFailed": "Falha no cadastro. Tente novamente.",
     "emailExists": "Este e-mail já está cadastrado",
-    "genericError": "Algo deu errado. Tente novamente mais tarde."
+    "genericError": "Algo deu errado. Tente novamente mais tarde.",
+    "identity": {
+      "title": "Continuar para o pagamento",
+      "subtitlePaid": "Verifique com Google, Microsoft ou e-mail — depois pague. Os dados do negócio são preenchidos após o pagamento.",
+      "subtitleFree": "Crie sua conta BizUply",
+      "checkoutNote": "Pagamento seguro com Lemon Squeezy. Sem senha antes do pagamento.",
+      "continueEmail": "Continuar com e-mail",
+      "sendCode": "Enviar código de verificação",
+      "sendingCode": "Enviando código…",
+      "otpHint": "Digite o código de 6 dígitos enviado para {{email}}.",
+      "verifyAndPay": "Verificar e continuar para o pagamento",
+      "changeEmail": "Usar outro e-mail",
+      "emailInvalid": "Digite um endereço de e-mail válido.",
+      "sendFailed": "Não foi possível enviar o código. Tente novamente.",
+      "useSocialForIntent": "Continue com Google ou Microsoft para este cadastro."
+    },
+    "setup": {
+      "title": "Conclua a configuração do seu negócio",
+      "subtitle": "Adicione o nome do negócio para personalizar o espaço de trabalho. Seu e-mail de acesso já está salvo.",
+      "optional": "opcional",
+      "continue": "Continuar para o painel",
+      "saving": "Salvando…"
+    }
   },
   "studio": {
     "back": "Voltar",

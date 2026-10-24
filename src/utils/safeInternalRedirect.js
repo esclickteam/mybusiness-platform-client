@@ -7,6 +7,7 @@ import {
   isWhatsAppApiPortalDashboardPath,
   isWhatsAppApiPortalPathAllowed,
   isWhatsAppApiPortalUser,
+  resolveMultiProductHome,
   whatsappApiPortalBillingPath,
   whatsappApiPortalHome,
 } from "./whatsappApiPortal.js";
@@ -178,15 +179,25 @@ export function resolvePostLoginDestination({
   hasAccess = true,
   enabledModules = null,
   subscriptionPlan = null,
+  activeProducts = null,
+  entitlements = null,
   accountKind = null,
   queryRedirect = null,
   storedRedirect = null,
 } = {}) {
   const normalizedRole = String(role || "").toLowerCase();
+  const accessUser = {
+    role: normalizedRole,
+    subscriptionPlan,
+    activeProducts,
+    entitlements,
+    enabledModules,
+    businessId,
+  };
   const portalAccount =
     normalizedRole === "business" &&
     Boolean(businessId) &&
-    isWhatsAppApiPortalUser({ role: normalizedRole, subscriptionPlan });
+    isWhatsAppApiPortalUser(accessUser);
 
   const preferred =
     sanitizeInternalRedirect(queryRedirect) ||
@@ -222,6 +233,11 @@ export function resolvePostLoginDestination({
       return "/pricing";
     }
     if (!businessId) return "/dashboard";
+
+    // Multi-product / entitlement-driven home (server activeProducts).
+    const multiHome = resolveMultiProductHome(accessUser);
+    if (multiHome) return multiHome;
+
     const limited = Array.isArray(enabledModules) ? enabledModules : null;
     const isWebsiteOnly =
       Boolean(limited?.includes("website")) &&
@@ -229,6 +245,9 @@ export function resolvePostLoginDestination({
       !limited?.includes("dashboard");
     if (isWebsiteOnly) {
       return `/business/${businessId}/dashboard/website`;
+    }
+    if (limited?.includes("crm") && !limited?.includes("automations")) {
+      return `/business/${businessId}/dashboard/crm`;
     }
     return `/business/${businessId}/dashboard`;
   }

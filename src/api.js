@@ -17,14 +17,13 @@ import {
 import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
 import { shouldAttachManagedBusinessHeader } from "./lib/partnerManagedContext";
 
-const envApiUrl = String(import.meta.env.VITE_API_URL || "")
-  .trim()
-  .replace(/\/+$/, "");
-const BASE_URL =
-  envApiUrl ||
-  (import.meta.env.MODE === "production"
-    ? "https://api.bizuply.com/api"
-    : "/api");
+import { browserHostname, resolveApiBaseUrl } from "./apiBaseUrl";
+
+const BASE_URL = resolveApiBaseUrl({
+  envApiUrl: import.meta.env.VITE_API_URL,
+  mode: import.meta.env.MODE,
+  hostname: browserHostname(),
+});
 
 const API = axios.create({
   baseURL: BASE_URL,

@@ -68,8 +68,10 @@ export async function changeAppLanguage(lng) {
 
 /**
  * Login / /me sync:
- * - Account language wins.
- * - Else an explicit local selection is applied and synced into the profile.
+ * - An explicit local selection (Pricing → Identity → Lemon → Dashboard) wins
+ *   so login/OAuth cannot flip the UI back to English mid-flow.
+ * - Local choice is written into the account profile when possible.
+ * - Else the account language is applied.
  * - Geo/browser remain the unresolved fallback and are never written as an
  *   explicit account preference.
  */
@@ -80,18 +82,18 @@ export function syncLanguageOnLogin(user) {
     return demoLocale;
   }
 
-  const accountLanguage = normalizeLanguage(user?.language, { fallback: null });
-  if (accountLanguage) {
-    markManualLanguageChoice(accountLanguage);
-    applyUiLanguage(accountLanguage, { persist: true });
-    return accountLanguage;
-  }
-
   const localLanguage = getManualLanguageChoice();
   if (localLanguage) {
     applyUiLanguage(localLanguage, { persist: true });
     void persistAccountLanguage(localLanguage);
     return localLanguage;
+  }
+
+  const accountLanguage = normalizeLanguage(user?.language, { fallback: null });
+  if (accountLanguage) {
+    markManualLanguageChoice(accountLanguage);
+    applyUiLanguage(accountLanguage, { persist: true });
+    return accountLanguage;
   }
 
   return null;
