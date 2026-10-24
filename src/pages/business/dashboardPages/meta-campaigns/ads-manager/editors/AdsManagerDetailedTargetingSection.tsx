@@ -356,6 +356,10 @@ export default function AdsManagerDetailedTargetingSection({
   }, [businessId, query, searchFn, i18n.language, t]);
 
   useEffect(() => {
+    // Use click (not mousedown): mousedown-outside races the browse button's
+    // own click in some browsers/automation and closes the panel immediately
+    // after open, which looked like "עיון לא נפתח" while the browse API still
+    // fired in the background.
     const onDoc = (event: MouseEvent) => {
       if (!boxRef.current?.contains(event.target as Node)) {
         setSearchOpen(false);
@@ -363,8 +367,8 @@ export default function AdsManagerDetailedTargetingSection({
         setInfoKey(null);
       }
     };
-    document.addEventListener("mousedown", onDoc);
-    return () => document.removeEventListener("mousedown", onDoc);
+    document.addEventListener("click", onDoc);
+    return () => document.removeEventListener("click", onDoc);
   }, []);
 
   const addItem = (item: AdSetDetailedTarget) => {
@@ -614,10 +618,17 @@ export default function AdsManagerDetailedTargetingSection({
               )}
               aria-expanded={browseOpen}
               data-testid="detailed-targeting-browse"
-              onClick={() => {
-                setBrowseOpen((v) => !v);
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
                 setSearchOpen(false);
                 setInfoKey(null);
+                setBrowseOpen((v) => !v);
+              }}
+              onMouseDown={(event) => {
+                // Keep focus/click on this control from being treated as an
+                // outside dismiss by document-level listeners.
+                event.stopPropagation();
               }}
             >
               {t("metaCampaigns.adsManager.chrome.browse")}

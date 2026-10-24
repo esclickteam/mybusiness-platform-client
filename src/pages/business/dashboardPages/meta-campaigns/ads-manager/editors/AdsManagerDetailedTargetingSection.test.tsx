@@ -144,6 +144,30 @@ describe("AdsManagerDetailedTargetingSection", () => {
     await waitFor(() => expect(selected.length).toBe(1));
   });
 
+  it("keeps the browse panel open after clicking עיון / Browse", async () => {
+    await i18n.changeLanguage("he");
+    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
+    render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+        />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("detailed-targeting-browse"));
+    await waitFor(() => expect(browseFn).toHaveBeenCalled());
+    expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /דמוגרפיה|Demographics/i })).toBeTruthy();
+    // Document click outside should close; click inside must not.
+    fireEvent.click(screen.getByTestId("detailed-targeting-panel"));
+    expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
+  });
+
   it("shows why unsupported Meta types cannot be selected", async () => {
     await i18n.changeLanguage("en");
     const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
