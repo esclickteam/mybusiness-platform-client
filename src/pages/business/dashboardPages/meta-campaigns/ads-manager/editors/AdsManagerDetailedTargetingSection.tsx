@@ -352,6 +352,8 @@ export default function AdsManagerDetailedTargetingSection({
   const ChevronBack = isRtl ? ChevronRight : ChevronLeft;
   const boxRef = useRef<HTMLDivElement | null>(null);
   const reqId = useRef(0);
+  const suggestReqId = useRef(0);
+  const browseReqId = useRef(0);
   const locale = localeForLang(i18n.language);
   const cached =
     businessId &&
@@ -452,24 +454,28 @@ export default function AdsManagerDetailedTargetingSection({
 
   const loadBrowse = useCallback(async () => {
     if (!businessId) return;
+    const id = ++browseReqId.current;
     setBrowseBusy(true);
     setError("");
     try {
       const data = await browseFn(businessId, { locale });
+      if (browseReqId.current !== id) return;
       setBrowseRows((data.results || []).filter((row) => !isSyntheticName(row.name)));
     } catch (err) {
+      if (browseReqId.current !== id) return;
       setError(
         err instanceof Error
           ? err.message
           : t("metaCampaigns.adsManager.chrome.detailedBrowseFailed")
       );
     } finally {
-      setBrowseBusy(false);
+      if (browseReqId.current === id) setBrowseBusy(false);
     }
   }, [businessId, browseFn, locale, t]);
 
   const loadSuggestions = useCallback(async () => {
     if (!businessId) return;
+    const id = ++suggestReqId.current;
     setSuggestBusy(true);
     setError("");
     try {
@@ -481,6 +487,7 @@ export default function AdsManagerDetailedTargetingSection({
           .filter((row) => row.id)
           .map((row) => ({ id: row.id, type: row.type || "interests" })),
       });
+      if (suggestReqId.current !== id) return;
       setSuggestSource(String(data.source || ""));
       setSuggestApiGap(String(data.apiGap || ""));
       setSuggestResults(
@@ -489,6 +496,7 @@ export default function AdsManagerDetailedTargetingSection({
         )
       );
     } catch (err) {
+      if (suggestReqId.current !== id) return;
       setSuggestResults([]);
       setSuggestSource("");
       setSuggestApiGap("");
@@ -498,7 +506,7 @@ export default function AdsManagerDetailedTargetingSection({
           : t("metaCampaigns.adsManager.chrome.detailedSuggestionsFailed")
       );
     } finally {
-      setSuggestBusy(false);
+      if (suggestReqId.current === id) setSuggestBusy(false);
     }
   }, [businessId, suggestFn, locale, suggestSort, selected, selectedIds, t]);
 
