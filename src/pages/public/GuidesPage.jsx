@@ -216,6 +216,11 @@ export function GuideArticlePage() {
               </details>
             ))}
           </section>
+          {article.serviceLink ? (
+            <p className="guide-service">
+              <Link to={article.serviceLink.href}>{article.serviceLink.label}</Link>
+            </p>
+          ) : null}
           <nav className="guide-links" aria-label={copy.related}>
             <p>{copy.related}</p>
             {related.map((item) => (

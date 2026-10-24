@@ -467,4 +467,92 @@ export function applyGuideDepth(articles) {
       ),
     ],
   });
+
+  patch("build-a-website-without-code", "headline-choice", (section) => {
+    section.paragraphs = section.paragraphs.filter((paragraph) => !/399|expert build|בניית המומחה|construcción de experto|construção de especialista|بناء المختص/.test(paragraph));
+  });
+  patch("website-form-to-crm", "place", (section) => {
+    section.paragraphs = section.paragraphs.map((paragraph) => paragraph
+      .replace(/\s*The expert build can place the same kind of form:.*$/, "")
+      .replace(/\s*בניית המומחה יכולה לשים טופס מאותו סוג:.*$/, "")
+      .replace(/\s*La construcción de experto puede colocar el mismo tipo de formulario\.?.*$/, "")
+      .replace(/\s*A construção de especialista pode colocar o mesmo tipo de formulário\.?.*$/, "")
+      .replace(/\s*يمكن لبناء المختص وضع النوع نفسه من النموذج\.?.*$/, ""));
+  });
+  patch("website-form-to-crm", "after", (section) => {
+    section.paragraphs = section.paragraphs.map((paragraph) => paragraph
+      .replace(/\s*The \$399 expert build is the setup, not the subscription\./, "")
+      .replace(/\s*בניית 399 הדולר היא ההקמה, לא המנוי\./, ""));
+  });
+  patch("website-form-to-crm", "lead", (section) => {
+    section.paragraphs = section.paragraphs.map((paragraph) => paragraph
+      .replace("A new lead, source Website, status New.", "A new lead. The Source column reads website, and the status is New.")
+      .replace("ליד חדש, מקור אתר, סטטוס חדש.", "ליד חדש. עמודת המקור מציגה website, והסטטוס הוא New.")
+      .replace("Un lead nuevo, origen Sitio, estado Nuevo.", "Un lead nuevo. La columna Source muestra website, y el estado es New.")
+      .replace("Um lead novo, origem Site, status Novo.", "Um lead novo. A coluna Source mostra website, e o status é New.")
+      .replace("عميل جديد، مصدر الموقع، حالة جديد.", "عميل جديد. يعرض عمود المصدر website، والحالة New."));
+  });
+
+  const serviceLabels = text(
+    "If you would rather not edit the page yourself, the expert website service is separate.",
+    "אם מעדיפים לא לערוך את העמוד בעצמכם, שירות בניית האתר נפרד.",
+    "Si prefiere no editar la página, el servicio de sitio de experto es aparte.",
+    "Se preferir não editar a página, o serviço de site de especialista fica à parte.",
+    "إذا فضّلتم عدم تحرير الصفحة بأنفسكم، فخدمة بناء الموقع منفصلة.",
+  );
+  for (const locale of LOCALES) {
+    articles["build-a-website-without-code"][locale].serviceLink = {
+      href: "/services/website-build",
+      label: serviceLabels[locale],
+    };
+  }
+
+  patch("connect-a-meta-ad-account", "where", (section, locale) => {
+    section.shots = [{
+      src: "/demo-media/meta/connection.png",
+      caption: text(
+        "Meta Connection shows Connected, the ad account, and the Facebook page. This screen does not publish a campaign.",
+        "מסך Meta Connection מציג Connected, את חשבון המודעות ואת דף הפייסבוק. המסך הזה לא מפרסם קמפיין.",
+        "Meta Connection muestra Connected, la cuenta de anuncios y la página de Facebook. Esta pantalla no publica una campaña.",
+        "Meta Connection mostra Connected, a conta de anúncios e a página do Facebook. Esta tela não publica uma campanha.",
+        "تعرض Meta Connection الحالة Connected وحساب الإعلانات وصفحة فيسبوك. هذه الشاشة لا تنشر حملة.",
+      )[locale],
+    }];
+  });
+  patch("meta-lead-ads-to-crm", "permission", (section, locale) => {
+    section.shots = [{
+      src: "/demo-media/meta/lead-source.png",
+      caption: text(
+        "A lead from a Facebook lead form shows facebook_lead_ads in the Source column.",
+        "ליד מטופס פייסבוק מציג facebook_lead_ads בעמודת המקור.",
+        "Un lead de un formulario de Facebook muestra facebook_lead_ads en la columna Source.",
+        "Um lead de um formulário do Facebook mostra facebook_lead_ads na coluna Source.",
+        "يعرض عميل من نموذج فيسبوك القيمة facebook_lead_ads في عمود المصدر.",
+      )[locale],
+    }];
+  });
+  patch("website-form-to-crm", "place", (section, locale) => {
+    section.shots = [{
+      src: "/demo-media/forms/form.png",
+      caption: text(
+        "The form on the demo site asks for a name, an email, and the request.",
+        "הטופס באתר הדמו מבקש שם, אימייל ואת הבקשה.",
+        "El formulario del sitio de demostración pide un nombre, un correo y la petición.",
+        "O formulário do site de demonstração pede um nome, um e-mail e o pedido.",
+        "يطلب النموذج في موقع العرض اسماً وبريداً والطلب.",
+      )[locale],
+    }];
+  });
+  patch("website-form-to-crm", "lead", (section, locale) => {
+    section.shots = [{
+      src: "/demo-media/forms/lead.png",
+      caption: text(
+        "After the form was sent, Noa Form appeared as a new lead. Source is website and the status is New.",
+        "אחרי שליחת הטופס הופיעה Noa Form כליד חדש. המקור הוא website והסטטוס הוא New.",
+        "Después de enviar el formulario, Noa Form apareció como un lead nuevo. Source es website y el estado es New.",
+        "Depois do envio, Noa Form apareceu como um lead novo. Source é website e o status é New.",
+        "بعد إرسال النموذج ظهرت Noa Form كعميل جديد. المصدر website والحالة New.",
+      )[locale],
+    }];
+  });
 }

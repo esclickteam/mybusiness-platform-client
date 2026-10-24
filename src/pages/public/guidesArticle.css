@@ -417,3 +417,10 @@
     max-width: none;
   }
 }
+
+.guide-service {
+  margin: 2rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  font-weight: 700;
+}
