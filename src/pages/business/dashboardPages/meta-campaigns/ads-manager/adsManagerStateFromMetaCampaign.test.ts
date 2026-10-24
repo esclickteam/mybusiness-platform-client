@@ -276,4 +276,52 @@ describe("adsManagerStateFromMetaCampaign", () => {
     expect(state.adSets[0].gender).toBe("all");
     expect(state.adSets[0].advantageAudience).toBe(true);
   });
+
+  it("keeps Meta targetingRaw when an editor draft omits it", () => {
+    const withDraft: MetaCampaign = {
+      ...campaign,
+      editorDraft: {
+        workspace: {
+          campaign: {
+            id: campaign.id,
+            name: campaign.name,
+            objective: "OUTCOME_LEADS",
+            budgetAmount: "100",
+            budgetType: "daily",
+            status: "PAUSED",
+          },
+          adSets: [
+            {
+              id: "adset-1",
+              name: "Main ad set",
+              interests: [
+                { id: "6003349071605", name: "Wedding photography", type: "interests" },
+              ],
+              targetingLoaded: false,
+              targetingRaw: null,
+            },
+          ],
+          ads: [
+            {
+              id: "ad-1",
+              name: "Main ad",
+              adSetId: "adset-1",
+              headline: "Headline from Meta",
+              primaryText: "Primary from Meta",
+            },
+          ],
+        },
+      },
+    };
+    const state = adsManagerStateFromMetaCampaign(withDraft);
+    expect(state.adSets[0].targetingLoaded).toBe(true);
+    expect(state.adSets[0].targetingRaw).toEqual(
+      expect.objectContaining({
+        geo_locations: { countries: ["IL"] },
+      })
+    );
+    expect(state.adSets[0].interests.map((row) => row.id)).toContain(
+      "6003349071605"
+    );
+  });
 });

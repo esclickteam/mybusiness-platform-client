@@ -388,8 +388,31 @@ export function adsManagerStateFromMetaCampaign(
     creativeOnMeta: campaign.creativeLinkedOnMeta === true,
     publishRecordId: campaign.publishRecordId,
   });
+  // Editor drafts saved during create often omit targetingRaw / targetingLoaded.
+  // Keep Meta's live targeting envelope so publish-changes can patch flexible_spec
+  // without rebuilding geo from scratch.
+  const adSetsWithMetaTargeting = drafted.adSets.map((adSet, index) => {
+    const fromMeta = loaded.adSets[index] || loaded.adSets[0];
+    if (!fromMeta) return adSet;
+    const targetingRaw = adSet.targetingRaw || fromMeta.targetingRaw || null;
+    const targetingLoaded =
+      Boolean(adSet.targetingLoaded) ||
+      Boolean(fromMeta.targetingLoaded) ||
+      Boolean(targetingRaw);
+    const interests =
+      Array.isArray(adSet.interests) && adSet.interests.length
+        ? adSet.interests
+        : fromMeta.interests || [];
+    return {
+      ...adSet,
+      targetingRaw,
+      targetingLoaded,
+      interests,
+    };
+  });
   return {
     ...drafted,
+    adSets: adSetsWithMetaTargeting,
     metaObjectIds: metaObjectIdsFromCampaign(campaign),
   };
 }

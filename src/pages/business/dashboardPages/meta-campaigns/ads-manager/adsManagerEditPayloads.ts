@@ -187,19 +187,20 @@ export function buildAdSetUpdateFromDiff(
   if (!relevant.length) return null;
   const payload: Record<string, unknown> = {};
   if (relevant.some((row) => row.labelKey === "changeAdSetName")) payload.name = adSet.name.trim();
-  if (
-    adSet.targetingLoaded &&
-    relevant.some((row) =>
-      [
-        "changeAge",
-        "changeLocations",
-        "changeGender",
-        "changeDetailedTargeting",
-      ].includes(row.labelKey)
-    ) &&
-    (relevant.some((row) => row.labelKey === "changeDetailedTargeting") ||
-      (adSet.ageMin != null && adSet.ageMax != null))
-  ) {
+  const wantsTargeting = relevant.some((row) =>
+    [
+      "changeAge",
+      "changeLocations",
+      "changeGender",
+      "changeDetailedTargeting",
+    ].includes(row.labelKey)
+  );
+  const canPatchTargeting =
+    Boolean(adSet.targetingRaw) ||
+    (adSet.targetingLoaded &&
+      (relevant.some((row) => row.labelKey === "changeDetailedTargeting") ||
+        (adSet.ageMin != null && adSet.ageMax != null)));
+  if (wantsTargeting && canPatchTargeting) {
     payload.targeting = mergeLoadedTargeting(adSet, relevant);
   }
   if (relevant.some((row) => row.labelKey === "changeSchedule")) {
