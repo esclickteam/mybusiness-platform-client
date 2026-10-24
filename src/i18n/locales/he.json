@@ -10375,6 +10375,7 @@
         "targetingInfoFallback": "קטגוריית מיקוד מ-Meta",
         "targetingUnsupportedFlexible": "לא נתמך לשמירה ב-Meta (flexible_spec) ולכן לא ניתן לבחירה",
         "targetingCategoryNotSelectable": "זו קטגוריה לעיון בלבד — בחרו ערך ספציפי עם מזהה Meta",
+        "detailedBrowseAria": "עיון במיקוד מפורט",
         "detailedBrowseFailed": "לא הצלחנו לטעון את קטגוריות המיקוד מ-Meta",
         "detailedSearchFailed": "לא הצלחנו לחפש מיקוד מפורט ב-Meta",
         "detailedBrowseEmpty": "אין תתי־קטגוריות זמינות לחשבון הזה",
