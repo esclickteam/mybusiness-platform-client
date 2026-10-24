@@ -67,11 +67,11 @@ export function installCustomerGuide(add, t) {
         ],
         video: "websites",
         videoNote: t(
-          "The clip changes a headline, saves, and shows the desktop and phone previews.",
-          "הקטע משנה כותרת, שומר, ומציג את התצוגה במחשב ובטלפון.",
-          "El clip cambia un titular, guarda y muestra las vistas de escritorio y de teléfono.",
-          "O clipe muda um título, salva e mostra as prévias de computador e de telefone.",
-          "يغيّر المقطع عنواناً، ويحفظ، ويعرض معاينتي الحاسوب والهاتف.",
+          "Change the headline, save, and check the desktop and phone previews.",
+          "משנים כותרת, שומרים, ובודקים את התצוגה במחשב ובטלפון.",
+          "Cambie el titular, guarde y revise las vistas de escritorio y de teléfono.",
+          "Mude o título, salve e confira as prévias de computador e de telefone.",
+          "غيّروا العنوان، واحفظوا، وتحققوا من معاينتي الحاسوب والهاتف.",
         ),
       },
       {

@@ -2,18 +2,18 @@
 
 export function installMoreGuides(add, t) {
   const crmNote = t(
-    "The recording shows a status, a note and a follow-up task in the isolated demo. The names are not customers.",
-    "ההקלטה מציגה סטטוס, הערה ומשימת מעקב בסביבת ההדגמה המבודדת. השמות אינם לקוחות.",
-    "La grabación muestra un estado, una nota y una tarea de seguimiento en la demo aislada. Los nombres no son clientes.",
-    "A gravação mostra um status, uma nota e uma tarefa de acompanhamento na demo isolada. Os nomes não são clientes.",
-    "يعرض التسجيل حالة وملاحظة ومهمة متابعة في العرض المعزول. الأسماء ليست عملاء.",
+    "The example changes a status, writes a note and leaves a follow-up task. The names on screen are sample names.",
+    "הדוגמה משנה סטטוס, כותבת הערה ומשאירה משימת מעקב. השמות על המסך הם שמות לדוגמה.",
+    "El ejemplo cambia un estado, escribe una nota y deja una tarea de seguimiento. Los nombres en pantalla son de muestra.",
+    "O exemplo muda um status, escreve uma nota e deixa uma tarefa de acompanhamento. Os nomes na tela são de amostra.",
+    "يغيّر المثال حالة، ويكتب ملاحظة، ويترك مهمة متابعة. الأسماء على الشاشة أسماء للعرض.",
   );
   const campaignNote = t(
-    "The recording opens ad sets, ads and a campaign drawer. The figures are demo data. Nothing is published and nothing is spent.",
-    "ההקלטה פותחת סטים של מודעות, מודעות ומגירת קמפיין. המספרים הם נתוני הדגמה. שום דבר לא פורסם ושום דבר לא הוצא.",
-    "La grabación abre conjuntos de anuncios, anuncios y el panel de una campaña. Las cifras son de demostración. No se publica nada y no se gasta nada.",
-    "A gravação abre conjuntos de anúncios, anúncios e a gaveta de uma campanha. Os números são de demonstração. Nada é publicado e nada é gasto.",
-    "يفتح التسجيل مجموعات الإعلانات والإعلانات ودرج الحملة. الأرقام بيانات عرض. لا يُنشر شيء ولا يُنفق شيء.",
+    "The example opens ad sets, ads and a campaign. The figures are sample numbers. Nothing is published and nothing is spent.",
+    "הדוגמה פותחת סטים, מודעות וקמפיין. המספרים הם נתוני דוגמה. שום דבר לא פורסם ושום דבר לא הוצא.",
+    "El ejemplo abre conjuntos, anuncios y una campaña. Las cifras son de muestra. No se publica nada y no se gasta nada.",
+    "O exemplo abre conjuntos, anúncios e uma campanha. Os números são de amostra. Nada é publicado e nada é gasto.",
+    "يفتح المثال المجموعات والإعلانات والحملة. الأرقام للعرض. لا يُنشر شيء ولا يُنفق شيء.",
   );
 
   add("follow-up-on-leads", {

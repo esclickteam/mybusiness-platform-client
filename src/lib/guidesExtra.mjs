@@ -60,18 +60,7 @@ const EN = {
     ],
     [["Where is the campaign price?", "There isn't one on the Bizuply price list. Meta bills the spend. Bizuply's related prices are the CRM, the business plan and, separately, WhatsApp."]],
   ),
-  "how-search-engines-read-a-business-site": guide(
-    "How search and answer engines read a business site | Bizuply",
-    "A page is easier to cite when the title, the first paragraphs and the visible facts match. Bizuply does not sell rankings, and it does not promise placement in an AI answer.",
-    "Say the true thing once, in the language of the reader",
-    [
-      ["What helps a crawler", ["One H1, a title that matches the page, a canonical URL, and hreflang when the same page exists in another language. The words in the first HTML should be the words a person sees."]],
-      ["What an answer engine can quote", ["A specific price, a limit, and a step that is true of the product. A sentence that invents a customer count or a rank cannot be defended, so this site does not publish those."]],
-      ["What Bizuply does not sell", ["There is no public SEO retainer, AEO retainer or content-production package on the pricing page. Content creation is hidden in the catalog and stays unsold. The website builder and the expert website build are the services that exist."]],
-    ],
-    [["Will this guide make a site rank?", "No. It describes how a clear page is structured. Ranking depends on the query, the competition and the site itself."]],
-  ),
-};
+  };
 
 const HE = {
   "connect-a-meta-ad-account": guide(
@@ -129,18 +118,7 @@ const HE = {
     ],
     [["איפה מחיר הקמפיין?", "אין מחיר כזה במחירון של ביזאפלי. Meta גובה את ההוצאה. המחירים הקשורים הם ה־CRM, החבילה העסקית, ובנפרד WhatsApp."]],
   ),
-  "how-search-engines-read-a-business-site": guide(
-    "איך מנועי חיפוש ומנועי תשובות קוראים אתר עסקי | ביזאפלי",
-    "עמוד קל יותר לציטוט כשהכותרת, הפסקאות הראשונות והעובדות הגלויות תואמות. ביזאפלי לא מוכרת דירוגים ולא מבטיחה הופעה בתשובת AI.",
-    "אומרים את הדבר הנכון פעם אחת, בשפה של הקורא",
-    [
-      ["מה עוזר לסורק", ["H1 אחד, כותרת שמתאימה לעמוד, כתובת canonical, ו־hreflang כשאותו עמוד קיים בשפה אחרת. המילים ב־HTML הראשון צריכות להיות המילים שאדם רואה."]],
-      ["מה מנוע תשובות יכול לצטט", ["מחיר מדויק, מגבלה, וצעד שנכון למוצר. משפט שממציא מספר לקוחות או דירוג אי אפשר להגן עליו, ולכן האתר הזה לא מפרסם כאלה."]],
-      ["מה ביזאפלי לא מוכרת", ["אין ריטיינר SEO, ריטיינר AEO או חבילת תוכן ציבורית במחירון. יצירת תוכן מוסתרת בקטלוג ונשארת לא למכירה. בונה האתרים ובניית האתר על ידי מומחה הם השירותים שקיימים."]],
-    ],
-    [["המדריך הזה יגרום לאתר להגיע לדירוג?", "לא. הוא מתאר איך עמוד ברור בנוי. דירוג תלוי בשאילתה, בתחרות ובאתר עצמו."]],
-  ),
-};
+  };
 
 const ES = {
   "connect-a-meta-ad-account": guide(
@@ -198,18 +176,7 @@ const ES = {
     ],
     [["¿Dónde está el precio de la campaña?", "No está en la lista de Bizuply. Meta cobra el gasto."]],
   ),
-  "how-search-engines-read-a-business-site": guide(
-    "Cómo leen un sitio los buscadores y los motores de respuesta | Bizuply",
-    "Una página se cita mejor cuando el título, los primeros párrafos y los hechos visibles coinciden. Bizuply no vende posiciones ni promete salir en una respuesta de IA.",
-    "Decir lo cierto una vez, en el idioma de quien lee",
-    [
-      ["Qué ayuda al rastreador", ["Un H1, un título que coincida, una URL canónica y hreflang si la página existe en otro idioma. El primer HTML debe decir lo que la persona ve."]],
-      ["Qué se puede citar", ["Un precio real, un límite y un paso verdadero del producto. Una cifra inventada de clientes no se publica."]],
-      ["Qué no se vende", ["No hay un retainer de SEO o de AEO en precios. La creación de contenido está oculta y no se vende. Existen el constructor y la construcción de experto."]],
-    ],
-    [["¿Esta guía hará que un sitio posicione?", "No. Describe cómo se ordena una página clara. La posición depende de la consulta, la competencia y el sitio."]],
-  ),
-};
+  };
 
 const PT = {
   "connect-a-meta-ad-account": guide(
@@ -267,18 +234,7 @@ const PT = {
     ],
     [["Onde está o preço da campanha?", "Não está na lista da Bizuply. A Meta cobra o gasto."]],
   ),
-  "how-search-engines-read-a-business-site": guide(
-    "Como buscadores e motores de resposta leem um site | Bizuply",
-    "Uma página é mais fácil de citar quando o título, os primeiros parágrafos e os fatos visíveis coincidem. A Bizuply não vende posições nem promete aparecer numa resposta de IA.",
-    "Dizer o que é verdade uma vez, na língua de quem lê",
-    [
-      ["O que ajuda o rastreador", ["Um H1, um título que combine, uma URL canônica e hreflang se a página existe em outro idioma. O primeiro HTML deve dizer o que a pessoa vê."]],
-      ["O que dá para citar", ["Um preço real, um limite e um passo verdadeiro do produto. Um número inventado de clientes não é publicado."]],
-      ["O que não se vende", ["Não há um retainer de SEO ou de AEO nos preços. A criação de conteúdo está oculta e não é vendida. Existem o construtor e a construção por especialista."]],
-    ],
-    [["Este guia faz um site ranquear?", "Não. Ele descreve como uma página clara se organiza. A posição depende da consulta, da concorrência e do site."]],
-  ),
-};
+  };
 
 const AR = {
   "connect-a-meta-ad-account": guide(
@@ -336,21 +292,10 @@ const AR = {
     ],
     [["أين سعر الحملة؟", "ليس في قائمة Bizuply. تحصّل Meta الإنفاق."]],
   ),
-  "how-search-engines-read-a-business-site": guide(
-    "كيف تقرأ محركات البحث ومحركات الإجابة موقعاً تجارياً | Bizuply",
-    "يسهل اقتباس الصفحة حين يتطابق العنوان والفقرات الأولى والحقائق الظاهرة. لا تبيع Bizuply ترتيباً ولا تعد بالظهور في إجابة ذكاء اصطناعي.",
-    "قولوا الأمر الصحيح مرة واحدة، بلغة القارئ",
-    [
-      ["ما الذي يساعد الزاحف", ["عنوان H1 واحد، وعنوان يطابق الصفحة، ورابط canonical، وhreflang إذا وُجدت الصفحة بلغة أخرى. يجب أن يقول HTML الأول ما يراه الشخص."]],
-      ["ما يمكن اقتباسه", ["سعر حقيقي وحد وخطوة صحيحة في المنتج. رقم عملاء مخترع لا يُنشر."]],
-      ["ما لا يُباع", ["لا يوجد اشتراك SEO أو AEO في الأسعار. إنشاء المحتوى مخفي وغير معروض للبيع. الموجود هو المنشئ وبناء المختص."]],
-    ],
-    [["هل يجعل هذا الدليل موقعاً يتصدر؟", "لا. يصف كيف تُبنى صفحة واضحة. الترتيب يعتمد على الاستعلام والمنافسة والموقع."]],
-  ),
-};
+  };
 
 export const EXTRA_GUIDES = { en: EN, he: HE, es: ES, "pt-BR": PT, ar: AR };
-export const EXTRA_GUIDE_SLUGS = Object.keys(EN).filter((slug) => slug !== "how-search-engines-read-a-business-site");
+export const EXTRA_GUIDE_SLUGS = Object.keys(EN);
 
 export function getExtraGuide(slug, locale) {
   if (slug === "how-search-engines-read-a-business-site") return null;
