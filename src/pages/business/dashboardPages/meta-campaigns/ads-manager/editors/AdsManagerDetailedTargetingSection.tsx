@@ -256,6 +256,30 @@ function toDraftItem(item: {
   };
 }
 
+/**
+ * Survives parent remounts (e.g. BusinessDashboardLayout briefly swapping to a
+ * full-screen loader). Without this, "עיון" opens then vanishes ~700ms later
+ * while the browse network call still succeeds in the background.
+ */
+type BrowseUiCache = {
+  businessId: string;
+  locale: string;
+  browseOpen: boolean;
+  browseRows: MetaDetailedTarget[];
+  expanded: Record<string, boolean>;
+};
+
+let browseUiCache: BrowseUiCache | null = null;
+
+function localeForLang(language?: string) {
+  return language?.startsWith("he") ? "he_IL" : "en_US";
+}
+
+/** Test helper — clears in-memory browse UI between cases. */
+export function __resetDetailedTargetingBrowseCacheForTests() {
+  browseUiCache = null;
+}
+
 export default function AdsManagerDetailedTargetingSection({
   businessId,
   selected,
@@ -268,17 +292,69 @@ export default function AdsManagerDetailedTargetingSection({
   const ChevronExpand = isRtl ? ChevronLeft : ChevronRight;
   const boxRef = useRef<HTMLDivElement | null>(null);
   const reqId = useRef(0);
+  const locale = localeForLang(i18n.language);
+  const cached =
+    businessId &&
+    browseUiCache &&
+    browseUiCache.businessId === businessId &&
+    browseUiCache.locale === locale
+      ? browseUiCache
+      : null;
 
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
-  const [browseOpen, setBrowseOpen] = useState(false);
+  const [browseOpen, setBrowseOpen] = useState(() => Boolean(cached?.browseOpen));
   const [searchResults, setSearchResults] = useState<MetaDetailedTarget[]>([]);
-  const [browseRows, setBrowseRows] = useState<MetaDetailedTarget[]>([]);
+  const [browseRows, setBrowseRows] = useState<MetaDetailedTarget[]>(
+    () => cached?.browseRows || []
+  );
   const [browseBusy, setBrowseBusy] = useState(false);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const [expanded, setExpanded] = useState<Record<string, boolean>>(
+    () => cached?.expanded || {}
+  );
   const [infoKey, setInfoKey] = useState<string | null>(null);
+
+  const scopeKey = `${businessId || ""}:${locale}`;
+  const scopeRef = useRef(scopeKey);
+
+  useEffect(() => {
+    if (scopeRef.current === scopeKey) return;
+    scopeRef.current = scopeKey;
+    const hit =
+      businessId &&
+      browseUiCache &&
+      browseUiCache.businessId === businessId &&
+      browseUiCache.locale === locale
+        ? browseUiCache
+        : null;
+    if (hit) {
+      setBrowseOpen(hit.browseOpen);
+      setBrowseRows(hit.browseRows);
+      setExpanded(hit.expanded);
+      return;
+    }
+    setBrowseOpen(false);
+    setBrowseRows([]);
+    setExpanded({});
+    setSearchOpen(false);
+    setInfoKey(null);
+  }, [scopeKey, businessId, locale]);
+
+  useEffect(() => {
+    if (!businessId) {
+      browseUiCache = null;
+      return;
+    }
+    browseUiCache = {
+      businessId,
+      locale,
+      browseOpen,
+      browseRows,
+      expanded,
+    };
+  }, [businessId, locale, browseOpen, browseRows, expanded]);
 
   const selectedIds = useMemo(
     () => new Set(selected.map((item) => item.id).filter(Boolean)),
@@ -292,7 +368,6 @@ export default function AdsManagerDetailedTargetingSection({
     setBrowseBusy(true);
     setError("");
     try {
-      const locale = i18n.language?.startsWith("he") ? "he_IL" : "en_US";
       const data = await browseFn(businessId, { locale });
       setBrowseRows(data.results || []);
     } catch (err) {
@@ -304,7 +379,7 @@ export default function AdsManagerDetailedTargetingSection({
     } finally {
       setBrowseBusy(false);
     }
-  }, [businessId, browseFn, i18n.language, t]);
+  }, [businessId, browseFn, locale, t]);
 
   useEffect(() => {
     if (!browseOpen) return;
@@ -326,7 +401,6 @@ export default function AdsManagerDetailedTargetingSection({
       try {
         setBusy(true);
         setError("");
-        const locale = i18n.language?.startsWith("he") ? "he_IL" : "en_US";
         const data = await searchFn(businessId, {
           q,
           locale,
@@ -353,7 +427,7 @@ export default function AdsManagerDetailedTargetingSection({
       }
     }, 280);
     return () => window.clearTimeout(timer);
-  }, [businessId, query, searchFn, i18n.language, t]);
+  }, [businessId, query, searchFn, locale, t]);
 
   useEffect(() => {
     // Use click (not mousedown): mousedown-outside races the browse button's
