@@ -89,25 +89,25 @@ export const studioraDefaultData = {
   reviewsTitle: "עבדנו עם מותגים שאוהבים את התוצאה.",
   reviewOneText:
     "Studiora לקחו מותג בינוני והפכו אותו למשהו שאי אפשר להתעלם ממנו. העיצוב מדויק והתהליך היה תענוג.",
-  reviewOneName: "יעל מור",
-  reviewOneRole: "מנכ״לית, Lumen",
+  reviewOneName: "Olivia Bennett",
+  reviewOneRole: "Director, Lumen",
   reviewTwoText:
     "הצוות הכי מקצועי שעבדנו איתו. הבינו אותנו מהר, ותרגמו את החזון בדיוק לאיך שדמיינו.",
-  reviewTwoName: "דניאל אבידר",
-  reviewTwoRole: "מייסד, Pulse",
+  reviewTwoName: "James Carter",
+  reviewTwoRole: "Founder, Pulse",
   reviewThreeText:
     "מעבר לעיצוב יפה — הם חושבים על העסק שלך. ההשקה שלנו הכפילה את ההמרות.",
-  reviewThreeName: "שני רותם",
-  reviewThreeRole: "שיווק, Terra",
+  reviewThreeName: "Sophia Mitchell",
+  reviewThreeRole: "Marketing, Terra",
 
   contactEyebrow: "בואו נדבר",
   contactTitle: "יש לכם רעיון? בואו נהפוך אותו למותג.",
   contactText:
     "ספרו לנו על הפרויקט שלכם — קטן או גדול — ונחזור אליכם עם כיוון, לוחות זמנים והצעה מותאמת.",
   contactButton: "שליחת בריף",
-  phone: "03-000-0000",
-  email: "hello@studiora.studio",
-  address: "המלאכה 7, תל אביב",
+  phone: "+1 212 555 0100",
+  email: "hello@northwind.example",
+  address: "120 Madison Avenue, New York, NY 10016",
 
   ctaTitle: "מוכנים לבנות משהו שאי אפשר להתעלם ממנו?",
   ctaText:

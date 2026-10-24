@@ -47,21 +47,21 @@ const CRM_FAQ = {
 const WHATSAPP_FAQ = {
   es: [
     ["¿Qué incluyen los 29 dólares?", "La suscripción de un número de WhatsApp conectado: conexión, API y webhooks, plantillas, panel y documentación. Cada número adicional necesita su propia suscripción."],
-    ["¿Hay prueba gratis?", "No. La suscripción empieza en 29 dólares al mes por un número."],
+    ["¿Qué incluye la suscripción?", "WhatsApp Business API cuesta 29 dólares al mes por número conectado. Los cargos de mensajería de Meta se aplican aparte, según el uso y la categoría del mensaje."],
     ["¿Las tarifas de Meta están incluidas?", "No. Meta cobra aparte según el país del destinatario y la categoría del mensaje."],
-    ["¿Se pueden gestionar varios clientes desde una pantalla?", "Todavía no. Cada número tiene su suscripción, su clave y su webhook."],
+    ["¿Cómo se factura un número adicional?", "Cada número conectado tiene su propia suscripción de 29 dólares al mes."],
   ],
   "pt-BR": [
     ["O que os 29 dólares incluem?", "A assinatura de um número de WhatsApp conectado: conexão, API e webhooks, modelos, painel e documentação. Cada número extra precisa da própria assinatura."],
-    ["Existe teste grátis?", "Não. A assinatura começa em 29 dólares por mês para um número."],
+    ["O que a assinatura inclui?", "O WhatsApp Business API custa US$ 29 por mês por número conectado. As cobranças de mensagens da Meta são à parte, conforme o uso e a categoria da mensagem."],
     ["As tarifas da Meta estão incluídas?", "Não. A Meta cobra à parte conforme o país do destinatário e a categoria da mensagem."],
-    ["Dá para administrar vários clientes em uma tela?", "Ainda não. Cada número tem a própria assinatura, chave e webhook."],
+    ["Como um número adicional é cobrado?", "Cada número conectado tem a própria assinatura de US$ 29 por mês."],
   ],
   ar: [
     ["ماذا يشمل مبلغ 29 دولاراً؟", "اشتراك رقم واتساب واحد متصل: الربط وواجهة البرمجة وwebhooks والقوالب ولوحة التحكم والتوثيق. كل رقم إضافي يحتاج اشتراكاً مستقلاً."],
-    ["هل توجد تجربة مجانية؟", "لا. يبدأ الاشتراك من 29 دولاراً شهرياً لرقم واحد."],
+    ["ماذا يشمل الاشتراك؟", "WhatsApp Business API بـ 29 دولاراً في الشهر لكل رقم متصل. تُحسب رسوم رسائل Meta بشكل منفصل، حسب الاستخدام وفئة الرسالة."],
     ["هل رسوم Meta مشمولة؟", "لا. تحصّل Meta الرسوم بشكل منفصل حسب بلد المستلم وفئة الرسالة."],
-    ["هل يمكن إدارة عدة عملاء من شاشة واحدة؟", "ليس بعد. لكل رقم اشتراك ومفتاح وwebhook خاص به."],
+    ["كيف يُحسب رقم إضافي؟", "لكل رقم متصل اشتراكه بـ 29 دولاراً في الشهر."],
   ],
 };
 
@@ -115,7 +115,7 @@ const PAGES = {
       "Precios",
       [
         "CRM solo cuesta 49 dólares al mes. El plan de negocio cuesta 99 dólares al mes o 990 dólares al año e incluye CRM, citas, colaboraciones y automatizaciones.",
-        "WhatsApp Cloud API cuesta 29 dólares al mes por número conectado. Las tarifas de mensajes de Meta se cobran aparte. No hay prueba gratis de WhatsApp.",
+        "WhatsApp Cloud API cuesta 29 dólares al mes por número conectado. Las tarifas de mensajes de Meta se cobran aparte. Los cargos de mensajería de Meta se aplican aparte, según el uso y la categoría del mensaje.",
         "El sitio web tiene un precio anual propio en la página de precios. No forma parte del producto CRM.",
       ],
     ),
@@ -197,12 +197,12 @@ const PAGES = {
     ),
     "/whatsapp-api": page(
       "WhatsApp API para empresas | Bizuply",
-      "Conecte WhatsApp Cloud API de Meta con Bizuply. 29 dólares al mes por número conectado. Las tarifas de Meta van aparte y no hay prueba gratis.",
+      "Conecte WhatsApp Cloud API de Meta con Bizuply. 29 dólares al mes por número conectado. Las tarifas de Meta van aparte Los cargos de mensajería de Meta se aplican aparte.",
       "WhatsApp API",
       "WhatsApp API para empresas",
       [
         "Bizuply conecta WhatsApp Cloud API: envío de plantillas aprobadas, seguimiento de entrega y webhooks firmados.",
-        "La suscripción es de 29 dólares al mes por un número conectado. Meta cobra los mensajes aparte. No hay prueba gratis.",
+        "La suscripción es de 29 dólares al mes por un número conectado. Meta cobra los mensajes aparte. Los cargos de mensajería de Meta se aplican aparte, según el uso y la categoría del mensaje.",
         "La conexión se hace con Embedded Signup de Meta desde el panel. Meta aprueba las plantillas y el número. No hay una cola de aprobación aparte de Bizuply.",
         "Sirve a desarrolladores, a negocios con CRM o sitio y a agencias que conectan un número por cliente. Administrar varios clientes desde una sola pantalla todavía no está disponible.",
       ],
@@ -265,7 +265,7 @@ cloneShape("pt-BR", {
     "Preços",
     [
       "CRM sozinho custa 49 dólares por mês. O plano de negócios custa 99 dólares por mês ou 990 dólares por ano e inclui CRM, agenda, colaborações e automações.",
-      "WhatsApp Cloud API custa 29 dólares por mês por número conectado. As tarifas de mensagem da Meta são cobradas à parte. Não há teste grátis de WhatsApp.",
+      "WhatsApp Cloud API custa 29 dólares por mês por número conectado. As tarifas de mensagem da Meta são cobradas à parte. As cobranças de mensagens da Meta são à parte, conforme o uso e a categoria da mensagem.",
       "O site tem um preço anual próprio na página de preços. Ele não faz parte do produto de CRM.",
     ],
   ),
@@ -311,12 +311,12 @@ cloneShape("pt-BR", {
   "/business": page("Para negócios | Bizuply", "Abra um negócio na Bizuply para usar CRM, agenda, site, automações e WhatsApp.", "Negócios", "Comece com o seu negócio", ["O cadastro do negócio é o caminho para o painel. Os preços públicos estão na página de preços e nas páginas de CRM e WhatsApp."]),
   "/whatsapp-api": page(
     "WhatsApp API para empresas | Bizuply",
-    "Conecte a WhatsApp Cloud API da Meta com a Bizuply. 29 dólares por mês por número conectado. As tarifas da Meta são à parte e não há teste grátis.",
+    "Conecte a WhatsApp Cloud API da Meta com a Bizuply. 29 dólares por mês por número conectado. As tarifas da Meta são à parte As cobranças de mensagens da Meta são à parte.",
     "WhatsApp API",
     "WhatsApp API para empresas",
     [
       "A Bizuply conecta a WhatsApp Cloud API: envio de modelos aprovados, acompanhamento de entrega e webhooks assinados.",
-      "A assinatura é de 29 dólares por mês para um número conectado. A Meta cobra as mensagens à parte. Não há teste grátis.",
+      "A assinatura é de 29 dólares por mês para um número conectado. A Meta cobra as mensagens à parte. As cobranças de mensagens da Meta são à parte, conforme o uso e a categoria da mensagem.",
       "A conexão usa o Embedded Signup da Meta no painel. A Meta aprova os modelos e o número. Não existe uma fila de aprovação separada da Bizuply.",
       "Serve a desenvolvedores, a negócios com CRM ou site e a agências que conectam um número por cliente. Administrar vários clientes em uma única tela ainda não está disponível.",
     ],
@@ -374,7 +374,7 @@ cloneShape("ar", {
     "الأسعار",
     [
       "CRM وحده 49 دولاراً شهرياً. الخطة التجارية 99 دولاراً شهرياً أو 990 دولاراً سنوياً وتشمل CRM والمواعيد والتعاون والأتمتة.",
-      "واجهة واتساب السحابية 29 دولاراً شهرياً لكل رقم متصل. رسوم رسائل Meta تُحصَّل بشكل منفصل. لا توجد تجربة مجانية لواتساب.",
+      "واجهة واتساب السحابية 29 دولاراً شهرياً لكل رقم متصل. رسوم رسائل Meta تُحصَّل بشكل منفصل. تُحسب رسوم رسائل Meta بشكل منفصل، حسب الاستخدام وفئة الرسالة.",
       "للموقع سعر سنوي مستقل في صفحة الأسعار. وهو ليس منتج CRM.",
     ],
   ),
@@ -420,12 +420,12 @@ cloneShape("ar", {
   "/business": page("للأنشطة | Bizuply", "افتحوا نشاطاً في Bizuply لاستخدام CRM والمواعيد والموقع والأتمتة وواتساب.", "النشاط", "ابدأوا بنشاطكم", ["تسجيل النشاط هو الطريق إلى اللوحة. الأسعار العامة في صفحة الأسعار وفي صفحتي CRM وواتساب."]),
   "/whatsapp-api": page(
     "واتساب API للأعمال | Bizuply",
-    "اربطوا WhatsApp Cloud API من Meta عبر Bizuply. 29 دولاراً شهرياً لكل رقم متصل. رسوم Meta منفصلة ولا توجد تجربة مجانية.",
+    "اربطوا WhatsApp Cloud API من Meta عبر Bizuply. 29 دولاراً شهرياً لكل رقم متصل. رسوم Meta منفصلة تُحسب رسوم رسائل Meta بشكل منفصل.",
     "واتساب API",
     "واتساب API للأعمال",
     [
       "تربط Bizuply واجهة واتساب السحابية: إرسال القوالب المعتمدة، وتتبع التسليم، وwebhooks موقّعة.",
-      "الاشتراك 29 دولاراً شهرياً لرقم واحد متصل. تحصّل Meta رسوم الرسائل بشكل منفصل. لا توجد تجربة مجانية.",
+      "الاشتراك 29 دولاراً شهرياً لرقم واحد متصل. تحصّل Meta رسوم الرسائل بشكل منفصل. تُحسب رسوم رسائل Meta بشكل منفصل، حسب الاستخدام وفئة الرسالة.",
       "يتم الربط عبر Embedded Signup من Meta داخل اللوحة. توافق Meta على القوالب والرقم. لا يوجد طابور موافقة منفصل لدى Bizuply.",
       "يناسب المطوّرين والأنشطة التي لديها CRM أو موقع والوكالات التي تربط رقماً واحداً لكل عميل. إدارة عدة عملاء من شاشة واحدة غير متاحة بعد.",
     ],

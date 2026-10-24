@@ -187,8 +187,8 @@ export function applyGuideDepth(articles) {
         "افتحوا قائمة العملاء قبل فتح دردشة. لكل صف مصدر: نموذج موقع، أو نموذج Meta، أو نموذج Google Ads، أو شخص كتب العميل. الحالة الأولى جديد. الملف خلف الصف يحفظ الهاتف والبريد والملاحظات.",
       ),
       text(
-        "CRM only is $49 a month and renews monthly. It is the pipeline and the client file. Appointments, collaborations and automations are on the business plan at $99 a month or $990 a year. WhatsApp is neither plan: a connected number is $29 a month, and Meta bills messages separately. There is no WhatsApp free trial.",
-        "CRM בלבד עולה 49 דולר לחודש ומתחדש מדי חודש. זה הצינור ותיק הלקוח. תורים, שיתופים ואוטומציות נמצאים בחבילה העסקית ב־99 דולר לחודש או 990 דולר לשנה. וואטסאפ אינו אף אחד מהמסלולים: מספר מחובר עולה 29 דולר לחודש, ו־Meta מחייבת הודעות בנפרד. אין ניסיון חינם לוואטסאפ.",
+        "CRM only is $49 a month and renews monthly. It is the pipeline and the client file. Appointments, collaborations and automations are on the business plan at $99 a month or $990 a year. WhatsApp Business API is separate: $29 a month per connected number. Meta messaging charges apply separately, based on usage and message category.",
+        "CRM בלבד עולה 49 דולר לחודש ומתחדש מדי חודש. זה הצינור ותיק הלקוח. תורים, שיתופים ואוטומציות נמצאים בחבילה העסקית ב־99 דולר לחודש או 990 דולר לשנה. WhatsApp Business API נפרד: 29 דולר לחודש לכל מספר מחובר. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
         "El CRM solo cuesta 49 dólares al mes y se renueva cada mes. Es el pipeline y el expediente. Las citas, las colaboraciones y las automatizaciones están en el plan de negocio a 99 dólares al mes o 990 al año. WhatsApp no entra en ninguno: un número conectado cuesta 29 dólares al mes, y Meta cobra los mensajes aparte.",
         "O CRM sozinho custa US$ 49 por mês e renova todo mês. É o pipeline e o arquivo do cliente. Agenda, colaborações e automações ficam no plano de negócios a US$ 99 por mês ou US$ 990 por ano. O WhatsApp não entra em nenhum: um número conectado custa US$ 29 por mês, e a Meta cobra as mensagens à parte.",
         "CRM وحده 49 دولاراً في الشهر ويتجدد شهرياً. هو المسار وملف العميل. المواعيد والتعاون والأتمتة في الخطة التجارية بـ 99 دولاراً في الشهر أو 990 في السنة. واتساب ليس في أي خطة: الرقم المتصل 29 دولاراً في الشهر، وMeta تحصّل الرسائل بشكل منفصل.",
@@ -407,8 +407,8 @@ export function applyGuideDepth(articles) {
     heading: text("Decide before you connect the number", "מחליטים לפני שמחברים את המספר", "Decida antes de conectar el número", "Decida antes de conectar o número", "قرّروا قبل ربط الرقم"),
     paragraphs: [
       text(
-        "Buy the number when the team is ready to send an approved template, not when the first lead arrives. The $29 covers one connected number: the connection, the API and webhooks, templates, the dashboard and the docs. It does not buy messages, and it does not include the CRM or the business plan. A second number needs a second subscription. There is no free trial, and there is no agency screen for several client numbers.",
-        "קונים את המספר כשהצוות מוכן לשלוח תבנית מאושרת, לא כשהליד הראשון מגיע. 29 הדולר מכסים מספר מחובר אחד: החיבור, ה־API וה־webhooks, התבניות, לוח הבקרה והתיעוד. הם לא קונים הודעות, והם לא כוללים את ה־CRM או את החבילה העסקית. מספר שני צריך מנוי שני. אין ניסיון חינם, ואין מסך סוכנות לכמה מספרי לקוחות.",
+        "Buy the number when the team is ready to send an approved template, not when the first lead arrives. WhatsApp Business API is $29 a month per connected number. That subscription includes the connection, templates, and the dashboard. Meta messaging charges apply separately, based on usage and message category. Each additional number has its own subscription.",
+        "קונים את המספר כשהצוות מוכן לשלוח תבנית מאושרת, לא כשהליד הראשון מגיע. WhatsApp Business API עולה 29 דולר לחודש לכל מספר מחובר. המנוי כולל את החיבור, את התבניות ואת לוח הבקרה. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה. לכל מספר נוסף יש מנוי משלו.",
         "Compre el número cuando el equipo esté listo para enviar una plantilla aprobada, no cuando llegue el primer lead. Los 29 dólares cubren un número conectado: la conexión, la API y los webhooks, las plantillas, el panel y la documentación. No compran mensajes, y no incluyen el CRM ni el plan de negocio.",
         "Compre o número quando a equipe estiver pronta para enviar um modelo aprovado, não quando o primeiro lead chegar. Os US$ 29 cobrem um número conectado: a conexão, a API e os webhooks, os modelos, o painel e a documentação. Eles não compram mensagens, e não incluem o CRM nem o plano de negócios.",
         "اشتروا الرقم حين يكون الفريق جاهزاً لإرسال قالب معتمد، لا حين يصل أول عميل. يغطي مبلغ 29 دولاراً رقماً واحداً متصلاً: الربط والواجهة وwebhooks والقوالب ولوحة التحكم والوثائق. وهو لا يشتري رسائل، ولا يشمل CRM ولا الخطة التجارية.",
@@ -535,8 +535,8 @@ export function applyGuideDepth(articles) {
     section.shots = [{
       src: "/demo-media/forms/form.png",
       caption: text(
-        "The form on the demo site asks for a name, an email, and the request.",
-        "הטופס באתר הדמו מבקש שם, אימייל ואת הבקשה.",
+        "The form asks for a name, an email, and the request.",
+        "הטופס מבקש שם, אימייל ואת הבקשה.",
         "El formulario del sitio de demostración pide un nombre, un correo y la petición.",
         "O formulário do site de demonstração pede um nome, um e-mail e o pedido.",
         "يطلب النموذج في موقع العرض اسماً وبريداً والطلب.",
@@ -547,11 +547,11 @@ export function applyGuideDepth(articles) {
     section.shots = [{
       src: "/demo-media/forms/lead.png",
       caption: text(
-        "After the form was sent, Noa Form appeared as a new lead. Source is website and the status is New.",
-        "אחרי שליחת הטופס הופיעה Noa Form כליד חדש. המקור הוא website והסטטוס הוא New.",
-        "Después de enviar el formulario, Noa Form apareció como un lead nuevo. Source es website y el estado es New.",
-        "Depois do envio, Noa Form apareceu como um lead novo. Source é website e o status é New.",
-        "بعد إرسال النموذج ظهرت Noa Form كعميل جديد. المصدر website والحالة New.",
+        "After the form was sent, Olivia Bennett appeared as a new lead. The source is website and the status is New.",
+        "אחרי שליחת הטופס הופיעה Olivia Bennett כליד חדש. המקור הוא website והסטטוס הוא New.",
+        "Después de enviar el formulario, Olivia Bennett apareció como un lead nuevo. Source es website y el estado es New.",
+        "Depois do envio, Olivia Bennett apareceu como um lead novo. Source é website e o status é New.",
+        "بعد إرسال النموذج ظهرت Olivia Bennett كعميل جديد. المصدر website والحالة New.",
       )[locale],
     }];
   });

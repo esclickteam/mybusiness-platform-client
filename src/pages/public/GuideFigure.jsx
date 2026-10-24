@@ -16,11 +16,11 @@ const COPY = {
     ar: ["عميل من إعلان Meta", "نموذج الموقع", "نموذج Google Ads", "عميل في CRM مع مصدره", "حالة ومهمة بتاريخ"],
   },
   fees: {
-    en: ["Bizuply: $29 / month for one connected number", "Meta: a separate fee per message, by country and category", "No free trial on the Bizuply number"],
-    he: ["ביזאפלי: 29$ לחודש למספר מחובר אחד", "Meta: חיוב נפרד לכל הודעה, לפי מדינה וקטגוריה", "אין ניסיון חינם על המספר בביזאפלי"],
-    es: ["Bizuply: 29 USD al mes por un número conectado", "Meta: una tarifa aparte por mensaje, según país y categoría", "Sin prueba gratis del número en Bizuply"],
-    "pt-BR": ["Bizuply: US$ 29 por mês para um número conectado", "Meta: uma tarifa à parte por mensagem, por país e categoria", "Sem teste grátis do número na Bizuply"],
-    ar: ["Bizuply: 29 دولاراً شهرياً لرقم واحد متصل", "Meta: رسم منفصل لكل رسالة حسب الدولة والفئة", "لا توجد تجربة مجانية لرقم Bizuply"],
+    en: ["WhatsApp Business API — $29/month per connected number.", "Meta messaging charges apply separately, based on usage and message category."],
+    he: ["WhatsApp Business API — 29 דולר לחודש לכל מספר מחובר.", "חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה."],
+    es: ["WhatsApp Business API — 29 USD al mes por número conectado.", "Los cargos de mensajería de Meta se aplican aparte, según el uso y la categoría del mensaje."],
+    "pt-BR": ["WhatsApp Business API — US$ 29 por mês por número conectado.", "As cobranças de mensagens da Meta são à parte, conforme o uso e a categoria da mensagem."],
+    ar: ["WhatsApp Business API — 29 دولاراً شهرياً لكل رقم متصل.", "رسوم رسائل Meta تُحسب بشكل منفصل، حسب الاستخدام وفئة الرسالة."],
   },
   automation: {
     en: ["Trigger: lead status becomes Contacted", "Action: create a CRM task", "Publish", "The lead changes status", "Run history shows Success"],

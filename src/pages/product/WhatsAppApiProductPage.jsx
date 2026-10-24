@@ -17,16 +17,16 @@ const COPY = {
   he: {
     title: "WhatsApp API לעסקים | ביזאפלי (Bizuply)",
     description:
-      "חיבור WhatsApp Cloud API של Meta דרך ביזאפלי. 29 דולר לחודש למספר מחובר. חיובי ההודעות של Meta נפרדים, ואין ניסיון חינם.",
+      "WhatsApp Business API — 29 דולר לחודש לכל מספר מחובר. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
     h1: "WhatsApp API לעסקים",
     lead: "ביזאפלי מחברת את WhatsApp Cloud API של Meta לעסק: תבניות שמאושרות אצל Meta, מעקב מסירה, ו־webhooks חתומים. המערכת שלכם מתחברת עם מפתח API של ביזאפלי, בלי לגעת בטוקן של Meta.",
     price: "29 דולר לחודש למספר וואטסאפ מחובר אחד.",
-    metaFees: "חיובי ההודעות של Meta מחויבים בנפרד, לפי המחירון של Meta. אין כאן ניסיון חינם.",
+    metaFees: "חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
     audiencesTitle: "למי זה מתאים",
     audiences: [
       ["מפתחים וצוותי SaaS", "מערכת שיכולה לשלוח בקשת HTTPS יכולה לשלוח תבנית מאושרת ולקבל אירועי סטטוס חתומים."],
       ["עסקים עם CRM או אתר", "המספר המחובר משמש את המערכת שכבר עובדת אצלכם, כולל CRM, אתר או כלי פנימי."],
-      ["סוכנויות שבונות ללקוח", "לכל מספר יש מנוי, מפתח ו־webhook משלו. ניהול כמה לקוחות ממסך אחד עדיין לא זמין."],
+      ["צוותים שמחברים מספר של לקוח", "כל מספר מחובר הוא מנוי משלו, ב־29 דולר לחודש."],
     ],
     capabilitiesTitle: "יכולות שקיימות היום",
     capabilities: [
@@ -57,25 +57,25 @@ const COPY = {
     faqTitle: "לפני שמתחילים",
     faq: [
       ["מה כוללים 29 הדולר?", "מנוי למספר וואטסאפ מחובר אחד: חיבור, API ו־webhooks, תבניות, לוח בקרה ותיעוד. מספר נוסף דורש מנוי נפרד."],
-      ["יש ניסיון חינם?", "אין. המנוי מתחיל ב־29 דולר לחודש למספר אחד."],
-      ["חיובי Meta כלולים?", "לא. Meta מחייבת לפי מדינת הנמען וקטגוריית ההודעה, בנפרד ממנוי ביזאפלי."],
-      ["אפשר לנהל כמה לקוחות ממסך אחד?", "עדיין לא. לכל מספר יש מנוי, מפתח ו־webhook משלו."],
+      ["מהו מנוי הוואטסאפ?", "WhatsApp Business API עולה 29 דולר לחודש לכל מספר מחובר."],
+      ["איך מחושבות הודעות Meta?", "חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה."],
+      ["איך מחויב מספר נוסף?", "לכל מספר מחובר יש מנוי משלו ב־29 דולר לחודש."],
     ],
     relatedTitle: "מוצרים משלימים",
   },
   en: {
     title: "WhatsApp API for businesses | Bizuply",
     description:
-      "Connect Meta's WhatsApp Cloud API through Bizuply. $29 per month for one connected number. Meta messaging fees are separate, and there is no free trial.",
+      "WhatsApp Business API — $29/month per connected number. Meta messaging charges apply separately, based on usage and message category.",
     h1: "WhatsApp API for businesses",
     lead: "Bizuply connects Meta's WhatsApp Cloud API to a business: templates Meta has approved, delivery status, and signed webhooks. Your system uses a Bizuply API key and does not handle Meta's access token.",
     price: "$29 per month for one connected WhatsApp number.",
-    metaFees: "Meta's messaging fees are billed separately, on Meta's own rate card. There is no free trial.",
+    metaFees: "Meta messaging charges apply separately, based on usage and message category.",
     audiencesTitle: "Who it is for",
     audiences: [
       ["Developers and SaaS teams", "Any system that can make an HTTPS request can send an approved template and receive signed status events."],
       ["Businesses with a CRM or website", "The connected number serves the system you already run, including a CRM, a website, or an internal tool."],
-      ["Agencies building for a client", "Each number has its own subscription, key, and webhook. Managing many clients from one screen is not available yet."],
+      ["Teams connecting a client's number", "Each connected number is its own subscription at $29 a month."],
     ],
     capabilitiesTitle: "Capabilities that are live",
     capabilities: [
@@ -106,9 +106,9 @@ const COPY = {
     faqTitle: "Before you start",
     faq: [
       ["What does the $29 cover?", "The subscription for one connected WhatsApp number: onboarding, the API and webhooks, templates, the dashboard, and documentation. Another number needs its own subscription."],
-      ["Is there a free trial?", "No. The subscription starts at $29 per month for one number."],
-      ["Are Meta charges included?", "No. Meta bills by the recipient's country and the message category, separately from the Bizuply subscription."],
-      ["Can one screen manage many clients?", "Not yet. Each number has its own subscription, API key, and webhook."],
+      ["What is the WhatsApp subscription?", "WhatsApp Business API is $29 a month per connected number."],
+      ["How are Meta messages billed?", "Meta messaging charges apply separately, based on usage and message category."],
+      ["How is an additional number billed?", "Each connected number has its own subscription at $29 a month."],
     ],
     relatedTitle: "Related products",
   },
