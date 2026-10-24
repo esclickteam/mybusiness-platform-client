@@ -1152,6 +1152,90 @@ export async function getMetaLeadgenTos(
   return data;
 }
 
+export type MetaPageWhatsAppNumber = {
+  id: string;
+  phone: string;
+  e164?: string;
+  displayNumber: string;
+  isWhatsAppBusiness?: boolean;
+  linkedToPage?: boolean;
+  pageId?: string;
+};
+
+export type MetaPageWhatsAppResult = {
+  success?: boolean;
+  ok?: boolean;
+  linked?: boolean;
+  alreadyLinkedToThisPage?: boolean;
+  needsVerification?: boolean;
+  codeSent?: boolean;
+  demoSafe?: boolean;
+  officialFlow?: boolean;
+  pageId?: string;
+  pageName?: string;
+  numbers?: MetaPageWhatsAppNumber[];
+  number?: MetaPageWhatsAppNumber | null;
+  hasWhatsAppNumber?: boolean;
+  canConnectAdditional?: boolean;
+  maxNumbers?: number;
+  message?: string;
+  code?: string;
+  verificationStatus?: string | null;
+  settingsHelpUrl?: string;
+  adsHelpUrl?: string;
+};
+
+export async function listPageWhatsAppNumbers(
+  businessId: string | undefined,
+  pageId: string
+) {
+  const { data } = await API.get<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers`,
+    withBusiness(businessId, { pageId })
+  );
+  return data;
+}
+
+export async function inspectPageWhatsAppNumber(
+  businessId: string | undefined,
+  pageId: string,
+  phone: string
+) {
+  const { data } = await API.post<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers/inspect`,
+    { businessId, pageId, phone },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function requestPageWhatsAppCode(
+  businessId: string | undefined,
+  pageId: string,
+  phone: string
+) {
+  const { data } = await API.post<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers/request-code`,
+    { businessId, pageId, phone },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function verifyPageWhatsAppCode(
+  businessId: string | undefined,
+  pageId: string,
+  phone: string,
+  code: string
+) {
+  const { data } = await API.post<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers/verify`,
+    { businessId, pageId, phone, code },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
 export async function listMetaLeadForms(
   businessId: string | undefined,
   pageId?: string

@@ -39,6 +39,7 @@ import {
   metaInputClass,
   metaSelectClass,
 } from "../metaAdsUi";
+import { displayWhatsAppNumber, isWhatsAppConversionLocation } from "../pageWhatsAppNumber";
 
 type Props = {
   ad: AdDraft;
@@ -50,6 +51,9 @@ type Props = {
   businessId: string | null;
   sessionMode?: "create" | "edit";
   showLeadgenTos?: boolean;
+  conversionLocation?: string;
+  whatsappPhone?: string;
+  whatsappDisplayNumber?: string;
   publishId?: string;
   onChange: (patch: Partial<AdDraft>) => void;
   onFormsRefresh?: () => Promise<void> | void;
@@ -66,6 +70,9 @@ export default function AdLevelEditor({
   businessId,
   sessionMode = "create",
   showLeadgenTos = false,
+  conversionLocation = "",
+  whatsappPhone = "",
+  whatsappDisplayNumber = "",
   publishId,
   onChange,
   onFormsRefresh,
@@ -76,6 +83,7 @@ export default function AdLevelEditor({
     t(`metaCampaigns.adsManager.chrome.${key}`, opts);
   const tabLabel = (tab: "active" | "archived") =>
     tab === "active" ? c("formTabActive") : c("formTabArchived");
+  const usesWhatsApp = isWhatsAppConversionLocation(conversionLocation);
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
@@ -259,9 +267,31 @@ export default function AdLevelEditor({
 
       <MetaSection
         title={c("destination")}
-        status={ad.instantFormId ? "ok" : "warn"}
+        status={
+          usesWhatsApp
+            ? whatsappPhone
+              ? "ok"
+              : "warn"
+            : ad.instantFormId
+              ? "ok"
+              : "warn"
+        }
       >
         <div className="space-y-5">
+          {usesWhatsApp ? (
+            <div
+              data-testid="ad-whatsapp-destination"
+              className="rounded-xl border border-[#C6D9F1] bg-[#F0F6FF] px-4 py-3"
+            >
+              <p className="text-[15px] font-bold text-[#050505]">WhatsApp</p>
+              <p className="mt-1 text-[13px] text-[#65676B]" dir="ltr">
+                {whatsappDisplayNumber ||
+                  displayWhatsAppNumber(whatsappPhone) ||
+                  c("pageWaChooseNumber")}
+              </p>
+            </div>
+          ) : (
+          <>
           <div>
             <h3 className="text-[15px] font-bold text-[#050505]">
               {c("website")}
@@ -517,6 +547,8 @@ export default function AdLevelEditor({
               </div>
             ) : null}
           </div>
+          </>
+          )}
         </div>
       </MetaSection>
 
