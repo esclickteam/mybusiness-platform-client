@@ -719,7 +719,9 @@ export default function AdsManagerDetailedTargetingSection({
         <p className="text-[12px] leading-snug text-[#65676B]">{description}</p>
         {range ? (
           <p className="text-[12px] font-semibold text-[#050505]">
-            {t("metaCampaigns.adsManager.chrome.audienceSizeRange", { range })}
+            {t("metaCampaigns.adsManager.chrome.audienceSizeLabel")}
+            {": "}
+            <span dir="ltr">{range}</span>
           </p>
         ) : null}
         {path.length ? (
@@ -795,7 +797,10 @@ export default function AdsManagerDetailedTargetingSection({
           </span>
         </button>
         {range ? (
-          <span className="max-w-[42%] shrink-0 pt-0.5 text-end text-[11px] font-semibold tabular-nums text-[#65676B]">
+          <span
+            className="max-w-[42%] shrink-0 pt-0.5 text-end text-[11px] font-semibold tabular-nums text-[#65676B]"
+            dir="ltr"
+          >
             {range}
           </span>
         ) : null}
@@ -877,7 +882,10 @@ export default function AdsManagerDetailedTargetingSection({
           </button>
 
           {range ? (
-            <span className="max-w-[40%] shrink-0 text-end text-[11px] font-semibold tabular-nums text-[#65676B]">
+            <span
+              className="max-w-[40%] shrink-0 text-end text-[11px] font-semibold tabular-nums text-[#65676B]"
+              dir="ltr"
+            >
               {range}
             </span>
           ) : null}
