@@ -299,7 +299,6 @@ export function normalizeMarketingPath(pathname) {
 export function marketingLegacyRedirectPath(pathname) {
   const path = normalizeMarketingPath(pathname);
   if (path === "/join") return "/business";
-  if (path === "/guides/how-search-engines-read-a-business-site" || path === "/guides/what-customers-should-see") return "/guides/build-a-website-without-code";
   if (path === "/Pricing") return "/pricing";
   return "";
 }
@@ -733,6 +732,9 @@ function renderSection(section) {
     const head = (section.table.columns || []).map((column) => `<th>${escapeText(column)}</th>`).join("");
     const rows = section.table.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeText(cell)}</td>`).join("")}</tr>`).join("");
     parts.push(`<table>${head ? `<thead><tr>${head}</tr></thead>` : ""}${rows}</table>`);
+  }
+  for (const shot of section.shots || []) {
+    parts.push(`<figure><img src="${escapeHtml(shot.src)}" alt="${escapeText(shot.caption || section.heading)}" /><figcaption>${escapeText(shot.caption || "")}</figcaption></figure>`);
   }
   return parts.join("");
 }

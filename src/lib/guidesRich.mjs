@@ -4,6 +4,7 @@ import { installRemainingGuides } from "./guidesRichRest.mjs";
 import { installMoreGuides } from "./guidesRichMore.mjs";
 import { installFinalGuides } from "./guidesRichFinal.mjs";
 import { installLastGuides } from "./guidesRichLast.mjs";
+import { applyGuideDepth } from "./guidesRichDepth.mjs";
 
 const LOCALES = ["en", "he", "es", "pt-BR", "ar"];
 
@@ -56,6 +57,7 @@ installRemainingGuides(add, t);
 installMoreGuides(add, t);
 installFinalGuides(add, t);
 installLastGuides(add, t);
+applyGuideDepth(ARTICLES);
 
 export function getRichGuide(slug, locale) {
   const pack = ARTICLES[slug];

@@ -39,8 +39,40 @@
   padding-inline-start: 1.2rem;
 }
 
+.guide-shots {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0 0.2rem;
+}
+
+.guide-layout-compare .guide-block {
+  background: transparent;
+  border: none;
+  padding-inline: 0;
+}
+
+.guide-layout-compare .guide-table {
+  background: #fff;
+  border: 1px solid #e7e1d6;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+.guide-layout-reference .guide-answer {
+  background: #fff;
+  border: 1px solid #e7e1d6;
+}
+
+.guide-layout-flow .guide-block {
+  background: #fbfaf7;
+}
+
+.guide-layout-review .guide-video {
+  margin-top: 0.4rem;
+}
+
 .guide-shot {
-  margin: 1.5rem 0;
+  margin: 0;
 }
 
 .guide-shot img {

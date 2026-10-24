@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { GUIDE_SLUGS, getGuide } from "../../lib/guidesMarketing.mjs";
@@ -140,6 +140,16 @@ function GuideSection({ section, locale }) {
           </tbody>
         </table>
       ) : null}
+      {section.shots?.length ? (
+        <div className="guide-shots">
+          {section.shots.map((shot) => (
+            <figure className="guide-shot" key={shot.src}>
+              <img src={shot.src} alt={shot.caption || heading} />
+              {shot.caption ? <figcaption>{shot.caption}</figcaption> : null}
+            </figure>
+          ))}
+        </div>
+      ) : null}
       {section.figure ? <GuideFigure kind={section.figure} locale={locale} /> : null}
       {section.video ? (
         <figure className="guide-video">
@@ -157,9 +167,6 @@ export function GuideArticlePage() {
   const locale = normalizeMarketingLocale(i18n.language);
   const dir = getTextDirection(locale);
   const copy = uiFor(locale);
-  if (slug === "how-search-engines-read-a-business-site" || slug === "what-customers-should-see") {
-    return <Navigate to="/guides/build-a-website-without-code" replace />;
-  }
   const article = getGuide(slug, locale);
   if (!article) {
     return (
@@ -173,7 +180,7 @@ export function GuideArticlePage() {
     .map((relatedSlug) => ({ slug: relatedSlug, article: getGuide(relatedSlug, locale) }))
     .filter((item) => item.article);
   return (
-    <article className="guide-page" dir={dir} lang={locale === "pt-BR" ? "pt-BR" : locale}>
+    <article className={`guide-page guide-layout-${article.layout || "story"}`} dir={dir} lang={locale === "pt-BR" ? "pt-BR" : locale}>
       <Helmet>
         <title>{article.title}</title>
         <meta name="description" content={article.description} />
