@@ -30,3 +30,5 @@ scripts/i18n-fragments/__pycache__/
 scripts/i18n-hardcoded-audit.json
 .env*
 !.env.example
+# Public site URLs only — scanner rejects this file if any secret is added.
+!.env.production

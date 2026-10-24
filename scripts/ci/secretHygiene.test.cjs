@@ -45,12 +45,28 @@ function gitLsFiles() {
     .filter((rel) => !rel.includes("node_modules/"));
 }
 
+const PUBLIC_CLIENT_ENV_KEYS = new Set(["VITE_API_URL", "VITE_CLIENT_URL"]);
+
+function isPublicClientUrlEnv(text) {
+  if (!text) return false;
+  const assignments = [];
+  for (const rawLine of text.split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line || line.startsWith("#")) continue;
+    const eq = line.indexOf("=");
+    if (eq < 1) return false;
+    const key = line.slice(0, eq).trim();
+    const value = line.slice(eq + 1).trim().replace(/^['"]|['"]$/g, "");
+    if (!PUBLIC_CLIENT_ENV_KEYS.has(key)) return false;
+    if (!/^https:\/\/[a-z0-9.-]+(\/.*)?$/i.test(value)) return false;
+    assignments.push(key);
+  }
+  return assignments.length > 0;
+}
+
 function scanFile(rel) {
   const findings = [];
   const base = path.basename(rel);
-  if (FORBIDDEN_ENV_NAMES.has(base)) {
-    findings.push({ type: "tracked_env_file", rel });
-  }
   const abs = path.join(REPO_ROOT, rel);
   let text;
   try {
@@ -59,6 +75,9 @@ function scanFile(rel) {
     text = buf.toString("utf8");
   } catch {
     return findings;
+  }
+  if (FORBIDDEN_ENV_NAMES.has(base) && !isPublicClientUrlEnv(text)) {
+    findings.push({ type: "tracked_env_file", rel });
   }
   const looksLikeEnvOrIgnore =
     base === ".gitignore" || base === ".env" || base.startsWith(".env.");
