@@ -10,6 +10,7 @@ import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import LazyRouteBoundary from "../../components/LazyRouteBoundary";
+import BusinessSetupGate from "../../components/auth/BusinessSetupGate";
 import {
   getDefaultDashboardPath,
   isDashboardPathAllowed,
@@ -439,6 +440,7 @@ const BusinessDashboardRoutes = () => {
 
   return (
     <LazyRouteBoundary>
+      <BusinessSetupGate />
       <Suspense fallback={<BizuplyLoader fullScreen label="Loading dashboard..." />}>
         <ModuleAccessGuard
           businessId={businessId}

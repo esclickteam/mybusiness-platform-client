@@ -36,7 +36,7 @@ type Props = {
   labels: Record<SocialProvider, string>;
   orLabel: string;
   redirectingLabel: string;
-  busy: SocialProvider | "email" | "link" | "oauth" | "otp" | null;
+  busy: SocialProvider | "email" | "link" | "oauth" | "otp" | null; // email = continue-with-email path
   onStart: (provider: SocialProvider) => void;
 };
 
