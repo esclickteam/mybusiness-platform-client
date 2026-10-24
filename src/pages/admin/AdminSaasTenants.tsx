@@ -55,11 +55,6 @@ type OpsState = {
 export default function AdminSaasTenants() {
   const [rows, setRows] = useState<TenantRow[]>([]);
   const [templates, setTemplates] = useState<CatalogTemplate[]>([]);
-  const [extraFor, setExtraFor] = useState<string | null>(null);
-  const [templateSlug, setTemplateSlug] = useState("");
-  const [subdomain, setSubdomain] = useState("");
-  const [setup, setSetup] = useState(0);
-  const [monthly, setMonthly] = useState(0);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [ops, setOps] = useState<OpsState | null>(null);
@@ -84,43 +79,13 @@ export default function AdminSaasTenants() {
       .then((res) => {
         const list = res.data.templates || [];
         setTemplates(list);
-        if (list[0]) setTemplateSlug(list[0].slug);
       })
       .catch(() => setTemplates([]));
   }, []);
 
-  async function provisionAnother(row: TenantRow) {
-    setError("");
+  async function provisionAnother(_row: TenantRow) {
+    setError("הקצאה נוספת מתבצעת רק ממסך עסקאות SaaS אחרי אישור תשלום ומסירה.");
     setNotice("");
-    if (!row.owner?.email || !row.ownerUserId) {
-      setError("חסרים פרטי הבעלים");
-      return;
-    }
-    try {
-      await API.post("/admin/saas-tenants/provision", {
-        accountKind: "bizuply_saas",
-        ownerUserId: row.ownerUserId,
-        businessId: row.businessId,
-        name: row.owner.name || row.businessName,
-        email: row.owner.email,
-        businessName: row.businessName,
-        templateSlug,
-        subdomain,
-        hostingPlanId: "starter",
-        currency: "ILS",
-        paymentMode: "none",
-        pricing: { setup, monthly },
-        idempotencyKey: `${row.owner.email}|${templateSlug}|${subdomain}`,
-      });
-      setNotice("המערכת הנוספת הוקמה. לא בוצע חיוב.");
-      setExtraFor(null);
-      await load();
-    } catch (err) {
-      const message = err && typeof err === "object" && "response" in err
-        ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
-        : "";
-      setError(message || "ההקמה נכשלה");
-    }
   }
 
   async function act(id: string, action: "suspend" | "resume") {
@@ -280,18 +245,7 @@ export default function AdminSaasTenants() {
                         ))}
                       </div>
                     ) : null}
-                    <button type="button" className="mt-1 block font-bold" onClick={() => setExtraFor(row.id)}>מערכת נוספת</button>
-                    {extraFor === row.id ? (
-                      <div className="mt-2 space-y-1">
-                        <select className="w-full rounded border px-2 py-1" value={templateSlug} onChange={(event) => setTemplateSlug(event.target.value)}>
-                          {templates.map((template) => <option key={template.slug} value={template.slug}>{template.name}</option>)}
-                        </select>
-                        <input className="w-full rounded border px-2 py-1" value={subdomain} placeholder="כתובת" onChange={(event) => setSubdomain(event.target.value)} />
-                        <input type="number" min={0} className="w-full rounded border px-2 py-1" value={setup} onChange={(event) => setSetup(Number(event.target.value) || 0)} />
-                        <input type="number" min={0} className="w-full rounded border px-2 py-1" value={monthly} onChange={(event) => setMonthly(Number(event.target.value) || 0)} />
-                        <button type="button" className="font-bold" onClick={() => provisionAnother(row)}>הקמה ללא חיוב</button>
-                      </div>
-                    ) : null}
+                    <button type="button" className="mt-1 block font-bold" onClick={() => provisionAnother(row)}>מערכת נוספת</button>
                   </td>
                 </tr>
               ))}

@@ -25,5 +25,6 @@ describe("admin nav active state", () => {
     expect(findNavMatch("/admin/settings/legal")?.item.path).toBe("/admin/settings/legal");
     expect(findNavMatch("/admin/crm/whatsapp")?.group.id).toBe("whatsapp");
     expect(findNavMatch("/admin/plans")?.group.id).toBe("billing");
+    expect(findNavMatch("/admin/saas-deals")?.item.path).toBe("/admin/saas-deals");
   });
 });

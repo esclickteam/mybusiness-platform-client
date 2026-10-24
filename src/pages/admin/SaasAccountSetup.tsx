@@ -11,6 +11,7 @@ export type SaasDraft = {
   serviceIds: string[];
   dealModel: "license" | "white_label" | "partner" | "exclusive_country";
   paymentMode: "none" | "manual_paid";
+  dealId: string;
   country: string;
   language: string;
   currency: "ILS" | "USD";
@@ -53,6 +54,7 @@ const EMPTY: SaasDraft = {
   serviceIds: ["license", "hosting", "database", "subdomain"],
   dealModel: "license",
   paymentMode: "none",
+  dealId: "",
   country: "IL",
   language: "he",
   currency: "USD",
@@ -169,6 +171,17 @@ export default function SaasAccountSetup({
             autoComplete="off"
           />
           <span className="mt-1 block text-xs font-bold text-slate-500">חובה, באנגלית, פנויה. טקסט הדוגמה אינו כתובת.</span>
+        </label>
+        <label className="text-sm font-bold">מזהה עסקה מאושרת *
+          <input
+            className="mt-1 w-full rounded-xl border px-3 py-2"
+            value={draft.dealId || ""}
+            onChange={(event) => patch({ dealId: event.target.value })}
+            placeholder="ממסך עסקאות SaaS"
+            required
+            autoComplete="off"
+          />
+          <span className="mt-1 block text-xs font-bold text-slate-500">הקצאה חסומה בלי אישור תשלום ומסירה.</span>
         </label>
       </div>
       <label className="block text-sm font-bold">דומיין

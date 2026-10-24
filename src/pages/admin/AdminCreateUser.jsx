@@ -295,6 +295,9 @@ export default function AdminCreateUser() {
     if (code === "saas_address_invalid") return "כתובת המערכת אינה תקינה";
     if (code === "saas_address_taken") return "כתובת המערכת כבר בשימוש";
     if (code === "saas_provision_failed") return data?.error || "הקמת המערכת נכשלה. אפשר להמשיך את ההקמה בלי ליצור משתמש נוסף.";
+    if (code === "saas_deal_required" || code === "saas_provision_blocked" || code === "saas_payment_required") {
+      return data?.error || "הקצאה חסומה עד אישור תשלום ומסירה";
+    }
     return data?.error || "שגיאה ביצירת משתמש";
   };
 
@@ -310,10 +313,11 @@ export default function AdminCreateUser() {
       });
       setResult((prev) => ({
         ...prev,
-        temporaryPassword: data.temporaryPassword,
-        credentialsReady: Boolean(data.temporaryPassword && (prev?.tenant?.status === "active" || prev?.setupStatus === "active")),
-        passwordResetRequired: false,
-        mustChangePassword: true,
+        temporaryPassword: undefined,
+        passwordSetupUrl: data.passwordSetupUrl,
+        credentialsReady: Boolean(data.passwordSetupUrl && (prev?.tenant?.status === "active" || prev?.setupStatus === "active")),
+        passwordResetRequired: !data.passwordSetupUrl,
+        mustChangePassword: false,
       }));
     } catch (err) {
       setError(err.response?.data?.error || "איפוס הסיסמה נכשל");
@@ -345,6 +349,14 @@ export default function AdminCreateUser() {
         payload.accountKind = form.accountKind || "bizuply";
         payload.businessName = form.businessName.trim();
         if (form.accountKind === "saas_only" || form.accountKind === "bizuply_saas") {
+          if (!String(form.saas.dealId || "").trim()) {
+            setError("יש לשייך עסקת SaaS מאושרת לפני הקצאה");
+            setErrorCode("saas_deal_required");
+            setCanRetry(false);
+            setSetupStatus("");
+            setSubmitting(false);
+            return;
+          }
           const addressError = saasAddressError(form.saas.subdomain);
           if (addressError) {
             setError(addressError.message);
@@ -359,12 +371,14 @@ export default function AdminCreateUser() {
             form.saas.templateSlug,
             form.saas.subdomain.trim().toLowerCase(),
           ].join("|");
+          payload.dealId = String(form.saas.dealId || "").trim();
           payload.saas = {
             ...form.saas,
+            dealId: String(form.saas.dealId || "").trim(),
             idempotencyKey,
             businessName: form.businessName.trim(),
             currency: form.saas.currency || "USD",
-            paymentMode: form.saas.paymentMode === "manual_paid" ? "manual_paid" : "none",
+            paymentMode: "none",
           };
           payload.country = form.saas.country;
           payload.language = form.saas.language;
@@ -545,13 +559,13 @@ export default function AdminCreateUser() {
             {result.accountKind === "saas_only" || result.accountKind === "bizuply_saas" ? (
               <div className="mt-3 space-y-1 font-bold">
                 <p>סטטוס הקמה: {result.setupStatus || result.tenant?.status || "pending"}</p>
-                {result.tenant?.status === "active" && result.credentialsReady && result.temporaryPassword ? (
+                {result.tenant?.status === "active" && result.credentialsReady && result.passwordSetupUrl ? (
                   <>
-                    <p>מסירה מאובטחת — אל תשלחו באימייל או בוואטסאפ. העתיקו והעבירו באופן פרטי.</p>
+                    <p>מסירה מאובטחת — שלחו קישור להגדרת סיסמה. אין סיסמה זמנית גלויה.</p>
                     <p>כניסה ל־Bizuply: <code dir="ltr">{result.loginUrl || "https://bizuply.com/login"}</code></p>
                     {result.user?.email ? <p>אימייל: {result.user.email}</p> : null}
                     <p>
-                      סיסמה זמנית: <code>{result.temporaryPassword}</code>
+                      קישור הגדרת סיסמה: <code dir="ltr">{result.passwordSetupUrl}</code>
                       <button
                         type="button"
                         className="ms-2 underline"
@@ -559,14 +573,14 @@ export default function AdminCreateUser() {
                           const text = [
                             `כניסה: ${result.loginUrl || "https://bizuply.com/login"}`,
                             `אימייל: ${result.user?.email || ""}`,
-                            `סיסמה זמנית: ${result.temporaryPassword}`,
-                            "בכניסה הראשונה יש להחליף סיסמה.",
+                            `הגדרת סיסמה: ${result.passwordSetupUrl}`,
+                            "הקישור חד-פעמי. אין סיסמה זמנית.",
                             "לאחר מכן: לוגו, צבעים, פרטי העסק, ואז פתיחת המערכת ללקוחות.",
                           ].join("\n");
                           navigator.clipboard?.writeText(text);
                         }}
                       >
-                        העתקת פרטי כניסה
+                        העתקת קישור הגדרה
                       </button>
                     </p>
                     {result.tenant?.accessPath || result.tenant?.product?.loginUrl ? (
@@ -579,14 +593,14 @@ export default function AdminCreateUser() {
                   </>
                 ) : result.tenant?.status === "active" && result.passwordResetRequired ? (
                   <>
-                    <p>החשבון והמערכת מוכנים, אך אין סיסמה זמנית זמינה. לא הונפקה סיסמה אוטומטית.</p>
+                    <p>החשבון והמערכת מוכנים. ניתן להנפיק קישור מאובטח להגדרת סיסמה.</p>
                     <button
                       type="button"
                       className="mt-2 rounded-lg bg-slate-900 px-3 py-2 text-white"
                       disabled={resettingPassword}
                       onClick={handleDeliveryReset}
                     >
-                      {resettingPassword ? "מאפס סיסמה..." : "איפוס סיסמה מורשה למסירה"}
+                      {resettingPassword ? "מנפיק קישור..." : "הנפקת קישור הגדרת סיסמה"}
                     </button>
                   </>
                 ) : (
