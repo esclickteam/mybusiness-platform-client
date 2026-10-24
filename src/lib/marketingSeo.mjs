@@ -299,6 +299,7 @@ export function normalizeMarketingPath(pathname) {
 export function marketingLegacyRedirectPath(pathname) {
   const path = normalizeMarketingPath(pathname);
   if (path === "/join") return "/business";
+  if (path === "/guides/how-search-engines-read-a-business-site") return "/guides/what-customers-should-see";
   if (path === "/Pricing") return "/pricing";
   return "";
 }

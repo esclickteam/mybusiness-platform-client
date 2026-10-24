@@ -350,9 +350,10 @@ const AR = {
 };
 
 export const EXTRA_GUIDES = { en: EN, he: HE, es: ES, "pt-BR": PT, ar: AR };
-export const EXTRA_GUIDE_SLUGS = Object.keys(EN);
+export const EXTRA_GUIDE_SLUGS = Object.keys(EN).filter((slug) => slug !== "how-search-engines-read-a-business-site");
 
 export function getExtraGuide(slug, locale) {
+  if (slug === "how-search-engines-read-a-business-site") return null;
   const pack = EXTRA_GUIDES[locale] || EXTRA_GUIDES.en;
   return pack[slug] || null;
 }

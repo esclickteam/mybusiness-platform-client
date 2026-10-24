@@ -2,11 +2,11 @@ import React from "react";
 
 const COPY = {
   crawl: {
-    en: ["Title", "One H1", "Opening answer", "Canonical URL", "hreflang only when that language exists"],
-    he: ["כותרת העמוד", "H1 אחד", "תשובה בפתיח", "כתובת canonical", "hreflang רק כשהשפה קיימת"],
-    es: ["Título", "Un solo H1", "Respuesta de apertura", "URL canónica", "hreflang solo si ese idioma existe"],
-    "pt-BR": ["Título", "Um único H1", "Resposta de abertura", "URL canônica", "hreflang só quando o idioma existe"],
-    ar: ["العنوان", "عنوان H1 واحد", "إجابة في الافتتاح", "رابط canonical", "hreflang فقط إذا وُجدت اللغة"],
+    en: ["Who you help", "The service", "How to book or ask", "The price, if you publish one", "How to reach you"],
+    he: ["את מי אתם עוזרים", "השירות", "איך קובעים או שואלים", "המחיר, אם מפרסמים אותו", "איך מגיעים אליכם"],
+    es: ["A quién ayuda", "El servicio", "Cómo reservar o preguntar", "El precio, si lo publica", "Cómo llegar a usted"],
+    "pt-BR": ["Quem você atende", "O serviço", "Como agendar ou perguntar", "O preço, se você publica", "Como falar com você"],
+    ar: ["من تساعدون", "الخدمة", "كيف يُحجز أو يُسأل", "السعر، إن نشرتموه", "كيف يصلون إليكم"],
   },
   path: {
     en: ["Meta Lead Ad", "Website form", "Google Ads form", "CRM lead, with its source", "Status and a dated task"],

@@ -1,6 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useParams } from "react-router-dom";
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { GUIDE_SLUGS, getGuide } from "../../lib/guidesMarketing.mjs";
@@ -39,11 +39,11 @@ function sectionHeading(section) {
 }
 
 const UI = {
-  en: { all: "All guides", updated: "Updated", faq: "Questions worth answering", pricing: "See pricing", crm: "Open the CRM", auto: "Automations", site: "Website builder", meta: "Meta campaigns", capture: "Still from the matching product recording. Names on screen are demo data.", zoom: "Enlarge", plan: "Plan", price: "Price", includes: "Includes", crmOnly: "CRM only", business: "Business plan", whatsapp: "WhatsApp number", crmIncludes: "Pipeline and client file", businessIncludes: "CRM, appointments, collaborations, automations", waIncludes: "One connected number. Meta messaging fees are separate.", read: "Read the guide", onPage: "On this page", answer: "Direct answer", example: "Example", related: "Continue with" },
-  he: { all: "כל המדריכים", updated: "עודכן", faq: "שאלות שכדאי לענות עליהן", pricing: "למחירון", crm: "לעמוד ה־CRM", auto: "אוטומציות", site: "בניית אתרים", meta: "קמפיינים של Meta", capture: "פריים מתוך ההקלטה שמתאימה למדריך. השמות על המסך הם נתוני הדגמה.", zoom: "הגדלה", plan: "מסלול", price: "מחיר", includes: "כולל", crmOnly: "CRM בלבד", business: "חבילה עסקית", whatsapp: "מספר WhatsApp", crmIncludes: "צינור ותיק לקוח", businessIncludes: "CRM, תורים, שיתופים ואוטומציות", waIncludes: "מספר מחובר אחד. חיובי Meta נפרדים.", read: "למדריך", onPage: "בעמוד", answer: "תשובה ישירה", example: "דוגמה", related: "המשיכו אל" },
-  es: { all: "Todas las guías", updated: "Actualizado", faq: "Preguntas que conviene responder", pricing: "Ver precios", crm: "Abrir el CRM", auto: "Automatizaciones", site: "Constructor de sitios", meta: "Campañas de Meta", capture: "Fotograma de la grabación que corresponde a esta guía. Los nombres son de demostración.", zoom: "Ampliar", plan: "Plan", price: "Precio", includes: "Incluye", crmOnly: "CRM solo", business: "Plan de negocio", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline y expediente", businessIncludes: "CRM, citas, colaboraciones y automatizaciones", waIncludes: "Un número conectado. Las tarifas de Meta van aparte.", read: "Leer la guía", onPage: "En esta página", answer: "Respuesta directa", example: "Ejemplo", related: "Siga con" },
-  "pt-BR": { all: "Todos os guias", updated: "Atualizado", faq: "Perguntas que vale responder", pricing: "Ver preços", crm: "Abrir o CRM", auto: "Automações", site: "Construtor de sites", meta: "Campanhas da Meta", capture: "Quadro da gravação que corresponde a este guia. Os nomes são de demonstração.", zoom: "Ampliar", plan: "Plano", price: "Preço", includes: "Inclui", crmOnly: "CRM sozinho", business: "Plano de negócios", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline e arquivo do cliente", businessIncludes: "CRM, agenda, colaborações e automações", waIncludes: "Um número conectado. As tarifas da Meta são à parte.", read: "Ler o guia", onPage: "Nesta página", answer: "Resposta direta", example: "Exemplo", related: "Continue com" },
-  ar: { all: "كل الأدلة", updated: "آخر تحديث", faq: "أسئلة تستحق إجابة", pricing: "الأسعار", crm: "صفحة CRM", auto: "الأتمتة", site: "منشئ المواقع", meta: "حملات Meta", capture: "لقطة من التسجيل المطابق لهذا الدليل. الأسماء على الشاشة بيانات عرض.", zoom: "تكبير", plan: "المسار", price: "السعر", includes: "يشمل", crmOnly: "CRM وحده", business: "الخطة التجارية", whatsapp: "رقم واتساب", crmIncludes: "المسار وملف العميل", businessIncludes: "CRM والمواعيد والتعاون والأتمتة", waIncludes: "رقم واحد متصل. رسوم Meta منفصلة.", read: "اقرأ الدليل", onPage: "في هذه الصفحة", answer: "إجابة مباشرة", example: "مثال", related: "تابع مع" },
+  en: { all: "All guides", updated: "Updated", faq: "Common questions", pricing: "See pricing", crm: "Open the CRM", auto: "Automations", site: "Website builder", meta: "Meta campaigns", capture: "Still from the matching product recording. Names on screen are demo data.", zoom: "Enlarge", plan: "Plan", price: "Price", includes: "Includes", crmOnly: "CRM only", business: "Business plan", whatsapp: "WhatsApp number", crmIncludes: "Pipeline and client file", businessIncludes: "CRM, appointments, collaborations, automations", waIncludes: "One connected number. Meta messaging fees are separate.", read: "Read the guide", onPage: "On this page", example: "Example", related: "Continue with" },
+  he: { all: "כל המדריכים", updated: "עודכן", faq: "שאלות נפוצות", pricing: "למחירון", crm: "לעמוד ה־CRM", auto: "אוטומציות", site: "בניית אתרים", meta: "קמפיינים של Meta", capture: "פריים מתוך ההקלטה שמתאימה למדריך. השמות על המסך הם נתוני הדגמה.", zoom: "הגדלה", plan: "מסלול", price: "מחיר", includes: "כולל", crmOnly: "CRM בלבד", business: "חבילה עסקית", whatsapp: "מספר WhatsApp", crmIncludes: "צינור ותיק לקוח", businessIncludes: "CRM, תורים, שיתופים ואוטומציות", waIncludes: "מספר מחובר אחד. חיובי Meta נפרדים.", read: "למדריך", onPage: "בעמוד", example: "דוגמה", related: "המשיכו אל" },
+  es: { all: "Todas las guías", updated: "Actualizado", faq: "Preguntas frecuentes", pricing: "Ver precios", crm: "Abrir el CRM", auto: "Automatizaciones", site: "Constructor de sitios", meta: "Campañas de Meta", capture: "Fotograma de la grabación que corresponde a esta guía. Los nombres son de demostración.", zoom: "Ampliar", plan: "Plan", price: "Precio", includes: "Incluye", crmOnly: "CRM solo", business: "Plan de negocio", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline y expediente", businessIncludes: "CRM, citas, colaboraciones y automatizaciones", waIncludes: "Un número conectado. Las tarifas de Meta van aparte.", read: "Leer la guía", onPage: "En esta página", example: "Ejemplo", related: "Siga con" },
+  "pt-BR": { all: "Todos os guias", updated: "Atualizado", faq: "Perguntas frequentes", pricing: "Ver preços", crm: "Abrir o CRM", auto: "Automações", site: "Construtor de sites", meta: "Campanhas da Meta", capture: "Quadro da gravação que corresponde a este guia. Os nomes são de demonstração.", zoom: "Ampliar", plan: "Plano", price: "Preço", includes: "Inclui", crmOnly: "CRM sozinho", business: "Plano de negócios", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline e arquivo do cliente", businessIncludes: "CRM, agenda, colaborações e automações", waIncludes: "Um número conectado. As tarifas da Meta são à parte.", read: "Ler o guia", onPage: "Nesta página", example: "Exemplo", related: "Continue com" },
+  ar: { all: "كل الأدلة", updated: "آخر تحديث", faq: "أسئلة شائعة", pricing: "الأسعار", crm: "صفحة CRM", auto: "الأتمتة", site: "منشئ المواقع", meta: "حملات Meta", capture: "لقطة من التسجيل المطابق لهذا الدليل. الأسماء على الشاشة بيانات عرض.", zoom: "تكبير", plan: "المسار", price: "السعر", includes: "يشمل", crmOnly: "CRM وحده", business: "الخطة التجارية", whatsapp: "رقم واتساب", crmIncludes: "المسار وملف العميل", businessIncludes: "CRM والمواعيد والتعاون والأتمتة", waIncludes: "رقم واحد متصل. رسوم Meta منفصلة.", read: "اقرأ الدليل", onPage: "في هذه الصفحة", example: "مثال", related: "تابع مع" },
 };
 
 function uiFor(locale) {
@@ -157,6 +157,9 @@ export function GuideArticlePage() {
   const locale = normalizeMarketingLocale(i18n.language);
   const dir = getTextDirection(locale);
   const copy = uiFor(locale);
+  if (slug === "how-search-engines-read-a-business-site") {
+    return <Navigate to="/guides/what-customers-should-see" replace />;
+  }
   const article = getGuide(slug, locale);
   if (!article) {
     return (
@@ -180,7 +183,7 @@ export function GuideArticlePage() {
         <p><Link to="/guides">{copy.all}</Link></p>
         <p className="guide-kicker">{copy.updated} {article.updated}</p>
         <h1>{article.h1}</h1>
-        <p className="guide-answer"><b>{copy.answer}</b>{article.lede || article.description}</p>
+        <p className="guide-answer">{article.lede || article.description}</p>
       </header>
       <div className="guide-split">
         <nav className="guide-toc" aria-label={copy.onPage}>
