@@ -85,11 +85,26 @@ function isBranchRootLabel(segment?: string) {
   );
 }
 
-function formatAudienceSize(value?: number | null) {
-  if (value == null || !Number.isFinite(value) || value <= 0) return "";
-  if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
-  if (value >= 1_000) return `${Math.round(value / 1_000)}K`;
-  return String(value);
+function formatAudienceCount(value?: number | null, locale = "he-IL") {
+  if (value == null || !Number.isFinite(Number(value)) || Number(value) <= 0) {
+    return "";
+  }
+  const tag = String(locale || "he").toLowerCase().startsWith("he")
+    ? "he-IL"
+    : "en-US";
+  return new Intl.NumberFormat(tag).format(Math.round(Number(value)));
+}
+
+/** Meta Ads Manager style: full numeric range, not abbreviated 1740.2M. */
+function formatAudienceSizeRange(
+  lower?: number | null,
+  upper?: number | null,
+  locale = "he-IL"
+) {
+  const hi = formatAudienceCount(upper ?? lower, locale);
+  const lo = formatAudienceCount(lower, locale);
+  if (lo && hi && lo !== hi) return `${lo} - ${hi}`;
+  return hi || lo || "";
 }
 
 function branchOf(item: MetaDetailedTarget): BrowseBranch {
@@ -358,6 +373,9 @@ export default function AdsManagerDetailedTargetingSection({
     () => cached?.suggestSort || "relevance"
   );
   const [suggestBusy, setSuggestBusy] = useState(false);
+  const [suggestSource, setSuggestSource] = useState("");
+  const [suggestApiGap, setSuggestApiGap] = useState("");
+  const [infoTarget, setInfoTarget] = useState<MetaDetailedTarget | null>(null);
   const [browseRows, setBrowseRows] = useState<MetaDetailedTarget[]>(
     () => cached?.browseRows || []
   );
@@ -463,6 +481,8 @@ export default function AdsManagerDetailedTargetingSection({
           .filter((row) => row.id)
           .map((row) => ({ id: row.id, type: row.type || "interests" })),
       });
+      setSuggestSource(String(data.source || ""));
+      setSuggestApiGap(String(data.apiGap || ""));
       setSuggestResults(
         (data.results || []).filter(
           (row) => row.id && row.selectable !== false && !selectedIds.has(row.id)
@@ -470,6 +490,8 @@ export default function AdsManagerDetailedTargetingSection({
       );
     } catch (err) {
       setSuggestResults([]);
+      setSuggestSource("");
+      setSuggestApiGap("");
       setError(
         err instanceof Error
           ? err.message
@@ -664,55 +686,148 @@ export default function AdsManagerDetailedTargetingSection({
     return t("metaCampaigns.adsManager.chrome.browseDemographics");
   };
 
+  const pathLabel = (item: MetaDetailedTarget) => {
+    const parts = Array.isArray(item.path)
+      ? item.path.map((p) => String(p || "").trim()).filter(Boolean)
+      : [];
+    if (!parts.length) return typeLabel(item.type);
+    // Meta shows parent chain without repeating the leaf name when identical.
+    const leaf = String(item.name || "").trim();
+    const parents =
+      parts[parts.length - 1] === leaf ? parts.slice(0, -1) : parts;
+    return parents.join(" > ") || typeLabel(item.type);
+  };
+
+  const renderInfoPane = (item: MetaDetailedTarget | TreeNode | null) => {
+    if (!item) return null;
+    const name = "name" in item ? item.name : "";
+    const description =
+      ("description" in item && item.description) ||
+      t("metaCampaigns.adsManager.chrome.targetingInfoFallback");
+    const range = formatAudienceSizeRange(
+      item.audienceSizeLower,
+      item.audienceSize,
+      locale
+    );
+    const path = Array.isArray(item.path) ? item.path.filter(Boolean) : [];
+    return (
+      <aside
+        className="flex w-[min(260px,42%)] shrink-0 flex-col gap-2 overflow-y-auto border-s border-[#E4E6EB] bg-[#F7F8FA] px-3 py-3 text-start"
+        data-testid="detailed-targeting-info-pane"
+      >
+        <p className="text-[13px] font-bold text-[#050505]">{name}</p>
+        <p className="text-[12px] leading-snug text-[#65676B]">{description}</p>
+        {range ? (
+          <p className="text-[12px] font-semibold text-[#050505]">
+            {t("metaCampaigns.adsManager.chrome.audienceSizeRange", { range })}
+          </p>
+        ) : null}
+        {path.length ? (
+          <p className="text-[11px] leading-snug text-[#8A8D91]">
+            {path.join(" › ")}
+          </p>
+        ) : null}
+      </aside>
+    );
+  };
+
   const renderResultRow = (
     item: MetaDetailedTarget,
     opts?: { onPick?: () => void }
   ) => {
     const selectedRow = selectedIds.has(item.id);
-    const size = formatAudienceSize(item.audienceSize);
+    const range = formatAudienceSizeRange(
+      item.audienceSizeLower,
+      item.audienceSize,
+      locale
+    );
+    const infoOpen = infoTarget?.id === item.id;
     return (
-      <button
+      <div
         key={`${item.type}:${item.id}`}
-        type="button"
-        disabled={selectedRow}
-        className="flex w-full items-start gap-2 border-b border-[#F0F2F5] px-3 py-2.5 text-start hover:bg-[#E7F3FF] disabled:opacity-50"
-        onMouseDown={(e) => e.preventDefault()}
-        onClick={() => {
-          const draft = toDraftItem(item);
-          if (draft) {
-            addItem(draft);
-            opts?.onPick?.();
-          }
-        }}
+        className={[
+          "flex w-full items-start gap-2 border-b border-[#F0F2F5] px-3 py-2.5",
+          selectedRow ? "bg-[#E7F3FF]" : "hover:bg-[#F7F8FA]",
+        ].join(" ")}
       >
-        <span className="min-w-0 flex-1">
+        <button
+          type="button"
+          className={[
+            "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border",
+            selectedRow
+              ? "border-[#1877F2] bg-[#1877F2] text-white"
+              : "border-[#CED0D4] bg-white text-transparent",
+          ].join(" ")}
+          aria-pressed={selectedRow}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            if (selectedRow) {
+              removeItem(item.id);
+              return;
+            }
+            const draft = toDraftItem(item);
+            if (draft) {
+              addItem(draft);
+              opts?.onPick?.();
+            }
+          }}
+        >
+          <Check className="h-3 w-3" />
+        </button>
+        <button
+          type="button"
+          className="min-w-0 flex-1 text-start"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            if (selectedRow) return;
+            const draft = toDraftItem(item);
+            if (draft) {
+              addItem(draft);
+              opts?.onPick?.();
+            }
+          }}
+        >
           <span className="block truncate text-[13px] font-semibold text-[#050505]">
             {item.name}
           </span>
           <span className="block truncate text-[11px] text-[#65676B]">
-            {[
-              typeLabel(item.type),
-              size
-                ? t("metaCampaigns.form.audienceSize", { size })
-                : "",
-            ]
-              .filter(Boolean)
-              .join(" · ")}
+            {pathLabel(item)}
           </span>
-        </span>
-        <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
-          {selectedRow
-            ? t("metaCampaigns.adsManager.chrome.added")
-            : t("metaCampaigns.adsManager.chrome.add")}
-        </span>
-      </button>
+        </button>
+        {range ? (
+          <span className="max-w-[42%] shrink-0 pt-0.5 text-end text-[11px] font-semibold tabular-nums text-[#65676B]">
+            {range}
+          </span>
+        ) : null}
+        <button
+          type="button"
+          className={[
+            "mt-0.5 shrink-0",
+            infoOpen ? "text-[#1877F2]" : "text-[#8A8D91] hover:text-[#1877F2]",
+          ].join(" ")}
+          aria-label={t("metaCampaigns.adsManager.chrome.targetingInfo")}
+          aria-pressed={infoOpen}
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={(e) => {
+            e.stopPropagation();
+            setInfoTarget((prev) => (prev?.id === item.id ? null : item));
+            setInfoKey(null);
+          }}
+        >
+          <Info className="h-3.5 w-3.5" />
+        </button>
+      </div>
     );
   };
 
   const renderBrowseRow = (node: TreeNode) => {
     const hasChildren = node.children.length > 0;
     const selectedRow = node.id ? selectedIds.has(node.id) : false;
-    const size = formatAudienceSize(node.audienceSize);
+    const range = formatAudienceSizeRange(
+      node.audienceSizeLower,
+      node.audienceSize,
+      locale
+    );
     const showInfo = infoKey === node.key;
     const blockedHint = !node.selectable
       ? unsupportedLabel(node.unsupportedReason)
@@ -745,17 +860,15 @@ export default function AdsManagerDetailedTargetingSection({
             onClick={() => {
               if (hasChildren) drillIntoFolder(node);
               else if (node.selectable) toggleSelectNode(node);
-              else setInfoKey((prev) => (prev === node.key ? null : node.key));
+              else {
+                setInfoKey((prev) => (prev === node.key ? null : node.key));
+                setInfoTarget(null);
+              }
             }}
           >
             <span className="block truncate text-[13px] font-semibold text-[#050505]">
               {node.name}
             </span>
-            {size ? (
-              <span className="block truncate text-[11px] text-[#65676B]">
-                {t("metaCampaigns.form.audienceSize", { size })}
-              </span>
-            ) : null}
             {blockedHint && !hasChildren ? (
               <span className="mt-0.5 block text-[11px] font-semibold text-[#8A8D91]">
                 {blockedHint}
@@ -763,13 +876,23 @@ export default function AdsManagerDetailedTargetingSection({
             ) : null}
           </button>
 
+          {range ? (
+            <span className="max-w-[40%] shrink-0 text-end text-[11px] font-semibold tabular-nums text-[#65676B]">
+              {range}
+            </span>
+          ) : null}
+
           <button
             type="button"
-            className="shrink-0 text-[#8A8D91] hover:text-[#1877F2]"
+            className={[
+              "shrink-0",
+              showInfo ? "text-[#1877F2]" : "text-[#8A8D91] hover:text-[#1877F2]",
+            ].join(" ")}
             aria-label={t("metaCampaigns.adsManager.chrome.targetingInfo")}
             onClick={(e) => {
               e.stopPropagation();
               setInfoKey((prev) => (prev === node.key ? null : node.key));
+              setInfoTarget(null);
             }}
           >
             <Info className="h-3.5 w-3.5" />
@@ -786,21 +909,6 @@ export default function AdsManagerDetailedTargetingSection({
             </button>
           ) : null}
         </div>
-        {showInfo ? (
-          <div className="border-b border-[#F0F2F5] bg-[#F7F8FA] px-3 py-2 text-[12px] leading-snug text-[#65676B]">
-            {blockedHint ||
-              node.description ||
-              (node.path.length
-                ? node.path.join(" › ")
-                : t("metaCampaigns.adsManager.chrome.targetingInfoFallback"))}
-            {node.type ? (
-              <span className="mt-1 block text-[11px] font-semibold text-[#8A8D91]">
-                {node.type}
-                {node.id ? ` · ${node.id}` : ""}
-              </span>
-            ) : null}
-          </div>
-        ) : null}
       </div>
     );
   };
@@ -920,7 +1028,10 @@ export default function AdsManagerDetailedTargetingSection({
 
         {panelOpen ? (
           <div
-            className="absolute inset-x-0 top-full z-[1300] mt-1 flex max-h-[min(420px,55vh)] flex-col overflow-hidden rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
+            className={[
+              "absolute top-full z-[1300] mt-1 flex max-h-[min(480px,62vh)] flex-col overflow-hidden rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]",
+              infoTarget || infoKey ? "inset-x-0 min-w-[min(100%,560px)]" : "inset-x-0",
+            ].join(" ")}
             dir={isRtl ? "rtl" : "ltr"}
             data-testid="detailed-targeting-panel"
             data-panel-mode={panelMode}
@@ -952,47 +1063,57 @@ export default function AdsManagerDetailedTargetingSection({
                     </button>
                   ))}
                 </div>
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                  {suggestBusy && !suggestResults.length ? (
-                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                      {t("metaCampaigns.adsManager.chrome.searching")}
-                    </p>
-                  ) : null}
-                  {suggestResults.map((item) => renderResultRow(item))}
-                  {!suggestBusy && !suggestResults.length ? (
-                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                      {t(
-                        "metaCampaigns.adsManager.chrome.detailedSuggestionsEmpty"
-                      )}
-                    </p>
-                  ) : null}
+                <div className="flex min-h-0 flex-1 overflow-hidden">
+                  <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
+                    {suggestBusy && !suggestResults.length ? (
+                      <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                        {t("metaCampaigns.adsManager.chrome.searching")}
+                      </p>
+                    ) : null}
+                    {suggestResults.map((item) => renderResultRow(item))}
+                    {!suggestBusy && !suggestResults.length ? (
+                      <p className="px-3 py-3 text-[13px] leading-snug text-[#65676B]">
+                        {suggestSource === "unavailable_empty_state" || suggestApiGap
+                          ? t(
+                              "metaCampaigns.adsManager.chrome.detailedSuggestionsUnavailable"
+                            )
+                          : t(
+                              "metaCampaigns.adsManager.chrome.detailedSuggestionsEmpty"
+                            )}
+                      </p>
+                    ) : null}
+                  </div>
+                  {infoTarget ? renderInfoPane(infoTarget) : null}
                 </div>
               </>
             ) : null}
 
             {panelMode === "search" ? (
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                {busy && !searchResults.length ? (
-                  <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                    {t("metaCampaigns.adsManager.chrome.searching")}
-                  </p>
-                ) : null}
-                {searchResults.map((item) =>
-                  renderResultRow(item, {
-                    onPick: () => {
-                      setQuery("");
-                      setSearchResults([]);
-                      setPanelMode("suggestions");
-                    },
-                  })
-                )}
-                {!busy &&
-                query.trim().length >= 2 &&
-                !searchResults.length ? (
-                  <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                    {t("metaCampaigns.adsManager.chrome.detailedSearchEmpty")}
-                  </p>
-                ) : null}
+              <div className="flex min-h-0 flex-1 overflow-hidden">
+                <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
+                  {busy && !searchResults.length ? (
+                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                      {t("metaCampaigns.adsManager.chrome.searching")}
+                    </p>
+                  ) : null}
+                  {searchResults.map((item) =>
+                    renderResultRow(item, {
+                      onPick: () => {
+                        setQuery("");
+                        setSearchResults([]);
+                        setPanelMode("suggestions");
+                      },
+                    })
+                  )}
+                  {!busy &&
+                  query.trim().length >= 2 &&
+                  !searchResults.length ? (
+                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                      {t("metaCampaigns.adsManager.chrome.detailedSearchEmpty")}
+                    </p>
+                  ) : null}
+                </div>
+                {infoTarget ? renderInfoPane(infoTarget) : null}
               </div>
             ) : null}
 
@@ -1015,33 +1136,40 @@ export default function AdsManagerDetailedTargetingSection({
                     <Info className="h-3.5 w-3.5 shrink-0 text-[#8A8D91]" />
                   </div>
                 ) : null}
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
-                  {browseBusy && !browseRows.length ? (
-                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                      {t("metaCampaigns.adsManager.chrome.searching")}
-                    </p>
-                  ) : !browseStack.length ? (
-                    ROOT_BRANCHES.map((root) => (
-                      <button
-                        key={root.id}
-                        type="button"
-                        className="flex w-full items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5 text-start hover:bg-[#F7F8FA]"
-                        onClick={() => drillIntoBranch(root.id)}
-                      >
-                        <span className="min-w-0 flex-1 text-[13px] font-semibold text-[#050505]">
-                          {t(`metaCampaigns.adsManager.chrome.${root.labelKey}`)}
-                        </span>
-                        <Info className="h-3.5 w-3.5 shrink-0 text-[#8A8D91]" />
-                        <ChevronDrill className="h-4 w-4 shrink-0 text-[#65676B]" />
-                      </button>
-                    ))
-                  ) : browseNodes.length ? (
-                    browseNodes.map((node) => renderBrowseRow(node))
-                  ) : (
-                    <p className="px-3 py-3 text-[12px] text-[#65676B]">
-                      {t("metaCampaigns.adsManager.chrome.detailedBrowseEmpty")}
-                    </p>
-                  )}
+                <div className="flex min-h-0 flex-1 overflow-hidden">
+                  <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain">
+                    {browseBusy && !browseRows.length ? (
+                      <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                        {t("metaCampaigns.adsManager.chrome.searching")}
+                      </p>
+                    ) : !browseStack.length ? (
+                      ROOT_BRANCHES.map((root) => (
+                        <button
+                          key={root.id}
+                          type="button"
+                          className="flex w-full items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5 text-start hover:bg-[#F7F8FA]"
+                          onClick={() => drillIntoBranch(root.id)}
+                        >
+                          <span className="min-w-0 flex-1 text-[13px] font-semibold text-[#050505]">
+                            {t(`metaCampaigns.adsManager.chrome.${root.labelKey}`)}
+                          </span>
+                          <Info className="h-3.5 w-3.5 shrink-0 text-[#8A8D91]" />
+                          <ChevronDrill className="h-4 w-4 shrink-0 text-[#65676B]" />
+                        </button>
+                      ))
+                    ) : browseNodes.length ? (
+                      browseNodes.map((node) => renderBrowseRow(node))
+                    ) : (
+                      <p className="px-3 py-3 text-[12px] text-[#65676B]">
+                        {t("metaCampaigns.adsManager.chrome.detailedBrowseEmpty")}
+                      </p>
+                    )}
+                  </div>
+                  {infoKey
+                    ? renderInfoPane(
+                        browseNodes.find((n) => n.key === infoKey) || null
+                      )
+                    : null}
                 </div>
               </div>
             ) : null}
