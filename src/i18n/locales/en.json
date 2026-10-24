@@ -10191,6 +10191,7 @@
         "duplicateLocalDone": "A new Bizuply draft was created. Nothing was sent to Meta.",
         "changePlacements": "Placements",
         "changeAudiences": "Audiences",
+        "changeDetailedTargeting": "Detailed targeting",
         "changeSelection": "Editor position",
         "serverConfirmedSave": "Saved in Bizuply",
         "notYetSaved": "Not saved on the server yet",

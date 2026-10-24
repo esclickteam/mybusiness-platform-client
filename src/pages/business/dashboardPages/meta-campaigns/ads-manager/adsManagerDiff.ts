@@ -60,7 +60,17 @@ export function snapshotAdsManager(state: AdsManagerState) {
       endTime: adSet.endTime,
       dailyBudget: adSet.dailyBudget,
       lifetimeBudget: adSet.lifetimeBudget,
-      interests: (adSet.interests || []).map((row) => row.name || row.id).join(", "),
+      // Prefer stable Meta IDs so rename-only label changes do not look like targeting edits.
+      interests: (adSet.interests || [])
+        .map((row) => {
+          const id = String(row?.id || "").trim();
+          if (!/^\d+$/.test(id)) return "";
+          const type = String(row?.type || "interests").trim() || "interests";
+          return `${type}:${id}`;
+        })
+        .filter(Boolean)
+        .sort()
+        .join(","),
       advantagePlacements: adSet.advantagePlacements,
       customAudiences: (adSet.customAudiences || []).map((row) => row.name || row.id).join(", "),
       excludedAudiences: (adSet.excludedAudiences || []).map((row) => row.name || row.id).join(", "),
@@ -185,6 +195,14 @@ export function diffAdsManagerState(
       labelKey: "changeAudiences",
       oldValue: text(prev.customAudiences || prev.excludedAudiences),
       newValue: text(adSet.customAudiences || adSet.excludedAudiences),
+      spendImpact: true,
+      entity: "adset",
+      entityId: adSet.id,
+    });
+    pushChange(changes, {
+      labelKey: "changeDetailedTargeting",
+      oldValue: text(prev.interests || "—"),
+      newValue: text(adSet.interests || "—"),
       spendImpact: true,
       entity: "adset",
       entityId: adSet.id,
