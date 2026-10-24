@@ -399,10 +399,11 @@ export function adsManagerStateFromMetaCampaign(
       Boolean(adSet.targetingLoaded) ||
       Boolean(fromMeta.targetingLoaded) ||
       Boolean(targetingRaw);
-    const interests =
-      Array.isArray(adSet.interests) && adSet.interests.length
-        ? adSet.interests
-        : fromMeta.interests || [];
+    // Honor an explicit empty draft list (user cleared all chips). Only fall
+    // back to Meta when the draft omitted interests entirely.
+    const interests = Array.isArray(adSet.interests)
+      ? adSet.interests
+      : fromMeta.interests || [];
     return {
       ...adSet,
       targetingRaw,
