@@ -1488,6 +1488,39 @@ export async function searchMetaDetailedTargeting(
   return data;
 }
 
+/**
+ * Empty-search / seed-based detailed targeting suggestions (Relevance | Size).
+ * Uses Meta targetingsuggestions when seeds exist; otherwise real browse rows.
+ */
+export async function suggestMetaDetailedTargeting(
+  businessId: string | undefined,
+  query?: {
+    locale?: string;
+    limit?: number;
+    sort?: "relevance" | "size";
+    targetingList?: Array<{ id: string; type?: string }>;
+  }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaDetailedTarget[];
+    source?: string;
+    sort?: string;
+    apiGap?: string;
+  }>(
+    "/meta-campaigns/targeting/detailed-suggestions",
+    withBusiness(businessId, {
+      locale: query?.locale,
+      limit: query?.limit,
+      sort: query?.sort || "relevance",
+      targeting_list: query?.targetingList?.length
+        ? JSON.stringify(query.targetingList)
+        : undefined,
+    })
+  );
+  return data;
+}
+
 /** Real Meta Marketing API publish (campaign → ad set → creative → ad). */
 export async function publishMetaCampaign(
   businessId: string,

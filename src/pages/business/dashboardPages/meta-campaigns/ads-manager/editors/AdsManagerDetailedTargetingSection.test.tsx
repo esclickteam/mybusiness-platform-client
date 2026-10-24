@@ -10,13 +10,12 @@ import type { AdSetDetailedTarget } from "../adsManagerTypes";
 
 const FIXTURE = [
   {
-    id: "6002714398399",
-    name: "Small business",
+    id: "",
+    name: "__ROOT__",
     type: "interests",
     branch: "interests",
-    selectable: true,
-    path: ["Interests", "Business and industry", "Small business"],
-    audienceSize: 420000000,
+    selectable: false,
+    path: [],
   },
   {
     id: "",
@@ -26,6 +25,38 @@ const FIXTURE = [
     selectable: false,
     unsupportedReason: "category",
     path: ["Interests", "Business and industry"],
+  },
+  {
+    id: "",
+    name: "Banking (finance)",
+    type: "interests",
+    branch: "interests",
+    selectable: false,
+    unsupportedReason: "category",
+    path: ["Interests", "Business and industry", "Banking (finance)"],
+  },
+  {
+    id: "6003063638807",
+    name: "Investment banking",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: [
+      "Interests",
+      "Business and industry",
+      "Banking (finance)",
+      "Investment banking",
+    ],
+    audienceSize: 120000000,
+  },
+  {
+    id: "6002714398399",
+    name: "Small business",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["Interests", "Business and industry", "Small business"],
+    audienceSize: 420000000,
   },
   {
     id: "6002714895372",
@@ -64,94 +95,74 @@ const FIXTURE = [
   },
 ];
 
+const SUGGESTIONS = [
+  {
+    id: "6003139266461",
+    name: "Beauty",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    audienceSize: 540000000,
+    path: ["Interests", "Shopping and fashion", "Beauty"],
+  },
+  {
+    id: "6002714895372",
+    name: "Engaged shoppers",
+    type: "behaviors",
+    branch: "behaviors",
+    selectable: true,
+    audienceSize: 700000000,
+    path: ["Behaviors", "Purchase behavior", "Engaged shoppers"],
+  },
+];
+
 describe("AdsManagerDetailedTargetingSection", () => {
   beforeEach(() => {
     __resetDetailedTargetingBrowseCacheForTests();
   });
 
-  it("opens browse, selects multiple Meta targets, and removes one", async () => {
-    await i18n.changeLanguage("en");
-    const onChange = vi.fn();
-    let selected: AdSetDetailedTarget[] = [];
-    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
-    const searchFn = vi.fn(async () => ({
+  it("opens suggestions on empty search click with Relevance/Size tabs", async () => {
+    await i18n.changeLanguage("he");
+    const suggestFn = vi.fn(async () => ({
       success: true,
-      results: FIXTURE.filter((row) => row.selectable),
+      results: SUGGESTIONS,
+      source: "browse_catalog_empty_state",
+      sort: "relevance",
     }));
 
-    const { rerender } = render(
+    render(
       <I18nextProvider i18n={i18n}>
         <AdsManagerDetailedTargetingSection
           businessId="biz"
-          selected={selected}
-          onChange={(next) => {
-            selected = next;
-            onChange(next);
-          }}
-          browseFn={browseFn as never}
-          searchFn={searchFn as never}
+          selected={[]}
+          onChange={() => {}}
+          browseFn={async () => ({ success: true, results: FIXTURE })}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={suggestFn as never}
         />
       </I18nextProvider>
     );
 
-    fireEvent.click(screen.getByRole("button", { name: /browse/i }));
-    await waitFor(() => expect(browseFn).toHaveBeenCalled());
-    fireEvent.click(screen.getByRole("button", { name: /interests/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Business and industry/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Small business/i }));
-
-    await waitFor(() => expect(onChange).toHaveBeenCalled());
-    expect(selected[0]?.id).toBe("6002714398399");
-    expect(selected[0]?.type).toBe("interests");
-
-    rerender(
-      <I18nextProvider i18n={i18n}>
-        <AdsManagerDetailedTargetingSection
-          businessId="biz"
-          selected={selected}
-          onChange={(next) => {
-            selected = next;
-            onChange(next);
-          }}
-          browseFn={browseFn as never}
-          searchFn={searchFn as never}
-        />
-      </I18nextProvider>
+    fireEvent.click(screen.getByTestId("detailed-targeting-search"));
+    await waitFor(() => expect(suggestFn).toHaveBeenCalled());
+    expect(screen.getByTestId("detailed-targeting-panel").getAttribute("data-panel-mode")).toBe(
+      "suggestions"
     );
+    expect(screen.getByTestId("suggest-tab-relevance")).toBeTruthy();
+    expect(screen.getByTestId("suggest-tab-size")).toBeTruthy();
+    expect(screen.getByText("Beauty")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: /behaviors/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Purchase behavior/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Engaged shoppers/i }));
-
-    await waitFor(() => expect(selected.length).toBe(2));
-    expect(selected.map((row) => row.type).sort()).toEqual([
-      "behaviors",
-      "interests",
-    ]);
-
-    rerender(
-      <I18nextProvider i18n={i18n}>
-        <AdsManagerDetailedTargetingSection
-          businessId="biz"
-          selected={selected}
-          onChange={(next) => {
-            selected = next;
-            onChange(next);
-          }}
-          browseFn={browseFn as never}
-          searchFn={searchFn as never}
-        />
-      </I18nextProvider>
+    fireEvent.click(screen.getByTestId("suggest-tab-size"));
+    await waitFor(() =>
+      expect(suggestFn).toHaveBeenCalledWith(
+        "biz",
+        expect.objectContaining({ sort: "size" })
+      )
     );
-
-    fireEvent.click(
-      screen.getByLabelText(new RegExp(`remove:.*${selected[0].name}`, "i"))
-    );
-    await waitFor(() => expect(selected.length).toBe(1));
   });
 
-  it("keeps the browse panel open after clicking עיון / Browse", async () => {
-    await i18n.changeLanguage("he");
+  it("keeps browse open when drilling replaces the clicked row", async () => {
+    await i18n.changeLanguage("en");
     const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
     render(
       <I18nextProvider i18n={i18n}>
@@ -161,20 +172,176 @@ describe("AdsManagerDetailedTargetingSection", () => {
           onChange={() => {}}
           browseFn={browseFn as never}
           searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={async () => ({ success: true, results: [] })}
         />
       </I18nextProvider>
     );
 
     fireEvent.click(screen.getByTestId("detailed-targeting-browse"));
     await waitFor(() => expect(browseFn).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: /^Interests$/i }));
+    // Panel must survive the document click that follows a replaced row.
     expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /דמוגרפיה|Demographics/i })).toBeTruthy();
-    // Document click outside should close; click inside must not.
-    fireEvent.click(screen.getByTestId("detailed-targeting-panel"));
-    expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
+    expect(screen.getByText("Business and industry")).toBeTruthy();
   });
 
-  it("restores browse panel after a full remount (dashboard loader swap)", async () => {
+  it("drills into nested Business and industry without flattening or showing __ROOT__", async () => {
+    await i18n.changeLanguage("en");
+    const onChange = vi.fn();
+    let selected: AdSetDetailedTarget[] = [];
+    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
+
+    render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={selected}
+          onChange={(next) => {
+            selected = next;
+            onChange(next);
+          }}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={async () => ({ success: true, results: [] })}
+        />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("detailed-targeting-browse"));
+    await waitFor(() => expect(browseFn).toHaveBeenCalled());
+    expect(screen.queryByText("__ROOT__")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /^Interests$/i }));
+    expect(screen.getByText("Business and industry")).toBeTruthy();
+    // Nested leaf must not appear until drill-in
+    expect(screen.queryByText("Investment banking")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /Business and industry/i }));
+    expect(screen.getByText("Banking (finance)")).toBeTruthy();
+    expect(screen.getByText("Small business")).toBeTruthy();
+    expect(screen.queryByText("Investment banking")).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /Banking \(finance\)/i }));
+    expect(screen.getByText("Investment banking")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: /Investment banking/i }));
+    await waitFor(() => expect(selected[0]?.id).toBe("6003063638807"));
+  });
+
+  it("searches in Hebrew/English and supports multi select/remove", async () => {
+    await i18n.changeLanguage("he");
+    const searchFn = vi.fn(async (_biz: string, query: { q: string }) => {
+      if (query.q.includes("יופי")) {
+        return {
+          success: true,
+          results: [
+            {
+              id: "6003139266461",
+              name: "יופי",
+              type: "interests",
+              branch: "interests",
+              selectable: true,
+              path: ["Interests"],
+            },
+          ],
+        };
+      }
+      return {
+        success: true,
+        results: FIXTURE.filter(
+          (row) =>
+            row.selectable &&
+            row.name.toLowerCase().includes(query.q.toLowerCase())
+        ),
+      };
+    });
+
+    function Harness() {
+      const [selected, setSelected] = React.useState<AdSetDetailedTarget[]>([]);
+      return (
+        <I18nextProvider i18n={i18n}>
+          <div data-selected-count={selected.length} />
+          <AdsManagerDetailedTargetingSection
+            businessId="biz"
+            selected={selected}
+            onChange={setSelected}
+            browseFn={async () => ({ success: true, results: FIXTURE })}
+            searchFn={searchFn as never}
+            suggestFn={async () => ({ success: true, results: SUGGESTIONS })}
+          />
+        </I18nextProvider>
+      );
+    }
+
+    render(<Harness />);
+
+    fireEvent.change(screen.getByTestId("detailed-targeting-search"), {
+      target: { value: "יופי" },
+    });
+    await waitFor(() => expect(searchFn).toHaveBeenCalled());
+    fireEvent.click(await screen.findByText("יופי"));
+    await waitFor(() =>
+      expect(document.querySelector("[data-selected-count]")?.getAttribute("data-selected-count")).toBe(
+        "1"
+      )
+    );
+
+    fireEvent.change(screen.getByTestId("detailed-targeting-search"), {
+      target: { value: "Small" },
+    });
+    await waitFor(() =>
+      expect(searchFn).toHaveBeenCalledWith(
+        "biz",
+        expect.objectContaining({ q: "Small" })
+      )
+    );
+    fireEvent.click(await screen.findByText("Small business"));
+    await waitFor(() =>
+      expect(document.querySelector("[data-selected-count]")?.getAttribute("data-selected-count")).toBe(
+        "2"
+      )
+    );
+    expect(screen.getAllByRole("button", { name: /הסרה:|remove:/i }).length).toBe(2);
+
+    fireEvent.click(screen.getAllByRole("button", { name: /הסרה:|remove:/i })[0]);
+    await waitFor(() =>
+      expect(document.querySelector("[data-selected-count]")?.getAttribute("data-selected-count")).toBe(
+        "1"
+      )
+    );
+  });
+
+  it("shows why unsupported Meta types cannot be selected", async () => {
+    await i18n.changeLanguage("en");
+    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
+    render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={async () => ({ success: true, results: [] })}
+        />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("detailed-targeting-browse"));
+    await waitFor(() => expect(browseFn).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: /^Demographics$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^Other$/i }));
+    expect(screen.getByText(/Legacy demographic cluster/i)).toBeTruthy();
+    expect(
+      screen.getByText(/not supported for Meta flexible_spec/i)
+    ).toBeTruthy();
+    fireEvent.click(screen.getByTestId("detailed-targeting-browse-back"));
+    fireEvent.click(screen.getByRole("button", { name: /^Education$/i }));
+    expect(screen.getByText(/College years/i)).toBeTruthy();
+    expect(screen.getByText(/browse category only/i)).toBeTruthy();
+  });
+
+  it("restores browse panel after a full remount", async () => {
     await i18n.changeLanguage("he");
     const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
     const view = render(
@@ -185,6 +352,7 @@ describe("AdsManagerDetailedTargetingSection", () => {
           onChange={() => {}}
           browseFn={browseFn as never}
           searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={async () => ({ success: true, results: [] })}
         />
       </I18nextProvider>
     );
@@ -202,42 +370,15 @@ describe("AdsManagerDetailedTargetingSection", () => {
           onChange={() => {}}
           browseFn={browseFn as never}
           searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={async () => ({ success: true, results: [] })}
         />
       </I18nextProvider>
     );
 
-    expect(screen.getByTestId("detailed-targeting-browse").getAttribute("aria-expanded")).toBe(
-      "true"
-    );
-    expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
-    expect(screen.getByRole("button", { name: /דמוגרפיה|Demographics/i })).toBeTruthy();
-    // Cache hit — no second Meta browse call.
-    expect(browseFn).toHaveBeenCalledTimes(1);
-  });
-
-  it("shows why unsupported Meta types cannot be selected", async () => {
-    await i18n.changeLanguage("en");
-    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
-    render(
-      <I18nextProvider i18n={i18n}>
-        <AdsManagerDetailedTargetingSection
-          businessId="biz"
-          selected={[]}
-          onChange={() => {}}
-          browseFn={browseFn as never}
-          searchFn={async () => ({ success: true, results: [] })}
-        />
-      </I18nextProvider>
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /browse/i }));
-    await waitFor(() => expect(browseFn).toHaveBeenCalled());
-    fireEvent.click(screen.getByRole("button", { name: /demographics/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Other/i }));
     expect(
-      screen.getByText(/not supported for Meta flexible_spec/i)
-    ).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: /Education/i }));
-    expect(screen.getByText(/browse category only/i)).toBeTruthy();
+      screen.getByTestId("detailed-targeting-browse").getAttribute("aria-expanded")
+    ).toBe("true");
+    expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
+    expect(browseFn).toHaveBeenCalledTimes(1);
   });
 });

@@ -46,11 +46,41 @@ const FIXTURE: MetaDetailedTarget[] = [
   },
   {
     id: "",
+    name: "__ROOT__",
+    type: "interests",
+    branch: "interests",
+    selectable: false,
+    path: [],
+  },
+  {
+    id: "",
     name: "Business and industry",
     type: "interests",
     branch: "interests",
     selectable: false,
     path: ["Interests", "Business and industry"],
+  },
+  {
+    id: "",
+    name: "Banking (finance)",
+    type: "interests",
+    branch: "interests",
+    selectable: false,
+    path: ["Interests", "Business and industry", "Banking (finance)"],
+  },
+  {
+    id: "6003063638807",
+    name: "Investment banking",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: [
+      "Interests",
+      "Business and industry",
+      "Banking (finance)",
+      "Investment banking",
+    ],
+    audienceSize: 120000000,
   },
   {
     id: "6002714398399",
@@ -169,6 +199,28 @@ async function mockSearch(_businessId: string | undefined, query: { q: string })
   };
 }
 
+async function mockSuggest(
+  _businessId: string | undefined,
+  query?: { sort?: string }
+) {
+  await new Promise((r) => setTimeout(r, 80));
+  const rows = FIXTURE.filter((row) => row.selectable && row.id);
+  const sorted =
+    query?.sort === "size"
+      ? rows
+          .slice()
+          .sort(
+            (a, b) => (Number(b.audienceSize) || 0) - (Number(a.audienceSize) || 0)
+          )
+      : rows;
+  return {
+    success: true,
+    results: sorted.slice(0, 12),
+    source: "browse_catalog_empty_state",
+    sort: query?.sort || "relevance",
+  };
+}
+
 export default function DetailedTargetingVisualQaPage() {
   const [selected, setSelected] = useState<AdSetDetailedTarget[]>([]);
   const [lang, setLang] = useState<"he" | "en">("he");
@@ -212,6 +264,7 @@ export default function DetailedTargetingVisualQaPage() {
               onChange={setSelected}
               browseFn={mockBrowse as never}
               searchFn={mockSearch as never}
+              suggestFn={mockSuggest as never}
             />
           </div>
 

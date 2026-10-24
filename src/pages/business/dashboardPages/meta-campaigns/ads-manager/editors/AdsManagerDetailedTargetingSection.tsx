@@ -18,6 +18,7 @@ import {
 import {
   browseMetaDetailedTargeting,
   searchMetaDetailedTargeting,
+  suggestMetaDetailedTargeting,
   type MetaDetailedTarget,
 } from "../../../../../../api/metaCampaignsApi";
 import type { AdSetDetailedTarget } from "../adsManagerTypes";
@@ -26,12 +27,14 @@ type Props = {
   businessId: string | null;
   selected: AdSetDetailedTarget[];
   onChange: (next: AdSetDetailedTarget[]) => void;
-  /** Test / visual-QA overrides — default to Meta Marketing API clients. */
   browseFn?: typeof browseMetaDetailedTargeting;
   searchFn?: typeof searchMetaDetailedTargeting;
+  suggestFn?: typeof suggestMetaDetailedTargeting;
 };
 
 type BrowseBranch = "demographics" | "interests" | "behaviors";
+type PanelMode = "closed" | "suggestions" | "search" | "browse";
+type SuggestSort = "relevance" | "size";
 
 type TreeNode = {
   key: string;
@@ -70,6 +73,18 @@ const ROOT_BRANCHES: Array<{
   },
 ];
 
+function isSyntheticName(name?: string) {
+  const n = String(name || "").trim();
+  return !n || n === "__ROOT__" || /^__+ROOT__+$/i.test(n);
+}
+
+/** True only for Meta taxonomy root folder labels — not leaf names that contain those words. */
+function isBranchRootLabel(segment?: string) {
+  return /^(demographics?|interests?|behaviors?|דמוגרפיה|תחומי עניין|תחום עניין|התנהגויות|התנהגות)$/i.test(
+    String(segment || "").trim()
+  );
+}
+
 function formatAudienceSize(value?: number | null) {
   if (value == null || !Number.isFinite(value) || value <= 0) return "";
   if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)}M`;
@@ -96,7 +111,7 @@ function branchOf(item: MetaDetailedTarget): BrowseBranch {
   ) {
     return "demographics";
   }
-  const root = String(item.path?.[0] || "");
+  const root = String(item.path?.[0] || item.name || "");
   if (/interest|תחומי עניין/i.test(root)) return "interests";
   if (/behavior|התנהג/i.test(root)) return "behaviors";
   if (/demographic|דמוגרפ/i.test(root)) return "demographics";
@@ -114,7 +129,11 @@ function normalizePath(item: MetaDetailedTarget, branch: BrowseBranch): string[]
         ? "Behaviors"
         : "Interests";
   if (!raw.length) {
-    return item.name ? [rootLabel, item.name] : [rootLabel];
+    if (item.name && !isSyntheticName(item.name)) {
+      const nameIsRoot = ROOT_BRANCHES.some((b) => b.pathRoots.test(item.name));
+      return nameIsRoot ? [item.name] : [rootLabel, item.name];
+    }
+    return [rootLabel];
   }
   const first = raw[0];
   const matchesRoot = ROOT_BRANCHES.find((b) => b.id === branch)?.pathRoots.test(
@@ -201,16 +220,25 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
       child.unsupportedReason = seed.unsupportedReason;
       child.type = seed.type || child.type;
       child.description = seed.description || child.description;
+      if (seed.audienceSize != null) child.audienceSize = seed.audienceSize;
     }
     return child;
   };
 
   rows.forEach((item) => {
+    if (isSyntheticName(item.name)) return;
     const branch = branchOf(item);
     const path = normalizePath(item, branch);
+    // Skip taxonomy root rows — they are the synthetic forest roots.
+    if (path.length <= 1) return;
     let cursor = roots[branch];
     for (let i = 1; i < path.length; i += 1) {
       const segment = path[i];
+      if (isSyntheticName(segment)) continue;
+      // Avoid nesting "Interests" under Interests when Meta duplicates the root name.
+      // Do NOT use loose /demographic/ matching — leaf names like
+      // "Legacy demographic cluster" must remain in the tree.
+      if (isBranchRootLabel(segment)) continue;
       const isLeaf = i === path.length - 1;
       cursor = ensureChild(
         cursor,
@@ -222,10 +250,14 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
   });
 
   const sortNodes = (nodes: TreeNode[]) => {
-    nodes.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
+    nodes.sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { sensitivity: "base" })
+    );
     nodes.forEach((n) => sortNodes(n.children));
   };
-  (Object.keys(roots) as BrowseBranch[]).forEach((key) => sortNodes(roots[key].children));
+  (Object.keys(roots) as BrowseBranch[]).forEach((key) =>
+    sortNodes(roots[key].children)
+  );
 
   return {
     demographics: roots.demographics.children,
@@ -256,17 +288,14 @@ function toDraftItem(item: {
   };
 }
 
-/**
- * Survives parent remounts (e.g. BusinessDashboardLayout briefly swapping to a
- * full-screen loader). Without this, "עיון" opens then vanishes ~700ms later
- * while the browse network call still succeeds in the background.
- */
 type BrowseUiCache = {
   businessId: string;
   locale: string;
-  browseOpen: boolean;
+  panelMode: PanelMode;
+  browseStack: BrowseBranch[];
+  browseFolderKey: string | null;
   browseRows: MetaDetailedTarget[];
-  expanded: Record<string, boolean>;
+  suggestSort: SuggestSort;
 };
 
 let browseUiCache: BrowseUiCache | null = null;
@@ -286,10 +315,12 @@ export default function AdsManagerDetailedTargetingSection({
   onChange,
   browseFn = browseMetaDetailedTargeting,
   searchFn = searchMetaDetailedTargeting,
+  suggestFn = suggestMetaDetailedTargeting,
 }: Props) {
   const { t, i18n } = useTranslation();
   const isRtl = (i18n.dir?.() || document?.dir || "rtl") === "rtl";
-  const ChevronExpand = isRtl ? ChevronLeft : ChevronRight;
+  const ChevronDrill = isRtl ? ChevronLeft : ChevronRight;
+  const ChevronBack = isRtl ? ChevronRight : ChevronLeft;
   const boxRef = useRef<HTMLDivElement | null>(null);
   const reqId = useRef(0);
   const locale = localeForLang(i18n.language);
@@ -304,17 +335,34 @@ export default function AdsManagerDetailedTargetingSection({
   const [query, setQuery] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [browseOpen, setBrowseOpen] = useState(() => Boolean(cached?.browseOpen));
+  const [panelMode, setPanelMode] = useState<PanelMode>(
+    () => cached?.panelMode || "closed"
+  );
   const [searchResults, setSearchResults] = useState<MetaDetailedTarget[]>([]);
+  const [suggestResults, setSuggestResults] = useState<MetaDetailedTarget[]>([]);
+  const [suggestSort, setSuggestSort] = useState<SuggestSort>(
+    () => cached?.suggestSort || "relevance"
+  );
+  const [suggestBusy, setSuggestBusy] = useState(false);
   const [browseRows, setBrowseRows] = useState<MetaDetailedTarget[]>(
     () => cached?.browseRows || []
   );
   const [browseBusy, setBrowseBusy] = useState(false);
-  const [expanded, setExpanded] = useState<Record<string, boolean>>(
-    () => cached?.expanded || {}
+  /** Drill-down stack: empty = 3 roots; [branch] = that branch's children; deeper via folderKey path. */
+  const [browseStack, setBrowseStack] = useState<BrowseBranch[]>(
+    () => cached?.browseStack || []
+  );
+  const [browseFolderKey, setBrowseFolderKey] = useState<string | null>(
+    () => cached?.browseFolderKey || null
   );
   const [infoKey, setInfoKey] = useState<string | null>(null);
+
+  const selectedIds = useMemo(
+    () => new Set(selected.map((item) => item.id).filter(Boolean)),
+    [selected]
+  );
+
+  const forest = useMemo(() => buildBrowseForest(browseRows), [browseRows]);
 
   const scopeKey = `${businessId || ""}:${locale}`;
   const scopeRef = useRef(scopeKey);
@@ -330,15 +378,19 @@ export default function AdsManagerDetailedTargetingSection({
         ? browseUiCache
         : null;
     if (hit) {
-      setBrowseOpen(hit.browseOpen);
+      setPanelMode(hit.panelMode);
       setBrowseRows(hit.browseRows);
-      setExpanded(hit.expanded);
+      setBrowseStack(hit.browseStack);
+      setBrowseFolderKey(hit.browseFolderKey);
+      setSuggestSort(hit.suggestSort);
       return;
     }
-    setBrowseOpen(false);
+    setPanelMode("closed");
     setBrowseRows([]);
-    setExpanded({});
-    setSearchOpen(false);
+    setBrowseStack([]);
+    setBrowseFolderKey(null);
+    setSearchResults([]);
+    setSuggestResults([]);
     setInfoKey(null);
   }, [scopeKey, businessId, locale]);
 
@@ -350,18 +402,21 @@ export default function AdsManagerDetailedTargetingSection({
     browseUiCache = {
       businessId,
       locale,
-      browseOpen,
+      panelMode,
+      browseStack,
+      browseFolderKey,
       browseRows,
-      expanded,
+      suggestSort,
     };
-  }, [businessId, locale, browseOpen, browseRows, expanded]);
-
-  const selectedIds = useMemo(
-    () => new Set(selected.map((item) => item.id).filter(Boolean)),
-    [selected]
-  );
-
-  const forest = useMemo(() => buildBrowseForest(browseRows), [browseRows]);
+  }, [
+    businessId,
+    locale,
+    panelMode,
+    browseStack,
+    browseFolderKey,
+    browseRows,
+    suggestSort,
+  ]);
 
   const loadBrowse = useCallback(async () => {
     if (!businessId) return;
@@ -369,7 +424,7 @@ export default function AdsManagerDetailedTargetingSection({
     setError("");
     try {
       const data = await browseFn(businessId, { locale });
-      setBrowseRows(data.results || []);
+      setBrowseRows((data.results || []).filter((row) => !isSyntheticName(row.name)));
     } catch (err) {
       setError(
         err instanceof Error
@@ -381,18 +436,53 @@ export default function AdsManagerDetailedTargetingSection({
     }
   }, [businessId, browseFn, locale, t]);
 
+  const loadSuggestions = useCallback(async () => {
+    if (!businessId) return;
+    setSuggestBusy(true);
+    setError("");
+    try {
+      const data = await suggestFn(businessId, {
+        locale,
+        sort: suggestSort,
+        limit: 30,
+        targetingList: selected
+          .filter((row) => row.id)
+          .map((row) => ({ id: row.id, type: row.type || "interests" })),
+      });
+      setSuggestResults(
+        (data.results || []).filter(
+          (row) => row.id && row.selectable !== false && !selectedIds.has(row.id)
+        )
+      );
+    } catch (err) {
+      setSuggestResults([]);
+      setError(
+        err instanceof Error
+          ? err.message
+          : t("metaCampaigns.adsManager.chrome.detailedSuggestionsFailed")
+      );
+    } finally {
+      setSuggestBusy(false);
+    }
+  }, [businessId, suggestFn, locale, suggestSort, selected, selectedIds, t]);
+
   useEffect(() => {
-    if (!browseOpen) return;
+    if (panelMode !== "browse") return;
     if (browseRows.length || browseBusy) return;
     void loadBrowse();
-  }, [browseOpen, browseRows.length, browseBusy, loadBrowse]);
+  }, [panelMode, browseRows.length, browseBusy, loadBrowse]);
+
+  useEffect(() => {
+    if (panelMode !== "suggestions") return;
+    void loadSuggestions();
+  }, [panelMode, suggestSort, loadSuggestions]);
 
   useEffect(() => {
     if (!businessId) return;
     const q = query.trim();
     if (q.length < 2) {
       setSearchResults([]);
-      setSearchOpen(false);
+      setPanelMode((prev) => (prev === "search" ? "suggestions" : prev));
       setBusy(false);
       return;
     }
@@ -401,6 +491,7 @@ export default function AdsManagerDetailedTargetingSection({
       try {
         setBusy(true);
         setError("");
+        setPanelMode("search");
         const data = await searchFn(businessId, {
           q,
           locale,
@@ -412,8 +503,6 @@ export default function AdsManagerDetailedTargetingSection({
             (row) => row.id && row.selectable !== false
           )
         );
-        setSearchOpen(true);
-        setBrowseOpen(false);
       } catch (err) {
         if (reqId.current !== id) return;
         setSearchResults([]);
@@ -430,16 +519,15 @@ export default function AdsManagerDetailedTargetingSection({
   }, [businessId, query, searchFn, locale, t]);
 
   useEffect(() => {
-    // Use click (not mousedown): mousedown-outside races the browse button's
-    // own click in some browsers/automation and closes the panel immediately
-    // after open, which looked like "עיון לא נפתח" while the browse API still
-    // fired in the background.
     const onDoc = (event: MouseEvent) => {
-      if (!boxRef.current?.contains(event.target as Node)) {
-        setSearchOpen(false);
-        setBrowseOpen(false);
-        setInfoKey(null);
-      }
+      const target = event.target as Node | null;
+      if (!target || !boxRef.current) return;
+      // Ignore detached targets from in-panel re-renders (drill-down replaces
+      // the clicked node before the bubble reaches document).
+      if (!document.contains(target)) return;
+      if (boxRef.current.contains(target)) return;
+      setPanelMode("closed");
+      setInfoKey(null);
     };
     document.addEventListener("click", onDoc);
     return () => document.removeEventListener("click", onDoc);
@@ -464,7 +552,84 @@ export default function AdsManagerDetailedTargetingSection({
     return "";
   };
 
-  const toggleSelect = (node: TreeNode) => {
+  const findNodeByKey = (nodes: TreeNode[], key: string): TreeNode | null => {
+    for (const node of nodes) {
+      if (node.key === key) return node;
+      const hit = findNodeByKey(node.children, key);
+      if (hit) return hit;
+    }
+    return null;
+  };
+
+  const browseBranch = browseStack[0] || null;
+  const browseNodes: TreeNode[] = useMemo(() => {
+    if (!browseBranch) return [];
+    const roots = forest[browseBranch] || [];
+    if (!browseFolderKey) return roots;
+    const folder = findNodeByKey(roots, browseFolderKey);
+    return folder?.children || [];
+  }, [browseBranch, browseFolderKey, forest]);
+
+  const browseHeaderLabel = useMemo(() => {
+    if (!browseBranch) return "";
+    if (!browseFolderKey) {
+      return t(
+        `metaCampaigns.adsManager.chrome.${
+          ROOT_BRANCHES.find((b) => b.id === browseBranch)?.labelKey
+        }`
+      );
+    }
+    const folder = findNodeByKey(forest[browseBranch] || [], browseFolderKey);
+    return folder?.name || "";
+  }, [browseBranch, browseFolderKey, forest, t]);
+
+  const openSuggestions = () => {
+    setBrowseStack([]);
+    setBrowseFolderKey(null);
+    setInfoKey(null);
+    setPanelMode("suggestions");
+  };
+
+  const openBrowse = () => {
+    setQuery("");
+    setSearchResults([]);
+    setBrowseStack([]);
+    setBrowseFolderKey(null);
+    setInfoKey(null);
+    setPanelMode((prev) => (prev === "browse" ? "closed" : "browse"));
+  };
+
+  const drillIntoBranch = (branch: BrowseBranch) => {
+    setBrowseStack([branch]);
+    setBrowseFolderKey(null);
+    setInfoKey(null);
+  };
+
+  const drillIntoFolder = (node: TreeNode) => {
+    if (!node.children.length) return;
+    setBrowseStack([node.branch]);
+    setBrowseFolderKey(node.key);
+    setInfoKey(null);
+  };
+
+  const browseBack = () => {
+    if (browseFolderKey && browseBranch) {
+      const folder = findNodeByKey(forest[browseBranch] || [], browseFolderKey);
+      const parentPath = folder?.path?.slice(0, -1) || [];
+      if (parentPath.length <= 1) {
+        setBrowseFolderKey(null);
+        return;
+      }
+      const parentKey = parentPath.join("›");
+      const parent = findNodeByKey(forest[browseBranch] || [], parentKey);
+      setBrowseFolderKey(parent?.key || null);
+      return;
+    }
+    setBrowseStack([]);
+    setBrowseFolderKey(null);
+  };
+
+  const toggleSelectNode = (node: TreeNode) => {
     if (!node.selectable || !node.id) return;
     if (selectedIds.has(node.id)) {
       removeItem(node.id);
@@ -474,57 +639,85 @@ export default function AdsManagerDetailedTargetingSection({
     if (draft) addItem(draft);
   };
 
-  const toggleExpand = (key: string) => {
-    setExpanded((prev) => ({ ...prev, [key]: !prev[key] }));
+  const typeLabel = (type?: string) => {
+    const tpe = String(type || "").toLowerCase();
+    if (tpe === "interests" || tpe === "interest") {
+      return t("metaCampaigns.adsManager.chrome.browseInterests");
+    }
+    if (tpe === "behaviors" || tpe === "behavior") {
+      return t("metaCampaigns.adsManager.chrome.browseBehaviors");
+    }
+    return t("metaCampaigns.adsManager.chrome.browseDemographics");
   };
 
-  const renderNode = (node: TreeNode, depth: number): React.ReactNode => {
+  const renderResultRow = (
+    item: MetaDetailedTarget,
+    opts?: { onPick?: () => void }
+  ) => {
+    const selectedRow = selectedIds.has(item.id);
+    const size = formatAudienceSize(item.audienceSize);
+    return (
+      <button
+        key={`${item.type}:${item.id}`}
+        type="button"
+        disabled={selectedRow}
+        className="flex w-full items-start gap-2 border-b border-[#F0F2F5] px-3 py-2.5 text-start hover:bg-[#E7F3FF] disabled:opacity-50"
+        onMouseDown={(e) => e.preventDefault()}
+        onClick={() => {
+          const draft = toDraftItem(item);
+          if (draft) {
+            addItem(draft);
+            opts?.onPick?.();
+          }
+        }}
+      >
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[13px] font-semibold text-[#050505]">
+            {item.name}
+          </span>
+          <span className="block truncate text-[11px] text-[#65676B]">
+            {[
+              typeLabel(item.type),
+              size
+                ? t("metaCampaigns.form.audienceSize", { size })
+                : "",
+            ]
+              .filter(Boolean)
+              .join(" · ")}
+          </span>
+        </span>
+        <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
+          {selectedRow
+            ? t("metaCampaigns.adsManager.chrome.added")
+            : t("metaCampaigns.adsManager.chrome.add")}
+        </span>
+      </button>
+    );
+  };
+
+  const renderBrowseRow = (node: TreeNode) => {
     const hasChildren = node.children.length > 0;
-    const isOpen = Boolean(expanded[node.key]);
-    const selected = node.id ? selectedIds.has(node.id) : false;
+    const selectedRow = node.id ? selectedIds.has(node.id) : false;
     const size = formatAudienceSize(node.audienceSize);
     const showInfo = infoKey === node.key;
-    const blockedHint = !node.selectable ? unsupportedLabel(node.unsupportedReason) : "";
+    const blockedHint = !node.selectable
+      ? unsupportedLabel(node.unsupportedReason)
+      : "";
 
     return (
       <div key={node.key}>
-        <div
-          className={[
-            "flex items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5",
-            node.selectable || hasChildren ? "hover:bg-[#F7F8FA]" : "bg-white",
-          ].join(" ")}
-          style={{ paddingInlineStart: 12 + depth * 14 }}
-        >
-          {hasChildren ? (
-            <button
-              type="button"
-              className="shrink-0 text-[#65676B]"
-              aria-label={isOpen ? "collapse" : "expand"}
-              onClick={() => toggleExpand(node.key)}
-            >
-              {isOpen ? (
-                <ChevronDown className="h-4 w-4" />
-              ) : (
-                <ChevronExpand className="h-4 w-4" />
-              )}
-            </button>
-          ) : node.selectable ? (
-            <span className="w-4 shrink-0" />
-          ) : (
-            <ChevronExpand className="h-4 w-4 shrink-0 text-[#CED0D4]" />
-          )}
-
+        <div className="flex items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5 hover:bg-[#F7F8FA]">
           {node.selectable ? (
             <button
               type="button"
               className={[
                 "flex h-4 w-4 shrink-0 items-center justify-center rounded border",
-                selected
+                selectedRow
                   ? "border-[#1877F2] bg-[#1877F2] text-white"
                   : "border-[#CED0D4] bg-white text-transparent",
               ].join(" ")}
-              onClick={() => toggleSelect(node)}
-              aria-pressed={selected}
+              onClick={() => toggleSelectNode(node)}
+              aria-pressed={selectedRow}
             >
               <Check className="h-3 w-3" />
             </button>
@@ -534,13 +727,10 @@ export default function AdsManagerDetailedTargetingSection({
 
           <button
             type="button"
-            className={[
-              "min-w-0 flex-1 text-start",
-              !node.selectable && !hasChildren ? "cursor-default opacity-80" : "",
-            ].join(" ")}
+            className="min-w-0 flex-1 text-start"
             onClick={() => {
-              if (hasChildren) toggleExpand(node.key);
-              else if (node.selectable) toggleSelect(node);
+              if (hasChildren) drillIntoFolder(node);
+              else if (node.selectable) toggleSelectNode(node);
               else setInfoKey((prev) => (prev === node.key ? null : node.key));
             }}
           >
@@ -570,12 +760,20 @@ export default function AdsManagerDetailedTargetingSection({
           >
             <Info className="h-3.5 w-3.5" />
           </button>
+
+          {hasChildren ? (
+            <button
+              type="button"
+              className="shrink-0 text-[#65676B]"
+              aria-label="expand"
+              onClick={() => drillIntoFolder(node)}
+            >
+              <ChevronDrill className="h-4 w-4" />
+            </button>
+          ) : null}
         </div>
         {showInfo ? (
-          <div
-            className="border-b border-[#F0F2F5] bg-[#F7F8FA] px-3 py-2 text-[12px] leading-snug text-[#65676B]"
-            style={{ paddingInlineStart: 28 + depth * 14 }}
-          >
+          <div className="border-b border-[#F0F2F5] bg-[#F7F8FA] px-3 py-2 text-[12px] leading-snug text-[#65676B]">
             {blockedHint ||
               node.description ||
               (node.path.length
@@ -589,14 +787,11 @@ export default function AdsManagerDetailedTargetingSection({
             ) : null}
           </div>
         ) : null}
-        {hasChildren && isOpen
-          ? node.children.map((child) => renderNode(child, depth + 1))
-          : null}
       </div>
     );
   };
 
-  const panelOpen = browseOpen || (searchOpen && (searchResults.length > 0 || busy));
+  const panelOpen = panelMode !== "closed";
 
   return (
     <div
@@ -640,7 +835,7 @@ export default function AdsManagerDetailedTargetingSection({
         <div
           className={[
             "flex min-h-[40px] overflow-hidden rounded-lg border bg-white",
-            browseOpen || searchOpen
+            panelOpen
               ? "border-[#1877F2] shadow-[0_0_0_1px_#1877F2]"
               : "border-[#CED0D4]",
           ].join(" ")}
@@ -660,18 +855,20 @@ export default function AdsManagerDetailedTargetingSection({
               autoComplete="off"
               onChange={(e) => {
                 setQuery(e.target.value);
-                if (e.target.value.trim().length >= 2) {
-                  setBrowseOpen(false);
-                }
               }}
               onFocus={() => {
-                if (searchResults.length && query.trim().length >= 2) {
-                  setSearchOpen(true);
-                  setBrowseOpen(false);
+                if (query.trim().length >= 2) {
+                  setPanelMode("search");
+                } else {
+                  openSuggestions();
                 }
               }}
+              onClick={(event) => {
+                event.stopPropagation();
+                if (query.trim().length < 2) openSuggestions();
+              }}
             />
-            {busy ? (
+            {busy || suggestBusy ? (
               <span className="absolute end-3 text-[11px] font-semibold text-[#65676B]">
                 …
               </span>
@@ -683,25 +880,21 @@ export default function AdsManagerDetailedTargetingSection({
               type="button"
               className={[
                 "flex h-full items-center gap-1 px-3 text-[13px] font-semibold",
-                browseOpen
+                panelMode === "browse"
                   ? "bg-[#E7F3FF] text-[#1877F2]"
                   : "text-[#050505] hover:bg-[#F0F2F5]",
               ].join(" ")}
               aria-label={t(
                 "metaCampaigns.adsManager.chrome.detailedBrowseAria"
               )}
-              aria-expanded={browseOpen}
+              aria-expanded={panelMode === "browse"}
               data-testid="detailed-targeting-browse"
               onClick={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                setSearchOpen(false);
-                setInfoKey(null);
-                setBrowseOpen((v) => !v);
+                openBrowse();
               }}
               onMouseDown={(event) => {
-                // Keep focus/click on this control from being treated as an
-                // outside dismiss by document-level listeners.
                 event.stopPropagation();
               }}
             >
@@ -713,111 +906,72 @@ export default function AdsManagerDetailedTargetingSection({
 
         {panelOpen ? (
           <div
-            className="absolute inset-x-0 top-full z-[1300] mt-1 max-h-[min(420px,55vh)] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
+            className="absolute inset-x-0 top-full z-[1300] mt-1 flex max-h-[min(420px,55vh)] flex-col overflow-hidden rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
             dir={isRtl ? "rtl" : "ltr"}
             data-testid="detailed-targeting-panel"
+            data-panel-mode={panelMode}
             role="listbox"
             aria-label={t("metaCampaigns.adsManager.chrome.detailedTargeting")}
           >
-            {browseOpen ? (
-              browseBusy && !browseRows.length ? (
-                <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                  {t("metaCampaigns.adsManager.chrome.searching")}
-                </p>
-              ) : (
-                ROOT_BRANCHES.map((root) => {
-                  const children = forest[root.id] || [];
-                  const rootKey = `root:${root.id}`;
-                  const open = expanded[rootKey] ?? false;
-                  return (
-                    <div key={root.id}>
-                      <div className="flex items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5 hover:bg-[#F7F8FA]">
-                        <button
-                          type="button"
-                          className="shrink-0 text-[#65676B]"
-                          onClick={() => toggleExpand(rootKey)}
-                        >
-                          {open ? (
-                            <ChevronDown className="h-4 w-4" />
-                          ) : (
-                            <ChevronExpand className="h-4 w-4" />
-                          )}
-                        </button>
-                        <button
-                          type="button"
-                          className="min-w-0 flex-1 text-start text-[13px] font-semibold text-[#050505]"
-                          onClick={() => toggleExpand(rootKey)}
-                        >
-                          {t(`metaCampaigns.adsManager.chrome.${root.labelKey}`)}
-                        </button>
-                        <Info className="h-3.5 w-3.5 shrink-0 text-[#8A8D91]" />
-                      </div>
-                      {open
-                        ? children.length
-                          ? children.map((child) => renderNode(child, 1))
-                          : (
-                              <p className="border-b border-[#F0F2F5] px-3 py-2 text-[12px] text-[#65676B]">
-                                {t(
-                                  "metaCampaigns.adsManager.chrome.detailedBrowseEmpty"
-                                )}
-                              </p>
-                            )
-                        : null}
-                    </div>
-                  );
-                })
-              )
-            ) : (
+            {panelMode === "suggestions" ? (
               <>
+                <div
+                  className="flex shrink-0 border-b border-[#E4E6EB]"
+                  data-testid="detailed-targeting-suggest-tabs"
+                >
+                  {(["relevance", "size"] as SuggestSort[]).map((tab) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      className={[
+                        "flex-1 px-3 py-2.5 text-[13px] font-semibold",
+                        suggestSort === tab
+                          ? "border-b-2 border-[#1877F2] text-[#1877F2]"
+                          : "text-[#65676B] hover:bg-[#F7F8FA]",
+                      ].join(" ")}
+                      data-testid={`suggest-tab-${tab}`}
+                      onClick={() => setSuggestSort(tab)}
+                    >
+                      {tab === "relevance"
+                        ? t("metaCampaigns.adsManager.chrome.suggestionsRelevance")
+                        : t("metaCampaigns.adsManager.chrome.suggestionsSize")}
+                    </button>
+                  ))}
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                  {suggestBusy && !suggestResults.length ? (
+                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                      {t("metaCampaigns.adsManager.chrome.searching")}
+                    </p>
+                  ) : null}
+                  {suggestResults.map((item) => renderResultRow(item))}
+                  {!suggestBusy && !suggestResults.length ? (
+                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                      {t(
+                        "metaCampaigns.adsManager.chrome.detailedSuggestionsEmpty"
+                      )}
+                    </p>
+                  ) : null}
+                </div>
+              </>
+            ) : null}
+
+            {panelMode === "search" ? (
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 {busy && !searchResults.length ? (
                   <p className="px-3 py-3 text-[13px] text-[#65676B]">
                     {t("metaCampaigns.adsManager.chrome.searching")}
                   </p>
                 ) : null}
-                {searchResults.map((item) => {
-                  const selectedRow = selectedIds.has(item.id);
-                  const size = formatAudienceSize(item.audienceSize);
-                  return (
-                    <button
-                      key={`${item.type}:${item.id}`}
-                      type="button"
-                      disabled={selectedRow}
-                      className="flex w-full items-start gap-2 px-3 py-2.5 text-start hover:bg-[#E7F3FF] disabled:opacity-50"
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => {
-                        const draft = toDraftItem(item);
-                        if (draft) {
-                          addItem(draft);
-                          setQuery("");
-                          setSearchResults([]);
-                          setSearchOpen(false);
-                        }
-                      }}
-                    >
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-semibold text-[#050505]">
-                          {item.name}
-                        </span>
-                        <span className="block truncate text-[11px] text-[#65676B]">
-                          {[
-                            item.path?.slice(-2).join(" › "),
-                            item.type,
-                            size
-                              ? t("metaCampaigns.form.audienceSize", { size })
-                              : "",
-                          ]
-                            .filter(Boolean)
-                            .join(" · ")}
-                        </span>
-                      </span>
-                      <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
-                        {selectedRow
-                          ? t("metaCampaigns.adsManager.chrome.added")
-                          : t("metaCampaigns.adsManager.chrome.add")}
-                      </span>
-                    </button>
-                  );
-                })}
+                {searchResults.map((item) =>
+                  renderResultRow(item, {
+                    onPick: () => {
+                      setQuery("");
+                      setSearchResults([]);
+                      setPanelMode("suggestions");
+                    },
+                  })
+                )}
                 {!busy &&
                 query.trim().length >= 2 &&
                 !searchResults.length ? (
@@ -825,8 +979,58 @@ export default function AdsManagerDetailedTargetingSection({
                     {t("metaCampaigns.adsManager.chrome.detailedSearchEmpty")}
                   </p>
                 ) : null}
-              </>
-            )}
+              </div>
+            ) : null}
+
+            {panelMode === "browse" ? (
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+                {browseStack.length ? (
+                  <div className="flex shrink-0 items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5">
+                    <button
+                      type="button"
+                      className="shrink-0 text-[#65676B]"
+                      aria-label={t("metaCampaigns.adsManager.chrome.browseBack")}
+                      data-testid="detailed-targeting-browse-back"
+                      onClick={browseBack}
+                    >
+                      <ChevronBack className="h-4 w-4" />
+                    </button>
+                    <span className="min-w-0 flex-1 truncate text-start text-[13px] font-semibold text-[#050505]">
+                      {browseHeaderLabel}
+                    </span>
+                    <Info className="h-3.5 w-3.5 shrink-0 text-[#8A8D91]" />
+                  </div>
+                ) : null}
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                  {browseBusy && !browseRows.length ? (
+                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                      {t("metaCampaigns.adsManager.chrome.searching")}
+                    </p>
+                  ) : !browseStack.length ? (
+                    ROOT_BRANCHES.map((root) => (
+                      <button
+                        key={root.id}
+                        type="button"
+                        className="flex w-full items-center gap-2 border-b border-[#F0F2F5] px-3 py-2.5 text-start hover:bg-[#F7F8FA]"
+                        onClick={() => drillIntoBranch(root.id)}
+                      >
+                        <span className="min-w-0 flex-1 text-[13px] font-semibold text-[#050505]">
+                          {t(`metaCampaigns.adsManager.chrome.${root.labelKey}`)}
+                        </span>
+                        <Info className="h-3.5 w-3.5 shrink-0 text-[#8A8D91]" />
+                        <ChevronDrill className="h-4 w-4 shrink-0 text-[#65676B]" />
+                      </button>
+                    ))
+                  ) : browseNodes.length ? (
+                    browseNodes.map((node) => renderBrowseRow(node))
+                  ) : (
+                    <p className="px-3 py-3 text-[12px] text-[#65676B]">
+                      {t("metaCampaigns.adsManager.chrome.detailedBrowseEmpty")}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>
