@@ -132,7 +132,7 @@ export function GuideArticlePage() {
       <p><Link to="/guides">{copy.all}</Link></p>
       <p className="guide-kicker">{copy.updated} {article.updated}</p>
       <h1>{article.h1}</h1>
-      <p className="guide-answer"><b>{copy.answer}</b>{article.description}</p>
+      <p className="guide-answer">{article.description}</p>
       <div className="guide-split">
       <nav className="guide-toc" aria-label={copy.onPage}>
         <p>{copy.onPage}</p>

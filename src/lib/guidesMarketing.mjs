@@ -5,6 +5,8 @@
  * Updated 2026-10-23.
  */
 
+import { EXTRA_GUIDE_SLUGS, getExtraGuide } from "./guidesExtra.mjs";
+
 const UPDATED = "2026-10-23";
 
 function guide(title, description, h1, sections, faq) {
@@ -474,11 +476,10 @@ export const GUIDE_LOCALES = {
   ar: AR,
 };
 
-export const GUIDE_SLUGS = Object.keys(EN);
+export const GUIDE_SLUGS = [...Object.keys(EN), ...EXTRA_GUIDE_SLUGS];
 
 export function getGuide(slug, locale) {
-  const pack = GUIDE_LOCALES[locale] || GUIDE_LOCALES.en;
-  return pack[slug] || null;
+  return getExtraGuide(slug, locale) || (GUIDE_LOCALES[locale] || GUIDE_LOCALES.en)[slug] || null;
 }
 
 export function guidePath(slug) {

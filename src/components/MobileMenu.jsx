@@ -16,6 +16,8 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
 
   const navLinks = [
     { to: "/about", label: t("nav.about") },
+    { to: "/platform", label: t("nav.platform") },
+    { to: "/services", label: t("nav.services") },
     { to: "/website-builder", label: t("nav.website") },
     { to: "/crm", label: t("nav.crm") },
     { to: "/automations", label: t("nav.automations") },

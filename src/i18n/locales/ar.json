@@ -83,6 +83,8 @@
     "appointments": "المواعيد",
     "automations": "الأتمتة",
     "agents": "وكلاء الأعمال",
+    "platform": "المنصة",
+    "services": "الخدمات",
     "contact": "تواصل",
     "cta": "ابدأ الآن",
     "mainAria": "التنقل الرئيسي"
@@ -456,6 +458,8 @@
     "ctaText": "ابدأ في إدارة صفحة نشاطك التجاري وCRM والتعاون وأدوات الذكاء الاصطناعي في مكان واحد.",
     "ctaButton": "سجل الآن",
     "rights": "{{year}} BizUply. جميع الحقوق محفوظة.",
+    "platform": "المنصة",
+    "services": "الخدمات",
     "crm": "CRM",
     "collaborations": "التعاون",
     "website": "الموقع والمتجر",

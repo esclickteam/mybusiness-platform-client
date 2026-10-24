@@ -19,6 +19,8 @@ type NavLink = {
 /** Flat SaaS nav — no dropdowns. RTL visual: logo right → links → actions left. */
 const navLinks: NavLink[] = [
   { to: "/about", labelKey: "nav.about" },
+  { to: "/platform", labelKey: "nav.platform" },
+  { to: "/services", labelKey: "nav.services" },
   { to: "/website-builder", labelKey: "nav.website" },
   { to: "/crm", labelKey: "nav.crm" },
   { to: "/automations", labelKey: "nav.automations" },

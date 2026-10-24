@@ -9,6 +9,7 @@
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
+import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
 import {
   MARKETING_LOCALE_PREFIXES,
   hasLocalizedMarketingPage,
@@ -253,6 +254,7 @@ export const MARKETING_PAGES = [
     changefreq: "yearly",
     priority: "0.4",
   },
+  ...activityMarketingEntries(),
 ];
 
 const NOINDEX_PREFIXES = [
@@ -357,6 +359,8 @@ function organizationSchema() {
 }
 
 function localizedPage(path, locale) {
+  const activity = getActivityPage(path, locale);
+  if (activity) return activity;
   if (locale === "he") return getHebrewMarketingPage(path);
   if (locale === "en") return null;
   return getLocaleMarketingPage(path, locale);
@@ -725,6 +729,8 @@ export function buildMarketingPrerender(pathname) {
     if (!article?.h1) return null;
     return renderLocalized(article, locale, path);
   }
+  const activity = getActivityPage(path, locale);
+  if (activity?.h1) return renderLocalized(activity, locale, path);
   if (locale !== "en") {
     const localized = localizedPage(path, locale);
     if (!localized?.h1) return null;

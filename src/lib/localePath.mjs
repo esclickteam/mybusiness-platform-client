@@ -7,6 +7,7 @@
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS } from "./guidesMarketing.mjs";
+import { getActivityPage } from "./activityPages.mjs";
 
 export const MARKETING_LOCALE_PREFIXES = [
   { url: "pt-br", locale: "pt-BR", dir: "ltr", htmlLang: "pt-BR", og: "pt_BR" },
@@ -84,6 +85,7 @@ export function hasLocalizedMarketingPage(path, locale) {
     const slug = path.slice("/guides/".length);
     return GUIDE_SLUGS.includes(slug);
   }
+  if (getActivityPage(path, language)) return true;
   if (language === "en") return path !== "/whatsapp-api";
   if (language === "he") return Boolean(getHebrewMarketingPage(path));
   return Boolean(getLocaleMarketingPage(path, language));

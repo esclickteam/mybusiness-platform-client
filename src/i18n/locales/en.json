@@ -83,6 +83,8 @@
     "appointments": "Appointments",
     "automations": "Automations",
     "agents": "Business Agents",
+    "platform": "Platform",
+    "services": "Services",
     "contact": "Contact",
     "cta": "Get Started",
     "mainAria": "Main navigation"
@@ -456,6 +458,8 @@
     "ctaText": "Start managing your business page, CRM, collaborations and AI tools in one place.",
     "ctaButton": "Register now",
     "rights": "© {{year}} Bizuply. All rights reserved.",
+    "platform": "Platform",
+    "services": "Services",
     "crm": "CRM",
     "collaborations": "Collaborations",
     "website": "Website & Store",

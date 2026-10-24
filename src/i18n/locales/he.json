@@ -83,6 +83,8 @@
     "appointments": "תורים",
     "automations": "אוטומציות",
     "agents": "נציגים לעסק",
+    "platform": "הפלטפורמה",
+    "services": "שירותים",
     "contact": "צרו קשר",
     "cta": "הירשמו עכשיו",
     "mainAria": "ניווט ראשי"
@@ -456,6 +458,8 @@
     "ctaText": "התחילו לנהל עמוד עסקי, CRM, שיתופי פעולה וכלי AI במקום אחד.",
     "ctaButton": "הירשמו עכשיו",
     "rights": "© {{year}} Bizuply · כל הזכויות שמורות",
+    "platform": "הפלטפורמה",
+    "services": "שירותים",
     "crm": "CRM",
     "collaborations": "שיתופי פעולה",
     "website": "בניית אתר וחנות",
