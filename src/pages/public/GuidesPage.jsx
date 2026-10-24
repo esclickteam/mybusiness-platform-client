@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { getHebrewMarketingPage } from "../../lib/hebrewMarketing.mjs";
 import { getLocaleMarketingPage } from "../../lib/localeMarketing.mjs";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
 import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
+import GuideFigure from "./GuideFigure";
 import "../../components/product-marketing/marketingKit.css";
 import "./guidesArticle.css";
 
@@ -19,30 +20,30 @@ const INDEX = {
   ar: getLocaleMarketingPage("/guides", "ar"),
 };
 
-const GUIDE_VIDEO = {
-  "what-is-a-crm": "crm",
-  "follow-up-on-leads": "crm",
-  "meta-lead-ads-to-crm": "campaigns",
-  "manage-meta-campaigns": "campaigns",
-  "business-automation": "automations",
-  "build-a-website-without-code": "websites",
-  "appointments-for-a-service-business": "appointments",
-  "from-ad-to-follow-up": "crm",
+const CAPTURES = {
+  "what-is-a-crm": "/demo-media/crm/poster.jpg",
+  "follow-up-on-leads": "/demo-media/crm/poster.jpg",
+  "business-automation": "/demo-media/automations/poster.jpg",
+  "build-a-website-without-code": "/demo-media/websites/poster.jpg",
+  "manage-meta-campaigns": "/demo-media/campaigns/poster.jpg",
+  "appointments-for-a-service-business": "/demo-media/appointments/poster.jpg",
+  "whatsapp-message-templates": "/demo-media/whatsapp/poster.jpg",
 };
 
-const CAPTURES = {
-  "what-is-a-crm": "/leads1.jpeg",
-  "meta-lead-ads-to-crm": "/leads2.jpeg",
-  "follow-up-on-leads": "/leads4.jpeg",
-  "crm-and-business-platform": "/leads5.jpeg",
-};
+function sectionParagraphs(section) {
+  return Array.isArray(section) ? section[1] : section.paragraphs || [];
+}
+
+function sectionHeading(section) {
+  return Array.isArray(section) ? section[0] : section.heading;
+}
 
 const UI = {
-  en: { all: "All guides", updated: "Updated", faq: "FAQ", pricing: "See pricing", crm: "Open the CRM", auto: "Automations", site: "Website builder", meta: "Meta campaigns", capture: "Product capture from the Bizuply CRM. Names in the image are sample data, not live customers.", zoom: "Enlarge", plan: "Plan", price: "Price", includes: "Includes", crmOnly: "CRM only", business: "Business plan", whatsapp: "WhatsApp number", crmIncludes: "Pipeline, client file, appointments calendar", businessIncludes: "CRM, appointments, collaborations, automations", waIncludes: "One connected number. Meta messaging fees are separate.", read: "Read the guide", onPage: "On this page", answer: "Direct answer" },
-  he: { all: "כל המדריכים", updated: "עודכן", faq: "שאלות נפוצות", pricing: "למחירון", crm: "לעמוד ה־CRM", auto: "אוטומציות", site: "בניית אתרים", meta: "קמפיינים של Meta", capture: "צילום מסך מתוך ה־CRM של ביזאפלי. השמות בצילום הם נתוני הדגמה, לא לקוחות אמיתיים.", zoom: "הגדלה", plan: "מסלול", price: "מחיר", includes: "כולל", crmOnly: "CRM בלבד", business: "חבילה עסקית", whatsapp: "מספר WhatsApp", crmIncludes: "צינור, תיק לקוח ויומן תורים", businessIncludes: "CRM, תורים, שיתופים ואוטומציות", waIncludes: "מספר מחובר אחד. חיובי Meta נפרדים.", read: "למדריך", onPage: "בעמוד", answer: "תשובה ישירה" },
-  es: { all: "Todas las guías", updated: "Actualizado", faq: "Preguntas frecuentes", pricing: "Ver precios", crm: "Abrir el CRM", auto: "Automatizaciones", site: "Constructor de sitios", meta: "Campañas de Meta", capture: "Captura del CRM de Bizuply. Los nombres de la imagen son de demostración, no clientes reales.", zoom: "Ampliar", plan: "Plan", price: "Precio", includes: "Incluye", crmOnly: "CRM solo", business: "Plan de negocio", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline, expediente y calendario", businessIncludes: "CRM, citas, colaboraciones y automatizaciones", waIncludes: "Un número conectado. Las tarifas de Meta van aparte.", read: "Leer la guía", onPage: "En esta página", answer: "Respuesta directa" },
-  "pt-BR": { all: "Todos os guias", updated: "Atualizado", faq: "Perguntas frequentes", pricing: "Ver preços", crm: "Abrir o CRM", auto: "Automações", site: "Construtor de sites", meta: "Campanhas da Meta", capture: "Captura do CRM da Bizuply. Os nomes na imagem são de demonstração, não clientes reais.", zoom: "Ampliar", plan: "Plano", price: "Preço", includes: "Inclui", crmOnly: "CRM sozinho", business: "Plano de negócios", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline, arquivo e agenda", businessIncludes: "CRM, agenda, colaborações e automações", waIncludes: "Um número conectado. As tarifas da Meta são à parte.", read: "Ler o guia", onPage: "Nesta página", answer: "Resposta direta" },
-  ar: { all: "كل الأدلة", updated: "آخر تحديث", faq: "أسئلة شائعة", pricing: "الأسعار", crm: "صفحة CRM", auto: "الأتمتة", site: "منشئ المواقع", meta: "حملات Meta", capture: "لقطة من CRM في Bizuply. الأسماء في الصورة بيانات عرض وليست عملاء حقيقيين.", zoom: "تكبير", plan: "المسار", price: "السعر", includes: "يشمل", crmOnly: "CRM وحده", business: "الخطة التجارية", whatsapp: "رقم واتساب", crmIncludes: "مسار وملف عميل وتقويم", businessIncludes: "CRM والمواعيد والتعاون والأتمتة", waIncludes: "رقم واحد متصل. رسوم Meta منفصلة.", read: "اقرأ الدليل", onPage: "في هذه الصفحة", answer: "إجابة مباشرة" },
+  en: { all: "All guides", updated: "Updated", faq: "Questions worth answering", pricing: "See pricing", crm: "Open the CRM", auto: "Automations", site: "Website builder", meta: "Meta campaigns", capture: "Still from the matching product recording. Names on screen are demo data.", zoom: "Enlarge", plan: "Plan", price: "Price", includes: "Includes", crmOnly: "CRM only", business: "Business plan", whatsapp: "WhatsApp number", crmIncludes: "Pipeline and client file", businessIncludes: "CRM, appointments, collaborations, automations", waIncludes: "One connected number. Meta messaging fees are separate.", read: "Read the guide", onPage: "On this page", answer: "Direct answer", example: "Example", related: "Continue with" },
+  he: { all: "כל המדריכים", updated: "עודכן", faq: "שאלות שכדאי לענות עליהן", pricing: "למחירון", crm: "לעמוד ה־CRM", auto: "אוטומציות", site: "בניית אתרים", meta: "קמפיינים של Meta", capture: "פריים מתוך ההקלטה שמתאימה למדריך. השמות על המסך הם נתוני הדגמה.", zoom: "הגדלה", plan: "מסלול", price: "מחיר", includes: "כולל", crmOnly: "CRM בלבד", business: "חבילה עסקית", whatsapp: "מספר WhatsApp", crmIncludes: "צינור ותיק לקוח", businessIncludes: "CRM, תורים, שיתופים ואוטומציות", waIncludes: "מספר מחובר אחד. חיובי Meta נפרדים.", read: "למדריך", onPage: "בעמוד", answer: "תשובה ישירה", example: "דוגמה", related: "המשיכו אל" },
+  es: { all: "Todas las guías", updated: "Actualizado", faq: "Preguntas que conviene responder", pricing: "Ver precios", crm: "Abrir el CRM", auto: "Automatizaciones", site: "Constructor de sitios", meta: "Campañas de Meta", capture: "Fotograma de la grabación que corresponde a esta guía. Los nombres son de demostración.", zoom: "Ampliar", plan: "Plan", price: "Precio", includes: "Incluye", crmOnly: "CRM solo", business: "Plan de negocio", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline y expediente", businessIncludes: "CRM, citas, colaboraciones y automatizaciones", waIncludes: "Un número conectado. Las tarifas de Meta van aparte.", read: "Leer la guía", onPage: "En esta página", answer: "Respuesta directa", example: "Ejemplo", related: "Siga con" },
+  "pt-BR": { all: "Todos os guias", updated: "Atualizado", faq: "Perguntas que vale responder", pricing: "Ver preços", crm: "Abrir o CRM", auto: "Automações", site: "Construtor de sites", meta: "Campanhas da Meta", capture: "Quadro da gravação que corresponde a este guia. Os nomes são de demonstração.", zoom: "Ampliar", plan: "Plano", price: "Preço", includes: "Inclui", crmOnly: "CRM sozinho", business: "Plano de negócios", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline e arquivo do cliente", businessIncludes: "CRM, agenda, colaborações e automações", waIncludes: "Um número conectado. As tarifas da Meta são à parte.", read: "Ler o guia", onPage: "Nesta página", answer: "Resposta direta", example: "Exemplo", related: "Continue com" },
+  ar: { all: "كل الأدلة", updated: "آخر تحديث", faq: "أسئلة تستحق إجابة", pricing: "الأسعار", crm: "صفحة CRM", auto: "الأتمتة", site: "منشئ المواقع", meta: "حملات Meta", capture: "لقطة من التسجيل المطابق لهذا الدليل. الأسماء على الشاشة بيانات عرض.", zoom: "تكبير", plan: "المسار", price: "السعر", includes: "يشمل", crmOnly: "CRM وحده", business: "الخطة التجارية", whatsapp: "رقم واتساب", crmIncludes: "المسار وملف العميل", businessIncludes: "CRM والمواعيد والتعاون والأتمتة", waIncludes: "رقم واحد متصل. رسوم Meta منفصلة.", read: "اقرأ الدليل", onPage: "في هذه الصفحة", answer: "إجابة مباشرة", example: "مثال", related: "تابع مع" },
 };
 
 function uiFor(locale) {
@@ -96,6 +97,60 @@ export function GuidesIndexPage() {
   );
 }
 
+function GuideSection({ section, locale }) {
+  const heading = sectionHeading(section);
+  const paragraphs = sectionParagraphs(section);
+  const id = section.id || encodeURIComponent(heading);
+  return (
+    <section className="guide-block" id={id}>
+      <h2>{heading}</h2>
+      {paragraphs.map((paragraph) => <p key={paragraph.slice(0, 64)}>{paragraph}</p>)}
+      {section.steps?.length ? (
+        <ol className="guide-steps">
+          {section.steps.map((step) => <li key={step.slice(0, 64)}>{step}</li>)}
+        </ol>
+      ) : null}
+      {section.example?.body ? (
+        <aside className="guide-example">
+          <p>{section.example.title}</p>
+          <p>{section.example.body}</p>
+        </aside>
+      ) : null}
+      {section.mistakes?.length ? (
+        <div className="guide-mistakes">
+          {section.mistakes.map((item) => (
+            <div key={item.problem}>
+              <p>{item.problem}</p>
+              <p>{item.fix}</p>
+            </div>
+          ))}
+        </div>
+      ) : null}
+      {section.table?.rows?.length ? (
+        <table className="guide-table">
+          {section.table.columns?.length ? (
+            <thead>
+              <tr>{section.table.columns.map((column) => <th key={column}>{column}</th>)}</tr>
+            </thead>
+          ) : null}
+          <tbody>
+            {section.table.rows.map((row) => (
+              <tr key={row.join("|")}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>
+            ))}
+          </tbody>
+        </table>
+      ) : null}
+      {section.figure ? <GuideFigure kind={section.figure} locale={locale} /> : null}
+      {section.video ? (
+        <figure className="guide-video">
+          <ProductDemoVideo moduleId={section.video} />
+          {section.videoNote ? <figcaption>{section.videoNote}</figcaption> : null}
+        </figure>
+      ) : null}
+    </section>
+  );
+}
+
 export function GuideArticlePage() {
   const { slug } = useParams();
   const { i18n } = useTranslation();
@@ -103,7 +158,6 @@ export function GuideArticlePage() {
   const dir = getTextDirection(locale);
   const copy = uiFor(locale);
   const article = getGuide(slug, locale);
-  const [zoom, setZoom] = useState(false);
   if (!article) {
     return (
       <main className="guide-page" dir={dir}>
@@ -112,7 +166,9 @@ export function GuideArticlePage() {
       </main>
     );
   }
-  const shot = CAPTURES[slug];
+  const related = (article.related || [])
+    .map((relatedSlug) => ({ slug: relatedSlug, article: getGuide(relatedSlug, locale) }))
+    .filter((item) => item.article);
   return (
     <article className="guide-page" dir={dir} lang={locale === "pt-BR" ? "pt-BR" : locale}>
       <Helmet>
@@ -120,85 +176,45 @@ export function GuideArticlePage() {
         <meta name="description" content={article.description} />
         <link rel="canonical" href={marketingPublicUrl(`/guides/${slug}`, locale)} />
       </Helmet>
-      <p><Link to="/guides">{copy.all}</Link></p>
-      <p className="guide-kicker">{copy.updated} {article.updated}</p>
-      <h1>{article.h1}</h1>
-      <p className="guide-answer">{article.description}</p>
+      <header className="guide-article-head">
+        <p><Link to="/guides">{copy.all}</Link></p>
+        <p className="guide-kicker">{copy.updated} {article.updated}</p>
+        <h1>{article.h1}</h1>
+        <p className="guide-answer"><b>{copy.answer}</b>{article.lede || article.description}</p>
+      </header>
       <div className="guide-split">
-      <nav className="guide-toc" aria-label={copy.onPage}>
-        <p>{copy.onPage}</p>
-        <ol>
-          {article.sections.map(([heading]) => (
-            <li key={heading}><a href={`#${encodeURIComponent(heading)}`}>{heading}</a></li>
+        <nav className="guide-toc" aria-label={copy.onPage}>
+          <p>{copy.onPage}</p>
+          <ol>
+            {article.sections.map((section) => {
+              const heading = sectionHeading(section);
+              const id = section.id || encodeURIComponent(heading);
+              return <li key={id}><a href={`#${id}`}>{heading}</a></li>;
+            })}
+          </ol>
+        </nav>
+        <div className="guide-body">
+          {article.sections.map((section) => (
+            <GuideSection key={section.id || sectionHeading(section)} section={section} locale={locale} />
           ))}
-        </ol>
-      </nav>
-      <div>
-      {GUIDE_VIDEO[slug] ? (
-        <ProductDemoVideo moduleId={GUIDE_VIDEO[slug]} />
-      ) : shot ? (
-        <figure className="guide-shot">
-          <button type="button" onClick={() => setZoom(true)} aria-label={copy.zoom} style={{ padding: 0, border: 0, background: "transparent", cursor: "zoom-in", width: "100%" }}>
-            <img src={shot} alt={copy.capture} />
-          </button>
-          <figcaption>{copy.capture}</figcaption>
-        </figure>
-      ) : null}
-      {slug === "crm-and-business-platform" ? (
-        <table className="guide-table">
-          <thead>
-            <tr>
-              <th>{copy.plan}</th>
-              <th>{copy.price}</th>
-              <th>{copy.includes}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{copy.crmOnly}</td>
-              <td>$49</td>
-              <td>{copy.crmIncludes}</td>
-            </tr>
-            <tr>
-              <td>{copy.business}</td>
-              <td>$99 / $990</td>
-              <td>{copy.businessIncludes}</td>
-            </tr>
-            <tr>
-              <td>{copy.whatsapp}</td>
-              <td>$29</td>
-              <td>{copy.waIncludes}</td>
-            </tr>
-          </tbody>
-        </table>
-      ) : null}
-      {article.sections.map(([heading, paragraphs]) => (
-        <section key={heading} id={encodeURIComponent(heading)}>
-          <h2>{heading}</h2>
-          {paragraphs.map((paragraph) => <p key={paragraph.slice(0, 48)}>{paragraph}</p>)}
-        </section>
-      ))}
-      <h2>{copy.faq}</h2>
-      {article.faq.map(([question, answer]) => (
-        <details key={question} className="guide-faq">
-          <summary>{question}</summary>
-          <p>{answer}</p>
-        </details>
-      ))}
-      <div className="guide-links">
-        <Link to="/pricing">{copy.pricing}</Link>
-        <Link to="/crm">{copy.crm}</Link>
-        <Link to="/automations">{copy.auto}</Link>
-        <Link to="/website-builder">{copy.site}</Link>
-        <Link to="/meta-campaigns">{copy.meta}</Link>
+          <section className="guide-block" id="questions">
+            <h2>{copy.faq}</h2>
+            {article.faq.map(([question, answer]) => (
+              <details key={question} className="guide-faq">
+                <summary>{question}</summary>
+                <p>{answer}</p>
+              </details>
+            ))}
+          </section>
+          <nav className="guide-links" aria-label={copy.related}>
+            <p>{copy.related}</p>
+            {related.map((item) => (
+              <Link key={item.slug} to={`/guides/${item.slug}`}>{item.article.h1}</Link>
+            ))}
+            <Link to="/pricing">{copy.pricing}</Link>
+          </nav>
+        </div>
       </div>
-      </div>
-      </div>
-      {zoom && shot ? (
-        <dialog open style={{ maxWidth: "min(1100px, 96vw)", border: 0, padding: 0, background: "transparent" }} onClick={() => setZoom(false)}>
-          <img src={shot} alt={copy.capture} style={{ width: "100%", height: "auto", borderRadius: 16 }} />
-        </dialog>
-      ) : null}
     </article>
   );
 }

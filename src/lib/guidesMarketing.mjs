@@ -6,6 +6,7 @@
  */
 
 import { EXTRA_GUIDE_SLUGS, getExtraGuide } from "./guidesExtra.mjs";
+import { getRichGuide } from "./guidesRich.mjs";
 
 const UPDATED = "2026-10-23";
 
@@ -479,7 +480,7 @@ export const GUIDE_LOCALES = {
 export const GUIDE_SLUGS = [...Object.keys(EN), ...EXTRA_GUIDE_SLUGS];
 
 export function getGuide(slug, locale) {
-  return getExtraGuide(slug, locale) || (GUIDE_LOCALES[locale] || GUIDE_LOCALES.en)[slug] || null;
+  return getRichGuide(slug, locale) || getExtraGuide(slug, locale) || (GUIDE_LOCALES[locale] || GUIDE_LOCALES.en)[slug] || null;
 }
 
 export function guidePath(slug) {

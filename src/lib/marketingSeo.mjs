@@ -507,6 +507,17 @@ function guideHead(path, locale) {
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
     `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    `<script type="application/ld+json">${jsonLd({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.h1,
+      description: article.description,
+      dateModified: article.updated,
+      inLanguage: locale,
+      mainEntityOfPage: canonical,
+      author: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
+      publisher: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
+    })}</script>`,
     faqSchemaTag(path, locale),
   ].filter(Boolean).join("\n");
 }
@@ -707,10 +718,28 @@ function escapeText(value) {
   return escapeHtml(value);
 }
 
+function renderSection(section) {
+  if (Array.isArray(section)) {
+    const [heading, body] = section;
+    return `<h2>${escapeText(heading)}</h2>${(body || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("")}`;
+  }
+  const parts = [`<h2>${escapeText(section.heading)}</h2>`];
+  for (const paragraph of section.paragraphs || []) parts.push(`<p>${escapeText(paragraph)}</p>`);
+  if (section.steps?.length) parts.push(`<ol>${section.steps.map((step) => `<li>${escapeText(step)}</li>`).join("")}</ol>`);
+  if (section.example?.body) parts.push(`<p><strong>${escapeText(section.example.title || "")}</strong> ${escapeText(section.example.body)}</p>`);
+  for (const item of section.mistakes || []) parts.push(`<p><strong>${escapeText(item.problem)}</strong> ${escapeText(item.fix)}</p>`);
+  if (section.table?.rows?.length) {
+    const head = (section.table.columns || []).map((column) => `<th>${escapeText(column)}</th>`).join("");
+    const rows = section.table.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeText(cell)}</td>`).join("")}</tr>`).join("");
+    parts.push(`<table>${head ? `<thead><tr>${head}</tr></thead>` : ""}${rows}</table>`);
+  }
+  return parts.join("");
+}
+
 function renderLocalized(page, locale, path) {
   const meta = marketingLocaleMeta(locale);
-  const paragraphs = (page.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("");
-  const sections = (page.sections || []).map(([heading, body]) => `<h2>${escapeText(heading)}</h2>${body.map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("")}`).join("");
+  const paragraphs = (page.lede ? [`<p>${escapeText(page.lede)}</p>`] : []).concat((page.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`)).join("");
+  const sections = (page.sections || []).map(renderSection).join("");
   const faqs = page.faq?.length ? page.faq : faqItems(path, locale);
   const faqHeading = locale === "he" ? "שאלות נפוצות" : locale === "ar" ? "أسئلة شائعة" : locale === "es" ? "Preguntas frecuentes" : locale === "pt-BR" ? "Perguntas frequentes" : "FAQ";
   const faq = faqs ? `<h2>${faqHeading}</h2>${faqBodyHtml(faqs)}` : "";

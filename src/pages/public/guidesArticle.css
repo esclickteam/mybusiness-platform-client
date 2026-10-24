@@ -1,8 +1,8 @@
 .guide-page,
 .guide-index {
-  max-width: 1080px;
+  max-width: 1120px;
   margin: 0 auto;
-  padding: 3.5rem 1.25rem 5rem;
+  padding: 2rem 1.25rem 4rem;
   color: #0f172a;
 }
 
@@ -13,33 +13,9 @@
   margin: 0.4rem 0 0.8rem;
 }
 
-.guide-page {
-  counter-reset: guide-step;
-}
-
 .guide-page h2 {
-  margin-top: 2.2rem;
+  margin-top: 0;
   font-size: 1.35rem;
-}
-
-.guide-page section h2 {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.guide-page section h2::before {
-  counter-increment: guide-step;
-  content: counter(guide-step);
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 1.6rem;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 999px;
-  background: #ede9fe;
-  color: #5b21b6;
-  font-size: 0.8rem;
 }
 
 .guide-kicker {
@@ -247,5 +223,165 @@
   .guide-feature img:hover,
   .guide-shot img:hover {
     transform: translateY(-2px);
+  }
+}
+
+.guide-page {
+  background:
+    linear-gradient(#f6f4ef, #f6f4ef) padding-box;
+}
+
+.guide-article-head {
+  max-width: 42rem;
+}
+
+.guide-body {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.guide-block {
+  padding: 1.15rem 1.15rem 1.25rem;
+  border: 1px solid #e7e1d6;
+  border-radius: 1rem;
+  background: #fff;
+}
+
+.guide-block h2 {
+  margin-top: 0;
+}
+
+.guide-block p,
+.guide-example p,
+.guide-mistakes p,
+.guide-faq p {
+  max-width: 42rem;
+}
+
+.guide-steps {
+  margin: 0.8rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+  counter-reset: guide-item;
+}
+
+.guide-steps li {
+  display: grid;
+  grid-template-columns: 1.8rem minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: start;
+  padding: 0.7rem 0.75rem;
+  border-radius: 0.75rem;
+  background: #f7f5f1;
+}
+
+.guide-steps li::before {
+  counter-increment: guide-item;
+  content: counter(guide-item);
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 999px;
+  background: #1f2937;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.guide-example,
+.guide-mistakes > div {
+  margin-top: 0.8rem;
+  padding: 0.85rem 0.95rem;
+  border-radius: 0.8rem;
+  background: #f4f7f5;
+  border-inline-start: 3px solid #1f6b4a;
+}
+
+.guide-example p:first-child,
+.guide-mistakes p:first-child {
+  margin: 0 0 0.3rem;
+  font-weight: 750;
+  color: #14532d;
+}
+
+.guide-mistakes {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.guide-figure {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0.9rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide-figure li {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+
+.guide-figure li span {
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  background: #4c1d95;
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex: none;
+}
+
+.guide-video {
+  margin: 0.9rem 0 0;
+}
+
+.guide-video figcaption {
+  margin-top: 0.45rem;
+  color: #64748b;
+  font-size: 0.88rem;
+}
+
+.guide-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 0.8rem;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #111827;
+}
+
+.guide-links p {
+  width: 100%;
+  margin: 0;
+  color: #e5e7eb;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.guide-links a {
+  color: #fff;
+}
+
+@media (max-width: 700px) {
+  .guide-block,
+  .guide-toc {
+    padding-inline: 0.85rem;
+  }
+
+  .guide-page h1 {
+    max-width: none;
   }
 }
