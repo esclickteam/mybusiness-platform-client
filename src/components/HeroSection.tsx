@@ -19,14 +19,6 @@ export default function HeroSection() {
       <div className="home-hero__glow" aria-hidden="true" />
       <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pb-8 pt-16 sm:px-6 sm:pt-20 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:px-8 lg:pb-4 lg:pt-24">
         <div>
-          <motion.p
-            className="home-brand"
-            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-          >
-            Bizuply
-          </motion.p>
           <motion.h1
             className="home-hero__title"
             initial={reduceMotion ? false : { opacity: 0, y: 18 }}
@@ -52,8 +44,8 @@ export default function HeroSection() {
             <Link to="/register" className="home-cta home-cta--primary">
               {t("home.startTrial")}
             </Link>
-            <Link to="/pricing" className="home-cta home-cta--ghost">
-              {t("home.viewPricing")}
+            <Link to="/platform" className="home-cta home-cta--ghost">
+              {t("home.explore")}
             </Link>
           </motion.div>
         </div>

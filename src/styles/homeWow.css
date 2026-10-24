@@ -446,13 +446,14 @@
   border-radius: 1.25rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
-  object-fit: cover;
+  object-fit: contain;
+  background: #0f172a;
 }
 
 .home-stage__main {
   width: 100%;
-  height: 420px;
-  background: #0f172a;
+  height: auto;
+  aspect-ratio: 16 / 10;
 }
 
 .home-stage__float {
@@ -607,9 +608,11 @@
 
 .home-way img {
   width: 100%;
-  height: 210px;
-  object-fit: cover;
-  object-position: top;
+  height: auto;
+  aspect-ratio: 8 / 5;
+  object-fit: contain;
+  object-position: center;
+  background: #0b1220;
 }
 
 .home-way div {
@@ -788,9 +791,11 @@
 .home-show__phone video {
   display: block;
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  background: #020617;
+  height: auto;
+  aspect-ratio: 8 / 5;
+  object-fit: contain;
+  object-position: center;
+  background: #0b1220;
 }
 
 .home-show__toggle {
@@ -923,7 +928,9 @@
   }
 
   .home-show__block--wide {
-    grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+    direction: ltr;
+    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+    align-items: center;
   }
 
   .home-show__block--chat {
@@ -931,12 +938,13 @@
   }
 
   .home-show__block--chat .home-show__copy { order: 2; }
-  .home-show__screen video { height: 380px; border-radius: 1.1rem; }
+  .home-show__screen video,
+  .home-show__desktop video { border-radius: 1.1rem; }
 }
 
 @media (max-width: 979px) {
   .home-show__screen video,
-  .home-show__desktop video { height: 220px; border-radius: 1rem; }
+  .home-show__desktop video { border-radius: 1rem; }
   .home-show__phone { width: 96px; height: 170px; }
   .home-show__title { max-width: none; }
 }

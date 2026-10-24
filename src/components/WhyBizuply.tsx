@@ -27,7 +27,7 @@ export default function WhyBizuply() {
     if (typeof window === "undefined") return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => {
-      setLit((value) => (value + 1) % 3);
+      setLit((value) => (value + 1) % 4);
     }, 2800);
     return () => window.clearInterval(id);
   }, []);
@@ -115,6 +115,18 @@ export default function WhyBizuply() {
       gradient: "from-violet-600 to-fuchsia-500",
       glow: "bg-violet-300/35",
     },
+    {
+      title: t("why.feature4Title"),
+      text: t("why.feature4Text"),
+      icon: (
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 3l2.2 4.6L19 8.2l-3.5 3.4.8 4.9L12 14.2 7.7 16.5l.8-4.9L5 8.2l4.8-.6L12 3z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+        </svg>
+      ),
+      badge: t("why.feature4Badge"),
+      gradient: "from-cyan-600 to-indigo-600",
+      glow: "bg-cyan-300/30",
+    },
   ];
 
   return (
@@ -140,10 +152,6 @@ export default function WhyBizuply() {
           <Reveal from="up" distance={24} blur delay={0.06}>
             <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-white sm:text-5xl lg:text-6xl">
               {t("why.titleTop")}
-              <br />
-              <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                {t("why.titleHighlight")}
-              </span>
             </h2>
           </Reveal>
 
@@ -154,7 +162,7 @@ export default function WhyBizuply() {
           </Reveal>
         </div>
 
-        <Stagger className="mt-12 grid gap-5 sm:mt-14 lg:grid-cols-3" gap={0.08}>
+        <Stagger className="mt-12 grid gap-5 sm:mt-14 sm:grid-cols-2" gap={0.08}>
           {features.map((feature, index) => (
             <StaggerItem key={feature.title} className="h-full">
               <div
@@ -187,18 +195,16 @@ export default function WhyBizuply() {
                     {feature.text}
                   </p>
 
-                  <Link
-                    to="/features"
-                    className="mt-6 inline-flex items-center justify-center gap-2 text-sm font-black text-indigo-700"
-                  >
-                    {t("common.learnMore")}
-                    <span aria-hidden="true">←</span>
-                  </Link>
                 </div>
               </div>
             </StaggerItem>
           ))}
         </Stagger>
+        <div className="mt-10 text-center">
+          <Link to="/pricing" className="home-cta home-cta--primary">
+            {t("why.planCta")}
+          </Link>
+        </div>
       </div>
     </section>
   );

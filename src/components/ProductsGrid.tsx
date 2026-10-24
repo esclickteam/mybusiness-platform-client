@@ -7,8 +7,8 @@ import { getTextDirection } from "../i18n/localeUtils";
 import {
   CalendarClock,
   Globe,
-  Handshake,
-  Headset,
+  Megaphone,
+  MessageCircle,
   Users,
   Zap,
 } from "lucide-react";
@@ -17,37 +17,12 @@ import { Reveal, Stagger, StaggerItem } from "./product-marketing";
 import "../styles/homeWow.css";
 
 const MODULES = [
-  { id: "crm", to: "/crm", Icon: Users, tone: "from-indigo-600 to-violet-600" },
-  {
-    id: "appointments",
-    to: "/appointments",
-    Icon: CalendarClock,
-    tone: "from-blue-600 to-cyan-500",
-  },
-  {
-    id: "automations",
-    to: "/automations",
-    Icon: Zap,
-    tone: "from-violet-600 to-fuchsia-500",
-  },
-  {
-    id: "agents",
-    to: "/agents",
-    Icon: Headset,
-    tone: "from-emerald-600 to-teal-500",
-  },
-  {
-    id: "collaborations",
-    to: "/collaborations",
-    Icon: Handshake,
-    tone: "from-pink-600 to-rose-500",
-  },
-  {
-    id: "site",
-    to: "/website-builder",
-    Icon: Globe,
-    tone: "from-sky-600 to-indigo-600",
-  },
+  { id: "crm", to: "/crm", Icon: Users, tone: "from-indigo-600 to-violet-600", image: "/demo-media/home/crm.jpg" },
+  { id: "appointments", to: "/appointments", Icon: CalendarClock, tone: "from-blue-600 to-cyan-500", image: "/demo-media/home/appointments.jpg" },
+  { id: "automations", to: "/automations", Icon: Zap, tone: "from-violet-600 to-fuchsia-500", image: "/demo-media/home/automations.jpg" },
+  { id: "site", to: "/website-builder", Icon: Globe, tone: "from-sky-600 to-indigo-600", image: "/demo-media/home/websites.jpg" },
+  { id: "campaigns", to: "/meta-campaigns", Icon: Megaphone, tone: "from-fuchsia-600 to-indigo-600", image: "/demo-media/home/campaigns.jpg" },
+  { id: "whatsapp", to: "/whatsapp-api", Icon: MessageCircle, tone: "from-emerald-600 to-teal-500", image: "/demo-media/home/whatsapp.jpg" },
 ];
 
 /** Every module the platform ships, each one a door into its own page. */
@@ -74,10 +49,7 @@ export default function ProductsGrid() {
 
           <Reveal from="up" distance={26} blur delay={0.06}>
             <h2 className="mt-7 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl">
-              {t("modules.titleTop")}{" "}
-              <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                {t("modules.titleHighlight")}
-              </span>
+              {t("modules.titleTop")}
             </h2>
           </Reveal>
 
@@ -92,7 +64,7 @@ export default function ProductsGrid() {
           className="mt-10 grid gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
           gap={0.07}
         >
-          {MODULES.map(({ id, to, Icon, tone }, index) => (
+          {MODULES.map(({ id, to, Icon, tone, image }, index) => (
             <StaggerItem key={id} className="h-full">
               <Link
                 to={to}
@@ -100,6 +72,7 @@ export default function ProductsGrid() {
                 style={{ "--gold-i": index } as CSSProperties}
               >
                 <span className="home-wow-card__inner">
+                  <img src={image} alt="" width={640} height={400} className="mb-4 h-36 w-full rounded-xl object-contain bg-slate-950" />
                   <span
                     className={`mx-auto mb-3 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${tone} text-white shadow-lg shadow-indigo-100 transition duration-300 group-hover:scale-110 sm:mb-4 sm:h-12 sm:w-12`}
                   >
@@ -115,7 +88,7 @@ export default function ProductsGrid() {
                   </p>
 
                   <span className="mt-4 inline-flex items-center justify-center gap-2 text-sm font-black text-indigo-700 sm:mt-5">
-                    {t("modules.open")}
+                    {t(`modules.${id}Cta`)}
                     <span
                       aria-hidden="true"
                       className="transition group-hover:-translate-x-1"

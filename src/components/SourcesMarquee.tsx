@@ -99,8 +99,8 @@ export default function SourcesMarquee() {
           <div className="home-flow__line" aria-hidden="true" />
           <div className="home-flow__crm">
             <p>{t("home.flowInto")}</p>
-            <strong>CRM</strong>
-            <span>{t("home.flowNext")}</span>
+            <strong>{t("home.flowCrm")}</strong>
+            <span>{t("home.flowSteps")}</span>
           </div>
         </div>
       </div>

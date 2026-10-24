@@ -42,8 +42,8 @@ function ProductFilm({
   const reduce = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(Boolean(reduce));
-  const src = `/demo-media/home/${id}.mp4?v=2`;
-  const poster = `/demo-media/home/${id}.jpg?v=2`;
+  const src = `/demo-media/home/${id}.mp4?v=3`;
+  const poster = `/demo-media/home/${id}.jpg?v=3`;
 
   useEffect(() => {
     const node = videoRef.current;
@@ -101,7 +101,7 @@ export default function ScrollStory() {
             const copy = COPY[block.id];
             return (
               <article key={block.id} className={`home-show__block home-show__block--${block.layout}`}>
-                <div className="home-show__copy">
+                <div className="home-show__copy" dir={getTextDirection(i18n.language)}>
                   <h3>{t(`home.${copy.title}`)}</h3>
                   <p>{t(`home.${copy.body}`)}</p>
                   {block.id === "crm" ? (

@@ -8,28 +8,16 @@ import "../styles/homeWow.css";
 
 const ROWS = [
   {
-    key: "domainSoftware",
-    to: "/crm",
-    image: "/demo-media/forms/lead.png",
-    cta: "domainSoftwareCta",
+    key: "pathSelf",
+    to: "/platform",
+    image: "/demo-media/home/crm.jpg",
+    cta: "pathSelfCta",
   },
   {
-    key: "domainWeb",
-    to: "/website-builder",
-    image: "/demo-media/websites/still-8.jpg",
-    cta: "domainWebCta",
-  },
-  {
-    key: "domainMarket",
-    to: "/meta-campaigns",
-    image: "/demo-media/campaigns/still-8.jpg",
-    cta: "domainMarketCta",
-  },
-  {
-    key: "domainSetup",
-    to: "/pricing",
-    image: "/demo-media/automations/still-8.jpg",
-    cta: "domainSetupCta",
+    key: "pathHelp",
+    to: "/services",
+    image: "/demo-media/home/websites.jpg",
+    cta: "pathHelpCta",
   },
 ] as const;
 

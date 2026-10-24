@@ -11,6 +11,7 @@ import PlatformDomains from "../components/PlatformDomains";
 import ProductsGrid from "../components/ProductsGrid";
 import ScrollStory from "../components/ScrollStory";
 import WhyBizuply from "../components/WhyBizuply";
+import HomeServices from "../components/HomeServices";
 import FAQMini from "../components/FAQMini";
 
 export default function Home() {
@@ -44,6 +45,8 @@ export default function Home() {
       <ScrollStory />
 
       <WhyBizuply />
+
+      <HomeServices />
 
       <FAQMini />
     </main>

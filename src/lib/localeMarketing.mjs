@@ -68,10 +68,10 @@ const WHATSAPP_FAQ = {
 const PAGES = {
   es: {
     "/": page(
-      "Bizuply — Todo lo que su negocio necesita para crecer, en un solo lugar",
-      "Bizuply conecta la gestión de clientes, el marketing, la comunicación, los sitios y las automatizaciones en un sistema. Use las herramientas o el servicio de puesta en marcha.",
+      "Bizuply — Todo lo que su negocio necesita para crecer en un solo lugar",
+      "Gestione clientes, capture leads y ordene el trabajo diario con Bizuply. CRM, marketing, WhatsApp, citas y automatizaciones en una plataforma.",
       "Bizuply",
-      "Todo lo que su negocio necesita para crecer, en un solo lugar",
+      "Todo lo que su negocio necesita para crecer en un solo lugar",
       [
         "Bizuply conecta la gestión de clientes, el marketing, la comunicación, los sitios y las automatizaciones en un sistema.",
         "Puede usar las herramientas o pedir a Bizuply la puesta en marcha del sitio, de las automatizaciones y del paso desde otro CRM.",
@@ -236,10 +236,10 @@ function cloneShape(locale, dict) {
 
 cloneShape("pt-BR", {
   "/": page(
-    "Bizuply — Tudo o que o seu negócio precisa para crescer, em um só lugar",
-    "A Bizuply conecta gestão de clientes, marketing, comunicação, sites e automações em um sistema. Use as ferramentas ou o serviço de implantação e acompanhamento.",
+    "Bizuply — Tudo o que o seu negócio precisa para crescer em um só lugar",
+    "Gerencie clientes, capture leads e organize o trabalho do dia com a Bizuply. CRM, marketing, WhatsApp, compromissos e automações em uma plataforma.",
     "Bizuply",
-    "Tudo o que o seu negócio precisa para crescer, em um só lugar",
+    "Tudo o que o seu negócio precisa para crescer em um só lugar",
     [
       "A Bizuply conecta gestão de clientes, marketing, comunicação, sites e automações em um sistema.",
       "Dá para usar as ferramentas ou pedir à Bizuply a implantação do site, das automações e da mudança de outro CRM.",
@@ -345,10 +345,10 @@ cloneShape("pt-BR", {
 
 cloneShape("ar", {
   "/": page(
-    "Bizuply — كل ما يحتاجه نشاطك لينمو في مكان واحد",
-    "تربط Bizuply إدارة العملاء والتسويق والتواصل والمواقع والأتمتة في نظام واحد. يمكن استخدام الأدوات أو خدمة التهيئة والمرافقة.",
+    "Bizuply — كل ما يحتاجه عملكم للنمو في مكان واحد",
+    "أديروا العملاء والتقطوا الطلبات ورتّبوا العمل اليومي مع Bizuply. CRM والتسويق وWhatsApp والمواعيد والأتمتة في منصة واحدة.",
     "Bizuply",
-    "كل ما يحتاجه نشاطك لينمو في مكان واحد",
+    "كل ما يحتاجه عملكم للنمو في مكان واحد",
     [
       "تربط Bizuply إدارة العملاء والتسويق والتواصل والمواقع والأتمتة في نظام واحد.",
       "يمكن استخدام الأدوات أو طلب تهيئة الموقع والأتمتة والانتقال من CRM آخر من Bizuply.",

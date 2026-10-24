@@ -47,9 +47,9 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply — Everything your business needs to grow, in one place",
+    title: "Bizuply — Everything your business needs to grow in one place",
     description:
-      "Bizuply connects customer management, marketing, communication, websites, and automations in one system. Use the tools yourself or with Bizuply setup and support.",
+      "Manage customers, capture leads, build your online presence and streamline everyday work with Bizuply. CRM, marketing, WhatsApp, appointments and automations in one platform.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
@@ -367,6 +367,20 @@ function localizedPage(path, locale) {
 }
 
 function faqItems(path, language) {
+  if (path === "/" && language === "en") {
+    return [
+      ["What is Bizuply?", "Bizuply is a business management and marketing platform that brings essential tools together in one place. It helps businesses manage leads and customers, organize appointments, build websites, work with automations and manage supported communication and marketing activities."],
+      ["Who is Bizuply designed for?", "Bizuply is designed for business owners and teams looking for a more organized way to manage customer relationships, marketing and everyday operations. Whether you are building your online presence or improving existing workflows, you can choose the tools that fit your needs."],
+      ["Can I use Bizuply without technical experience?", "Bizuply provides visual tools for everyday business tasks, including customer management, website editing and workflow configuration. You can explore the available features yourself, and professional setup services are available for selected needs."],
+      ["How does the CRM help manage leads?", "The CRM keeps lead details, customer information, statuses, notes and follow-up tasks organized in one place. It helps you understand where each enquiry stands and what needs to happen next."],
+      ["Can I connect leads from advertising campaigns?", "Bizuply supports lead management workflows for connected marketing channels, including supported Meta integrations. Available connections and permissions depend on the accounts and services being connected."],
+      ["Can I create a website with Bizuply?", "Yes. Bizuply includes website-building tools with a visual editor and customizable templates. Professional website setup services are also available."],
+      ["What can I automate?", "Bizuply allows businesses to configure supported workflows based on actions and conditions. For example, an automation can help create a follow-up task when a lead reaches a specific status."],
+      ["How does WhatsApp Business API work with Bizuply?", "Bizuply provides WhatsApp Business API integration for supported business communication workflows. The service costs $29 per month for each connected number. Meta messaging charges apply separately according to usage and message category."],
+      ["How much does Bizuply cost?", "The CRM plan starts at $49 per month. The Business plan is available for $99 per month or $990 per year. Additional products and professional services have their own pricing. Visit the pricing page to explore the available options."],
+      ["Can Bizuply help with setup?", "Yes. Bizuply offers professional services for selected setup needs, including websites and business automations. You can review the available services and pricing before getting started."],
+    ];
+  }
   const localized = language === "en" ? null : localizedPage(path, language);
   if (localized?.faq?.length) return localized.faq;
   const guide = path.startsWith("/guides/") ? getGuide(path.slice("/guides/".length), language) : null;
