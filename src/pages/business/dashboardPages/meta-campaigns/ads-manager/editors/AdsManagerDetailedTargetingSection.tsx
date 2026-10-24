@@ -465,6 +465,9 @@ export default function AdsManagerDetailedTargetingSection({
     suggestSort,
   ]);
 
+  const tRef = useRef(t);
+  tRef.current = t;
+
   const loadBrowse = useCallback(async () => {
     if (!businessId) return;
     const id = ++browseReqId.current;
@@ -479,12 +482,12 @@ export default function AdsManagerDetailedTargetingSection({
       setError(
         err instanceof Error
           ? err.message
-          : t("metaCampaigns.adsManager.chrome.detailedBrowseFailed")
+          : tRef.current("metaCampaigns.adsManager.chrome.detailedBrowseFailed")
       );
     } finally {
       if (browseReqId.current === id) setBrowseBusy(false);
     }
-  }, [businessId, browseFn, locale, t]);
+  }, [businessId, browseFn, locale]);
 
   const loadSuggestions = useCallback(async () => {
     if (!businessId) return;
@@ -518,12 +521,14 @@ export default function AdsManagerDetailedTargetingSection({
       setError(
         err instanceof Error
           ? err.message
-          : t("metaCampaigns.adsManager.chrome.detailedSuggestionsFailed")
+          : tRef.current(
+              "metaCampaigns.adsManager.chrome.detailedSuggestionsFailed"
+            )
       );
     } finally {
       if (suggestReqId.current === id) setSuggestBusy(false);
     }
-  }, [businessId, suggestFn, locale, suggestSort, t]);
+  }, [businessId, suggestFn, locale, suggestSort]);
 
   useEffect(() => {
     if (panelMode !== "browse") return;
