@@ -13429,6 +13429,13 @@
       "emailInvalid": "Digite um endereço de e-mail válido.",
       "sendFailed": "Não foi possível enviar o código. Tente novamente.",
       "useSocialForIntent": "Continue com Google ou Microsoft para este cadastro."
+    },
+    "setup": {
+      "title": "Conclua a configuração do seu negócio",
+      "subtitle": "Adicione o nome do negócio para personalizar o espaço de trabalho. Seu e-mail de acesso já está salvo.",
+      "optional": "opcional",
+      "continue": "Continuar para o painel",
+      "saving": "Salvando…"
     }
   },
   "studio": {
