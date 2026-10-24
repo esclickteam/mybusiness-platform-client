@@ -263,9 +263,13 @@ export default function AdSetLevelEditor({
                             : "",
                         ].join(" ")}
                         onClick={() => {
+                          const pageChanged = page.id !== adSet.facebookPageId;
                           onChange({
                             facebookPageId: page.id,
                             facebookPageName: page.name,
+                            ...(pageChanged
+                              ? { whatsappPhone: "", whatsappDisplayNumber: "" }
+                              : {}),
                           });
                           setPageMenuOpen(false);
                           setPageQuery("");

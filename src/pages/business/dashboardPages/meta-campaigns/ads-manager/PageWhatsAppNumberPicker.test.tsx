@@ -132,6 +132,76 @@ describe("PageWhatsAppNumberPicker", () => {
     expect(onSelect).toHaveBeenCalledWith(linked);
   });
 
+  it("resends a Meta verification code without using a Bizuply OTP", async () => {
+    listPageWhatsAppNumbers.mockResolvedValue({ numbers: [] });
+    inspectPageWhatsAppNumber.mockResolvedValue({ linked: false, needsVerification: true });
+    requestPageWhatsAppCode
+      .mockResolvedValueOnce({
+        linked: false,
+        codeSent: true,
+        needsVerification: true,
+      })
+      .mockResolvedValueOnce({
+        linked: false,
+        codeSent: true,
+        needsVerification: true,
+        message: "Meta sent a new code",
+      });
+    render(
+      <PageWhatsAppNumberPicker
+        businessId="biz-1"
+        pageId="page-1"
+        selectedPhone=""
+        onSelect={vi.fn()}
+      />
+    );
+    await waitFor(() => screen.getByTestId("page-whatsapp-phone"));
+    fireEvent.change(screen.getByTestId("page-whatsapp-phone"), {
+      target: { value: "555039072" },
+    });
+    fireEvent.click(screen.getByTestId("page-whatsapp-continue"));
+    await waitFor(() => screen.getByTestId("page-whatsapp-code"));
+    fireEvent.click(screen.getByText("Resend"));
+    await waitFor(() => expect(requestPageWhatsAppCode).toHaveBeenCalledTimes(2));
+    expect(verifyPageWhatsAppCode).not.toHaveBeenCalled();
+  });
+
+  it("keeps the number unlinked when Meta says the code expired", async () => {
+    listPageWhatsAppNumbers.mockResolvedValue({ numbers: [] });
+    inspectPageWhatsAppNumber.mockResolvedValue({ linked: false });
+    requestPageWhatsAppCode.mockResolvedValue({
+      linked: false,
+      codeSent: true,
+      needsVerification: true,
+    });
+    verifyPageWhatsAppCode.mockResolvedValue({
+      linked: false,
+      code: "EXPIRED_CODE",
+      message: "The verification code expired. Request a new code from Meta.",
+    });
+    const onSelect = vi.fn();
+    render(
+      <PageWhatsAppNumberPicker
+        businessId="biz-1"
+        pageId="page-1"
+        selectedPhone=""
+        onSelect={onSelect}
+      />
+    );
+    await waitFor(() => screen.getByTestId("page-whatsapp-phone"));
+    fireEvent.change(screen.getByTestId("page-whatsapp-phone"), {
+      target: { value: "555039072" },
+    });
+    fireEvent.click(screen.getByTestId("page-whatsapp-continue"));
+    await waitFor(() => screen.getByTestId("page-whatsapp-code"));
+    fireEvent.change(screen.getByTestId("page-whatsapp-code"), {
+      target: { value: "000000" },
+    });
+    fireEvent.click(screen.getByTestId("page-whatsapp-continue"));
+    await waitFor(() => screen.getByTestId("page-whatsapp-error"));
+    expect(onSelect).not.toHaveBeenCalled();
+  });
+
   it("shows Meta's already-on-another-account error and can cancel mid-flow", async () => {
     listPageWhatsAppNumbers.mockResolvedValue({ numbers: [] });
     inspectPageWhatsAppNumber.mockResolvedValue({ linked: false });

@@ -379,6 +379,7 @@ export default function PageWhatsAppNumberPicker({
                       {c("pageWaCountry")}
                       <select
                         className={`${metaInputClass} mt-1`}
+                        dir="ltr"
                         value={country.dial}
                         onChange={(e) => {
                           const next =
@@ -390,7 +391,7 @@ export default function PageWhatsAppNumberPicker({
                       >
                         {PAGE_WHATSAPP_COUNTRIES.map((row) => (
                           <option key={`${row.iso}-${row.dial}`} value={row.dial}>
-                            {row.dial}+
+                            +{row.dial} {row.label}
                           </option>
                         ))}
                       </select>
