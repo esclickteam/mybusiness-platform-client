@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { fetchSaasProduct } from "../../saas/api";
 import { SaasSeo, useSaasLocale } from "../../saas/chrome";
-import { localizePublicDemoUrl, type SaasProduct } from "../../saas/logic";
+import { isWithdrawnFromPublicSale, localizePublicDemoUrl, type SaasProduct } from "../../saas/logic";
 import "../../saas/saas.css";
 
 const MODES = ["admin", "customer", "full"] as const;
@@ -32,7 +32,7 @@ export default function SaasTemplateDemoPage() {
     fetchSaasProduct(slug)
       .then((data) => {
         if (!alive) return;
-        if (data.product?.kind !== "template") {
+        if (data.product?.kind !== "template" || isWithdrawnFromPublicSale(data.product?.slug || slug)) {
           setProduct(null);
           setMissing(true);
           return;
