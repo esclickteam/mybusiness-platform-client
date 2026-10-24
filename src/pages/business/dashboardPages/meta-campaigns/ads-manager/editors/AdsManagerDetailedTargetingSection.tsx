@@ -521,7 +521,10 @@ export default function AdsManagerDetailedTargetingSection({
   const panelOpen = browseOpen || (searchOpen && (searchResults.length > 0 || busy));
 
   return (
-    <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
+    <div
+      className="rounded-lg border border-[#E4E6EB] px-3.5 py-3"
+      data-testid="ads-manager-detailed-targeting"
+    >
       <p className="text-[15px] font-bold text-[#050505]">
         {t("metaCampaigns.adsManager.chrome.detailedTargeting")}
       </p>
@@ -571,6 +574,10 @@ export default function AdsManagerDetailedTargetingSection({
               placeholder={t(
                 "metaCampaigns.adsManager.chrome.detailedSearchPlaceholder"
               )}
+              aria-label={t(
+                "metaCampaigns.adsManager.chrome.detailedSearchPlaceholder"
+              )}
+              data-testid="detailed-targeting-search"
               value={query}
               autoComplete="off"
               onChange={(e) => {
@@ -602,6 +609,11 @@ export default function AdsManagerDetailedTargetingSection({
                   ? "bg-[#E7F3FF] text-[#1877F2]"
                   : "text-[#050505] hover:bg-[#F0F2F5]",
               ].join(" ")}
+              aria-label={t(
+                "metaCampaigns.adsManager.chrome.detailedBrowseAria"
+              )}
+              aria-expanded={browseOpen}
+              data-testid="detailed-targeting-browse"
               onClick={() => {
                 setBrowseOpen((v) => !v);
                 setSearchOpen(false);
@@ -618,6 +630,9 @@ export default function AdsManagerDetailedTargetingSection({
           <div
             className="absolute inset-x-0 top-full z-[1300] mt-1 max-h-[min(420px,55vh)] overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]"
             dir={isRtl ? "rtl" : "ltr"}
+            data-testid="detailed-targeting-panel"
+            role="listbox"
+            aria-label={t("metaCampaigns.adsManager.chrome.detailedTargeting")}
           >
             {browseOpen ? (
               browseBusy && !browseRows.length ? (
