@@ -22,6 +22,7 @@ const FIXTURE = [
     type: "interests",
     branch: "interests",
     selectable: false,
+    unsupportedReason: "category",
     path: ["Interests", "Business and industry"],
   },
   {
@@ -38,7 +39,26 @@ const FIXTURE = [
     type: "behaviors",
     branch: "behaviors",
     selectable: false,
+    unsupportedReason: "category",
     path: ["Behaviors", "Purchase behavior"],
+  },
+  {
+    id: "",
+    name: "College years",
+    type: "college_years",
+    branch: "demographics",
+    selectable: false,
+    unsupportedReason: "category_not_selectable",
+    path: ["Demographics", "Education", "College years"],
+  },
+  {
+    id: "999001",
+    name: "Legacy demographic cluster",
+    type: "demographics",
+    branch: "demographics",
+    selectable: false,
+    unsupportedReason: "unsupported_flexible_spec",
+    path: ["Demographics", "Other", "Legacy demographic cluster"],
   },
 ];
 
@@ -122,5 +142,31 @@ describe("AdsManagerDetailedTargetingSection", () => {
       screen.getByLabelText(new RegExp(`remove:.*${selected[0].name}`, "i"))
     );
     await waitFor(() => expect(selected.length).toBe(1));
+  });
+
+  it("shows why unsupported Meta types cannot be selected", async () => {
+    await i18n.changeLanguage("en");
+    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
+    render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+        />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /browse/i }));
+    await waitFor(() => expect(browseFn).toHaveBeenCalled());
+    fireEvent.click(screen.getByRole("button", { name: /demographics/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Other/i }));
+    expect(
+      screen.getByText(/not supported for Meta flexible_spec/i)
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Education/i }));
+    expect(screen.getByText(/browse category only/i)).toBeTruthy();
   });
 });

@@ -10384,6 +10384,8 @@
         "browseBehaviors": "Behaviors",
         "targetingInfo": "Targeting info",
         "targetingInfoFallback": "Meta targeting category",
+        "targetingUnsupportedFlexible": "Not supported for Meta flexible_spec, so it cannot be selected",
+        "targetingCategoryNotSelectable": "Browse category only — pick a specific Meta ID value",
         "detailedBrowseFailed": "Could not load Meta targeting categories",
         "detailedSearchFailed": "Could not search Meta detailed targeting",
         "detailedBrowseEmpty": "No subcategories available for this ad account",

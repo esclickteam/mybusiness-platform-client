@@ -444,6 +444,11 @@ export type MetaInterestTarget = {
   /** Browse root: demographics | interests | behaviors */
   branch?: string;
   selectable?: boolean;
+  /**
+   * Why a browse/search row cannot be selected:
+   * unsupported_flexible_spec | category_not_selectable | category
+   */
+  unsupportedReason?: string;
   parent?: string;
 };
 
