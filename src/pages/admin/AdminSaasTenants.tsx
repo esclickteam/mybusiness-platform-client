@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
 
+const PAID_ALLOCATION_FAILED = "שולם – ההקצאה נכשלה";
+
 type TenantRow = {
   id: string;
   ownerUserId?: string;
@@ -36,6 +38,25 @@ type TenantRow = {
     syncError?: string;
   };
   shared?: { brandName?: string; primaryColor?: string; phone?: string };
+  adminStatus?: {
+    paymentLabel?: string;
+    allocationLabel?: string;
+    headline?: string;
+    dealModel?: string;
+    canRetry?: boolean;
+    needsDealChoice?: boolean;
+  };
+};
+
+type Clarification = {
+  id: string;
+  buyerName?: string;
+  buyerEmail?: string;
+  productName?: string;
+  amountUsd?: number | null;
+  currency?: string;
+  paymentLabel?: string;
+  allocationLabel?: string;
 };
 
 type CatalogTemplate = {
@@ -71,10 +92,78 @@ export default function AdminSaasTenants() {
   const [priceMonthly, setPriceMonthly] = useState(0);
   const [accessUntil, setAccessUntil] = useState("");
   const [licenseNote, setLicenseNote] = useState("");
+  const [clarifications, setClarifications] = useState<Clarification[]>([]);
+  const [dealChoice, setDealChoice] = useState<Record<string, string>>({});
+
+  function dealLabel(deal?: string) {
+    if (deal === "license") return "רישיון אופה";
+    if (deal === "white_label") return "White Label";
+    return "";
+  }
+
+  function errorMessage(err: unknown, fallback: string) {
+    const message = err && typeof err === "object" && "response" in err
+      ? (err as { response?: { data?: { error?: string } } }).response?.data?.error
+      : "";
+    return message || fallback;
+  }
 
   async function load() {
     const { data } = await API.get("/admin/saas-tenants");
     setRows(data.tenants || []);
+    try {
+      const attention = await API.get("/admin/saas-tenants/attention");
+      setClarifications(attention.data.clarifications || []);
+    } catch {
+      setClarifications([]);
+    }
+  }
+
+  async function retryAllocation(row: TenantRow) {
+    setError("");
+    setNotice("");
+    const chosen = row.adminStatus?.needsDealChoice ? dealChoice[row.id] : row.adminStatus?.dealModel;
+    if (row.templateSlug === "bakeora" && chosen !== "license" && chosen !== "white_label") {
+      setError("יש לבחור סוג עסקה לפני ההקצאה");
+      return;
+    }
+    const label = dealLabel(chosen);
+    const approved = window.confirm(label
+      ? `להקצות מחדש במסלול ${label}? לא יבוצע חיוב נוסף.`
+      : "להקצות מחדש? לא יבוצע חיוב נוסף.");
+    if (!approved) return;
+    try {
+      await API.post(`/admin/saas-tenants/${row.id}/allocation-retry`, {
+        confirm: true,
+        ...(chosen === "license" || chosen === "white_label" ? { dealModel: chosen } : {}),
+      });
+      setNotice("הניסיון החוזר נשלח. לא בוצע חיוב נוסף.");
+      await load();
+    } catch (err) {
+      setError(errorMessage(err, "ניסיון ההקצאה נכשל"));
+    }
+  }
+
+  async function confirmClarification(order: Clarification) {
+    setError("");
+    setNotice("");
+    const chosen = dealChoice[order.id];
+    if (chosen !== "license" && chosen !== "white_label") {
+      setError("יש לבחור סוג עסקה לפני ההקצאה");
+      return;
+    }
+    const approved = window.confirm(`לאשר ${dealLabel(chosen)} ולהקצות את הסביבה? לא יבוצע חיוב נוסף.`);
+    if (!approved) return;
+    try {
+      await API.post(`/admin/saas-tenants/orders/${order.id}/confirm-deal`, {
+        confirm: true,
+        dealModel: chosen,
+      });
+      setNotice("סוג העסקה נשמר וההקצאה התחילה. לא בוצע חיוב נוסף.");
+      await load();
+    } catch (err) {
+      setError(errorMessage(err, "אישור סוג העסקה נכשל"));
+    }
   }
 
   useEffect(() => {
@@ -190,6 +279,34 @@ export default function AdminSaasTenants() {
             {ops.watch.dependencies ? ` · Mongo ${ops.watch.dependencies.mongo ? "תקין" : "כשל"} · Redis ${ops.watch.dependencies.redis ? "תקין" : "כשל"}` : ""}
           </p>
         ) : null}
+        <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm">
+          <h2 className="mb-2 font-black">עסקאות ששולמו וממתינות לסוג עסקה</h2>
+          {clarifications.length === 0 ? (
+            <p className="text-sm">אין עסקאות שממתינות לסוג עסקה.</p>
+          ) : (
+            <ul className="space-y-3 text-sm">
+              {clarifications.map((order) => (
+                <li key={order.id} className="rounded-xl border p-3">
+                  <div>{order.productName} · {order.buyerName} · {order.buyerEmail}</div>
+                  <div>{order.amountUsd} {order.currency}</div>
+                  <div>תשלום: {order.paymentLabel || "שולם"}</div>
+                  <div>הקצאה: {order.allocationLabel || "ממתין לסוג עסקה"}</div>
+                  <select
+                    className="mt-2 w-full rounded border px-2 py-1"
+                    value={dealChoice[order.id] || ""}
+                    aria-label="סוג עסקה"
+                    onChange={(event) => setDealChoice((current) => ({ ...current, [order.id]: event.target.value }))}
+                  >
+                    <option value="">בחירת סוג עסקה</option>
+                    <option value="license">רישיון אופה</option>
+                    <option value="white_label">White Label</option>
+                  </select>
+                  <button type="button" className="mt-2 font-bold" onClick={() => confirmClarification(order)}>אשר והקצה</button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
         {ops?.failing?.length ? (
           <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm">
             <h2 className="mb-2 font-black">כשלי סנכרון</h2>
@@ -230,9 +347,31 @@ export default function AdminSaasTenants() {
                   <td className="px-3 py-2">{row.hosting?.planId} · {row.hosting?.usedMb}/{row.hosting?.quotaMb}MB</td>
                   <td className="px-3 py-2">{row.database?.status}</td>
                   <td className="px-3 py-2">{(row.services || []).map((service) => `${service.id}:${service.status}`).join(", ")}</td>
-                  <td className="px-3 py-2">{row.paymentStatus === "paid" ? "שולם" : "טרם שולם"}{row.charged ? "" : " · ללא חיוב"}<br />{row.quote?.dueNow} {row.quote?.currency}<br />חידוש {row.quote?.renewal}</td>
+                  <td className="px-3 py-2">
+                    <div>תשלום: {row.adminStatus?.paymentLabel || (row.paymentStatus === "paid" ? "שולם" : "טרם שולם")}</div>
+                    <div>הקצאה: {row.adminStatus?.allocationLabel || "—"}</div>
+                    {row.adminStatus?.headline ? <strong className="block">{row.adminStatus.headline || PAID_ALLOCATION_FAILED}</strong> : null}
+                    {row.charged ? null : <div>ללא חיוב</div>}
+                    <div>{row.quote?.dueNow} {row.quote?.currency}</div>
+                    <div>חידוש {row.quote?.renewal}</div>
+                  </td>
                   <td className="px-3 py-2">{row.renewalAt ? new Date(row.renewalAt).toLocaleDateString() : "—"}</td>
                   <td className="px-3 py-2">
+                    {row.adminStatus?.needsDealChoice ? (
+                      <select
+                        className="mb-1 w-full rounded border px-2 py-1"
+                        value={dealChoice[row.id] || ""}
+                        aria-label="סוג עסקה לניסיון חוזר"
+                        onChange={(event) => setDealChoice((current) => ({ ...current, [row.id]: event.target.value }))}
+                      >
+                        <option value="">בחירת סוג עסקה</option>
+                        <option value="license">רישיון אופה</option>
+                        <option value="white_label">White Label</option>
+                      </select>
+                    ) : null}
+                    {row.adminStatus?.canRetry || row.adminStatus?.needsDealChoice ? (
+                      <button type="button" className="mb-1 block font-bold" onClick={() => retryAllocation(row)}>נסה להקצות מחדש</button>
+                    ) : null}
                     {row.status === "active" ? (
                       <button type="button" className="font-bold" onClick={() => act(row.id, "suspend")}>השהיה</button>
                     ) : row.status === "suspended" ? (
