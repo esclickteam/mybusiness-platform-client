@@ -1490,7 +1490,7 @@ export async function searchMetaDetailedTargeting(
 
 /**
  * Empty-search / seed-based detailed targeting suggestions (Relevance | Size).
- * Uses Meta targetingsuggestions when seeds exist; otherwise real browse rows.
+ * Official Meta /targetingsuggestions only (selected targets or Page-category seeds).
  */
 export async function suggestMetaDetailedTargeting(
   businessId: string | undefined,
@@ -1506,6 +1506,7 @@ export async function suggestMetaDetailedTargeting(
     results: MetaDetailedTarget[];
     source?: string;
     sort?: string;
+    seedSource?: string;
     apiGap?: string;
   }>(
     "/meta-campaigns/targeting/detailed-suggestions",

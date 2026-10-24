@@ -199,24 +199,70 @@ async function mockSearch(_businessId: string | undefined, query: { q: string })
   };
 }
 
+/** Official Meta targetingsuggestions–shaped Hebrew rows (not browse size ranks). */
+const META_SUGGESTIONS: MetaDetailedTarget[] = [
+  {
+    id: "6003389760112",
+    name: "שיווק במדיה החברתית (שיווק)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["תחומי עניין", "מקוון (מחשוב)", "שיווק במדיה החברתית (שיווק)"],
+    audienceSizeLower: 335018659,
+    audienceSize: 393981943,
+    description: "",
+  },
+  {
+    id: "6003371567474",
+    name: "יזמות (עסקים ופיננסים)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["תחומי עניין", "יזמות (עסקים ופיננסים)"],
+    audienceSizeLower: 869364035,
+    audienceSize: 1022372106,
+  },
+  {
+    id: "6002714398399",
+    name: "בעלי עסקים קטנים",
+    type: "behaviors",
+    branch: "behaviors",
+    selectable: true,
+    path: ["התנהגויות", "פעילויות דיגיטליות", "בעלי עסקים קטנים"],
+    audienceSizeLower: 50814355,
+    audienceSize: 59757682,
+    description:
+      "אנשים שרושמים את עצמם כבעלי עסק קטן או שבבעלותם דפים של עסקים קטנים",
+  },
+  {
+    id: "6003127206524",
+    name: "שיווק דיגיטלי (שיווק)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["תחומי עניין", "מקוון (מחשוב)", "שיווק דיגיטלי (שיווק)"],
+    audienceSizeLower: 400569799,
+    audienceSize: 471070084,
+  },
+];
+
 async function mockSuggest(
   _businessId: string | undefined,
   query?: { sort?: string }
 ) {
   await new Promise((r) => setTimeout(r, 80));
-  const rows = FIXTURE.filter((row) => row.selectable && row.id);
+  const rows = META_SUGGESTIONS.slice();
   const sorted =
     query?.sort === "size"
-      ? rows
-          .slice()
-          .sort(
-            (a, b) => (Number(b.audienceSize) || 0) - (Number(a.audienceSize) || 0)
-          )
+      ? rows.sort(
+          (a, b) => (Number(b.audienceSize) || 0) - (Number(a.audienceSize) || 0)
+        )
       : rows;
   return {
     success: true,
-    results: sorted.slice(0, 12),
-    source: "browse_catalog_empty_state",
+    results: sorted,
+    source: "targetingsuggestions",
+    seedSource: "page_category",
     sort: query?.sort || "relevance",
   };
 }

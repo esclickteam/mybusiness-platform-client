@@ -104,21 +104,24 @@ const FIXTURE = [
 const SUGGESTIONS = [
   {
     id: "6003139266461",
-    name: "Beauty",
+    name: "יופי",
     type: "interests",
     branch: "interests",
     selectable: true,
     audienceSize: 540000000,
-    path: ["Interests", "Shopping and fashion", "Beauty"],
+    audienceSizeLower: 459000000,
+    description: "אנשים שמתעניינים ביופי",
+    path: ["תחומי עניין", "קניות ואופנה", "יופי"],
   },
   {
     id: "6002714895372",
-    name: "Engaged shoppers",
+    name: "קונים מעורבים",
     type: "behaviors",
     branch: "behaviors",
     selectable: true,
     audienceSize: 700000000,
-    path: ["Behaviors", "Purchase behavior", "Engaged shoppers"],
+    audienceSizeLower: 595000000,
+    path: ["התנהגויות", "התנהגות רכישה", "קונים מעורבים"],
   },
 ];
 
@@ -132,7 +135,8 @@ describe("AdsManagerDetailedTargetingSection", () => {
     const suggestFn = vi.fn(async () => ({
       success: true,
       results: SUGGESTIONS,
-      source: "browse_catalog_empty_state",
+      source: "targetingsuggestions",
+      seedSource: "page_category",
       sort: "relevance",
     }));
 
@@ -156,7 +160,17 @@ describe("AdsManagerDetailedTargetingSection", () => {
     );
     expect(screen.getByTestId("suggest-tab-relevance")).toBeTruthy();
     expect(screen.getByTestId("suggest-tab-size")).toBeTruthy();
-    expect(screen.getByText("Beauty")).toBeTruthy();
+    expect(screen.getByText("יופי")).toBeTruthy();
+    // Meta-like full range, not abbreviated 540.0M; no "הוסף" CTA.
+    expect(screen.getByText(/459,000,000\s*-\s*540,000,000/)).toBeTruthy();
+    expect(screen.queryByText(/^הוסף$/)).toBeNull();
+
+    const infoButtons = screen.getAllByLabelText(/מידע על תחום המיקוד|Targeting info/i);
+    fireEvent.click(infoButtons[0]);
+    await waitFor(() =>
+      expect(screen.getByTestId("detailed-targeting-info-pane")).toBeTruthy()
+    );
+    expect(screen.getByText(/אנשים שמתעניינים ביופי/)).toBeTruthy();
 
     fireEvent.click(screen.getByTestId("suggest-tab-size"));
     await waitFor(() =>
