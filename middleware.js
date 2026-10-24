@@ -132,6 +132,9 @@ function isCustomerSiteHost(host) {
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
   if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app")) return false;
+  if (host === "qa.local" || host.endsWith(".qa.local") || host.endsWith(".trycloudflare.com")) {
+    return false;
+  }
   return true;
 }
 

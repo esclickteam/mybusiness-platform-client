@@ -12,7 +12,13 @@ import {
   useSaasLocale,
   WhatsAppDock,
 } from "../../saas/chrome";
-import { demoTarget, isSaasTemplate, type SaasModelId, type SaasProduct } from "../../saas/logic";
+import {
+  demoTarget,
+  isSaasTemplate,
+  isWithdrawnFromPublicSale,
+  type SaasModelId,
+  type SaasProduct,
+} from "../../saas/logic";
 import SaasTemplateProductPage from "./SaasTemplateProductPage";
 import SaasScreenMock from "../../saas/SaasScreenMock";
 import {
@@ -56,6 +62,11 @@ export default function SaasProductPage() {
     fetchSaasProduct(slug)
       .then((data) => {
         if (!activeRequest) return;
+        if (isWithdrawnFromPublicSale(data.product?.slug || slug)) {
+          setProduct(null);
+          setError(t("saasMarket.product.missing"));
+          return;
+        }
         setProduct(data.product);
         setWhatsapp(data.settings?.whatsappE164 || "");
         setError("");
