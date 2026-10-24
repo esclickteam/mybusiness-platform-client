@@ -1531,6 +1531,13 @@ export default function MetaAdsManagerPage() {
                       patch.facebookPageName || selectedAd.facebookPageName,
                   });
                 }
+                if (
+                  typeof patch.conversionLocation === "string" &&
+                  patch.conversionLocation.toLowerCase().includes("whatsapp") &&
+                  selectedAd
+                ) {
+                  patchAd(selectedAd.id, { callToAction: "WHATSAPP_MESSAGE" });
+                }
               }}
             />
           ) : null}
@@ -1550,6 +1557,9 @@ export default function MetaAdsManagerPage() {
               showLeadgenTos={String(selectedAdSet?.conversionLocation || "")
                 .toLowerCase()
                 .includes("instant")}
+              conversionLocation={selectedAdSet?.conversionLocation}
+              whatsappPhone={selectedAdSet?.whatsappPhone}
+              whatsappDisplayNumber={selectedAdSet?.whatsappDisplayNumber}
               publishId={publishRecordIdRef.current || state.publishRecordId || ""}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
               onFormReady={async (form) => {

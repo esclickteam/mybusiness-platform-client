@@ -12,14 +12,17 @@ vi.mock("react-toastify", () => ({
   toast: { error: vi.fn(), success: vi.fn() },
 }));
 
-vi.mock("../../../../../api/whatsappApi", () => ({
-  getWhatsAppStatus: vi.fn().mockResolvedValue({ connected: false }),
-}));
-
 vi.mock("../../../../../api/metaCampaignsApi", () => ({
   createMetaLeadForm: (...args: unknown[]) => createMetaLeadForm(...args),
   syncMetaLeadForm: (...args: unknown[]) => syncMetaLeadForm(...args),
   saveMetaLeadFormDraft: (...args: unknown[]) => saveMetaLeadFormDraft(...args),
+  listPageWhatsAppNumbers: vi.fn().mockResolvedValue({
+    numbers: [],
+    officialFlow: true,
+  }),
+  inspectPageWhatsAppNumber: vi.fn(),
+  requestPageWhatsAppCode: vi.fn(),
+  verifyPageWhatsAppCode: vi.fn(),
 }));
 
 vi.mock("../../../../../i18n/i18n", () => ({
