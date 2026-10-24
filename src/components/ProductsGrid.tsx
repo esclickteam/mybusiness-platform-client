@@ -56,7 +56,7 @@ export default function ProductsGrid() {
 
   return (
     <section
-      className="relative overflow-hidden bg-white py-16 text-slate-800 sm:py-24"
+      className="home-products relative overflow-hidden py-16 sm:py-24"
       dir={getTextDirection(i18n.language)}
     >
       <div className="pointer-events-none absolute inset-0">
@@ -66,14 +66,14 @@ export default function ProductsGrid() {
       <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <Reveal from="up" distance={20}>
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-sm font-black text-white backdrop-blur">
               <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
               {t("modules.eyebrow")}
             </div>
           </Reveal>
 
           <Reveal from="up" distance={26} blur delay={0.06}>
-            <h2 className="mt-7 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl">
+            <h2 className="mt-7 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-white sm:text-5xl">
               {t("modules.titleTop")}{" "}
               <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
                 {t("modules.titleHighlight")}
@@ -82,7 +82,7 @@ export default function ProductsGrid() {
           </Reveal>
 
           <Reveal from="up" distance={20} delay={0.12}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-300">
               {t("modules.subtitle")}
             </p>
           </Reveal>

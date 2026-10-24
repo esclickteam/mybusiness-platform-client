@@ -68,13 +68,13 @@ const WHATSAPP_FAQ = {
 const PAGES = {
   es: {
     "/": page(
-      "Bizuply — Crear, gestionar, comercializar y crecer",
-      "Bizuply es software que usted opera: CRM, sitios, automatizaciones, campañas de Meta y WhatsApp, más el trabajo de puesta en marcha que figura en precios. El sitio oficial es bizuply.com.",
+      "Bizuply — Todo lo que su negocio necesita para crecer, en un solo lugar",
+      "Bizuply conecta la gestión de clientes, el marketing, la comunicación, los sitios y las automatizaciones en un sistema. Use las herramientas o el servicio de puesta en marcha.",
       "Bizuply",
-      "Crear, gestionar, comercializar y crecer",
+      "Todo lo que su negocio necesita para crecer, en un solo lugar",
       [
-        "Usted opera el CRM, el constructor de sitios, las automatizaciones, las campañas de Meta y WhatsApp.",
-        "La creación profesional de un sitio y la puesta en marcha de automatizaciones están en la página de precios, separadas del software de autoservicio.",
+        "Bizuply conecta la gestión de clientes, el marketing, la comunicación, los sitios y las automatizaciones en un sistema.",
+        "Puede usar las herramientas o pedir a Bizuply la puesta en marcha del sitio, de las automatizaciones y del paso desde otro CRM.",
       ],
     ),
     "/about": page(
@@ -236,13 +236,13 @@ function cloneShape(locale, dict) {
 
 cloneShape("pt-BR", {
   "/": page(
-    "Bizuply — Criar, gerir, divulgar e crescer",
-    "A Bizuply é um software que você opera: CRM, sites, automações, campanhas da Meta e WhatsApp, além da implantação listada na página de preços. O site oficial é bizuply.com.",
+    "Bizuply — Tudo o que o seu negócio precisa para crescer, em um só lugar",
+    "A Bizuply conecta gestão de clientes, marketing, comunicação, sites e automações em um sistema. Use as ferramentas ou o serviço de implantação e acompanhamento.",
     "Bizuply",
-    "Criar, gerir, divulgar e crescer",
+    "Tudo o que o seu negócio precisa para crescer, em um só lugar",
     [
-      "Você opera o CRM, o construtor de sites, as automações, as campanhas da Meta e o WhatsApp.",
-      "A criação profissional de um site e a implantação de automações ficam na página de preços, separadas do software de autoatendimento.",
+      "A Bizuply conecta gestão de clientes, marketing, comunicação, sites e automações em um sistema.",
+      "Dá para usar as ferramentas ou pedir à Bizuply a implantação do site, das automações e da mudança de outro CRM.",
     ],
   ),
   "/about": page(
@@ -345,13 +345,13 @@ cloneShape("pt-BR", {
 
 cloneShape("ar", {
   "/": page(
-    "Bizuply — للبناء والإدارة والتسويق والنمو",
-    "Bizuply برنامج تشغّلونه بأنفسكم: CRM والمواقع والأتمتة وحملات Meta وواتساب، إضافة إلى أعمال التهيئة المذكورة في صفحة الأسعار. الموقع الرسمي bizuply.com.",
+    "Bizuply — كل ما يحتاجه نشاطك لينمو في مكان واحد",
+    "تربط Bizuply إدارة العملاء والتسويق والتواصل والمواقع والأتمتة في نظام واحد. يمكن استخدام الأدوات أو خدمة التهيئة والمرافقة.",
     "Bizuply",
-    "للبناء والإدارة والتسويق والنمو",
+    "كل ما يحتاجه نشاطك لينمو في مكان واحد",
     [
-      "تشغّلون CRM ومنشئ المواقع والأتمتة وحملات Meta وواتساب بأنفسكم.",
-      "بناء الموقع الاحترافي وتهيئة الأتمتة يظهران في صفحة الأسعار، منفصلين عن البرنامج ذاتي الخدمة.",
+      "تربط Bizuply إدارة العملاء والتسويق والتواصل والمواقع والأتمتة في نظام واحد.",
+      "يمكن استخدام الأدوات أو طلب تهيئة الموقع والأتمتة والانتقال من CRM آخر من Bizuply.",
     ],
   ),
   "/about": page(

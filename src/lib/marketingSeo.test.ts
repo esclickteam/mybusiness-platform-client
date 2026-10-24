@@ -79,7 +79,9 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/book/abc")).toBeNull();
     expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
-    expect(buildMarketingDocumentHead("/he/") || "").toContain("<title>ביזאפלי (Bizuply)");
+    expect(buildMarketingDocumentHead("/he/") || "").toContain(
+      "<title>Bizuply — כל מה שהעסק שלך צריך כדי לצמוח במקום אחד</title>",
+    );
     for (const page of MARKETING_PAGES) {
       expect(page.title).not.toContain("BizUply");
       expect(page.description).not.toContain("BizUply");

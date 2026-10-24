@@ -1,44 +1,62 @@
+"use client";
+
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { Reveal } from "./product-marketing";
+import "../styles/homeWow.css";
 
 const ROWS = [
-  { n: "01", href: "/crm", title: "home.domainSoftware", body: "home.domainSoftwareBody" },
-  { n: "02", href: "/website-builder", title: "home.domainWeb", body: "home.domainWebBody" },
-  { n: "03", href: "/meta-campaigns", title: "home.domainMarket", body: "home.domainMarketBody" },
-  { n: "04", href: "/pricing", title: "home.domainSetup", body: "home.domainSetupBody" },
-];
+  {
+    key: "domainSoftware",
+    to: "/crm",
+    image: "/demo-media/forms/lead.png",
+    cta: "domainSoftwareCta",
+  },
+  {
+    key: "domainWeb",
+    to: "/website-builder",
+    image: "/demo-media/websites/still-8.jpg",
+    cta: "domainWebCta",
+  },
+  {
+    key: "domainMarket",
+    to: "/meta-campaigns",
+    image: "/demo-media/campaigns/still-8.jpg",
+    cta: "domainMarketCta",
+  },
+  {
+    key: "domainSetup",
+    to: "/pricing",
+    image: "/demo-media/automations/still-8.jpg",
+    cta: "domainSetupCta",
+  },
+] as const;
 
 export default function PlatformDomains() {
   const { t, i18n } = useTranslation();
-  const dir = getTextDirection(i18n.language);
 
   return (
-    <section className="bg-white text-slate-900" dir={dir}>
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8 lg:py-24">
-        <div>
-          <p className="text-sm font-black uppercase tracking-[0.14em] text-indigo-700">Bizuply</p>
-          <h2 className="mt-3 max-w-[12ch] text-4xl font-black leading-[0.95] tracking-[-0.04em] sm:text-5xl">
-            {t("home.domainsTitle")}
-          </h2>
-          <p className="mt-5 max-w-md text-base leading-7 text-slate-600">{t("home.domainsLead")}</p>
-        </div>
-        <ol className="divide-y divide-slate-200 border-y border-slate-200">
+    <section className="home-ways" dir={getTextDirection(i18n.language)}>
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+        <Reveal from="up" distance={18}>
+          <h2 className="home-ways__title">{t("home.domainsTitle")}</h2>
+          <p className="home-ways__lead">{t("home.domainsLead")}</p>
+        </Reveal>
+        <div className="mt-10 grid gap-5 lg:grid-cols-2">
           {ROWS.map((row) => (
-            <li key={row.n}>
-              <Link
-                to={row.href}
-                className="grid grid-cols-[3.5rem_minmax(0,1fr)] items-start gap-4 py-6 transition hover:bg-indigo-50/60"
-              >
-                <span className="pt-1 text-sm font-black text-indigo-700">{row.n}</span>
-                <span>
-                  <span className="block text-2xl font-black tracking-[-0.03em]">{t(row.title)}</span>
-                  <span className="mt-2 block text-base leading-7 text-slate-600">{t(row.body)}</span>
-                </span>
-              </Link>
-            </li>
+            <Reveal key={row.key} from="up" distance={20}>
+              <article className="home-way">
+                <img src={row.image} alt={t(`home.${row.key}`)} width={960} height={540} />
+                <div>
+                  <h3>{t(`home.${row.key}`)}</h3>
+                  <p>{t(`home.${row.key}Body`)}</p>
+                  <Link to={row.to}>{t(`home.${row.cta}`)}</Link>
+                </div>
+              </article>
+            </Reveal>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );

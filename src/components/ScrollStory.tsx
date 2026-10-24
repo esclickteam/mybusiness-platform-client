@@ -4,11 +4,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 
-import {
-  TourAppointmentsDemo,
-  TourClientDemo,
-  TourLeadCardDemo,
-} from "./TourLiveDemos";
+import { demoMediaLocale } from "./product-marketing/ProductDemoVideo";
 import TemplateShowcase from "./website-builder-marketing/TemplateShowcase";
 import { websiteHeroTemplates } from "./website-builder-marketing/websiteHeroTemplates";
 import { Reveal, Stagger, StaggerItem } from "./product-marketing";
@@ -18,7 +14,8 @@ import "./website-builder-marketing/WebsiteBuilderHero.css";
 type Step = {
   id: string;
   to: string;
-  live?: "leads" | "clients" | "appointments";
+  media?: "crm" | "automations" | "appointments" | "websites";
+  poster?: string;
   siteShowcase?: boolean;
 };
 
@@ -26,33 +23,57 @@ const STEPS: Step[] = [
   {
     id: "leads",
     to: "/crm",
-    live: "leads",
+    media: "crm",
+    poster: "/demo-media/forms/lead.png",
   },
   {
     id: "clients",
     to: "/crm",
-    live: "clients",
+    media: "automations",
+    poster: "/demo-media/automations/still-8.jpg",
   },
   {
     id: "appointments",
     to: "/appointments",
-    live: "appointments",
+    media: "appointments",
+    poster: "/demo-media/appointments/poster.jpg",
   },
   {
     id: "site",
     to: "/website-builder",
+    media: "websites",
+    poster: "/demo-media/websites/poster.jpg",
     siteShowcase: true,
   },
 ];
 
-function LiveFor({ kind }: { kind: NonNullable<Step["live"]> }) {
-  if (kind === "leads") return <TourLeadCardDemo />;
-  if (kind === "clients") return <TourClientDemo />;
-  return <TourAppointmentsDemo />;
+function ProductFilm({ step, locale }: { step: Step; locale: string }) {
+  if (!step.media) return null;
+  const src = `/demo-media/${step.media}/${step.media}-${locale}.mp4`;
+  return (
+    <figure className="home-film">
+      <video
+        poster={step.poster}
+        controls
+        playsInline
+        preload="none"
+        aria-label={step.media}
+      >
+        <source src={src} type="video/mp4" />
+        <track
+          kind="captions"
+          srcLang={locale}
+          src={`/demo-media/${step.media}/${step.media}-${locale}.vtt`}
+          default
+        />
+      </video>
+    </figure>
+  );
 }
 
 export default function ScrollStory() {
   const { t, i18n } = useTranslation();
+  const locale = demoMediaLocale(i18n.language);
 
   const bulletsFor = (id: string) => {
     const value = t(`tour.${id}Bullets`, { returnObjects: true }) as unknown;
@@ -136,11 +157,8 @@ export default function ScrollStory() {
                 delay={0.08}
                 className="mx-auto mt-10 max-w-3xl"
               >
-                {step.live ? (
-                  <div className="live-demo-fixed live-demo-fixed--tour">
-                    <LiveFor kind={step.live} />
-                  </div>
-                ) : step.siteShowcase ? (
+                {step.media ? <ProductFilm step={step} locale={locale} /> : null}
+                {step.siteShowcase ? (
                   <div className="home-site-stage">
                     <TemplateShowcase
                       templates={websiteHeroTemplates.slice(0, 5)}
