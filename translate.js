@@ -1,10 +1,10 @@
-// טעינת משתני סביבה מקובץ .env
+// Offline Node script only — not part of the Vite browser bundle.
+// Use a dedicated local OpenAI key named "Bizuply Development". Never reuse production.
 import 'dotenv/config';
 import fs from "fs";
 import path from "path";
 import OpenAI from "openai";
 
-// יצירת חיבור ל-OpenAI עם המפתח שלך מה-.env
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
