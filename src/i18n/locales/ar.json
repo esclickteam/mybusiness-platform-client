@@ -473,7 +473,14 @@
     "ariaLabel": "الملاحة مساحة العمل",
     "whatsapp": "WhatsApp عبر Meta",
     "metaCampaigns": "الحملات",
-    "socialSchedule": "جدولة المشاركات والقصص"
+    "socialSchedule": "جدولة المشاركات والقصص",
+    "products": {
+      "title": "منتجاتك",
+      "business": "Business",
+      "crm": "CRM",
+      "website": "الموقع",
+      "whatsappApi": "WhatsApp API"
+    }
   },
   "automations": {
     "shell": {

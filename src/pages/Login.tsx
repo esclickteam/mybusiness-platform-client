@@ -46,6 +46,8 @@ type LoginUser = {
   role?: string;
   businessId?: string;
   enabledModules?: string[] | null;
+  activeProducts?: Array<{ key?: string; homeModule?: string }> | null;
+  entitlements?: Record<string, unknown> | null;
   hasAccess?: boolean;
   mustChangePassword?: boolean;
   isTempPassword?: boolean;
@@ -183,6 +185,8 @@ function BusinessLogin() {
       accountKind: loggedInUser?.accountKind ?? null,
       enabledModules: loggedInUser?.enabledModules ?? null,
       subscriptionPlan: loggedInUser?.subscriptionPlan ?? null,
+      activeProducts: loggedInUser?.activeProducts ?? null,
+      entitlements: loggedInUser?.entitlements ?? null,
       queryRedirect,
       storedRedirect: null,
     });
@@ -317,6 +321,8 @@ function BusinessLogin() {
         accountKind: loggedInUser?.accountKind ?? null,
         enabledModules: loggedInUser?.enabledModules ?? null,
         subscriptionPlan: loggedInUser?.subscriptionPlan ?? null,
+        activeProducts: loggedInUser?.activeProducts ?? null,
+        entitlements: loggedInUser?.entitlements ?? null,
         queryRedirect,
         storedRedirect: loginResult?.redirectUrl || null,
       });

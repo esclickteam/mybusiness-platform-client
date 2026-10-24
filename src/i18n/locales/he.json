@@ -473,7 +473,14 @@
     "ariaLabel": "ניווט סביבת העבודה העסקית",
     "whatsapp": "WhatsApp דרך Meta",
     "metaCampaigns": "קמפיינים",
-    "socialSchedule": "תזמון פוסטים וסטוריז"
+    "socialSchedule": "תזמון פוסטים וסטוריז",
+    "products": {
+      "title": "המוצרים שלכם",
+      "business": "Business",
+      "crm": "CRM",
+      "website": "אתר",
+      "whatsappApi": "WhatsApp API"
+    }
   },
   "automations": {
     "shell": {

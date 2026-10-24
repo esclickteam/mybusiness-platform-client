@@ -473,7 +473,14 @@
     "ariaLabel": "Business workspace navigation",
     "whatsapp": "WhatsApp via Meta",
     "metaCampaigns": "Campaigns",
-    "socialSchedule": "Schedule Posts & Stories"
+    "socialSchedule": "Schedule Posts & Stories",
+    "products": {
+      "title": "Your products",
+      "business": "Business",
+      "crm": "CRM",
+      "website": "Website",
+      "whatsappApi": "WhatsApp API"
+    }
   },
   "automations": {
     "shell": {

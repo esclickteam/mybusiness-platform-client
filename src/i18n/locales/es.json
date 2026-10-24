@@ -473,7 +473,14 @@
     "ariaLabel": "Navegación del espacio de trabajo empresarial",
     "whatsapp": "WhatsApp a través de Meta",
     "metaCampaigns": "Campañas",
-    "socialSchedule": "Programar publicaciones e historias"
+    "socialSchedule": "Programar publicaciones e historias",
+    "products": {
+      "title": "Tus productos",
+      "business": "Business",
+      "crm": "CRM",
+      "website": "Sitio web",
+      "whatsappApi": "WhatsApp API"
+    }
   },
   "automations": {
     "shell": {
