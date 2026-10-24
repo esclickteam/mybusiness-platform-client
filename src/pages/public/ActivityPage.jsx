@@ -1,15 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { getActivityPage } from "../../lib/activityPages.mjs";
 import { marketingPublicUrl, normalizeMarketingLocale, splitMarketingLocale } from "../../lib/localePath.mjs";
-import {
-  AutomationIllustration,
-  CampaignIllustration,
-  WebsiteFixtureIllustration,
-} from "../../components/product-marketing/ProductIllustrations";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import "./activityPage.css";
 
 const LEAD_LABELS = new Set([
@@ -20,13 +16,9 @@ const LEAD_LABELS = new Set([
   "الإجابة المباشرة",
 ]);
 
-function Visual({ media, locale }) {
-  if (media === "crm") {
-    return null;
-  }
-  if (media === "campaign") return <CampaignIllustration locale={locale} />;
-  if (media === "automation") return <AutomationIllustration locale={locale} />;
-  if (media === "site") return <WebsiteFixtureIllustration locale={locale} />;
+function Visual({ media }) {
+  if (media === "automation") return <ProductDemoVideo moduleId="automations" />;
+  if (media === "campaign") return <ProductDemoVideo moduleId="campaigns" />;
   return null;
 }
 
@@ -37,14 +29,6 @@ export default function ActivityPage() {
   const bare = splitMarketingLocale(pathname).path;
   const page = getActivityPage(bare, locale);
   const dir = getTextDirection(locale);
-  const [zoom, setZoom] = useState(false);
-  const caption = {
-    en: "Product capture from the Bizuply CRM. Names in the image are sample data, not live customers.",
-    he: "צילום מתוך ה־CRM של ביזאפלי. השמות בצילום הם נתוני הדגמה, לא לקוחות אמיתיים.",
-    es: "Captura del CRM de Bizuply. Los nombres son de demostración, no clientes reales.",
-    "pt-BR": "Captura do CRM da Bizuply. Os nomes são de demonstração, não clientes reais.",
-    ar: "لقطة من CRM في Bizuply. الأسماء بيانات عرض وليست عملاء حقيقيين.",
-  }[locale] || "Product capture from the Bizuply CRM. Names in the image are sample data, not live customers.";
 
   if (!page) {
     return (
@@ -74,16 +58,7 @@ export default function ActivityPage() {
           <Link to="/contact">{locale === "he" ? "יצירת קשר" : locale === "ar" ? "اتصال" : locale === "es" ? "Contacto" : locale === "pt-BR" ? "Contato" : "Contact"}</Link>
         </div>
       </header>
-      {page.media === "crm" ? (
-        <figure className="act-shot">
-          <button type="button" onClick={() => setZoom(true)}>
-            <img src="/leads1.jpeg" alt={caption} />
-          </button>
-          <figcaption>{caption}</figcaption>
-        </figure>
-      ) : (
-        <Visual media={page.media} locale={locale} />
-      )}
+      <Visual media={page.media} />
       {page.steps?.length ? (
         <ol className="act-steps">
           {page.steps.map((step) => <li key={step}>{step}</li>)}
@@ -110,11 +85,6 @@ export default function ActivityPage() {
           </details>
         ))}
       </div>
-      {zoom ? (
-        <dialog open className="act-zoom" onClick={() => setZoom(false)}>
-          <img src="/leads1.jpeg" alt={caption} />
-        </dialog>
-      ) : null}
     </article>
   );
 }

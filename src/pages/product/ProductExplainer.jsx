@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import "../../styles/ProductExplainer.css";
 import { marketingPublicUrl } from "../../lib/localePath.mjs";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 
 const PAGE_META = {
   crm: { icon: UsersRound, accent: "from-[#6D28D9] to-[#2563EB]" },
@@ -172,6 +173,10 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
             </div>
           </div>
         </section>
+        ) : null}
+
+        {pageKey === "appointments" ? (
+          <ProductDemoVideo moduleId="appointments" />
         ) : null}
 
         {isCrm ? (

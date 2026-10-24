@@ -7,12 +7,7 @@ import { GUIDE_SLUGS, getGuide } from "../../lib/guidesMarketing.mjs";
 import { getHebrewMarketingPage } from "../../lib/hebrewMarketing.mjs";
 import { getLocaleMarketingPage } from "../../lib/localeMarketing.mjs";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
-import {
-  AutomationIllustration,
-  CampaignIllustration,
-  WebsiteFixtureIllustration,
-  WhatsAppStatusIllustration,
-} from "../../components/product-marketing/ProductIllustrations";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import "../../components/product-marketing/marketingKit.css";
 import "./guidesArticle.css";
 
@@ -22,6 +17,19 @@ const INDEX = {
   es: getLocaleMarketingPage("/guides", "es"),
   "pt-BR": getLocaleMarketingPage("/guides", "pt-BR"),
   ar: getLocaleMarketingPage("/guides", "ar"),
+};
+
+const GUIDE_VIDEO = {
+  "what-is-a-crm": "crm",
+  "follow-up-on-leads": "crm",
+  "crm-and-business-platform": "crm",
+  "meta-lead-ads-to-crm": "campaigns",
+  "manage-meta-campaigns": "campaigns",
+  "business-automation": "automations",
+  "build-a-website-without-code": "websites",
+  "whatsapp-cloud-api-cost": "whatsapp",
+  "appointments-for-a-service-business": "appointments",
+  "from-ad-to-follow-up": "campaigns",
 };
 
 const CAPTURES = {
@@ -41,21 +49,6 @@ const UI = {
 
 function uiFor(locale) {
   return UI[locale] || UI.en;
-}
-
-const VISUAL = {
-  "whatsapp-cloud-api-cost": "wa",
-  "business-automation": "auto",
-  "build-a-website-without-code": "site",
-  "manage-meta-campaigns": "meta",
-};
-
-function GuideVisual({ slug, locale }) {
-  if (VISUAL[slug] === "wa") return <WhatsAppStatusIllustration locale={locale} />;
-  if (VISUAL[slug] === "auto") return <AutomationIllustration locale={locale} />;
-  if (VISUAL[slug] === "site") return <WebsiteFixtureIllustration locale={locale} />;
-  if (VISUAL[slug] === "meta") return <CampaignIllustration locale={locale} />;
-  return null;
 }
 
 export function GuidesIndexPage() {
@@ -143,14 +136,16 @@ export function GuideArticlePage() {
         </ol>
       </nav>
       <div>
-      {shot ? (
+      {GUIDE_VIDEO[slug] ? (
+        <ProductDemoVideo moduleId={GUIDE_VIDEO[slug]} />
+      ) : shot ? (
         <figure className="guide-shot">
           <button type="button" onClick={() => setZoom(true)} aria-label={copy.zoom} style={{ padding: 0, border: 0, background: "transparent", cursor: "zoom-in", width: "100%" }}>
             <img src={shot} alt={copy.capture} />
           </button>
           <figcaption>{copy.capture}</figcaption>
         </figure>
-      ) : <GuideVisual slug={slug} locale={locale} />}
+      ) : null}
       {slug === "crm-and-business-platform" ? (
         <table className="guide-table">
           <thead>

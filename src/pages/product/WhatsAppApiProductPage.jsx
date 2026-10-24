@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
 import { getLocaleMarketingPage } from "../../lib/localeMarketing.mjs";
-import { WhatsAppStatusIllustration } from "../../components/product-marketing/ProductIllustrations";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import {
   FaqAccordion,
   SectionHeading,
@@ -141,7 +141,7 @@ export default function WhatsAppApiProductPage() {
             <p className="pm-eyebrow">WhatsApp Cloud API</p>
             <h1 className="pm-title">{localized.h1}</h1>
             {localized.paragraphs.map((paragraph) => <p className="pm-lead" key={paragraph.slice(0, 24)}>{paragraph}</p>)}
-            <WhatsAppStatusIllustration locale={locale} />
+            <ProductDemoVideo moduleId="whatsapp" />
             <div className="crm-hero__actions">
               <a className="pm-cta pm-cta--primary" href="https://whatsapp.bizuply.com/get-started">$29</a>
               <Link className="pm-cta pm-cta--ghost" to="/pricing">{locale === "es" ? "Precios" : locale === "ar" ? "الأسعار" : "Preços"}</Link>
@@ -172,7 +172,7 @@ export default function WhatsAppApiProductPage() {
           <p className="pm-lead">{copy.lead}</p>
           <p className="pm-spot__title">{copy.price}</p>
           <p className="pm-spot__text">{copy.metaFees}</p>
-          <WhatsAppStatusIllustration locale={locale} />
+          <ProductDemoVideo moduleId="whatsapp" />
           <div className="crm-hero__actions">
             <a className="pm-cta pm-cta--primary" href="https://whatsapp.bizuply.com/get-started">{copy.cta}</a>
             <a className="pm-cta pm-cta--ghost" href="https://whatsapp.bizuply.com/pricing">{copy.plans}</a>

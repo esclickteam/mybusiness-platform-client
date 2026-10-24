@@ -1,0 +1,181 @@
+{
+  "environment": "local isolated replica set mongodb://127.0.0.1:27018/bizuply_local_demo",
+  "recordedAt": "2026-10-24",
+  "uiLanguage": "en",
+  "items": [
+    {
+      "id": "crm",
+      "module": "crm",
+      "action": "Follow a lead through the file",
+      "uiLanguage": "en",
+      "captionLanguages": [
+        "en",
+        "he",
+        "es",
+        "pt-BR",
+        "ar"
+      ],
+      "realRecording": true,
+      "edited": true,
+      "titleCards": true,
+      "burnedCaptions": false,
+      "playerCaptions": "WebVTT",
+      "mockedExternalService": false,
+      "note": "Recorded in the isolated local demo workspace.",
+      "recordedAt": "2026-10-24",
+      "poster": "/demo-media/crm/poster.jpg",
+      "files": [
+        "/demo-media/crm/crm-en.mp4",
+        "/demo-media/crm/crm-he.mp4",
+        "/demo-media/crm/crm-es.mp4",
+        "/demo-media/crm/crm-pt-br.mp4",
+        "/demo-media/crm/crm-ar.mp4"
+      ]
+    },
+    {
+      "id": "automations",
+      "module": "automations",
+      "action": "Create a workflow and save it",
+      "uiLanguage": "en",
+      "captionLanguages": [
+        "en",
+        "he",
+        "es",
+        "pt-BR",
+        "ar"
+      ],
+      "realRecording": true,
+      "edited": true,
+      "titleCards": true,
+      "burnedCaptions": false,
+      "playerCaptions": "WebVTT",
+      "mockedExternalService": false,
+      "note": "Recorded in the isolated local demo workspace.",
+      "recordedAt": "2026-10-24",
+      "poster": "/demo-media/automations/poster.jpg",
+      "files": [
+        "/demo-media/automations/automations-en.mp4",
+        "/demo-media/automations/automations-he.mp4",
+        "/demo-media/automations/automations-es.mp4",
+        "/demo-media/automations/automations-pt-br.mp4",
+        "/demo-media/automations/automations-ar.mp4"
+      ]
+    },
+    {
+      "id": "websites",
+      "module": "websites",
+      "action": "Edit a template and preview it",
+      "uiLanguage": "en",
+      "captionLanguages": [
+        "en",
+        "he",
+        "es",
+        "pt-BR",
+        "ar"
+      ],
+      "realRecording": true,
+      "edited": true,
+      "titleCards": true,
+      "burnedCaptions": false,
+      "playerCaptions": "WebVTT",
+      "mockedExternalService": false,
+      "note": "Recorded in the isolated local demo workspace.",
+      "recordedAt": "2026-10-24",
+      "poster": "/demo-media/websites/poster.jpg",
+      "files": [
+        "/demo-media/websites/websites-en.mp4",
+        "/demo-media/websites/websites-he.mp4",
+        "/demo-media/websites/websites-es.mp4",
+        "/demo-media/websites/websites-pt-br.mp4",
+        "/demo-media/websites/websites-ar.mp4"
+      ]
+    },
+    {
+      "id": "campaigns",
+      "module": "campaigns",
+      "action": "Open a campaign inside Bizuply",
+      "uiLanguage": "en",
+      "captionLanguages": [
+        "en",
+        "he",
+        "es",
+        "pt-BR",
+        "ar"
+      ],
+      "realRecording": true,
+      "edited": true,
+      "titleCards": true,
+      "burnedCaptions": false,
+      "playerCaptions": "WebVTT",
+      "mockedExternalService": true,
+      "note": "Showcase campaign metrics inside Bizuply. No campaign was published and no spend was made.",
+      "recordedAt": "2026-10-24",
+      "poster": "/demo-media/campaigns/poster.jpg",
+      "files": [
+        "/demo-media/campaigns/campaigns-en.mp4",
+        "/demo-media/campaigns/campaigns-he.mp4",
+        "/demo-media/campaigns/campaigns-es.mp4",
+        "/demo-media/campaigns/campaigns-pt-br.mp4",
+        "/demo-media/campaigns/campaigns-ar.mp4"
+      ]
+    },
+    {
+      "id": "whatsapp",
+      "module": "whatsapp",
+      "action": "Templates and the inbox",
+      "uiLanguage": "en",
+      "captionLanguages": [
+        "en",
+        "he",
+        "es",
+        "pt-BR",
+        "ar"
+      ],
+      "realRecording": true,
+      "edited": true,
+      "titleCards": true,
+      "burnedCaptions": false,
+      "playerCaptions": "WebVTT",
+      "mockedExternalService": true,
+      "note": "Showcase demo number and inbox. No WhatsApp message was sent.",
+      "recordedAt": "2026-10-24",
+      "poster": "/demo-media/whatsapp/poster.jpg",
+      "files": [
+        "/demo-media/whatsapp/whatsapp-en.mp4",
+        "/demo-media/whatsapp/whatsapp-he.mp4",
+        "/demo-media/whatsapp/whatsapp-es.mp4",
+        "/demo-media/whatsapp/whatsapp-pt-br.mp4",
+        "/demo-media/whatsapp/whatsapp-ar.mp4"
+      ]
+    },
+    {
+      "id": "appointments",
+      "module": "appointments",
+      "action": "Create a booking on the calendar",
+      "uiLanguage": "en",
+      "captionLanguages": [
+        "en",
+        "he",
+        "es",
+        "pt-BR",
+        "ar"
+      ],
+      "realRecording": true,
+      "edited": true,
+      "titleCards": true,
+      "burnedCaptions": false,
+      "playerCaptions": "WebVTT",
+      "mockedExternalService": false,
+      "note": "Recorded in the isolated local demo workspace.",
+      "recordedAt": "2026-10-24",
+      "poster": "/demo-media/appointments/poster.jpg",
+      "files": [
+        "/demo-media/appointments/appointments-en.mp4",
+        "/demo-media/appointments/appointments-he.mp4",
+        "/demo-media/appointments/appointments-es.mp4",
+        "/demo-media/appointments/appointments-pt-br.mp4",
+        "/demo-media/appointments/appointments-ar.mp4"
+      ]
+    }
+  ]
+}

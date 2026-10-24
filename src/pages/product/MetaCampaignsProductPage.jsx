@@ -14,7 +14,7 @@ import { getTextDirection } from "../../i18n/localeUtils";
 import { getHebrewMarketingPage } from "../../lib/hebrewMarketing.mjs";
 import { getLocaleMarketingPage } from "../../lib/localeMarketing.mjs";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
-import { CampaignIllustration } from "../../components/product-marketing/ProductIllustrations";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
 
@@ -159,7 +159,7 @@ export default function MetaCampaignsProductPage() {
       />
       <section className="pm-section">
         <div className="pm-shell">
-          <CampaignIllustration locale={locale} />
+          <ProductDemoVideo moduleId="campaigns" />
         </div>
       </section>
       <section className="pm-section">

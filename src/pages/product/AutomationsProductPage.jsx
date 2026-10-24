@@ -35,6 +35,7 @@ import {
   getAutomationsRail,
   getAutomationsSteps,
 } from "../../components/automations-marketing/automationsMarketingData";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import AutomationsNotificationsDemo from "../../components/automations-marketing/AutomationsNotificationsDemo";
 import AutomationsBuilderPreview from "../../components/automations-marketing/AutomationsBuilderPreview";
 import "../../components/product-marketing/marketingKit.css";
@@ -94,6 +95,12 @@ export default function AutomationsProductPage() {
         }}
         stats={automationsHeroStats}
       />
+
+      <section className="pm-section pm-section--tight">
+        <div className="pm-shell">
+          <ProductDemoVideo moduleId="automations" />
+        </div>
+      </section>
 
       {/* How it works */}
       <section className="pm-section pm-section--tight">

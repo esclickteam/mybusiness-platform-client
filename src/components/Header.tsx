@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
@@ -8,26 +8,10 @@ import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { getTextDirection } from "../i18n/localeUtils";
+import { normalizeMarketingLocale } from "../lib/localePath.mjs";
+import { marketingNav } from "../lib/marketingNav.mjs";
 import { businessNoAccessPath } from "../utils/whatsappApiPortal";
 import "../styles/SiteHeader.css";
-
-type NavLink = {
-  to: string;
-  labelKey: string;
-};
-
-/** Flat SaaS nav — no dropdowns. RTL visual: logo right → links → actions left. */
-const navLinks: NavLink[] = [
-  { to: "/about", labelKey: "nav.about" },
-  { to: "/platform", labelKey: "nav.platform" },
-  { to: "/services", labelKey: "nav.services" },
-  { to: "/website-builder", labelKey: "nav.website" },
-  { to: "/crm", labelKey: "nav.crm" },
-  { to: "/automations", labelKey: "nav.automations" },
-  { to: "/agents", labelKey: "nav.agents" },
-  { to: "/collaborations", labelKey: "nav.collaborations" },
-  { to: "/pricing", labelKey: "nav.pricing" },
-];
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -35,6 +19,8 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const groups = marketingNav(normalizeMarketingLocale(i18n.language));
 
   const headerDir = getTextDirection(i18n.language);
   const accountPath =
@@ -59,6 +45,10 @@ export default function Header() {
     }
   };
 
+  useEffect(() => {
+    setOpenGroup(null);
+  }, [location.pathname]);
+
   if (isDashboard) return null;
 
   return (
@@ -70,16 +60,43 @@ export default function Header() {
           </Link>
 
           <div className="site-header__nav">
-            {navLinks.map((item) => {
-              const isActive = location.pathname === item.to;
+            {groups.map((group) => {
+              if (!group.links) {
+                const isActive = location.pathname === group.to;
+                return (
+                  <Link
+                    key={group.id}
+                    to={group.to}
+                    className={`site-header__link${isActive ? " is-active" : ""}`}
+                  >
+                    {group.label}
+                  </Link>
+                );
+              }
+              const open = openGroup === group.id;
               return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  className={`site-header__link${isActive ? " is-active" : ""}`}
+                <div
+                  key={group.id}
+                  className={`site-nav__item${open ? " is-open" : ""}`}
+                  onMouseEnter={() => setOpenGroup(group.id)}
+                  onMouseLeave={() => setOpenGroup(null)}
                 >
-                  {t(item.labelKey)}
-                </Link>
+                  <button
+                    type="button"
+                    className="site-header__link site-nav__button"
+                    aria-expanded={open}
+                    onClick={() => setOpenGroup(open ? null : group.id)}
+                  >
+                    {group.label}
+                  </button>
+                  <div className="site-nav__panel" hidden={!open}>
+                    {group.links.map(([to, label]) => (
+                      <Link key={to} to={to} onClick={() => setOpenGroup(null)}>
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
               );
             })}
           </div>

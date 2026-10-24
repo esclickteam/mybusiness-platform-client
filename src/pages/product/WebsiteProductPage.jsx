@@ -19,6 +19,7 @@ import WebsiteTemplateLibrary from "../../components/website-builder-marketing/W
 import WebsiteSeoSection from "../../components/website-builder-marketing/WebsiteSeoSection";
 import WebsiteEcosystem from "../../components/website-builder-marketing/WebsiteEcosystem";
 import WebsiteLaunchFlow from "../../components/website-builder-marketing/WebsiteLaunchFlow";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import { getWebsiteFaq } from "../../components/website-builder-marketing/websiteMarketingData";
 import {
   AuroraBackdrop,
@@ -124,6 +125,12 @@ export default function WebsiteProductPage() {
       <ScrollProgress />
 
       <WebsiteBuilderHero />
+
+      <section className="pm-section pm-section--tight">
+        <div className="pm-shell">
+          <ProductDemoVideo moduleId="websites" />
+        </div>
+      </section>
 
       <WebsiteTemplateLibrary />
 
