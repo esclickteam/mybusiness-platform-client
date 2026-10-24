@@ -65,12 +65,18 @@ export default function HeroSection() {
           </p>
         </Reveal>
 
-        <div className="mt-9 flex items-center justify-center">
+        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
             to="/pricing"
             className="cta-solid inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-base font-black text-white shadow-xl shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-indigo-300 sm:w-auto"
           >
             {t("home.startTrial")}
+          </Link>
+          <Link
+            to="/contact"
+            className="inline-flex w-full items-center justify-center rounded-2xl border border-slate-300 bg-white px-8 py-4 text-base font-black text-slate-800 shadow-sm transition hover:-translate-y-0.5 sm:w-auto"
+          >
+            {t("home.contactCta")}
           </Link>
         </div>
 

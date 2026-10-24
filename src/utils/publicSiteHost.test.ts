@@ -47,5 +47,7 @@ describe("publicSiteHost", () => {
     expect(isPublicCustomerSiteHost("www.whatsapp.bizuply.com")).toBe(false);
     expect(isPublicCustomerSiteHost("acme.bizuply.com")).toBe(true);
     expect(isPublicCustomerSiteHost("mybusiness-platform-client-staging.vercel.app")).toBe(false);
+    expect(isPublicCustomerSiteHost("chain-bouquet-francisco-sister.trycloudflare.com")).toBe(false);
+    expect(isPublicCustomerSiteHost("preview.example.com")).toBe(true);
   });
 });

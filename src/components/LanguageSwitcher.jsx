@@ -6,7 +6,7 @@ import { coerceSupportedLanguage, getTextDirection } from "../i18n/localeUtils";
 import { changeAppLanguage } from "../i18n/persistLanguage";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 import { findMarketingPage } from "../lib/marketingSeo.mjs";
-import { splitMarketingLocale, withMarketingLocale } from "../lib/localePath.mjs";
+import { hasLocalizedMarketingPage, splitMarketingLocale, withMarketingLocale } from "../lib/localePath.mjs";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 
 export default function LanguageSwitcher({
@@ -33,8 +33,9 @@ export default function LanguageSwitcher({
         host === "127.0.0.1" ||
         host.endsWith(".vercel.app"));
     const bare = splitMarketingLocale(window.location.pathname).path;
-    const canMove = Boolean(findMarketingPage(bare) || bare === "/whatsapp-api");
-    if (onMarketingHost && canMove && (lng === "he" || lng === "en")) {
+    const canMove = Boolean(findMarketingPage(bare) || bare === "/whatsapp-api" || bare.startsWith("/guides/"));
+    const targetReady = lng === "en" || hasLocalizedMarketingPage(bare, lng);
+    if (onMarketingHost && canMove && targetReady) {
       const next = withMarketingLocale(bare, lng);
       if (next !== window.location.pathname) {
         await changeAppLanguage(lng);

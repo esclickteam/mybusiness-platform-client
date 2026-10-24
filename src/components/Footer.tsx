@@ -22,6 +22,8 @@ export default function Footer() {
   const footerDir = getTextDirection(normalizeLanguage(i18n.language));
 
   const solutionsLinks: FooterLink[] = [
+    { label: t("footer.platform"), to: "/platform" },
+    { label: t("footer.services"), to: "/services" },
     { label: t("footer.crm"), to: "/crm" },
     { label: t("footer.website"), to: "/website-builder" },
     { label: t("footer.automations"), to: "/automations" },

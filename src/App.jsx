@@ -104,6 +104,15 @@ const AppointmentsProductPage = lazy(() =>
 const AutomationsProductPage = lazy(() =>
   import("./pages/product/AutomationsProductPage")
 );
+const MetaCampaignsProductPage = lazy(() =>
+  import("./pages/product/MetaCampaignsProductPage")
+);
+const GuidesIndexPage = lazy(() =>
+  import("./pages/public/GuidesPage").then((mod) => ({ default: mod.GuidesIndexPage }))
+);
+const GuideArticlePage = lazy(() =>
+  import("./pages/public/GuidesPage").then((mod) => ({ default: mod.GuideArticlePage }))
+);
 const AgentsProductPage = lazy(() =>
   import("./pages/product/AgentsProductPage")
 );
@@ -263,6 +272,7 @@ const CollabLegacyRedirect = lazy(
 );
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
+const ActivityPage = lazy(() => import("./pages/public/ActivityPage"));
 const Support = lazy(() => import("./pages/Support"));
 const TrialEnded = lazy(() => import("./pages/TrialEnded"));
 const MetaCallbackPage = lazy(() =>
@@ -1166,6 +1176,12 @@ export default function App() {
                           path="/automations"
                           element={<AutomationsProductPage />}
                         />
+                        <Route
+                          path="/meta-campaigns"
+                          element={<MetaCampaignsProductPage />}
+                        />
+                        <Route path="/guides" element={<GuidesIndexPage />} />
+                        <Route path="/guides/:slug" element={<GuideArticlePage />} />
                         <Route path="/agents" element={<AgentsProductPage />} />
                         <Route path="/whatsapp-api" element={<WhatsAppApiProductPage />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -1321,6 +1337,10 @@ export default function App() {
                         <Route path="/support" element={<Support />} />
                         <Route path="/features" element={<Features />} />
                         <Route path="/solutions" element={<Solutions />} />
+                        <Route path="/platform" element={<ActivityPage />} />
+                        <Route path="/services" element={<ActivityPage />} />
+                        <Route path="/services/:slug" element={<ActivityPage />} />
+                        <Route path="/solutions/:slug" element={<ActivityPage />} />
                         <Route path="/trial-ended" element={<TrialEnded />} />
                         <Route path="/unsubscribe" element={<Unsubscribe />} />
 

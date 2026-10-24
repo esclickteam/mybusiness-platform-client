@@ -177,7 +177,8 @@ export function detectLanguageFromTimezone() {
 export function languageFromUrl() {
   if (typeof window === "undefined") return null;
   try {
-    if (splitMarketingLocale(window.location.pathname).locale === "he") return "he";
+    const fromPath = splitMarketingLocale(window.location.pathname).locale;
+    if (fromPath && fromPath !== "en") return fromPath;
     const raw = new URLSearchParams(window.location.search).get("lang");
     if (!raw) return null;
     return normalizeLanguage(raw, { fallback: null });

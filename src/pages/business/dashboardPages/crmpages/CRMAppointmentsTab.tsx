@@ -182,10 +182,6 @@ function getTodayIso() {
   return new Date().toLocaleDateString("en-CA");
 }
 
-function toIsoDate(date: Date) {
-  return date.toLocaleDateString("en-CA");
-}
-
 function getAppointmentDateTime(appointment: AppointmentItem) {
   if (!appointment.date) return null;
 

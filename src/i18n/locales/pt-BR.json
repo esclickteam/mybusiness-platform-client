@@ -83,19 +83,32 @@
     "appointments": "Agendamentos",
     "automations": "Automações",
     "agents": "Agentes de negócio",
+    "platform": "Plataforma",
+    "services": "Serviços",
     "contact": "Contato",
     "cta": "Começar",
     "mainAria": "Navegação principal"
   },
   "seo": {
-    "homeTitle": "Bizuply — Administre seu negócio. Tudo em um só lugar.",
-    "homeDescription": "Uma plataforma de negócios moderna com uma página de negócios profissional, colaborações, CRM e IA."
+    "homeTitle": "Bizuply — Criar, gerir, divulgar e crescer",
+    "homeDescription": "A Bizuply é um software que você opera: CRM, sites, automações, campanhas da Meta e WhatsApp, além da implantação listada na página de preços. O site oficial é bizuply.com."
   },
   "home": {
-    "badge": "Plataforma de gestão de negócios tudo em um",
-    "headlineTop": "Administre seu negócio",
-    "headlineHighlight": "em um só lugar",
-    "subtitle": "Uma plataforma inteligente para gerenciar clientes, compromissos, CRM, colaborações, propostas e IA – tudo conectado em um espaço de trabalho premium.",
+    "badge": "Software, sites e implantação",
+    "headlineTop": "Criar, gerir,",
+    "headlineHighlight": "divulgar e crescer",
+    "subtitle": "A Bizuply é a plataforma e o trabalho de implantação ao redor dela. O CRM, o construtor de sites, as automações, as campanhas da Meta e o WhatsApp você opera. Quando quiser que a gente faça o trabalho, a página de preços lista a criação do site, a implantação de automações e o acompanhamento humano.",
+    "contactCta": "Falar com a Bizuply",
+    "domainsTitle": "Quatro formas de trabalhar com a Bizuply",
+    "domainsLead": "O software de autoatendimento e o trabalho feito para você ficam separados. Cada link abre uma página que já existe.",
+    "domainSoftware": "Software",
+    "domainSoftwareBody": "CRM, agenda, automações e WhatsApp, dentro do produto em que você entra.",
+    "domainWeb": "Sites",
+    "domainWebBody": "Monte o site no editor ou encomende uma criação profissional na página de preços.",
+    "domainMarket": "Ferramentas de marketing",
+    "domainMarketBody": "Conecte a conta de anúncios da Meta do negócio, edite campanhas e leve os Lead Ads ao CRM. A Meta cobra o investimento em mídia.",
+    "domainSetup": "Implantação",
+    "domainSetupBody": "Automações, um site profissional, migração de outro CRM e atendentes humanos. Os preços são só os impressos na página de preços.",
     "startTrial": "Registre-se agora",
     "viewPricing": "Ver preços",
     "trustNoCard": "Nenhum cartão de crédito necessário",
@@ -445,6 +458,8 @@
     "ctaText": "Comece a gerenciar sua página de negócios, CRM, colaborações e ferramentas de IA em um só lugar.",
     "ctaButton": "Registre-se agora",
     "rights": "{{year}} BizUply. Todos os direitos reservados.",
+    "platform": "Plataforma",
+    "services": "Serviços",
     "crm": "CRM",
     "collaborations": "Colaborações",
     "website": "Site e loja",
@@ -3079,7 +3094,7 @@
   },
   "about": {
     "seoTitle": "Sobre o Bizuply  A plataforma que cresce com você",
-    "seoDescription": "Conheça a Bizuply uma empresa de tecnologia americana para gerenciamento de negócios, CRM, leads, sites, automações, agentes e colaborações em um só lugar Meta App Review Developers",
+    "seoDescription": "Conheça a Bizuply uma empresa de tecnologia americana para gerenciamento de negócios, CRM, leads, sites, automações, agentes e colaborações em um só lugar",
     "ogTitle": "Sobre Bizuply",
     "ogDescription": "A plataforma que cresce com você - seu negócio em um só lugar",
     "twitterTitle": "Sobre Bizuply",
@@ -3104,7 +3119,7 @@
     "value3Text": "Somos desenvolvedores de Meta App Review. Nosso aplicativo passou no processo de Revisão de Aplicativos da Meta para que as empresas possam conectar o CRM ao Lead Ads com segurança e aprovação oficial",
     "value4Title": "Simples e profissional.",
     "value4Text": "Uma interface clara que funciona desde o primeiro dia - sem curva de aprendizado pesado, sem complexidade desnecessária, com a sensação de um sistema de negócios sério",
-    "metaBadge": "Desenvolvedores de Meta App Review",
+    "metaBadge": "Meta Tech Provider",
     "whoBrand": "Bizuply",
     "whoTitle": "Quem somos nós",
     "whoLead": "Uma empresa de tecnologia americana construindo uma plataforma de gerenciamento de negócios para empresas que querem crescer com a ordem",
@@ -7939,10 +7954,10 @@
       "step4Text": "Transforme leads em clientes e continue gerenciando-os no mesmo sistema",
       "ctaTitle": "Organize seu pipeline de lead",
       "ctaText": "Comece com o Bizuply CRM um aplicativo Meta que passou na Revisão de Aplicativos",
-      "metaBadge": "Desenvolvedores de Meta App Review",
+      "metaBadge": "Meta Tech Provider",
       "metaTrustLine": "Somos desenvolvedores de análise de aplicativos Meta o aplicativo Bizuply passou no processo de revisão de aplicativos da Meta para conectar anúncios de leads a empresas",
       "metaSectionBadge": "Meta App Review",
-      "metaSectionTitle": "Desenvolvedores de Meta App Review",
+      "metaSectionTitle": "Meta Tech Provider",
       "metaSectionText": "O Bizuply é um aplicativo Meta que permite que as empresas conectem sua página do Facebook e recebam anúncios de leads diretamente no CRM depois de concluir o processo de revisão de aplicativos da Meta",
       "metaPoint1": "Conexão segura e aprovada do Facebook Lead Ads",
       "metaPoint2": "Cada empresa conecta sua própria página e concede permissões",
@@ -12206,11 +12221,11 @@
   "crmPage": {
     "seo": {
       "title": "CRM e Meta Leads  Bizuply Desenvolvedores de Revisão de Aplicativos Meta",
-      "description": "O Bizuply é desenvolvedor aprovado pela Meta App Review. Conecte o Facebook Lead Ads ao seu CRM e gerencie leads, clientes e compromissos em um só lugar."
+      "description": "A Bizuply é Meta Tech Provider e o aplicativo passou no Meta App Review para Lead Ads. Conecte o Facebook Lead Ads ao seu CRM e gerencie leads, clientes e compromissos em um só lugar. CRM sozinho: 49 dólares por mês."
     },
     "hero": {
       "ariaLabel": "CRM e Leads",
-      "badgeMeta": "Desenvolvedores de Meta App Review",
+      "badgeMeta": "Meta Tech Provider",
       "badgeRealtime": "Leads em tempo real",
       "badgeCalendar": "Calendário de compromissos sincronizados",
       "titleLine1": "Cada líder, cada cliente, cada compromisso",
@@ -12919,16 +12934,16 @@
   "websitePage": {
     "seo": {
       "title": "Construtor de Sites Profissional  Bizuply",
-      "description": "Crie um site, loja ou site habilitado para reservas a partir de 205 modelos, edite em um editor visual e publique em seu próprio domínio com cada consulta do site fluindo diretamente para o seu CRM."
+      "description": "Crie um site, uma loja ou uma página com agendamento no editor visual e publique no seu domínio. Cada contato do site entra no CRM."
     },
     "hero": {
       "aria": "Criador de sites",
-      "badgeTemplates": "205 modelos prontos",
+      "badgeTemplates": "Biblioteca de modelos",
       "badgeEditor": "Editor visual",
       "badgeStore": "Armazenar e reservar",
       "titleLead": "Crie um site profissional",
       "titleHighlight": "que traz clientes",
-      "lead": "Escolha um modelo de 205 designs por setor, edite todos os elementos no lugar, adicione uma loja, calendário e plugins - e depois publique no seu próprio endereço. Cada consulta do site flui direto para o seu pipeline de CRM.",
+      "lead": "Escolha um modelo da biblioteca por setor, edite cada elemento no lugar, adicione uma loja, uma agenda e plugins, e publique no seu endereço. Cada contato do site entra no CRM.",
       "ctaPackages": "Ver planos"
     },
     "heroActions": {
@@ -12956,7 +12971,7 @@
     },
     "library": {
       "eyebrow": "Biblioteca de modelos",
-      "titleLead": "205 modelos construídos",
+      "titleLead": "Modelos prontos",
       "titleHighlight": "para a sua indústria",
       "lead": "Cada modelo vem com páginas prontas, uma paleta de cores e conteúdo de amostra. A partir daí, você edita cada elemento no lugar até que o site fale na voz da sua empresa."
     },
@@ -13289,7 +13304,7 @@
     "faq": {
       "code": {
         "q": "Preciso saber como codificar para construir um site no Bizuply?",
-        "a": "Não. Escolha um dos 205 modelos, clique em qualquer elemento e altere-o no lugar - texto, cor, imagem e espaçamento. Qualquer um que queira ir mais fundo pode adicionar suas próprias tags CSS e HTML à cabeça e ao corpo do site."
+        "a": "Não. Escolha um modelo da biblioteca, clique em qualquer elemento e altere-o no lugar: texto, cor, imagem e espaçamento. Quem quiser ir mais fundo pode adicionar CSS e HTML."
       },
       "structure": {
         "q": "Posso mudar a estrutura do site e não apenas o conteúdo?",

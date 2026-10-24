@@ -132,6 +132,15 @@ function isCustomerSiteHost(host) {
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
   if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app")) return false;
+  if (
+    host.endsWith(".trycloudflare.com") ||
+    host.endsWith(".loca.lt") ||
+    host.endsWith(".ngrok-free.app") ||
+    host.endsWith(".ngrok.io") ||
+    host.endsWith(".ngrok.app")
+  ) {
+    return false;
+  }
   return true;
 }
 
@@ -726,11 +735,34 @@ async function proxySaasProduct(request, host) {
   return new Response(response.body, { status: response.status, headers: outgoing });
 }
 
+function isUnindexedPreviewHost(host) {
+  return Boolean(
+    host &&
+      (host.endsWith(".vercel.app") || host.endsWith(".trycloudflare.com"))
+  );
+}
+
+function withPreviewNoindex(response, host) {
+  if (!isUnindexedPreviewHost(host)) return response;
+  const headers = new Headers(response.headers);
+  headers.set("x-robots-tag", "noindex, nofollow");
+  return new Response(response.body, { status: response.status, headers });
+}
+
 function isPlatformMarketingHost(host) {
   if (!host) return false;
   if (isBizuplyWhatsAppHost(host) || isBizuplyTravelHost(host)) return false;
   if (isCustomerSiteHost(host) || isSaasProductHost(host)) return false;
-  return MARKETING_HOSTS.has(host) || host === "127.0.0.1" || host.endsWith(".vercel.app");
+  return (
+    MARKETING_HOSTS.has(host) ||
+    host === "127.0.0.1" ||
+    host.endsWith(".vercel.app") ||
+    host.endsWith(".trycloudflare.com") ||
+    host.endsWith(".loca.lt") ||
+    host.endsWith(".ngrok-free.app") ||
+    host.endsWith(".ngrok.io") ||
+    host.endsWith(".ngrok.app")
+  );
 }
 
 function marketingLegacyRedirect(request, host, pathname) {
@@ -781,10 +813,13 @@ async function handleMarketingDocument(request) {
     let documentHtml = injectSeoHead(html, headHtml);
     const prerender = buildMarketingPrerender(pathname);
     const locale = splitMarketingLocale(pathname);
-    if (locale.locale === "he") {
+    if (locale.locale !== "en") {
+      const meta = prerender || {};
+      const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale);
+      const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,
-        '<html lang="he" dir="rtl">',
+        `<html lang="${lang}" dir="${dir}">`,
       );
     }
     if (prerender) {
@@ -799,7 +834,9 @@ async function handleMarketingDocument(request) {
         "content-type": "text/html; charset=utf-8",
         "cache-control": "public, max-age=0, must-revalidate",
         "x-bizuply-seo-edge": "marketing",
-        ...(noindex ? { "x-robots-tag": "noindex, nofollow" } : {}),
+        ...(noindex || isUnindexedPreviewHost(getHost(request))
+          ? { "x-robots-tag": "noindex, nofollow" }
+          : {}),
       },
     });
   } catch {
@@ -816,7 +853,7 @@ export default async function middleware(request) {
     !getGoogleHtmlVerificationFile(pathname) &&
     !isSeoDiscoveryPath(pathname)
   ) {
-    return passThrough();
+    return withPreviewNoindex(passThrough(), host);
   }
 
   const legacyRedirect = marketingLegacyRedirect(request, host, pathname);

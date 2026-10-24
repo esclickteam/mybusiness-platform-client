@@ -3,7 +3,9 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { marketingPublicUrl } from "../../lib/localePath.mjs";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
+import { getLocaleMarketingPage } from "../../lib/localeMarketing.mjs";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import {
   FaqAccordion,
   SectionHeading,
@@ -114,15 +116,46 @@ const COPY = {
 
 export default function WhatsAppApiProductPage() {
   const { i18n } = useTranslation();
-  const hebrew = String(i18n.language || "").startsWith("he");
+  const locale = normalizeMarketingLocale(i18n.language);
+  const hebrew = locale === "he";
+  const localized = locale === "en" || locale === "he" ? null : getLocaleMarketingPage("/whatsapp-api", locale);
   const copy = hebrew ? COPY.he : COPY.en;
-  const dir = getTextDirection(i18n.language);
+  const dir = getTextDirection(locale);
 
   useEffect(() => {
-    document.title = copy.title;
+    document.title = localized?.title || copy.title;
     const meta = document.querySelector('meta[name="description"]');
-    if (meta) meta.setAttribute("content", copy.description);
-  }, [copy.title, copy.description]);
+    if (meta) meta.setAttribute("content", localized?.description || copy.description);
+  }, [copy.title, copy.description, localized]);
+
+  if (localized) {
+    return (
+      <main className="pm" dir={dir} lang={locale === "pt-BR" ? "pt-BR" : locale}>
+        <Helmet>
+          <title>{localized.title}</title>
+          <meta name="description" content={localized.description} />
+          <link rel="canonical" href={marketingPublicUrl("/whatsapp-api", locale)} />
+        </Helmet>
+        <section className="pm-section">
+          <div className="pm-shell">
+            <p className="pm-eyebrow">WhatsApp Cloud API</p>
+            <h1 className="pm-title">{localized.h1}</h1>
+            {localized.paragraphs.map((paragraph) => <p className="pm-lead" key={paragraph.slice(0, 24)}>{paragraph}</p>)}
+            <ProductDemoVideo moduleId="whatsapp" />
+            <div className="crm-hero__actions">
+              <a className="pm-cta pm-cta--primary" href="https://whatsapp.bizuply.com/get-started">$29</a>
+              <Link className="pm-cta pm-cta--ghost" to="/pricing">{locale === "es" ? "Precios" : locale === "ar" ? "الأسعار" : "Preços"}</Link>
+            </div>
+          </div>
+        </section>
+        <section className="pm-section">
+          <div className="pm-shell">
+            <FaqAccordion items={(localized.faq || []).map(([q, a]) => ({ q, a }))} />
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="pm" dir={dir} lang={hebrew ? "he" : "en"}>
@@ -139,6 +172,7 @@ export default function WhatsAppApiProductPage() {
           <p className="pm-lead">{copy.lead}</p>
           <p className="pm-spot__title">{copy.price}</p>
           <p className="pm-spot__text">{copy.metaFees}</p>
+          <ProductDemoVideo moduleId="whatsapp" />
           <div className="crm-hero__actions">
             <a className="pm-cta pm-cta--primary" href="https://whatsapp.bizuply.com/get-started">{copy.cta}</a>
             <a className="pm-cta pm-cta--ghost" href="https://whatsapp.bizuply.com/pricing">{copy.plans}</a>

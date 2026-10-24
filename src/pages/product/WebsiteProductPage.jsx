@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { marketingPublicUrl } from "../../lib/localePath.mjs";
 import {
   Code2,
   History,
@@ -18,6 +19,7 @@ import WebsiteTemplateLibrary from "../../components/website-builder-marketing/W
 import WebsiteSeoSection from "../../components/website-builder-marketing/WebsiteSeoSection";
 import WebsiteEcosystem from "../../components/website-builder-marketing/WebsiteEcosystem";
 import WebsiteLaunchFlow from "../../components/website-builder-marketing/WebsiteLaunchFlow";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import { getWebsiteFaq } from "../../components/website-builder-marketing/websiteMarketingData";
 import {
   AuroraBackdrop,
@@ -109,7 +111,7 @@ export default function WebsiteProductPage() {
       <Helmet>
         <title>{SEO_TITLE}</title>
         <meta name="description" content={SEO_DESCRIPTION} />
-        <link rel="canonical" href="https://bizuply.com/website-builder" />
+        <link rel="canonical" href={marketingPublicUrl("/website-builder", i18n.language)} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={SEO_TITLE} />
         <meta property="og:description" content={SEO_DESCRIPTION} />
@@ -123,6 +125,12 @@ export default function WebsiteProductPage() {
       <ScrollProgress />
 
       <WebsiteBuilderHero />
+
+      <section className="pm-section pm-section--tight">
+        <div className="pm-shell">
+          <ProductDemoVideo moduleId="websites" />
+        </div>
+      </section>
 
       <WebsiteTemplateLibrary />
 
