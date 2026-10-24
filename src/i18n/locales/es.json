@@ -474,7 +474,14 @@
     "ariaLabel": "Navegación del espacio de trabajo empresarial",
     "whatsapp": "WhatsApp a través de Meta",
     "metaCampaigns": "Campañas",
-    "socialSchedule": "Programar publicaciones e historias"
+    "socialSchedule": "Programar publicaciones e historias",
+    "products": {
+      "title": "Tus productos",
+      "business": "Business",
+      "crm": "CRM",
+      "website": "Sitio web",
+      "whatsappApi": "WhatsApp API"
+    }
   },
   "automations": {
     "shell": {
@@ -2578,6 +2585,57 @@
     "resetInvalidLink": "Enlace de restablecimiento de contraseña no válido",
     "newPassword": "Nueva contraseña",
     "confirmPassword": "Confirmar contraseña",
+    "continueGoogle": "Continuar con Google",
+    "continueMicrosoft": "Continuar con Microsoft",
+    "or": "O",
+    "redirecting": "Redirigiendo…",
+    "providerGoogle": "Google",
+    "providerMicrosoft": "Microsoft",
+    "oauth": {
+      "completing": "Iniciando sesión…",
+      "linkSubmit": "Verificar y continuar",
+      "linking": "Conectando…",
+      "linkSubtitle": "Este correo de {{provider}} coincide con {{email}}. Introduce tu contraseña de BizUply para vincularlo. Tus planes y datos permanecen en esta cuenta.",
+      "errors": {
+        "existing_account": "Este correo ya tiene una cuenta de BizUply que no puede usar {{provider}} aquí. Inicia sesión con correo y contraseña.",
+        "whatsapp_account": "Este acceso de Google/Microsoft pertenece a una cuenta de WhatsApp API, no a un espacio de negocio BizUply. Usa el login de WhatsApp API, o un correo con plan de negocio BizUply.",
+        "partner_account": "Este correo pertenece a una cuenta de partner y no puede vincular {{provider}} en el login de negocio. Usa el portal de partners o correo y contraseña.",
+        "email_unverified": "{{provider}} no confirmó este correo. Verifícalo en {{provider}} o usa correo y contraseña.",
+        "no_account": "Todavía no hay una cuenta de BizUply vinculada a este acceso de {{provider}}. Elige un plan para crear una.",
+        "provider_mismatch": "Esta cuenta ya está vinculada a otro acceso de {{provider}}. Usa ese, o entra con correo y contraseña.",
+        "state_invalid": "La sesión de acceso caducó. Inténtalo de nuevo.",
+        "cancelled": "Se canceló el acceso con {{provider}}.",
+        "provider_unavailable": "El acceso con {{provider}} no está disponible ahora. Usa correo y contraseña.",
+        "provider_error": "No pudimos iniciar sesión con {{provider}}. Inténtalo de nuevo.",
+        "account_disabled": "Esta cuenta está desactivada. Contacta support@bizuply.com.",
+        "rate_limited": "Demasiados intentos. Prueba de nuevo en unos minutos.",
+        "signup_closed": "El registro no está disponible temporalmente. Inténtalo más tarde.",
+        "session": "No pudimos terminar el inicio de sesión. Inténtalo de nuevo.",
+        "plan_required": "Elige un plan en la página de precios antes de registrarte con {{provider}}.",
+        "incorrect_password": "Contraseña incorrecta. Inténtalo de nuevo o usa el código por email.",
+        "verification_required": "Introduce el código del email o tu contraseña de BizUply para continuar.",
+        "otp_invalid": "Ese código es incorrecto. Inténtalo de nuevo.",
+        "otp_expired": "Ese código caducó. Envía uno nuevo.",
+        "otp_required": "Envía primero un código de verificación.",
+        "otp_locked": "Demasiados códigos incorrectos. Empieza de nuevo con {{provider}}.",
+        "otp_cooldown": "Espera un momento antes de pedir otro código.",
+        "otp_send_limited": "Demasiadas solicitudes de código. Prueba más tarde o usa tu contraseña.",
+        "otp_send_failed": "No pudimos enviar el código ahora. Inténtalo de nuevo o usa tu contraseña.",
+        "link_session": "La cuenta ya está vinculada, pero no pudimos terminar el acceso. Actualiza e inicia de nuevo con Google o Microsoft — no necesitas un código nuevo.",
+        "link_failed": "No pudimos vincular esta cuenta. Empieza de nuevo con {{provider}}."
+      },
+      "linkFound": "Encontramos tu cuenta BizUply existente. Verifica que es tuya para conectar {{provider}}.",
+      "linkKeepData": "Tus negocios, planes y datos permanecen en esta cuenta.",
+      "verifyMethods": "Métodos de verificación",
+      "methodOtp": "Código por email",
+      "methodPassword": "Contraseña",
+      "otpHint": "Enviaremos un código de 6 dígitos a {{email}}.",
+      "otpSend": "Enviar código",
+      "otpResend": "Enviar un código nuevo",
+      "otpResendIn": "Reenviar en {{seconds}} s",
+      "otpSending": "Enviando…",
+      "otpLabel": "Código de verificación"
+    },
     "whatsappApiCheckout": {
       "pending": "Pago recibido. Estamos activando tu cuenta de la API de WhatsApp. Suele tardar unos segundos.",
       "ready": "Tu cuenta de la API de WhatsApp está lista. Inicia sesión con el correo y la contraseña que elegiste.",
@@ -13368,7 +13426,29 @@
     "purchaseIntentExpired": "La solicitud de compra falta o caducó. Vuelva a precios y elija el servicio otra vez.",
     "registerFailed": "El registro falló. Inténtelo de nuevo.",
     "emailExists": "Este correo ya está registrado",
-    "genericError": "Algo salió mal. Inténtelo más tarde."
+    "genericError": "Algo salió mal. Inténtelo más tarde.",
+    "identity": {
+      "title": "Continuar al pago",
+      "subtitlePaid": "Verifica con Google, Microsoft o correo — luego paga. Los datos del negocio se completan después del pago.",
+      "subtitleFree": "Crea tu cuenta de BizUply",
+      "checkoutNote": "Pago seguro con Lemon Squeezy. Sin contraseña antes del pago.",
+      "continueEmail": "Continuar con correo",
+      "sendCode": "Enviar código de verificación",
+      "sendingCode": "Enviando código…",
+      "otpHint": "Introduce el código de 6 dígitos enviado a {{email}}.",
+      "verifyAndPay": "Verificar y continuar al pago",
+      "changeEmail": "Usar otro correo",
+      "emailInvalid": "Introduce un correo válido.",
+      "sendFailed": "No se pudo enviar el código. Inténtalo de nuevo.",
+      "useSocialForIntent": "Continúa con Google o Microsoft para este registro."
+    },
+    "setup": {
+      "title": "Termina de configurar tu negocio",
+      "subtitle": "Añade el nombre de tu negocio para personalizar el espacio de trabajo. Tu correo de acceso ya está guardado.",
+      "optional": "opcional",
+      "continue": "Continuar al panel",
+      "saving": "Guardando…"
+    }
   },
   "studio": {
     "back": "Volver",

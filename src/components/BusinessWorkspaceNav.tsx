@@ -31,11 +31,23 @@ import {
   normalizeEnabledModules,
 } from "../utils/moduleAccess";
 import {
+  hasWhatsAppApiProduct,
+  homePathForProduct,
   isWhatsAppApiPortalUser,
   WHATSAPP_API_DOCS_URL,
   WHATSAPP_API_HELP_URL,
 } from "../utils/whatsappApiPortal";
 import { normalizeBusinessId } from "../utils/notificationNavigation";
+
+const PRODUCT_LABELS: Record<string, { labelKey: string; fallback: string }> = {
+  business: { labelKey: "businessNav.products.business", fallback: "Business" },
+  crm: { labelKey: "businessNav.products.crm", fallback: "CRM" },
+  website: { labelKey: "businessNav.products.website", fallback: "Website" },
+  whatsapp_api: {
+    labelKey: "businessNav.products.whatsappApi",
+    fallback: "WhatsApp API",
+  },
+};
 
 /* =========================
    Types
@@ -318,12 +330,19 @@ export default function BusinessWorkspaceNav({
       demoTarget: "nav-automations",
     },
     {
-      labelKey: "businessNav.whatsapp",
-      fallback: "WhatsApp Messages",
-      to: `${basePath}/dashboard/whatsapp`,
+      labelKey: hasWhatsAppApiProduct(user)
+        ? "whatsappApiPortal.nav.overview"
+        : "businessNav.whatsapp",
+      fallback: hasWhatsAppApiProduct(user) ? "WhatsApp API" : "WhatsApp Messages",
+      to: hasWhatsAppApiProduct(user)
+        ? `${basePath}/dashboard/whatsapp/overview`
+        : `${basePath}/dashboard/whatsapp`,
       icon: MessageCircle,
       moduleKey:
-        showRestrictedNav || user?.isGuidedDemo || explicitlyEnabled("whatsapp")
+        showRestrictedNav ||
+        user?.isGuidedDemo ||
+        explicitlyEnabled("whatsapp") ||
+        hasWhatsAppApiProduct(user)
           ? "whatsapp"
           : "__hidden__",
       demoTarget: "nav-whatsapp",
@@ -468,6 +487,15 @@ export default function BusinessWorkspaceNav({
     },
   ];
 
+  const activeProducts = Array.isArray(user?.activeProducts)
+    ? user.activeProducts
+        .map((p: { key?: string } | string) =>
+          p && typeof p === "object" ? String(p.key || "") : String(p || "")
+        )
+        .filter(Boolean)
+    : [];
+  const showProductSwitcher = !isWhatsAppApiPortalUser(user) && activeProducts.length > 1;
+
   const visibleItems = isWhatsAppApiPortalUser(user) ? apiPortalItems : items.filter((item) => {
     if (accountKind === "saas_only") {
       return item.moduleKey === "saas" || item.labelKey === "businessNav.helpCenter";
@@ -519,6 +547,36 @@ export default function BusinessWorkspaceNav({
       )}
       className="flex flex-col overflow-hidden text-start"
     >
+      {showProductSwitcher && businessId ? (
+        <div
+          className={`border-b border-slate-200/80 ${collapsed ? "px-1.5 py-2" : "px-2 py-2"}`}
+        >
+          {!collapsed ? (
+            <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+              {translate(t, "businessNav.products.title", "Your products")}
+            </p>
+          ) : null}
+          <div className="space-y-0.5">
+            {activeProducts.map((key) => {
+              const meta = PRODUCT_LABELS[key] || {
+                labelKey: `businessNav.products.${key}`,
+                fallback: key,
+              };
+              return (
+                <NavItem
+                  key={`product-${key}`}
+                  label={translate(t, meta.labelKey, meta.fallback)}
+                  to={homePathForProduct(businessId, key)}
+                  icon={key === "whatsapp_api" ? MessageCircle : LayoutDashboard}
+                  exact={false}
+                  onNavigate={onNavigate}
+                  collapsed={collapsed}
+                />
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
       <div
         className={`space-y-0.5 overflow-hidden ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
       >

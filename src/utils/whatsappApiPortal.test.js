@@ -26,6 +26,30 @@ describe("isWhatsAppApiPortalUser", () => {
     expect(isWhatsAppApiPortalUser(null)).toBe(false);
   });
 
+  it("is false for multi-product accounts even when subscriptionPlan stays whatsapp_api", () => {
+    expect(
+      isWhatsAppApiPortalUser({
+        role: "business",
+        subscriptionPlan: "whatsapp_api",
+        activeProducts: [{ key: "whatsapp_api" }, { key: "business" }],
+      })
+    ).toBe(false);
+    expect(
+      isWhatsAppApiPortalUser({
+        role: "business",
+        subscriptionPlan: "whatsapp_api",
+        enabledModules: ["dashboard", "billing", "crm", "whatsapp", "automations"],
+      })
+    ).toBe(false);
+    expect(
+      isWhatsAppApiPortalUser({
+        role: "business",
+        subscriptionPlan: "whatsapp_api",
+        activeProducts: [{ key: "whatsapp_api" }],
+      })
+    ).toBe(true);
+  });
+
   it("never applies to admin, partner, marketer or demo sessions", () => {
     for (const role of ["admin", "partner", "marketer", "staff", "customer"]) {
       expect(isWhatsAppApiPortalUser({ role, subscriptionPlan: "whatsapp_api" })).toBe(false);
@@ -130,6 +154,16 @@ describe("resolvePostLoginDestination for WhatsApp API customers", () => {
         hasAccess: true,
         subscriptionPlan: "crm_only",
         enabledModules: ["dashboard", "billing", "crm"],
+      })
+    ).toBe(dash("/crm"));
+    expect(
+      resolvePostLoginDestination({
+        role: "business",
+        businessId: BIZ,
+        hasAccess: true,
+        subscriptionPlan: "whatsapp_api",
+        activeProducts: [{ key: "whatsapp_api" }, { key: "business" }],
+        enabledModules: ["dashboard", "billing", "crm", "whatsapp", "automations"],
       })
     ).toBe(dash());
     expect(
