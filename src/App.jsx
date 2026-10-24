@@ -866,6 +866,9 @@ export default function App() {
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   // The WhatsApp API product login is a standalone page with its own branding.
   const isWhatsAppApiLogin = location.pathname === WHATSAPP_API_LOGIN_PATH;
+  // AuthShell pages own their chrome (incl. language switcher) — hide public Header/Footer.
+  const isAuthShellRoute =
+    location.pathname === "/login" || location.pathname === "/register";
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -1025,6 +1028,7 @@ export default function App() {
           !isPublicProposalRoute &&
           !isPartnerSignRoute &&
           !isWhatsAppApiLogin &&
+          !isAuthShellRoute &&
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
@@ -1596,12 +1600,13 @@ export default function App() {
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
           !isWhatsAppApiLogin &&
+          !isAuthShellRoute &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && (
+      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && (
         <PreLoginBot />
       )}
 

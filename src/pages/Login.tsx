@@ -103,6 +103,11 @@ function BusinessLogin() {
   const [linkOtp, setLinkOtp] = useState<string>("");
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [otpCooldown, setOtpCooldown] = useState<number>(0);
+  /** Passwordless email OTP login (default) vs legacy password. */
+  const [loginMethod, setLoginMethod] = useState<"otp" | "password">("otp");
+  const [loginOtp, setLoginOtp] = useState<string>("");
+  const [loginOtpSent, setLoginOtpSent] = useState<boolean>(false);
+  const [loginEmailMasked, setLoginEmailMasked] = useState<string>("");
 
   useEffect(() => {
     DashboardPage.preload().finally(() => {
@@ -272,6 +277,121 @@ function BusinessLogin() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
+  const finishPasswordOrOtpLogin = async (
+    loginResult: LoginResponse & { accessToken?: string },
+    opts?: { viaOtp?: boolean }
+  ) => {
+    const loggedInUser = loginResult?.user;
+    const role = String(loggedInUser?.role || "").toLowerCase();
+
+    if (
+      !opts?.viaOtp &&
+      role === "business" &&
+      (loggedInUser?.mustChangePassword || loggedInUser?.isTempPassword)
+    ) {
+      clearPostLoginRedirect();
+      navigate("/change-password", { replace: true });
+      return;
+    }
+
+    const finalRedirect = resolvePostLoginDestination({
+      role: loggedInUser?.role,
+      businessId: loggedInUser?.businessId,
+      hasAccess: loggedInUser?.hasAccess !== false,
+      accountKind: loggedInUser?.accountKind ?? null,
+      enabledModules: loggedInUser?.enabledModules ?? null,
+      subscriptionPlan: loggedInUser?.subscriptionPlan ?? null,
+      activeProducts: loggedInUser?.activeProducts ?? null,
+      entitlements: loggedInUser?.entitlements ?? null,
+      queryRedirect,
+      storedRedirect: loginResult?.redirectUrl || null,
+    });
+
+    if (queryRedirect && isCompatibleRedirect(role, queryRedirect)) {
+      rememberPostLoginRedirect(queryRedirect);
+    } else {
+      clearPostLoginRedirect();
+    }
+
+    const lang = normalizeLanguage(searchParams.get("lang"));
+    const withReviewLang = (path: string) => {
+      if (!lang) return path;
+      const [pathname, search = ""] = String(path || "/").split("?");
+      const params = new URLSearchParams(search);
+      params.set("lang", lang);
+      const query = params.toString();
+      return query ? `${pathname}?${query}` : pathname;
+    };
+
+    navigate(withReviewLang(finalRedirect), { replace: true });
+
+    setTimeout(() => {
+      if (typeof fetchNotifications === "function") {
+        fetchNotifications();
+      }
+    }, 1000);
+  };
+
+  const handleSendLoginOtp = async (emailOverride?: string) => {
+    setLoginError("");
+    const cleanEmail = String(emailOverride || form.email || "")
+      .trim()
+      .toLowerCase();
+    if (!cleanEmail || !cleanEmail.includes("@")) {
+      setLoginError(t("login.errors.enterEmail"));
+      return;
+    }
+    setSocialBusy("otp");
+    try {
+      if (rememberMe) {
+        localStorage.setItem("bizuply_remember_email", cleanEmail);
+      } else {
+        localStorage.removeItem("bizuply_remember_email");
+      }
+      const { data } = await API.post("/auth/login/email/start", {
+        email: cleanEmail,
+        language: normalizeLanguage(i18n.language) || "en",
+      });
+      setLoginOtpSent(true);
+      setLoginEmailMasked(String(data?.emailMasked || cleanEmail));
+      setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);
+      setForm((prev) => ({ ...prev, email: cleanEmail }));
+    } catch (err) {
+      const apiErr = err as {
+        response?: { data?: { code?: string; cooldownSeconds?: number } };
+      };
+      const code = apiErr.response?.data?.code || "otp_send_failed";
+      if (code === "otp_cooldown") {
+        setOtpCooldown(Number(apiErr.response?.data?.cooldownSeconds || 60) || 60);
+      }
+      setLoginError(t(`login.errors.${code}`, { defaultValue: t("login.errors.otp_send_failed") }));
+    } finally {
+      setSocialBusy(null);
+    }
+  };
+
+  const handleResendLoginOtp = async () => {
+    setLoginError("");
+    setSocialBusy("otp");
+    try {
+      const { data } = await API.post("/auth/login/email/send", {});
+      setLoginOtpSent(true);
+      if (data?.emailMasked) setLoginEmailMasked(String(data.emailMasked));
+      setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);
+    } catch (err) {
+      const apiErr = err as {
+        response?: { data?: { code?: string; cooldownSeconds?: number } };
+      };
+      const code = apiErr.response?.data?.code || "otp_send_failed";
+      if (code === "otp_cooldown") {
+        setOtpCooldown(Number(apiErr.response?.data?.cooldownSeconds || 60) || 60);
+      }
+      setLoginError(t(`login.errors.${code}`, { defaultValue: t("login.errors.otp_send_failed") }));
+    } finally {
+      setSocialBusy(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginError("");
@@ -280,6 +400,42 @@ function BusinessLogin() {
     // a React onChange) still submits email/password correctly.
     const formData = new FormData(e.currentTarget);
     const emailValue = String(formData.get("email") || form.email || "");
+
+    if (loginMethod === "otp") {
+      const code = String(formData.get("loginOtp") || loginOtp || "").replace(/\D/g, "");
+      if (!loginOtpSent) {
+        await handleSendLoginOtp(emailValue);
+        return;
+      }
+      if (code.length !== 6) {
+        setLoginError(t("login.errors.otp_invalid"));
+        return;
+      }
+      setLoading(true);
+      try {
+        const { data } = await API.post<LoginResponse & { accessToken?: string }>(
+          "/auth/login/email/verify",
+          { code }
+        );
+        if (!data?.accessToken || !data?.user) {
+          setLoginError(t("login.errors.otp_invalid"));
+          return;
+        }
+        clearRefreshDead();
+        loginWithToken(data.user, data.accessToken, { skipRedirect: true });
+        await finishPasswordOrOtpLogin(data, { viaOtp: true });
+      } catch (err) {
+        const apiErr = err as { response?: { data?: { code?: string } } };
+        const codeKey = apiErr.response?.data?.code || "otp_invalid";
+        setLoginError(
+          t(`login.errors.${codeKey}`, { defaultValue: t("login.errors.otp_invalid") })
+        );
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     const passwordValue = String(formData.get("password") || form.password || "");
 
     if (!emailValue.trim() || !passwordValue) {
@@ -302,57 +458,7 @@ function BusinessLogin() {
         skipRedirect: true,
       })) as LoginResponse;
 
-      const loggedInUser = loginResult?.user;
-      const role = String(loggedInUser?.role || "").toLowerCase();
-
-      if (
-        role === "business" &&
-        (loggedInUser?.mustChangePassword || loggedInUser?.isTempPassword)
-      ) {
-        clearPostLoginRedirect();
-        navigate("/change-password", { replace: true });
-        return;
-      }
-
-      const finalRedirect = resolvePostLoginDestination({
-        role: loggedInUser?.role,
-        businessId: loggedInUser?.businessId,
-        hasAccess: loggedInUser?.hasAccess !== false,
-        accountKind: loggedInUser?.accountKind ?? null,
-        enabledModules: loggedInUser?.enabledModules ?? null,
-        subscriptionPlan: loggedInUser?.subscriptionPlan ?? null,
-        activeProducts: loggedInUser?.activeProducts ?? null,
-        entitlements: loggedInUser?.entitlements ?? null,
-        queryRedirect,
-        storedRedirect: loginResult?.redirectUrl || null,
-      });
-
-      // Keep only a role-compatible deep link. Stale `/`, `/dashboard`, or
-      // `/client/dashboard` (or a server payload for the wrong product area)
-      // must not win over the partner home on the next auth bootstrap.
-      if (queryRedirect && isCompatibleRedirect(role, queryRedirect)) {
-        rememberPostLoginRedirect(queryRedirect);
-      } else {
-        clearPostLoginRedirect();
-      }
-
-      const lang = normalizeLanguage(searchParams.get("lang"));
-      const withReviewLang = (path) => {
-        if (!lang) return path;
-        const [pathname, search = ""] = String(path || "/").split("?");
-        const params = new URLSearchParams(search);
-        params.set("lang", lang);
-        const query = params.toString();
-        return query ? `${pathname}?${query}` : pathname;
-      };
-
-      navigate(withReviewLang(finalRedirect), { replace: true });
-
-      setTimeout(() => {
-        if (typeof fetchNotifications === "function") {
-          fetchNotifications();
-        }
-      }, 1000);
+      await finishPasswordOrOtpLogin(loginResult);
     } catch (err) {
       setLoginError(messageForLoginFailure(err, t));
     } finally {
@@ -627,6 +733,44 @@ function BusinessLogin() {
                 busy={socialBusy}
                 onStart={handleSocialStart}
               />
+              <div
+                className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1"
+                role="tablist"
+                aria-label={t("login.oauth.verifyMethods")}
+              >
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={loginMethod === "otp"}
+                  onClick={() => {
+                    setLoginMethod("otp");
+                    setLoginError("");
+                  }}
+                  className={`h-10 rounded-xl text-sm font-bold transition ${
+                    loginMethod === "otp"
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  {t("login.methodOtp")}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={loginMethod === "password"}
+                  onClick={() => {
+                    setLoginMethod("password");
+                    setLoginError("");
+                  }}
+                  className={`h-10 rounded-xl text-sm font-bold transition ${
+                    loginMethod === "password"
+                      ? "bg-white text-slate-900 shadow-sm"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  {t("login.methodPassword")}
+                </button>
+              </div>
               <div className="text-start">
                 <label
                   htmlFor="email"
@@ -642,7 +786,7 @@ function BusinessLogin() {
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    disabled={loading}
+                    disabled={loading || (loginMethod === "otp" && loginOtpSent)}
                     required
                     autoComplete="email"
                     placeholder="name@company.com"
@@ -652,46 +796,112 @@ function BusinessLogin() {
                 </div>
               </div>
 
-              <div className="text-start">
-                <label
-                  htmlFor="password"
-                  className="mb-2 block text-sm font-bold text-slate-700"
-                >
-                  {t("login.passwordLabel")}
-                </label>
-                <div className="relative">
-                  <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                  <input
-                    type={showPassword ? "text" : "password"}
-                    id="password"
-                    name="password"
-                    value={form.password}
-                    onChange={handleChange}
-                    disabled={loading}
-                    required
-                    autoComplete="current-password"
-                    placeholder="••••••••"
-                    dir="ltr"
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-12 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
-                    className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
-                  >
-                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                  </button>
+              {loginMethod === "otp" ? (
+                <div className="space-y-3 text-start">
+                  <p className="text-sm font-semibold leading-6 text-slate-600">
+                    {t("login.otpHint", {
+                      email: loginEmailMasked || form.email || t("login.emailLabel"),
+                    })}
+                  </p>
+                  {loginOtpSent ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => void handleResendLoginOtp()}
+                        disabled={socialBusy !== null || otpCooldown > 0}
+                        className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-800 transition hover:border-violet-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        {socialBusy === "otp"
+                          ? t("login.otpSending")
+                          : otpCooldown > 0
+                            ? t("login.otpResendIn", { seconds: String(otpCooldown) })
+                            : t("login.otpResend")}
+                      </button>
+                      <div>
+                        <label
+                          htmlFor="loginOtp"
+                          className="mb-2 block text-sm font-bold text-slate-700"
+                        >
+                          {t("login.otpLabel")}
+                        </label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          autoComplete="one-time-code"
+                          id="loginOtp"
+                          name="loginOtp"
+                          value={loginOtp}
+                          onChange={(e) =>
+                            setLoginOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                          }
+                          disabled={loading}
+                          required
+                          maxLength={6}
+                          placeholder="••••••"
+                          dir="ltr"
+                          className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-center text-lg font-bold tracking-[0.35em] text-slate-900 outline-none transition placeholder:tracking-[0.35em] placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLoginOtpSent(false);
+                          setLoginOtp("");
+                          setLoginError("");
+                        }}
+                        className="text-sm font-semibold text-slate-500 transition hover:text-violet-700"
+                      >
+                        {t("register.identity.changeEmail")}
+                      </button>
+                    </>
+                  ) : null}
                 </div>
-              </div>
+              ) : (
+                <div className="text-start">
+                  <label
+                    htmlFor="password"
+                    className="mb-2 block text-sm font-bold text-slate-700"
+                  >
+                    {t("login.passwordLabel")}
+                  </label>
+                  <div className="relative">
+                    <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      id="password"
+                      name="password"
+                      value={form.password}
+                      onChange={handleChange}
+                      disabled={loading}
+                      required
+                      autoComplete="current-password"
+                      placeholder="••••••••"
+                      dir="ltr"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-12 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                      className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+                    >
+                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="flex items-center justify-between gap-3 pt-1 text-sm font-semibold">
-                <Link
-                  to="/forgot-password"
-                  className="text-slate-500 transition hover:text-violet-700"
-                >
-                  {t("login.forgotPassword")}
-                </Link>
+                {loginMethod === "password" ? (
+                  <Link
+                    to="/forgot-password"
+                    className="text-slate-500 transition hover:text-violet-700"
+                  >
+                    {t("login.forgotPassword")}
+                  </Link>
+                ) : (
+                  <span />
+                )}
 
                 <label className="inline-flex cursor-pointer items-center gap-2 text-slate-600">
                   <input
@@ -724,9 +934,17 @@ function BusinessLogin() {
               ? socialBusy === "link"
                 ? t("login.oauth.linking")
                 : t("login.oauth.linkSubmit")
-              : loading
-                ? t("login.loggingIn")
-                : t("login.signIn")}
+              : loginMethod === "otp" && !loginOtpSent
+                ? socialBusy === "otp"
+                  ? t("login.otpSending")
+                  : t("login.otpSend")
+                : loginMethod === "otp" && loading
+                  ? t("login.otpVerifying")
+                  : loading
+                    ? t("login.loggingIn")
+                    : loginMethod === "otp"
+                      ? t("login.otpVerify")
+                      : t("login.signIn")}
             {!loading && socialBusy !== "link" && socialBusy !== "otp" ? (
               <span aria-hidden className="rtl-flip">
                 ←

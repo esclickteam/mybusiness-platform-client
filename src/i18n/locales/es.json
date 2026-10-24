@@ -476,7 +476,7 @@
     "socialSchedule": "Programar publicaciones e historias",
     "products": {
       "title": "Tus productos",
-      "business": "Business",
+      "business": "Negocio",
       "crm": "CRM",
       "website": "Sitio web",
       "whatsappApi": "WhatsApp API"
@@ -2566,7 +2566,15 @@
       "serverError": "Error del servidor. Inténtelo de nuevo.",
       "staffCredentials": "Usuario o contraseña incorrectos",
       "generic": "Algo salió mal. Inténtelo de nuevo.",
-      "permission": "Error de permiso — inténtelo de nuevo"
+      "permission": "Error de permiso — inténtelo de nuevo",
+      "enterEmail": "Introduce tu email",
+      "otp_invalid": "Código inválido o caducado. Inténtalo de nuevo.",
+      "otp_expired": "Este código caducó. Solicita uno nuevo.",
+      "otp_locked": "Demasiados intentos. Solicita un código nuevo.",
+      "otp_required": "Solicita primero un código de acceso.",
+      "otp_send_failed": "No se pudo enviar el código. Inténtalo de nuevo.",
+      "otp_cooldown": "Espera antes de solicitar otro código.",
+      "state_invalid": "La sesión de acceso caducó. Empieza de nuevo."
     },
     "forgotTitle": "Olvidé mi contraseña",
     "forgotSubtitle": "Ingrese su correo electrónico y le enviaremos un enlace de restablecimiento seguro",
@@ -2639,7 +2647,19 @@
       "pending": "Pago recibido. Estamos activando tu cuenta de la API de WhatsApp. Suele tardar unos segundos.",
       "ready": "Tu cuenta de la API de WhatsApp está lista. Inicia sesión con el correo y la contraseña que elegiste.",
       "slow": "Pago recibido, pero la activación está tardando más de lo normal. Intenta iniciar sesión en un minuto o escribe a support@bizuply.com."
-    }
+    },
+    "methodOtp": "Código por email",
+    "methodPassword": "Contraseña",
+    "otpHint": "Enviaremos un código de 6 dígitos a {{email}}. No hace falta contraseña.",
+    "otpSend": "Enviar código",
+    "otpResend": "Enviar un código nuevo",
+    "otpResendIn": "Reenviar en {{seconds}}s",
+    "otpSending": "Enviando…",
+    "otpLabel": "Código de acceso",
+    "otpVerify": "Entrar con código",
+    "otpVerifying": "Iniciando sesión…",
+    "usePasswordInstead": "Usar contraseña",
+    "useCodeInstead": "Usar código por email"
   },
   "pricing": {
     "seoTitle": "Paquetes de Servicio  BizUply",

@@ -45,13 +45,15 @@ describe("persistLanguage", () => {
     document.documentElement.dir = "ltr";
   });
 
-  it("lets the account language win on login", () => {
+  it("keeps an explicit local language over a different account language on login", () => {
+    localStorage.setItem("token", "test-token");
     localStorage.setItem(MANUAL_LANG_FLAG, "he");
     const result = syncLanguageOnLogin({ language: "ar" });
-    expect(result).toBe("ar");
-    expect(getManualLanguageChoice()).toBe("ar");
-    expect(document.documentElement.lang).toBe("ar");
+    expect(result).toBe("he");
+    expect(getManualLanguageChoice()).toBe("he");
+    expect(document.documentElement.lang).toBe("he");
     expect(document.documentElement.dir).toBe("rtl");
+    expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "he" });
   });
 
   it("syncs an explicit local language into the account when the profile has none", () => {
@@ -60,6 +62,14 @@ describe("persistLanguage", () => {
     const result = syncLanguageOnLogin({ language: null });
     expect(result).toBe("es");
     expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "es" });
+  });
+
+  it("applies account language when nothing was chosen locally", () => {
+    const result = syncLanguageOnLogin({ language: "ar" });
+    expect(result).toBe("ar");
+    expect(getManualLanguageChoice()).toBe("ar");
+    expect(document.documentElement.lang).toBe("ar");
+    expect(document.documentElement.dir).toBe("rtl");
   });
 
   it("does not invent an account language from geo when nothing was chosen", () => {

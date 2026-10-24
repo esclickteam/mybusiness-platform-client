@@ -476,7 +476,7 @@
     "socialSchedule": "תזמון פוסטים וסטוריז",
     "products": {
       "title": "המוצרים שלכם",
-      "business": "Business",
+      "business": "מערכת עסק",
       "crm": "CRM",
       "website": "אתר",
       "whatsappApi": "WhatsApp API"
@@ -2566,7 +2566,15 @@
       "serverError": "שגיאת שרת. נסו שוב.",
       "staffCredentials": "שם משתמש או סיסמה שגויים",
       "generic": "אירעה שגיאה. נסו שוב.",
-      "permission": "שגיאת הרשאה — נסו שוב"
+      "permission": "שגיאת הרשאה — נסו שוב",
+      "enterEmail": "נא להזין אימייל",
+      "otp_invalid": "קוד שגוי או שפג תוקפו. נסו שוב.",
+      "otp_expired": "פג תוקף הקוד. בקשו קוד חדש.",
+      "otp_locked": "יותר מדי ניסיונות. בקשו קוד חדש.",
+      "otp_required": "בקשו קוד התחברות תחילה.",
+      "otp_send_failed": "לא הצלחנו לשלוח את הקוד. נסו שוב.",
+      "otp_cooldown": "יש להמתין לפני בקשת קוד נוסף.",
+      "state_invalid": "פג תוקף ההתחברות. התחילו מחדש."
     },
     "forgotTitle": "שכחתי סיסמה",
     "forgotSubtitle": "הזינו את האימייל שלכם ונשלח קישור מאובטח לאיפוס הסיסמה",
@@ -2639,7 +2647,19 @@
       "pending": "התשלום התקבל. אנחנו מפעילים את חשבון ה-WhatsApp API שלכם. זה לוקח בדרך כלל כמה שניות.",
       "ready": "חשבון ה-WhatsApp API מוכן. התחברו עם האימייל והסיסמה שבחרתם.",
       "slow": "התשלום התקבל, אבל ההפעלה לוקחת יותר זמן מהרגיל. נסו להתחבר בעוד דקה או פנו ל-support@bizuply.com."
-    }
+    },
+    "methodOtp": "קוד באימייל",
+    "methodPassword": "סיסמה",
+    "otpHint": "נשלח קוד בן 6 ספרות אל {{email}}. אין צורך בסיסמה.",
+    "otpSend": "שליחת קוד",
+    "otpResend": "שליחת קוד חדש",
+    "otpResendIn": "שליחה מחדש בעוד {{seconds}} שנ׳",
+    "otpSending": "שולחים…",
+    "otpLabel": "קוד התחברות",
+    "otpVerify": "התחברות עם קוד",
+    "otpVerifying": "מתחברים…",
+    "usePasswordInstead": "התחברות עם סיסמה",
+    "useCodeInstead": "התחברות עם קוד באימייל"
   },
   "pricing": {
     "seoTitle": "חבילות שירות | BizUply",

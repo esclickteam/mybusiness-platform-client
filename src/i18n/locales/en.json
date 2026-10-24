@@ -2566,7 +2566,15 @@
       "serverError": "Server error. Please try again.",
       "staffCredentials": "Incorrect username or password",
       "generic": "Something went wrong. Please try again.",
-      "permission": "Permission error — please try again"
+      "permission": "Permission error — please try again",
+      "enterEmail": "Please enter your email",
+      "otp_invalid": "Invalid or expired code. Try again.",
+      "otp_expired": "This code expired. Request a new one.",
+      "otp_locked": "Too many attempts. Request a new code.",
+      "otp_required": "Request a sign-in code first.",
+      "otp_send_failed": "Could not send the code. Try again.",
+      "otp_cooldown": "Please wait before requesting another code.",
+      "state_invalid": "Sign-in session expired. Start again."
     },
     "forgotTitle": "Forgot password",
     "forgotSubtitle": "Enter your email and we will send a secure reset link",
@@ -2639,7 +2647,19 @@
       "pending": "Payment received. We're activating your WhatsApp API account. This usually takes a few seconds.",
       "ready": "Your WhatsApp API account is ready. Sign in with the email and password you just chose.",
       "slow": "Payment received. Activation is taking longer than usual. Try signing in in a minute, or contact support@bizuply.com."
-    }
+    },
+    "methodOtp": "Email code",
+    "methodPassword": "Password",
+    "otpHint": "We'll send a 6-digit code to {{email}}. No password needed.",
+    "otpSend": "Send code",
+    "otpResend": "Send a new code",
+    "otpResendIn": "Resend in {{seconds}}s",
+    "otpSending": "Sending…",
+    "otpLabel": "Sign-in code",
+    "otpVerify": "Sign in with code",
+    "otpVerifying": "Signing in…",
+    "usePasswordInstead": "Use password instead",
+    "useCodeInstead": "Use email code instead"
   },
   "pricing": {
     "seoTitle": "Service Packages | BizUply",
