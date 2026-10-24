@@ -47,11 +47,11 @@ export function installRemainingGuides(add, t) {
         ],
         video: "crm",
         videoNote: t(
-          "The example changes a status, writes a note and leaves a follow-up task. The names on screen are sample names.",
-          "הדוגמה משנה סטטוס, כותבת הערה ומשאירה משימת מעקב. השמות על המסך הם שמות לדוגמה.",
-          "El ejemplo cambia un estado, escribe una nota y deja una tarea de seguimiento. Los nombres en pantalla son de muestra.",
-          "O exemplo muda um status, escreve uma nota e deixa uma tarefa de acompanhamento. Os nomes na tela são de amostra.",
-          "يغيّر المثال حالة، ويكتب ملاحظة، ويترك مهمة متابعة. الأسماء على الشاشة أسماء للعرض.",
+          "Change the status, write a note, and leave a follow-up task.",
+          "משנים סטטוס, כותבים הערה, ומשאירים משימת מעקב.",
+          "Cambie el estado, escriba una nota y deje una tarea de seguimiento.",
+          "Mude o status, escreva uma nota e deixe uma tarefa de acompanhamento.",
+          "غيّروا الحالة، واكتبوا ملاحظة، واتركوا مهمة متابعة.",
         ),
       },
       {
@@ -105,7 +105,6 @@ export function installRemainingGuides(add, t) {
       [t("Does a CRM replace WhatsApp?", "האם CRM מחליף את וואטסאפ?", "¿Un CRM reemplaza a WhatsApp?", "Um CRM substitui o WhatsApp?", "هل يحل CRM محل واتساب؟"), t("No. WhatsApp is a separate subscription at $29 a month per connected number, plus Meta's message fees.", "לא. וואטסאפ הוא מנוי נפרד ב־29 דולר לחודש לכל מספר מחובר, ועוד חיובי ההודעות של Meta.", "No. WhatsApp es una suscripción aparte a 29 dólares al mes por número conectado, más las tarifas de mensaje de Meta.", "Não. O WhatsApp é uma assinatura à parte de US$ 29 por mês por número conectado, mais as tarifas de mensagem da Meta.", "لا. واتساب اشتراك منفصل بـ 29 دولاراً في الشهر لكل رقم متصل، إضافة إلى رسوم رسائل Meta.")],
       [t("How many lead statuses are there?", "כמה סטטוסים יש לליד?", "¿Cuántos estados de lead hay?", "Quantos status de lead existem?", "كم حالة للعميل المحتمل؟"), t("Six: New, Contacted, Interested, Converted, Lost and Old lead.", "שישה: חדש, נוצר קשר, מעוניין, הומר, אבוד וליד ישן.", "Seis: Nuevo, Contactado, Interesado, Convertido, Perdido y Lead antiguo.", "Seis: Novo, Contato feito, Interessado, Convertido, Perdido e Lead antigo.", "ست: جديد، وتم التواصل، ومهتم، وتم التحويل، وضائع، وعميل قديم.")],
       [t("Can the $49 plan run an automation?", "האם מסלול 49 הדולר יכול להריץ אוטומציה?", "¿El plan de 49 dólares puede ejecutar una automatización?", "O plano de US$ 49 pode executar uma automação?", "هل تستطيع خطة 49 دولاراً تشغيل أتمتة؟"), t("No. Automations are on the business plan. The $49 plan keeps the record and the manual follow-up.", "לא. אוטומציות נמצאות בחבילה העסקית. מסלול 49 הדולר שומר את הרשומה ואת המעקב הידני.", "No. Las automatizaciones están en el plan de negocio. El plan de 49 dólares guarda el registro y el seguimiento manual.", "Não. As automações ficam no plano de negócios. O plano de US$ 49 guarda o registro e o acompanhamento manual.", "لا. الأتمتة في الخطة التجارية. خطة 49 دولاراً تحفظ السجل والمتابعة اليدوية.")],
-      [t("Are the names in the example real customers?", "האם השמות בדוגמה הם לקוחות אמיתיים?", "¿Los nombres del ejemplo son clientes reales?", "Os nomes do exemplo são clientes reais?", "هل الأسماء في المثال عملاء حقيقيون؟"), t("No. They are sample names, so you can see the record without using your own client list.", "לא. אלה שמות לדוגמה, כדי שאפשר יהיה לראות את הרשומה בלי להשתמש ברשימת הלקוחות שלכם.", "No. Son nombres de muestra, para ver el registro sin usar su propia lista de clientes.", "Não. São nomes de amostra, para ver o registro sem usar a sua própria lista de clientes.", "لا. هي أسماء للعرض، حتى تروا السجل دون استخدام قائمة عملائكم.")],
     ],
   });
 }
