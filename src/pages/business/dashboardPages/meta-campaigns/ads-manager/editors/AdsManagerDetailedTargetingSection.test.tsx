@@ -8,6 +8,7 @@ import AdsManagerDetailedTargetingSection, {
 } from "./AdsManagerDetailedTargetingSection";
 import type { AdSetDetailedTarget } from "../adsManagerTypes";
 
+/** Meta-shaped rows: `path` is parent chain; `name` is this node. */
 const FIXTURE = [
   {
     id: "",
@@ -24,7 +25,7 @@ const FIXTURE = [
     branch: "interests",
     selectable: false,
     unsupportedReason: "category",
-    path: ["Interests", "Business and industry"],
+    path: ["Interests"],
   },
   {
     id: "",
@@ -33,7 +34,7 @@ const FIXTURE = [
     branch: "interests",
     selectable: false,
     unsupportedReason: "category",
-    path: ["Interests", "Business and industry", "Banking (finance)"],
+    path: ["Interests", "Business and industry"],
   },
   {
     id: "6003063638807",
@@ -41,13 +42,18 @@ const FIXTURE = [
     type: "interests",
     branch: "interests",
     selectable: true,
-    path: [
-      "Interests",
-      "Business and industry",
-      "Banking (finance)",
-      "Investment banking",
-    ],
+    // Parent path ends at Banking — name is the leaf (live Meta shape).
+    path: ["Interests", "Business and industry", "Banking (finance)"],
     audienceSize: 120000000,
+  },
+  {
+    id: "6003062205328",
+    name: "Retail banking",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["Interests", "Business and industry", "Banking (finance)"],
+    audienceSize: 209000000,
   },
   {
     id: "6002714398399",
@@ -55,7 +61,7 @@ const FIXTURE = [
     type: "interests",
     branch: "interests",
     selectable: true,
-    path: ["Interests", "Business and industry", "Small business"],
+    path: ["Interests", "Business and industry"],
     audienceSize: 420000000,
   },
   {
@@ -64,7 +70,7 @@ const FIXTURE = [
     type: "behaviors",
     branch: "behaviors",
     selectable: true,
-    path: ["Behaviors", "Purchase behavior", "Engaged shoppers"],
+    path: ["Behaviors", "Purchase behavior"],
   },
   {
     id: "",
@@ -73,7 +79,7 @@ const FIXTURE = [
     branch: "behaviors",
     selectable: false,
     unsupportedReason: "category",
-    path: ["Behaviors", "Purchase behavior"],
+    path: ["Behaviors"],
   },
   {
     id: "",
@@ -82,7 +88,7 @@ const FIXTURE = [
     branch: "demographics",
     selectable: false,
     unsupportedReason: "category_not_selectable",
-    path: ["Demographics", "Education", "College years"],
+    path: ["Demographics", "Education"],
   },
   {
     id: "999001",
@@ -91,7 +97,7 @@ const FIXTURE = [
     branch: "demographics",
     selectable: false,
     unsupportedReason: "unsupported_flexible_spec",
-    path: ["Demographics", "Other", "Legacy demographic cluster"],
+    path: ["Demographics", "Other"],
   },
 ];
 
@@ -219,10 +225,13 @@ describe("AdsManagerDetailedTargetingSection", () => {
     fireEvent.click(screen.getByRole("button", { name: /Business and industry/i }));
     expect(screen.getByText("Banking (finance)")).toBeTruthy();
     expect(screen.getByText("Small business")).toBeTruthy();
+    // Meta parent-path rows must not promote Banking into a selectable leaf.
     expect(screen.queryByText("Investment banking")).toBeNull();
+    expect(screen.queryByText("Retail banking")).toBeNull();
 
     fireEvent.click(screen.getByRole("button", { name: /Banking \(finance\)/i }));
     expect(screen.getByText("Investment banking")).toBeTruthy();
+    expect(screen.getByText("Retail banking")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: /Investment banking/i }));
     await waitFor(() => expect(selected[0]?.id).toBe("6003063638807"));
