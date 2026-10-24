@@ -29,3 +29,4 @@ scripts/__pycache__/
 scripts/i18n-fragments/__pycache__/
 scripts/i18n-hardcoded-audit.json
 .env*
+!.env.example
