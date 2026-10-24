@@ -107,6 +107,9 @@ const AutomationsProductPage = lazy(() =>
 const AgentsProductPage = lazy(() =>
   import("./pages/product/AgentsProductPage")
 );
+const WhatsAppApiProductPage = lazy(() =>
+  import("./pages/product/WhatsAppApiProductPage")
+);
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -128,6 +131,9 @@ const AiAutomationTemplatesVisualPage = import.meta.env.DEV
   : null;
 const WhatsAppHubVisualQaPage = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/WhatsAppHubVisualQaPage"))
+  : null;
+const DetailedTargetingVisualQaPage = import.meta.env.DEV
+  ? lazy(() => import("./pages/dev/DetailedTargetingVisualQaPage"))
   : null;
 const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
@@ -850,7 +856,7 @@ export default function App() {
   const isMiniSiteHost = isPublicMiniSiteHost();
   const hostname = getCurrentHostname();
   const travelHost = isBizuplyTravelHost(hostname);
-  const whatsappLanding = shouldRenderWhatsAppLanding(hostname, location.pathname);
+  const whatsappLanding = shouldRenderWhatsAppLanding(hostname, location.pathname, location.search);
   const publicMarketingHost = travelHost || whatsappLanding;
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isSaasMarketplaceRoute =
@@ -1012,6 +1018,20 @@ export default function App() {
     return <Navigate to="/plans" replace />;
   }
 
+  const showPublicWidgets =
+    !isDashboardRoute &&
+    !isBusinessChatRoute &&
+    !isEarlyAccessLanding &&
+    !isSaasMarketplaceRoute &&
+    !isSaasPublicSite &&
+    !isDevVisualRoute &&
+    !isMiniSiteHost &&
+    !isPublicProposalRoute &&
+    !isPartnerSignRoute &&
+    !isPublicPartnerDeal &&
+    !isPublicPartnerSales &&
+    !isBizuplyPublicBookingRoute;
+
   return (
     <NotificationsProvider>
       <div className="app-layout" dir={appDir} lang={appLang}>
@@ -1057,7 +1077,7 @@ export default function App() {
               className={
                 isPublicBusinessProfile
                   ? "app-scroll-area app-scroll-area--profile"
-                  : "app-scroll-area"
+                  : `app-scroll-area${showPublicWidgets ? " has-public-widgets" : ""}`
               }
             >
               <AiProvider>
@@ -1151,6 +1171,7 @@ export default function App() {
                           element={<AutomationsProductPage />}
                         />
                         <Route path="/agents" element={<AgentsProductPage />} />
+                        <Route path="/whatsapp-api" element={<WhatsAppApiProductPage />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
@@ -1232,6 +1253,12 @@ export default function App() {
                           <Route
                             path="/dev/whatsapp-hub-qa"
                             element={<WhatsAppHubVisualQaPage />}
+                          />
+                        ) : null}
+                        {import.meta.env.DEV && DetailedTargetingVisualQaPage ? (
+                          <Route
+                            path="/dev/detailed-targeting-qa"
+                            element={<DetailedTargetingVisualQaPage />}
                           />
                         ) : null}
                         <Route
@@ -1649,6 +1676,13 @@ export default function App() {
         !isBizuplyPublicBookingRoute && (
           <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}
+
+      {showPublicWidgets && (
+        <div
+          className={`bizuply-widget-lane${whatsappLanding ? " is-dark" : ""}`}
+          aria-hidden="true"
+        />
+      )}
     </NotificationsProvider>
   );
 }

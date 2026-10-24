@@ -39,7 +39,7 @@ export default function Footer() {
   const supportLinks: FooterLink[] = [
     { label: t("footer.faq"), to: "/faq" },
     { label: t("footer.terms"), to: "/terms" },
-    { label: t("footer.privacy"), to: "/privacy-policy" },
+    { label: t("footer.privacy"), to: "/privacy" },
     { label: t("footer.accessibility"), to: "/accessibility" },
   ];
 
@@ -56,7 +56,7 @@ export default function Footer() {
         >
           <img
             src={logo}
-            alt="BizUply"
+            alt="Bizuply"
             width={180}
             height={56}
             className="h-11 w-auto max-w-[11rem] object-contain sm:h-12 sm:max-w-[12.5rem]"

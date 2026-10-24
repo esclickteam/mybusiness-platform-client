@@ -1,10 +1,13 @@
-import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FaGlobe } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { LANGUAGE_META, getShortLanguageLabel } from "../i18n/languages";
 import { coerceSupportedLanguage, getTextDirection } from "../i18n/localeUtils";
 import { changeAppLanguage } from "../i18n/persistLanguage";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
+import { findMarketingPage } from "../lib/marketingSeo.mjs";
+import { splitMarketingLocale, withMarketingLocale } from "../lib/localePath.mjs";
+import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 
 export default function LanguageSwitcher({
   compact = true,
@@ -21,6 +24,24 @@ export default function LanguageSwitcher({
   const dir = getTextDirection(currentLang);
 
   const changeLanguage = async (lng) => {
+    const host = window.location.hostname;
+    const onMarketingHost =
+      !isPublicCustomerSiteHost() &&
+      (host === "bizuply.com" ||
+        host === "www.bizuply.com" ||
+        host === "localhost" ||
+        host === "127.0.0.1" ||
+        host.endsWith(".vercel.app"));
+    const bare = splitMarketingLocale(window.location.pathname).path;
+    const canMove = Boolean(findMarketingPage(bare) || bare === "/whatsapp-api");
+    if (onMarketingHost && canMove && (lng === "he" || lng === "en")) {
+      const next = withMarketingLocale(bare, lng);
+      if (next !== window.location.pathname) {
+        await changeAppLanguage(lng);
+        window.location.assign(next);
+        return;
+      }
+    }
     await changeAppLanguage(lng);
     setOpen(false);
   };

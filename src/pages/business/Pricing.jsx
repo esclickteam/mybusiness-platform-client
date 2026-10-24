@@ -626,7 +626,7 @@ export default function Plans() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="pricing-wow__brand text-3xl font-black tracking-[-0.05em] sm:text-4xl">
-            BizUply
+            Bizuply
           </p>
           <h1 className="pricing-wow__title mt-4 text-4xl font-black leading-[1.08] tracking-[-0.045em] sm:text-5xl lg:text-6xl">
             {t("pricing.addonsTitle")}

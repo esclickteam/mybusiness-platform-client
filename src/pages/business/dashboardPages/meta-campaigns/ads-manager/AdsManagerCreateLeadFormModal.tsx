@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Check, Loader2, MessageCircle, Settings, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Check, Loader2, Settings, X } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   createMetaLeadForm,
@@ -12,7 +11,7 @@ import {
 import {
   type LeadFormDuplicateSeed,
 } from "./leadFormDuplicateSeed";
-import { getWhatsAppStatus } from "../../../../../api/whatsappApi";
+import PageWhatsAppNumberPicker from "./PageWhatsAppNumberPicker";
 import LeadFormQuestionBuilder from "../LeadFormQuestionBuilder";
 import MetaLeadFormLivePreview from "../MetaLeadFormLivePreview";
 import {
@@ -174,9 +173,6 @@ export default function AdsManagerCreateLeadFormModal({
   const [thankYouLink, setThankYouLink] = useState("");
   const [callPhone, setCallPhone] = useState("");
   const [whatsappPhone, setWhatsappPhone] = useState("");
-  const [whatsappDisplay, setWhatsappDisplay] = useState("");
-  const [whatsappConnected, setWhatsappConnected] = useState(false);
-  const [whatsappLoading, setWhatsappLoading] = useState(false);
   const [contactTypes, setContactTypes] = useState<string[]>(() =>
     defaultSelectedLeadContactTypes()
   );
@@ -279,36 +275,6 @@ export default function AdsManagerCreateLeadFormModal({
     }
     wasOpenRef.current = open;
   }, [open, mode]);
-
-  useEffect(() => {
-    if (!open || !businessId) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        setWhatsappLoading(true);
-        const status = await getWhatsAppStatus(businessId);
-        if (cancelled) return;
-        const connected = Boolean(status.connected || status.readyToSend);
-        setWhatsappConnected(connected);
-        const display =
-          status.displayPhoneNumber || status.verifiedName || "";
-        setWhatsappDisplay(display);
-        if (connected && status.displayPhoneNumber) {
-          setWhatsappPhone((prev) => prev || status.displayPhoneNumber);
-        }
-      } catch {
-        if (!cancelled) {
-          setWhatsappConnected(false);
-          setWhatsappDisplay("");
-        }
-      } finally {
-        if (!cancelled) setWhatsappLoading(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [open, businessId]);
 
   useEffect(() => {
     if (additionalAction === "whatsapp" && !thankYouButton.trim()) {
@@ -893,54 +859,21 @@ export default function AdsManagerCreateLeadFormModal({
 
                 {additionalAction === "whatsapp" ? (
                   <div className="rounded-lg border border-[#CED0D4] bg-[#F7F8FA] p-3">
-                    <p className="text-[15px] font-bold text-[#050505]">
-                      {cc("addWhatsappAccount")}
-                    </p>
-                    <p className="mt-1 text-[12px] text-[#65676B]">
-                      {cc("whatsappChatHint")}
-                    </p>
-                    {whatsappLoading ? (
-                      <p className="mt-3 text-[13px] text-[#65676B]">
-                        {cc("loadingWhatsapp")}
-                      </p>
-                    ) : whatsappConnected ? (
-                      <div className="mt-3 flex items-center gap-3 rounded-lg border border-[#A6D9B3] bg-[#E7F6EC] px-3 py-2.5">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white">
-                          <MessageCircle className="h-5 w-5" />
-                        </span>
-                        <span className="min-w-0">
-                          <span className="block text-[14px] font-bold text-[#050505]">
-                            WhatsApp
-                          </span>
-                          <span className="block truncate text-[12px] text-[#65676B]" dir="ltr">
-                            {whatsappDisplay || whatsappPhone}
-                          </span>
-                        </span>
-                        <Check className="ml-auto h-4 w-4 text-[#31A24C]" />
-                      </div>
-                    ) : (
-                      <div className="mt-3 space-y-2">
-                        <div className="rounded-lg border border-[#F5D78E] bg-[#FFF8E5] px-3 py-2 text-[12px] text-[#050505]">
-                          {cc("whatsappNotConnected")}
-                        </div>
-                        <Link
-                          to="../whatsapp/settings"
-                          className="inline-flex text-[13px] font-semibold text-[#1877F2] hover:underline"
-                        >
-                          {cc("connectWhatsapp")}
-                        </Link>
-                      </div>
-                    )}
-                    <MetaFieldLike label={cc("whatsappNumber")}>
-                      <input
-                        className={metaInputClass}
-                        data-testid="lead-form-whatsapp-phone"
-                        dir="ltr"
-                        value={whatsappPhone}
-                        onChange={(e) => setWhatsappPhone(e.target.value)}
-                        placeholder="+9725..."
-                      />
-                    </MetaFieldLike>
+                    <PageWhatsAppNumberPicker
+                      businessId={businessId}
+                      pageId={pageId}
+                      pageName={pageName}
+                      selectedPhone={whatsappPhone}
+                      onSelect={(number) => {
+                        setWhatsappPhone(number.e164 || number.phone);
+                      }}
+                    />
+                    <input
+                      className="sr-only"
+                      data-testid="lead-form-whatsapp-phone"
+                      readOnly
+                      value={whatsappPhone}
+                    />
                   </div>
                 ) : null}
 

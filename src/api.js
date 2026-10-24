@@ -178,8 +178,17 @@ API.interceptors.response.use(
     const { response, config } = error;
 
     if (!response) {
-      console.error("Network error:", error);
-      return Promise.reject(new Error("Network error"));
+      const message = String(error?.message || "");
+      const timedOut =
+        error?.code === "ECONNABORTED" ||
+        error?.code === "ETIMEDOUT" ||
+        /timeout of \d+ms/i.test(message);
+      console.error(timedOut ? "Network timeout:" : "Network error:", error);
+      const err = new Error(timedOut ? "Network timeout" : "Network error");
+      err.code = timedOut ? "NETWORK_TIMEOUT" : error?.code || "NETWORK_ERROR";
+      err.isTimeout = timedOut;
+      err.cause = error;
+      return Promise.reject(err);
     }
 
     const authErrorCode = response.data?.code;

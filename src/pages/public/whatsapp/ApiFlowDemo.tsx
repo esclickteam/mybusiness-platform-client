@@ -5,12 +5,11 @@ import { SEND_RESPONSE, WEBHOOK_PAYLOAD } from "./apiSamples";
 
 type NodeIndex = 0 | 1 | 2 | 3;
 
-const NODES: Array<{ label: string; icon: React.ComponentType<{ size?: number }> }> = [
-  { label: "Your system", icon: Server },
-  { label: "Bizuply API", icon: Layers },
-  { label: "WhatsApp Cloud API", icon: Cloud },
-  { label: "Customer", icon: Smartphone },
-];
+const NODE_ICONS = [Server, Layers, Cloud, Smartphone];
+const NODE_LABELS = {
+  en: ["Your system", "Bizuply API", "WhatsApp Cloud API", "Customer"],
+  he: ["המערכת שלכם", "Bizuply API", "WhatsApp Cloud API", "הלקוח"],
+};
 
 const CENTER = ["12.5%", "37.5%", "62.5%", "87.5%"];
 
@@ -130,7 +129,57 @@ function Panel({ step }: { step: Step }) {
   return <CodeBlock title="Your webhook handler" code={ACK} language="js" />;
 }
 
-export default function ApiFlowDemo() {
+const STEPS_HE: Step[] = [
+  {
+    short: "בקשת API",
+    title: "המערכת שלכם קוראת ל־API של ביזאפלי",
+    text: "ה־CRM, האתר או השרת שולחים בקשת HTTPS מאומתת אחת, עם שם תבנית מאושרת, הנמען ומשתני התבנית.",
+    from: 0,
+    to: 1,
+    active: [0, 1],
+    panel: "request",
+  },
+  {
+    short: "ביזאפלי מעבדת",
+    title: "ביזאפלי בודקת ומעבירה את השליחה",
+    text: "נבדקים מפתח ה־API, אישור התבנית ומספר המשתנים. ה־Idempotency-Key נרשם, וההודעה נשלחת דרך WhatsApp Cloud API של Meta.",
+    from: 1,
+    to: 2,
+    active: [1, 2],
+    panel: "response",
+  },
+  {
+    short: "מגיע ל־WhatsApp",
+    title: "ההודעה מגיעה ל־WhatsApp",
+    text: "Meta מוסרת את הודעת התבנית לוואטסאפ של הלקוח. המסירה תלויה בבדיקות של Meta, בהסכמת הנמען ובזמינות המכשיר.",
+    from: 2,
+    to: 3,
+    active: [2, 3],
+    panel: "phone",
+  },
+  {
+    short: "אירוע webhook",
+    title: "עדכון סטטוס הופך ל־webhook חתום",
+    text: "כש־WhatsApp מדווח שההודעה נשלחה, נמסרה, נקראה או נכשלה, ביזאפלי יוצרת אירוע webhook וחותמת אותו בסוד שלכם באמצעות HMAC-SHA256.",
+    from: 3,
+    to: 1,
+    active: [3, 2, 1],
+    returning: true,
+    panel: "webhook",
+  },
+  {
+    short: "המערכת מקבלת",
+    title: "המערכת שלכם מקבלת ומאמתת את האירוע",
+    text: "נקודת הקצה בודקת את החתימה ואת חותמת הזמן, מעדכנת את הרשומה לפי messageId או externalId, ומחזירה 2xx. מסירה שנכשלה מנוסה שוב עם השהיה.",
+    from: 1,
+    to: 0,
+    active: [1, 0],
+    returning: true,
+    panel: "ack",
+  },
+];
+
+export default function ApiFlowDemo({ lang = "en" }: { lang?: string }) {
   const [index, setIndex] = useState(0);
   const [reduced] = useState(prefersReducedMotion);
   const [playing, setPlaying] = useState(!reduced);
@@ -139,7 +188,10 @@ export default function ApiFlowDemo() {
   const [run, setRun] = useState(0);
   const root = useRef<HTMLDivElement>(null);
   const stepList = useRef<HTMLOListElement>(null);
-  const step = STEPS[index];
+  const he = lang === "he";
+  const steps = he ? STEPS_HE : STEPS;
+  const nodeLabels = he ? NODE_LABELS.he : NODE_LABELS.en;
+  const step = steps[index];
   const packet = reduced ? { pos: CENTER[step.to], animate: false } : motion;
   const running = playing && visible && !reduced;
 
@@ -163,9 +215,9 @@ export default function ApiFlowDemo() {
 
   useEffect(() => {
     if (!playing || !visible) return undefined;
-    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % STEPS.length), STEP_MS);
+    const timer = window.setTimeout(() => setIndex((current) => (current + 1) % steps.length), STEP_MS);
     return () => window.clearTimeout(timer);
-  }, [index, playing, visible, run]);
+  }, [index, playing, visible, run, steps.length]);
 
   useEffect(() => {
     if (reduced) return undefined;
@@ -187,7 +239,7 @@ export default function ApiFlowDemo() {
     <div className="wa-demo" ref={root} role="region" aria-roledescription="interactive diagram" aria-label="How a WhatsApp API request flows through Bizuply">
       <div className="wa-demo-top">
         <p>
-          <span className="wa-badge is-info">Illustration</span>&nbsp; Sample data, not a live API transaction
+          <span className="wa-badge is-info">{he ? "המחשה" : "Illustration"}</span>&nbsp; {he ? "נתוני דוגמה, לא עסקת API חיה" : "Sample data, not a live API transaction"}
         </p>
         <div className="wa-demo-controls">
           <button
@@ -197,7 +249,7 @@ export default function ApiFlowDemo() {
             onClick={() => setPlaying((value) => !value)}
           >
             {playing ? <Pause size={14} /> : <Play size={14} />}
-            {playing ? "Pause" : "Play"}
+            {playing ? (he ? "השהיה" : "Pause") : (he ? "הפעלה" : "Play")}
           </button>
           <button
             type="button"
@@ -208,13 +260,13 @@ export default function ApiFlowDemo() {
               setPlaying(!reduced);
             }}
           >
-            <RotateCcw size={14} /> Restart
+            <RotateCcw size={14} /> {he ? "מההתחלה" : "Restart"}
           </button>
         </div>
       </div>
 
       <ol className="wa-demo-steps" ref={stepList}>
-        {STEPS.map((item, i) => (
+        {steps.map((item, i) => (
           <li key={item.short}>
             <button
               type="button"
@@ -240,12 +292,12 @@ export default function ApiFlowDemo() {
       <div className="wa-demo-body">
         <div className="wa-demo-stage">
           <div className="wa-demo-lane" aria-hidden="true">
-            {NODES.map((node, i) => {
-              const Icon = node.icon;
+            {nodeLabels.map((label, i) => {
+              const Icon = NODE_ICONS[i];
               return (
-                <div key={node.label} className={step.active.includes(i as NodeIndex) ? "wa-demo-node is-active" : "wa-demo-node"}>
+                <div key={label} className={step.active.includes(i as NodeIndex) ? "wa-demo-node is-active" : "wa-demo-node"}>
                   <Icon size={20} />
-                  {node.label}
+                  {label}
                 </div>
               );
             })}
@@ -260,7 +312,7 @@ export default function ApiFlowDemo() {
           <div className="wa-demo-caption wa-fade-in" key={`caption-${index}`} aria-live={playing ? "off" : "polite"}>
             <h3>
               <span className="wa-mono" style={{ color: "var(--wa-green)", fontSize: 13 }}>
-                Step {index + 1} of {STEPS.length}
+                {he ? `שלב ${index + 1} מתוך ${steps.length}` : `Step ${index + 1} of ${steps.length}`}
               </span>
               <br />
               {step.title}
@@ -273,8 +325,9 @@ export default function ApiFlowDemo() {
         </div>
       </div>
       <p className="wa-demo-note">
-        Webhooks currently cover message status events (accepted, sent, delivered, read, failed). Customer replies are
-        handled in the Bizuply WhatsApp inbox and are not forwarded to external webhooks yet.
+        {he
+          ? "ה־webhooks מכסים כרגע אירועי סטטוס (accepted, sent, delivered, read, failed). תשובות של לקוחות מטופלות בתיבת הוואטסאפ של ביזאפלי, ועדיין לא מועברות ל־webhooks חיצוניים."
+          : "Webhooks currently cover message status events (accepted, sent, delivered, read, failed). Customer replies are handled in the Bizuply WhatsApp inbox and are not forwarded to external webhooks yet."}
       </p>
     </div>
   );

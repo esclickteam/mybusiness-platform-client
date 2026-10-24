@@ -26,8 +26,21 @@ import {
   buildWhatsAppSitemapXml,
   getWhatsAppPageMeta,
   isBizuplyWhatsAppHost,
+  normalizeWhatsAppPath,
   whatsappCanonicalUrl,
+  whatsappHomepagePrerender,
 } from "./src/lib/whatsappHost.mjs";
+import {
+  buildMarketingDocumentHead,
+  buildMarketingPrerender,
+  buildMarketingRobotsTxt,
+  buildMarketingSitemapXml,
+  buildNotFoundHtml,
+  isSeoDiscoveryPath,
+  isUnknownMarketingPath,
+  marketingPublicRedirect,
+} from "./src/lib/marketingSeo.mjs";
+import { splitMarketingLocale } from "./src/lib/localePath.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -122,6 +135,16 @@ function isCustomerSiteHost(host) {
   return true;
 }
 
+function shellDocumentHeaders() {
+  const headers = {
+    accept: "text/html",
+    "x-bizuply-seo-middleware": "1",
+  };
+  const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+  if (bypass) headers["x-vercel-protection-bypass"] = bypass;
+  return headers;
+}
+
 function passThrough() {
   return new Response(null, {
     headers: {
@@ -184,6 +207,14 @@ function stripShellSeoTags(html) {
   next = next.replace(/<meta\b[^>]*\bname=["']author["'][^>]*>/gi, "");
   next = next.replace(/<meta\b[^>]*\bname=["']robots["'][^>]*>/gi, "");
   next = next.replace(
+    /<meta\b[^>]*\bname=["']apple-mobile-web-app-title["'][^>]*>/gi,
+    "",
+  );
+  next = next.replace(
+    /<meta\b[^>]*\bname=["']application-name["'][^>]*>/gi,
+    "",
+  );
+  next = next.replace(
     /<meta\b[^>]*\bname=["']google-site-verification["'][^>]*>/gi,
     "",
   );
@@ -227,16 +258,9 @@ async function handleRobotsOrSitemap(request, pathname) {
 
   try {
     if (!isCustomerSiteHost(host)) {
-      const marketingPath = isRobots
-        ? "/marketing-robots.txt"
-        : "/marketing-sitemap.xml";
-
-      const assetRes = await fetch(new URL(marketingPath, request.url));
-      const body = await assetRes.text();
-
-      return seoResponse(body, {
+      return seoResponse(isRobots ? buildMarketingRobotsTxt() : buildMarketingSitemapXml(), {
         isRobots,
-        status: assetRes.ok ? 200 : assetRes.status,
+        status: 200,
         source: "marketing",
       });
     }
@@ -268,17 +292,69 @@ async function handleRobotsOrSitemap(request, pathname) {
   }
 }
 
-function fallbackHtmlResponse(html, status, started, reason) {
-  return new Response(html, {
+function insertHeadBlock(html, block) {
+  if (/<head\b[^>]*>/i.test(html)) {
+    return html.replace(/<head\b[^>]*>/i, (match) => `${match}${block}`);
+  }
+  if (/<\/head>/i.test(html)) {
+    return html.replace(/<\/head>/i, `${block}</head>`);
+  }
+  return `${block}${html}`;
+}
+
+/**
+ * Customer host with no usable SEO head.
+ * A completed 404 means the published site does not exist, so the shell must
+ * not be indexed as Bizuply. Timeout, 5xx, and unreadable JSON are temporary:
+ * strip the platform brand, but do not noindex a site that may be valid.
+ * Never invent a title from the hostname.
+ */
+function customerNeutralDocument(html, { indexable }) {
+  const clean = stripShellSeoTags(html);
+  const robots = indexable ? "index, follow" : "noindex, nofollow";
+  const block =
+    `\n<meta name="robots" content="${robots}" data-bizuply-edge-seo="1" />\n`;
+  return insertHeadBlock(clean, block);
+}
+
+function customerNeutralResponse(html, status, started, reason, indexable) {
+  const headers = {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": indexable
+      ? "private, no-store"
+      : "public, max-age=0, must-revalidate",
+    "x-bizuply-seo-edge": indexable ? "customer-unavailable" : "customer-absent",
+    "x-bizuply-seo-edge-reason": reason,
+    "x-bizuply-seo-edge-ms": String(Date.now() - started),
+  };
+  if (!indexable) headers["x-robots-tag"] = "noindex, nofollow";
+  return new Response(customerNeutralDocument(html, { indexable }), {
     status,
-    headers: {
-      "content-type": "text/html; charset=utf-8",
-      "cache-control": "public, max-age=0, must-revalidate",
-      "x-bizuply-seo-edge": "fallback",
-      "x-bizuply-seo-edge-reason": reason,
-      "x-bizuply-seo-edge-ms": String(Date.now() - started),
-    },
+    headers,
   });
+}
+
+/**
+ * The application shell itself could not be read. Do not pass the request
+ * through to the platform index.html: that document carries Bizuply titles,
+ * og:url, and Organization schema. 503 asks crawlers to keep the previous
+ * customer snapshot and retry.
+ */
+function customerSiteUnavailableResponse(started, reason) {
+  return new Response(
+    '<!doctype html><html><head><meta charset="utf-8"></head><body></body></html>',
+    {
+      status: 503,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "private, no-store",
+        "retry-after": "120",
+        "x-bizuply-seo-edge": "site-unavailable",
+        "x-bizuply-seo-edge-reason": reason,
+        "x-bizuply-seo-edge-ms": String(Date.now() - started),
+      },
+    },
+  );
 }
 
 async function handleHtmlSeoInjection(request) {
@@ -300,37 +376,43 @@ async function handleHtmlSeoInjection(request) {
       `&path=${encodeURIComponent(pathname)}&_t=${Date.now()}`;
 
     const htmlPromise = fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
 
-    let seoRes = null;
-    let seoReason = "empty";
-    try {
-      seoRes = await fetchWithTimeout(
-        seoUrl,
-        { headers: { accept: "application/json" } },
-        SEO_HEAD_TIMEOUT_MS,
-      );
-    } catch {
-      seoReason = "timeout";
+    const requestSeo = async () => {
+      try {
+        return await fetchWithTimeout(
+          seoUrl,
+          { headers: { accept: "application/json" } },
+          SEO_HEAD_TIMEOUT_MS,
+        );
+      } catch {
+        return null;
+      }
+    };
+
+    let seoRes = await requestSeo();
+    const temporaryFailure = !seoRes || seoRes.status >= 500;
+    if (temporaryFailure) {
+      seoRes = await requestSeo();
     }
 
     const htmlRes = await htmlPromise;
 
     if (!htmlRes.ok) {
-      return passThrough();
+      return customerSiteUnavailableResponse(started, `shell-${htmlRes.status}`);
     }
 
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) {
-      return passThrough();
+      return customerSiteUnavailableResponse(started, "shell-empty");
     }
 
     let headHtml = "";
-    if (seoRes && seoRes.ok) {
+    let seoReason = "empty";
+    if (!seoRes) {
+      seoReason = "timeout";
+    } else if (seoRes.ok) {
       try {
         const payload = await seoRes.json();
         headHtml = String(payload?.headHtml || "").trim();
@@ -339,13 +421,21 @@ async function handleHtmlSeoInjection(request) {
         headHtml = "";
         seoReason = "parse";
       }
-    } else if (seoRes && !seoRes.ok) {
+    } else {
       seoReason = `seo-${seoRes.status}`;
     }
 
-    // Safe fallback: never break the SPA if SEO fetch/parse fails.
+    // Keep the SPA body. Only the platform head is removed when the
+    // customer SEO API cannot supply a real head.
     if (!headHtml) {
-      return fallbackHtmlResponse(html, htmlRes.status, started, seoReason);
+      const siteConfirmedMissing = seoRes?.status === 404;
+      return customerNeutralResponse(
+        html,
+        htmlRes.status,
+        started,
+        seoReason,
+        !siteConfirmedMissing,
+      );
     }
 
     const injected = injectSeoHead(html, headHtml);
@@ -360,8 +450,8 @@ async function handleHtmlSeoInjection(request) {
       },
     });
   } catch {
-    // Last resort: never return 500 from SEO middleware.
-    return passThrough();
+    // Never fall through to the platform shell on a customer host.
+    return customerSiteUnavailableResponse(started, "shell-error");
   }
 }
 
@@ -419,10 +509,7 @@ async function handleSaasMarketplaceDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
@@ -484,6 +571,13 @@ function whatsappHeadHtml(pathname) {
     `<meta name="keywords" content="${escapeHtmlAttr(WHATSAPP_SEO_KEYWORDS)}" />`,
     `<meta name="robots" content="${page ? "index, follow" : "noindex, follow"}" />`,
     canonical ? `<link rel="canonical" href="${canonical}" />` : "",
+    normalizeWhatsAppPath(pathname) === "/"
+      ? [
+          `<link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/" />`,
+          `<link rel="alternate" hreflang="he" href="https://bizuply.com/he/whatsapp-api" />`,
+          `<link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/" />`,
+        ].join("\n")
+      : "",
     `<meta property="og:title" content="${title}" />`,
     `<meta property="og:description" content="${description}" />`,
     `<meta property="og:type" content="website" />`,
@@ -532,16 +626,21 @@ async function handleWhatsAppDocument(request) {
 
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();
     const pathname = getPathname(request);
-    return new Response(injectSeoHead(html, whatsappHeadHtml(pathname)), {
+    let documentHtml = injectSeoHead(html, whatsappHeadHtml(pathname));
+    const prerender = whatsappHomepagePrerender(pathname);
+    if (prerender) {
+      documentHtml = documentHtml.replace(
+        '<div id="root"></div>',
+        `<div id="root">${prerender}</div>`,
+      );
+    }
+    return new Response(documentHtml, {
       status: getWhatsAppPageMeta(pathname) ? 200 : 404,
       headers: {
         "content-type": "text/html; charset=utf-8",
@@ -559,10 +658,7 @@ async function handleTravelDocument(request) {
 
   try {
     const htmlRes = await fetch(new URL("/index.html", request.url), {
-      headers: {
-        accept: "text/html",
-        "x-bizuply-seo-middleware": "1",
-      },
+      headers: shellDocumentHeaders(),
     });
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
@@ -630,11 +726,101 @@ async function proxySaasProduct(request, host) {
   return new Response(response.body, { status: response.status, headers: outgoing });
 }
 
+function isPlatformMarketingHost(host) {
+  if (!host) return false;
+  if (isBizuplyWhatsAppHost(host) || isBizuplyTravelHost(host)) return false;
+  if (isCustomerSiteHost(host) || isSaasProductHost(host)) return false;
+  return MARKETING_HOSTS.has(host) || host === "127.0.0.1" || host.endsWith(".vercel.app");
+}
+
+function marketingLegacyRedirect(request, host, pathname) {
+  const dest = marketingPublicRedirect(pathname);
+  if (!dest || !isPlatformMarketingHost(host)) return null;
+  const location = dest.startsWith("http")
+    ? dest
+    : host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app")
+      ? new URL(dest, request.url).toString()
+      : `https://bizuply.com${dest}`;
+  return new Response(null, {
+    status: 301,
+    headers: {
+      location,
+      "cache-control": "public, max-age=3600",
+      "x-bizuply-seo-edge": "marketing-redirect",
+    },
+  });
+}
+
+async function handleMarketingDocument(request) {
+  if (!isDocumentNavigation(request)) return passThrough();
+  const pathname = getPathname(request);
+  const headHtml = buildMarketingDocumentHead(pathname);
+  if (!headHtml) {
+    if (isUnknownMarketingPath(pathname)) {
+      return new Response(buildNotFoundHtml(), {
+        status: 404,
+        headers: {
+          "content-type": "text/html; charset=utf-8",
+          "cache-control": "public, max-age=0, must-revalidate",
+          "x-robots-tag": "noindex, nofollow",
+          "x-bizuply-seo-edge": "marketing-not-found",
+        },
+      });
+    }
+    return passThrough();
+  }
+
+  try {
+    const htmlRes = await fetch(new URL("/index.html", request.url), {
+      headers: shellDocumentHeaders(),
+    });
+    if (!htmlRes.ok) return passThrough();
+    const html = await htmlRes.text();
+    if (!html || !/<html[\s>]/i.test(html)) return passThrough();
+    const noindex = headHtml.includes("noindex");
+    let documentHtml = injectSeoHead(html, headHtml);
+    const prerender = buildMarketingPrerender(pathname);
+    const locale = splitMarketingLocale(pathname);
+    if (locale.locale === "he") {
+      documentHtml = documentHtml.replace(
+        /<html\b[^>]*>/i,
+        '<html lang="he" dir="rtl">',
+      );
+    }
+    if (prerender) {
+      documentHtml = documentHtml.replace(
+        '<div id="root"></div>',
+        `<div id="root">${prerender.inner}</div>`,
+      );
+    }
+    return new Response(documentHtml, {
+      status: 200,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-bizuply-seo-edge": "marketing",
+        ...(noindex ? { "x-robots-tag": "noindex, nofollow" } : {}),
+      },
+    });
+  } catch {
+    return passThrough();
+  }
+}
+
 export default async function middleware(request) {
   const host = getHost(request);
   if (isSaasProductHost(host)) return proxySaasProduct(request, host);
   const pathname = getPathname(request);
-  if (isStaticAsset(pathname) && !getGoogleHtmlVerificationFile(pathname)) return passThrough();
+  if (
+    isStaticAsset(pathname) &&
+    !getGoogleHtmlVerificationFile(pathname) &&
+    !isSeoDiscoveryPath(pathname)
+  ) {
+    return passThrough();
+  }
+
+  const legacyRedirect = marketingLegacyRedirect(request, host, pathname);
+  if (legacyRedirect) return legacyRedirect;
 
   if (isBizuplyWhatsAppHost(host)) {
     if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
@@ -664,6 +850,10 @@ export default async function middleware(request) {
   const googleFile = getGoogleHtmlVerificationFile(pathname);
   if (googleFile) {
     return handleGoogleHtmlVerification(request, googleFile);
+  }
+
+  if (isPlatformMarketingHost(host)) {
+    return handleMarketingDocument(request);
   }
 
   return handleHtmlSeoInjection(request);

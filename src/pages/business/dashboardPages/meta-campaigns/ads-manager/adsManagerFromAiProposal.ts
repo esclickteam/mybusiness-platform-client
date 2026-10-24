@@ -67,7 +67,7 @@ export function isCampaignObjective(value: string | null | undefined): value is 
 
 export function conversionLocationFromDestination(key?: string | null): string {
   if (key === "LEAD_FORM") return "Instant forms";
-  if (key === "WHATSAPP") return "Messenger";
+  if (key === "WHATSAPP") return "WhatsApp";
   return "Website";
 }
 
@@ -106,7 +106,11 @@ export function adsManagerStateFromAiProposal(
   const locations = (proposal.adSet.locations || []).map(locationFromProposal);
   const conversionLocation = conversionLocationFromDestination(destinationKey);
   const usesInstantForms = conversionLocation.toLowerCase().includes("instant");
-  const cta = proposal.graphSafe?.cta || proposal.creative.ctaKey || "LEARN_MORE";
+  const usesWhatsApp = conversionLocation.toLowerCase().includes("whatsapp");
+  const cta =
+    proposal.graphSafe?.cta ||
+    proposal.creative.ctaKey ||
+    (usesWhatsApp ? "WHATSAPP_MESSAGE" : "LEARN_MORE");
   const media = proposal.creative.media;
   const campaignName = proposal.campaign.name || state.campaign.name;
 

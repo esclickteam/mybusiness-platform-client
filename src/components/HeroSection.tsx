@@ -46,6 +46,12 @@ export default function HeroSection() {
         </Reveal>
 
         <h1 className="mx-auto mt-8 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.055em] text-slate-800 sm:text-6xl lg:text-7xl">
+          <span className="mb-3 block text-[0.42em] font-black tracking-normal text-slate-950">Bizuply</span>
+          {t("home.brandLocal", { defaultValue: "" }) ? (
+            <span className="mb-3 block text-[0.38em] font-bold tracking-normal text-slate-700">
+              {t("home.brandLocal")}
+            </span>
+          ) : null}
           <WordReveal text={t("home.headlineTop")} delay={0.12} />
           <br />
           <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">

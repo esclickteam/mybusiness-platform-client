@@ -110,9 +110,49 @@ function mapAdSet(
   const start = splitDateTime(adSet.startTime || campaign.startTime);
   const end = splitDateTime(adSet.endTime || campaign.stopTime);
   const locations = locationsFromMeta(adSet, campaign);
-  const interests = (adSet.interests?.length ? adSet.interests : campaign.interests || []).map(
-    (row) => ({ id: String(row.id), name: String(row.name || row.id) })
+  const detailedFromAdSet = [
+    ...(adSet.detailedTargets || []),
+    ...(adSet.interests || []),
+    ...(adSet.behaviors || []),
+  ];
+  const detailedFromCampaign = [
+    ...(campaign.detailedTargets || []),
+    ...(campaign.interests || []),
+    ...(campaign.behaviors || []),
+  ];
+  const sourceDetailed = detailedFromAdSet.length
+    ? detailedFromAdSet
+    : detailedFromCampaign;
+  const behaviorIds = new Set(
+    [...(adSet.behaviors || []), ...(campaign.behaviors || [])].map((row) =>
+      String(row.id)
+    )
   );
+  const seenInterestIds = new Set<string>();
+  const interests = sourceDetailed
+    .map((row) => {
+      const id = String(row?.id || "").trim();
+      if (!id || seenInterestIds.has(id)) return null;
+      seenInterestIds.add(id);
+      const explicitType = String((row as { type?: string }).type || "").trim();
+      const type =
+        explicitType ||
+        (behaviorIds.has(id) ? "behaviors" : "interests");
+      return {
+        id,
+        name: String(row.name || id),
+        type,
+        path: Array.isArray((row as { path?: string[] }).path)
+          ? ((row as { path?: string[] }).path as string[])
+          : [],
+      };
+    })
+    .filter(Boolean) as Array<{
+    id: string;
+    name: string;
+    type: string;
+    path?: string[];
+  }>;
   const targetingLoaded = adSet.targetingLoaded !== false && Boolean(
     adSet.targetingRaw ||
       locations.length ||
@@ -152,6 +192,8 @@ function mapAdSet(
     name: adSet.name || fallback.name,
     status: adSet.status || fallback.status,
     facebookPageId: adSet.pageId || campaign.pageId || "",
+    whatsappPhone: fallback.whatsappPhone || "",
+    whatsappDisplayNumber: fallback.whatsappDisplayNumber || "",
     facebookPageName: fallback.facebookPageName,
     locationsSummary: locations.map((loc) => loc.name).join(", "),
     locations,
@@ -348,8 +390,32 @@ export function adsManagerStateFromMetaCampaign(
     creativeOnMeta: campaign.creativeLinkedOnMeta === true,
     publishRecordId: campaign.publishRecordId,
   });
+  // Editor drafts saved during create often omit targetingRaw / targetingLoaded.
+  // Keep Meta's live targeting envelope so publish-changes can patch flexible_spec
+  // without rebuilding geo from scratch.
+  const adSetsWithMetaTargeting = drafted.adSets.map((adSet, index) => {
+    const fromMeta = loaded.adSets[index] || loaded.adSets[0];
+    if (!fromMeta) return adSet;
+    const targetingRaw = adSet.targetingRaw || fromMeta.targetingRaw || null;
+    const targetingLoaded =
+      Boolean(adSet.targetingLoaded) ||
+      Boolean(fromMeta.targetingLoaded) ||
+      Boolean(targetingRaw);
+    // Honor an explicit empty draft list (user cleared all chips). Only fall
+    // back to Meta when the draft omitted interests entirely.
+    const interests = Array.isArray(adSet.interests)
+      ? adSet.interests
+      : fromMeta.interests || [];
+    return {
+      ...adSet,
+      targetingRaw,
+      targetingLoaded,
+      interests,
+    };
+  });
   return {
     ...drafted,
+    adSets: adSetsWithMetaTargeting,
     metaObjectIds: metaObjectIdsFromCampaign(campaign),
   };
 }

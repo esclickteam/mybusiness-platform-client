@@ -10,7 +10,7 @@ import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 import AdminHeader from "./AdminsHeader";
 import AdminPageHeader from "./shell/AdminPageHeader";
 import AdminRowMenu from "./shell/AdminRowMenu";
-import AdminPager, { paginateRows } from "./shell/AdminPager";
+import AdminPager from "./shell/AdminPager";
 
 const ROLE_LABELS = {
   all: "הכל",
@@ -56,6 +56,7 @@ function AdminUsers() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [users, setUsers] = useState([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
@@ -71,51 +72,52 @@ function AdminUsers() {
 
   useEffect(() => {
     let cancelled = false;
-
-    async function fetchUsers() {
+    const delay = search.trim() ? 300 : 0;
+    const timer = setTimeout(async () => {
       setLoading(true);
       setError("");
 
       try {
-        const res = await API.get("/admin/users");
+        const res = await API.get("/admin/users", {
+          params: {
+            q: search.trim() || undefined,
+            role: filter === "all" ? undefined : filter,
+            page,
+            limit: PAGE_SIZE,
+          },
+        });
         if (cancelled) return;
-        setUsers(Array.isArray(res.data) ? res.data : []);
+        const payload = res.data;
+        const list = Array.isArray(payload) ? payload : payload?.users || [];
+        setUsers(list);
+        setTotal(
+          Array.isArray(payload)
+            ? list.length
+            : Number(payload?.total) || list.length
+        );
       } catch (err) {
         console.error("Error loading users:", err);
         if (!cancelled) {
           setError("לא ניתן לטעון את רשימת המשתמשים");
+          setUsers([]);
+          setTotal(0);
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
-    }
-
-    fetchUsers();
+    }, delay);
 
     return () => {
       cancelled = true;
+      clearTimeout(timer);
     };
-  }, []);
+  }, [search, filter, page]);
 
-  const filtered = useMemo(() => {
-    const term = search.trim().toLowerCase();
-
-    return users.filter((u) => {
-      const matchSearch =
-        !term ||
-        u.phone?.includes(search.trim()) ||
-        u.username?.toLowerCase().includes(term) ||
-        u.email?.toLowerCase().includes(term) ||
-        u.name?.toLowerCase().includes(term);
-
-      const matchRole = filter === "all" || u.role === filter;
-      return matchSearch && matchRole;
-    });
-  }, [users, search, filter]);
+  const filtered = users;
 
   useEffect(() => {
     setPage(1);
-  }, [search, filter, sortKey, sortDir]);
+  }, [search, filter]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -129,7 +131,15 @@ function AdminUsers() {
     return list;
   }, [filtered, sortKey, sortDir]);
 
-  const table = paginateRows(sorted, page, PAGE_SIZE);
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const table = {
+    page,
+    pageCount,
+    rows: sorted,
+    from: total ? (page - 1) * PAGE_SIZE + 1 : 0,
+    to: Math.min(page * PAGE_SIZE, total),
+    total,
+  };
   const pageRows = table.rows;
 
   function toggleSort(key) {
@@ -150,6 +160,7 @@ function AdminUsers() {
     try {
       await API.delete(`/admin/users/${id}`);
       setUsers((prev) => prev.filter((u) => u._id !== id));
+      setTotal((current) => Math.max(0, current - 1));
     } catch (err) {
       setError(err.response?.data?.error || "שגיאה במחיקת המשתמש");
     } finally {
@@ -276,7 +287,7 @@ function AdminUsers() {
               className="biz-input sm:max-w-sm"
             />
             <span className="text-xs font-semibold text-[#667085]">
-              {filtered.length} משתמשים
+              {total} משתמשים
             </span>
           </div>
 

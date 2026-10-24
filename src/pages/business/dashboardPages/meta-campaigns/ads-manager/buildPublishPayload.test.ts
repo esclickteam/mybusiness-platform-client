@@ -4,6 +4,7 @@ import {
   audienceTargetingFromAdsManager,
   buildAudienceEstimatePayload,
   buildPublishPayloadFromAdsManager,
+  validateAdsManagerClient,
 } from "./buildPublishPayload";
 
 describe("audience estimate and publish use the same targeting", () => {
@@ -15,7 +16,14 @@ describe("audience estimate and publish use the same targeting", () => {
     state.adSets[0].gender = "female";
     state.adSets[0].advantageAudience = true;
     state.adSets[0].furtherLimitReach = false;
-    state.adSets[0].interests = [{ id: "6003139266461", name: "Beauty" }];
+    state.adSets[0].interests = [
+      { id: "6003139266461", name: "Beauty", type: "interests" },
+      {
+        id: "6002714895372",
+        name: "Engaged shoppers",
+        type: "behaviors",
+      },
+    ];
     state.adSets[0].locations = [
       {
         key: "IL",
@@ -68,5 +76,20 @@ describe("audience estimate and publish use the same targeting", () => {
     expect(draft.activateAfterPublish).toBe(false);
     expect(live.status).toBe("ACTIVE");
     expect(live.activateAfterPublish).toBe(true);
+  });
+
+  it("publishes Click to WhatsApp with the Page-linked number", () => {
+    const state = createDefaultAdsManagerState();
+    state.adSets[0].conversionLocation = "WhatsApp";
+    state.adSets[0].facebookPageId = "111";
+    state.adSets[0].whatsappPhone = "972515573699";
+    state.ads[0].facebookPageId = "111";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Chat";
+    const publish = buildPublishPayloadFromAdsManager(state);
+    expect(publish.destinationType).toBe("WHATSAPP");
+    expect(publish.whatsappPhone).toBe("972515573699");
+    expect(publish.callToAction).toBe("WHATSAPP_MESSAGE");
+    expect(validateAdsManagerClient(state)).toEqual([]);
   });
 });

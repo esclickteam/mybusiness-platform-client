@@ -103,6 +103,8 @@ export type MetaCampaign = {
   locations?: MetaLocationTarget[];
   locationMode?: "places" | "radius";
   interests?: MetaInterestTarget[];
+  behaviors?: MetaInterestTarget[];
+  detailedTargets?: MetaDetailedTarget[];
   ageMin?: number | null;
   ageMax?: number | null;
   genders?: number[];
@@ -223,6 +225,8 @@ export type MetaCampaignAdSet = {
   excludedLocations?: MetaLocationTarget[];
   interests?: MetaInterestTarget[];
   behaviors?: MetaInterestTarget[];
+  /** All flexible_spec entries (interests + behaviors + demographics). */
+  detailedTargets?: MetaDetailedTarget[];
   customAudiences?: MetaInterestTarget[];
   excludedAudiences?: MetaInterestTarget[];
   locales?: Array<string | number>;
@@ -435,7 +439,20 @@ export type MetaInterestTarget = {
   path?: string[];
   topic?: string;
   description?: string;
+  /** Meta flexible_spec key: interests | behaviors | life_events | … */
+  type?: string;
+  /** Browse root: demographics | interests | behaviors */
+  branch?: string;
+  selectable?: boolean;
+  /**
+   * Why a browse/search row cannot be selected:
+   * unsupported_flexible_spec | category_not_selectable | category
+   */
+  unsupportedReason?: string;
+  parent?: string;
 };
+
+export type MetaDetailedTarget = MetaInterestTarget;
 
 export type MetaCampaignPayload = {
   name: string;
@@ -586,16 +603,28 @@ export type MetaPublishResult = {
   }>;
 };
 
+/** Meta publish walks campaign → ad set → creative → ad and can exceed 20s. */
+export const META_PUBLISH_TIMEOUT_MS = 180000;
+export const META_GRAPH_READ_TIMEOUT_MS = 60000;
+
 function withBusiness(businessId?: string, extra?: Record<string, unknown>) {
   const params: Record<string, unknown> = { ...(extra || {}) };
   if (businessId) params.businessId = businessId;
   return { params };
 }
 
+function withMetaTimeout(
+  businessId?: string,
+  extra?: Record<string, unknown>,
+  timeout = META_GRAPH_READ_TIMEOUT_MS
+) {
+  return { ...withBusiness(businessId, extra), timeout };
+}
+
 export async function getMetaCampaignsStatus(businessId?: string) {
   const { data } = await API.get<MetaAdsConnectionStatus>(
     "/meta-campaigns/status",
-    withBusiness(businessId)
+    withMetaTimeout(businessId)
   );
   return data;
 }
@@ -705,7 +734,7 @@ export async function getMetaCampaign(
     objectives?: MetaAdsConnectionStatus["objectives"];
     specialAdCategories?: MetaAdsConnectionStatus["specialAdCategories"];
     connection?: MetaAdsConnectionStatus;
-  }>(`/meta-campaigns/campaigns/${campaignId}`, withBusiness(businessId, range));
+  }>(`/meta-campaigns/campaigns/${campaignId}`, withMetaTimeout(businessId, range));
   return data;
 }
 
@@ -950,10 +979,14 @@ export async function saveMetaEditorDraft(
   const path = body.publishId
     ? `/meta-campaigns/publishes/${body.publishId}/editor-draft`
     : "/meta-campaigns/publishes/editor-draft";
-  const { data } = await API.post<MetaEditorDraftSaveResult>(path, {
-    businessId,
-    ...body,
-  });
+  const { data } = await API.post<MetaEditorDraftSaveResult>(
+    path,
+    {
+      businessId,
+      ...body,
+    },
+    { timeout: META_GRAPH_READ_TIMEOUT_MS }
+  );
   return data;
 }
 
@@ -1130,7 +1163,91 @@ export async function getMetaLeadgenTos(
 ) {
   const { data } = await API.get<MetaLeadgenTosStatus>(
     "/meta-campaigns/leadgen-tos",
+    withMetaTimeout(businessId, { pageId })
+  );
+  return data;
+}
+
+export type MetaPageWhatsAppNumber = {
+  id: string;
+  phone: string;
+  e164?: string;
+  displayNumber: string;
+  isWhatsAppBusiness?: boolean;
+  linkedToPage?: boolean;
+  pageId?: string;
+};
+
+export type MetaPageWhatsAppResult = {
+  success?: boolean;
+  ok?: boolean;
+  linked?: boolean;
+  alreadyLinkedToThisPage?: boolean;
+  needsVerification?: boolean;
+  codeSent?: boolean;
+  demoSafe?: boolean;
+  officialFlow?: boolean;
+  pageId?: string;
+  pageName?: string;
+  numbers?: MetaPageWhatsAppNumber[];
+  number?: MetaPageWhatsAppNumber | null;
+  hasWhatsAppNumber?: boolean;
+  canConnectAdditional?: boolean;
+  maxNumbers?: number;
+  message?: string;
+  code?: string;
+  verificationStatus?: string | null;
+  settingsHelpUrl?: string;
+  adsHelpUrl?: string;
+};
+
+export async function listPageWhatsAppNumbers(
+  businessId: string | undefined,
+  pageId: string
+) {
+  const { data } = await API.get<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers`,
     withBusiness(businessId, { pageId })
+  );
+  return data;
+}
+
+export async function inspectPageWhatsAppNumber(
+  businessId: string | undefined,
+  pageId: string,
+  phone: string
+) {
+  const { data } = await API.post<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers/inspect`,
+    { businessId, pageId, phone },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function requestPageWhatsAppCode(
+  businessId: string | undefined,
+  pageId: string,
+  phone: string
+) {
+  const { data } = await API.post<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers/request-code`,
+    { businessId, pageId, phone },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function verifyPageWhatsAppCode(
+  businessId: string | undefined,
+  pageId: string,
+  phone: string,
+  code: string
+) {
+  const { data } = await API.post<MetaPageWhatsAppResult>(
+    `/meta-campaigns/pages/${encodeURIComponent(pageId)}/whatsapp-numbers/verify`,
+    { businessId, pageId, phone, code },
+    withBusiness(businessId)
   );
   return data;
 }
@@ -1147,7 +1264,7 @@ export async function listMetaLeadForms(
     questionTypes?: MetaLeadFormQuestionType[];
     warning?: string;
     metaUnavailable?: boolean;
-  }>("/meta-campaigns/lead-forms", withBusiness(businessId, { pageId }));
+  }>("/meta-campaigns/lead-forms", withMetaTimeout(businessId, { pageId }));
   return data;
 }
 
@@ -1355,7 +1472,11 @@ export async function estimateMetaAudienceReach(
       impressions?: number | null;
       actions?: number | null;
     } | null;
-  }>("/meta-campaigns/targeting/reach-estimate", payload, withBusiness(businessId));
+  }>(
+    "/meta-campaigns/targeting/reach-estimate",
+    payload,
+    withMetaTimeout(businessId)
+  );
   return data;
 }
 
@@ -1433,6 +1554,78 @@ export async function browseMetaInterestCategories(
   return data;
 }
 
+/** Account-scoped Meta targetingbrowse catalog (demographics / interests / behaviors). */
+export async function browseMetaDetailedTargeting(
+  businessId: string | undefined,
+  query?: { locale?: string; limit?: number }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaDetailedTarget[];
+  }>(
+    "/meta-campaigns/targeting/detailed-browse",
+    withBusiness(businessId, {
+      locale: query?.locale,
+      limit: query?.limit,
+    })
+  );
+  return data;
+}
+
+/** Account-scoped Meta targetingsearch across detailed targeting types. */
+export async function searchMetaDetailedTargeting(
+  businessId: string | undefined,
+  query: { q: string; locale?: string; limit?: number; limitType?: string }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaDetailedTarget[];
+  }>(
+    "/meta-campaigns/targeting/detailed-search",
+    withBusiness(businessId, {
+      q: query.q,
+      locale: query.locale,
+      limit: query.limit,
+      limit_type: query.limitType,
+    })
+  );
+  return data;
+}
+
+/**
+ * Empty-search / seed-based detailed targeting suggestions (Relevance | Size).
+ * Official Meta /targetingsuggestions only (selected targets or Page-category seeds).
+ */
+export async function suggestMetaDetailedTargeting(
+  businessId: string | undefined,
+  query?: {
+    locale?: string;
+    limit?: number;
+    sort?: "relevance" | "size";
+    targetingList?: Array<{ id: string; type?: string }>;
+  }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaDetailedTarget[];
+    source?: string;
+    sort?: string;
+    seedSource?: string;
+    apiGap?: string;
+  }>(
+    "/meta-campaigns/targeting/detailed-suggestions",
+    withBusiness(businessId, {
+      locale: query?.locale,
+      limit: query?.limit,
+      sort: query?.sort || "relevance",
+      targeting_list: query?.targetingList?.length
+        ? JSON.stringify(query.targetingList)
+        : undefined,
+    })
+  );
+  return data;
+}
+
 /** Real Meta Marketing API publish (campaign → ad set → creative → ad). */
 export async function publishMetaCampaign(
   businessId: string,
@@ -1440,7 +1633,8 @@ export async function publishMetaCampaign(
 ) {
   const { data } = await API.post<MetaPublishResult>(
     "/meta-campaigns/publishes",
-    { businessId, ...payload }
+    { businessId, ...payload },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
   );
   return data;
 }
@@ -1456,8 +1650,44 @@ export async function syncMetaPublish(
     campaignStatus?: string;
     adSetStatus?: string;
     adStatus?: string;
-  }>(`/meta-campaigns/publishes/${publishId}/sync`, { businessId });
+  }>(
+    `/meta-campaigns/publishes/${publishId}/sync`,
+    { businessId },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
+  );
   return data;
+}
+
+export async function getMetaPublish(businessId: string, publishId: string) {
+  const { data } = await API.get<{
+    success: boolean;
+    publish: MetaCampaignPublishRecord;
+  }>(`/meta-campaigns/publishes/${publishId}`, withMetaTimeout(businessId));
+  return data.publish;
+}
+
+export async function waitForMetaPublish(
+  businessId: string,
+  publishId: string,
+  options?: { timeoutMs?: number; intervalMs?: number }
+) {
+  const timeoutMs = options?.timeoutMs ?? 120000;
+  const intervalMs = options?.intervalMs ?? 2500;
+  const started = Date.now();
+  let last = await getMetaPublish(businessId, publishId);
+  while (Date.now() - started < timeoutMs) {
+    const status = String(last?.publishStatus || "");
+    if (
+      status === "submitted" ||
+      status === "failed" ||
+      status === "partial_failed"
+    ) {
+      return last;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    last = await getMetaPublish(businessId, publishId);
+  }
+  return last;
 }
 
 export type MetaLeadFormUpdatePlan = {
@@ -1530,7 +1760,8 @@ export async function publishMetaCampaignChanges(
 ) {
   const { data } = await API.post<MetaExistingPublishResult>(
     `/meta-campaigns/campaigns/${campaignId}/publish-changes`,
-    { businessId, ...payload }
+    { businessId, ...payload },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
   );
   return data;
 }
@@ -1542,7 +1773,8 @@ export async function retryMetaPublish(
 ) {
   const { data } = await API.post<MetaPublishResult>(
     `/meta-campaigns/publishes/${publishId}/retry`,
-    { businessId, ...(payload || {}) }
+    { businessId, ...(payload || {}) },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
   );
   return data;
 }

@@ -32,7 +32,7 @@ const proposal = {
 describe("adsManagerFromAiProposal", () => {
   it("maps destination onto the existing Ads Manager conversion locations", () => {
     expect(conversionLocationFromDestination("LEAD_FORM")).toBe("Instant forms");
-    expect(conversionLocationFromDestination("WHATSAPP")).toBe("Messenger");
+    expect(conversionLocationFromDestination("WHATSAPP")).toBe("WhatsApp");
     expect(conversionLocationFromDestination("WEBSITE")).toBe("Website");
   });
 

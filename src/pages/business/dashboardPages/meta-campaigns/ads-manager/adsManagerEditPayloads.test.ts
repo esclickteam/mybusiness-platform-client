@@ -93,6 +93,67 @@ describe("adsManagerEditPayloads", () => {
     );
   });
 
+  it("detects detailed-targeting edits and patches flexible_spec on targetingRaw", () => {
+    const baseline = adsManagerStateFromMetaCampaign({
+      ...campaign,
+      adSets: [
+        {
+          ...campaign.adSets![0],
+          interests: [
+            { id: "6003349071605", name: "Wedding photography", type: "interests" },
+            { id: "6003409392877", name: "Weddings", type: "interests" },
+          ],
+          targetingRaw: {
+            geo_locations: { countries: ["IL"] },
+            age_min: 24,
+            age_max: 35,
+            flexible_spec: [
+              {
+                interests: [
+                  { id: "6003349071605", name: "Wedding photography" },
+                  { id: "6003409392877", name: "Weddings" },
+                ],
+              },
+            ],
+            targeting_automation: { advantage_audience: 1 },
+          },
+        },
+      ],
+    });
+    const current = {
+      ...baseline,
+      adSets: baseline.adSets.map((adSet) => ({
+        ...adSet,
+        interests: [
+          { id: "6003409392877", name: "Weddings", type: "interests" },
+          { id: "6003028599807", name: "Real estate", type: "interests" },
+        ],
+      })),
+    };
+    const changes = diffAdsManagerState(baseline, current);
+    expect(changes.some((row) => row.labelKey === "changeDetailedTargeting")).toBe(
+      true
+    );
+    const payload = buildExistingPublishPayload(current, changes, {
+      routeId: campaign.id,
+    });
+    expect(payload.adSet).toEqual(
+      expect.objectContaining({
+        targeting: expect.objectContaining({
+          geo_locations: { countries: ["IL"] },
+          flexible_spec: [
+            {
+              interests: [
+                { id: "6003409392877", name: "Weddings" },
+                { id: "6003028599807", name: "Real estate" },
+              ],
+            },
+          ],
+        }),
+      })
+    );
+  });
+
   it("saves a description change without clearing an empty image hash", () => {
     const baseline = adsManagerStateFromMetaCampaign(campaign);
     const current = {

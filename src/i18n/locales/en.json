@@ -89,7 +89,7 @@
   },
   "seo": {
     "homeTitle": "Bizuply — Run your business. All in one place.",
-    "homeDescription": "A modern business platform with a professional business page, collaborations, CRM and AI."
+    "homeDescription": "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי."
   },
   "home": {
     "badge": "All-in-one business management platform",
@@ -100,7 +100,8 @@
     "viewPricing": "View pricing",
     "trustNoCard": "No credit card required",
     "trustTrial": "Quick registration",
-    "trustCancel": "Cancel anytime"
+    "trustCancel": "Cancel anytime",
+    "brandLocal": ""
   },
   "live": {
     "crumb": "CRM · Lead management",
@@ -317,7 +318,7 @@
     "subtitle": "Everything your business needs — CRM, clients, appointments, collaborations, automations and AI — in one simple, powerful platform.",
     "builtFor": "Built for modern businesses",
     "panelTitle": "Stop managing your business across disconnected tools",
-    "panelText": "BizUply brings your daily business operations into one beautiful workspace — so you can move faster, stay organized and grow with confidence.",
+    "panelText": "Bizuply brings your daily business operations into one beautiful workspace — so you can move faster, stay organized and grow with confidence.",
     "statActions": "actions managed",
     "statSatisfaction": "satisfaction",
     "statVisibility": "business visibility",
@@ -412,7 +413,7 @@
     "a6Footer": "Less manual work — more leads that reach a close."
   },
   "finalCta": {
-    "eyebrow": "BizUply business OS",
+    "eyebrow": "Bizuply business OS",
     "titleTop": "Run your business",
     "titleHighlight": "in one place",
     "subtitle": "Manage your business page, CRM, appointments, collaborations and AI tools — all from one connected workspace.",
@@ -2401,16 +2402,16 @@
     "unknownService": "Unknown service"
   },
   "features": {
-    "seoTitle": "BizUply — All the Tools Your Business Needs in One Place",
-    "seoDescription": "Explore BizUply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses.",
-    "seoKeywords": "BizUply, business platform, CRM, chat, reviews, scheduling, AI assistant, small business tools, SaaS, business management",
+    "seoTitle": "Bizuply — All the Tools Your Business Needs in One Place",
+    "seoDescription": "Explore Bizuply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses.",
+    "seoKeywords": "Bizuply, business platform, CRM, chat, reviews, scheduling, AI assistant, small business tools, SaaS, business management",
     "badge": "BIZUPLY FEATURES",
     "heroTitleTop": "All the tools your business needs",
     "heroTitleHighlight": "in one place.",
-    "heroSubtitle": "BizUply brings together your business page, CRM, messages, reviews, collaborations, appointments and AI insights — all inside one smart, beautiful workspace.",
+    "heroSubtitle": "Bizuply brings together your business page, CRM, messages, reviews, collaborations, appointments and AI insights — all inside one smart, beautiful workspace.",
     "overviewBadge": "Business OS",
     "overviewTitle": "Replace scattered tools with one connected workspace.",
-    "overviewText": "Instead of managing clients in one place, messages in another, appointments somewhere else and AI separately — BizUply brings everything together.",
+    "overviewText": "Instead of managing clients in one place, messages in another, appointments somewhere else and AI separately — Bizuply brings everything together.",
     "statCrm": "CRM",
     "statCrmLabel": "Client data",
     "statAi": "AI",
@@ -2451,7 +2452,7 @@
     "card3Description": "Let clients contact you directly from your business page, then manage every message from a single organized dashboard.",
     "card3Point1": "Clients send messages from your page",
     "card3Point2": "Messages appear in your dashboard",
-    "card3Point3": "Reply directly inside BizUply",
+    "card3Point3": "Reply directly inside Bizuply",
     "card3Point4": "Message history is saved",
     "card3Point5": "Real-time notifications",
     "card3Result": "Client communication becomes centralized, organized and much easier to follow up on.",
@@ -2462,25 +2463,25 @@
     "card4Point2": "Star ratings build credibility",
     "card4Point3": "Reviews appear on your page",
     "card4Point4": "Better reputation over time",
-    "card4Point5": "More trust across the BizUply network",
+    "card4Point5": "More trust across the Bizuply network",
     "card4Result": "Authentic feedback helps your business look more reliable, professional and ready to grow.",
     "ctaTitleTop": "Build, manage and grow",
     "ctaTitleBottom": "your business from one place.",
-    "ctaText": "From client management to AI insights, BizUply gives you the tools to operate more professionally and move faster."
+    "ctaText": "From client management to AI insights, Bizuply gives you the tools to operate more professionally and move faster."
   },
   "solutions": {
-    "seoTitle": "BizUply — Smart Solutions for Every Type of Business",
-    "seoDescription": "Discover BizUply's tailored solutions for every business type — from service providers and freelancers to shops and collaborations. Manage clients, communication, and growth in one smart place.",
-    "seoKeywords": "BizUply solutions, small business tools, CRM, client management, AI assistant, business collaborations, service providers, freelancers, shops, SaaS platform",
-    "ogTitle": "BizUply — Smart Solutions for Businesses",
-    "ogDescription": "BizUply adapts to every business type with smart tools for management, communication, and automation.",
+    "seoTitle": "Bizuply — Smart Solutions for Every Type of Business",
+    "seoDescription": "Discover Bizuply's tailored solutions for every business type — from service providers and freelancers to shops and collaborations. Manage clients, communication, and growth in one smart place.",
+    "seoKeywords": "Bizuply solutions, small business tools, CRM, client management, AI assistant, business collaborations, service providers, freelancers, shops, SaaS platform",
+    "ogTitle": "Bizuply — Smart Solutions for Businesses",
+    "ogDescription": "Bizuply adapts to every business type with smart tools for management, communication, and automation.",
     "badge": "BIZUPLY SOLUTIONS",
     "heroTitleTop": "Smart solutions",
     "heroTitleHighlight": "for every business.",
-    "heroSubtitle": "Every business is unique — with its own clients, challenges and goals. BizUply adapts to your workflow with CRM, communication, collaborations and AI tools in one smart platform.",
+    "heroSubtitle": "Every business is unique — with its own clients, challenges and goals. Bizuply adapts to your workflow with CRM, communication, collaborations and AI tools in one smart platform.",
     "overviewBadge": "One platform. Multiple workflows.",
     "overviewTitle": "Built for the way real businesses actually work.",
-    "overviewText": "Whether you work from a studio, visit clients on-site, sell services online or collaborate with partners — BizUply gives you one connected workspace to manage it all.",
+    "overviewText": "Whether you work from a studio, visit clients on-site, sell services online or collaborate with partners — Bizuply gives you one connected workspace to manage it all.",
     "statCrm": "CRM",
     "statCrmLabel": "Clients",
     "statAi": "AI",
@@ -2514,7 +2515,7 @@
     "card3Subtitle": "Designers, Marketers, Consultants, Digital Experts",
     "card3Challenge": "Staying visible, organized and trusted in the digital space can be difficult.",
     "card3Solution": "A professional business profile with service listings, real client reviews and instant communication.",
-    "card3Plus": "BizUply’s AI assistant helps you craft messages, track leads and make better decisions faster.",
+    "card3Plus": "Bizuply’s AI assistant helps you craft messages, track leads and make better decisions faster.",
     "card4Title": "For Small Businesses & Shops",
     "card4Subtitle": "Studios, Shops, Local Businesses, Growing Teams",
     "card4Challenge": "Managing clients, messages and reviews across multiple channels quickly becomes messy.",
@@ -2527,7 +2528,7 @@
     "card5Plus": "Every connection is built on transparency, trust and mutual growth — because businesses grow better together.",
     "ctaTitleTop": "One flexible platform.",
     "ctaTitleBottom": "Built around your business.",
-    "ctaText": "No matter your field, BizUply adapts to your workflow — helping your business stay connected, efficient and ready to grow."
+    "ctaText": "No matter your field, Bizuply adapts to your workflow — helping your business stay connected, efficient and ready to grow."
   },
   "login": {
     "welcomeBadge": "WELCOME BACK",
@@ -2662,8 +2663,8 @@
     "useCodeInstead": "Use email code instead"
   },
   "pricing": {
-    "seoTitle": "Service Packages | BizUply",
-    "seoDescription": "BizUply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
+    "seoTitle": "Service Packages | Bizuply",
+    "seoDescription": "Bizuply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
     "badge": "Service packages",
     "heroTitleTop": "Services that move",
     "heroTitleHighlight": "your business forward.",
@@ -2699,7 +2700,7 @@
     "addonsClear": "Clear",
     "addonsRequestQuote": "Continue to quote",
     "addonsContactMessage": "Hi, I’d like a quote for these business services: {{services}}",
-    "addonsContactMessageEmpty": "Hi, I’d like a quote for BizUply service packages.",
+    "addonsContactMessageEmpty": "Hi, I’d like a quote for Bizuply service packages.",
     "viewDetails": "Full details",
     "moreDetails": "more in details",
     "modalClose": "Close",
@@ -2736,7 +2737,7 @@
           "2": "Pages, sections, galleries, and forms",
           "3": "Mobile, tablet, and desktop responsive",
           "4": "Free domain for the first year",
-          "5": "Publish to BizUply URL or your domain",
+          "5": "Publish to Bizuply URL or your domain",
           "6": "Site lead form linked to CRM",
           "7": "Built-in accessibility tools",
           "8": "Basic page SEO",
@@ -2744,9 +2745,9 @@
         }
       },
       "monthly": {
-        "name": "BizUply Business",
+        "name": "Bizuply Business",
         "badge": "Flexible",
-        "description": "Access to the BizUply business system — CRM, appointments, collaborations, automations, and AI. Website not included.",
+        "description": "Access to the Bizuply business system — CRM, appointments, collaborations, automations, and AI. Website not included.",
         "note": "Renewing monthly billing",
         "button": "Start monthly",
         "pricePeriod": "/month",
@@ -2758,7 +2759,7 @@
           "4": "Reviews and ratings management",
           "5": "Business collaboration network",
           "6": "Smart automations",
-          "7": "BizUply AI advisor and insights",
+          "7": "Bizuply AI advisor and insights",
           "8": "Tasks, call logging, and alerts",
           "9": "Analytics and performance dashboard",
           "10": "Option to add human agents",
@@ -2766,7 +2767,7 @@
         }
       },
       "yearly": {
-        "name": "BizUply Business yearly",
+        "name": "Bizuply Business yearly",
         "badge": "Best value",
         "description": "The business system at a better yearly price — CRM, appointments, collaborations, and AI. Website not included.",
         "note": "Renewing yearly billing · save {{savings}} vs monthly",
@@ -3155,17 +3156,17 @@
     "ctaText": "Create your business workspace, connect with clients and manage everything from one smart platform."
   },
   "about": {
-    "seoTitle": "About BizUply | The platform that grows with you",
-    "seoDescription": "Meet BizUply — an American technology company for business management, CRM, leads, websites, automations, agents, and collaborations in one place Meta App Review Developers",
-    "ogTitle": "About BizUply",
+    "seoTitle": "About Bizuply | The platform that grows with you",
+    "seoDescription": "Meet Bizuply (ביזאפלי) — an American technology company for business management, CRM, leads, websites, automations, agents, and collaborations in one place.",
+    "ogTitle": "About Bizuply",
     "ogDescription": "The platform that grows with you — your business in one place",
-    "twitterTitle": "About BizUply",
+    "twitterTitle": "About Bizuply",
     "twitterDescription": "The platform that grows with you — your business in one place",
-    "badge": "About BizUply",
-    "heroTitle": "About BizUply",
+    "badge": "About Bizuply",
+    "heroTitle": "About Bizuply",
     "heroHighlight": "The platform that grows with you — your business in one place",
     "heroSubtitle": "We built one system that connects CRM, leads, websites, automations, agents, and collaborations — so business owners stop jumping between tools and start managing growth with clarity",
-    "heroImageAlt": "BizUply dashboard with leads, reviews, and smart recommendations",
+    "heroImageAlt": "Bizuply dashboard with leads, reviews, and smart recommendations",
     "heroFloatTitle": "Task completed",
     "heroFloatText": "A new lead was handled successfully",
     "stat1Label": "Active businesses",
@@ -3177,17 +3178,17 @@
     "value1Text": "Behind the product are people ready to help — onboarding guidance, professional support, and hands-on lead handling when a human touch is needed",
     "value2Title": "Smart and automatic",
     "value2Text": "Automations that work in the background: lead follow-ups, reminders, repeating workflows, and real time saved every workday",
-    "value3Title": "Meta App Review",
-    "value3Text": "We are Meta App Review Developers. Our app passed Meta’s App Review process so businesses can connect CRM to Lead Ads securely and with official approval",
+    "value3Title": "Meta Tech Provider",
+    "value3Text": "Bizuply is a Meta Tech Provider. The app passed Meta App Review, so a business can connect Lead Ads to the CRM",
     "value4Title": "Simple and professional",
     "value4Text": "A clear interface that works from day one — no heavy learning curve, no unnecessary complexity, with the feel of a serious business system",
-    "metaBadge": "Meta App Review Developers",
-    "whoBrand": "BizUply",
+    "metaBadge": "Meta Tech Provider",
+    "whoBrand": "Bizuply",
     "whoTitle": "Who we are",
     "whoLead": "An American technology company building a business management platform for businesses that want to grow with order",
     "whoText": "We are a product, technology, and marketing team that understands the daily reality of business owners: missed leads, scattered tools, and tasks that never close — that’s why we built one system that connects management, service, and growth",
     "whoText2": "Our goal is simple: give you real control over the business with smart CRM, automations, agents, website tools, and collaborations — without compromising on a clean, professional experience",
-    "whoImageAlt": "The BizUply team collaborating",
+    "whoImageAlt": "The Bizuply team collaborating",
     "widgetsTitle": "A smart snapshot of the business",
     "widgetsText": "Top pages, collaborations, and referrals — just like inside the product, with numbers that count up in real time",
     "widgetsImageAlt": "Top pages and collaborations overview",
@@ -3204,7 +3205,7 @@
       "pageProducts": "Products"
     },
     "servicesTitle": "Everything your business needs in one place",
-    "servicesSubtitle": "Pick the capability you need — and see how BizUply connects everything into one working system",
+    "servicesSubtitle": "Pick the capability you need — and see how Bizuply connects everything into one working system",
     "service1Title": "Collaborations",
     "service2Title": "Website & Store",
     "service3Title": "Business Agents",
@@ -8102,8 +8103,8 @@
     "benefitsBadge": "Why it matters",
     "stepsBadge": "How it works",
     "crm": {
-      "seoTitle": "CRM & Meta Leads | BizUply — Meta App Review Developers",
-      "seoDescription": "BizUply are Meta App Review Developers. Connect Facebook Lead Ads to your CRM and manage leads in one place.",
+      "seoTitle": "CRM Software with Meta Lead Ads Integration | Bizuply",
+      "seoDescription": "Manage leads and customers in one CRM. Meta Lead Ads, Google Ads, and your website feed one pipeline, with a client file and appointments. CRM only is $49/month.",
       "badge": "CRM & Meta Leads",
       "heroDisplayTitle": "CRM & Leads",
       "heroTitle": "Manage leads and clients",
@@ -8118,7 +8119,7 @@
       "sectionAppointmentsTitle": "Synced meeting calendar",
       "sectionAppointmentsText": "Appointments, payment status, and a live calendar connected to clients and services",
       "heroSubtitle": "Capture leads from Facebook and Instagram, track statuses, and communicate — with a Meta app that passed App Review",
-      "heroImageAlt": "BizUply CRM preview — customer file, tasks, and appointments",
+      "heroImageAlt": "Bizuply CRM preview — customer file, tasks, and appointments",
       "previewTitle": "A clear lead pipeline",
       "previewText": "From new lead to paying client",
       "audience1": "Businesses getting leads from ads",
@@ -8127,7 +8128,7 @@
       "pipelineBadge": "Live lead pipeline",
       "pipelineTitle": "See the whole pipeline — no guessing",
       "pipelineSubtitle": "From new lead to paying client: clear statuses, accurate sources, and progress that moves in real time",
-      "pipelinePreviewTitle": "Sales pipeline · BizUply CRM",
+      "pipelinePreviewTitle": "Sales pipeline · Bizuply CRM",
       "pipelineLive": "Live",
       "pipelineStage": {
         "new": "New",
@@ -8157,7 +8158,7 @@
       "benefit3Title": "Statuses that show progress",
       "benefit3Text": "New, contacted, interested, converted — a clear view of the pipeline",
       "benefit4Title": "Fast day-to-day work",
-      "benefit4Text": "A clean interface like BizUply Leads — without unnecessary complexity",
+      "benefit4Text": "A clean interface like Bizuply Leads — without unnecessary complexity",
       "stepsTitle": "Start managing leads quickly",
       "stepsSubtitle": "Four simple steps from setup to daily use",
       "step1Title": "Connect sources",
@@ -8169,19 +8170,19 @@
       "step4Title": "Close and convert",
       "step4Text": "Turn leads into clients and keep managing them in the same system",
       "ctaTitle": "Organize your lead pipeline",
-      "ctaText": "Start with BizUply CRM — a Meta app that passed App Review",
-      "metaBadge": "Meta App Review Developers",
-      "metaTrustLine": "We are Meta App Review Developers — the BizUply app passed Meta’s App Review process for connecting Lead Ads to businesses",
+      "ctaText": "Start with Bizuply CRM — a Meta app that passed App Review",
+      "metaBadge": "Meta Tech Provider",
+      "metaTrustLine": "Bizuply is a Meta Tech Provider. The app passed Meta App Review for connecting Lead Ads to a business CRM",
       "metaSectionBadge": "Meta App Review",
-      "metaSectionTitle": "Meta App Review Developers",
-      "metaSectionText": "BizUply is a Meta app that lets businesses connect their Facebook Page and receive Lead Ads directly into the CRM — after completing Meta’s App Review process",
+      "metaSectionTitle": "App Review approved for Lead Ads",
+      "metaSectionText": "Bizuply is a Meta Tech Provider. A business connects its own Facebook Page and receives Lead Ads directly in the CRM after Meta App Review",
       "metaPoint1": "Secure, approved Facebook Lead Ads connection",
       "metaPoint2": "Each business connects its own Page and grants permissions",
       "metaPoint3": "Leads land automatically in the CRM pipeline with source and status"
     },
     "collaborations": {
-      "seoTitle": "Business Collaborations | BizUply",
-      "seoDescription": "Find business partners, manage conversations and opportunities, and grow together with BizUply Collaborations.",
+      "seoTitle": "Business Collaborations | Bizuply",
+      "seoDescription": "Find business partners, manage conversations and opportunities, and grow together with Bizuply Collaborations.",
       "badge": "Collaborations",
       "heroTitle": "Find partners",
       "heroHighlight": "and grow together.",
@@ -8212,11 +8213,11 @@
       "step4Title": "Work together",
       "step4Text": "Manage the partnership and track results over time.",
       "ctaTitle": "Want a new growth channel?",
-      "ctaText": "Join the BizUply collaboration network and start connecting with relevant partners."
+      "ctaText": "Join the Bizuply collaboration network and start connecting with relevant partners."
     },
     "website": {
-      "seoTitle": "Website & Business Page Builder | BizUply",
-      "seoDescription": "Build a professional website and business page with BizUply — templates, editor, SEO, and client inquiries in one place.",
+      "seoTitle": "Website & Business Page Builder | Bizuply",
+      "seoDescription": "Build a professional website and business page with Bizuply — templates, editor, SEO, and client inquiries in one place.",
       "badge": "Website builder",
       "heroTitle": "A website and business page",
       "heroHighlight": "that work for you.",
@@ -8247,11 +8248,11 @@
       "step4Title": "Get inquiries",
       "step4Text": "Clients find you and reach out — then management continues in the system.",
       "ctaTitle": "Ready for a clear digital presence?",
-      "ctaText": "Start building your website or business page with BizUply today."
+      "ctaText": "Start building your website or business page with Bizuply today."
     },
     "appointments": {
-      "seoTitle": "Appointment Scheduling | BizUply",
-      "seoDescription": "Manage your appointment calendar, reminders, and client follow-up with BizUply Appointments.",
+      "seoTitle": "Appointment Scheduling | Bizuply",
+      "seoDescription": "Manage your appointment calendar, reminders, and client follow-up with Bizuply Appointments.",
       "badge": "Appointments",
       "heroTitle": "Appointment scheduling",
       "heroHighlight": "without the chaos.",
@@ -8282,11 +8283,11 @@
       "step4Title": "Track and improve",
       "step4Text": "See load, arrive prepared, and keep the schedule clean.",
       "ctaTitle": "Want a calendar that works for you?",
-      "ctaText": "Turn on BizUply Appointments and stop chasing coordination."
+      "ctaText": "Turn on Bizuply Appointments and stop chasing coordination."
     },
     "automations": {
-      "seoTitle": "Business Automations | BizUply",
-      "seoDescription": "Run business automations: reminders, follow-ups, tasks, and alerts that work in the background with BizUply.",
+      "seoTitle": "Business Automations | Bizuply",
+      "seoDescription": "Run business automations: reminders, follow-ups, tasks, and alerts that work in the background with Bizuply.",
       "badge": "Business Automations",
       "heroTitle": "Automations",
       "heroHighlight": "that work for you.",
@@ -8317,11 +8318,11 @@
       "step4Title": "Improve",
       "step4Text": "Review results and upgrade the flow.",
       "ctaTitle": "Want the business to run without you chasing it?",
-      "ctaText": "Turn on BizUply automations and stop chasing manual tasks."
+      "ctaText": "Turn on Bizuply automations and stop chasing manual tasks."
     },
     "agents": {
-      "seoTitle": "Business Agents | BizUply",
-      "seoDescription": "Human agents who handle leads, book meetings, and support inquiries — connected directly into BizUply.",
+      "seoTitle": "Business Agents | Bizuply",
+      "seoDescription": "Human agents who handle leads, book meetings, and support inquiries — connected directly into Bizuply.",
       "badge": "Business Agents",
       "heroTitle": "Human agents",
       "heroHighlight": "that move results.",
@@ -8346,13 +8347,13 @@
       "step1Title": "Define the need",
       "step1Text": "Leads, bookings, or ongoing support.",
       "step2Title": "Connect to the system",
-      "step2Text": "Agents work inside BizUply.",
+      "step2Text": "Agents work inside Bizuply.",
       "step3Title": "Start handling",
       "step3Text": "Inquiries get responses and move forward.",
       "step4Title": "Measure results",
       "step4Text": "See statuses, meetings, and progress in real time.",
       "ctaTitle": "Need a human layer that drives results?",
-      "ctaText": "Connect business agents through BizUply and reduce overload from day one."
+      "ctaText": "Connect business agents through Bizuply and reduce overload from day one."
     }
   },
   "whatsapp": {
@@ -10268,6 +10269,7 @@
         "duplicateLocalDone": "A new Bizuply draft was created. Nothing was sent to Meta.",
         "changePlacements": "Placements",
         "changeAudiences": "Audiences",
+        "changeDetailedTargeting": "Detailed targeting",
         "changeSelection": "Editor position",
         "serverConfirmedSave": "Saved in Bizuply",
         "notYetSaved": "Not saved on the server yet",
@@ -10405,6 +10407,33 @@
         "website": "Website",
         "websiteAndInstantForms": "Website and instant forms",
         "messenger": "Messenger",
+        "whatsappConversion": "WhatsApp",
+        "pageWaTitle": "Add a WhatsApp Business app account",
+        "pageWaHint": "Choose where you want to manage chats with people who click your ad.",
+        "pageWaLoading": "Loading WhatsApp numbers linked to this Page…",
+        "pageWaLoadFailed": "Could not load WhatsApp numbers for this Page from Meta.",
+        "pageWaChooseNumber": "Select a number",
+        "pageWaConnectAnother": "Connect another number",
+        "pageWaLimitHint": "You can connect up to 50 WhatsApp numbers per Facebook Page. Edit WhatsApp numbers in Business Manager and number connections in Page settings.",
+        "pageWaNeedPage": "Select a Facebook Page to see linked WhatsApp numbers.",
+        "pageWaModalTitle": "Connect WhatsApp Business",
+        "pageWaModalHint": "Enter the number assigned to your WhatsApp account, so people can message you directly from your ads.",
+        "pageWaCountry": "Country",
+        "pageWaPhone": "Phone number",
+        "pageWaContinue": "Continue",
+        "pageWaCancel": "Cancel",
+        "pageWaCodeTitle": "Verify WhatsApp number",
+        "pageWaCodeHint": "Meta sent a verification code on WhatsApp. Enter it to finish linking this Page.",
+        "pageWaCode": "Verification code",
+        "pageWaCodeSent": "A verification code was sent on WhatsApp.",
+        "pageWaResend": "Resend",
+        "pageWaResendFailed": "Meta could not resend the code.",
+        "pageWaInvalidCode": "The verification code is incorrect or has expired.",
+        "pageWaTooManyAttempts": "Too many verification attempts. Request a new code from Meta.",
+        "pageWaConnectFailed": "Meta did not confirm this number is linked to the Page.",
+        "pageWaAlreadyOnPage": "This WhatsApp Business number is already connected to this Page.",
+        "pageWaConnected": "The number is linked to the Page and selected for this campaign.",
+        "pageWaRequired": "Select a WhatsApp number linked to the Facebook Page.",
         "facebookPage": "Facebook Page",
         "choosePageHint": "Choose the Page you want to promote.",
         "selectFacebookPage": "Select a Facebook Page",
@@ -10454,6 +10483,29 @@
         "gender": "Gender",
         "detailedTargeting": "Detailed targeting",
         "allDemographics": "All demographics, interests and behaviors",
+        "includePeopleMatching": "Include people who match",
+        "detailedSearchPlaceholder": "Add demographics, interests or behaviors",
+        "browseDemographics": "Demographics",
+        "browseInterests": "Interests",
+        "browseBehaviors": "Behaviors",
+        "targetingInfo": "Targeting info",
+        "targetingInfoFallback": "Meta targeting category",
+        "targetingUnsupportedFlexible": "Not supported for Meta flexible_spec, so it cannot be selected",
+        "targetingCategoryNotSelectable": "Browse category only — pick a specific Meta ID value",
+        "detailedBrowseAria": "Browse detailed targeting",
+        "detailedBrowseFailed": "Could not load Meta targeting categories",
+        "detailedSearchFailed": "Could not search Meta detailed targeting",
+        "detailedBrowseEmpty": "No subcategories available for this ad account",
+        "detailedSearchEmpty": "No targeting results. Try a different search.",
+        "detailedSuggestionsEmpty": "No targeting suggestions available right now.",
+        "detailedSuggestionsUnavailable": "Official Meta suggestions appear after you select an audience, or from your connected Page category. Meanwhile, search or browse categories.",
+        "detailedSuggestionsFailed": "Could not load Meta targeting suggestions",
+        "audienceSizeRange": "Audience size: {{range}}",
+        "audienceSizeLabel": "Audience size",
+        "suggestionsRelevance": "Relevance",
+        "suggestionsSize": "Size",
+        "browseBack": "Back",
+        "connectToSearchTargeting": "Connect Meta Ads to search and browse detailed targeting.",
         "furtherLimitReach": "Further limit the reach of your ads",
         "saveAudience": "Save audience",
         "adTransparency": "Ad transparency",
@@ -12018,6 +12070,8 @@
       "instantFormsFailed": "Failed to load Instant Forms from Meta",
       "retryCompleted": "Retry completed — Ad ID confirmed from Meta",
       "publishFailed": "Publish to Meta failed",
+      "publishWaiting": "Publishing to Meta is still running. Waiting for the existing attempt — no duplicate campaign will be created.",
+      "publishTimeout": "Publishing to Meta timed out. The campaign was not activated. Try Publish again in a moment.",
       "syncFailed": "Sync from Meta failed",
       "syncSuccess": "Synced from Meta · {{status}}",
       "retryFailed": "Retry failed"
@@ -12231,8 +12285,8 @@
   },
   "agentsPage": {
     "seo": {
-      "title": "Human Agents for Your Business | BizUply",
-      "description": "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your BizUply CRM."
+      "title": "Human Agents for Your Business | Bizuply",
+      "description": "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your Bizuply CRM."
     },
     "hero": {
       "ariaLabel": "Human agents for your business",
@@ -12270,7 +12324,7 @@
       },
       "connect": {
         "title": "Connect to the system",
-        "text": "Agents work inside BizUply — not from a disconnected call center — with access to the lead pipeline and your business process.",
+        "text": "Agents work inside Bizuply — not from a disconnected call center — with access to the lead pipeline and your business process.",
         "tags": {
           "0": "CRM",
           "1": "Connection",
@@ -12403,7 +12457,7 @@
       "title": "What's important to know about human agents",
       "items": {
         "0": {
-          "q": "What's the difference between a BizUply agent and an external call center?",
+          "q": "What's the difference between a Bizuply agent and an external call center?",
           "a": "The agents work inside your system — with access to the CRM, statuses and documentation. It's not a disconnected call center that emails you a summary at the end of the day."
         },
         "1": {
@@ -12431,7 +12485,7 @@
     "finalCta": {
       "eyebrow": "Need a human layer",
       "title": "Connect agents that drive results — without losing control",
-      "text": "Lead handling, meeting scheduling and partnership management from inside BizUply. Every activity is documented, every status is visible, and the load drops from day one.",
+      "text": "Lead handling, meeting scheduling and partnership management from inside Bizuply. Every activity is documented, every status is visible, and the load drops from day one.",
       "primaryLabel": "Sign up now"
     },
     "workspace": {
@@ -12507,7 +12561,7 @@
     }
   },
   "automationsPage": {
-    "seoTitle": "Automations for Your Business | BizUply",
+    "seoTitle": "Automations for Your Business | Bizuply",
     "seoDescription": "Reminders, follow-ups, tasks, and alerts that run in the background and stay connected to your CRM — so fewer leads slip through the cracks.",
     "hero": {
       "ariaLabel": "Automations for your business",
@@ -12768,8 +12822,8 @@
     }
   },
   "collabPage": {
-    "seoTitle": "Business Collaborations | BizUply",
-    "seoDescription": "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with BizUply.",
+    "seoTitle": "Business Collaborations | Bizuply",
+    "seoDescription": "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with Bizuply.",
     "hero": {
       "ariaLabel": "Business Collaborations",
       "badgeNetwork": "Smart partner network",
@@ -12890,7 +12944,7 @@
       "q4": "Is there chat between businesses?",
       "a4": "Yes. There's real-time business chat between businesses — you can start it from a partner card or from within the collaboration profile.",
       "q5": "Can a human manager run collaborations for us?",
-      "a5": "Yes. You can bring on a BizUply representative to find partners, make contact, follow up on responses and manage the collaboration process — all from within the system.",
+      "a5": "Yes. You can bring on a Bizuply representative to find partners, make contact, follow up on responses and manage the collaboration process — all from within the system.",
       "q6": "What happens after you send a proposal?",
       "a6": "The proposal enters the pipeline with a clear status. The other side can approve or decline, and you can cancel a sent proposal — all documented in one place."
     },
@@ -12942,22 +12996,25 @@
   },
   "crmPage": {
     "seo": {
-      "title": "CRM & Meta Leads | BizUply — Meta App Review Developers",
-      "description": "BizUply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place."
+      "title": "CRM Software with Meta Lead Ads Integration | Bizuply",
+      "description": "Manage leads and customers in one CRM. Meta Lead Ads, Google Ads, and your website feed one pipeline, with a client file and appointments. CRM only is $49/month."
     },
     "hero": {
       "ariaLabel": "CRM & Leads",
-      "badgeMeta": "Meta App Review Developers",
+      "badgeMeta": "Meta Tech Provider",
+      "badgeTech": "Meta Tech Provider",
+      "badgeReview": "App Review approved",
       "badgeRealtime": "Real-time leads",
       "badgeCalendar": "Synced appointment calendar",
       "titleLine1": "Every lead, every client, every appointment",
       "titleLine2": "in one place",
       "lead": "Inquiries from Facebook, Instagram, Google Ads and your own website flow automatically into a single pipeline with status, notes and tasks. From there you continue to the client file, the appointment calendar and the service catalog — all in the same system.",
-      "trust": "We are Meta App Review Developers — the BizUply app has passed Meta's App Review process for connecting Lead Ads to businesses.",
+      "trust": "A business connects its own Facebook page, and new Lead Ads enter this CRM with their source and status.",
       "ctaAutomations": "Automations",
-      "ctaStartFree": "Start for free"
+      "ctaStartFree": "See plans"
     },
     "stats": {
+      "caption": "Product facts, not performance results",
       "pipelineStatuses": "statuses in the lead pipeline",
       "autoChannels": "automated lead channels",
       "docTypes": "record types in the client file",
@@ -12974,7 +13031,7 @@
     },
     "pipelineSection": {
       "eyebrow": "Lead pipeline",
-      "titleA": "Five statuses, ",
+      "titleA": "Six statuses, ",
       "titleHighlight": "one clear picture",
       "lead": "Every lead holds a single status, and every status change is logged automatically on its timeline — so you can see when it moved and where to."
     },
@@ -12993,7 +13050,7 @@
         "title": "Filter by status and source",
         "text": "Narrow the list to a single status or a single channel — Meta, Google or your own website.",
         "tags": [
-          "5 statuses",
+          "6 statuses",
           "Meta",
           "Google",
           "Website"
@@ -13068,7 +13125,7 @@
     "integrationSources": {
       "meta": {
         "name": "Facebook & Instagram Lead Ads",
-        "badge": "Meta App Review",
+        "badge": "App Review approved",
         "steps": [
           "Sign in with your Facebook account and approve permissions",
           "Choose the business page to sync",
@@ -13160,9 +13217,9 @@
       }
     },
     "metaTrust": {
-      "eyebrow": "Meta App Review",
-      "title": "Meta developers who passed App Review",
-      "lead": "BizUply is a Meta app that lets businesses connect their Facebook page and receive Lead Ads directly into the CRM — after passing Meta's App Review process.",
+      "eyebrow": "Meta Tech Provider",
+      "title": "App Review approved for Lead Ads",
+      "lead": "Bizuply is a Meta Tech Provider. The app passed Meta App Review, so a business can connect its own Facebook page and receive Lead Ads in this CRM.",
       "points": [
         "Secure and approved Facebook Lead Ads connection",
         "The business connects its own page and approves permissions itself",
@@ -13177,15 +13234,15 @@
     "faq": {
       "statuses": {
         "q": "What statuses can a lead have?",
-        "a": "Five: New, Contacted, Interested, Converted and Lost. Every status change is logged automatically on the lead's timeline, so you can see when it moved and where to."
+        "a": "Six: New, Contacted, Interested, Converted, Lost and Old lead. Every status change is logged automatically on the lead's timeline, so you can see when it moved and where to."
       },
       "sources": {
         "q": "Where do the leads come from?",
-        "a": "From three automated channels: Facebook and Instagram Lead Ads via an approved Meta connection, Google Ads lead forms, and forms on the site you built in BizUply. Each lead keeps its source alongside its details."
+        "a": "From three automated channels: Facebook and Instagram Lead Ads via an approved Meta connection, Google Ads lead forms, and forms on the site you built in Bizuply. Each lead keeps its source alongside its details."
       },
       "approved": {
-        "q": "Is BizUply really approved by Meta?",
-        "a": "Yes. The BizUply app has passed Meta's App Review process for connecting Lead Ads. The business connects its own Facebook page and approves the permissions, and from that moment the leads flow directly into the CRM."
+        "q": "Is Bizuply really approved by Meta?",
+        "a": "Yes. Bizuply is a Meta Tech Provider, and the app passed Meta App Review for Lead Ads. The business connects its own Facebook page and approves the permissions, and from that moment the leads flow directly into the CRM."
       },
       "followup": {
         "q": "How do you avoid missing follow-ups?",
@@ -13206,18 +13263,101 @@
       "dashboard": {
         "q": "Can I see a snapshot without opening the CRM?",
         "a": "Yes. The business dashboard shows new leads, untreated leads, the change versus the previous period, a table of the most recent leads with source and status, and the upcoming appointments."
+      },
+      "price": {
+        "q": "What does the CRM cost?",
+        "a": "CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year."
       }
+    },
+    "audiences": {
+      "eyebrow": "Who it is for",
+      "titleA": "Teams that already receive inquiries ",
+      "titleHighlight": "and need one place to work them",
+      "lead": "The CRM is for businesses that collect leads from ads or a website and then need a status, a follow-up and, when it is relevant, an appointment.",
+      "cards": {
+        "services": {
+          "title": "Service businesses",
+          "text": "Clinics, salons, studios and field teams that turn an inquiry into a client file and a booked time."
+        },
+        "ads": {
+          "title": "Businesses running lead ads",
+          "text": "Teams that buy Facebook, Instagram or Google lead forms and want each submission in the pipeline with its source."
+        },
+        "sites": {
+          "title": "Businesses on a Bizuply website",
+          "text": "A form published in the website builder saves the inquiry with the Website source and can send an email alert."
+        }
+      }
+    },
+    "useCases": {
+      "eyebrow": "Use cases",
+      "title": "What happens after the inquiry arrives",
+      "items": {
+        "leadAd": {
+          "title": "A Lead Ad becomes a pipeline card",
+          "text": "After the Facebook page is connected and the form is selected, a new Meta lead enters with status New. The source and form fields stay on the card."
+        },
+        "website": {
+          "title": "A website form joins the same list",
+          "text": "A lead form on a Bizuply site is saved with the Website source. The business can receive an email alert, and the visitor can see a thank-you message."
+        },
+        "client": {
+          "title": "A converted lead continues as a client",
+          "text": "The client file keeps contact details, a log, files and appointment history, so the work does not stop when the status changes to Converted."
+        },
+        "booking": {
+          "title": "The next step can be a time on the calendar",
+          "text": "Business hours and service duration define 15-minute windows. A booking from the customer page sends a confirmation email and appears on the calendar."
+        }
+      }
+    },
+    "start": {
+      "eyebrow": "Getting started",
+      "title": "From an account to the first lead",
+      "steps": {
+        "account": {
+          "title": "Create the business account",
+          "text": "Open a Bizuply account and enter the CRM from the business dashboard."
+        },
+        "source": {
+          "title": "Connect one source",
+          "text": "Connect a Facebook page and lead form, a Google Ads lead form, or a form on your Bizuply website."
+        },
+        "work": {
+          "title": "Work the card",
+          "text": "Set the status, add a note, call or WhatsApp log, and create a task with a date and time."
+        }
+      }
+    },
+    "pricingNote": {
+      "eyebrow": "Pricing",
+      "title": "CRM only is $49 per month",
+      "text": "The CRM-only plan is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.",
+      "plans": "See all plans",
+      "crmOnly": "Start CRM only"
+    },
+    "related": {
+      "eyebrow": "Works with the rest of Bizuply",
+      "title": "The CRM is not a separate inbox",
+      "automations": "Automations",
+      "automationsText": "Reminders, follow-ups, tasks and alerts connected to the CRM.",
+      "appointments": "Appointments",
+      "appointmentsText": "The calendar, services and customer booking page.",
+      "websites": "Website builder",
+      "websitesText": "A site whose inquiries enter the same pipeline.",
+      "whatsapp": "WhatsApp API",
+      "whatsappText": "A connected WhatsApp number for systems that send approved templates."
     },
     "finalCta": {
       "eyebrow": "Start organizing your pipeline",
       "title": "Organize your lead pipeline — and never miss an inquiry",
       "text": "Connect your lead sources, work with statuses and tasks, and continue to the client file and appointment calendar. All in a Meta app that passed App Review.",
-      "primaryLabel": "Sign up now"
+      "primaryLabel": "Create an account"
     }
   },
   "privacyPage": {
-    "metaTitle": "Privacy Policy - BizUply",
-    "metaDescription": "Read BizUply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
+    "metaTitle": "Privacy Policy - Bizuply",
+    "metaDescription": "Read Bizuply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
     "badge": "Privacy Center",
     "title": "Privacy Policy",
     "intro": "This Privacy Policy explains how BizUply collects, stores, uses, and protects personal and business information across the platform.",
@@ -13445,8 +13585,8 @@
       "Governing Law",
       "Contact Details"
     ],
-    "seoTitle": "Terms of Service - BizUply",
-    "seoDesc": "Read BizUply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
+    "seoTitle": "Terms of Service - Bizuply",
+    "seoDesc": "Read Bizuply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
     "badge": "Legal Center",
     "title": "Terms of Service",
     "intro": "Please read these terms carefully before using BizUply's website, app, platform, tools, and services.",
@@ -13651,7 +13791,7 @@
   },
   "websitePage": {
     "seo": {
-      "title": "Professional Website Builder | BizUply",
+      "title": "Professional Website Builder | Bizuply",
       "description": "Build a website, store, or booking-enabled site from 205 templates, edit in a visual editor, and publish to your own domain — with every inquiry from the site flowing straight into your CRM."
     },
     "hero": {
@@ -13820,7 +13960,7 @@
     },
     "plugins": {
       "accessibility": {
-        "name": "BizUply Accessibility",
+        "name": "Bizuply Accessibility",
         "category": "Accessibility"
       },
       "countdown": {
@@ -13916,7 +14056,7 @@
           ]
         },
         "handle": {
-          "title": "BizUply handles the inquiry",
+          "title": "Bizuply handles the inquiry",
           "text": "The inquiry is saved, an email alert is sent to you, and whoever left their details receives an automatic reply.",
           "tags": [
             "Email alert",
@@ -14021,7 +14161,7 @@
     },
     "faq": {
       "code": {
-        "q": "Do I need to know how to code to build a site on BizUply?",
+        "q": "Do I need to know how to code to build a site on Bizuply?",
         "a": "No. Choose one of the 205 templates, click any element, and change it in place — text, color, image, and spacing. Anyone who does want to go deeper can add their own CSS and HTML tags to the site's head and body."
       },
       "structure": {
@@ -21544,7 +21684,7 @@
       "featureDash": "CRM dashboard and data",
       "payError": "We could not start payment. Try again.",
       "alreadyActive": "An active subscription already exists on your account. Manage or change it in billing.",
-      "seoTitle": "CRM only — BizUply",
+      "seoTitle": "CRM only — Bizuply",
       "badge": "Special offer",
       "title": "CRM only",
       "subtitle": "Manage all of your leads and customers in one place.",
@@ -22731,6 +22871,7 @@
       "siteDomainMissing": "We could not find a published site for this domain:",
       "reauth": "Please sign in again",
       "network": "Network problem — check your connection",
+      "timeout": "The request to Meta took too long. The campaign was not activated. Wait a moment and try Publish again — a duplicate campaign will not be created.",
       "loadData": "Could not load the data",
       "connectDomain": "Domain connection failed",
       "disconnectDomain": "Domain disconnect failed",

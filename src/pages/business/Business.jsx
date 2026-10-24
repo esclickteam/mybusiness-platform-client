@@ -19,7 +19,7 @@ function BusinessJoin() {
           name="description"
           content={t("business.profileBuild.seoDesc")}
         />
-        <link rel="canonical" href="https://bizuply.com/join" />
+        <link rel="canonical" href="https://bizuply.com/business" />
         <meta name="robots" content="index, follow" />
       </Helmet>
 

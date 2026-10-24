@@ -16,6 +16,7 @@ import {
   retryMetaPublish,
   syncMetaPublish,
   saveMetaEditorDraft,
+  waitForMetaPublish,
   type MetaAdsConnectionStatus,
   type MetaCampaignPublishRecord,
   type MetaEditorDraftSaveResult,
@@ -56,6 +57,8 @@ import type { AdsManagerState } from "./adsManagerTypes";
 import type { EditorDraft, EditorWorkspace } from "./editorDraft";
 import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
 import { leadgenTosBlocksPublish } from "./leadgenTos";
+import { isPublishTimeoutError, recoverTimedOutPublish } from "./recoverTimedOutPublish";
+import { getApiErrorMessage } from "../../../../../utils/apiErrorMessage";
 import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import { getTextDirection } from "@/i18n/localeUtils";
 import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
@@ -659,7 +662,7 @@ export default function MetaAdsManagerPage() {
         }
         if (savedUpdate?.publishId) rememberSaved(stateRef.current, savedUpdate);
         toast.error(
-          err.response?.data?.error || err.message || c("changesNotPublished")
+          getApiErrorMessage(error, c("changesNotPublished"))
         );
       } finally {
         setPublishing(false);
@@ -724,9 +727,19 @@ export default function MetaAdsManagerPage() {
         return;
       }
       if (resumeId) payload.resumePublishId = resumeId;
-      const result = resumeId
-        ? await retryMetaPublish(businessId, resumeId, payload)
-        : await publishMetaCampaign(businessId, payload);
+      let result;
+      try {
+        result = resumeId
+          ? await retryMetaPublish(businessId, resumeId, payload)
+          : await publishMetaCampaign(businessId, payload);
+      } catch (error: unknown) {
+        if (resumeId && isPublishTimeoutError(error)) {
+          toast.info(t("metaCampaigns.adsToasts.publishWaiting"));
+        }
+        result = await recoverTimedOutPublish(error, resumeId, (publishId) =>
+          waitForMetaPublish(businessId, publishId)
+        );
+      }
       if (result?.demoSafe) {
         // The guided tour shows its own localized success toast for this step.
         if (!isGuidedDemoActive()) {
@@ -796,9 +809,7 @@ export default function MetaAdsManagerPage() {
       }
       if (savedDraft?.publishId) rememberSaved(stateRef.current, savedDraft);
       toast.error(
-        err.response?.data?.error ||
-          err.message ||
-          t("metaCampaigns.adsToasts.publishFailed")
+        getApiErrorMessage(error, t("metaCampaigns.adsToasts.publishFailed"))
       );
     } finally {
       setPublishing(false);
@@ -1531,6 +1542,13 @@ export default function MetaAdsManagerPage() {
                       patch.facebookPageName || selectedAd.facebookPageName,
                   });
                 }
+                if (
+                  typeof patch.conversionLocation === "string" &&
+                  patch.conversionLocation.toLowerCase().includes("whatsapp") &&
+                  selectedAd
+                ) {
+                  patchAd(selectedAd.id, { callToAction: "WHATSAPP_MESSAGE" });
+                }
               }}
             />
           ) : null}
@@ -1550,6 +1568,9 @@ export default function MetaAdsManagerPage() {
               showLeadgenTos={String(selectedAdSet?.conversionLocation || "")
                 .toLowerCase()
                 .includes("instant")}
+              conversionLocation={selectedAdSet?.conversionLocation}
+              whatsappPhone={selectedAdSet?.whatsappPhone}
+              whatsappDisplayNumber={selectedAdSet?.whatsappDisplayNumber}
               publishId={publishRecordIdRef.current || state.publishRecordId || ""}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
               onFormReady={async (form) => {

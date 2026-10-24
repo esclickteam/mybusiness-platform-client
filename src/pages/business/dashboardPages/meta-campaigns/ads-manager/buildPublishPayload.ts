@@ -74,7 +74,13 @@ export function audienceTargetingFromAdsManager(state: AdsManagerState) {
     genders: gendersForMeta(adSet?.gender || "all"),
     interests: (adSet?.interests || [])
       .filter((item) => item?.id)
-      .map((item) => ({ id: item.id, name: item.name })),
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        type: item.type || "interests",
+        path: item.path,
+        description: item.description,
+      })),
     advantageAudience,
     advantagePlacements: adSet?.advantagePlacements !== false,
     furtherLimitReach: Boolean(adSet?.furtherLimitReach),
@@ -122,6 +128,9 @@ export function buildPublishPayloadFromAdsManager(
   const usesInstantForms = String(adSet.conversionLocation)
     .toLowerCase()
     .includes("instant");
+  const usesWhatsApp = String(adSet.conversionLocation)
+    .toLowerCase()
+    .includes("whatsapp");
 
   const audience = audienceTargetingFromAdsManager(state);
   const pageId = ad.facebookPageId || adSet.facebookPageId || "";
@@ -170,18 +179,26 @@ export function buildPublishPayloadFromAdsManager(
     advantagePlacements: adSet.advantagePlacements,
     conversionLocation: adSet.conversionLocation,
     performanceGoal: adSet.performanceGoal,
-    destinationType:
-      isLeads && usesInstantForms ? "ON_AD" : "WEBSITE",
+    destinationType: usesWhatsApp
+      ? "WHATSAPP"
+      : isLeads && usesInstantForms
+        ? "ON_AD"
+        : "WEBSITE",
+    whatsappPhone: usesWhatsApp ? adSet.whatsappPhone : undefined,
     leadFormId: ad.instantFormId || undefined,
     formId: ad.instantFormId || undefined,
-    websiteUrl: ad.websiteUrl,
-    link: ad.websiteUrl,
+    websiteUrl: usesWhatsApp
+      ? ad.websiteUrl || "https://api.whatsapp.com/send"
+      : ad.websiteUrl,
+    link: usesWhatsApp
+      ? ad.websiteUrl || "https://api.whatsapp.com/send"
+      : ad.websiteUrl,
     displayLink: ad.displayLink,
     primaryText: ad.primaryText,
     message: ad.primaryText,
     headline: ad.headline,
     description: ad.description,
-    callToAction: ad.callToAction,
+    callToAction: usesWhatsApp ? "WHATSAPP_MESSAGE" : ad.callToAction,
     imageHash: ad.imageHash || undefined,
     imageUrl: ad.imagePreviewUrl || undefined,
     videoId: ad.videoId || undefined,
@@ -197,6 +214,9 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   const usesInstantForms = String(adSet?.conversionLocation || "")
     .toLowerCase()
     .includes("instant");
+  const usesWhatsApp = String(adSet?.conversionLocation || "")
+    .toLowerCase()
+    .includes("whatsapp");
 
   if (!campaign?.name.trim()) errors.push(tChrome("validationCampaignName"));
   if (!campaign?.objective) errors.push(tChrome("validationObjective"));
@@ -211,7 +231,11 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   if (!pageId || pageId === "page_1" || pageId === "page_2") {
     errors.push(tChrome("validationPage"));
   }
-  if (usesInstantForms && !adSet?.facebookPageId && !ad?.facebookPageId) {
+  if (
+    (usesInstantForms || usesWhatsApp) &&
+    !adSet?.facebookPageId &&
+    !ad?.facebookPageId
+  ) {
     errors.push(tChrome("validationPageForForms"));
   }
   if (!ad?.primaryText.trim() || !ad?.headline.trim()) {
@@ -224,7 +248,10 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   ) {
     errors.push(tChrome("validationInstantForm"));
   }
-  if (!ad?.instantFormId && !ad?.websiteUrl.trim()) {
+  if (usesWhatsApp && !String(adSet?.whatsappPhone || "").trim()) {
+    errors.push(tChrome("pageWaRequired"));
+  }
+  if (!usesWhatsApp && !ad?.instantFormId && !ad?.websiteUrl.trim()) {
     errors.push(tChrome("validationDestination"));
   }
   return errors;

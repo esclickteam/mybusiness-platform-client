@@ -343,7 +343,7 @@
   --gold-i: 0;
   position: relative;
   isolation: isolate;
-  overflow: visible;
+  overflow: hidden;
   height: 100%;
   border-radius: 1.35rem;
   padding: 0;

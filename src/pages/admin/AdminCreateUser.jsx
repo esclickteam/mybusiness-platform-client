@@ -134,7 +134,11 @@ export default function AdminCreateUser() {
   const [loadingMeta, setLoadingMeta] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [errorCode, setErrorCode] = useState("");
+  const [canRetry, setCanRetry] = useState(false);
+  const [setupStatus, setSetupStatus] = useState("");
   const [result, setResult] = useState(null);
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -276,10 +280,55 @@ export default function AdminCreateUser() {
     });
   };
 
+  const saasAddressError = (subdomain) => {
+    const value = String(subdomain || "").trim().toLowerCase();
+    if (!value) return { message: "כתובת המערכת חובה", code: "saas_address_missing" };
+    if (value === "my-restaurant" || value === "my-business" || value === "example") {
+      return { message: "כתובת המערכת אינה תקינה", code: "saas_address_invalid" };
+    }
+    return null;
+  };
+
+  const messageForSaasError = (data) => {
+    const code = data?.code || "";
+    if (code === "saas_address_missing") return "כתובת המערכת חובה";
+    if (code === "saas_address_invalid") return "כתובת המערכת אינה תקינה";
+    if (code === "saas_address_taken") return "כתובת המערכת כבר בשימוש";
+    if (code === "saas_provision_failed") return data?.error || "הקמת המערכת נכשלה. אפשר להמשיך את ההקמה בלי ליצור משתמש נוסף.";
+    return data?.error || "שגיאה ביצירת משתמש";
+  };
+
+  const handleDeliveryReset = async () => {
+    if (resettingPassword || !result?.user?._id) return;
+    setResettingPassword(true);
+    setError("");
+    try {
+      const { data } = await API.post("/admin/users/saas-delivery-reset", {
+        userId: result.user._id,
+        email: result.user.email,
+        tenantId: result.tenant?.id,
+      });
+      setResult((prev) => ({
+        ...prev,
+        temporaryPassword: data.temporaryPassword,
+        credentialsReady: Boolean(data.temporaryPassword && (prev?.tenant?.status === "active" || prev?.setupStatus === "active")),
+        passwordResetRequired: false,
+        mustChangePassword: true,
+      }));
+    } catch (err) {
+      setError(err.response?.data?.error || "איפוס הסיסמה נכשל");
+      setErrorCode(err.response?.data?.code || "saas_reset_failed");
+    } finally {
+      setResettingPassword(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
     setSubmitting(true);
     setError("");
+    setErrorCode("");
     setResult(null);
 
     try {
@@ -296,10 +345,19 @@ export default function AdminCreateUser() {
         payload.accountKind = form.accountKind || "bizuply";
         payload.businessName = form.businessName.trim();
         if (form.accountKind === "saas_only" || form.accountKind === "bizuply_saas") {
+          const addressError = saasAddressError(form.saas.subdomain);
+          if (addressError) {
+            setError(addressError.message);
+            setErrorCode(addressError.code);
+            setCanRetry(false);
+            setSetupStatus("");
+            setSubmitting(false);
+            return;
+          }
           const idempotencyKey = [
             form.email.trim().toLowerCase(),
             form.saas.templateSlug,
-            form.saas.subdomain,
+            form.saas.subdomain.trim().toLowerCase(),
           ].join("|");
           payload.saas = {
             ...form.saas,
@@ -399,14 +457,34 @@ export default function AdminCreateUser() {
       }
 
       setResult(data);
-      setForm((prev) => ({
-        ...EMPTY,
-        userType: prev.userType,
-        packageSku: prev.packageSku,
-        paymentMode: prev.paymentMode,
-      }));
+      setSetupStatus(data.setupStatus || data.tenant?.status || "");
+      setCanRetry(Boolean(data.canRetry));
+      if (!(data.accountKind === "saas_only" || data.accountKind === "bizuply_saas")) {
+        setForm((prev) => ({
+          ...EMPTY,
+          userType: prev.userType,
+          packageSku: prev.packageSku,
+          paymentMode: prev.paymentMode,
+        }));
+      }
     } catch (err) {
-      setError(err.response?.data?.error || "שגיאה ביצירת משתמש");
+      const data = err.response?.data || {};
+      setError(messageForSaasError(data));
+      setErrorCode(data.code || "");
+      setCanRetry(Boolean(data.canRetry));
+      setSetupStatus(data.setupStatus || "failed");
+      if (data.user) {
+        setResult({
+          success: false,
+          accountKind: form.accountKind,
+          user: data.user,
+          businessId: data.businessId,
+          setupStatus: data.setupStatus || "failed",
+          canRetry: Boolean(data.canRetry),
+          passwordResetRequired: Boolean(data.passwordResetRequired),
+          createdUser: data.createdUser,
+        });
+      }
     } finally {
       setSubmitting(false);
     }
@@ -437,7 +515,11 @@ export default function AdminCreateUser() {
 
         {error ? (
           <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
-            {error}
+            <p>{error}</p>
+            {setupStatus ? <p className="mt-1">סטטוס הקמה: {setupStatus}</p> : null}
+            {errorCode === "saas_address_missing" ? <p className="mt-1">יש למלא כתובת מערכת אמיתית לפני יצירת המשתמש.</p> : null}
+            {errorCode === "saas_address_taken" ? <p className="mt-1">בחרו כתובת פנויה או המשיכו הקמה קיימת של אותו לקוח.</p> : null}
+            {canRetry ? <p className="mt-1">אפשר ללחוץ שוב כדי להמשיך את ההקמה שנכשלה, בלי ליצור משתמש כפול.</p> : null}
           </div>
         ) : null}
 
@@ -462,39 +544,54 @@ export default function AdminCreateUser() {
             ) : null}
             {result.accountKind === "saas_only" || result.accountKind === "bizuply_saas" ? (
               <div className="mt-3 space-y-1 font-bold">
-                <p>מסירה מאובטחת — אל תשלחו באימייל או בוואטסאפ ציבורי. העתיקו והעבירו באופן פרטי.</p>
-                <p>כניסה ל־Bizuply: <code dir="ltr">{result.loginUrl || "https://bizuply.com/login"}</code></p>
-                {result.user?.email ? <p>אימייל: {result.user.email}</p> : null}
-                {result.temporaryPassword ? (
-                  <p>
-                    סיסמה זמנית: <code>{result.temporaryPassword}</code>
+                <p>סטטוס הקמה: {result.setupStatus || result.tenant?.status || "pending"}</p>
+                {result.tenant?.status === "active" && result.credentialsReady && result.temporaryPassword ? (
+                  <>
+                    <p>מסירה מאובטחת — אל תשלחו באימייל או בוואטסאפ. העתיקו והעבירו באופן פרטי.</p>
+                    <p>כניסה ל־Bizuply: <code dir="ltr">{result.loginUrl || "https://bizuply.com/login"}</code></p>
+                    {result.user?.email ? <p>אימייל: {result.user.email}</p> : null}
+                    <p>
+                      סיסמה זמנית: <code>{result.temporaryPassword}</code>
+                      <button
+                        type="button"
+                        className="ms-2 underline"
+                        onClick={() => {
+                          const text = [
+                            `כניסה: ${result.loginUrl || "https://bizuply.com/login"}`,
+                            `אימייל: ${result.user?.email || ""}`,
+                            `סיסמה זמנית: ${result.temporaryPassword}`,
+                            "בכניסה הראשונה יש להחליף סיסמה.",
+                            "לאחר מכן: לוגו, צבעים, פרטי העסק, ואז פתיחת המערכת ללקוחות.",
+                          ].join("\n");
+                          navigator.clipboard?.writeText(text);
+                        }}
+                      >
+                        העתקת פרטי כניסה
+                      </button>
+                    </p>
+                    {result.tenant?.accessPath || result.tenant?.product?.loginUrl ? (
+                      <p>
+                        כתובת המערכת:{" "}
+                        <code dir="ltr">{result.tenant.product?.loginUrl || result.tenant.accessPath}</code>
+                      </p>
+                    ) : null}
+                    <p>הלקוח מחליף סיסמה בכניסה הראשונה, נכנס ל־«המערכות שלי», ומעדכן מיתוג ותוכן.</p>
+                  </>
+                ) : result.tenant?.status === "active" && result.passwordResetRequired ? (
+                  <>
+                    <p>החשבון והמערכת מוכנים, אך אין סיסמה זמנית זמינה. לא הונפקה סיסמה אוטומטית.</p>
                     <button
                       type="button"
-                      className="ms-2 underline"
-                      onClick={() => {
-                        const text = [
-                          `כניסה: ${result.loginUrl || "https://bizuply.com/login"}`,
-                          `אימייל: ${result.user?.email || ""}`,
-                          `סיסמה זמנית: ${result.temporaryPassword}`,
-                          "בכניסה הראשונה יש להחליף סיסמה.",
-                          "לאחר מכן: לוגו, צבעים, פרטי העסק, ואז פתיחת המערכת ללקוחות.",
-                        ].join("\n");
-                        navigator.clipboard?.writeText(text);
-                      }}
+                      className="mt-2 rounded-lg bg-slate-900 px-3 py-2 text-white"
+                      disabled={resettingPassword}
+                      onClick={handleDeliveryReset}
                     >
-                      העתקת פרטי כניסה
+                      {resettingPassword ? "מאפס סיסמה..." : "איפוס סיסמה מורשה למסירה"}
                     </button>
-                  </p>
+                  </>
                 ) : (
-                  <p>החשבון כבר היה קיים — לא הונפקה סיסמה חדשה.</p>
+                  <p>פרטי המסירה יוצגו רק אחרי שהחשבון והמערכת פעילים.</p>
                 )}
-                {result.tenant?.accessPath || result.tenant?.product?.loginUrl ? (
-                  <p>
-                    כתובת המערכת:{" "}
-                    <code dir="ltr">{result.tenant.product?.loginUrl || result.tenant.accessPath}</code>
-                  </p>
-                ) : null}
-                <p>הלקוח מחליף סיסמה בכניסה הראשונה, נכנס ל־«המערכות שלי», ומעדכן מיתוג ותוכן.</p>
               </div>
             ) : (
               <>
@@ -1060,7 +1157,9 @@ export default function AdminCreateUser() {
               className="rounded-xl bg-[#7C4DFF] px-6 py-3 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-60"
             >
               {submitting
-                ? "יוצר..."
+                ? "מקים..."
+                : canRetry && (form.accountKind === "saas_only" || form.accountKind === "bizuply_saas")
+                  ? "המשך הקמה שנכשלה"
                 : form.userType === "business" && form.paymentMode === "stripe"
                   ? "צור משתמש ופתח Stripe"
                   : "צור משתמש"}
