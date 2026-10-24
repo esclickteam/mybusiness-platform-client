@@ -39,7 +39,7 @@ type Props = {
 const EMPTY_DETAILED_TARGETS: AdSetDetailedTarget[] = [];
 
 const AGE_MIN_OPTIONS = Array.from({ length: 48 }, (_, i) => 18 + i); // 18..65
-const AGE_MAX_OPTIONS = [...AGE_MIN_OPTIONS, 65];
+const AGE_MAX_OPTIONS = AGE_MIN_OPTIONS;
 
 // Store English id values for the Meta API; labels/descriptions are translated at render time.
 const PERFORMANCE_GOAL_IDS = [

@@ -48,6 +48,8 @@ vi.mock("../../../../../api/metaCampaignsApi", () => ({
   planMetaCampaignChanges: vi.fn(),
   retryMetaPublish: vi.fn(),
   syncMetaPublish: vi.fn(),
+  waitForMetaPublish: vi.fn(),
+  getMetaPublish: vi.fn(),
   updateMetaCampaign: vi.fn(),
   updateMetaAdSet: vi.fn(),
   updateMetaAd: vi.fn(),

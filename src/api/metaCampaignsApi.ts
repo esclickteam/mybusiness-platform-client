@@ -603,16 +603,28 @@ export type MetaPublishResult = {
   }>;
 };
 
+/** Meta publish walks campaign → ad set → creative → ad and can exceed 20s. */
+export const META_PUBLISH_TIMEOUT_MS = 180000;
+export const META_GRAPH_READ_TIMEOUT_MS = 60000;
+
 function withBusiness(businessId?: string, extra?: Record<string, unknown>) {
   const params: Record<string, unknown> = { ...(extra || {}) };
   if (businessId) params.businessId = businessId;
   return { params };
 }
 
+function withMetaTimeout(
+  businessId?: string,
+  extra?: Record<string, unknown>,
+  timeout = META_GRAPH_READ_TIMEOUT_MS
+) {
+  return { ...withBusiness(businessId, extra), timeout };
+}
+
 export async function getMetaCampaignsStatus(businessId?: string) {
   const { data } = await API.get<MetaAdsConnectionStatus>(
     "/meta-campaigns/status",
-    withBusiness(businessId)
+    withMetaTimeout(businessId)
   );
   return data;
 }
@@ -722,7 +734,7 @@ export async function getMetaCampaign(
     objectives?: MetaAdsConnectionStatus["objectives"];
     specialAdCategories?: MetaAdsConnectionStatus["specialAdCategories"];
     connection?: MetaAdsConnectionStatus;
-  }>(`/meta-campaigns/campaigns/${campaignId}`, withBusiness(businessId, range));
+  }>(`/meta-campaigns/campaigns/${campaignId}`, withMetaTimeout(businessId, range));
   return data;
 }
 
@@ -967,10 +979,14 @@ export async function saveMetaEditorDraft(
   const path = body.publishId
     ? `/meta-campaigns/publishes/${body.publishId}/editor-draft`
     : "/meta-campaigns/publishes/editor-draft";
-  const { data } = await API.post<MetaEditorDraftSaveResult>(path, {
-    businessId,
-    ...body,
-  });
+  const { data } = await API.post<MetaEditorDraftSaveResult>(
+    path,
+    {
+      businessId,
+      ...body,
+    },
+    { timeout: META_GRAPH_READ_TIMEOUT_MS }
+  );
   return data;
 }
 
@@ -1147,7 +1163,7 @@ export async function getMetaLeadgenTos(
 ) {
   const { data } = await API.get<MetaLeadgenTosStatus>(
     "/meta-campaigns/leadgen-tos",
-    withBusiness(businessId, { pageId })
+    withMetaTimeout(businessId, { pageId })
   );
   return data;
 }
@@ -1248,7 +1264,7 @@ export async function listMetaLeadForms(
     questionTypes?: MetaLeadFormQuestionType[];
     warning?: string;
     metaUnavailable?: boolean;
-  }>("/meta-campaigns/lead-forms", withBusiness(businessId, { pageId }));
+  }>("/meta-campaigns/lead-forms", withMetaTimeout(businessId, { pageId }));
   return data;
 }
 
@@ -1456,7 +1472,11 @@ export async function estimateMetaAudienceReach(
       impressions?: number | null;
       actions?: number | null;
     } | null;
-  }>("/meta-campaigns/targeting/reach-estimate", payload, withBusiness(businessId));
+  }>(
+    "/meta-campaigns/targeting/reach-estimate",
+    payload,
+    withMetaTimeout(businessId)
+  );
   return data;
 }
 
@@ -1613,7 +1633,8 @@ export async function publishMetaCampaign(
 ) {
   const { data } = await API.post<MetaPublishResult>(
     "/meta-campaigns/publishes",
-    { businessId, ...payload }
+    { businessId, ...payload },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
   );
   return data;
 }
@@ -1629,8 +1650,44 @@ export async function syncMetaPublish(
     campaignStatus?: string;
     adSetStatus?: string;
     adStatus?: string;
-  }>(`/meta-campaigns/publishes/${publishId}/sync`, { businessId });
+  }>(
+    `/meta-campaigns/publishes/${publishId}/sync`,
+    { businessId },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
+  );
   return data;
+}
+
+export async function getMetaPublish(businessId: string, publishId: string) {
+  const { data } = await API.get<{
+    success: boolean;
+    publish: MetaCampaignPublishRecord;
+  }>(`/meta-campaigns/publishes/${publishId}`, withMetaTimeout(businessId));
+  return data.publish;
+}
+
+export async function waitForMetaPublish(
+  businessId: string,
+  publishId: string,
+  options?: { timeoutMs?: number; intervalMs?: number }
+) {
+  const timeoutMs = options?.timeoutMs ?? 120000;
+  const intervalMs = options?.intervalMs ?? 2500;
+  const started = Date.now();
+  let last = await getMetaPublish(businessId, publishId);
+  while (Date.now() - started < timeoutMs) {
+    const status = String(last?.publishStatus || "");
+    if (
+      status === "submitted" ||
+      status === "failed" ||
+      status === "partial_failed"
+    ) {
+      return last;
+    }
+    await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    last = await getMetaPublish(businessId, publishId);
+  }
+  return last;
 }
 
 export type MetaLeadFormUpdatePlan = {
@@ -1703,7 +1760,8 @@ export async function publishMetaCampaignChanges(
 ) {
   const { data } = await API.post<MetaExistingPublishResult>(
     `/meta-campaigns/campaigns/${campaignId}/publish-changes`,
-    { businessId, ...payload }
+    { businessId, ...payload },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
   );
   return data;
 }
@@ -1715,7 +1773,8 @@ export async function retryMetaPublish(
 ) {
   const { data } = await API.post<MetaPublishResult>(
     `/meta-campaigns/publishes/${publishId}/retry`,
-    { businessId, ...(payload || {}) }
+    { businessId, ...(payload || {}) },
+    { timeout: META_PUBLISH_TIMEOUT_MS }
   );
   return data;
 }

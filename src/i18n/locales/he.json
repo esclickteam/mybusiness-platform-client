@@ -11977,6 +11977,8 @@
       "instantFormsFailed": "טעינת Instant Forms מ-Meta נכשלה",
       "retryCompleted": "הניסיון הושלם — מזהה מודעה אושר מ-Meta",
       "publishFailed": "הפרסום ל-Meta נכשל",
+      "publishWaiting": "הפרסום ל-Meta עדיין רץ. ממתינים לסיום הניסיון הקיים — לא ייווצר קמפיין כפול.",
+      "publishTimeout": "הפרסום ל-Meta נקטע בגלל timeout. הקמפיין לא הופעל. נסו לפרסם שוב בעוד רגע.",
       "syncFailed": "הסנכרון מ-Meta נכשל",
       "syncSuccess": "סונכרן מ-Meta · {{status}}",
       "retryFailed": "הניסיון החוזר נכשל"
@@ -22754,6 +22756,7 @@
       "siteDomainMissing": "לא מצאנו אתר מפורסם עבור הדומיין:",
       "reauth": "יש להתחבר מחדש",
       "network": "בעיית רשת — בדקו את החיבור",
+      "timeout": "הבקשה ל-Meta חרגה ממגבלת הזמן. הקמפיין לא הופעל. המתינו רגע ולחצו שוב על פרסום — לא ייווצר קמפיין כפול.",
       "loadData": "שגיאה בטעינת הנתונים",
       "connectDomain": "חיבור הדומיין נכשל",
       "disconnectDomain": "ניתוק הדומיין נכשל",
