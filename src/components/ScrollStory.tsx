@@ -1,185 +1,154 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useReducedMotion } from "framer-motion";
 import { getTextDirection } from "../i18n/localeUtils";
-
-import { demoMediaLocale } from "./product-marketing/ProductDemoVideo";
-import TemplateShowcase from "./website-builder-marketing/TemplateShowcase";
-import { websiteHeroTemplates } from "./website-builder-marketing/websiteHeroTemplates";
-import { Reveal, Stagger, StaggerItem } from "./product-marketing";
 import "../styles/homeWow.css";
-import "./website-builder-marketing/WebsiteBuilderHero.css";
 
-type Step = {
-  id: string;
-  to: string;
-  media?: "crm" | "automations" | "appointments" | "websites";
-  poster?: string;
-  siteShowcase?: boolean;
-};
+type FilmId = "crm" | "whatsapp" | "campaigns" | "automations" | "websites" | "appointments";
 
-const STEPS: Step[] = [
-  {
-    id: "leads",
-    to: "/crm",
-    media: "crm",
-    poster: "/demo-media/forms/lead.png",
-  },
-  {
-    id: "clients",
-    to: "/crm",
-    media: "automations",
-    poster: "/demo-media/automations/still-8.jpg",
-  },
-  {
-    id: "appointments",
-    to: "/appointments",
-    media: "appointments",
-    poster: "/demo-media/appointments/poster.jpg",
-  },
-  {
-    id: "site",
-    to: "/website-builder",
-    media: "websites",
-    poster: "/demo-media/websites/poster.jpg",
-    siteShowcase: true,
-  },
+const BLOCKS: { id: FilmId; to: string; layout: string }[] = [
+  { id: "crm", to: "/crm", layout: "split" },
+  { id: "whatsapp", to: "/whatsapp-api", layout: "chat" },
+  { id: "campaigns", to: "/meta-campaigns", layout: "wide" },
+  { id: "automations", to: "/automations", layout: "flow" },
+  { id: "websites", to: "/website-builder", layout: "devices" },
+  { id: "appointments", to: "/appointments", layout: "calendar" },
 ];
 
-function ProductFilm({ step, locale }: { step: Step; locale: string }) {
-  if (!step.media) return null;
-  const src = `/demo-media/${step.media}/${step.media}-${locale}.mp4`;
+const COPY: Record<FilmId, { title: string; body: string; cta: string; video: string }> = {
+  crm: { title: "crmTitle", body: "crmBody", cta: "crmCta", video: "crmVideo" },
+  whatsapp: { title: "waTitle", body: "waBody", cta: "waCta", video: "waVideo" },
+  campaigns: { title: "adsTitle", body: "adsBody", cta: "adsCta", video: "adsVideo" },
+  automations: { title: "autoTitle", body: "autoBody", cta: "autoCta", video: "autoVideo" },
+  websites: { title: "webTitle", body: "webBody", cta: "webCta", video: "webVideo" },
+  appointments: { title: "calTitle", body: "calBody", cta: "calCta", video: "calVideo" },
+};
+
+function ProductFilm({
+  id,
+  label,
+  className,
+  controls = true,
+}: {
+  id: FilmId;
+  label: string;
+  className?: string;
+  controls?: boolean;
+}) {
+  const { t } = useTranslation();
+  const reduce = useReducedMotion();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [paused, setPaused] = useState(Boolean(reduce));
+  const src = `/demo-media/home/${id}.mp4?v=2`;
+  const poster = `/demo-media/home/${id}.jpg?v=2`;
+
+  useEffect(() => {
+    const node = videoRef.current;
+    if (!node) return;
+    if (reduce || paused) {
+      node.pause();
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) void node.play().catch(() => undefined);
+        else node.pause();
+      },
+      { threshold: 0.45 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [paused, reduce, src]);
+
   return (
-    <figure className="home-film">
+    <div className={className || "home-show__screen"}>
       <video
-        poster={step.poster}
-        controls
+        ref={videoRef}
+        src={src}
+        poster={poster}
+        muted
+        loop
         playsInline
-        preload="none"
-        aria-label={step.media}
-      >
-        <source src={src} type="video/mp4" />
-        <track
-          kind="captions"
-          srcLang={locale}
-          src={`/demo-media/${step.media}/${step.media}-${locale}.vtt`}
-          default
-        />
-      </video>
-    </figure>
+        preload="metadata"
+        aria-label={label}
+      />
+      {controls ? (
+        <button
+          type="button"
+          className="home-show__toggle"
+          onClick={() => setPaused((value) => !value)}
+        >
+          {paused || reduce ? t("home.showPlay") : t("home.showPause")}
+        </button>
+      ) : null}
+    </div>
   );
 }
 
 export default function ScrollStory() {
   const { t, i18n } = useTranslation();
-  const locale = demoMediaLocale(i18n.language);
-
-  const bulletsFor = (id: string) => {
-    const value = t(`tour.${id}Bullets`, { returnObjects: true }) as unknown;
-    return Array.isArray(value) ? (value as string[]) : [];
-  };
 
   return (
-    <section
-      className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] py-16 text-center text-slate-800 sm:py-24"
-      dir={getTextDirection(i18n.language)}
-    >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
-        <div className="absolute right-[-180px] top-[620px] h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
-        <div className="absolute left-[-180px] top-[1200px] h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
-        <Reveal from="up" distance={20}>
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("tour.eyebrow")}
-          </div>
-        </Reveal>
-
-        <Reveal from="up" distance={26} blur delay={0.06}>
-          <h2 className="mx-auto mt-7 max-w-4xl text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl lg:text-6xl">
-            {t("tour.titleTop")}{" "}
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("tour.titleHighlight")}
-            </span>
-          </h2>
-        </Reveal>
-
-        <Reveal from="up" distance={20} delay={0.14}>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            {t("tour.subtitle")}
-          </p>
-        </Reveal>
-
-        <div className="mt-16 space-y-20 sm:mt-20 sm:space-y-28">
-          {STEPS.map((step) => (
-            <article key={step.id}>
-              <Reveal from="up" distance={22}>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-indigo-600">
-                  {t(`tour.${step.id}Label`)}
-                </p>
-
-                <h3 className="mx-auto mt-4 max-w-3xl text-3xl font-black leading-[1.08] tracking-[-0.035em] text-slate-900 sm:text-4xl lg:text-5xl">
-                  {t(`tour.${step.id}Title`)}
-                </h3>
-
-                <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-slate-600 lg:text-lg">
-                  {t(`tour.${step.id}Text`)}
-                </p>
-              </Reveal>
-
-              <Stagger
-                className="mx-auto mt-7 flex max-w-3xl flex-wrap justify-center gap-2.5"
-                gap={0.06}
-              >
-                {bulletsFor(step.id).map((item) => (
-                  <StaggerItem key={item}>
-                    <span className="inline-flex items-center gap-2 rounded-full border border-white/80 bg-white/85 px-4 py-2 text-sm font-bold text-slate-700 shadow-sm backdrop-blur">
-                      <span
-                        className="grid h-4 w-4 place-items-center rounded-full bg-indigo-600 text-[0.6rem] font-black text-white"
-                        aria-hidden="true"
-                      >
-                        ✓
-                      </span>
-                      {item}
-                    </span>
-                  </StaggerItem>
-                ))}
-              </Stagger>
-
-              <Reveal
-                from="up"
-                distance={30}
-                duration={0.85}
-                delay={0.08}
-                className="mx-auto mt-10 max-w-3xl"
-              >
-                {step.media ? <ProductFilm step={step} locale={locale} /> : null}
-                {step.siteShowcase ? (
-                  <div className="home-site-stage">
-                    <TemplateShowcase
-                      templates={websiteHeroTemplates.slice(0, 5)}
-                    />
+    <section className="home-show" dir={getTextDirection(i18n.language)}>
+      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+        <h2 className="home-show__title">{t("home.showTitle")}</h2>
+        <p className="home-show__lead">{t("home.showLead")}</p>
+        <div className="home-show__stack">
+          {BLOCKS.map((block) => {
+            const copy = COPY[block.id];
+            return (
+              <article key={block.id} className={`home-show__block home-show__block--${block.layout}`}>
+                <div className="home-show__copy">
+                  <h3>{t(`home.${copy.title}`)}</h3>
+                  <p>{t(`home.${copy.body}`)}</p>
+                  {block.id === "crm" ? (
+                    <div className="home-show__facts">
+                      <p>
+                        <span>{t("home.crmStatus")}</span>
+                        <strong>{t("home.crmStatusValue")}</strong>
+                      </p>
+                      <p>
+                        <span>{t("home.crmTask")}</span>
+                        <strong>{t("home.crmTaskValue")}</strong>
+                      </p>
+                    </div>
+                  ) : null}
+                  {block.id === "campaigns" ? (
+                    <div className="home-show__marks" aria-hidden="true">
+                      <img src="/meta.svg" alt="" width="28" height="28" />
+                      <svg viewBox="0 0 24 24" width="28" height="28">
+                        <path fill="#1877F2" d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.84c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22C18.34 21.24 22 17.08 22 12.06z" />
+                      </svg>
+                      <svg viewBox="0 0 24 24" width="28" height="28">
+                        <defs>
+                          <radialGradient id="home-ig" cx="30%" cy="110%" r="120%">
+                            <stop offset="0%" stopColor="#feda75" />
+                            <stop offset="45%" stopColor="#d62976" />
+                            <stop offset="100%" stopColor="#4f5bd5" />
+                          </radialGradient>
+                        </defs>
+                        <rect width="24" height="24" rx="6" fill="url(#home-ig)" />
+                        <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" strokeWidth="1.6" />
+                        <circle cx="17.2" cy="6.8" r="1" fill="#fff" />
+                      </svg>
+                    </div>
+                  ) : null}
+                  <Link to={block.to}>{t(`home.${copy.cta}`)}</Link>
+                </div>
+                {block.layout === "devices" ? (
+                  <div className="home-show__devices">
+                    <ProductFilm id={block.id} label={t(`home.${copy.video}`)} className="home-show__desktop" />
+                    <ProductFilm id={block.id} label={t(`home.${copy.video}`)} className="home-show__phone" controls={false} />
                   </div>
-                ) : null}
-              </Reveal>
-
-              <Reveal from="up" distance={18} delay={0.1} className="mt-9">
-                <Link
-                  to={step.to}
-                  className="cta-solid group inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800"
-                >
-                  {t(`tour.${step.id}Cta`)}
-                  <span aria-hidden="true" className="transition group-hover:-translate-x-1">
-                    ←
-                  </span>
-                </Link>
-              </Reveal>
-            </article>
-          ))}
+                ) : (
+                  <ProductFilm id={block.id} label={t(`home.${copy.video}`)} />
+                )}
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
