@@ -118,7 +118,12 @@ function branchOf(item: MetaDetailedTarget): BrowseBranch {
   return "interests";
 }
 
-function normalizePath(item: MetaDetailedTarget, branch: BrowseBranch): string[] {
+/**
+ * Meta targetingbrowse `path` is the parent chain; `name` is this node.
+ * Some rows already include `name` as the last path segment — don't duplicate.
+ * Getting this wrong flattens folders (e.g. Banking absorbs Retail banking's id).
+ */
+function itemFullPath(item: MetaDetailedTarget, branch: BrowseBranch): string[] {
   const raw = Array.isArray(item.path)
     ? item.path.map((p) => String(p || "").trim()).filter(Boolean)
     : [];
@@ -128,19 +133,23 @@ function normalizePath(item: MetaDetailedTarget, branch: BrowseBranch): string[]
       : branch === "behaviors"
         ? "Behaviors"
         : "Interests";
-  if (!raw.length) {
-    if (item.name && !isSyntheticName(item.name)) {
-      const nameIsRoot = ROOT_BRANCHES.some((b) => b.pathRoots.test(item.name));
-      return nameIsRoot ? [item.name] : [rootLabel, item.name];
-    }
-    return [rootLabel];
+  const name = String(item.name || "").trim();
+
+  let parents = raw.slice();
+  if (!parents.length) {
+    if (name && !isSyntheticName(name) && isBranchRootLabel(name)) return [name];
+    parents = [rootLabel];
+  } else {
+    const first = parents[0];
+    const matchesRoot = ROOT_BRANCHES.find((b) => b.id === branch)?.pathRoots.test(
+      first
+    );
+    if (!matchesRoot) parents = [rootLabel, ...parents];
   }
-  const first = raw[0];
-  const matchesRoot = ROOT_BRANCHES.find((b) => b.id === branch)?.pathRoots.test(
-    first
-  );
-  if (matchesRoot) return raw;
-  return [rootLabel, ...raw];
+
+  if (!name || isSyntheticName(name)) return parents;
+  if (parents[parents.length - 1] === name) return parents;
+  return [...parents, name];
 }
 
 function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, TreeNode[]> {
@@ -209,6 +218,11 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
       };
       parent.children.push(child);
     } else if (seedSelectable) {
+      // Never turn an already-expanded folder into a leaf just because a Meta
+      // row reused the folder path — that was the Banking flatten bug.
+      if (child.children.length > 0 && child.name !== String(seed!.name || "")) {
+        return child;
+      }
       child.id = String(seed!.id);
       child.selectable = true;
       child.unsupportedReason = "";
@@ -228,7 +242,7 @@ function buildBrowseForest(rows: MetaDetailedTarget[]): Record<BrowseBranch, Tre
   rows.forEach((item) => {
     if (isSyntheticName(item.name)) return;
     const branch = branchOf(item);
-    const path = normalizePath(item, branch);
+    const path = itemFullPath(item, branch);
     // Skip taxonomy root rows — they are the synthetic forest roots.
     if (path.length <= 1) return;
     let cursor = roots[branch];
