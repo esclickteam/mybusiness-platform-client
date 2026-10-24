@@ -459,4 +459,106 @@ describe("AdsManagerDetailedTargetingSection", () => {
     expect(screen.getByTestId("detailed-targeting-panel")).toBeTruthy();
     expect(browseFn).toHaveBeenCalledTimes(1);
   });
+
+  it("keeps browse drill path and skips Meta reload after remount", async () => {
+    await i18n.changeLanguage("en");
+    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
+    const suggestFn = vi.fn(async () => ({
+      success: true,
+      results: SUGGESTIONS,
+      source: "targetingsuggestions",
+    }));
+    const view = render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={suggestFn as never}
+        />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("detailed-targeting-browse"));
+    await waitFor(() => expect(browseFn).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.getByRole("button", { name: /^Interests$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Business and industry/i }));
+    expect(screen.getByText(/Banking \(finance\)/i)).toBeTruthy();
+
+    view.unmount();
+    render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={suggestFn as never}
+        />
+      </I18nextProvider>
+    );
+
+    expect(screen.getByTestId("detailed-targeting-panel").getAttribute("data-panel-mode")).toBe(
+      "browse"
+    );
+    expect(screen.getByText(/Banking \(finance\)/i)).toBeTruthy();
+    expect(browseFn).toHaveBeenCalledTimes(1);
+
+    // Focus must not yank browse → suggestions or trigger Meta suggest.
+    fireEvent.focus(screen.getByTestId("detailed-targeting-search"));
+    expect(screen.getByTestId("detailed-targeting-panel").getAttribute("data-panel-mode")).toBe(
+      "browse"
+    );
+    expect(suggestFn).not.toHaveBeenCalled();
+  });
+
+  it("reuses suggestion payload across remount without a second Meta call", async () => {
+    await i18n.changeLanguage("he");
+    const suggestFn = vi.fn(async () => ({
+      success: true,
+      results: SUGGESTIONS,
+      source: "targetingsuggestions",
+      seedSource: "page_category",
+    }));
+    const browseFn = vi.fn(async () => ({ success: true, results: FIXTURE }));
+    const view = render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={suggestFn as never}
+        />
+      </I18nextProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("detailed-targeting-search"));
+    await waitFor(() => expect(suggestFn).toHaveBeenCalledTimes(1));
+    expect(screen.getByText("יופי")).toBeTruthy();
+
+    view.unmount();
+    render(
+      <I18nextProvider i18n={i18n}>
+        <AdsManagerDetailedTargetingSection
+          businessId="biz"
+          selected={[]}
+          onChange={() => {}}
+          browseFn={browseFn as never}
+          searchFn={async () => ({ success: true, results: [] })}
+          suggestFn={suggestFn as never}
+        />
+      </I18nextProvider>
+    );
+
+    expect(screen.getByTestId("detailed-targeting-panel").getAttribute("data-panel-mode")).toBe(
+      "suggestions"
+    );
+    expect(screen.getByText("יופי")).toBeTruthy();
+    expect(suggestFn).toHaveBeenCalledTimes(1);
+  });
 });
