@@ -2610,7 +2610,9 @@
         "otp_locked": "Demasiados códigos incorrectos. Empieza de nuevo con {{provider}}.",
         "otp_cooldown": "Espera un momento antes de pedir otro código.",
         "otp_send_limited": "Demasiadas solicitudes de código. Prueba más tarde o usa tu contraseña.",
-        "otp_send_failed": "No pudimos enviar el código ahora. Inténtalo de nuevo o usa tu contraseña."
+        "otp_send_failed": "No pudimos enviar el código ahora. Inténtalo de nuevo o usa tu contraseña.",
+        "link_session": "La cuenta ya está vinculada, pero no pudimos terminar el acceso. Actualiza e inicia de nuevo con Google o Microsoft — no necesitas un código nuevo.",
+        "link_failed": "No pudimos vincular esta cuenta. Empieza de nuevo con {{provider}}."
       },
       "linkFound": "Encontramos tu cuenta BizUply existente. Verifica que es tuya para conectar {{provider}}.",
       "linkKeepData": "Tus negocios, planes y datos permanecen en esta cuenta.",

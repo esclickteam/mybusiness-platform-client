@@ -81,6 +81,8 @@ const ERROR_KEYS: Record<string, string> = {
   otp_cooldown: "login.oauth.errors.otp_cooldown",
   otp_send_limited: "login.oauth.errors.otp_send_limited",
   otp_send_failed: "login.oauth.errors.otp_send_failed",
+  link_session: "login.oauth.errors.link_session",
+  link_failed: "login.oauth.errors.link_failed",
 };
 
 type Translate = (key: string, opts?: Record<string, string>) => string;

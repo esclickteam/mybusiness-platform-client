@@ -414,11 +414,23 @@ function BusinessLogin() {
       }
       await finishOauthSession();
     } catch (err) {
-      const apiErr = err as { response?: { data?: { code?: string } } };
-      const fallback = linkMethod === "otp" ? "otp_invalid" : "incorrect_password";
+      const apiErr = err as {
+        response?: { status?: number; data?: { code?: string; linked?: boolean } };
+      };
+      const status = apiErr.response?.status;
+      const code = apiErr.response?.data?.code;
+      const linked = apiErr.response?.data?.linked === true;
+      // Prefer precise server codes (OTP vs session vs missing cookies) over a
+      // generic provider_error so the user knows whether to resend a code.
+      let mapped =
+        code ||
+        (status === 404 || status === 400 ? "state_invalid" : null) ||
+        (linked ? "link_session" : null);
+      if (!mapped) {
+        mapped = linkMethod === "otp" ? "otp_invalid" : "incorrect_password";
+      }
       setLoginError(
-        oauthErrorMessage(apiErr.response?.data?.code || fallback, linkProvider, t) ||
-          t(`login.oauth.errors.${fallback}`)
+        oauthErrorMessage(mapped, linkProvider, t) || t(`login.oauth.errors.${mapped}`)
       );
       setSocialBusy(null);
     }

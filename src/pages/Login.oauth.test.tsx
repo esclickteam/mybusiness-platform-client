@@ -193,4 +193,68 @@ describe("BizUply social login", () => {
     await waitFor(() => expect(apiPost).toHaveBeenCalledWith("/auth/oauth/link", { password: "Password#123" }));
     await waitFor(() => expect(loginWithToken).toHaveBeenCalled());
   });
+
+  it("shows OTP vs session vs missing-cookie errors distinctly after link", async () => {
+    apiPost.mockRejectedValueOnce({
+      response: { status: 401, data: { code: "otp_invalid" } },
+    });
+    renderAt("/login?oauth=link_required&provider=google");
+    await screen.findByText(/login.oauth.linkFound/);
+    fireEvent.change(screen.getByLabelText("login.oauth.otpLabel"), { target: { value: "111111" } });
+    fireEvent.click(screen.getByRole("button", { name: "login.oauth.linkSubmit" }));
+    expect((await screen.findByRole("alert")).textContent).toContain("login.oauth.errors.otp_invalid");
+
+    apiPost.mockRejectedValueOnce({
+      response: { status: 400, data: { code: "state_invalid" } },
+    });
+    fireEvent.change(screen.getByLabelText("login.oauth.otpLabel"), { target: { value: "222222" } });
+    fireEvent.click(screen.getByRole("button", { name: "login.oauth.linkSubmit" }));
+    expect((await screen.findByRole("alert")).textContent).toContain("login.oauth.errors.state_invalid");
+
+    apiPost.mockRejectedValueOnce({
+      response: { status: 503, data: { code: "link_session", linked: true } },
+    });
+    fireEvent.change(screen.getByLabelText("login.oauth.otpLabel"), { target: { value: "333333" } });
+    fireEvent.click(screen.getByRole("button", { name: "login.oauth.linkSubmit" }));
+    expect((await screen.findByRole("alert")).textContent).toContain("login.oauth.errors.link_session");
+  });
+
+  it("links Microsoft with OTP and finishes the dashboard session", async () => {
+    apiGet.mockImplementation(async (url: string) => {
+      if (url === "/auth/oauth/providers") return { data: { providers: ["google", "microsoft"] } };
+      if (url === "/auth/me") {
+        return {
+          data: {
+            role: "business",
+            businessId: "b1",
+            hasAccess: true,
+            subscriptionPlan: "monthly",
+          },
+        };
+      }
+      if (url === "/auth/oauth/link-preview") {
+        return {
+          data: {
+            email: "ms@bizuply.test",
+            emailMasked: "m***@bizuply.test",
+            provider: "microsoft",
+            methods: ["otp", "password"],
+            hasPassword: true,
+            otpCooldownSeconds: 0,
+          },
+        };
+      }
+      throw new Error(`unexpected GET ${url}`);
+    });
+    apiPost.mockResolvedValue({ data: { success: true, oauth: "success", cooldownSeconds: 60 } });
+    refreshAccessTokenOnce.mockResolvedValue("access-ms");
+    renderAt("/login?oauth=link_required&provider=microsoft");
+    await screen.findByText(/login.oauth.linkFound/);
+    fireEvent.click(screen.getByRole("button", { name: "login.oauth.otpSend" }));
+    await waitFor(() => expect(apiPost).toHaveBeenCalledWith("/auth/oauth/link-otp/send", {}));
+    fireEvent.change(screen.getByLabelText("login.oauth.otpLabel"), { target: { value: "654321" } });
+    fireEvent.click(screen.getByRole("button", { name: "login.oauth.linkSubmit" }));
+    await waitFor(() => expect(apiPost).toHaveBeenCalledWith("/auth/oauth/link", { code: "654321" }));
+    await waitFor(() => expect(loginWithToken).toHaveBeenCalled());
+  });
 });
