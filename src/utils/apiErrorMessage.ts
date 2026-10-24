@@ -3,6 +3,11 @@ import i18n from "../i18n/i18n";
 const TECHNICAL_MESSAGE_KEYS: Record<string, string> = {
   NO_REFRESH_TOKEN: "leftover.errors.reauth",
   "Network error": "leftover.errors.network",
+  NETWORK_ERROR: "leftover.errors.network",
+  "Network timeout": "leftover.errors.timeout",
+  NETWORK_TIMEOUT: "leftover.errors.timeout",
+  ECONNABORTED: "leftover.errors.timeout",
+  META_TIMEOUT: "leftover.errors.timeout",
 };
 
 const TECHNICAL_PATTERN =
@@ -27,8 +32,12 @@ export function getApiErrorMessage(
   const anyErr = err as {
     message?: string;
     code?: string;
-    response?: { data?: { error?: string; message?: string } };
+    isTimeout?: boolean;
+    response?: { data?: { error?: string; message?: string; code?: string } };
   };
+  if (anyErr?.isTimeout || anyErr?.code === "NETWORK_TIMEOUT") {
+    return i18n.t("leftover.errors.timeout");
+  }
 
   const candidates = [
     asText(anyErr?.response?.data?.error),

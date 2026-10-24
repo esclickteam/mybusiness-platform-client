@@ -11992,6 +11992,8 @@
       "instantFormsFailed": "Failed to load Instant Forms from Meta",
       "retryCompleted": "Retry completed — Ad ID confirmed from Meta",
       "publishFailed": "Publish to Meta failed",
+      "publishWaiting": "Publishing to Meta is still running. Waiting for the existing attempt — no duplicate campaign will be created.",
+      "publishTimeout": "Publishing to Meta timed out. The campaign was not activated. Try Publish again in a moment.",
       "syncFailed": "Sync from Meta failed",
       "syncSuccess": "Synced from Meta · {{status}}",
       "retryFailed": "Retry failed"
@@ -22769,6 +22771,7 @@
       "siteDomainMissing": "We could not find a published site for this domain:",
       "reauth": "Please sign in again",
       "network": "Network problem — check your connection",
+      "timeout": "The request to Meta took too long. The campaign was not activated. Wait a moment and try Publish again — a duplicate campaign will not be created.",
       "loadData": "Could not load the data",
       "connectDomain": "Domain connection failed",
       "disconnectDomain": "Domain disconnect failed",
