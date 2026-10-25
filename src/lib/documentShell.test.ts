@@ -14,11 +14,14 @@ function rootInner(html: string) {
   return html.slice(start + '<div id="root">'.length, end);
 }
 
-function crawlBlock(html: string) {
-  const start = html.indexOf('<div id="bizuply-crawl"');
-  const root = html.indexOf('<div id="root">');
-  if (start === -1 || root === -1 || root < start) return "";
-  return html.slice(start, root);
+function noscriptCrawl(html: string) {
+  const match = html.match(/<noscript id="bizuply-crawl">([\s\S]*?)<\/noscript>/);
+  return match ? match[1] : "";
+}
+
+function visibleH1Count(html: string) {
+  const withoutNoscript = html.replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "");
+  return (withoutNoscript.match(/<h1\b/gi) || []).length;
 }
 
 afterEach(() => {
@@ -49,16 +52,15 @@ async function documentFor(url: string, host: string) {
 }
 
 describe("first paint document shell", () => {
-  it("clips crawlable copy in static CSS and keeps the React mount empty in the file", () => {
-    expect(indexHtml).toContain("#bizuply-crawl");
-    expect(indexHtml).toContain("clip-path: inset(50%)");
+  it("does not hide a second document in the static shell", () => {
     expect(indexHtml).toContain('<div id="bizuply-crawl"></div>');
     expect(indexHtml).toContain('<div id="root"></div>');
+    expect(indexHtml).not.toContain("clip-path: inset(50%)");
     expect(rootInner(indexHtml)).not.toContain("<h1");
     expect(indexHtml).not.toContain("The official website is bizuply.com");
   });
 
-  it("paints the designed homepage in #root and keeps the GEO summary clipped", async () => {
+  it("paints one designed homepage H1 and keeps GEO copy in metadata, not a hidden dump", async () => {
     const page = await documentFor("https://bizuply.com/", "bizuply.com");
     expect(page.status).toBe(200);
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("marketing");
@@ -66,31 +68,27 @@ describe("first paint document shell", () => {
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"@type":"Organization"');
     expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
-    expect(page.body).toContain("<h1>Bizuply</h1>");
-    expect(page.body).toContain("The official website is bizuply.com. In Hebrew, the brand name is ביזאפלי.");
-    expect(page.body).toContain("clip-path:inset(50%)");
+    expect(page.body).toContain("In Hebrew, the brand name is ביזאפלי.");
     expect(page.body).toContain('class="home-paint"');
-    expect(page.body).toContain("Main navigation");
+    expect(page.body).toContain('class="home-paint__title"');
     expect(page.body).toContain("Run your business");
     expect(page.body).toContain("in one place");
-    expect(page.body).toContain("Register now");
+    expect(visibleH1Count(page.body)).toBe(1);
+    expect(noscriptCrawl(page.body)).toBe("");
     expect(rootInner(page.body)).toContain("home-paint__header");
     expect(rootInner(page.body)).toContain("Run your business");
-    expect(rootInner(page.body)).not.toContain("<main lang=\"en\" dir=\"ltr\"><h1>Bizuply</h1>");
     expect(rootInner(page.body)).not.toContain("The official website is bizuply.com");
-    expect(rootInner(page.body)).not.toContain("In Hebrew, the brand name");
-    const crawl = crawlBlock(page.body);
-    expect(crawl).toContain("<h1>Bizuply</h1>");
-    expect(crawl).toContain("The official website is bizuply.com");
-    expect(crawl).toContain("position:absolute");
-    expect(page.body).not.toContain("document.getElementById(\"bizuply-crawl\")");
+    expect(rootInner(page.body)).not.toContain("<h1>Bizuply</h1>");
+    expect(page.body).not.toContain("position:absolute;width:1px;height:1px");
   });
 
-  it("keeps Hebrew and CRM copy crawlable without placing the raw summary in the React mount", async () => {
+  it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
     const hebrew = await documentFor("https://bizuply.com/he/", "bizuply.com");
     expect(hebrew.body).toContain('lang="he" dir="rtl"');
     expect(hebrew.body).toContain("נהלו את העסק שלכם");
     expect(hebrew.body).toContain("ביזאפלי");
+    expect(visibleH1Count(hebrew.body)).toBe(1);
+    expect(noscriptCrawl(hebrew.body)).toBe("");
     expect(rootInner(hebrew.body)).toContain("home-paint__header");
     expect(rootInner(hebrew.body)).not.toContain("<h1>Bizuply</h1>");
 
@@ -99,14 +97,17 @@ describe("first paint document shell", () => {
     expect(crm.body).toContain("<h1>Every lead, every client, every appointment in one place</h1>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
+    expect(visibleH1Count(crm.body)).toBe(0);
     expect(rootInner(crm.body)).not.toContain("<h1");
-    expect(rootInner(crm.body)).not.toContain("CRM only is $49");
-    expect(crawlBlock(crm.body)).toContain("<h2>FAQ</h2>");
+    expect(noscriptCrawl(crm.body)).toContain("<h2>FAQ</h2>");
+    expect(noscriptCrawl(crm.body)).toContain("CRM only is $49 per month");
 
     const hebrewCrm = await documentFor("https://bizuply.com/he/crm", "bizuply.com");
     expect(hebrewCrm.body).toContain("<h1>כל ליד, כל לקוח, כל פגישה במקום אחד</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
+    expect(visibleH1Count(hebrewCrm.body)).toBe(0);
     expect(rootInner(hebrewCrm.body)).not.toContain("כל ליד");
+    expect(noscriptCrawl(hebrewCrm.body)).toContain("כל ליד");
   });
 
   it("does not paint the WhatsApp summary inside #root", async () => {
@@ -115,8 +116,9 @@ describe("first paint document shell", () => {
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("whatsapp");
     expect(page.body).toContain("<h1>WhatsApp API. Built for Your Business.</h1>");
     expect(page.body).toContain("$29 per month for one connected WhatsApp number");
+    expect(visibleH1Count(page.body)).toBe(0);
     expect(rootInner(page.body)).not.toContain("<h1");
-    expect(crawlBlock(page.body)).toContain("There is no free trial.");
+    expect(noscriptCrawl(page.body)).toContain("There is no free trial.");
     expect(page.body).toContain('rel="canonical" href="https://whatsapp.bizuply.com/"');
   });
 });

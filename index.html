@@ -303,22 +303,6 @@
         background: var(--bg);
       }
 
-      /* Crawlable SEO copy is in the HTML for bots. Clip it on the first
-         paint so visitors never see the raw summary, including before JS. */
-      #bizuply-crawl,
-      .bizuply-sr-only {
-        position: absolute !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        margin: -1px !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important;
-        clip-path: inset(50%) !important;
-        white-space: nowrap !important;
-        border: 0 !important;
-      }
-
       .home-paint {
         min-height: 100vh;
         background:
@@ -588,23 +572,6 @@
   <body>
   <noscript>
     <!-- Meta Pixel noscript is platform-only; omitted on published customer hosts via JS gate above. -->
-    <style>
-      #root:empty { display: none !important; }
-      body:has(#root:empty) #bizuply-crawl {
-        position: static !important;
-        width: auto !important;
-        height: auto !important;
-        margin: 0 auto !important;
-        overflow: visible !important;
-        clip: auto !important;
-        clip-path: none !important;
-        white-space: normal !important;
-        border: 0 !important;
-        display: block !important;
-        max-width: 42rem;
-        padding: 3rem 1.5rem !important;
-      }
-    </style>
   </noscript>
 
   <div id="initial-bg"></div>

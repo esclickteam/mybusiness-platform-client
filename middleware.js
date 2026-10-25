@@ -617,16 +617,14 @@ function whatsappSeoFile(pathname) {
 
 const CRAWL_PLACEHOLDER = '<div id="bizuply-crawl"></div>';
 const ROOT_PLACEHOLDER = '<div id="root"></div>';
-const CRAWL_VISUAL_STYLE =
-  "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0";
 
 /**
- * Crawlable summaries stay in the HTML response, outside the React mount.
- * Putting them in #root painted unstyled English copy until createRoot ran.
- * Visibility is clipped by CSS in the first HTML (not by later JavaScript).
+ * Fallback copy for clients without JavaScript. It lives in <noscript>, so a
+ * JS browser never paints it and Google does not get a second hidden H1.
+ * Putting the same summary in #root was the first-paint flash.
  */
 function injectCrawlableDocument(html, inner) {
-  const slot = `<div id="bizuply-crawl" style="${CRAWL_VISUAL_STYLE}">${inner}</div>`;
+  const slot = `<noscript id="bizuply-crawl">${inner}</noscript>`;
   if (html.includes(CRAWL_PLACEHOLDER)) {
     return html.replace(CRAWL_PLACEHOLDER, slot);
   }
@@ -820,11 +818,10 @@ async function handleMarketingDocument(request) {
         '<html lang="he" dir="rtl">',
       );
     }
-    if (prerender) {
-      documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
-    }
     if (homePaint) {
       documentHtml = injectRootInner(documentHtml, homePaint.inner);
+    } else if (prerender) {
+      documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
     }
     return new Response(documentHtml, {
       status: 200,
