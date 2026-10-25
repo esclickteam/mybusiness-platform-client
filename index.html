@@ -20,11 +20,16 @@
             return null;
           }
 
+          if (String(location.pathname || "").indexOf("/embed/") === 0) {
+            document.documentElement.setAttribute("data-embed", "true");
+          }
+
           var earlyHost = String(location.hostname || "").toLowerCase();
           if (
             earlyHost === "travel.bizuply.com" ||
             earlyHost === "www.travel.bizuply.com"
           ) {
+            document.documentElement.setAttribute("data-travel-host", "true");
             document.documentElement.lang = "en";
             document.documentElement.dir = "ltr";
             return;
@@ -302,6 +307,80 @@
         min-height: 100vh;
         background: var(--bg);
       }
+
+      /*
+        First paint is the brand shell. The crawlable summary is a sibling of
+        #root, never its child: createRoot replaces #root once the app starts.
+      */
+      #boot {
+        position: fixed;
+        inset: 0;
+        z-index: 1000001;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        direction: ltr;
+        padding: 1.5rem;
+        background: linear-gradient(to bottom, #f6f7fb 0%, #e8ebf8 100%);
+      }
+
+      #boot-mark {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.8rem;
+        max-width: 100%;
+      }
+
+      #boot-mark img {
+        width: 4rem;
+        height: 4rem;
+        flex: 0 0 auto;
+        object-fit: contain;
+      }
+
+      #boot-mark span {
+        font-family: Inter, Assistant, system-ui, sans-serif;
+        font-size: clamp(2rem, 7vw, 3.15rem);
+        font-weight: 800;
+        letter-spacing: -0.045em;
+        line-height: 1;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      html[data-public-site="true"] #boot,
+      html[data-embed="true"] #boot {
+        display: none !important;
+      }
+
+      html[data-wa-host="true"] #boot {
+        background: #05070d;
+      }
+
+      html[data-travel-host="true"] #boot {
+        background: #f4f7fb;
+      }
+
+      html[data-wa-host="true"] #boot-mark,
+      html[data-travel-host="true"] #boot-mark {
+        display: none !important;
+      }
+
+      #bizuply-crawl {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        clip-path: inset(50%);
+        white-space: nowrap;
+        border: 0;
+      }
     </style>
 
     <!-- ✅ Favicons -->
@@ -349,9 +428,66 @@
   <body>
   <noscript>
     <!-- Meta Pixel noscript is platform-only; omitted on published customer hosts via JS gate above. -->
+    <style>
+      #boot { display: none !important; }
+      #bizuply-crawl {
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        margin: 0 auto !important;
+        overflow: visible !important;
+        clip: auto !important;
+        clip-path: none !important;
+        white-space: normal !important;
+        border: 0 !important;
+        display: block !important;
+        box-sizing: border-box;
+        max-width: 42rem;
+        padding: 3rem 1.5rem !important;
+      }
+      #bizuply-crawl h1 {
+        margin: 0 0 0.75rem;
+        font-size: 2rem;
+        line-height: 1.25;
+      }
+      #bizuply-crawl p,
+      #bizuply-crawl li {
+        font-size: 1.05rem;
+        line-height: 1.65;
+      }
+    </style>
   </noscript>
 
   <div id="initial-bg"></div>
+  <div id="boot" role="status" aria-live="polite" aria-busy="true" aria-label="Loading Bizuply">
+    <div id="boot-mark" aria-hidden="true">
+      <img src="/favicon-v2.png?v=2" alt="" width="64" height="64" />
+      <span>Bizuply</span>
+    </div>
+  </div>
+  <div id="bizuply-crawl"></div>
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var boot = document.getElementById("boot");
+      var crawl = document.getElementById("bizuply-crawl");
+      if (crawl) crawl.setAttribute("aria-hidden", "true");
+      if (!boot) return;
+      var lang = root.lang || "en";
+      var label = "Loading Bizuply";
+      if (lang === "he") label = "טוען את ביזאפלי";
+      else if (lang === "ar") label = "جارٍ تحميل Bizuply";
+      else if (lang === "es") label = "Cargando Bizuply";
+      else if (lang === "pt-BR") label = "Carregando a Bizuply";
+      boot.setAttribute("aria-label", label);
+      if (
+        root.getAttribute("data-public-site") === "true" ||
+        root.getAttribute("data-embed") === "true"
+      ) {
+        boot.remove();
+      }
+    })();
+  </script>
   <div id="root"></div>
   <div id="popup-root"></div>
 

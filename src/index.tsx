@@ -120,6 +120,14 @@ const queryClient = new QueryClient({
    Fallback (nested lazy routes inside App)
 ========================================================== */
 
+function ReleaseDocumentShell() {
+  React.useEffect(() => {
+    document.getElementById("boot")?.remove();
+    document.getElementById("bizuply-crawl")?.remove();
+  }, []);
+  return null;
+}
+
 function AppLoader() {
   if (isBizuplyWhatsAppHost(window.location.hostname)) {
     return <div className="min-h-screen bg-[#05070d]" />;
@@ -158,6 +166,7 @@ ReactDOM.createRoot(rootElement).render(
             <NotificationsProvider>
               <LazyRouteBoundary>
                 <Suspense fallback={<AppLoader />}>
+                  <ReleaseDocumentShell />
                   <App />
                 </Suspense>
               </LazyRouteBoundary>
