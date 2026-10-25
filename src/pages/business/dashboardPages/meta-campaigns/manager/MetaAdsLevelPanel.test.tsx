@@ -101,4 +101,40 @@ describe("Meta ads level panel", () => {
       expect(api.setMetaAdStatus).toHaveBeenCalledWith("biz-1", "120257524330680405", "PAUSED", undefined)
     );
   });
+
+  it("asks before deleting a live ad and only then calls Meta", async () => {
+    api.deleteMetaObjects.mockResolvedValue({
+      success: true,
+      results: [{ id: "120257524330680405", ok: true, kind: "meta" }],
+      deletedIds: ["120257524330680405"],
+      failed: [],
+    });
+    render(
+      <MetaAdsLevelPanel
+        businessId="biz-1"
+        level="ad"
+        currency="ILS"
+        rangeQuery={{ datePreset: "last_30d" }}
+        onEdit={() => undefined}
+        onDuplicate={() => undefined}
+        onOpenCampaign={() => undefined}
+        onOpenAdSet={() => undefined}
+      />
+    );
+
+    fireEvent.click(await screen.findByTestId("meta-level-delete-120257524330680405"));
+    expect(screen.getByTestId("meta-campaign-delete-name")).toHaveTextContent("האם ברצונך למחוק את המודעה?");
+    expect(screen.getByTestId("meta-campaign-delete-message")).toHaveTextContent(
+      "אם תמחק את המודעה הזו, לא תהיה לך אפשרות לשחזר אותה מאוחר יותר."
+    );
+    expect(api.deleteMetaObjects).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByTestId("meta-campaign-delete-confirm"));
+    await waitFor(() =>
+      expect(api.deleteMetaObjects).toHaveBeenCalledWith(
+        "biz-1",
+        [expect.objectContaining({ id: "120257524330680405", level: "ad" })],
+        { confirm: true }
+      )
+    );
+  });
 });
