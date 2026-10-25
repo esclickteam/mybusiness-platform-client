@@ -7,6 +7,7 @@
  */
 
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
@@ -367,20 +368,7 @@ function localizedPage(path, locale) {
 }
 
 function faqItems(path, language) {
-  if (path === "/" && language === "en") {
-    return [
-      ["What is Bizuply?", "Bizuply is a business management and marketing platform that brings essential tools together in one place. It helps businesses manage leads and customers, organize appointments, build websites, work with automations and manage supported communication and marketing activities."],
-      ["Who is Bizuply designed for?", "Bizuply is designed for business owners and teams looking for a more organized way to manage customer relationships, marketing and everyday operations. Whether you are building your online presence or improving existing workflows, you can choose the tools that fit your needs."],
-      ["Can I use Bizuply without technical experience?", "Bizuply provides visual tools for everyday business tasks, including customer management, website editing and workflow configuration. You can explore the available features yourself, and professional setup services are available for selected needs."],
-      ["How does the CRM help manage leads?", "The CRM keeps lead details, customer information, statuses, notes and follow-up tasks organized in one place. It helps you understand where each enquiry stands and what needs to happen next."],
-      ["Can I connect leads from advertising campaigns?", "Bizuply supports lead management workflows for connected marketing channels, including supported Meta integrations. Available connections and permissions depend on the accounts and services being connected."],
-      ["Can I create a website with Bizuply?", "Yes. Bizuply includes website-building tools with a visual editor and customizable templates. Professional website setup services are also available."],
-      ["What can I automate?", "Bizuply allows businesses to configure supported workflows based on actions and conditions. For example, an automation can help create a follow-up task when a lead reaches a specific status."],
-      ["How does WhatsApp Business API work with Bizuply?", "Bizuply provides WhatsApp Business API integration for supported business communication workflows. The service costs $29 per month for each connected number. Meta messaging charges apply separately according to usage and message category."],
-      ["How much does Bizuply cost?", "The CRM plan starts at $49 per month. The Business plan is available for $99 per month or $990 per year. Additional products and professional services have their own pricing. Visit the pricing page to explore the available options."],
-      ["Can Bizuply help with setup?", "Yes. Bizuply offers professional services for selected setup needs, including websites and business automations. You can review the available services and pricing before getting started."],
-    ];
-  }
+  if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
   const localized = language === "en" ? null : localizedPage(path, language);
   if (localized?.faq?.length) return localized.faq;
   const guide = path.startsWith("/guides/") ? getGuide(path.slice("/guides/".length), language) : null;
@@ -758,7 +746,9 @@ function renderLocalized(page, locale, path) {
   const paragraphs = (page.lede ? [`<p>${escapeText(page.lede)}</p>`] : []).concat((page.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`)).join("");
   const sections = (page.sections || []).map(renderSection).join("");
   const faqs = page.faq?.length ? page.faq : faqItems(path, locale);
-  const faqHeading = locale === "he" ? "שאלות נפוצות" : locale === "ar" ? "أسئلة شائعة" : locale === "es" ? "Preguntas frecuentes" : locale === "pt-BR" ? "Perguntas frequentes" : "FAQ";
+  const faqHeading = path === "/" && HOME_FAQ_TITLE[locale]
+    ? HOME_FAQ_TITLE[locale]
+    : locale === "he" ? "שאלות נפוצות" : locale === "ar" ? "أسئلة شائعة" : locale === "es" ? "Preguntas frecuentes" : locale === "pt-BR" ? "Perguntas frequentes" : "FAQ";
   const faq = faqs ? `<h2>${faqHeading}</h2>${faqBodyHtml(faqs)}` : "";
   const servicePrefix = locale === "en" ? "" : locale === "pt-BR" ? "/pt-br" : `/${locale}`;
   const service = page.serviceLink?.href
@@ -793,7 +783,7 @@ export function buildMarketingPrerender(pathname) {
     return {
       lang: "en",
       dir: "ltr",
-      inner: `<main lang="en" dir="ltr"><h1>Everything your business needs to grow in one place</h1><p>${escapeText(found.page.description)}</p><h2>FAQ</h2>${faqBodyHtml(faqs)}</main>`,
+      inner: `<main lang="en" dir="ltr"><h1>Everything your business needs to grow in one place</h1><p>${escapeText(found.page.description)}</p><h2>${escapeText(HOME_FAQ_TITLE.en)}</h2>${faqBodyHtml(faqs)}</main>`,
     };
   }
   const heading = path === "/crm"

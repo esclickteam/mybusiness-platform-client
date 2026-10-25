@@ -42,8 +42,8 @@ function ProductFilm({
   const reduce = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(Boolean(reduce));
-  const src = `/demo-media/home/${id}.mp4?v=3`;
-  const poster = `/demo-media/home/${id}.jpg?v=3`;
+  const src = `/demo-media/home/${id}.mp4?v=4`;
+  const poster = `/demo-media/home/${id}.jpg?v=4`;
 
   useEffect(() => {
     const node = videoRef.current;
@@ -72,7 +72,7 @@ function ProductFilm({
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         aria-label={label}
       />
       {controls ? (

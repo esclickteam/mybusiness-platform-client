@@ -125,4 +125,26 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/p/acme")).toBeNull();
     expect(buildMarketingDocumentHead("/s/northwind")).toBeNull();
   });
+
+  it("uses the visible homepage FAQ in structured data for every language", () => {
+    const locales = [
+      ["en", "/"],
+      ["he", "/he/"],
+      ["es", "/es/"],
+      ["pt-BR", "/pt-br/"],
+      ["ar", "/ar/"],
+    ];
+    for (const [locale, route] of locales) {
+      const home = JSON.parse(readFileSync(path.join(process.cwd(), "src/i18n/locales", `${locale}.json`), "utf8")).home;
+      const head = buildMarketingDocumentHead(route) || "";
+      const body = buildMarketingPrerender(route)?.inner || "";
+      expect(head.match(/"@type":"FAQPage"/g)?.length).toBe(1);
+      expect(head.match(/"@type":"Question"/g)?.length).toBe(10);
+      expect(head).toContain(home.faq1q);
+      expect(head).toContain(home.faq10a);
+      expect(body).toContain(`<h1>${home.headline}</h1>`);
+      expect(body).toContain(home.faqTitle);
+      expect(body).toContain(home.faq8a);
+    }
+  });
 });
