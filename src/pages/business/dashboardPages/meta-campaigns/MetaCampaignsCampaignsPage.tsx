@@ -35,7 +35,7 @@ import {
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
-import { removeCampaignFromList } from "./campaignListDeletion";
+import { removeCampaignsFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
 
 type OutletCtx = { businessId: string | null };
@@ -86,8 +86,11 @@ export default function MetaCampaignsCampaignsPage() {
   const [pinnedAdSet, setPinnedAdSet] = useState<{ id: string; name: string } | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
   const [bulkStatus, setBulkStatus] = useState<"ACTIVE" | "PAUSED" | null>(null);
-  const deletion = useCampaignDraftDelete(businessId, (id) => {
-    setCampaigns((current) => removeCampaignFromList(current, id));
+  const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
+    const ids = extra?.ids?.length ? extra.ids : [id];
+    setCampaigns((current) => removeCampaignsFromList(current, ids));
+    setChecked((current) => current.filter((rowId) => !ids.includes(rowId)));
+    if (pinnedCampaign && ids.includes(pinnedCampaign.id)) setPinnedCampaign(null);
   });
 
   async function load() {
@@ -365,6 +368,9 @@ export default function MetaCampaignsCampaignsPage() {
           <div className="flex flex-wrap gap-2">
             <button type="button" className={btnSecondary} onClick={() => setBulkStatus("PAUSED")}>{t("metaCampaigns.actions.pause")}</button>
             <button type="button" className={btnSecondary} onClick={() => setBulkStatus("ACTIVE")}>{t("metaCampaigns.actions.resume")}</button>
+            <button type="button" className={btnSecondary} data-testid="meta-campaign-bulk-delete" onClick={() => deletion.askMany(checkedRows, "campaign")}>
+              {t("metaCampaigns.levels.bulkDelete")}
+            </button>
           </div>
         ) : null}
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -672,7 +678,9 @@ export default function MetaCampaignsCampaignsPage() {
       ) : null}
 
       <MetaCampaignDeleteDialog
-        campaign={deletion.target}
+        campaign={deletion.target as (MetaCampaign & { name: string }) | null}
+        targets={deletion.targets}
+        level={deletion.level}
         busy={deletion.busy}
         error={deletion.error}
         onClose={deletion.close}

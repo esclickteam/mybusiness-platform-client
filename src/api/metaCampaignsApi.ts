@@ -998,6 +998,46 @@ export async function deleteLocalCampaignDraft(businessId: string | undefined, p
   return data;
 }
 
+export type MetaDeleteItem = {
+  id: string;
+  level?: "campaign" | "adset" | "ad";
+  name?: string;
+  campaignId?: string;
+  adSetId?: string;
+};
+
+export type MetaDeleteResultRow = {
+  id: string;
+  level?: string;
+  name?: string;
+  ok: boolean;
+  kind?: string;
+  error?: string;
+  code?: string;
+};
+
+export async function deleteMetaObjects(
+  businessId: string | undefined,
+  items: MetaDeleteItem[],
+  options?: { confirm?: boolean }
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    results: MetaDeleteResultRow[];
+    deletedIds: string[];
+    failed: MetaDeleteResultRow[];
+  }>(
+    "/meta-campaigns/objects/delete",
+    {
+      businessId,
+      confirm: options?.confirm !== false,
+      items,
+    },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
 export async function duplicateLocalCampaignDraft(businessId: string | undefined, publishId: string) {
   const { data } = await API.post<MetaEditorDraftSaveResult>(
     `/meta-campaigns/publishes/${publishId}/duplicate-draft`,
@@ -1080,13 +1120,14 @@ export async function setMetaAdStatus(
 
 export async function deleteMetaCampaign(
   businessId: string | undefined,
-  campaignId: string
+  campaignId: string,
+  options?: { confirm?: boolean; name?: string }
 ) {
-  const { data } = await API.delete<{ success: boolean }>(
-    `/meta-campaigns/campaigns/${campaignId}`,
-    withBusiness(businessId)
+  return deleteMetaObjects(
+    businessId,
+    [{ id: campaignId, level: "campaign", name: options?.name }],
+    { confirm: options?.confirm !== false }
   );
-  return data;
 }
 
 export async function previewMetaAd(

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Eye, History, Loader2, Pause, Pencil, Play, RefreshCw } from "lucide-react";
+import { Eye, History, Loader2, Pause, Pencil, Play, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   getMetaAdsManager,
@@ -31,6 +31,8 @@ import { COLUMN_LABEL } from "./columnLabels";
 import ManagerColumnMenu, { beginColumnResize } from "./ManagerColumnMenu";
 import { readManagerMetric } from "./managerMetrics";
 import { bulkLivePlan, runBulkStatus, selectVisible, toggleSelected } from "./managerSelection";
+import MetaCampaignDeleteDialog from "../MetaCampaignDeleteDialog";
+import { useCampaignDraftDelete } from "../useCampaignDraftDelete";
 
 type Props = {
   businessId: string;
@@ -100,6 +102,12 @@ export default function MetaAdsLevelPanel({
   const [history, setHistory] = useState<Array<{ id: string; action: string; createdAt?: string | null; success: boolean }>>([]);
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [timezoneName, setTimezoneName] = useState("");
+  const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
+    const ids = extra?.ids?.length ? extra.ids : [id];
+    setRows((current) => current.filter((row) => !ids.includes(row.id)));
+    setSelected((current) => current.filter((rowId) => !ids.includes(rowId)));
+    setRefreshKey((value) => value + 1);
+  });
 
   useEffect(() => {
     setPrefs(loadColumnPrefs(window.localStorage, businessId, level));
@@ -253,6 +261,14 @@ export default function MetaAdsLevelPanel({
         <div className="flex flex-wrap gap-2">
           <button type="button" className={btnSecondary} onClick={() => setPending("PAUSED")}>{t("metaCampaigns.actions.pause")}</button>
           <button type="button" className={btnSecondary} onClick={() => setPending("ACTIVE")}>{t("metaCampaigns.actions.resume")}</button>
+          <button
+            type="button"
+            className={btnSecondary}
+            data-testid="meta-level-bulk-delete"
+            onClick={() => deletion.askMany(sorted.filter((row) => selected.includes(row.id)), level)}
+          >
+            {t("metaCampaigns.levels.bulkDelete")}
+          </button>
         </div>
       ) : null}
       {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
@@ -346,6 +362,16 @@ export default function MetaAdsLevelPanel({
                         </button>
                         <button
                           type="button"
+                          className={`${btnSecondary} inline-flex min-h-11 min-w-11 items-center justify-center`}
+                          aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                          data-testid={`meta-level-delete-${row.id}`}
+                          disabled={deletion.busy}
+                          onClick={() => deletion.ask(row, level)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
                           className={btnPrimary}
                           onClick={() => {
                             setSelected([row.id]);
@@ -411,6 +437,14 @@ export default function MetaAdsLevelPanel({
           </div>
         </div>
       ) : null}
+      <MetaCampaignDeleteDialog
+        targets={deletion.targets}
+        level={deletion.level}
+        busy={deletion.busy}
+        error={deletion.error}
+        onClose={deletion.close}
+        onConfirm={() => void deletion.confirm()}
+      />
       {details ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4" role="dialog" aria-modal="true">
           <div className={`${cardBase} max-h-[80vh] w-full max-w-lg space-y-2 overflow-y-auto p-5`}>

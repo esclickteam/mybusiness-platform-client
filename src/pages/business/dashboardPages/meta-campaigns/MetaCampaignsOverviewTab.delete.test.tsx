@@ -7,6 +7,7 @@ import he from "../../../../i18n/locales/he.json";
 const api = vi.hoisted(() => ({
   getMetaCampaignsOverview: vi.fn(),
   deleteLocalCampaignDraft: vi.fn(),
+  deleteMetaObjects: vi.fn(),
   selectMetaAdAccount: vi.fn(),
   setMetaCampaignStatus: vi.fn(),
 }));
@@ -59,7 +60,7 @@ describe("Meta overview campaign delete", () => {
     vi.clearAllMocks();
   });
 
-  it("shows the trash control on both layouts and does not remove a live Meta campaign", async () => {
+  it("shows the trash control on both layouts and asks before deleting a live Meta campaign", async () => {
     api.getMetaCampaignsOverview.mockResolvedValue({
       connection: {
         connected: true,
@@ -99,15 +100,20 @@ describe("Meta overview campaign delete", () => {
     expect(buttons).toHaveLength(2);
     fireEvent.click(buttons[1]);
     expect(screen.getByTestId("meta-campaign-delete-message")).toHaveTextContent(
-      "האם למחוק את הקמפיין? פעולה זו אינה ניתנת לביטול."
+      "אם תמחק את הקמפיין הזה, לא תהיה לך אפשרות לשחזר אותו מאוחר יותר."
     );
-    expect(screen.getByTestId("meta-campaign-delete-blocked")).toBeTruthy();
-    expect(api.deleteLocalCampaignDraft).not.toHaveBeenCalled();
+    expect(screen.getByTestId("meta-campaign-delete-confirm")).toBeTruthy();
+    expect(api.deleteMetaObjects).not.toHaveBeenCalled();
     expect(screen.getByTestId("meta-campaign-count")).toHaveAttribute("data-count", "1");
   });
 
   it("removes a local draft and updates the campaign count without a reload", async () => {
-    api.deleteLocalCampaignDraft.mockResolvedValue({ success: true, publishId: "draft-1" });
+    api.deleteMetaObjects.mockResolvedValue({
+      success: true,
+      results: [{ id: "draft-1", ok: true }],
+      deletedIds: ["draft-1"],
+      failed: [],
+    });
     api.getMetaCampaignsOverview.mockResolvedValue({
       connection: {
         connected: true,
@@ -164,7 +170,7 @@ describe("Meta overview campaign delete", () => {
     fireEvent.click(screen.getByTestId("meta-campaign-delete-confirm"));
 
     await waitFor(() => expect(screen.getByTestId("meta-campaign-count")).toHaveAttribute("data-count", "1"));
-    expect(api.deleteLocalCampaignDraft).toHaveBeenCalledTimes(1);
+    expect(api.deleteMetaObjects).toHaveBeenCalledTimes(1);
     expect(api.getMetaCampaignsOverview.mock.calls.length).toBe(loadsBeforeDelete);
     expect(screen.queryByText("טיוטת חתונות")).toBeNull();
     expect(screen.getAllByText("קמפיין Evently360").length).toBeGreaterThan(0);

@@ -69,7 +69,6 @@ import {
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
-import { removeCampaignFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
 import {
   compareByDeliveryMetric,
@@ -264,10 +263,11 @@ export default function MetaCampaignsOverviewTab() {
     useState<MetaCampaign | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [metricSort, setMetricSort] = useState<CampaignMetricSort | null>(null);
-  const deletion = useCampaignDraftDelete(businessId, (id) => {
+  const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
+    const ids = extra?.ids?.length ? extra.ids : [id];
     setData((current) =>
       current
-        ? { ...current, campaigns: removeCampaignFromList(current.campaigns || [], id) }
+        ? { ...current, campaigns: (current.campaigns || []).filter((row) => !ids.includes(row.id)) }
         : current
     );
   });
@@ -1528,7 +1528,8 @@ export default function MetaCampaignsOverviewTab() {
 
 
       <MetaCampaignDeleteDialog
-        campaign={deletion.target}
+        targets={deletion.targets}
+        level={deletion.level}
         busy={deletion.busy}
         error={deletion.error}
         onClose={deletion.close}
