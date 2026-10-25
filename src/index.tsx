@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { Buffer } from "buffer";
 
-import { marketingLocaleBasename } from "./lib/localePath.mjs";
+import { marketingLocaleBasename } from "./lib/localePathCore.mjs";
 
 /* i18n */
 import { i18nReady } from "./i18n/i18n";

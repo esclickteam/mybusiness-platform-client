@@ -3,10 +3,8 @@ import { FaGlobe } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import { LANGUAGE_META, getShortLanguageLabel } from "../i18n/languages";
 import { coerceSupportedLanguage, getTextDirection } from "../i18n/localeUtils";
-import { changeAppLanguage } from "../i18n/persistLanguage";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
-import { findMarketingPage } from "../lib/marketingSeo.mjs";
-import { hasLocalizedMarketingPage, splitMarketingLocale, withMarketingLocale } from "../lib/localePath.mjs";
+import { splitMarketingLocale, withMarketingLocale } from "../lib/localePathCore.mjs";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 
 export default function LanguageSwitcher({
@@ -33,6 +31,22 @@ export default function LanguageSwitcher({
         host === "127.0.0.1" ||
         host.endsWith(".vercel.app"));
     const bare = splitMarketingLocale(window.location.pathname).path;
+    if (bare === "/") {
+      const { changeAppLanguage } = await import("../i18n/persistLanguage");
+      await changeAppLanguage(lng);
+      const next = withMarketingLocale("/", lng);
+      if (onMarketingHost && next !== window.location.pathname) {
+        window.location.assign(next);
+        return;
+      }
+      setOpen(false);
+      return;
+    }
+    const [{ findMarketingPage }, { hasLocalizedMarketingPage }, { changeAppLanguage }] = await Promise.all([
+      import("../lib/marketingSeo.mjs"),
+      import("../lib/localePath.mjs"),
+      import("../i18n/persistLanguage"),
+    ]);
     const canMove = Boolean(findMarketingPage(bare) || bare === "/whatsapp-api" || bare.startsWith("/guides/"));
     const targetReady = lng === "en" || hasLocalizedMarketingPage(bare, lng);
     if (onMarketingHost && canMove && targetReady) {

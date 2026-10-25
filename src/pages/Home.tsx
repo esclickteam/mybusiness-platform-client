@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
-import { marketingPublicUrl } from "../lib/localePath.mjs";
+import { marketingPublicUrl } from "../lib/localePathCore.mjs";
 
 import HeroSection from "../components/HeroSection";
 import { HomeAudiences, HomeJourney } from "../components/HomeNarrative";

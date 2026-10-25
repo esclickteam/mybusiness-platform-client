@@ -17,7 +17,7 @@ import {
   getManualLanguageChoice,
   resolvePreferredLanguage,
 } from "./localeUtils";
-import { splitMarketingLocale } from "../lib/localePath.mjs";
+import { splitMarketingLocale } from "../lib/localePathCore.mjs";
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
 import { isBizuplyWhatsAppHost } from "../lib/whatsappHost.mjs";
 import { SUPPORTED_LANGUAGES } from "./languages";

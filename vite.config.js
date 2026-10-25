@@ -76,7 +76,10 @@ export default defineConfig({
 
   build: {
     rollupOptions: {
-      input: path.resolve(__dirname, "index.html"),
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        marketing: path.resolve(__dirname, "marketing.html"),
+      },
     },
 
     commonjsOptions: {

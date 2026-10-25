@@ -749,6 +749,12 @@ function withPreviewNoindex(response, host) {
   return new Response(response.body, { status: response.status, headers });
 }
 
+export function documentShellForHost(host, pathname) {
+  if (!isPlatformMarketingHost(host)) return "index";
+  if (splitMarketingLocale(pathname).path !== "/") return "index";
+  return "marketing";
+}
+
 function isPlatformMarketingHost(host) {
   if (!host) return false;
   if (isBizuplyWhatsAppHost(host) || isBizuplyTravelHost(host)) return false;
@@ -803,9 +809,17 @@ async function handleMarketingDocument(request) {
   }
 
   try {
-    const htmlRes = await fetch(new URL("/index.html", request.url), {
+    const shellName = documentShellForHost(getHost(request), pathname) === "marketing"
+      ? "/marketing.html"
+      : "/index.html";
+    let htmlRes = await fetch(new URL(shellName, request.url), {
       headers: shellDocumentHeaders(),
     });
+    if (!htmlRes.ok && shellName !== "/index.html") {
+      htmlRes = await fetch(new URL("/index.html", request.url), {
+        headers: shellDocumentHeaders(),
+      });
+    }
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();

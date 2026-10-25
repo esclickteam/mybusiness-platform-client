@@ -19,7 +19,7 @@ import {
   normalizeLanguage,
 } from "./languages";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
-import { splitMarketingLocale } from "../lib/localePath.mjs";
+import { splitMarketingLocale } from "../lib/localePathCore.mjs";
 
 export {
   FALLBACK_LANGUAGE,
