@@ -747,18 +747,24 @@
 
 .home-show__stack {
   display: grid;
-  gap: 1.5rem;
+  gap: 1.75rem;
   margin-top: 2.5rem;
 }
 
 .home-show__block {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
   align-items: center;
+  direction: ltr;
   overflow: hidden;
   border-radius: 1.75rem;
   padding: 1.25rem;
 }
+
+.home-show__block .home-show__copy { order: 1; }
+.home-show__block .home-show__screen,
+.home-show__block .home-show__devices { order: 2; }
 
 .home-show__copy h3 {
   margin: 0;
@@ -901,7 +907,7 @@
 }
 
 .home-show__desktop video {
-  height: 360px;
+  height: auto;
   border-radius: 1.1rem;
 }
 
@@ -918,26 +924,27 @@
 }
 
 @media (min-width: 980px) {
-  .home-show__block--split,
-  .home-show__block--chat,
-  .home-show__block--flow,
-  .home-show__block--devices,
-  .home-show__block--calendar {
-    grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
-    padding: 1.6rem;
+  .home-show__block {
+    gap: 2rem;
+    padding: 1.75rem;
   }
 
-  .home-show__block--wide {
-    direction: ltr;
-    grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
-    align-items: center;
+  .home-show__block--copy-left {
+    grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
   }
 
-  .home-show__block--chat {
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  .home-show__block--copy-left .home-show__copy { order: 1; }
+  .home-show__block--copy-left .home-show__screen,
+  .home-show__block--copy-left .home-show__devices { order: 2; }
+
+  .home-show__block--media-left {
+    grid-template-columns: minmax(0, 1.14fr) minmax(0, 0.86fr);
   }
 
-  .home-show__block--chat .home-show__copy { order: 2; }
+  .home-show__block--media-left .home-show__copy { order: 2; }
+  .home-show__block--media-left .home-show__screen,
+  .home-show__block--media-left .home-show__devices { order: 1; }
+
   .home-show__screen video,
   .home-show__desktop video { border-radius: 1.1rem; }
 }

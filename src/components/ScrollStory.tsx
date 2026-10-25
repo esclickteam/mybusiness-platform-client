@@ -9,13 +9,13 @@ import "../styles/homeWow.css";
 
 type FilmId = "crm" | "whatsapp" | "campaigns" | "automations" | "websites" | "appointments";
 
-const BLOCKS: { id: FilmId; to: string; layout: string }[] = [
-  { id: "crm", to: "/crm", layout: "split" },
-  { id: "whatsapp", to: "/whatsapp-api", layout: "chat" },
-  { id: "campaigns", to: "/meta-campaigns", layout: "wide" },
-  { id: "automations", to: "/automations", layout: "flow" },
-  { id: "websites", to: "/website-builder", layout: "devices" },
-  { id: "appointments", to: "/appointments", layout: "calendar" },
+const BLOCKS: { id: FilmId; to: string; layout: string; side: "copy-left" | "media-left" }[] = [
+  { id: "crm", to: "/crm", layout: "split", side: "copy-left" },
+  { id: "whatsapp", to: "/whatsapp-api", layout: "chat", side: "media-left" },
+  { id: "campaigns", to: "/meta-campaigns", layout: "wide", side: "copy-left" },
+  { id: "automations", to: "/automations", layout: "flow", side: "media-left" },
+  { id: "websites", to: "/website-builder", layout: "devices", side: "copy-left" },
+  { id: "appointments", to: "/appointments", layout: "calendar", side: "media-left" },
 ];
 
 const COPY: Record<FilmId, { title: string; body: string; cta: string; video: string }> = {
@@ -100,7 +100,7 @@ export default function ScrollStory() {
           {BLOCKS.map((block) => {
             const copy = COPY[block.id];
             return (
-              <article key={block.id} className={`home-show__block home-show__block--${block.layout}`}>
+              <article key={block.id} className={`home-show__block home-show__block--${block.layout} home-show__block--${block.side}`}>
                 <div className="home-show__copy" dir={getTextDirection(i18n.language)}>
                   <h3>{t(`home.${copy.title}`)}</h3>
                   <p>{t(`home.${copy.body}`)}</p>
