@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import API from "../../../../api";
+import { enterSystemHref } from "../../../../saas/productAccess";
 
 type TenantCard = {
   id: string;
@@ -9,6 +10,8 @@ type TenantCard = {
   publicSlug: string;
   status: string;
   accessPath: string;
+  productLoginUrl?: string;
+  product?: { loginUrl?: string; passwordSync?: { status?: string; reason?: string } };
   domain?: { host?: string };
   hosting?: { planId?: string };
   quote?: { renewal?: number; currency?: string };
@@ -55,12 +58,18 @@ export default function MySaasSystems() {
           <article key={tenant.id} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
             <h2 className="text-lg font-black">{tenant.businessName || tenant.templateSlug}</h2>
             <p className="text-sm text-slate-600">{tenant.templateSlug}</p>
-            <p className="mt-2 text-sm">דומיין: {tenant.domain?.host || tenant.accessPath}</p>
+            <p className="mt-2 text-sm">דומיין: {tenant.domain?.host || enterSystemHref(tenant) || tenant.accessPath}</p>
             <p className="text-sm">סטטוס: {STATUS[tenant.status] || tenant.status}</p>
             <p className="text-sm">חבילה: {tenant.hosting?.planId || "—"}</p>
             <p className="text-sm">חידוש: {tenant.renewalAt ? new Date(tenant.renewalAt).toLocaleDateString() : "—"}</p>
+            {tenant.product?.passwordSync?.status === "too_short" ? (
+              <p className="mt-2 text-sm font-bold text-rose-700">יש להחליף את סיסמת Bizuply ל־8 תווים לפחות לפני כניסה למוצר.</p>
+            ) : null}
+            {tenant.product?.passwordSync?.status === "failed" ? (
+              <p className="mt-2 text-sm font-bold text-rose-700">סנכרון הסיסמה למוצר נכשל. התחברו שוב ל־Bizuply כדי לנסות שוב. אין להעביר סיסמה בכתובת.</p>
+            ) : null}
             <div className="mt-3 flex flex-wrap gap-2">
-              <a className="rounded-full bg-[#24124d] px-3 py-2 text-sm font-bold text-white" href={tenant.accessPath} target="_blank" rel="noreferrer">
+              <a className="rounded-full bg-[#24124d] px-3 py-2 text-sm font-bold text-white" href={enterSystemHref(tenant)} target="_blank" rel="noreferrer">
                 כניסה למערכת
               </a>
               <Link className="rounded-full border px-3 py-2 text-sm font-bold" to={`/business/${businessId}/dashboard/saas/${tenant.id}`}>
