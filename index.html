@@ -217,6 +217,8 @@
         document.head.appendChild(pre2);
         var css = document.createElement("link");
         css.rel = "stylesheet";
+        css.media = "print";
+        css.onload = function () { this.media = "all"; };
         css.href =
           "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap";
         // Required so cssRules can be read (html-to-image / capture tools).

@@ -75,7 +75,7 @@ export default function Footer() {
 
         <div className="mx-auto mt-5 h-px w-full max-w-xl bg-slate-200/80" />
 
-        <p className="mt-3 text-[11px] font-semibold text-slate-400 sm:text-xs">
+        <p className="mt-3 text-[11px] font-semibold text-slate-600 sm:text-xs">
           {t("footer.rights", { year })}
         </p>
       </div>
@@ -94,9 +94,9 @@ function scrollPageToTop() {
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
     <div className="text-center">
-      <h4 className="mb-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-400">
+      <p className="mb-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-600">
         {title}
-      </h4>
+      </p>
       <ul className="space-y-0.5">
         {links.map((link) => (
           <li key={`${title}-${link.to}-${link.label}`}>

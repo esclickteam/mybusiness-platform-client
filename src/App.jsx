@@ -2,7 +2,7 @@ import React, { Suspense, lazy, useEffect, useLayoutEffect, useState } from "rea
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import i18n from "./i18n/i18n";
+import i18n, { ensureLocale } from "./i18n/i18n";
 import { getHtmlLang, getTextDirection } from "./i18n/localeUtils";
 
 import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
@@ -857,6 +857,7 @@ function PageLoader() {
 
 export default function App() {
   const { user, loading, initialized } = useAuth();
+  const { i18n } = useTranslation();
   useLayoutEffect(() => {
     if (!document.getElementById("bizuply-first-paint")) return undefined;
     const release = () => {
@@ -887,9 +888,9 @@ export default function App() {
   useLayoutEffect(() => {
     if (location.pathname !== "/") {
       document.getElementById("bizuply-first-paint")?.remove();
+      void ensureLocale(i18n.language);
     }
-  }, [location.pathname]);
-  const { i18n } = useTranslation();
+  }, [location.pathname, i18n.language]);
   const appDir = getTextDirection(i18n.language);
   const appLang = getHtmlLang(i18n.language);
 

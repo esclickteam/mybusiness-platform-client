@@ -102,7 +102,7 @@ export default function LanguageSwitcher({
                   : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
               }`
         }
-        aria-label={t("common.changeLanguage")}
+        aria-label={`${shortLabel}, ${t("common.changeLanguage")}`}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={menuId}

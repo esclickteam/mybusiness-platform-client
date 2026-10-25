@@ -11,6 +11,8 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function HeroSection() {
   const { t, i18n } = useTranslation();
+  const reduceMotion = useReducedMotion();
+  const dir = getTextDirection(i18n.language);
   if (
     typeof document !== "undefined" &&
     (document.querySelector("#bizuply-first-paint .home-hero") ||
@@ -18,8 +20,6 @@ export default function HeroSection() {
   ) {
     return null;
   }
-  const reduceMotion = useReducedMotion();
-  const dir = getTextDirection(i18n.language);
 
   return (
     <section className="home-hero" dir={dir}>
@@ -66,10 +66,10 @@ export default function HeroSection() {
         >
           <img
             className="home-stage__main"
-            src="/demo-media/forms/lead.png"
+            src="/demo-media/forms/lead.webp"
             alt={t("home.stageAlt")}
-            width={1200}
-            height={750}
+            width={960}
+            height={600}
             fetchPriority="high"
             decoding="async"
           />

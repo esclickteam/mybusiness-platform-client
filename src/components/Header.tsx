@@ -55,7 +55,7 @@ export default function Header() {
       <header className="site-header" dir={headerDir}>
         <nav className="site-header__bar" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
           <Link to="/" className="site-header__logo" aria-label="BizUply">
-            <img src="/logo-mark.svg" alt="BizUply" width="176" height="52" />
+            <img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchPriority="low" decoding="async" />
           </Link>
 
           <div className="site-header__nav">

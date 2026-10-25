@@ -825,6 +825,10 @@ async function handleMarketingDocument(request) {
     }
     if (isHome) {
       documentHtml = documentHtml.replace(
+        "</head>",
+        '<link rel="preload" as="image" href="/demo-media/forms/lead.webp" fetchpriority="high"></head>',
+      );
+      documentHtml = documentHtml.replace(
         /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
         '<link rel="preload" as="style" href="$1" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link rel="stylesheet" href="$1"></noscript>',
       );

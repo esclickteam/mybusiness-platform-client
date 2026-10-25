@@ -57,7 +57,13 @@ const languageDetector = new LanguageDetector();
 languageDetector.addDetector(browserGeoDetector);
 
 const CLUB = { en: clubEn, he: clubHe, es: clubEs, "pt-BR": clubPtBR, ar: clubAr };
-const loadedLocales = new Set();
+const fullLocales = new Set();
+const partialLocales = new Set();
+
+function isMarketingHomepage() {
+  if (typeof window === "undefined") return false;
+  return splitMarketingLocale(window.location.pathname).path === "/";
+}
 
 function bootLanguage() {
   if (typeof window === "undefined") return FALLBACK_LANGUAGE;
@@ -71,7 +77,7 @@ function bootLanguage() {
   return resolvePreferredLanguage({ allowGeo: true, allowBrowser: true });
 }
 
-async function importLocale(code) {
+async function importFullLocale(code) {
   switch (code) {
     case "he":
       return (await import("./locales/he.json")).default;
@@ -86,6 +92,21 @@ async function importLocale(code) {
   }
 }
 
+async function importMarketingLocale(code) {
+  switch (code) {
+    case "he":
+      return (await import("./locales/marketing/he.json")).default;
+    case "es":
+      return (await import("./locales/marketing/es.json")).default;
+    case "pt-BR":
+      return (await import("./locales/marketing/pt-BR.json")).default;
+    case "ar":
+      return (await import("./locales/marketing/ar.json")).default;
+    default:
+      return (await import("./locales/marketing/en.json")).default;
+  }
+}
+
 function packLocale(code, messages) {
   return withMetaCostCopy(
     withWhatsappPerformance(
@@ -96,13 +117,41 @@ function packLocale(code, messages) {
   );
 }
 
+function supportedLocale(code) {
+  return CLUB[code] ? code : FALLBACK_LANGUAGE;
+}
+
 export async function ensureLocale(code) {
-  const language = CLUB[code] ? code : FALLBACK_LANGUAGE;
-  if (loadedLocales.has(language)) return language;
-  const messages = await importLocale(language);
+  const language = supportedLocale(code);
+  if (fullLocales.has(language)) return language;
+  const upgrading = partialLocales.has(language);
+  const messages = await importFullLocale(language);
   i18n.addResourceBundle(language, "translation", packLocale(language, messages), true, true);
-  loadedLocales.add(language);
+  fullLocales.add(language);
+  partialLocales.add(language);
+  if (upgrading && i18n.language === language) i18n.emit("languageChanged", language);
   return language;
+}
+
+export async function ensureMarketingLocale(code) {
+  const language = supportedLocale(code);
+  if (fullLocales.has(language) || partialLocales.has(language)) return language;
+  const messages = await importMarketingLocale(language);
+  i18n.addResourceBundle(language, "translation", packLocale(language, messages), true, true);
+  partialLocales.add(language);
+  return language;
+}
+
+function scheduleFullLocale(language) {
+  if (typeof window === "undefined" || fullLocales.has(language)) return;
+  const run = () => { void ensureLocale(language); };
+  window.addEventListener("pointerdown", run, { once: true, capture: true });
+  const start = () => {
+    if (window.requestIdleCallback) window.requestIdleCallback(run, { timeout: 2500 });
+    else window.setTimeout(run, 1200);
+  };
+  if (document.readyState === "complete") start();
+  else window.addEventListener("load", start, { once: true });
 }
 
 const initialLanguage = bootLanguage();
@@ -164,10 +213,14 @@ i18n.on("languageChanged", (lng) => {
 }
 
 export async function bootstrapI18n() {
-  const codes = import.meta.env.MODE === "test"
-    ? ["en", "he", "es", "pt-BR", "ar"]
-    : [initialLanguage];
-  await Promise.all(codes.map((code) => ensureLocale(code)));
+  if (import.meta.env.MODE === "test") {
+    await Promise.all(["en", "he", "es", "pt-BR", "ar"].map((code) => ensureLocale(code)));
+  } else if (isMarketingHomepage()) {
+    await ensureMarketingLocale(initialLanguage);
+    scheduleFullLocale(initialLanguage);
+  } else {
+    await ensureLocale(initialLanguage);
+  }
   if (i18n.language !== initialLanguage) await i18n.changeLanguage(initialLanguage);
 }
 
