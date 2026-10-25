@@ -148,6 +148,10 @@ const prerender = rootElement.querySelector("main");
 if (prerender) {
   const hold = document.createElement("div");
   hold.id = "bizuply-first-paint";
+  const shell = prerender.previousElementSibling;
+  if (shell?.getAttribute("data-bizuply-shell") === "header") {
+    hold.appendChild(shell);
+  }
   hold.appendChild(prerender);
   rootElement.insertAdjacentElement("beforebegin", hold);
   rootElement.setAttribute("hidden", "");

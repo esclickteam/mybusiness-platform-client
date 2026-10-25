@@ -221,10 +221,10 @@ const PAGES = {
       ],
     ),
     "/guides": page(
-      "Guías | Bizuply",
-      "Guías prácticas sobre CRM, WhatsApp Cloud API, automatizaciones, anuncios de Meta y el constructor de sitios de Bizuply.",
+      "Guías prácticas para el negocio | Bizuply",
+      "Guías prácticas de CRM, WhatsApp Business, anuncios de Meta, automatizaciones, sitios web y citas. Aprenda cómo se conecta el trabajo en Bizuply.",
       "Guías",
-      "Centro de guías",
+      "Guías prácticas para un negocio más inteligente",
       ["Guías escritas a partir de las funciones que el producto ya publica. Cada guía indica el precio real y los límites conocidos."],
     ),
   },
@@ -335,10 +335,10 @@ cloneShape("pt-BR", {
     ],
   ),
   "/guides": page(
-    "Guias | Bizuply",
-    "Guias práticos sobre CRM, WhatsApp Cloud API, automações, anúncios da Meta e o construtor de sites da Bizuply.",
+    "Guias práticos para o negócio | Bizuply",
+    "Guias práticos de CRM, WhatsApp Business, anúncios da Meta, automações, sites e agendamentos. Veja como o trabalho se conecta na Bizuply.",
     "Guias",
-    "Centro de guias",
+    "Guias práticos para um negócio mais inteligente",
     ["Guias escritos a partir das funções que o produto já publica. Cada guia indica o preço real e os limites conhecidos."],
   ),
 });
@@ -444,10 +444,10 @@ cloneShape("ar", {
     ],
   ),
   "/guides": page(
-    "أدلة | Bizuply",
-    "أدلة عملية عن CRM وواتساب API والأتمتة وإعلانات Meta ومنشئ المواقع في Bizuply.",
+    "أدلة عملية لإدارة العمل | Bizuply",
+    "أدلة عملية عن CRM وواتساب للأعمال وإعلانات Meta والأتمتة والمواقع والمواعيد. تعرّفوا على كيفية اتصال العمل في Bizuply.",
     "أدلة",
-    "مركز الأدلة",
+    "أدلة عملية لعمل أكثر ذكاءً",
     ["أدلة مكتوبة من الوظائف التي ينشرها المنتج فعلاً. يذكر كل دليل السعر الحقيقي والحدود المعروفة."],
   ),
 });

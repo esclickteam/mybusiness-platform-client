@@ -2,21 +2,33 @@
 
 export function installRemainingGuides(add, t) {
   add("what-is-a-crm", {
-    title: t("What is a CRM for a small business? | Bizuply", "מהו CRM לעסק קטן? | ביזאפלי", "Qué es un CRM para un negocio pequeño | Bizuply", "O que é um CRM para um pequeno negócio | Bizuply", "ما هو CRM لنشاط صغير؟ | Bizuply"),
-    description: t(
-      "A CRM is the record of people who might buy and people who already did. In Bizuply, CRM only is $49 a month.",
-      "CRM הוא הרשומה של מי שעשוי לקנות ושל מי שכבר קנה. בביזאפלי, CRM בלבד עולה 49 דולר לחודש.",
-      "Un CRM es el registro de quien podría comprar y de quien ya compró. En Bizuply, el CRM solo cuesta 49 dólares al mes.",
-      "Um CRM é o registro de quem pode comprar e de quem já comprou. Na Bizuply, o CRM sozinho custa US$ 49 por mês.",
-      "CRM هو سجل من قد يشتري ومن اشترى فعلاً. في Bizuply، CRM وحده 49 دولاراً في الشهر.",
+    title: t(
+      "What is a CRM, and why does your business need one? | Bizuply",
+      "מהו CRM, ולמה העסק צריך אותו? | Bizuply",
+      "Qué es un CRM y por qué lo necesita un negocio | Bizuply",
+      "O que é um CRM e por que o seu negócio precisa de um | Bizuply",
+      "ما هو CRM، ولماذا يحتاجه عملك؟ | Bizuply",
     ),
-    h1: t("What is a CRM for a small business?", "מהו CRM לעסק קטן?", "Qué es un CRM para un negocio pequeño", "O que é um CRM para um pequeno negócio", "ما هو CRM لنشاط صغير؟"),
+    description: t(
+      "CRM software organizes leads, customer information, conversations and follow-up. Learn how it works and how Bizuply keeps that record in one place.",
+      "תוכנת CRM מסדרת לידים, מידע על לקוחות, שיחות ומעקב. כך זה עובד, וכך Bizuply שומרת את הרשומה במקום אחד.",
+      "El software CRM organiza leads, información de clientes, conversaciones y seguimiento. Vea cómo funciona y cómo Bizuply guarda ese registro en un solo lugar.",
+      "Um software de CRM organiza leads, informações de clientes, conversas e acompanhamento. Veja como funciona e como a Bizuply guarda esse registro em um só lugar.",
+      "برنامج CRM ينظّم العملاء المحتملين ومعلومات العملاء والمحادثات والمتابعة. تعرّفوا على طريقة عمله وكيف تحفظ Bizuply هذا السجل في مكان واحد.",
+    ),
+    h1: t(
+      "What is a CRM, and why does your business need one?",
+      "מהו CRM, ולמה העסק צריך אותו?",
+      "Qué es un CRM y por qué lo necesita un negocio",
+      "O que é um CRM e por que o seu negócio precisa de um",
+      "ما هو CRM، ولماذا يحتاجه عملك؟",
+    ),
     lede: t(
-      "A CRM keeps one record per person: where they came from, which of the six statuses they are in, what was said, and what has to happen next. It is not a place to store a logo and hope someone remembers the conversation.",
-      "CRM שומר רשומה אחת לכל אדם: מאיפה הגיע, באיזה מששת הסטטוסים הוא נמצא, מה נאמר, ומה צריך לקרות אחר כך. זה לא מקום לשמור לוגו ולקוות שמישהו יזכור את השיחה.",
-      "Un CRM guarda un registro por persona: de dónde llegó, en cuál de los seis estados está, qué se dijo y qué tiene que pasar después. No es un lugar para guardar un logo y esperar que alguien recuerde la conversación.",
-      "Um CRM guarda um registro por pessoa: de onde ela veio, em qual dos seis status está, o que foi dito e o que precisa acontecer depois. Não é um lugar para guardar um logo e esperar que alguém lembre a conversa.",
-      "يحتفظ CRM بسجل واحد لكل شخص: من أين أتى، وفي أي حالة من الحالات الست هو، وماذا قيل، وما الذي يجب أن يحدث بعد ذلك. ليس مكاناً لحفظ شعار على أمل أن يتذكر أحد المحادثة.",
+      "CRM (Customer Relationship Management) software helps businesses organize information about leads and customers, track interactions and manage activities such as follow-ups, tasks and sales opportunities. Instead of leaving that history in separate inboxes and notes, a business can keep one record of where the person came from, what was said and what should happen next.",
+      "תוכנת CRM לניהול קשרי לקוחות עוזרת לעסק לארגן מידע על לידים ולקוחות, לעקוב אחרי פניות ולנהל פעולות כמו מעקב, משימות והזדמנויות מכירה. במקום להשאיר את ההיסטוריה בתיבות דואר ופתקים נפרדים, אפשר לשמור רשומה אחת: מאיפה האדם הגיע, מה נאמר ומה הצעד הבא.",
+      "El software CRM (gestión de relaciones con clientes) ayuda a organizar la información de leads y clientes, seguir las interacciones y gestionar actividades como seguimientos, tareas y oportunidades. En lugar de dejar ese historial en bandejas y notas separadas, el negocio puede guardar un solo registro: de dónde llegó la persona, qué se dijo y qué sigue.",
+      "Um software de CRM (gestão de relacionamento com o cliente) ajuda a organizar informações de leads e clientes, acompanhar interações e gerir atividades como follow-ups, tarefas e oportunidades. Em vez de deixar esse histórico em caixas de entrada e anotações separadas, o negócio pode manter um único registro: de onde a pessoa veio, o que foi dito e qual é o próximo passo.",
+      "يساعد برنامج CRM لإدارة علاقات العملاء على تنظيم معلومات العملاء المحتملين والعملاء، ومتابعة التفاعلات، وإدارة أنشطة مثل المتابعة والمهام وفرص البيع. بدلاً من ترك هذا السجل في صناديق بريد وملاحظات متفرقة، يمكن للعمل الاحتفاظ بسجل واحد: من أين أتى الشخص، وماذا قيل، وما الخطوة التالية.",
     ),
     related: ["follow-up-on-leads", "meta-lead-ads-to-crm", "crm-and-business-platform"],
     sections: [

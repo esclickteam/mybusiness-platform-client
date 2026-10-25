@@ -3,7 +3,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
-import logo from "../images/logo_final.svg";
 import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
@@ -56,7 +55,7 @@ export default function Header() {
       <header className="site-header" dir={headerDir}>
         <nav className="site-header__bar" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
           <Link to="/" className="site-header__logo" aria-label="BizUply">
-            <img src={logo} alt="BizUply" />
+            <img src="/brand/logo.svg" alt="BizUply" width={180} height={46} />
           </Link>
 
           <div className="site-header__nav">

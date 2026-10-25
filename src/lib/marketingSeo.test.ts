@@ -161,6 +161,7 @@ describe("marketing crawl files", () => {
       const body = buildMarketingPrerender(route);
       expect(body?.dir).toBe(dir);
       expect(body?.inner.match(/<h1\b/g)?.length).toBe(1);
+      expect(body?.inner).toContain('data-bizuply-shell="header"');
       expect(body?.inner).toContain(`<h1 class="pf-hero__title">${h1}</h1>`);
       expect(body?.inner).toContain('class="pf-hero"');
       expect(body?.inner).not.toContain("Everything your business needs to grow");

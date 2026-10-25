@@ -12,6 +12,7 @@ import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
 import { platformJsonLd, renderPlatformPrerender } from "./platformPage.mjs";
+import { guidesIndexJsonLd, renderGuidesPrerender } from "./guidesHub.mjs";
 import {
   MARKETING_LOCALE_PREFIXES,
   hasLocalizedMarketingPage,
@@ -208,11 +209,11 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/guides",
-    title: "Guides | Bizuply",
+    title: "Practical Business Guides | Bizuply",
     description:
-      "Practical guides on CRM, WhatsApp Cloud API, automations, Meta ads, and the Bizuply website builder.",
+      "Practical guides on CRM, WhatsApp Business, Meta ads, automations, websites and appointments. Learn how the work fits together in Bizuply.",
     crumb: "Guides",
-    lastmod: "2026-10-23",
+    lastmod: "2026-10-25",
     changefreq: "weekly",
     priority: "0.7",
   },
@@ -564,10 +565,18 @@ export function buildMarketingDocumentHead(pathname) {
       ...(path === "/platform"
         ? [
             `<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high" />`,
+            `<link rel="stylesheet" href="/site-header-critical.css" />`,
             `<link rel="stylesheet" href="/platform-critical.css" />`,
             ...platformJsonLd(getActivityPage(path, locale), canonical, locale, (itemPath) => marketingPublicUrl(itemPath, locale)).map(
               (data) => `<script type="application/ld+json">${jsonLd(data)}</script>`,
             ),
+          ]
+        : []),
+      ...(path === "/guides"
+        ? [
+            `<link rel="stylesheet" href="/site-header-critical.css" />`,
+            `<link rel="stylesheet" href="/guides-critical.css" />`,
+            `<script type="application/ld+json">${jsonLd(guidesIndexJsonLd(locale, (itemPath) => marketingPublicUrl(itemPath, locale)))}</script>`,
           ]
         : []),
     ].filter(Boolean).join("\n");
@@ -779,6 +788,7 @@ export function buildMarketingPrerender(pathname) {
     const activity = getActivityPage(path, locale);
     if (activity?.h1) return renderPlatformPrerender(activity, locale);
   }
+  if (path === "/guides") return renderGuidesPrerender(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);
     if (!article?.h1) return null;

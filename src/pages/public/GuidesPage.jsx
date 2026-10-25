@@ -1,34 +1,31 @@
-import React from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { GUIDE_SLUGS, getGuide } from "../../lib/guidesMarketing.mjs";
-import { getHebrewMarketingPage } from "../../lib/hebrewMarketing.mjs";
-import { getLocaleMarketingPage } from "../../lib/localeMarketing.mjs";
-import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
-import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
+import { getGuide } from "../../lib/guidesMarketing.mjs";
+import {
+  guideHasTutorial,
+  guidesHubCopy,
+  publishedGuideGroups,
+} from "../../lib/guidesHub.mjs";
+import { marketingPublicUrl, normalizeMarketingLocale, splitMarketingLocale } from "../../lib/localePath.mjs";
+import { demoMediaLocale } from "../../components/product-marketing/ProductDemoVideo";
 import GuideFigure from "./GuideFigure";
 import "../../components/product-marketing/marketingKit.css";
 import "./guidesArticle.css";
+import "./guidesHub.css";
 
-const INDEX = {
-  en: { title: "Guides | Bizuply", description: "Practical guides on CRM, WhatsApp Cloud API, automations, Meta ads, and the website builder.", h1: "Guides" },
-  he: getHebrewMarketingPage("/guides"),
-  es: getLocaleMarketingPage("/guides", "es"),
-  "pt-BR": getLocaleMarketingPage("/guides", "pt-BR"),
-  ar: getLocaleMarketingPage("/guides", "ar"),
-};
+const POPULAR = ["what-is-a-crm", "whatsapp-cloud-api-cost", "meta-lead-ads-to-crm", "business-automation"];
 
-const CAPTURES = {
-  "what-is-a-crm": "/demo-media/crm/poster.jpg",
-  "follow-up-on-leads": "/demo-media/crm/poster.jpg",
-  "business-automation": "/demo-media/automations/poster.jpg",
-  "build-a-website-without-code": "/demo-media/websites/poster.jpg",
-  "manage-meta-campaigns": "/demo-media/campaigns/poster.jpg",
-  "appointments-for-a-service-business": "/demo-media/appointments/poster.jpg",
-  "whatsapp-message-templates": "/demo-media/whatsapp/poster.jpg",
-};
+function useGuideLocale() {
+  const { i18n } = useTranslation();
+  const locale = typeof window === "undefined" ? "en" : splitMarketingLocale(window.location.pathname).locale;
+  useEffect(() => {
+    if (normalizeMarketingLocale(i18n.language) !== locale) void i18n.changeLanguage(locale);
+  }, [i18n, locale]);
+  return locale;
+}
 
 function sectionParagraphs(section) {
   return Array.isArray(section) ? section[1] : section.paragraphs || [];
@@ -50,50 +47,161 @@ function uiFor(locale) {
   return UI[locale] || UI.en;
 }
 
-export function GuidesIndexPage() {
-  const { i18n } = useTranslation();
-  const locale = normalizeMarketingLocale(i18n.language);
-  const dir = getTextDirection(locale);
-  const page = INDEX[locale] || INDEX.en;
-  const copy = uiFor(locale);
-  const [featured, ...rest] = GUIDE_SLUGS;
-  const lead = getGuide(featured, locale);
+function GuideCard({ item, read }) {
   return (
-    <main className="guide-index" dir={dir} lang={locale === "pt-BR" ? "pt-BR" : locale}>
+    <article className="gk-card">
+      <Link to={`/guides/${item.slug}`}>
+        <img src={item.media.src} alt={item.media.alt} width="640" height="400" />
+        <h3>{item.article.h1}</h3>
+        <p>{item.article.description}</p>
+        <p>{read}</p>
+      </Link>
+    </article>
+  );
+}
+
+export function GuidesIndexPage() {
+  const locale = useGuideLocale();
+  const dir = getTextDirection(locale);
+  const copy = guidesHubCopy(locale);
+  const groups = publishedGuideGroups(locale);
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("all");
+  const needle = query.trim().toLowerCase();
+  const visible = useMemo(() => groups
+    .filter((group) => category === "all" || group.id === category)
+    .map((group) => ({
+      ...group,
+      articles: group.articles.filter(({ article }) => {
+        if (!needle) return true;
+        return `${article.h1} ${article.description} ${group.label}`.toLowerCase().includes(needle);
+      }),
+    }))
+    .filter((group) => group.articles.length), [groups, category, needle]);
+  const flat = visible.flatMap((group) => group.articles);
+  const popular = flat.filter((item) => POPULAR.includes(item.slug));
+  const tutorials = flat.filter((item) => guideHasTutorial(item.article));
+  const lang = locale === "pt-BR" ? "pt-BR" : locale;
+  return (
+    <main className="gk" dir={dir} lang={lang}>
       <Helmet>
-        <title>{page.title}</title>
-        <meta name="description" content={page.description} />
+        <title>{copy.title}</title>
+        <meta name="description" content={copy.description} />
         <link rel="canonical" href={marketingPublicUrl("/guides", locale)} />
       </Helmet>
-      <header className="guide-mast">
-        <p className="guide-kicker">Bizuply</p>
-        <h1>{page.h1}</h1>
-        <p>{page.description}</p>
-      </header>
-      <article className="guide-feature">
-        <div>
-          <p className="guide-kicker">01</p>
-          <h2><Link to={`/guides/${featured}`}>{lead.h1}</Link></h2>
-          <p>{lead.description}</p>
-          <Link className="guide-read" to={`/guides/${featured}`}>{copy.read}</Link>
+      <section className="gk-hero">
+        <div className="gk-wrap">
+          <p className="gk-kicker">{copy.kicker}</p>
+          <h1>{copy.h1}</h1>
+          <p className="gk-lead">{copy.lede}</p>
+          <form className="gk-search" role="search" onSubmit={(event) => event.preventDefault()}>
+            <label className="gk-sr" htmlFor="guide-search">{copy.searchLabel}</label>
+            <input id="guide-search" type="search" value={query} placeholder={copy.search} onChange={(event) => setQuery(event.target.value)} />
+          </form>
+          <div className="gk-chips" role="toolbar" aria-label={copy.all}>
+            <button type="button" aria-pressed={category === "all"} onClick={() => setCategory("all")}>{copy.all}</button>
+            {groups.map((group) => (
+              <button key={group.id} type="button" aria-pressed={category === group.id} onClick={() => setCategory(group.id)}>{group.label}</button>
+            ))}
+          </div>
         </div>
-        <img src={CAPTURES[featured]} alt={copy.capture} />
-      </article>
-      <ol className="guide-rail">
-        {rest.map((slug, index) => {
-          const article = getGuide(slug, locale);
-          return (
-            <li key={slug}>
-              <span>{String(index + 2).padStart(2, "0")}</span>
-              <div>
-                <Link to={`/guides/${slug}`}>{article.h1}</Link>
-                <p>{article.description}</p>
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+      </section>
+      {category === "all" && !needle ? (
+        <section className="gk-feature">
+          <div className="gk-wrap gk-feature__grid">
+            <div>
+              <p className="gk-kicker">{copy.featuredKicker}</p>
+              <h2>{copy.featuredTitle}</h2>
+              <p>{copy.featuredBody}</p>
+              <Link className="gk-btn" to="/guides/what-is-a-crm">{copy.featuredCta}</Link>
+            </div>
+            <img src="/demo-media/crm/lead-file.png" alt={copy.featuredTitle} width="960" height="600" />
+          </div>
+        </section>
+      ) : null}
+      <div className="gk-wrap" id="guides">
+        {flat.length ? null : <p className="gk-empty">{copy.empty}</p>}
+        {popular.length > 1 && category === "all" && !needle ? (
+          <section className="gk-band">
+            <h2>{copy.popular}</h2>
+            <ul className="gk-links">
+              {popular.map((item) => (
+                <li key={item.slug}><Link to={`/guides/${item.slug}`}>{item.article.h1}</Link></li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+        {visible.map((group) => (
+          <section className="gk-group" key={group.id} id={group.id}>
+            <h2>{group.label}</h2>
+            <div className="gk-grid">{group.articles.map((item) => <GuideCard key={item.slug} item={item} read={copy.read} />)}</div>
+          </section>
+        ))}
+        {tutorials.length && !needle ? (
+          <section className="gk-band">
+            <h2>{copy.tutorials}</h2>
+            <ul className="gk-links">
+              {tutorials.map((item) => (
+                <li key={`tutorial-${item.slug}`}><Link to={`/guides/${item.slug}`}>{item.article.h1}</Link></li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
+      <section className="gk-cta">
+        <div className="gk-wrap">
+          <h2>{copy.ctaTitle}</h2>
+          <p>{copy.ctaBody}</p>
+          <div className="gk-cta__actions">
+            <Link to="/platform">{copy.explore}</Link>
+            <Link to="/pricing">{copy.pricing}</Link>
+          </div>
+        </div>
+      </section>
     </main>
+  );
+}
+
+function GuideFilm({ moduleId }) {
+  const { i18n } = useTranslation();
+  const locale = demoMediaLocale(i18n.language);
+  const nodeRef = useRef(null);
+  useEffect(() => {
+    const node = nodeRef.current;
+    if (!node) return undefined;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) return undefined;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) void node.play().catch(() => {});
+      else node.pause();
+    }, { threshold: 0.45 });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [moduleId, locale]);
+  const src = `/demo-media/${moduleId}/${moduleId}-${locale}.mp4`;
+  return (
+    <video
+      key={src}
+      ref={nodeRef}
+      className="pdv__video"
+      controls
+      muted
+      loop
+      playsInline
+      preload="none"
+      poster={`/demo-media/${moduleId}/poster.jpg`}
+    >
+      <source src={src} type="video/mp4" />
+      {["en", "he", "es", "pt-br", "ar"].map((fileLocale) => (
+        <track
+          key={fileLocale}
+          kind="subtitles"
+          src={`/demo-media/${moduleId}/${moduleId}.${fileLocale}.vtt`}
+          srcLang={fileLocale === "pt-br" ? "pt-BR" : fileLocale}
+          default={fileLocale === locale}
+        />
+      ))}
+    </video>
   );
 }
 
@@ -153,7 +261,7 @@ function GuideSection({ section, locale }) {
       {section.figure ? <GuideFigure kind={section.figure} locale={locale} /> : null}
       {section.video ? (
         <figure className="guide-video">
-          <ProductDemoVideo moduleId={section.video} />
+          <GuideFilm moduleId={section.video} />
           {section.videoNote ? <figcaption>{section.videoNote}</figcaption> : null}
         </figure>
       ) : null}
@@ -163,8 +271,7 @@ function GuideSection({ section, locale }) {
 
 export function GuideArticlePage() {
   const { slug } = useParams();
-  const { i18n } = useTranslation();
-  const locale = normalizeMarketingLocale(i18n.language);
+  const locale = useGuideLocale();
   const dir = getTextDirection(locale);
   const copy = uiFor(locale);
   const article = getGuide(slug, locale);
