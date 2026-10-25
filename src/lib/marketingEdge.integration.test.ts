@@ -53,7 +53,9 @@ describe("marketing edge integration", () => {
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"name":"Bizuply"');
     expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
-    expect(page.body).toContain("<h1>Bizuply</h1>");
+    expect(page.body).toContain('class="home-paint__title"');
+    expect(page.body).toContain("Run your business");
+    expect(page.body.replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "").match(/<h1\b/gi)?.length).toBe(1);
     expect(page.body).not.toContain("noindex");
   });
 

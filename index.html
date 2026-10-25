@@ -302,6 +302,229 @@
         min-height: 100vh;
         background: var(--bg);
       }
+
+      .home-paint {
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at top, #ffffff 0%, #f7f8ff 34%, #eef3ff 68%, #ffffff 100%);
+        color: #0f172a;
+      }
+
+      .home-paint__header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        background: rgba(255, 255, 255, 0.92);
+        border-bottom: 1px solid #e2e8f0;
+        backdrop-filter: blur(14px);
+      }
+
+      .home-paint__bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        width: 100%;
+        max-width: 1280px;
+        height: 4.5rem;
+        margin-inline: auto;
+        padding-inline: clamp(0.85rem, 2.5vw, 1.5rem);
+        box-sizing: border-box;
+      }
+
+      .home-paint__logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        color: #0f172a;
+        font-weight: 800;
+        font-size: 1.15rem;
+        letter-spacing: -0.03em;
+        text-decoration: none;
+      }
+
+      .home-paint__logo img {
+        width: 2.4rem;
+        height: 2.4rem;
+        object-fit: contain;
+      }
+
+      .home-paint__nav {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex: 1 1 auto;
+        gap: 0.15rem;
+      }
+
+      .home-paint__link {
+        display: inline-flex;
+        align-items: center;
+        height: 2.25rem;
+        padding: 0 0.65rem;
+        border-radius: 0.55rem;
+        color: #475569;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .home-paint__actions {
+        display: none;
+        align-items: center;
+        gap: 0.45rem;
+      }
+
+      .home-paint__mobile {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .home-paint__lang,
+      .home-paint__burger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.4rem;
+        height: 2.4rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.65rem;
+        background: #fff;
+        font-size: 0.72rem;
+        font-weight: 800;
+      }
+
+      .home-paint__burger {
+        flex-direction: column;
+        gap: 0.28rem;
+      }
+
+      .home-paint__burger span {
+        display: block;
+        width: 1rem;
+        height: 1.5px;
+        border-radius: 999px;
+        background: #334155;
+      }
+
+      .home-paint__signin {
+        display: inline-flex;
+        align-items: center;
+        height: 2.4rem;
+        padding-inline: 0.7rem;
+        border-radius: 0.65rem;
+        color: #475569;
+        font-size: 0.88rem;
+        font-weight: 800;
+        text-decoration: none;
+      }
+
+      .home-paint__cta,
+      .home-paint__start {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 2.4rem;
+        padding-inline: 1rem;
+        border-radius: 0.65rem;
+        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        color: #fff;
+        font-size: 0.88rem;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 6px 18px rgba(79, 70, 229, 0.24);
+      }
+
+      .home-paint__hero {
+        box-sizing: border-box;
+        max-width: 80rem;
+        margin: 0 auto;
+        padding: 4rem 1.25rem 5rem;
+        text-align: center;
+      }
+
+      .home-paint__badge {
+        display: inline-flex;
+        margin: 0 auto;
+        padding: 0.5rem 1.25rem;
+        border: 1px solid #e0e7ff;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.85);
+        color: #4338ca;
+        font-size: 0.75rem;
+        font-weight: 800;
+      }
+
+      .home-paint__title {
+        margin: 2rem auto 0;
+        max-width: 64rem;
+        font-size: clamp(2.4rem, 7vw, 4.5rem);
+        font-weight: 900;
+        letter-spacing: -0.055em;
+        line-height: 0.95;
+        color: #1e293b;
+      }
+
+      .home-paint__brand,
+      .home-paint__local,
+      .home-paint__top,
+      .home-paint__hi {
+        display: block;
+      }
+
+      .home-paint__brand {
+        margin-bottom: 0.4rem;
+        font-size: 0.42em;
+        color: #020617;
+      }
+
+      .home-paint__local {
+        margin-bottom: 0.45rem;
+        font-size: 0.38em;
+        font-weight: 700;
+        letter-spacing: 0;
+        color: #334155;
+      }
+
+      .home-paint__hi {
+        background: linear-gradient(to right, #4338ca, #7c3aed, #06b6d4);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      .home-paint__lead {
+        margin: 1.75rem auto 0;
+        max-width: 48rem;
+        color: #475569;
+        font-size: clamp(1rem, 2vw, 1.25rem);
+        line-height: 1.7;
+      }
+
+      .home-paint__cta-row {
+        margin-top: 2.25rem;
+      }
+
+      .home-paint__start {
+        min-width: 12rem;
+        height: auto;
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        font-size: 1rem;
+      }
+
+      @media (min-width: 1100px) {
+        .home-paint__nav,
+        .home-paint__actions {
+          display: flex;
+        }
+
+        .home-paint__mobile {
+          display: none;
+        }
+      }
     </style>
 
     <!-- ✅ Favicons -->
@@ -352,6 +575,7 @@
   </noscript>
 
   <div id="initial-bg"></div>
+  <div id="bizuply-crawl"></div>
   <div id="root"></div>
   <div id="popup-root"></div>
 
