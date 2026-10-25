@@ -171,6 +171,6 @@ export async function bootstrapI18n() {
   if (i18n.language !== initialLanguage) await i18n.changeLanguage(initialLanguage);
 }
 
-await bootstrapI18n();
+export const i18nReady = bootstrapI18n();
 
 export default i18n;

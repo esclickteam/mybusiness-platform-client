@@ -8,7 +8,7 @@ import { Buffer } from "buffer";
 import { marketingLocaleBasename } from "./lib/localePath.mjs";
 
 /* i18n */
-import "./i18n/i18n";
+import { i18nReady } from "./i18n/i18n";
 import "./styles/rtl.css";
 
 /* Contexts */
@@ -153,6 +153,7 @@ if (prerender) {
   rootElement.setAttribute("hidden", "");
 }
 
+void i18nReady.finally(() => {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HelmetProvider>
@@ -178,5 +179,6 @@ ReactDOM.createRoot(rootElement).render(
     </HelmetProvider>
   </React.StrictMode>
 );
+});
 
 registerServiceWorkerNotificationBridge();
