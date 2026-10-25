@@ -31,6 +31,8 @@ class LazyRouteBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
+    document.getElementById("boot")?.remove();
+    document.getElementById("bizuply-crawl")?.remove();
     console.error("LazyRouteBoundary:", error, errorInfo);
 
     const shouldAutoReload =

@@ -108,6 +108,9 @@ describe("whatsapp host", () => {
       expect(homeHtml).toContain('hreflang="x-default" href="https://whatsapp.bizuply.com/"');
       expect(homeHtml).toContain("$29 per month for one connected WhatsApp number");
       expect(homeHtml).toContain("There is no free trial.");
+      expect(homeHtml).toContain('<div id="bizuply-crawl"');
+      expect(homeHtml).toContain('<div id="root"></div>');
+      expect(homeHtml).not.toContain("<div id=\"root\"><main");
 
       const missing = await call("/no-such-page");
       const missingHtml = await missing.text();

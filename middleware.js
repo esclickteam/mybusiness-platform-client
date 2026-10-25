@@ -611,6 +611,27 @@ function whatsappSeoFile(pathname) {
   return seoResponse(body, { isRobots, status: 200, source: "whatsapp" });
 }
 
+const CRAWL_PLACEHOLDER = '<div id="bizuply-crawl"></div>';
+const ROOT_PLACEHOLDER = '<div id="root"></div>';
+const CRAWL_VISUAL_STYLE =
+  "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0";
+
+/**
+ * Crawlable HTML stays in the document response, outside the React mount.
+ * createRoot replaces every child of #root, which is what painted the unstyled
+ * summary before the app loaded.
+ */
+function injectCrawlableDocument(html, inner) {
+  const slot = `<div id="bizuply-crawl" style="${CRAWL_VISUAL_STYLE}">${inner}</div>`;
+  if (html.includes(CRAWL_PLACEHOLDER)) {
+    return html.replace(CRAWL_PLACEHOLDER, slot);
+  }
+  if (html.includes(ROOT_PLACEHOLDER)) {
+    return html.replace(ROOT_PLACEHOLDER, `${slot}\n  ${ROOT_PLACEHOLDER}`);
+  }
+  return html;
+}
+
 /** The sign-in runs on bizuply.com, where the host-only auth session lives; the query (lang, etc.) carries over. */
 function whatsappLoginRedirect(request) {
   const target = new URL(WHATSAPP_LOGIN_APP_URL);
@@ -635,10 +656,7 @@ async function handleWhatsAppDocument(request) {
     let documentHtml = injectSeoHead(html, whatsappHeadHtml(pathname));
     const prerender = whatsappHomepagePrerender(pathname);
     if (prerender) {
-      documentHtml = documentHtml.replace(
-        '<div id="root"></div>',
-        `<div id="root">${prerender}</div>`,
-      );
+      documentHtml = injectCrawlableDocument(documentHtml, prerender);
     }
     return new Response(documentHtml, {
       status: getWhatsAppPageMeta(pathname) ? 200 : 404,
@@ -788,10 +806,7 @@ async function handleMarketingDocument(request) {
       );
     }
     if (prerender) {
-      documentHtml = documentHtml.replace(
-        '<div id="root"></div>',
-        `<div id="root">${prerender.inner}</div>`,
-      );
+      documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
     }
     return new Response(documentHtml, {
       status: 200,
