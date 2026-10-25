@@ -11,7 +11,7 @@ type TenantCard = {
   status: string;
   accessPath: string;
   productLoginUrl?: string;
-  product?: { loginUrl?: string };
+  product?: { loginUrl?: string; passwordSync?: { status?: string; reason?: string } };
   domain?: { host?: string };
   hosting?: { planId?: string };
   quote?: { renewal?: number; currency?: string };
@@ -62,6 +62,12 @@ export default function MySaasSystems() {
             <p className="text-sm">סטטוס: {STATUS[tenant.status] || tenant.status}</p>
             <p className="text-sm">חבילה: {tenant.hosting?.planId || "—"}</p>
             <p className="text-sm">חידוש: {tenant.renewalAt ? new Date(tenant.renewalAt).toLocaleDateString() : "—"}</p>
+            {tenant.product?.passwordSync?.status === "too_short" ? (
+              <p className="mt-2 text-sm font-bold text-rose-700">יש להחליף את סיסמת Bizuply ל־8 תווים לפחות לפני כניסה למוצר.</p>
+            ) : null}
+            {tenant.product?.passwordSync?.status === "failed" ? (
+              <p className="mt-2 text-sm font-bold text-rose-700">סנכרון הסיסמה למוצר נכשל. התחברו שוב ל־Bizuply כדי לנסות שוב. אין להעביר סיסמה בכתובת.</p>
+            ) : null}
             <div className="mt-3 flex flex-wrap gap-2">
               <a className="rounded-full bg-[#24124d] px-3 py-2 text-sm font-bold text-white" href={enterSystemHref(tenant)} target="_blank" rel="noreferrer">
                 כניסה למערכת

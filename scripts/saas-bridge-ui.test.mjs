@@ -30,3 +30,9 @@ test("dinevo public and owner previews are not TableFlow", () => {
   assert.doesNotMatch(owner, /templateSlug === "tableflow" \|\| templateSlug === "dinevo"/);
   assert.doesNotMatch(owner, /railway\.app/);
 });
+
+test("my systems reports password sync failure instead of hiding it", () => {
+  const page = fs.readFileSync(new URL("../src/pages/business/dashboardPages/saas/MySaasSystems.tsx", import.meta.url), "utf8");
+  assert.match(page, /passwordSync\?\.status === "failed"/);
+  assert.match(page, /passwordSync\?\.status === "too_short"/);
+});
