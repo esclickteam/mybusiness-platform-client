@@ -10,7 +10,10 @@ const AccessibilityWidget = lazy(() => import("../components/site-plugins/access
 const SupportChatWidget = lazy(() => import("../components/SupportChatWidget"));
 
 function leaveMarketingSite(href: string) {
-  window.location.assign(href);
+  const locale = splitMarketingLocale(window.location.pathname).locale || "en";
+  const url = new URL(href, window.location.origin);
+  if (!url.searchParams.has("lang")) url.searchParams.set("lang", locale);
+  window.location.assign(`${url.pathname}${url.search}${url.hash}`);
 }
 
 export function installMarketingNavigation() {
