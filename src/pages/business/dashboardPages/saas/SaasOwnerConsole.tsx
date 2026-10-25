@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import API from "../../../../api";
 import BusinessContentEditor from "../../../../saas/BusinessContentEditor";
 import TableflowGuest from "../../../../saas/TableflowGuest";
+import { enterSystemHref, isHostedShellProduct, productHost } from "../../../../saas/productAccess";
 
 type Content = {
   branding: Record<string, string>;
@@ -21,11 +22,11 @@ const STAFF_PERMISSIONS = [
   ["staff.manage", "ניהול עובדים"],
 ] as const;
 const PRODUCT_HOSTS: Record<string, string> = {
-  beautyflow: "beautyflow-production-9f07.up.railway.app",
-  "global-properties": "web-production-923d7.up.railway.app",
-  tableflow: "tableflow.bizuply.com",
-  dinevo: "dinevo.bizuply.com",
-  cliny: "cliny.bizuply.com",
+  beautyflow: productHost("beautyflow"),
+  "global-properties": productHost("global-properties"),
+  tableflow: productHost("tableflow"),
+  dinevo: productHost("dinevo"),
+  cliny: productHost("cliny"),
 };
 
 function apiError(err: unknown, fallback: string) {
@@ -193,6 +194,8 @@ export default function SaasOwnerConsole() {
     hosting?: { planId?: string; quotaMb?: number; usedMb?: number };
     domain?: { host?: string; status?: string; ssl?: string; mode?: string };
     product?: { loginUrl?: string; tenantId?: string };
+    productLoginUrl?: string;
+    publicSlug?: string;
     templateSlug?: string;
     database?: { status?: string; backup?: string; retentionDays?: number };
     services?: { id: string; status: string; label?: string }[];
@@ -216,7 +219,7 @@ export default function SaasOwnerConsole() {
           <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("375px")}>Mobile</button>
         </div>
         <div className="mx-auto w-full overflow-x-auto rounded-2xl border bg-white" style={{ width, maxWidth: "100%" }}>
-          {templateSlug === "tableflow" || templateSlug === "dinevo" ? (
+          {isHostedShellProduct(templateSlug) ? (
             <TableflowGuest content={preview as never} />
           ) : (
             <div className="p-6" style={{ background: content.branding.background || "#fff", color: content.branding.primaryColor }}>
@@ -352,7 +355,12 @@ export default function SaasOwnerConsole() {
           <p className="text-xs">חבילה {tenant.hosting?.planId} · {tenant.hosting?.usedMb}/{tenant.hosting?.quotaMb} MB</p>
           <p className="text-xs">מסד: {tenant.database?.status}. גיבוי פר־לקוח: {tenant.database?.backup}. שמירה: {tenant.database?.retentionDays || 30} יום</p>
           <p className="text-xs">כתובת ברירת מחדל: {tenant.domain?.host || tenant.accessPath} · סטטוס {tenant.domain?.status || "platform_path"} · SSL {tenant.domain?.ssl || "platform_only"}</p>
-          <p className="text-xs">כניסה למערכת: {tenant.product?.loginUrl || tenant.accessPath}</p>
+          <p className="text-xs">
+            כניסה למערכת:{" "}
+            <a href={enterSystemHref(tenant)} target="_blank" rel="noreferrer" dir="ltr">
+              {enterSystemHref(tenant)}
+            </a>
+          </p>
           {tenant.domain?.status === "pending_connection" ? (
             <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs">
               <p className="font-black">הדומיין עדיין לא פעיל. יש לאמת בעלות אצל רשם הדומיין לפני שהוא יסומן כמחובר.</p>
