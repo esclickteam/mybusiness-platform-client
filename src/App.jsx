@@ -1,17 +1,17 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useLayoutEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import i18n from "./i18n/i18n";
 import { getHtmlLang, getTextDirection } from "./i18n/localeUtils";
 
-import PreLoginBot from "./components/PreLoginBot";
-import SupportChatWidget from "./components/SupportChatWidget";
-import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
-import AdminSoftphoneHost from "./components/AdminSoftphoneHost";
-import AdminShell from "./pages/admin/shell/AdminShell";
 import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
-import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
+const PreLoginBot = lazy(() => import("./components/PreLoginBot"));
+const SupportChatWidget = lazy(() => import("./components/SupportChatWidget"));
+const AccessibilityWidget = lazy(() => import("./components/site-plugins/accessibility/AccessibilityWidget"));
+const AdminSoftphoneHost = lazy(() => import("./components/AdminSoftphoneHost"));
+const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
+const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -43,9 +43,8 @@ const AdminWithdrawalsPage = lazy(() =>
 );
 
 import { AiProvider } from "./context/AiContext";
-import AiModal from "./components/AiModal";
+const AiModal = lazy(() => import("./components/AiModal"));
 import { NotificationsProvider } from "./context/NotificationsContext";
-import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 const AffiliateDashboardPage = lazy(() =>
@@ -68,7 +67,7 @@ import {
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
-import GuidedDemoHost from "./guidedDemo/GuidedDemoHost";
+const GuidedDemoHost = lazy(() => import("./guidedDemo/GuidedDemoHost"));
 const SitePortalGate = lazy(() =>
   import("./components/site-builder/public/SitePortalGate")
 );
@@ -858,6 +857,26 @@ function PageLoader() {
 
 export default function App() {
   const { user, loading, initialized } = useAuth();
+  useLayoutEffect(() => {
+    if (!document.getElementById("bizuply-first-paint")) return undefined;
+    const release = () => {
+      document.getElementById("root")?.removeAttribute("hidden");
+      document.getElementById("bizuply-first-paint")?.remove();
+    };
+    const root = document.getElementById("root");
+    if (root?.querySelector("h1")) {
+      release();
+      return undefined;
+    }
+    const observer = new MutationObserver(() => {
+      if (root?.querySelector("h1")) {
+        observer.disconnect();
+        release();
+      }
+    });
+    if (root) observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
   const location = useLocation();
   const { i18n } = useTranslation();
   const appDir = getTextDirection(i18n.language);
@@ -916,6 +935,9 @@ export default function App() {
     location.pathname === "/checkout/success" ||
     location.pathname.startsWith("/checkout/success/") ||
     isPartnerHostPublicChrome;
+  const isWorkspaceRoute =
+    /^\/(business|admin|staff|client|partner|dashboard|embed)\b/.test(location.pathname) ||
+    location.pathname.includes("/dashboard");
   const isDashboardRoute =
     location.pathname.includes("/dashboard") ||
     isAdminRoute ||
@@ -956,7 +978,9 @@ export default function App() {
 
   useEffect(() => {
     if (isMiniSiteHost || publicMarketingHost) return;
-    preloadDashboardComponents();
+    void import("./pages/business/dashboardPages/DashboardPage").then((mod) => {
+      mod.preloadDashboardComponents();
+    });
   }, [isMiniSiteHost, publicMarketingHost]);
 
   if (whatsappLanding) {
@@ -1058,7 +1082,7 @@ export default function App() {
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
-        {isStaffRoute ? <StaffSoftphoneHost /> : null}
+        {isStaffRoute ? <Suspense fallback={null}><StaffSoftphoneHost /></Suspense> : null}
 
         <ScrollToTop />
 
@@ -1099,19 +1123,19 @@ export default function App() {
                         <div className="min-h-screen bg-[#05070d]" />
                       ) : location.pathname === "/login" ? (
                         <LoginFormSkeleton />
-                      ) : (
+                      ) : isWorkspaceRoute ? (
                         <PageLoader />
-                      )
+                      ) : null
                     }
                   >
                     <motion.div
                       key={location.pathname}
                       initial={
-                        isDevVisualRoute || isAdminRoute ? false : { opacity: 0, y: 10 }
+                        isDevVisualRoute || isAdminRoute || !isWorkspaceRoute ? false : { opacity: 0, y: 10 }
                       }
                       animate={{ opacity: 1, y: 0 }}
                       exit={
-                        isDevVisualRoute || isAdminRoute
+                        isDevVisualRoute || isAdminRoute || !isWorkspaceRoute
                           ? { opacity: 1 }
                           : { opacity: 0, y: -10 }
                       }
@@ -1512,7 +1536,7 @@ export default function App() {
                           path="/admin"
                           element={
                             <ProtectedRoute roles={["admin"]}>
-                              <AdminShell />
+                              <Suspense fallback={null}><AdminShell /></Suspense>
                             </ProtectedRoute>
                           }
                         >
@@ -1621,7 +1645,7 @@ export default function App() {
                         <Route path="*" element={<Navigate to="/" replace />} />
                       </Routes>
 
-                      <AiModal />
+                      <Suspense fallback={null}><AiModal /></Suspense>
                     </motion.div>
                   </Suspense>
                   </LazyRouteBoundary>
@@ -1646,14 +1670,14 @@ export default function App() {
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
-      <GuidedDemoHost />
+      <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
       {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && (
-        <PreLoginBot />
+        <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
       {/* Admin softphone — survives page changes + business impersonation */}
-      <AdminSoftphoneHost />
+      <Suspense fallback={null}><AdminSoftphoneHost /></Suspense>
 
       {user?.role === "admin" && isAdminRoute && <AdminPushPermissionBanner />}
 
@@ -1674,7 +1698,7 @@ export default function App() {
         !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
-          <SupportChatWidget />
+          <Suspense fallback={null}><SupportChatWidget /></Suspense>
         )}
 
       {/* Platform accessibility only — never dashboards, never customer public sites */}
@@ -1689,7 +1713,7 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute && (
-          <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
+          <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
         )}
 
       {showPublicWidgets && (

@@ -10,6 +10,7 @@ import {
   Save,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 import API from "@api";
 import { getApiErrorMessage } from "../../../../../utils/apiErrorMessage";
 import {
@@ -174,7 +175,7 @@ export default function CRMLeadCard({
   const name = lead.fullName || lead.name || t("crm.common.unnamedClient");
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 p-2 sm:p-4" dir="rtl">
+    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 p-2 sm:p-4" dir={getTextDirection(i18n.language)}>
       <div className="mx-auto flex min-h-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
         <header className="sticky top-0 z-10 border-b border-slate-200 bg-white px-4 py-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -184,7 +185,7 @@ export default function CRMLeadCard({
               </p>
               <h2 className="text-xl font-black text-slate-900">{name}</h2>
               <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs font-bold text-slate-500">
-                <span>{lead.phone || t("crm.common.noPhone")}</span>
+                <span dir="ltr">{lead.phone || t("crm.common.noPhone")}</span>
                 <span>{lead.email || t("crm.common.noEmail")}</span>
                 <span>{t(`crm.leads.statuses.${lead.status || "new"}`, { defaultValue: lead.status })}</span>
                 <span>{lead.assignedToName || t("crm.leads.unassignedAgent")}</span>
@@ -264,7 +265,7 @@ export default function CRMLeadCard({
           {tab === "overview" && (
             <div className="grid gap-3 sm:grid-cols-2">
               <Fact label={t("crm.common.name")} value={name} />
-              <Fact label={t("crm.common.phone")} value={lead.phone} />
+              <Fact label={t("crm.common.phone")} value={lead.phone} ltr />
               <Fact label={t("crm.common.email")} value={lead.email} />
               <Fact label={t("crm.common.status")} value={lead.status} />
               <Fact label={t("crm.leads.table.agent")} value={lead.assignedToName} />
@@ -537,11 +538,11 @@ export default function CRMLeadCard({
   );
 }
 
-function Fact({ label, value }: { label: string; value?: unknown }) {
+function Fact({ label, value, ltr = false }: { label: string; value?: unknown; ltr?: boolean }) {
   return (
     <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
       <p className="text-[11px] font-black text-slate-400">{label}</p>
-      <p className="mt-1 text-sm font-bold text-slate-800">{value ? String(value) : "—"}</p>
+      <p className="mt-1 text-sm font-bold text-slate-800" dir={ltr ? "ltr" : undefined}>{value ? String(value) : "—"}</p>
     </div>
   );
 }

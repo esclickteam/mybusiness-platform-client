@@ -50,7 +50,7 @@ export const MARKETING_PAGES = [
     path: "/",
     title: "Bizuply — Everything your business needs to grow in one place",
     description:
-      "Manage customers, capture leads, build your online presence and streamline everyday work with Bizuply. CRM, marketing, WhatsApp, appointments and automations in one platform.",
+      "Manage customers, capture leads, run marketing campaigns, communicate through WhatsApp, schedule appointments and automate everyday workflows with Bizuply.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",

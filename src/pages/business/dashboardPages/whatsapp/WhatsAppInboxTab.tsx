@@ -232,7 +232,7 @@ export default function WhatsAppInboxTab() {
                     : "hover:bg-slate-50",
                 ].join(" ")}
               >
-                <p className="text-sm font-black text-slate-900">
+                <p className="text-sm font-black text-slate-900" dir={conv.recipientName ? undefined : "ltr"}>
                   {conv.recipientName || conv.phone}
                 </p>
                 <p className="mt-0.5 truncate text-xs font-medium text-slate-500">
@@ -340,7 +340,7 @@ export default function WhatsAppInboxTab() {
                         defaultValue: msg.status,
                       })}
                     </span>
-                    {msg.providerMessageId && (
+                    {msg.providerMessageId && !String(msg.providerMessageId).startsWith("wamid.demo") && (
                       <span className="font-mono" dir="ltr">
                         {msg.providerMessageId}
                       </span>

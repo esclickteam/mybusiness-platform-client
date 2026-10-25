@@ -42,8 +42,8 @@ function ProductFilm({
   const reduce = useReducedMotion();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(Boolean(reduce));
-  const src = `/demo-media/home/${id}.mp4?v=4`;
-  const poster = `/demo-media/home/${id}.jpg?v=4`;
+  const src = `/demo-media/home/${id}.mp4?v=5`;
+  const poster = `/demo-media/home/${id}.jpg?v=5`;
 
   useEffect(() => {
     const node = videoRef.current;

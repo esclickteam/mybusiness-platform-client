@@ -1,4 +1,4 @@
-import i18n from "./i18n";
+import i18n, { ensureLocale } from "./i18n";
 import API from "../api";
 import {
   applyDocumentLocale,
@@ -21,7 +21,7 @@ export function applyUiLanguage(lng, { persist = false } = {}) {
   }
 
   if (i18n.language !== language) {
-    void i18n.changeLanguage(language);
+    void ensureLocale(language).then(() => i18n.changeLanguage(language));
   }
 
   return language;
@@ -61,6 +61,7 @@ export async function changeAppLanguage(lng) {
   const language = coerceSupportedLanguage(lng);
   markManualLanguageChoice(language);
   applyDocumentLocale(language);
+  await ensureLocale(language);
   await i18n.changeLanguage(language);
   await persistAccountLanguage(language);
   return language;

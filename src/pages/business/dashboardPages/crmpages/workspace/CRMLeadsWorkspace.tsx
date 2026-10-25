@@ -12,6 +12,7 @@ import {
   Upload,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 import ExcelJS from "exceljs";
 import {
   assignLead,
@@ -259,7 +260,7 @@ export default function CRMLeadsWorkspace({
   };
 
   return (
-    <div className="space-y-3" dir="rtl">
+    <div className="space-y-3" dir={getTextDirection(i18n.language)}>
       {error && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-bold text-rose-700">{error}</div>}
       {notice && <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-700">{notice}</div>}
 
@@ -508,7 +509,7 @@ export default function CRMLeadsWorkspace({
                       className="crm-kanban-card cursor-pointer text-xs font-bold"
                     >
                       <p className="line-clamp-1">{lead.fullName || lead.name}</p>
-                      <p className="text-slate-400">{lead.phone}</p>
+                      <p className="text-slate-400" dir="ltr">{lead.phone}</p>
                       <p className="mt-1 text-[10px] font-semibold text-slate-400">
                         {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source || "—"}
                       </p>
@@ -668,9 +669,9 @@ function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key
     case "name":
       return lead.fullName || lead.name || "";
     case "phone":
-      return lead.phone || "";
+      return lead.phone ? <span dir="ltr">{lead.phone}</span> : "";
     case "email":
-      return lead.email || "";
+      return lead.email ? <span dir="ltr">{lead.email}</span> : "";
     case "status":
       return t(`crm.leads.statuses.${lead.status || "new"}`, { defaultValue: lead.status });
     case "source":

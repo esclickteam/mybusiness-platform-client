@@ -114,6 +114,13 @@ export default function FAQMini() {
                           <p className="mx-auto max-w-2xl text-base font-semibold leading-8 text-slate-600">
                             {item.a}
                           </p>
+                          {i === 9 ? (
+                            <p className="mx-auto mt-3 max-w-2xl">
+                              <Link to="/pricing" className="font-black text-indigo-700 underline">
+                                {t("home.finalPricing")}
+                              </Link>
+                            </p>
+                          ) : null}
                         </div>
                       </motion.div>
                     ) : null}

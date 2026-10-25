@@ -2,11 +2,6 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-import en from "./locales/en.json";
-import he from "./locales/he.json";
-import es from "./locales/es.json";
-import ptBR from "./locales/pt-BR.json";
-import ar from "./locales/ar.json";
 import clubEn from "./locales/club/en.json";
 import clubHe from "./locales/club/he.json";
 import clubEs from "./locales/club/es.json";
@@ -19,9 +14,7 @@ import {
   FALLBACK_LANGUAGE,
   applyDocumentLocale,
   applyLanguageFromUrl,
-  fetchGeoLanguage,
   getManualLanguageChoice,
-  hasManualLanguageChoice,
   resolvePreferredLanguage,
 } from "./localeUtils";
 import { splitMarketingLocale } from "../lib/localePath.mjs";
@@ -63,57 +56,63 @@ const browserGeoDetector = {
 const languageDetector = new LanguageDetector();
 languageDetector.addDetector(browserGeoDetector);
 
+const CLUB = { en: clubEn, he: clubHe, es: clubEs, "pt-BR": clubPtBR, ar: clubAr };
+const loadedLocales = new Set();
+
+function bootLanguage() {
+  if (typeof window === "undefined") return FALLBACK_LANGUAGE;
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale) return demoLocale;
+  const fromUrl = applyLanguageFromUrl();
+  if (fromUrl) return fromUrl;
+  const path = splitMarketingLocale(window.location.pathname).path;
+  const appRoute = /^\/(business|admin|staff|client|partner|login|register|dashboard|embed)\b/.test(path);
+  if (!appRoute) return FALLBACK_LANGUAGE;
+  return resolvePreferredLanguage({ allowGeo: true, allowBrowser: true });
+}
+
+async function importLocale(code) {
+  switch (code) {
+    case "he":
+      return (await import("./locales/he.json")).default;
+    case "es":
+      return (await import("./locales/es.json")).default;
+    case "pt-BR":
+      return (await import("./locales/pt-BR.json")).default;
+    case "ar":
+      return (await import("./locales/ar.json")).default;
+    default:
+      return (await import("./locales/en.json")).default;
+  }
+}
+
+function packLocale(code, messages) {
+  return withMetaCostCopy(
+    withWhatsappPerformance(
+      { ...messages, club: CLUB[code] || clubEn, saasMarket: saasMarketCopy[code] || saasMarketCopy.en },
+      code
+    ),
+    code
+  );
+}
+
+export async function ensureLocale(code) {
+  const language = CLUB[code] ? code : FALLBACK_LANGUAGE;
+  if (loadedLocales.has(language)) return language;
+  const messages = await importLocale(language);
+  i18n.addResourceBundle(language, "translation", packLocale(language, messages), true, true);
+  loadedLocales.add(language);
+  return language;
+}
+
+const initialLanguage = bootLanguage();
+
 i18n
   .use(languageDetector)
   .use(initReactI18next)
   .init({
-    resources: {
-      en: {
-        translation: withMetaCostCopy(
-          withWhatsappPerformance(
-            { ...en, club: clubEn, saasMarket: saasMarketCopy.en },
-            "en"
-          ),
-          "en"
-        ),
-      },
-      he: {
-        translation: withMetaCostCopy(
-          withWhatsappPerformance(
-            { ...he, club: clubHe, saasMarket: saasMarketCopy.he },
-            "he"
-          ),
-          "he"
-        ),
-      },
-      es: {
-        translation: withMetaCostCopy(
-          withWhatsappPerformance(
-            { ...es, club: clubEs, saasMarket: saasMarketCopy.es },
-            "es"
-          ),
-          "es"
-        ),
-      },
-      "pt-BR": {
-        translation: withMetaCostCopy(
-          withWhatsappPerformance(
-            { ...ptBR, club: clubPtBR, saasMarket: saasMarketCopy["pt-BR"] },
-            "pt-BR"
-          ),
-          "pt-BR"
-        ),
-      },
-      ar: {
-        translation: withMetaCostCopy(
-          withWhatsappPerformance(
-            { ...ar, club: clubAr, saasMarket: saasMarketCopy.ar },
-            "ar"
-          ),
-          "ar"
-        ),
-      },
-    },
+    resources: {},
+    lng: initialLanguage,
 
     fallbackLng: FALLBACK_LANGUAGE,
     supportedLngs: [...SUPPORTED_LANGUAGES],
@@ -164,21 +163,14 @@ i18n.on("languageChanged", (lng) => {
   else applyDocumentLocale(i18n.language);
 }
 
-if (
-  typeof window !== "undefined" &&
-  import.meta.env.MODE !== "test" &&
-  !hasManualLanguageChoice() &&
-  !readGuidedDemoLocaleLock() &&
-  !isBizuplyTravelHost(window.location.hostname) &&
-  !isBizuplyWhatsAppHost(window.location.hostname)
-) {
-  void fetchGeoLanguage().then((geoLanguage) => {
-    if (splitMarketingLocale(window.location.pathname).locale !== "en") return;
-    if (!geoLanguage || hasManualLanguageChoice() || readGuidedDemoLocaleLock()) return;
-    if (getManualLanguageChoice()) return;
-    if (i18n.language === geoLanguage) return;
-    void i18n.changeLanguage(geoLanguage);
-  });
+export async function bootstrapI18n() {
+  const codes = import.meta.env.MODE === "test"
+    ? ["en", "he", "es", "pt-BR", "ar"]
+    : [initialLanguage];
+  await Promise.all(codes.map((code) => ensureLocale(code)));
+  if (i18n.language !== initialLanguage) await i18n.changeLanguage(initialLanguage);
 }
+
+await bootstrapI18n();
 
 export default i18n;

@@ -69,12 +69,12 @@ const PAGES = {
   es: {
     "/": page(
       "Bizuply — Todo lo que su negocio necesita para crecer en un solo lugar",
-      "Gestione clientes, capture leads y ordene el trabajo diario con Bizuply. CRM, marketing, WhatsApp, citas y automatizaciones en una plataforma.",
+      "Gestione clientes, capture leads, ejecute campañas, comuníquese por WhatsApp, programe citas y automatice el trabajo diario con Bizuply.",
       "Bizuply",
       "Todo lo que su negocio necesita para crecer en un solo lugar",
       [
-        "Bizuply conecta la gestión de clientes, el marketing, la comunicación, los sitios y las automatizaciones en un sistema.",
-        "Puede usar las herramientas o pedir a Bizuply la puesta en marcha del sitio, de las automatizaciones y del paso desde otro CRM.",
+        "Gestione clientes, capture leads, ejecute campañas, comuníquese por WhatsApp, programe citas y automatice el trabajo diario, todo desde una plataforma de negocio conectada.",
+        "Si prefiere gestionarlo todo o necesita ayuda experta para la puesta en marcha, Bizuply da a su negocio las herramientas y el apoyo para avanzar.",
       ],
     ),
     "/about": page(
@@ -237,12 +237,12 @@ function cloneShape(locale, dict) {
 cloneShape("pt-BR", {
   "/": page(
     "Bizuply — Tudo o que o seu negócio precisa para crescer em um só lugar",
-    "Gerencie clientes, capture leads e organize o trabalho do dia com a Bizuply. CRM, marketing, WhatsApp, compromissos e automações em uma plataforma.",
+    "Gerencie clientes, capture leads, rode campanhas, converse pelo WhatsApp, marque compromissos e automatize o trabalho do dia com a Bizuply.",
     "Bizuply",
     "Tudo o que o seu negócio precisa para crescer em um só lugar",
     [
-      "A Bizuply conecta gestão de clientes, marketing, comunicação, sites e automações em um sistema.",
-      "Dá para usar as ferramentas ou pedir à Bizuply a implantação do site, das automações e da mudança de outro CRM.",
+      "Gerencie clientes, capture leads, rode campanhas, converse pelo WhatsApp, marque compromissos e automatize o trabalho do dia — tudo em uma plataforma de negócios conectada.",
+      "Se você prefere cuidar de tudo ou precisa de ajuda especializada para começar, a Bizuply dá ao negócio as ferramentas e o apoio para avançar.",
     ],
   ),
   "/about": page(
@@ -346,12 +346,12 @@ cloneShape("pt-BR", {
 cloneShape("ar", {
   "/": page(
     "Bizuply — كل ما يحتاجه عملكم للنمو في مكان واحد",
-    "أديروا العملاء والتقطوا الطلبات ورتّبوا العمل اليومي مع Bizuply. CRM والتسويق وWhatsApp والمواعيد والأتمتة في منصة واحدة.",
+    "أديروا العملاء والتقطوا الطلبات وشغّلوا الحملات وتواصلوا عبر WhatsApp ونظّموا المواعيد وأتمتوا العمل اليومي مع Bizuply.",
     "Bizuply",
     "كل ما يحتاجه عملكم للنمو في مكان واحد",
     [
-      "تربط Bizuply إدارة العملاء والتسويق والتواصل والمواقع والأتمتة في نظام واحد.",
-      "يمكن استخدام الأدوات أو طلب تهيئة الموقع والأتمتة والانتقال من CRM آخر من Bizuply.",
+      "أديروا العملاء، والتقطوا الطلبات، وشغّلوا الحملات، وتواصلوا عبر WhatsApp، ونظّموا المواعيد، وأتمتوا العمل اليومي — من منصة أعمال واحدة متصلة.",
+      "سواء فضّلتم إدارة كل شيء بأنفسكم أو احتجتم إلى مساعدة خبراء في التهيئة، تمنح Bizuply عملكم الأدوات والدعم للمضي قدمًا.",
     ],
   ),
   "/about": page(

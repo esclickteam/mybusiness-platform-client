@@ -130,6 +130,7 @@ function AppLoader() {
   if (isPublicCustomerSiteHost()) {
     return <PublicSiteLoader fullScreen label="Loading" />;
   }
+  if (document.getElementById("bizuply-first-paint")) return null;
   return <BizuplyLoader fullScreen label="Loading Bizuply..." />;
 }
 
@@ -141,6 +142,15 @@ const rootElement = document.getElementById("root");
 
 if (!rootElement) {
   throw new Error("Root element with id 'root' was not found");
+}
+
+const prerender = rootElement.querySelector("main");
+if (prerender) {
+  const hold = document.createElement("div");
+  hold.id = "bizuply-first-paint";
+  hold.appendChild(prerender);
+  rootElement.insertAdjacentElement("beforebegin", hold);
+  rootElement.setAttribute("hidden", "");
 }
 
 ReactDOM.createRoot(rootElement).render(

@@ -21,7 +21,7 @@ export default function HeroSection() {
         <div>
           <motion.h1
             className="home-hero__title"
-            initial={reduceMotion ? false : { opacity: 0, y: 18 }}
+            initial={reduceMotion ? false : { opacity: 1, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.08, ease: EASE }}
           >
@@ -29,15 +29,16 @@ export default function HeroSection() {
           </motion.h1>
           <motion.p
             className="home-hero__lead"
-            initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+            initial={reduceMotion ? false : { opacity: 1, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.16, ease: EASE }}
           >
             {t("home.subtitle")}
           </motion.p>
+          <p className="home-hero__note">{t("home.supportLine")}</p>
           <motion.div
             className="mt-8 flex flex-wrap gap-3"
-            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
+            initial={reduceMotion ? false : { opacity: 1, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.24, ease: EASE }}
           >
@@ -52,7 +53,7 @@ export default function HeroSection() {
 
         <motion.div
           className="home-stage"
-          initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+          initial={reduceMotion ? false : { opacity: 1, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.12, ease: EASE }}
         >
@@ -62,6 +63,8 @@ export default function HeroSection() {
             alt={t("home.stageAlt")}
             width={1200}
             height={750}
+            fetchPriority="high"
+            decoding="async"
           />
           <img
             className="home-stage__float home-stage__float--a"
