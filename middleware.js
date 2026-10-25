@@ -41,6 +41,7 @@ import {
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
 import { splitMarketingLocale } from "./src/lib/localePath.mjs";
+import { buildHomeFirstPaint } from "./src/lib/homeFirstPaint.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -614,6 +615,37 @@ function whatsappSeoFile(pathname) {
   return seoResponse(body, { isRobots, status: 200, source: "whatsapp" });
 }
 
+const CRAWL_PLACEHOLDER = '<div id="bizuply-crawl"></div>';
+const ROOT_PLACEHOLDER = '<div id="root"></div>';
+const CRAWL_VISUAL_STYLE =
+  "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0";
+
+/**
+ * Crawlable summaries stay in the HTML response, outside the React mount.
+ * Putting them in #root painted unstyled English copy until createRoot ran.
+ * Visibility is clipped by CSS in the first HTML (not by later JavaScript).
+ */
+function injectCrawlableDocument(html, inner) {
+  const slot = `<div id="bizuply-crawl" style="${CRAWL_VISUAL_STYLE}">${inner}</div>`;
+  if (html.includes(CRAWL_PLACEHOLDER)) {
+    return html.replace(CRAWL_PLACEHOLDER, slot);
+  }
+  if (html.includes(ROOT_PLACEHOLDER)) {
+    return html.replace(ROOT_PLACEHOLDER, `${slot}\n  ${ROOT_PLACEHOLDER}`);
+  }
+  return html;
+}
+
+function injectRootInner(html, inner) {
+  if (html.includes(ROOT_PLACEHOLDER)) {
+    return html.replace(ROOT_PLACEHOLDER, `<div id="root">${inner}</div>`);
+  }
+  return html.replace(
+    /<div id="root"><\/div>/,
+    `<div id="root">${inner}</div>`,
+  );
+}
+
 /** The sign-in runs on bizuply.com, where the host-only auth session lives; the query (lang, etc.) carries over. */
 function whatsappLoginRedirect(request) {
   const target = new URL(WHATSAPP_LOGIN_APP_URL);
@@ -638,10 +670,7 @@ async function handleWhatsAppDocument(request) {
     let documentHtml = injectSeoHead(html, whatsappHeadHtml(pathname));
     const prerender = whatsappHomepagePrerender(pathname);
     if (prerender) {
-      documentHtml = documentHtml.replace(
-        '<div id="root"></div>',
-        `<div id="root">${prerender}</div>`,
-      );
+      documentHtml = injectCrawlableDocument(documentHtml, prerender);
     }
     return new Response(documentHtml, {
       status: getWhatsAppPageMeta(pathname) ? 200 : 404,
@@ -783,6 +812,7 @@ async function handleMarketingDocument(request) {
     const noindex = headHtml.includes("noindex");
     let documentHtml = injectSeoHead(html, headHtml);
     const prerender = buildMarketingPrerender(pathname);
+    const homePaint = buildHomeFirstPaint(pathname);
     const locale = splitMarketingLocale(pathname);
     if (locale.locale === "he") {
       documentHtml = documentHtml.replace(
@@ -791,10 +821,10 @@ async function handleMarketingDocument(request) {
       );
     }
     if (prerender) {
-      documentHtml = documentHtml.replace(
-        '<div id="root"></div>',
-        `<div id="root">${prerender.inner}</div>`,
-      );
+      documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
+    }
+    if (homePaint) {
+      documentHtml = injectRootInner(documentHtml, homePaint.inner);
     }
     return new Response(documentHtml, {
       status: 200,
