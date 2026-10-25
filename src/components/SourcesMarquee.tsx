@@ -85,7 +85,7 @@ export default function SourcesMarquee() {
 
   return (
     <div className="home-flow" dir={getTextDirection(i18n.language)}>
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+      <div className="home-flow__inner">
         <p className="home-flow__eyebrow">{t("live.sourcesEyebrow")}</p>
         <h2 className="home-flow__title">{t("home.flowTitle")}</h2>
         <p className="home-flow__lead">{t("home.flowBody")}</p>

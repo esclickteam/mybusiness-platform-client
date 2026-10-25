@@ -813,14 +813,37 @@ async function handleMarketingDocument(request) {
     let documentHtml = injectSeoHead(html, headHtml);
     const prerender = buildMarketingPrerender(pathname);
     const locale = splitMarketingLocale(pathname);
-    if (locale.locale !== "en") {
+    const isHome = locale.path === "/";
+    if (locale.locale !== "en" || isHome) {
       const meta = prerender || {};
-      const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale);
+      const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale === "en" ? "en" : locale.locale);
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,
-        `<html lang="${lang}" dir="${dir}">`,
+        `<html lang="${lang}" dir="${dir}"${isHome ? ' class="bizuply-home"' : ""}>`,
       );
+    }
+    if (isHome) {
+      documentHtml = documentHtml.replace(
+        /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
+        '<link rel="preload" as="style" href="$1" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link rel="stylesheet" href="$1"></noscript>',
+      );
+      try {
+        const criticalRes = await fetch(new URL("/home-critical.css", request.url), {
+          headers: shellDocumentHeaders(),
+        });
+        if (criticalRes.ok) {
+          const criticalCss = await criticalRes.text();
+          if (criticalCss && !criticalCss.includes("<html")) {
+            documentHtml = documentHtml.replace(
+              '<link rel="stylesheet" href="/home-critical.css" />',
+              `<style id="home-critical">${criticalCss}</style>`,
+            );
+          }
+        }
+      } catch {
+        /* The linked stylesheet remains. */
+      }
     }
     if (prerender) {
       documentHtml = documentHtml.replace(

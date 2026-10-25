@@ -93,11 +93,14 @@ if (onWhatsAppHost) {
   const defaultTheme = savedTheme || "light";
 
   const isBusinessTheme = defaultTheme === "business" || defaultTheme === "dark";
+  const keepHomePaint = Boolean(document.querySelector(".home-shell"));
 
-  document.body.style.background = isBusinessTheme ? "#f6f7fb" : "#ffffff";
-  document.documentElement.style.background = isBusinessTheme
-    ? "#f6f7fb"
-    : "#ffffff";
+  if (!keepHomePaint) {
+    document.body.style.background = isBusinessTheme ? "#f6f7fb" : "#ffffff";
+    document.documentElement.style.background = isBusinessTheme
+      ? "#f6f7fb"
+      : "#ffffff";
+  }
 
   document.body.setAttribute("data-theme", defaultTheme);
 }

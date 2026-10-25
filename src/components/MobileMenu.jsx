@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import logo from "../images/logo_final.svg";
+const logo = "/logo-mark.svg";
 import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 import { normalizeMarketingLocale } from "../lib/localePath.mjs";
 import { marketingNav } from "../lib/marketingNav.mjs";

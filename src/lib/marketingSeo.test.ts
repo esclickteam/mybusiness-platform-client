@@ -142,7 +142,9 @@ describe("marketing crawl files", () => {
       expect(head.match(/"@type":"Question"/g)?.length).toBe(10);
       expect(head).toContain(home.faq1q);
       expect(head).toContain(home.faq10a);
-      expect(body).toContain(`<h1>${home.headline}</h1>`);
+      expect(body).toContain(`<h1 class="home-hero__title">${home.headline}</h1>`);
+      expect(body).toContain("home-hero");
+      expect(body).toContain(home.supportLine);
       expect(body).toContain(home.faqTitle);
       expect(body).toContain(home.faq8a);
     }

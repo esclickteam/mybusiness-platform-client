@@ -8,6 +8,8 @@
 
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
+import { HOME_SHELL } from "./homeShell.mjs";
+import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
@@ -762,8 +764,46 @@ function renderLocalized(page, locale, path) {
   };
 }
 
+function localeHref(locale, path) {
+  const prefix = locale === "pt-BR" ? "/pt-br" : locale && locale !== "en" ? `/${locale}` : "";
+  if (!path || path === "/") return prefix || "/";
+  return `${prefix}${path}`;
+}
+
+const HOME_CHANNELS = [
+  ["Meta", "Lead Ads"],
+  ["Facebook", "Lead Ads"],
+  ["Instagram", "Lead Ads"],
+  ["WhatsApp", "Business API"],
+  ["Google Ads", "Leads"],
+  ["Website", "Forms"],
+];
+
+function renderHomePrerender(locale) {
+  const meta = marketingLocaleMeta(locale);
+  const copy = HOME_SHELL[locale] || HOME_SHELL.en;
+  const href = (path) => localeHref(locale, path);
+  const nav = marketingNav(locale).map((group) => (
+    group.links
+      ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
+      : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`
+  )).join("");
+  const channel = ([name, label]) => `<li class="home-channel"><span><strong>${escapeText(name)}</strong><em>${escapeText(label)}</em></span></li>`;
+  const row = HOME_CHANNELS.concat(HOME_CHANNELS).map(channel).join("");
+  const track = `<ul class="home-marquee__row">${row}</ul><ul class="home-marquee__row">${row}</ul>`;
+  const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
+  const faqs = faqItems("/", locale);
+  const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
+  return {
+    lang: meta.htmlLang,
+    dir: meta.dir,
+    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="BizUply" width="176" height="52"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero"><div class="home-hero__glow" aria-hidden="true"></div><div class="home-hero__grid"><div><h1 class="home-hero__title">${escapeText(copy.headline)}</h1><p class="home-hero__lead">${escapeText(copy.subtitle)}</p><p class="home-hero__note">${escapeText(copy.supportLine)}</p><div class="home-hero__actions"><a class="home-cta home-cta--primary" href="${escapeHtml(href("/register"))}">${escapeText(copy.startTrial)}</a><a class="home-cta home-cta--ghost" href="${escapeHtml(href("/platform"))}">${escapeText(copy.explore)}</a></div></div><div class="home-stage"><img class="home-stage__main" src="/demo-media/forms/lead.png" alt="${escapeText(copy.stageAlt)}" width="1200" height="750" fetchpriority="high" decoding="async"><img class="home-stage__float home-stage__float--a" src="/demo-media/whatsapp/still-3.jpg" alt="${escapeText(copy.stageWhatsappAlt)}" width="640" height="400"><img class="home-stage__float home-stage__float--b" src="/demo-media/appointments/still-8.jpg" alt="${escapeText(copy.stageAppointmentsAlt)}" width="640" height="400"><span class="home-cursor" aria-hidden="true"></span></div></div><div class="home-flow"><div class="home-flow__inner"><p class="home-flow__eyebrow">${escapeText(copy.sources)}</p><h2 class="home-flow__title">${escapeText(copy.flowTitle)}</h2><p class="home-flow__lead">${escapeText(copy.flowBody)}</p><div class="home-flow__board"><div class="home-marquee"><div class="home-marquee__track">${track}</div></div><div class="home-flow__line" aria-hidden="true"></div><div class="home-flow__crm"><p>${escapeText(copy.flowInto)}</p><strong>${escapeText(copy.flowCrm)}</strong><span>${escapeText(copy.flowSteps)}</span></div></div></div></div></section><section class="home-crawl"><h2>${escapeText(faqTitle)}</h2>${faqBodyHtml(faqs)}</section></main>`,
+  };
+}
+
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/") return renderHomePrerender(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);
     if (!article?.h1) return null;
@@ -778,14 +818,6 @@ export function buildMarketingPrerender(pathname) {
   }
   const found = findMarketingPage(path);
   if (!found?.page) return null;
-  if (path === "/") {
-    const faqs = faqItems("/", "en");
-    return {
-      lang: "en",
-      dir: "ltr",
-      inner: `<main lang="en" dir="ltr"><h1>Everything your business needs to grow in one place</h1><p>${escapeText(found.page.description)}</p><h2>${escapeText(HOME_FAQ_TITLE.en)}</h2>${faqBodyHtml(faqs)}</main>`,
-    };
-  }
   const heading = path === "/crm"
     ? "Every lead, every client, every appointment in one place"
     : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");

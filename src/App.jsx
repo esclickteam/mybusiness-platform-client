@@ -860,16 +860,22 @@ export default function App() {
   useLayoutEffect(() => {
     if (!document.getElementById("bizuply-first-paint")) return undefined;
     const release = () => {
+      const shell = document.getElementById("bizuply-first-paint");
+      const hero = shell?.querySelector(".home-hero");
+      if (hero && document.querySelector("#root .app-main")) {
+        shell.replaceChildren(hero);
+        hero.setAttribute("data-kept-hero", "true");
+      }
       document.getElementById("root")?.removeAttribute("hidden");
-      document.getElementById("bizuply-first-paint")?.remove();
+      if (!hero) shell?.remove();
     };
     const root = document.getElementById("root");
-    if (root?.querySelector("h1")) {
+    if (root?.querySelector(".app-main")) {
       release();
       return undefined;
     }
     const observer = new MutationObserver(() => {
-      if (root?.querySelector("h1")) {
+      if (root?.querySelector(".app-main")) {
         observer.disconnect();
         release();
       }
@@ -878,6 +884,11 @@ export default function App() {
     return () => observer.disconnect();
   }, []);
   const location = useLocation();
+  useLayoutEffect(() => {
+    if (location.pathname !== "/") {
+      document.getElementById("bizuply-first-paint")?.remove();
+    }
+  }, [location.pathname]);
   const { i18n } = useTranslation();
   const appDir = getTextDirection(i18n.language);
   const appLang = getHtmlLang(i18n.language);
@@ -977,11 +988,11 @@ export default function App() {
   }, [isMiniSiteHost, publicMarketingHost, user]);
 
   useEffect(() => {
-    if (isMiniSiteHost || publicMarketingHost) return;
+    if (isMiniSiteHost || publicMarketingHost || !isWorkspaceRoute) return;
     void import("./pages/business/dashboardPages/DashboardPage").then((mod) => {
       mod.preloadDashboardComponents();
     });
-  }, [isMiniSiteHost, publicMarketingHost]);
+  }, [isMiniSiteHost, publicMarketingHost, isWorkspaceRoute]);
 
   if (whatsappLanding) {
     return (
@@ -1676,8 +1687,12 @@ export default function App() {
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
-      {/* Admin softphone — survives page changes + business impersonation */}
-      <Suspense fallback={null}><AdminSoftphoneHost /></Suspense>
+      {/* Admin softphone — only for an admin session, including impersonation. */}
+      {(user?.role === "admin" ||
+        user?.impersonatorRole === "admin" ||
+        (typeof window !== "undefined" && Boolean(window.localStorage.getItem("impersonatedBy")))) && (
+        <Suspense fallback={null}><AdminSoftphoneHost /></Suspense>
+      )}
 
       {user?.role === "admin" && isAdminRoute && <AdminPushPermissionBanner />}
 

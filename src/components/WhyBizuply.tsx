@@ -51,7 +51,7 @@ export default function WhyBizuply() {
             <article key={card.title} className="home-why-card">
               <div className={card.images.length > 1 ? "home-why-card__media home-why-card__media--pair" : "home-why-card__media"}>
                 {card.images.map((src) => (
-                  <img key={src} src={src} alt={t(`why.${card.alt}`)} width="640" height="400" />
+                  <img key={src} src={src} alt={t(`why.${card.alt}`)} width="640" height="400" loading="lazy" decoding="async" />
                 ))}
               </div>
               <div>

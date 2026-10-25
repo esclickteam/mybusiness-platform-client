@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import logo from "../images/logo_final.svg";
+const logo = "/logo-mark.svg";
 import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 
 type FooterLink = {
