@@ -5,6 +5,8 @@
  * The SaaS marketplace stays at /saas and is not added to the sitemap.
  */
 
+import { platformActivity } from "./platformPage.mjs";
+
 function copy(title, description, crumb, h1, lede, sections, faq, links, steps = []) {
   return { title, description, crumb, h1, lede, sections, faq, links, steps, updated: "2026-10-24" };
 }
@@ -14,138 +16,6 @@ function pack(layout, media, locales) {
 }
 
 const PAGES = {
-  "/platform": pack("flow", "crm", {
-    en: copy(
-      "One place for the digital work | Bizuply",
-      "Run CRM, appointments, websites, automations, Meta campaigns and WhatsApp from Bizuply instead of hopping between separate tools.",
-      "Platform",
-      "The digital work of the business, in one place",
-      "Bizuply is the system you log into. A lead, a page, a campaign, an appointment and a follow-up can live in the same account. Done-for-you setup is a separate purchase on the pricing page.",
-      [
-        ["What you operate yourself", ["The CRM holds the lead, six statuses, the client file, tasks and the appointment calendar. The website builder publishes a site whose form can create a lead. Automations, on the business plan, run after a trigger such as a new lead. Meta campaigns are edited in the dashboard after you connect your own ad account. WhatsApp is a separate number subscription."]],
-        ["What stays outside the software", ["Meta bills the ad spend. WhatsApp messaging fees are billed by Meta on top of the $29 monthly number. An expert website, automation setup, CRM migration and human follow-up are services with their own prices. They are not included just because the software is on."]],
-      ],
-      [["Does one login replace every tool?", "It replaces the tools Bizuply actually ships: CRM, appointments, the website builder, automations, Meta campaign editing and WhatsApp. It does not replace Meta's ad billing, and it does not include a hidden marketing-agency service."]],
-      [
-        ["/crm", "CRM"],
-        ["/website-builder", "Website builder"],
-        ["/automations", "Automations"],
-        ["/meta-campaigns", "Meta campaigns"],
-        ["/whatsapp-api", "WhatsApp"],
-        ["/appointments", "Appointments"],
-      ],
-      [
-        "A Meta lead form or a website form creates a lead with a source.",
-        "Someone sets a status and writes what happened on the timeline.",
-        "A dated task keeps the next step. Overdue tasks show in notifications.",
-        "On the business plan, an automation can create that task for every new lead.",
-      ],
-    ),
-    he: copy(
-      "כל העבודה הדיגיטלית במקום אחד | ביזאפלי",
-      "CRM, תורים, אתר, אוטומציות, קמפיינים של Meta ו־WhatsApp מתוך ביזאפלי, בלי לקפוץ בין מערכות נפרדות לכל פעולה.",
-      "הפלטפורמה",
-      "העבודה הדיגיטלית של העסק, במקום אחד",
-      "ביזאפלי היא המערכת שאליה מתחברים. ליד, עמוד, קמפיין, תור ומעקב יכולים לשבת באותו חשבון. הקמה שמבצעים עבורכם היא רכישה נפרדת במחירון.",
-      [
-        ["מה מפעילים לבד", ["ה־CRM שומר את הליד, שישה סטטוסים, תיק לקוח, משימות ויומן. בונה האתרים מפרסם אתר שטופס בו יכול לפתוח ליד. אוטומציות, בחבילה העסקית, רצות אחרי טריגר כמו ליד חדש. קמפיינים של Meta נערכים בלוח אחרי חיבור חשבון המודעות של העסק. WhatsApp הוא מנוי נפרד למספר."]],
-        ["מה נשאר מחוץ לתוכנה", ["את הוצאת המדיה גובה Meta. הודעות WhatsApp מחויבות על ידי Meta בנוסף ל־29 דולר לחודש למספר. אתר מומחה, הקמת אוטומציות, מעבר CRM וליווי אנושי הם שירותים עם מחיר משלהם."]],
-      ],
-      [["התחברות אחת מחליפה כל כלי?", "היא מחליפה את הכלים שביזאפלי באמת מספקת: CRM, תורים, בונה אתרים, אוטומציות, עריכת קמפיינים של Meta ו־WhatsApp. היא לא מחליפה את החיוב של Meta על מודעות, ואין כאן שירות סוכנות שיווק מוסתר."]],
-      [
-        ["/crm", "CRM"],
-        ["/website-builder", "בונה אתרים"],
-        ["/automations", "אוטומציות"],
-        ["/meta-campaigns", "קמפיינים של Meta"],
-        ["/whatsapp-api", "WhatsApp"],
-        ["/appointments", "תורים"],
-      ],
-      [
-        "טופס Meta או טופס באתר יוצרים ליד עם מקור.",
-        "מגדירים סטטוס וכותבים מה קרה בציר הזמן.",
-        "משימה עם תאריך שומרת את הצעד הבא. משימה באיחור מופיעה בהתראות.",
-        "בחבילה העסקית, אוטומציה יכולה ליצור את המשימה לכל ליד חדש.",
-      ],
-    ),
-    es: copy(
-      "El trabajo digital en un solo lugar | Bizuply",
-      "CRM, citas, sitios, automatizaciones, campañas de Meta y WhatsApp desde Bizuply, sin saltar de una herramienta a otra.",
-      "Plataforma",
-      "El trabajo digital del negocio, en un solo lugar",
-      "Bizuply es el sistema al que entra. Un lead, una página, una campaña, una cita y un seguimiento pueden vivir en la misma cuenta. La puesta en marcha hecha por nosotros es una compra aparte en precios.",
-      [
-        ["Lo que usted opera", ["El CRM guarda el lead, seis estados, el expediente, las tareas y la agenda. El constructor publica un sitio cuyo formulario puede crear un lead. Las automatizaciones, en el plan de negocio, corren tras un disparador. Las campañas de Meta se editan en el panel después de conectar la cuenta de anuncios. WhatsApp es una suscripción aparte por número."]],
-        ["Lo que queda fuera", ["Meta cobra la inversión publicitaria. Los mensajes de WhatsApp los cobra Meta, además de 29 dólares al mes por número. Un sitio de experto, la puesta en marcha de automatizaciones, la migración del CRM y el seguimiento humano tienen su propio precio."]],
-      ],
-      [["¿Un acceso sustituye todas las herramientas?", "Sustituye las que Bizuply publica: CRM, citas, constructor, automatizaciones, edición de campañas de Meta y WhatsApp. No sustituye el cobro de Meta ni incluye una agencia de marketing oculta."]],
-      [
-        ["/crm", "CRM"],
-        ["/website-builder", "Constructor"],
-        ["/automations", "Automatizaciones"],
-        ["/meta-campaigns", "Campañas de Meta"],
-        ["/whatsapp-api", "WhatsApp"],
-        ["/appointments", "Citas"],
-      ],
-      [
-        "Un formulario de Meta o del sitio crea un lead con origen.",
-        "Se fija un estado y se anota lo ocurrido en la línea de tiempo.",
-        "Una tarea con fecha guarda el siguiente paso.",
-        "En el plan de negocio, una automatización puede crear esa tarea.",
-      ],
-    ),
-    "pt-BR": copy(
-      "O trabalho digital em um só lugar | Bizuply",
-      "CRM, agenda, sites, automações, campanhas da Meta e WhatsApp na Bizuply, sem pular entre ferramentas separadas.",
-      "Plataforma",
-      "O trabalho digital do negócio, em um só lugar",
-      "A Bizuply é o sistema em que você entra. Um lead, uma página, uma campanha, um compromisso e um acompanhamento podem ficar na mesma conta. A implantação feita por nós é uma compra à parte na página de preços.",
-      [
-        ["O que você opera", ["O CRM guarda o lead, seis status, o arquivo, as tarefas e a agenda. O construtor publica um site cujo formulário pode criar um lead. As automações, no plano de negócios, rodam depois de um gatilho. As campanhas da Meta são editadas no painel depois de conectar a conta de anúncios. O WhatsApp é uma assinatura separada por número."]],
-        ["O que fica de fora", ["A Meta cobra o investimento em mídia. As mensagens de WhatsApp são cobradas pela Meta, além de 29 dólares por mês por número. Site de especialista, implantação de automações, migração de CRM e acompanhamento humano têm preço próprio."]],
-      ],
-      [["Um login substitui todas as ferramentas?", "Substitui as que a Bizuply publica: CRM, agenda, construtor, automações, edição de campanhas da Meta e WhatsApp. Não substitui a cobrança da Meta nem inclui uma agência escondida."]],
-      [
-        ["/crm", "CRM"],
-        ["/website-builder", "Construtor"],
-        ["/automations", "Automações"],
-        ["/meta-campaigns", "Campanhas da Meta"],
-        ["/whatsapp-api", "WhatsApp"],
-        ["/appointments", "Agenda"],
-      ],
-      [
-        "Um formulário da Meta ou do site cria um lead com origem.",
-        "Define-se um status e registra-se o que aconteceu.",
-        "Uma tarefa com data guarda o próximo passo.",
-        "No plano de negócios, uma automação pode criar essa tarefa.",
-      ],
-    ),
-    ar: copy(
-      "العمل الرقمي في مكان واحد | Bizuply",
-      "CRM والمواعيد والمواقع والأتمتة وحملات Meta وواتساب من Bizuply، دون التنقل بين أدوات منفصلة.",
-      "المنصة",
-      "العمل الرقمي للنشاط، في مكان واحد",
-      "Bizuply هي النظام الذي تدخلون إليه. يمكن أن يعيش العميل المحتمل والصفحة والحملة والموعد والمتابعة في الحساب نفسه. التهيئة التي ننفذها لكم شراء منفصل في صفحة الأسعار.",
-      [
-        ["ما تشغّلونه بأنفسكم", ["يحفظ CRM العميل المحتمل وست حالات والملف والمهام والتقويم. ينشر منشئ المواقع موقعاً يمكن لنموذجه أن ينشئ عميلاً محتملاً. تعمل الأتمتة في الخطة التجارية بعد محفّز. تُحرَّر حملات Meta في اللوحة بعد ربط حساب الإعلانات. واتساب اشتراك منفصل لكل رقم."]],
-        ["ما يبقى خارج البرنامج", ["تحصّل Meta إنفاق الإعلان. رسوم رسائل واتساب تحصّلها Meta إضافة إلى 29 دولاراً شهرياً للرقم. بناء موقع على يد مختص، وتهيئة الأتمتة، ونقل CRM، والمتابعة البشرية لها أسعارها."]],
-      ],
-      [["هل يحل دخول واحد محل كل الأدوات؟", "يحل محل الأدوات التي تنشرها Bizuply: CRM والمواعيد والمنشئ والأتمتة وتحرير حملات Meta وواتساب. لا يحل محل فوترة Meta ولا يتضمن وكالة تسويق مخفية."]],
-      [
-        ["/crm", "CRM"],
-        ["/website-builder", "منشئ المواقع"],
-        ["/automations", "الأتمتة"],
-        ["/meta-campaigns", "حملات Meta"],
-        ["/whatsapp-api", "واتساب"],
-        ["/appointments", "المواعيد"],
-      ],
-      [
-        "نموذج Meta أو نموذج في الموقع ينشئ عميلاً محتملاً مع مصدر.",
-        "تُحدَّد الحالة ويُسجَّل ما حدث في الخط الزمني.",
-        "مهمة بتاريخ تحفظ الخطوة التالية.",
-        "في الخطة التجارية يمكن للأتمتة أن تنشئ هذه المهمة.",
-      ],
-    ),
-  }),
   "/services": pack("split", null, {
     en: copy(
       "Setup we do for you | Bizuply",
@@ -1068,6 +938,7 @@ PAGES["/solutions/ready-systems"] = industry({
 });
 
 export function getActivityPage(path, locale) {
+  if (path === "/platform") return platformActivity(locale);
   const found = PAGES[path];
   if (!found) return null;
   const language = locale === "pt-BR" || locale === "pt" ? "pt-BR" : locale;
@@ -1082,15 +953,24 @@ export function getActivityPage(path, locale) {
 }
 
 export function activityMarketingEntries() {
-  return Object.entries(PAGES).map(([path, page]) => ({
+  const platform = platformActivity("en");
+  return [{
+    path: "/platform",
+    title: platform.title,
+    description: platform.description,
+    crumb: platform.crumb,
+    lastmod: "2026-10-25",
+    changefreq: "monthly",
+    priority: "0.8",
+  }].concat(Object.entries(PAGES).map(([path, page]) => ({
     path,
     title: page.locales.en.title,
     description: page.locales.en.description,
     crumb: page.locales.en.crumb,
     lastmod: "2026-10-24",
     changefreq: "monthly",
-    priority: path === "/platform" || path === "/services" ? "0.8" : "0.64",
-  }));
+    priority: path === "/services" ? "0.8" : "0.64",
+  })));
 }
 
 export function activityChildLinks(path, locale) {

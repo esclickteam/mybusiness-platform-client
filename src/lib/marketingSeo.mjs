@@ -11,6 +11,7 @@ import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
+import { platformJsonLd, renderPlatformPrerender } from "./platformPage.mjs";
 import {
   MARKETING_LOCALE_PREFIXES,
   hasLocalizedMarketingPage,
@@ -369,6 +370,7 @@ function localizedPage(path, locale) {
 
 function faqItems(path, language) {
   if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
+  if (path === "/platform") return getActivityPage(path, language)?.faq || null;
   const localized = language === "en" ? null : localizedPage(path, language);
   if (localized?.faq?.length) return localized.faq;
   const guide = path.startsWith("/guides/") ? getGuide(path.slice("/guides/".length), language) : null;
@@ -559,6 +561,15 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
       faqSchemaTag(path, locale),
+      ...(path === "/platform"
+        ? [
+            `<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high" />`,
+            `<link rel="stylesheet" href="/platform-critical.css" />`,
+            ...platformJsonLd(getActivityPage(path, locale), canonical, locale, (itemPath) => marketingPublicUrl(itemPath, locale)).map(
+              (data) => `<script type="application/ld+json">${jsonLd(data)}</script>`,
+            ),
+          ]
+        : []),
     ].filter(Boolean).join("\n");
   }
 
@@ -764,6 +775,10 @@ function renderLocalized(page, locale, path) {
 
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/platform") {
+    const activity = getActivityPage(path, locale);
+    if (activity?.h1) return renderPlatformPrerender(activity, locale);
+  }
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);
     if (!article?.h1) return null;

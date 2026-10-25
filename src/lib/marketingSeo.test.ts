@@ -147,4 +147,39 @@ describe("marketing crawl files", () => {
       expect(body).toContain(home.faq8a);
     }
   });
+
+  it("publishes a styled platform page in five languages", () => {
+    const routes = [
+      ["en", "/platform", "https://bizuply.com/platform", "ltr", "One platform. A more connected business."],
+      ["he", "/he/platform", "https://bizuply.com/he/platform", "rtl", "פלטפורמה אחת. עסק מחובר יותר."],
+      ["es", "/es/platform", "https://bizuply.com/es/platform", "ltr", "Una plataforma. Un negocio más conectado."],
+      ["pt-BR", "/pt-br/platform", "https://bizuply.com/pt-br/platform", "ltr", "Uma plataforma. Um negócio mais conectado."],
+      ["ar", "/ar/platform", "https://bizuply.com/ar/platform", "rtl", "منصة واحدة. عمل أكثر ترابطًا."],
+    ];
+    for (const [, route, canonical, dir, h1] of routes) {
+      const head = buildMarketingDocumentHead(route) || "";
+      const body = buildMarketingPrerender(route);
+      expect(body?.dir).toBe(dir);
+      expect(body?.inner.match(/<h1\b/g)?.length).toBe(1);
+      expect(body?.inner).toContain(`<h1 class="pf-hero__title">${h1}</h1>`);
+      expect(body?.inner).toContain('class="pf-hero"');
+      expect(body?.inner).not.toContain("Everything your business needs to grow");
+      expect(body?.inner).not.toContain("The digital work of the business");
+      expect(head).toContain(`<link rel="canonical" href="${canonical}" />`);
+      expect(head.match(/"@type":"FAQPage"/g)?.length).toBe(1);
+      expect(head.match(/"@type":"Question"/g)?.length).toBe(12);
+      expect(head.match(/"@type":"SoftwareApplication"/g)?.length).toBe(1);
+      expect(head).toContain('hreflang="he" href="https://bizuply.com/he/platform"');
+      expect(head).toContain('hreflang="en" href="https://bizuply.com/platform"');
+      expect(head).toContain('hreflang="x-default" href="https://bizuply.com/platform"');
+      expect(body?.inner).toContain(route === "/platform" ? 'href="/pricing"' : `href="${route.replace(/\/platform$/, "/pricing")}"`);
+    }
+    const english = buildMarketingPrerender("/platform")?.inner || "";
+    for (const path of ["/crm", "/whatsapp-api", "/meta-campaigns", "/automations", "/website-builder", "/appointments", "/pricing"]) {
+      expect(english).toContain(`href="${path}"`);
+    }
+    expect(buildMarketingDocumentHead("/platform") || "").toContain("All-in-One Business Management Platform | Bizuply");
+    expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/platform</loc>");
+    expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/ar/platform</loc>");
+  });
 });
