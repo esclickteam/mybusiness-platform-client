@@ -8,6 +8,7 @@ import type { MetaCampaign } from "../../../../api/metaCampaignsApi";
 const api = vi.hoisted(() => ({
   getMetaCampaignsOverview: vi.fn(),
   deleteLocalCampaignDraft: vi.fn(),
+  deleteMetaObjects: vi.fn(),
   selectMetaAdAccount: vi.fn(),
   setMetaCampaignStatus: vi.fn(),
 }));

@@ -8,6 +8,7 @@ const api = vi.hoisted(() => ({
   listMetaChangeHistory: vi.fn(),
   setMetaAdSetStatus: vi.fn(),
   setMetaAdStatus: vi.fn(),
+  deleteMetaObjects: vi.fn(),
 }));
 
 vi.mock("../../../../../api/metaCampaignsApi", () => api);
