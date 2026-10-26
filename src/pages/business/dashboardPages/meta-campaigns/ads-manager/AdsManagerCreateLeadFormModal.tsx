@@ -192,6 +192,9 @@ export default function AdsManagerCreateLeadFormModal({
     FormTrackingParam[]
   >([]);
   const [sourceFormId, setSourceFormId] = useState("");
+  const [disclaimerTitle, setDisclaimerTitle] = useState("");
+  const [disclaimerText, setDisclaimerText] = useState("");
+  const [disclaimerRequired, setDisclaimerRequired] = useState(false);
   const initialDraftRef = useRef(initialDraft);
   initialDraftRef.current = initialDraft;
 
@@ -232,6 +235,9 @@ export default function AdsManagerCreateLeadFormModal({
       }))
     );
     setSourceFormId(seed.sourceFormId || "");
+    setDisclaimerTitle(seed.disclaimerTitle || "");
+    setDisclaimerText(seed.disclaimerText || "");
+    setDisclaimerRequired(Boolean(seed.disclaimerRequired));
     idempotencyKeyRef.current = seed.idempotencyKey || "";
   };
 
@@ -259,6 +265,9 @@ export default function AdsManagerCreateLeadFormModal({
     setContactFieldKeys({});
     setTrackingParameters([]);
     setSourceFormId("");
+    setDisclaimerTitle("");
+    setDisclaimerText("");
+    setDisclaimerRequired(false);
     idempotencyKeyRef.current = "";
   };
 
@@ -428,6 +437,9 @@ export default function AdsManagerCreateLeadFormModal({
     customQuestions: customQuestions.map((question) => ({ ...question })),
     contactFieldKeys: { ...contactFieldKeys },
     trackingParameters: trackingParameters.map((row) => ({ ...row })),
+    disclaimerTitle,
+    disclaimerText,
+    disclaimerRequired,
   });
 
   const handleSaveDraft = async () => {
@@ -555,6 +567,15 @@ export default function AdsManagerCreateLeadFormModal({
         additionalAction,
         whatsappPhone: whatsappPhone.trim() || undefined,
         callPhone: callPhone.trim() || undefined,
+        ...(disclaimerTitle.trim() && disclaimerText.trim()
+          ? {
+              customDisclaimer: {
+                title: disclaimerTitle.trim(),
+                text: disclaimerText.trim(),
+                isRequired: disclaimerRequired,
+              },
+            }
+          : {}),
         idempotencyKey: idempotencyKeyRef.current,
         ...(mode === "duplicate"
           ? {}
@@ -787,6 +808,33 @@ export default function AdsManagerCreateLeadFormModal({
                     placeholder="https://"
                   />
                 </MetaFieldLike>
+                <MetaFieldLike
+                  label={cc("disclaimerTitle")}
+                  hint={cc("disclaimerHint")}
+                >
+                  <input
+                    className={metaInputClass}
+                    value={disclaimerTitle}
+                    onChange={(e) => setDisclaimerTitle(e.target.value)}
+                    placeholder={cc("disclaimerTitlePlaceholder")}
+                  />
+                </MetaFieldLike>
+                <MetaFieldLike label={cc("disclaimerText")}>
+                  <textarea
+                    className={`${metaInputClass} h-24 resize-y py-2`}
+                    value={disclaimerText}
+                    onChange={(e) => setDisclaimerText(e.target.value)}
+                    placeholder={cc("disclaimerTextPlaceholder")}
+                  />
+                </MetaFieldLike>
+                <label className="flex items-center gap-2 text-[13px] font-semibold text-[#050505]">
+                  <input
+                    type="checkbox"
+                    checked={disclaimerRequired}
+                    onChange={(e) => setDisclaimerRequired(e.target.checked)}
+                  />
+                  {cc("disclaimerRequired")}
+                </label>
               </div>
             ) : null}
 

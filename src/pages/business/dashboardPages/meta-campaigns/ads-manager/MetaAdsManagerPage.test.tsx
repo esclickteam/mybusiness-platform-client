@@ -55,6 +55,11 @@ vi.mock("../../../../../api/metaCampaignsApi", () => ({
   updateMetaAd: vi.fn(),
   saveMetaEditorDraft: vi.fn(),
   duplicateMetaCampaign: vi.fn(),
+  diffMetaCampaignSync: vi.fn().mockResolvedValue({
+    hasConflicts: false,
+    conflicts: [],
+    overwrittenByReload: false,
+  }),
 }));
 
 import en from "../../../../../i18n/locales/en.json";

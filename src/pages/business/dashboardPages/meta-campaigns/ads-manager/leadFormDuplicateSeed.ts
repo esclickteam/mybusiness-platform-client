@@ -31,6 +31,9 @@ export type LeadFormDuplicateSeed = {
   customQuestions: LeadFormCustomQuestionDraft[];
   contactFieldKeys: Record<string, string>;
   trackingParameters?: Array<{ id: string; key: string; value: string }>;
+  disclaimerTitle?: string;
+  disclaimerText?: string;
+  disclaimerRequired?: boolean;
 };
 
 const CONTACT_TYPES = new Set<string>(
@@ -84,6 +87,23 @@ export function leadFormDuplicateSeedFromMeta(
         options,
       })
     );
+  });
+  questions.forEach((question) => {
+    const deps =
+      question.dependentConditionalQuestions ||
+      question.dependent_conditional_questions ||
+      [];
+    const parentId = question.id || question.key;
+    if (!parentId || !deps.length) return;
+    deps.forEach((dep) => {
+      const fieldKey = String(dep.fieldKey || dep.field_key || "").trim();
+      const option = String(dep.name || "").trim();
+      if (!fieldKey || !option) return;
+      const child = customQuestions.find((row) => row.key === fieldKey);
+      if (!child) return;
+      child.dependentOnQuestionId = parentId;
+      child.dependentOnOption = option;
+    });
   });
   const action = leadFormActionFromButton(form.thankYouPage?.buttonType);
   const website =
@@ -191,5 +211,8 @@ export function leadFormDuplicateSeedFromSavedEditor(
     customQuestions,
     contactFieldKeys,
     trackingParameters,
+    disclaimerTitle: asString(editor.disclaimerTitle),
+    disclaimerText: asString(editor.disclaimerText),
+    disclaimerRequired: Boolean(editor.disclaimerRequired),
   };
 }

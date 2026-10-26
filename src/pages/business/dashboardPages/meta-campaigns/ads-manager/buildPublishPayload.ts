@@ -237,12 +237,6 @@ export function buildPublishPayloadFromAdsManager(
     imageHash: ad.imageHash || undefined,
     imageUrl: ad.imagePreviewUrl || undefined,
     videoId: ad.videoId || undefined,
-    creativeFormat:
-      ad.creativeFormat === "video"
-        ? "video"
-        : ad.creativeFormat === "carousel"
-          ? "carousel"
-          : "single",
     carouselCards:
       ad.creativeFormat === "carousel"
         ? (ad.carouselCards || [])
@@ -255,6 +249,18 @@ export function buildPublishPayloadFromAdsManager(
             }))
         : undefined,
     dynamicCreative: adSet.dynamicCreative === true,
+    productSetId: ad.productSetId || undefined,
+    objectStoryId: ad.objectStoryId || undefined,
+    creativeFormat:
+      ad.creativeFormat === "video"
+        ? "video"
+        : ad.creativeFormat === "carousel"
+          ? "carousel"
+          : ad.creativeFormat === "catalog"
+            ? "catalog"
+            : ad.creativeFormat === "existing_post"
+              ? "existing_post"
+              : "single",
   };
 }
 
@@ -288,7 +294,10 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   ) {
     errors.push(tChrome("validationPageForForms"));
   }
-  if (!ad?.primaryText.trim() || !ad?.headline.trim()) {
+  if (
+    ad?.creativeFormat !== "existing_post" &&
+    (!ad?.primaryText.trim() || !ad?.headline.trim())
+  ) {
     errors.push(tChrome("validationCreativeText"));
   }
   if (
@@ -301,7 +310,13 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   if (usesWhatsApp && !String(adSet?.whatsappPhone || "").trim()) {
     errors.push(tChrome("pageWaRequired"));
   }
-  if (!usesWhatsApp && !usesPhone && !ad?.instantFormId && !ad?.websiteUrl.trim()) {
+  if (
+    ad?.creativeFormat !== "existing_post" &&
+    !usesWhatsApp &&
+    !usesPhone &&
+    !ad?.instantFormId &&
+    !ad?.websiteUrl.trim()
+  ) {
     errors.push(tChrome("validationDestination"));
   }
   if (
@@ -309,6 +324,12 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
     (ad.carouselCards || []).filter((card) => card.imageHash).length < 2
   ) {
     errors.push(tChrome("validationCarousel"));
+  }
+  if (ad?.creativeFormat === "catalog" && !ad.productSetId) {
+    errors.push(tChrome("validationCatalog"));
+  }
+  if (ad?.creativeFormat === "existing_post" && !ad.objectStoryId) {
+    errors.push(tChrome("validationExistingPost"));
   }
   if (
     ad?.callToAction &&
