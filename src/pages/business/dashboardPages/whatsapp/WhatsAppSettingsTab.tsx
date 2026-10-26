@@ -67,6 +67,10 @@ import {
 } from "../../../../styles/bizuplyUi";
 import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
 import WhatsAppInvistimoSharePanel from "./WhatsAppInvistimoSharePanel";
+import {
+  buildInvistimoAccountShareExtras,
+  isInvistimoShareTenant,
+} from "./invistimoAccountSharePolicy";
 
 type OutletCtx = { businessId: string | null };
 
@@ -389,6 +393,14 @@ export default function WhatsAppSettingsTab() {
       return;
     }
 
+    if (isInvistimoShareTenant(businessId)) {
+      const msg = t("whatsapp.settings.invistimoShareGenericConnectBlocked");
+      setActionError(msg);
+      setActionInfo("");
+      toast.error(msg);
+      return;
+    }
+
     if (connection?.canConnectOwnNumber === false || connection?.isPlatformManagedConnection) {
       const msg = t("whatsapp.settings.managedHostNoConnectOwn");
       setActionError(msg);
@@ -588,16 +600,18 @@ export default function WhatsAppSettingsTab() {
               config_id: signup.configId,
               response_type: "code",
               override_default_response_type: true,
-              extras: {
-                setup: (() => {
-                  const prefill = splitE164ForMetaPrefill(entered?.e164);
-                  return prefill
-                    ? { business: { phone: prefill } }
-                    : {};
-                })(),
-                featureType: "",
-                sessionInfoVersion: "3",
-              },
+              extras: isInvistimoShareTenant(businessId)
+                ? buildInvistimoAccountShareExtras()
+                : {
+                    setup: (() => {
+                      const prefill = splitE164ForMetaPrefill(entered?.e164);
+                      return prefill
+                        ? { business: { phone: prefill } }
+                        : {};
+                    })(),
+                    featureType: "",
+                    sessionInfoVersion: "3",
+                  },
             }
           );
         } catch (error: any) {
@@ -1009,7 +1023,10 @@ export default function WhatsAppSettingsTab() {
   const linked = Boolean(connection?.connected);
   const isPlatformManaged = Boolean(connection?.isPlatformManagedConnection);
   const canDisconnect = connection?.canDisconnect !== false && !isPlatformManaged;
-  const canConnectOwn = connection?.canConnectOwnNumber !== false && !isPlatformManaged;
+  const canConnectOwn =
+    connection?.canConnectOwnNumber !== false &&
+    !isPlatformManaged &&
+    !isInvistimoShareTenant(businessId);
   const usingManagedWithoutPrivate =
     Boolean(connection?.usingManagedWithoutPrivate) && !isStandaloneApiAccount;
   const readyToSend = Boolean(connection?.readyToSend);
@@ -1101,7 +1118,9 @@ export default function WhatsAppSettingsTab() {
               </button>
             ) : (
               <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
-                {t("whatsapp.settings.managedHostNoConnectOwn")}
+                {isInvistimoShareTenant(businessId)
+                  ? t("whatsapp.settings.invistimoShareGenericConnectBlocked")
+                  : t("whatsapp.settings.managedHostNoConnectOwn")}
               </p>
             )}
             {actionInfo && (

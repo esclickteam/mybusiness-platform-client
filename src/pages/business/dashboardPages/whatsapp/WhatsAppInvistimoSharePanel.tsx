@@ -6,6 +6,7 @@ import {
   runInvistimoTemplateMigrationDryRun,
 } from "../../../../api/whatsappApi";
 import { btnSecondary } from "../../../../styles/bizuplyUi";
+import { INVISTIMO_SHARE_SCREENS } from "./invistimoAccountSharePolicy";
 
 type Props = {
   businessId: string;
@@ -75,6 +76,26 @@ export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
         <li>{t("whatsapp.settings.invistimoShareStep3")}</li>
         <li>{t("whatsapp.settings.invistimoShareStep4")}</li>
       </ol>
+      <p className="mt-3 text-xs font-semibold text-slate-900">
+        {t("whatsapp.settings.invistimoShareScreensTitle")}
+      </p>
+      <ol className="mt-2 list-decimal space-y-2 ps-5 text-xs font-medium text-slate-700">
+        {INVISTIMO_SHARE_SCREENS.map((screen) => (
+          <li key={screen.id}>
+            <span className="font-semibold">{t(screen.titleKey)}</span>
+            <span className="mt-0.5 block">{t(screen.meaningKey)}</span>
+            <span className="mt-0.5 block font-semibold text-amber-800">
+              {t(screen.abortKey)}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p className="mt-3 text-xs font-semibold text-amber-800">
+        {t("whatsapp.settings.invistimoShareAbortHow")}
+      </p>
+      <p className="mt-2 text-xs font-semibold text-slate-800">
+        {t("whatsapp.settings.invistimoShareGoNoGo")}
+      </p>
       <p className="mt-2 text-xs font-semibold text-amber-800">
         {t("whatsapp.settings.invistimoShareFrozen")}
       </p>
