@@ -31,10 +31,15 @@ import {
   startWhatsAppVoiceVerification,
   submitWhatsAppVoiceVerificationCode,
   validateWhatsAppStaging,
+  getInvistimoWhatsAppMigration,
+  saveInvistimoWhatsAppInventory,
+  runInvistimoWhatsAppDryRun,
   type WhatsAppConnection,
   type WhatsAppStagingStatus,
   type WhatsAppTemplate,
   type WhatsAppVoiceVerificationSession,
+  type InvistimoWhatsAppMetaInventory,
+  type InvistimoWhatsAppMigrationStatus,
 } from "../../../../api/whatsappApi";
 import { registrationFailureMessage } from "./whatsappStatusUx";
 import { useAuth } from "../../../../context/AuthContext";
@@ -162,6 +167,13 @@ export default function WhatsAppSettingsTab() {
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
   const [staging, setStaging] = useState<WhatsAppStagingStatus | null>(null);
   const [stagingBusy, setStagingBusy] = useState(false);
+  const [invistimoMigration, setInvistimoMigration] =
+    useState<InvistimoWhatsAppMigrationStatus | null>(null);
+  const [inventoryDraft, setInventoryDraft] =
+    useState<InvistimoWhatsAppMetaInventory>({});
+  const [inventoryBusy, setInventoryBusy] = useState(false);
+  const [dryRunBusy, setDryRunBusy] = useState(false);
+  const [dryRunResult, setDryRunResult] = useState<string>("");
   const [pendingRegisterPin, setPendingRegisterPin] = useState("");
   const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
     []
@@ -201,12 +213,19 @@ export default function WhatsAppSettingsTab() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [status, stagingStatus] = await Promise.all([
+      const [status, stagingStatus, migration] = await Promise.all([
         getWhatsAppStatus(businessId, { enrichPayment: true }),
         getWhatsAppStagingStatus(businessId).catch(() => null),
+        isInvistimoAdminBusiness(businessId)
+          ? getInvistimoWhatsAppMigration(businessId).catch(() => null)
+          : Promise.resolve(null),
       ]);
       setConnection(status);
       setStaging(stagingStatus);
+      setInvistimoMigration(migration);
+      if (migration?.inventory) {
+        setInventoryDraft(migration.inventory);
+      }
       if (status.connected) {
         const templates = await listWhatsAppTemplates(businessId, {
           approvedOnly: true,
@@ -751,6 +770,13 @@ export default function WhatsAppSettingsTab() {
       toast.error(t("whatsapp.settings.registrationRequired"));
       return;
     }
+    if (
+      isInvistimoAdminBusiness(businessId) &&
+      staging?.invistimoDialogCutover?.hostingMutationsLocked
+    ) {
+      toast.error(t("whatsapp.settings.invistimoDialogCutoverLocked"));
+      return;
+    }
     try {
       setTesting(true);
       const result = await sendWhatsAppTest(businessId, {
@@ -896,6 +922,58 @@ export default function WhatsAppSettingsTab() {
       );
     } finally {
       setStagingBusy(false);
+    }
+  };
+
+  const handleSaveInventory = async () => {
+    if (!businessId || !isInvistimoAdminBusiness(businessId)) return;
+    try {
+      setInventoryBusy(true);
+      const saved = await saveInvistimoWhatsAppInventory(businessId, {
+        wabaId: inventoryDraft.wabaId,
+        phoneNumberId: inventoryDraft.phoneNumberId,
+        metaPortfolioId: inventoryDraft.metaPortfolioId,
+        displayName: inventoryDraft.displayName,
+        phoneStatus: inventoryDraft.phoneStatus,
+        pinKnown: inventoryDraft.pinKnown,
+        twoStepEnabled: inventoryDraft.twoStepEnabled,
+        notes: inventoryDraft.notes,
+      });
+      setInventoryDraft(saved.inventory || inventoryDraft);
+      toast.success(t("whatsapp.settings.invistimoInventorySaved"));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          t("whatsapp.settings.invistimoInventoryFailed")
+      );
+    } finally {
+      setInventoryBusy(false);
+    }
+  };
+
+  const handleInvistimoDryRun = async () => {
+    if (!businessId || !isInvistimoAdminBusiness(businessId)) return;
+    try {
+      setDryRunBusy(true);
+      const result = await runInvistimoWhatsAppDryRun(businessId, {});
+      const collision = result?.numberCollision || {};
+      setDryRunResult(
+        [
+          result?.dialogUntouched ? "Dialog untouched" : "Dialog risk",
+          result?.liveSend ? "LIVE SEND" : "no live send",
+          collision.distinct ? "numbers distinct" : "numbers overlap",
+          `live ${collision.liveDisplayPhone || "—"}`,
+          `dialog ${collision.dialogDisplayPhone || "—"}`,
+        ].join(" · ")
+      );
+      toast.success(t("whatsapp.settings.invistimoDryRunSuccess"));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          t("whatsapp.settings.invistimoDryRunFailed")
+      );
+    } finally {
+      setDryRunBusy(false);
     }
   };
 
@@ -1302,6 +1380,120 @@ export default function WhatsAppSettingsTab() {
                       "+972 51 595 3390",
                   })}
                 </p>
+                <p className="mt-2 text-xs font-medium" dir="ltr">
+                  Live: {invistimoMigration?.live?.displayPhoneNumber || connection?.displayPhoneNumber || "—"}
+                  {" · "}
+                  Dialog: +972 51 595 3390
+                </p>
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                  <label className="text-xs font-semibold">
+                    {t("whatsapp.settings.invistimoWabaId")}
+                    <input
+                      className={`${inputBase} mt-1`}
+                      dir="ltr"
+                      inputMode="numeric"
+                      value={inventoryDraft.wabaId || ""}
+                      onChange={(e) =>
+                        setInventoryDraft((prev) => ({
+                          ...prev,
+                          wabaId: e.target.value.replace(/\D/g, "").slice(0, 32),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label className="text-xs font-semibold">
+                    {t("whatsapp.settings.invistimoPhoneNumberId")}
+                    <input
+                      className={`${inputBase} mt-1`}
+                      dir="ltr"
+                      inputMode="numeric"
+                      value={inventoryDraft.phoneNumberId || ""}
+                      onChange={(e) =>
+                        setInventoryDraft((prev) => ({
+                          ...prev,
+                          phoneNumberId: e.target.value.replace(/\D/g, "").slice(0, 32),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label className="text-xs font-semibold">
+                    {t("whatsapp.settings.invistimoPortfolioId")}
+                    <input
+                      className={`${inputBase} mt-1`}
+                      dir="ltr"
+                      inputMode="numeric"
+                      value={inventoryDraft.metaPortfolioId || ""}
+                      onChange={(e) =>
+                        setInventoryDraft((prev) => ({
+                          ...prev,
+                          metaPortfolioId: e.target.value.replace(/\D/g, "").slice(0, 32),
+                        }))
+                      }
+                    />
+                  </label>
+                  <label className="text-xs font-semibold">
+                    {t("whatsapp.settings.invistimoPinKnown")}
+                    <select
+                      className={`${inputBase} mt-1`}
+                      value={
+                        inventoryDraft.pinKnown === true
+                          ? "yes"
+                          : inventoryDraft.pinKnown === false
+                            ? "no"
+                            : ""
+                      }
+                      onChange={(e) =>
+                        setInventoryDraft((prev) => ({
+                          ...prev,
+                          pinKnown:
+                            e.target.value === "yes"
+                              ? true
+                              : e.target.value === "no"
+                                ? false
+                                : null,
+                        }))
+                      }
+                    >
+                      <option value="">{t("whatsapp.settings.invistimoUnset")}</option>
+                      <option value="yes">{t("whatsapp.settings.invistimoYes")}</option>
+                      <option value="no">{t("whatsapp.settings.invistimoNo")}</option>
+                    </select>
+                  </label>
+                </div>
+                <p className="mt-2 text-xs text-amber-900">
+                  {t("whatsapp.settings.invistimoInventoryHint")}
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    className={btnPrimary}
+                    disabled={inventoryBusy}
+                    onClick={() => {
+                      void handleSaveInventory();
+                    }}
+                  >
+                    {inventoryBusy
+                      ? t("whatsapp.settings.invistimoInventorySaving")
+                      : t("whatsapp.settings.invistimoInventorySave")}
+                  </button>
+                  <button
+                    type="button"
+                    className={btnSecondary}
+                    disabled={dryRunBusy}
+                    onClick={() => {
+                      void handleInvistimoDryRun();
+                    }}
+                  >
+                    {dryRunBusy
+                      ? t("whatsapp.settings.invistimoDryRunRunning")
+                      : t("whatsapp.settings.invistimoDryRun")}
+                  </button>
+                </div>
+                {dryRunResult ? (
+                  <p className="mt-2 text-xs font-medium" dir="ltr">
+                    {dryRunResult}
+                  </p>
+                ) : null}
               </div>
             ) : null}
 

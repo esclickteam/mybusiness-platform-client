@@ -902,6 +902,78 @@ export type WhatsAppStagingStatus = {
   } | null;
 };
 
+export type InvistimoWhatsAppMetaInventory = {
+  channelId?: string;
+  wabaId?: string;
+  phoneNumberId?: string;
+  metaPortfolioId?: string;
+  displayName?: string;
+  phoneStatus?: string;
+  qualityRating?: string;
+  twoStepEnabled?: boolean | null;
+  pinKnown?: boolean | null;
+  templatesNote?: string;
+  webhookUrl?: string;
+  hostingType?: string;
+  channelApiStatus?: string;
+  billingStatus?: string;
+  openRequests?: string;
+  notes?: string;
+  updatedAt?: string | null;
+};
+
+export type InvistimoWhatsAppMigrationStatus = {
+  success: boolean;
+  readOnly?: boolean;
+  productionCutoverPerformed?: boolean;
+  hostingMutationsLocked?: boolean;
+  dialogMustStayConnected?: boolean;
+  wabaId?: string;
+  phoneNumberId?: string;
+  inventory?: InvistimoWhatsAppMetaInventory;
+  dryRun?: {
+    liveSend?: boolean;
+    dialogUntouched?: boolean;
+    numberCollision?: {
+      testNumberAttached?: boolean;
+      dialogNumberAttached?: boolean;
+      distinct?: boolean;
+      liveDisplayPhone?: string;
+      dialogDisplayPhone?: string;
+    };
+  };
+  live?: WhatsAppStagingStatus["live"];
+};
+
+export async function getInvistimoWhatsAppMigration(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-migration", {
+    params: { businessId },
+  });
+  return data as InvistimoWhatsAppMigrationStatus;
+}
+
+export async function saveInvistimoWhatsAppInventory(
+  businessId: string,
+  inventory: InvistimoWhatsAppMetaInventory
+) {
+  const { data } = await API.put("/whatsapp/invistimo-migration/inventory", {
+    businessId,
+    ...inventory,
+  });
+  return data as { success: boolean; inventory: InvistimoWhatsAppMetaInventory };
+}
+
+export async function runInvistimoWhatsAppDryRun(
+  businessId: string,
+  payload: { template?: string } = {}
+) {
+  const { data } = await API.post("/whatsapp/invistimo-migration/dry-run", {
+    businessId,
+    ...payload,
+  });
+  return data;
+}
+
 export async function getWhatsAppStagingStatus(businessId: string) {
   const { data } = await API.get("/whatsapp/connection/staging", {
     params: { businessId },
