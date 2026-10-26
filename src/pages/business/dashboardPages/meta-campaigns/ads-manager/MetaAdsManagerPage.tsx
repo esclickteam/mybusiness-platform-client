@@ -123,6 +123,7 @@ export default function MetaAdsManagerPage() {
   const [leadFormDrafts, setLeadFormDrafts] = useState<MetaLeadFormDraft[]>([]);
   const [formsLoading, setFormsLoading] = useState(false);
   const [formsError, setFormsError] = useState("");
+  const [metaReloadTick, setMetaReloadTick] = useState(0);
   const [estimateLoading, setEstimateLoading] = useState(true);
   const [estimateAttempt, setEstimateAttempt] = useState(0);
   const [publishing, setPublishing] = useState(false);
@@ -150,6 +151,7 @@ export default function MetaAdsManagerPage() {
     suggested: string;
     current: string;
   } | null>(null);
+  const [metaReloadTick, setMetaReloadTick] = useState(0);
   const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
   const publishedBaselineRef = useRef<AdsManagerState | null>(null);
@@ -241,7 +243,7 @@ export default function MetaAdsManagerPage() {
     return () => {
       cancelled = true;
     };
-  }, [businessId, campaignId, isEditSession, navigate, replaceState, t]);
+  }, [businessId, campaignId, isEditSession, navigate, replaceState, t, metaReloadTick]);
 
   const dirty = isAdsManagerDirty(baselineRef.current, state);
   const unpublishedChanges = useMemo(() => {
@@ -1526,6 +1528,11 @@ export default function MetaAdsManagerPage() {
             <CampaignLevelEditor
               campaign={state.campaign}
               sessionMode={isEditSession ? "edit" : "create"}
+              onRefreshFromMeta={
+                isEditSession
+                  ? () => setMetaReloadTick((tick) => tick + 1)
+                  : undefined
+              }
               onDuplicate={() => void handleDuplicate()}
               onChange={(patch) => {
                 patchCampaign(patch);

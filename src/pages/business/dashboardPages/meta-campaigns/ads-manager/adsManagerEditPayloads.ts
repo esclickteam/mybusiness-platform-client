@@ -146,6 +146,45 @@ export function mergeLoadedTargeting(
     if (flex) targeting.flexible_spec = flex;
     else delete targeting.flexible_spec;
   }
+  if (labels.has("changeAudiences")) {
+    if (adSet.customAudiences?.length) {
+      targeting.custom_audiences = adSet.customAudiences.map((row) => ({ id: row.id }));
+    } else delete targeting.custom_audiences;
+    if (adSet.excludedAudiences?.length) {
+      targeting.excluded_custom_audiences = adSet.excludedAudiences.map((row) => ({
+        id: row.id,
+      }));
+    } else delete targeting.excluded_custom_audiences;
+    if (adSet.locales?.length) targeting.locales = adSet.locales;
+    else delete targeting.locales;
+  }
+  if (labels.has("changePlacements")) {
+    if (adSet.advantagePlacements) {
+      delete targeting.publisher_platforms;
+      delete targeting.facebook_positions;
+      delete targeting.instagram_positions;
+      delete targeting.messenger_positions;
+      delete targeting.audience_network_positions;
+      delete targeting.threads_positions;
+      delete targeting.device_platforms;
+    } else {
+      targeting.publisher_platforms = adSet.publisherPlatforms?.length
+        ? adSet.publisherPlatforms
+        : ["facebook", "instagram"];
+      if (adSet.facebookPositions?.length) {
+        targeting.facebook_positions = adSet.facebookPositions;
+      }
+      if (adSet.instagramPositions?.length) {
+        targeting.instagram_positions = adSet.instagramPositions;
+      }
+      if (adSet.messengerPositions?.length) {
+        targeting.messenger_positions = adSet.messengerPositions;
+      }
+      if (adSet.audienceNetworkPositions?.length) {
+        targeting.audience_network_positions = adSet.audienceNetworkPositions;
+      }
+    }
+  }
   if (targeting.targeting_automation && typeof targeting.targeting_automation === "object") {
     targeting.targeting_automation = {
       ...(targeting.targeting_automation as Record<string, unknown>),
@@ -193,6 +232,8 @@ export function buildAdSetUpdateFromDiff(
       "changeLocations",
       "changeGender",
       "changeDetailedTargeting",
+      "changeAudiences",
+      "changePlacements",
     ].includes(row.labelKey)
   );
   const canPatchTargeting =

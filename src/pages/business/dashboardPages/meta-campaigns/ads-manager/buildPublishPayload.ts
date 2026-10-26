@@ -7,6 +7,7 @@ import {
   usesPhoneDestination,
 } from "./metaAdCtas";
 import { isWhatsAppConversionLocation } from "./pageWhatsAppNumber";
+import { mapUiBidStrategy, placementPayload } from "./metaAdsManagerParity";
 
 const tChrome = (key: string) =>
   i18n.t(`metaCampaigns.adsManager.chrome.${key}`);
@@ -89,7 +90,10 @@ export function audienceTargetingFromAdsManager(state: AdsManagerState) {
         description: item.description,
       })),
     advantageAudience,
-    advantagePlacements: adSet?.advantagePlacements !== false,
+    ...placementPayload(adSet || { advantagePlacements: true }),
+    customAudiences: adSet?.customAudiences || [],
+    excludedAudiences: adSet?.excludedAudiences || [],
+    locales: adSet?.locales || [],
     furtherLimitReach: Boolean(adSet?.furtherLimitReach),
     suggestAudience: adSet?.suggestAudience !== false,
   };
@@ -169,10 +173,12 @@ export function buildPublishPayloadFromAdsManager(
         ? amount
         : undefined,
     budgetAmount: amount,
-    bidStrategy:
-      campaign.bidStrategy === "Highest volume"
-        ? "LOWEST_COST_WITHOUT_CAP"
-        : undefined,
+    budgetStrategy: campaign.budgetStrategy,
+    useCampaignBudget: campaign.budgetStrategy === "campaign",
+    isAdsetBudgetSharingEnabled: campaign.budgetStrategy === "campaign",
+    bidStrategy: mapUiBidStrategy(campaign.bidStrategy),
+    bidAmount: Number(campaign.bidAmount) || undefined,
+    roasAverageFloor: Number(campaign.roasAverageFloor) || undefined,
     startDate: adSet.startDate,
     startTime: adSet.startTime,
     endDateEnabled: adSet.endDateEnabled,
@@ -187,7 +193,18 @@ export function buildPublishPayloadFromAdsManager(
     interests: audience.interests,
     advantageAudience: audience.advantageAudience,
     advantagePlus: campaign.advantagePlusLeads,
-    advantagePlacements: adSet.advantagePlacements,
+    advantagePlacements: audience.advantagePlacements,
+    placementMode: audience.placementMode,
+    publisherPlatforms: audience.publisherPlatforms,
+    facebookPositions: audience.facebookPositions,
+    instagramPositions: audience.instagramPositions,
+    messengerPositions: audience.messengerPositions,
+    audienceNetworkPositions: audience.audienceNetworkPositions,
+    threadsPositions: audience.threadsPositions,
+    devicePlatforms: audience.devicePlatforms,
+    customAudiences: audience.customAudiences,
+    excludedAudiences: audience.excludedAudiences,
+    locales: audience.locales,
     conversionLocation: adSet.conversionLocation,
     performanceGoal: adSet.performanceGoal,
     destinationType: usesWhatsApp
@@ -217,7 +234,23 @@ export function buildPublishPayloadFromAdsManager(
     imageHash: ad.imageHash || undefined,
     imageUrl: ad.imagePreviewUrl || undefined,
     videoId: ad.videoId || undefined,
-    creativeFormat: ad.creativeFormat === "video" ? "video" : "single",
+    creativeFormat:
+      ad.creativeFormat === "video"
+        ? "video"
+        : ad.creativeFormat === "carousel"
+          ? "carousel"
+          : "single",
+    carouselCards:
+      ad.creativeFormat === "carousel"
+        ? (ad.carouselCards || [])
+            .filter((card) => card.imageHash || card.link)
+            .map((card) => ({
+              headline: card.headline,
+              description: card.description,
+              imageHash: card.imageHash,
+              link: card.link || ad.websiteUrl,
+            }))
+        : undefined,
   };
 }
 
@@ -266,6 +299,12 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   }
   if (!usesWhatsApp && !usesPhone && !ad?.instantFormId && !ad?.websiteUrl.trim()) {
     errors.push(tChrome("validationDestination"));
+  }
+  if (
+    ad?.creativeFormat === "carousel" &&
+    (ad.carouselCards || []).filter((card) => card.imageHash).length < 2
+  ) {
+    errors.push(tChrome("validationCarousel"));
   }
   if (
     ad?.callToAction &&

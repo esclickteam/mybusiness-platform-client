@@ -177,10 +177,21 @@ export default function AdLevelEditor({
     return form.name.toLowerCase().includes(q);
   });
 
-  const pickMedia = (format: "image" | "video") => {
-    onChange({ creativeFormat: format });
+  const pickMedia = (format: "image" | "video" | "carousel") => {
+    onChange({
+      creativeFormat: format,
+      carouselCards:
+        format === "carousel" && !(ad.carouselCards || []).length
+          ? [
+              { headline: ad.headline, description: ad.description, imageHash: ad.imageHash, imagePreviewUrl: ad.imagePreviewUrl, link: ad.websiteUrl },
+              { headline: "", description: "", imageHash: "", imagePreviewUrl: "", link: ad.websiteUrl },
+            ]
+          : ad.carouselCards,
+    });
     setMediaMenuOpen(false);
-    window.setTimeout(() => fileRef.current?.click(), 0);
+    if (format !== "carousel") {
+      window.setTimeout(() => fileRef.current?.click(), 0);
+    }
   };
 
   const handleUpload = async (file: File | null) => {
@@ -204,6 +215,29 @@ export default function AdLevelEditor({
           imageHash: "",
           imagePreviewUrl: "",
           mediaLabel: file.name || c("videoUploadedFallback"),
+        });
+      } else if (ad.creativeFormat === "carousel") {
+        const cards = [...(ad.carouselCards || [])];
+        const empty = cards.findIndex((card) => !card.imageHash);
+        const idx = empty >= 0 ? empty : Math.max(0, cards.length - 1);
+        if (!cards[idx]) {
+          cards[idx] = {
+            headline: "",
+            description: "",
+            imageHash: "",
+            imagePreviewUrl: "",
+            link: ad.websiteUrl,
+          };
+        }
+        cards[idx] = {
+          ...cards[idx],
+          imageHash: result.imageHash || "",
+          imagePreviewUrl: result.url || "",
+        };
+        onChange({
+          creativeFormat: "carousel",
+          carouselCards: cards,
+          mediaLabel: file.name || c("imageUploadedFallback"),
         });
       } else {
         onChange({
@@ -585,7 +619,11 @@ export default function AdLevelEditor({
             onClick={() => setMediaMenuOpen((v) => !v)}
           >
             <span className="font-semibold">
-              {ad.creativeFormat === "video" ? c("videoAd") : c("imageAd")}
+              {ad.creativeFormat === "video"
+                ? c("videoAd")
+                : ad.creativeFormat === "carousel"
+                  ? c("carouselAd")
+                  : c("imageAd")}
             </span>
             <Upload className="h-4 w-4 text-[#65676B]" />
           </button>
@@ -603,6 +641,23 @@ export default function AdLevelEditor({
                   </span>
                   <span className="block text-[12px] text-[#65676B]">
                     {c("imageAdUploadDesc")}
+                  </span>
+                </span>
+              </button>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => {
+                  pickMedia("carousel");
+                }}
+              >
+                <Copy className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">
+                    {c("carouselAd")}
+                  </span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    {c("carouselAdUploadDesc")}
                   </span>
                 </span>
               </button>
@@ -673,6 +728,61 @@ export default function AdLevelEditor({
             </MetaLinkButton>
           )}
         </MetaField>
+
+        {ad.creativeFormat === "carousel" ? (
+          <div className="space-y-2">
+            <p className="text-[13px] font-semibold">{c("carouselCards")}</p>
+            {(ad.carouselCards || []).map((card, index) => (
+              <div key={`card-${index}`} className="rounded-md border border-[#E4E6EB] p-3">
+                <input
+                  className={`${metaInputClass} mb-2`}
+                  value={card.headline}
+                  placeholder={c("headline")}
+                  onChange={(e) => {
+                    const cards = [...(ad.carouselCards || [])];
+                    cards[index] = { ...cards[index], headline: e.target.value };
+                    onChange({ carouselCards: cards });
+                  }}
+                />
+                <input
+                  className={metaInputClass}
+                  value={card.link}
+                  placeholder={c("websiteUrl")}
+                  onChange={(e) => {
+                    const cards = [...(ad.carouselCards || [])];
+                    cards[index] = { ...cards[index], link: e.target.value };
+                    onChange({ carouselCards: cards });
+                  }}
+                />
+                {card.imagePreviewUrl ? (
+                  <img src={card.imagePreviewUrl} alt="" className="mt-2 max-h-24 object-contain" />
+                ) : (
+                  <p className="mt-2 text-[12px] text-[#65676B]">{c("carouselNeedImage")}</p>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className={metaBtnSecondary}
+              onClick={() =>
+                onChange({
+                  carouselCards: [
+                    ...(ad.carouselCards || []),
+                    {
+                      headline: "",
+                      description: "",
+                      imageHash: "",
+                      imagePreviewUrl: "",
+                      link: ad.websiteUrl,
+                    },
+                  ],
+                })
+              }
+            >
+              {c("addCarouselCard")}
+            </button>
+          </div>
+        ) : null}
 
         <div className="space-y-4" data-demo-target="meta-creative">
           <MetaField label={c("primaryText")}>

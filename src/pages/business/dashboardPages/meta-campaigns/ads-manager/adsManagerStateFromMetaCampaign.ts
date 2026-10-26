@@ -217,6 +217,14 @@ function mapAdSet(
     advantagePlacements:
       adSet.placementMode === "advantage" ||
       !(adSet.publisherPlatforms || campaign.publisherPlatforms || []).length,
+    publisherPlatforms: adSet.publisherPlatforms || campaign.publisherPlatforms || [],
+    facebookPositions: adSet.facebookPositions || [],
+    instagramPositions: adSet.instagramPositions || [],
+    messengerPositions: adSet.messengerPositions || [],
+    audienceNetworkPositions: adSet.audienceNetworkPositions || [],
+    threadsPositions: adSet.threadsPositions || [],
+    devicePlatforms: adSet.devicePlatforms || [],
+    locales: Array.isArray(adSet.locales) ? adSet.locales.map(Number).filter(Boolean) : [],
     targetingLoaded,
     targetingRaw: adSet.targetingRaw || null,
     recoveredDraft: adSet.recoveredDraft === true,
@@ -298,6 +306,7 @@ export function adsManagerStateFromMetaCampaign(
     budgetType: campaign.lifetimeBudget && !campaign.dailyBudget ? "lifetime" : "daily",
     budgetAmount,
     currency: options?.currency || base.campaign.currency,
+    bidStrategy: campaign.bidStrategy || base.campaign.bidStrategy,
     advantagePlusLeads: objective === "OUTCOME_LEADS",
   };
 
