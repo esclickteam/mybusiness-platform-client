@@ -6,7 +6,8 @@
  * their machine under .auth/ (gitignored). This script never prints cookies,
  * tokens, or passwords, and it never attaches to the Cursor Browser panel.
  *
- * Mutating WhatsApp API calls are blocked after login.
+ * Mutating WhatsApp API calls are blocked after login. The runner does not
+ * auto-reconnect, switch accounts, or bypass access limits.
  */
 import { chromium } from "playwright";
 import fs from "node:fs";
@@ -31,6 +32,8 @@ const BLOCKED_WRITE = /\/api\/whatsapp(\/|$)/i;
 const BLOCKED_PATH = /cutover|migrate|send-test|campaigns\/send|history-import|webhook/i;
 const DANGER_CLICK =
   /send|שלח|cutover|migrate|העבר|disconnect|נתק|webhook|meta register/i;
+const SECRET_TEXT =
+  /Bearer\s+[A-Za-z0-9._~+/=-]+|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9._-]+|(?:password|passwd|pwd|token|cookie|authorization|secret|api[_-]?key)[=:]\s*[^&\s,;]+/gi;
 
 const MODULES = [
   { id: "dashboard", title: "Dashboard", path: "/overview" },
@@ -50,6 +53,18 @@ function ensureDirs() {
   fs.mkdirSync(SHOT_DIR, { recursive: true });
 }
 
+function redact(value) {
+  return String(value ?? "").replace(SECRET_TEXT, "[redacted]");
+}
+
+function apiPath(url) {
+  try {
+    return new URL(url).pathname;
+  } catch {
+    return "[url]";
+  }
+}
+
 function looksLoggedIn(url) {
   const u = String(url || "");
   return (
@@ -58,12 +73,20 @@ function looksLoggedIn(url) {
   );
 }
 
+function sanitizeApiRow(row) {
+  return {
+    status: row.status,
+    method: row.method,
+    path: apiPath(row.path.startsWith("http") ? row.path : `https://local.invalid${row.path}`),
+  };
+}
+
 async function attachGuards(page, findings) {
   page.on("pageerror", (err) => {
-    findings.jsErrors.push(String(err?.message || err));
+    findings.jsErrors.push(redact(err?.message || err));
   });
   page.on("console", (msg) => {
-    if (msg.type() === "error") findings.consoleErrors.push(msg.text());
+    if (msg.type() === "error") findings.consoleErrors.push(redact(msg.text()));
   });
   page.on("response", (res) => {
     const url = res.url();
@@ -71,7 +94,7 @@ async function attachGuards(page, findings) {
     findings.api.push({
       status: res.status(),
       method: res.request().method(),
-      path: new URL(url).pathname,
+      path: apiPath(url),
     });
   });
   await page.route("**/*", async (route) => {
@@ -80,10 +103,22 @@ async function attachGuards(page, findings) {
     const method = req.method();
     const write = !["GET", "HEAD", "OPTIONS"].includes(method);
     if (write && (BLOCKED_WRITE.test(url) || BLOCKED_PATH.test(url))) {
-      findings.blockedWrites.push(`${method} ${new URL(url).pathname}`);
+      findings.blockedWrites.push(`${method} ${apiPath(url)}`);
       return route.abort("blockedbyclient");
     }
     return route.continue();
+  });
+}
+
+async function screenshotSafe(page, dest) {
+  const mask = page.locator(
+    'input[type="password"], input[name*="password" i], input[name*="token" i], input[autocomplete="current-password"], input[autocomplete="one-time-code"]'
+  );
+  await page.screenshot({
+    path: dest,
+    fullPage: true,
+    animations: "disabled",
+    mask: (await mask.count()) ? [mask] : [],
   });
 }
 
@@ -91,16 +126,16 @@ async function loginIfNeeded(browser) {
   if (fs.existsSync(STATE_FILE)) {
     return { reused: true };
   }
-  if (!process.stdin.isTTY && process.env.INVISTIMO_ALLOW_HEADLESS_LOGIN !== "1") {
+  if (!process.stdin.isTTY) {
     throw new Error(
-      "No saved local login. Run this in a terminal and sign in as support@invistimo.com when Chromium opens. Do not commit e2e/invistimo-whatsapp-acceptance/.auth/"
+      "No saved local Invistimo login. Run `npm run test:invistimo-accept` in a terminal and sign in as support@invistimo.com when Chromium opens. The runner will not log in automatically or bypass access. Do not commit e2e/invistimo-whatsapp-acceptance/.auth/"
     );
   }
   const context = await browser.newContext();
   const page = await context.newPage();
   await page.goto(LOGIN_URL, { waitUntil: "domcontentloaded", timeout: 60000 });
   process.stderr.write(
-    `\nSign in as support@invistimo.com in the opened window.\nWaiting for ${HUB} …\n`
+    `\nSign in as support@invistimo.com in the opened window.\nWaiting for the Invistimo WhatsApp hub …\n`
   );
   const deadline = Date.now() + 10 * 60 * 1000;
   while (Date.now() < deadline) {
@@ -112,7 +147,48 @@ async function loginIfNeeded(browser) {
     await page.waitForTimeout(1000);
   }
   await context.close();
-  throw new Error("Login timed out. The operator must finish sign-in in the headed browser.");
+  throw new Error(
+    "Login timed out. The operator must finish sign-in in the headed browser. The runner will not retry or bypass login."
+  );
+}
+
+async function assertInvistimoSession(context) {
+  const page = await context.newPage();
+  try {
+    await page.goto(HUB, { waitUntil: "domcontentloaded", timeout: 45000 });
+    await page.waitForTimeout(1500);
+    const url = page.url();
+    if (/\/login|whatsapp-api\/login/i.test(url)) {
+      throw new Error(
+        "Saved session is not signed in as Invistimo. Delete e2e/invistimo-whatsapp-acceptance/.auth/ and run again in a terminal to sign in yourself. The runner will not log in automatically."
+      );
+    }
+    if (!looksLoggedIn(url)) {
+      throw new Error(
+        "Connected session is not the Invistimo WhatsApp hub. Tests were not started. The runner will not switch accounts or bypass access."
+      );
+    }
+    const identity = await page.evaluate((expectedId) => {
+      const tokenPresent = Boolean(window.localStorage.getItem("token"));
+      const managed = String(window.localStorage.getItem("managedBusinessId") || "").trim();
+      const body = String(document.body?.innerText || "");
+      return {
+        tokenPresent,
+        managedIsInvistimo: !managed || managed === expectedId,
+        hasInvistimoLabel: /Invistimo/i.test(body),
+        onHub: location.pathname.includes(`/business/${expectedId}/dashboard/whatsapp`),
+      };
+    }, INVISTIMO_BUSINESS_ID);
+    if (!identity.tokenPresent || !identity.onHub || !identity.managedIsInvistimo) {
+      throw new Error(
+        "Connected account is not Invistimo. Tests were not started. The runner will not reconnect or bypass access."
+      );
+    }
+    process.stderr.write("Invistimo session confirmed. Starting module checks…\n");
+    return { confirmed: true, hasInvistimoLabel: identity.hasInvistimoLabel };
+  } finally {
+    await page.close();
+  }
 }
 
 function moduleResult(id, title) {
@@ -154,7 +230,7 @@ async function runModule(context, mod) {
     }
     await page.waitForTimeout(2500);
     const finalUrl = page.url();
-    findings.url = finalUrl;
+    findings.url = finalUrl.split("?")[0];
     if (finalUrl.includes("/whatsapp-api/login") || finalUrl.includes("/login")) {
       findings.notes.push("FAIL: redirected to login");
     }
@@ -177,13 +253,13 @@ async function runModule(context, mod) {
       findings.notes.push(`INFO: ${dangerCount} send/cutover-like buttons visible (not clicked)`);
     }
     const shot = path.join(SHOT_DIR, `${mod.id}.png`);
-    await page.screenshot({ path: shot, fullPage: true });
+    await screenshotSafe(page, shot);
     findings.screenshot = path.relative(here, shot);
     if (!findings.notes.some((n) => n.startsWith("FAIL:"))) {
       findings.notes.push("loaded");
     }
   } catch (err) {
-    findings.notes.push(`FAIL: ${err.message}`);
+    findings.notes.push(`FAIL: ${redact(err.message)}`);
   } finally {
     await page.close();
   }
@@ -207,7 +283,7 @@ async function runIsolation(context) {
   try {
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
     await page.waitForTimeout(2000);
-    findings.url = page.url();
+    findings.url = page.url().split("?")[0];
     const hrefs = await page.$$eval('a[href*="/dashboard/whatsapp/"]', (els) =>
       els.map((a) => a.getAttribute("href") || "")
     );
@@ -220,10 +296,10 @@ async function runIsolation(context) {
       findings.notes.push("no Invistimo-only WhatsApp nav links");
     }
     const shot = path.join(SHOT_DIR, "isolation.png");
-    await page.screenshot({ path: shot, fullPage: true });
+    await screenshotSafe(page, shot);
     findings.screenshot = path.relative(here, shot);
   } catch (err) {
-    findings.notes.push(`FAIL: ${err.message}`);
+    findings.notes.push(`FAIL: ${redact(err.message)}`);
   } finally {
     await page.close();
   }
@@ -240,11 +316,11 @@ function writeReport(rows) {
       id: r.id,
       title: r.title,
       status: r.status,
-      url: r.url,
-      notes: r.notes,
-      jsErrors: r.jsErrors,
+      url: String(r.url || "").split("?")[0],
+      notes: r.notes.map(redact),
+      jsErrors: (r.jsErrors || []).map(redact),
       screenshot: r.screenshot,
-      apiSample: r.api.slice(0, 12),
+      apiSample: (r.api || []).slice(0, 12).map(sanitizeApiRow),
       blockedWrites: r.blockedWrites,
     })),
   };
@@ -259,9 +335,13 @@ function writeReport(rows) {
     "",
     "| Module | Status | Notes |",
     "|---|---|---|",
-    ...rows.map((r) => `| ${r.title} | **${r.status}** | ${r.notes.join("; ").replace(/\|/g, "/")} |`),
+    ...rows.map(
+      (r) =>
+        `| ${r.title} | **${r.status}** | ${r.notes.map(redact).join("; ").replace(/\|/g, "/")} |`
+    ),
     "",
-    "Auth state was not printed. Mutating WhatsApp API calls were blocked.",
+    "Auth state was not printed. Cookies, tokens, and passwords were not written to this report.",
+    "Mutating WhatsApp API calls were blocked. One module failure does not stop the rest.",
   ];
   fs.writeFileSync(path.join(RESULTS_DIR, "report.md"), `${lines.join("\n")}\n`);
   return summary;
@@ -276,12 +356,27 @@ async function main() {
   try {
     await loginIfNeeded(browser);
     const context = await browser.newContext({ storageState: STATE_FILE });
+    await assertInvistimoSession(context);
     const rows = [];
     for (const mod of MODULES) {
       process.stderr.write(`Checking ${mod.title}…\n`);
-      rows.push(await runModule(context, mod));
+      try {
+        rows.push(await runModule(context, mod));
+      } catch (err) {
+        const row = moduleResult(mod.id, mod.title);
+        row.notes.push(`FAIL: ${redact(err.message)}`);
+        row.status = "FAIL";
+        rows.push(row);
+      }
     }
-    rows.push(await runIsolation(context));
+    try {
+      rows.push(await runIsolation(context));
+    } catch (err) {
+      const row = moduleResult("isolation", "Other-tenant isolation");
+      row.notes.push(`FAIL: ${redact(err.message)}`);
+      row.status = "FAIL";
+      rows.push(row);
+    }
     await context.close();
     const summary = writeReport(rows);
     const failed = rows.filter((r) => r.status === "FAIL").length;
@@ -306,6 +401,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error(err.message || err);
+  console.error(redact(err.message || err));
   process.exit(2);
 });
