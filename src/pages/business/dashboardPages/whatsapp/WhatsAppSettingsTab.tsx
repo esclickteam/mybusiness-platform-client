@@ -60,6 +60,7 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
 
 type OutletCtx = { businessId: string | null };
 
@@ -846,6 +847,10 @@ export default function WhatsAppSettingsTab() {
 
   const handleActivateStaging = async () => {
     if (!businessId || !staging?.pending) return;
+    if (staging.invistimoDialogCutover?.hostingMutationsLocked) {
+      toast.error(t("whatsapp.settings.invistimoDialogCutoverLocked"));
+      return;
+    }
     const pendingPhone = staging.pending.displayPhoneNumber || "";
     const livePhone =
       staging.live?.displayPhoneNumber || connection?.displayPhoneNumber || "";
@@ -1284,6 +1289,22 @@ export default function WhatsAppSettingsTab() {
               </div>
             ) : null}
 
+            {isInvistimoAdminBusiness(businessId) ||
+            staging?.invistimoDialogCutover ? (
+              <div className="rounded-xl border border-amber-200 bg-amber-50/80 px-4 py-3 text-sm text-amber-950">
+                <p className="font-semibold">
+                  {t("whatsapp.settings.invistimoDialogCutoverTitle")}
+                </p>
+                <p className="mt-1">
+                  {t("whatsapp.settings.invistimoDialogCutoverBody", {
+                    phone:
+                      staging?.invistimoDialogCutover?.target?.display ||
+                      "+972 51 595 3390",
+                  })}
+                </p>
+              </div>
+            ) : null}
+
             {staging?.pending ? (
               <div className="rounded-xl border border-sky-200 bg-sky-50/70 px-4 py-3">
                 <p className="text-sm font-black text-sky-950">
@@ -1388,7 +1409,11 @@ export default function WhatsAppSettingsTab() {
                       maxLength={6}
                       value={pendingRegisterPin}
                       disabled={
-                        stagingBusy || Boolean(staging.pending.registrationPinLocked)
+                        stagingBusy ||
+                        Boolean(staging.pending.registrationPinLocked) ||
+                        Boolean(
+                          staging.invistimoDialogCutover?.hostingMutationsLocked
+                        )
                       }
                       onChange={(e) =>
                         setPendingRegisterPin(
@@ -1404,7 +1429,10 @@ export default function WhatsAppSettingsTab() {
                       disabled={
                         stagingBusy ||
                         pendingRegisterPin.length !== 6 ||
-                        Boolean(staging.pending.registrationPinLocked)
+                        Boolean(staging.pending.registrationPinLocked) ||
+                        Boolean(
+                          staging.invistimoDialogCutover?.hostingMutationsLocked
+                        )
                       }
                       onClick={() => {
                         void handleRegisterPendingPin();
@@ -1448,7 +1476,12 @@ export default function WhatsAppSettingsTab() {
                     <button
                       type="button"
                       className={btnSecondary}
-                      disabled={stagingBusy}
+                      disabled={
+                        stagingBusy ||
+                        Boolean(
+                          staging.invistimoDialogCutover?.hostingMutationsLocked
+                        )
+                      }
                       onClick={() => {
                         void handleRetryPendingWebhook();
                       }}
@@ -1461,7 +1494,10 @@ export default function WhatsAppSettingsTab() {
                     className={btnPrimary}
                     disabled={
                       stagingBusy ||
-                      staging.pending.status !== "ready_to_activate"
+                      staging.pending.status !== "ready_to_activate" ||
+                      Boolean(
+                        staging.invistimoDialogCutover?.hostingMutationsLocked
+                      )
                     }
                     onClick={() => {
                       void handleActivateStaging();

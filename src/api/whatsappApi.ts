@@ -893,6 +893,13 @@ export type WhatsAppStagingStatus = {
     label: string;
     secret?: boolean;
   }>;
+  invistimoDialogCutover?: {
+    productionCutoverAllowed?: boolean;
+    hostingMutationsLocked?: boolean;
+    dialogMustStayConnected?: boolean;
+    target?: { display?: string; digits?: string };
+    live?: { targetNumberAttached?: boolean; wabaId?: string; phoneNumberId?: string };
+  } | null;
 };
 
 export async function getWhatsAppStagingStatus(businessId: string) {
