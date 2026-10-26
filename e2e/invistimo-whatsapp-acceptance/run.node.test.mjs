@@ -33,6 +33,10 @@ test("acceptance runner covers the ten Invistimo hub modules and stays read-only
   assert.match(src, /function readSessionOrigin/);
   assert.match(src, /function looksOnInvistimoTenant/);
   assert.match(src, /function looksOnWhatsAppHub/);
+  assert.match(src, /function extractBusinessIds/);
+  assert.match(src, /BLOCKED: redirected to Connection/);
+  assert.match(src, /FAIL: WhatsApp API targeted a non-Invistimo businessId/);
+  assert.match(src, /expectPath: "\/dashboard\/whatsapp\/overview"/);
 });
 
 test("runner confirms Invistimo before modules and does not auto-login or bypass", () => {

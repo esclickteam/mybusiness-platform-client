@@ -53,16 +53,76 @@ const SECRET_TEXT =
   /Bearer\s+[A-Za-z0-9._~+/=-]+|eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9._-]+|(?:password|passwd|pwd|token|cookie|authorization|secret|api[_-]?key)[=:]\s*[^&\s,;]+/gi;
 
 const MODULES = [
-  { id: "dashboard", title: "Dashboard", path: "/overview" },
-  { id: "inbox", title: "Inbox", path: "/inbox" },
-  { id: "templates", title: "Templates", path: "/templates" },
-  { id: "contacts", title: "Contacts / Guests", path: "/contacts" },
-  { id: "automations", title: "Automations", path: "/automations" },
-  { id: "agents", title: "Agents", path: "/agents" },
-  { id: "scheduled", title: "Scheduled Messages", path: "/scheduled" },
-  { id: "reports", title: "Reports / Performance", path: "/insights" },
-  { id: "billing", title: "Billing", path: "/billing" },
-  { id: "connection", title: "Connection", path: "/connection" },
+  {
+    id: "dashboard",
+    title: "Dashboard",
+    path: "/overview",
+    expectPath: "/dashboard/whatsapp/overview",
+    marker: "[data-demo-target='whatsapp-overview'], [data-testid='whatsapp-module-dashboard']",
+  },
+  {
+    id: "inbox",
+    title: "Inbox",
+    path: "/inbox",
+    expectPath: "/dashboard/whatsapp/inbox",
+    marker: "",
+  },
+  {
+    id: "templates",
+    title: "Templates",
+    path: "/templates",
+    expectPath: "/dashboard/whatsapp/templates",
+    marker: "",
+  },
+  {
+    id: "contacts",
+    title: "Contacts / Guests",
+    path: "/contacts",
+    expectPath: "/dashboard/whatsapp/contacts",
+    marker: "",
+  },
+  {
+    id: "automations",
+    title: "Automations",
+    path: "/automations",
+    expectPath: "/dashboard/whatsapp/automations",
+    marker: "",
+  },
+  {
+    id: "agents",
+    title: "Agents",
+    path: "/agents",
+    expectPath: "/dashboard/whatsapp/agents",
+    marker: "",
+  },
+  {
+    id: "scheduled",
+    title: "Scheduled Messages",
+    path: "/scheduled",
+    expectPath: "/dashboard/whatsapp/scheduled",
+    marker: "",
+  },
+  {
+    id: "reports",
+    title: "Reports / Performance",
+    path: "/insights",
+    expectPath: "/dashboard/whatsapp/insights",
+    marker: "",
+  },
+  {
+    id: "billing",
+    title: "Billing",
+    path: "/billing",
+    expectPath: "/dashboard/whatsapp/billing",
+    marker: "",
+  },
+  {
+    id: "connection",
+    title: "Connection",
+    path: "/connection",
+    expectPath: "/dashboard/whatsapp/connection",
+    marker: "#whatsapp-connection-settings, [data-testid='whatsapp-module-connection']",
+  },
 ];
 
 function ensureDirs() {
@@ -80,6 +140,20 @@ function apiPath(url) {
   } catch {
     return "[url]";
   }
+}
+
+function extractBusinessIds(url) {
+  const ids = [];
+  try {
+    const parsed = new URL(url);
+    const fromPath = parsed.pathname.match(/\/business\/([^/]+)/i);
+    if (fromPath?.[1]) ids.push(fromPath[1]);
+    const fromQuery = parsed.searchParams.get("businessId");
+    if (fromQuery) ids.push(fromQuery);
+  } catch {
+    return [];
+  }
+  return [...new Set(ids.map((id) => String(id).trim()).filter(Boolean))];
 }
 
 function looksOnInvistimoTenant(url) {
@@ -109,11 +183,16 @@ async function attachGuards(page, findings) {
   page.on("response", (res) => {
     const url = res.url();
     if (!url.includes("/api/whatsapp")) return;
+    const businessIds = extractBusinessIds(url);
     findings.api.push({
       status: res.status(),
       method: res.request().method(),
       path: apiPath(url),
+      businessIds,
     });
+    if (businessIds.some((id) => id !== INVISTIMO_BUSINESS_ID)) {
+      findings.notes.push("FAIL: WhatsApp API targeted a non-Invistimo businessId");
+    }
   });
   await page.route("**/*", async (route) => {
     const req = route.request();
@@ -229,8 +308,10 @@ function decideStatus(row) {
     row.notes.some((n) => n.startsWith("FAIL:")) ||
     row.jsErrors.length > 0 ||
     row.api.some((a) => a.status >= 500);
+  const blocked = row.notes.some((n) => n.startsWith("BLOCKED:"));
   const authDenied = row.api.some((a) => a.status === 401 || a.status === 403);
   if (fatal) return "FAIL";
+  if (blocked) return "BLOCKED";
   if (authDenied && !row.notes.some((n) => n.includes("loaded"))) return "FAIL";
   return "PASS";
 }
@@ -255,6 +336,20 @@ async function runModule(context, mod) {
     if (!finalUrl.includes(`/business/${INVISTIMO_BUSINESS_ID}/`)) {
       findings.notes.push("FAIL: left Invistimo tenant");
     }
+    const onExpectedPath = finalUrl.includes(mod.expectPath);
+    const onConnection = /\/dashboard\/whatsapp\/connection(\/|$|\?)/.test(finalUrl);
+    if (mod.id !== "connection" && onConnection) {
+      findings.notes.push(
+        "BLOCKED: redirected to Connection instead of the requested module"
+      );
+    } else if (!onExpectedPath) {
+      findings.notes.push(`FAIL: expected path ${mod.expectPath}`);
+    } else if (mod.marker) {
+      const mark = page.locator(mod.marker);
+      if (!(await mark.count())) {
+        findings.notes.push("FAIL: expected module content was not rendered");
+      }
+    }
     const spinner = page.locator('[data-testid="whatsapp-tab-suspense"]');
     if ((await spinner.count()) && (await spinner.first().isVisible())) {
       await spinner.first().waitFor({ state: "hidden", timeout: 15000 }).catch(() => {
@@ -273,7 +368,9 @@ async function runModule(context, mod) {
     const shot = path.join(SHOT_DIR, `${mod.id}.png`);
     await screenshotSafe(page, shot);
     findings.screenshot = path.relative(here, shot);
-    if (!findings.notes.some((n) => n.startsWith("FAIL:"))) {
+    if (
+      !findings.notes.some((n) => n.startsWith("FAIL:") || n.startsWith("BLOCKED:"))
+    ) {
       findings.notes.push("loaded");
     }
   } catch (err) {
@@ -397,9 +494,9 @@ async function main() {
     }
     await context.close();
     const summary = writeReport(rows);
-    const failed = rows.filter((r) => r.status === "FAIL").length;
+    const failed = rows.filter((r) => r.status === "FAIL" || r.status === "BLOCKED").length;
     process.stderr.write(
-      `\nWrote ${path.join(RESULTS_DIR, "report.md")} (${failed} FAIL)\n`
+      `\nWrote ${path.join(RESULTS_DIR, "report.md")} (${failed} FAIL/BLOCKED)\n`
     );
     console.log(
       JSON.stringify(
