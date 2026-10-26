@@ -23,9 +23,26 @@ const STATE_FILE = path.join(AUTH_DIR, "invistimo.storage.json");
 const INVISTIMO_BUSINESS_ID =
   process.env.INVISTIMO_BUSINESS_ID || "6a8df4e95c704a03773a9966";
 const OTHER_BUSINESS_ID = process.env.INVISTIMO_OTHER_BUSINESS_ID || "";
-const ORIGIN = process.env.INVISTIMO_ORIGIN || "https://whatsapp.bizuply.com";
 const LOGIN_URL =
   process.env.INVISTIMO_LOGIN_URL || "https://bizuply.com/whatsapp-api/login";
+
+function readSessionOrigin() {
+  try {
+    if (!fs.existsSync(STATE_FILE)) return "";
+    const data = JSON.parse(fs.readFileSync(STATE_FILE, "utf8"));
+    const origins = (data.origins || []).map((o) => String(o.origin || "")).filter(Boolean);
+    return (
+      origins.find((o) => /^https:\/\/(whatsapp\.)?bizuply\.com$/i.test(o)) || ""
+    );
+  } catch {
+    return "";
+  }
+}
+
+const ORIGIN =
+  process.env.INVISTIMO_ORIGIN ||
+  readSessionOrigin() ||
+  "https://whatsapp.bizuply.com";
 const HUB = `${ORIGIN}/business/${INVISTIMO_BUSINESS_ID}/dashboard/whatsapp`;
 
 const BLOCKED_WRITE = /\/api\/whatsapp(\/|$)/i;
@@ -65,12 +82,13 @@ function apiPath(url) {
   }
 }
 
-function looksLoggedIn(url) {
+function looksOnInvistimoTenant(url) {
+  return String(url || "").includes(`/business/${INVISTIMO_BUSINESS_ID}/`);
+}
+
+function looksOnWhatsAppHub(url) {
   const u = String(url || "");
-  return (
-    u.includes(`/business/${INVISTIMO_BUSINESS_ID}/`) &&
-    u.includes("/dashboard/whatsapp")
-  );
+  return looksOnInvistimoTenant(u) && u.includes("/dashboard/whatsapp");
 }
 
 function sanitizeApiRow(row) {
@@ -139,7 +157,7 @@ async function loginIfNeeded(browser) {
   );
   const deadline = Date.now() + 10 * 60 * 1000;
   while (Date.now() < deadline) {
-    if (looksLoggedIn(page.url())) {
+    if (looksOnInvistimoTenant(page.url())) {
       await context.storageState({ path: STATE_FILE });
       await context.close();
       return { reused: false };
@@ -163,7 +181,7 @@ async function assertInvistimoSession(context) {
         "Saved session is not signed in as Invistimo. Delete e2e/invistimo-whatsapp-acceptance/.auth/ and run again in a terminal to sign in yourself. The runner will not log in automatically."
       );
     }
-    if (!looksLoggedIn(url)) {
+    if (!looksOnWhatsAppHub(url)) {
       throw new Error(
         "Connected session is not the Invistimo WhatsApp hub. Tests were not started. The runner will not switch accounts or bypass access."
       );

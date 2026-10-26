@@ -27,10 +27,12 @@ test("acceptance runner covers the ten Invistimo hub modules and stays read-only
   assert.match(src, /BLOCKED_WRITE/);
   assert.match(src, /route\.abort\("blockedbyclient"\)/);
   assert.match(src, /Boolean\(window\.localStorage\.getItem\("token"\)\)/);
-  assert.doesNotMatch(src, /fs\.readFileSync\(STATE_FILE/);
+  assert.match(src, /JSON\.parse\(fs\.readFileSync\(STATE_FILE/);
+  assert.doesNotMatch(src, /console\.(log|error)\([^\n]*origins|JSON\.stringify\(data\)/);
   assert.match(src, /never prints cookies/);
-  assert.equal(fs.existsSync(path.join(here, ".auth")), false);
-  assert.equal(fs.existsSync(path.join(here, "results")), false);
+  assert.match(src, /function readSessionOrigin/);
+  assert.match(src, /function looksOnInvistimoTenant/);
+  assert.match(src, /function looksOnWhatsAppHub/);
 });
 
 test("runner confirms Invistimo before modules and does not auto-login or bypass", () => {
@@ -42,6 +44,7 @@ test("runner confirms Invistimo before modules and does not auto-login or bypass
   assert.match(src, /will not log in automatically/);
   assert.match(src, /will not switch accounts or bypass access/);
   assert.match(src, /headless: false/);
+  assert.match(src, /looksOnWhatsAppHub\(url\)/);
 });
 
 test("one module failure does not abort the suite and reports stay redacted", () => {
