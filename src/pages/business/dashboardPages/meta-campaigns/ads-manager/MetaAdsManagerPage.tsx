@@ -74,6 +74,7 @@ import {
   metaBtnSecondary,
   metaPageBg,
 } from "./metaAdsUi";
+import { resolveCtaForAdContext } from "./metaAdCtas";
 
 type OutletCtx = { businessId: string | null };
 
@@ -1542,12 +1543,18 @@ export default function MetaAdsManagerPage() {
                       patch.facebookPageName || selectedAd.facebookPageName,
                   });
                 }
-                if (
-                  typeof patch.conversionLocation === "string" &&
-                  patch.conversionLocation.toLowerCase().includes("whatsapp") &&
-                  selectedAd
-                ) {
-                  patchAd(selectedAd.id, { callToAction: "WHATSAPP_MESSAGE" });
+                if (typeof patch.conversionLocation === "string" && selectedAd) {
+                  const loc = patch.conversionLocation.toLowerCase();
+                  if (loc.includes("whatsapp")) {
+                    patchAd(selectedAd.id, { callToAction: "WHATSAPP_MESSAGE" });
+                  } else if (loc.includes("instant")) {
+                    patchAd(selectedAd.id, {
+                      callToAction: resolveCtaForAdContext(
+                        selectedAd.callToAction,
+                        { usesInstantForms: true }
+                      ),
+                    });
+                  }
                 }
               }}
             />

@@ -103,6 +103,11 @@ import {
   type MetaPreviewFormat,
 } from "./metaCampaignUtils";
 import { formatCampaignDeliveryMetric } from "./campaignDeliveryMetrics";
+import {
+  INSTANT_FORM_CTA_VALUES,
+  metaCtaLabel,
+  resolveCtaForAdContext,
+} from "./ads-manager/metaAdCtas";
 
 type OutletCtx = { businessId: string | null };
 
@@ -288,22 +293,28 @@ export default function MetaCampaignEditorPage() {
   }, [connection?.specialAdCategories, t]);
 
   const callToActions = useMemo(() => {
-    if (connection?.callToActions?.length) {
-      return connection.callToActions.map((item) => ({
-        value: item.value,
-        label: CTA_LABEL_KEYS[item.value]
-          ? t(CTA_LABEL_KEYS[item.value])
-          : item.labelEn || item.labelHe || item.value,
-      }));
-    }
-    return [
-      { value: "SIGN_UP", label: t("metaCampaigns.cta.signUp") },
-      { value: "LEARN_MORE", label: t("metaCampaigns.cta.learnMore") },
-      { value: "CONTACT_US", label: t("metaCampaigns.cta.contactUs") },
-      { value: "SHOP_NOW", label: t("metaCampaigns.cta.shopNow") },
-      { value: "WHATSAPP_MESSAGE", label: t("metaCampaigns.cta.whatsapp") },
-    ];
-  }, [connection?.callToActions, t]);
+    const all = connection?.callToActions?.length
+      ? connection.callToActions.map((item) => ({
+          value: item.value,
+          label: CTA_LABEL_KEYS[item.value]
+            ? t(CTA_LABEL_KEYS[item.value])
+            : item.labelEn || item.labelHe || item.value,
+        }))
+      : [
+          { value: "SIGN_UP", label: metaCtaLabel("SIGN_UP", t) },
+          { value: "LEARN_MORE", label: metaCtaLabel("LEARN_MORE", t) },
+          { value: "GET_QUOTE", label: metaCtaLabel("GET_QUOTE", t) },
+          { value: "SUBSCRIBE", label: metaCtaLabel("SUBSCRIBE", t) },
+          { value: "APPLY_NOW", label: metaCtaLabel("APPLY_NOW", t) },
+          { value: "DOWNLOAD", label: metaCtaLabel("DOWNLOAD", t) },
+          { value: "CONTACT_US", label: metaCtaLabel("CONTACT_US", t) },
+          { value: "SHOP_NOW", label: metaCtaLabel("SHOP_NOW", t) },
+          { value: "WHATSAPP_MESSAGE", label: metaCtaLabel("WHATSAPP_MESSAGE", t) },
+        ];
+    if (!isLeads) return all;
+    const allowed = new Set<string>(INSTANT_FORM_CTA_VALUES);
+    return all.filter((item) => allowed.has(item.value));
+  }, [connection?.callToActions, isLeads, t]);
 
   const selectedPreviewFormats = useMemo(
     () =>
@@ -499,8 +510,14 @@ export default function MetaCampaignEditorPage() {
       .replace(/\s+/g, "_")
       .replace(/[^a-zA-Z0-9_]/g, "")
       .toUpperCase();
-    if (/^[A-Z][A-Z0-9_]{1,40}$/.test(selected)) return selected;
-    return isLeads ? "SIGN_UP" : "LEARN_MORE";
+    const normalized = /^[A-Z][A-Z0-9_]{1,40}$/.test(selected)
+      ? selected
+      : isLeads
+        ? "SIGN_UP"
+        : "LEARN_MORE";
+    return resolveCtaForAdContext(normalized, {
+      usesInstantForms: isLeads,
+    });
   };
 
   const ctaDisplayLabel =

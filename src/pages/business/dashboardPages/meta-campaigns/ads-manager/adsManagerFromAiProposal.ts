@@ -1,4 +1,5 @@
 import { createDefaultAdsManagerState } from "./adsManagerDefaults";
+import { resolveCtaForAdContext } from "./metaAdCtas";
 import type {
   AdsManagerLocation,
   AdsManagerState,
@@ -107,10 +108,12 @@ export function adsManagerStateFromAiProposal(
   const conversionLocation = conversionLocationFromDestination(destinationKey);
   const usesInstantForms = conversionLocation.toLowerCase().includes("instant");
   const usesWhatsApp = conversionLocation.toLowerCase().includes("whatsapp");
-  const cta =
+  const cta = resolveCtaForAdContext(
     proposal.graphSafe?.cta ||
-    proposal.creative.ctaKey ||
-    (usesWhatsApp ? "WHATSAPP_MESSAGE" : "LEARN_MORE");
+      proposal.creative.ctaKey ||
+      (usesWhatsApp ? "WHATSAPP_MESSAGE" : "LEARN_MORE"),
+    { usesInstantForms, usesWhatsApp }
+  );
   const media = proposal.creative.media;
   const campaignName = proposal.campaign.name || state.campaign.name;
 
