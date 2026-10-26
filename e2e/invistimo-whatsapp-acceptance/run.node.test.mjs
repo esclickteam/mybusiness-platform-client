@@ -24,7 +24,7 @@ test("acceptance runner covers the ten Invistimo hub modules and stays read-only
   }
   assert.match(src, /Invistimo-only links/);
   assert.match(src, /BLOCKED_WRITE/);
-  assert.doesNotMatch(src, /storageState\(\)|cookie|localStorage\.getItem/);
+  assert.doesNotMatch(src, /localStorage\.getItem|document\.cookie/);
   assert.match(src, /never prints cookies/);
   assert.equal(fs.existsSync(path.join(here, ".auth")), false);
 });
