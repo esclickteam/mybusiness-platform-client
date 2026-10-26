@@ -57,6 +57,8 @@ export type CampaignDraft = {
   budgetAmount: string;
   currency: string;
   bidStrategy: string;
+  bidAmount: string;
+  roasAverageFloor: string;
   advantagePlusLeads: boolean;
   showMoreDetails: boolean;
   showMoreBudget: boolean;
@@ -147,6 +149,14 @@ export type AdSetDraft = {
   includeCustomAudiences: string[];
   customAudiences: AdSetInterest[];
   excludedAudiences: AdSetInterest[];
+  locales: number[];
+  publisherPlatforms: string[];
+  facebookPositions: string[];
+  instagramPositions: string[];
+  messengerPositions: string[];
+  audienceNetworkPositions: string[];
+  threadsPositions: string[];
+  devicePlatforms: string[];
   targetingLoaded: boolean;
   targetingRaw: Record<string, unknown> | null;
   /** Audience restored from a failed publish because Meta has no ad set yet. */
@@ -165,7 +175,15 @@ export type AdSetDraft = {
   locationsExpanded: boolean;
 };
 
-export type AdCreativeFormat = "image" | "video";
+export type AdCreativeFormat = "image" | "video" | "carousel";
+
+export type CarouselCardDraft = {
+  headline: string;
+  description: string;
+  imageHash: string;
+  imagePreviewUrl: string;
+  link: string;
+};
 
 export type AdDraft = {
   id: string;
@@ -198,6 +216,7 @@ export type AdDraft = {
   imageHash: string;
   imagePreviewUrl: string;
   videoId: string;
+  carouselCards: CarouselCardDraft[];
 };
 
 export type AdsManagerTreeNode = {

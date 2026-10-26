@@ -239,6 +239,10 @@ export type MetaCampaignAdSet = {
   publisherPlatforms?: string[];
   facebookPositions?: string[];
   instagramPositions?: string[];
+  messengerPositions?: string[];
+  audienceNetworkPositions?: string[];
+  threadsPositions?: string[];
+  devicePlatforms?: string[];
   placementMode?: string;
   targetingRaw?: Record<string, unknown> | null;
   targetingLoaded?: boolean;
@@ -1664,6 +1668,45 @@ export async function suggestMetaDetailedTargeting(
         : undefined,
     })
   );
+  return data;
+}
+
+export type MetaCustomAudience = {
+  id: string;
+  name: string;
+  subtype?: string;
+  approximateCount?: number | null;
+  lookalike?: boolean;
+};
+
+export type MetaSavedAudience = {
+  id: string;
+  name: string;
+  targeting?: Record<string, unknown> | null;
+  approximateCount?: number | null;
+};
+
+export async function listMetaCustomAudiences(businessId: string | undefined) {
+  const { data } = await API.get<{ success: boolean; results: MetaCustomAudience[] }>(
+    "/meta-campaigns/targeting/custom-audiences",
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function listMetaSavedAudiences(businessId: string | undefined) {
+  const { data } = await API.get<{ success: boolean; results: MetaSavedAudience[] }>(
+    "/meta-campaigns/targeting/saved-audiences",
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function listMetaAdStudies(businessId: string | undefined) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: Array<{ id: string; name?: string; type?: string }>;
+  }>("/meta-campaigns/ad-studies", withBusiness(businessId));
   return data;
 }
 

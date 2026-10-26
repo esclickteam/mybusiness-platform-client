@@ -22,6 +22,8 @@ import {
 } from "../metaAdsUi";
 import AdsManagerLocationsSection from "./AdsManagerLocationsSection";
 import AdsManagerDetailedTargetingSection from "./AdsManagerDetailedTargetingSection";
+import AdsManagerPlacementsSection from "./AdsManagerPlacementsSection";
+import AdsManagerAudiencesSection from "./AdsManagerAudiencesSection";
 import LeadgenTosCard from "../LeadgenTosCard";
 import PageWhatsAppNumberPicker from "../PageWhatsAppNumberPicker";
 import { isWhatsAppConversionLocation } from "../pageWhatsAppNumber";
@@ -810,24 +812,12 @@ export default function AdSetLevelEditor({
         />
       </MetaSection>
 
-      <MetaSection
-        title={t("metaCampaigns.adsManager.chrome.placements")}
-        action={
-          <MetaTag>{t("metaCampaigns.adsManager.chrome.advantageOn")}</MetaTag>
-        }
-      >
-        <p className="text-[13px] leading-snug text-[#65676B]">
-          {t("metaCampaigns.adsManager.chrome.placementsHint")}
-        </p>
-        <MetaToggle
-          checked={adSet.advantagePlacements}
-          onChange={(advantagePlacements) => onChange({ advantagePlacements })}
-          label={t("metaCampaigns.adsManager.chrome.advantagePlacements")}
-          description={t(
-            "metaCampaigns.adsManager.chrome.advantagePlacementsDesc"
-          )}
-        />
-      </MetaSection>
+      <AdsManagerAudiencesSection
+        adSet={adSet}
+        businessId={businessId}
+        onChange={onChange}
+      />
+      <AdsManagerPlacementsSection adSet={adSet} onChange={onChange} />
     </div>
   );
 }

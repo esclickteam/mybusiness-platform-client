@@ -20,7 +20,9 @@ export function createDefaultCampaign(): CampaignDraft {
     budgetType: "daily",
     budgetAmount: "70.00",
     currency: "ILS",
-    bidStrategy: "Highest volume",
+    bidStrategy: "LOWEST_COST_WITHOUT_CAP",
+    bidAmount: "",
+    roasAverageFloor: "",
     advantagePlusLeads: true,
     showMoreDetails: false,
     showMoreBudget: false,
@@ -77,6 +79,14 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
     includeCustomAudiences: [],
     customAudiences: [],
     excludedAudiences: [],
+    locales: [],
+    publisherPlatforms: ["facebook", "instagram"],
+    facebookPositions: ["feed", "story", "facebook_reels"],
+    instagramPositions: ["stream", "story", "reels"],
+    messengerPositions: [],
+    audienceNetworkPositions: [],
+    threadsPositions: [],
+    devicePlatforms: [],
     targetingLoaded: false,
     targetingRaw: null,
     /** Meta: show Age / Gender / Detailed targeting under Suggest an audience */
@@ -123,6 +133,7 @@ export function createDefaultAd(adSetName: string): AdDraft {
     imageHash: "",
     imagePreviewUrl: "",
     videoId: "",
+    carouselCards: [],
   };
 }
 
