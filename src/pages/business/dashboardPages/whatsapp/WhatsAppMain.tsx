@@ -21,6 +21,8 @@ import {
   Activity,
   BarChart3,
   Calculator,
+  CalendarClock,
+  Clock,
   Code2,
   LineChart,
   Inbox,
@@ -30,7 +32,9 @@ import {
   PlugZap,
   RefreshCw,
   Settings2,
+  Shield,
   UserRound,
+  Users,
   Wallet,
 } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
@@ -59,6 +63,7 @@ import {
 } from "./hubNavigation";
 import WhatsAppTabSuspenseFallback from "./WhatsAppTabSuspenseFallback";
 import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
+import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
 
 type WhatsAppTab = {
@@ -109,6 +114,33 @@ const MAIN_TABS: WhatsAppTab[] = [
   },
 ];
 
+const INVISTIMO_ONLY_TABS: WhatsAppTab[] = [
+  {
+    path: "automations",
+    to: "automations",
+    labelKey: "whatsapp.nav.automations",
+    icon: CalendarClock,
+  },
+  {
+    path: "contacts",
+    to: "contacts",
+    labelKey: "whatsapp.nav.contacts",
+    icon: Users,
+  },
+  {
+    path: "agents",
+    to: "agents",
+    labelKey: "whatsapp.nav.agents",
+    icon: Shield,
+  },
+  {
+    path: "scheduled",
+    to: "scheduled",
+    labelKey: "whatsapp.nav.scheduled",
+    icon: Clock,
+  },
+];
+
 function readWaBillingFlag(searchParams: URLSearchParams) {
   return (
     searchParams.get("waBilling") ||
@@ -147,6 +179,7 @@ export default function WhatsAppMain() {
   const [syncing, setSyncing] = useState(false);
   const guidedDemo = Boolean(user?.isGuidedDemo);
   const apiPortal = isWhatsAppApiPortalUser(user);
+  const invistimoHub = isInvistimoAdminBusiness(businessId);
 
   const pathAfterWhatsapp = useMemo(
     () => pathSegmentsAfterWhatsapp(location.pathname),
@@ -161,10 +194,13 @@ export default function WhatsAppMain() {
     const base = guidedDemo
       ? MAIN_TABS.filter((tab) => tab.path !== "billing")
       : MAIN_TABS;
-    if (connectionLoading) return base;
+    const withInvistimo = invistimoHub
+      ? [...base, ...INVISTIMO_ONLY_TABS]
+      : base;
+    if (connectionLoading) return withInvistimo;
     if (!isConnected) {
       return [
-        ...base,
+        ...withInvistimo,
         {
           path: "connection",
           to: "connection",
@@ -173,15 +209,17 @@ export default function WhatsAppMain() {
         },
       ];
     }
-    return base;
-  }, [connectionLoading, isConnected, guidedDemo]);
+    return withInvistimo;
+  }, [connectionLoading, isConnected, guidedDemo, invistimoHub]);
 
   useEffect(() => {
-    const target = resolveWhatsAppHubRedirect(location.pathname);
+    const target = resolveWhatsAppHubRedirect(location.pathname, {
+      invistimoHub,
+    });
     if (target && target !== location.pathname.replace(/\/+$/, "")) {
       navigate(target, { replace: true });
     }
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, invistimoHub]);
 
   useEffect(() => {
     if (visualQa) return;
@@ -199,6 +237,9 @@ export default function WhatsAppMain() {
       "billing",
       "developers",
       "meta-costs",
+      ...(invistimoHub
+        ? ["automations", "contacts", "agents", "scheduled"]
+        : []),
     ]);
     if (apiPortal) allowWhenDisconnected.add("overview");
     if (!isConnected && !allowWhenDisconnected.has(topSegment)) {
@@ -216,6 +257,7 @@ export default function WhatsAppMain() {
     navigate,
     guidedDemo,
     apiPortal,
+    invistimoHub,
   ]);
 
   useEffect(() => {

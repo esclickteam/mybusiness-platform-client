@@ -197,6 +197,21 @@ const WhatsAppMetaCostsTab = lazy(() =>
 const WhatsAppMessagesLayout = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppMessagesLayout")
 );
+const WhatsAppAutomationsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppAutomationsTab")
+);
+const WhatsAppInvistimoOnly = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppInvistimoOnly")
+);
+const WhatsAppInvistimoContactsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppInvistimoContactsTab")
+);
+const WhatsAppInvistimoAgentsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppInvistimoAgentsTab")
+);
+const WhatsAppInvistimoScheduledTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppInvistimoScheduledTab")
+);
 
 /* Meta Ads campaign management */
 const MetaCampaignsMain = lazy(() =>
@@ -634,7 +649,38 @@ const BusinessDashboardRoutes = () => {
             <Route path="compose" element={<Navigate to="../messages/compose" replace />} />
             <Route path="lists" element={<Navigate to="../messages/lists" replace />} />
             <Route path="history" element={<Navigate to="../messages/history" replace />} />
-            <Route path="automations" element={<Navigate to="../overview" replace />} />
+            <Route
+              path="automations"
+              element={
+                <WhatsAppInvistimoOnly>
+                  <WhatsAppAutomationsTab />
+                </WhatsAppInvistimoOnly>
+              }
+            />
+            <Route
+              path="contacts"
+              element={
+                <WhatsAppInvistimoOnly>
+                  <WhatsAppInvistimoContactsTab />
+                </WhatsAppInvistimoOnly>
+              }
+            />
+            <Route
+              path="agents"
+              element={
+                <WhatsAppInvistimoOnly>
+                  <WhatsAppInvistimoAgentsTab />
+                </WhatsAppInvistimoOnly>
+              }
+            />
+            <Route
+              path="scheduled"
+              element={
+                <WhatsAppInvistimoOnly>
+                  <WhatsAppInvistimoScheduledTab />
+                </WhatsAppInvistimoOnly>
+              }
+            />
             <Route path="health" element={<Navigate to="../insights" replace />} />
             <Route path="settings" element={<Navigate to="../connection" replace />} />
             <Route path="*" element={<Navigate to="overview" replace />} />

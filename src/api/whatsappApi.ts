@@ -510,6 +510,7 @@ export type WhatsAppCampaign = {
   }>;
   createdAt?: string;
   completedAt?: string;
+  scheduledAt?: string | null;
 };
 
 export type WhatsAppAutomationTrigger =
@@ -551,6 +552,11 @@ export type WhatsAppMessageLog = {
   recipientPhone: string;
   conversationPhone?: string;
   body?: string;
+  caption?: string;
+  messageType?: string;
+  filename?: string;
+  mimeType?: string;
+  mediaUrl?: string;
   templateName?: string;
   templateLanguage?: string;
   direction?: "outbound" | "inbound";
@@ -893,7 +899,86 @@ export type WhatsAppStagingStatus = {
     label: string;
     secret?: boolean;
   }>;
+  invistimoDialogCutover?: {
+    productionCutoverAllowed?: boolean;
+    hostingMutationsLocked?: boolean;
+    dialogMustStayConnected?: boolean;
+    target?: { display?: string; digits?: string };
+    live?: { targetNumberAttached?: boolean; wabaId?: string; phoneNumberId?: string };
+  } | null;
 };
+
+export type InvistimoWhatsAppMetaInventory = {
+  channelId?: string;
+  wabaId?: string;
+  phoneNumberId?: string;
+  metaPortfolioId?: string;
+  displayName?: string;
+  phoneStatus?: string;
+  qualityRating?: string;
+  twoStepEnabled?: boolean | null;
+  pinKnown?: boolean | null;
+  templatesNote?: string;
+  webhookUrl?: string;
+  hostingType?: string;
+  channelApiStatus?: string;
+  billingStatus?: string;
+  openRequests?: string;
+  notes?: string;
+  updatedAt?: string | null;
+};
+
+export type InvistimoWhatsAppMigrationStatus = {
+  success: boolean;
+  readOnly?: boolean;
+  productionCutoverPerformed?: boolean;
+  hostingMutationsLocked?: boolean;
+  dialogMustStayConnected?: boolean;
+  wabaId?: string;
+  phoneNumberId?: string;
+  inventory?: InvistimoWhatsAppMetaInventory;
+  dryRun?: {
+    liveSend?: boolean;
+    dialogUntouched?: boolean;
+    numberCollision?: {
+      testNumberAttached?: boolean;
+      dialogNumberAttached?: boolean;
+      distinct?: boolean;
+      liveDisplayPhone?: string;
+      dialogDisplayPhone?: string;
+    };
+  };
+  live?: WhatsAppStagingStatus["live"];
+};
+
+export async function getInvistimoWhatsAppMigration(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-migration", {
+    params: { businessId },
+  });
+  return data as InvistimoWhatsAppMigrationStatus;
+}
+
+export async function saveInvistimoWhatsAppInventory(
+  businessId: string,
+  inventory: InvistimoWhatsAppMetaInventory
+) {
+  const { data } = await API.put("/whatsapp/invistimo-migration/inventory", {
+    businessId,
+    ...inventory,
+  });
+  return data as { success: boolean; inventory: InvistimoWhatsAppMetaInventory };
+}
+
+export async function runInvistimoWhatsAppDryRun(
+  businessId: string,
+  payload: { template?: string } = {}
+) {
+  const { data } = await API.post("/whatsapp/invistimo-migration/dry-run", {
+    businessId,
+    ...payload,
+  });
+  return data;
+}
 
 export async function getWhatsAppStagingStatus(businessId: string) {
   const { data } = await API.get("/whatsapp/connection/staging", {
@@ -1700,6 +1785,8 @@ export async function replyWhatsAppConversation(
     log: WhatsAppMessageLog;
     providerMessageId?: string;
     demoSafe?: boolean;
+    dryRun?: boolean;
+    liveDispatch?: boolean;
   };
 }
 
@@ -1961,4 +2048,133 @@ export async function testWhatsAppChannelWebhook(businessId: string) {
     webhookUrl?: string;
     note?: string;
   };
+}
+
+export type InvistimoWhatsAppAgent = {
+  id: string;
+  userId?: string | null;
+  name: string;
+  email: string;
+  role: "owner" | "manager" | "agent" | "viewer" | string;
+  permissions: string[];
+  status: "invited" | "active" | "disabled" | string;
+  source?: string;
+  locked?: boolean;
+};
+
+export async function getInvistimoWhatsAppHub(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/hub", {
+    params: { businessId },
+  });
+  return data as {
+    success: boolean;
+    extraModulesVisible?: boolean;
+    otherTenantsUnchanged?: boolean;
+    liveDispatch?: boolean;
+    login?: {
+      accountEmail?: string;
+      hubUrl?: string;
+      loginPath?: string;
+      noNewTenant?: boolean;
+    };
+    modules?: Array<{ id: string; path: string; invistimoOnly?: boolean }>;
+  };
+}
+
+export async function listInvistimoWhatsAppContacts(
+  businessId: string,
+  q = ""
+) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/contacts", {
+    params: { businessId, q },
+  });
+  return data as {
+    guests: WhatsAppRecipient[];
+    lists: Array<{
+      id: string;
+      name: string;
+      purpose?: string;
+      memberCount?: number;
+    }>;
+  };
+}
+
+export async function listInvistimoWhatsAppAgents(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/agents", {
+    params: { businessId },
+  });
+  return (data?.agents || []) as InvistimoWhatsAppAgent[];
+}
+
+export async function saveInvistimoWhatsAppAgent(
+  businessId: string,
+  payload: {
+    name: string;
+    email: string;
+    role?: string;
+    permissions?: string[];
+    status?: string;
+  }
+) {
+  const { data } = await API.post("/whatsapp/invistimo-ops/agents", {
+    businessId,
+    ...payload,
+  });
+  return data?.agent as InvistimoWhatsAppAgent;
+}
+
+export async function updateInvistimoWhatsAppAgent(
+  businessId: string,
+  id: string,
+  payload: Partial<{
+    name: string;
+    email: string;
+    role: string;
+    permissions: string[];
+    status: string;
+  }>
+) {
+  const { data } = await API.patch(`/whatsapp/invistimo-ops/agents/${id}`, {
+    businessId,
+    ...payload,
+  });
+  return data?.agent as InvistimoWhatsAppAgent;
+}
+
+export async function listInvistimoScheduledMessages(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/scheduled", {
+    params: { businessId },
+  });
+  return (data?.campaigns || []) as WhatsAppCampaign[];
+}
+
+export async function createInvistimoScheduledMessage(
+  businessId: string,
+  payload: {
+    name?: string;
+    templateId: string;
+    scheduledAt: string;
+    audienceType: "selected_clients" | "mailing_list" | "manual";
+    mailingListId?: string | null;
+    clientIds?: string[];
+    manualRecipients?: Array<{ name?: string; phone: string }>;
+    consentConfirmed: boolean;
+  }
+) {
+  const { data } = await API.post("/whatsapp/invistimo-ops/scheduled", {
+    businessId,
+    ...payload,
+  });
+  return data;
+}
+
+export async function cancelInvistimoScheduledMessage(
+  businessId: string,
+  id: string
+) {
+  const { data } = await API.post(
+    `/whatsapp/invistimo-ops/scheduled/${id}/cancel`,
+    { businessId }
+  );
+  return data;
 }
