@@ -74,7 +74,15 @@ import {
   metaBtnSecondary,
   metaPageBg,
 } from "./metaAdsUi";
-import { resolveCtaForAdContext } from "./metaAdCtas";
+import {
+  conversionLocationsForObjective,
+  inspectCtaForContext,
+  usesInstantFormDestination,
+  usesMessengerDestination,
+  usesPhoneDestination,
+} from "./metaAdCtas";
+import CtaCompatibilityDialog from "./CtaCompatibilityDialog";
+import { isWhatsAppConversionLocation } from "./pageWhatsAppNumber";
 
 type OutletCtx = { businessId: string | null };
 
@@ -138,6 +146,10 @@ export default function MetaAdsManagerPage() {
   const [planError, setPlanError] = useState("");
   const [approveNewAd, setApproveNewAd] = useState(false);
   const [updateSummary, setUpdateSummary] = useState<MetaExistingPublishResult | null>(null);
+  const [ctaConfirm, setCtaConfirm] = useState<{
+    suggested: string;
+    current: string;
+  } | null>(null);
   const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
   const publishedBaselineRef = useRef<AdsManagerState | null>(null);
@@ -1515,7 +1527,17 @@ export default function MetaAdsManagerPage() {
               campaign={state.campaign}
               sessionMode={isEditSession ? "edit" : "create"}
               onDuplicate={() => void handleDuplicate()}
-              onChange={patchCampaign}
+              onChange={(patch) => {
+                patchCampaign(patch);
+                if (patch.objective && selectedAdSet) {
+                  const allowed = conversionLocationsForObjective(patch.objective);
+                  if (!allowed.includes(selectedAdSet.conversionLocation)) {
+                    patchAdSet(selectedAdSet.id, {
+                      conversionLocation: allowed[0],
+                    });
+                  }
+                }
+              }}
             />
           ) : null}
 
@@ -1524,6 +1546,7 @@ export default function MetaAdsManagerPage() {
           selectedAdSet ? (
             <AdSetLevelEditor
               adSet={selectedAdSet}
+              objective={state.campaign.objective}
               businessId={businessId}
               pages={connectedPages}
               selectedPageId={connection?.selectedPage?.pageId}
@@ -1544,15 +1567,17 @@ export default function MetaAdsManagerPage() {
                   });
                 }
                 if (typeof patch.conversionLocation === "string" && selectedAd) {
-                  const loc = patch.conversionLocation.toLowerCase();
-                  if (loc.includes("whatsapp")) {
-                    patchAd(selectedAd.id, { callToAction: "WHATSAPP_MESSAGE" });
-                  } else if (loc.includes("instant")) {
-                    patchAd(selectedAd.id, {
-                      callToAction: resolveCtaForAdContext(
-                        selectedAd.callToAction,
-                        { usesInstantForms: true }
-                      ),
+                  const loc = patch.conversionLocation;
+                  const inspected = inspectCtaForContext(selectedAd.callToAction, {
+                    usesInstantForms: usesInstantFormDestination(loc),
+                    usesWhatsApp: isWhatsAppConversionLocation(loc),
+                    usesMessenger: usesMessengerDestination(loc),
+                    usesPhone: usesPhoneDestination(loc),
+                  });
+                  if (!inspected.compatible) {
+                    setCtaConfirm({
+                      current: inspected.current,
+                      suggested: inspected.suggested,
                     });
                   }
                 }
@@ -1830,6 +1855,18 @@ export default function MetaAdsManagerPage() {
             : undefined
         }
         updateSummary={updateSummary}
+      />
+      <CtaCompatibilityDialog
+        open={Boolean(ctaConfirm && selectedAd)}
+        currentCta={ctaConfirm?.current || selectedAd?.callToAction || ""}
+        suggestedCta={ctaConfirm?.suggested || "SIGN_UP"}
+        onKeep={() => setCtaConfirm(null)}
+        onAccept={() => {
+          if (selectedAd && ctaConfirm) {
+            patchAd(selectedAd.id, { callToAction: ctaConfirm.suggested });
+          }
+          setCtaConfirm(null);
+        }}
       />
     </div>
   );

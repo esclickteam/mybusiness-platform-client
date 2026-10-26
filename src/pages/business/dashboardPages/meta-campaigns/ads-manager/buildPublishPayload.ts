@@ -1,9 +1,12 @@
 import i18n from "../../../../../i18n/i18n";
 import type { AdsManagerState } from "./adsManagerTypes";
 import {
-  resolveCtaForAdContext,
+  inspectCtaForContext,
   usesInstantFormDestination,
+  usesMessengerDestination,
+  usesPhoneDestination,
 } from "./metaAdCtas";
+import { isWhatsAppConversionLocation } from "./pageWhatsAppNumber";
 
 const tChrome = (key: string) =>
   i18n.t(`metaCampaigns.adsManager.chrome.${key}`);
@@ -130,13 +133,15 @@ export function buildPublishPayloadFromAdsManager(
   const isLeads = campaign.objective === "OUTCOME_LEADS";
   const amount = Number(String(campaign.budgetAmount).replace(/,/g, ""));
   const usesInstantForms = usesInstantFormDestination(adSet.conversionLocation);
-  const usesWhatsApp = String(adSet.conversionLocation)
-    .toLowerCase()
-    .includes("whatsapp");
-  const callToAction = resolveCtaForAdContext(ad.callToAction, {
+  const usesWhatsApp = isWhatsAppConversionLocation(adSet.conversionLocation);
+  const usesMessenger = usesMessengerDestination(adSet.conversionLocation);
+  const usesPhone = usesPhoneDestination(adSet.conversionLocation);
+  const callToAction = inspectCtaForContext(ad.callToAction, {
     usesInstantForms,
     usesWhatsApp,
-  });
+    usesMessenger,
+    usesPhone,
+  }).current || ad.callToAction;
 
   const audience = audienceTargetingFromAdsManager(state);
   const pageId = ad.facebookPageId || adSet.facebookPageId || "";
@@ -187,9 +192,13 @@ export function buildPublishPayloadFromAdsManager(
     performanceGoal: adSet.performanceGoal,
     destinationType: usesWhatsApp
       ? "WHATSAPP"
-      : isLeads && usesInstantForms
-        ? "ON_AD"
-        : "WEBSITE",
+      : usesPhone
+        ? "PHONE"
+        : usesMessenger
+          ? "MESSENGER"
+          : isLeads && usesInstantForms
+            ? "ON_AD"
+            : "WEBSITE",
     whatsappPhone: usesWhatsApp ? adSet.whatsappPhone : undefined,
     leadFormId: usesInstantForms ? ad.instantFormId || undefined : undefined,
     formId: usesInstantForms ? ad.instantFormId || undefined : undefined,
@@ -218,9 +227,9 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   const adSet = state.adSets[0];
   const ad = state.ads[0];
   const usesInstantForms = usesInstantFormDestination(adSet?.conversionLocation);
-  const usesWhatsApp = String(adSet?.conversionLocation || "")
-    .toLowerCase()
-    .includes("whatsapp");
+  const usesWhatsApp = isWhatsAppConversionLocation(adSet?.conversionLocation);
+  const usesMessenger = usesMessengerDestination(adSet?.conversionLocation);
+  const usesPhone = usesPhoneDestination(adSet?.conversionLocation);
 
   if (!campaign?.name.trim()) errors.push(tChrome("validationCampaignName"));
   if (!campaign?.objective) errors.push(tChrome("validationObjective"));
@@ -255,8 +264,19 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   if (usesWhatsApp && !String(adSet?.whatsappPhone || "").trim()) {
     errors.push(tChrome("pageWaRequired"));
   }
-  if (!usesWhatsApp && !ad?.instantFormId && !ad?.websiteUrl.trim()) {
+  if (!usesWhatsApp && !usesPhone && !ad?.instantFormId && !ad?.websiteUrl.trim()) {
     errors.push(tChrome("validationDestination"));
+  }
+  if (
+    ad?.callToAction &&
+    !inspectCtaForContext(ad.callToAction, {
+      usesInstantForms,
+      usesWhatsApp,
+      usesMessenger,
+      usesPhone,
+    }).compatible
+  ) {
+    errors.push(tChrome("validationLeadFormCta"));
   }
   return errors;
 }

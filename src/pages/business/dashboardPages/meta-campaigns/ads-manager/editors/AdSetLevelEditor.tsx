@@ -8,7 +8,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { MetaAdsPage } from "../../../../../../api/metaCampaignsApi";
-import type { AdSetDetailedTarget, AdSetDraft } from "../adsManagerTypes";
+import type { AdSetDetailedTarget, AdSetDraft, CampaignObjective } from "../adsManagerTypes";
 import {
   MetaField,
   MetaLinkButton,
@@ -25,6 +25,7 @@ import AdsManagerDetailedTargetingSection from "./AdsManagerDetailedTargetingSec
 import LeadgenTosCard from "../LeadgenTosCard";
 import PageWhatsAppNumberPicker from "../PageWhatsAppNumberPicker";
 import { isWhatsAppConversionLocation } from "../pageWhatsAppNumber";
+import { conversionLocationsForObjective } from "../metaAdCtas";
 
 type Props = {
   adSet: AdSetDraft;
@@ -33,6 +34,7 @@ type Props = {
   pages: MetaAdsPage[];
   selectedPageId?: string;
   onResumeDraft?: () => void;
+  objective?: CampaignObjective | string;
 };
 
 /** Stable empty array — `|| []` would recreate identity every render. */
@@ -54,6 +56,7 @@ export default function AdSetLevelEditor({
   pages,
   selectedPageId,
   onResumeDraft,
+  objective = "OUTCOME_LEADS",
 }: Props) {
   const { t } = useTranslation();
   const [pageQuery, setPageQuery] = useState("");
@@ -176,21 +179,23 @@ export default function AdSetLevelEditor({
               });
             }}
           >
-            <option value="Instant forms">
-              {t("metaCampaigns.adsManager.chrome.instantForms")}
-            </option>
-            <option value="Website">
-              {t("metaCampaigns.adsManager.chrome.website")}
-            </option>
-            <option value="Website and instant forms">
-              {t("metaCampaigns.adsManager.chrome.websiteAndInstantForms")}
-            </option>
-            <option value="Messenger">
-              {t("metaCampaigns.adsManager.chrome.messenger")}
-            </option>
-            <option value="WhatsApp">
-              {t("metaCampaigns.adsManager.chrome.whatsappConversion")}
-            </option>
+            {conversionLocationsForObjective(objective).map((value) => (
+              <option key={value} value={value}>
+                {value === "Instant forms"
+                  ? t("metaCampaigns.adsManager.chrome.instantForms")
+                  : value === "Website"
+                    ? t("metaCampaigns.adsManager.chrome.website")
+                    : value === "Website and instant forms"
+                      ? t("metaCampaigns.adsManager.chrome.websiteAndInstantForms")
+                      : value === "Messenger"
+                        ? t("metaCampaigns.adsManager.chrome.messenger")
+                        : value === "WhatsApp"
+                          ? t("metaCampaigns.adsManager.chrome.whatsappConversion")
+                          : value === "Phone"
+                            ? t("metaCampaigns.adsManager.chrome.phoneConversion")
+                            : value}
+              </option>
+            ))}
           </select>
         </div>
 
