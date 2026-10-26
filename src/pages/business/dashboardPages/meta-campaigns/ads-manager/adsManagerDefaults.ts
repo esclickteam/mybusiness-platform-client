@@ -117,7 +117,7 @@ export function createDefaultAd(adSetName: string): AdDraft {
       "Get expert help for your business. Fill out the form and we’ll get back to you shortly.",
     headline: "Talk to our team",
     description: "Free consultation",
-    callToAction: "LEARN_MORE",
+    callToAction: "SIGN_UP",
     mediaLabel: "Choose media for this ad",
     creativeFormat: "image",
     imageHash: "",

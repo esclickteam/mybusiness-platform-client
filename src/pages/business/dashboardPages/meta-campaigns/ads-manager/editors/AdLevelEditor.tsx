@@ -26,7 +26,12 @@ import {
   leadFormDuplicateSeedFromSavedEditor,
   type LeadFormDuplicateSeed,
 } from "../leadFormDuplicateSeed";
-import { metaCtaLabel, metaCtaOptions } from "../metaAdCtas";
+import {
+  metaCtaLabel,
+  metaCtaOptionsForContext,
+  resolveCtaForAdContext,
+  usesInstantFormDestination,
+} from "../metaAdCtas";
 import LeadgenTosCard from "../LeadgenTosCard";
 import {
   MetaField,
@@ -84,6 +89,11 @@ export default function AdLevelEditor({
   const tabLabel = (tab: "active" | "archived") =>
     tab === "active" ? c("formTabActive") : c("formTabArchived");
   const usesWhatsApp = isWhatsAppConversionLocation(conversionLocation);
+  const usesInstantForms = usesInstantFormDestination(conversionLocation);
+  const ctaOptions = metaCtaOptionsForContext(
+    { usesInstantForms, usesWhatsApp },
+    t
+  );
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
@@ -103,6 +113,16 @@ export default function AdLevelEditor({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
+
+  useEffect(() => {
+    const next = resolveCtaForAdContext(ad.callToAction, {
+      usesInstantForms,
+      usesWhatsApp,
+    });
+    if (next && next !== ad.callToAction) {
+      onChange({ callToAction: next });
+    }
+  }, [ad.callToAction, onChange, usesInstantForms, usesWhatsApp]);
 
   const readActionError = (error: unknown) => {
     const response = (error as { response?: { data?: { error?: string; message?: string } } })
@@ -706,7 +726,7 @@ export default function AdLevelEditor({
               data-testid="meta-ads-cta-menu"
               className="absolute z-40 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-xl"
             >
-              {metaCtaOptions(t).map((cta) => {
+              {ctaOptions.map((cta) => {
                 const selected = ad.callToAction === cta.value;
                 return (
                   <button

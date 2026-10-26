@@ -18,6 +18,22 @@ export const META_AD_CTA_VALUES = [
   "ORDER_NOW",
 ] as const;
 
+/**
+ * Instant Form creatives (Marketing API lead-ads create guide).
+ * OPEN_LINK + lead_gen_form_id is rejected (error 100 / 1856030).
+ */
+export const INSTANT_FORM_CTA_VALUES = [
+  "APPLY_NOW",
+  "DOWNLOAD",
+  "GET_QUOTE",
+  "LEARN_MORE",
+  "SIGN_UP",
+  "SUBSCRIBE",
+] as const;
+
+export const DEFAULT_INSTANT_FORM_CTA = "SIGN_UP";
+export const DEFAULT_WEBSITE_CTA = "LEARN_MORE";
+
 export type MetaAdCtaValue = (typeof META_AD_CTA_VALUES)[number];
 
 const EN_FALLBACK: Record<string, string> = {
@@ -56,6 +72,45 @@ export function metaCtaOptions(
   t?: (key: string, options?: Record<string, unknown>) => string
 ): Array<{ value: string; label: string }> {
   return META_AD_CTA_VALUES.map((value) => ({
+    value,
+    label: metaCtaLabel(value, t),
+  }));
+}
+
+export function isInstantFormCta(value: string): boolean {
+  return (INSTANT_FORM_CTA_VALUES as readonly string[]).includes(
+    String(value || "").trim().toUpperCase()
+  );
+}
+
+export function usesInstantFormDestination(conversionLocation?: string): boolean {
+  return /instant/i.test(String(conversionLocation || ""));
+}
+
+export function resolveCtaForAdContext(
+  current: string,
+  context: { usesInstantForms?: boolean; usesWhatsApp?: boolean }
+): string {
+  const cta = String(current || "").trim().toUpperCase();
+  if (context.usesWhatsApp) return "WHATSAPP_MESSAGE";
+  if (context.usesInstantForms) {
+    return isInstantFormCta(cta) ? cta : DEFAULT_INSTANT_FORM_CTA;
+  }
+  if (cta === "WHATSAPP_MESSAGE") return DEFAULT_WEBSITE_CTA;
+  return cta || DEFAULT_WEBSITE_CTA;
+}
+
+export function metaCtaOptionsForContext(
+  context: { usesInstantForms?: boolean; usesWhatsApp?: boolean },
+  t?: (key: string, options?: Record<string, unknown>) => string
+): Array<{ value: string; label: string }> {
+  if (context.usesWhatsApp) {
+    return [{ value: "WHATSAPP_MESSAGE", label: metaCtaLabel("WHATSAPP_MESSAGE", t) }];
+  }
+  const values = context.usesInstantForms
+    ? INSTANT_FORM_CTA_VALUES
+    : META_AD_CTA_VALUES.filter((value) => value !== "WHATSAPP_MESSAGE");
+  return values.map((value) => ({
     value,
     label: metaCtaLabel(value, t),
   }));

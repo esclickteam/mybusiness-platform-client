@@ -1,5 +1,9 @@
 import i18n from "../../../../../i18n/i18n";
 import type { AdsManagerState } from "./adsManagerTypes";
+import {
+  resolveCtaForAdContext,
+  usesInstantFormDestination,
+} from "./metaAdCtas";
 
 const tChrome = (key: string) =>
   i18n.t(`metaCampaigns.adsManager.chrome.${key}`);
@@ -125,12 +129,14 @@ export function buildPublishPayloadFromAdsManager(
 
   const isLeads = campaign.objective === "OUTCOME_LEADS";
   const amount = Number(String(campaign.budgetAmount).replace(/,/g, ""));
-  const usesInstantForms = String(adSet.conversionLocation)
-    .toLowerCase()
-    .includes("instant");
+  const usesInstantForms = usesInstantFormDestination(adSet.conversionLocation);
   const usesWhatsApp = String(adSet.conversionLocation)
     .toLowerCase()
     .includes("whatsapp");
+  const callToAction = resolveCtaForAdContext(ad.callToAction, {
+    usesInstantForms,
+    usesWhatsApp,
+  });
 
   const audience = audienceTargetingFromAdsManager(state);
   const pageId = ad.facebookPageId || adSet.facebookPageId || "";
@@ -185,8 +191,8 @@ export function buildPublishPayloadFromAdsManager(
         ? "ON_AD"
         : "WEBSITE",
     whatsappPhone: usesWhatsApp ? adSet.whatsappPhone : undefined,
-    leadFormId: ad.instantFormId || undefined,
-    formId: ad.instantFormId || undefined,
+    leadFormId: usesInstantForms ? ad.instantFormId || undefined : undefined,
+    formId: usesInstantForms ? ad.instantFormId || undefined : undefined,
     websiteUrl: usesWhatsApp
       ? ad.websiteUrl || "https://api.whatsapp.com/send"
       : ad.websiteUrl,
@@ -198,7 +204,7 @@ export function buildPublishPayloadFromAdsManager(
     message: ad.primaryText,
     headline: ad.headline,
     description: ad.description,
-    callToAction: usesWhatsApp ? "WHATSAPP_MESSAGE" : ad.callToAction,
+    callToAction,
     imageHash: ad.imageHash || undefined,
     imageUrl: ad.imagePreviewUrl || undefined,
     videoId: ad.videoId || undefined,
@@ -211,9 +217,7 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   const campaign = state.campaign;
   const adSet = state.adSets[0];
   const ad = state.ads[0];
-  const usesInstantForms = String(adSet?.conversionLocation || "")
-    .toLowerCase()
-    .includes("instant");
+  const usesInstantForms = usesInstantFormDestination(adSet?.conversionLocation);
   const usesWhatsApp = String(adSet?.conversionLocation || "")
     .toLowerCase()
     .includes("whatsapp");

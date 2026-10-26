@@ -92,4 +92,35 @@ describe("audience estimate and publish use the same targeting", () => {
     expect(publish.callToAction).toBe("WHATSAPP_MESSAGE");
     expect(validateAdsManagerClient(state)).toEqual([]);
   });
+
+  it("never publishes OPEN_LINK with an Instant Form id", () => {
+    const state = createDefaultAdsManagerState();
+    state.campaign.objective = "OUTCOME_LEADS";
+    state.adSets[0].conversionLocation = "Instant forms";
+    state.adSets[0].facebookPageId = "111";
+    state.ads[0].facebookPageId = "111";
+    state.ads[0].instantFormId = "form_9";
+    state.ads[0].callToAction = "OPEN_LINK";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Lead";
+    const publish = buildPublishPayloadFromAdsManager(state);
+    expect(publish.leadFormId).toBe("form_9");
+    expect(publish.callToAction).toBe("SIGN_UP");
+    expect(publish.callToAction).not.toBe("OPEN_LINK");
+  });
+
+  it("keeps OPEN_LINK on website traffic and drops a leftover form id", () => {
+    const state = createDefaultAdsManagerState();
+    state.campaign.objective = "OUTCOME_TRAFFIC";
+    state.adSets[0].conversionLocation = "Website";
+    state.ads[0].instantFormId = "stale_form";
+    state.ads[0].callToAction = "OPEN_LINK";
+    state.ads[0].websiteUrl = "https://example.com";
+    state.ads[0].facebookPageId = "111";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Visit";
+    const publish = buildPublishPayloadFromAdsManager(state);
+    expect(publish.leadFormId).toBeUndefined();
+    expect(publish.callToAction).toBe("OPEN_LINK");
+  });
 });

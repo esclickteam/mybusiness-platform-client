@@ -1,7 +1,14 @@
 import { describe, expect, it } from "vitest";
 import he from "../../../../../i18n/locales/he.json";
 import en from "../../../../../i18n/locales/en.json";
-import { META_AD_CTA_VALUES, metaCtaLabel, metaCtaOptions } from "./metaAdCtas";
+import {
+  INSTANT_FORM_CTA_VALUES,
+  META_AD_CTA_VALUES,
+  metaCtaLabel,
+  metaCtaOptions,
+  metaCtaOptionsForContext,
+  resolveCtaForAdContext,
+} from "./metaAdCtas";
 
 function lookup(locale: Record<string, unknown>, key: string) {
   return key.split(".").reduce<unknown>(
@@ -24,6 +31,30 @@ describe("metaAdCtas i18n", () => {
     expect(options.map((item) => item.label).join(" ")).not.toMatch(
       /See details|Learn more|Sign up|OPEN_LINK|LEARN_MORE/
     );
+  });
+
+  it("keeps Instant Form CTAs to the documented Meta list", () => {
+    expect(INSTANT_FORM_CTA_VALUES).toEqual([
+      "APPLY_NOW",
+      "DOWNLOAD",
+      "GET_QUOTE",
+      "LEARN_MORE",
+      "SIGN_UP",
+      "SUBSCRIBE",
+    ]);
+    expect(resolveCtaForAdContext("OPEN_LINK", { usesInstantForms: true })).toBe(
+      "SIGN_UP"
+    );
+    expect(resolveCtaForAdContext("LEARN_MORE", { usesInstantForms: true })).toBe(
+      "LEARN_MORE"
+    );
+    expect(resolveCtaForAdContext("OPEN_LINK", { usesWhatsApp: true })).toBe(
+      "WHATSAPP_MESSAGE"
+    );
+    expect(resolveCtaForAdContext("OPEN_LINK", {})).toBe("OPEN_LINK");
+    const leadOptions = metaCtaOptionsForContext({ usesInstantForms: true });
+    expect(leadOptions.map((item) => item.value)).not.toContain("OPEN_LINK");
+    expect(leadOptions.map((item) => item.value)).toContain("SIGN_UP");
   });
 
   it("keeps English labels in EN", () => {

@@ -52,6 +52,18 @@ describe("adsManagerFromAiProposal", () => {
     expect(state.ads[0].instantFormId).toBe("form_9");
   });
 
+  it("remaps OPEN_LINK onto SIGN_UP for Instant Form proposals", () => {
+    const state = adsManagerStateFromAiProposal({
+      proposal: {
+        ...proposal,
+        creative: { ...proposal.creative, ctaKey: "OPEN_LINK" },
+        graphSafe: { objective: "OUTCOME_LEADS", cta: "OPEN_LINK" },
+      },
+      destinationKey: "LEAD_FORM",
+    });
+    expect(state.ads[0].callToAction).toBe("SIGN_UP");
+  });
+
   it("ignores invalid Graph-looking objectives from the proposal", () => {
     const state = adsManagerStateFromAiProposal({
       proposal: {
