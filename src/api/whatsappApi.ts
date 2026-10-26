@@ -552,6 +552,11 @@ export type WhatsAppMessageLog = {
   recipientPhone: string;
   conversationPhone?: string;
   body?: string;
+  caption?: string;
+  messageType?: string;
+  filename?: string;
+  mimeType?: string;
+  mediaUrl?: string;
   templateName?: string;
   templateLanguage?: string;
   direction?: "outbound" | "inbound";
@@ -1780,6 +1785,8 @@ export async function replyWhatsAppConversation(
     log: WhatsAppMessageLog;
     providerMessageId?: string;
     demoSafe?: boolean;
+    dryRun?: boolean;
+    liveDispatch?: boolean;
   };
 }
 

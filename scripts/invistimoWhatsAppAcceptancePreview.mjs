@@ -16,6 +16,10 @@ export const INVISTIMO_EMAIL = "support@invistimo.com";
 export const OTHER_EMAIL = "other.cafe@example.test";
 export const INVISTIMO_PREVIEW_PASSWORD = "InvistimoPreview-Only-2026";
 export const OTHER_PREVIEW_PASSWORD = "OtherTenantPreview-Only-2026";
+export const AGENT_PREVIEW_PASSWORD = "InvistimoAgentPreview-Only-2026";
+export const AGENT_NO_VIEW_EMAIL = "agent.noview@invistimo.com";
+export const AGENT_NO_SEND_EMAIL = "agent.nosend@invistimo.com";
+export const AGENT_NO_MANAGE_EMAIL = "agent.nomanage@invistimo.com";
 const SECRET = "invistimo-acceptance-preview-not-prod";
 
 const MIME = {
@@ -68,7 +72,7 @@ function userPublic(row) {
     id: row.id,
     name: row.name,
     email: row.email,
-    role: "business",
+    role: row.role || "business",
     businessId: row.businessId,
     subscriptionPlan: "monthly",
     paymentStatus: "active",
@@ -150,11 +154,27 @@ function createState() {
     conversations: [
       {
         phone: "972501111222",
-        name: "Dana Guest",
-        lastMessage: "כן, מגיעים",
+        recipientName: "Dana Guest",
+        lastBody: "כן, מגיעים",
         lastDirection: "inbound",
         lastStatus: "received",
-        updatedAt: new Date().toISOString(),
+        lastMessageAt: new Date().toISOString(),
+      },
+      {
+        phone: "972502222333",
+        recipientName: "Noam RSVP",
+        lastBody: "menu.pdf",
+        lastDirection: "inbound",
+        lastStatus: "received",
+        lastMessageAt: new Date(Date.now() - 120000).toISOString(),
+      },
+      {
+        phone: "972503333444",
+        recipientName: "Closed Window",
+        lastBody: "הודעה מלפני יומיים",
+        lastDirection: "inbound",
+        lastStatus: "received",
+        lastMessageAt: new Date(Date.now() - 50 * 3600000).toISOString(),
       },
     ],
     messages: {
@@ -173,6 +193,46 @@ function createState() {
           body: "כן, מגיעים",
           status: "received",
           createdAt: new Date().toISOString(),
+        },
+      ],
+      "972502222333": [
+        {
+          _id: "n1",
+          direction: "outbound",
+          body: "שולחים תפריט ומיקום",
+          status: "read",
+          source: "reply",
+          createdAt: new Date(Date.now() - 7200000).toISOString(),
+        },
+        {
+          _id: "n2",
+          direction: "outbound",
+          body: "שולחן 12",
+          caption: "שולחן 12",
+          messageType: "image",
+          mimeType: "image/svg+xml",
+          mediaUrl:
+            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='120'><rect fill='%2310b981' width='240' height='120'/><text x='20' y='70' fill='white' font-size='22'>Table 12</text></svg>",
+          status: "delivered",
+          createdAt: new Date(Date.now() - 7000000).toISOString(),
+        },
+        {
+          _id: "n3",
+          direction: "inbound",
+          body: "תפריט מצורף",
+          messageType: "document",
+          filename: "menu.pdf",
+          status: "received",
+          createdAt: new Date(Date.now() - 120000).toISOString(),
+        },
+      ],
+      "972503333444": [
+        {
+          _id: "c1",
+          direction: "inbound",
+          body: "הודעה מלפני יומיים",
+          status: "received",
+          createdAt: new Date(Date.now() - 50 * 3600000).toISOString(),
         },
       ],
     },
@@ -194,6 +254,36 @@ export function createPreviewHandler({ distDir } = {}) {
       email: OTHER_EMAIL,
       password: OTHER_PREVIEW_PASSWORD,
       businessId: OTHER_BUSINESS_ID,
+    },
+    [AGENT_NO_VIEW_EMAIL]: {
+      id: "agent-no-view",
+      name: "No View Agent",
+      email: AGENT_NO_VIEW_EMAIL,
+      password: AGENT_PREVIEW_PASSWORD,
+      businessId: INVISTIMO_BUSINESS_ID,
+      role: "worker",
+      permissions: [],
+      manage: false,
+    },
+    [AGENT_NO_SEND_EMAIL]: {
+      id: "agent-no-send",
+      name: "No Send Agent",
+      email: AGENT_NO_SEND_EMAIL,
+      password: AGENT_PREVIEW_PASSWORD,
+      businessId: INVISTIMO_BUSINESS_ID,
+      role: "worker",
+      permissions: ["inbox"],
+      manage: false,
+    },
+    [AGENT_NO_MANAGE_EMAIL]: {
+      id: "agent-no-manage",
+      name: "No Manage Agent",
+      email: AGENT_NO_MANAGE_EMAIL,
+      password: AGENT_PREVIEW_PASSWORD,
+      businessId: INVISTIMO_BUSINESS_ID,
+      role: "worker",
+      permissions: ["inbox", "send"],
+      manage: false,
     },
   };
   const tenantState = {
@@ -299,6 +389,21 @@ export function createPreviewHandler({ distDir } = {}) {
     const state = tenantState[businessId];
     const isInvistimo = businessId === INVISTIMO_BUSINESS_ID;
 
+    function denyAgent(permission) {
+      return json(res, 403, {
+        success: false,
+        error: `Invistimo WhatsApp agent is missing the "${permission}" permission`,
+        code: "AGENT_PERMISSION_DENIED",
+      });
+    }
+
+    function hasGrant(permission) {
+      if (!isInvistimo) return true;
+      if (!user.permissions) return true;
+      if (permission === "manage") return Boolean(user.manage);
+      return user.permissions.includes(permission);
+    }
+
     if (pathname === "/api/whatsapp/status") return json(res, 200, connection(businessId));
     if (pathname === "/api/whatsapp/account-health/sync" && req.method === "POST") {
       return json(res, 200, { success: true, connection: connection(businessId) });
@@ -353,6 +458,7 @@ export function createPreviewHandler({ distDir } = {}) {
       });
     }
     if (pathname === "/api/whatsapp/conversations") {
+      if (!hasGrant("inbox")) return denyAgent("inbox");
       return json(res, 200, { success: true, conversations: state.conversations });
     }
     if (
@@ -360,22 +466,54 @@ export function createPreviewHandler({ distDir } = {}) {
       !pathname.endsWith("/reply") &&
       req.method === "GET"
     ) {
+      if (!hasGrant("inbox")) return denyAgent("inbox");
       const phone = decodeURIComponent(pathname.split("/")[4] || "");
       return json(res, 200, { success: true, messages: state.messages[phone] || [] });
     }
     if (pathname.startsWith("/api/whatsapp/conversations/") && pathname.endsWith("/reply") && req.method === "POST") {
+      if (!hasGrant("send")) return denyAgent("send");
       const body = await readBody(req);
       const phone = decodeURIComponent(pathname.split("/")[4] || "");
+      const thread = state.messages[phone] || [];
+      const lastInbound = [...thread]
+        .reverse()
+        .find((row) => row.direction === "inbound");
+      const inboundAt = lastInbound ? new Date(lastInbound.createdAt).getTime() : 0;
+      const sessionOpen = inboundAt && Date.now() - inboundAt <= 24 * 60 * 60 * 1000;
+      if (!sessionOpen) {
+        return json(res, 400, {
+          success: false,
+          error: "Customer care window is closed. Send an approved template message instead.",
+          code: "SESSION_CLOSED",
+          liveDispatch: false,
+        });
+      }
+      const text = String(body.body || body.text || "");
       const msg = {
         _id: `m${Date.now()}`,
         direction: "outbound",
-        body: String(body.body || body.text || ""),
+        body: text,
         status: "sent",
         source: "preview_session",
         createdAt: new Date().toISOString(),
+        providerMessageId: `preview-${Date.now()}`,
       };
-      state.messages[phone] = [...(state.messages[phone] || []), msg];
-      return json(res, 200, { success: true, message: msg, liveDispatch: false });
+      state.messages[phone] = [...thread, msg];
+      const conv = state.conversations.find((row) => row.phone === phone);
+      if (conv) {
+        conv.lastBody = text;
+        conv.lastDirection = "outbound";
+        conv.lastStatus = "sent";
+        conv.lastMessageAt = msg.createdAt;
+      }
+      return json(res, 200, {
+        success: true,
+        log: msg,
+        providerMessageId: msg.providerMessageId,
+        liveDispatch: false,
+        dryRun: true,
+        sessionOpen: true,
+      });
     }
     if (pathname === "/api/whatsapp/recipients") {
       return json(res, 200, { success: true, recipients: state.guests, total: state.guests.length });
@@ -440,9 +578,11 @@ export function createPreviewHandler({ distDir } = {}) {
       return json(res, 200, { success: true, guests, lists: state.lists });
     }
     if (pathname === "/api/whatsapp/invistimo-ops/agents" && req.method === "GET") {
+      if (!hasGrant("manage")) return denyAgent("manage");
       return json(res, 200, { success: true, agents: state.agents });
     }
     if (pathname === "/api/whatsapp/invistimo-ops/agents" && req.method === "POST") {
+      if (!hasGrant("manage")) return denyAgent("manage");
       const body = await readBody(req);
       if (String(body.email || "").toLowerCase() === INVISTIMO_EMAIL) {
         return json(res, 400, { success: false, code: "AGENT_OWNER_LOCKED", error: "Owner locked" });
@@ -461,6 +601,7 @@ export function createPreviewHandler({ distDir } = {}) {
       return json(res, 201, { success: true, agent });
     }
     if (pathname.startsWith("/api/whatsapp/invistimo-ops/agents/") && req.method === "PATCH") {
+      if (!hasGrant("manage")) return denyAgent("manage");
       const id = pathname.split("/").pop();
       const body = await readBody(req);
       const agent = state.agents.find((a) => a.id === id);

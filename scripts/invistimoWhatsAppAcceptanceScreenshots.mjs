@@ -96,13 +96,23 @@ await page.waitForTimeout(600);
 await shot(page, "invistimo_scheduled_saved");
 
 await page.goto(`${HUB(INVISTIMO_ID)}/inbox`, { waitUntil: "domcontentloaded" });
+await page.getByText("כן, מגיעים").first().waitFor({ timeout: 30000 });
+await shot(page, "invistimo_inbox_first_load");
+await page.reload({ waitUntil: "domcontentloaded" });
+await page.getByText("כן, מגיעים").first().waitFor({ timeout: 30000 });
+await shot(page, "invistimo_inbox_after_refresh");
+await page.getByText(/Noam RSVP/i).first().click();
+await page.getByText(/menu\.pdf|תפריט מצורף/i).first().waitFor({ timeout: 15000 });
+await shot(page, "invistimo_inbox_files");
 const reply = page.locator("textarea, input[type='text']").last();
 if (await reply.count()) {
   await reply.fill("תודה, נרשם. Preview only.");
   const send = page.getByRole("button", { name: /send|שלח/i }).first();
   if (await send.count()) await send.click();
-  await page.waitForTimeout(600);
+  await page.waitForTimeout(800);
 }
+await page.getByText("Dana Guest").first().click();
+await page.getByText("תודה, נרשם. Preview only.").first().waitFor({ timeout: 15000 });
 await shot(page, "invistimo_inbox_reply");
 
 await page.goto(`${BASE}/whatsapp-api/login`, { waitUntil: "domcontentloaded" });
