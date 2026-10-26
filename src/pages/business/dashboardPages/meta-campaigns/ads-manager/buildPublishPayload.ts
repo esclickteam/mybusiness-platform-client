@@ -7,7 +7,11 @@ import {
   usesPhoneDestination,
 } from "./metaAdCtas";
 import { isWhatsAppConversionLocation } from "./pageWhatsAppNumber";
-import { mapUiBidStrategy, placementPayload } from "./metaAdsManagerParity";
+import {
+  compatibilityIssueKeys,
+  mapUiBidStrategy,
+  placementPayload,
+} from "./metaAdsManagerParity";
 
 const tChrome = (key: string) =>
   i18n.t(`metaCampaigns.adsManager.chrome.${key}`);
@@ -36,9 +40,7 @@ function selectedAge(adSet: AdsManagerState["adSets"][0]) {
  */
 export function audienceTargetingFromAdsManager(state: AdsManagerState) {
   const adSet = state.adSets[0];
-  const locations = (adSet?.locations || [])
-    .filter((loc) => loc.include !== false)
-    .map((loc) => {
+  const locations = (adSet?.locations || []).map((loc) => {
       const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
       const cityOnly = Boolean(loc.cityOnly) || loc.radiusMiles == null;
       const radiusMiles =
@@ -56,11 +58,12 @@ export function audienceTargetingFromAdsManager(state: AdsManagerState) {
         distanceUnit: radiusMiles != null ? ("mile" as const) : undefined,
         latitude: loc.latitude,
         longitude: loc.longitude,
+        include: loc.include !== false,
       };
     });
 
   const countries = locations
-    .filter((item) => item.type === "country")
+    .filter((item) => item.include !== false && item.type === "country")
     .map((item) => String(item.key || item.countryCode || "").toUpperCase())
     .filter(Boolean);
 
@@ -251,6 +254,7 @@ export function buildPublishPayloadFromAdsManager(
               link: card.link || ad.websiteUrl,
             }))
         : undefined,
+    dynamicCreative: adSet.dynamicCreative === true,
   };
 }
 
@@ -316,6 +320,22 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
     }).compatible
   ) {
     errors.push(tChrome("validationLeadFormCta"));
+  }
+  for (const key of compatibilityIssueKeys({
+    objective: campaign?.objective,
+    bidStrategy: campaign?.bidStrategy,
+    bidAmount: campaign?.bidAmount,
+    roasAverageFloor: campaign?.roasAverageFloor,
+    advantagePlacements: adSet?.advantagePlacements,
+    publisherPlatforms: adSet?.publisherPlatforms,
+    messengerPositions: adSet?.messengerPositions,
+    conversionLocation: adSet?.conversionLocation,
+    leadFormId: ad?.instantFormId,
+    creativeFormat: ad?.creativeFormat,
+    carouselCards: ad?.carouselCards,
+  })) {
+    const message = tChrome(key);
+    if (!errors.includes(message)) errors.push(message);
   }
   return errors;
 }

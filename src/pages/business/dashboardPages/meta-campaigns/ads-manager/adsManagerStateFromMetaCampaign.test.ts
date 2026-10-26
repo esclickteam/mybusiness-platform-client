@@ -374,4 +374,30 @@ describe("adsManagerStateFromMetaCampaign", () => {
       "6003349071605"
     );
   });
+
+  it("preferMeta keeps live Meta settings instead of a stale editor workspace", () => {
+    const withDraft: MetaCampaign = {
+      ...campaign,
+      name: "Live Meta name",
+      editorDraft: {
+        workspace: {
+          campaign: {
+            id: campaign.id,
+            name: "Stale local name",
+            objective: "OUTCOME_LEADS",
+            budgetAmount: "9",
+            budgetType: "daily",
+            status: "PAUSED",
+          },
+          adSets: [{ id: "adset-1", name: "Stale ad set" }],
+          ads: [{ id: "ad-1", name: "Stale ad", adSetId: "adset-1" }],
+        },
+      },
+    };
+    const overlaid = adsManagerStateFromMetaCampaign(withDraft);
+    const fromMeta = adsManagerStateFromMetaCampaign(withDraft, { preferMeta: true });
+    expect(overlaid.campaign.name).toBe("Stale local name");
+    expect(fromMeta.campaign.name).toBe("Live Meta name");
+    expect(fromMeta.adSets[0].name).toBe("Main ad set");
+  });
 });

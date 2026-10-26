@@ -151,7 +151,8 @@ export default function MetaAdsManagerPage() {
     suggested: string;
     current: string;
   } | null>(null);
-  const [metaReloadTick, setMetaReloadTick] = useState(0);
+  const [refreshConfirmOpen, setRefreshConfirmOpen] = useState(false);
+  const preferMetaOnLoad = useRef(false);
   const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
   const publishedBaselineRef = useRef<AdsManagerState | null>(null);
@@ -203,7 +204,9 @@ export default function MetaAdsManagerPage() {
         if (cancelled || !data?.campaign) return;
         const hydrated = adsManagerStateFromMetaCampaign(data.campaign, {
           currency: data.currency,
+          preferMeta: preferMetaOnLoad.current,
         });
+        preferMetaOnLoad.current = false;
         replaceState(hydrated);
         baselineRef.current = hydrated;
         publishRecordIdRef.current = hydrated.publishRecordId || "";
@@ -1530,7 +1533,14 @@ export default function MetaAdsManagerPage() {
               sessionMode={isEditSession ? "edit" : "create"}
               onRefreshFromMeta={
                 isEditSession
-                  ? () => setMetaReloadTick((tick) => tick + 1)
+                  ? () => {
+                      if (isAdsManagerDirty(baselineRef.current, state)) {
+                        setRefreshConfirmOpen(true);
+                        return;
+                      }
+                      preferMetaOnLoad.current = true;
+                      setMetaReloadTick((tick) => tick + 1);
+                    }
                   : undefined
               }
               onDuplicate={() => void handleDuplicate()}
@@ -1863,6 +1873,34 @@ export default function MetaAdsManagerPage() {
         }
         updateSummary={updateSummary}
       />
+      {refreshConfirmOpen ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
+            <h2 className="text-[17px] font-bold text-[#050505]">{c("refreshConfirmTitle")}</h2>
+            <p className="mt-2 text-[14px] leading-snug text-[#65676B]">{c("refreshConfirmBody")}</p>
+            <div className="mt-5 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                className={metaBtnSecondary}
+                onClick={() => setRefreshConfirmOpen(false)}
+              >
+                {c("refreshConfirmKeep")}
+              </button>
+              <button
+                type="button"
+                className={metaBtnPrimary}
+                onClick={() => {
+                  setRefreshConfirmOpen(false);
+                  preferMetaOnLoad.current = true;
+                  setMetaReloadTick((tick) => tick + 1);
+                }}
+              >
+                {c("refreshConfirmLoad")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <CtaCompatibilityDialog
         open={Boolean(ctaConfirm && selectedAd)}
         currentCta={ctaConfirm?.current || selectedAd?.callToAction || ""}

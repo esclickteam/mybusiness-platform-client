@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { createDefaultAdsManagerState } from "./adsManagerDefaults";
-import { buildPublishPayloadFromAdsManager } from "./buildPublishPayload";
+import {
+  buildPublishPayloadFromAdsManager,
+  validateAdsManagerClient,
+} from "./buildPublishPayload";
 import { mapUiBidStrategy, placementPayload } from "./metaAdsManagerParity";
 
 describe("Ads Manager Marketing API parity", () => {
@@ -60,5 +63,42 @@ describe("Ads Manager Marketing API parity", () => {
     expect(publish.creativeFormat).toBe("carousel");
     expect(publish.carouselCards).toHaveLength(2);
     expect(placementPayload(state.adSets[0]).advantagePlacements).toBe(false);
+  });
+
+  it("sends excluded locations to Graph targeting", () => {
+    const state = createDefaultAdsManagerState();
+    state.adSets[0].locations = [
+      { key: "IL", name: "Israel", type: "country", countryCode: "IL", include: true },
+      { key: "US", name: "United States", type: "country", countryCode: "US", include: false },
+    ];
+    state.adSets[0].facebookPageId = "123";
+    state.ads[0].facebookPageId = "123";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Hi";
+    const publish = buildPublishPayloadFromAdsManager(state);
+    expect(publish.locations).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ key: "US", include: false }),
+        expect.objectContaining({ key: "IL", include: true }),
+      ])
+    );
+  });
+
+  it("blocks ROAS on leads and Audience Network with Instant Forms", () => {
+    const state = createDefaultAdsManagerState();
+    state.campaign.objective = "OUTCOME_LEADS";
+    state.campaign.bidStrategy = "LOWEST_COST_WITH_MIN_ROAS";
+    state.campaign.roasAverageFloor = "1.4";
+    state.adSets[0].conversionLocation = "Instant forms";
+    state.adSets[0].advantagePlacements = false;
+    state.adSets[0].publisherPlatforms = ["facebook", "audience_network"];
+    state.adSets[0].facebookPageId = "123";
+    state.ads[0].facebookPageId = "123";
+    state.ads[0].instantFormId = "form_1";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Hi";
+    const errors = validateAdsManagerClient(state).join(" ");
+    expect(errors).toMatch(/ROAS|מכירות|Sales/i);
+    expect(errors).toMatch(/Audience Network|Instant/i);
   });
 });

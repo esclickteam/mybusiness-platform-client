@@ -283,7 +283,7 @@ function mapAd(
 
 export function adsManagerStateFromMetaCampaign(
   campaign: MetaCampaign,
-  options?: { currency?: string }
+  options?: { currency?: string; preferMeta?: boolean }
 ): AdsManagerState {
   const base = createDefaultAdsManagerState();
   const objective: CampaignObjective = isCampaignObjective(campaign.objective)
@@ -395,10 +395,12 @@ export function adsManagerStateFromMetaCampaign(
     ads,
     audienceEstimate: { lower: 0, upper: 0, spectrum: 0.5, ready: false },
   };
-  const drafted = applyEditorDraft(loaded, campaign.editorDraft, {
-    creativeOnMeta: campaign.creativeLinkedOnMeta === true,
-    publishRecordId: campaign.publishRecordId,
-  });
+  const drafted = options?.preferMeta
+    ? { ...loaded, publishRecordId: campaign.publishRecordId || loaded.publishRecordId }
+    : applyEditorDraft(loaded, campaign.editorDraft, {
+        creativeOnMeta: campaign.creativeLinkedOnMeta === true,
+        publishRecordId: campaign.publishRecordId,
+      });
   // Editor drafts saved during create often omit targetingRaw / targetingLoaded.
   // Keep Meta's live targeting envelope so publish-changes can patch flexible_spec
   // without rebuilding geo from scratch.

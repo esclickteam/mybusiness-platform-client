@@ -55,6 +55,66 @@ export function mapUiBidStrategy(raw: string): string {
   return "LOWEST_COST_WITHOUT_CAP";
 }
 
+export function compatibilityIssueKeys(input: {
+  objective?: string;
+  bidStrategy?: string;
+  bidAmount?: string | number;
+  roasAverageFloor?: string | number;
+  advantagePlacements?: boolean;
+  publisherPlatforms?: string[];
+  messengerPositions?: string[];
+  conversionLocation?: string;
+  leadFormId?: string;
+  creativeFormat?: string;
+  carouselCards?: Array<{ imageHash?: string }>;
+}): string[] {
+  const objective = String(input.objective || "").toUpperCase();
+  const bid = mapUiBidStrategy(input.bidStrategy || "");
+  const platforms = input.publisherPlatforms || [];
+  const messenger = input.messengerPositions || [];
+  const instantForm = /instant/i.test(String(input.conversionLocation || ""));
+  const whatsapp = /whatsapp/i.test(String(input.conversionLocation || ""));
+  const keys: string[] = [];
+  if (
+    bid === "LOWEST_COST_WITH_MIN_ROAS" &&
+    objective !== "OUTCOME_SALES" &&
+    objective !== "OUTCOME_APP_PROMOTION"
+  ) {
+    keys.push("compatRoasObjective");
+  }
+  if (
+    (bid === "COST_CAP" || bid === "LOWEST_COST_WITH_BID_CAP") &&
+    !(Number(input.bidAmount) > 0)
+  ) {
+    keys.push("compatBidAmount");
+  }
+  if (bid === "LOWEST_COST_WITH_MIN_ROAS" && !(Number(input.roasAverageFloor) > 0)) {
+    keys.push("compatRoasFloor");
+  }
+  if (input.advantagePlacements === false && !platforms.length) {
+    keys.push("compatManualPlatform");
+  }
+  if (platforms.includes("threads") && !platforms.includes("instagram")) {
+    keys.push("compatThreads");
+  }
+  if (messenger.includes("sponsored_messages") && platforms.some((p) => p !== "messenger")) {
+    keys.push("compatSponsored");
+  }
+  if (instantForm && platforms.includes("audience_network")) {
+    keys.push("compatAnForms");
+  }
+  if (whatsapp && platforms.includes("audience_network")) {
+    keys.push("compatAnWhatsapp");
+  }
+  if (
+    input.creativeFormat === "carousel" &&
+    (input.carouselCards || []).filter((card) => card.imageHash).length < 2
+  ) {
+    keys.push("validationCarousel");
+  }
+  return keys;
+}
+
 export function toggleValue(list: string[], value: string): string[] {
   return list.includes(value)
     ? list.filter((item) => item !== value)
