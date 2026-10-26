@@ -59,4 +59,34 @@ describe("resolveWhatsAppHubRedirect", () => {
   it("sends unknown top-level segments to overview", () => {
     expect(resolveWhatsAppHubRedirect(`${base}/nope`)).toBe(`${base}/overview`);
   });
+
+  it("keeps Invistimo-only extras only when the Invistimo hub flag is on", () => {
+    expect(resolveWhatsAppHubRedirect(`${base}/automations`)).toBe(
+      `${base}/overview`
+    );
+    expect(resolveWhatsAppHubRedirect(`${base}/contacts`)).toBe(
+      `${base}/overview`
+    );
+    expect(resolveWhatsAppHubRedirect(`${base}/agents`)).toBe(
+      `${base}/overview`
+    );
+    expect(resolveWhatsAppHubRedirect(`${base}/scheduled`)).toBe(
+      `${base}/overview`
+    );
+    expect(
+      resolveWhatsAppHubRedirect(`${base}/automations`, { invistimoHub: true })
+    ).toBeNull();
+    expect(
+      resolveWhatsAppHubRedirect(`${base}/contacts`, { invistimoHub: true })
+    ).toBeNull();
+    expect(
+      resolveWhatsAppHubRedirect(`${base}/agents`, { invistimoHub: true })
+    ).toBeNull();
+    expect(
+      resolveWhatsAppHubRedirect(`${base}/scheduled`, { invistimoHub: true })
+    ).toBeNull();
+    expect(
+      resolveWhatsAppHubRedirect(`${base}/nope`, { invistimoHub: true })
+    ).toBe(`${base}/overview`);
+  });
 });

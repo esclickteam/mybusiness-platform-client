@@ -8226,7 +8226,10 @@
       "insights": "Percepções",
       "developers": "API / Desenvolvedores",
       "billing": "Cobrança da Meta",
-      "connection": "Conexão"
+      "connection": "Conexão",
+      "contacts": "Contatos e convidados",
+      "agents": "Agentes",
+      "scheduled": "Agendadas"
     },
     "categories": {
       "appointment_reminder": "Lembrete de compromisso",

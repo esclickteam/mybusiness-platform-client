@@ -8226,7 +8226,10 @@
       "insights": "رؤى",
       "developers": "API / المطورون",
       "billing": "فوترة Meta",
-      "connection": "اتصال"
+      "connection": "اتصال",
+      "contacts": "جهات الاتصال والضيوف",
+      "agents": "الوكلاء",
+      "scheduled": "مجدولة"
     },
     "categories": {
       "appointment_reminder": "تذكير الموعد",

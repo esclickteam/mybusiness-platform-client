@@ -8226,7 +8226,10 @@
       "insights": "Perspectivas",
       "developers": "API / Desarrolladores",
       "billing": "Facturación de Meta",
-      "connection": "Conexión"
+      "connection": "Conexión",
+      "contacts": "Contactos e invitados",
+      "agents": "Agentes",
+      "scheduled": "Programados"
     },
     "categories": {
       "appointment_reminder": "Recordatorio de nombramiento",

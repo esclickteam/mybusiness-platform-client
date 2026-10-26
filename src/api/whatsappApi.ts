@@ -510,6 +510,7 @@ export type WhatsAppCampaign = {
   }>;
   createdAt?: string;
   completedAt?: string;
+  scheduledAt?: string | null;
 };
 
 export type WhatsAppAutomationTrigger =
@@ -2040,4 +2041,133 @@ export async function testWhatsAppChannelWebhook(businessId: string) {
     webhookUrl?: string;
     note?: string;
   };
+}
+
+export type InvistimoWhatsAppAgent = {
+  id: string;
+  userId?: string | null;
+  name: string;
+  email: string;
+  role: "owner" | "manager" | "agent" | "viewer" | string;
+  permissions: string[];
+  status: "invited" | "active" | "disabled" | string;
+  source?: string;
+  locked?: boolean;
+};
+
+export async function getInvistimoWhatsAppHub(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/hub", {
+    params: { businessId },
+  });
+  return data as {
+    success: boolean;
+    extraModulesVisible?: boolean;
+    otherTenantsUnchanged?: boolean;
+    liveDispatch?: boolean;
+    login?: {
+      accountEmail?: string;
+      hubUrl?: string;
+      loginPath?: string;
+      noNewTenant?: boolean;
+    };
+    modules?: Array<{ id: string; path: string; invistimoOnly?: boolean }>;
+  };
+}
+
+export async function listInvistimoWhatsAppContacts(
+  businessId: string,
+  q = ""
+) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/contacts", {
+    params: { businessId, q },
+  });
+  return data as {
+    guests: WhatsAppRecipient[];
+    lists: Array<{
+      id: string;
+      name: string;
+      purpose?: string;
+      memberCount?: number;
+    }>;
+  };
+}
+
+export async function listInvistimoWhatsAppAgents(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/agents", {
+    params: { businessId },
+  });
+  return (data?.agents || []) as InvistimoWhatsAppAgent[];
+}
+
+export async function saveInvistimoWhatsAppAgent(
+  businessId: string,
+  payload: {
+    name: string;
+    email: string;
+    role?: string;
+    permissions?: string[];
+    status?: string;
+  }
+) {
+  const { data } = await API.post("/whatsapp/invistimo-ops/agents", {
+    businessId,
+    ...payload,
+  });
+  return data?.agent as InvistimoWhatsAppAgent;
+}
+
+export async function updateInvistimoWhatsAppAgent(
+  businessId: string,
+  id: string,
+  payload: Partial<{
+    name: string;
+    email: string;
+    role: string;
+    permissions: string[];
+    status: string;
+  }>
+) {
+  const { data } = await API.patch(`/whatsapp/invistimo-ops/agents/${id}`, {
+    businessId,
+    ...payload,
+  });
+  return data?.agent as InvistimoWhatsAppAgent;
+}
+
+export async function listInvistimoScheduledMessages(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-ops/scheduled", {
+    params: { businessId },
+  });
+  return (data?.campaigns || []) as WhatsAppCampaign[];
+}
+
+export async function createInvistimoScheduledMessage(
+  businessId: string,
+  payload: {
+    name?: string;
+    templateId: string;
+    scheduledAt: string;
+    audienceType: "selected_clients" | "mailing_list" | "manual";
+    mailingListId?: string | null;
+    clientIds?: string[];
+    manualRecipients?: Array<{ name?: string; phone: string }>;
+    consentConfirmed: boolean;
+  }
+) {
+  const { data } = await API.post("/whatsapp/invistimo-ops/scheduled", {
+    businessId,
+    ...payload,
+  });
+  return data;
+}
+
+export async function cancelInvistimoScheduledMessage(
+  businessId: string,
+  id: string
+) {
+  const { data } = await API.post(
+    `/whatsapp/invistimo-ops/scheduled/${id}/cancel`,
+    { businessId }
+  );
+  return data;
 }

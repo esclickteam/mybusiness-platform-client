@@ -171,4 +171,23 @@ describe("WhatsApp hub tab navigation", () => {
       expect(screen.getByTestId("tab-overview")).toBeInTheDocument()
     );
   });
+
+  it("does not show Invistimo-only extras for other tenants", async () => {
+    render(
+      <HubHarness initial="/business/biz-1/dashboard/whatsapp/overview" />
+    );
+    await waitFor(() => screen.getByTestId("tab-overview"));
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.automations/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.contacts/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.agents/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.scheduled/i })
+    ).not.toBeInTheDocument();
+  });
 });
