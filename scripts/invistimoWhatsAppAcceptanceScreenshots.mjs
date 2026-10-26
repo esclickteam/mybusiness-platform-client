@@ -96,22 +96,19 @@ await page.waitForTimeout(600);
 await shot(page, "invistimo_scheduled_saved");
 
 await page.goto(`${HUB(INVISTIMO_ID)}/inbox`, { waitUntil: "domcontentloaded" });
-await page.getByText("כן, מגיעים").first().waitFor({ timeout: 30000 });
+await page.locator("[data-wa-message]").first().waitFor({ timeout: 30000 });
 await shot(page, "invistimo_inbox_first_load");
 await page.reload({ waitUntil: "domcontentloaded" });
-await page.getByText("כן, מגיעים").first().waitFor({ timeout: 30000 });
+await page.locator("[data-wa-message]").first().waitFor({ timeout: 30000 });
 await shot(page, "invistimo_inbox_after_refresh");
-await page.getByText(/Noam RSVP/i).first().click();
-await page.getByText(/menu\.pdf|תפריט מצורף/i).first().waitFor({ timeout: 15000 });
+await page.getByRole("button", { name: /Noam RSVP/i }).first().click();
+await page.locator("[data-wa-message]").nth(2).waitFor({ timeout: 15000 });
+await page.getByText("menu.pdf").first().waitFor({ timeout: 15000 });
 await shot(page, "invistimo_inbox_files");
-const reply = page.locator("textarea, input[type='text']").last();
-if (await reply.count()) {
-  await reply.fill("תודה, נרשם. Preview only.");
-  const send = page.getByRole("button", { name: /send|שלח/i }).first();
-  if (await send.count()) await send.click();
-  await page.waitForTimeout(800);
-}
-await page.getByText("Dana Guest").first().click();
+await page.getByRole("button", { name: /Dana Guest/i }).first().click();
+await page.locator("[data-wa-message='inbound']").first().waitFor({ timeout: 15000 });
+await page.getByPlaceholder(/type a reply/i).fill("תודה, נרשם. Preview only.");
+await page.getByRole("button", { name: /reply|שלח/i }).last().click();
 await page.getByText("תודה, נרשם. Preview only.").first().waitFor({ timeout: 15000 });
 await shot(page, "invistimo_inbox_reply");
 
@@ -120,9 +117,12 @@ await page.evaluate(() => localStorage.clear());
 await login(page, "other.cafe@example.test", "OtherTenantPreview-Only-2026");
 await page.goto(`${HUB(OTHER_ID)}/overview`, { waitUntil: "domcontentloaded" });
 await page.waitForTimeout(800);
-const extras = await page.getByRole("link", { name: /automations|contacts|agents|scheduled|אוטומציות|נציגים|מוזמנים|מתוזמנות/i }).count();
+const extras = await page
+  .locator('a[href*="/dashboard/whatsapp/"]')
+  .filter({ hasText: /automations|contacts|agents|scheduled|אוטומציות|נציגים|מוזמנים|מתוזמנות/i })
+  .count();
 await shot(page, "other_tenant_hub_no_extras");
-if (extras > 0) throw new Error(`other tenant saw extra nav items: ${extras}`);
+if (extras > 0) throw new Error(`other tenant saw extra WhatsApp hub items: ${extras}`);
 
 await browser.close();
 console.log("acceptance screenshots done");

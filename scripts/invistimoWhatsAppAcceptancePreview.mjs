@@ -212,7 +212,10 @@ function createState() {
           messageType: "image",
           mimeType: "image/svg+xml",
           mediaUrl:
-            "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='120'><rect fill='%2310b981' width='240' height='120'/><text x='20' y='70' fill='white' font-size='22'>Table 12</text></svg>",
+            "data:image/svg+xml;utf8," +
+            encodeURIComponent(
+              "<svg xmlns='http://www.w3.org/2000/svg' width='240' height='120'><rect fill='#10b981' width='240' height='120'/><text x='20' y='70' fill='white' font-size='22'>Table 12</text></svg>"
+            ),
           status: "delivered",
           createdAt: new Date(Date.now() - 7000000).toISOString(),
         },
