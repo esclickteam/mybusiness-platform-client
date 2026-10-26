@@ -980,6 +980,35 @@ export async function runInvistimoWhatsAppDryRun(
   return data;
 }
 
+export async function runInvistimoTemplateMigrationDryRun(businessId: string) {
+  const { data } = await API.post(
+    "/whatsapp/invistimo-migration/templates/migrate-dry-run",
+    { businessId }
+  );
+  return data as {
+    success: boolean;
+    mappedCount?: number;
+    eligibleCount?: number;
+    ineligibleCount?: number;
+    allThirtyTwoMapped?: boolean;
+    metaWritePerformed?: boolean;
+    eligible?: Array<{ name: string; eligible: boolean }>;
+    ineligible?: Array<{ name: string; reasons?: string[] }>;
+  };
+}
+
+export async function getInvistimoShareReadiness(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-migration/readiness", {
+    params: { businessId },
+  });
+  return data as {
+    success: boolean;
+    productionCutoverAllowed?: boolean;
+    checks?: Array<{ id: string; verdict: string; detail: string }>;
+    summary?: { PASS?: string[]; BLOCKED?: string[]; NOT_VERIFIED?: string[] };
+  };
+}
+
 export async function getWhatsAppStagingStatus(businessId: string) {
   const { data } = await API.get("/whatsapp/connection/staging", {
     params: { businessId },

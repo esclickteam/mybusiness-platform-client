@@ -66,6 +66,7 @@ import {
   inputBase,
 } from "../../../../styles/bizuplyUi";
 import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
+import WhatsAppInvistimoSharePanel from "./WhatsAppInvistimoSharePanel";
 
 type OutletCtx = { businessId: string | null };
 
@@ -1365,6 +1366,10 @@ export default function WhatsAppSettingsTab() {
                   {t("whatsapp.settings.voiceStart")}
                 </button>
               </div>
+            ) : null}
+
+            {isInvistimoAdminBusiness(businessId) ? (
+              <WhatsAppInvistimoSharePanel businessId={businessId} />
             ) : null}
 
             {isInvistimoAdminBusiness(businessId) ||
