@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
+  completeWhatsAppEmbeddedSignup,
   getInvistimoShareReadiness,
+  getWhatsAppEmbeddedSignupConfig,
   runInvistimoTemplateMigrationDryRun,
 } from "../../../../api/whatsappApi";
-import { btnSecondary } from "../../../../styles/bizuplyUi";
-import { INVISTIMO_SHARE_SCREENS } from "./invistimoAccountSharePolicy";
+import { btnPrimary, btnSecondary } from "../../../../styles/bizuplyUi";
+import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
+import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
+import {
+  extractEmbeddedSignupSessionAssets,
+} from "./embeddedSignupSessionAssets";
+import {
+  INVISTIMO_SHARE_CONFIRM_PHRASE,
+  INVISTIMO_SHARE_SCREENS,
+  assertInvistimoShareAssets,
+  buildInvistimoAccountShareExtras,
+  evaluateInvistimoShareEvent,
+} from "./invistimoAccountSharePolicy";
 
 type Props = {
   businessId: string;
@@ -14,8 +27,71 @@ type Props = {
 
 export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
   const { t } = useTranslation();
-  const [busy, setBusy] = useState<"templates" | "readiness" | null>(null);
+  const [busy, setBusy] = useState<"templates" | "readiness" | "share" | null>(
+    null
+  );
   const [summary, setSummary] = useState("");
+  const [shareAllowed, setShareAllowed] = useState(false);
+  const sessionRef = useRef<{
+    phoneNumberId: string;
+    wabaId: string;
+    metaBusinessId?: string;
+    event?: string;
+  } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void getWhatsAppEmbeddedSignupConfig(businessId)
+      .then((config) => {
+        if (cancelled) return;
+        setShareAllowed(Boolean(config.invistimoAccountShare?.shareExecutionAllowed));
+      })
+      .catch(() => {
+        if (!cancelled) setShareAllowed(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId]);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (
+        event.origin !== "https://www.facebook.com" &&
+        event.origin !== "https://web.facebook.com"
+      ) {
+        return;
+      }
+      try {
+        const data =
+          typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        if (data?.type !== "WA_EMBEDDED_SIGNUP") return;
+        const verdict = evaluateInvistimoShareEvent(
+          typeof data.event === "string" ? data.event : ""
+        );
+        if (verdict.abort) {
+          sessionRef.current = null;
+          if (data.event && data.event !== "CANCEL") {
+            toast.error(t("whatsapp.settings.invistimoShareMetaAbort"));
+          }
+          return;
+        }
+        const assets = extractEmbeddedSignupSessionAssets(data);
+        if (assets?.phoneNumberId && assets?.wabaId) {
+          sessionRef.current = {
+            phoneNumberId: assets.phoneNumberId,
+            wabaId: assets.wabaId,
+            metaBusinessId: assets.metaBusinessId,
+            event: assets.event,
+          };
+        }
+      } catch {
+        // Ignore non-JSON postMessages from the popup.
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, [t]);
 
   const handleTemplateDryRun = async () => {
     try {
@@ -62,6 +138,94 @@ export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
     }
   };
 
+  const handleStartShare = async () => {
+    if (!shareAllowed) {
+      toast.error(t("whatsapp.settings.invistimoShareStartBlocked"));
+      return;
+    }
+    try {
+      setBusy("share");
+      sessionRef.current = null;
+      const signup = await getWhatsAppEmbeddedSignupConfig(businessId);
+      if (!signup.ready || !signup.appId || !signup.configId) {
+        throw new Error(t("whatsapp.settings.configMissing"));
+      }
+      if (!signup.invistimoAccountShare?.shareExecutionAllowed) {
+        throw new Error(t("whatsapp.settings.invistimoShareStartBlocked"));
+      }
+      const FB = await loadFacebookSdk(
+        signup.appId,
+        signup.graphVersion || "v21.0"
+      );
+      await new Promise<void>((resolve, reject) => {
+        FB.login(
+          (response) => {
+            void (async () => {
+              try {
+                const code = response?.authResponse?.code;
+                if (!code) {
+                  reject(new Error(t("whatsapp.settings.connectCancelled")));
+                  return;
+                }
+                const assets = sessionRef.current;
+                if (!assets?.phoneNumberId || !assets?.wabaId) {
+                  reject(new Error(t("whatsapp.settings.missingSessionAssets")));
+                  return;
+                }
+                const eventCheck = evaluateInvistimoShareEvent(assets.event || "FINISH");
+                if (!eventCheck.allowComplete) {
+                  reject(new Error(t("whatsapp.settings.invistimoShareMetaAbort")));
+                  return;
+                }
+                const assetCheck = assertInvistimoShareAssets(assets);
+                if (!assetCheck.ok) {
+                  reject(new Error(t("whatsapp.settings.invistimoShareMetaAbort")));
+                  return;
+                }
+                const status = await completeWhatsAppEmbeddedSignup(businessId, {
+                  code,
+                  phoneNumberId: assets.phoneNumberId,
+                  wabaId: assets.wabaId,
+                  metaBusinessId: assets.metaBusinessId,
+                  metaEventType: assets.event || "FINISH",
+                  confirmInvistimoAccountShare: INVISTIMO_SHARE_CONFIRM_PHRASE,
+                });
+                if (!status.staged || status.liveUnchanged === false) {
+                  reject(new Error(t("whatsapp.settings.invistimoShareMetaAbort")));
+                  return;
+                }
+                setSummary(
+                  t("whatsapp.settings.invistimoShareStartedOk", {
+                    waba: assets.wabaId,
+                  })
+                );
+                toast.success(t("whatsapp.settings.invistimoShareStartedOkToast"));
+                resolve();
+              } catch (error) {
+                reject(error instanceof Error ? error : new Error(String(error)));
+              }
+            })();
+          },
+          {
+            config_id: signup.configId,
+            response_type: "code",
+            override_default_response_type: true,
+            extras:
+              signup.invistimoAccountShare?.extras ||
+              signup.extras ||
+              buildInvistimoAccountShareExtras(),
+          }
+        );
+      });
+    } catch (error: any) {
+      toast.error(
+        getApiErrorMessage(error, t("whatsapp.settings.invistimoShareStartFailed"))
+      );
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900">
       <p className="font-semibold">
@@ -94,14 +258,29 @@ export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
         {t("whatsapp.settings.invistimoShareAbortHow")}
       </p>
       <p className="mt-2 text-xs font-semibold text-slate-800">
-        {t("whatsapp.settings.invistimoShareGoNoGo")}
+        {t(
+          shareAllowed
+            ? "whatsapp.settings.invistimoShareGoShareOnly"
+            : "whatsapp.settings.invistimoShareGoNoGo"
+        )}
       </p>
       <p className="mt-2 text-xs font-semibold text-amber-800">
         {t("whatsapp.settings.invistimoShareFrozen")}
       </p>
       <div className="mt-3 flex flex-wrap gap-2">
-        <button type="button" className={btnSecondary} disabled>
-          {t("whatsapp.settings.invistimoShareStartBlocked")}
+        <button
+          type="button"
+          className={shareAllowed ? btnPrimary : btnSecondary}
+          disabled={!shareAllowed || busy !== null}
+          onClick={() => {
+            void handleStartShare();
+          }}
+        >
+          {busy === "share"
+            ? t("whatsapp.settings.invistimoShareStarting")
+            : shareAllowed
+              ? t("whatsapp.settings.invistimoShareStart")
+              : t("whatsapp.settings.invistimoShareStartBlocked")}
         </button>
         <button
           type="button"

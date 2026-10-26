@@ -260,6 +260,13 @@ export type WhatsAppEmbeddedSignupConfig = {
   graphVersion: string;
   encryptionReady?: boolean;
   permissions?: string[];
+  genericConnectBlocked?: boolean;
+  extras?: Record<string, unknown>;
+  invistimoAccountShare?: {
+    shareExecutionAllowed?: boolean;
+    extras?: Record<string, unknown>;
+    permissions?: string[];
+  };
 };
 
 export type WhatsAppHeaderType =
@@ -807,6 +814,7 @@ export async function completeWhatsAppEmbeddedSignup(
     metaBusinessId?: string;
     metaEventType?: string;
     pin?: string;
+    confirmInvistimoAccountShare?: string;
   }
 ) {
   const { data } = await API.post("/whatsapp/embedded-signup/complete", {
