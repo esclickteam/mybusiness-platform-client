@@ -59,7 +59,7 @@ export default function CampaignLevelEditor({
       <MetaSection
         title={t("metaCampaigns.adsManager.campaignName")}
         action={
-          {onRefreshFromMeta ? (
+          onRefreshFromMeta ? (
             <button type="button" className={metaBtnSecondary} onClick={onRefreshFromMeta}>
               {t("metaCampaigns.adsManager.chrome.refreshFromMeta")}
             </button>
@@ -67,7 +67,7 @@ export default function CampaignLevelEditor({
             <button type="button" className={metaBtnSecondary}>
               {t("metaCampaigns.adsManager.createTemplate")}
             </button>
-          )}
+          )
         }
       >
         <MetaField label={t("metaCampaigns.adsManager.campaignName")}>
