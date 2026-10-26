@@ -186,7 +186,7 @@ export default function WhatsAppOverviewTab() {
     activity.some((event) => String(event.type || "").startsWith("message_"));
 
   return (
-    <div dir={getTextDirection(i18n.language)} className="space-y-3" data-demo-target="whatsapp-overview">
+    <div dir={getTextDirection(i18n.language)} className="space-y-3" data-demo-target="whatsapp-overview" data-testid="whatsapp-module-dashboard">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-black text-slate-900">
           {t("whatsapp.hub.overviewTitle")}

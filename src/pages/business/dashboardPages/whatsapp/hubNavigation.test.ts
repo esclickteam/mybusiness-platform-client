@@ -1,4 +1,7 @@
-import { resolveWhatsAppHubRedirect } from "./hubNavigation";
+import {
+  isWhatsAppHubAllowedWhenDisconnected,
+  resolveWhatsAppHubRedirect,
+} from "./hubNavigation";
 
 describe("resolveWhatsAppHubRedirect", () => {
   const base = "/business/biz-1/dashboard/whatsapp";
@@ -88,5 +91,49 @@ describe("resolveWhatsAppHubRedirect", () => {
     expect(
       resolveWhatsAppHubRedirect(`${base}/nope`, { invistimoHub: true })
     ).toBe(`${base}/overview`);
+  });
+});
+
+describe("isWhatsAppHubAllowedWhenDisconnected", () => {
+  it("keeps setup tabs for every tenant without faking Connected", () => {
+    for (const tab of ["connection", "billing", "developers", "meta-costs"]) {
+      expect(isWhatsAppHubAllowedWhenDisconnected(tab)).toBe(true);
+    }
+    expect(isWhatsAppHubAllowedWhenDisconnected("overview")).toBe(false);
+    expect(isWhatsAppHubAllowedWhenDisconnected("inbox")).toBe(false);
+    expect(isWhatsAppHubAllowedWhenDisconnected("templates")).toBe(false);
+    expect(isWhatsAppHubAllowedWhenDisconnected("insights")).toBe(false);
+  });
+
+  it("lets the Invistimo tenant view hub modules before cutover", () => {
+    for (const tab of [
+      "overview",
+      "inbox",
+      "templates",
+      "insights",
+      "automations",
+      "contacts",
+      "agents",
+      "scheduled",
+    ]) {
+      expect(
+        isWhatsAppHubAllowedWhenDisconnected(tab, { invistimoHub: true })
+      ).toBe(true);
+    }
+    expect(
+      isWhatsAppHubAllowedWhenDisconnected("messages", { invistimoHub: true })
+    ).toBe(false);
+    expect(
+      isWhatsAppHubAllowedWhenDisconnected("profile", { invistimoHub: true })
+    ).toBe(false);
+  });
+
+  it("lets the API portal open overview only", () => {
+    expect(
+      isWhatsAppHubAllowedWhenDisconnected("overview", { apiPortal: true })
+    ).toBe(true);
+    expect(
+      isWhatsAppHubAllowedWhenDisconnected("inbox", { apiPortal: true })
+    ).toBe(false);
   });
 });

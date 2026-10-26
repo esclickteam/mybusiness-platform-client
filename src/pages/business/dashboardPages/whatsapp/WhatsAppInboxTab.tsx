@@ -211,6 +211,7 @@ export default function WhatsAppInboxTab() {
       className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]"
       dir={getTextDirection(i18n.language)}
       data-demo-target="whatsapp-inbox"
+      data-testid="whatsapp-module-inbox"
     >
       <section className={`${cardBase} overflow-hidden`}>
         <div className="border-b border-slate-100 px-4 py-4">

@@ -22,6 +22,39 @@ export const INVISTIMO_ONLY_SEGMENTS = new Set([
   "scheduled",
 ]);
 
+/** Always reachable without a linked WABA. Does not imply readyToSend. */
+export const ALWAYS_DISCONNECTED_SEGMENTS = new Set([
+  "connection",
+  "billing",
+  "developers",
+  "meta-costs",
+]);
+
+/**
+ * Invistimo-only read/manage screens that stay open before number cutover.
+ * These do not fake `connected` and do not authorize outbound send.
+ */
+export const INVISTIMO_PRE_CUTOVER_VIEW_SEGMENTS = new Set([
+  "overview",
+  "inbox",
+  "templates",
+  "insights",
+  ...INVISTIMO_ONLY_SEGMENTS,
+]);
+
+export function isWhatsAppHubAllowedWhenDisconnected(
+  topSegment: string,
+  options: { invistimoHub?: boolean; apiPortal?: boolean } = {}
+): boolean {
+  const top = String(topSegment || "");
+  if (ALWAYS_DISCONNECTED_SEGMENTS.has(top)) return true;
+  if (options.apiPortal && top === "overview") return true;
+  if (options.invistimoHub && INVISTIMO_PRE_CUTOVER_VIEW_SEGMENTS.has(top)) {
+    return true;
+  }
+  return false;
+}
+
 export const KNOWN_TOP_SEGMENTS = new Set([
   "overview",
   "profile",

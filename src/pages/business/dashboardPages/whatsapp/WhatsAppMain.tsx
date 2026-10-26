@@ -57,6 +57,7 @@ import {
   toneBadgeClass,
 } from "./hubFormat";
 import {
+  isWhatsAppHubAllowedWhenDisconnected,
   pathSegmentsAfterWhatsapp,
   resolveWhatsAppHubRedirect,
   whatsappBasePath,
@@ -232,17 +233,13 @@ export default function WhatsAppMain() {
       });
       return;
     }
-    const allowWhenDisconnected = new Set([
-      "connection",
-      "billing",
-      "developers",
-      "meta-costs",
-      ...(invistimoHub
-        ? ["automations", "contacts", "agents", "scheduled"]
-        : []),
-    ]);
-    if (apiPortal) allowWhenDisconnected.add("overview");
-    if (!isConnected && !allowWhenDisconnected.has(topSegment)) {
+    if (
+      !isConnected &&
+      !isWhatsAppHubAllowedWhenDisconnected(topSegment, {
+        invistimoHub,
+        apiPortal,
+      })
+    ) {
       navigate(`${whatsappBasePath(location.pathname)}/connection${location.search}`, {
         replace: true,
       });
