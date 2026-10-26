@@ -84,6 +84,7 @@ describe("audience estimate and publish use the same targeting", () => {
     state.adSets[0].facebookPageId = "111";
     state.adSets[0].whatsappPhone = "972515573699";
     state.ads[0].facebookPageId = "111";
+    state.ads[0].callToAction = "WHATSAPP_MESSAGE";
     state.ads[0].primaryText = "Hello";
     state.ads[0].headline = "Chat";
     const publish = buildPublishPayloadFromAdsManager(state);
@@ -93,7 +94,7 @@ describe("audience estimate and publish use the same targeting", () => {
     expect(validateAdsManagerClient(state)).toEqual([]);
   });
 
-  it("never publishes OPEN_LINK with an Instant Form id", () => {
+  it("blocks Instant Form publish while OPEN_LINK is still selected", () => {
     const state = createDefaultAdsManagerState();
     state.campaign.objective = "OUTCOME_LEADS";
     state.adSets[0].conversionLocation = "Instant forms";
@@ -105,8 +106,24 @@ describe("audience estimate and publish use the same targeting", () => {
     state.ads[0].headline = "Lead";
     const publish = buildPublishPayloadFromAdsManager(state);
     expect(publish.leadFormId).toBe("form_9");
-    expect(publish.callToAction).toBe("SIGN_UP");
-    expect(publish.callToAction).not.toBe("OPEN_LINK");
+    expect(publish.callToAction).toBe("OPEN_LINK");
+    expect(validateAdsManagerClient(state).join(" ")).toMatch(/Instant Form|טופס|OPEN_LINK|לפרטים/i);
+  });
+
+  it("publishes GET_QUOTE with an Instant Form id", () => {
+    const state = createDefaultAdsManagerState();
+    state.campaign.objective = "OUTCOME_LEADS";
+    state.adSets[0].conversionLocation = "Instant forms";
+    state.adSets[0].facebookPageId = "111";
+    state.ads[0].facebookPageId = "111";
+    state.ads[0].instantFormId = "form_9";
+    state.ads[0].callToAction = "GET_QUOTE";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Lead";
+    const publish = buildPublishPayloadFromAdsManager(state);
+    expect(publish.callToAction).toBe("GET_QUOTE");
+    expect(publish.leadFormId).toBe("form_9");
+    expect(validateAdsManagerClient(state)).toEqual([]);
   });
 
   it("keeps OPEN_LINK on website traffic and drops a leftover form id", () => {

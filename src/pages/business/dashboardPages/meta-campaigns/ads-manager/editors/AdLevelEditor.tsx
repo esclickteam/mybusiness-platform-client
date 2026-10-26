@@ -27,10 +27,12 @@ import {
   type LeadFormDuplicateSeed,
 } from "../leadFormDuplicateSeed";
 import {
+  inspectCtaForContext,
   metaCtaLabel,
   metaCtaOptionsForContext,
-  resolveCtaForAdContext,
   usesInstantFormDestination,
+  usesMessengerDestination,
+  usesPhoneDestination,
 } from "../metaAdCtas";
 import LeadgenTosCard from "../LeadgenTosCard";
 import {
@@ -90,10 +92,16 @@ export default function AdLevelEditor({
     tab === "active" ? c("formTabActive") : c("formTabArchived");
   const usesWhatsApp = isWhatsAppConversionLocation(conversionLocation);
   const usesInstantForms = usesInstantFormDestination(conversionLocation);
-  const ctaOptions = metaCtaOptionsForContext(
-    { usesInstantForms, usesWhatsApp },
-    t
-  );
+  const usesMessenger = usesMessengerDestination(conversionLocation);
+  const usesPhone = usesPhoneDestination(conversionLocation);
+  const ctaContext = {
+    usesInstantForms,
+    usesWhatsApp,
+    usesMessenger,
+    usesPhone,
+  };
+  const ctaOptions = metaCtaOptionsForContext(ctaContext, t);
+  const ctaStatus = inspectCtaForContext(ad.callToAction, ctaContext);
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
@@ -113,16 +121,6 @@ export default function AdLevelEditor({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
-
-  useEffect(() => {
-    const next = resolveCtaForAdContext(ad.callToAction, {
-      usesInstantForms,
-      usesWhatsApp,
-    });
-    if (next && next !== ad.callToAction) {
-      onChange({ callToAction: next });
-    }
-  }, [ad.callToAction, onChange, usesInstantForms, usesWhatsApp]);
 
   const readActionError = (error: unknown) => {
     const response = (error as { response?: { data?: { error?: string; message?: string } } })
@@ -721,6 +719,11 @@ export default function AdLevelEditor({
             </span>
             <ChevronDown className="h-4 w-4 text-[#65676B]" />
           </button>
+          {!ctaStatus.compatible ? (
+            <p className="mt-1.5 text-[12px] font-semibold text-[#C03221]">
+              {c("ctaIncompatibleLeadForm")}
+            </p>
+          ) : null}
           {ctaOpen ? (
             <div
               data-testid="meta-ads-cta-menu"
@@ -732,13 +735,22 @@ export default function AdLevelEditor({
                   <button
                     key={cta.value}
                     type="button"
+                    disabled={!cta.compatible}
+                    title={
+                      cta.compatible
+                        ? undefined
+                        : t(`metaCampaigns.adsManager.chrome.${cta.reasonKey || "ctaIncompatibleLeadForm"}`)
+                    }
                     className={[
                       "flex w-full items-center gap-3 px-3 py-2.5 text-left text-[14px]",
-                      selected
-                        ? "bg-[#E7F3FF] font-semibold text-[#050505]"
-                        : "hover:bg-[#F0F2F5]",
+                      !cta.compatible
+                        ? "cursor-not-allowed text-[#8A8D91]"
+                        : selected
+                          ? "bg-[#E7F3FF] font-semibold text-[#050505]"
+                          : "hover:bg-[#F0F2F5]",
                     ].join(" ")}
                     onClick={() => {
+                      if (!cta.compatible) return;
                       onChange({ callToAction: cta.value });
                       setCtaOpen(false);
                     }}
