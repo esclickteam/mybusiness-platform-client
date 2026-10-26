@@ -1070,6 +1070,17 @@ export default function WhatsAppSettingsTab() {
           {t("whatsapp.settings.subtitle")}
         </p>
 
+        {/*
+          INVISTIMO account-share must be visible while Bizuply still shows
+          disconnected (360dialog remains the live sender). Do not gate this
+          panel on connection.connected — that hid Stage 1 in production.
+        */}
+        {isInvistimoAdminBusiness(businessId) ? (
+          <div className="mt-5">
+            <WhatsAppInvistimoSharePanel businessId={businessId} />
+          </div>
+        ) : null}
+
         {!linked ? (
           <div className="mt-6 space-y-4">
             {usingManagedWithoutPrivate ? (
@@ -1385,10 +1396,6 @@ export default function WhatsAppSettingsTab() {
                   {t("whatsapp.settings.voiceStart")}
                 </button>
               </div>
-            ) : null}
-
-            {isInvistimoAdminBusiness(businessId) ? (
-              <WhatsAppInvistimoSharePanel businessId={businessId} />
             ) : null}
 
             {isInvistimoAdminBusiness(businessId) ||
