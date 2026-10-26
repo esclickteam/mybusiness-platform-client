@@ -103,7 +103,7 @@ export default function WhatsAppInsightsTab() {
   }
 
   return (
-    <div dir={getTextDirection(i18n.language)} className="space-y-3">
+    <div dir={getTextDirection(i18n.language)} className="space-y-3" data-testid="whatsapp-module-reports">
       <div>
         <h2 className="text-base font-black text-slate-900">
           {t("whatsapp.hub.insightsTitle")}
