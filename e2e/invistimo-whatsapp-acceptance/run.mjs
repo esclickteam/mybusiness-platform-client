@@ -65,14 +65,14 @@ const MODULES = [
     title: "Inbox",
     path: "/inbox",
     expectPath: "/dashboard/whatsapp/inbox",
-    marker: "",
+    marker: "[data-testid='whatsapp-module-inbox'], [data-demo-target='whatsapp-inbox']",
   },
   {
     id: "templates",
     title: "Templates",
     path: "/templates",
     expectPath: "/dashboard/whatsapp/templates",
-    marker: "",
+    marker: "[data-testid='whatsapp-module-templates'], [data-demo-target='whatsapp-templates']",
   },
   {
     id: "contacts",
@@ -107,7 +107,7 @@ const MODULES = [
     title: "Reports / Performance",
     path: "/insights",
     expectPath: "/dashboard/whatsapp/insights",
-    marker: "",
+    marker: "[data-testid='whatsapp-module-reports']",
   },
   {
     id: "billing",
@@ -359,6 +359,27 @@ async function runModule(context, mod) {
     const bodyText = ((await page.locator("body").innerText().catch(() => "")) || "").slice(0, 4000);
     if (/application error|chunkloaderror|cannot get \//i.test(bodyText)) {
       findings.notes.push("FAIL: error page");
+    }
+    if (findings.api.some((a) => a.status >= 500)) {
+      findings.notes.push("FAIL: WhatsApp API returned HTTP 500");
+    }
+    const needsApi = [
+      "dashboard",
+      "inbox",
+      "templates",
+      "reports",
+      "contacts",
+      "automations",
+      "agents",
+      "scheduled",
+      "connection",
+    ].includes(mod.id);
+    if (
+      needsApi &&
+      onExpectedPath &&
+      !findings.api.some((a) => a.status >= 200 && a.status < 400)
+    ) {
+      findings.notes.push("FAIL: no successful WhatsApp API response for this module");
     }
     const danger = page.getByRole("button", { name: DANGER_CLICK });
     const dangerCount = await danger.count();
