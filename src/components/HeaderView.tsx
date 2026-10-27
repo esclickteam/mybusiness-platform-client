@@ -88,12 +88,28 @@ export default function HeaderView({
                   className={`site-nav__item${open ? " is-open" : ""}`}
                   onMouseEnter={() => setOpenGroup(group.id)}
                   onMouseLeave={() => setOpenGroup(null)}
+                  onKeyDown={(event) => {
+                    if (event.key !== "Escape") return;
+                    setOpenGroup(null);
+                    event.currentTarget.querySelector("button")?.focus();
+                  }}
                 >
                   <button
                     type="button"
                     className="site-header__link site-nav__button"
                     aria-expanded={open}
+                    aria-haspopup="true"
                     onClick={() => setOpenGroup(open ? null : group.id)}
+                    onKeyDown={(event) => {
+                      if (event.key !== "ArrowDown") return;
+                      event.preventDefault();
+                      setOpenGroup(group.id);
+                      const panel = event.currentTarget.nextElementSibling;
+                      requestAnimationFrame(() => {
+                        const link = panel?.querySelector("a");
+                        if (link instanceof HTMLAnchorElement) link.focus();
+                      });
+                    }}
                   >
                     {group.label}
                   </button>
