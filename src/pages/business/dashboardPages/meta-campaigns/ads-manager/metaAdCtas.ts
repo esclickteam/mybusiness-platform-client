@@ -203,7 +203,7 @@ export function metaCtaOptionsForContext(
   }
 
   const values = context.usesInstantForms
-    ? INSTANT_FORM_ADS_MANAGER_ORDER
+    ? INSTANT_FORM_CTA_VALUES
     : META_AD_CTA_VALUES.filter((value) => value !== "WHATSAPP_MESSAGE");
 
   return values.map((value) => {

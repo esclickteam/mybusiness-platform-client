@@ -79,12 +79,15 @@ import {
 import {
   conversionLocationsForObjective,
   inspectCtaForContext,
+  metaCtaLabel,
   usesInstantFormDestination,
   usesMessengerDestination,
   usesPhoneDestination,
 } from "./metaAdCtas";
 import CtaCompatibilityDialog from "./CtaCompatibilityDialog";
 import { isWhatsAppConversionLocation } from "./pageWhatsAppNumber";
+import { displayListStatus } from "../campaignLocalDraft";
+import { formatDateTimeHe, metaDeliveryStatusKey } from "../metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
 
@@ -1337,13 +1340,21 @@ export default function MetaAdsManagerPage() {
           {state.lastSavedAt ? (
             <span className="text-[12px] font-semibold text-[#65676B]">
               {c("lastSavedAt", {
-                time: new Date(state.lastSavedAt).toLocaleString(i18n.language || "he"),
+                time: formatDateTimeHe(state.lastSavedAt),
               })}
             </span>
           ) : null}
           {isEditSession ? (
             <span className="rounded-full bg-[#E4E6EB] px-2 py-1 text-[12px] font-bold text-[#050505]">
-              {c("campaignStatusLabel")}: {state.campaign.status || "DRAFT"}
+              {c("campaignStatusLabel")}:{" "}
+              {t(
+                `metaCampaigns.status.${metaDeliveryStatusKey(
+                  displayListStatus({
+                    id: state.campaign.id,
+                    status: state.campaign.status,
+                  })
+                )}`
+              )}
             </span>
           ) : null}
           {dirty ? (
@@ -1527,7 +1538,9 @@ export default function MetaAdsManagerPage() {
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
                   <dt className="text-[#65676B]">{c("reviewCta")}</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {selectedAd?.callToAction || c("notSet")}
+                    {selectedAd?.callToAction
+                      ? metaCtaLabel(selectedAd.callToAction, t)
+                      : c("notSet")}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
@@ -1554,6 +1567,7 @@ export default function MetaAdsManagerPage() {
                     {selectedAd?.instagramAccountId || c("notSet")}
                   </dd>
                 </div>
+                {usesInstantFormDestination(selectedAdSet?.conversionLocation) ? (
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#65676B]">{c("reviewInstantForm")}</dt>
                   <dd className="text-end font-semibold text-[#050505]">
@@ -1569,6 +1583,7 @@ export default function MetaAdsManagerPage() {
                     ) : null}
                   </dd>
                 </div>
+                ) : null}
               </dl>
               {reviewErrors.length ? (
                 <div className="mt-4 rounded-md border border-[#F5D78E] bg-[#FFF8E5] px-3 py-2 text-[13px]">
@@ -1750,6 +1765,7 @@ export default function MetaAdsManagerPage() {
                 null
               }
               score={state.campaignScore}
+              conversionLocation={selectedAdSet?.conversionLocation}
             />
           ) : null}
         </aside>

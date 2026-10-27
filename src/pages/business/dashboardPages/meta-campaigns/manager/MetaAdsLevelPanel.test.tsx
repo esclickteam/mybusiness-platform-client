@@ -81,6 +81,7 @@ describe("Meta ads level panel", () => {
     );
 
     expect(await screen.findByText("מודעת Evently")).toBeTruthy();
+    expect(screen.getByText("שם המודעה")).toBeTruthy();
     expect(screen.getByText("4,715")).toBeTruthy();
     fireEvent.change(screen.getByTestId("meta-manager-search"), { target: { value: "120257524330680405" } });
     await waitFor(() =>

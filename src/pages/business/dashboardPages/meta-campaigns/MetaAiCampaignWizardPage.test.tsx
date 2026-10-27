@@ -27,6 +27,7 @@ function resolveKey(locale: unknown, key: string, opts?: Record<string, unknown>
 }
 
 vi.mock("react-i18next", () => ({
+  initReactI18next: { type: "3rdParty", init: () => undefined },
   useTranslation: () => ({
     t: (key: string, opts?: Record<string, unknown>) =>
       resolveKey(localeRef.current, key, opts),
@@ -529,7 +530,9 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     );
     expect(screen.getByTestId("meta-ai-lead-form")).toBeTruthy();
     expect(screen.getByText("טיפול פנים בחיפה")).toBeTruthy();
-    expect(screen.getByText("השאירו פרטים ונחזור אליכן.")).toBeTruthy();
+    expect(screen.getByTestId("meta-ai-primary-text")).toHaveValue(
+      "השאירו פרטים ונחזור אליכן."
+    );
   });
 
   it("retries generation without starting a new session", async () => {

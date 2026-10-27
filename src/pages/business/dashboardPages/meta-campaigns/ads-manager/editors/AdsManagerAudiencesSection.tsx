@@ -11,6 +11,7 @@ import {
   type MetaSavedAudience,
 } from "../../../../../../api/metaCampaignsApi";
 import type { AdSetDraft, AdSetInterest } from "../adsManagerTypes";
+import { metaAdsFriendlyMessage } from "../../metaAdsFriendlyError";
 import { MetaField, MetaSection, metaInputClass } from "../metaAdsUi";
 
 type Props = {
@@ -28,6 +29,22 @@ function toggleAudience(list: AdSetInterest[], row: MetaCustomAudience): AdSetIn
   const exists = list.some((item) => item.id === row.id);
   if (exists) return list.filter((item) => item.id !== row.id);
   return [...list, { id: row.id, name: row.name }];
+}
+
+function audienceErrorText(
+  err: unknown,
+  t: (key: string) => string
+): string {
+  const code = metaAdsFriendlyMessage(err, "");
+  if (code === "GRAPH_FIELD") {
+    return t("metaCampaigns.adsManager.chrome.audienceGraphFieldError");
+  }
+  const message = err as { response?: { data?: { error?: string } }; message?: string };
+  return (
+    message.response?.data?.error ||
+    message.message ||
+    String(err)
+  );
 }
 
 export default function AdsManagerAudiencesSection({
@@ -66,12 +83,12 @@ export default function AdsManagerAudiencesSection({
         setStudies(studyRows.results || []);
       })
       .catch((err) => {
-        if (!cancelled) setError(String(err?.message || err));
+        if (!cancelled) setError(audienceErrorText(err, t));
       });
     return () => {
       cancelled = true;
     };
-  }, [businessId]);
+  }, [businessId, t]);
 
   const refreshAudiences = async () => {
     if (!businessId) return;
@@ -97,8 +114,7 @@ export default function AdsManagerAudiencesSection({
       setLalName("");
       await refreshAudiences();
     } catch (err) {
-      const message = err as { response?: { data?: { error?: string } }; message?: string };
-      setError(message.response?.data?.error || message.message || String(err));
+      setError(audienceErrorText(err, t));
     } finally {
       setLalBusy(false);
     }
@@ -116,8 +132,7 @@ export default function AdsManagerAudiencesSection({
       setAbName("");
       await refreshAudiences();
     } catch (err) {
-      const message = err as { response?: { data?: { error?: string } }; message?: string };
-      setError(message.response?.data?.error || message.message || String(err));
+      setError(audienceErrorText(err, t));
     } finally {
       setAbBusy(false);
     }
@@ -133,8 +148,7 @@ export default function AdsManagerAudiencesSection({
       setConfirmStart(false);
       await refreshAudiences();
     } catch (err) {
-      const message = err as { response?: { data?: { error?: string } }; message?: string };
-      setError(message.response?.data?.error || message.message || String(err));
+      setError(audienceErrorText(err, t));
     } finally {
       setAbBusy(false);
     }

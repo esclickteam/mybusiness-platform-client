@@ -27,7 +27,8 @@ import {
   type ColumnPrefs,
   type ManagerColumnId,
 } from "./columnPrefs";
-import { COLUMN_LABEL } from "./columnLabels";
+import { columnLabelKey } from "./columnLabels";
+import { canToggleMetaDelivery, displayListStatus } from "../campaignLocalDraft";
 import ManagerColumnMenu, { beginColumnResize } from "./ManagerColumnMenu";
 import { readManagerMetric } from "./managerMetrics";
 import { bulkLivePlan, runBulkStatus, selectVisible, toggleSelected } from "./managerSelection";
@@ -49,7 +50,7 @@ type Props = {
 
 function cellText(row: MetaManagerRow, column: ManagerColumnId, currency: string) {
   if (column === "name") return row.name;
-  if (column === "status") return row.effectiveStatus || row.status || "";
+  if (column === "status") return displayListStatus(row);
   if (column === "budget") {
     if (row.dailyBudget) return formatCurrency(row.dailyBudget, currency);
     if (row.lifetimeBudget) return formatCurrency(row.lifetimeBudget, currency);
@@ -256,7 +257,7 @@ export default function MetaAdsLevelPanel({
           </button>
         </div>
       </div>
-      {columnsOpen ? <ManagerColumnMenu prefs={prefs} onChange={updatePrefs} /> : null}
+      {columnsOpen ? <ManagerColumnMenu prefs={prefs} onChange={updatePrefs} level={level} /> : null}
       {selected.length ? (
         <div className="flex flex-wrap gap-2">
           <button type="button" className={btnSecondary} onClick={() => setPending("PAUSED")}>{t("metaCampaigns.actions.pause")}</button>
@@ -304,7 +305,7 @@ export default function MetaAdsLevelPanel({
                         }))
                       }
                     >
-                      {t(COLUMN_LABEL[column])}
+                      {t(columnLabelKey(column, level))}
                     </button>
                     <span
                       role="separator"
@@ -319,7 +320,11 @@ export default function MetaAdsLevelPanel({
             </thead>
             <tbody>
               {sorted.map((row) => {
-                const tone = statusTone(row.effectiveStatus || row.status || "");
+                const listStatus = displayListStatus(row);
+                const tone = statusTone(listStatus);
+                const canToggle = canToggleMetaDelivery(row);
+                const isConfiguredActive =
+                  String(row.configuredStatus || row.status).toUpperCase() === "ACTIVE";
                 return (
                   <tr key={row.id} className="border-t border-slate-100" data-testid={`meta-manager-row-${row.id}`}>
                     <td className="px-3 py-3">
@@ -339,7 +344,7 @@ export default function MetaAdsLevelPanel({
                           </button>
                         ) : column === "status" ? (
                           <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
-                            {t(`metaCampaigns.status.${metaDeliveryStatusKey(row.effectiveStatus || row.status || "")}`, { defaultValue: row.status })}
+                            {t(`metaCampaigns.status.${metaDeliveryStatusKey(listStatus)}`, { defaultValue: listStatus })}
                           </span>
                         ) : (
                           cellText(row, column, currency)
@@ -370,16 +375,20 @@ export default function MetaAdsLevelPanel({
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
+                        {canToggle ? (
                         <button
                           type="button"
                           className={btnPrimary}
+                          aria-label={isConfiguredActive ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                          data-testid={`meta-level-toggle-${row.id}`}
                           onClick={() => {
                             setSelected([row.id]);
-                            setPending(String(row.configuredStatus || row.status).toUpperCase() === "ACTIVE" ? "PAUSED" : "ACTIVE");
+                            setPending(isConfiguredActive ? "PAUSED" : "ACTIVE");
                           }}
                         >
-                          {String(row.configuredStatus || row.status).toUpperCase() === "ACTIVE" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                          {isConfiguredActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                         </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>

@@ -106,6 +106,7 @@ describe("campaign impressions and reach", () => {
       campaigns: [
         row({
           id: "paused-1",
+          metaCampaignId: "120252174521090469",
           name: "קמפיין מושהה",
           status: "PAUSED",
           configuredStatus: "PAUSED",
@@ -126,6 +127,7 @@ describe("campaign impressions and reach", () => {
         }),
         row({
           id: "active-1",
+          metaCampaignId: "120252174521090470",
           name: "קמפיין פעיל",
           status: "ACTIVE",
           configuredStatus: "ACTIVE",
@@ -178,6 +180,8 @@ describe("campaign impressions and reach", () => {
     expect(screen.getAllByTestId("campaign-reach-draft-1")[0]).toHaveTextContent("—");
     expect(screen.getByTestId("meta-campaign-insights-synced")).toHaveTextContent("סונכרן לאחרונה");
     expect(screen.getByRole("columnheader", { name: /חשיפות/ })).toBeTruthy();
+    expect(screen.queryByTestId("campaign-toggle-draft-1")).toBeNull();
+    expect(screen.getAllByTestId("campaign-toggle-paused-1").length).toBeGreaterThan(0);
     expect(screen.getByRole("columnheader", { name: /תפוצה/ })).toBeTruthy();
     expect(api.getMetaCampaignsOverview).toHaveBeenCalledWith(
       "biz-1",

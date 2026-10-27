@@ -5,7 +5,7 @@ import type { MetaLeadForm } from "../../../../../../api/metaCampaignsApi";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdPlacementPreview from "../../AdPlacementPreview";
 import InstantFormFlowPreview from "../InstantFormFlowPreview";
-import { metaCtaLabel } from "../metaAdCtas";
+import { metaCtaLabel, usesInstantFormDestination } from "../metaAdCtas";
 import {
   MetaSidebarCard,
   MetaToggle,
@@ -17,6 +17,7 @@ type Props = {
   forms: InstantFormItem[];
   selectedLeadForm: MetaLeadForm | null;
   score: number;
+  conversionLocation?: string;
 };
 
 export default function AdInsightsSidebar({
@@ -24,6 +25,7 @@ export default function AdInsightsSidebar({
   forms,
   selectedLeadForm,
   score,
+  conversionLocation,
 }: Props) {
   const { t } = useTranslation();
   const cc = (key: string, opts?: Record<string, unknown>) =>
@@ -31,6 +33,7 @@ export default function AdInsightsSidebar({
   const [previewOn, setPreviewOn] = useState(true);
   const [tab, setTab] = useState<"ad" | "destination">("ad");
   const [device, setDevice] = useState<"mobile" | "desktop">("mobile");
+  const usesInstantForms = usesInstantFormDestination(conversionLocation);
   const selectedFormMeta = forms.find((f) => f.id === ad.instantFormId);
   const formForPreview =
     selectedLeadForm ||
@@ -46,13 +49,13 @@ export default function AdInsightsSidebar({
   const issues = useMemo(() => {
     const list: string[] = [];
     if (!ad.imagePreviewUrl && !ad.videoId) list.push(cc("issueMedia"));
-    if (!ad.instantFormId) list.push(cc("selectOrCreateForm"));
+    if (usesInstantForms && !ad.instantFormId) list.push(cc("selectOrCreateForm"));
     if (!ad.primaryText.trim() || !ad.headline.trim()) {
       list.push(cc("issueText"));
     }
     return list;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ad, t]);
+  }, [ad, t, usesInstantForms]);
 
   return (
     <div className="space-y-3 pb-6">
@@ -205,22 +208,27 @@ export default function AdInsightsSidebar({
                   />
                 </div>
 
-                {/* Meta-style Instant Form preview under ad image + text */}
+                {usesInstantForms ? (
                 <InstantFormFlowPreview
                   form={formForPreview}
                   pageName={ad.facebookPageName || cc("yourPage")}
                   fallbackHeadline={ad.headline}
                 />
+                ) : null}
               </div>
             ) : (
               <div
                 className={device === "mobile" ? "mx-auto max-w-[280px]" : ""}
               >
+                {usesInstantForms ? (
                 <InstantFormFlowPreview
                   form={formForPreview}
                   pageName={ad.facebookPageName || cc("yourPage")}
                   fallbackHeadline={ad.headline}
                 />
+                ) : (
+                  <p className="text-[13px] text-[#65676B]">{ad.websiteUrl || cc("notSet")}</p>
+                )}
               </div>
             )}
           </>

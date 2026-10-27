@@ -37,10 +37,11 @@ describe("metaAdCtas i18n", () => {
     );
   });
 
-  it("shows Ads Manager Instant Form options and marks OPEN_LINK incompatible", () => {
+  it("hides Graph-unsupported Instant Form CTAs and marks OPEN_LINK incompatible", () => {
     expect(INSTANT_FORM_CTA_VALUES).toContain("GET_OFFER");
     expect(INSTANT_FORM_CTA_VALUES).toContain("ORDER_NOW");
     expect(INSTANT_FORM_CTA_VALUES).toContain("CONTACT_US");
+    expect(INSTANT_FORM_CTA_VALUES).not.toContain("OPEN_LINK");
     expect(INSTANT_FORM_ADS_MANAGER_ORDER).toContain("OPEN_LINK");
     expect(inspectCtaForContext("OPEN_LINK", { usesInstantForms: true })).toEqual({
       current: "OPEN_LINK",
@@ -51,9 +52,7 @@ describe("metaAdCtas i18n", () => {
       true
     );
     const leadOptions = metaCtaOptionsForContext({ usesInstantForms: true });
-    expect(leadOptions.find((item) => item.value === "OPEN_LINK")?.compatible).toBe(
-      false
-    );
+    expect(leadOptions.map((item) => item.value)).not.toContain("OPEN_LINK");
     expect(leadOptions.find((item) => item.value === "GET_OFFER")?.compatible).toBe(
       true
     );
