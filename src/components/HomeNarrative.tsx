@@ -2,6 +2,7 @@
 
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { AudienceArt, JourneyRail } from "./HomeVisuals";
 
 export function HomeJourney() {
   const { t, i18n } = useTranslation();
@@ -11,6 +12,7 @@ export function HomeJourney() {
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
         <h2>{t("home.journeyTitle")}</h2>
         <p className="home-journey__lead">{t("home.journeyLead")}</p>
+        <JourneyRail />
         <ol>
           {steps.map((step) => (
             <li key={step}>
@@ -36,8 +38,9 @@ export function HomeAudiences() {
         <h2>{t("home.audienceTitle")}</h2>
         <p className="home-audiences__lead">{t("home.audienceLead")}</p>
         <div>
-          {items.map((item) => (
+          {items.map((item, index) => (
             <article key={item}>
+              <AudienceArt index={index} />
               <h3>{t(`home.audience_${item}`)}</h3>
               <p>{t(`home.audience_${item}Body`)}</p>
             </article>

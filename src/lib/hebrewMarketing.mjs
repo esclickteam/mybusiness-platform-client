@@ -5,9 +5,9 @@
 
 export const HEBREW_MARKETING_PAGES = {
   "/": {
-    title: "Bizuply — כל מה שהעסק שלכם צריך כדי לצמוח במקום אחד",
+    title: "Bizuply | פלטפורמה לניהול עסק ו-CRM במקום אחד",
     description:
-      "נהלו לקוחות, קלטו פניות, הריצו קמפיינים, דברו ב־WhatsApp, קבעו פגישות והפכו עבודה יומיומית לאוטומטית עם Bizuply.",
+      "נהלו לידים, לקוחות, WhatsApp Business, קמפיינים של Meta, פגישות, אתרים ואוטומציות בפלטפורמה אחת ומחוברת. הכירו את Bizuply.",
     crumb: "Bizuply",
     h1: "כל מה שהעסק שלכם צריך כדי לצמוח במקום אחד",
     paragraphs: [

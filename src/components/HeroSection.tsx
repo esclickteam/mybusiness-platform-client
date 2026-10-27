@@ -66,7 +66,7 @@ export default function HeroSection() {
         >
           <img
             className="home-stage__main"
-            src="/demo-media/forms/lead.webp"
+            src="/demo-media/crm/poster.jpg"
             alt={t("home.stageAlt")}
             width={960}
             height={600}
@@ -75,14 +75,14 @@ export default function HeroSection() {
           />
           <img
             className="home-stage__float home-stage__float--a"
-            src="/demo-media/whatsapp/still-3.jpg"
+            src="/demo-media/whatsapp/poster.jpg"
             alt={t("home.stageWhatsappAlt")}
             width={640}
             height={400}
           />
           <img
             className="home-stage__float home-stage__float--b"
-            src="/demo-media/appointments/still-8.jpg"
+            src="/demo-media/appointments/poster.jpg"
             alt={t("home.stageAppointmentsAlt")}
             width={640}
             height={400}

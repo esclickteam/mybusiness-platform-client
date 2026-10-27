@@ -4,13 +4,14 @@ import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { WhyArt } from "./HomeVisuals";
 import "../styles/homeWow.css";
 
 const CARDS = [
-  { title: "feature1Title", text: "feature1Text", images: ["/demo-media/home/crm.jpg"], alt: "feature1Alt" },
-  { title: "feature2Title", text: "feature2Text", images: ["/demo-media/home/automations.jpg"], alt: "feature2Alt" },
-  { title: "feature3Title", text: "feature3Text", images: ["/demo-media/home/campaigns.jpg"], alt: "feature3Alt" },
-  { title: "feature4Title", text: "feature4Text", images: ["/demo-media/home/websites.jpg", "/demo-media/home/appointments.jpg"], alt: "feature4Alt" },
+  { title: "feature1Title", text: "feature1Text" },
+  { title: "feature2Title", text: "feature2Text" },
+  { title: "feature3Title", text: "feature3Text" },
+  { title: "feature4Title", text: "feature4Text" },
 ] as const;
 
 export default function WhyBizuply() {
@@ -47,12 +48,10 @@ export default function WhyBizuply() {
           <p className="home-why-stage__lead">{t("why.subtitle")}</p>
         </div>
         <div className="home-why-grid">
-          {CARDS.map((card) => (
+          {CARDS.map((card, index) => (
             <article key={card.title} className="home-why-card">
-              <div className={card.images.length > 1 ? "home-why-card__media home-why-card__media--pair" : "home-why-card__media"}>
-                {card.images.map((src) => (
-                  <img key={src} src={src} alt={t(`why.${card.alt}`)} width="640" height="400" loading="lazy" decoding="async" />
-                ))}
+              <div className="home-why-card__media">
+                <WhyArt index={index} />
               </div>
               <div>
                 <h3>{t(`why.${card.title}`)}</h3>

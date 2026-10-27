@@ -1,3 +1,5 @@
+import { STORY } from "./homepageStory.mjs";
+
 /** Homepage first-paint copy. Same strings as the locale files. */
 export const HOME_SHELL = {
   "en": {
@@ -96,3 +98,11 @@ export const HOME_SHELL = {
     "navAria": "التنقل الرئيسي"
   }
 };
+
+for (const [locale, story] of Object.entries(STORY)) {
+  if (!HOME_SHELL[locale]) continue;
+  HOME_SHELL[locale].flowTitle = story.flowTitle;
+  HOME_SHELL[locale].flowBody = story.flowBody;
+  HOME_SHELL[locale].channelSite = story.channelSite;
+  HOME_SHELL[locale].channels = story.channels;
+}

@@ -32,13 +32,6 @@ export default function FAQMini() {
       </div>
 
       <div className="relative mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
-        <Reveal from="up" distance={20}>
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("home.faqEyebrow")}
-          </div>
-        </Reveal>
-
         <Reveal from="up" distance={26} blur delay={0.06}>
           <h2 className="mt-7 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl">
             {t("home.faqTitle")}
@@ -64,11 +57,12 @@ export default function FAQMini() {
                       : "border-slate-100 bg-white/85 hover:border-indigo-100"
                   }`}
                 >
+                  <h3 className="m-0 text-base font-black sm:text-lg">
                   <button
                     type="button"
                     onClick={() => setOpenIndex(isOpen ? null : i)}
                     aria-expanded={isOpen}
-                    className="flex w-full items-center gap-4 px-5 py-5 text-center sm:px-7"
+                    className="flex w-full items-center gap-4 px-5 py-5 text-center font-black sm:px-7"
                   >
                     <span
                       className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-black transition ${
@@ -80,7 +74,7 @@ export default function FAQMini() {
                       {String(i + 1).padStart(2, "0")}
                     </span>
 
-                    <span className="flex-1 text-base font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-lg">
+                    <span className="m-0 flex-1 text-base font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-lg">
                       {item.q}
                     </span>
 
@@ -97,6 +91,7 @@ export default function FAQMini() {
                       +
                     </motion.span>
                   </button>
+                  </h3>
 
                   <AnimatePresence initial={false}>
                     {isOpen ? (
@@ -114,13 +109,6 @@ export default function FAQMini() {
                           <p className="mx-auto max-w-2xl text-base font-semibold leading-8 text-slate-600">
                             {item.a}
                           </p>
-                          {i === 9 ? (
-                            <p className="mx-auto mt-3 max-w-2xl">
-                              <Link to="/pricing" className="font-black text-indigo-700 underline">
-                                {t("home.finalPricing")}
-                              </Link>
-                            </p>
-                          ) : null}
                         </div>
                       </motion.div>
                     ) : null}
@@ -150,7 +138,7 @@ export default function FAQMini() {
 
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                to="/pricing"
+                to="/register"
                 className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
               >
                 {t("home.startTrial")}

@@ -18,13 +18,13 @@ const BLOCKS: { id: FilmId; to: string; layout: string; side: "copy-left" | "med
   { id: "appointments", to: "/appointments", layout: "calendar", side: "media-left" },
 ];
 
-const COPY: Record<FilmId, { title: string; body: string; cta: string; video: string }> = {
-  crm: { title: "crmTitle", body: "crmBody", cta: "crmCta", video: "crmVideo" },
-  whatsapp: { title: "waTitle", body: "waBody", cta: "waCta", video: "waVideo" },
-  campaigns: { title: "adsTitle", body: "adsBody", cta: "adsCta", video: "adsVideo" },
-  automations: { title: "autoTitle", body: "autoBody", cta: "autoCta", video: "autoVideo" },
-  websites: { title: "webTitle", body: "webBody", cta: "webCta", video: "webVideo" },
-  appointments: { title: "calTitle", body: "calBody", cta: "calCta", video: "calVideo" },
+const COPY: Record<FilmId, { title: string; body: string; cta: string; video: string; points: string }> = {
+  crm: { title: "crmTitle", body: "crmBody", cta: "crmCta", video: "crmVideo", points: "crmPoint" },
+  whatsapp: { title: "waTitle", body: "waBody", cta: "waCta", video: "waVideo", points: "waPoint" },
+  campaigns: { title: "adsTitle", body: "adsBody", cta: "adsCta", video: "adsVideo", points: "adsPoint" },
+  automations: { title: "autoTitle", body: "autoBody", cta: "autoCta", video: "autoVideo", points: "autoPoint" },
+  websites: { title: "webTitle", body: "webBody", cta: "webCta", video: "webVideo", points: "webPoint" },
+  appointments: { title: "calTitle", body: "calBody", cta: "calCta", video: "calVideo", points: "calPoint" },
 };
 
 function ProductFilm({
@@ -78,9 +78,10 @@ function ProductFilm({
       {controls ? (
         <button
           type="button"
-          className="home-show__toggle"
-          onClick={() => setPaused((value) => !value)}
-        >
+        className="home-show__toggle"
+        aria-pressed={paused || Boolean(reduce)}
+        onClick={() => setPaused((value) => !value)}
+      >
           {paused || reduce ? t("home.showPlay") : t("home.showPause")}
         </button>
       ) : null}
@@ -104,48 +105,14 @@ export default function ScrollStory() {
                 <div className="home-show__copy" dir={getTextDirection(i18n.language)}>
                   <h3>{t(`home.${copy.title}`)}</h3>
                   <p>{t(`home.${copy.body}`)}</p>
-                  {block.id === "crm" ? (
-                    <div className="home-show__facts">
-                      <p>
-                        <span>{t("home.crmStatus")}</span>
-                        <strong>{t("home.crmStatusValue")}</strong>
-                      </p>
-                      <p>
-                        <span>{t("home.crmTask")}</span>
-                        <strong>{t("home.crmTaskValue")}</strong>
-                      </p>
-                    </div>
-                  ) : null}
-                  {block.id === "campaigns" ? (
-                    <div className="home-show__marks" aria-hidden="true">
-                      <img src="/meta.svg" alt="" width="28" height="28" />
-                      <svg viewBox="0 0 24 24" width="28" height="28">
-                        <path fill="#1877F2" d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.84c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22C18.34 21.24 22 17.08 22 12.06z" />
-                      </svg>
-                      <svg viewBox="0 0 24 24" width="28" height="28">
-                        <defs>
-                          <radialGradient id="home-ig" cx="30%" cy="110%" r="120%">
-                            <stop offset="0%" stopColor="#feda75" />
-                            <stop offset="45%" stopColor="#d62976" />
-                            <stop offset="100%" stopColor="#4f5bd5" />
-                          </radialGradient>
-                        </defs>
-                        <rect width="24" height="24" rx="6" fill="url(#home-ig)" />
-                        <circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" strokeWidth="1.6" />
-                        <circle cx="17.2" cy="6.8" r="1" fill="#fff" />
-                      </svg>
-                    </div>
-                  ) : null}
+                  <ul className="home-show__points">
+                    {[1, 2, 3].map((point) => (
+                      <li key={point}>{t(`home.${copy.points}${point}`)}</li>
+                    ))}
+                  </ul>
                   <Link to={block.to}>{t(`home.${copy.cta}`)}</Link>
                 </div>
-                {block.layout === "devices" ? (
-                  <div className="home-show__devices">
-                    <ProductFilm id={block.id} label={t(`home.${copy.video}`)} className="home-show__desktop" />
-                    <ProductFilm id={block.id} label={t(`home.${copy.video}`)} className="home-show__phone" controls={false} />
-                  </div>
-                ) : (
-                  <ProductFilm id={block.id} label={t(`home.${copy.video}`)} />
-                )}
+                <ProductFilm id={block.id} label={t(`home.${copy.video}`)} />
               </article>
             );
           })}

@@ -8,10 +8,8 @@ import { marketingPublicUrl } from "../lib/localePathCore.mjs";
 import HeroSection from "../components/HeroSection";
 import { HomeAudiences, HomeJourney } from "../components/HomeNarrative";
 import PlatformDomains from "../components/PlatformDomains";
-import ProductsGrid from "../components/ProductsGrid";
 import ScrollStory from "../components/ScrollStory";
 import WhyBizuply from "../components/WhyBizuply";
-import HomeServices from "../components/HomeServices";
 import FAQMini from "../components/FAQMini";
 
 const HREFLANG = [
@@ -67,13 +65,11 @@ export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir={getTextDirection(i18n.language)}>
       <HeroSection />
-      <HomeJourney />
       <PlatformDomains />
-      <ProductsGrid />
       <ScrollStory />
+      <HomeJourney />
       <HomeAudiences />
       <WhyBizuply />
-      <HomeServices />
       <FAQMini />
     </main>
   );

@@ -1,0 +1,104 @@
+{
+  "page": "/",
+  "rule": "Each file is used once on the public site.",
+  "items": [
+    {
+      "id": "home-hero-crm",
+      "file": "/demo-media/crm/poster.jpg",
+      "page": "/",
+      "area": "hero",
+      "subject": "Northwind Studio CRM lead list",
+      "aspect": "16:9",
+      "altKey": "home.stageAlt",
+      "status": "used-once"
+    },
+    {
+      "id": "home-hero-whatsapp",
+      "file": "/demo-media/whatsapp/poster.jpg",
+      "page": "/",
+      "area": "hero",
+      "subject": "Northwind Studio WhatsApp inbox",
+      "aspect": "16:9",
+      "altKey": "home.stageWhatsappAlt",
+      "status": "used-once"
+    },
+    {
+      "id": "home-hero-appointments",
+      "file": "/demo-media/appointments/poster.jpg",
+      "page": "/",
+      "area": "hero",
+      "subject": "Northwind Studio appointment calendar",
+      "aspect": "16:9",
+      "altKey": "home.stageAppointmentsAlt",
+      "status": "used-once"
+    },
+    {
+      "id": "home-film-crm",
+      "file": "/demo-media/home/crm.mp4",
+      "poster": "/demo-media/home/crm.jpg",
+      "page": "/",
+      "area": "crm-demo",
+      "subject": "CRM lead workflow",
+      "aspect": "16:10",
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 14.4,
+      "note": "Existing homepage clip. Spec asks for a new 18-25s recording."
+    },
+    {
+      "id": "home-film-whatsapp",
+      "file": "/demo-media/home/whatsapp.mp4",
+      "poster": "/demo-media/home/whatsapp.jpg",
+      "page": "/",
+      "area": "whatsapp-demo",
+      "subject": "WhatsApp conversation",
+      "aspect": "16:10",
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 13.8
+    },
+    {
+      "id": "home-film-campaigns",
+      "file": "/demo-media/home/campaigns.mp4",
+      "poster": "/demo-media/home/campaigns.jpg",
+      "page": "/",
+      "area": "campaigns-demo",
+      "subject": "Campaign review",
+      "aspect": "16:10",
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 4.2
+    },
+    {
+      "id": "home-film-automations",
+      "file": "/demo-media/home/automations.mp4",
+      "poster": "/demo-media/home/automations.jpg",
+      "page": "/",
+      "area": "automations-demo",
+      "subject": "Automation workflow",
+      "aspect": "16:10",
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 10.6
+    },
+    {
+      "id": "home-film-websites",
+      "file": "/demo-media/home/websites.mp4",
+      "poster": "/demo-media/home/websites.jpg",
+      "page": "/",
+      "area": "website-demo",
+      "subject": "Website editor",
+      "aspect": "16:10",
+      "status": "needs-replacement",
+      "durationSeconds": 11.8,
+      "note": "Spec requires a new 18-25s editor recording with no text selection."
+    },
+    {
+      "id": "home-film-appointments",
+      "file": "/demo-media/home/appointments.mp4",
+      "poster": "/demo-media/home/appointments.jpg",
+      "page": "/",
+      "area": "appointments-demo",
+      "subject": "Appointment calendar",
+      "aspect": "16:10",
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 6
+    }
+  ]
+}
