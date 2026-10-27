@@ -11,7 +11,7 @@ const COPY = {
     dir: "ltr",
     lang: "en",
     navAria: "Main navigation",
-    login: "Login",
+    login: "Log In",
     cta: "Get Started",
     langCode: "EN",
     about: "About",

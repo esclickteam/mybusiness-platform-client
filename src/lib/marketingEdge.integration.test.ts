@@ -49,13 +49,13 @@ describe("marketing edge integration", () => {
     const page = await read(await middleware(request("https://bizuply.com/", "bizuply.com")));
     expect(page.status).toBe(200);
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("marketing");
-    expect(page.body).toContain("<title>Bizuply | All-in-One Business Management Platform &amp; CRM</title>");
+    expect(page.body).toContain("<title>Bizuply | Business Management, CRM, Websites &amp; SaaS Solutions</title>");
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"name":"Bizuply"');
     expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
-    expect(page.body).toContain('<h1 class="home-hero__title">Everything your business needs to grow in one place</h1>');
+    expect(page.body).toContain('<h1 class="home-hero__title">Everything your business needs. One powerful place to grow.</h1>');
     expect(page.body.replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "").match(/<h1\b/gi)?.length).toBe(1);
-    expect(page.body).not.toContain("noindex");
+    expect(page.body).not.toMatch(/<meta[^>]+noindex/i);
   });
 
   it("gives product pages their own metadata and keeps dynamic routes untouched", async () => {

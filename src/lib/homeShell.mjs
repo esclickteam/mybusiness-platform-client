@@ -16,7 +16,7 @@ export const HOME_SHELL = {
     "stageAlt": "Northwind Studio lead list inside Bizuply",
     "stageWhatsappAlt": "A Northwind Studio WhatsApp conversation inside Bizuply",
     "stageAppointmentsAlt": "The Northwind Studio appointment calendar inside Bizuply",
-    "login": "Login",
+    "login": "Log In",
     "cta": "Get Started",
     "sources": "Where the enquiries come from",
     "navAria": "Main navigation"
