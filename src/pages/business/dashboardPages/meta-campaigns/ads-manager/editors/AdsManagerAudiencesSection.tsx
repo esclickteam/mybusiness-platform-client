@@ -17,6 +17,11 @@ type Props = {
   adSet: AdSetDraft;
   businessId: string | null;
   onChange: (patch: Partial<AdSetDraft>) => void;
+  advancedCapabilities?: {
+    lookalikeCreate?: boolean;
+    abStudyCreate?: boolean;
+    abStudyStart?: boolean;
+  };
 };
 
 function toggleAudience(list: AdSetInterest[], row: MetaCustomAudience): AdSetInterest[] {
@@ -29,6 +34,7 @@ export default function AdsManagerAudiencesSection({
   adSet,
   businessId,
   onChange,
+  advancedCapabilities,
 }: Props) {
   const { t } = useTranslation();
   const [audiences, setAudiences] = useState<MetaCustomAudience[]>([]);
@@ -163,6 +169,7 @@ export default function AdsManagerAudiencesSection({
         }
         empty={t("metaCampaigns.adsManager.chrome.noLookalikes")}
       />
+      {advancedCapabilities?.lookalikeCreate ? (
       <div className="mt-3 space-y-2 rounded-md border border-[#E4E6EB] p-3">
         <p className="text-[13px] font-semibold">
           {t("metaCampaigns.adsManager.chrome.createLookalike")}
@@ -230,6 +237,11 @@ export default function AdsManagerAudiencesSection({
             : t("metaCampaigns.adsManager.chrome.createLookalike")}
         </button>
       </div>
+      ) : (
+        <p className="mt-2 text-[12px] text-[#65676B]">
+          {t("metaCampaigns.adsManager.chrome.advancedWritesOff")}
+        </p>
+      )}
       <AudienceGroup
         title={t("metaCampaigns.adsManager.chrome.excludedAudiences")}
         rows={audiences}
@@ -275,6 +287,8 @@ export default function AdsManagerAudiencesSection({
           {t("metaCampaigns.adsManager.chrome.abTests")}
         </p>
         <p className="mt-1">{t("metaCampaigns.adsManager.chrome.abTestsHint")}</p>
+        {advancedCapabilities?.abStudyCreate ? (
+          <>
         <MetaField label={t("metaCampaigns.adsManager.chrome.abTestName")}>
           <input
             className={metaInputClass}
@@ -290,6 +304,10 @@ export default function AdsManagerAudiencesSection({
         >
           {t("metaCampaigns.adsManager.chrome.createAbDraft")}
         </button>
+          </>
+        ) : (
+          <p className="mt-1">{t("metaCampaigns.adsManager.chrome.advancedWritesOff")}</p>
+        )}
         {studies.length ? (
           <ul className="mt-3 space-y-2">
             {studies.map((row) => (
@@ -297,6 +315,7 @@ export default function AdsManagerAudiencesSection({
                 <span>
                   {row.name || row.id} {row.type ? `· ${row.type}` : ""}
                 </span>
+                {advancedCapabilities?.abStudyStart ? (
                 <button
                   type="button"
                   className="text-[12px] font-bold text-[#1877F2]"
@@ -307,6 +326,7 @@ export default function AdsManagerAudiencesSection({
                 >
                   {t("metaCampaigns.adsManager.chrome.startAb")}
                 </button>
+                ) : null}
               </li>
             ))}
           </ul>

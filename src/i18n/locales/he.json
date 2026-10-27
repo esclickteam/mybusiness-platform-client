@@ -10649,6 +10649,7 @@
         "abConfirmTitle": "להפעיל את ניסוי ה-A/B?",
         "abConfirmBody": "Meta תפעיל את הניסוי. זו לא פרסום קמפיין, ומכאן לא נשנה תקציבים חיים.",
         "abConfirmCheck": "אני מאשר/ת שאני רוצה להפעיל את הניסוי",
+        "advancedWritesOff": "יצירת Lookalike, מודעות קטלוג וטיוטות A/B כבויה עד שאימות מול חשבון בדיקה יאושר.",
         "createLookalike": "יצירת קהל Lookalike",
         "createLookalikeHint": "יוצר קהל Lookalike חדש ב-Meta. הוא לא מצורף אוטומטית לקמפיין פעיל.",
         "lookalikeSource": "קהל מקור",

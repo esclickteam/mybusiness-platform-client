@@ -68,6 +68,11 @@ type Props = {
   onChange: (patch: Partial<AdDraft>) => void;
   onFormsRefresh?: () => Promise<void> | void;
   onFormReady?: (form: { id: string; name: string; pageId: string }) => Promise<void> | void;
+  advancedCapabilities?: {
+    catalogCreatives?: boolean;
+    existingPostCreatives?: boolean;
+    leadFormConditionals?: boolean;
+  };
 };
 
 export default function AdLevelEditor({
@@ -87,6 +92,7 @@ export default function AdLevelEditor({
   onChange,
   onFormsRefresh,
   onFormReady,
+  advancedCapabilities,
 }: Props) {
   const { t } = useTranslation();
   const c = (key: string, opts?: Record<string, unknown>) =>
@@ -736,6 +742,7 @@ export default function AdLevelEditor({
                   </span>
                 </span>
               </button>
+              {advancedCapabilities?.catalogCreatives ? (
               <button
                 type="button"
                 className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
@@ -749,6 +756,8 @@ export default function AdLevelEditor({
                   </span>
                 </span>
               </button>
+              ) : null}
+              {advancedCapabilities?.existingPostCreatives ? (
               <button
                 type="button"
                 className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
@@ -762,6 +771,7 @@ export default function AdLevelEditor({
                   </span>
                 </span>
               </button>
+              ) : null}
             </div>
           ) : null}
           <input
@@ -1032,6 +1042,7 @@ export default function AdLevelEditor({
         adDraftId={editorMode === "duplicate" ? undefined : ad.id}
         mode={editorMode}
         initialDraft={editorMode === "duplicate" ? duplicateSeed : null}
+        allowAdvancedLeadForm={Boolean(advancedCapabilities?.leadFormConditionals)}
         onClose={() => setCreateFormOpen(false)}
         onDraftSaved={async () => {
           await onFormsRefresh?.();

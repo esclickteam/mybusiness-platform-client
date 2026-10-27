@@ -1628,6 +1628,7 @@ export default function MetaAdsManagerPage() {
               businessId={businessId}
               pages={connectedPages}
               selectedPageId={connection?.selectedPage?.pageId}
+              advancedCapabilities={connection?.adsManagerAdvanced}
               onResumeDraft={
                 selectedAdSet.recoveredPublishId
                   ? () => {
@@ -1675,6 +1676,7 @@ export default function MetaAdsManagerPage() {
               pages={connectedPages}
               businessId={businessId}
               sessionMode={isEditSession ? "edit" : "create"}
+              advancedCapabilities={connection?.adsManagerAdvanced}
               showLeadgenTos={String(selectedAdSet?.conversionLocation || "")
                 .toLowerCase()
                 .includes("instant")}

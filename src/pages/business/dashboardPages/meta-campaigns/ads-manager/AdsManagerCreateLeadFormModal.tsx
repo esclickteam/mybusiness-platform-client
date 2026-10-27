@@ -103,6 +103,7 @@ type Props = {
   onClose: () => void;
   onCreated: (form: CreatedLeadForm) => void | Promise<void>;
   onDraftSaved?: () => void | Promise<void>;
+  allowAdvancedLeadForm?: boolean;
 };
 
 export default function AdsManagerCreateLeadFormModal({
@@ -117,6 +118,7 @@ export default function AdsManagerCreateLeadFormModal({
   onClose,
   onCreated,
   onDraftSaved,
+  allowAdvancedLeadForm = false,
 }: Props) {
   const { t } = useTranslation();
   const cc = React.useCallback(
@@ -788,6 +790,7 @@ export default function AdsManagerCreateLeadFormModal({
                   onContactTypesChange={setContactTypes}
                   onCustomQuestionsChange={setCustomQuestions}
                   disabled={busy}
+                  allowConditionals={allowAdvancedLeadForm}
                 />
               </div>
             ) : null}
@@ -808,6 +811,8 @@ export default function AdsManagerCreateLeadFormModal({
                     placeholder="https://"
                   />
                 </MetaFieldLike>
+                {allowAdvancedLeadForm ? (
+                <>
                 <MetaFieldLike
                   label={cc("disclaimerTitle")}
                   hint={cc("disclaimerHint")}
@@ -835,6 +840,8 @@ export default function AdsManagerCreateLeadFormModal({
                   />
                   {cc("disclaimerRequired")}
                 </label>
+                </>
+                ) : null}
               </div>
             ) : null}
 

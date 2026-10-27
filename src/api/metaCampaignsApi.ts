@@ -377,6 +377,14 @@ export type MetaAdsConnectionStatus = {
   previewFormats?: MetaLabeledOption[];
   leadFormQuestionTypes?: MetaLeadFormQuestionType[];
   isShowcaseDemo?: boolean;
+  adsManagerAdvanced?: {
+    lookalikeCreate?: boolean;
+    catalogCreatives?: boolean;
+    existingPostCreatives?: boolean;
+    leadFormConditionals?: boolean;
+    abStudyCreate?: boolean;
+    abStudyStart?: boolean;
+  };
 };
 
 export type MetaCampaignsOverview = {

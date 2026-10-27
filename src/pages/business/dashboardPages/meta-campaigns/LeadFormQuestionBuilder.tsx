@@ -16,6 +16,7 @@ type Props = {
   onContactTypesChange: (types: string[]) => void;
   onCustomQuestionsChange: (questions: LeadFormCustomQuestionDraft[]) => void;
   disabled?: boolean;
+  allowConditionals?: boolean;
 };
 
 export default function LeadFormQuestionBuilder({
@@ -24,6 +25,7 @@ export default function LeadFormQuestionBuilder({
   onContactTypesChange,
   onCustomQuestionsChange,
   disabled = false,
+  allowConditionals = false,
 }: Props) {
   const { t } = useTranslation();
 
@@ -294,7 +296,7 @@ export default function LeadFormQuestionBuilder({
                       String(row.label || "").trim() &&
                       row.dependentOnQuestionId !== question.id
                   );
-                  if (!parents.length) return null;
+                  if (!allowConditionals || !parents.length) return null;
                   const selectedParent = parents.find(
                     (row) => row.id === question.dependentOnQuestionId
                   );

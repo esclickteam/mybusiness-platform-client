@@ -10660,6 +10660,7 @@
         "abConfirmTitle": "Start this A/B study?",
         "abConfirmBody": "Meta will start the experiment. This is not a campaign publish and we will not change live budgets from this screen.",
         "abConfirmCheck": "I confirm I want to start this study",
+        "advancedWritesOff": "Creating Lookalikes, catalog ads, and A/B drafts stays off until a test ad account is allowlisted.",
         "createLookalike": "Create lookalike audience",
         "createLookalikeHint": "Creates a new Meta lookalike. It is not attached to an active campaign automatically.",
         "lookalikeSource": "Source audience",
