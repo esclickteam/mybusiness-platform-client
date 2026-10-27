@@ -48,11 +48,18 @@ vi.mock("../../../../../api/metaCampaignsApi", () => ({
   planMetaCampaignChanges: vi.fn(),
   retryMetaPublish: vi.fn(),
   syncMetaPublish: vi.fn(),
+  waitForMetaPublish: vi.fn(),
+  getMetaPublish: vi.fn(),
   updateMetaCampaign: vi.fn(),
   updateMetaAdSet: vi.fn(),
   updateMetaAd: vi.fn(),
   saveMetaEditorDraft: vi.fn(),
   duplicateMetaCampaign: vi.fn(),
+  diffMetaCampaignSync: vi.fn().mockResolvedValue({
+    hasConflicts: false,
+    conflicts: [],
+    overwrittenByReload: false,
+  }),
 }));
 
 import en from "../../../../../i18n/locales/en.json";
@@ -145,6 +152,16 @@ describe("MetaAdsManagerPage manual create", () => {
     expect(source).toMatch(/publishMetaCampaignChanges/);
     expect(source).toMatch(/publishIntentLabelKey/);
     expect(source).toMatch(/verifiedOnExistingAd/);
+  });
+
+  it("keeps Meta vs local sync diffs as a warning until the user chooses a version", () => {
+    const source = fs.readFileSync(
+      path.resolve(__dirname, "./MetaAdsManagerPage.tsx"),
+      "utf8"
+    );
+    expect(source).toMatch(/syncConflictKeep/);
+    expect(source).toMatch(/setSyncDiff\(diff\.hasConflicts \? diff : null\)/);
+    expect(source).not.toMatch(/overwrittenByReload:\s*true/);
   });
 
   it("does not import AI session APIs", () => {

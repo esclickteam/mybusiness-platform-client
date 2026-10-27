@@ -108,19 +108,32 @@ export default function WhatsAppApiLoginPage() {
   useEffect(() => {
     if (!oauthSuccess || completedRef.current) return;
     completedRef.current = true;
+    let cancelled = false;
+    const failOpen = () => {
+      if (cancelled) return;
+      setCompleting(false);
+      setError(copy.errors.session);
+      navigate(WHATSAPP_API_LOGIN_PATH, { replace: true });
+    };
+    const timer = window.setTimeout(failOpen, 15000);
     (async () => {
       try {
         clearRefreshDead();
         const accessToken = await refreshAccessTokenOnce();
         const { data } = await API.get("/auth/me", { headers: { Authorization: `Bearer ${accessToken}` } });
+        if (cancelled) return;
         loginWithToken(data, accessToken, { skipRedirect: true });
         goToDestination(data, { welcome: checkoutReturn });
       } catch {
-        setCompleting(false);
-        setError(copy.errors.session);
-        navigate(WHATSAPP_API_LOGIN_PATH, { replace: true });
+        failOpen();
+      } finally {
+        window.clearTimeout(timer);
       }
     })();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [oauthSuccess]);
 

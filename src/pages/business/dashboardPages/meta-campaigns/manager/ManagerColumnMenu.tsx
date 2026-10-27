@@ -2,15 +2,18 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { btnSecondary, cardBase } from "../../../../../styles/bizuplyUi";
 import { applyColumnPreset, moveColumn, type ColumnPrefs, type ManagerColumnId } from "./columnPrefs";
-import { COLUMN_LABEL } from "./columnLabels";
+import { columnLabelKey } from "./columnLabels";
+import type { MetaManagerLevel } from "../../../../../api/metaCampaignsApi";
 
 type Props = {
   prefs: ColumnPrefs;
   onChange: (next: ColumnPrefs) => void;
+  level?: MetaManagerLevel | "campaign" | "adset" | "ad";
 };
 
-export default function ManagerColumnMenu({ prefs, onChange }: Props) {
+export default function ManagerColumnMenu({ prefs, onChange, level }: Props) {
   const { t } = useTranslation();
+  const labelFor = (id: typeof prefs.order[number]) => t(columnLabelKey(id, level));
   return (
     <div className={`${cardBase} space-y-2 p-3`} data-testid="meta-column-menu">
       <div className="flex flex-wrap gap-2">
@@ -30,7 +33,7 @@ export default function ManagerColumnMenu({ prefs, onChange }: Props) {
               type="checkbox"
               checked={!prefs.hidden.includes(id)}
               disabled={id === "name" || id === "status"}
-              aria-label={t(COLUMN_LABEL[id])}
+              aria-label={labelFor(id)}
               onChange={() =>
                 onChange({
                   ...prefs,
@@ -40,13 +43,13 @@ export default function ManagerColumnMenu({ prefs, onChange }: Props) {
                 })
               }
             />
-            {t(COLUMN_LABEL[id])}
+            {labelFor(id)}
           </span>
           <span className="flex gap-1">
-            <button type="button" className={btnSecondary} aria-label={`${t(COLUMN_LABEL[id])} up`} onClick={() => onChange(moveColumn(prefs, id, -1))}>
+            <button type="button" className={btnSecondary} aria-label={`${labelFor(id)} up`} onClick={() => onChange(moveColumn(prefs, id, -1))}>
               ↑
             </button>
-            <button type="button" className={btnSecondary} aria-label={`${t(COLUMN_LABEL[id])} down`} onClick={() => onChange(moveColumn(prefs, id, 1))}>
+            <button type="button" className={btnSecondary} aria-label={`${labelFor(id)} down`} onClick={() => onChange(moveColumn(prefs, id, 1))}>
               ↓
             </button>
           </span>

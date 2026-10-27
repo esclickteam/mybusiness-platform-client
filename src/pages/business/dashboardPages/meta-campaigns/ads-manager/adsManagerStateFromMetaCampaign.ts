@@ -17,6 +17,8 @@ import type {
   MetaObjectIds,
 } from "./adsManagerTypes";
 import { applyEditorDraft, isRealMetaObjectId } from "./editorDraft";
+import { conversionLocationsForObjective, usesInstantFormDestination } from "./metaAdCtas";
+import { isUnpublishedLocalCampaign } from "../campaignLocalDraft";
 
 function realMetaId(value: unknown): string {
   const id = String(value ?? "").trim();
@@ -190,8 +192,9 @@ function mapAdSet(
     ...fallback,
     id: adSet.id,
     name: adSet.name || fallback.name,
-    status: adSet.status || fallback.status,
     facebookPageId: adSet.pageId || campaign.pageId || "",
+    whatsappPhone: fallback.whatsappPhone || "",
+    whatsappDisplayNumber: fallback.whatsappDisplayNumber || "",
     facebookPageName: fallback.facebookPageName,
     locationsSummary: locations.map((loc) => loc.name).join(", "),
     locations,
@@ -215,6 +218,14 @@ function mapAdSet(
     advantagePlacements:
       adSet.placementMode === "advantage" ||
       !(adSet.publisherPlatforms || campaign.publisherPlatforms || []).length,
+    publisherPlatforms: adSet.publisherPlatforms || campaign.publisherPlatforms || [],
+    facebookPositions: adSet.facebookPositions || [],
+    instagramPositions: adSet.instagramPositions || [],
+    messengerPositions: adSet.messengerPositions || [],
+    audienceNetworkPositions: adSet.audienceNetworkPositions || [],
+    threadsPositions: adSet.threadsPositions || [],
+    devicePlatforms: adSet.devicePlatforms || [],
+    locales: Array.isArray(adSet.locales) ? adSet.locales.map(Number).filter(Boolean) : [],
     targetingLoaded,
     targetingRaw: adSet.targetingRaw || null,
     recoveredDraft: adSet.recoveredDraft === true,
@@ -224,10 +235,18 @@ function mapAdSet(
     endDateEnabled: Boolean(end.date),
     endDate: end.date,
     endTime: end.time || "",
-    conversionLocation:
-      campaign.leadFormId || campaign.formId
-        ? "Instant forms"
-        : fallback.conversionLocation,
+    conversionLocation: (() => {
+      const allowed = conversionLocationsForObjective(campaign.objective);
+      const preferred =
+        campaign.leadFormId || campaign.formId
+          ? "Instant forms"
+          : fallback.conversionLocation;
+      if (allowed.includes(preferred)) return preferred;
+      return allowed[0] || fallback.conversionLocation;
+    })(),
+    status: isUnpublishedLocalCampaign({ id: campaign.id, status: campaign.status })
+      ? "DRAFT"
+      : adSet.status || fallback.status,
     showMoreAudience: true,
     showMorePlacements: true,
     ageExpanded: true,
@@ -243,22 +262,39 @@ function mapAd(
   adSet: MetaCampaignAdSet | undefined,
   fallback: AdDraft
 ): AdDraft {
+  const formatRaw = String(ad.creativeFormat || campaign.creativeFormat || "").toLowerCase();
   const isVideo =
     Boolean(ad.videoId) ||
     campaign.creativeFormat === "video" ||
     fallback.creativeFormat === "video";
+  const creativeFormat =
+    formatRaw === "catalog" || formatRaw === "dpa"
+      ? "catalog"
+      : formatRaw === "existing_post"
+        ? "existing_post"
+        : formatRaw === "carousel"
+          ? "carousel"
+          : isVideo
+            ? "video"
+            : "image";
   return {
     ...fallback,
     id: ad.id,
     adSetId: ad.adSetId || adSet?.id || fallback.adSetId,
     name: ad.name || fallback.name,
-    status: ad.status || fallback.status,
+    status: isUnpublishedLocalCampaign({ id: campaign.id, status: campaign.status })
+      ? "DRAFT"
+      : ad.status || fallback.status,
     creativeId: ad.creativeId || campaign.creativeId || "",
     facebookPageId: ad.pageId || adSet?.pageId || campaign.pageId || fallback.facebookPageId,
     instagramAccountId: ad.instagramUserId || campaign.instagramUserId || "",
     websiteUrl: ad.link || campaign.link || "",
     displayLink: ad.displayLink || campaign.displayLink || "",
-    instantFormId: ad.leadFormId || ad.formId || campaign.leadFormId || campaign.formId || "",
+    instantFormId: usesInstantFormDestination(
+      conversionLocationsForObjective(campaign.objective)[0]
+    )
+      ? ad.leadFormId || ad.formId || campaign.leadFormId || campaign.formId || ""
+      : "",
     primaryText: ad.primaryText || campaign.primaryText || "",
     headline: ad.headline || campaign.headline || "",
     description: ad.description || campaign.description || "",
@@ -266,14 +302,17 @@ function mapAd(
     imageHash: ad.imageHash || campaign.imageHash || "",
     imagePreviewUrl: ad.imageUrl || campaign.imageUrl || campaign.picture || "",
     videoId: ad.videoId || campaign.videoId || "",
-    creativeFormat: isVideo ? "video" : "image",
+    creativeFormat,
+    catalogId: ad.catalogId || campaign.catalogId || fallback.catalogId || "",
+    productSetId: ad.productSetId || campaign.productSetId || fallback.productSetId || "",
+    objectStoryId: ad.objectStoryId || campaign.objectStoryId || fallback.objectStoryId || "",
     mediaLabel: ad.imageHash || ad.videoId ? "Current media" : fallback.mediaLabel,
   };
 }
 
 export function adsManagerStateFromMetaCampaign(
   campaign: MetaCampaign,
-  options?: { currency?: string }
+  options?: { currency?: string; preferMeta?: boolean }
 ): AdsManagerState {
   const base = createDefaultAdsManagerState();
   const objective: CampaignObjective = isCampaignObjective(campaign.objective)
@@ -290,12 +329,15 @@ export function adsManagerStateFromMetaCampaign(
     id: campaign.id,
     name: campaign.name || base.campaign.name,
     objective,
-    status: campaign.status || "PAUSED",
+    status: isRealMetaObjectId(campaign.id)
+      ? campaign.status || "PAUSED"
+      : "DRAFT",
     buyingType: String(campaign.buyingType || "").toUpperCase() === "RESERVED" ? "reserved" : "auction",
     budgetStrategy: hasCampaignBudget ? "campaign" : "adset",
     budgetType: campaign.lifetimeBudget && !campaign.dailyBudget ? "lifetime" : "daily",
     budgetAmount,
     currency: options?.currency || base.campaign.currency,
+    bidStrategy: campaign.bidStrategy || base.campaign.bidStrategy,
     advantagePlusLeads: objective === "OUTCOME_LEADS",
   };
 
@@ -384,12 +426,38 @@ export function adsManagerStateFromMetaCampaign(
     ads,
     audienceEstimate: { lower: 0, upper: 0, spectrum: 0.5, ready: false },
   };
-  const drafted = applyEditorDraft(loaded, campaign.editorDraft, {
-    creativeOnMeta: campaign.creativeLinkedOnMeta === true,
-    publishRecordId: campaign.publishRecordId,
+  const drafted = options?.preferMeta
+    ? { ...loaded, publishRecordId: campaign.publishRecordId || loaded.publishRecordId }
+    : applyEditorDraft(loaded, campaign.editorDraft, {
+        creativeOnMeta: campaign.creativeLinkedOnMeta === true,
+        publishRecordId: campaign.publishRecordId,
+      });
+  // Editor drafts saved during create often omit targetingRaw / targetingLoaded.
+  // Keep Meta's live targeting envelope so publish-changes can patch flexible_spec
+  // without rebuilding geo from scratch.
+  const adSetsWithMetaTargeting = drafted.adSets.map((adSet, index) => {
+    const fromMeta = loaded.adSets[index] || loaded.adSets[0];
+    if (!fromMeta) return adSet;
+    const targetingRaw = adSet.targetingRaw || fromMeta.targetingRaw || null;
+    const targetingLoaded =
+      Boolean(adSet.targetingLoaded) ||
+      Boolean(fromMeta.targetingLoaded) ||
+      Boolean(targetingRaw);
+    // Honor an explicit empty draft list (user cleared all chips). Only fall
+    // back to Meta when the draft omitted interests entirely.
+    const interests = Array.isArray(adSet.interests)
+      ? adSet.interests
+      : fromMeta.interests || [];
+    return {
+      ...adSet,
+      targetingRaw,
+      targetingLoaded,
+      interests,
+    };
   });
   return {
     ...drafted,
+    adSets: adSetsWithMetaTargeting,
     metaObjectIds: metaObjectIdsFromCampaign(campaign),
   };
 }

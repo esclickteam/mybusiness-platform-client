@@ -17,14 +17,13 @@ import {
 import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
 import { shouldAttachManagedBusinessHeader } from "./lib/partnerManagedContext";
 
-const envApiUrl = String(import.meta.env.VITE_API_URL || "")
-  .trim()
-  .replace(/\/+$/, "");
-const BASE_URL =
-  envApiUrl ||
-  (import.meta.env.MODE === "production"
-    ? "https://api.bizuply.com/api"
-    : "/api");
+import { browserHostname, resolveApiBaseUrl } from "./apiBaseUrl";
+
+const BASE_URL = resolveApiBaseUrl({
+  envApiUrl: import.meta.env.VITE_API_URL,
+  mode: import.meta.env.MODE,
+  hostname: browserHostname(),
+});
 
 const API = axios.create({
   baseURL: BASE_URL,
@@ -179,8 +178,17 @@ API.interceptors.response.use(
     const { response, config } = error;
 
     if (!response) {
-      console.error("Network error:", error);
-      return Promise.reject(new Error("Network error"));
+      const message = String(error?.message || "");
+      const timedOut =
+        error?.code === "ECONNABORTED" ||
+        error?.code === "ETIMEDOUT" ||
+        /timeout of \d+ms/i.test(message);
+      console.error(timedOut ? "Network timeout:" : "Network error:", error);
+      const err = new Error(timedOut ? "Network timeout" : "Network error");
+      err.code = timedOut ? "NETWORK_TIMEOUT" : error?.code || "NETWORK_ERROR";
+      err.isTimeout = timedOut;
+      err.cause = error;
+      return Promise.reject(err);
     }
 
     const authErrorCode = response.data?.code;

@@ -28,6 +28,7 @@ type Props = {
   onChange: (patch: Partial<CampaignDraft>) => void;
   sessionMode?: "create" | "edit";
   onDuplicate?: () => void;
+  onRefreshFromMeta?: () => void;
 };
 
 function formatBudgetMoney(campaign: CampaignDraft) {
@@ -49,6 +50,7 @@ export default function CampaignLevelEditor({
   onChange,
   sessionMode = "create",
   onDuplicate,
+  onRefreshFromMeta,
 }: Props) {
   const { t } = useTranslation();
 
@@ -57,9 +59,15 @@ export default function CampaignLevelEditor({
       <MetaSection
         title={t("metaCampaigns.adsManager.campaignName")}
         action={
-          <button type="button" className={metaBtnSecondary}>
-            {t("metaCampaigns.adsManager.createTemplate")}
-          </button>
+          onRefreshFromMeta ? (
+            <button type="button" className={metaBtnSecondary} onClick={onRefreshFromMeta}>
+              {t("metaCampaigns.adsManager.chrome.refreshFromMeta")}
+            </button>
+          ) : (
+            <button type="button" className={metaBtnSecondary}>
+              {t("metaCampaigns.adsManager.createTemplate")}
+            </button>
+          )
         }
       >
         <MetaField label={t("metaCampaigns.adsManager.campaignName")}>
@@ -231,15 +239,43 @@ export default function CampaignLevelEditor({
             value={campaign.bidStrategy}
             onChange={(e) => onChange({ bidStrategy: e.target.value })}
           >
-            <option value="Highest volume">
+            <option value="LOWEST_COST_WITHOUT_CAP">
               {t("metaCampaigns.adsManager.highestVolume")}
             </option>
-            <option value="Cost per result goal">
+            <option value="COST_CAP">
               {t("metaCampaigns.adsManager.costPerResult")}
             </option>
-            <option value="Bid cap">{t("metaCampaigns.adsManager.bidCap")}</option>
+            <option value="LOWEST_COST_WITH_BID_CAP">
+              {t("metaCampaigns.adsManager.bidCap")}
+            </option>
+            <option value="LOWEST_COST_WITH_MIN_ROAS">
+              {t("metaCampaigns.adsManager.minRoas")}
+            </option>
           </select>
         </MetaField>
+        {campaign.bidStrategy === "COST_CAP" ||
+        campaign.bidStrategy === "LOWEST_COST_WITH_BID_CAP" ||
+        campaign.bidStrategy === "Cost per result goal" ||
+        campaign.bidStrategy === "Bid cap" ? (
+          <MetaField label={t("metaCampaigns.adsManager.bidAmount")}>
+            <input
+              className={metaInputClass}
+              value={campaign.bidAmount}
+              onChange={(e) => onChange({ bidAmount: e.target.value })}
+              inputMode="decimal"
+            />
+          </MetaField>
+        ) : null}
+        {campaign.bidStrategy === "LOWEST_COST_WITH_MIN_ROAS" ? (
+          <MetaField label={t("metaCampaigns.adsManager.roasFloor")}>
+            <input
+              className={metaInputClass}
+              value={campaign.roasAverageFloor}
+              onChange={(e) => onChange({ roasAverageFloor: e.target.value })}
+              inputMode="decimal"
+            />
+          </MetaField>
+        ) : null}
 
         <div className="flex flex-wrap items-center gap-4">
           <MetaLinkButton

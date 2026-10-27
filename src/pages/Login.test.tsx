@@ -7,7 +7,14 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en", changeLanguage: vi.fn() } }),
   initReactI18next: { type: "3rdParty", init: () => undefined },
 }));
-vi.mock("../context/AuthContext", () => ({ useAuth: () => ({ login: vi.fn() }) }));
+vi.mock("../api", () => ({
+  default: { get: vi.fn().mockRejectedValue(new Error("offline")), defaults: { baseURL: "/api" } },
+}));
+vi.mock("../context/AuthContext", () => ({ useAuth: () => ({ login: vi.fn(), loginWithToken: vi.fn() }) }));
+vi.mock("../utils/tokenRefresh", () => ({
+  refreshAccessTokenOnce: vi.fn(),
+  clearRefreshDead: vi.fn(),
+}));
 vi.mock("../context/NotificationsContext", () => ({ useNotifications: () => ({ fetchNotifications: vi.fn() }) }));
 vi.mock("../hooks/usePartnerHostBranding", () => ({ usePartnerHostBranding: () => ({ whiteLabelEnabled: false }) }));
 vi.mock("../utils/lazyWithPreload", () => ({ lazyWithPreload: () => ({ preload: () => Promise.resolve() }) }));
@@ -62,5 +69,35 @@ describe("Login", () => {
     cleanup();
     renderAt("/login?product=whatsapp_api&checkout=whatsapp_api&email=a%40b.c&ref=1");
     expect(screen.getByTestId("where")).toHaveTextContent("/whatsapp-api/login?checkout=whatsapp_api&email=a%40b.c&ref=1");
+  });
+
+  it("default /login is password-only: no Email code / Password tabs", async () => {
+    renderAt("/login");
+    await waitFor(() => expect(screen.getByText("login.cardTitle")).toBeInTheDocument());
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "login.methodOtp" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "login.methodPassword" })).not.toBeInTheDocument();
+    expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
+    expect(screen.getByLabelText("login.passwordLabel")).toBeInTheDocument();
+    expect(screen.getByText("login.forgotPassword")).toBeInTheDocument();
+    expect(screen.getByText("login.rememberMe")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "login.signIn" })).toBeInTheDocument();
+    expect(screen.getByText("login.useCodeInstead")).toHaveAttribute(
+      "href",
+      "/login?method=email-code"
+    );
+  });
+
+  it("dedicated ?method=email-code keeps passwordless OTP without tabs", async () => {
+    renderAt("/login?method=email-code&redirect=/pricing");
+    await waitFor(() => expect(screen.getByText("login.cardTitle")).toBeInTheDocument());
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(screen.queryByLabelText("login.passwordLabel")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "login.otpSend" })).toBeInTheDocument();
+    expect(screen.getByText("login.usePasswordInstead")).toHaveAttribute(
+      "href",
+      "/login?redirect=%2Fpricing"
+    );
   });
 });

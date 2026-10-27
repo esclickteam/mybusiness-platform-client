@@ -1,5 +1,17 @@
 import i18n from "../../../../../i18n/i18n";
 import type { AdsManagerState } from "./adsManagerTypes";
+import {
+  inspectCtaForContext,
+  usesInstantFormDestination,
+  usesMessengerDestination,
+  usesPhoneDestination,
+} from "./metaAdCtas";
+import { isWhatsAppConversionLocation } from "./pageWhatsAppNumber";
+import {
+  compatibilityIssueKeys,
+  mapUiBidStrategy,
+  placementPayload,
+} from "./metaAdsManagerParity";
 
 const tChrome = (key: string) =>
   i18n.t(`metaCampaigns.adsManager.chrome.${key}`);
@@ -28,9 +40,7 @@ function selectedAge(adSet: AdsManagerState["adSets"][0]) {
  */
 export function audienceTargetingFromAdsManager(state: AdsManagerState) {
   const adSet = state.adSets[0];
-  const locations = (adSet?.locations || [])
-    .filter((loc) => loc.include !== false)
-    .map((loc) => {
+  const locations = (adSet?.locations || []).map((loc) => {
       const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
       const cityOnly = Boolean(loc.cityOnly) || loc.radiusMiles == null;
       const radiusMiles =
@@ -48,11 +58,12 @@ export function audienceTargetingFromAdsManager(state: AdsManagerState) {
         distanceUnit: radiusMiles != null ? ("mile" as const) : undefined,
         latitude: loc.latitude,
         longitude: loc.longitude,
+        include: loc.include !== false,
       };
     });
 
   const countries = locations
-    .filter((item) => item.type === "country")
+    .filter((item) => item.include !== false && item.type === "country")
     .map((item) => String(item.key || item.countryCode || "").toUpperCase())
     .filter(Boolean);
 
@@ -82,7 +93,10 @@ export function audienceTargetingFromAdsManager(state: AdsManagerState) {
         description: item.description,
       })),
     advantageAudience,
-    advantagePlacements: adSet?.advantagePlacements !== false,
+    ...placementPayload(adSet || { advantagePlacements: true }),
+    customAudiences: adSet?.customAudiences || [],
+    excludedAudiences: adSet?.excludedAudiences || [],
+    locales: adSet?.locales || [],
     furtherLimitReach: Boolean(adSet?.furtherLimitReach),
     suggestAudience: adSet?.suggestAudience !== false,
   };
@@ -125,9 +139,16 @@ export function buildPublishPayloadFromAdsManager(
 
   const isLeads = campaign.objective === "OUTCOME_LEADS";
   const amount = Number(String(campaign.budgetAmount).replace(/,/g, ""));
-  const usesInstantForms = String(adSet.conversionLocation)
-    .toLowerCase()
-    .includes("instant");
+  const usesInstantForms = usesInstantFormDestination(adSet.conversionLocation);
+  const usesWhatsApp = isWhatsAppConversionLocation(adSet.conversionLocation);
+  const usesMessenger = usesMessengerDestination(adSet.conversionLocation);
+  const usesPhone = usesPhoneDestination(adSet.conversionLocation);
+  const callToAction = inspectCtaForContext(ad.callToAction, {
+    usesInstantForms,
+    usesWhatsApp,
+    usesMessenger,
+    usesPhone,
+  }).current || ad.callToAction;
 
   const audience = audienceTargetingFromAdsManager(state);
   const pageId = ad.facebookPageId || adSet.facebookPageId || "";
@@ -155,10 +176,12 @@ export function buildPublishPayloadFromAdsManager(
         ? amount
         : undefined,
     budgetAmount: amount,
-    bidStrategy:
-      campaign.bidStrategy === "Highest volume"
-        ? "LOWEST_COST_WITHOUT_CAP"
-        : undefined,
+    budgetStrategy: campaign.budgetStrategy,
+    useCampaignBudget: campaign.budgetStrategy === "campaign",
+    isAdsetBudgetSharingEnabled: campaign.budgetStrategy === "campaign",
+    bidStrategy: mapUiBidStrategy(campaign.bidStrategy),
+    bidAmount: Number(campaign.bidAmount) || undefined,
+    roasAverageFloor: Number(campaign.roasAverageFloor) || undefined,
     startDate: adSet.startDate,
     startTime: adSet.startTime,
     endDateEnabled: adSet.endDateEnabled,
@@ -173,25 +196,71 @@ export function buildPublishPayloadFromAdsManager(
     interests: audience.interests,
     advantageAudience: audience.advantageAudience,
     advantagePlus: campaign.advantagePlusLeads,
-    advantagePlacements: adSet.advantagePlacements,
+    advantagePlacements: audience.advantagePlacements,
+    placementMode: audience.placementMode,
+    publisherPlatforms: audience.publisherPlatforms,
+    facebookPositions: audience.facebookPositions,
+    instagramPositions: audience.instagramPositions,
+    messengerPositions: audience.messengerPositions,
+    audienceNetworkPositions: audience.audienceNetworkPositions,
+    threadsPositions: audience.threadsPositions,
+    devicePlatforms: audience.devicePlatforms,
+    customAudiences: audience.customAudiences,
+    excludedAudiences: audience.excludedAudiences,
+    locales: audience.locales,
     conversionLocation: adSet.conversionLocation,
     performanceGoal: adSet.performanceGoal,
-    destinationType:
-      isLeads && usesInstantForms ? "ON_AD" : "WEBSITE",
-    leadFormId: ad.instantFormId || undefined,
-    formId: ad.instantFormId || undefined,
-    websiteUrl: ad.websiteUrl,
-    link: ad.websiteUrl,
+    destinationType: usesWhatsApp
+      ? "WHATSAPP"
+      : usesPhone
+        ? "PHONE"
+        : usesMessenger
+          ? "MESSENGER"
+          : isLeads && usesInstantForms
+            ? "ON_AD"
+            : "WEBSITE",
+    whatsappPhone: usesWhatsApp ? adSet.whatsappPhone : undefined,
+    leadFormId: usesInstantForms ? ad.instantFormId || undefined : undefined,
+    formId: usesInstantForms ? ad.instantFormId || undefined : undefined,
+    websiteUrl: usesWhatsApp
+      ? ad.websiteUrl || "https://api.whatsapp.com/send"
+      : ad.websiteUrl,
+    link: usesWhatsApp
+      ? ad.websiteUrl || "https://api.whatsapp.com/send"
+      : ad.websiteUrl,
     displayLink: ad.displayLink,
     primaryText: ad.primaryText,
     message: ad.primaryText,
     headline: ad.headline,
     description: ad.description,
-    callToAction: ad.callToAction,
+    callToAction,
     imageHash: ad.imageHash || undefined,
     imageUrl: ad.imagePreviewUrl || undefined,
     videoId: ad.videoId || undefined,
-    creativeFormat: ad.creativeFormat === "video" ? "video" : "single",
+    carouselCards:
+      ad.creativeFormat === "carousel"
+        ? (ad.carouselCards || [])
+            .filter((card) => card.imageHash || card.link)
+            .map((card) => ({
+              headline: card.headline,
+              description: card.description,
+              imageHash: card.imageHash,
+              link: card.link || ad.websiteUrl,
+            }))
+        : undefined,
+    dynamicCreative: adSet.dynamicCreative === true,
+    productSetId: ad.productSetId || undefined,
+    objectStoryId: ad.objectStoryId || undefined,
+    creativeFormat:
+      ad.creativeFormat === "video"
+        ? "video"
+        : ad.creativeFormat === "carousel"
+          ? "carousel"
+          : ad.creativeFormat === "catalog"
+            ? "catalog"
+            : ad.creativeFormat === "existing_post"
+              ? "existing_post"
+              : "single",
   };
 }
 
@@ -200,9 +269,10 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   const campaign = state.campaign;
   const adSet = state.adSets[0];
   const ad = state.ads[0];
-  const usesInstantForms = String(adSet?.conversionLocation || "")
-    .toLowerCase()
-    .includes("instant");
+  const usesInstantForms = usesInstantFormDestination(adSet?.conversionLocation);
+  const usesWhatsApp = isWhatsAppConversionLocation(adSet?.conversionLocation);
+  const usesMessenger = usesMessengerDestination(adSet?.conversionLocation);
+  const usesPhone = usesPhoneDestination(adSet?.conversionLocation);
 
   if (!campaign?.name.trim()) errors.push(tChrome("validationCampaignName"));
   if (!campaign?.objective) errors.push(tChrome("validationObjective"));
@@ -217,10 +287,17 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   if (!pageId || pageId === "page_1" || pageId === "page_2") {
     errors.push(tChrome("validationPage"));
   }
-  if (usesInstantForms && !adSet?.facebookPageId && !ad?.facebookPageId) {
+  if (
+    (usesInstantForms || usesWhatsApp) &&
+    !adSet?.facebookPageId &&
+    !ad?.facebookPageId
+  ) {
     errors.push(tChrome("validationPageForForms"));
   }
-  if (!ad?.primaryText.trim() || !ad?.headline.trim()) {
+  if (
+    ad?.creativeFormat !== "existing_post" &&
+    (!ad?.primaryText.trim() || !ad?.headline.trim())
+  ) {
     errors.push(tChrome("validationCreativeText"));
   }
   if (
@@ -230,8 +307,56 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   ) {
     errors.push(tChrome("validationInstantForm"));
   }
-  if (!ad?.instantFormId && !ad?.websiteUrl.trim()) {
+  if (usesWhatsApp && !String(adSet?.whatsappPhone || "").trim()) {
+    errors.push(tChrome("pageWaRequired"));
+  }
+  if (
+    ad?.creativeFormat !== "existing_post" &&
+    !usesWhatsApp &&
+    !usesPhone &&
+    !ad?.instantFormId &&
+    !ad?.websiteUrl.trim()
+  ) {
     errors.push(tChrome("validationDestination"));
+  }
+  if (
+    ad?.creativeFormat === "carousel" &&
+    (ad.carouselCards || []).filter((card) => card.imageHash).length < 2
+  ) {
+    errors.push(tChrome("validationCarousel"));
+  }
+  if (ad?.creativeFormat === "catalog" && !ad.productSetId) {
+    errors.push(tChrome("validationCatalog"));
+  }
+  if (ad?.creativeFormat === "existing_post" && !ad.objectStoryId) {
+    errors.push(tChrome("validationExistingPost"));
+  }
+  if (
+    ad?.callToAction &&
+    !inspectCtaForContext(ad.callToAction, {
+      usesInstantForms,
+      usesWhatsApp,
+      usesMessenger,
+      usesPhone,
+    }).compatible
+  ) {
+    errors.push(tChrome("validationLeadFormCta"));
+  }
+  for (const key of compatibilityIssueKeys({
+    objective: campaign?.objective,
+    bidStrategy: campaign?.bidStrategy,
+    bidAmount: campaign?.bidAmount,
+    roasAverageFloor: campaign?.roasAverageFloor,
+    advantagePlacements: adSet?.advantagePlacements,
+    publisherPlatforms: adSet?.publisherPlatforms,
+    messengerPositions: adSet?.messengerPositions,
+    conversionLocation: adSet?.conversionLocation,
+    leadFormId: ad?.instantFormId,
+    creativeFormat: ad?.creativeFormat,
+    carouselCards: ad?.carouselCards,
+  })) {
+    const message = tChrome(key);
+    if (!errors.includes(message)) errors.push(message);
   }
   return errors;
 }

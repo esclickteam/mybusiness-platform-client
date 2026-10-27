@@ -1,6 +1,7 @@
 import i18n from "../../../../i18n/i18n";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 import { formatDemoMoney, getDemoCurrency } from "../../../../guidedDemo/demoCurrency";
+import { DEFAULT_AD_ACCOUNT_TIMEZONE } from "./metaAdsCalendar";
 
 /** Guided demos pin the currency to the demo locale; otherwise the ad account's. */
 export function resolveCampaignCurrency(accountCurrency?: string | null) {
@@ -58,7 +59,11 @@ export function toLocalIsoDate(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-export function formatDateTimeHe(value?: string | Date | null, locale = getIntlLocale(i18n.language)) {
+export function formatDateTimeHe(
+  value?: string | Date | null,
+  locale = getIntlLocale(i18n.language),
+  timeZone = DEFAULT_AD_ACCOUNT_TIMEZONE
+) {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -68,6 +73,7 @@ export function formatDateTimeHe(value?: string | Date | null, locale = getIntlL
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: timeZone || DEFAULT_AD_ACCOUNT_TIMEZONE,
   });
 }
 
@@ -442,6 +448,9 @@ export type LeadFormCustomQuestionDraft = {
   key?: string;
   /** Per-option export keys for multiple choice */
   optionKeys?: string[];
+  /** Show this question when another multiple-choice option is selected. */
+  dependentOnQuestionId?: string;
+  dependentOnOption?: string;
 };
 
 /** Meta-style export key: spaces → underscores, keep Hebrew letters. */
@@ -474,6 +483,8 @@ export function createLeadFormCustomQuestion(
           : ["", ""],
     key: partial?.key,
     optionKeys: partial?.optionKeys ? [...partial.optionKeys] : undefined,
+    dependentOnQuestionId: partial?.dependentOnQuestionId,
+    dependentOnOption: partial?.dependentOnOption,
   };
 }
 
@@ -496,46 +507,62 @@ export function buildMetaLeadFormQuestionsPayload(input: {
       return key ? { type, key } : { type };
     });
 
-  const customQuestions = (input.customQuestions || [])
-    .map((question, index) => {
-      const label = String(question.label || "").trim();
-      if (!label) return null;
-      const fallbackKey = `question_${index + 1}`;
-      const payload: {
-        type: "CUSTOM";
-        key: string;
-        label: string;
-        answerType: LeadFormAnswerType;
-        options?: Array<string | { key: string; value: string }>;
-      } = {
-        type: "CUSTOM",
-        key: suggestLeadFieldKey(question.key || label, fallbackKey),
-        label,
-        answerType: question.answerType || "short_answer",
-      };
-      if (question.answerType === "multiple_choice") {
-        const opts: Array<{ key: string; value: string }> = [];
-        (question.options || []).forEach((opt, optIndex) => {
-          const value = String(opt || "").trim();
-          if (!value) return;
-          const optFallback = `option_${optIndex + 1}`;
-          const optKeyRaw = String(question.optionKeys?.[optIndex] || "").trim();
-          opts.push({
-            key: suggestLeadFieldKey(optKeyRaw || value, optFallback),
-            value,
-          });
-        });
-        payload.options = opts;
-      }
-      return payload;
-    })
-    .filter(Boolean) as Array<{
+  type CustomQuestionPayload = {
     type: "CUSTOM";
     key: string;
     label: string;
     answerType: LeadFormAnswerType;
     options?: Array<string | { key: string; value: string }>;
-  }>;
+    dependentConditionalQuestions?: Array<{ name: string; fieldKey: string }>;
+  };
+
+  const filled = (input.customQuestions || []).filter((question) =>
+    String(question.label || "").trim()
+  );
+
+  const customQuestions: CustomQuestionPayload[] = filled.map((question, index) => {
+    const label = String(question.label || "").trim();
+    const fallbackKey = `question_${index + 1}`;
+    const payload: CustomQuestionPayload = {
+      type: "CUSTOM",
+      key: suggestLeadFieldKey(question.key || label, fallbackKey),
+      label,
+      answerType: question.answerType || "short_answer",
+    };
+    if (question.answerType === "multiple_choice") {
+      const opts: Array<{ key: string; value: string }> = [];
+      (question.options || []).forEach((opt, optIndex) => {
+        const value = String(opt || "").trim();
+        if (!value) return;
+        const optFallback = `option_${optIndex + 1}`;
+        const optKeyRaw = String(question.optionKeys?.[optIndex] || "").trim();
+        opts.push({
+          key: suggestLeadFieldKey(optKeyRaw || value, optFallback),
+          value,
+        });
+      });
+      payload.options = opts;
+    }
+    return payload;
+  });
+
+  filled.forEach((question, index) => {
+    if (!question.dependentOnQuestionId || !question.dependentOnOption) return;
+    const parentIndex = filled.findIndex(
+      (row) => row.id === question.dependentOnQuestionId
+    );
+    if (parentIndex < 0) return;
+    const parentPayload = customQuestions[parentIndex];
+    const childPayload = customQuestions[index];
+    if (!parentPayload || !childPayload) return;
+    parentPayload.dependentConditionalQuestions = [
+      ...(parentPayload.dependentConditionalQuestions || []),
+      {
+        name: question.dependentOnOption,
+        fieldKey: childPayload.key,
+      },
+    ];
+  });
 
   return [...contactQuestions, ...customQuestions];
 }

@@ -14,19 +14,29 @@ import {
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import {
+  listMetaPagePosts,
+  listMetaProductCatalogs,
+  listMetaProductSets,
   setMetaLeadFormStatus,
   uploadMetaMedia,
   type MetaAdsPage,
   type MetaLeadFormDraft,
 } from "../../../../../../api/metaCampaignsApi";
-import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
+import type { AdCreativeFormat, AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdsManagerCreateLeadFormModal from "../AdsManagerCreateLeadFormModal";
 import {
   leadFormDuplicateSeedFromMeta,
   leadFormDuplicateSeedFromSavedEditor,
   type LeadFormDuplicateSeed,
 } from "../leadFormDuplicateSeed";
-import { metaCtaLabel, metaCtaOptions } from "../metaAdCtas";
+import {
+  inspectCtaForContext,
+  metaCtaLabel,
+  metaCtaOptionsForContext,
+  usesInstantFormDestination,
+  usesMessengerDestination,
+  usesPhoneDestination,
+} from "../metaAdCtas";
 import LeadgenTosCard from "../LeadgenTosCard";
 import {
   MetaField,
@@ -39,6 +49,7 @@ import {
   metaInputClass,
   metaSelectClass,
 } from "../metaAdsUi";
+import { displayWhatsAppNumber, isWhatsAppConversionLocation } from "../pageWhatsAppNumber";
 
 type Props = {
   ad: AdDraft;
@@ -50,10 +61,18 @@ type Props = {
   businessId: string | null;
   sessionMode?: "create" | "edit";
   showLeadgenTos?: boolean;
+  conversionLocation?: string;
+  whatsappPhone?: string;
+  whatsappDisplayNumber?: string;
   publishId?: string;
   onChange: (patch: Partial<AdDraft>) => void;
   onFormsRefresh?: () => Promise<void> | void;
   onFormReady?: (form: { id: string; name: string; pageId: string }) => Promise<void> | void;
+  advancedCapabilities?: {
+    catalogCreatives?: boolean;
+    existingPostCreatives?: boolean;
+    leadFormConditionals?: boolean;
+  };
 };
 
 export default function AdLevelEditor({
@@ -66,16 +85,32 @@ export default function AdLevelEditor({
   businessId,
   sessionMode = "create",
   showLeadgenTos = false,
+  conversionLocation = "",
+  whatsappPhone = "",
+  whatsappDisplayNumber = "",
   publishId,
   onChange,
   onFormsRefresh,
   onFormReady,
+  advancedCapabilities,
 }: Props) {
   const { t } = useTranslation();
   const c = (key: string, opts?: Record<string, unknown>) =>
     t(`metaCampaigns.adsManager.chrome.${key}`, opts);
   const tabLabel = (tab: "active" | "archived") =>
     tab === "active" ? c("formTabActive") : c("formTabArchived");
+  const usesWhatsApp = isWhatsAppConversionLocation(conversionLocation);
+  const usesInstantForms = usesInstantFormDestination(conversionLocation);
+  const usesMessenger = usesMessengerDestination(conversionLocation);
+  const usesPhone = usesPhoneDestination(conversionLocation);
+  const ctaContext = {
+    usesInstantForms,
+    usesWhatsApp,
+    usesMessenger,
+    usesPhone,
+  };
+  const ctaOptions = metaCtaOptionsForContext(ctaContext, t);
+  const ctaStatus = inspectCtaForContext(ad.callToAction, ctaContext);
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
@@ -86,6 +121,9 @@ export default function AdLevelEditor({
   const [editorMode, setEditorMode] = useState<"create" | "duplicate">("create");
   const [duplicateSeed, setDuplicateSeed] = useState<LeadFormDuplicateSeed | null>(null);
   const [formActionKey, setFormActionKey] = useState("");
+  const [catalogs, setCatalogs] = useState<Array<{ id: string; name: string }>>([]);
+  const [productSets, setProductSets] = useState<Array<{ id: string; name: string }>>([]);
+  const [pagePosts, setPagePosts] = useState<Array<{ id: string; message: string }>>([]);
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -95,6 +133,56 @@ export default function AdLevelEditor({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
+
+  useEffect(() => {
+    if (!businessId || ad.creativeFormat !== "catalog") return;
+    let cancelled = false;
+    listMetaProductCatalogs(businessId)
+      .then((data) => {
+        if (!cancelled) setCatalogs(data.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setCatalogs([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, ad.creativeFormat]);
+
+  useEffect(() => {
+    if (!businessId || !ad.catalogId || ad.creativeFormat !== "catalog") {
+      setProductSets([]);
+      return;
+    }
+    let cancelled = false;
+    listMetaProductSets(businessId, ad.catalogId)
+      .then((data) => {
+        if (!cancelled) setProductSets(data.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setProductSets([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, ad.catalogId, ad.creativeFormat]);
+
+  useEffect(() => {
+    if (!businessId || ad.creativeFormat !== "existing_post") return;
+    const pageId = ad.facebookPageId;
+    if (!pageId) return;
+    let cancelled = false;
+    listMetaPagePosts(businessId, pageId)
+      .then((data) => {
+        if (!cancelled) setPagePosts(data.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setPagePosts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, ad.creativeFormat, ad.facebookPageId]);
 
   const readActionError = (error: unknown) => {
     const response = (error as { response?: { data?: { error?: string; message?: string } } })
@@ -151,10 +239,21 @@ export default function AdLevelEditor({
     return form.name.toLowerCase().includes(q);
   });
 
-  const pickMedia = (format: "image" | "video") => {
-    onChange({ creativeFormat: format });
+  const pickMedia = (format: AdCreativeFormat) => {
+    onChange({
+      creativeFormat: format,
+      carouselCards:
+        format === "carousel" && !(ad.carouselCards || []).length
+          ? [
+              { headline: ad.headline, description: ad.description, imageHash: ad.imageHash, imagePreviewUrl: ad.imagePreviewUrl, link: ad.websiteUrl },
+              { headline: "", description: "", imageHash: "", imagePreviewUrl: "", link: ad.websiteUrl },
+            ]
+          : ad.carouselCards,
+    });
     setMediaMenuOpen(false);
-    window.setTimeout(() => fileRef.current?.click(), 0);
+    if (format === "image" || format === "video") {
+      window.setTimeout(() => fileRef.current?.click(), 0);
+    }
   };
 
   const handleUpload = async (file: File | null) => {
@@ -178,6 +277,29 @@ export default function AdLevelEditor({
           imageHash: "",
           imagePreviewUrl: "",
           mediaLabel: file.name || c("videoUploadedFallback"),
+        });
+      } else if (ad.creativeFormat === "carousel") {
+        const cards = [...(ad.carouselCards || [])];
+        const empty = cards.findIndex((card) => !card.imageHash);
+        const idx = empty >= 0 ? empty : Math.max(0, cards.length - 1);
+        if (!cards[idx]) {
+          cards[idx] = {
+            headline: "",
+            description: "",
+            imageHash: "",
+            imagePreviewUrl: "",
+            link: ad.websiteUrl,
+          };
+        }
+        cards[idx] = {
+          ...cards[idx],
+          imageHash: result.imageHash || "",
+          imagePreviewUrl: result.url || "",
+        };
+        onChange({
+          creativeFormat: "carousel",
+          carouselCards: cards,
+          mediaLabel: file.name || c("imageUploadedFallback"),
         });
       } else {
         onChange({
@@ -259,9 +381,35 @@ export default function AdLevelEditor({
 
       <MetaSection
         title={c("destination")}
-        status={ad.instantFormId ? "ok" : "warn"}
+        status={
+          usesWhatsApp
+            ? whatsappPhone
+              ? "ok"
+              : "warn"
+            : usesInstantForms
+              ? ad.instantFormId
+                ? "ok"
+                : "warn"
+              : ad.websiteUrl
+                ? "ok"
+                : "warn"
+        }
       >
         <div className="space-y-5">
+          {usesWhatsApp ? (
+            <div
+              data-testid="ad-whatsapp-destination"
+              className="rounded-xl border border-[#C6D9F1] bg-[#F0F6FF] px-4 py-3"
+            >
+              <p className="text-[15px] font-bold text-[#050505]">WhatsApp</p>
+              <p className="mt-1 text-[13px] text-[#65676B]" dir="ltr">
+                {whatsappDisplayNumber ||
+                  displayWhatsAppNumber(whatsappPhone) ||
+                  c("pageWaChooseNumber")}
+              </p>
+            </div>
+          ) : (
+          <>
           <div>
             <h3 className="text-[15px] font-bold text-[#050505]">
               {c("website")}
@@ -288,6 +436,7 @@ export default function AdLevelEditor({
             </div>
           </div>
 
+          {usesInstantForms ? (
           <div className="border-t border-[#E4E6EB] pt-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="text-[15px] font-bold text-[#050505]">
@@ -517,6 +666,9 @@ export default function AdLevelEditor({
               </div>
             ) : null}
           </div>
+          ) : null}
+          </>
+          )}
         </div>
       </MetaSection>
 
@@ -535,7 +687,15 @@ export default function AdLevelEditor({
             onClick={() => setMediaMenuOpen((v) => !v)}
           >
             <span className="font-semibold">
-              {ad.creativeFormat === "video" ? c("videoAd") : c("imageAd")}
+              {ad.creativeFormat === "video"
+                ? c("videoAd")
+                : ad.creativeFormat === "carousel"
+                  ? c("carouselAd")
+                  : ad.creativeFormat === "catalog"
+                    ? c("catalogAd")
+                    : ad.creativeFormat === "existing_post"
+                      ? c("existingPostAd")
+                      : c("imageAd")}
             </span>
             <Upload className="h-4 w-4 text-[#65676B]" />
           </button>
@@ -559,6 +719,23 @@ export default function AdLevelEditor({
               <button
                 type="button"
                 className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => {
+                  pickMedia("carousel");
+                }}
+              >
+                <Copy className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">
+                    {c("carouselAd")}
+                  </span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    {c("carouselAdUploadDesc")}
+                  </span>
+                </span>
+              </button>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
                 onClick={() => pickMedia("video")}
               >
                 <Video className="h-5 w-5 text-[#65676B]" />
@@ -571,6 +748,36 @@ export default function AdLevelEditor({
                   </span>
                 </span>
               </button>
+              {advancedCapabilities?.catalogCreatives ? (
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => pickMedia("catalog")}
+              >
+                <Folder className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">{c("catalogAd")}</span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    {c("catalogAdDesc")}
+                  </span>
+                </span>
+              </button>
+              ) : null}
+              {advancedCapabilities?.existingPostCreatives ? (
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => pickMedia("existing_post")}
+              >
+                <Copy className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">{c("existingPostAd")}</span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    {c("existingPostAdDesc")}
+                  </span>
+                </span>
+              </button>
+              ) : null}
             </div>
           ) : null}
           <input
@@ -624,6 +831,111 @@ export default function AdLevelEditor({
           )}
         </MetaField>
 
+        {ad.creativeFormat === "catalog" ? (
+          <div className="space-y-2">
+            <MetaField label={c("catalog")}>
+              <select
+                className={metaSelectClass}
+                value={ad.catalogId}
+                onChange={(e) => onChange({ catalogId: e.target.value, productSetId: "" })}
+              >
+                <option value="">{c("pickCatalog")}</option>
+                {catalogs.map((row) => (
+                  <option key={row.id} value={row.id}>
+                    {row.name}
+                  </option>
+                ))}
+              </select>
+            </MetaField>
+            <MetaField label={c("productSet")}>
+              <select
+                className={metaSelectClass}
+                value={ad.productSetId}
+                onChange={(e) => onChange({ productSetId: e.target.value })}
+              >
+                <option value="">{c("pickProductSet")}</option>
+                {productSets.map((row) => (
+                  <option key={row.id} value={row.id}>
+                    {row.name}
+                  </option>
+                ))}
+              </select>
+            </MetaField>
+          </div>
+        ) : null}
+
+        {ad.creativeFormat === "existing_post" ? (
+          <MetaField label={c("existingPost")}>
+            <select
+              className={metaSelectClass}
+              value={ad.objectStoryId}
+              onChange={(e) => onChange({ objectStoryId: e.target.value })}
+            >
+              <option value="">{c("pickExistingPost")}</option>
+              {pagePosts.map((row) => (
+                <option key={row.id} value={row.id}>
+                  {row.message || row.id}
+                </option>
+              ))}
+            </select>
+          </MetaField>
+        ) : null}
+
+        {ad.creativeFormat === "carousel" ? (
+          <div className="space-y-2">
+            <p className="text-[13px] font-semibold">{c("carouselCards")}</p>
+            {(ad.carouselCards || []).map((card, index) => (
+              <div key={`card-${index}`} className="rounded-md border border-[#E4E6EB] p-3">
+                <input
+                  className={`${metaInputClass} mb-2`}
+                  value={card.headline}
+                  placeholder={c("headline")}
+                  onChange={(e) => {
+                    const cards = [...(ad.carouselCards || [])];
+                    cards[index] = { ...cards[index], headline: e.target.value };
+                    onChange({ carouselCards: cards });
+                  }}
+                />
+                <input
+                  className={metaInputClass}
+                  value={card.link}
+                  placeholder={c("websiteUrl")}
+                  onChange={(e) => {
+                    const cards = [...(ad.carouselCards || [])];
+                    cards[index] = { ...cards[index], link: e.target.value };
+                    onChange({ carouselCards: cards });
+                  }}
+                />
+                {card.imagePreviewUrl ? (
+                  <img src={card.imagePreviewUrl} alt="" className="mt-2 max-h-24 object-contain" />
+                ) : (
+                  <p className="mt-2 text-[12px] text-[#65676B]">{c("carouselNeedImage")}</p>
+                )}
+              </div>
+            ))}
+            <button
+              type="button"
+              className={metaBtnSecondary}
+              onClick={() =>
+                onChange({
+                  carouselCards: [
+                    ...(ad.carouselCards || []),
+                    {
+                      headline: "",
+                      description: "",
+                      imageHash: "",
+                      imagePreviewUrl: "",
+                      link: ad.websiteUrl,
+                    },
+                  ],
+                })
+              }
+            >
+              {c("addCarouselCard")}
+            </button>
+          </div>
+        ) : null}
+
         <div className="space-y-4" data-demo-target="meta-creative">
           <MetaField label={c("primaryText")}>
             <textarea
@@ -669,24 +981,38 @@ export default function AdLevelEditor({
             </span>
             <ChevronDown className="h-4 w-4 text-[#65676B]" />
           </button>
+          {!ctaStatus.compatible ? (
+            <p className="mt-1.5 text-[12px] font-semibold text-[#C03221]">
+              {c("ctaIncompatibleLeadForm")}
+            </p>
+          ) : null}
           {ctaOpen ? (
             <div
               data-testid="meta-ads-cta-menu"
               className="absolute z-40 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-xl"
             >
-              {metaCtaOptions(t).map((cta) => {
+              {ctaOptions.map((cta) => {
                 const selected = ad.callToAction === cta.value;
                 return (
                   <button
                     key={cta.value}
                     type="button"
+                    disabled={!cta.compatible}
+                    title={
+                      cta.compatible
+                        ? undefined
+                        : t(`metaCampaigns.adsManager.chrome.${cta.reasonKey || "ctaIncompatibleLeadForm"}`)
+                    }
                     className={[
                       "flex w-full items-center gap-3 px-3 py-2.5 text-left text-[14px]",
-                      selected
-                        ? "bg-[#E7F3FF] font-semibold text-[#050505]"
-                        : "hover:bg-[#F0F2F5]",
+                      !cta.compatible
+                        ? "cursor-not-allowed text-[#8A8D91]"
+                        : selected
+                          ? "bg-[#E7F3FF] font-semibold text-[#050505]"
+                          : "hover:bg-[#F0F2F5]",
                     ].join(" ")}
                     onClick={() => {
+                      if (!cta.compatible) return;
                       onChange({ callToAction: cta.value });
                       setCtaOpen(false);
                     }}
@@ -722,6 +1048,7 @@ export default function AdLevelEditor({
         adDraftId={editorMode === "duplicate" ? undefined : ad.id}
         mode={editorMode}
         initialDraft={editorMode === "duplicate" ? duplicateSeed : null}
+        allowAdvancedLeadForm={Boolean(advancedCapabilities?.leadFormConditionals)}
         onClose={() => setCreateFormOpen(false)}
         onDraftSaved={async () => {
           await onFormsRefresh?.();

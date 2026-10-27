@@ -115,6 +115,23 @@ describe("adsManagerStateFromMetaCampaign", () => {
     expect(state.ads[0].facebookPageId).toBe("1222199210985216");
   });
 
+  it("keeps unpublished mongo drafts as DRAFT and Traffic off Instant Form leftovers", () => {
+    const local = adsManagerStateFromMetaCampaign({
+      ...campaign,
+      id: "6ae06f095cddb10faa003644",
+      status: "PAUSED",
+      objective: "OUTCOME_TRAFFIC",
+      leadFormId: "stale-form",
+      adSets: campaign.adSets?.map((row) => ({ ...row, id: "local-adset", status: "PAUSED" })),
+      ads: campaign.ads?.map((row) => ({ ...row, id: "local-ad", status: "PAUSED", leadFormId: "stale-form" })),
+    });
+    expect(local.campaign.status).toBe("DRAFT");
+    expect(local.adSets[0].status).toBe("DRAFT");
+    expect(local.ads[0].status).toBe("DRAFT");
+    expect(local.adSets[0].conversionLocation).toBe("Website");
+    expect(local.ads[0].instantFormId).toBe("");
+  });
+
   it("loads mixed detailed targeting for edit and keeps Meta ids/types after add/remove", () => {
     const withDetailed: MetaCampaign = {
       ...campaign,
@@ -275,5 +292,129 @@ describe("adsManagerStateFromMetaCampaign", () => {
     expect(state.adSets[0].ageMax).toBe(35);
     expect(state.adSets[0].gender).toBe("all");
     expect(state.adSets[0].advantageAudience).toBe(true);
+  });
+
+  it("keeps an explicit empty draft interest list instead of Meta chips", () => {
+    const withEmptyDraft: MetaCampaign = {
+      ...campaign,
+      interests: [{ id: "600", name: "Small business", type: "interests" }],
+      adSets: [
+        {
+          ...campaign.adSets![0],
+          interests: [{ id: "600", name: "Small business", type: "interests" }],
+        },
+      ],
+      editorDraft: {
+        workspace: {
+          campaign: {
+            id: campaign.id,
+            name: campaign.name,
+            objective: "OUTCOME_LEADS",
+            budgetAmount: "100",
+            budgetType: "daily",
+            status: "PAUSED",
+          },
+          adSets: [
+            {
+              id: "adset-1",
+              name: "Main ad set",
+              interests: [],
+              targetingLoaded: false,
+              targetingRaw: null,
+            },
+          ],
+          ads: [
+            {
+              id: "ad-1",
+              name: "Main ad",
+              adSetId: "adset-1",
+              headline: "Headline from Meta",
+              primaryText: "Primary from Meta",
+            },
+          ],
+        },
+      },
+    };
+    const state = adsManagerStateFromMetaCampaign(withEmptyDraft);
+    expect(state.adSets[0].interests).toEqual([]);
+    expect(state.adSets[0].targetingRaw).toEqual(
+      expect.objectContaining({
+        geo_locations: { countries: ["IL"] },
+      })
+    );
+  });
+
+  it("keeps Meta targetingRaw when an editor draft omits it", () => {
+    const withDraft: MetaCampaign = {
+      ...campaign,
+      editorDraft: {
+        workspace: {
+          campaign: {
+            id: campaign.id,
+            name: campaign.name,
+            objective: "OUTCOME_LEADS",
+            budgetAmount: "100",
+            budgetType: "daily",
+            status: "PAUSED",
+          },
+          adSets: [
+            {
+              id: "adset-1",
+              name: "Main ad set",
+              interests: [
+                { id: "6003349071605", name: "Wedding photography", type: "interests" },
+              ],
+              targetingLoaded: false,
+              targetingRaw: null,
+            },
+          ],
+          ads: [
+            {
+              id: "ad-1",
+              name: "Main ad",
+              adSetId: "adset-1",
+              headline: "Headline from Meta",
+              primaryText: "Primary from Meta",
+            },
+          ],
+        },
+      },
+    };
+    const state = adsManagerStateFromMetaCampaign(withDraft);
+    expect(state.adSets[0].targetingLoaded).toBe(true);
+    expect(state.adSets[0].targetingRaw).toEqual(
+      expect.objectContaining({
+        geo_locations: { countries: ["IL"] },
+      })
+    );
+    expect(state.adSets[0].interests.map((row) => row.id)).toContain(
+      "6003349071605"
+    );
+  });
+
+  it("preferMeta keeps live Meta settings instead of a stale editor workspace", () => {
+    const withDraft: MetaCampaign = {
+      ...campaign,
+      name: "Live Meta name",
+      editorDraft: {
+        workspace: {
+          campaign: {
+            id: campaign.id,
+            name: "Stale local name",
+            objective: "OUTCOME_LEADS",
+            budgetAmount: "9",
+            budgetType: "daily",
+            status: "PAUSED",
+          },
+          adSets: [{ id: "adset-1", name: "Stale ad set" }],
+          ads: [{ id: "ad-1", name: "Stale ad", adSetId: "adset-1" }],
+        },
+      },
+    };
+    const overlaid = adsManagerStateFromMetaCampaign(withDraft);
+    const fromMeta = adsManagerStateFromMetaCampaign(withDraft, { preferMeta: true });
+    expect(overlaid.campaign.name).toBe("Stale local name");
+    expect(fromMeta.campaign.name).toBe("Live Meta name");
+    expect(fromMeta.adSets[0].name).toBe("Main ad set");
   });
 });

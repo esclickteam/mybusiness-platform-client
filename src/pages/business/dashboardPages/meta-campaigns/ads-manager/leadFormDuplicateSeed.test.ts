@@ -17,6 +17,7 @@ describe("leadFormDuplicateSeedFromMeta", () => {
           key: "guests",
           label: "כמה מוזמנים?",
           options: [{ key: "small", value: "עד 100" }, { key: "large", value: "מעל 100" }],
+          dependentConditionalQuestions: [{ name: "מעל 100", fieldKey: "interest" }],
         },
       ],
       contextCard: { title: "כותרת", content: "תיאור" },
@@ -46,6 +47,8 @@ describe("leadFormDuplicateSeedFromMeta", () => {
     expect(seed.customQuestions[0].options).toEqual([]);
     expect(seed.customQuestions[1].answerType).toBe("multiple_choice");
     expect(seed.customQuestions[1].options).toEqual(["עד 100", "מעל 100"]);
+    expect(seed.customQuestions[0].dependentOnQuestionId).toBe("guests");
+    expect(seed.customQuestions[0].dependentOnOption).toBe("מעל 100");
     expect(seed.locale).toBe("he_IL");
   });
 });

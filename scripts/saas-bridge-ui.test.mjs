@@ -14,3 +14,25 @@ test("the builder exposes draft, preview, publish, restore, language, and automa
   assert.match(page, /entity is not in this system/);
   assert.doesNotMatch(page, /integrationSecret|JWT_SECRET|password/i);
 });
+
+test("my systems enter-system uses the product login helper, not the marketplace shell path", () => {
+  const page = fs.readFileSync(new URL("../src/pages/business/dashboardPages/saas/MySaasSystems.tsx", import.meta.url), "utf8");
+  assert.match(page, /enterSystemHref/);
+  assert.doesNotMatch(page, /href=\{tenant\.accessPath\}/);
+});
+
+test("dinevo public and owner previews are not TableFlow", () => {
+  const publicSite = fs.readFileSync(new URL("../src/pages/saas/SaasPublicSite.tsx", import.meta.url), "utf8");
+  const owner = fs.readFileSync(new URL("../src/pages/business/dashboardPages/saas/SaasOwnerConsole.tsx", import.meta.url), "utf8");
+  assert.doesNotMatch(publicSite, /templateSlug === "dinevo"/);
+  assert.match(publicSite, /ProductPublicLanding/);
+  assert.match(publicSite, /isHostedShellProduct/);
+  assert.doesNotMatch(owner, /templateSlug === "tableflow" \|\| templateSlug === "dinevo"/);
+  assert.doesNotMatch(owner, /railway\.app/);
+});
+
+test("my systems reports password sync failure instead of hiding it", () => {
+  const page = fs.readFileSync(new URL("../src/pages/business/dashboardPages/saas/MySaasSystems.tsx", import.meta.url), "utf8");
+  assert.match(page, /passwordSync\?\.status === "failed"/);
+  assert.match(page, /passwordSync\?\.status === "too_short"/);
+});

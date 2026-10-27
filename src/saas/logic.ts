@@ -188,12 +188,29 @@ export const EXAMPLE_PLANS = [
   { id: "business", name: "Business", price: 199 },
 ] as const;
 
-export function filterProducts<T extends { category: string }>(
+/** Withdrawn from public marketing and sale. Source and existing tenants stay. */
+export const WITHDRAWN_FROM_PUBLIC_SALE = [
+  "serviceflow",
+  "reviewpilot",
+  "salonflow",
+  "signflow",
+  "academyflow",
+  "stayflow",
+] as const;
+
+const WITHDRAWN_SLUGS = new Set<string>(WITHDRAWN_FROM_PUBLIC_SALE);
+
+export function isWithdrawnFromPublicSale(slug?: string) {
+  return WITHDRAWN_SLUGS.has(String(slug || "").trim().toLowerCase());
+}
+
+export function filterProducts<T extends { category: string; slug?: string }>(
   products: T[],
   category: string
 ) {
-  if (!category || category === "all") return products;
-  return products.filter((item) => item.category === category);
+  const listed = products.filter((item) => !isWithdrawnFromPublicSale(item.slug));
+  if (!category || category === "all") return listed;
+  return listed.filter((item) => item.category === category);
 }
 
 export function formatUsd(amount: number) {

@@ -46,11 +46,41 @@ const FIXTURE: MetaDetailedTarget[] = [
   },
   {
     id: "",
+    name: "__ROOT__",
+    type: "interests",
+    branch: "interests",
+    selectable: false,
+    path: [],
+  },
+  {
+    id: "",
     name: "Business and industry",
     type: "interests",
     branch: "interests",
     selectable: false,
     path: ["Interests", "Business and industry"],
+  },
+  {
+    id: "",
+    name: "Banking (finance)",
+    type: "interests",
+    branch: "interests",
+    selectable: false,
+    path: ["Interests", "Business and industry", "Banking (finance)"],
+  },
+  {
+    id: "6003063638807",
+    name: "Investment banking",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: [
+      "Interests",
+      "Business and industry",
+      "Banking (finance)",
+      "Investment banking",
+    ],
+    audienceSize: 120000000,
   },
   {
     id: "6002714398399",
@@ -121,6 +151,33 @@ const FIXTURE: MetaDetailedTarget[] = [
     path: ["Behaviors", "Travel", "Frequent travelers"],
     audienceSize: 210000000,
   },
+  {
+    id: "",
+    name: "College years",
+    type: "college_years",
+    branch: "demographics",
+    selectable: false,
+    unsupportedReason: "category_not_selectable",
+    path: ["Demographics", "Education", "College years"],
+  },
+  {
+    id: "999001",
+    name: "Legacy demographic cluster",
+    type: "demographics",
+    branch: "demographics",
+    selectable: false,
+    unsupportedReason: "unsupported_flexible_spec",
+    path: ["Demographics", "Other", "Legacy demographic cluster"],
+  },
+  {
+    id: "6002867432822",
+    name: "יופי (קונספט חברתי)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["Interests", "Shopping and fashion", "יופי (קונספט חברתי)"],
+    audienceSize: 500000000,
+  },
 ];
 
 async function mockBrowse() {
@@ -139,6 +196,74 @@ async function mockSearch(_businessId: string | undefined, query: { q: string })
         row.id &&
         `${row.name} ${(row.path || []).join(" ")}`.toLowerCase().includes(q)
     ),
+  };
+}
+
+/** Official Meta targetingsuggestions–shaped Hebrew rows (not browse size ranks). */
+const META_SUGGESTIONS: MetaDetailedTarget[] = [
+  {
+    id: "6003389760112",
+    name: "שיווק במדיה החברתית (שיווק)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["תחומי עניין", "מקוון (מחשוב)", "שיווק במדיה החברתית (שיווק)"],
+    audienceSizeLower: 335018659,
+    audienceSize: 393981943,
+    description: "",
+  },
+  {
+    id: "6003371567474",
+    name: "יזמות (עסקים ופיננסים)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["תחומי עניין", "יזמות (עסקים ופיננסים)"],
+    audienceSizeLower: 869364035,
+    audienceSize: 1022372106,
+  },
+  {
+    id: "6002714398399",
+    name: "בעלי עסקים קטנים",
+    type: "behaviors",
+    branch: "behaviors",
+    selectable: true,
+    path: ["התנהגויות", "פעילויות דיגיטליות", "בעלי עסקים קטנים"],
+    audienceSizeLower: 50814355,
+    audienceSize: 59757682,
+    description:
+      "אנשים שרושמים את עצמם כבעלי עסק קטן או שבבעלותם דפים של עסקים קטנים",
+  },
+  {
+    id: "6003127206524",
+    name: "שיווק דיגיטלי (שיווק)",
+    type: "interests",
+    branch: "interests",
+    selectable: true,
+    path: ["תחומי עניין", "מקוון (מחשוב)", "שיווק דיגיטלי (שיווק)"],
+    audienceSizeLower: 400569799,
+    audienceSize: 471070084,
+  },
+];
+
+async function mockSuggest(
+  _businessId: string | undefined,
+  query?: { sort?: string }
+) {
+  await new Promise((r) => setTimeout(r, 80));
+  const rows = META_SUGGESTIONS.slice();
+  const sorted =
+    query?.sort === "size"
+      ? rows.sort(
+          (a, b) => (Number(b.audienceSize) || 0) - (Number(a.audienceSize) || 0)
+        )
+      : rows;
+  return {
+    success: true,
+    results: sorted,
+    source: "targetingsuggestions",
+    seedSource: "page_category",
+    sort: query?.sort || "relevance",
   };
 }
 
@@ -185,6 +310,7 @@ export default function DetailedTargetingVisualQaPage() {
               onChange={setSelected}
               browseFn={mockBrowse as never}
               searchFn={mockSearch as never}
+              suggestFn={mockSuggest as never}
             />
           </div>
 

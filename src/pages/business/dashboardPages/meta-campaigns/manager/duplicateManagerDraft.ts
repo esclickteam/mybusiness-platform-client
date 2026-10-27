@@ -34,13 +34,13 @@ export function duplicateManagerDraft(state: AdsManagerState, scope: DuplicateSc
   const nextSets = adSets.map((row, index) => {
     const id = localId("adset", index);
     setIds.set(row.id, id);
-    return { ...row, id, status: "PAUSED" };
+    return { ...row, id, status: "DRAFT" };
   });
   const nextAds = ads.map((ad, index) => ({
     ...ad,
     id: localId("ad", index),
     adSetId: setIds.get(ad.adSetId) || nextSets[0]?.id || "adset_1",
-    status: "PAUSED",
+    status: "DRAFT",
     creativeId: "",
     formLinkedOnMeta: false,
   }));
@@ -57,9 +57,9 @@ export function duplicateManagerDraft(state: AdsManagerState, scope: DuplicateSc
       ...state.campaign,
       id: "campaign_copy",
       name: `${state.campaign.name} (עותק)`,
-      status: "PAUSED",
+      status: "DRAFT",
     },
-    adSets: nextSets.length ? nextSets : state.adSets.map((row, index) => ({ ...row, id: localId("adset", index), status: "PAUSED" })),
+    adSets: nextSets.length ? nextSets : state.adSets.map((row, index) => ({ ...row, id: localId("adset", index), status: "DRAFT" })),
     ads: nextAds,
     selectedLevel: scope.level,
     selectedId:

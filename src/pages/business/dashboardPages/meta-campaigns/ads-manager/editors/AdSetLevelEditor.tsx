@@ -8,7 +8,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import type { MetaAdsPage } from "../../../../../../api/metaCampaignsApi";
-import type { AdSetDraft } from "../adsManagerTypes";
+import type { AdSetDetailedTarget, AdSetDraft, CampaignObjective } from "../adsManagerTypes";
 import {
   MetaField,
   MetaLinkButton,
@@ -22,7 +22,12 @@ import {
 } from "../metaAdsUi";
 import AdsManagerLocationsSection from "./AdsManagerLocationsSection";
 import AdsManagerDetailedTargetingSection from "./AdsManagerDetailedTargetingSection";
+import AdsManagerPlacementsSection from "./AdsManagerPlacementsSection";
+import AdsManagerAudiencesSection from "./AdsManagerAudiencesSection";
 import LeadgenTosCard from "../LeadgenTosCard";
+import PageWhatsAppNumberPicker from "../PageWhatsAppNumberPicker";
+import { isWhatsAppConversionLocation } from "../pageWhatsAppNumber";
+import { conversionLocationsForObjective } from "../metaAdCtas";
 
 type Props = {
   adSet: AdSetDraft;
@@ -31,10 +36,19 @@ type Props = {
   pages: MetaAdsPage[];
   selectedPageId?: string;
   onResumeDraft?: () => void;
+  objective?: CampaignObjective | string;
+  advancedCapabilities?: {
+    lookalikeCreate?: boolean;
+    abStudyCreate?: boolean;
+    abStudyStart?: boolean;
+  };
 };
 
+/** Stable empty array — `|| []` would recreate identity every render. */
+const EMPTY_DETAILED_TARGETS: AdSetDetailedTarget[] = [];
+
 const AGE_MIN_OPTIONS = Array.from({ length: 48 }, (_, i) => 18 + i); // 18..65
-const AGE_MAX_OPTIONS = [...AGE_MIN_OPTIONS, 65];
+const AGE_MAX_OPTIONS = AGE_MIN_OPTIONS;
 
 // Store English id values for the Meta API; labels/descriptions are translated at render time.
 const PERFORMANCE_GOAL_IDS = [
@@ -49,6 +63,8 @@ export default function AdSetLevelEditor({
   pages,
   selectedPageId,
   onResumeDraft,
+  objective = "OUTCOME_LEADS",
+  advancedCapabilities,
 }: Props) {
   const { t } = useTranslation();
   const [pageQuery, setPageQuery] = useState("");
@@ -77,6 +93,8 @@ export default function AdSetLevelEditor({
   const usesInstantForms = String(adSet.conversionLocation)
     .toLowerCase()
     .includes("instant");
+  const usesWhatsApp = isWhatsAppConversionLocation(adSet.conversionLocation);
+  const usesPageIdentity = usesInstantForms || usesWhatsApp;
 
   const filteredPages = useMemo(() => {
     const q = pageQuery.trim().toLowerCase();
@@ -90,7 +108,7 @@ export default function AdSetLevelEditor({
 
   // Prefill Facebook Page from connected account when Instant forms is selected.
   useEffect(() => {
-    if (!usesInstantForms) return;
+    if (!usesPageIdentity) return;
     if (adSet.facebookPageId) return;
     const preferred =
       pages.find((p) => p.id === selectedPageId) || pages[0] || null;
@@ -100,7 +118,7 @@ export default function AdSetLevelEditor({
       facebookPageName: preferred.name,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [usesInstantForms, pages, selectedPageId, adSet.facebookPageId]);
+  }, [usesPageIdentity, pages, selectedPageId, adSet.facebookPageId]);
 
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
@@ -146,7 +164,13 @@ export default function AdSetLevelEditor({
             {t("metaCampaigns.adsManager.chrome.conversionLocation")}
           </p>
           <p className="mt-1 text-[13px] text-[#65676B]">
-            {t("metaCampaigns.adsManager.chrome.conversionLocationHint")}{" "}
+            {t(
+              String(objective || "").toUpperCase() === "OUTCOME_TRAFFIC"
+                ? "metaCampaigns.adsManager.chrome.conversionLocationHintTraffic"
+                : String(objective || "").toUpperCase() === "OUTCOME_LEADS"
+                  ? "metaCampaigns.adsManager.chrome.conversionLocationHint"
+                  : "metaCampaigns.adsManager.chrome.conversionLocationHintGeneric"
+            )}{" "}
             <a
               href="https://www.facebook.com/business/help"
               target="_blank"
@@ -159,24 +183,37 @@ export default function AdSetLevelEditor({
           <select
             className={`${metaSelectClass} mt-2`}
             value={adSet.conversionLocation}
-            onChange={(e) => onChange({ conversionLocation: e.target.value })}
+            onChange={(e) => {
+              const conversionLocation = e.target.value;
+              onChange({
+                conversionLocation,
+                ...(isWhatsAppConversionLocation(conversionLocation)
+                  ? {}
+                  : { whatsappPhone: "", whatsappDisplayNumber: "" }),
+              });
+            }}
           >
-            <option value="Instant forms">
-              {t("metaCampaigns.adsManager.chrome.instantForms")}
-            </option>
-            <option value="Website">
-              {t("metaCampaigns.adsManager.chrome.website")}
-            </option>
-            <option value="Website and instant forms">
-              {t("metaCampaigns.adsManager.chrome.websiteAndInstantForms")}
-            </option>
-            <option value="Messenger">
-              {t("metaCampaigns.adsManager.chrome.messenger")}
-            </option>
+            {conversionLocationsForObjective(objective).map((value) => (
+              <option key={value} value={value}>
+                {value === "Instant forms"
+                  ? t("metaCampaigns.adsManager.chrome.instantForms")
+                  : value === "Website"
+                    ? t("metaCampaigns.adsManager.chrome.website")
+                    : value === "Website and instant forms"
+                      ? t("metaCampaigns.adsManager.chrome.websiteAndInstantForms")
+                      : value === "Messenger"
+                        ? t("metaCampaigns.adsManager.chrome.messenger")
+                        : value === "WhatsApp"
+                          ? t("metaCampaigns.adsManager.chrome.whatsappConversion")
+                          : value === "Phone"
+                            ? t("metaCampaigns.adsManager.chrome.phoneConversion")
+                            : value}
+              </option>
+            ))}
           </select>
         </div>
 
-        {usesInstantForms ? (
+        {usesPageIdentity ? (
           <div ref={pageMenuRef} className="relative">
             <p className="flex items-center gap-1 text-[15px] font-bold text-[#050505]">
               {t("metaCampaigns.adsManager.chrome.facebookPage")}
@@ -245,9 +282,13 @@ export default function AdSetLevelEditor({
                             : "",
                         ].join(" ")}
                         onClick={() => {
+                          const pageChanged = page.id !== adSet.facebookPageId;
                           onChange({
                             facebookPageId: page.id,
                             facebookPageName: page.name,
+                            ...(pageChanged
+                              ? { whatsappPhone: "", whatsappDisplayNumber: "" }
+                              : {}),
                           });
                           setPageMenuOpen(false);
                           setPageQuery("");
@@ -286,6 +327,21 @@ export default function AdSetLevelEditor({
             businessId={businessId}
             pageId={adSet.facebookPageId}
             pageName={selectedPage?.name || adSet.facebookPageName}
+          />
+        ) : null}
+
+        {usesWhatsApp ? (
+          <PageWhatsAppNumberPicker
+            businessId={businessId}
+            pageId={adSet.facebookPageId}
+            pageName={selectedPage?.name || adSet.facebookPageName}
+            selectedPhone={adSet.whatsappPhone}
+            onSelect={(number) =>
+              onChange({
+                whatsappPhone: number.phone,
+                whatsappDisplayNumber: number.displayNumber,
+              })
+            }
           />
         ) : null}
 
@@ -717,7 +773,7 @@ export default function AdSetLevelEditor({
 
               <AdsManagerDetailedTargetingSection
                 businessId={businessId}
-                selected={adSet.interests || []}
+                selected={adSet.interests ?? EMPTY_DETAILED_TARGETS}
                 onChange={(interests) => onChange({ interests })}
               />
             </div>
@@ -768,24 +824,13 @@ export default function AdSetLevelEditor({
         />
       </MetaSection>
 
-      <MetaSection
-        title={t("metaCampaigns.adsManager.chrome.placements")}
-        action={
-          <MetaTag>{t("metaCampaigns.adsManager.chrome.advantageOn")}</MetaTag>
-        }
-      >
-        <p className="text-[13px] leading-snug text-[#65676B]">
-          {t("metaCampaigns.adsManager.chrome.placementsHint")}
-        </p>
-        <MetaToggle
-          checked={adSet.advantagePlacements}
-          onChange={(advantagePlacements) => onChange({ advantagePlacements })}
-          label={t("metaCampaigns.adsManager.chrome.advantagePlacements")}
-          description={t(
-            "metaCampaigns.adsManager.chrome.advantagePlacementsDesc"
-          )}
-        />
-      </MetaSection>
+      <AdsManagerAudiencesSection
+        adSet={adSet}
+        businessId={businessId}
+        onChange={onChange}
+        advancedCapabilities={advancedCapabilities}
+      />
+      <AdsManagerPlacementsSection adSet={adSet} onChange={onChange} />
     </div>
   );
 }

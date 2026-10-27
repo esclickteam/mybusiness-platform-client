@@ -26,6 +26,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { path: "/admin/saas-marketplace", label: "SaaS Marketplace" },
       { path: "/admin/saas-control-center", label: "SaaS Control Center" },
+      { path: "/admin/saas-deals", label: "עסקאות SaaS" },
       { path: "/admin/saas-tenants", label: "מערכות SaaS" },
       { path: "/admin/club", label: "מועדון עסקים" },
       { path: "/admin/early-access", label: "הרשמה מוקדמת" },

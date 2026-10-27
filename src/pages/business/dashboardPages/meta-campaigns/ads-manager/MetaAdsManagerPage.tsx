@@ -16,6 +16,8 @@ import {
   retryMetaPublish,
   syncMetaPublish,
   saveMetaEditorDraft,
+  waitForMetaPublish,
+  diffMetaCampaignSync,
   type MetaAdsConnectionStatus,
   type MetaCampaignPublishRecord,
   type MetaEditorDraftSaveResult,
@@ -40,6 +42,7 @@ import {
 } from "./buildPublishPayload";
 import { useAdsManagerState } from "./useAdsManagerState";
 import { adsManagerStateFromMetaCampaign } from "./adsManagerStateFromMetaCampaign";
+import { localSnapshotFromState, metaSnapshotFromCampaign } from "./adsManagerSync";
 import {
   diffAdsManagerState,
   isAdsManagerDirty,
@@ -56,6 +59,8 @@ import type { AdsManagerState } from "./adsManagerTypes";
 import type { EditorDraft, EditorWorkspace } from "./editorDraft";
 import { guidedDemoInstantForm, guidedDemoPublishExtras } from "./guidedDemoAdsDraft";
 import { leadgenTosBlocksPublish } from "./leadgenTos";
+import { isPublishTimeoutError, recoverTimedOutPublish } from "./recoverTimedOutPublish";
+import { getApiErrorMessage } from "../../../../../utils/apiErrorMessage";
 import { isGuidedDemoActive, readGuidedDemoLocaleLock } from "@/guidedDemo/sessionStore";
 import { getTextDirection } from "@/i18n/localeUtils";
 import { formatDemoMoney } from "@/guidedDemo/demoCurrency";
@@ -71,6 +76,18 @@ import {
   metaBtnSecondary,
   metaPageBg,
 } from "./metaAdsUi";
+import {
+  conversionLocationsForObjective,
+  inspectCtaForContext,
+  metaCtaLabel,
+  usesInstantFormDestination,
+  usesMessengerDestination,
+  usesPhoneDestination,
+} from "./metaAdCtas";
+import CtaCompatibilityDialog from "./CtaCompatibilityDialog";
+import { isWhatsAppConversionLocation } from "./pageWhatsAppNumber";
+import { displayListStatus } from "../campaignLocalDraft";
+import { formatDateTimeHe, metaDeliveryStatusKey } from "../metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
 
@@ -111,6 +128,7 @@ export default function MetaAdsManagerPage() {
   const [leadFormDrafts, setLeadFormDrafts] = useState<MetaLeadFormDraft[]>([]);
   const [formsLoading, setFormsLoading] = useState(false);
   const [formsError, setFormsError] = useState("");
+  const [metaReloadTick, setMetaReloadTick] = useState(0);
   const [estimateLoading, setEstimateLoading] = useState(true);
   const [estimateAttempt, setEstimateAttempt] = useState(0);
   const [publishing, setPublishing] = useState(false);
@@ -134,6 +152,16 @@ export default function MetaAdsManagerPage() {
   const [planError, setPlanError] = useState("");
   const [approveNewAd, setApproveNewAd] = useState(false);
   const [updateSummary, setUpdateSummary] = useState<MetaExistingPublishResult | null>(null);
+  const [ctaConfirm, setCtaConfirm] = useState<{
+    suggested: string;
+    current: string;
+  } | null>(null);
+  const [refreshConfirmOpen, setRefreshConfirmOpen] = useState(false);
+  const [syncDiff, setSyncDiff] = useState<{
+    hasConflicts: boolean;
+    conflicts: Array<{ field: string; local: unknown; meta: unknown }>;
+  } | null>(null);
+  const preferMetaOnLoad = useRef(false);
   const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
   const publishedBaselineRef = useRef<AdsManagerState | null>(null);
@@ -183,9 +211,12 @@ export default function MetaAdsManagerPage() {
       try {
         const data = await getMetaCampaign(businessId, campaignId);
         if (cancelled || !data?.campaign) return;
+        const preferMeta = preferMetaOnLoad.current;
         const hydrated = adsManagerStateFromMetaCampaign(data.campaign, {
           currency: data.currency,
+          preferMeta,
         });
+        preferMetaOnLoad.current = false;
         replaceState(hydrated);
         baselineRef.current = hydrated;
         publishRecordIdRef.current = hydrated.publishRecordId || "";
@@ -212,6 +243,23 @@ export default function MetaAdsManagerPage() {
           metaBaselineRef.current = null;
         }
         setServerAck(Boolean(hydrated.lastSavedAt));
+        if (preferMeta || !isRealMetaObjectId(campaignId)) {
+          setSyncDiff(null);
+        } else {
+          try {
+            const diff = await diffMetaCampaignSync(
+              businessId,
+              campaignId,
+              localSnapshotFromState(hydrated),
+              metaSnapshotFromCampaign(data.campaign)
+            );
+            if (!cancelled) {
+              setSyncDiff(diff.hasConflicts ? diff : null);
+            }
+          } catch {
+            if (!cancelled) setSyncDiff(null);
+          }
+        }
       } catch (error: unknown) {
         const err = error as { response?: { data?: { error?: string } }; message?: string };
         toast.error(
@@ -225,7 +273,7 @@ export default function MetaAdsManagerPage() {
     return () => {
       cancelled = true;
     };
-  }, [businessId, campaignId, isEditSession, navigate, replaceState, t]);
+  }, [businessId, campaignId, isEditSession, navigate, replaceState, t, metaReloadTick]);
 
   const dirty = isAdsManagerDirty(baselineRef.current, state);
   const unpublishedChanges = useMemo(() => {
@@ -659,7 +707,7 @@ export default function MetaAdsManagerPage() {
         }
         if (savedUpdate?.publishId) rememberSaved(stateRef.current, savedUpdate);
         toast.error(
-          err.response?.data?.error || err.message || c("changesNotPublished")
+          getApiErrorMessage(error, c("changesNotPublished"))
         );
       } finally {
         setPublishing(false);
@@ -724,9 +772,19 @@ export default function MetaAdsManagerPage() {
         return;
       }
       if (resumeId) payload.resumePublishId = resumeId;
-      const result = resumeId
-        ? await retryMetaPublish(businessId, resumeId, payload)
-        : await publishMetaCampaign(businessId, payload);
+      let result;
+      try {
+        result = resumeId
+          ? await retryMetaPublish(businessId, resumeId, payload)
+          : await publishMetaCampaign(businessId, payload);
+      } catch (error: unknown) {
+        if (resumeId && isPublishTimeoutError(error)) {
+          toast.info(t("metaCampaigns.adsToasts.publishWaiting"));
+        }
+        result = await recoverTimedOutPublish(error, resumeId, (publishId) =>
+          waitForMetaPublish(businessId, publishId)
+        );
+      }
       if (result?.demoSafe) {
         // The guided tour shows its own localized success toast for this step.
         if (!isGuidedDemoActive()) {
@@ -796,9 +854,7 @@ export default function MetaAdsManagerPage() {
       }
       if (savedDraft?.publishId) rememberSaved(stateRef.current, savedDraft);
       toast.error(
-        err.response?.data?.error ||
-          err.message ||
-          t("metaCampaigns.adsToasts.publishFailed")
+        getApiErrorMessage(error, t("metaCampaigns.adsToasts.publishFailed"))
       );
     } finally {
       setPublishing(false);
@@ -1175,6 +1231,43 @@ export default function MetaAdsManagerPage() {
         </div>
       )}
 
+      {syncDiff?.hasConflicts ? (
+        <div className="border-b border-amber-300 bg-[#FFF8E5] px-4 py-3 text-[13px] text-[#8A6D1D]">
+          <p className="font-bold text-[#050505]">{c("syncConflictTitle")}</p>
+          <p className="mt-1">{c("syncConflictBody")}</p>
+          <ul className="mt-2 max-h-32 list-disc space-y-1 overflow-auto ps-5">
+            {syncDiff.conflicts.map((row) => (
+              <li key={row.field}>
+                <span className="font-semibold">{row.field}</span>
+                {": "}
+                {c("syncConflictLocal")} {String(row.local ?? "—")} · {c("syncConflictMeta")}{" "}
+                {String(row.meta ?? "—")}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              className={metaBtnSecondary}
+              onClick={() => setSyncDiff(null)}
+            >
+              {c("syncConflictKeep")}
+            </button>
+            <button
+              type="button"
+              className={metaBtnPrimary}
+              onClick={() => {
+                preferMetaOnLoad.current = true;
+                setSyncDiff(null);
+                setMetaReloadTick((tick) => tick + 1);
+              }}
+            >
+              {c("syncConflictLoadMeta")}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       {connection?.adAccountBillingHealth?.actionRequired ? (
         <div
           className={[
@@ -1247,13 +1340,21 @@ export default function MetaAdsManagerPage() {
           {state.lastSavedAt ? (
             <span className="text-[12px] font-semibold text-[#65676B]">
               {c("lastSavedAt", {
-                time: new Date(state.lastSavedAt).toLocaleString(i18n.language || "he"),
+                time: formatDateTimeHe(state.lastSavedAt),
               })}
             </span>
           ) : null}
           {isEditSession ? (
             <span className="rounded-full bg-[#E4E6EB] px-2 py-1 text-[12px] font-bold text-[#050505]">
-              {c("campaignStatusLabel")}: {state.campaign.status || "DRAFT"}
+              {c("campaignStatusLabel")}:{" "}
+              {t(
+                `metaCampaigns.status.${metaDeliveryStatusKey(
+                  displayListStatus({
+                    id: state.campaign.id,
+                    status: state.campaign.status,
+                  })
+                )}`
+              )}
             </span>
           ) : null}
           {dirty ? (
@@ -1437,7 +1538,9 @@ export default function MetaAdsManagerPage() {
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
                   <dt className="text-[#65676B]">{c("reviewCta")}</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {selectedAd?.callToAction || c("notSet")}
+                    {selectedAd?.callToAction
+                      ? metaCtaLabel(selectedAd.callToAction, t)
+                      : c("notSet")}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
@@ -1464,6 +1567,7 @@ export default function MetaAdsManagerPage() {
                     {selectedAd?.instagramAccountId || c("notSet")}
                   </dd>
                 </div>
+                {usesInstantFormDestination(selectedAdSet?.conversionLocation) ? (
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#65676B]">{c("reviewInstantForm")}</dt>
                   <dd className="text-end font-semibold text-[#050505]">
@@ -1479,6 +1583,7 @@ export default function MetaAdsManagerPage() {
                     ) : null}
                   </dd>
                 </div>
+                ) : null}
               </dl>
               {reviewErrors.length ? (
                 <div className="mt-4 rounded-md border border-[#F5D78E] bg-[#FFF8E5] px-3 py-2 text-[13px]">
@@ -1502,8 +1607,30 @@ export default function MetaAdsManagerPage() {
             <CampaignLevelEditor
               campaign={state.campaign}
               sessionMode={isEditSession ? "edit" : "create"}
+              onRefreshFromMeta={
+                isEditSession
+                  ? () => {
+                      if (isAdsManagerDirty(baselineRef.current, state)) {
+                        setRefreshConfirmOpen(true);
+                        return;
+                      }
+                      preferMetaOnLoad.current = true;
+                      setMetaReloadTick((tick) => tick + 1);
+                    }
+                  : undefined
+              }
               onDuplicate={() => void handleDuplicate()}
-              onChange={patchCampaign}
+              onChange={(patch) => {
+                patchCampaign(patch);
+                if (patch.objective && selectedAdSet) {
+                  const allowed = conversionLocationsForObjective(patch.objective);
+                  if (!allowed.includes(selectedAdSet.conversionLocation)) {
+                    patchAdSet(selectedAdSet.id, {
+                      conversionLocation: allowed[0],
+                    });
+                  }
+                }
+              }}
             />
           ) : null}
 
@@ -1512,9 +1639,11 @@ export default function MetaAdsManagerPage() {
           selectedAdSet ? (
             <AdSetLevelEditor
               adSet={selectedAdSet}
+              objective={state.campaign.objective}
               businessId={businessId}
               pages={connectedPages}
               selectedPageId={connection?.selectedPage?.pageId}
+              advancedCapabilities={connection?.adsManagerAdvanced}
               onResumeDraft={
                 selectedAdSet.recoveredPublishId
                   ? () => {
@@ -1530,6 +1659,21 @@ export default function MetaAdsManagerPage() {
                     facebookPageName:
                       patch.facebookPageName || selectedAd.facebookPageName,
                   });
+                }
+                if (typeof patch.conversionLocation === "string" && selectedAd) {
+                  const loc = patch.conversionLocation;
+                  const inspected = inspectCtaForContext(selectedAd.callToAction, {
+                    usesInstantForms: usesInstantFormDestination(loc),
+                    usesWhatsApp: isWhatsAppConversionLocation(loc),
+                    usesMessenger: usesMessengerDestination(loc),
+                    usesPhone: usesPhoneDestination(loc),
+                  });
+                  if (!inspected.compatible) {
+                    setCtaConfirm({
+                      current: inspected.current,
+                      suggested: inspected.suggested,
+                    });
+                  }
                 }
               }}
             />
@@ -1547,9 +1691,13 @@ export default function MetaAdsManagerPage() {
               pages={connectedPages}
               businessId={businessId}
               sessionMode={isEditSession ? "edit" : "create"}
+              advancedCapabilities={connection?.adsManagerAdvanced}
               showLeadgenTos={String(selectedAdSet?.conversionLocation || "")
                 .toLowerCase()
                 .includes("instant")}
+              conversionLocation={selectedAdSet?.conversionLocation}
+              whatsappPhone={selectedAdSet?.whatsappPhone}
+              whatsappDisplayNumber={selectedAdSet?.whatsappDisplayNumber}
               publishId={publishRecordIdRef.current || state.publishRecordId || ""}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
               onFormReady={async (form) => {
@@ -1617,6 +1765,7 @@ export default function MetaAdsManagerPage() {
                 null
               }
               score={state.campaignScore}
+              conversionLocation={selectedAdSet?.conversionLocation}
             />
           ) : null}
         </aside>
@@ -1802,6 +1951,46 @@ export default function MetaAdsManagerPage() {
             : undefined
         }
         updateSummary={updateSummary}
+      />
+      {refreshConfirmOpen ? (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
+            <h2 className="text-[17px] font-bold text-[#050505]">{c("refreshConfirmTitle")}</h2>
+            <p className="mt-2 text-[14px] leading-snug text-[#65676B]">{c("refreshConfirmBody")}</p>
+            <div className="mt-5 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                className={metaBtnSecondary}
+                onClick={() => setRefreshConfirmOpen(false)}
+              >
+                {c("refreshConfirmKeep")}
+              </button>
+              <button
+                type="button"
+                className={metaBtnPrimary}
+                onClick={() => {
+                  setRefreshConfirmOpen(false);
+                  preferMetaOnLoad.current = true;
+                  setMetaReloadTick((tick) => tick + 1);
+                }}
+              >
+                {c("refreshConfirmLoad")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      <CtaCompatibilityDialog
+        open={Boolean(ctaConfirm && selectedAd)}
+        currentCta={ctaConfirm?.current || selectedAd?.callToAction || ""}
+        suggestedCta={ctaConfirm?.suggested || "SIGN_UP"}
+        onKeep={() => setCtaConfirm(null)}
+        onAccept={() => {
+          if (selectedAd && ctaConfirm) {
+            patchAd(selectedAd.id, { callToAction: ctaConfirm.suggested });
+          }
+          setCtaConfirm(null);
+        }}
       />
     </div>
   );

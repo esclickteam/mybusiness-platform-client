@@ -16,6 +16,7 @@ type Props = {
   onContactTypesChange: (types: string[]) => void;
   onCustomQuestionsChange: (questions: LeadFormCustomQuestionDraft[]) => void;
   disabled?: boolean;
+  allowConditionals?: boolean;
 };
 
 export default function LeadFormQuestionBuilder({
@@ -24,6 +25,7 @@ export default function LeadFormQuestionBuilder({
   onContactTypesChange,
   onCustomQuestionsChange,
   disabled = false,
+  allowConditionals = false,
 }: Props) {
   const { t } = useTranslation();
 
@@ -285,6 +287,74 @@ export default function LeadFormQuestionBuilder({
                     </button>
                   </div>
                 ) : null}
+
+                {(() => {
+                  const parents = customQuestions.filter(
+                    (row) =>
+                      row.id !== question.id &&
+                      row.answerType === "multiple_choice" &&
+                      String(row.label || "").trim() &&
+                      row.dependentOnQuestionId !== question.id
+                  );
+                  if (!allowConditionals || !parents.length) return null;
+                  const selectedParent = parents.find(
+                    (row) => row.id === question.dependentOnQuestionId
+                  );
+                  return (
+                    <div className="space-y-2 rounded-xl border border-dashed border-slate-200 bg-slate-50 p-3">
+                      <p className="text-xs font-bold text-slate-600">
+                        {t("metaCampaigns.form.conditionalQuestion")}
+                      </p>
+                      <p className="text-[11px] font-semibold text-slate-500">
+                        {t("metaCampaigns.form.conditionalQuestionHint")}
+                      </p>
+                      <select
+                        className={inputBase}
+                        disabled={disabled}
+                        value={question.dependentOnQuestionId || ""}
+                        onChange={(e) =>
+                          updateCustom(question.id, {
+                            dependentOnQuestionId: e.target.value || undefined,
+                            dependentOnOption: "",
+                          })
+                        }
+                      >
+                        <option value="">
+                          {t("metaCampaigns.form.conditionalAlways")}
+                        </option>
+                        {parents.map((row) => (
+                          <option key={row.id} value={row.id}>
+                            {row.label}
+                          </option>
+                        ))}
+                      </select>
+                      {selectedParent ? (
+                        <select
+                          className={inputBase}
+                          disabled={disabled}
+                          value={question.dependentOnOption || ""}
+                          onChange={(e) =>
+                            updateCustom(question.id, {
+                              dependentOnOption: e.target.value || undefined,
+                            })
+                          }
+                        >
+                          <option value="">
+                            {t("metaCampaigns.form.conditionalPickOption")}
+                          </option>
+                          {(selectedParent.options || [])
+                            .map((opt) => String(opt || "").trim())
+                            .filter(Boolean)
+                            .map((opt) => (
+                              <option key={opt} value={opt}>
+                                {opt}
+                              </option>
+                            ))}
+                        </select>
+                      ) : null}
+                    </div>
+                  );
+                })()}
               </div>
             ))}
           </div>

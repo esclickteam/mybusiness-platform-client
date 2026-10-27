@@ -23,5 +23,11 @@ export function metaAdsFriendlyMessage(
   if (raw.includes("not connected") || raw.includes("connect a meta")) {
     return "DISCONNECTED";
   }
+  if (raw.includes("nonexisting field") || raw.includes("approximate_count")) {
+    return "GRAPH_FIELD";
+  }
+  if (raw.includes("adstudies") && (code === 2500 || raw.includes("unknown path"))) {
+    return "GRAPH_ADSTUDIES";
+  }
   return fallback;
 }

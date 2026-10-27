@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Eye, History, Loader2, Pause, Pencil, Play, RefreshCw } from "lucide-react";
+import { Eye, History, Loader2, Pause, Pencil, Play, RefreshCw, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
   getMetaAdsManager,
@@ -27,10 +27,13 @@ import {
   type ColumnPrefs,
   type ManagerColumnId,
 } from "./columnPrefs";
-import { COLUMN_LABEL } from "./columnLabels";
+import { columnLabelKey } from "./columnLabels";
+import { canToggleMetaDelivery, displayListStatus } from "../campaignLocalDraft";
 import ManagerColumnMenu, { beginColumnResize } from "./ManagerColumnMenu";
 import { readManagerMetric } from "./managerMetrics";
 import { bulkLivePlan, runBulkStatus, selectVisible, toggleSelected } from "./managerSelection";
+import MetaCampaignDeleteDialog from "../MetaCampaignDeleteDialog";
+import { useCampaignDraftDelete } from "../useCampaignDraftDelete";
 
 type Props = {
   businessId: string;
@@ -47,7 +50,7 @@ type Props = {
 
 function cellText(row: MetaManagerRow, column: ManagerColumnId, currency: string) {
   if (column === "name") return row.name;
-  if (column === "status") return row.effectiveStatus || row.status || "";
+  if (column === "status") return displayListStatus(row);
   if (column === "budget") {
     if (row.dailyBudget) return formatCurrency(row.dailyBudget, currency);
     if (row.lifetimeBudget) return formatCurrency(row.lifetimeBudget, currency);
@@ -100,6 +103,12 @@ export default function MetaAdsLevelPanel({
   const [history, setHistory] = useState<Array<{ id: string; action: string; createdAt?: string | null; success: boolean }>>([]);
   const [syncedAt, setSyncedAt] = useState<string | null>(null);
   const [timezoneName, setTimezoneName] = useState("");
+  const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
+    const ids = extra?.ids?.length ? extra.ids : [id];
+    setRows((current) => current.filter((row) => !ids.includes(row.id)));
+    setSelected((current) => current.filter((rowId) => !ids.includes(rowId)));
+    setRefreshKey((value) => value + 1);
+  });
 
   useEffect(() => {
     setPrefs(loadColumnPrefs(window.localStorage, businessId, level));
@@ -248,11 +257,19 @@ export default function MetaAdsLevelPanel({
           </button>
         </div>
       </div>
-      {columnsOpen ? <ManagerColumnMenu prefs={prefs} onChange={updatePrefs} /> : null}
+      {columnsOpen ? <ManagerColumnMenu prefs={prefs} onChange={updatePrefs} level={level} /> : null}
       {selected.length ? (
         <div className="flex flex-wrap gap-2">
           <button type="button" className={btnSecondary} onClick={() => setPending("PAUSED")}>{t("metaCampaigns.actions.pause")}</button>
           <button type="button" className={btnSecondary} onClick={() => setPending("ACTIVE")}>{t("metaCampaigns.actions.resume")}</button>
+          <button
+            type="button"
+            className={btnSecondary}
+            data-testid="meta-level-bulk-delete"
+            onClick={() => deletion.askMany(sorted.filter((row) => selected.includes(row.id)), level)}
+          >
+            {t("metaCampaigns.levels.bulkDelete")}
+          </button>
         </div>
       ) : null}
       {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
@@ -288,7 +305,7 @@ export default function MetaAdsLevelPanel({
                         }))
                       }
                     >
-                      {t(COLUMN_LABEL[column])}
+                      {t(columnLabelKey(column, level))}
                     </button>
                     <span
                       role="separator"
@@ -303,7 +320,11 @@ export default function MetaAdsLevelPanel({
             </thead>
             <tbody>
               {sorted.map((row) => {
-                const tone = statusTone(row.effectiveStatus || row.status || "");
+                const listStatus = displayListStatus(row);
+                const tone = statusTone(listStatus);
+                const canToggle = canToggleMetaDelivery(row);
+                const isConfiguredActive =
+                  String(row.configuredStatus || row.status).toUpperCase() === "ACTIVE";
                 return (
                   <tr key={row.id} className="border-t border-slate-100" data-testid={`meta-manager-row-${row.id}`}>
                     <td className="px-3 py-3">
@@ -323,7 +344,7 @@ export default function MetaAdsLevelPanel({
                           </button>
                         ) : column === "status" ? (
                           <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
-                            {t(`metaCampaigns.status.${metaDeliveryStatusKey(row.effectiveStatus || row.status || "")}`, { defaultValue: row.status })}
+                            {t(`metaCampaigns.status.${metaDeliveryStatusKey(listStatus)}`, { defaultValue: listStatus })}
                           </span>
                         ) : (
                           cellText(row, column, currency)
@@ -346,14 +367,28 @@ export default function MetaAdsLevelPanel({
                         </button>
                         <button
                           type="button"
+                          className={`${btnSecondary} inline-flex min-h-11 min-w-11 items-center justify-center`}
+                          aria-label={t("metaCampaigns.actions.deleteCampaign")}
+                          data-testid={`meta-level-delete-${row.id}`}
+                          disabled={deletion.busy}
+                          onClick={() => deletion.ask(row, level)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                        {canToggle ? (
+                        <button
+                          type="button"
                           className={btnPrimary}
+                          aria-label={isConfiguredActive ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                          data-testid={`meta-level-toggle-${row.id}`}
                           onClick={() => {
                             setSelected([row.id]);
-                            setPending(String(row.configuredStatus || row.status).toUpperCase() === "ACTIVE" ? "PAUSED" : "ACTIVE");
+                            setPending(isConfiguredActive ? "PAUSED" : "ACTIVE");
                           }}
                         >
-                          {String(row.configuredStatus || row.status).toUpperCase() === "ACTIVE" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                          {isConfiguredActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                         </button>
+                        ) : null}
                       </div>
                     </td>
                   </tr>
@@ -411,6 +446,14 @@ export default function MetaAdsLevelPanel({
           </div>
         </div>
       ) : null}
+      <MetaCampaignDeleteDialog
+        targets={deletion.targets}
+        level={deletion.level}
+        busy={deletion.busy}
+        error={deletion.error}
+        onClose={deletion.close}
+        onConfirm={() => void deletion.confirm()}
+      />
       {details ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4" role="dialog" aria-modal="true">
           <div className={`${cardBase} max-h-[80vh] w-full max-w-lg space-y-2 overflow-y-auto p-5`}>

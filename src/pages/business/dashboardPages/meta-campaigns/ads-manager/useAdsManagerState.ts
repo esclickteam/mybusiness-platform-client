@@ -254,6 +254,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
             buyingType: choice.buyingType,
             objective: choice.objective,
             advantagePlusLeads: isLeads,
+            status: "DRAFT",
           },
           adSets: prev.adSets.map((row, index) =>
             index === 0
@@ -261,6 +262,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
                   ...row,
                   id: adSetId,
                   name: adSetName,
+                  status: "DRAFT",
                   conversionLocation: isLeads
                     ? "Instant forms"
                     : "Website",
@@ -277,6 +279,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
                   id: adId,
                   adSetId: adSetId,
                   name: adName,
+                  status: "DRAFT",
                   callToAction: isLeads ? "SIGN_UP" : "LEARN_MORE",
                   instantFormId: isLeads ? row.instantFormId : "",
                 }

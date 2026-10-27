@@ -1,7 +1,9 @@
 /**
- * Standalone WhatsApp API customers (`subscriptionPlan === "whatsapp_api"`)
- * get a dedicated portal built from the existing WhatsApp hub screens.
- * Every other account keeps the regular business dashboard.
+ * WhatsApp API product helpers.
+ *
+ * Exclusive portal shell applies only when WhatsApp API is the user's ONLY
+ * active product. Multi-product accounts use the regular business dashboard
+ * with server-derived `enabledModules` + `activeProducts` for navigation.
  */
 
 export const WHATSAPP_API_PLAN = "whatsapp_api";
@@ -10,7 +12,7 @@ export const WHATSAPP_API_DOCS_URL = "https://whatsapp.bizuply.com/docs";
 
 export const WHATSAPP_API_HELP_URL = "https://whatsapp.bizuply.com/help";
 
-/** Dashboard sections a portal account may open. */
+/** Dashboard sections a portal-only account may open. */
 const PORTAL_DASHBOARD_SEGMENTS = new Set(["whatsapp", "billing"]);
 
 /** WhatsApp hub sections that belong to the Business Plan messaging product. */
@@ -22,11 +24,64 @@ const PORTAL_BLOCKED_WHATSAPP_SEGMENTS = new Set([
   "inbox",
 ]);
 
+function activeProductKeys(user) {
+  const list = Array.isArray(user?.activeProducts) ? user.activeProducts : [];
+  return list
+    .map((p) => (p && typeof p === "object" ? String(p.key || "") : String(p || "")))
+    .filter(Boolean);
+}
+
+/** True when entitlements/modules show a BizUply surface beyond WhatsApp API. */
+function hasBizuplySurface(user) {
+  const keys = new Set(activeProductKeys(user));
+  if (keys.has("business") || keys.has("crm") || keys.has("website")) return true;
+
+  const modules = Array.isArray(user?.enabledModules) ? user.enabledModules : null;
+  if (!modules) return false;
+  return (
+    modules.includes("crm") ||
+    modules.includes("automations") ||
+    modules.includes("website") ||
+    modules.includes("build") ||
+    modules.includes("BizUply") ||
+    modules.includes("collab") ||
+    modules.includes("meta-campaigns")
+  );
+}
+
+function hasWhatsAppApiEntitlement(user) {
+  const keys = new Set(activeProductKeys(user));
+  if (keys.has("whatsapp_api")) return true;
+  const ent = user?.entitlements?.whatsappApi;
+  if (ent && ent.enabled) return true;
+  return String(user?.subscriptionPlan || "") === WHATSAPP_API_PLAN;
+}
+
+/**
+ * Exclusive WhatsApp API portal (limited nav). Multi-product users return false
+ * so they get the full dashboard + product switcher.
+ */
 export function isWhatsAppApiPortalUser(user) {
   if (!user) return false;
   if (String(user.role || "").toLowerCase() !== "business") return false;
   if (user.isGuidedDemo || user.isShowcaseDemo) return false;
+
+  const keys = activeProductKeys(user);
+  if (keys.length) {
+    return keys.includes("whatsapp_api") && keys.every((k) => k === "whatsapp_api");
+  }
+
+  if (!hasWhatsAppApiEntitlement(user)) return false;
+  // subscriptionPlan still whatsapp_api after a BizUply buy — modules/entitlements decide.
+  if (hasBizuplySurface(user)) return false;
   return String(user.subscriptionPlan || "") === WHATSAPP_API_PLAN;
+}
+
+/** User has WhatsApp API among their products (portal-only or multi-product). */
+export function hasWhatsAppApiProduct(user) {
+  if (!user) return false;
+  if (String(user.role || "").toLowerCase() !== "business") return false;
+  return hasWhatsAppApiEntitlement(user);
 }
 
 export function whatsappApiPortalHome(businessId) {
@@ -122,4 +177,37 @@ export function isWhatsAppApiPortalPathAllowed(pathname) {
     return !PORTAL_BLOCKED_WHATSAPP_SEGMENTS.has(subSegment);
   }
   return true;
+}
+
+/** Home path for a product key from server `activeProducts`. */
+export function homePathForProduct(businessId, productKey) {
+  const bid = String(businessId || "").trim();
+  if (!bid) return "/dashboard";
+  switch (String(productKey || "")) {
+    case "whatsapp_api":
+      return whatsappApiPortalHome(bid);
+    case "crm":
+      return `/business/${bid}/dashboard/crm`;
+    case "website":
+      return `/business/${bid}/dashboard/website`;
+    case "business":
+    default:
+      return `/business/${bid}/dashboard`;
+  }
+}
+
+/**
+ * Default post-login home when the user has several products.
+ * Prefer an explicit product query, else business → crm → website → whatsapp.
+ */
+export function resolveMultiProductHome(user) {
+  const businessId = user?.businessId;
+  if (!businessId) return "/dashboard";
+  const keys = activeProductKeys(user);
+  if (!keys.length) return null;
+  if (keys.length === 1) return homePathForProduct(businessId, keys[0]);
+  for (const preferred of ["business", "crm", "website", "whatsapp_api"]) {
+    if (keys.includes(preferred)) return homePathForProduct(businessId, preferred);
+  }
+  return homePathForProduct(businessId, keys[0]);
 }

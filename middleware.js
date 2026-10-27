@@ -133,6 +133,8 @@ function isCustomerSiteHost(host) {
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
   if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app")) return false;
   if (
+    host === "qa.local" ||
+    host.endsWith(".qa.local") ||
     host.endsWith(".trycloudflare.com") ||
     host.endsWith(".loca.lt") ||
     host.endsWith(".ngrok-free.app") ||
@@ -620,6 +622,35 @@ function whatsappSeoFile(pathname) {
   return seoResponse(body, { isRobots, status: 200, source: "whatsapp" });
 }
 
+const CRAWL_PLACEHOLDER = '<div id="bizuply-crawl"></div>';
+const ROOT_PLACEHOLDER = '<div id="root"></div>';
+
+/**
+ * Fallback copy for clients without JavaScript. It lives in <noscript>, so a
+ * JS browser never paints it and Google does not get a second hidden H1.
+ * Putting the same summary in #root was the first-paint flash.
+ */
+function injectCrawlableDocument(html, inner) {
+  const slot = `<noscript id="bizuply-crawl">${inner}</noscript>`;
+  if (html.includes(CRAWL_PLACEHOLDER)) {
+    return html.replace(CRAWL_PLACEHOLDER, slot);
+  }
+  if (html.includes(ROOT_PLACEHOLDER)) {
+    return html.replace(ROOT_PLACEHOLDER, `${slot}\n  ${ROOT_PLACEHOLDER}`);
+  }
+  return html;
+}
+
+function injectRootInner(html, inner) {
+  if (html.includes(ROOT_PLACEHOLDER)) {
+    return html.replace(ROOT_PLACEHOLDER, `<div id="root">${inner}</div>`);
+  }
+  return html.replace(
+    /<div id="root"><\/div>/,
+    `<div id="root">${inner}</div>`,
+  );
+}
+
 /** The sign-in runs on bizuply.com, where the host-only auth session lives; the query (lang, etc.) carries over. */
 function whatsappLoginRedirect(request) {
   const target = new URL(WHATSAPP_LOGIN_APP_URL);
@@ -644,10 +675,7 @@ async function handleWhatsAppDocument(request) {
     let documentHtml = injectSeoHead(html, whatsappHeadHtml(pathname));
     const prerender = whatsappHomepagePrerender(pathname);
     if (prerender) {
-      documentHtml = documentHtml.replace(
-        '<div id="root"></div>',
-        `<div id="root">${prerender}</div>`,
-      );
+      documentHtml = injectCrawlableDocument(documentHtml, prerender);
     }
     return new Response(documentHtml, {
       status: getWhatsAppPageMeta(pathname) ? 200 : 404,
@@ -840,7 +868,7 @@ async function handleMarketingDocument(request) {
     if (isHome) {
       documentHtml = documentHtml.replace(
         "</head>",
-        '<link rel="preload" as="image" href="/demo-media/forms/lead.webp" fetchpriority="high"></head>',
+        '<link rel="preload" as="image" href="/demo-media/crm/poster.jpg" fetchpriority="high"></head>',
       );
       documentHtml = documentHtml.replace(
         /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
@@ -862,12 +890,9 @@ async function handleMarketingDocument(request) {
       } catch {
         /* The linked stylesheet remains. */
       }
-    }
-    if (prerender) {
-      documentHtml = documentHtml.replace(
-        '<div id="root"></div>',
-        `<div id="root">${prerender.inner}</div>`,
-      );
+      if (prerender) documentHtml = injectRootInner(documentHtml, prerender.inner);
+    } else if (prerender) {
+      documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
     }
     return new Response(documentHtml, {
       status: 200,

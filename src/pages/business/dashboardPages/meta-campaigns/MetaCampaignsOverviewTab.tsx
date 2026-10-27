@@ -69,8 +69,14 @@ import {
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
-import { removeCampaignFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
+import {
+  canToggleMetaDelivery,
+  displayListStatus,
+  isQaTestDraftName,
+  loadHideQaDrafts,
+  saveHideQaDrafts,
+} from "./campaignLocalDraft";
 import {
   compareByDeliveryMetric,
   formatCampaignDeliveryMetric,
@@ -264,10 +270,15 @@ export default function MetaCampaignsOverviewTab() {
     useState<MetaCampaign | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [metricSort, setMetricSort] = useState<CampaignMetricSort | null>(null);
-  const deletion = useCampaignDraftDelete(businessId, (id) => {
+  const [hideQaDrafts, setHideQaDrafts] = useState(false);
+  useEffect(() => {
+    setHideQaDrafts(loadHideQaDrafts(window.localStorage, businessId));
+  }, [businessId]);
+  const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
+    const ids = extra?.ids?.length ? extra.ids : [id];
     setData((current) =>
       current
-        ? { ...current, campaigns: removeCampaignFromList(current.campaigns || [], id) }
+        ? { ...current, campaigns: (current.campaigns || []).filter((row) => !ids.includes(row.id)) }
         : current
     );
   });
@@ -385,9 +396,12 @@ export default function MetaCampaignsOverviewTab() {
             if (segment === "engagement") return objective.includes("ENGAGEMENT");
             return true;
           });
-    if (!metricSort) return filtered;
-    return compareByDeliveryMetric(filtered, metricSort.key, metricSort.direction);
-  }, [data?.campaigns, metricSort, segment]);
+    const visible = hideQaDrafts
+      ? filtered.filter((campaign) => !isQaTestDraftName(campaign.name))
+      : filtered;
+    if (!metricSort) return visible;
+    return compareByDeliveryMetric(visible, metricSort.key, metricSort.direction);
+  }, [data?.campaigns, hideQaDrafts, metricSort, segment]);
 
   useEffect(() => {
     if (!queryCampaignId) return;
@@ -1070,6 +1084,19 @@ export default function MetaCampaignsOverviewTab() {
                   <option value="reach:desc">{t("metaCampaigns.table.reach")} ↓</option>
                   <option value="reach:asc">{t("metaCampaigns.table.reach")} ↑</option>
                 </select>
+                <label className="inline-flex items-center gap-2 text-xs font-bold text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={hideQaDrafts}
+                    onChange={(event) => {
+                      const next = event.target.checked;
+                      setHideQaDrafts(next);
+                      saveHideQaDrafts(window.localStorage, businessId, next);
+                    }}
+                    data-testid="meta-hide-qa-drafts"
+                  />
+                  {t("metaCampaigns.ux.hideQaDrafts")}
+                </label>
                 <Link to={`${basePath}/campaigns`} className={btnSecondary}>
                   {t("metaCampaigns.ux.viewCampaigns")}
                 </Link>
@@ -1079,11 +1106,12 @@ export default function MetaCampaignsOverviewTab() {
             <div className="space-y-3 p-3 md:hidden">
               {campaigns.length ? (
                 campaigns.map((campaign) => {
-                  const deliveryStatus =
-                    campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
+                  const listStatus = displayListStatus(campaign);
+                  const deliveryStatus = listStatus;
                   const tone = statusTone(deliveryStatus);
                   const isConfiguredActive =
                     String(campaign.configuredStatus || campaign.status || "").toUpperCase() === "ACTIVE";
+                  const canToggle = canToggleMetaDelivery(campaign);
                   return (
                     <article key={campaign.id} className="rounded-xl border border-slate-100 p-3" data-testid={`campaign-row-${campaign.id}`}>
                       <p className="break-words font-black text-slate-900">{campaign.name}</p>
@@ -1131,8 +1159,10 @@ export default function MetaCampaignsOverviewTab() {
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
+                        {canToggle ? (
                         <button
                           type="button"
+                          data-testid={`campaign-toggle-${campaign.id}`}
                           disabled={busyId === campaign.id}
                           onClick={() => setPendingStatusCampaign(campaign)}
                           className="inline-flex h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 disabled:opacity-50"
@@ -1140,6 +1170,7 @@ export default function MetaCampaignsOverviewTab() {
                           {isConfiguredActive ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
                           {isConfiguredActive ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
                         </button>
+                        ) : null}
                       </div>
                     </article>
                   );
@@ -1276,15 +1307,13 @@ export default function MetaCampaignsOverviewTab() {
                 <tbody>
                   {campaigns.length ? (
                     campaigns.map((campaign, campaignIndex) => {
-                      const deliveryStatus =
-                        campaign.deliveryStatus ||
-                        campaign.effectiveStatus ||
-                        campaign.status;
+                      const deliveryStatus = displayListStatus(campaign);
                       const tone = statusTone(deliveryStatus);
                       const isConfiguredActive =
                         String(
                           campaign.configuredStatus || campaign.status || ""
                         ).toUpperCase() === "ACTIVE";
+                      const canToggle = canToggleMetaDelivery(campaign);
                       const results =
                         campaign.metrics?.results ?? campaign.metrics?.leads;
                       const costPerResult =
@@ -1467,8 +1496,10 @@ export default function MetaCampaignsOverviewTab() {
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
+                            {canToggle ? (
                             <button
                                 type="button"
+                                data-testid={`campaign-toggle-${campaign.id}`}
                                 title={
                                   isConfiguredActive
                                     ? t("metaCampaigns.actions.pauseHint")
@@ -1489,6 +1520,7 @@ export default function MetaCampaignsOverviewTab() {
                                   ? t("metaCampaigns.actions.pause")
                                   : t("metaCampaigns.actions.resume")}
                               </button>
+                            ) : null}
                             </div>
                           </td>
                         </tr>
@@ -1528,7 +1560,8 @@ export default function MetaCampaignsOverviewTab() {
 
 
       <MetaCampaignDeleteDialog
-        campaign={deletion.target}
+        targets={deletion.targets}
+        level={deletion.level}
         busy={deletion.busy}
         error={deletion.error}
         onClose={deletion.close}

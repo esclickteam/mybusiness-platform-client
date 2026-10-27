@@ -9,6 +9,26 @@ describe("Phase 9 UX helpers", () => {
     expect(metaAdsFriendlyMessage({ response: { status: 403, data: { error: "permission" } } }, "LOAD")).toBe(
       "PERMISSION"
     );
+    expect(
+      metaAdsFriendlyMessage(
+        { message: "(#100) Tried accessing nonexisting field (approximate_count)" },
+        "LOAD"
+      )
+    ).toBe("GRAPH_FIELD");
+    expect(
+      metaAdsFriendlyMessage(
+        {
+          response: {
+            status: 400,
+            data: {
+              error: "Unknown path components: /adstudies",
+              details: { code: 2500 },
+            },
+          },
+        },
+        "LOAD"
+      )
+    ).toBe("GRAPH_ADSTUDIES");
   });
 
   it("keeps automation templates on the existing rule engine fields", () => {

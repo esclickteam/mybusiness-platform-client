@@ -8,6 +8,7 @@ import type { MetaCampaign } from "../../../../api/metaCampaignsApi";
 const api = vi.hoisted(() => ({
   getMetaCampaignsOverview: vi.fn(),
   deleteLocalCampaignDraft: vi.fn(),
+  deleteMetaObjects: vi.fn(),
   duplicateLocalCampaignDraft: vi.fn(),
   setMetaCampaignStatus: vi.fn(),
 }));
@@ -92,8 +93,8 @@ describe("Meta campaign list delete", () => {
   });
 
   it("shows a trash button on desktop and mobile, then deletes only the local draft", async () => {
-    let release: (value: { success: boolean }) => void = () => undefined;
-    api.deleteLocalCampaignDraft.mockImplementation(
+    let release: (value: { success: boolean; results: unknown[]; deletedIds: string[]; failed: unknown[] }) => void = () => undefined;
+    api.deleteMetaObjects.mockImplementation(
       () => new Promise((resolve) => {
         release = resolve;
       })
@@ -110,25 +111,29 @@ describe("Meta campaign list delete", () => {
     buttons.forEach((button) => expect(button.querySelector("svg")).toBeTruthy());
 
     fireEvent.click(buttons[0]);
-    expect(screen.getByTestId("meta-campaign-delete-name")).toHaveTextContent("טיוטת חתונות");
+    expect(screen.getByTestId("meta-campaign-delete-name")).toHaveTextContent("האם ברצונך למחוק את הקמפיין?");
     expect(screen.getByTestId("meta-campaign-delete-message")).toHaveTextContent(
-      "האם למחוק את הקמפיין? פעולה זו אינה ניתנת לביטול."
+      "אם תמחק את הקמפיין הזה, לא תהיה לך אפשרות לשחזר אותו מאוחר יותר."
     );
 
     const confirm = screen.getByTestId("meta-campaign-delete-confirm");
     fireEvent.click(confirm);
     fireEvent.click(confirm);
-    expect(api.deleteLocalCampaignDraft).toHaveBeenCalledTimes(1);
-    expect(api.deleteLocalCampaignDraft).toHaveBeenCalledWith("biz-1", "draft-1");
+    expect(api.deleteMetaObjects).toHaveBeenCalledTimes(1);
+    expect(api.deleteMetaObjects).toHaveBeenCalledWith(
+      "biz-1",
+      [expect.objectContaining({ id: "draft-1", level: "campaign" })],
+      { confirm: true }
+    );
 
-    release({ success: true });
+    release({ success: true, results: [{ id: "draft-1", ok: true }], deletedIds: ["draft-1"], failed: [] });
     await waitFor(() => expect(screen.getByTestId("meta-campaign-count")).toHaveAttribute("data-count", "1"));
     expect(screen.queryByText("טיוטת חתונות")).toBeNull();
     expect(screen.getAllByText("קמפיין Evently360").length).toBeGreaterThan(0);
   });
 
   it("keeps the campaign and shows a Hebrew error when deletion fails", async () => {
-    api.deleteLocalCampaignDraft.mockRejectedValue({
+    api.deleteMetaObjects.mockRejectedValue({
       response: { data: { error: "Could not delete the draft" } },
     });
     renderPage();
@@ -142,18 +147,32 @@ describe("Meta campaign list delete", () => {
     expect(screen.getAllByText("טיוטת חתונות").length).toBeGreaterThan(0);
   });
 
-  it("does not delete or hide a campaign that already exists on Meta", async () => {
+  it("asks before deleting a live Meta campaign and removes it only after Meta confirms", async () => {
+    api.deleteMetaObjects.mockResolvedValue({
+      success: true,
+      results: [{ id: "120251822243990469", ok: true, kind: "meta" }],
+      deletedIds: ["120251822243990469"],
+      failed: [],
+    });
     renderPage();
     fireEvent.click((await screen.findAllByTestId("meta-campaign-delete-120251822243990469"))[0]);
 
-    expect(screen.getByTestId("meta-campaign-delete-name")).toHaveTextContent("קמפיין Evently360");
+    expect(screen.getByTestId("meta-campaign-delete-name")).toHaveTextContent("האם ברצונך למחוק את הקמפיין?");
     expect(screen.getByTestId("meta-campaign-delete-message")).toHaveTextContent(
-      "האם למחוק את הקמפיין? פעולה זו אינה ניתנת לביטול."
+      "אם תמחק את הקמפיין הזה, לא תהיה לך אפשרות לשחזר אותו מאוחר יותר."
     );
-    expect(screen.getByTestId("meta-campaign-delete-blocked")).toHaveTextContent("קמפיין Evently360");
-    expect(screen.queryByTestId("meta-campaign-delete-confirm")).toBeNull();
-    expect(api.deleteLocalCampaignDraft).not.toHaveBeenCalled();
+    expect(screen.getByTestId("meta-campaign-delete-confirm")).toHaveTextContent("מחיקה");
+    expect(api.deleteMetaObjects).not.toHaveBeenCalled();
     expect(screen.getByTestId("meta-campaign-count")).toHaveAttribute("data-count", "2");
+
+    fireEvent.click(screen.getByTestId("meta-campaign-delete-confirm"));
+    await waitFor(() => expect(screen.getByTestId("meta-campaign-count")).toHaveAttribute("data-count", "1"));
+    expect(api.deleteMetaObjects).toHaveBeenCalledWith(
+      "biz-1",
+      [expect.objectContaining({ id: "120251822243990469", level: "campaign" })],
+      { confirm: true }
+    );
+    expect(screen.queryByText("קמפיין Evently360")).toBeNull();
   });
 
   it("hides and restores campaign columns from the same menu as the other levels", async () => {

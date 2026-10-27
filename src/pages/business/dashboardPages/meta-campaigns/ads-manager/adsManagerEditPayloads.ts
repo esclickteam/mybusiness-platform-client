@@ -39,6 +39,65 @@ function geoFromFormLocations(locations: AdSetDraft["locations"]) {
   };
 }
 
+const FLEXIBLE_SPEC_KEYS = new Set([
+  "interests",
+  "behaviors",
+  "life_events",
+  "family_statuses",
+  "industries",
+  "income",
+  "work_positions",
+  "work_employers",
+  "education_majors",
+  "education_schools",
+  "education_statuses",
+  "relationship_statuses",
+  "college_years",
+]);
+
+const INTEGER_FLEXIBLE_SPEC_KEYS = new Set(["college_years", "education_statuses"]);
+
+function normalizeFlexibleKey(type: string): string {
+  const raw = String(type || "interests").trim() || "interests";
+  if (raw === "interest") return "interests";
+  if (raw === "behavior") return "behaviors";
+  return FLEXIBLE_SPEC_KEYS.has(raw) ? raw : "interests";
+}
+
+/** Rebuild Meta flexible_spec from the editor's detailed-targeting chips. */
+export function flexibleSpecFromDetailedTargets(
+  interests: AdSetDraft["interests"]
+): Array<Record<string, Array<{ id: string; name?: string } | number>>> | null {
+  const buckets: Record<string, Array<{ id: string; name?: string } | number>> =
+    Object.create(null);
+  for (const item of interests || []) {
+    const id = String(item?.id || "").trim();
+    if (!/^\d+$/.test(id)) continue;
+    const key = normalizeFlexibleKey(String(item?.type || "interests"));
+    if (!buckets[key]) buckets[key] = [];
+    if (INTEGER_FLEXIBLE_SPEC_KEYS.has(key)) {
+      const n = Number(id);
+      if (!Number.isFinite(n)) continue;
+      if (!buckets[key].some((row) => Number(row) === n)) {
+        buckets[key].push(Math.trunc(n));
+      }
+      continue;
+    }
+    if (
+      buckets[key].some(
+        (row) => typeof row === "object" && row && "id" in row && row.id === id
+      )
+    ) {
+      continue;
+    }
+    const entry: { id: string; name?: string } = { id };
+    const name = String(item?.name || "").trim();
+    if (name) entry.name = name;
+    buckets[key].push(entry);
+  }
+  return Object.keys(buckets).length ? [buckets] : null;
+}
+
 export function mergeLoadedTargeting(
   adSet: AdSetDraft,
   changes: AdsManagerChange[]
@@ -82,6 +141,50 @@ export function mergeLoadedTargeting(
   if (labels.has("changeLocations")) {
     targeting.geo_locations = geoFromFormLocations(adSet.locations);
   }
+  if (labels.has("changeDetailedTargeting")) {
+    const flex = flexibleSpecFromDetailedTargets(adSet.interests);
+    if (flex) targeting.flexible_spec = flex;
+    else delete targeting.flexible_spec;
+  }
+  if (labels.has("changeAudiences")) {
+    if (adSet.customAudiences?.length) {
+      targeting.custom_audiences = adSet.customAudiences.map((row) => ({ id: row.id }));
+    } else delete targeting.custom_audiences;
+    if (adSet.excludedAudiences?.length) {
+      targeting.excluded_custom_audiences = adSet.excludedAudiences.map((row) => ({
+        id: row.id,
+      }));
+    } else delete targeting.excluded_custom_audiences;
+    if (adSet.locales?.length) targeting.locales = adSet.locales;
+    else delete targeting.locales;
+  }
+  if (labels.has("changePlacements")) {
+    if (adSet.advantagePlacements) {
+      delete targeting.publisher_platforms;
+      delete targeting.facebook_positions;
+      delete targeting.instagram_positions;
+      delete targeting.messenger_positions;
+      delete targeting.audience_network_positions;
+      delete targeting.threads_positions;
+      delete targeting.device_platforms;
+    } else {
+      targeting.publisher_platforms = adSet.publisherPlatforms?.length
+        ? adSet.publisherPlatforms
+        : ["facebook", "instagram"];
+      if (adSet.facebookPositions?.length) {
+        targeting.facebook_positions = adSet.facebookPositions;
+      }
+      if (adSet.instagramPositions?.length) {
+        targeting.instagram_positions = adSet.instagramPositions;
+      }
+      if (adSet.messengerPositions?.length) {
+        targeting.messenger_positions = adSet.messengerPositions;
+      }
+      if (adSet.audienceNetworkPositions?.length) {
+        targeting.audience_network_positions = adSet.audienceNetworkPositions;
+      }
+    }
+  }
   if (targeting.targeting_automation && typeof targeting.targeting_automation === "object") {
     targeting.targeting_automation = {
       ...(targeting.targeting_automation as Record<string, unknown>),
@@ -123,14 +226,22 @@ export function buildAdSetUpdateFromDiff(
   if (!relevant.length) return null;
   const payload: Record<string, unknown> = {};
   if (relevant.some((row) => row.labelKey === "changeAdSetName")) payload.name = adSet.name.trim();
-  if (
-    adSet.targetingLoaded &&
-    adSet.ageMin != null &&
-    adSet.ageMax != null &&
-    relevant.some((row) =>
-      ["changeAge", "changeLocations", "changeGender"].includes(row.labelKey)
-    )
-  ) {
+  const wantsTargeting = relevant.some((row) =>
+    [
+      "changeAge",
+      "changeLocations",
+      "changeGender",
+      "changeDetailedTargeting",
+      "changeAudiences",
+      "changePlacements",
+    ].includes(row.labelKey)
+  );
+  const canPatchTargeting =
+    Boolean(adSet.targetingRaw) ||
+    (adSet.targetingLoaded &&
+      (relevant.some((row) => row.labelKey === "changeDetailedTargeting") ||
+        (adSet.ageMin != null && adSet.ageMax != null)));
+  if (wantsTargeting && canPatchTargeting) {
     payload.targeting = mergeLoadedTargeting(adSet, relevant);
   }
   if (relevant.some((row) => row.labelKey === "changeSchedule")) {

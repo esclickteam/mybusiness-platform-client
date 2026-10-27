@@ -53,6 +53,8 @@ export default defineConfig({
       "www.travel.bizuply.com",
       "whatsapp.bizuply.com",
       "www.whatsapp.bizuply.com",
+      "admin.qa.local",
+      ".qa.local",
     ],
 
     proxy: {

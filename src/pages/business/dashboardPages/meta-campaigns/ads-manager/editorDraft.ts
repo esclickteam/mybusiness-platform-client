@@ -21,6 +21,9 @@ export type EditorDraftAd = {
   videoId?: string;
   creativeFormat?: string;
   mediaLabel?: string;
+  catalogId?: string;
+  productSetId?: string;
+  objectStoryId?: string;
 };
 
 export type EditorWorkspace = {
@@ -96,6 +99,9 @@ export function buildEditorDraft(state: AdsManagerState): EditorDraft {
         videoId: text(ad.videoId),
         creativeFormat: ad.creativeFormat,
         mediaLabel: ad.mediaLabel,
+        catalogId: text(ad.catalogId),
+        productSetId: text(ad.productSetId),
+        objectStoryId: text(ad.objectStoryId),
       };
     }),
   };
@@ -142,8 +148,20 @@ function mergeAd(
     imageHash: preferSaved(saved.imageHash, ad.imageHash),
     imagePreviewUrl: preview.startsWith("blob:") ? ad.imagePreviewUrl : preview,
     videoId: preferSaved(saved.videoId, ad.videoId),
-    creativeFormat:
-      text(saved.videoId) || text(ad.videoId) ? "video" : ad.creativeFormat,
+    catalogId: preferSaved(saved.catalogId, ad.catalogId),
+    productSetId: preferSaved(saved.productSetId, ad.productSetId),
+    objectStoryId: preferSaved(saved.objectStoryId, ad.objectStoryId),
+    creativeFormat: ((): AdDraft["creativeFormat"] => {
+      const savedFormat = text(saved.creativeFormat);
+      if (
+        savedFormat === "catalog" ||
+        savedFormat === "existing_post" ||
+        savedFormat === "carousel"
+      ) {
+        return savedFormat;
+      }
+      return text(saved.videoId) || text(ad.videoId) ? "video" : ad.creativeFormat;
+    })(),
     mediaLabel: preferSaved(saved.mediaLabel, ad.mediaLabel),
   };
 }

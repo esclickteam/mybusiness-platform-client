@@ -194,6 +194,7 @@ const PartnerAgreementSign = lazy(() => import("./pages/sign/PartnerAgreementSig
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminSaasTenants = lazy(() => import("./pages/admin/AdminSaasTenants"));
+const AdminSaasDeals = lazy(() => import("./pages/admin/AdminSaasDeals"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const AdminCrmLayout = lazy(() => import("./pages/admin/crm/AdminCrmLayout"));
@@ -913,6 +914,9 @@ export default function App() {
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   // The WhatsApp API product login is a standalone page with its own branding.
   const isWhatsAppApiLogin = location.pathname === WHATSAPP_API_LOGIN_PATH;
+  // AuthShell pages own their chrome (incl. language switcher) — hide public Header/Footer.
+  const isAuthShellRoute =
+    location.pathname === "/login" || location.pathname === "/register";
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -1091,6 +1095,7 @@ export default function App() {
           !isPublicProposalRoute &&
           !isPartnerSignRoute &&
           !isWhatsAppApiLogin &&
+          !isAuthShellRoute &&
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
@@ -1571,6 +1576,7 @@ export default function App() {
                         <Route path="settings" element={<AdminSettings />} />
                         <Route path="users" element={<AdminUsers />} />
                         <Route path="create-user" element={<AdminCreateUser />} />
+                        <Route path="saas-deals" element={<AdminSaasDeals />} />
                         <Route path="saas-tenants" element={<AdminSaasTenants />} />
                         <Route path="businesses" element={<AdminBusinesses />} />
                         <Route path="customers" element={<AdminCustomers />} />
@@ -1679,12 +1685,13 @@ export default function App() {
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
           !isWhatsAppApiLogin &&
+          !isAuthShellRoute &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && (
+      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 

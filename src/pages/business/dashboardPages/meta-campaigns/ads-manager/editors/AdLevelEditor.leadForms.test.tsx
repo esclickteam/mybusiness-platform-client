@@ -34,10 +34,6 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
-vi.mock("../../../../../../api/whatsappApi", () => ({
-  getWhatsAppStatus: vi.fn().mockResolvedValue({ connected: false }),
-}));
-
 vi.mock("../../../../../../api/metaCampaignsApi", () => ({
   duplicateMetaLeadForm: (...args: unknown[]) => duplicateMetaLeadForm(...args),
   setMetaLeadFormStatus: (...args: unknown[]) => setMetaLeadFormStatus(...args),
@@ -45,6 +41,13 @@ vi.mock("../../../../../../api/metaCampaignsApi", () => ({
   saveMetaLeadFormDraft: (...args: unknown[]) => saveMetaLeadFormDraft(...args),
   syncMetaLeadForm: vi.fn(),
   uploadMetaMedia: vi.fn(),
+  listMetaProductCatalogs: vi.fn().mockResolvedValue({ results: [] }),
+  listMetaProductSets: vi.fn().mockResolvedValue({ results: [] }),
+  listMetaPagePosts: vi.fn().mockResolvedValue({ results: [] }),
+  listPageWhatsAppNumbers: vi.fn().mockResolvedValue({ numbers: [] }),
+  inspectPageWhatsAppNumber: vi.fn(),
+  requestPageWhatsAppCode: vi.fn(),
+  verifyPageWhatsAppCode: vi.fn(),
 }));
 
 const liveForm: InstantFormItem = {
@@ -101,6 +104,7 @@ describe("instant form duplicate and archive", () => {
     render(
       <AdLevelEditor
         ad={ad}
+        conversionLocation="Instant forms"
         forms={[liveForm]}
         pages={[]}
         businessId="biz"
@@ -174,6 +178,7 @@ describe("instant form duplicate and archive", () => {
     render(
       <AdLevelEditor
         ad={ad}
+        conversionLocation="Instant forms"
         forms={[liveForm]}
         formDrafts={[
           {
@@ -221,6 +226,7 @@ describe("instant form duplicate and archive", () => {
     render(
       <AdLevelEditor
         ad={ad}
+        conversionLocation="Instant forms"
         forms={[liveForm]}
         pages={[]}
         businessId="biz"

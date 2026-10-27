@@ -35,17 +35,25 @@ import {
 import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
-import { removeCampaignFromList } from "./campaignListDeletion";
+import { removeCampaignsFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
+import {
+  canToggleMetaDelivery,
+  displayListStatus,
+  isQaTestDraftName,
+  loadHideQaDrafts,
+  saveHideQaDrafts,
+} from "./campaignLocalDraft";
 
 type OutletCtx = { businessId: string | null };
 
 function campaignListStatus(campaign: MetaCampaign) {
   const raw = String(campaign.configuredStatus || campaign.status || "").toUpperCase();
   if (campaign.publishFailed || raw === "FAILED" || raw === "PARTIAL_FAILED") return "FAILED";
-  if (campaign.localOnly || raw === "DRAFT") return "DRAFT";
+  const displayed = displayListStatus(campaign);
+  if (displayed === "DRAFT") return "DRAFT";
   if (campaign.hasUnpublishedChanges) return "PENDING_PUBLISH";
-  return raw;
+  return displayed;
 }
 
 function objectiveKey(objective?: string | null) {
@@ -85,9 +93,13 @@ export default function MetaCampaignsCampaignsPage() {
   const [pinnedCampaign, setPinnedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [pinnedAdSet, setPinnedAdSet] = useState<{ id: string; name: string } | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
+  const [hideQaDrafts, setHideQaDrafts] = useState(false);
   const [bulkStatus, setBulkStatus] = useState<"ACTIVE" | "PAUSED" | null>(null);
-  const deletion = useCampaignDraftDelete(businessId, (id) => {
-    setCampaigns((current) => removeCampaignFromList(current, id));
+  const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
+    const ids = extra?.ids?.length ? extra.ids : [id];
+    setCampaigns((current) => removeCampaignsFromList(current, ids));
+    setChecked((current) => current.filter((rowId) => !ids.includes(rowId)));
+    if (pinnedCampaign && ids.includes(pinnedCampaign.id)) setPinnedCampaign(null);
   });
 
   async function load() {
@@ -125,6 +137,7 @@ export default function MetaCampaignsCampaignsPage() {
 
   useEffect(() => {
     setColumnPrefs(loadColumnPrefs(window.localStorage, businessId || "campaign", "campaign"));
+    setHideQaDrafts(loadHideQaDrafts(window.localStorage, businessId));
   }, [businessId]);
 
   useEffect(() => {
@@ -138,6 +151,7 @@ export default function MetaCampaignsCampaignsPage() {
       if (query && !hay.includes(query.toLowerCase())) return false;
       const status = campaignListStatus(row);
       if (statusFilter !== "all" && status !== statusFilter) return false;
+      if (hideQaDrafts && isQaTestDraftName(row.name)) return false;
       return true;
     });
     return filtered.sort((a, b) => {
@@ -152,7 +166,7 @@ export default function MetaCampaignsCampaignsPage() {
       if (bv == null) return -1;
       return sortDir === "asc" ? av - bv : bv - av;
     });
-  }, [campaigns, query, sortDir, sortKey, statusFilter]);
+  }, [campaigns, hideQaDrafts, query, sortDir, sortKey, statusFilter]);
 
   const activate = pending
     ? String(pending.configuredStatus || pending.status || "").toUpperCase() !== "ACTIVE"
@@ -342,6 +356,19 @@ export default function MetaCampaignsCampaignsPage() {
           <option value="PENDING_PUBLISH">{t("metaCampaigns.status.pending_publish")}</option>
           <option value="FAILED">{t("metaCampaigns.status.failed")}</option>
         </select>
+        <label className="inline-flex items-center gap-2 self-center text-xs font-bold text-slate-600">
+          <input
+            type="checkbox"
+            checked={hideQaDrafts}
+            onChange={(event) => {
+              const next = event.target.checked;
+              setHideQaDrafts(next);
+              saveHideQaDrafts(window.localStorage, businessId, next);
+            }}
+            data-testid="meta-hide-qa-drafts"
+          />
+          {t("metaCampaigns.ux.hideQaDrafts")}
+        </label>
         <p className="self-center text-xs font-black uppercase tracking-wide text-slate-500">
           {t("metaCampaigns.ux.showingRange", { range: t(rangeLabelKey) })}
           {compare && comparison ? ` · ${t("metaCampaigns.ranges.compare")}: ${comparison.since} – ${comparison.until}` : ""}
@@ -365,6 +392,9 @@ export default function MetaCampaignsCampaignsPage() {
           <div className="flex flex-wrap gap-2">
             <button type="button" className={btnSecondary} onClick={() => setBulkStatus("PAUSED")}>{t("metaCampaigns.actions.pause")}</button>
             <button type="button" className={btnSecondary} onClick={() => setBulkStatus("ACTIVE")}>{t("metaCampaigns.actions.resume")}</button>
+            <button type="button" className={btnSecondary} data-testid="meta-campaign-bulk-delete" onClick={() => deletion.askMany(checkedRows, "campaign")}>
+              {t("metaCampaigns.levels.bulkDelete")}
+            </button>
           </div>
         ) : null}
         <div className="flex flex-wrap items-center justify-between gap-2">
@@ -406,7 +436,7 @@ export default function MetaCampaignsCampaignsPage() {
             const listStatus = campaignListStatus(campaign);
             const delivery = listStatus || campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
             const tone = statusTone(delivery);
-            const canToggleLive = !campaign.localOnly && listStatus !== "DRAFT";
+            const canToggleLive = canToggleMetaDelivery(campaign);
             const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
             const editId = campaign.localOnly ? draftId : campaign.id;
             return (
@@ -538,7 +568,7 @@ export default function MetaCampaignsCampaignsPage() {
                 const listStatus = campaignListStatus(campaign);
                 const delivery = listStatus || campaign.deliveryStatus || campaign.effectiveStatus || campaign.status;
                 const tone = statusTone(delivery);
-                const canToggleLive = !campaign.localOnly && listStatus !== "DRAFT";
+                const canToggleLive = canToggleMetaDelivery(campaign);
                 const draftId = campaign.publishRecordId || (campaign.localOnly ? campaign.id : "");
                 const editId = campaign.localOnly ? draftId : campaign.id;
                 return (
@@ -672,7 +702,9 @@ export default function MetaCampaignsCampaignsPage() {
       ) : null}
 
       <MetaCampaignDeleteDialog
-        campaign={deletion.target}
+        campaign={deletion.target as (MetaCampaign & { name: string }) | null}
+        targets={deletion.targets}
+        level={deletion.level}
         busy={deletion.busy}
         error={deletion.error}
         onClose={deletion.close}

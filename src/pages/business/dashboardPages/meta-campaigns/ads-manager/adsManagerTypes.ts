@@ -57,6 +57,8 @@ export type CampaignDraft = {
   budgetAmount: string;
   currency: string;
   bidStrategy: string;
+  bidAmount: string;
+  roasAverageFloor: string;
   advantagePlusLeads: boolean;
   showMoreDetails: boolean;
   showMoreBudget: boolean;
@@ -111,6 +113,9 @@ export type AdSetDraft = {
   /** Facebook Page used for Instant forms / lead conversion */
   facebookPageId: string;
   facebookPageName: string;
+  /** WhatsApp number linked to the selected Facebook Page (E.164 digits). */
+  whatsappPhone: string;
+  whatsappDisplayNumber: string;
   performanceGoal: string;
   costPerResultGoal: string;
   dataset: string;
@@ -144,6 +149,14 @@ export type AdSetDraft = {
   includeCustomAudiences: string[];
   customAudiences: AdSetInterest[];
   excludedAudiences: AdSetInterest[];
+  locales: number[];
+  publisherPlatforms: string[];
+  facebookPositions: string[];
+  instagramPositions: string[];
+  messengerPositions: string[];
+  audienceNetworkPositions: string[];
+  threadsPositions: string[];
+  devicePlatforms: string[];
   targetingLoaded: boolean;
   targetingRaw: Record<string, unknown> | null;
   /** Audience restored from a failed publish because Meta has no ad set yet. */
@@ -162,7 +175,15 @@ export type AdSetDraft = {
   locationsExpanded: boolean;
 };
 
-export type AdCreativeFormat = "image" | "video";
+export type AdCreativeFormat = "image" | "video" | "carousel" | "catalog" | "existing_post";
+
+export type CarouselCardDraft = {
+  headline: string;
+  description: string;
+  imageHash: string;
+  imagePreviewUrl: string;
+  link: string;
+};
 
 export type AdDraft = {
   id: string;
@@ -195,6 +216,10 @@ export type AdDraft = {
   imageHash: string;
   imagePreviewUrl: string;
   videoId: string;
+  carouselCards: CarouselCardDraft[];
+  catalogId: string;
+  productSetId: string;
+  objectStoryId: string;
 };
 
 export type AdsManagerTreeNode = {

@@ -98,6 +98,11 @@ export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
     return false;
   }
 
+  // Isolated HTTPS preview (local Caddy / Cloudflare quick tunnel), not a published customer site.
+  if (host === "qa.local" || host.endsWith(".qa.local") || host.endsWith(".trycloudflare.com")) {
+    return false;
+  }
+
   return host.includes(".");
 }
 

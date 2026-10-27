@@ -44,6 +44,7 @@ export default function WhatsAppInboxTab() {
   const [selectedPhone, setSelectedPhone] = useState("");
   const [messages, setMessages] = useState<WhatsAppMessageLog[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [messagesReadyFor, setMessagesReadyFor] = useState("");
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
   const [clearing, setClearing] = useState(false);
@@ -54,9 +55,7 @@ export default function WhatsAppInboxTab() {
     try {
       const rows = await listWhatsAppConversations(businessId);
       setConversations(rows);
-      if (!selectedPhone && rows[0]?.phone) {
-        setSelectedPhone(rows[0].phone);
-      }
+      setSelectedPhone((current) => current || rows[0]?.phone || "");
     } catch (error: any) {
       const code = error?.response?.data?.code;
       toast.error(
@@ -82,6 +81,7 @@ export default function WhatsAppInboxTab() {
   useEffect(() => {
     if (!businessId || !selectedPhone) {
       setMessages([]);
+      setMessagesReadyFor("");
       return;
     }
     let cancelled = false;
@@ -92,8 +92,15 @@ export default function WhatsAppInboxTab() {
           businessId,
           selectedPhone
         );
-        if (!cancelled) setMessages(rows);
+        if (!cancelled) {
+          setMessages(rows);
+          setMessagesReadyFor(selectedPhone);
+        }
       } catch (error: any) {
+        if (!cancelled) {
+          setMessages([]);
+          setMessagesReadyFor(selectedPhone);
+        }
         toast.error(
           error?.response?.data?.error || t("whatsapp.errors.loadInbox")
         );
@@ -120,7 +127,7 @@ export default function WhatsAppInboxTab() {
         return;
       }
       setReply("");
-      if (result?.demoSafe && result.log) {
+      if ((result?.demoSafe || result?.dryRun) && result.log) {
         const optimistic = { ...result.log, status: "sending" };
         setMessages((prev) => [...prev, optimistic]);
         const id = optimistic._id;
@@ -146,9 +153,9 @@ export default function WhatsAppInboxTab() {
         businessId,
         selectedPhone
       );
-      if (!result?.demoSafe) setMessages(rows);
+      if (!result?.demoSafe && !result?.dryRun) setMessages(rows);
       await loadConversations();
-      const replyMessage = result?.demoSafe
+      const replyMessage = result?.demoSafe || result?.dryRun
         ? t(
             "whatsapp.inbox.demoReplySent",
             "Demo message saved. It was not sent to a real customer."
@@ -204,6 +211,7 @@ export default function WhatsAppInboxTab() {
       className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]"
       dir={getTextDirection(i18n.language)}
       data-demo-target="whatsapp-inbox"
+      data-testid="whatsapp-module-inbox"
     >
       <section className={`${cardBase} overflow-hidden`}>
         <div className="border-b border-slate-100 px-4 py-4">
@@ -302,7 +310,7 @@ export default function WhatsAppInboxTab() {
         </div>
 
         <div className="flex-1 space-y-2 overflow-y-auto bg-[#ECE5DD] p-4">
-          {loadingMessages ? (
+          {loadingMessages || (selectedPhone && messagesReadyFor !== selectedPhone) ? (
             <div className="flex items-center justify-center gap-2 py-10 text-sm text-slate-600">
               <Loader2 className="h-4 w-4 animate-spin" />
               {t("whatsapp.loading")}
@@ -314,9 +322,14 @@ export default function WhatsAppInboxTab() {
           ) : (
             messages.map((msg) => {
               const outbound = msg.direction !== "inbound";
+              const mediaUrl = msg.mediaUrl || "";
+              const isImage =
+                msg.messageType === "image" ||
+                String(msg.mimeType || "").startsWith("image/");
               return (
                 <div
                   key={msg._id}
+                  data-wa-message={msg.direction || "outbound"}
                   className={[
                     "max-w-[85%] rounded-2xl px-3 py-2 text-sm shadow-sm",
                     outbound
@@ -324,8 +337,20 @@ export default function WhatsAppInboxTab() {
                       : "me-auto rounded-es-md bg-white text-slate-800",
                   ].join(" ")}
                 >
+                  {isImage && mediaUrl ? (
+                    <img
+                      src={mediaUrl}
+                      alt={msg.caption || msg.filename || "WhatsApp image"}
+                      className="mb-2 max-h-48 rounded-lg"
+                    />
+                  ) : null}
+                  {msg.messageType === "document" ? (
+                    <p className="mb-1 text-xs font-black text-slate-600" dir="ltr">
+                      {msg.filename || "document"}
+                    </p>
+                  ) : null}
                   <p className="whitespace-pre-wrap font-medium">
-                    {msg.body || "—"}
+                    {msg.body || msg.caption || (mediaUrl ? "" : "—")}
                   </p>
                   <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-500">
                     <span>

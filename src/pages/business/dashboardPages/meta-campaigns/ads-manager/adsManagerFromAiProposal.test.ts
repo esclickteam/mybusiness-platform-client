@@ -32,7 +32,7 @@ const proposal = {
 describe("adsManagerFromAiProposal", () => {
   it("maps destination onto the existing Ads Manager conversion locations", () => {
     expect(conversionLocationFromDestination("LEAD_FORM")).toBe("Instant forms");
-    expect(conversionLocationFromDestination("WHATSAPP")).toBe("Messenger");
+    expect(conversionLocationFromDestination("WHATSAPP")).toBe("WhatsApp");
     expect(conversionLocationFromDestination("WEBSITE")).toBe("Website");
   });
 
@@ -50,6 +50,18 @@ describe("adsManagerFromAiProposal", () => {
     expect(state.ads[0].headline).toBe("Facial in Haifa");
     expect(state.ads[0].callToAction).toBe("SIGN_UP");
     expect(state.ads[0].instantFormId).toBe("form_9");
+  });
+
+  it("remaps OPEN_LINK onto SIGN_UP for Instant Form proposals", () => {
+    const state = adsManagerStateFromAiProposal({
+      proposal: {
+        ...proposal,
+        creative: { ...proposal.creative, ctaKey: "OPEN_LINK" },
+        graphSafe: { objective: "OUTCOME_LEADS", cta: "OPEN_LINK" },
+      },
+      destinationKey: "LEAD_FORM",
+    });
+    expect(state.ads[0].callToAction).toBe("SIGN_UP");
   });
 
   it("ignores invalid Graph-looking objectives from the proposal", () => {

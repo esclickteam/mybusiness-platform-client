@@ -321,7 +321,7 @@ export default function WhatsAppTemplatesTab() {
   }
 
   return (
-    <div className="space-y-4" dir={getTextDirection(i18n.language)} data-demo-target="whatsapp-templates">
+    <div className="space-y-4" dir={getTextDirection(i18n.language)} data-demo-target="whatsapp-templates" data-testid="whatsapp-module-templates">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-black text-slate-900">

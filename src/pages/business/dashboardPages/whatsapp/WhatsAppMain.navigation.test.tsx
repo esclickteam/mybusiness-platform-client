@@ -1,5 +1,5 @@
 import React from "react";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   MemoryRouter,
   Route,
@@ -9,6 +9,7 @@ import {
 } from "react-router-dom";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { resolveWhatsAppHubRedirect } from "./hubNavigation";
+import { INVISTIMO_BUSINESS_ID } from "../../../../utils/invistimoAdmin";
 
 vi.mock("../../../../context/AuthContext", () => ({
   useAuth: () => ({ user: { businessId: "biz-1" } }),
@@ -48,6 +49,7 @@ vi.mock("../../../dev/whatsappVisualQaContext", () => ({
 }));
 
 import WhatsAppMain from "./WhatsAppMain";
+import { getWhatsAppStatus } from "../../../../api/whatsappApi";
 
 function LocationProbe() {
   const location = useLocation();
@@ -94,6 +96,18 @@ function HubHarness({ initial }: { initial: string }) {
           <Route
             path="inbox"
             element={<div data-testid="tab-inbox">inbox</div>}
+          />
+          <Route
+            path="templates"
+            element={<div data-testid="tab-templates">templates</div>}
+          />
+          <Route
+            path="insights"
+            element={<div data-testid="tab-insights">insights</div>}
+          />
+          <Route
+            path="connection"
+            element={<div data-testid="tab-connection">connection</div>}
           />
           <Route path="*" element={<Navigate to="overview" replace />} />
         </Route>
@@ -170,5 +184,86 @@ describe("WhatsApp hub tab navigation", () => {
     await waitFor(() =>
       expect(screen.getByTestId("tab-overview")).toBeInTheDocument()
     );
+  });
+
+  it("does not show Invistimo-only extras for other tenants", async () => {
+    render(
+      <HubHarness initial="/business/biz-1/dashboard/whatsapp/overview" />
+    );
+    await waitFor(() => screen.getByTestId("tab-overview"));
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.automations/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.contacts/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.agents/i })
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /whatsapp\.nav\.scheduled/i })
+    ).not.toBeInTheDocument();
+  });
+
+  afterEach(() => {
+    vi.mocked(getWhatsAppStatus).mockResolvedValue({
+      connected: true,
+      readyToSend: true,
+      readiness: "ready",
+      verifiedName: "Test Biz",
+      displayPhoneNumber: "+972500000000",
+      qualityRating: "GREEN",
+      messagingLimitTier: "TIER_1K",
+      lastMetaSyncAt: new Date().toISOString(),
+    });
+  });
+
+  it("keeps Invistimo overview when WhatsApp is not linked", async () => {
+    vi.mocked(getWhatsAppStatus).mockResolvedValue({
+      connected: false,
+      readyToSend: false,
+    } as never);
+    const path = `/business/${INVISTIMO_BUSINESS_ID}/dashboard/whatsapp/overview`;
+    render(<HubHarness initial={path} />);
+    await waitFor(() => {
+      expect(screen.getByTestId("tab-overview")).toBeInTheDocument();
+    });
+    expect(screen.getByTestId("location").textContent).toBe(path);
+  });
+
+  it("keeps Invistimo inbox, templates, and insights when WhatsApp is not linked", async () => {
+    vi.mocked(getWhatsAppStatus).mockResolvedValue({
+      connected: false,
+      readyToSend: false,
+    } as never);
+    for (const [rest, testId] of [
+      ["inbox", "tab-inbox"],
+      ["templates", "tab-templates"],
+      ["insights", "tab-insights"],
+    ] as const) {
+      const path = `/business/${INVISTIMO_BUSINESS_ID}/dashboard/whatsapp/${rest}`;
+      const view = render(<HubHarness initial={path} />);
+      await waitFor(() => {
+        expect(screen.getByTestId(testId)).toBeInTheDocument();
+      });
+      expect(screen.getByTestId("location").textContent).toBe(path);
+      view.unmount();
+    }
+  });
+
+  it("sends a disconnected non-Invistimo tenant from overview to connection", async () => {
+    vi.mocked(getWhatsAppStatus).mockResolvedValue({
+      connected: false,
+      readyToSend: false,
+    } as never);
+    render(
+      <HubHarness initial="/business/biz-1/dashboard/whatsapp/overview" />
+    );
+    await waitFor(() => {
+      expect(screen.getByTestId("location").textContent).toBe(
+        "/business/biz-1/dashboard/whatsapp/connection"
+      );
+    });
+    expect(screen.getByTestId("tab-connection")).toBeInTheDocument();
   });
 });
