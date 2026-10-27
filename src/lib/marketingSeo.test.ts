@@ -111,8 +111,9 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/crm") || "").toContain("How much does Bizuply CRM cost?");
     expect(buildMarketingDocumentHead("/about") || "").toContain("Our Mission, Approach");
     expect(buildMarketingDocumentHead("/about") || "").toContain("images/about/og.png");
-    expect(buildMarketingPrerender("/about")?.inner).toContain("Built to make business feel more connected");
-    expect(buildMarketingPrerender("/he/about")?.inner).toContain("נבנתה כדי להפוך את העבודה העסקית למחוברת יותר");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Built for businesses that want their work connected");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Ready-Made SaaS Solutions");
+    expect(buildMarketingPrerender("/he/about")?.inner).toContain("נבנתה לעסקים שרוצים שהעבודה שלהם תהיה מחוברת");
     expect(buildMarketingPrerender("/he/terms")).toBeNull();
     const spanish = buildMarketingDocumentHead("/es/crm") || "";
     expect(spanish).toContain('hreflang="es" href="https://bizuply.com/es/crm"');
