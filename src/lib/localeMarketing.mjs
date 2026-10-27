@@ -158,10 +158,10 @@ const PAGES = {
       ],
     ),
     "/website-builder": page(
-      "Constructor de sitios web para negocios | Bizuply",
-      "Cree un sitio, una tienda o una página con reservas en un editor visual y publique en su dominio. Cada consulta del sitio entra al CRM.",
+      "Creador de sitios para negocios | Web sin código y CRM | Bizuply",
+      "Cree un sitio profesional para su negocio con Bizuply. Personalice plantillas en un editor visual, publíquelo en su dominio y conecte las consultas al CRM.",
       "Sitios web",
-      "Un sitio profesional que trae clientes",
+      "Cree un sitio profesional que trabaje para su negocio",
       [
         "Elija una plantilla de la biblioteca, edite el contenido en el editor visual y publique en su dirección. No publicamos aquí una cifra de plantillas que no se haya vuelto a contar en esta versión.",
         "Los formularios del sitio pueden crear un lead en el mismo CRM, con su origen.",
@@ -296,10 +296,10 @@ cloneShape("pt-BR", {
     ],
   ),
   "/website-builder": page(
-    "Construtor de sites para negócios | Bizuply",
-    "Crie um site, uma loja ou uma página com agendamento em um editor visual e publique no seu domínio. Cada contato do site entra no CRM.",
+    "Criador de sites para empresas | Sites sem código e CRM | Bizuply",
+    "Crie um site profissional para a sua empresa com a Bizuply. Personalize modelos em um editor visual, publique no seu domínio e conecte os contatos do site ao CRM.",
     "Sites",
-    "Um site profissional que traz clientes",
+    "Crie um site profissional que trabalhe para o seu negócio",
     [
       "Escolha um modelo da biblioteca, edite o conteúdo no editor visual e publique no seu endereço. Esta página não publica uma quantidade de modelos que não tenha sido recontada nesta versão.",
       "Os formulários do site podem criar um lead no mesmo CRM, com a origem.",
@@ -405,10 +405,10 @@ cloneShape("ar", {
     ],
   ),
   "/website-builder": page(
-    "منشئ مواقع للأنشطة | Bizuply",
-    "أنشئوا موقعاً أو متجراً أو صفحة حجز بمحرر مرئي وانشروا على نطاقكم. كل استفسار من الموقع يدخل إلى CRM.",
+    "منشئ مواقع للأعمال | مواقع بدون كود وCRM | Bizuply",
+    "أنشئ موقعاً مهنياً لنشاطك مع Bizuply. خصّص القوالب في محرر مرئي، وانشر على نطاقك، واربط استفسارات الموقع بـ CRM.",
     "المواقع",
-    "موقع مهني يجلب عملاء",
+    "أنشئ موقعاً مهنياً يعمل لصالح نشاطك",
     [
       "اختاروا قالباً من المكتبة، وحرّروا المحتوى في المحرر المرئي، ثم انشروا على عنوانكم. لا نعرض هنا رقماً للقوالب لم يُعَد إحصاؤه في هذه النسخة.",
       "يمكن لنماذج الموقع إنشاء عميل محتمل في CRM نفسه مع مصدره.",
