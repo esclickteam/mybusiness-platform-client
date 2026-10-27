@@ -6,6 +6,7 @@
  * Hebrew and other UI languages stay client-side until dedicated locale URLs exist.
  */
 
+import { crmFaqPairs, getCrmCopy, renderCrmPrerender } from "./crmMarketingCopy.mjs";
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { HOME_SHELL } from "./homeShell.mjs";
@@ -162,9 +163,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/crm",
-    title: "CRM Software with Meta Lead Ads Integration | Bizuply",
+    title: "CRM Software for Small Businesses & Lead Management | Bizuply",
     description:
-      "Manage leads and customers in one CRM. Meta Lead Ads, Google Ads, and your website feed one pipeline, with a client file and appointments. CRM only is $49/month.",
+      "Organize leads, manage customers, track follow-ups, and connect supported Meta, Google Ads, and website inquiries with Bizuply CRM. Plans start at $49/month.",
     crumb: "CRM",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -574,6 +575,7 @@ const ABOUT_FAQ = {
 };
 
 function faqItems(path, language) {
+  if (path === "/crm") return crmFaqPairs(language);
   if (path === "/website-builder") return getWebsiteBuilderCopy(language).faq.items;
   if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
   if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
@@ -733,8 +735,42 @@ function guideHead(path, locale) {
   ].filter(Boolean).join("\n");
 }
 
+function crmDocumentHead(locale) {
+  const copy = getCrmCopy(locale);
+  const canonical = marketingPublicUrl("/crm", copy.lang);
+  const page = { path: "/crm", title: copy.title, description: copy.description, crumb: copy.crumb };
+  const application = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Bizuply CRM",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url: "https://bizuply.com/crm",
+    description: copy.description,
+    offers: [
+      { "@type": "Offer", name: "CRM Only", price: "49", priceCurrency: "USD", url: "https://bizuply.com/register?plan=crm_only" },
+      { "@type": "Offer", name: "Bizuply Business", price: "99", priceCurrency: "USD", url: "https://bizuply.com/pricing" },
+      { "@type": "Offer", name: "Bizuply Business yearly", price: "990", priceCurrency: "USD", url: "https://bizuply.com/pricing" },
+    ],
+  };
+  return [
+    `<title>${escapeHtml(copy.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(copy.description)}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    hreflangTags("/crm"),
+    ...sharedSocialTags(copy.title, copy.description, canonical, copy.lang),
+    `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
+    `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, copy.lang))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    faqSchemaTag("/crm", copy.lang),
+    `<script type="application/ld+json">${jsonLd(application)}</script>`,
+  ].join("\n");
+}
+
 export function buildMarketingDocumentHead(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/crm") return crmDocumentHead(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const head = guideHead(path, locale);
     if (head) return head;
@@ -1068,6 +1104,10 @@ function renderHomePrerender(locale) {
 
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/crm") {
+    const copy = getCrmCopy(locale);
+    return { lang: copy.lang, dir: copy.dir, inner: renderCrmPrerender(locale) };
+  }
   if (path === "/") return renderHomePrerender(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);

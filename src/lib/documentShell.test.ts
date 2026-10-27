@@ -91,17 +91,17 @@ describe("first paint document shell", () => {
     expect(rootInner(hebrew.body)).not.toContain("<h1>Bizuply</h1>");
 
     const crm = await documentFor("https://bizuply.com/crm", "bizuply.com");
-    expect(crm.body).toContain("<title>CRM Software with Meta Lead Ads Integration | Bizuply</title>");
-    expect(crm.body).toContain("<h1>Every lead, every client, every appointment in one place</h1>");
+    expect(crm.body).toContain("<title>CRM Software for Small Businesses &amp; Lead Management | Bizuply</title>");
+    expect(crm.body).toContain("<h1>Manage every lead and customer relationship in one place</h1>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
     expect(visibleH1Count(crm.body)).toBe(0);
     expect(rootInner(crm.body)).not.toContain("<h1");
-    expect(noscriptCrawl(crm.body)).toContain("<h2>FAQ</h2>");
+    expect(noscriptCrawl(crm.body)).toContain("<h2>Frequently asked questions about CRM software</h2>");
     expect(noscriptCrawl(crm.body)).toContain("CRM only is $49 per month");
 
     const hebrewCrm = await documentFor("https://bizuply.com/he/crm", "bizuply.com");
-    expect(hebrewCrm.body).toContain("<h1>כל ליד, כל לקוח, כל פגישה במקום אחד</h1>");
+    expect(hebrewCrm.body).toContain("<h1>נהלו כל ליד וכל קשר עם הלקוח במקום אחד</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
     expect(visibleH1Count(hebrewCrm.body)).toBe(0);
     expect(rootInner(hebrewCrm.body)).not.toContain("כל ליד");

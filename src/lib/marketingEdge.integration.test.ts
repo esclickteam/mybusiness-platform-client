@@ -63,13 +63,13 @@ describe("marketing edge integration", () => {
     const booking = await middleware(request("https://bizuply.com/book/example-business", "bizuply.com"));
     const login = await read(await middleware(request("https://bizuply.com/login", "bizuply.com")));
     expect(crm.status).toBe(200);
-    expect(crm.body).toContain("<title>CRM Software with Meta Lead Ads Integration | Bizuply</title>");
+    expect(crm.body).toContain("<title>CRM Software for Small Businesses &amp; Lead Management | Bizuply</title>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
     const hebrewCrm = await read(await middleware(request("https://bizuply.com/he/crm", "bizuply.com")));
     expect(hebrewCrm.status).toBe(200);
     expect(hebrewCrm.body).toContain('lang="he" dir="rtl"');
-    expect(hebrewCrm.body).toContain("<h1>כל ליד, כל לקוח, כל פגישה במקום אחד</h1>");
+    expect(hebrewCrm.body).toContain("<h1>נהלו כל ליד וכל קשר עם הלקוח במקום אחד</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
     const whatsappHebrew = await read(await middleware(request("https://bizuply.com/he/whatsapp-api", "bizuply.com")));
     expect(whatsappHebrew.body).toContain("29 דולר");
@@ -102,7 +102,7 @@ describe("marketing edge integration", () => {
       await middleware(request("https://idoeshet.sites.bizuply.com/", "idoeshet.sites.bizuply.com")),
     );
     expect(customer.status).not.toBe(404);
-    expect(customer.body).not.toContain("CRM Software with Meta Lead Ads Integration");
+    expect(customer.body).not.toContain("CRM Software for Small Businesses");
     expect(customer.body).not.toContain('href="https://bizuply.com/crm"');
     expect(customer.headers.get("x-bizuply-seo-edge")).not.toBe("marketing");
   });
