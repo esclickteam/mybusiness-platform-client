@@ -10,14 +10,26 @@ const ROWS = [
   {
     key: "pathSelf",
     to: "/platform",
-    image: "/demo-media/home/crm.jpg",
+    image: "/demo-media/home/frames/way-platform.jpg",
     cta: "pathSelfCta",
   },
   {
-    key: "pathHelp",
-    to: "/services",
-    image: "/demo-media/home/websites.jpg",
-    cta: "pathHelpCta",
+    key: "pathWeb",
+    to: "/website-builder",
+    image: "/demo-media/home/frames/way-website.jpg",
+    cta: "pathWebCta",
+  },
+  {
+    key: "pathMarket",
+    to: "/meta-campaigns",
+    image: "/demo-media/home/frames/way-marketing.jpg",
+    cta: "pathMarketCta",
+  },
+  {
+    key: "pathSetup",
+    to: "/pricing",
+    image: "/demo-media/home/frames/way-setup.jpg",
+    cta: "pathSetupCta",
   },
 ] as const;
 
@@ -31,11 +43,11 @@ export default function PlatformDomains() {
           <h2 className="home-ways__title">{t("home.domainsTitle")}</h2>
           <p className="home-ways__lead">{t("home.domainsLead")}</p>
         </Reveal>
-        <div className="mt-10 grid gap-5 lg:grid-cols-2">
+        <div className="mt-10 grid gap-5 md:grid-cols-2">
           {ROWS.map((row) => (
             <Reveal key={row.key} from="up" distance={20}>
               <article className="home-way">
-                <img src={row.image} alt={t(`home.${row.key}`)} width={960} height={540} />
+                <img src={row.image} alt={t(`home.${row.key}`)} width={1280} height={800} />
                 <div>
                   <h3>{t(`home.${row.key}`)}</h3>
                   <p>{t(`home.${row.key}Body`)}</p>

@@ -50,9 +50,9 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply — Everything your business needs to grow in one place",
+    title: "Bizuply | All-in-One Business Management Platform & CRM",
     description:
-      "Manage customers, capture leads, run marketing campaigns, communicate through WhatsApp, schedule appointments and automate everyday workflows with Bizuply.",
+      "Manage leads, customers, WhatsApp Business, Meta campaigns, appointments, websites and automations in one connected platform. Discover Bizuply.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
@@ -343,6 +343,34 @@ function jsonLd(data) {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+function websiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Bizuply",
+    url: `${MARKETING_ORIGIN}/`,
+    publisher: { "@type": "Organization", name: "Bizuply", url: `${MARKETING_ORIGIN}/` },
+  };
+}
+
+function softwareSchema(description, url) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Bizuply",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url,
+    description,
+    offers: [
+      { "@type": "Offer", name: "CRM", price: "49", priceCurrency: "USD" },
+      { "@type": "Offer", name: "Business", price: "99", priceCurrency: "USD" },
+      { "@type": "Offer", name: "Business yearly", price: "990", priceCurrency: "USD" },
+      { "@type": "Offer", name: "WhatsApp Business API", price: "29", priceCurrency: "USD" },
+    ],
+  };
+}
+
 function organizationSchema() {
   return {
     "@context": "https://schema.org",
@@ -560,6 +588,8 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+      path === "/" ? `<script type="application/ld+json">${jsonLd(websiteSchema())}</script>` : "",
+      path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
       faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
   }
@@ -771,13 +801,28 @@ function localeHref(locale, path) {
 }
 
 const HOME_CHANNELS = [
-  ["Meta", "Lead Ads"],
-  ["Facebook", "Lead Ads"],
-  ["Instagram", "Lead Ads"],
-  ["WhatsApp", "Business API"],
-  ["Google Ads", "Leads"],
-  ["Website", "Forms"],
+  ["Facebook", "facebook"],
+  ["Instagram", "instagram"],
+  ["Meta", "meta"],
+  ["WhatsApp", "whatsapp"],
+  ["Google Ads", "google"],
+  ["site", "site"],
 ];
+
+function channelMark(kind) {
+  if (kind === "meta") return `<img src="/meta.svg" alt="" width="28" height="28">`;
+  if (kind === "google") return `<img src="/google-ads.svg" alt="" width="28" height="28">`;
+  if (kind === "facebook") {
+    return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="#1877F2" d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06C2 17.08 5.66 21.24 10.44 22v-7.03H7.9v-2.91h2.54V9.84c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.47h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34V22C18.34 21.24 22 17.08 22 12.06z"/></svg>`;
+  }
+  if (kind === "instagram") {
+    return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><defs><linearGradient id="home-ig-shell" x1="0" y1="24" x2="24" y2="0"><stop offset="0%" stop-color="#feda75"/><stop offset="45%" stop-color="#d62976"/><stop offset="100%" stop-color="#4f5bd5"/></linearGradient></defs><rect width="24" height="24" rx="6" fill="url(#home-ig-shell)"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="1.6"/><circle cx="17.2" cy="6.8" r="1" fill="#fff"/></svg>`;
+  }
+  if (kind === "whatsapp") {
+    return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="#25D366" d="M12.04 2C6.58 2 2.15 6.4 2.15 11.83c0 1.74.46 3.44 1.34 4.94L2 22l5.39-1.4a10 10 0 0 0 4.65 1.15h.01c5.46 0 9.89-4.4 9.89-9.83C21.94 6.4 17.5 2 12.04 2zm5.76 13.85c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.81-.11-.41-.14-.95-.31-1.64-.61-2.88-1.25-4.76-4.15-4.9-4.35-.14-.19-1.17-1.55-1.17-2.96s.74-2.1 1-2.39c.26-.28.57-.35.76-.35h.55c.17 0 .41-.07.64.49.24.58.82 2 .89 2.15.07.14.12.32.02.51-.1.19-.14.31-.28.48-.14.16-.3.37-.42.49-.14.14-.29.29-.12.56.16.28.73 1.2 1.57 1.95 1.08.96 1.99 1.26 2.27 1.4.28.14.44.12.6-.07.17-.19.7-.81.89-1.09.19-.28.37-.23.63-.14.26.09 1.64.77 1.92.91.28.14.47.21.54.33.07.12.07.68-.17 1.36z"/></svg>`;
+  }
+  return `<svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><rect width="24" height="24" rx="6" fill="#e0e7ff"/><path d="M7 7.5h10M7 12h10M7 16.5h6" stroke="#4338ca" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+}
 
 function renderHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
@@ -788,16 +833,19 @@ function renderHomePrerender(locale) {
       ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
       : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`
   )).join("");
-  const channel = ([name, label]) => `<li class="home-channel"><span><strong>${escapeText(name)}</strong><em>${escapeText(label)}</em></span></li>`;
-  const row = HOME_CHANNELS.concat(HOME_CHANNELS).map(channel).join("");
-  const track = `<ul class="home-marquee__row">${row}</ul><ul class="home-marquee__row">${row}</ul>`;
+  const channel = ([name, kind]) => {
+    const label = kind === "site" ? copy.channelSite : name;
+    return `<li class="home-channel">${channelMark(kind)}<span><strong>${escapeText(label)}</strong></span></li>`;
+  };
+  const row = HOME_CHANNELS.map(channel).join("");
+  const track = `<ul class="home-marquee__row">${row}</ul><ul class="home-marquee__row" aria-hidden="true">${row}</ul>`;
   const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
   const faqs = faqItems("/", locale);
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
   return {
     lang: meta.htmlLang,
     dir: meta.dir,
-    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero"><div class="home-hero__glow" aria-hidden="true"></div><div class="home-hero__grid"><div><h1 class="home-hero__title">${escapeText(copy.headline)}</h1><p class="home-hero__lead">${escapeText(copy.subtitle)}</p><p class="home-hero__note">${escapeText(copy.supportLine)}</p><div class="home-hero__actions"><a class="home-cta home-cta--primary" href="${escapeHtml(href("/register"))}">${escapeText(copy.startTrial)}</a><a class="home-cta home-cta--ghost" href="${escapeHtml(href("/platform"))}">${escapeText(copy.explore)}</a></div></div><div class="home-stage"><img class="home-stage__main" src="/demo-media/forms/lead.webp" alt="${escapeText(copy.stageAlt)}" width="960" height="600" fetchpriority="high" decoding="async"><img class="home-stage__float home-stage__float--a" src="/demo-media/whatsapp/still-3.jpg" alt="${escapeText(copy.stageWhatsappAlt)}" width="640" height="400"><img class="home-stage__float home-stage__float--b" src="/demo-media/appointments/still-8.jpg" alt="${escapeText(copy.stageAppointmentsAlt)}" width="640" height="400"><span class="home-cursor" aria-hidden="true"></span></div></div><div class="home-flow"><div class="home-flow__inner"><p class="home-flow__eyebrow">${escapeText(copy.sources)}</p><h2 class="home-flow__title">${escapeText(copy.flowTitle)}</h2><p class="home-flow__lead">${escapeText(copy.flowBody)}</p><div class="home-flow__board"><div class="home-marquee"><div class="home-marquee__track">${track}</div></div><div class="home-flow__line" aria-hidden="true"></div><div class="home-flow__crm"><p>${escapeText(copy.flowInto)}</p><strong>${escapeText(copy.flowCrm)}</strong><span>${escapeText(copy.flowSteps)}</span></div></div></div></div></section><section class="home-crawl"><h2>${escapeText(faqTitle)}</h2>${faqBodyHtml(faqs)}</section></main>`,
+    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero"><div class="home-hero__glow" aria-hidden="true"></div><div class="home-hero__grid"><div><h1 class="home-hero__title">${escapeText(copy.headline)}</h1><p class="home-hero__lead">${escapeText(copy.subtitle)}</p><p class="home-hero__note">${escapeText(copy.supportLine)}</p><div class="home-hero__actions"><a class="home-cta home-cta--primary" href="${escapeHtml(href("/register"))}">${escapeText(copy.startTrial)}</a><a class="home-cta home-cta--ghost" href="${escapeHtml(href("/platform"))}">${escapeText(copy.explore)}</a></div></div><div class="home-stage"><img class="home-stage__main" src="/demo-media/home/crm.jpg" alt="${escapeText(copy.stageAlt)}" width="1280" height="800" fetchpriority="high" decoding="async"><img class="home-stage__float home-stage__float--a" src="/demo-media/home/frames/hero-whatsapp.jpg" alt="${escapeText(copy.stageWhatsappAlt)}" width="1280" height="800"><img class="home-stage__float home-stage__float--b" src="/demo-media/home/frames/hero-calendar.jpg" alt="${escapeText(copy.stageAppointmentsAlt)}" width="1280" height="800"><span class="home-cursor" aria-hidden="true"></span></div></div><div class="home-flow"><div class="home-flow__inner"><h2 class="home-flow__title">${escapeText(copy.flowTitle)}</h2><p class="home-flow__lead">${escapeText(copy.flowBody)}</p><div class="home-flow__board"><div class="home-marquee"><div class="home-marquee__track">${track}</div></div><div class="home-flow__line" aria-hidden="true"></div><div class="home-flow__crm"><strong>${escapeText(copy.flowCrm)}</strong></div></div></div></div></section><section class="home-crawl"><h2>${escapeText(faqTitle)}</h2>${faqBodyHtml(faqs)}</section></main>`,
   };
 }
 

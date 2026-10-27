@@ -840,7 +840,7 @@ async function handleMarketingDocument(request) {
     if (isHome) {
       documentHtml = documentHtml.replace(
         "</head>",
-        '<link rel="preload" as="image" href="/demo-media/forms/lead.webp" fetchpriority="high"></head>',
+        '<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high"></head>',
       );
       documentHtml = documentHtml.replace(
         /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
