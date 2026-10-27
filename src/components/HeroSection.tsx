@@ -66,23 +66,23 @@ export default function HeroSection() {
         >
           <img
             className="home-stage__main"
-            src="/demo-media/forms/lead.webp"
+            src="/demo-media/home/crm.jpg"
             alt={t("home.stageAlt")}
-            width={960}
-            height={600}
+            width={1280}
+            height={800}
             fetchPriority="high"
             decoding="async"
           />
           <img
             className="home-stage__float home-stage__float--a"
-            src="/demo-media/whatsapp/still-3.jpg"
+            src="/demo-media/home/frames/hero-whatsapp.jpg"
             alt={t("home.stageWhatsappAlt")}
             width={640}
             height={400}
           />
           <img
             className="home-stage__float home-stage__float--b"
-            src="/demo-media/appointments/still-8.jpg"
+            src="/demo-media/home/frames/hero-calendar.jpg"
             alt={t("home.stageAppointmentsAlt")}
             width={640}
             height={400}

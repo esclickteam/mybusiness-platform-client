@@ -1,220 +1,220 @@
 export const HOME_FAQ_TITLE = {
-  "en": "Everything you need to know",
-  "he": "מה שכדאי לדעת",
-  "es": "Lo que conviene saber",
-  "pt-BR": "O que vale saber",
-  "ar": "ما يجدر معرفته"
+  "en": "Frequently asked questions about Bizuply",
+  "he": "שאלות נפוצות על Bizuply",
+  "es": "Preguntas frecuentes sobre Bizuply",
+  "pt-BR": "Perguntas frequentes sobre a Bizuply",
+  "ar": "أسئلة شائعة حول Bizuply"
 };
 
 export const HOME_FAQ = {
   "en": [
     [
       "What is Bizuply and how does it work?",
-      "Bizuply is an international platform for running and growing a business. A new inquiry can enter the CRM from a connected form or supported ad channel, where the team updates the lead, continues the conversation and schedules the next step. Marketing, WhatsApp, websites, automations and appointments stay in one workspace."
+      "Bizuply is a business management platform that brings customer management, supported marketing tools, WhatsApp Business communication, website creation, appointment scheduling and automations into a connected workspace. Businesses can choose the tools they need and organize daily activities around shared customer information and workflows."
     ],
     [
       "Who is Bizuply designed for?",
-      "Bizuply is designed for small businesses, service providers, marketing teams and growing teams that want customer records, conversations and follow-up in one place. A studio can track a new lead, a service business can book the next meeting, and a team can share the same customer history."
+      "Bizuply is designed for small businesses, service providers, marketing teams and growing organizations that want to manage customer relationships and daily operations more efficiently. The available tools support different workflows, from lead follow-up and appointment scheduling to marketing activity and website management."
     ],
     [
       "What can I manage with Bizuply CRM?",
-      "The CRM keeps leads, customer details, statuses, notes and follow-up tasks together. For example, a team can mark a lead as contacted, add a note about the request and create the next task without moving that work to another tool."
+      "Bizuply CRM helps businesses organize leads and customer records, track pipeline stages, add notes and manage follow-up tasks. Teams can review customer details, update lead statuses and keep the information needed for the next interaction accessible."
     ],
     [
       "Can I manage Meta advertising campaigns through Bizuply?",
-      "Yes, for supported Meta campaign workflows. A business can connect its advertising account, review campaign activity, budgets and performance, and bring incoming leads closer to the CRM follow-up. Available actions depend on the connected account and permissions."
+      "Bizuply provides supported Meta campaign management capabilities for connected business advertising accounts. Depending on account permissions and available features, businesses can review campaign activity, budgets and performance and work with incoming leads through their CRM processes. Advertising charges are billed separately by Meta."
     ],
     [
       "How does WhatsApp Business API work with Bizuply?",
-      "Bizuply connects WhatsApp Business API so a team can manage conversations and approved message templates from the same workspace as the customer record. The Bizuply service is $29 per month for each connected number. Meta charges for messages separately, based on usage and message category."
+      "Bizuply connects with the WhatsApp Business Platform so businesses can manage supported customer conversations and approved message templates from their workspace. The Bizuply subscription is $29 per month for each connected number. Meta messaging charges are separate and depend on message usage and applicable categories."
     ],
     [
       "Can I build a website or online store with Bizuply?",
-      "Yes. Bizuply includes a visual website editor and ready-made templates, and supported forms can connect to the CRM. A basic store add-on and professional website setup are separate services. The pricing page lists the current options."
+      "Bizuply offers a visual website editor and ready-made templates that help businesses create and customize their online presence. Supported forms can connect inquiries with CRM workflows. Website setup services and store-related capabilities may have separate availability or pricing, depending on the selected service."
     ],
     [
       "What business processes can I automate?",
-      "You can automate supported steps that follow business activity. A practical example is creating a follow-up task when a lead reaches a chosen status, so the next action is not left only in someone's memory."
+      "Bizuply supports workflows that respond to selected business events, such as lead activity or status changes. Depending on the available plan and configuration, businesses can use automation to create follow-up tasks and connect routine actions within their customer management processes."
     ],
     [
       "Does Bizuply include appointment scheduling?",
-      "Yes. The calendar organizes appointments, services, availability and bookings. A team can see the next meeting, change a time and keep that appointment with the rest of the day's work."
+      "Yes. Bizuply includes appointment management tools for organizing services, availability and bookings. Businesses can review upcoming appointments, manage schedule changes and keep appointment information connected with their daily operations."
     ],
     [
       "Can Bizuply set up and manage services for my business?",
-      "Yes. You can use the tools yourself, or ask Bizuply to set up selected services such as a website or automations. The pricing page shows which setup services are available before you start."
+      "Yes. Businesses can use supported tools independently or request professional assistance with selected services, such as website setup, business workflows and digital configuration. The available setup services and their costs depend on the scope of work and the selected offering."
     ],
     [
       "How much does Bizuply cost?",
-      "The price depends on the products and services you choose. The CRM plan starts at $49 per month. The Business plan is $99 per month or $990 per year. WhatsApp Business API is $29 per month for each connected number, and Meta messaging fees are separate. See the pricing page for the current list."
+      "Bizuply offers different plans and services depending on the tools a business needs. The CRM plan starts at $49 per month, while the Business plan is $99 per month or $990 per year. WhatsApp Business API is $29 per month per connected number, with Meta messaging charges billed separately. Visit the pricing page for current plans and service details."
     ]
   ],
   "he": [
     [
       "מהי Bizuply ואיך היא עובדת?",
-      "Bizuply היא פלטפורמה בינלאומית לניהול ולצמיחה של עסק. פנייה חדשה יכולה להיכנס ל־CRM מטופס מחובר או מערוץ פרסום נתמך, ושם הצוות מעדכן את הליד, ממשיך את השיחה וקובע את הצעד הבא. שיווק, WhatsApp, אתרים, אוטומציות ופגישות נשארים בסביבה אחת."
+      "Bizuply היא פלטפורמה לניהול עסק שמחברת ניהול לקוחות, כלי שיווק נתמכים, תקשורת ב-WhatsApp Business, יצירת אתר, תיאום פגישות ואוטומציות לסביבת עבודה אחת. עסקים יכולים לבחור את הכלים שהם צריכים ולארגן את העבודה היומיומית סביב מידע ותהליכים משותפים על הלקוחות."
     ],
     [
-      "למי Bizuply מתאימה?",
-      "Bizuply מתאימה לעסקים קטנים, נותני שירות, צוותי שיווק וצוותים שגדלים ורוצים רשומות לקוח, שיחות והמשך טיפול במקום אחד. סטודיו יכול לעקוב אחרי ליד חדש, עסק שירות יכול לקבוע את הפגישה הבאה, וצוות יכול לחלוק את אותה היסטוריה."
+      "למי Bizuply מיועדת?",
+      "Bizuply מיועדת לעסקים קטנים, לנותני שירות, לצוותי שיווק ולארגונים בצמיחה שרוצים לנהל קשרי לקוחות ועבודה יומיומית ביעילות רבה יותר. הכלים הזמינים תומכים בתהליכי עבודה שונים, ממעקב אחרי לידים ותיאום פגישות ועד פעילות שיווקית וניהול אתר."
     ],
     [
-      "מה אפשר לנהל ב־CRM של Bizuply?",
-      "ה־CRM מחזיק יחד לידים, פרטי לקוחות, סטטוסים, הערות ומשימות המשך. לדוגמה, הצוות יכול לסמן שליד נוצר קשר, להוסיף הערה על הבקשה וליצור את המשימה הבאה בלי להעביר את העבודה לכלי אחר."
+      "מה אפשר לנהל ב-CRM של Bizuply?",
+      "ה-CRM של Bizuply עוזר לעסקים לארגן לידים ורשומות לקוחות, לעקוב אחרי שלבי הצינור, להוסיף הערות ולנהל משימות המשך. צוותים יכולים לעיין בפרטי הלקוח, לעדכן סטטוס של ליד ולשמור נגיש את המידע שנדרש לאינטראקציה הבאה."
     ],
     [
       "אפשר לנהל קמפיינים של Meta דרך Bizuply?",
-      "כן, בתהליכי קמפיין נתמכים של Meta. עסק יכול לחבר את חשבון הפרסום, לבדוק פעילות, תקציב וביצועים, ולקרב לידים שנכנסים להמשך הטיפול ב־CRM. הפעולות הזמינות תלויות בחשבון המחובר ובהרשאות."
+      "Bizuply מספקת יכולות נתמכות לניהול קמפיינים של Meta לחשבונות פרסום עסקיים מחוברים. בהתאם להרשאות החשבון וליכולות הזמינות, עסקים יכולים לעיין בפעילות הקמפיין, בתקציבים ובביצועים, ולעבוד עם לידים נכנסים דרך תהליכי ה-CRM. חיוב הפרסום מתבצע בנפרד על ידי Meta."
     ],
     [
       "איך WhatsApp Business API עובד עם Bizuply?",
-      "Bizuply מחברת WhatsApp Business API כדי שהצוות ינהל שיחות ותבניות מאושרות מאותה סביבה שבה נמצא תיק הלקוח. השירות של Bizuply עולה 29$ לחודש לכל מספר מחובר. Meta גובה בנפרד על הודעות, לפי שימוש וקטגוריית ההודעה."
+      "Bizuply מתחברת ל-WhatsApp Business Platform כדי שעסקים יוכלו לנהל שיחות נתמכות עם לקוחות ותבניות הודעה מאושרות מתוך סביבת העבודה. המינוי של Bizuply הוא 29$ לחודש לכל מספר מחובר. חיובי ההודעות של Meta נפרדים ותלויים בשימוש בהודעות ובקטגוריות החלות."
     ],
     [
-      "אפשר לבנות אתר או חנות עם Bizuply?",
-      "כן. ב־Bizuply יש עורך אתרים חזותי ותבניות מוכנות, וטפסים נתמכים יכולים להתחבר ל־CRM. תוספת חנות בסיסית והקמת אתר מקצועית הם שירותים נפרדים. עמוד המחירים מציג את האפשרויות העדכניות."
+      "אפשר לבנות אתר או חנות אונליין עם Bizuply?",
+      "ב-Bizuply יש עורך אתרים חזותי ותבניות מוכנות שעוזרים לעסקים ליצור ולהתאים את הנוכחות המקוונת שלהם. טפסים נתמכים יכולים לחבר פניות לתהליכי CRM. שירותי הקמת אתר ויכולות שקשורות לחנות עשויים להיות זמינים או מתומחרים בנפרד, בהתאם לשירות שנבחר."
     ],
     [
       "אילו תהליכים עסקיים אפשר להפוך לאוטומטיים?",
-      "אפשר להפוך לאוטומטיים שלבים נתמכים שמגיבים לפעילות בעסק. דוגמה מעשית היא יצירת משימת המשך כשליד מגיע לסטטוס מסוים, כך שהצעד הבא לא נשאר רק בזיכרון של מישהו."
+      "Bizuply תומכת בתהליכי עבודה שמגיבים לאירועים עסקיים נבחרים, כמו פעילות של ליד או שינוי סטטוס. בהתאם לתוכנית ולתצורה הזמינות, עסקים יכולים להשתמש באוטומציה כדי ליצור משימות המשך ולחבר פעולות שגרתיות בתוך תהליכי ניהול הלקוחות."
     ],
     [
-      "יש ב־Bizuply ניהול פגישות?",
-      "כן. היומן מסדר פגישות, שירותים, זמינות והזמנות. הצוות יכול לראות את הפגישה הבאה, לשנות מועד ולשמור אותה בתוך שאר יום העבודה."
+      "האם Bizuply כוללת תיאום פגישות?",
+      "כן. ב-Bizuply יש כלים לניהול פגישות, לארגון שירותים, זמינות והזמנות. עסקים יכולים לעיין בפגישות הקרובות, לנהל שינויים בלוח הזמנים ולשמור את פרטי הפגישה מחוברים לעבודה היומיומית."
     ],
     [
-      "Bizuply יכולה להקים ולנהל שירותים לעסק?",
-      "כן. אפשר להשתמש בכלים בעצמכם, או לבקש מ־Bizuply להקים שירותים נבחרים כמו אתר או אוטומציות. עמוד המחירים מראה אילו שירותי הקמה זמינים לפני שמתחילים."
+      "Bizuply יכולה להקים ולנהל שירותים עבור העסק שלי?",
+      "כן. עסקים יכולים להשתמש בכלים הנתמכים באופן עצמאי או לבקש סיוע מקצועי בשירותים נבחרים, כמו הקמת אתר, תהליכי עבודה עסקיים והגדרה דיגיטלית. שירותי ההקמה הזמינים והעלות שלהם תלויים בהיקף העבודה ובהצעה שנבחרה."
     ],
     [
-      "כמה עולה Bizuply?",
-      "המחיר תלוי במוצרים ובשירותים שבוחרים. תוכנית ה־CRM מתחילה ב־49$ לחודש. תוכנית Business עולה 99$ לחודש או 990$ לשנה. WhatsApp Business API עולה 29$ לחודש לכל מספר מחובר, ודמי ההודעות של Meta נגבים בנפרד. הרשימה העדכנית נמצאת בעמוד המחירים."
+      "כמה Bizuply עולה?",
+      "ל-Bizuply יש תוכניות ושירותים שונים בהתאם לכלים שהעסק צריך. תוכנית ה-CRM מתחילה ב-49$ לחודש, ותוכנית Business עולה 99$ לחודש או 990$ לשנה. WhatsApp Business API עולה 29$ לחודש לכל מספר מחובר, וחיובי ההודעות של Meta מחויבים בנפרד. עמוד המחירים מציג את התוכניות ואת פרטי השירות העדכניים."
     ]
   ],
   "es": [
     [
       "¿Qué es Bizuply y cómo funciona?",
-      "Bizuply es una plataforma internacional para gestionar y hacer crecer un negocio. Una consulta nueva puede entrar al CRM desde un formulario conectado o un canal publicitario compatible, y allí el equipo actualiza el lead, sigue la conversación y define el siguiente paso. Marketing, WhatsApp, sitios, automatizaciones y citas permanecen en un mismo espacio."
+      "Bizuply es una plataforma de gestión empresarial que reúne la gestión de clientes, herramientas de marketing compatibles, la comunicación de WhatsApp Business, la creación de sitios, la programación de citas y las automatizaciones en un espacio conectado. Los negocios eligen las herramientas que necesitan y organizan la actividad diaria en torno a información y flujos compartidos."
     ],
     [
-      "¿Para quién está pensada Bizuply?",
-      "Bizuply está pensada para pequeños negocios, proveedores de servicios, equipos de marketing y equipos en crecimiento que quieren fichas, conversaciones y seguimiento en un solo lugar. Un estudio puede seguir un lead nuevo, un negocio de servicios puede reservar la próxima reunión y un equipo puede compartir el mismo historial."
+      "¿Para quién está diseñada Bizuply?",
+      "Bizuply está diseñada para pequeños negocios, proveedores de servicios, equipos de marketing y organizaciones en crecimiento que quieren gestionar las relaciones con los clientes y la operación diaria con más eficiencia. Las herramientas disponibles cubren distintos flujos, desde el seguimiento de leads y las citas hasta la actividad de marketing y la gestión del sitio."
     ],
     [
       "¿Qué puedo gestionar con el CRM de Bizuply?",
-      "El CRM reúne leads, datos de clientes, estados, notas y tareas de seguimiento. Por ejemplo, el equipo puede marcar un lead como contactado, añadir una nota sobre la solicitud y crear la siguiente tarea sin pasar ese trabajo a otra herramienta."
+      "El CRM de Bizuply ayuda a organizar leads y registros de clientes, seguir las etapas del pipeline, añadir notas y gestionar tareas de seguimiento. Los equipos pueden revisar los datos del cliente, actualizar el estado del lead y tener a mano la información de la siguiente interacción."
     ],
     [
-      "¿Puedo gestionar campañas de Meta desde Bizuply?",
-      "Sí, en los flujos de campaña de Meta compatibles. Un negocio puede conectar su cuenta publicitaria, revisar actividad, presupuestos y rendimiento, y acercar los leads entrantes al seguimiento del CRM. Las acciones disponibles dependen de la cuenta conectada y de los permisos."
+      "¿Puedo gestionar campañas de Meta a través de Bizuply?",
+      "Bizuply ofrece capacidades compatibles de gestión de campañas de Meta para cuentas publicitarias de negocio conectadas. Según los permisos de la cuenta y las funciones disponibles, los negocios pueden revisar la actividad, los presupuestos y el rendimiento, y trabajar con los leads entrantes en sus procesos de CRM. Meta factura los cargos publicitarios por separado."
     ],
     [
       "¿Cómo funciona WhatsApp Business API con Bizuply?",
-      "Bizuply conecta WhatsApp Business API para que el equipo gestione conversaciones y plantillas aprobadas desde el mismo espacio que la ficha del cliente. El servicio de Bizuply cuesta 29 dólares al mes por cada número conectado. Meta cobra los mensajes por separado, según el uso y la categoría."
+      "Bizuply se conecta con WhatsApp Business Platform para que los negocios gestionen conversaciones compatibles y plantillas de mensajes aprobadas desde su espacio de trabajo. La suscripción de Bizuply es de 29 dólares al mes por cada número conectado. Los cargos de mensajería de Meta son independientes y dependen del uso y de las categorías aplicables."
     ],
     [
-      "¿Puedo crear un sitio o una tienda con Bizuply?",
-      "Sí. Bizuply incluye un editor visual y plantillas listas, y los formularios compatibles pueden conectarse al CRM. Una tienda básica y la puesta en marcha profesional del sitio son servicios aparte. La página de precios muestra las opciones actuales."
+      "¿Puedo crear un sitio web o una tienda en línea con Bizuply?",
+      "Bizuply ofrece un editor visual de sitios y plantillas listas que ayudan a crear y personalizar la presencia en línea. Los formularios compatibles pueden conectar las consultas con los flujos del CRM. Los servicios de configuración del sitio y las capacidades relacionadas con una tienda pueden tener disponibilidad o precio aparte, según el servicio elegido."
     ],
     [
       "¿Qué procesos de negocio puedo automatizar?",
-      "Puede automatizar pasos compatibles que responden a la actividad del negocio. Un ejemplo práctico es crear una tarea de seguimiento cuando un lead llega a un estado elegido, para que el siguiente paso no quede solo en la memoria de alguien."
+      "Bizuply admite flujos que responden a eventos de negocio seleccionados, como la actividad de un lead o un cambio de estado. Según el plan y la configuración disponibles, los negocios pueden usar la automatización para crear tareas de seguimiento y conectar acciones habituales dentro de la gestión de clientes."
     ],
     [
-      "¿Bizuply incluye agenda de citas?",
-      "Sí. El calendario organiza citas, servicios, disponibilidad y reservas. El equipo puede ver la próxima reunión, cambiar una hora y mantener esa cita dentro del resto del día."
+      "¿Bizuply incluye programación de citas?",
+      "Sí. Bizuply incluye herramientas para organizar servicios, disponibilidad y reservas. Los negocios pueden revisar las próximas citas, gestionar cambios de agenda y mantener la información de las citas conectada a la operación diaria."
     ],
     [
       "¿Bizuply puede configurar y gestionar servicios para mi negocio?",
-      "Sí. Puede usar las herramientas usted mismo o pedir a Bizuply que configure servicios seleccionados, como un sitio o automatizaciones. La página de precios muestra qué servicios de puesta en marcha están disponibles."
+      "Sí. Los negocios pueden usar las herramientas compatibles por su cuenta o solicitar ayuda profesional en servicios seleccionados, como la configuración del sitio, los flujos de trabajo y la configuración digital. Los servicios de puesta en marcha disponibles y su costo dependen del alcance y de la oferta elegida."
     ],
     [
       "¿Cuánto cuesta Bizuply?",
-      "El precio depende de los productos y servicios que elija. El plan de CRM empieza en 49 dólares al mes. El plan Business cuesta 99 dólares al mes o 990 al año. WhatsApp Business API cuesta 29 dólares al mes por cada número conectado, y las tarifas de mensajes de Meta van aparte. La lista actual está en la página de precios."
+      "Bizuply ofrece distintos planes y servicios según las herramientas que el negocio necesita. El plan de CRM empieza en 49 dólares al mes, y el plan Business cuesta 99 dólares al mes o 990 dólares al año. WhatsApp Business API cuesta 29 dólares al mes por cada número conectado, y los cargos de mensajería de Meta se facturan aparte. Visite la página de precios para ver los planes y los detalles vigentes."
     ]
   ],
   "pt-BR": [
     [
       "O que é a Bizuply e como ela funciona?",
-      "A Bizuply é uma plataforma internacional para administrar e fazer um negócio crescer. Uma nova consulta pode entrar no CRM por um formulário conectado ou por um canal de anúncio compatível, e ali a equipe atualiza o lead, continua a conversa e define o próximo passo. Marketing, WhatsApp, sites, automações e compromissos ficam no mesmo espaço."
+      "A Bizuply é uma plataforma de gestão de negócios que reúne gestão de clientes, ferramentas de marketing compatíveis, comunicação pelo WhatsApp Business, criação de sites, agendamento e automações em um espaço conectado. Os negócios escolhem as ferramentas de que precisam e organizam a atividade do dia em torno de informações e fluxos compartilhados."
     ],
     [
       "Para quem a Bizuply foi feita?",
-      "A Bizuply foi feita para pequenos negócios, prestadores de serviço, equipes de marketing e equipes em crescimento que querem fichas, conversas e acompanhamento em um só lugar. Um estúdio pode acompanhar um lead novo, um negócio de serviços pode marcar a próxima reunião e uma equipe pode compartilhar o mesmo histórico."
+      "A Bizuply foi feita para pequenos negócios, prestadores de serviço, equipes de marketing e organizações em crescimento que querem gerir relacionamentos e a operação do dia com mais eficiência. As ferramentas disponíveis apoiam fluxos diferentes, do acompanhamento de leads e do agendamento à atividade de marketing e à gestão do site."
     ],
     [
       "O que posso gerenciar no CRM da Bizuply?",
-      "O CRM reúne leads, dados de clientes, status, notas e tarefas de acompanhamento. Por exemplo, a equipe pode marcar um lead como contatado, acrescentar uma nota sobre o pedido e criar a próxima tarefa sem levar esse trabalho para outra ferramenta."
+      "O CRM da Bizuply ajuda a organizar leads e registros de clientes, acompanhar as etapas do funil, adicionar notas e gerenciar tarefas de acompanhamento. As equipes podem revisar os dados do cliente, atualizar o status do lead e manter acessível a informação necessária para a próxima interação."
     ],
     [
       "Posso gerenciar campanhas da Meta pela Bizuply?",
-      "Sim, nos fluxos de campanha da Meta compatíveis. Um negócio pode conectar a conta de anúncios, revisar atividade, orçamentos e desempenho, e aproximar os leads que chegam do acompanhamento no CRM. As ações disponíveis dependem da conta conectada e das permissões."
+      "A Bizuply oferece recursos compatíveis de gestão de campanhas da Meta para contas de anúncios empresariais conectadas. Conforme as permissões da conta e os recursos disponíveis, os negócios podem revisar atividade, orçamentos e desempenho e trabalhar com os leads recebidos nos processos de CRM. A Meta cobra a mídia separadamente."
     ],
     [
       "Como o WhatsApp Business API funciona com a Bizuply?",
-      "A Bizuply conecta o WhatsApp Business API para a equipe gerenciar conversas e modelos aprovados no mesmo espaço da ficha do cliente. O serviço da Bizuply custa 29 dólares por mês para cada número conectado. A Meta cobra as mensagens à parte, conforme o uso e a categoria."
+      "A Bizuply se conecta à WhatsApp Business Platform para que os negócios gerenciem conversas compatíveis e modelos de mensagem aprovados no próprio espaço de trabalho. A assinatura da Bizuply é de 29 dólares por mês para cada número conectado. As cobranças de mensagens da Meta são separadas e dependem do uso e das categorias aplicáveis."
     ],
     [
-      "Posso criar um site ou uma loja com a Bizuply?",
-      "Sim. A Bizuply inclui um editor visual e modelos prontos, e formulários compatíveis podem se conectar ao CRM. Uma loja básica e a implantação profissional do site são serviços separados. A página de preços mostra as opções atuais."
+      "Posso criar um site ou uma loja online com a Bizuply?",
+      "A Bizuply oferece um editor visual de sites e modelos prontos que ajudam a criar e personalizar a presença online. Formulários compatíveis podem conectar contatos aos fluxos do CRM. Serviços de configuração do site e recursos ligados a loja podem ter disponibilidade ou preço separados, conforme o serviço escolhido."
     ],
     [
       "Quais processos de negócio posso automatizar?",
-      "Você pode automatizar etapas compatíveis que respondem à atividade do negócio. Um exemplo prático é criar uma tarefa de acompanhamento quando um lead chega a um status escolhido, para que o próximo passo não fique só na memória de alguém."
+      "A Bizuply oferece fluxos que respondem a eventos de negócio selecionados, como a atividade de um lead ou uma mudança de status. Conforme o plano e a configuração disponíveis, os negócios podem usar a automação para criar tarefas de acompanhamento e conectar ações de rotina dentro da gestão de clientes."
     ],
     [
-      "A Bizuply inclui agenda de compromissos?",
-      "Sim. O calendário organiza compromissos, serviços, disponibilidade e reservas. A equipe pode ver a próxima reunião, mudar um horário e manter esse compromisso dentro do restante do dia."
+      "A Bizuply inclui agendamento de compromissos?",
+      "Sim. A Bizuply inclui ferramentas para organizar serviços, disponibilidade e reservas. Os negócios podem revisar os próximos compromissos, gerenciar mudanças de agenda e manter as informações ligadas à operação do dia."
     ],
     [
-      "A Bizuply pode configurar e operar serviços para o meu negócio?",
-      "Sim. Você pode usar as ferramentas por conta própria ou pedir à Bizuply para configurar serviços selecionados, como um site ou automações. A página de preços mostra quais serviços de implantação estão disponíveis."
+      "A Bizuply pode configurar e gerenciar serviços para o meu negócio?",
+      "Sim. Os negócios podem usar as ferramentas compatíveis por conta própria ou pedir ajuda profissional em serviços selecionados, como configuração de site, fluxos de trabalho e configuração digital. Os serviços de implantação disponíveis e o custo dependem do escopo e da oferta escolhida."
     ],
     [
       "Quanto custa a Bizuply?",
-      "O preço depende dos produtos e serviços escolhidos. O plano de CRM começa em 49 dólares por mês. O plano Business custa 99 dólares por mês ou 990 por ano. O WhatsApp Business API custa 29 dólares por mês para cada número conectado, e as tarifas de mensagem da Meta são separadas. A lista atual está na página de preços."
+      "A Bizuply oferece planos e serviços diferentes conforme as ferramentas de que o negócio precisa. O plano de CRM começa em 49 dólares por mês, e o plano Business custa 99 dólares por mês ou 990 dólares por ano. O WhatsApp Business API custa 29 dólares por mês por número conectado, e as cobranças de mensagens da Meta são faturadas à parte. Visite a página de preços para ver os planos e os detalhes atuais."
     ]
   ],
   "ar": [
     [
       "ما هي Bizuply وكيف تعمل؟",
-      "Bizuply منصة دولية لإدارة العمل وتنميته. يمكن أن يدخل استفسار جديد إلى CRM من نموذج متصل أو من قناة إعلانية مدعومة، وهناك يحدّث الفريق العميل المحتمل ويكمل الحوار ويحدد الخطوة التالية. يبقى التسويق وWhatsApp والمواقع والأتمتة والمواعيد في مساحة واحدة."
+      "Bizuply منصة لإدارة الأعمال تجمع إدارة العملاء وأدوات التسويق المدعومة والتواصل عبر WhatsApp Business وإنشاء المواقع وجدولة المواعيد والأتمتة في مساحة عمل متصلة. يمكن للأنشطة اختيار الأدوات التي تحتاجها وتنظيم العمل اليومي حول معلومات العملاء والمسارات المشتركة."
     ],
     [
       "لمن صُممت Bizuply؟",
-      "صُممت Bizuply للأعمال الصغيرة ومقدمي الخدمات وفرق التسويق والفرق النامية التي تريد السجلات والحوارات والمتابعة في مكان واحد. يمكن لاستوديو متابعة عميل محتمل جديد، ولعمل خدمي حجز الاجتماع التالي، وللفريق مشاركة السجل نفسه."
+      "صُممت Bizuply للأنشطة الصغيرة ومقدّمي الخدمات وفرق التسويق والمؤسسات النامية التي تريد إدارة علاقات العملاء والعمل اليومي بكفاءة أكبر. تدعم الأدوات المتاحة مسارات مختلفة، من متابعة العملاء المحتملين وجدولة المواعيد إلى النشاط التسويقي وإدارة الموقع."
     ],
     [
-      "ماذا يمكنني إدارته في CRM من Bizuply؟",
-      "يجمع CRM العملاء المحتملين وبيانات العملاء والحالات والملاحظات ومهام المتابعة. على سبيل المثال، يمكن للفريق تعليم العميل المحتمل بأنه تم التواصل، وإضافة ملاحظة عن الطلب، وإنشاء المهمة التالية من دون نقل العمل إلى أداة أخرى."
+      "ماذا يمكنني أن أدير في CRM من Bizuply؟",
+      "يساعد CRM من Bizuply على تنظيم العملاء المحتملين وسجلات العملاء، وتتبّع مراحل المسار، وإضافة الملاحظات، وإدارة مهام المتابعة. يمكن للفرق مراجعة بيانات العميل وتحديث الحالة وإبقاء المعلومات اللازمة للتفاعل التالي في المتناول."
     ],
     [
       "هل يمكنني إدارة حملات Meta عبر Bizuply؟",
-      "نعم، في مسارات حملات Meta المدعومة. يمكن للعمل ربط حساب الإعلانات ومراجعة النشاط والميزانيات والأداء وتقريب الطلبات الواردة من متابعة CRM. الإجراءات المتاحة تعتمد على الحساب المتصل والصلاحيات."
+      "توفّر Bizuply قدرات مدعومة لإدارة حملات Meta لحسابات الإعلان التجارية المتصلة. بحسب صلاحيات الحساب والميزات المتاحة، يمكن للأنشطة مراجعة النشاط والميزانيات والأداء والعمل مع العملاء المحتملين الواردين عبر عمليات CRM. تُحصّل Meta رسوم الإعلان بشكل منفصل."
     ],
     [
       "كيف يعمل WhatsApp Business API مع Bizuply؟",
-      "تربط Bizuply WhatsApp Business API حتى يدير الفريق الحوارات والقوالب المعتمدة من المساحة نفسها التي يوجد فيها سجل العميل. تبلغ خدمة Bizuply 29 دولارًا شهريًا لكل رقم متصل. تحصّل Meta رسوم الرسائل بشكل منفصل حسب الاستخدام وفئة الرسالة."
+      "تتصل Bizuply بمنصة WhatsApp Business حتى تدير الأنشطة المحادثات المدعومة وقوالب الرسائل المعتمدة من مساحة العمل. اشتراك Bizuply هو 29 دولارًا شهريًا لكل رقم متصل. رسوم رسائل Meta منفصلة وتعتمد على الاستخدام والفئات المطبّقة."
     ],
     [
-      "هل يمكنني بناء موقع أو متجر مع Bizuply؟",
-      "نعم. تتضمن Bizuply محررًا مرئيًا وقوالب جاهزة، ويمكن للنماذج المدعومة أن تتصل بـ CRM. المتجر الأساسي وتهيئة الموقع المهنية خدمتان منفصلتان. تعرض صفحة الأسعار الخيارات الحالية."
+      "هل يمكنني بناء موقع أو متجر إلكتروني مع Bizuply؟",
+      "تقدّم Bizuply محرر مواقع مرئيًا وقوالب جاهزة تساعد على إنشاء الحضور الإلكتروني وتخصيصه. يمكن للنماذج المدعومة ربط الاستفسارات بمسارات CRM. قد تكون خدمات تهيئة الموقع والقدرات المرتبطة بالمتجر متاحة أو مسعّرة بشكل منفصل، بحسب الخدمة المختارة."
     ],
     [
-      "ما العمليات التي يمكنني أتمتتها؟",
-      "يمكنكم أتمتة خطوات مدعومة تستجيب لنشاط العمل. مثال عملي هو إنشاء مهمة متابعة عندما يصل عميل محتمل إلى حالة محددة، حتى لا تبقى الخطوة التالية في ذاكرة أحد."
+      "ما العمليات التجارية التي يمكنني أتمتتها؟",
+      "تدعم Bizuply مسارات تستجيب لأحداث عمل مختارة، مثل نشاط عميل محتمل أو تغيّر حالة. بحسب الخطة والإعداد المتاحين، يمكن للأنشطة استخدام الأتمتة لإنشاء مهام متابعة وربط الإجراءات الروتينية داخل عمليات إدارة العملاء."
     ],
     [
-      "هل تتضمن Bizuply جدولة المواعيد؟",
-      "نعم. ينظّم التقويم المواعيد والخدمات والتوفر والحجوزات. يمكن للفريق رؤية الاجتماع التالي وتغيير الوقت وإبقاء الموعد ضمن بقية اليوم."
+      "هل تشمل Bizuply جدولة المواعيد؟",
+      "نعم. تشمل Bizuply أدوات لإدارة المواعيد وتنظيم الخدمات والتوفر والحجوزات. يمكن للأنشطة مراجعة المواعيد القادمة وإدارة تغييرات الجدول وإبقاء معلومات المواعيد مرتبطة بالعمل اليومي."
     ],
     [
-      "هل تستطيع Bizuply تهيئة الخدمات وإدارتها لعملي؟",
-      "نعم. يمكنكم استخدام الأدوات بأنفسكم، أو طلب تهيئة خدمات محددة من Bizuply مثل موقع أو أتمتة. تعرض صفحة الأسعار خدمات التهيئة المتاحة قبل البدء."
+      "هل تستطيع Bizuply تهيئة الخدمات وإدارتها لنشاطي؟",
+      "نعم. يمكن للأنشطة استخدام الأدوات المدعومة بشكل مستقل أو طلب مساعدة مهنية في خدمات مختارة، مثل تهيئة الموقع ومسارات العمل والإعداد الرقمي. تعتمد خدمات التهيئة المتاحة وتكلفتها على نطاق العمل والعرض المختار."
     ],
     [
       "كم تكلف Bizuply؟",
-      "تعتمد التكلفة على المنتجات والخدمات التي تختارونها. تبدأ خطة CRM من 49 دولارًا شهريًا. تبلغ خطة Business‏ 99 دولارًا شهريًا أو 990 دولارًا سنويًا. يبلغ WhatsApp Business API‏ 29 دولارًا شهريًا لكل رقم متصل، ورسوم رسائل Meta منفصلة. القائمة الحالية في صفحة الأسعار."
+      "تقدّم Bizuply خططًا وخدمات مختلفة بحسب الأدوات التي يحتاجها النشاط. تبدأ خطة CRM من 49 دولارًا شهريًا، وخطة Business بسعر 99 دولارًا شهريًا أو 990 دولارًا سنويًا. تبلغ تكلفة WhatsApp Business API‏ 29 دولارًا شهريًا لكل رقم متصل، وتُفوتر رسوم رسائل Meta بشكل منفصل. زوروا صفحة الأسعار للاطلاع على الخطط وتفاصيل الخدمات الحالية."
     ]
   ]
 };

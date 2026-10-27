@@ -32,15 +32,8 @@ export default function FAQMini() {
       </div>
 
       <div className="relative mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
-        <Reveal from="up" distance={20}>
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("home.faqEyebrow")}
-          </div>
-        </Reveal>
-
         <Reveal from="up" distance={26} blur delay={0.06}>
-          <h2 className="mt-7 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl">
+          <h2 className="text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl">
             {t("home.faqTitle")}
           </h2>
         </Reveal>
@@ -131,41 +124,21 @@ export default function FAQMini() {
           })}
         </div>
 
-        <Reveal from="up" distance={24} delay={0.1}>
-          <div className="mt-14 rounded-[2rem] border border-indigo-100 bg-white/85 px-6 py-10 text-center shadow-[0_24px_70px_rgba(79,70,229,0.12)] backdrop-blur sm:px-12">
-            <span
-              className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-2xl text-white shadow-lg shadow-indigo-200"
-              aria-hidden="true"
-            >
-              ✦
-            </span>
-
-            <h2 className="mt-6 text-2xl font-black tracking-[-0.03em] text-slate-900 sm:text-3xl">
-              {t("home.finalTitle")}
-            </h2>
-
-            <p className="mx-auto mt-3 max-w-xl text-base font-semibold leading-7 text-slate-600">
-              {t("home.finalLead")}
-            </p>
-
-            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Link
-                to="/pricing"
-                className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
-              >
-                {t("home.startTrial")}
-              </Link>
-
-              <Link
-                to="/pricing"
-                className="inline-flex w-full items-center justify-center rounded-2xl border border-indigo-100 bg-white px-7 py-3.5 text-sm font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 sm:w-auto"
-              >
-                {t("home.finalPricing")}
-              </Link>
-            </div>
-          </div>
-        </Reveal>
       </div>
+      <section className="home-close" dir={getTextDirection(i18n.language)}>
+        <div className="mx-auto max-w-4xl px-5 text-center sm:px-6">
+          <h2>{t("home.finalTitle")}</h2>
+          <p>{t("home.finalLead")}</p>
+          <div className="home-close__actions">
+            <Link to="/register" className="home-cta home-cta--primary">
+              {t("home.startTrial")}
+            </Link>
+            <Link to="/pricing" className="home-cta home-cta--ghost">
+              {t("home.finalPricing")}
+            </Link>
+          </div>
+        </div>
+      </section>
     </section>
   );
 }

@@ -10,12 +10,12 @@ type Channel = {
 };
 
 const CHANNELS: Channel[] = [
-  { name: "Meta", label: "Lead Ads", mark: "meta" },
-  { name: "Facebook", label: "Lead Ads", mark: "facebook" },
-  { name: "Instagram", label: "Lead Ads", mark: "instagram" },
-  { name: "WhatsApp", label: "Business API", mark: "whatsapp" },
-  { name: "Google Ads", label: "Leads", mark: "google" },
-  { name: "Website", label: "Forms", mark: "site" },
+  { name: "Facebook", label: "", mark: "facebook" },
+  { name: "Instagram", label: "", mark: "instagram" },
+  { name: "Meta", label: "", mark: "meta" },
+  { name: "WhatsApp", label: "", mark: "whatsapp" },
+  { name: "Google Ads", label: "", mark: "google" },
+  { name: "Website Forms", label: "", mark: "site" },
 ];
 
 function Mark({ kind, gid }: { kind: Channel["mark"]; gid: string }) {
@@ -63,15 +63,14 @@ function Mark({ kind, gid }: { kind: Channel["mark"]; gid: string }) {
   );
 }
 
-function Row({ copy, track }: { copy: Channel[]; track: string }) {
+function Row({ copy, track, hidden = false }: { copy: Channel[]; track: string; hidden?: boolean }) {
   return (
-    <ul className="home-marquee__row">
+    <ul className="home-marquee__row" aria-hidden={hidden || undefined}>
       {copy.map((channel, index) => (
         <li key={`${track}-${channel.name}-${index}`} className="home-channel">
           <Mark kind={channel.mark} gid={`ig-${track}-${index}`} />
           <span>
             <strong>{channel.name}</strong>
-            <em>{channel.label}</em>
           </span>
         </li>
       ))}
@@ -81,26 +80,24 @@ function Row({ copy, track }: { copy: Channel[]; track: string }) {
 
 export default function SourcesMarquee() {
   const { t, i18n } = useTranslation();
-  const loop = [...CHANNELS, ...CHANNELS];
-
+  const channels = CHANNELS.map((channel) =>
+    channel.mark === "site" ? { ...channel, name: t("home.channelSite") } : channel,
+  );
   return (
     <div className="home-flow" dir={getTextDirection(i18n.language)}>
       <div className="home-flow__inner">
-        <p className="home-flow__eyebrow">{t("live.sourcesEyebrow")}</p>
         <h2 className="home-flow__title">{t("home.flowTitle")}</h2>
         <p className="home-flow__lead">{t("home.flowBody")}</p>
         <div className="home-flow__board">
-          <div className="home-marquee" aria-label={t("live.sourcesEyebrow")}>
+          <div className="home-marquee" aria-label={t("home.flowTitle")}>
             <div className="home-marquee__track">
-              <Row copy={loop} track="a" />
-              <Row copy={loop} track="b" />
+              <Row copy={channels} track="a" />
+              <Row copy={channels} track="b" hidden />
             </div>
           </div>
           <div className="home-flow__line" aria-hidden="true" />
           <div className="home-flow__crm">
-            <p>{t("home.flowInto")}</p>
             <strong>{t("home.flowCrm")}</strong>
-            <span>{t("home.flowSteps")}</span>
           </div>
         </div>
       </div>
