@@ -115,6 +115,23 @@ describe("adsManagerStateFromMetaCampaign", () => {
     expect(state.ads[0].facebookPageId).toBe("1222199210985216");
   });
 
+  it("keeps unpublished mongo drafts as DRAFT and Traffic off Instant Form leftovers", () => {
+    const local = adsManagerStateFromMetaCampaign({
+      ...campaign,
+      id: "6ae06f095cddb10faa003644",
+      status: "PAUSED",
+      objective: "OUTCOME_TRAFFIC",
+      leadFormId: "stale-form",
+      adSets: campaign.adSets?.map((row) => ({ ...row, id: "local-adset", status: "PAUSED" })),
+      ads: campaign.ads?.map((row) => ({ ...row, id: "local-ad", status: "PAUSED", leadFormId: "stale-form" })),
+    });
+    expect(local.campaign.status).toBe("DRAFT");
+    expect(local.adSets[0].status).toBe("DRAFT");
+    expect(local.ads[0].status).toBe("DRAFT");
+    expect(local.adSets[0].conversionLocation).toBe("Website");
+    expect(local.ads[0].instantFormId).toBe("");
+  });
+
   it("loads mixed detailed targeting for edit and keeps Meta ids/types after add/remove", () => {
     const withDetailed: MetaCampaign = {
       ...campaign,

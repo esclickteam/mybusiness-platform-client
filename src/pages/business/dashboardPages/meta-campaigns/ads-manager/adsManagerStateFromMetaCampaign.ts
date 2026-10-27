@@ -17,6 +17,8 @@ import type {
   MetaObjectIds,
 } from "./adsManagerTypes";
 import { applyEditorDraft, isRealMetaObjectId } from "./editorDraft";
+import { conversionLocationsForObjective, usesInstantFormDestination } from "./metaAdCtas";
+import { isUnpublishedLocalCampaign } from "../campaignLocalDraft";
 
 function realMetaId(value: unknown): string {
   const id = String(value ?? "").trim();
@@ -190,7 +192,6 @@ function mapAdSet(
     ...fallback,
     id: adSet.id,
     name: adSet.name || fallback.name,
-    status: adSet.status || fallback.status,
     facebookPageId: adSet.pageId || campaign.pageId || "",
     whatsappPhone: fallback.whatsappPhone || "",
     whatsappDisplayNumber: fallback.whatsappDisplayNumber || "",
@@ -234,10 +235,18 @@ function mapAdSet(
     endDateEnabled: Boolean(end.date),
     endDate: end.date,
     endTime: end.time || "",
-    conversionLocation:
-      campaign.leadFormId || campaign.formId
-        ? "Instant forms"
-        : fallback.conversionLocation,
+    conversionLocation: (() => {
+      const allowed = conversionLocationsForObjective(campaign.objective);
+      const preferred =
+        campaign.leadFormId || campaign.formId
+          ? "Instant forms"
+          : fallback.conversionLocation;
+      if (allowed.includes(preferred)) return preferred;
+      return allowed[0] || fallback.conversionLocation;
+    })(),
+    status: isUnpublishedLocalCampaign({ id: campaign.id, status: campaign.status })
+      ? "DRAFT"
+      : adSet.status || fallback.status,
     showMoreAudience: true,
     showMorePlacements: true,
     ageExpanded: true,
@@ -273,13 +282,19 @@ function mapAd(
     id: ad.id,
     adSetId: ad.adSetId || adSet?.id || fallback.adSetId,
     name: ad.name || fallback.name,
-    status: ad.status || fallback.status,
+    status: isUnpublishedLocalCampaign({ id: campaign.id, status: campaign.status })
+      ? "DRAFT"
+      : ad.status || fallback.status,
     creativeId: ad.creativeId || campaign.creativeId || "",
     facebookPageId: ad.pageId || adSet?.pageId || campaign.pageId || fallback.facebookPageId,
     instagramAccountId: ad.instagramUserId || campaign.instagramUserId || "",
     websiteUrl: ad.link || campaign.link || "",
     displayLink: ad.displayLink || campaign.displayLink || "",
-    instantFormId: ad.leadFormId || ad.formId || campaign.leadFormId || campaign.formId || "",
+    instantFormId: usesInstantFormDestination(
+      conversionLocationsForObjective(campaign.objective)[0]
+    )
+      ? ad.leadFormId || ad.formId || campaign.leadFormId || campaign.formId || ""
+      : "",
     primaryText: ad.primaryText || campaign.primaryText || "",
     headline: ad.headline || campaign.headline || "",
     description: ad.description || campaign.description || "",
@@ -314,7 +329,9 @@ export function adsManagerStateFromMetaCampaign(
     id: campaign.id,
     name: campaign.name || base.campaign.name,
     objective,
-    status: campaign.status || "PAUSED",
+    status: isRealMetaObjectId(campaign.id)
+      ? campaign.status || "PAUSED"
+      : "DRAFT",
     buyingType: String(campaign.buyingType || "").toUpperCase() === "RESERVED" ? "reserved" : "auction",
     budgetStrategy: hasCampaignBudget ? "campaign" : "adset",
     budgetType: campaign.lifetimeBudget && !campaign.dailyBudget ? "lifetime" : "daily",

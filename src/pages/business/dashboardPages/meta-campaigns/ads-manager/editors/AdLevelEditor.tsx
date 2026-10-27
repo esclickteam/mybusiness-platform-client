@@ -386,9 +386,13 @@ export default function AdLevelEditor({
             ? whatsappPhone
               ? "ok"
               : "warn"
-            : ad.instantFormId
-              ? "ok"
-              : "warn"
+            : usesInstantForms
+              ? ad.instantFormId
+                ? "ok"
+                : "warn"
+              : ad.websiteUrl
+                ? "ok"
+                : "warn"
         }
       >
         <div className="space-y-5">
@@ -432,6 +436,7 @@ export default function AdLevelEditor({
             </div>
           </div>
 
+          {usesInstantForms ? (
           <div className="border-t border-[#E4E6EB] pt-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h3 className="text-[15px] font-bold text-[#050505]">
@@ -661,6 +666,7 @@ export default function AdLevelEditor({
               </div>
             ) : null}
           </div>
+          ) : null}
           </>
           )}
         </div>

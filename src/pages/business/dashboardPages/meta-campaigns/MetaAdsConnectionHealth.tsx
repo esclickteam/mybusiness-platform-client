@@ -35,10 +35,17 @@ export default function MetaAdsConnectionHealth({
           <p className="text-sm font-semibold text-slate-600">
             {t("metaCampaigns.ux.facebookPage")}: {pageName || "—"}
           </p>
-          <p className="text-sm font-semibold text-slate-600">
+          <p className="text-sm font-semibold text-slate-600" data-testid="meta-instagram-status">
             {t("metaCampaigns.ux.instagram")}:{" "}
-            {instagramConnected ? t("metaCampaigns.ux.connected") : t("metaCampaigns.ux.notConnected")}
+            {instagramConnected
+              ? t("metaCampaigns.ux.connected")
+              : t("metaCampaigns.overview.instagramNotConnected")}
           </p>
+          {!instagramConnected ? (
+            <p className="mt-1 text-xs font-semibold text-amber-800">
+              {t("metaCampaigns.overview.instagramConnectHint")}
+            </p>
+          ) : null}
           {lastSync ? (
             <p className="mt-1 text-xs font-semibold text-slate-400">{lastSync}</p>
           ) : null}

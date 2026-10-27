@@ -178,6 +178,8 @@ describe("campaign impressions and reach", () => {
     expect(screen.getAllByTestId("campaign-reach-draft-1")[0]).toHaveTextContent("—");
     expect(screen.getByTestId("meta-campaign-insights-synced")).toHaveTextContent("סונכרן לאחרונה");
     expect(screen.getByRole("columnheader", { name: /חשיפות/ })).toBeTruthy();
+    expect(screen.queryByTestId("campaign-toggle-draft-1")).toBeNull();
+    expect(screen.getAllByTestId("campaign-toggle-paused-1").length).toBeGreaterThan(0);
     expect(screen.getByRole("columnheader", { name: /תפוצה/ })).toBeTruthy();
     expect(api.getMetaCampaignsOverview).toHaveBeenCalledWith(
       "biz-1",

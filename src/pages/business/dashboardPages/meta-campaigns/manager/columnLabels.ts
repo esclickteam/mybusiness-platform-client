@@ -1,4 +1,5 @@
 import type { ManagerColumnId } from "./columnPrefs";
+import type { MetaManagerLevel } from "../../../../../api/metaCampaignsApi";
 
 export const COLUMN_LABEL: Record<ManagerColumnId, string> = {
   name: "metaCampaigns.table.name",
@@ -21,3 +22,12 @@ export const COLUMN_LABEL: Record<ManagerColumnId, string> = {
   purchases: "metaCampaigns.levels.purchases",
   updated: "metaCampaigns.overview.lastUpdatedLabel",
 };
+
+export function columnLabelKey(
+  column: ManagerColumnId,
+  level?: MetaManagerLevel | "campaign" | "adset" | "ad"
+): string {
+  if (column === "name" && level === "ad") return "metaCampaigns.table.adName";
+  if (column === "name" && level === "adset") return "metaCampaigns.table.adSetName";
+  return COLUMN_LABEL[column];
+}

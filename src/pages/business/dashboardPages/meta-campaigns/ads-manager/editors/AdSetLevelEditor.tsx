@@ -164,7 +164,13 @@ export default function AdSetLevelEditor({
             {t("metaCampaigns.adsManager.chrome.conversionLocation")}
           </p>
           <p className="mt-1 text-[13px] text-[#65676B]">
-            {t("metaCampaigns.adsManager.chrome.conversionLocationHint")}{" "}
+            {t(
+              String(objective || "").toUpperCase() === "OUTCOME_TRAFFIC"
+                ? "metaCampaigns.adsManager.chrome.conversionLocationHintTraffic"
+                : String(objective || "").toUpperCase() === "OUTCOME_LEADS"
+                  ? "metaCampaigns.adsManager.chrome.conversionLocationHint"
+                  : "metaCampaigns.adsManager.chrome.conversionLocationHintGeneric"
+            )}{" "}
             <a
               href="https://www.facebook.com/business/help"
               target="_blank"

@@ -1,6 +1,7 @@
 import i18n from "../../../../i18n/i18n";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 import { formatDemoMoney, getDemoCurrency } from "../../../../guidedDemo/demoCurrency";
+import { DEFAULT_AD_ACCOUNT_TIMEZONE } from "./metaAdsCalendar";
 
 /** Guided demos pin the currency to the demo locale; otherwise the ad account's. */
 export function resolveCampaignCurrency(accountCurrency?: string | null) {
@@ -58,7 +59,11 @@ export function toLocalIsoDate(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-export function formatDateTimeHe(value?: string | Date | null, locale = getIntlLocale(i18n.language)) {
+export function formatDateTimeHe(
+  value?: string | Date | null,
+  locale = getIntlLocale(i18n.language),
+  timeZone = DEFAULT_AD_ACCOUNT_TIMEZONE
+) {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -68,6 +73,7 @@ export function formatDateTimeHe(value?: string | Date | null, locale = getIntlL
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: timeZone || DEFAULT_AD_ACCOUNT_TIMEZONE,
   });
 }
 

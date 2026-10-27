@@ -302,9 +302,14 @@ export default function MetaCampaignsSettingsTab() {
               <dd className="font-black text-slate-900">
                 {instagramConnected
                   ? t("metaCampaigns.ux.connected")
-                  : t("metaCampaigns.ux.notConnected")}
+                  : t("metaCampaigns.overview.instagramNotConnected")}
               </dd>
             </div>
+            {!instagramConnected ? (
+              <p className="text-xs font-semibold text-amber-800" data-testid="meta-instagram-hint">
+                {t("metaCampaigns.overview.instagramConnectHint")}
+              </p>
+            ) : null}
             {status?.selectedAdAccount?.currency ? (
               <div className="flex flex-wrap justify-between gap-2">
                 <dt>{t("metaCampaigns.settings.currency")}</dt>
