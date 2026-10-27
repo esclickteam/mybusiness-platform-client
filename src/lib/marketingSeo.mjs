@@ -6,6 +6,8 @@
  * Hebrew and other UI languages stay client-side until dedicated locale URLs exist.
  */
 
+import { collaborationsPrerender, collaborationsSchemas } from "./collaborationsSeo.mjs";
+import { getCollaborationsCopy } from "../pages/product/collaborations/runtime.js";
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { HOME_SHELL } from "./homeShell.mjs";
@@ -172,9 +174,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/collaborations",
-    title: "Business Collaborations | Bizuply",
+    title: "Business Collaboration Platform & Partnership Opportunities | Bizuply",
     description:
-      "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with Bizuply.",
+      "Find complementary businesses, explore partnership opportunities, manage collaboration proposals, and connect through business chat with Bizuply.",
     crumb: "Collaborations",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -733,8 +735,28 @@ function guideHead(path, locale) {
   ].filter(Boolean).join("\n");
 }
 
+function collaborationsDocumentHead(locale) {
+  const copy = getCollaborationsCopy(locale);
+  const lang = ["he", "es", "pt-BR", "ar"].includes(locale) ? locale : "en";
+  const canonical = marketingPublicUrl("/collaborations", lang);
+  const page = { path: "/collaborations", title: copy.seo.title, description: copy.seo.description, crumb: copy.crumb };
+  return [
+    `<title>${escapeHtml(copy.seo.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(copy.seo.description)}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    hreflangTags("/collaborations"),
+    ...sharedSocialTags(copy.seo.title, copy.seo.description, canonical, lang),
+    `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
+    `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, lang))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    ...collaborationsSchemas(lang, canonical).map((schema) => `<script type="application/ld+json">${jsonLd(schema)}</script>`),
+  ].join("\n");
+}
+
 export function buildMarketingDocumentHead(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/collaborations") return collaborationsDocumentHead(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const head = guideHead(path, locale);
     if (head) return head;
@@ -1068,6 +1090,7 @@ function renderHomePrerender(locale) {
 
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/collaborations") return collaborationsPrerender(locale);
   if (path === "/") return renderHomePrerender(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);
