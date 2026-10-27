@@ -41,7 +41,6 @@ import {
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
 import { splitMarketingLocale } from "./src/lib/localePath.mjs";
-import { buildHomeFirstPaint } from "./src/lib/homeFirstPaint.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -133,7 +132,15 @@ function isCustomerSiteHost(host) {
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
   if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app")) return false;
-  if (host === "qa.local" || host.endsWith(".qa.local") || host.endsWith(".trycloudflare.com")) {
+  if (
+    host === "qa.local" ||
+    host.endsWith(".qa.local") ||
+    host.endsWith(".trycloudflare.com") ||
+    host.endsWith(".loca.lt") ||
+    host.endsWith(".ngrok-free.app") ||
+    host.endsWith(".ngrok.io") ||
+    host.endsWith(".ngrok.app")
+  ) {
     return false;
   }
   return true;
@@ -756,11 +763,40 @@ async function proxySaasProduct(request, host) {
   return new Response(response.body, { status: response.status, headers: outgoing });
 }
 
+function isUnindexedPreviewHost(host) {
+  return Boolean(
+    host &&
+      (host.endsWith(".vercel.app") || host.endsWith(".trycloudflare.com"))
+  );
+}
+
+function withPreviewNoindex(response, host) {
+  if (!isUnindexedPreviewHost(host)) return response;
+  const headers = new Headers(response.headers);
+  headers.set("x-robots-tag", "noindex, nofollow");
+  return new Response(response.body, { status: response.status, headers });
+}
+
+export function documentShellForHost(host, pathname) {
+  if (!isPlatformMarketingHost(host)) return "index";
+  if (splitMarketingLocale(pathname).path !== "/") return "index";
+  return "marketing";
+}
+
 function isPlatformMarketingHost(host) {
   if (!host) return false;
   if (isBizuplyWhatsAppHost(host) || isBizuplyTravelHost(host)) return false;
   if (isCustomerSiteHost(host) || isSaasProductHost(host)) return false;
-  return MARKETING_HOSTS.has(host) || host === "127.0.0.1" || host.endsWith(".vercel.app");
+  return (
+    MARKETING_HOSTS.has(host) ||
+    host === "127.0.0.1" ||
+    host.endsWith(".vercel.app") ||
+    host.endsWith(".trycloudflare.com") ||
+    host.endsWith(".loca.lt") ||
+    host.endsWith(".ngrok-free.app") ||
+    host.endsWith(".ngrok.io") ||
+    host.endsWith(".ngrok.app")
+  );
 }
 
 function marketingLegacyRedirect(request, host, pathname) {
@@ -801,25 +837,60 @@ async function handleMarketingDocument(request) {
   }
 
   try {
-    const htmlRes = await fetch(new URL("/index.html", request.url), {
+    const shellName = documentShellForHost(getHost(request), pathname) === "marketing"
+      ? "/marketing.html"
+      : "/index.html";
+    let htmlRes = await fetch(new URL(shellName, request.url), {
       headers: shellDocumentHeaders(),
     });
+    if (!htmlRes.ok && shellName !== "/index.html") {
+      htmlRes = await fetch(new URL("/index.html", request.url), {
+        headers: shellDocumentHeaders(),
+      });
+    }
     if (!htmlRes.ok) return passThrough();
     const html = await htmlRes.text();
     if (!html || !/<html[\s>]/i.test(html)) return passThrough();
     const noindex = headHtml.includes("noindex");
     let documentHtml = injectSeoHead(html, headHtml);
     const prerender = buildMarketingPrerender(pathname);
-    const homePaint = buildHomeFirstPaint(pathname);
     const locale = splitMarketingLocale(pathname);
-    if (locale.locale === "he") {
+    const isHome = locale.path === "/";
+    if (locale.locale !== "en" || isHome) {
+      const meta = prerender || {};
+      const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale === "en" ? "en" : locale.locale);
+      const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,
-        '<html lang="he" dir="rtl">',
+        `<html lang="${lang}" dir="${dir}"${isHome ? ' class="bizuply-home"' : ""}>`,
       );
     }
-    if (homePaint) {
-      documentHtml = injectRootInner(documentHtml, homePaint.inner);
+    if (isHome) {
+      documentHtml = documentHtml.replace(
+        "</head>",
+        '<link rel="preload" as="image" href="/demo-media/crm/poster.jpg" fetchpriority="high"></head>',
+      );
+      documentHtml = documentHtml.replace(
+        /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
+        '<link rel="preload" as="style" href="$1" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link rel="stylesheet" href="$1"></noscript>',
+      );
+      try {
+        const criticalRes = await fetch(new URL("/home-critical.css", request.url), {
+          headers: shellDocumentHeaders(),
+        });
+        if (criticalRes.ok) {
+          const criticalCss = await criticalRes.text();
+          if (criticalCss && !criticalCss.includes("<html")) {
+            documentHtml = documentHtml.replace(
+              '<link rel="stylesheet" href="/home-critical.css" />',
+              `<style id="home-critical">${criticalCss}</style>`,
+            );
+          }
+        }
+      } catch {
+        /* The linked stylesheet remains. */
+      }
+      if (prerender) documentHtml = injectRootInner(documentHtml, prerender.inner);
     } else if (prerender) {
       documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
     }
@@ -829,7 +900,9 @@ async function handleMarketingDocument(request) {
         "content-type": "text/html; charset=utf-8",
         "cache-control": "public, max-age=0, must-revalidate",
         "x-bizuply-seo-edge": "marketing",
-        ...(noindex ? { "x-robots-tag": "noindex, nofollow" } : {}),
+        ...(noindex || isUnindexedPreviewHost(getHost(request))
+          ? { "x-robots-tag": "noindex, nofollow" }
+          : {}),
       },
     });
   } catch {
@@ -846,7 +919,7 @@ export default async function middleware(request) {
     !getGoogleHtmlVerificationFile(pathname) &&
     !isSeoDiscoveryPath(pathname)
   ) {
-    return passThrough();
+    return withPreviewNoindex(passThrough(), host);
   }
 
   const legacyRedirect = marketingLegacyRedirect(request, host, pathname);

@@ -101,6 +101,24 @@
   color: #5b21b6;
 }
 
+.site-mobile__group {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.site-mobile__group summary {
+  padding: 0.85rem 0.2rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.site-mobile__sub {
+  display: block;
+  padding: 0.45rem 0.4rem 0.45rem 0.9rem;
+  color: #334155;
+  font-weight: 650;
+  text-decoration: none;
+}
+
 .site-mobile__footer {
   display: grid;
   gap: 0.55rem;

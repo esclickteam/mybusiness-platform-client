@@ -2,8 +2,10 @@ import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import logo from "../images/logo_final.svg";
+const logo = "/logo-mark.svg";
 import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
+import { normalizeMarketingLocale } from "../lib/localePathCore.mjs";
+import { marketingNav } from "../lib/marketingNav.mjs";
 import { businessNoAccessPath } from "../utils/whatsappApiPortal";
 import "./MobileMenu.css";
 
@@ -14,15 +16,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
   const accountPath =
     user?.role === "business" && !user?.hasAccess ? businessNoAccessPath(user) : "/dashboard";
 
-  const navLinks = [
-    { to: "/about", label: t("nav.about") },
-    { to: "/website-builder", label: t("nav.website") },
-    { to: "/crm", label: t("nav.crm") },
-    { to: "/automations", label: t("nav.automations") },
-    { to: "/agents", label: t("nav.agents") },
-    { to: "/collaborations", label: t("nav.collaborations") },
-    { to: "/pricing", label: t("nav.pricing") },
-  ];
+  const groups = marketingNav(normalizeMarketingLocale(i18n.language));
 
   useEffect(() => {
     if (!open) return;
@@ -70,17 +64,29 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
         </div>
 
         <nav className="site-mobile__nav">
-          {navLinks.map((item) => {
-            const active = location.pathname === item.to;
+          {groups.map((group) => {
+            if (!group.links) {
+              const active = location.pathname === group.to;
+              return (
+                <Link
+                  key={group.id}
+                  to={group.to}
+                  onClick={onClose}
+                  className={`site-mobile__link${active ? " is-active" : ""}`}
+                >
+                  {group.label}
+                </Link>
+              );
+            }
             return (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={onClose}
-                className={`site-mobile__link${active ? " is-active" : ""}`}
-              >
-                {item.label}
-              </Link>
+              <details key={group.id} className="site-mobile__group">
+                <summary>{group.label}</summary>
+                {group.links.map(([to, label]) => (
+                  <Link key={to} to={to} onClick={onClose} className="site-mobile__sub">
+                    {label}
+                  </Link>
+                ))}
+              </details>
             );
           })}
         </nav>

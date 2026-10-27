@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import logo from "../images/logo_final.svg";
+const logo = "/logo-mark.svg";
 import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 
 type FooterLink = {
@@ -22,6 +22,8 @@ export default function Footer() {
   const footerDir = getTextDirection(normalizeLanguage(i18n.language));
 
   const solutionsLinks: FooterLink[] = [
+    { label: t("footer.platform"), to: "/platform" },
+    { label: t("footer.services"), to: "/services" },
     { label: t("footer.crm"), to: "/crm" },
     { label: t("footer.website"), to: "/website-builder" },
     { label: t("footer.automations"), to: "/automations" },
@@ -73,7 +75,7 @@ export default function Footer() {
 
         <div className="mx-auto mt-5 h-px w-full max-w-xl bg-slate-200/80" />
 
-        <p className="mt-3 text-[11px] font-semibold text-slate-400 sm:text-xs">
+        <p className="mt-3 text-[11px] font-semibold text-slate-600 sm:text-xs">
           {t("footer.rights", { year })}
         </p>
       </div>
@@ -92,9 +94,9 @@ function scrollPageToTop() {
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
     <div className="text-center">
-      <h4 className="mb-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-400">
+      <p className="mb-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-600">
         {title}
-      </h4>
+      </p>
       <ul className="space-y-0.5">
         {links.map((link) => (
           <li key={`${title}-${link.to}-${link.label}`}>

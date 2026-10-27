@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { marketingPublicUrl } from "../../lib/localePath.mjs";
 import { Helmet } from "react-helmet-async";
 import {
   BellRing,
@@ -34,6 +35,7 @@ import {
   getAutomationsRail,
   getAutomationsSteps,
 } from "../../components/automations-marketing/automationsMarketingData";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import AutomationsNotificationsDemo from "../../components/automations-marketing/AutomationsNotificationsDemo";
 import AutomationsBuilderPreview from "../../components/automations-marketing/AutomationsBuilderPreview";
 import "../../components/product-marketing/marketingKit.css";
@@ -60,7 +62,7 @@ export default function AutomationsProductPage() {
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={seoDescription} />
-        <link rel="canonical" href="https://bizuply.com/automations" />
+        <link rel="canonical" href={marketingPublicUrl("/automations", i18n.language)} />
         <meta name="robots" content="index, follow" />
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
@@ -93,6 +95,12 @@ export default function AutomationsProductPage() {
         }}
         stats={automationsHeroStats}
       />
+
+      <section className="pm-section pm-section--tight">
+        <div className="pm-shell">
+          <ProductDemoVideo moduleId="automations" />
+        </div>
+      </section>
 
       {/* How it works */}
       <section className="pm-section pm-section--tight">

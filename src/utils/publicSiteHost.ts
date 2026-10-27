@@ -94,7 +94,7 @@ export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
     return true;
   }
 
-  if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app")) {
+  if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app") || isEphemeralPreviewHost(host)) {
     return false;
   }
 
@@ -104,4 +104,16 @@ export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
   }
 
   return host.includes(".");
+}
+
+/** Temporary review tunnels. They are not customer sites and must stay noindex. */
+export function isEphemeralPreviewHost(hostname?: string | null): boolean {
+  const host = normalizeHostname(hostname);
+  return (
+    host.endsWith(".trycloudflare.com") ||
+    host.endsWith(".loca.lt") ||
+    host.endsWith(".ngrok-free.app") ||
+    host.endsWith(".ngrok.io") ||
+    host.endsWith(".ngrok.app")
+  );
 }

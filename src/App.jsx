@@ -1,17 +1,17 @@
-import React, { Suspense, lazy, useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useLayoutEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import i18n from "./i18n/i18n";
+import i18n, { ensureLocale } from "./i18n/i18n";
 import { getHtmlLang, getTextDirection } from "./i18n/localeUtils";
 
-import PreLoginBot from "./components/PreLoginBot";
-import SupportChatWidget from "./components/SupportChatWidget";
-import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
-import AdminSoftphoneHost from "./components/AdminSoftphoneHost";
-import AdminShell from "./pages/admin/shell/AdminShell";
 import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
-import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
+const PreLoginBot = lazy(() => import("./components/PreLoginBot"));
+const SupportChatWidget = lazy(() => import("./components/SupportChatWidget"));
+const AccessibilityWidget = lazy(() => import("./components/site-plugins/accessibility/AccessibilityWidget"));
+const AdminSoftphoneHost = lazy(() => import("./components/AdminSoftphoneHost"));
+const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
+const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -43,9 +43,8 @@ const AdminWithdrawalsPage = lazy(() =>
 );
 
 import { AiProvider } from "./context/AiContext";
-import AiModal from "./components/AiModal";
+const AiModal = lazy(() => import("./components/AiModal"));
 import { NotificationsProvider } from "./context/NotificationsContext";
-import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
 const AffiliateDashboardPage = lazy(() =>
@@ -68,7 +67,7 @@ import {
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
-import GuidedDemoHost from "./guidedDemo/GuidedDemoHost";
+const GuidedDemoHost = lazy(() => import("./guidedDemo/GuidedDemoHost"));
 const SitePortalGate = lazy(() =>
   import("./components/site-builder/public/SitePortalGate")
 );
@@ -103,6 +102,15 @@ const AppointmentsProductPage = lazy(() =>
 );
 const AutomationsProductPage = lazy(() =>
   import("./pages/product/AutomationsProductPage")
+);
+const MetaCampaignsProductPage = lazy(() =>
+  import("./pages/product/MetaCampaignsProductPage")
+);
+const GuidesIndexPage = lazy(() =>
+  import("./pages/public/GuidesPage").then((mod) => ({ default: mod.GuidesIndexPage }))
+);
+const GuideArticlePage = lazy(() =>
+  import("./pages/public/GuidesPage").then((mod) => ({ default: mod.GuideArticlePage }))
 );
 const AgentsProductPage = lazy(() =>
   import("./pages/product/AgentsProductPage")
@@ -264,6 +272,7 @@ const CollabLegacyRedirect = lazy(
 );
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
+const ActivityPage = lazy(() => import("./pages/public/ActivityPage"));
 const Support = lazy(() => import("./pages/Support"));
 const TrialEnded = lazy(() => import("./pages/TrialEnded"));
 const MetaCallbackPage = lazy(() =>
@@ -849,8 +858,40 @@ function PageLoader() {
 
 export default function App() {
   const { user, loading, initialized } = useAuth();
-  const location = useLocation();
   const { i18n } = useTranslation();
+  useLayoutEffect(() => {
+    if (!document.getElementById("bizuply-first-paint")) return undefined;
+    const release = () => {
+      const shell = document.getElementById("bizuply-first-paint");
+      const hero = shell?.querySelector(".home-hero");
+      if (hero && document.querySelector("#root .app-main")) {
+        shell.replaceChildren(hero);
+        hero.setAttribute("data-kept-hero", "true");
+      }
+      document.getElementById("root")?.removeAttribute("hidden");
+      if (!hero) shell?.remove();
+    };
+    const root = document.getElementById("root");
+    if (root?.querySelector(".app-main")) {
+      release();
+      return undefined;
+    }
+    const observer = new MutationObserver(() => {
+      if (root?.querySelector(".app-main")) {
+        observer.disconnect();
+        release();
+      }
+    });
+    if (root) observer.observe(root, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, []);
+  const location = useLocation();
+  useLayoutEffect(() => {
+    if (location.pathname !== "/") {
+      document.getElementById("bizuply-first-paint")?.remove();
+      void ensureLocale(i18n.language);
+    }
+  }, [location.pathname, i18n.language]);
   const appDir = getTextDirection(i18n.language);
   const appLang = getHtmlLang(i18n.language);
 
@@ -910,6 +951,9 @@ export default function App() {
     location.pathname === "/checkout/success" ||
     location.pathname.startsWith("/checkout/success/") ||
     isPartnerHostPublicChrome;
+  const isWorkspaceRoute =
+    /^\/(business|admin|staff|client|partner|dashboard|embed)\b/.test(location.pathname) ||
+    location.pathname.includes("/dashboard");
   const isDashboardRoute =
     location.pathname.includes("/dashboard") ||
     isAdminRoute ||
@@ -949,9 +993,11 @@ export default function App() {
   }, [isMiniSiteHost, publicMarketingHost, user]);
 
   useEffect(() => {
-    if (isMiniSiteHost || publicMarketingHost) return;
-    preloadDashboardComponents();
-  }, [isMiniSiteHost, publicMarketingHost]);
+    if (isMiniSiteHost || publicMarketingHost || !isWorkspaceRoute) return;
+    void import("./pages/business/dashboardPages/DashboardPage").then((mod) => {
+      mod.preloadDashboardComponents();
+    });
+  }, [isMiniSiteHost, publicMarketingHost, isWorkspaceRoute]);
 
   if (whatsappLanding) {
     return (
@@ -1053,7 +1099,7 @@ export default function App() {
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
-        {isStaffRoute ? <StaffSoftphoneHost /> : null}
+        {isStaffRoute ? <Suspense fallback={null}><StaffSoftphoneHost /></Suspense> : null}
 
         <ScrollToTop />
 
@@ -1094,19 +1140,19 @@ export default function App() {
                         <div className="min-h-screen bg-[#05070d]" />
                       ) : location.pathname === "/login" ? (
                         <LoginFormSkeleton />
-                      ) : (
+                      ) : isWorkspaceRoute ? (
                         <PageLoader />
-                      )
+                      ) : null
                     }
                   >
                     <motion.div
                       key={location.pathname}
                       initial={
-                        isDevVisualRoute || isAdminRoute ? false : { opacity: 0, y: 10 }
+                        isDevVisualRoute || isAdminRoute || !isWorkspaceRoute ? false : { opacity: 0, y: 10 }
                       }
                       animate={{ opacity: 1, y: 0 }}
                       exit={
-                        isDevVisualRoute || isAdminRoute
+                        isDevVisualRoute || isAdminRoute || !isWorkspaceRoute
                           ? { opacity: 1 }
                           : { opacity: 0, y: -10 }
                       }
@@ -1171,6 +1217,12 @@ export default function App() {
                           path="/automations"
                           element={<AutomationsProductPage />}
                         />
+                        <Route
+                          path="/meta-campaigns"
+                          element={<MetaCampaignsProductPage />}
+                        />
+                        <Route path="/guides" element={<GuidesIndexPage />} />
+                        <Route path="/guides/:slug" element={<GuideArticlePage />} />
                         <Route path="/agents" element={<AgentsProductPage />} />
                         <Route path="/whatsapp-api" element={<WhatsAppApiProductPage />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -1326,6 +1378,10 @@ export default function App() {
                         <Route path="/support" element={<Support />} />
                         <Route path="/features" element={<Features />} />
                         <Route path="/solutions" element={<Solutions />} />
+                        <Route path="/platform" element={<ActivityPage />} />
+                        <Route path="/services" element={<ActivityPage />} />
+                        <Route path="/services/:slug" element={<ActivityPage />} />
+                        <Route path="/solutions/:slug" element={<ActivityPage />} />
                         <Route path="/trial-ended" element={<TrialEnded />} />
                         <Route path="/unsubscribe" element={<Unsubscribe />} />
 
@@ -1497,7 +1553,7 @@ export default function App() {
                           path="/admin"
                           element={
                             <ProtectedRoute roles={["admin"]}>
-                              <AdminShell />
+                              <Suspense fallback={null}><AdminShell /></Suspense>
                             </ProtectedRoute>
                           }
                         >
@@ -1607,7 +1663,7 @@ export default function App() {
                         <Route path="*" element={<Navigate to="/" replace />} />
                       </Routes>
 
-                      <AiModal />
+                      <Suspense fallback={null}><AiModal /></Suspense>
                     </motion.div>
                   </Suspense>
                   </LazyRouteBoundary>
@@ -1633,14 +1689,18 @@ export default function App() {
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
-      <GuidedDemoHost />
+      <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
       {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && (
-        <PreLoginBot />
+        <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
-      {/* Admin softphone — survives page changes + business impersonation */}
-      <AdminSoftphoneHost />
+      {/* Admin softphone — only for an admin session, including impersonation. */}
+      {(user?.role === "admin" ||
+        user?.impersonatorRole === "admin" ||
+        (typeof window !== "undefined" && Boolean(window.localStorage.getItem("impersonatedBy")))) && (
+        <Suspense fallback={null}><AdminSoftphoneHost /></Suspense>
+      )}
 
       {user?.role === "admin" && isAdminRoute && <AdminPushPermissionBanner />}
 
@@ -1661,7 +1721,7 @@ export default function App() {
         !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
-          <SupportChatWidget />
+          <Suspense fallback={null}><SupportChatWidget /></Suspense>
         )}
 
       {/* Platform accessibility only — never dashboards, never customer public sites */}
@@ -1676,7 +1736,7 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute && (
-          <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
+          <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
         )}
 
       {showPublicWidgets && (

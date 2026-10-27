@@ -3,6 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/home-critical.css" />
+    <script>
+      (function () {
+        var host = String(location.hostname || "");
+        if (/trycloudflare\.com$|ngrok|\.loca\.lt$/.test(host)) {
+          var robots = document.createElement("meta");
+          robots.name = "robots";
+          robots.content = "noindex, nofollow";
+          document.head.appendChild(robots);
+        }
+      })();
+    </script>
     <script>
       (function () {
         try {
@@ -46,6 +58,30 @@
             if (!waLang) waLang = "en";
             document.documentElement.lang = waLang;
             document.documentElement.dir = waLang === "he" || waLang === "ar" ? "rtl" : "ltr";
+            return;
+          }
+
+          var first = String(location.pathname || "/").split("/")[1] || "";
+          var fromPath = normalize(first);
+          if (fromPath && fromPath !== "en") {
+            document.documentElement.lang = fromPath;
+            document.documentElement.dir = fromPath === "he" || fromPath === "ar" ? "rtl" : "ltr";
+            return;
+          }
+          var appRoute = {
+            business: 1,
+            admin: 1,
+            staff: 1,
+            client: 1,
+            partner: 1,
+            login: 1,
+            register: 1,
+            dashboard: 1,
+            embed: 1,
+          };
+          if (!appRoute[first.toLowerCase()]) {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
             return;
           }
 
@@ -130,32 +166,35 @@
     <script>
       (function () {
         if (window.__BIZUPLY_PUBLIC_SITE__) return;
-        !(function (f, b, e, v, n, t, s) {
-          if (f.fbq) return;
-          n = f.fbq = function () {
-            n.callMethod
-              ? n.callMethod.apply(n, arguments)
-              : n.queue.push(arguments);
-          };
-          if (!f._fbq) f._fbq = n;
-          n.push = n;
-          n.loaded = !0;
-          n.version = "2.0";
-          n.queue = [];
-          t = b.createElement(e);
-          t.async = !0;
-          t.src = v;
-          s = b.getElementsByTagName(e)[0];
-          s.parentNode.insertBefore(t, s);
-        })(
-          window,
-          document,
-          "script",
-          "https://connect.facebook.net/en_US/fbevents.js"
-        );
-
-        fbq("init", "1427327632368128");
-        fbq("track", "PageView");
+        function startPixel() {
+          !(function (f, b, e, v, n, t, s) {
+            if (f.fbq) return;
+            n = f.fbq = function () {
+              n.callMethod
+                ? n.callMethod.apply(n, arguments)
+                : n.queue.push(arguments);
+            };
+            if (!f._fbq) f._fbq = n;
+            n.push = n;
+            n.loaded = !0;
+            n.version = "2.0";
+            n.queue = [];
+            t = b.createElement(e);
+            t.async = !0;
+            t.src = v;
+            s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s);
+          })(
+            window,
+            document,
+            "script",
+            "https://connect.facebook.net/en_US/fbevents.js"
+          );
+          fbq("init", "1427327632368128");
+          fbq("track", "PageView");
+        }
+        if (window.requestIdleCallback) requestIdleCallback(startPixel, { timeout: 2500 });
+        else window.addEventListener("load", startPixel, { once: true });
       })();
     </script>
 
@@ -178,6 +217,8 @@
         document.head.appendChild(pre2);
         var css = document.createElement("link");
         css.rel = "stylesheet";
+        css.media = "print";
+        css.onload = function () { this.media = "all"; };
         css.href =
           "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap";
         // Required so cssRules can be read (html-to-image / capture tools).
@@ -565,8 +606,7 @@
       }
     </script>
 
-    <!-- 🎨 Global CSS ONLY -->
-    <link rel="stylesheet" href="/index.css" />
+    <!-- App CSS is injected by the build. /index.css is not a file and must not block first paint. -->
   </head>
 
   <body>

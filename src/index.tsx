@@ -5,10 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { Buffer } from "buffer";
 
-import { marketingLocaleBasename } from "./lib/localePath.mjs";
+import { marketingLocaleBasename } from "./lib/localePathCore.mjs";
 
 /* i18n */
-import "./i18n/i18n";
+import { i18nReady } from "./i18n/i18n";
 import "./styles/rtl.css";
 
 /* Contexts */
@@ -93,11 +93,14 @@ if (onWhatsAppHost) {
   const defaultTheme = savedTheme || "light";
 
   const isBusinessTheme = defaultTheme === "business" || defaultTheme === "dark";
+  const keepHomePaint = Boolean(document.querySelector(".home-shell"));
 
-  document.body.style.background = isBusinessTheme ? "#f6f7fb" : "#ffffff";
-  document.documentElement.style.background = isBusinessTheme
-    ? "#f6f7fb"
-    : "#ffffff";
+  if (!keepHomePaint) {
+    document.body.style.background = isBusinessTheme ? "#f6f7fb" : "#ffffff";
+    document.documentElement.style.background = isBusinessTheme
+      ? "#f6f7fb"
+      : "#ffffff";
+  }
 
   document.body.setAttribute("data-theme", defaultTheme);
 }
@@ -130,6 +133,7 @@ function AppLoader() {
   if (isPublicCustomerSiteHost()) {
     return <PublicSiteLoader fullScreen label="Loading" />;
   }
+  if (document.getElementById("bizuply-first-paint")) return null;
   return <BizuplyLoader fullScreen label="Loading Bizuply..." />;
 }
 
@@ -143,6 +147,16 @@ if (!rootElement) {
   throw new Error("Root element with id 'root' was not found");
 }
 
+const prerender = rootElement.querySelector("main");
+if (prerender) {
+  const hold = document.createElement("div");
+  hold.id = "bizuply-first-paint";
+  hold.appendChild(prerender);
+  rootElement.insertAdjacentElement("beforebegin", hold);
+  rootElement.setAttribute("hidden", "");
+}
+
+void i18nReady.finally(() => {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HelmetProvider>
@@ -168,5 +182,6 @@ ReactDOM.createRoot(rootElement).render(
     </HelmetProvider>
   </React.StrictMode>
 );
+});
 
 registerServiceWorkerNotificationBridge();

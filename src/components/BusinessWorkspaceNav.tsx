@@ -362,10 +362,10 @@ export default function BusinessWorkspaceNav({
     },
     {
       labelKey: "businessNav.saasBridge",
-      fallback: "מערכות SaaS",
+      fallback: "SaaS systems",
       to: `${basePath}/dashboard/saas-bridge`,
       icon: Workflow,
-      moduleKey: "automations",
+      moduleKey: "saas",
     },
     {
       labelKey: "businessNav.collaborations",

@@ -34,9 +34,21 @@ export default defineConfig({
     ],
   },
 
+  preview: {
+    host: "127.0.0.1",
+    port: 4173,
+    strictPort: true,
+    allowedHosts: true,
+    headers: {
+      "X-Robots-Tag": "noindex, nofollow",
+    },
+  },
+
   server: {
     port: 3000,
     allowedHosts: [
+      "localhost",
+      "127.0.0.1",
       "travel.bizuply.com",
       "www.travel.bizuply.com",
       "whatsapp.bizuply.com",
@@ -66,7 +78,10 @@ export default defineConfig({
 
   build: {
     rollupOptions: {
-      input: path.resolve(__dirname, "index.html"),
+      input: {
+        main: path.resolve(__dirname, "index.html"),
+        marketing: path.resolve(__dirname, "marketing.html"),
+      },
     },
 
     commonjsOptions: {

@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Reveal } from "../product-marketing";
+import ProductDemoVideo from "../product-marketing/ProductDemoVideo";
 import "./crmSections.css";
 
 type Shot = {
@@ -16,7 +17,8 @@ type Block = {
   eyebrow: string;
   title: string;
   lead: string;
-  main: Shot;
+      video?: boolean;
+      main: Shot;
   extras: Shot[];
 };
 
@@ -30,20 +32,20 @@ function getBlocks(t: TFn): Block[] {
       eyebrow: t("crmPage.tour.leads.eyebrow"),
       title: t("crmPage.tour.leads.title"),
       lead: t("crmPage.tour.leads.lead"),
+      video: true,
       main: {
-        src: "/leads1.jpeg",
+        src: "/demo-media/crm/leads-list.png",
         crumb: t("crmPage.tour.leads.main.crumb"),
         caption: t("crmPage.tour.leads.main.caption"),
       },
       extras: [
         {
-          src: "/leads2.jpeg",
+          src: "/demo-media/crm/lead-file.png",
           crumb: t("crmPage.tour.leads.extra1.crumb"),
           caption: t("crmPage.tour.leads.extra1.caption"),
         },
         {
-          src: "/leads3.jpeg",
-          portrait: true,
+          src: "/demo-media/crm/lead-task.png",
           crumb: t("crmPage.tour.leads.extra2.crumb"),
           caption: t("crmPage.tour.leads.extra2.caption"),
         },
@@ -65,24 +67,7 @@ function getBlocks(t: TFn): Block[] {
           crumb: t("crmPage.tour.clients.extra1.crumb"),
           caption: t("crmPage.tour.clients.extra1.caption"),
         },
-        {
-          src: "/leads6.jpeg",
-          crumb: t("crmPage.tour.clients.extra2.crumb"),
-          caption: t("crmPage.tour.clients.extra2.caption"),
-        },
       ],
-    },
-    {
-      id: "appointments",
-      eyebrow: t("crmPage.tour.appointments.eyebrow"),
-      title: t("crmPage.tour.appointments.title"),
-      lead: t("crmPage.tour.appointments.lead"),
-      main: {
-        src: "/leads7.jpeg",
-        crumb: t("crmPage.tour.appointments.main.crumb"),
-        caption: t("crmPage.tour.appointments.main.caption"),
-      },
-      extras: [],
     },
   ];
 }
@@ -125,6 +110,7 @@ export default function CrmScreenshotTour() {
           </Reveal>
 
           <Reveal from="up" distance={30} duration={0.8} delay={0.08}>
+            {block.video ? <ProductDemoVideo moduleId="crm" /> : null}
             <ShotFrame shot={block.main} eager={index === 0} />
           </Reveal>
 

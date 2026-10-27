@@ -1,55 +1,63 @@
 /**
  * Public locale prefixes for the Bizuply marketing host.
- * English keeps the existing URLs. Hebrew lives under /he/.
+ * English keeps the existing URLs. Other languages use a prefix:
+ * /he/  /es/  /pt-br/  /ar/
  */
 
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+import { getLocaleMarketingPage } from "./localeMarketing.mjs";
+import { GUIDE_SLUGS } from "./guidesMarketing.mjs";
+import { getActivityPage } from "./activityPages.mjs";
 
-export function splitMarketingLocale(pathname) {
-  const clean = String(pathname || "/").split(/[?#]/)[0] || "/";
-  const path = clean.length > 1 && clean.endsWith("/") ? clean.slice(0, -1) : clean;
-  if (path === "/he" || path.startsWith("/he/")) {
-    const rest = path.replace(/^\/he(?=\/|$)/, "") || "/";
-    return { locale: "he", path: rest || "/" };
+export {
+  MARKETING_LOCALE_PREFIXES,
+  hebrewPublicUrl,
+  localeUrlPrefix,
+  marketingLocaleBasename,
+  marketingLocaleMeta,
+  marketingPublicUrl,
+  normalizeMarketingLocale,
+  splitMarketingLocale,
+  withMarketingLocale,
+} from "./localePathCore.mjs";
+import {
+  MARKETING_LOCALE_PREFIXES,
+  marketingPublicUrl,
+  normalizeMarketingLocale,
+} from "./localePathCore.mjs";
+
+export function hasLocalizedMarketingPage(path, locale) {
+  const language = normalizeMarketingLocale(locale);
+  if (path.startsWith("/guides/")) {
+    const slug = path.slice("/guides/".length);
+    return GUIDE_SLUGS.includes(slug);
   }
-  return { locale: "en", path: path || "/" };
-}
-
-export function withMarketingLocale(path, locale) {
-  const { path: bare } = splitMarketingLocale(path);
-  if (locale === "he") return bare === "/" ? "/he/" : `/he${bare}`;
-  return bare || "/";
-}
-
-export function marketingLocaleBasename(pathname) {
-  return splitMarketingLocale(pathname).locale === "he" ? "/he" : "";
-}
-
-export function hebrewPublicUrl(path) {
-  return path === "/" ? "https://bizuply.com/he/" : `https://bizuply.com/he${path}`;
-}
-
-export function marketingPublicUrl(path, locale) {
-  const { path: bare } = splitMarketingLocale(path);
-  if (String(locale || "").toLowerCase().startsWith("he")) return hebrewPublicUrl(bare);
-  return bare === "/" ? "https://bizuply.com/" : `https://bizuply.com${bare}`;
+  if (getActivityPage(path, language)) return true;
+  if (language === "en") return path !== "/whatsapp-api";
+  if (language === "he") return Boolean(getHebrewMarketingPage(path));
+  return Boolean(getLocaleMarketingPage(path, language));
 }
 
 export function hreflangTags(path) {
   if (path === "/whatsapp-api") {
-    return [
+    const tags = [
       `<link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/" />`,
-      `<link rel="alternate" hreflang="he" href="https://bizuply.com/he/whatsapp-api" />`,
       `<link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/" />`,
-    ].join("\n");
+    ];
+    for (const entry of MARKETING_LOCALE_PREFIXES) {
+      if (!hasLocalizedMarketingPage(path, entry.locale)) continue;
+      tags.splice(1, 0, `<link rel="alternate" hreflang="${entry.htmlLang}" href="${marketingPublicUrl(path, entry.locale)}" />`);
+    }
+    return tags.join("\n");
   }
   const english = path === "/" ? "https://bizuply.com/" : `https://bizuply.com${path}`;
   const tags = [
     `<link rel="alternate" hreflang="en" href="${english}" />`,
     `<link rel="alternate" hreflang="x-default" href="${english}" />`,
   ];
-  if (getHebrewMarketingPage(path)) {
-    tags.splice(1, 0, `<link rel="alternate" hreflang="he" href="${hebrewPublicUrl(path)}" />`);
+  for (const entry of MARKETING_LOCALE_PREFIXES) {
+    if (!hasLocalizedMarketingPage(path, entry.locale)) continue;
+    tags.splice(1, 0, `<link rel="alternate" hreflang="${entry.htmlLang}" href="${marketingPublicUrl(path, entry.locale)}" />`);
   }
   return tags.join("\n");
 }

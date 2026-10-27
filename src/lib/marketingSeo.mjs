@@ -7,10 +7,21 @@
  */
 
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
+import { HOME_SHELL } from "./homeShell.mjs";
+import { STORY } from "./homepageStory.mjs";
+import { marketingNav } from "./marketingNav.mjs";
+import { getLocaleMarketingPage } from "./localeMarketing.mjs";
+import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
+import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
 import {
-  hebrewPublicUrl,
+  MARKETING_LOCALE_PREFIXES,
+  hasLocalizedMarketingPage,
   hreflangTags,
+  marketingLocaleMeta,
+  marketingPublicUrl,
   splitMarketingLocale,
+  withMarketingLocale,
 } from "./localePath.mjs";
 
 export const MARKETING_ORIGIN = "https://bizuply.com";
@@ -40,9 +51,9 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply — Run your business. All in one place.",
+    title: "Bizuply | All-in-One Business Management Platform & CRM",
     description:
-      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. The official site is bizuply.com. In Hebrew, the brand name is ביזאפלי.",
+      "Manage leads, customers, WhatsApp Business, Meta campaigns, appointments, websites and automations in one connected platform. Discover Bizuply.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
@@ -171,7 +182,7 @@ export const MARKETING_PAGES = [
     path: "/website-builder",
     title: "Professional Website Builder | Bizuply",
     description:
-      "Build a website, store, or booking-enabled site from 205 templates, edit in a visual editor, and publish to your own domain — with every inquiry from the site flowing straight into your CRM.",
+      "Build a website, store, or booking site in a visual editor and publish it to your own domain — with every inquiry from the site flowing straight into your CRM.",
     crumb: "Website builder",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -183,9 +194,29 @@ export const MARKETING_PAGES = [
     description:
       "Reminders, follow-ups, tasks, and alerts that run in the background and stay connected to your CRM — so fewer leads slip through the cracks.",
     crumb: "Automations",
-    lastmod: "2026-08-01",
+    lastmod: "2026-10-23",
     changefreq: "monthly",
-    priority: "0.6",
+    priority: "0.7",
+  },
+  {
+    path: "/meta-campaigns",
+    title: "Meta Campaign Management | Bizuply",
+    description:
+      "Create and edit Meta campaigns, ad sets, and ads from the Bizuply dashboard, and send Lead Ads into the CRM. Meta bills the ad spend.",
+    crumb: "Meta campaigns",
+    lastmod: "2026-10-23",
+    changefreq: "monthly",
+    priority: "0.7",
+  },
+  {
+    path: "/guides",
+    title: "Guides | Bizuply",
+    description:
+      "Practical guides on CRM, WhatsApp Cloud API, automations, Meta ads, and the Bizuply website builder.",
+    crumb: "Guides",
+    lastmod: "2026-10-23",
+    changefreq: "weekly",
+    priority: "0.7",
   },
   {
     path: "/agents",
@@ -227,6 +258,7 @@ export const MARKETING_PAGES = [
     changefreq: "yearly",
     priority: "0.4",
   },
+  ...activityMarketingEntries(),
 ];
 
 const NOINDEX_PREFIXES = [
@@ -330,7 +362,20 @@ function organizationSchema() {
   };
 }
 
+function localizedPage(path, locale) {
+  const activity = getActivityPage(path, locale);
+  if (activity) return activity;
+  if (locale === "he") return getHebrewMarketingPage(path);
+  if (locale === "en") return null;
+  return getLocaleMarketingPage(path, locale);
+}
+
 function faqItems(path, language) {
+  if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
+  const localized = language === "en" ? null : localizedPage(path, language);
+  if (localized?.faq?.length) return localized.faq;
+  const guide = path.startsWith("/guides/") ? getGuide(path.slice("/guides/".length), language) : null;
+  if (guide?.faq?.length) return guide.faq;
   if (path === "/crm") {
     return language === "he"
       ? [
@@ -424,8 +469,8 @@ function breadcrumbSchema(page, canonical) {
 function sharedSocialTags(title, description, canonical, language = "en") {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
-  const ogLocale = language === "he" ? "he_IL" : "en_US";
-  const ogAlternate = language === "he" ? "en_US" : "he_IL";
+  const ogLocale = marketingLocaleMeta(language).og;
+  const ogAlternate = language === "en" ? "he_IL" : "en_US";
   return [
     `<meta property="og:title" content="${safeTitle}" />`,
     `<meta property="og:description" content="${safeDescription}" />`,
@@ -450,38 +495,75 @@ function sharedSocialTags(title, description, canonical, language = "en") {
  * Returns null when the path should keep the SPA shell unchanged
  * (dynamic public routes such as bookings and partner storefronts).
  */
+function guideHead(path, locale) {
+  const slug = path.slice("/guides/".length);
+  if (!slug || slug.includes("/")) return null;
+  const article = getGuide(slug, locale);
+  if (!article) return null;
+  const canonical = marketingPublicUrl(path, locale);
+  const page = { path, title: article.title, description: article.description, crumb: article.h1 };
+  return [
+    `<title>${escapeHtml(article.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(article.description)}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    hreflangTags(path),
+    ...sharedSocialTags(article.title, article.description, canonical, locale),
+    `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
+    `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    `<script type="application/ld+json">${jsonLd({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: article.h1,
+      description: article.description,
+      dateModified: article.updated,
+      inLanguage: locale,
+      mainEntityOfPage: canonical,
+      author: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
+      publisher: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
+    })}</script>`,
+    faqSchemaTag(path, locale),
+  ].filter(Boolean).join("\n");
+}
+
 export function buildMarketingDocumentHead(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
-  const hebrew = locale === "he" ? getHebrewMarketingPage(path) : null;
+  if (path.startsWith("/guides/") && path !== "/guides") {
+    const head = guideHead(path, locale);
+    if (head) return head;
+  }
+  const localized = locale === "en" ? null : localizedPage(path, locale);
   const found = findMarketingPage(path);
-  if (locale === "he" && !hebrew && found) {
+  if (locale !== "en" && !localized && found) {
     return [
       `<title>Bizuply</title>`,
       `<meta name="robots" content="noindex, follow" />`,
-      `<link rel="canonical" href="${escapeHtml(hebrewPublicUrl(found.canonicalPath))}" />`,
+      `<link rel="canonical" href="${escapeHtml(marketingPublicUrl(found.canonicalPath, locale))}" />`,
     ].join("\n");
   }
 
-  if ((locale === "en" && found) || hebrew) {
-    const page = hebrew
-      ? { path, title: hebrew.title, description: hebrew.description, crumb: hebrew.crumb }
+  if ((locale === "en" && found) || localized) {
+    const page = localized
+      ? { path, title: localized.title, description: localized.description, crumb: localized.crumb }
       : found.page;
-    const canonicalPath = hebrew ? path : found.canonicalPath;
-    const canonical = locale === "he" ? hebrewPublicUrl(canonicalPath) : marketingCanonicalUrl(canonicalPath);
+    const canonicalPath = localized ? path : found.canonicalPath;
+    const canonical = locale === "en" ? marketingCanonicalUrl(canonicalPath) : marketingPublicUrl(canonicalPath, locale);
     const title = escapeHtml(page.title);
     const description = escapeHtml(page.description);
-    const language = locale === "he" ? "he" : "en";
     return [
       `<title>${title}</title>`,
       `<meta name="description" content="${description}" />`,
       `<meta name="robots" content="index, follow" />`,
       `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
       hreflangTags(canonicalPath),
-      ...sharedSocialTags(page.title, page.description, canonical, language),
+      ...sharedSocialTags(page.title, page.description, canonical, locale),
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
-      `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, language))}</script>`,
+      path === "/" ? `<script type="application/ld+json">${jsonLd(websiteSchema())}</script>` : "",
+      `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
-      faqSchemaTag(path, language),
+      path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
+      faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
   }
 
@@ -496,38 +578,54 @@ export function buildMarketingDocumentHead(pathname) {
 
 function hreflangXml(path) {
   if (path === "/whatsapp-api") {
+    const extras = MARKETING_LOCALE_PREFIXES
+      .filter((entry) => hasLocalizedMarketingPage(path, entry.locale))
+      .map((entry) => `
+    <xhtml:link rel="alternate" hreflang="${entry.htmlLang}" href="${marketingPublicUrl(path, entry.locale)}"/>`)
+      .join("");
     return `
-    <xhtml:link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/"/>
-    <xhtml:link rel="alternate" hreflang="he" href="https://bizuply.com/he/whatsapp-api"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://whatsapp.bizuply.com/"/>${extras}
     <xhtml:link rel="alternate" hreflang="x-default" href="https://whatsapp.bizuply.com/"/>`;
   }
   const english = marketingCanonicalUrl(path);
-  const hebrew = getHebrewMarketingPage(path)
-    ? `
-    <xhtml:link rel="alternate" hreflang="he" href="${hebrewPublicUrl(path)}"/>`
-    : "";
+  const extras = MARKETING_LOCALE_PREFIXES
+    .filter((entry) => hasLocalizedMarketingPage(path, entry.locale))
+    .map((entry) => `
+    <xhtml:link rel="alternate" hreflang="${entry.htmlLang}" href="${marketingPublicUrl(path, entry.locale)}"/>`)
+    .join("");
   return `
-    <xhtml:link rel="alternate" hreflang="en" href="${english}"/>${hebrew}
+    <xhtml:link rel="alternate" hreflang="en" href="${english}"/>${extras}
     <xhtml:link rel="alternate" hreflang="x-default" href="${english}"/>`;
 }
 
 export function buildMarketingSitemapXml() {
+  const localizedPaths = [
+    ...MARKETING_PAGES.map((page) => page.path),
+    "/whatsapp-api",
+    ...GUIDE_SLUGS.map((slug) => guidePath(slug)),
+  ];
+  const localizedUrls = [];
+  for (const path of localizedPaths) {
+    for (const entry of MARKETING_LOCALE_PREFIXES) {
+      if (!hasLocalizedMarketingPage(path, entry.locale)) continue;
+      localizedUrls.push({
+        path,
+        loc: marketingPublicUrl(path, entry.locale),
+        lastmod: "2026-10-23",
+        changefreq: "monthly",
+        priority: path.startsWith("/guides/") ? "0.6" : "0.7",
+      });
+    }
+  }
   const pages = [
     ...MARKETING_PAGES.map((page) => ({ path: page.path, lastmod: page.lastmod, changefreq: page.changefreq, priority: page.priority })),
-    ...MARKETING_PAGES.filter((page) => getHebrewMarketingPage(page.path)).map((page) => ({
-      path: page.path,
-      loc: hebrewPublicUrl(page.path),
-      lastmod: "2026-10-23",
-      changefreq: page.changefreq,
-      priority: page.priority,
-    })),
-    {
-      path: "/whatsapp-api",
-      loc: hebrewPublicUrl("/whatsapp-api"),
+    ...GUIDE_SLUGS.map((slug) => ({
+      path: guidePath(slug),
       lastmod: "2026-10-23",
       changefreq: "monthly",
-      priority: "0.8",
-    },
+      priority: "0.6",
+    })),
+    ...localizedUrls,
   ];
   const urls = pages.map((page) => {
     const loc = page.loc || marketingCanonicalUrl(page.path);
@@ -620,37 +718,154 @@ export function marketingPublicRedirect(pathname) {
   if (locale === "en" && path === "/whatsapp-api") return "https://whatsapp.bizuply.com/";
   const legacy = marketingLegacyRedirectPath(path);
   if (!legacy) return "";
-  if (locale === "he") return legacy === "/" ? "/he/" : `/he${legacy}`;
-  return legacy;
+  return withMarketingLocale(legacy, locale);
 }
 
 function escapeText(value) {
   return escapeHtml(value);
 }
 
+function renderSection(section) {
+  if (Array.isArray(section)) {
+    const [heading, body] = section;
+    return `<h2>${escapeText(heading)}</h2>${(body || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("")}`;
+  }
+  const parts = [`<h2>${escapeText(section.heading)}</h2>`];
+  for (const paragraph of section.paragraphs || []) parts.push(`<p>${escapeText(paragraph)}</p>`);
+  if (section.steps?.length) parts.push(`<ol>${section.steps.map((step) => `<li>${escapeText(step)}</li>`).join("")}</ol>`);
+  if (section.example?.body) parts.push(`<p><strong>${escapeText(section.example.title || "")}</strong> ${escapeText(section.example.body)}</p>`);
+  for (const item of section.mistakes || []) parts.push(`<p><strong>${escapeText(item.problem)}</strong> ${escapeText(item.fix)}</p>`);
+  if (section.table?.rows?.length) {
+    const head = (section.table.columns || []).map((column) => `<th>${escapeText(column)}</th>`).join("");
+    const rows = section.table.rows.map((row) => `<tr>${row.map((cell) => `<td>${escapeText(cell)}</td>`).join("")}</tr>`).join("");
+    parts.push(`<table>${head ? `<thead><tr>${head}</tr></thead>` : ""}${rows}</table>`);
+  }
+  for (const shot of section.shots || []) {
+    parts.push(`<figure><img src="${escapeHtml(shot.src)}" alt="${escapeText(shot.caption || section.heading)}" /><figcaption>${escapeText(shot.caption || "")}</figcaption></figure>`);
+  }
+  return parts.join("");
+}
+
+function renderLocalized(page, locale, path) {
+  const meta = marketingLocaleMeta(locale);
+  const paragraphs = (page.lede ? [`<p>${escapeText(page.lede)}</p>`] : []).concat((page.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`)).join("");
+  const sections = (page.sections || []).map(renderSection).join("");
+  const faqs = page.faq?.length ? page.faq : faqItems(path, locale);
+  const faqHeading = path === "/" && HOME_FAQ_TITLE[locale]
+    ? HOME_FAQ_TITLE[locale]
+    : locale === "he" ? "שאלות נפוצות" : locale === "ar" ? "أسئلة شائعة" : locale === "es" ? "Preguntas frecuentes" : locale === "pt-BR" ? "Perguntas frequentes" : "FAQ";
+  const faq = faqs ? `<h2>${faqHeading}</h2>${faqBodyHtml(faqs)}` : "";
+  const servicePrefix = locale === "en" ? "" : locale === "pt-BR" ? "/pt-br" : `/${locale}`;
+  const service = page.serviceLink?.href
+    ? `<p><a href="${escapeHtml(`${servicePrefix}${page.serviceLink.href}`)}">${escapeText(page.serviceLink.label)}</a></p>`
+    : "";
+  const updated = page.updated ? `<p>${escapeText(locale === "he" ? `עודכן ${page.updated}` : locale === "ar" ? `آخر تحديث ${page.updated}` : locale === "es" ? `Actualizado el ${page.updated}` : locale === "pt-BR" ? `Atualizado em ${page.updated}` : `Updated ${page.updated}`)}</p>` : "";
+  return {
+    lang: meta.htmlLang,
+    dir: meta.dir,
+    inner: `<main lang="${meta.htmlLang}" dir="${meta.dir}"><h1>${escapeText(page.h1)}</h1>${updated}${paragraphs}${sections}${service}${faq}</main>`,
+  };
+}
+
+function localeHref(locale, path) {
+  const prefix = locale === "pt-BR" ? "/pt-br" : locale && locale !== "en" ? `/${locale}` : "";
+  if (!path || path === "/") return prefix || "/";
+  return `${prefix}${path}`;
+}
+
+function homeStoryHtml(locale) {
+  const story = STORY[locale] || STORY.en;
+  const ways = story.ways
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  const films = story.films
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p><ul>${item.points.map((point) => `<li>${escapeText(point)}</li>`).join("")}</ul>`)
+    .join("");
+  const steps = story.steps
+    .map((item, index) => `<h3>0${index + 1} ${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  const audiences = story.audiences
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  const why = story.whyCards
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  return [
+    `<section><h2>${escapeText(story.waysTitle)}</h2><p>${escapeText(story.waysLead)}</p>${ways}</section>`,
+    `<section><h2>${escapeText(story.showTitle)}</h2><p>${escapeText(story.showLead)}</p>${films}</section>`,
+    `<section><h2>${escapeText(story.journeyTitle)}</h2><p>${escapeText(story.journeyLead)}</p>${steps}</section>`,
+    `<section><h2>${escapeText(story.audienceTitle)}</h2><p>${escapeText(story.audienceLead)}</p>${audiences}</section>`,
+    `<section><h2>${escapeText(story.whyTitle)}</h2><p>${escapeText(story.whyLead)}</p>${why}</section>`,
+    `<section><h2>${escapeText(story.finalTitle)}</h2><p>${escapeText(story.finalLead)}</p></section>`,
+  ].join("");
+}
+
+function websiteSchema() {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Bizuply",
+    url: `${MARKETING_ORIGIN}/`,
+    inLanguage: ["en", "he", "es", "pt-BR", "ar"],
+  };
+}
+
+function softwareSchema(description, canonical) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Bizuply",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    description,
+    url: canonical,
+    offers: [
+      { "@type": "Offer", name: "CRM", price: "49", priceCurrency: "USD", description: "CRM plan, billed monthly" },
+      { "@type": "Offer", name: "Business", price: "99", priceCurrency: "USD", description: "Business plan, billed monthly" },
+      { "@type": "Offer", name: "Business annual", price: "990", priceCurrency: "USD", description: "Business plan, billed yearly" },
+      { "@type": "Offer", name: "WhatsApp Business API", price: "29", priceCurrency: "USD", description: "Per connected number, billed monthly. Meta messaging charges are separate." },
+    ],
+  };
+}
+
+function renderHomePrerender(locale) {
+  const meta = marketingLocaleMeta(locale);
+  const copy = HOME_SHELL[locale] || HOME_SHELL.en;
+  const href = (path) => localeHref(locale, path);
+  const nav = marketingNav(locale).map((group) => (
+    group.links
+      ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
+      : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`
+  )).join("");
+  const row = (copy.channels || STORY.en.channels).map((name) => `<li class="home-channel"><span><strong>${escapeText(name)}</strong></span></li>`).join("");
+  const track = `<ul class="home-marquee__row">${row}</ul><ul class="home-marquee__row" aria-hidden="true">${row}</ul>`;
+  const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
+  const faqs = faqItems("/", locale);
+  const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
+  return {
+    lang: meta.htmlLang,
+    dir: meta.dir,
+    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero"><div class="home-hero__glow" aria-hidden="true"></div><div class="home-hero__grid"><div><h1 class="home-hero__title">${escapeText(copy.headline)}</h1><p class="home-hero__lead">${escapeText(copy.subtitle)}</p><p class="home-hero__note">${escapeText(copy.supportLine)}</p><div class="home-hero__actions"><a class="home-cta home-cta--primary" href="${escapeHtml(href("/register"))}">${escapeText(copy.startTrial)}</a><a class="home-cta home-cta--ghost" href="${escapeHtml(href("/platform"))}">${escapeText(copy.explore)}</a></div></div><div class="home-stage"><img class="home-stage__main" src="/demo-media/crm/poster.jpg" alt="${escapeText(copy.stageAlt)}" width="960" height="600" fetchpriority="high" decoding="async"><img class="home-stage__float home-stage__float--a" src="/demo-media/whatsapp/poster.jpg" alt="${escapeText(copy.stageWhatsappAlt)}" width="640" height="400"><img class="home-stage__float home-stage__float--b" src="/demo-media/appointments/poster.jpg" alt="${escapeText(copy.stageAppointmentsAlt)}" width="640" height="400"><span class="home-cursor" aria-hidden="true"></span></div></div><div class="home-flow"><div class="home-flow__inner"><h2 class="home-flow__title">${escapeText(copy.flowTitle)}</h2><p class="home-flow__lead">${escapeText(copy.flowBody)}</p><div class="home-flow__board"><div class="home-marquee"><div class="home-marquee__track">${track}</div></div><div class="home-flow__line" aria-hidden="true"></div><div class="home-flow__crm"><p>${escapeText(copy.flowInto)}</p><strong>${escapeText(copy.flowCrm)}</strong><span>${escapeText(copy.flowSteps)}</span></div></div></div></div></section><div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(faqTitle)}</h2><p>${escapeText((STORY[locale] || STORY.en).faqLead)}</p>${faqBodyHtml(faqs)}</section></div></main>`,
+  };
+}
+
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
-  if (locale === "he") {
-    const hebrew = getHebrewMarketingPage(path);
-    if (!hebrew?.h1) return null;
-    const paragraphs = (hebrew.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("");
-    const faqs = faqItems(path, "he");
-    const faq = faqs?.length ? `<h2>שאלות נפוצות</h2>${faqBodyHtml(faqs)}` : "";
-    return {
-      lang: "he",
-      dir: "rtl",
-      inner: `<main lang="he" dir="rtl"><h1>${escapeText(hebrew.h1)}</h1>${paragraphs}${faq}</main>`,
-    };
+  if (path === "/") return renderHomePrerender(locale);
+  if (path.startsWith("/guides/") && path !== "/guides") {
+    const article = getGuide(path.slice("/guides/".length), locale);
+    if (!article?.h1) return null;
+    return renderLocalized(article, locale, path);
+  }
+  const activity = getActivityPage(path, locale);
+  if (activity?.h1) return renderLocalized(activity, locale, path);
+  if (locale !== "en") {
+    const localized = localizedPage(path, locale);
+    if (!localized?.h1) return null;
+    return renderLocalized(localized, locale, path);
   }
   const found = findMarketingPage(path);
   if (!found?.page) return null;
-  if (path === "/") {
-    return {
-      lang: "en",
-      dir: "ltr",
-      inner: `<main lang="en" dir="ltr"><h1>Bizuply</h1><p>Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp.</p><p>The official website is bizuply.com. In Hebrew, the brand name is ביזאפלי.</p></main>`,
-    };
-  }
   const heading = path === "/crm"
     ? "Every lead, every client, every appointment in one place"
     : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");

@@ -15,6 +15,8 @@ import {
   UsersRound,
 } from "lucide-react";
 import "../../styles/ProductExplainer.css";
+import { marketingPublicUrl } from "../../lib/localePath.mjs";
+import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 
 const PAGE_META = {
   crm: { icon: UsersRound, accent: "from-[#6D28D9] to-[#2563EB]" },
@@ -40,7 +42,7 @@ const stagger = {
 };
 
 export default function ProductExplainer({ pageKey, hideHero = false }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const meta = PAGE_META[pageKey] || PAGE_META.crm;
   const Icon = meta.icon;
   const base = `productPages.${pageKey}`;
@@ -67,7 +69,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
         <Helmet>
           <title>{t(`${base}.seoTitle`)}</title>
           <meta name="description" content={t(`${base}.seoDescription`)} />
-          <link rel="canonical" href={`https://bizuply.com/${pageKey === "website" ? "website-builder" : pageKey}`} />
+          <link rel="canonical" href={marketingPublicUrl(`/${pageKey === "website" ? "website-builder" : pageKey}`, i18n.language)} />
           <meta name="robots" content="index, follow" />
           <meta property="og:title" content={t(`${base}.seoTitle`)} />
           <meta property="og:description" content={t(`${base}.seoDescription`)} />
@@ -171,6 +173,10 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
             </div>
           </div>
         </section>
+        ) : null}
+
+        {pageKey === "appointments" ? (
+          <ProductDemoVideo moduleId="appointments" />
         ) : null}
 
         {isCrm ? (

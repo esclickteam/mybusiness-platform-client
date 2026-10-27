@@ -1,6 +1,9 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { ACTIVITY_PATHS, getActivityPage } from "../lib/activityPages.mjs";
+import { normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 const solutionMeta = [
   {
@@ -31,7 +34,12 @@ const solutionMeta = [
 ];
 
 function Solutions() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
+  const industries = ACTIVITY_PATHS.filter((path) => path.startsWith("/solutions/")).map((path) => {
+    const page = getActivityPage(path, locale);
+    return { path, label: page?.crumb, text: page?.h1 };
+  });
 
   const overviewStats = [
     [t("solutions.statCrm"), t("solutions.statCrmLabel")],
@@ -217,6 +225,15 @@ function Solutions() {
                 </div>
               </div>
             </article>
+          ))}
+        </section>
+
+        <section className="mt-16 grid gap-3 sm:grid-cols-2">
+          {industries.map((item) => (
+            <Link key={item.path} to={item.path} className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-800">
+              <span className="text-xs font-black uppercase tracking-wide text-indigo-700">{item.label}</span>
+              <span className="mt-2 block text-xl font-black">{item.text}</span>
+            </Link>
           ))}
         </section>
 

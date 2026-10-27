@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/home-critical.css" />
+    <script>
+      (function () {
+        var host = String(location.hostname || "");
+        if (/trycloudflare\.com$|ngrok|\.loca\.lt$/.test(host)) {
+          var robots = document.createElement("meta");
+          robots.name = "robots";
+          robots.content = "noindex, nofollow";
+          document.head.appendChild(robots);
+        }
+      })();
+    </script>
+    <script>
+      (function () {
+        try {
+          function normalize(raw) {
+            if (!raw) return null;
+            var value = String(raw).trim().replace(/_/g, "-");
+            var lower = value.toLowerCase();
+            if (lower === "pt-br") return "pt-BR";
+            if (lower === "iw" || lower.indexOf("iw-") === 0) return "he";
+            var parts = lower.split("-");
+            var base = parts[0];
+            var region = parts[1] || "";
+            if (base === "pt") return region === "br" ? "pt-BR" : null;
+            if (base === "en" || base === "he" || base === "es" || base === "ar") return base;
+            return null;
+          }
+
+          var earlyHost = String(location.hostname || "").toLowerCase();
+          if (
+            earlyHost === "travel.bizuply.com" ||
+            earlyHost === "www.travel.bizuply.com"
+          ) {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+            return;
+          }
+          if (
+            earlyHost === "whatsapp.bizuply.com" ||
+            earlyHost === "www.whatsapp.bizuply.com"
+          ) {
+            document.documentElement.setAttribute("data-wa-host", "true");
+            var waLang = null;
+            try {
+              waLang = normalize(new URLSearchParams(location.search).get("lang"));
+            } catch (eWaUrl) {}
+            if (!waLang) {
+              try {
+                waLang = normalize(localStorage.getItem("bizuply_lang_preference"));
+              } catch (eWaStore) {}
+            }
+            if (!waLang) waLang = "en";
+            document.documentElement.lang = waLang;
+            document.documentElement.dir = waLang === "he" || waLang === "ar" ? "rtl" : "ltr";
+            return;
+          }
+
+          var first = String(location.pathname || "/").split("/")[1] || "";
+          var fromPath = normalize(first);
+          if (fromPath && fromPath !== "en") {
+            document.documentElement.lang = fromPath;
+            document.documentElement.dir = fromPath === "he" || fromPath === "ar" ? "rtl" : "ltr";
+            return;
+          }
+          var appRoute = {
+            business: 1,
+            admin: 1,
+            staff: 1,
+            client: 1,
+            partner: 1,
+            login: 1,
+            register: 1,
+            dashboard: 1,
+            embed: 1,
+          };
+          if (!appRoute[first.toLowerCase()]) {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+            return;
+          }
+
+          function readCookie(name) {
+            var match = document.cookie.match(
+              new RegExp("(?:^|; )" + name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&") + "=([^;]*)")
+            );
+            return match ? decodeURIComponent(match[1]) : null;
+          }
+
+          var lang = null;
+
+          try {
+            lang = normalize(new URLSearchParams(location.search).get("lang"));
+          } catch (eUrl) {}
+
+          if (!lang) {
+            try {
+              lang = normalize(localStorage.getItem("bizuply_lang_preference"));
+            } catch (e0) {}
+          }
+
+          if (!lang) lang = normalize(readCookie("bizuply_lang"));
+          if (!lang) lang = normalize(readCookie("bizuply_geo_lang"));
+          if (!lang) {
+            try {
+              var nav = [navigator.language].concat(navigator.languages || []);
+              for (var i = 0; i < nav.length && !lang; i++) lang = normalize(nav[i]);
+            } catch (eNav) {}
+          }
+          if (!lang) lang = "en";
+
+          document.documentElement.lang = lang;
+          document.documentElement.dir = lang === "he" || lang === "ar" ? "rtl" : "ltr";
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- Detect published customer hosts early (custom domains + sites.*) -->
+    <script>
+      (function () {
+        try {
+          var host = String(location.hostname || "").toLowerCase();
+          if (
+            host === "travel.bizuply.com" ||
+            host === "www.travel.bizuply.com" ||
+            host === "whatsapp.bizuply.com" ||
+            host === "www.whatsapp.bizuply.com"
+          ) {
+            return;
+          }
+          var publicDomain = "sites.bizuply.com";
+          var marketing = {
+            "bizuply.com": 1,
+            "www.bizuply.com": 1,
+            localhost: 1,
+            "127.0.0.1": 1,
+          };
+          var isCustomer =
+            (host.endsWith("." + publicDomain) && host !== publicDomain) ||
+            (host.endsWith(".bizuply.com") &&
+              host !== "bizuply.com" &&
+              host !== "www.bizuply.com") ||
+            (!marketing[host] &&
+              !/\.vercel\.app$/.test(host) &&
+              host.indexOf(".") !== -1);
+          if (isCustomer) {
+            document.documentElement.setAttribute("data-public-site", "true");
+            window.__BIZUPLY_PUBLIC_SITE__ = true;
+          }
+        } catch (e) {}
+      })();
+    </script>
+
+    <!-- ✅ Meta / Facebook Domain Verification -->
+    <meta
+      name="facebook-domain-verification"
+      content="azd93f5jgru1b53xrjj0dqaco20viu"
+    />
+
+    <!-- ✅ Meta Pixel — platform marketing only (never on published customer sites) -->
+    <script>
+      (function () {
+        if (window.__BIZUPLY_PUBLIC_SITE__) return;
+        function startPixel() {
+          !(function (f, b, e, v, n, t, s) {
+            if (f.fbq) return;
+            n = f.fbq = function () {
+              n.callMethod
+                ? n.callMethod.apply(n, arguments)
+                : n.queue.push(arguments);
+            };
+            if (!f._fbq) f._fbq = n;
+            n.push = n;
+            n.loaded = !0;
+            n.version = "2.0";
+            n.queue = [];
+            t = b.createElement(e);
+            t.async = !0;
+            t.src = v;
+            s = b.getElementsByTagName(e)[0];
+            s.parentNode.insertBefore(t, s);
+          })(
+            window,
+            document,
+            "script",
+            "https://connect.facebook.net/en_US/fbevents.js"
+          );
+          fbq("init", "1427327632368128");
+          fbq("track", "PageView");
+        }
+        if (window.requestIdleCallback) requestIdleCallback(startPixel, { timeout: 2500 });
+        else window.addEventListener("load", startPixel, { once: true });
+      })();
+    </script>
+
+    <!-- Platform fonts — skipped on published sites + embed previews -->
+    <script>
+      (function () {
+        var isEmbed =
+          String(location.pathname || "").indexOf("/embed/") === 0;
+        // Embeds render customer templates; platform fonts only cause CORS noise
+        // during html-to-image card screenshots.
+        if (window.__BIZUPLY_PUBLIC_SITE__ || isEmbed) return;
+        var pre1 = document.createElement("link");
+        pre1.rel = "preconnect";
+        pre1.href = "https://fonts.googleapis.com";
+        document.head.appendChild(pre1);
+        var pre2 = document.createElement("link");
+        pre2.rel = "preconnect";
+        pre2.href = "https://fonts.gstatic.com";
+        pre2.crossOrigin = "anonymous";
+        document.head.appendChild(pre2);
+        var css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.media = "print";
+        css.onload = function () { this.media = "all"; };
+        css.href =
+          "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap";
+        // Required so cssRules can be read (html-to-image / capture tools).
+        css.setAttribute("crossorigin", "anonymous");
+        document.head.appendChild(css);
+      })();
+    </script>
+
+    <!-- 🧠 SEO -->
+    <title>Bizuply — Business Platform</title>
+    <meta
+      name="description"
+      content="Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי."
+    />
+    <meta
+      name="keywords"
+      content="bizuply, business platform, crm, scheduling, bookings, saas, ai assistant, automation, business management"
+    />
+    <meta name="author" content="Bizuply" />
+    <meta http-equiv="Content-Language" content="en" />
+
+    <!-- ⚡ Neutral first paint on published customer sites (no Bizuply splash) -->
+    <script>
+      (function () {
+        var host = String(location.hostname || "").toLowerCase();
+        if (
+          host === "whatsapp.bizuply.com" ||
+          host === "www.whatsapp.bizuply.com"
+        ) {
+          document.documentElement.style.background = "#05070d";
+          if (document.body) document.body.style.backgroundColor = "#05070d";
+          document.title =
+            "Official WhatsApp API Platform for Developers & Businesses | Bizuply";
+          return;
+        }
+        if (
+          host === "travel.bizuply.com" ||
+          host === "www.travel.bizuply.com"
+        ) {
+          document.documentElement.style.background = "#f4f7fb";
+          if (document.body) document.body.style.backgroundColor = "#f4f7fb";
+          document.title = "Bizuply Travel | Travel Technology Platform";
+          return;
+        }
+        if (window.__BIZUPLY_PUBLIC_SITE__) {
+          document.documentElement.style.background = "#ffffff";
+          if (document.body) document.body.style.backgroundColor = "#ffffff";
+          // Keep edge-injected customer title for crawlers / first paint.
+          if (!document.querySelector("title[data-bizuply-edge-seo]")) {
+            document.title = "";
+          }
+          return;
+        }
+        document.documentElement.style.background =
+          "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
+        if (document.body) document.body.style.backgroundColor = "#f6f7fb";
+      })();
+    </script>
+
+    <!-- 🎨 Theme Variables (CRITICAL CSS ONLY) -->
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --surface: #ffffff;
+        --surface-2: #f3f5fb;
+        --border: #e8ecf5;
+        --text: #0f172a;
+        --muted: #475569;
+        --violet: #6a11cb;
+        --violet-600: #5a0fb0;
+        --violet-100: #efe6fb;
+        --blue: #2575fc;
+        --blue-50: #e9f0ff;
+        --success: #16a34a;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --ring: rgba(106, 17, 203, 0.28);
+        --shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+        --accent-gradient: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
+        color: var(--text);
+        font-family: "Assistant", "Inter", system-ui, sans-serif;
+        overflow-x: hidden;
+      }
+
+      html[data-wa-host="true"],
+      html[data-wa-host="true"] body {
+        background: #05070d !important;
+        color: #f3f7ff;
+      }
+
+      html[data-public-site="true"],
+      html[data-public-site="true"] body {
+        background: #ffffff !important;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+          sans-serif;
+      }
+
+      html[data-public-site="true"] #root {
+        background: #ffffff;
+      }
+
+      #initial-bg {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
+        z-index: -1;
+        pointer-events: none;
+      }
+
+      html[data-public-site="true"] #initial-bg {
+        background: #ffffff;
+      }
+
+      #root {
+        min-height: 100vh;
+        background: var(--bg);
+      }
+    </style>
+
+    <!-- ✅ Favicons -->
+    <link rel="icon" href="/favicon-v2.png?v=2" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon-v3.png?v=2" />
+    <!-- use-credentials: Vercel Deployment Protection / SSO blocks credential-less manifest fetches -->
+    <link rel="manifest" href="/site.webmanifest" crossorigin="use-credentials" />
+    <meta name="theme-color" content="#6a11cb" />
+    <meta name="apple-mobile-web-app-title" content="Bizuply" />
+    <meta name="application-name" content="Bizuply" />
+    <meta name="msapplication-TileColor" content="#6a11cb" />
+    <meta name="msapplication-config" content="/browserconfig.xml" />
+
+    <!-- 🧩 Social Preview -->
+    <meta property="og:title" content="Bizuply — Business Platform" />
+    <meta
+      property="og:description"
+      content="Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp."
+    />
+    <meta property="og:image" content="https://bizuply.com/bizuply%20logo.png" />
+    <meta property="og:url" content="https://bizuply.com" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- 📦 Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Bizuply",
+        "alternateName": ["ביזאפלי", "BizUply"],
+        "url": "https://bizuply.com",
+        "logo": "https://bizuply.com/android-chrome-512x512.png",
+        "sameAs": [
+          "https://www.facebook.com/bizuply",
+          "https://www.instagram.com/bizuply"
+        ]
+      }
+    </script>
+
+    <!-- bizuply-entry:marketing -->
+    <!-- App CSS is injected by the build. /index.css is not a file and must not block first paint. -->
+  </head>
+
+  <body>
+  <noscript>
+    <!-- Meta Pixel noscript is platform-only; omitted on published customer hosts via JS gate above. -->
+  </noscript>
+
+  <div id="initial-bg"></div>
+  <div id="root"></div>
+  <div id="popup-root"></div>
+
+  <script type="module" src="/src/marketing.tsx"></script>
+</body>
+</html>

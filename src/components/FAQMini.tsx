@@ -8,79 +8,17 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 import { Reveal } from "./product-marketing";
 
-type FaqBullet = {
-  title: string;
-  text: string;
-};
-
-type FaqItem = {
-  q: string;
-  lead: string;
-  bullets: FaqBullet[];
-  footer?: string;
-};
+type FaqItem = { q: string; a: string };
 
 export default function FAQMini() {
   const { t, i18n } = useTranslation();
   const reduceMotion = useReducedMotion();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const faqs: FaqItem[] = [
-    {
-      q: t("faqMini.q1"),
-      lead: t("faqMini.a1Lead"),
-      bullets: [1, 2, 3, 4].map((n) => ({
-        title: t(`faqMini.a1b${n}Title`),
-        text: t(`faqMini.a1b${n}Text`),
-      })),
-      footer: t("faqMini.a1Footer"),
-    },
-    {
-      q: t("faqMini.q2"),
-      lead: t("faqMini.a2Lead"),
-      bullets: [1, 2, 3].map((n) => ({
-        title: t(`faqMini.a2b${n}Title`),
-        text: t(`faqMini.a2b${n}Text`),
-      })),
-      footer: t("faqMini.a2Footer"),
-    },
-    {
-      q: t("faqMini.q3"),
-      lead: t("faqMini.a3Lead"),
-      bullets: [1, 2, 3, 4].map((n) => ({
-        title: t(`faqMini.a3b${n}Title`),
-        text: t(`faqMini.a3b${n}Text`),
-      })),
-      footer: t("faqMini.a3Footer"),
-    },
-    {
-      q: t("faqMini.q4"),
-      lead: t("faqMini.a4Lead"),
-      bullets: [1, 2, 3].map((n) => ({
-        title: t(`faqMini.a4b${n}Title`),
-        text: t(`faqMini.a4b${n}Text`),
-      })),
-      footer: t("faqMini.a4Footer"),
-    },
-    {
-      q: t("faqMini.q5"),
-      lead: t("faqMini.a5Lead"),
-      bullets: [1, 2, 3].map((n) => ({
-        title: t(`faqMini.a5b${n}Title`),
-        text: t(`faqMini.a5b${n}Text`),
-      })),
-      footer: t("faqMini.a5Footer"),
-    },
-    {
-      q: t("faqMini.q6"),
-      lead: t("faqMini.a6Lead"),
-      bullets: [1, 2, 3].map((n) => ({
-        title: t(`faqMini.a6b${n}Title`),
-        text: t(`faqMini.a6b${n}Text`),
-      })),
-      footer: t("faqMini.a6Footer"),
-    },
-  ];
+  const faqs: FaqItem[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => ({
+    q: t(`home.faq${n}q`),
+    a: t(`home.faq${n}a`),
+  }));
 
   return (
     <section
@@ -94,25 +32,15 @@ export default function FAQMini() {
       </div>
 
       <div className="relative mx-auto max-w-4xl px-5 sm:px-6 lg:px-8">
-        <Reveal from="up" distance={20}>
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("faqMini.eyebrow")}
-          </div>
-        </Reveal>
-
         <Reveal from="up" distance={26} blur delay={0.06}>
           <h2 className="mt-7 text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl">
-            {t("faqMini.titleTop")}{" "}
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("faqMini.titleHighlight")}
-            </span>
+            {t("home.faqTitle")}
           </h2>
         </Reveal>
 
         <Reveal from="up" distance={20} delay={0.12}>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            {t("faqMini.subtitle")}
+            {t("home.faqLead")}
           </p>
         </Reveal>
 
@@ -129,11 +57,12 @@ export default function FAQMini() {
                       : "border-slate-100 bg-white/85 hover:border-indigo-100"
                   }`}
                 >
+                  <h3 className="m-0 text-base font-black sm:text-lg">
                   <button
                     type="button"
                     onClick={() => setOpenIndex(isOpen ? null : i)}
                     aria-expanded={isOpen}
-                    className="flex w-full items-center gap-4 px-5 py-5 text-center sm:px-7"
+                    className="flex w-full items-center gap-4 px-5 py-5 text-center font-black sm:px-7"
                   >
                     <span
                       className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-black transition ${
@@ -145,7 +74,7 @@ export default function FAQMini() {
                       {String(i + 1).padStart(2, "0")}
                     </span>
 
-                    <span className="flex-1 text-base font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-lg">
+                    <span className="m-0 flex-1 text-base font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-lg">
                       {item.q}
                     </span>
 
@@ -162,6 +91,7 @@ export default function FAQMini() {
                       +
                     </motion.span>
                   </button>
+                  </h3>
 
                   <AnimatePresence initial={false}>
                     {isOpen ? (
@@ -175,41 +105,10 @@ export default function FAQMini() {
                         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-6 text-center sm:px-7">
+                        <div className="px-5 pb-6 text-start sm:px-7">
                           <p className="mx-auto max-w-2xl text-base font-semibold leading-8 text-slate-600">
-                            {item.lead}
+                            {item.a}
                           </p>
-
-                          <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                            {item.bullets.map((bullet) => (
-                              <div
-                                key={bullet.title}
-                                className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 text-center"
-                              >
-                                <div className="mb-2 flex items-center justify-center gap-2">
-                                  <span
-                                    className="grid h-5 w-5 place-items-center rounded-full bg-indigo-600 text-[0.65rem] font-black text-white"
-                                    aria-hidden="true"
-                                  >
-                                    ✓
-                                  </span>
-                                  <strong className="text-sm font-black text-slate-800">
-                                    {bullet.title}
-                                  </strong>
-                                </div>
-
-                                <p className="text-sm font-semibold leading-6 text-slate-500">
-                                  {bullet.text}
-                                </p>
-                              </div>
-                            ))}
-                          </div>
-
-                          {item.footer ? (
-                            <p className="mx-auto mt-5 max-w-2xl rounded-2xl border border-indigo-100 bg-indigo-50/70 px-5 py-4 text-sm font-black leading-6 text-indigo-900">
-                              {item.footer}
-                            </p>
-                          ) : null}
                         </div>
                       </motion.div>
                     ) : null}
@@ -229,27 +128,27 @@ export default function FAQMini() {
               ✦
             </span>
 
-            <h3 className="mt-6 text-2xl font-black tracking-[-0.03em] text-slate-900 sm:text-3xl">
-              {t("faqMini.stillTitle")}
-            </h3>
+            <h2 className="mt-6 text-2xl font-black tracking-[-0.03em] text-slate-900 sm:text-3xl">
+              {t("home.finalTitle")}
+            </h2>
 
             <p className="mx-auto mt-3 max-w-xl text-base font-semibold leading-7 text-slate-600">
-              {t("faqMini.stillText")}
+              {t("home.finalLead")}
             </p>
 
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                to="/pricing"
+                to="/register"
                 className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
               >
                 {t("home.startTrial")}
               </Link>
 
               <Link
-                to="/contact"
+                to="/pricing"
                 className="inline-flex w-full items-center justify-center rounded-2xl border border-indigo-100 bg-white px-7 py-3.5 text-sm font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 sm:w-auto"
               >
-                {t("nav.contact")}
+                {t("home.finalPricing")}
               </Link>
             </div>
           </div>
