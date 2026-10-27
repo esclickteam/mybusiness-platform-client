@@ -1827,6 +1827,7 @@ export async function diffMetaCampaignSync(
 export async function listMetaAdStudies(businessId: string | undefined) {
   const { data } = await API.get<{
     success: boolean;
+    available?: boolean;
     results: Array<{ id: string; name?: string; type?: string }>;
   }>("/meta-campaigns/ad-studies", withBusiness(businessId));
   return data;

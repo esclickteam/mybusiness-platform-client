@@ -57,6 +57,7 @@ export default function AdsManagerAudiencesSection({
   const [audiences, setAudiences] = useState<MetaCustomAudience[]>([]);
   const [saved, setSaved] = useState<MetaSavedAudience[]>([]);
   const [studies, setStudies] = useState<Array<{ id: string; name?: string; type?: string }>>([]);
+  const [studiesAvailable, setStudiesAvailable] = useState(true);
   const [error, setError] = useState("");
   const [lalName, setLalName] = useState("");
   const [lalOrigin, setLalOrigin] = useState("");
@@ -71,20 +72,36 @@ export default function AdsManagerAudiencesSection({
   useEffect(() => {
     if (!businessId) return;
     let cancelled = false;
-    Promise.all([
+    Promise.allSettled([
       listMetaCustomAudiences(businessId),
       listMetaSavedAudiences(businessId),
       listMetaAdStudies(businessId),
-    ])
-      .then(([custom, savedRows, studyRows]) => {
-        if (cancelled) return;
-        setAudiences(custom.results || []);
-        setSaved(savedRows.results || []);
-        setStudies(studyRows.results || []);
-      })
-      .catch((err) => {
-        if (!cancelled) setError(audienceErrorText(err, t));
-      });
+    ]).then(([custom, savedRows, studyRows]) => {
+      if (cancelled) return;
+      const audienceFailures: string[] = [];
+      if (custom.status === "fulfilled") {
+        setAudiences(custom.value.results || []);
+      } else {
+        audienceFailures.push(audienceErrorText(custom.reason, t));
+      }
+      if (savedRows.status === "fulfilled") {
+        setSaved(savedRows.value.results || []);
+      } else {
+        audienceFailures.push(audienceErrorText(savedRows.reason, t));
+      }
+      if (studyRows.status === "fulfilled") {
+        setStudies(studyRows.value.results || []);
+        setStudiesAvailable(studyRows.value.available !== false);
+      } else if (metaAdsFriendlyMessage(studyRows.reason, "") === "GRAPH_ADSTUDIES") {
+        setStudies([]);
+        setStudiesAvailable(false);
+      } else {
+        setStudies([]);
+        setStudiesAvailable(false);
+        audienceFailures.push(audienceErrorText(studyRows.reason, t));
+      }
+      setError(audienceFailures[0] || "");
+    });
     return () => {
       cancelled = true;
     };
@@ -92,12 +109,20 @@ export default function AdsManagerAudiencesSection({
 
   const refreshAudiences = async () => {
     if (!businessId) return;
-    const [custom, studyRows] = await Promise.all([
-      listMetaCustomAudiences(businessId),
-      listMetaAdStudies(businessId),
-    ]);
+    const custom = await listMetaCustomAudiences(businessId);
     setAudiences(custom.results || []);
-    setStudies(studyRows.results || []);
+    try {
+      const studyRows = await listMetaAdStudies(businessId);
+      setStudies(studyRows.results || []);
+      setStudiesAvailable(studyRows.available !== false);
+    } catch (err) {
+      if (metaAdsFriendlyMessage(err, "") === "GRAPH_ADSTUDIES") {
+        setStudies([]);
+        setStudiesAvailable(false);
+        return;
+      }
+      throw err;
+    }
   };
 
   const createLookalike = async () => {
@@ -322,7 +347,11 @@ export default function AdsManagerAudiencesSection({
         ) : (
           <p className="mt-1">{t("metaCampaigns.adsManager.chrome.advancedWritesOff")}</p>
         )}
-        {studies.length ? (
+        {!studiesAvailable ? (
+          <p className="mt-2" data-testid="meta-ab-studies-unavailable">
+            {t("metaCampaigns.adsManager.chrome.abTestsUnavailable")}
+          </p>
+        ) : studies.length ? (
           <ul className="mt-3 space-y-2">
             {studies.map((row) => (
               <li key={row.id} className="flex flex-wrap items-center justify-between gap-2">

@@ -10663,6 +10663,7 @@
         "localesHint": "Language locale keys from Meta (example: 6)",
         "abTests": "A/B tests on this ad account",
         "abTestsEmpty": "No Ad Studies returned by the Marketing API.",
+        "abTestsUnavailable": "A/B tests are not available on this ad account or Marketing API version.",
         "abTestsHint": "Create a draft split test only. Starting a study needs an explicit confirmation and does not change live campaign budgets.",
         "abTestName": "Study name",
         "createAbDraft": "Create draft A/B study",
