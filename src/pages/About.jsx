@@ -7,16 +7,6 @@ import {
   getHtmlLang,
   getTextDirection,
 } from "../i18n/localeUtils";
-import {
-  AudienceArt,
-  CommitmentMark,
-  DifferenceIcon,
-  HeroComposition,
-  PeopleConstellation,
-  PrincipleIcon,
-  StepMark,
-  WorkspaceComposition,
-} from "../components/about/AboutVisuals";
 import { marketingPublicUrl } from "../lib/localePathCore.mjs";
 import "../styles/About.css";
 
@@ -33,56 +23,25 @@ const LOCALES = [
   { code: "ar", hrefLang: "ar", og: "ar_AE" },
 ];
 
-const PRINCIPLES = [
-  ["clarity", "principle1Title", "principle1Text"],
-  ["connection", "principle2Title", "principle2Text"],
-  ["practicality", "principle3Title", "principle3Text"],
-];
-
 const JOURNEY = ["journey1", "journey2", "journey3", "journey4", "journey5"];
-
-const STEPS = [
-  ["step1Title", "step1Text"],
-  ["step2Title", "step2Text"],
-  ["step3Title", "step3Text"],
-  ["step4Title", "step4Text"],
-];
-
-const AUDIENCES = [1, 2, 3, 4];
-
-const DIFFERENCES = [
-  ["tools", "diff1Title", "diff1Text"],
-  ["start", "diff2Title", "diff2Text"],
-  ["flow", "diff3Title", "diff3Text"],
-  ["services", "diff4Title", "diff4Text"],
-];
-
+const AUDIENCES = [1, 2, 3, 4, 5, 6];
 const FAQS = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+
+const PRODUCTS = [
+  ["crm", "/crm"],
+  ["whatsapp", "/whatsapp-api"],
+  ["marketing", "/meta-campaigns"],
+  ["automations", "/automations"],
+  ["website", "/website-builder"],
+  ["appointments", "/appointments"],
+  ["collaborations", "/collaborations"],
+  ["agents", "/agents"],
+  ["saas", "/saas"],
+  ["templates", "/website-builder"],
+];
 
 function pageUrl(code) {
   return marketingPublicUrl(PAGE_PATH, code);
-}
-
-function AboutLink({ to, className, children, external = false }) {
-  if (external) {
-    return (
-      <a className={className} href={to}>
-        {children}
-      </a>
-    );
-  }
-  if (String(to).startsWith("#")) {
-    return (
-      <a className={className} href={to}>
-        {children}
-      </a>
-    );
-  }
-  return (
-    <Link className={className} to={to}>
-      {children}
-    </Link>
-  );
 }
 
 export default function About() {
@@ -92,18 +51,6 @@ export default function About() {
   const htmlLang = getHtmlLang(lang);
   const canonical = pageUrl(lang);
   const activeOg = LOCALES.find((item) => item.code === lang)?.og || "en_US";
-
-  const related = [
-    { href: "/", label: t("about.linkHome") },
-    { href: "/features", label: t("about.linkPlatform") },
-    { href: "/crm", label: t("about.linkCrm") },
-    { href: "/website-builder", label: t("about.linkWebsite") },
-    { href: "/appointments", label: t("about.linkAppointments") },
-    { href: "/automations", label: t("about.linkAutomations") },
-    { href: "https://whatsapp.bizuply.com", label: t("about.linkWhatsapp"), external: true },
-    { href: "/pricing", label: t("about.linkPricing") },
-    { href: "/contact", label: t("about.linkContact") },
-  ];
 
   const schema = useMemo(() => {
     const orgId = `${ORIGIN}/#organization`;
@@ -313,9 +260,10 @@ export default function About() {
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
       </Helmet>
 
-      <section className="about-band about-band--navy about-hero">
-        <div className="about-wrap about-hero-grid">
-          <div className="about-hero-copy">
+      <section className="about-hero">
+        <div className="about-hero__glow" aria-hidden="true" />
+        <div className="about-wrap about-hero__grid">
+          <div className="about-hero__copy">
             <nav className="about-crumb" aria-label={t("about.crumbAria")}>
               <Link to="/">{t("about.linkHome")}</Link>
               <span aria-hidden="true">/</span>
@@ -324,50 +272,96 @@ export default function About() {
             <p className="about-kicker">{t("about.badge")}</p>
             <h1>{t("about.heroTitle")}</h1>
             <p className="about-lead">{t("about.heroLead")}</p>
-            <p className="about-support">{t("about.heroSupport")}</p>
+            <p className="about-note">{t("about.heroNote")}</p>
             <div className="about-actions">
-              <AboutLink className="about-btn about-btn--light" to="/features">
-                {t("about.ctaExplorePlatform")}
-              </AboutLink>
-              <AboutLink className="about-btn about-btn--ghost" to="#who">
-                {t("about.ctaGetToKnow")}
-              </AboutLink>
+              <Link className="about-btn about-btn--light" to="/platform">
+                {t("about.ctaExplore")}
+              </Link>
+              <a className="about-btn about-btn--ghost" href="#company">
+                {t("about.ctaStory")}
+              </a>
             </div>
           </div>
-          <HeroComposition label={t("about.heroVisualAlt")} />
+          <div className="about-stage">
+            <img
+              className="about-shot about-shot--back"
+              src="/images/about/shot-campaigns.webp"
+              alt={t("about.altCampaigns")}
+              width="1600"
+              height="900"
+            />
+            <img
+              className="about-shot about-shot--main"
+              src="/images/about/shot-whatsapp.webp"
+              alt={t("about.altWhatsapp")}
+              width="1600"
+              height="900"
+            />
+            <img
+              className="about-shot about-shot--front"
+              src="/images/about/shot-calendar.webp"
+              alt={t("about.altCalendar")}
+              width="1600"
+              height="900"
+            />
+          </div>
         </div>
       </section>
 
-      <section className="about-band about-band--white" id="who">
-        <div className="about-wrap about-split">
-          <div className="about-split__title">
+      <section className="about-band about-band--white" id="company">
+        <div className="about-wrap about-story">
+          <div className="about-story__copy">
+            <p className="about-kicker about-kicker--ink">{t("about.whoKicker")}</p>
             <h2>{t("about.whoTitle")}</h2>
-          </div>
-          <div className="about-split__copy about-prose">
             <p>{t("about.whoP1")}</p>
             <p>{t("about.whoP2")}</p>
             <p>{t("about.whoP3")}</p>
           </div>
-          <div className="about-split__visual">
-            <WorkspaceComposition label={t("about.whoVisualAlt")} />
-          </div>
+          <figure className="about-story__figure">
+            <img
+              src="/images/about/shot-editor.webp"
+              alt={t("about.altEditor")}
+              width="1600"
+              height="900"
+            />
+            <figcaption>{t("about.editorCaption")}</figcaption>
+          </figure>
         </div>
       </section>
 
       <section className="about-band about-band--mist">
         <div className="about-wrap">
-          <h2 className="about-section-title">{t("about.missionTitle")}</h2>
-          <div className="about-prose about-prose--narrow">
-            <p>{t("about.missionP1")}</p>
-            <p>{t("about.missionP2")}</p>
-            <p>{t("about.missionP3")}</p>
+          <div className="about-belief">
+            <div>
+              <h2>{t("about.beliefTitle")}</h2>
+              <p>{t("about.beliefP1")}</p>
+            </div>
+            <p className="about-belief__aside">{t("about.beliefP2")}</p>
           </div>
-          <ul className="about-principles">
-            {PRINCIPLES.map(([icon, titleKey, textKey]) => (
-              <li key={titleKey}>
-                <PrincipleIcon name={icon} />
-                <h3>{t(`about.${titleKey}`)}</h3>
-                <p>{t(`about.${textKey}`)}</p>
+          <ol className="about-axis" aria-label={t("about.journeyAria")}>
+            {JOURNEY.map((key, index) => (
+              <li key={key}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{t(`about.${key}`)}</strong>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="about-band about-band--white" id="work">
+        <div className="about-wrap">
+          <header className="about-center">
+            <h2>{t("about.ecosystemTitle")}</h2>
+            <p>{t("about.ecosystemLead")}</p>
+          </header>
+          <ul className="about-ecosystem">
+            {PRODUCTS.map(([id, href]) => (
+              <li key={id}>
+                <Link to={href}>
+                  <strong>{t(`about.product.${id}.name`)}</strong>
+                  <span>{t(`about.product.${id}.text`)}</span>
+                </Link>
               </li>
             ))}
           </ul>
@@ -375,48 +369,66 @@ export default function About() {
       </section>
 
       <section className="about-band about-band--navy">
-        <div className="about-wrap about-why">
-          <div className="about-prose">
-            <h2>{t("about.whyTitle")}</h2>
-            <p>{t("about.whyP1")}</p>
-            <p>{t("about.whyP2")}</p>
-            <p>{t("about.whyP3")}</p>
+        <div className="about-wrap about-split-dark">
+          <div>
+            <h2>{t("about.differenceTitle")}</h2>
+            <p>{t("about.differenceLead")}</p>
           </div>
-          <ol className="about-journey" aria-label={t("about.journeyAria")}>
-            {JOURNEY.map((key, index) => (
-              <li key={key} style={{ "--step": index }}>
-                <span>{t(`about.${key}`)}</span>
-              </li>
-            ))}
-          </ol>
+          <div className="about-contrast">
+            <article>
+              <h3>{t("about.diffPlatformTitle")}</h3>
+              <p>{t("about.diffPlatformText")}</p>
+            </article>
+            <article>
+              <h3>{t("about.diffDedicatedTitle")}</h3>
+              <p>{t("about.diffDedicatedText")}</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="about-band about-band--cloud" id="offer">
+        <div className="about-wrap">
+          <h2 className="about-center__title">{t("about.offersTitle")}</h2>
+          <div className="about-offers">
+            <article className="about-offer about-offer--photo">
+              <img
+                src="/images/about/shot-automations.webp"
+                alt={t("about.altAutomations")}
+                width="1600"
+                height="900"
+              />
+              <div>
+                <h3>{t("about.offerPlatformTitle")}</h3>
+                <p>{t("about.offerPlatformText")}</p>
+                <Link to="/platform">{t("about.offerPlatformLink")}</Link>
+              </div>
+            </article>
+            <article className="about-offer about-offer--navy">
+              <p className="about-kicker">{t("about.offerSaasKicker")}</p>
+              <h3>{t("about.offerSaasTitle")}</h3>
+              <p>{t("about.offerSaasText")}</p>
+              <Link to="/saas">{t("about.offerSaasLink")}</Link>
+            </article>
+            <article className="about-offer about-offer--line">
+              <p className="about-kicker about-kicker--ink">{t("about.offerServicesKicker")}</p>
+              <h3>{t("about.offerServicesTitle")}</h3>
+              <p>{t("about.offerServicesText")}</p>
+              <Link to="/services">{t("about.offerServicesLink")}</Link>
+            </article>
+          </div>
         </div>
       </section>
 
       <section className="about-band about-band--white">
         <div className="about-wrap">
-          <h2 className="about-section-title">{t("about.approachTitle")}</h2>
-          <p className="about-intro">{t("about.approachIntro")}</p>
-          <ol className="about-steps">
-            {STEPS.map(([titleKey, textKey], index) => (
-              <li key={titleKey} className="about-step">
-                <span className="about-step-index">{String(index + 1).padStart(2, "0")}</span>
-                <StepMark index={index} />
-                <h3>{t(`about.${titleKey}`)}</h3>
-                <p>{t(`about.${textKey}`)}</p>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="about-band about-band--cloud">
-        <div className="about-wrap">
-          <h2 className="about-section-title">{t("about.audiencesTitle")}</h2>
-          <p className="about-intro">{t("about.audiencesIntro")}</p>
+          <div className="about-audience-head">
+            <h2>{t("about.audiencesTitle")}</h2>
+            <p>{t("about.audiencesIntro")}</p>
+          </div>
           <ul className="about-audiences">
             {AUDIENCES.map((n) => (
               <li key={n}>
-                <AudienceArt index={n - 1} label={t(`about.audience${n}Alt`)} />
                 <h3>{t(`about.audience${n}Title`)}</h3>
                 <p>{t(`about.audience${n}Text`)}</p>
               </li>
@@ -425,67 +437,24 @@ export default function About() {
         </div>
       </section>
 
-      <section className="about-band about-band--navy">
+      <section className="about-band about-band--mist">
         <div className="about-wrap about-people">
-          <div className="about-prose">
+          <div>
             <h2>{t("about.peopleTitle")}</h2>
             <p>{t("about.peopleP1")}</p>
+          </div>
+          <div className="about-people__note">
             <p>{t("about.peopleP2")}</p>
-          </div>
-          <PeopleConstellation label={t("about.peopleVisualAlt")} />
-        </div>
-      </section>
-
-      <section className="about-band about-band--white">
-        <div className="about-wrap">
-          <h2 className="about-section-title">{t("about.differentTitle")}</h2>
-          <p className="about-intro">{t("about.differentIntro")}</p>
-          <ul className="about-diffs">
-            {DIFFERENCES.map(([icon, titleKey, textKey]) => (
-              <li key={titleKey}>
-                <DifferenceIcon name={icon} />
-                <h3>{t(`about.${titleKey}`)}</h3>
-                <p>{t(`about.${textKey}`)}</p>
-              </li>
-            ))}
-          </ul>
-          <div className="about-actions">
-            <AboutLink className="about-btn about-btn--navy" to="/solutions">
-              {t("about.ctaSolutions")}
-            </AboutLink>
+            <p>
+              <a href="mailto:support@bizuply.com">support@bizuply.com</a>
+            </p>
           </div>
         </div>
       </section>
 
-      <section className="about-band about-band--mist">
-        <div className="about-wrap about-commitment">
-          <div>
-            <div className="about-rule" aria-hidden="true" />
-            <h2>{t("about.commitmentTitle")}</h2>
-            <div className="about-prose">
-              <p>{t("about.commitmentP1")}</p>
-              <p>{t("about.commitmentP2")}</p>
-            </div>
-            <nav className="about-related" aria-label={t("about.relatedAria")}>
-              {related.map((item) => (
-                <AboutLink
-                  key={item.href}
-                  to={item.href}
-                  external={item.external}
-                  className="about-related__link"
-                >
-                  {item.label}
-                </AboutLink>
-              ))}
-            </nav>
-          </div>
-          <CommitmentMark label={t("about.commitmentVisualAlt")} />
-        </div>
-      </section>
-
-      <section className="about-band about-band--cloud" id="faq">
+      <section className="about-band about-band--white" id="faq">
         <div className="about-wrap about-faq-wrap">
-          <h2 className="about-section-title">{t("about.faqTitle")}</h2>
+          <h2>{t("about.faqTitle")}</h2>
           <div className="about-faq">
             {FAQS.map((n) => (
               <details key={n} className="about-faq-item">
@@ -499,20 +468,17 @@ export default function About() {
         </div>
       </section>
 
-      <section className="about-band about-final">
-        <div className="about-wrap about-final-inner">
+      <section className="about-close">
+        <div className="about-wrap about-close__inner">
           <h2>{t("about.finalTitle")}</h2>
           <p>{t("about.finalText")}</p>
           <div className="about-actions">
-            <AboutLink className="about-btn about-btn--light" to="/features">
+            <Link className="about-btn about-btn--light" to="/platform">
               {t("about.ctaExplore")}
-            </AboutLink>
-            <AboutLink className="about-btn about-btn--lilac" to="/register">
-              {t("about.ctaStart")}
-            </AboutLink>
-            <AboutLink className="about-btn about-btn--ghost" to="/contact">
+            </Link>
+            <Link className="about-btn about-btn--ghost" to="/contact">
               {t("about.ctaContact")}
-            </AboutLink>
+            </Link>
           </div>
         </div>
       </section>

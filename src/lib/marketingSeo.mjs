@@ -1136,14 +1136,14 @@ export function buildMarketingPrerender(pathname) {
   const heading = path === "/crm"
     ? "Every lead, every client, every appointment in one place"
     : path === "/about"
-      ? "Built to make business feel more connected"
+      ? "Built for businesses that want their work connected"
       : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
   const extra = path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
     : path === "/about" && aboutFaqs
-      ? `<h2>Frequently asked questions about Bizuply</h2>${faqBodyHtml(aboutFaqs)}`
+      ? `<p>Bizuply develops software for customers, communication, marketing, websites and day-to-day operations, together with professional services that help a business put that software to work.</p><p>Bizuply LLC is registered in the United States. Support is at support@bizuply.com.</p><h2>Business Platform</h2><p>A connected workspace for managing customers, communication, marketing, and everyday business operations.</p><h2>Ready-Made SaaS Solutions</h2><p>Industry-focused software solutions designed around specific business workflows.</p><h2>Professional Digital Services</h2><p>Practical assistance with websites, technology setup, and connected business solutions.</p><p><a href="/platform">Explore Bizuply</a> <a href="/contact">Contact Our Team</a></p><h2>Frequently asked questions about Bizuply</h2>${faqBodyHtml(aboutFaqs)}`
       : "";
   return {
     lang: "en",
