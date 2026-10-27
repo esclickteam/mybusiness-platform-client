@@ -134,6 +134,9 @@ export function createDefaultAd(adSetName: string): AdDraft {
     imagePreviewUrl: "",
     videoId: "",
     carouselCards: [],
+    catalogId: "",
+    productSetId: "",
+    objectStoryId: "",
   };
 }
 

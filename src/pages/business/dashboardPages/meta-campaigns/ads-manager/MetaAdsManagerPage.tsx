@@ -17,6 +17,7 @@ import {
   syncMetaPublish,
   saveMetaEditorDraft,
   waitForMetaPublish,
+  diffMetaCampaignSync,
   type MetaAdsConnectionStatus,
   type MetaCampaignPublishRecord,
   type MetaEditorDraftSaveResult,
@@ -41,6 +42,7 @@ import {
 } from "./buildPublishPayload";
 import { useAdsManagerState } from "./useAdsManagerState";
 import { adsManagerStateFromMetaCampaign } from "./adsManagerStateFromMetaCampaign";
+import { localSnapshotFromState, metaSnapshotFromCampaign } from "./adsManagerSync";
 import {
   diffAdsManagerState,
   isAdsManagerDirty,
@@ -152,6 +154,10 @@ export default function MetaAdsManagerPage() {
     current: string;
   } | null>(null);
   const [refreshConfirmOpen, setRefreshConfirmOpen] = useState(false);
+  const [syncDiff, setSyncDiff] = useState<{
+    hasConflicts: boolean;
+    conflicts: Array<{ field: string; local: unknown; meta: unknown }>;
+  } | null>(null);
   const preferMetaOnLoad = useRef(false);
   const [serverAck, setServerAck] = useState(false);
   const baselineRef = useRef<AdsManagerState | null>(null);
@@ -202,9 +208,10 @@ export default function MetaAdsManagerPage() {
       try {
         const data = await getMetaCampaign(businessId, campaignId);
         if (cancelled || !data?.campaign) return;
+        const preferMeta = preferMetaOnLoad.current;
         const hydrated = adsManagerStateFromMetaCampaign(data.campaign, {
           currency: data.currency,
-          preferMeta: preferMetaOnLoad.current,
+          preferMeta,
         });
         preferMetaOnLoad.current = false;
         replaceState(hydrated);
@@ -233,6 +240,23 @@ export default function MetaAdsManagerPage() {
           metaBaselineRef.current = null;
         }
         setServerAck(Boolean(hydrated.lastSavedAt));
+        if (preferMeta || !isRealMetaObjectId(campaignId)) {
+          setSyncDiff(null);
+        } else {
+          try {
+            const diff = await diffMetaCampaignSync(
+              businessId,
+              campaignId,
+              localSnapshotFromState(hydrated),
+              metaSnapshotFromCampaign(data.campaign)
+            );
+            if (!cancelled) {
+              setSyncDiff(diff.hasConflicts ? diff : null);
+            }
+          } catch {
+            if (!cancelled) setSyncDiff(null);
+          }
+        }
       } catch (error: unknown) {
         const err = error as { response?: { data?: { error?: string } }; message?: string };
         toast.error(
@@ -1204,6 +1228,43 @@ export default function MetaAdsManagerPage() {
         </div>
       )}
 
+      {syncDiff?.hasConflicts ? (
+        <div className="border-b border-amber-300 bg-[#FFF8E5] px-4 py-3 text-[13px] text-[#8A6D1D]">
+          <p className="font-bold text-[#050505]">{c("syncConflictTitle")}</p>
+          <p className="mt-1">{c("syncConflictBody")}</p>
+          <ul className="mt-2 max-h-32 list-disc space-y-1 overflow-auto ps-5">
+            {syncDiff.conflicts.map((row) => (
+              <li key={row.field}>
+                <span className="font-semibold">{row.field}</span>
+                {": "}
+                {c("syncConflictLocal")} {String(row.local ?? "—")} · {c("syncConflictMeta")}{" "}
+                {String(row.meta ?? "—")}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button
+              type="button"
+              className={metaBtnSecondary}
+              onClick={() => setSyncDiff(null)}
+            >
+              {c("syncConflictKeep")}
+            </button>
+            <button
+              type="button"
+              className={metaBtnPrimary}
+              onClick={() => {
+                preferMetaOnLoad.current = true;
+                setSyncDiff(null);
+                setMetaReloadTick((tick) => tick + 1);
+              }}
+            >
+              {c("syncConflictLoadMeta")}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
       {connection?.adAccountBillingHealth?.actionRequired ? (
         <div
           className={[
@@ -1567,6 +1628,7 @@ export default function MetaAdsManagerPage() {
               businessId={businessId}
               pages={connectedPages}
               selectedPageId={connection?.selectedPage?.pageId}
+              advancedCapabilities={connection?.adsManagerAdvanced}
               onResumeDraft={
                 selectedAdSet.recoveredPublishId
                   ? () => {
@@ -1614,6 +1676,7 @@ export default function MetaAdsManagerPage() {
               pages={connectedPages}
               businessId={businessId}
               sessionMode={isEditSession ? "edit" : "create"}
+              advancedCapabilities={connection?.adsManagerAdvanced}
               showLeadgenTos={String(selectedAdSet?.conversionLocation || "")
                 .toLowerCase()
                 .includes("instant")}

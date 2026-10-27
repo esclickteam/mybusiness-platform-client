@@ -175,7 +175,7 @@ export type AdSetDraft = {
   locationsExpanded: boolean;
 };
 
-export type AdCreativeFormat = "image" | "video" | "carousel";
+export type AdCreativeFormat = "image" | "video" | "carousel" | "catalog" | "existing_post";
 
 export type CarouselCardDraft = {
   headline: string;
@@ -217,6 +217,9 @@ export type AdDraft = {
   imagePreviewUrl: string;
   videoId: string;
   carouselCards: CarouselCardDraft[];
+  catalogId: string;
+  productSetId: string;
+  objectStoryId: string;
 };
 
 export type AdsManagerTreeNode = {

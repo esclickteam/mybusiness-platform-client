@@ -253,10 +253,21 @@ function mapAd(
   adSet: MetaCampaignAdSet | undefined,
   fallback: AdDraft
 ): AdDraft {
+  const formatRaw = String(ad.creativeFormat || campaign.creativeFormat || "").toLowerCase();
   const isVideo =
     Boolean(ad.videoId) ||
     campaign.creativeFormat === "video" ||
     fallback.creativeFormat === "video";
+  const creativeFormat =
+    formatRaw === "catalog" || formatRaw === "dpa"
+      ? "catalog"
+      : formatRaw === "existing_post"
+        ? "existing_post"
+        : formatRaw === "carousel"
+          ? "carousel"
+          : isVideo
+            ? "video"
+            : "image";
   return {
     ...fallback,
     id: ad.id,
@@ -276,7 +287,10 @@ function mapAd(
     imageHash: ad.imageHash || campaign.imageHash || "",
     imagePreviewUrl: ad.imageUrl || campaign.imageUrl || campaign.picture || "",
     videoId: ad.videoId || campaign.videoId || "",
-    creativeFormat: isVideo ? "video" : "image",
+    creativeFormat,
+    catalogId: ad.catalogId || campaign.catalogId || fallback.catalogId || "",
+    productSetId: ad.productSetId || campaign.productSetId || fallback.productSetId || "",
+    objectStoryId: ad.objectStoryId || campaign.objectStoryId || fallback.objectStoryId || "",
     mediaLabel: ad.imageHash || ad.videoId ? "Current media" : fallback.mediaLabel,
   };
 }

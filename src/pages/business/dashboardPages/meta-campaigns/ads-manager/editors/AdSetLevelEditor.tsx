@@ -37,6 +37,11 @@ type Props = {
   selectedPageId?: string;
   onResumeDraft?: () => void;
   objective?: CampaignObjective | string;
+  advancedCapabilities?: {
+    lookalikeCreate?: boolean;
+    abStudyCreate?: boolean;
+    abStudyStart?: boolean;
+  };
 };
 
 /** Stable empty array — `|| []` would recreate identity every render. */
@@ -59,6 +64,7 @@ export default function AdSetLevelEditor({
   selectedPageId,
   onResumeDraft,
   objective = "OUTCOME_LEADS",
+  advancedCapabilities,
 }: Props) {
   const { t } = useTranslation();
   const [pageQuery, setPageQuery] = useState("");
@@ -816,6 +822,7 @@ export default function AdSetLevelEditor({
         adSet={adSet}
         businessId={businessId}
         onChange={onChange}
+        advancedCapabilities={advancedCapabilities}
       />
       <AdsManagerPlacementsSection adSet={adSet} onChange={onChange} />
     </div>

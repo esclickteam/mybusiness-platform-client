@@ -126,7 +126,10 @@ export type MetaCampaign = {
   imageUrl?: string;
   picture?: string;
   videoId?: string;
-  creativeFormat?: "single" | "video" | "carousel" | string;
+  creativeFormat?: "single" | "video" | "carousel" | "catalog" | "existing_post" | string;
+  objectStoryId?: string;
+  productSetId?: string;
+  catalogId?: string;
   callToAction?: string;
   ctaCustom?: string;
   carouselCards?: MetaCarouselCard[];
@@ -200,6 +203,10 @@ export type MetaCampaignAd = {
   campaignId?: string;
   campaignName?: string;
   adSetId?: string;
+  creativeFormat?: string;
+  objectStoryId?: string;
+  productSetId?: string;
+  catalogId?: string;
 };
 
 export type MetaCampaignAdSet = {
@@ -264,6 +271,8 @@ export type MetaLeadFormQuestion = {
   required?: boolean;
   answerType?: "short_answer" | "multiple_choice";
   options?: Array<string | { key?: string; value: string }>;
+  dependentConditionalQuestions?: Array<{ name?: string; fieldKey?: string; field_key?: string }>;
+  dependent_conditional_questions?: Array<{ name?: string; field_key?: string; fieldKey?: string }>;
 };
 
 export type MetaLeadFormQuestionType = {
@@ -368,6 +377,14 @@ export type MetaAdsConnectionStatus = {
   previewFormats?: MetaLabeledOption[];
   leadFormQuestionTypes?: MetaLeadFormQuestionType[];
   isShowcaseDemo?: boolean;
+  adsManagerAdvanced?: {
+    lookalikeCreate?: boolean;
+    catalogCreatives?: boolean;
+    existingPostCreatives?: boolean;
+    leadFormConditionals?: boolean;
+    abStudyCreate?: boolean;
+    abStudyStart?: boolean;
+  };
 };
 
 export type MetaCampaignsOverview = {
@@ -1355,6 +1372,7 @@ export async function createMetaLeadForm(
     idempotencyKey?: string;
     publishId?: string;
     adDraftId?: string;
+    customDisclaimer?: { title: string; text: string; isRequired?: boolean };
   }
 ) {
   const { data } = await API.post<MetaLeadFormWriteResult>(
@@ -1699,6 +1717,110 @@ export async function listMetaSavedAudiences(businessId: string | undefined) {
     "/meta-campaigns/targeting/saved-audiences",
     withBusiness(businessId)
   );
+  return data;
+}
+
+export async function createMetaLookalikeAudience(
+  businessId: string | undefined,
+  payload: {
+    originAudienceId: string;
+    country: string;
+    percent: number;
+    name?: string;
+  }
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    audience: MetaCustomAudience & { country?: string; ratio?: number };
+  }>("/meta-campaigns/targeting/lookalike-audiences", {
+    businessId,
+    ...payload,
+  });
+  return data;
+}
+
+export async function listMetaProductCatalogs(businessId: string | undefined) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: Array<{ id: string; name: string; productCount?: number | null }>;
+  }>("/meta-campaigns/product-catalogs", withBusiness(businessId));
+  return data;
+}
+
+export async function listMetaProductSets(
+  businessId: string | undefined,
+  catalogId: string
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: Array<{ id: string; name: string; productCount?: number | null }>;
+  }>(
+    `/meta-campaigns/product-catalogs/${encodeURIComponent(catalogId)}/product-sets`,
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function listMetaPagePosts(
+  businessId: string | undefined,
+  pageId: string
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: Array<{
+      id: string;
+      message: string;
+      createdTime?: string | null;
+      picture?: string;
+      permalink?: string;
+    }>;
+  }>("/meta-campaigns/page-posts", withBusiness(businessId, { pageId }));
+  return data;
+}
+
+export async function createMetaAdStudy(
+  businessId: string | undefined,
+  payload: {
+    name: string;
+    cells: Array<{ name: string; treatmentPercentage?: number; adsetIds?: string[] }>;
+  }
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    study: { id?: string };
+    started: boolean;
+  }>("/meta-campaigns/ad-studies", { businessId, ...payload, confirmStart: false });
+  return data;
+}
+
+export async function startMetaAdStudy(
+  businessId: string | undefined,
+  studyId: string,
+  confirmStart: boolean
+) {
+  const { data } = await API.post<{ success: boolean }>(
+    `/meta-campaigns/ad-studies/${encodeURIComponent(studyId)}/start`,
+    { businessId, confirmStart }
+  );
+  return data;
+}
+
+export async function diffMetaCampaignSync(
+  businessId: string | undefined,
+  campaignId: string,
+  local: Record<string, unknown>,
+  meta: Record<string, unknown>
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    hasConflicts: boolean;
+    conflicts: Array<{ field: string; local: unknown; meta: unknown }>;
+    overwrittenByReload: boolean;
+  }>(`/meta-campaigns/campaigns/${encodeURIComponent(campaignId)}/sync-diff`, {
+    businessId,
+    local,
+    meta,
+  });
   return data;
 }
 

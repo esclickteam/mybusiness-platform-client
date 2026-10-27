@@ -14,12 +14,15 @@ import {
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
 import {
+  listMetaPagePosts,
+  listMetaProductCatalogs,
+  listMetaProductSets,
   setMetaLeadFormStatus,
   uploadMetaMedia,
   type MetaAdsPage,
   type MetaLeadFormDraft,
 } from "../../../../../../api/metaCampaignsApi";
-import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
+import type { AdCreativeFormat, AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdsManagerCreateLeadFormModal from "../AdsManagerCreateLeadFormModal";
 import {
   leadFormDuplicateSeedFromMeta,
@@ -65,6 +68,11 @@ type Props = {
   onChange: (patch: Partial<AdDraft>) => void;
   onFormsRefresh?: () => Promise<void> | void;
   onFormReady?: (form: { id: string; name: string; pageId: string }) => Promise<void> | void;
+  advancedCapabilities?: {
+    catalogCreatives?: boolean;
+    existingPostCreatives?: boolean;
+    leadFormConditionals?: boolean;
+  };
 };
 
 export default function AdLevelEditor({
@@ -84,6 +92,7 @@ export default function AdLevelEditor({
   onChange,
   onFormsRefresh,
   onFormReady,
+  advancedCapabilities,
 }: Props) {
   const { t } = useTranslation();
   const c = (key: string, opts?: Record<string, unknown>) =>
@@ -112,6 +121,9 @@ export default function AdLevelEditor({
   const [editorMode, setEditorMode] = useState<"create" | "duplicate">("create");
   const [duplicateSeed, setDuplicateSeed] = useState<LeadFormDuplicateSeed | null>(null);
   const [formActionKey, setFormActionKey] = useState("");
+  const [catalogs, setCatalogs] = useState<Array<{ id: string; name: string }>>([]);
+  const [productSets, setProductSets] = useState<Array<{ id: string; name: string }>>([]);
+  const [pagePosts, setPagePosts] = useState<Array<{ id: string; message: string }>>([]);
   const ctaRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -121,6 +133,56 @@ export default function AdLevelEditor({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
+
+  useEffect(() => {
+    if (!businessId || ad.creativeFormat !== "catalog") return;
+    let cancelled = false;
+    listMetaProductCatalogs(businessId)
+      .then((data) => {
+        if (!cancelled) setCatalogs(data.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setCatalogs([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, ad.creativeFormat]);
+
+  useEffect(() => {
+    if (!businessId || !ad.catalogId || ad.creativeFormat !== "catalog") {
+      setProductSets([]);
+      return;
+    }
+    let cancelled = false;
+    listMetaProductSets(businessId, ad.catalogId)
+      .then((data) => {
+        if (!cancelled) setProductSets(data.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setProductSets([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, ad.catalogId, ad.creativeFormat]);
+
+  useEffect(() => {
+    if (!businessId || ad.creativeFormat !== "existing_post") return;
+    const pageId = ad.facebookPageId;
+    if (!pageId) return;
+    let cancelled = false;
+    listMetaPagePosts(businessId, pageId)
+      .then((data) => {
+        if (!cancelled) setPagePosts(data.results || []);
+      })
+      .catch(() => {
+        if (!cancelled) setPagePosts([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, ad.creativeFormat, ad.facebookPageId]);
 
   const readActionError = (error: unknown) => {
     const response = (error as { response?: { data?: { error?: string; message?: string } } })
@@ -177,7 +239,7 @@ export default function AdLevelEditor({
     return form.name.toLowerCase().includes(q);
   });
 
-  const pickMedia = (format: "image" | "video" | "carousel") => {
+  const pickMedia = (format: AdCreativeFormat) => {
     onChange({
       creativeFormat: format,
       carouselCards:
@@ -189,7 +251,7 @@ export default function AdLevelEditor({
           : ad.carouselCards,
     });
     setMediaMenuOpen(false);
-    if (format !== "carousel") {
+    if (format === "image" || format === "video") {
       window.setTimeout(() => fileRef.current?.click(), 0);
     }
   };
@@ -623,7 +685,11 @@ export default function AdLevelEditor({
                 ? c("videoAd")
                 : ad.creativeFormat === "carousel"
                   ? c("carouselAd")
-                  : c("imageAd")}
+                  : ad.creativeFormat === "catalog"
+                    ? c("catalogAd")
+                    : ad.creativeFormat === "existing_post"
+                      ? c("existingPostAd")
+                      : c("imageAd")}
             </span>
             <Upload className="h-4 w-4 text-[#65676B]" />
           </button>
@@ -676,6 +742,36 @@ export default function AdLevelEditor({
                   </span>
                 </span>
               </button>
+              {advancedCapabilities?.catalogCreatives ? (
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => pickMedia("catalog")}
+              >
+                <Folder className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">{c("catalogAd")}</span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    {c("catalogAdDesc")}
+                  </span>
+                </span>
+              </button>
+              ) : null}
+              {advancedCapabilities?.existingPostCreatives ? (
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => pickMedia("existing_post")}
+              >
+                <Copy className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">{c("existingPostAd")}</span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    {c("existingPostAdDesc")}
+                  </span>
+                </span>
+              </button>
+              ) : null}
             </div>
           ) : null}
           <input
@@ -728,6 +824,56 @@ export default function AdLevelEditor({
             </MetaLinkButton>
           )}
         </MetaField>
+
+        {ad.creativeFormat === "catalog" ? (
+          <div className="space-y-2">
+            <MetaField label={c("catalog")}>
+              <select
+                className={metaSelectClass}
+                value={ad.catalogId}
+                onChange={(e) => onChange({ catalogId: e.target.value, productSetId: "" })}
+              >
+                <option value="">{c("pickCatalog")}</option>
+                {catalogs.map((row) => (
+                  <option key={row.id} value={row.id}>
+                    {row.name}
+                  </option>
+                ))}
+              </select>
+            </MetaField>
+            <MetaField label={c("productSet")}>
+              <select
+                className={metaSelectClass}
+                value={ad.productSetId}
+                onChange={(e) => onChange({ productSetId: e.target.value })}
+              >
+                <option value="">{c("pickProductSet")}</option>
+                {productSets.map((row) => (
+                  <option key={row.id} value={row.id}>
+                    {row.name}
+                  </option>
+                ))}
+              </select>
+            </MetaField>
+          </div>
+        ) : null}
+
+        {ad.creativeFormat === "existing_post" ? (
+          <MetaField label={c("existingPost")}>
+            <select
+              className={metaSelectClass}
+              value={ad.objectStoryId}
+              onChange={(e) => onChange({ objectStoryId: e.target.value })}
+            >
+              <option value="">{c("pickExistingPost")}</option>
+              {pagePosts.map((row) => (
+                <option key={row.id} value={row.id}>
+                  {row.message || row.id}
+                </option>
+              ))}
+            </select>
+          </MetaField>
+        ) : null}
 
         {ad.creativeFormat === "carousel" ? (
           <div className="space-y-2">
@@ -896,6 +1042,7 @@ export default function AdLevelEditor({
         adDraftId={editorMode === "duplicate" ? undefined : ad.id}
         mode={editorMode}
         initialDraft={editorMode === "duplicate" ? duplicateSeed : null}
+        allowAdvancedLeadForm={Boolean(advancedCapabilities?.leadFormConditionals)}
         onClose={() => setCreateFormOpen(false)}
         onDraftSaved={async () => {
           await onFormsRefresh?.();
