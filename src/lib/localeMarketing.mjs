@@ -177,11 +177,11 @@ const PAGES = {
       ["Defina horarios y servicios. El calendario ofrece huecos de 15 minutos. El cliente puede reservar en una página pública y el negocio recibe la cita en el mismo sistema que el CRM."],
     ),
     "/collaborations": page(
-      "Colaboraciones entre negocios | Bizuply",
-      "Coordine colaboraciones con otros negocios desde Bizuply, dentro del plan de negocio.",
+      "Plataforma de colaboración empresarial y oportunidades de partnership | Bizuply",
+      "Encuentre negocios complementarios, explore oportunidades de partnership, gestione propuestas de colaboración y comuníquese por el chat empresarial de Bizuply.",
       "Colaboraciones",
-      "Colaboraciones",
-      ["Las colaboraciones forman parte del plan de negocio de 99 dólares al mes o 990 dólares al año, junto con CRM, citas y automatizaciones."],
+      "Descubra socios de negocio. Cree oportunidades. Crezcan juntos.",
+      ["Bizuply reúne el descubrimiento de negocios, las oportunidades, las propuestas y el chat de texto para explorar una colaboración. No garantiza un socio ni aprueba las condiciones comerciales."],
     ),
     "/agents": page(
       "Agentes humanos | Bizuply",
@@ -310,7 +310,7 @@ cloneShape("pt-BR", {
     ],
   ),
   "/appointments": page("Agenda de compromissos | Bizuply", "Calendário, lembretes e acompanhamento na Bizuply, com horários de 15 minutos.", "Agenda", "Agenda de compromissos", ["Defina horários e serviços. O calendário oferece horários livres de 15 minutos. O cliente pode reservar em uma página pública e o compromisso entra no mesmo sistema do CRM."]),
-  "/collaborations": page("Colaborações entre negócios | Bizuply", "Coordene colaborações com outros negócios dentro do plano de negócios da Bizuply.", "Colaborações", "Colaborações", ["As colaborações fazem parte do plano de 99 dólares por mês ou 990 dólares por ano, junto com CRM, agenda e automações."]),
+  "/collaborations": page("Plataforma de colaboração empresarial e oportunidades de parceria | Bizuply", "Encontre negócios complementares, explore oportunidades de parceria, gerencie propostas de colaboração e converse pelo chat empresarial da Bizuply.", "Colaborações", "Descubra parceiros de negócio. Crie oportunidades. Cresçam juntos.", ["A Bizuply reúne a descoberta de negócios, as oportunidades, as propostas e o chat de texto. Ela não garante um parceiro nem aprova condições comerciais."]),
   "/agents": page("Agentes humanos | Bizuply", "Atribua o trabalho do negócio a agentes humanos. Esta página não descreve um chatbot.", "Agentes", "Agentes do negócio", ["Os agentes desta página são pessoas da equipe, não um chatbot. O acesso fica na conta do negócio."]),
   "/business": page("Para negócios | Bizuply", "Abra um negócio na Bizuply para usar CRM, agenda, site, automações e WhatsApp.", "Negócios", "Comece com o seu negócio", ["O cadastro do negócio é o caminho para o painel. Os preços públicos estão na página de preços e nas páginas de CRM e WhatsApp."]),
   "/whatsapp-api": page(
@@ -421,7 +421,7 @@ cloneShape("ar", {
     ],
   ),
   "/appointments": page("تنسيق المواعيد | Bizuply", "تقويم مواعيد وتذكيرات ومتابعة داخل Bizuply بخطوات 15 دقيقة.", "المواعيد", "تنسيق المواعيد", ["حدّدوا الساعات والخدمات. يعرض التقويم نوافذ من 15 دقيقة. يستطيع العميل الحجز في صفحة عامة ويظهر الموعد في النظام نفسه مع CRM."]),
-  "/collaborations": page("التعاون بين الأنشطة | Bizuply", "نسّقوا التعاون مع أنشطة أخرى ضمن الخطة التجارية في Bizuply.", "التعاون", "التعاون", ["التعاون جزء من خطة 99 دولاراً شهرياً أو 990 دولاراً سنوياً مع CRM والمواعيد والأتمتة."]),
+  "/collaborations": page("منصة للتعاون بين الأعمال وفرص الشراكة | Bizuply", "اعثروا على أعمال مكمّلة، واستكشفوا فرص الشراكة، وأديروا مقترحات التعاون، وتواصلوا عبر دردشة الأعمال في Bizuply.", "التعاون", "اكتشفوا شركاء أعمال. أنشئوا فرصاً. انموا معاً.", ["تجمع Bizuply اكتشاف الأعمال والفرص والمقترحات ودردشة النص. لا تضمن شريكاً ولا توافق على الشروط التجارية."]),
   "/agents": page("وكلاء بشريون | Bizuply", "أسندوا عمل النشاط إلى وكلاء بشريين. هذه الصفحة لا تصف روبوت دردشة.", "الوكلاء", "وكلاء النشاط", ["الوكلاء هنا أشخاص من الفريق وليسوا روبوت دردشة. تُدار الصلاحيات من حساب النشاط."]),
   "/business": page("للأنشطة | Bizuply", "افتحوا نشاطاً في Bizuply لاستخدام CRM والمواعيد والموقع والأتمتة وواتساب.", "النشاط", "ابدأوا بنشاطكم", ["تسجيل النشاط هو الطريق إلى اللوحة. الأسعار العامة في صفحة الأسعار وفي صفحتي CRM وواتساب."]),
   "/whatsapp-api": page(
