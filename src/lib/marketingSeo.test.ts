@@ -109,7 +109,10 @@ describe("marketing crawl files", () => {
     expect(buildMarketingPrerender("/he/crm")?.inner).toContain("49 דולר");
     expect(buildMarketingDocumentHead("/he/whatsapp-api") || "").toContain("מה כוללים 29 הדולר?");
     expect(buildMarketingDocumentHead("/crm") || "").toContain("What does the CRM cost?");
-    expect(buildMarketingPrerender("/he/about")?.inner).toContain("Meta Tech Provider");
+    expect(buildMarketingDocumentHead("/about") || "").toContain("Our Mission, Approach");
+    expect(buildMarketingDocumentHead("/about") || "").toContain("images/about/og.png");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Built to make business feel more connected");
+    expect(buildMarketingPrerender("/he/about")?.inner).toContain("נבנתה כדי להפוך את העבודה העסקית למחוברת יותר");
     expect(buildMarketingPrerender("/he/terms")).toBeNull();
     const spanish = buildMarketingDocumentHead("/es/crm") || "";
     expect(spanish).toContain('hreflang="es" href="https://bizuply.com/es/crm"');

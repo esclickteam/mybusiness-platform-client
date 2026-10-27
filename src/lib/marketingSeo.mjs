@@ -42,6 +42,7 @@ Sitemap: https://bizuply.com/sitemap.xml
 `;
 
 const OG_IMAGE = "https://bizuply.com/bizuply%20logo.png";
+const ABOUT_OG_IMAGE = "https://bizuply.com/images/about/og.png";
 const ORGANIZATION_LOGO = "https://bizuply.com/android-chrome-512x512.png";
 const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 
@@ -62,11 +63,11 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/about",
-    title: "About Bizuply | The platform that grows with you",
+    title: "About Bizuply | Our Mission, Approach & Business Platform",
     description:
-      "Meet Bizuply (ביזאפלי) — an American technology company for business management, CRM, leads, websites, automations, agents, and collaborations in one place.",
+      "Learn about Bizuply, our mission and our approach to connected business technology. Explore how our software platform and digital services support modern businesses.",
     crumb: "About",
-    lastmod: "2025-07-01",
+    lastmod: "2026-10-27",
     changefreq: "monthly",
     priority: "0.8",
   },
@@ -349,13 +350,21 @@ function organizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": `${MARKETING_ORIGIN}/#organization`,
     name: "Bizuply",
+    legalName: "Bizuply LLC",
     alternateName: ["ביזאפלי", "BizUply"],
     url: `${MARKETING_ORIGIN}/`,
     logo: ORGANIZATION_LOGO,
     image: OG_IMAGE,
     description:
       "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
+    contactPoint: {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: "support@bizuply.com",
+      availableLanguage: ["English", "Hebrew", "Spanish", "Portuguese", "Arabic"],
+    },
     sameAs: [
       "https://www.facebook.com/bizuply",
       "https://www.instagram.com/bizuply",
@@ -371,8 +380,202 @@ function localizedPage(path, locale) {
   return getLocaleMarketingPage(path, locale);
 }
 
+const ABOUT_FAQ = {
+  "en": [
+    [
+      "What is Bizuply?",
+      "Bizuply is a business technology company offering a connected business management platform and digital services. Its software capabilities include CRM, supported marketing tools, WhatsApp Business communication, website creation, appointment scheduling and business automations."
+    ],
+    [
+      "What does Bizuply help businesses do?",
+      "Bizuply helps businesses organize customer information, incoming inquiries, communication, appointments and everyday workflows. The available tools are designed to support practical business processes and provide a more connected working environment."
+    ],
+    [
+      "Who can use Bizuply?",
+      "Bizuply serves businesses with different operational needs, including independent professionals, small businesses, service providers, marketing teams and growing organizations. The suitability of individual products depends on the workflows and requirements of each business."
+    ],
+    [
+      "Is Bizuply a software platform or a service provider?",
+      "Bizuply offers both software products and selected professional digital services. Businesses can use supported platform capabilities independently or explore additional assistance with services such as website setup and workflow configuration."
+    ],
+    [
+      "Can businesses choose individual products?",
+      "Bizuply offers different products and plans, allowing businesses to review the available options and select services according to their needs. Current subscriptions, features and prices are listed on the pricing page."
+    ],
+    [
+      "Does Bizuply offer website development?",
+      "Bizuply provides website-building tools as well as selected professional website setup services. The available options depend on the type of website and the services requested."
+    ],
+    [
+      "Does Bizuply support WhatsApp Business?",
+      "Bizuply offers supported WhatsApp Business Platform connectivity for business communication. Businesses can review the available subscription and messaging options on the relevant product and pricing pages."
+    ],
+    [
+      "How can I get started with Bizuply?",
+      "You can explore the platform, review available products and pricing, and create an account to get started with supported services. Businesses seeking professional setup assistance can contact Bizuply to discuss their requirements."
+    ],
+    [
+      "Where is Bizuply based?",
+      "Bizuply LLC is a company registered in the United States. For official company details and current contact information, refer to the verified business information published by Bizuply."
+    ]
+  ],
+  "he": [
+    [
+      "מהי Bizuply?",
+      "Bizuply היא חברת טכנולוגיה עסקית המציעה פלטפורמת ניהול עסקי מחוברת ושירותים דיגיטליים. יכולות התוכנה שלה כוללות CRM, כלי שיווק נתמכים, תקשורת WhatsApp Business, יצירת אתרים, תיאום פגישות ואוטומציות עסקיות."
+    ],
+    [
+      "במה Bizuply מסייעת לעסקים?",
+      "Bizuply מסייעת לעסקים לארגן מידע על לקוחות, פניות נכנסות, תקשורת, פגישות ותהליכי עבודה יומיומיים. הכלים הזמינים נועדו לתמוך בתהליכים עסקיים מעשיים ולספק סביבת עבודה מחוברת יותר."
+    ],
+    [
+      "מי יכול להשתמש ב־Bizuply?",
+      "Bizuply משרתת עסקים עם צרכים תפעוליים שונים, ובכלל זה בעלי מקצוע עצמאיים, עסקים קטנים, נותני שירות, צוותי שיווק וארגונים בצמיחה. ההתאמה של כל מוצר תלויה בתהליכי העבודה ובדרישות של כל עסק."
+    ],
+    [
+      "Bizuply היא פלטפורמת תוכנה או ספקית שירות?",
+      "Bizuply מציעה גם מוצרי תוכנה וגם שירותים דיגיטליים מקצועיים נבחרים. עסקים יכולים להשתמש ביכולות הנתמכות של הפלטפורמה באופן עצמאי, או לבחון סיוע נוסף בשירותים כמו הקמת אתר והגדרת תהליכי עבודה."
+    ],
+    [
+      "האם עסקים יכולים לבחור מוצרים בודדים?",
+      "Bizuply מציעה מוצרים ומסלולים שונים, ומאפשרת לעסקים לבחון את האפשרויות הזמינות ולבחור שירותים בהתאם לצרכים שלהם. המנויים, היכולות והמחירים העדכניים מפורטים בעמוד המחירים."
+    ],
+    [
+      "האם Bizuply מציעה פיתוח אתרים?",
+      "Bizuply מספקת כלים לבניית אתרים וגם שירותי הקמת אתר מקצועיים נבחרים. האפשרויות הזמינות תלויות בסוג האתר ובשירותים המבוקשים."
+    ],
+    [
+      "האם Bizuply תומכת ב־WhatsApp Business?",
+      "Bizuply מציעה חיבור נתמך ל־WhatsApp Business Platform לתקשורת עסקית. עסקים יכולים לבחון את אפשרויות המנוי והמסרים הזמינות בעמודי המוצר והמחירים הרלוונטיים."
+    ],
+    [
+      "איך אפשר להתחיל עם Bizuply?",
+      "אפשר להכיר את הפלטפורמה, לבחון את המוצרים והמחירים הזמינים, וליצור חשבון כדי להתחיל לעבוד עם השירותים הנתמכים. עסקים שמחפשים סיוע מקצועי בהקמה יכולים ליצור קשר עם Bizuply כדי לדון בדרישות שלהם."
+    ],
+    [
+      "היכן Bizuply מבוססת?",
+      "Bizuply LLC היא חברה הרשומה בארצות הברית. לפרטים רשמיים של החברה ולפרטי קשר עדכניים, יש לפנות למידע העסקי המאומת שמפרסמת Bizuply."
+    ]
+  ],
+  "es": [
+    [
+      "¿Qué es Bizuply?",
+      "Bizuply es una empresa de tecnología empresarial que ofrece una plataforma conectada de gestión de negocios y servicios digitales. Sus capacidades de software incluyen CRM, herramientas de marketing compatibles, comunicación por WhatsApp Business, creación de sitios web, programación de citas y automatizaciones empresariales."
+    ],
+    [
+      "¿En qué ayuda Bizuply a los negocios?",
+      "Bizuply ayuda a los negocios a organizar la información de los clientes, las consultas entrantes, la comunicación, las citas y los flujos de trabajo cotidianos. Las herramientas disponibles están diseñadas para apoyar procesos empresariales prácticos y ofrecer un entorno de trabajo más conectado."
+    ],
+    [
+      "¿Quién puede usar Bizuply?",
+      "Bizuply atiende a negocios con distintas necesidades operativas, incluidos profesionales independientes, pequeños negocios, proveedores de servicios, equipos de marketing y organizaciones en crecimiento. La idoneidad de cada producto depende de los flujos de trabajo y de los requisitos de cada negocio."
+    ],
+    [
+      "¿Bizuply es una plataforma de software o un proveedor de servicios?",
+      "Bizuply ofrece tanto productos de software como servicios digitales profesionales seleccionados. Los negocios pueden usar las capacidades compatibles de la plataforma de forma independiente, o explorar asistencia adicional con servicios como la configuración de un sitio web y la configuración de flujos de trabajo."
+    ],
+    [
+      "¿Los negocios pueden elegir productos individuales?",
+      "Bizuply ofrece distintos productos y planes, y permite a los negocios revisar las opciones disponibles y seleccionar servicios según sus necesidades. Las suscripciones, funciones y precios actuales figuran en la página de precios."
+    ],
+    [
+      "¿Bizuply ofrece desarrollo de sitios web?",
+      "Bizuply proporciona herramientas para crear sitios web, así como servicios profesionales seleccionados de configuración de sitios. Las opciones disponibles dependen del tipo de sitio web y de los servicios solicitados."
+    ],
+    [
+      "¿Bizuply admite WhatsApp Business?",
+      "Bizuply ofrece conectividad compatible con WhatsApp Business Platform para la comunicación empresarial. Los negocios pueden revisar las opciones disponibles de suscripción y mensajería en las páginas relevantes de producto y de precios."
+    ],
+    [
+      "¿Cómo puedo empezar con Bizuply?",
+      "Puede explorar la plataforma, revisar los productos y precios disponibles, y crear una cuenta para empezar con los servicios compatibles. Los negocios que buscan asistencia profesional de configuración pueden contactar a Bizuply para conversar sobre sus requisitos."
+    ],
+    [
+      "¿Dónde tiene su base Bizuply?",
+      "Bizuply LLC es una empresa registrada en Estados Unidos. Para los datos oficiales de la empresa y la información de contacto actual, consulte la información empresarial verificada que publica Bizuply."
+    ]
+  ],
+  "pt-BR": [
+    [
+      "O que é a Bizuply?",
+      "A Bizuply é uma empresa de tecnologia empresarial que oferece uma plataforma conectada de gestão de negócios e serviços digitais. Suas capacidades de software incluem CRM, ferramentas de marketing compatíveis, comunicação pelo WhatsApp Business, criação de sites, agendamento de horários e automações empresariais."
+    ],
+    [
+      "No que a Bizuply ajuda os negócios?",
+      "A Bizuply ajuda os negócios a organizar informações de clientes, consultas recebidas, comunicação, agendamentos e fluxos de trabalho do dia a dia. As ferramentas disponíveis foram pensadas para apoiar processos empresariais práticos e oferecer um ambiente de trabalho mais conectado."
+    ],
+    [
+      "Quem pode usar a Bizuply?",
+      "A Bizuply atende negócios com necessidades operacionais diferentes, incluindo profissionais independentes, pequenos negócios, prestadores de serviços, equipes de marketing e organizações em crescimento. A adequação de cada produto depende dos fluxos de trabalho e dos requisitos de cada negócio."
+    ],
+    [
+      "A Bizuply é uma plataforma de software ou uma prestadora de serviços?",
+      "A Bizuply oferece tanto produtos de software quanto serviços digitais profissionais selecionados. Os negócios podem usar as capacidades compatíveis da plataforma de forma independente ou buscar assistência adicional com serviços como a configuração de um site e a configuração de fluxos de trabalho."
+    ],
+    [
+      "Os negócios podem escolher produtos individuais?",
+      "A Bizuply oferece diferentes produtos e planos, permitindo que os negócios analisem as opções disponíveis e selecionem serviços de acordo com suas necessidades. Assinaturas, recursos e preços atuais estão descritos na página de preços."
+    ],
+    [
+      "A Bizuply oferece desenvolvimento de sites?",
+      "A Bizuply fornece ferramentas para criação de sites, além de serviços profissionais selecionados de configuração de sites. As opções disponíveis dependem do tipo de site e dos serviços solicitados."
+    ],
+    [
+      "A Bizuply oferece suporte ao WhatsApp Business?",
+      "A Bizuply oferece conectividade compatível com a WhatsApp Business Platform para comunicação empresarial. Os negócios podem consultar as opções disponíveis de assinatura e de mensagens nas páginas relevantes de produto e de preços."
+    ],
+    [
+      "Como posso começar com a Bizuply?",
+      "Você pode explorar a plataforma, revisar os produtos e preços disponíveis e criar uma conta para começar com os serviços compatíveis. Negócios que buscam assistência profissional de configuração podem entrar em contato com a Bizuply para conversar sobre seus requisitos."
+    ],
+    [
+      "Onde a Bizuply está baseada?",
+      "A Bizuply LLC é uma empresa registrada nos Estados Unidos. Para os dados oficiais da empresa e as informações de contato atuais, consulte as informações empresariais verificadas publicadas pela Bizuply."
+    ]
+  ],
+  "ar": [
+    [
+      "ما هي Bizuply؟",
+      "Bizuply شركة تقنية أعمال تقدّم منصة مترابطة لإدارة الأعمال وخدمات رقمية. تشمل قدراتها البرمجية إدارة علاقات العملاء، وأدوات تسويق مدعومة، والتواصل عبر WhatsApp Business، وإنشاء المواقع، وجدولة المواعيد، وأتمتة الأعمال."
+    ],
+    [
+      "ماذا تساعد Bizuply الشركات على فعله؟",
+      "تساعد Bizuply الشركات على تنظيم معلومات العملاء والاستفسارات الواردة والتواصل والمواعيد وسير العمل اليومي. صُمّمت الأدوات المتاحة لدعم عمليات تجارية عملية وتوفير بيئة عمل أكثر ترابطًا."
+    ],
+    [
+      "من يمكنه استخدام Bizuply؟",
+      "تخدم Bizuply أعمالًا ذات احتياجات تشغيلية مختلفة، بما في ذلك المهنيون المستقلون والشركات الصغيرة ومقدّمو الخدمات وفرق التسويق والمؤسسات النامية. تعتمد ملاءمة كل منتج على سير العمل ومتطلبات كل عمل."
+    ],
+    [
+      "هل Bizuply منصة برمجيات أم مقدّم خدمات؟",
+      "تقدّم Bizuply منتجات برمجية وخدمات رقمية مهنية مختارة. يمكن للشركات استخدام القدرات المدعومة في المنصة بشكل مستقل، أو استكشاف مساعدة إضافية في خدمات مثل إعداد المواقع وتهيئة سير العمل."
+    ],
+    [
+      "هل يمكن للشركات اختيار منتجات منفردة؟",
+      "تقدّم Bizuply منتجات وخططًا مختلفة، ما يتيح للشركات مراجعة الخيارات المتاحة واختيار الخدمات وفق احتياجاتها. الاشتراكات والخصائص والأسعار الحالية مذكورة في صفحة الأسعار."
+    ],
+    [
+      "هل تقدّم Bizuply تطوير مواقع؟",
+      "توفّر Bizuply أدوات لبناء المواقع إلى جانب خدمات مهنية مختارة لإعداد المواقع. تعتمد الخيارات المتاحة على نوع الموقع والخدمات المطلوبة."
+    ],
+    [
+      "هل تدعم Bizuply منصة WhatsApp Business؟",
+      "تقدّم Bizuply اتصالًا مدعومًا بمنصة WhatsApp Business Platform للتواصل التجاري. يمكن للشركات مراجعة خيارات الاشتراك والمراسلة المتاحة في صفحات المنتج والأسعار ذات الصلة."
+    ],
+    [
+      "كيف أبدأ مع Bizuply؟",
+      "يمكنك استكشاف المنصة، ومراجعة المنتجات والأسعار المتاحة، وإنشاء حساب للبدء بالخدمات المدعومة. يمكن للشركات التي تبحث عن مساعدة مهنية في الإعداد التواصل مع Bizuply لمناقشة متطلباتها."
+    ],
+    [
+      "أين تتمركز Bizuply؟",
+      "Bizuply LLC شركة مسجّلة في الولايات المتحدة. للاطلاع على البيانات الرسمية للشركة ومعلومات التواصل الحالية، يُرجى الرجوع إلى المعلومات التجارية الموثّقة التي تنشرها Bizuply."
+    ]
+  ]
+};
+
 function faqItems(path, language) {
   if (path === "/website-builder") return getWebsiteBuilderCopy(language).faq.items;
+  if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
   if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
   const localized = language === "en" ? null : localizedPage(path, language);
   if (localized?.faq?.length) return localized.faq;
@@ -468,9 +671,10 @@ function breadcrumbSchema(page, canonical) {
   };
 }
 
-function sharedSocialTags(title, description, canonical, language = "en") {
+function sharedSocialTags(title, description, canonical, language = "en", image = OG_IMAGE) {
   const safeTitle = escapeHtml(title);
   const safeDescription = escapeHtml(description);
+  const safeImage = escapeHtml(image || OG_IMAGE);
   const ogLocale = marketingLocaleMeta(language).og;
   const ogAlternate = language === "en" ? "he_IL" : "en_US";
   return [
@@ -479,13 +683,13 @@ function sharedSocialTags(title, description, canonical, language = "en") {
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="Bizuply" />`,
     `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
-    `<meta property="og:image" content="${OG_IMAGE}" />`,
+    `<meta property="og:image" content="${safeImage}" />`,
     `<meta property="og:locale" content="${ogLocale}" />`,
     `<meta property="og:locale:alternate" content="${ogAlternate}" />`,
     `<meta name="twitter:card" content="summary_large_image" />`,
     `<meta name="twitter:title" content="${safeTitle}" />`,
     `<meta name="twitter:description" content="${safeDescription}" />`,
-    `<meta name="twitter:image" content="${OG_IMAGE}" />`,
+    `<meta name="twitter:image" content="${safeImage}" />`,
     `<link rel="icon" href="/favicon-v2.png?v=2" type="image/png" />`,
     `<link rel="apple-touch-icon" href="/apple-touch-icon-v3.png?v=2" />`,
     `<meta name="facebook-domain-verification" content="${FACEBOOK_DOMAIN_VERIFICATION}" />`,
@@ -559,7 +763,7 @@ export function buildMarketingDocumentHead(pathname) {
       `<meta name="robots" content="index, follow" />`,
       `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
       hreflangTags(canonicalPath),
-      ...sharedSocialTags(page.title, page.description, canonical, locale),
+      ...sharedSocialTags(page.title, page.description, canonical, locale, path === "/about" ? ABOUT_OG_IMAGE : OG_IMAGE),
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
       path === "/" ? `<script type="application/ld+json">${jsonLd(websiteSchema())}</script>` : "",
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
@@ -881,11 +1085,16 @@ export function buildMarketingPrerender(pathname) {
   if (!found?.page) return null;
   const heading = path === "/crm"
     ? "Every lead, every client, every appointment in one place"
-    : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
+    : path === "/about"
+      ? "Built to make business feel more connected"
+      : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
+  const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
   const extra = path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
-    : "";
+    : path === "/about" && aboutFaqs
+      ? `<h2>Frequently asked questions about Bizuply</h2>${faqBodyHtml(aboutFaqs)}`
+      : "";
   return {
     lang: "en",
     dir: "ltr",
