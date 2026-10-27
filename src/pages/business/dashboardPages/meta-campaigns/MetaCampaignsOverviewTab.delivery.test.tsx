@@ -106,6 +106,7 @@ describe("campaign impressions and reach", () => {
       campaigns: [
         row({
           id: "paused-1",
+          metaCampaignId: "120252174521090469",
           name: "קמפיין מושהה",
           status: "PAUSED",
           configuredStatus: "PAUSED",
@@ -126,6 +127,7 @@ describe("campaign impressions and reach", () => {
         }),
         row({
           id: "active-1",
+          metaCampaignId: "120252174521090470",
           name: "קמפיין פעיל",
           status: "ACTIVE",
           configuredStatus: "ACTIVE",

@@ -104,6 +104,7 @@ describe("instant form duplicate and archive", () => {
     render(
       <AdLevelEditor
         ad={ad}
+        conversionLocation="Instant forms"
         forms={[liveForm]}
         pages={[]}
         businessId="biz"
@@ -177,6 +178,7 @@ describe("instant form duplicate and archive", () => {
     render(
       <AdLevelEditor
         ad={ad}
+        conversionLocation="Instant forms"
         forms={[liveForm]}
         formDrafts={[
           {
@@ -224,6 +226,7 @@ describe("instant form duplicate and archive", () => {
     render(
       <AdLevelEditor
         ad={ad}
+        conversionLocation="Instant forms"
         forms={[liveForm]}
         pages={[]}
         businessId="biz"
