@@ -79,6 +79,7 @@ import {
 import {
   conversionLocationsForObjective,
   inspectCtaForContext,
+  metaCtaLabel,
   usesInstantFormDestination,
   usesMessengerDestination,
   usesPhoneDestination,
@@ -1527,7 +1528,9 @@ export default function MetaAdsManagerPage() {
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
                   <dt className="text-[#65676B]">{c("reviewCta")}</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {selectedAd?.callToAction || c("notSet")}
+                    {selectedAd?.callToAction
+                      ? metaCtaLabel(selectedAd.callToAction, t)
+                      : c("notSet")}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
