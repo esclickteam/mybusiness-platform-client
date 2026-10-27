@@ -19,7 +19,7 @@ export function isUnpublishedLocalCampaign(row: CampaignStatusRow | null | undef
   const status = String(row.configuredStatus || row.status || "")
     .toUpperCase()
     .replace(/[^A-Z_]/g, "");
-  if (status === "DRAFT" || status === "PENDING_PUBLISH") return true;
+  if (status === "DRAFT") return true;
   const liveId = String(row.metaCampaignId || row.id || "").trim();
   return !isLiveMetaObjectId(liveId);
 }

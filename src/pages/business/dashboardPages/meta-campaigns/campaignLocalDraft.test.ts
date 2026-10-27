@@ -36,6 +36,24 @@ describe("unpublished local drafts", () => {
     expect(
       canToggleMetaDelivery({ id: "120252174521090469", status: "PAUSED" })
     ).toBe(true);
+    expect(
+      isUnpublishedLocalCampaign({
+        id: "120251859679660469",
+        status: "PENDING_PUBLISH",
+      })
+    ).toBe(false);
+    expect(
+      displayListStatus({
+        id: "120251859679660469",
+        status: "PENDING_PUBLISH",
+      })
+    ).toBe("PENDING_PUBLISH");
+    expect(
+      canToggleMetaDelivery({
+        id: "120251859679660469",
+        status: "PENDING_PUBLISH",
+      })
+    ).toBe(true);
   });
 
   it("formats last-synced times in Asia/Jerusalem instead of UTC", () => {
