@@ -37,7 +37,13 @@ import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { removeCampaignsFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
-import { canToggleMetaDelivery, displayListStatus, isQaTestDraftName } from "./campaignLocalDraft";
+import {
+  canToggleMetaDelivery,
+  displayListStatus,
+  isQaTestDraftName,
+  loadHideQaDrafts,
+  saveHideQaDrafts,
+} from "./campaignLocalDraft";
 
 type OutletCtx = { businessId: string | null };
 
@@ -87,7 +93,7 @@ export default function MetaCampaignsCampaignsPage() {
   const [pinnedCampaign, setPinnedCampaign] = useState<{ id: string; name: string } | null>(null);
   const [pinnedAdSet, setPinnedAdSet] = useState<{ id: string; name: string } | null>(null);
   const [checked, setChecked] = useState<string[]>([]);
-  const [hideQaDrafts, setHideQaDrafts] = useState(true);
+  const [hideQaDrafts, setHideQaDrafts] = useState(false);
   const [bulkStatus, setBulkStatus] = useState<"ACTIVE" | "PAUSED" | null>(null);
   const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
     const ids = extra?.ids?.length ? extra.ids : [id];
@@ -131,6 +137,7 @@ export default function MetaCampaignsCampaignsPage() {
 
   useEffect(() => {
     setColumnPrefs(loadColumnPrefs(window.localStorage, businessId || "campaign", "campaign"));
+    setHideQaDrafts(loadHideQaDrafts(window.localStorage, businessId));
   }, [businessId]);
 
   useEffect(() => {
@@ -353,7 +360,11 @@ export default function MetaCampaignsCampaignsPage() {
           <input
             type="checkbox"
             checked={hideQaDrafts}
-            onChange={(event) => setHideQaDrafts(event.target.checked)}
+            onChange={(event) => {
+              const next = event.target.checked;
+              setHideQaDrafts(next);
+              saveHideQaDrafts(window.localStorage, businessId, next);
+            }}
             data-testid="meta-hide-qa-drafts"
           />
           {t("metaCampaigns.ux.hideQaDrafts")}

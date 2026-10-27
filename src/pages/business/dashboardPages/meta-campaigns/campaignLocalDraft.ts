@@ -42,3 +42,31 @@ export function isQaTestDraftName(name?: string | null): boolean {
   const value = String(name || "");
   return /Bizuply DT|#\d+\s*QA|QA PAUSED|E2E PAUSED/i.test(value);
 }
+
+export function hideQaDraftsStorageKey(businessId?: string | null): string {
+  return `bizuply.meta.hideQaDrafts.${String(businessId || "default")}`;
+}
+
+/** Default is off; a stored "1"/"true" means the user turned the filter on. */
+export function loadHideQaDrafts(
+  storage: Pick<Storage, "getItem"> | null | undefined,
+  businessId?: string | null
+): boolean {
+  if (!storage) return false;
+  try {
+    const raw = String(storage.getItem(hideQaDraftsStorageKey(businessId)) || "").trim().toLowerCase();
+    if (raw === "1" || raw === "true") return true;
+    return false;
+  } catch {
+    return false;
+  }
+}
+
+export function saveHideQaDrafts(
+  storage: Pick<Storage, "setItem"> | null | undefined,
+  businessId: string | null | undefined,
+  hide: boolean
+): void {
+  if (!storage) return;
+  storage.setItem(hideQaDraftsStorageKey(businessId), hide ? "1" : "0");
+}

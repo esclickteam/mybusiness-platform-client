@@ -10652,6 +10652,7 @@
         "localesHint": "מפתחות שפה של Meta (לדוגמה 6)",
         "abTests": "בדיקות A/B בחשבון",
         "abTestsEmpty": "אין Ad Studies שחזרו מ-Marketing API.",
+        "abTestsUnavailable": "בדיקות A/B אינן זמינות בחשבון הזה או בגרסת ה-Marketing API.",
         "abTestsHint": "יצירת ניסוי נשארת טיוטה. הפעלה דורשת אישור מפורש ואינה משנה תקציבים של קמפיינים חיים.",
         "abTestName": "שם הניסוי",
         "createAbDraft": "יצירת טיוטת A/B",

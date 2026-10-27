@@ -4,6 +4,8 @@ import {
   displayListStatus,
   isQaTestDraftName,
   isUnpublishedLocalCampaign,
+  loadHideQaDrafts,
+  saveHideQaDrafts,
 } from "./campaignLocalDraft";
 import { formatDateTimeHe } from "./metaCampaignUtils";
 
@@ -67,5 +69,21 @@ describe("unpublished local drafts", () => {
     );
     expect(isQaTestDraftName("Bizuply DT E2E PAUSED 2026-10-24T12-18-53-743Z")).toBe(true);
     expect(isQaTestDraftName("קמפיין לידים חדש")).toBe(false);
+  });
+
+  it("defaults hide-QA-drafts off and persists the user's checkbox", () => {
+    const store = new Map<string, string>();
+    const storage = {
+      getItem: (key: string) => store.get(key) ?? null,
+      setItem: (key: string, value: string) => {
+        store.set(key, value);
+      },
+    };
+    expect(loadHideQaDrafts(storage, "biz-1")).toBe(false);
+    saveHideQaDrafts(storage, "biz-1", true);
+    expect(loadHideQaDrafts(storage, "biz-1")).toBe(true);
+    expect(loadHideQaDrafts(storage, "biz-2")).toBe(false);
+    saveHideQaDrafts(storage, "biz-1", false);
+    expect(loadHideQaDrafts(storage, "biz-1")).toBe(false);
   });
 });

@@ -192,6 +192,42 @@ describe("campaign impressions and reach", () => {
     await waitFor(() => expect(api.getMetaCampaignsOverview).toHaveBeenCalledTimes(2));
   });
 
+  it("shows QA drafts by default and persists hide-filter without deleting", async () => {
+    window.localStorage.clear();
+    api.getMetaCampaignsOverview.mockResolvedValue({
+      connection,
+      kpis: { roas: 0, costPerLead: 0, leads: 0, spend: 0, impressions: 0, reach: 0 },
+      series: [],
+      insights: [],
+      insightsSync: { ok: true, level: "campaign", syncedAt: "2026-10-18T08:00:00.000Z", error: null },
+      campaigns: [
+        row({
+          id: "qa-1",
+          name: "Bizuply DT E2E PAUSED 2026-10-24T12-18-53-743Z",
+          status: "DRAFT",
+          localOnly: true,
+        }),
+        row({
+          id: "live-1",
+          metaCampaignId: "120252174521090469",
+          name: "קמפיין פעיל",
+          status: "ACTIVE",
+          configuredStatus: "ACTIVE",
+        }),
+      ],
+    });
+    renderOverview();
+    expect((await screen.findAllByTestId("campaign-row-qa-1")).length).toBeGreaterThan(0);
+    const box = screen.getByTestId("meta-hide-qa-drafts") as HTMLInputElement;
+    expect(box.checked).toBe(false);
+    fireEvent.click(box);
+    await waitFor(() => expect(screen.queryAllByTestId("campaign-row-qa-1")).toHaveLength(0));
+    expect(screen.getAllByTestId("campaign-row-live-1").length).toBeGreaterThan(0);
+    expect(window.localStorage.getItem("bizuply.meta.hideQaDrafts.biz-1")).toBe("1");
+    expect(api.deleteLocalCampaignDraft).not.toHaveBeenCalled();
+    expect(api.deleteMetaObjects).not.toHaveBeenCalled();
+  });
+
   it("sorts the table by impressions", async () => {
     renderOverview();
     expect(await screen.findByTestId("meta-campaign-count")).toBeTruthy();

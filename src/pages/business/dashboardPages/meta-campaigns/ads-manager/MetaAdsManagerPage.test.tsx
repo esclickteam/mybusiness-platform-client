@@ -154,6 +154,16 @@ describe("MetaAdsManagerPage manual create", () => {
     expect(source).toMatch(/verifiedOnExistingAd/);
   });
 
+  it("keeps Meta vs local sync diffs as a warning until the user chooses a version", () => {
+    const source = fs.readFileSync(
+      path.resolve(__dirname, "./MetaAdsManagerPage.tsx"),
+      "utf8"
+    );
+    expect(source).toMatch(/syncConflictKeep/);
+    expect(source).toMatch(/setSyncDiff\(diff\.hasConflicts \? diff : null\)/);
+    expect(source).not.toMatch(/overwrittenByReload:\s*true/);
+  });
+
   it("does not import AI session APIs", () => {
     const source = fs.readFileSync(
       path.resolve(__dirname, "./MetaAdsManagerPage.tsx"),

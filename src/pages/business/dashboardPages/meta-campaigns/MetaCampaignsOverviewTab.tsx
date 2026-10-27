@@ -70,7 +70,13 @@ import { useMetaAdsDateRange } from "./useMetaAdsDateRange";
 import { useMetaAdsTimeZone } from "./metaAdsTimeZone";
 import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
-import { canToggleMetaDelivery, displayListStatus, isQaTestDraftName } from "./campaignLocalDraft";
+import {
+  canToggleMetaDelivery,
+  displayListStatus,
+  isQaTestDraftName,
+  loadHideQaDrafts,
+  saveHideQaDrafts,
+} from "./campaignLocalDraft";
 import {
   compareByDeliveryMetric,
   formatCampaignDeliveryMetric,
@@ -264,7 +270,10 @@ export default function MetaCampaignsOverviewTab() {
     useState<MetaCampaign | null>(null);
   const [nowMs, setNowMs] = useState(() => Date.now());
   const [metricSort, setMetricSort] = useState<CampaignMetricSort | null>(null);
-  const [hideQaDrafts, setHideQaDrafts] = useState(true);
+  const [hideQaDrafts, setHideQaDrafts] = useState(false);
+  useEffect(() => {
+    setHideQaDrafts(loadHideQaDrafts(window.localStorage, businessId));
+  }, [businessId]);
   const deletion = useCampaignDraftDelete(businessId, (id, extra) => {
     const ids = extra?.ids?.length ? extra.ids : [id];
     setData((current) =>
@@ -1079,7 +1088,11 @@ export default function MetaCampaignsOverviewTab() {
                   <input
                     type="checkbox"
                     checked={hideQaDrafts}
-                    onChange={(event) => setHideQaDrafts(event.target.checked)}
+                    onChange={(event) => {
+                      const next = event.target.checked;
+                      setHideQaDrafts(next);
+                      saveHideQaDrafts(window.localStorage, businessId, next);
+                    }}
                     data-testid="meta-hide-qa-drafts"
                   />
                   {t("metaCampaigns.ux.hideQaDrafts")}
