@@ -16,10 +16,10 @@ export const WB_MEDIA = {
 };
 
 export const WB_TEMPLATES = [
-  { id: "silkbar", name: "Silkbar", image: "/marketing/website-builder/gallery-silkbar.webp", category: "beauty" },
-  { id: "aurelia", name: "Aurelia", image: "/marketing/website-builder/gallery-aurelia.webp", category: "food" },
-  { id: "villaire", name: "Villaire", image: "/marketing/website-builder/gallery-villaire.webp", category: "realEstate" },
-  { id: "justora", name: "Justora", image: "/marketing/website-builder/gallery-justora.webp", category: "services" },
-  { id: "serenova", name: "Serenova", image: "/marketing/website-builder/gallery-serenova.webp", category: "health" },
-  { id: "sportifya", name: "Sportifya", image: "/marketing/website-builder/gallery-sportifya.webp", category: "commerce" },
+  { id: "glintica", name: "Glintica", image: "/marketing/website-builder/gallery-glintica.webp", category: "beauty", accent: "#c08497", accentSoft: "#f3d5dc" },
+  { id: "verdant", name: "Verdant", image: "/marketing/website-builder/gallery-verdant.webp", category: "realEstate", accent: "#6f8f72", accentSoft: "#d7e2d4" },
+  { id: "savory", name: "Savory", image: "/marketing/website-builder/gallery-savory.webp", category: "food", accent: "#e0a100", accentSoft: "#f6e7c1" },
+  { id: "vitalis", name: "Vitalis", image: "/marketing/website-builder/gallery-vitalis.webp", category: "health", accent: "#0f766e", accentSoft: "#99f6e4" },
+  { id: "chanel", name: "Chanel", image: "/marketing/website-builder/gallery-chanel.webp", category: "commerce", accent: "#1a1a1a", accentSoft: "#d4af6a" },
+  { id: "nexora", name: "Nexora", image: "/marketing/website-builder/gallery-nexora.webp", category: "technology", accent: "#6d5efc", accentSoft: "#c4b5fd" },
 ];

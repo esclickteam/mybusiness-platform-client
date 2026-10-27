@@ -1,4 +1,5 @@
 import { WB_MEDIA, WB_TEMPLATES } from "./websiteBuilderMedia.mjs";
+import { WB_DEPTH } from "./websiteBuilderDepth.mjs";
 
 export { WB_MEDIA, WB_TEMPLATES };
 
@@ -56,6 +57,7 @@ const en = {
       services: "Professional Services",
       health: "Health & Clinics",
       commerce: "E-commerce",
+      technology: "Technology",
     },
     businessType: "Business type",
   },
@@ -195,7 +197,7 @@ const he = {
     lead: "עיינו בעיצובים לענפים ולצרכים שונים. התחילו מפריסה שמתאימה למטרות שלכם, ואז התאימו תוכן, ויזואליה ומבנה.",
     preview: "תצוגה מקדימה",
     close: "סגירת התצוגה",
-    categories: { beauty: "יופי וטיפוח", food: "מסעדות ואוכל", realEstate: "נדל״ן", services: "שירותים מקצועיים", health: "בריאות וקליניקות", commerce: "מסחר אלקטרוני" },
+    categories: { beauty: "יופי וטיפוח", food: "מסעדות ואוכל", realEstate: "נדל״ן", services: "שירותים מקצועיים", health: "בריאות וקליניקות", commerce: "מסחר אלקטרוני", technology: "טכנולוגיה" },
     businessType: "סוג העסק",
   },
   screens: {
@@ -334,7 +336,7 @@ const es = {
     lead: "Explore diseños para distintos sectores y necesidades. Empiece con una estructura acorde a sus objetivos y luego adapte el contenido, las imágenes y la organización.",
     preview: "Ver plantilla",
     close: "Cerrar vista previa",
-    categories: { beauty: "Belleza y bienestar", food: "Restaurantes y comida", realEstate: "Inmobiliario", services: "Servicios profesionales", health: "Salud y clínicas", commerce: "Comercio electrónico" },
+    categories: { beauty: "Belleza y bienestar", food: "Restaurantes y comida", realEstate: "Inmobiliario", services: "Servicios profesionales", health: "Salud y clínicas", commerce: "Comercio electrónico", technology: "Tecnología" },
     businessType: "Tipo de negocio",
   },
   screens: {
@@ -473,7 +475,7 @@ const pt = {
     lead: "Explore designs para diferentes setores e necessidades. Comece com uma estrutura alinhada aos seus objetivos e depois adapte o conteúdo, as imagens e a organização.",
     preview: "Ver modelo",
     close: "Fechar prévia",
-    categories: { beauty: "Beleza e bem-estar", food: "Restaurantes e alimentação", realEstate: "Imóveis", services: "Serviços profissionais", health: "Saúde e clínicas", commerce: "Comércio eletrônico" },
+    categories: { beauty: "Beleza e bem-estar", food: "Restaurantes e alimentação", realEstate: "Imóveis", services: "Serviços profissionais", health: "Saúde e clínicas", commerce: "Comércio eletrônico", technology: "Tecnologia" },
     businessType: "Tipo de negócio",
   },
   screens: {
@@ -612,7 +614,7 @@ const ar = {
     lead: "استكشف تصاميم لقطاعات واحتياجات مختلفة. ابدأ بتخطيط يلائم أهدافك، ثم خصّص المحتوى والصور والبنية.",
     preview: "معاينة القالب",
     close: "إغلاق المعاينة",
-    categories: { beauty: "التجميل والعناية", food: "المطاعم والطعام", realEstate: "العقارات", services: "الخدمات المهنية", health: "الصحة والعيادات", commerce: "التجارة الإلكترونية" },
+    categories: { beauty: "التجميل والعناية", food: "المطاعم والطعام", realEstate: "العقارات", services: "الخدمات المهنية", health: "الصحة والعيادات", commerce: "التجارة الإلكترونية", technology: "التكنولوجيا" },
     businessType: "نوع النشاط",
   },
   screens: {
@@ -721,7 +723,17 @@ export function normalizeWebsiteLocale(language) {
 
 export function getWebsiteBuilderCopy(language) {
   const locale = normalizeWebsiteLocale(language);
-  return { ...COPY[locale], locale };
+  const base = COPY[locale];
+  const depth = WB_DEPTH[locale];
+  return {
+    ...base,
+    locale,
+    depth,
+    faq: {
+      ...base.faq,
+      items: [...base.faq.items, ...(depth.extraFaq || [])],
+    },
+  };
 }
 
 export const WEBSITE_BUILDER_LOCALES = ["en", "he", "es", "pt-BR", "ar"];

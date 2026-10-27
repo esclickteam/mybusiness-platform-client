@@ -1,13 +1,15 @@
-import React, { useEffect, useId, useState } from "react";
+import React, { useCallback, useEffect, useId, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { ArrowRight, Check } from "lucide-react";
+import TemplateShowcase from "../../components/website-builder-marketing/TemplateShowcase";
 import {
   WB_MEDIA,
   WB_TEMPLATES,
   getWebsiteBuilderCopy,
 } from "../../content/websiteBuilderCopy.mjs";
 import { marketingPublicUrl, splitMarketingLocale } from "../../lib/localePath.mjs";
+import "../../components/website-builder-marketing/WebsiteBuilderHero.css";
 import "./websiteProductPage.css";
 
 const HREFLANG = [
@@ -32,6 +34,46 @@ function Forward() {
   return <ArrowRight className="wb-forward" size={17} aria-hidden="true" />;
 }
 
+function DepthGuide({ copy }) {
+  return (
+    <>
+      {copy.depth.sections.map((section, index) => (
+        <section className={`wb-band ${index % 2 ? "wb-band--white" : "wb-band--mist"}`} key={section.title}>
+          <div className="wb-shell">
+            <h2>{section.title}</h2>
+            <p className="wb-prose">{section.lead}</p>
+            {section.steps ? (
+              <ol className="wb-steps">
+                {section.steps.map((step) => <li key={step}>{step}</li>)}
+              </ol>
+            ) : null}
+            {section.items ? (
+              <div className="wb-types">
+                {section.items.map((item) => (
+                  <article className="wb-type wb-type--plain" key={item.title}>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                  </article>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </section>
+      ))}
+      <section className="wb-band wb-band--white">
+        <div className="wb-shell">
+          <p className="wb-links">{copy.depth.linksTitle}: {copy.depth.links.map((item, index) => (
+            <React.Fragment key={item.href}>
+              {index ? " · " : null}
+              <Link to={item.href}>{item.label}</Link>
+            </React.Fragment>
+          ))}</p>
+        </div>
+      </section>
+    </>
+  );
+}
+
 function GrowthMark({ index }) {
   const marks = [
     <svg key="a" viewBox="0 0 64 64" aria-hidden="true"><rect x="8" y="14" width="48" height="34" rx="6" fill="none" stroke="currentColor" strokeWidth="2" /><path d="M8 22h48" stroke="currentColor" strokeWidth="2" /></svg>,
@@ -46,6 +88,18 @@ export default function WebsiteProductPage() {
   const locale = splitMarketingLocale(window.location.pathname).locale;
   const copy = getWebsiteBuilderCopy(locale);
   const [preview, setPreview] = useState(null);
+  const [activeTemplate, setActiveTemplate] = useState(WB_TEMPLATES[0]);
+  const galleryTemplates = useMemo(() => WB_TEMPLATES.map((template) => ({
+    id: template.id,
+    title: template.name,
+    category: copy.templates.categories[template.category],
+    desktopImage: template.image,
+    accent: template.accent,
+    accentSoft: template.accentSoft,
+  })), [copy]);
+  const onActiveTemplate = useCallback((template) => {
+    setActiveTemplate(WB_TEMPLATES.find((item) => item.id === template.id) || WB_TEMPLATES[0]);
+  }, []);
   const previewTitleId = useId();
   const canonical = marketingPublicUrl("/website-builder", copy.locale);
   const typeImages = [WB_MEDIA.typeBusiness, WB_MEDIA.typeStore, WB_MEDIA.typeBooking];
@@ -165,25 +219,21 @@ export default function WebsiteProductPage() {
         </div>
       </section>
 
-      <section className="wb-band wb-band--white" id="wb-templates" aria-labelledby="wb-templates-title">
+      <section className="wb-band wb-band--white" aria-labelledby="wb-templates-title">
         <div className="wb-shell">
           <h2 id="wb-templates-title">{copy.templates.title}</h2>
           <p className="wb-prose">{copy.templates.lead}</p>
-          <div className="wb-gallery">
-            {WB_TEMPLATES.map((template) => (
-              <article className="wb-card" key={template.id}>
-                <figure dir="ltr">
-                  <img src={template.image} alt={`${template.name}. ${copy.templates.categories[template.category]}`} width="1440" height="900" />
-                </figure>
-                <div className="wb-card__body">
-                  <h3>{template.name}</h3>
-                  <p>{copy.templates.businessType}: {copy.templates.categories[template.category]}</p>
-                  <button type="button" className="wb-text-btn" onClick={() => setPreview(template)}>
-                    {copy.templates.preview}
-                  </button>
-                </div>
-              </article>
-            ))}
+          <div className="wb-template-restore" dir="ltr">
+            <div id="wb-templates">
+              <TemplateShowcase templates={galleryTemplates} onActiveChange={onActiveTemplate} />
+            </div>
+            <p className="wb-template-meta">
+              <strong>{activeTemplate.name}</strong>
+              <span>{copy.templates.businessType}: {copy.templates.categories[activeTemplate.category]}</span>
+              <button type="button" className="wb-text-btn" onClick={() => setPreview(activeTemplate)}>
+                {copy.templates.preview}
+              </button>
+            </p>
           </div>
         </div>
       </section>
@@ -281,6 +331,8 @@ export default function WebsiteProductPage() {
           <p className="wb-note">{copy.paths.note}</p>
         </div>
       </section>
+
+      <DepthGuide copy={copy} />
 
       <section className="wb-band wb-band--white" aria-labelledby="wb-compare-title">
         <div className="wb-shell">

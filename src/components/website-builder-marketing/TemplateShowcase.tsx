@@ -44,10 +44,12 @@ function shortestOffset(from: number, to: number, length: number) {
 
 type Props = {
   templates?: WebsiteHeroTemplate[];
+  onActiveChange?: (template: WebsiteHeroTemplate) => void;
 };
 
 export default function TemplateShowcase({
   templates: templatesProp,
+  onActiveChange,
 }: Props) {
   const { t, i18n } = useTranslation();
   const templates = useMemo(
@@ -98,6 +100,10 @@ export default function TemplateShowcase({
   }, [paused, reducedMotion, count]);
 
   const activeTemplate = templates[active];
+
+  useEffect(() => {
+    if (activeTemplate) onActiveChange?.(activeTemplate);
+  }, [activeTemplate, onActiveChange]);
 
   useEffect(() => {
     const hero = stageRef.current?.closest(".wb-hero") as HTMLElement | null;
