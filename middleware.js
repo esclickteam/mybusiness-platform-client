@@ -42,7 +42,6 @@ import {
 } from "./src/lib/marketingSeo.mjs";
 import { splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
-import { buildWebsiteBuilderFirstPaint } from "./src/content/websiteBuilderPaint.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -856,7 +855,6 @@ async function handleMarketingDocument(request) {
     const noindex = headHtml.includes("noindex");
     let documentHtml = injectSeoHead(html, headHtml);
     const prerender = buildMarketingPrerender(pathname);
-    const websitePaint = buildWebsiteBuilderFirstPaint(pathname);
     const locale = splitMarketingLocale(pathname);
     const isHome = locale.path === "/";
     if (locale.locale !== "en" || isHome) {
@@ -897,8 +895,6 @@ async function handleMarketingDocument(request) {
     } else if (locale.path === "/crm") {
       if (prerender) documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
       documentHtml = injectRootInner(documentHtml, buildCrmHeaderPaint(locale.locale));
-    } else if (websitePaint) {
-      documentHtml = injectRootInner(documentHtml, websitePaint.inner);
     } else if (prerender) {
       documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
     }

@@ -15,7 +15,6 @@ import { HOME_SHELL } from "./homeShell.mjs";
 import { STORY } from "./homepageStory.mjs";
 import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
-import { getWebsiteBuilderCopy } from "../content/websiteBuilderCopy.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
 import {
@@ -185,9 +184,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/website-builder",
-    title: "Website Builder for Business | No-Code Websites & CRM | Bizuply",
+    title: "Professional Website Builder | Bizuply",
     description:
-      "Build a professional business website with Bizuply. Customize templates in a visual editor, publish on your domain, and connect website inquiries to your CRM.",
+      "Build a website, store, or booking site in a visual editor and publish it to your own domain — with every inquiry from the site flowing straight into your CRM.",
     crumb: "Website builder",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -578,7 +577,6 @@ const ABOUT_FAQ = {
 
 function faqItems(path, language) {
   if (path === "/crm") return crmFaqPairs(language);
-  if (path === "/website-builder") return getWebsiteBuilderCopy(language).faq.items;
   if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
   if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
   const localized = language === "en" ? null : localizedPage(path, language);
@@ -827,17 +825,6 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
       path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
-      path === "/website-builder" ? `<script type="application/ld+json">${jsonLd({
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        name: "Bizuply Website Builder",
-        applicationCategory: "BusinessApplication",
-        operatingSystem: "Web",
-        url: canonical,
-        description: page.description,
-        inLanguage: locale,
-        provider: { "@type": "Organization", name: "Bizuply", url: `${MARKETING_ORIGIN}/` },
-      })}</script>` : "",
       faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
   }

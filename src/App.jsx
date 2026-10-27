@@ -13,7 +13,6 @@ const AdminSoftphoneHost = lazy(() => import("./components/AdminSoftphoneHost"))
 const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
 const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
 import Header from "./components/Header";
-import WebsiteProductPage from "./pages/product/WebsiteProductPage";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
@@ -94,6 +93,9 @@ const About = lazy(() => import("./pages/About"));
 const CrmProductPage = lazy(() => import("./pages/product/CrmProductPage"));
 const CollaborationsProductPage = lazy(() =>
   import("./pages/product/CollaborationsProductPage")
+);
+const WebsiteProductPage = lazy(() =>
+  import("./pages/product/WebsiteProductPage")
 );
 const AppointmentsProductPage = lazy(() =>
   import("./pages/product/AppointmentsProductPage")
@@ -1039,7 +1041,7 @@ export default function App() {
   // Only block the tree during the initial auth boot. Login/staffLogin also
   // flip `loading`, and unmounting /login mid-submit drops the form error
   // state and makes it look like "nothing happened".
-  if (loading && !initialized && location.pathname !== "/website-builder" && location.pathname !== "/crm") {
+  if (loading && !initialized && location.pathname !== "/crm") {
     if (isWhatsAppApiLogin) return <div className="min-h-screen bg-[#05070d]" />;
     // The /login route has its own layout-matched skeleton to avoid a large
     // layout shift when this app-level auth check resolves and the real
