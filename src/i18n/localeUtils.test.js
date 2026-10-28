@@ -5,6 +5,7 @@ import {
   LANGUAGE_COOKIE,
   MANUAL_LANG_FLAG,
   applyLanguageFromUrl,
+  explicitLanguageFromUrl,
   coerceSupportedLanguage,
   getHtmlLang,
   getIntlLocale,
@@ -175,6 +176,28 @@ describe("languageFromUrl", () => {
     localStorage.removeItem(MANUAL_LANG_FLAG);
     expect(applyLanguageFromUrl()).toBeNull();
     expect(getManualLanguageChoice()).toBeNull();
+  });
+
+  it("ignores leftover lang=en and keeps a saved choice", () => {
+    setSessionLanguageOverride("he");
+    window.history.replaceState({}, "", "/login?lang=en");
+    expect(explicitLanguageFromUrl()).toBeNull();
+    expect(applyLanguageFromUrl()).toBeNull();
+    expect(getManualLanguageChoice()).toBe("he");
+    expect(
+      resolvePreferredLanguage({
+        accountLanguage: "en",
+        businessCountry: "US",
+        allowBrowser: true,
+      })
+    ).toBe("he");
+  });
+
+  it("treats a non-English lang query as an explicit choice", () => {
+    window.history.replaceState({}, "", "/login?lang=he");
+    expect(applyLanguageFromUrl()).toBe("he");
+    expect(getManualLanguageChoice()).toBe("he");
+    expect(resolvePreferredLanguage({ accountLanguage: "en", businessCountry: "US" })).toBe("he");
   });
 });
 

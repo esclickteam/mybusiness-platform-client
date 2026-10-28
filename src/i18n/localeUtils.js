@@ -222,18 +222,30 @@ export function languageFromUrl() {
   }
 }
 
+/**
+ * A non-English ?lang= (or a /he marketing path) is an explicit choice.
+ * ?lang=en is not: the marketing shell used to append it on every exit,
+ * so treating it as a choice locked the product in English.
+ */
+export function explicitLanguageFromUrl() {
+  const lang = languageFromUrl();
+  if (!lang || lang === FALLBACK_LANGUAGE) return null;
+  return lang;
+}
+
 export function applyLanguageFromUrl() {
   const demoLocale = readGuidedDemoLocaleLock();
   if (demoLocale) return demoLocale;
-  const lang = languageFromUrl();
+  const lang = explicitLanguageFromUrl();
   if (!lang) return null;
-  setSessionLanguageOverride(lang);
+  if (getManualLanguageChoice() !== lang) setSessionLanguageOverride(lang);
   return lang;
 }
 
 /**
  * Resolve UI language. One order for the whole product:
- * 1. Explicit URL or manual choice
+ * 1. Explicit non-English URL, then a stored manual choice.
+ *    ?lang=en is ignored so a marketing leftover cannot override them.
  * 2. Account / business language
  * 3. Business country, when no language is stored
  * 4. Last resolved account/country language (so refresh does not flash English)
@@ -249,7 +261,7 @@ export function resolvePreferredLanguage({
   hasBusiness = false,
   allowBrowser = true,
 } = {}) {
-  const fromUrl = languageFromUrl();
+  const fromUrl = explicitLanguageFromUrl();
   if (fromUrl) return fromUrl;
 
   const fromManual = getManualLanguageChoice();

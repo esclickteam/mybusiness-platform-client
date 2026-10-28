@@ -125,6 +125,17 @@ function BusinessLogin() {
     }
   }, [i18n, location.search]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (!params.has("lang")) return;
+    params.delete("lang");
+    const search = params.toString();
+    navigate(
+      { pathname: location.pathname, search: search ? `?${search}` : "" },
+      { replace: true }
+    );
+  }, [location.pathname, location.search, navigate]);
+
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
     [location.search]
@@ -341,7 +352,7 @@ function BusinessLogin() {
 
     const lang = normalizeLanguage(searchParams.get("lang"));
     const withReviewLang = (path: string) => {
-      if (!lang) return path;
+      if (!lang || lang === "en") return path;
       const [pathname, search = ""] = String(path || "/").split("?");
       const params = new URLSearchParams(search);
       params.set("lang", lang);
@@ -582,7 +593,7 @@ function BusinessLogin() {
   }
 
   return (
-    <AuthShell>
+    <AuthShell withSiteHeader>
       <AuthCard
         title={t("login.cardTitle")}
         subtitle={t("login.cardSubtitle")}
