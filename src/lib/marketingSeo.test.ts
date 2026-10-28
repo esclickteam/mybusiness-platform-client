@@ -92,7 +92,7 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
-    expect(hebrew).toContain("<title>מערכת CRM לניהול לקוחות ולידים | ביזאפלי</title>");
+    expect(hebrew).toContain("<title>תוכנת CRM לעסקים קטנים וניהול לידים | Bizuply</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
     expect(hebrew).toContain('hreflang="en" href="https://bizuply.com/crm"');
     expect(hebrew).toContain('hreflang="x-default" href="https://bizuply.com/crm"');
@@ -105,14 +105,15 @@ describe("marketing crawl files", () => {
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/about</loc>");
     expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/he/terms</loc>");
     expect(buildMarketingPrerender("/crm")?.inner).toContain("CRM only is $49 per month");
-    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>Every lead, every client, every appointment in one place</h1>");
+    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>Manage every lead and customer relationship in one place</h1>");
     expect(buildMarketingPrerender("/he/crm")?.inner).toContain("49 דולר");
     expect(buildMarketingDocumentHead("/he/whatsapp-api") || "").toContain("מה כוללים 29 הדולר?");
-    expect(buildMarketingDocumentHead("/crm") || "").toContain("What does the CRM cost?");
+    expect(buildMarketingDocumentHead("/crm") || "").toContain("How much does Bizuply CRM cost?");
     expect(buildMarketingDocumentHead("/about") || "").toContain("Our Mission, Approach");
     expect(buildMarketingDocumentHead("/about") || "").toContain("images/about/og.png");
-    expect(buildMarketingPrerender("/about")?.inner).toContain("Built to make business feel more connected");
-    expect(buildMarketingPrerender("/he/about")?.inner).toContain("נבנתה כדי להפוך את העבודה העסקית למחוברת יותר");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Built for businesses that want their work connected");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Ready-Made SaaS Solutions");
+    expect(buildMarketingPrerender("/he/about")?.inner).toContain("נבנתה לעסקים שרוצים שהעבודה שלהם תהיה מחוברת");
     expect(buildMarketingPrerender("/he/terms")).toBeNull();
     const spanish = buildMarketingDocumentHead("/es/crm") || "";
     expect(spanish).toContain('hreflang="es" href="https://bizuply.com/es/crm"');

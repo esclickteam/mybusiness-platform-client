@@ -106,13 +106,29 @@ export default function HeaderView({
                   className={`site-nav__item${group.wide ? " site-nav__item--wide" : ""}${open ? " is-open" : ""}`}
                   onMouseEnter={() => armGroup(group.id)}
                   onMouseLeave={scheduleClose}
+                  onKeyDown={(event) => {
+                    if (event.key !== "Escape") return;
+                    setOpenGroup(null);
+                    event.currentTarget.querySelector("button")?.focus();
+                  }}
                 >
                   <button
                     type="button"
                     className="site-header__link site-nav__button"
                     aria-expanded={open}
+                    aria-haspopup="true"
                     onClick={() => setOpenGroup(open ? null : group.id)}
                     onFocus={() => armGroup(group.id)}
+                    onKeyDown={(event) => {
+                      if (event.key !== "ArrowDown") return;
+                      event.preventDefault();
+                      armGroup(group.id);
+                      const panel = event.currentTarget.nextElementSibling;
+                      requestAnimationFrame(() => {
+                        const link = panel?.querySelector("a");
+                        if (link instanceof HTMLAnchorElement) link.focus();
+                      });
+                    }}
                   >
                     {group.label}
                   </button>

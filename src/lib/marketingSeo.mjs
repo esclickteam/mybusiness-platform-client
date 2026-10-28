@@ -6,6 +6,9 @@
  * Hebrew and other UI languages stay client-side until dedicated locale URLs exist.
  */
 
+import { crmFaqPairs, getCrmCopy, renderCrmPrerender } from "./crmMarketingCopy.mjs";
+import { collaborationsPrerender, collaborationsSchemas } from "./collaborationsSeo.mjs";
+import { getCollaborationsCopy } from "../pages/product/collaborations/runtime.js";
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { HOME_SHELL } from "./homeShell.mjs";
@@ -161,9 +164,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/crm",
-    title: "CRM Software with Meta Lead Ads Integration | Bizuply",
+    title: "CRM Software for Small Businesses & Lead Management | Bizuply",
     description:
-      "Manage leads and customers in one CRM. Meta Lead Ads, Google Ads, and your website feed one pipeline, with a client file and appointments. CRM only is $49/month.",
+      "Organize leads, manage customers, track follow-ups, and connect supported Meta, Google Ads, and website inquiries with Bizuply CRM. Plans start at $49/month.",
     crumb: "CRM",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -171,9 +174,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/collaborations",
-    title: "Business Collaborations | Bizuply",
+    title: "Business Collaboration Platform & Partnership Opportunities | Bizuply",
     description:
-      "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with Bizuply.",
+      "Find complementary businesses, explore partnership opportunities, manage collaboration proposals, and connect through business chat with Bizuply.",
     crumb: "Collaborations",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -573,6 +576,7 @@ const ABOUT_FAQ = {
 };
 
 function faqItems(path, language) {
+  if (path === "/crm") return crmFaqPairs(language);
   if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
   if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
   const localized = language === "en" ? null : localizedPage(path, language);
@@ -731,8 +735,62 @@ function guideHead(path, locale) {
   ].filter(Boolean).join("\n");
 }
 
+function crmDocumentHead(locale) {
+  const copy = getCrmCopy(locale);
+  const canonical = marketingPublicUrl("/crm", copy.lang);
+  const page = { path: "/crm", title: copy.title, description: copy.description, crumb: copy.crumb };
+  const application = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Bizuply CRM",
+    applicationCategory: "BusinessApplication",
+    operatingSystem: "Web",
+    url: "https://bizuply.com/crm",
+    description: copy.description,
+    offers: [
+      { "@type": "Offer", name: "CRM Only", price: "49", priceCurrency: "USD", url: "https://bizuply.com/register?plan=crm_only" },
+      { "@type": "Offer", name: "Bizuply Business", price: "99", priceCurrency: "USD", url: "https://bizuply.com/pricing" },
+      { "@type": "Offer", name: "Bizuply Business yearly", price: "990", priceCurrency: "USD", url: "https://bizuply.com/pricing" },
+    ],
+  };
+  return [
+    `<title>${escapeHtml(copy.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(copy.description)}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    hreflangTags("/crm"),
+    ...sharedSocialTags(copy.title, copy.description, canonical, copy.lang),
+    `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
+    `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, copy.lang))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    faqSchemaTag("/crm", copy.lang),
+    `<script type="application/ld+json">${jsonLd(application)}</script>`,
+  ].join("\n");
+}
+
+function collaborationsDocumentHead(locale) {
+  const copy = getCollaborationsCopy(locale);
+  const lang = ["he", "es", "pt-BR", "ar"].includes(locale) ? locale : "en";
+  const canonical = marketingPublicUrl("/collaborations", lang);
+  const page = { path: "/collaborations", title: copy.seo.title, description: copy.seo.description, crumb: copy.crumb };
+  return [
+    `<title>${escapeHtml(copy.seo.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(copy.seo.description)}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    hreflangTags("/collaborations"),
+    ...sharedSocialTags(copy.seo.title, copy.seo.description, canonical, lang),
+    `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
+    `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, lang))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    ...collaborationsSchemas(lang, canonical).map((schema) => `<script type="application/ld+json">${jsonLd(schema)}</script>`),
+  ].join("\n");
+}
+
 export function buildMarketingDocumentHead(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/crm") return crmDocumentHead(locale);
+  if (path === "/collaborations") return collaborationsDocumentHead(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const head = guideHead(path, locale);
     if (head) return head;
@@ -1031,6 +1089,11 @@ function renderHomePrerender(locale) {
 
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (path === "/crm") {
+    const copy = getCrmCopy(locale);
+    return { lang: copy.lang, dir: copy.dir, inner: renderCrmPrerender(locale) };
+  }
+  if (path === "/collaborations") return collaborationsPrerender(locale);
   if (path === "/") return renderHomePrerender(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);
@@ -1049,14 +1112,14 @@ export function buildMarketingPrerender(pathname) {
   const heading = path === "/crm"
     ? "Every lead, every client, every appointment in one place"
     : path === "/about"
-      ? "Built to make business feel more connected"
+      ? "Built for businesses that want their work connected"
       : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
   const extra = path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
     : path === "/about" && aboutFaqs
-      ? `<h2>Frequently asked questions about Bizuply</h2>${faqBodyHtml(aboutFaqs)}`
+      ? `<p>Bizuply develops software for customers, communication, marketing, websites and day-to-day operations, together with professional services that help a business put that software to work.</p><p>Bizuply LLC is registered in the United States. Support is at support@bizuply.com.</p><h2>Business Platform</h2><p>A connected workspace for managing customers, communication, marketing, and everyday business operations.</p><h2>Ready-Made SaaS Solutions</h2><p>Industry-focused software solutions designed around specific business workflows.</p><h2>Professional Digital Services</h2><p>Practical assistance with websites, technology setup, and connected business solutions.</p><p><a href="/platform">Explore Bizuply</a> <a href="/contact">Contact Our Team</a></p><h2>Frequently asked questions about Bizuply</h2>${faqBodyHtml(aboutFaqs)}`
       : "";
   return {
     lang: "en",

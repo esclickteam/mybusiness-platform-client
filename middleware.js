@@ -41,6 +41,7 @@ import {
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
 import { splitMarketingLocale } from "./src/lib/localePath.mjs";
+import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -891,6 +892,9 @@ async function handleMarketingDocument(request) {
         /* The linked stylesheet remains. */
       }
       if (prerender) documentHtml = injectRootInner(documentHtml, prerender.inner);
+    } else if (locale.path === "/crm") {
+      if (prerender) documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
+      documentHtml = injectRootInner(documentHtml, buildCrmHeaderPaint(locale.locale));
     } else if (prerender) {
       documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
     }

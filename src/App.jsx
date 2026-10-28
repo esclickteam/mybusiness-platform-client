@@ -1041,7 +1041,7 @@ export default function App() {
   // Only block the tree during the initial auth boot. Login/staffLogin also
   // flip `loading`, and unmounting /login mid-submit drops the form error
   // state and makes it look like "nothing happened".
-  if (loading && !initialized) {
+  if (loading && !initialized && location.pathname !== "/crm") {
     if (isWhatsAppApiLogin) return <div className="min-h-screen bg-[#05070d]" />;
     // The /login route has its own layout-matched skeleton to avoid a large
     // layout shift when this app-level auth check resolves and the real

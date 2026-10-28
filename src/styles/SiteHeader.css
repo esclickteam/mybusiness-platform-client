@@ -253,6 +253,24 @@
   position: relative;
 }
 
+.site-nav__item.is-open {
+  z-index: 40;
+}
+
+.site-nav__item::after {
+  content: "";
+  position: absolute;
+  z-index: 29;
+  top: 100%;
+  inset-inline-start: 0;
+  width: 100%;
+  height: 0.55rem;
+}
+
+.site-nav__item.is-open::after {
+  width: 20rem;
+}
+
 .site-nav__button {
   border: 0;
   background: transparent;
