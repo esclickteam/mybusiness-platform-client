@@ -13,6 +13,13 @@ export function humanizeWhatsAppTemplateName(metaTemplateName = ""): string {
     .replace(/\b\w/g, (ch) => ch.toUpperCase());
 }
 
+export function shouldShowAutomationTemplatePicker(input: {
+  connected?: boolean;
+  readyToSend?: boolean;
+} | null | undefined): boolean {
+  return input?.connected === true && input?.readyToSend === true;
+}
+
 export function resolveWhatsAppTemplateDisplayName(
   template: Partial<ApprovedWhatsAppTemplate> | null | undefined
 ): string {
