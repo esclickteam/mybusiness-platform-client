@@ -1410,6 +1410,7 @@
         "connectAccountCta": "Connect WhatsApp",
         "reconnectRequired": "Reconnect required",
         "connectedAs": "Connected number: {{phone}}",
+        "connectedReadyText": "Messages are sent from this business's connected number. Bizuply's central number is not used.",
         "noneApproved": "No approved WhatsApp templates available",
         "noneApprovedHint": "After a template is approved in Meta, refresh the list.",
         "chooseTemplate": "Choose a template",

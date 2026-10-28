@@ -2802,14 +2802,16 @@ function EditorInner({
                       <p>
                         {waManagedModeEnabled
                           ? t("automations.editor.wa.bizuplyBannerText")
-                          : t("automations.editor.wa.ownNumberText")}
+                          : waPrivateConnected
+                            ? t("automations.editor.wa.connectedReadyText")
+                            : t("automations.editor.wa.connectRequired")}
                       </p>
                       {!waManagedModeEnabled && !waPrivateConnected ? (
                         <Link
                           className="af-toolbar__btn"
                           to={`/business/${businessId}/dashboard/whatsapp/settings`}
                         >
-                          {t("automations.editor.wa.connectCta")}
+                          {t("automations.editor.wa.connectAccountCta")}
                         </Link>
                       ) : null}
                     </div>
