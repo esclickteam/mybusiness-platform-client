@@ -917,6 +917,7 @@ export default function App() {
   // AuthShell pages own their chrome (incl. language switcher) — hide public Header/Footer.
   const isAuthShellRoute =
     location.pathname === "/login" || location.pathname === "/register";
+  const isLoginRoute = location.pathname === "/login";
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -1095,7 +1096,7 @@ export default function App() {
           !isPublicProposalRoute &&
           !isPartnerSignRoute &&
           !isWhatsAppApiLogin &&
-          !isAuthShellRoute &&
+          (!isAuthShellRoute || isLoginRoute) &&
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}

@@ -1,14 +1,8 @@
 import React, { createContext, type ReactNode, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Bot,
-  CalendarDays,
-  Globe2,
-  Megaphone,
-  Users,
-} from "lucide-react";
 import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
 import LanguageSwitcher from "../LanguageSwitcher";
+import LoginShowcase from "./LoginShowcase";
 import {
   applyPartnerFavicon,
   hidesBizuplyChrome,
@@ -57,26 +51,21 @@ type AuthShellProps = {
   children: ReactNode;
   headline?: ReactNode;
   cardMaxWidthClassName?: string;
+  withSiteHeader?: boolean;
 };
 
 export default function AuthShell({
   children,
   headline,
   cardMaxWidthClassName = "max-w-[440px]",
+  withSiteHeader = false,
 }: AuthShellProps) {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const dir = i18n.dir();
   const { branding } = usePartnerHostBranding();
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
   const brandName = partnerFacingName(branding, host);
-  const featureCards = [
-    { title: t("login.featureCrmTitle"), subtitle: t("login.featureCrmText"), icon: Users },
-    { title: t("login.featureAppointmentsTitle"), subtitle: t("login.featureAppointmentsText"), icon: CalendarDays },
-    { title: t("login.featureAiTitle"), subtitle: t("login.featureAiText"), icon: Bot },
-    { title: t("login.featureWebsiteTitle"), subtitle: t("login.featureWebsiteText"), icon: Globe2 },
-    { title: t("login.featureMetaLeadsTitle"), subtitle: t("login.featureMetaLeadsText"), icon: Megaphone },
-  ];
 
   useEffect(() => {
     applyPartnerFavicon(whiteLabel ? branding?.faviconUrl || branding?.stored?.faviconUrl : "");
@@ -85,7 +74,7 @@ export default function AuthShell({
 
   return (
     <LoginBrandingContext.Provider value={branding}>
-      <div dir={dir} className="auth-stage">
+      <div dir={dir} className={`auth-stage${withSiteHeader ? " auth-stage--under-header" : ""}`}>
         <div className="auth-stage__bg" aria-hidden="true">
           <div className="auth-stage__gradient" />
           <div className="auth-stage__grid" />
@@ -93,9 +82,11 @@ export default function AuthShell({
           <div className="auth-orb auth-orb--b" />
           <div className="auth-orb auth-orb--c" />
         </div>
-        <div className="auth-stage__lang">
-          <LanguageSwitcher />
-        </div>
+        {withSiteHeader ? null : (
+          <div className="auth-stage__lang">
+            <LanguageSwitcher />
+          </div>
+        )}
         <main className="auth-stage__main">
           <section className={`auth-stage__panel ${cardMaxWidthClassName}`}>
             {children}
@@ -108,34 +99,7 @@ export default function AuthShell({
               {brandName ? <h2 className="auth-showcase__title">{brandName}</h2> : null}
             </section>
           ) : (
-            <section className="auth-showcase">
-              <div className="auth-showcase__brand">
-                <BrandMark />
-              </div>
-              <h2 className="auth-showcase__title">
-                {headline || (
-                  <>
-                    {t("login.heroTitleTop")}{" "}
-                    <em>{t("login.heroTitleHighlight")}</em>
-                  </>
-                )}
-              </h2>
-              <div className="auth-showcase__line" aria-hidden="true">
-                <span />
-                <span />
-              </div>
-              <div className="auth-showcase__grid">
-                {featureCards.map(({ title, subtitle, icon: Icon }) => (
-                  <article key={title} className="auth-float">
-                    <span className="auth-float__icon">
-                      <Icon size={18} />
-                    </span>
-                    <strong>{title}</strong>
-                    <span>{subtitle}</span>
-                  </article>
-                ))}
-              </div>
-            </section>
+            <LoginShowcase headline={headline} />
           )}
         </main>
       </div>

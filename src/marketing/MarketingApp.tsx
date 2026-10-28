@@ -12,7 +12,9 @@ const SupportChatWidget = lazy(() => import("../components/SupportChatWidget"));
 function leaveMarketingSite(href: string) {
   const locale = splitMarketingLocale(window.location.pathname).locale || "en";
   const url = new URL(href, window.location.origin);
-  if (!url.searchParams.has("lang")) url.searchParams.set("lang", locale);
+  if (locale !== "en" && !url.searchParams.has("lang")) {
+    url.searchParams.set("lang", locale);
+  }
   window.location.assign(`${url.pathname}${url.search}${url.hash}`);
 }
 
