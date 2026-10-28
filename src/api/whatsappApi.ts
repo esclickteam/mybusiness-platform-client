@@ -671,6 +671,7 @@ export async function getWhatsAppIntegrationStatus(
     lastTemplatesSyncAt?: string | null;
     hasAccessToken?: boolean;
     managedModeEnabled?: boolean;
+    managedSenderAvailable?: boolean;
     customerUnavailableMessage?: string | null;
     managedStatus?: {
       configured?: boolean;

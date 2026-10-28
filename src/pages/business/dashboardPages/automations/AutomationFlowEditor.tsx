@@ -40,7 +40,7 @@ import {
   shouldIgnoreCanvasPickerClose,
 } from "./automation-builder/toolbarAddStep";
 import { toast } from "react-toastify";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import {
   Loader2,
   FlaskConical,
@@ -541,7 +541,7 @@ function EditorInner({
   const [testing, setTesting] = useState(false);
   const [filter] = useState<PaletteFilter>("all");
   const [waConnected, setWaConnected] = useState(false);
-  const [waManagedModeEnabled, setWaManagedModeEnabled] = useState(true);
+  const [waManagedModeEnabled, setWaManagedModeEnabled] = useState(false);
   const [waPrivateConnected, setWaPrivateConnected] = useState(false);
   const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
   const [waLoading, setWaLoading] = useState(false);
@@ -671,7 +671,7 @@ function EditorInner({
   }, [selectedId, nodes, inspectorBaseline]);
 
   const loadApprovedWhatsAppTemplates = useCallback(async (
-    senderMode: WhatsAppSenderMode = "bizuply_managed"
+    senderMode: WhatsAppSenderMode = "business_connected"
   ) => {
     setWaLoading(true);
     setWaSyncError("");
@@ -689,14 +689,7 @@ function EditorInner({
         }),
       ]);
       setWaPrivateConnected(Boolean(privateStatus.connected));
-      setWaManagedModeEnabled(
-        Boolean(
-          managedStatus.managedModeEnabled ??
-            managedStatus.managedStatus?.managedModeEnabled ??
-            (approved as { managedModeEnabled?: boolean }).managedModeEnabled ??
-            true
-        )
-      );
+      setWaManagedModeEnabled(managedStatus.managedSenderAvailable === true);
       setWaConnected(Boolean(approved.connected));
       setWaLastSyncAt(
         approved.lastTemplatesSyncAt ||
@@ -732,7 +725,7 @@ function EditorInner({
   }, [businessId]);
 
   const refreshWhatsAppTemplatesFromMeta = useCallback(async (
-    senderMode: WhatsAppSenderMode = "bizuply_managed"
+    senderMode: WhatsAppSenderMode = "business_connected"
   ) => {
     setWaLoading(true);
     setWaSyncError("");
@@ -906,10 +899,11 @@ function EditorInner({
   );
 
   const selectedWaSenderMode = useMemo<WhatsAppSenderMode>(() => {
+    if (!waManagedModeEnabled) return "business_connected";
     const raw = String(selectedNode?.data?.senderMode || "").trim();
     if (raw === "business_connected") return "business_connected";
     return "bizuply_managed";
-  }, [selectedNode?.data?.senderMode]);
+  }, [selectedNode?.data?.senderMode, waManagedModeEnabled]);
 
   useEffect(() => {
     void loadApprovedWhatsAppTemplates(selectedWaSenderMode);
@@ -1044,7 +1038,7 @@ function EditorInner({
       );
       return prev.map((n) => {
         if (n.id !== selectedId) return n;
-        const nextData = {
+        const nextData: Record<string, unknown> = {
           ...(n.data || {}),
           ...(needsRecipientDefault
             ? { recipientType: defaultEmailRecipientType(triggerKey) }
@@ -1080,7 +1074,7 @@ function EditorInner({
       );
       return prev.map((n) => {
         if (n.id !== selectedId) return n;
-        const nextData = {
+        const nextData: Record<string, unknown> = {
           ...(n.data || {}),
           emailProvider: "microsoft",
           ...(needsRecipientDefault
@@ -2776,10 +2770,24 @@ function EditorInner({
                 ) ? (
                   <div className="af-wa-template">
                     <div className="af-wa-banner" dir={dir}>
-                      <strong>{t("automations.editor.wa.bizuplyBannerTitle")}</strong>
+                      <strong>
+                        {waManagedModeEnabled
+                          ? t("automations.editor.wa.bizuplyBannerTitle")
+                          : t("automations.editor.wa.ownNumberTitle")}
+                      </strong>
                       <p>
-                        {t("automations.editor.wa.bizuplyBannerText")}
+                        {waManagedModeEnabled
+                          ? t("automations.editor.wa.bizuplyBannerText")
+                          : t("automations.editor.wa.ownNumberText")}
                       </p>
+                      {!waManagedModeEnabled && !waPrivateConnected ? (
+                        <Link
+                          className="af-toolbar__btn"
+                          to={`/business/${businessId}/dashboard/whatsapp/settings`}
+                        >
+                          {t("automations.editor.wa.connectCta")}
+                        </Link>
+                      ) : null}
                     </div>
 
                     <p className="af-wa-cost__estimate" dir={dir}>
@@ -2808,12 +2816,11 @@ function EditorInner({
                             });
                           }}
                         >
-                          <option
-                            value="bizuply_managed"
-                            disabled={!waManagedModeEnabled}
-                          >
-                            {t("automations.editor.wa.managedNumber")}
-                          </option>
+                          {waManagedModeEnabled ? (
+                            <option value="bizuply_managed">
+                              {t("automations.editor.wa.managedNumber")}
+                            </option>
+                          ) : null}
                           <option
                             value="business_connected"
                             disabled={!waPrivateConnected}
@@ -3214,7 +3221,12 @@ function EditorInner({
                       recipientType={String(
                         selectedNode.data?.recipientType || ""
                       )}
-                      senderLabel={t("automations.editor.wa.managedNumber")}
+                      senderLabel={
+                        waManagedModeEnabled &&
+                        selectedWaSenderMode === "bizuply_managed"
+                          ? t("automations.editor.wa.managedNumber")
+                          : t("automations.editor.wa.businessNumber")
+                      }
                       hasSelection={Boolean(
                         String(selectedNode.data?.templateId || "").trim()
                       )}
