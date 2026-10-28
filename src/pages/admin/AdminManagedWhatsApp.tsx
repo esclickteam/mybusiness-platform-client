@@ -1221,9 +1221,7 @@ export default function AdminManagedWhatsApp() {
                 </div>
               ) : null}
 
-              ) : null}
-
-              {(showUsDetailPanel) && sendRegistered ? (
+              {showUsDetailPanel && sendRegistered ? (
                 <div
                   style={{
                     marginTop: 18,
