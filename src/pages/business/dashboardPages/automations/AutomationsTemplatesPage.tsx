@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import {
+  Link,
   useNavigate,
   useOutletContext,
   useSearchParams,
@@ -147,6 +148,7 @@ export default function AutomationsTemplatesPage() {
   const [gmailConnected, setGmailConnected] = useState(false);
   const [outlookConnected, setOutlookConnected] = useState(false);
   const [businessSenders, setBusinessSenders] = useState<EmailSender[]>([]);
+  const [waCatalogReady, setWaCatalogReady] = useState(false);
   const [managedWaReady, setManagedWaReady] = useState(false);
   const [managedModeEnabled, setManagedModeEnabled] = useState(true);
   const [waUnavailableMessage, setWaUnavailableMessage] = useState<string | null>(
@@ -211,19 +213,24 @@ export default function AutomationsTemplatesPage() {
           listVerifiedEmailSenders().catch(() => [] as EmailSender[]),
         ]);
 
+      const approvedReady =
+        approved.readyToSend === true && approved.connected === true;
       const byId = new Map<string, WhatsAppTemplate | ApprovedWhatsAppTemplate>();
-      for (const tpl of [
-        ...(approved.templates || []),
-        ...(allTpl || []),
-      ]) {
-        const id = getWaTemplateId(tpl);
-        if (id && !byId.has(id)) byId.set(id, tpl);
+      if (approvedReady) {
+        for (const tpl of [
+          ...(approved.templates || []),
+          ...(allTpl || []),
+        ]) {
+          const id = getWaTemplateId(tpl);
+          if (id && !byId.has(id)) byId.set(id, tpl);
+        }
       }
 
       setRecipes(recipeResult?.recipes || []);
       setAiEntitled(Boolean(recipeResult?.aiAutomationsEntitled));
       setTriggers(catalog.triggers || []);
-      setWaTemplates(listUsableWaTemplates(Array.from(byId.values())));
+      setWaCatalogReady(approvedReady);
+      setWaTemplates(approvedReady ? listUsableWaTemplates(Array.from(byId.values())) : []);
       setManagedWaReady(
         Boolean(
           waStatus?.readyToSend ||
@@ -1131,6 +1138,17 @@ export default function AutomationsTemplatesPage() {
                 <p>
                   {t("automations.templates.chooseApprovedWa")}
                 </p>
+                {!waCatalogReady ? (
+                  <div data-testid="wa-template-connect-gate">
+                    <p>{t("automations.editor.wa.connectRequired")}</p>
+                    <Link
+                      className="af-toolbar__btn"
+                      to={`/business/${businessId}/dashboard/whatsapp/settings`}
+                    >
+                      {t("automations.editor.wa.connectAccountCta")}
+                    </Link>
+                  </div>
+                ) : (
                 <label>
                   {t("automations.templates.approvedMessageTemplate")}
                   <select
@@ -1158,7 +1176,8 @@ export default function AutomationsTemplatesPage() {
                     })}
                   </select>
                 </label>
-                {!waTemplates.length ? (
+                )}
+                {waCatalogReady && !waTemplates.length ? (
                   <p className="ax-template-card__blocker">
                     {t("automations.templates.noApprovedYet")}
                   </p>

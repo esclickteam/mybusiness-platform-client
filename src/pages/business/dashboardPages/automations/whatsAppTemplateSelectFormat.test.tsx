@@ -11,6 +11,7 @@ import {
   formatWhatsAppTemplateLanguage,
   formatWhatsAppVariableCountLabel,
   humanizeWhatsAppTemplateName,
+  shouldShowAutomationTemplatePicker,
   isAutomationSendableTemplate,
   listAutomationPickerTemplates,
   resolveAutomationTemplateWarning,
@@ -64,6 +65,27 @@ describe("whatsAppTemplateSelectFormat", () => {
         name: "ליד חדש התקבל",
       })
     ).toBe("ליד חדש התקבל");
+  });
+
+  it("hides the picker unless the business connection is ready to send", () => {
+    expect(
+      shouldShowAutomationTemplatePicker({
+        connected: true,
+        readyToSend: false,
+      })
+    ).toBe(false);
+    expect(
+      shouldShowAutomationTemplatePicker({
+        connected: false,
+        readyToSend: false,
+      })
+    ).toBe(false);
+    expect(
+      shouldShowAutomationTemplatePicker({
+        connected: true,
+        readyToSend: true,
+      })
+    ).toBe(true);
   });
 
   it("humanizes technical name without inventing Hebrew meaning", () => {

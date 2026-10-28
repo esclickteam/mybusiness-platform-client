@@ -670,6 +670,7 @@ export async function getWhatsAppIntegrationStatus(
     displayPhoneMasked?: string;
     lastTemplatesSyncAt?: string | null;
     hasAccessToken?: boolean;
+    needsReconnect?: boolean;
     managedModeEnabled?: boolean;
     managedSenderAvailable?: boolean;
     customerUnavailableMessage?: string | null;
@@ -724,6 +725,8 @@ export async function listApprovedWhatsAppTemplates(
     senderMode?: WhatsAppSenderMode;
     usableForAutomation?: boolean;
     connected: boolean;
+    readyToSend?: boolean;
+    needsReconnect?: boolean;
     tenantConnected?: boolean;
     managedAllowed?: boolean;
     integrationId?: string;
@@ -761,6 +764,9 @@ export async function syncWhatsAppTemplatesForAutomation(
     usableForAutomation?: boolean;
     senderMode?: WhatsAppSenderMode;
     connected: boolean;
+    readyToSend?: boolean;
+    needsReconnect?: boolean;
+    displayPhoneNumber?: string;
     tenantConnected?: boolean;
     managedAllowed?: boolean;
     templates: ApprovedWhatsAppTemplate[];

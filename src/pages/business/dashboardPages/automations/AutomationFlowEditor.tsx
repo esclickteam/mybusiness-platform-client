@@ -109,7 +109,7 @@ import {
 import { isBusinessAlertMetaTemplateName, isTestTemplateName } from "./whatsappAutomationMetaTemplates";
 import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
 import { WhatsAppActionPreview } from "./WhatsAppActionPreview";
-import { canPersistAutomationTemplateSelection } from "./whatsAppTemplateSelectFormat";
+import { canPersistAutomationTemplateSelection, shouldShowAutomationTemplatePicker } from "./whatsAppTemplateSelectFormat";
 import { EmailActionTemplateFields } from "./EmailActionTemplateFields";
 import {
   listVerifiedEmailSenders,
@@ -543,6 +543,8 @@ function EditorInner({
   const [waConnected, setWaConnected] = useState(false);
   const [waManagedModeEnabled, setWaManagedModeEnabled] = useState(false);
   const [waPrivateConnected, setWaPrivateConnected] = useState(false);
+  const [waDisplayPhone, setWaDisplayPhone] = useState("");
+  const [waNeedsReconnect, setWaNeedsReconnect] = useState(false);
   const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
   const [waLoading, setWaLoading] = useState(false);
   const [waSyncError, setWaSyncError] = useState("");
@@ -675,6 +677,8 @@ function EditorInner({
   ) => {
     setWaLoading(true);
     setWaSyncError("");
+    setWaTemplates([]);
+    setWaConnected(false);
     try {
       const [managedStatus, privateStatus, approved] = await Promise.all([
         getWhatsAppIntegrationStatus(businessId, {
@@ -688,18 +692,33 @@ function EditorInner({
           senderMode,
         }),
       ]);
-      setWaPrivateConnected(Boolean(privateStatus.connected));
+      const ready = shouldShowAutomationTemplatePicker(approved);
+      setWaPrivateConnected(ready);
       setWaManagedModeEnabled(managedStatus.managedSenderAvailable === true);
-      setWaConnected(Boolean(approved.connected));
-      setWaLastSyncAt(
-        approved.lastTemplatesSyncAt ||
-          (senderMode === "business_connected"
-            ? privateStatus.lastTemplatesSyncAt
-            : managedStatus.lastTemplatesSyncAt ||
-              managedStatus.managedStatus?.lastTemplatesSyncAt) ||
-          null
+      setWaConnected(ready);
+      setWaNeedsReconnect(
+        !ready &&
+          (Boolean(approved.needsReconnect) ||
+            Boolean(privateStatus.needsReconnect) ||
+            Boolean(privateStatus.connected))
       );
-      setWaTemplates(approved.templates || []);
+      setWaDisplayPhone(
+        ready
+          ? String(
+              approved.displayPhoneNumber ||
+                privateStatus.displayPhoneNumber ||
+                ""
+            )
+          : ""
+      );
+      setWaLastSyncAt(
+        ready
+          ? approved.lastTemplatesSyncAt ||
+              privateStatus.lastTemplatesSyncAt ||
+              null
+          : null
+      );
+      setWaTemplates(ready ? approved.templates || [] : []);
       const unavailable =
         managedStatus.customerUnavailableMessage ||
         managedStatus.managedStatus?.customerUnavailableMessage ||
@@ -733,9 +752,14 @@ function EditorInner({
       const synced = await syncWhatsAppTemplatesForAutomation(businessId, {
         senderMode,
       });
-      setWaConnected(Boolean(synced.connected));
-      setWaLastSyncAt(synced.lastTemplatesSyncAt || null);
-      setWaTemplates(synced.templates || []);
+      setWaConnected(Boolean(synced.readyToSend));
+      setWaDisplayPhone(
+        synced.readyToSend
+          ? String(synced.displayPhoneNumber || "")
+          : ""
+      );
+      setWaLastSyncAt(synced.readyToSend ? synced.lastTemplatesSyncAt || null : null);
+      setWaTemplates(synced.readyToSend ? synced.templates || [] : []);
       if (!synced.connected) {
         setWaSyncError(
           synced.customerUnavailableMessage ||
@@ -2906,6 +2930,7 @@ function EditorInner({
                       ) : null}
                     </div>
 
+                    {waConnected ? (
                     <div className="af-wa-template__head">
                       <span>{t("automations.editor.wa.template")}</span>
                       <button
@@ -2928,39 +2953,38 @@ function EditorInner({
                         )}
                       </button>
                     </div>
+                    ) : null}
+
+                    {waConnected && waDisplayPhone ? (
+                      <p className="af-wa-template__state" dir={dir}>
+                        {t("automations.editor.wa.connectedAs", {
+                          phone: waDisplayPhone,
+                        })}
+                      </p>
+                    ) : null}
 
                     {waLoading && waTemplates.length === 0 ? (
                       <p className="af-wa-template__state">
                         {t("automations.editor.wa.loadingTemplates")}
                       </p>
                     ) : !waConnected ? (
-                      <div className="af-wa-template__state af-wa-template__state--error">
-                        <p>
-                          {waManagedModeEnabled
-                            ? waSyncError ||
-                              t("automations.editor.wa.loadTemplatesError")
-                            : t("automations.editor.wa.managedOff")}
-                        </p>
-                        {waManagedModeEnabled ? (
-                          <button
-                            type="button"
-                            className="af-toolbar__btn"
-                            onClick={() =>
-                              void refreshWhatsAppTemplatesFromMeta(
-                                selectedWaSenderMode
-                              )
-                            }
-                          >
-                            {t("automations.editor.wa.retry")}
-                          </button>
-                        ) : (
-                          <a
-                            className="af-toolbar__btn"
-                            href={`/business/${businessId}/dashboard/whatsapp`}
-                          >
-                            {t("automations.editor.wa.connectCta")}
-                          </a>
-                        )}
+                      <div
+                        className="af-wa-template__state"
+                        dir={dir}
+                        data-testid="wa-template-connect-gate"
+                      >
+                        {waNeedsReconnect ||
+                        String(selectedNode.data?.metaTemplateName || "") ||
+                        String(selectedNode.data?.templateId || "") ? (
+                          <strong>{t("automations.editor.wa.reconnectRequired")}</strong>
+                        ) : null}
+                        <p>{t("automations.editor.wa.connectRequired")}</p>
+                        <Link
+                          className="af-toolbar__btn"
+                          to={`/business/${businessId}/dashboard/whatsapp/settings`}
+                        >
+                          {t("automations.editor.wa.connectAccountCta")}
+                        </Link>
                       </div>
                     ) : waSyncError && waTemplates.length === 0 ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
