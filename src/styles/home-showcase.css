@@ -74,6 +74,7 @@
   font-weight: 780;
 }
 .home-hero__lead { max-width: 38rem; color: #31445f; font-size: 1.15rem; }
+.hx-hero__wash { position: absolute; inset: 0; pointer-events: none; }
 .hx-hero__actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1.4rem; }
 
 .hx-stage { position: relative; min-height: 560px; }
@@ -98,7 +99,8 @@
 .hx-window header i { width: 8px; height: 8px; border-radius: 50%; background: #d5dced; }
 .hx-window--crm { width: 46%; left: 0; top: 8%; }
 .hx-window--crm ul { list-style: none; margin: 0; padding: 0.4rem 0.8rem 0.8rem; }
-.hx-window--crm li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0; border-top: 1px solid var(--line); font-size: 0.86rem; }
+.hx-window--crm li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.55rem 0; border-top: 1px solid var(--line); font-size: 0.86rem; color: #10203f; }
+.hx-window--crm li b { color: #10203f; font-weight: 700; }
 .hx-window--crm span { color: var(--blue); }
 .hx-phone {
   width: 34%; right: 4%; top: 18%;
