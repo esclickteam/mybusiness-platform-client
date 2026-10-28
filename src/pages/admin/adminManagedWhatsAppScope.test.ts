@@ -48,9 +48,18 @@ describe("admin managed WhatsApp page scope", () => {
     const en = adminManagedWhatsAppCopy("en");
     expect(he.connect).toBe("חבר WhatsApp");
     expect(he.notConnected).toBe("לא מחובר ל-WhatsApp");
+    expect(he.statusActive).toBe("פעיל");
+    expect(he.wabaConnected).toBe("WABA מחובר");
     expect(en.connect).toBe("Connect WhatsApp");
+    expect(en.statusActive).toBe("Active");
+    expect(en.statusInactive).toBe("Off");
+    expect(en.wabaConnected).toBe("WABA connected");
+    expect(en.wabaDisconnected).toBe("WABA not connected");
+    expect(en.phoneConnected).toBe("Phone number connected");
+    expect(en.registrationRegistered).toBe("Send registration: Registered");
     expect(en.description).toContain("US");
     expect(en.description.toLowerCase()).not.toContain("israel");
     expect(he.description).not.toContain("ישראל");
+    expect(JSON.stringify(en)).not.toMatch(/[\u0590-\u05FF]/);
   });
 });
