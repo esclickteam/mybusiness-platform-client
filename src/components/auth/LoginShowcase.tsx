@@ -95,6 +95,7 @@ export default function LoginShowcase({
             <svg className="auth-chart" viewBox="0 0 240 78" preserveAspectRatio="none">
               <path d="M4 62 C 36 60, 48 28, 78 34 S 124 18, 156 26 210 8, 236 14" />
               <path d="M4 68 C 40 66, 70 48, 108 52 S 168 40, 236 36" />
+              <path className="is-green" d="M4 58 C 52 56, 88 44, 128 46 S 190 30, 236 28" />
             </svg>
             <div className="auth-metrics">
               <p>

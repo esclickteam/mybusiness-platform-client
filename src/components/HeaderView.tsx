@@ -59,11 +59,9 @@ export default function HeaderView({
 
   if (isDashboard) return null;
 
-  const onLogin = location.pathname === "/login";
-
   return (
     <>
-      <header className={`site-header${onLogin ? " site-header--overlay" : ""}`} dir={headerDir}>
+      <header className="site-header" dir={headerDir}>
         <nav className="site-header__bar" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
           <Link to="/" className="site-header__logo" aria-label="BizUply">
             <img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchPriority="low" decoding="async" />

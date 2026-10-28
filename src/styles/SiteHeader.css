@@ -389,39 +389,3 @@
     transform: none;
   }
 }
-
-.site-header--overlay {
-  position: fixed;
-  inset-inline: 0;
-  top: 0;
-  background: rgba(8, 12, 28, 0.46);
-  --sh-ink: #f8fafc;
-  --sh-muted: rgba(226, 232, 240, 0.88);
-  --sh-accent: #ddd6fe;
-  --sh-line: rgba(255, 255, 255, 0.18);
-  box-shadow: none;
-}
-
-.site-header--overlay .site-header__logo {
-  padding: 0.12rem 0.45rem;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.94);
-}
-
-.site-header--overlay .site-header__link:hover,
-.site-header--overlay .site-header__signin:hover,
-.site-header--overlay .site-header__link.is-active {
-  color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.site-header--overlay .site-header__icon-btn {
-  background: rgba(255, 255, 255, 0.08);
-  color: #f8fafc;
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.site-header--overlay .site-header__icon-btn:hover {
-  background: rgba(255, 255, 255, 0.16);
-  color: #fff;
-}
