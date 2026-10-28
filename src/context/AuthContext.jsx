@@ -7,10 +7,14 @@ import {
   getValidAccessToken,
   refreshAccessTokenOnce,
   isAccessTokenExpired,
+  isHardRefreshFailure,
+  isTransientRefreshFailure,
   shouldAttemptRefresh,
   clearRefreshDead,
+  isRefreshDead,
   markRefreshDead,
 } from "../utils/tokenRefresh";
+import { writeSessionHint } from "../utils/sessionHint";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
 import { messageForLoginFailure } from "../utils/loginFailureMessage";
 import {
@@ -212,24 +216,25 @@ function clearLocalAuth({ clearDashboardRoute = false } = {}) {
 async function tryRefreshWithRetries(maxAttempts = 3) {
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
     try {
-      return await refreshAccessTokenOnce();
+      return { token: await refreshAccessTokenOnce(), hard: false, transient: false };
     } catch (err) {
-      if (
-        err.message === "NO_REFRESH_TOKEN" ||
-        err.message === "REFRESH_REVOKED" ||
-        err.code === "REFRESH_TOKEN_NOT_FOUND" ||
-        err.code === "REFRESH_TOKEN_INVALID"
-      ) {
-        return null;
+      if (isHardRefreshFailure(err)) {
+        return { token: null, hard: true, transient: false };
       }
       if (attempt < maxAttempts - 1) {
         await new Promise((resolve) =>
           setTimeout(resolve, 1000 * (attempt + 1))
         );
+        continue;
       }
+      return {
+        token: null,
+        hard: false,
+        transient: isTransientRefreshFailure(err) || !isHardRefreshFailure(err),
+      };
     }
   }
-  return null;
+  return { token: null, hard: false, transient: true };
 }
 
 /* ===========================
@@ -262,7 +267,7 @@ export function AuthProvider({ children }) {
     }
   });
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [initialized, setInitialized] = useState(false);
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -288,6 +293,7 @@ export function AuthProvider({ children }) {
       const normalized = applyManagedSessionToUser(normalizeUser(data));
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      syncLanguageOnLogin(normalized);
       return normalized;
     };
 
@@ -317,10 +323,11 @@ export function AuthProvider({ children }) {
   const loginWithToken = (
     userFromServer,
     accessToken,
-    { skipRedirect = false } = {}
+    { skipRedirect = false, rememberMe = true } = {}
   ) => {
     resetSessionInvalidationGuard();
     clearRefreshDead();
+    writeSessionHint(rememberMe !== false);
     localStorage.setItem("token", accessToken);
     setAuthToken(accessToken);
     setToken(accessToken);
@@ -429,15 +436,16 @@ export function AuthProvider({ children }) {
   /* ===========================
      🔐 Login
   =========================== */
-  const login = async (email, password, { skipRedirect = false } = {}) => {
+  const login = async (email, password, { skipRedirect = false, rememberMe = true } = {}) => {
     // Do not flip the global `loading` boot flag here — App.jsx treats that as
     // "unmount the whole tree", which drops /login mid-submit and hides errors.
     setError(null);
 
     try {
+      const persistent = rememberMe !== false;
       const { data } = await API.post(
         "/auth/login",
-        { email: email.trim().toLowerCase(), password },
+        { email: email.trim().toLowerCase(), password, rememberMe: persistent },
         { withCredentials: true }
       );
 
@@ -445,6 +453,7 @@ export function AuthProvider({ children }) {
 
       resetSessionInvalidationGuard();
       clearRefreshDead();
+      writeSessionHint(persistent);
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
       clearManagedBusinessContext();
@@ -579,6 +588,7 @@ export function AuthProvider({ children }) {
 
       resetSessionInvalidationGuard();
       clearRefreshDead();
+      writeSessionHint(true);
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
       clearManagedBusinessContext();
@@ -778,6 +788,8 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    let sessionTransient = false;
+
     (async () => {
       setLoading(true);
 
@@ -795,20 +807,38 @@ export function AuthProvider({ children }) {
             if (activeToken && !cancelled) {
               setToken(activeToken);
             }
-          } catch {
-            // No valid refresh cookie — fall through to logged-out state
+          } catch (err) {
+            if (isHardRefreshFailure(err)) {
+              activeToken = null;
+            } else {
+              // Network / 5xx: keep the cached session and try again later.
+              sessionTransient = true;
+            }
           }
         }
       }
 
+      const keepCachedSession = () => {
+        if (cancelled) return;
+        setLoading(false);
+        setInitialized(true);
+      };
+
       if (!activeToken) {
+        if (sessionTransient) {
+          keepCachedSession();
+          return;
+        }
         // Cached profile without a usable access/refresh session = zombie login.
         // Clear it instead of rendering a dashboard that 401s on every API call.
         if (shouldAttemptRefresh()) {
           const recovered = await tryRefreshWithRetries();
-          if (recovered && !cancelled) {
-            activeToken = recovered;
-            setToken(recovered);
+          if (recovered?.token && !cancelled) {
+            activeToken = recovered.token;
+            setToken(recovered.token);
+          } else if (recovered?.transient) {
+            keepCachedSession();
+            return;
           } else if (!cancelled) {
             clearLocalAuth();
             markRefreshDead();
@@ -839,6 +869,16 @@ export function AuthProvider({ children }) {
         const freshUser = await refreshUser();
 
         if (!freshUser) {
+          const cachedSession = Boolean(
+            localStorage.getItem("token") || localStorage.getItem("businessDetails")
+          );
+          if (!isRefreshDead() && (sessionTransient || cachedSession)) {
+            if (!cancelled) {
+              setLoading(false);
+              setInitialized(true);
+            }
+            return;
+          }
           throw new Error("Missing user");
         }
 
@@ -1082,21 +1122,22 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.error("❌ Auth init failed:", err);
 
-        // Never restore a cached profile after bootstrap failure — that left a
-        // zombie "logged in" UI that kept hammering APIs with a revoked session.
         if (!cancelled) {
-          clearLocalAuth();
-          markRefreshDead();
-          setToken(null);
-          setUser(null);
+          const hard = err?.message === "Missing user" || isHardRefreshFailure(err);
+          if (hard) {
+            clearLocalAuth();
+            markRefreshDead();
+            setToken(null);
+            setUser(null);
 
-          if (socket) {
-            socket.disconnect();
-            setSocket(null);
-          }
+            if (socket) {
+              socket.disconnect();
+              setSocket(null);
+            }
 
-          if (!isPublicRoute(location.pathname) && !isSessionInvalidated()) {
-            navigate(loginPath(), { replace: true });
+            if (!isPublicRoute(location.pathname) && !isSessionInvalidated()) {
+              navigate(loginPath(), { replace: true });
+            }
           }
         }
       } finally {

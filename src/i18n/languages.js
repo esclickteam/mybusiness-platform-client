@@ -15,6 +15,8 @@ export const GEO_LANG_COOKIE = "bizuply_geo_lang";
 export const MANUAL_LANG_FLAG = "bizuply_lang_preference";
 export const SESSION_LANG_KEY = "bizuply_lang_session";
 export const I18N_STORAGE_KEY = "i18nextLng";
+/** Last language resolved from the account or the business country. Not a manual choice. */
+export const RESOLVED_LANG_KEY = "bizuply_lang_resolved";
 
 export const LANGUAGE_META = Object.freeze([
   {
@@ -116,6 +118,39 @@ const ARABIC_COUNTRIES = new Set([
 /** Clear English-speaking countries — never guess `en` for unknown countries. */
 const CLEAR_ENGLISH_COUNTRIES = new Set(["US", "GB", "AU", "CA", "NZ", "IE"]);
 
+const COUNTRY_NAME_TO_CODE = Object.freeze({
+  ISRAEL: "IL",
+  "UNITED STATES": "US",
+  "UNITED STATES OF AMERICA": "US",
+  USA: "US",
+  "UNITED KINGDOM": "GB",
+  UK: "GB",
+  "GREAT BRITAIN": "GB",
+  ENGLAND: "GB",
+  BRAZIL: "BR",
+  BRASIL: "BR",
+  SPAIN: "ES",
+  MEXICO: "MX",
+  "UNITED ARAB EMIRATES": "AE",
+  UAE: "AE",
+});
+
+/**
+ * ISO code for a stored business country.
+ * Accepts alpha-2 codes and the country names already used in the product.
+ * Returns null when the value is missing or not a country we can identify.
+ */
+export function recognizedCountryCode(country) {
+  const raw = String(country || "")
+    .trim()
+    .replace(/[_-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .toUpperCase();
+  if (!raw || raw === "XX" || raw === "T1") return null;
+  if (/^[A-Z]{2}$/.test(raw)) return raw;
+  return COUNTRY_NAME_TO_CODE[raw] || null;
+}
+
 const META_BY_CODE = Object.fromEntries(
   LANGUAGE_META.map((item) => [item.code, item])
 );
@@ -181,10 +216,8 @@ export function isHebrewLanguage(lng) {
 }
 
 export function languageFromCountry(country) {
-  const code = String(country || "")
-    .trim()
-    .toUpperCase();
-  if (!code || code === "XX" || code === "T1") return null;
+  const code = recognizedCountryCode(country);
+  if (!code) return null;
   if (code === "IL") return "he";
   if (code === "BR") return "pt-BR";
   if (SPANISH_COUNTRIES.has(code)) return "es";

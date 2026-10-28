@@ -4,8 +4,13 @@ import {
   applyDocumentLocale,
   coerceSupportedLanguage,
   getManualLanguageChoice,
+  getResolvedLanguage,
   markManualLanguageChoice,
   normalizeLanguage,
+  recognizedCountryCode,
+  rememberResolvedLanguage,
+  languageFromCountry,
+  FALLBACK_LANGUAGE,
 } from "./localeUtils";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 
@@ -68,13 +73,11 @@ export async function changeAppLanguage(lng) {
 }
 
 /**
- * Login / /me sync:
- * - An explicit local selection (Pricing → Identity → Lemon → Dashboard) wins
- *   so login/OAuth cannot flip the UI back to English mid-flow.
- * - Local choice is written into the account profile when possible.
- * - Else the account language is applied.
- * - Geo/browser remain the unresolved fallback and are never written as an
- *   explicit account preference.
+ * Login / /me sync. Manual choice always wins and is never replaced.
+ * Otherwise: account language, then business country, then English for a
+ * business that has neither. Visitors with no business keep the language
+ * already chosen at boot (browser, then English). Nothing here is inferred
+ * from the visitor's own country.
  */
 export function syncLanguageOnLogin(user) {
   const demoLocale = readGuidedDemoLocaleLock();
@@ -85,6 +88,7 @@ export function syncLanguageOnLogin(user) {
 
   const localLanguage = getManualLanguageChoice();
   if (localLanguage) {
+    rememberResolvedLanguage(localLanguage);
     applyUiLanguage(localLanguage, { persist: true });
     void persistAccountLanguage(localLanguage);
     return localLanguage;
@@ -92,9 +96,27 @@ export function syncLanguageOnLogin(user) {
 
   const accountLanguage = normalizeLanguage(user?.language, { fallback: null });
   if (accountLanguage) {
-    markManualLanguageChoice(accountLanguage);
-    applyUiLanguage(accountLanguage, { persist: true });
+    rememberResolvedLanguage(accountLanguage);
+    applyUiLanguage(accountLanguage);
     return accountLanguage;
+  }
+
+  const businessCountry = user?.billingCountry || user?.businessCountry || user?.country;
+  if (recognizedCountryCode(businessCountry)) {
+    const fromCountry = languageFromCountry(businessCountry) || FALLBACK_LANGUAGE;
+    rememberResolvedLanguage(fromCountry);
+    applyUiLanguage(fromCountry);
+    return fromCountry;
+  }
+
+  const role = String(user?.role || "").toLowerCase();
+  const hasBusiness = Boolean(user?.businessId) || role === "business" || role === "worker" || role === "manager";
+  if (hasBusiness) {
+    const cached = getResolvedLanguage();
+    const language = cached || FALLBACK_LANGUAGE;
+    rememberResolvedLanguage(language);
+    applyUiLanguage(language);
+    return language;
   }
 
   return null;

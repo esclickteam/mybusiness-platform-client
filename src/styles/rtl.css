@@ -45,3 +45,18 @@ html[dir="ltr"] {
 [dir="rtl"] .recharts-legend-item {
   margin-inline: 8px 0;
 }
+
+html.locale-swap {
+  animation: localeSwap 0.28s ease;
+}
+
+@keyframes localeSwap {
+  from { opacity: 0.72; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.locale-swap {
+    animation: none;
+  }
+}

@@ -441,14 +441,14 @@ function BusinessLogin() {
       try {
         const { data } = await API.post<LoginResponse & { accessToken?: string }>(
           "/auth/login/email/verify",
-          { code }
+          { code, rememberMe }
         );
         if (!data?.accessToken || !data?.user) {
           setLoginError(t("login.errors.otp_invalid"));
           return;
         }
         clearRefreshDead();
-        loginWithToken(data.user, data.accessToken, { skipRedirect: true });
+        loginWithToken(data.user, data.accessToken, { skipRedirect: true, rememberMe });
         await finishPasswordOrOtpLogin(data, { viaOtp: true });
       } catch (err) {
         const apiErr = err as { response?: { data?: { code?: string } } };
@@ -482,6 +482,7 @@ function BusinessLogin() {
 
       const loginResult = (await login(cleanEmail, passwordValue, {
         skipRedirect: true,
+        rememberMe,
       })) as LoginResponse;
 
       await finishPasswordOrOtpLogin(loginResult);
@@ -589,7 +590,7 @@ function BusinessLogin() {
         <form
           onSubmit={linkRequired ? handleLinkSubmit : handleSubmit}
           noValidate
-          className="space-y-4"
+          className="auth-stagger space-y-4"
         >
           {checkoutSuccess ? (
             <p
@@ -936,7 +937,7 @@ function BusinessLogin() {
           <button
             type="submit"
             disabled={loading || socialBusy !== null}
-            className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+            className="auth-primary-btn mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {linkRequired
               ? socialBusy === "link"

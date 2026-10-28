@@ -14,6 +14,7 @@ import {
   clearRefreshDead,
   markRefreshDead,
 } from "./tokenRefresh";
+import { clearSessionHint } from "./sessionHint";
 import { clearAdminActiveBusinessId } from "./adminTenant";
 import { isLoginPath, loginPathForBrowser } from "./whatsappApiPortal";
 
@@ -101,6 +102,7 @@ export function clearPersistedAuthState({ clearDashboardRoute = true } = {}) {
     localStorage.removeItem("managedBusinessName");
     localStorage.removeItem("partnerDisplayName");
     clearAdminActiveBusinessId();
+    clearSessionHint();
   } catch {
     /* ignore */
   }

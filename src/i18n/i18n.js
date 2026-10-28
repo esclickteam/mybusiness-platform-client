@@ -26,32 +26,26 @@ import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 const browserGeoDetector = {
   name: "browserGeo",
   lookup() {
-    const demoLocale = readGuidedDemoLocaleLock();
-    if (demoLocale) return demoLocale;
-
-    if (
-      typeof window !== "undefined" &&
-      isBizuplyTravelHost(window.location.hostname)
-    ) {
-      return "en";
-    }
-
-    if (
-      typeof window !== "undefined" &&
-      isBizuplyWhatsAppHost(window.location.hostname)
-    ) {
-      return getManualLanguageChoice() || "en";
-    }
-
-    const fromUrl = applyLanguageFromUrl();
-    if (fromUrl) return fromUrl;
-
-    return resolvePreferredLanguage({
-      allowGeo: true,
-      allowBrowser: true,
-    });
+    return bootLanguage();
   },
 };
+
+function bootLanguage() {
+  if (typeof window === "undefined") return FALLBACK_LANGUAGE;
+  const demoLocale = readGuidedDemoLocaleLock();
+  if (demoLocale) return demoLocale;
+
+  if (isBizuplyTravelHost(window.location.hostname)) return "en";
+
+  const fromUrl = applyLanguageFromUrl();
+  if (fromUrl) return fromUrl;
+
+  if (isBizuplyWhatsAppHost(window.location.hostname)) {
+    return resolvePreferredLanguage({ allowBrowser: false });
+  }
+
+  return resolvePreferredLanguage({ allowBrowser: true });
+}
 
 const languageDetector = new LanguageDetector();
 languageDetector.addDetector(browserGeoDetector);
@@ -63,18 +57,6 @@ const partialLocales = new Set();
 function isMarketingHomepage() {
   if (typeof window === "undefined") return false;
   return splitMarketingLocale(window.location.pathname).path === "/";
-}
-
-function bootLanguage() {
-  if (typeof window === "undefined") return FALLBACK_LANGUAGE;
-  const demoLocale = readGuidedDemoLocaleLock();
-  if (demoLocale) return demoLocale;
-  const fromUrl = applyLanguageFromUrl();
-  if (fromUrl) return fromUrl;
-  const path = splitMarketingLocale(window.location.pathname).path;
-  const appRoute = /^\/(business|admin|staff|client|partner|login|register|dashboard|embed)\b/.test(path);
-  if (!appRoute) return FALLBACK_LANGUAGE;
-  return resolvePreferredLanguage({ allowGeo: true, allowBrowser: true });
 }
 
 async function importFullLocale(code) {
@@ -221,7 +203,9 @@ export async function bootstrapI18n() {
   } else {
     await ensureLocale(initialLanguage);
   }
-  if (i18n.language !== initialLanguage) await i18n.changeLanguage(initialLanguage);
+  const manual = typeof window === "undefined" ? null : getManualLanguageChoice();
+  const target = manual || initialLanguage;
+  if (i18n.language !== target) await i18n.changeLanguage(target);
 }
 
 export const i18nReady = bootstrapI18n();

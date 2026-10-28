@@ -130,8 +130,9 @@ export const useAi = () => useContext(AiContext);
 /*  Modal component                                             */
 /* ------------------------------------------------------------ */
 function AiModal() {
-  const { activeSuggestion, approveSuggestion, rejectSuggestion, loading, setActiveSuggestion } = useAi();
-  if (!activeSuggestion) return null;
+  const ai = useAi();
+  if (!ai?.activeSuggestion) return null;
+  const { activeSuggestion, approveSuggestion, rejectSuggestion, loading, setActiveSuggestion } = ai;
 
   return (
     <div
