@@ -5,7 +5,12 @@ import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import { marketingPublicUrl } from "../lib/localePathCore.mjs";
 
-import HomeShowcase from "../components/HomeShowcase";
+import HeroSection from "../components/HeroSection";
+import { HomeAudiences, HomeJourney } from "../components/HomeNarrative";
+import PlatformDomains from "../components/PlatformDomains";
+import ScrollStory from "../components/ScrollStory";
+import WhyBizuply from "../components/WhyBizuply";
+import FAQMini from "../components/FAQMini";
 
 const HREFLANG = [
   ["en", "https://bizuply.com/"],
@@ -59,7 +64,13 @@ export default function Home() {
 
   return (
     <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir={getTextDirection(i18n.language)}>
-      <HomeShowcase />
+      <HeroSection />
+      <PlatformDomains />
+      <ScrollStory />
+      <HomeJourney />
+      <HomeAudiences />
+      <WhyBizuply />
+      <FAQMini />
     </main>
   );
 }

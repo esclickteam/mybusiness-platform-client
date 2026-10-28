@@ -1,67 +1,104 @@
 {
   "page": "/",
-  "component": "src/components/HomeShowcase.tsx",
-  "rule": "Each file is used once on the public site. Video posters are the poster attribute of that same clip, not a second layout image. SaaS cards and the overview are original CSS, because catalog screenshots and product-page films are already used elsewhere.",
+  "rule": "Each file is used once on the public site.",
   "items": [
     {
-      "id": "hero-lead-form",
-      "file": "/demo-media/forms/lead.webp",
-      "area": "hero website window",
-      "role": "real inquiry form capture",
-      "aspect": "16:10",
+      "id": "home-hero-crm",
+      "file": "/demo-media/crm/poster.jpg",
+      "page": "/",
+      "area": "hero",
+      "subject": "Northwind Studio CRM lead list",
+      "aspect": "16:9",
+      "altKey": "home.stageAlt",
       "status": "used-once"
     },
     {
-      "id": "band-crm",
+      "id": "home-hero-whatsapp",
+      "file": "/demo-media/whatsapp/poster.jpg",
+      "page": "/",
+      "area": "hero",
+      "subject": "Northwind Studio WhatsApp inbox",
+      "aspect": "16:9",
+      "altKey": "home.stageWhatsappAlt",
+      "status": "used-once"
+    },
+    {
+      "id": "home-hero-appointments",
+      "file": "/demo-media/appointments/poster.jpg",
+      "page": "/",
+      "area": "hero",
+      "subject": "Northwind Studio appointment calendar",
+      "aspect": "16:9",
+      "altKey": "home.stageAppointmentsAlt",
+      "status": "used-once"
+    },
+    {
+      "id": "home-film-crm",
       "file": "/demo-media/home/crm.mp4",
       "poster": "/demo-media/home/crm.jpg",
-      "area": "CRM product band",
-      "role": "product film",
+      "page": "/",
+      "area": "crm-demo",
+      "subject": "CRM lead workflow",
       "aspect": "16:10",
-      "status": "used-once"
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 14.4,
+      "note": "Existing homepage clip. Spec asks for a new 18-25s recording."
     },
     {
-      "id": "band-whatsapp",
+      "id": "home-film-whatsapp",
       "file": "/demo-media/home/whatsapp.mp4",
       "poster": "/demo-media/home/whatsapp.jpg",
-      "area": "WhatsApp product band",
-      "role": "product film",
+      "page": "/",
+      "area": "whatsapp-demo",
+      "subject": "WhatsApp conversation",
       "aspect": "16:10",
-      "status": "used-once"
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 13.8
     },
     {
-      "id": "band-campaigns",
+      "id": "home-film-campaigns",
       "file": "/demo-media/home/campaigns.mp4",
       "poster": "/demo-media/home/campaigns.jpg",
-      "area": "marketing product band",
-      "role": "product film",
+      "page": "/",
+      "area": "campaigns-demo",
+      "subject": "Campaign review",
       "aspect": "16:10",
-      "status": "used-once"
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 4.2
     },
     {
-      "id": "band-websites",
+      "id": "home-film-automations",
+      "file": "/demo-media/home/automations.mp4",
+      "poster": "/demo-media/home/automations.jpg",
+      "page": "/",
+      "area": "automations-demo",
+      "subject": "Automation workflow",
+      "aspect": "16:10",
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 10.6
+    },
+    {
+      "id": "home-film-websites",
       "file": "/demo-media/home/websites.mp4",
       "poster": "/demo-media/home/websites.jpg",
-      "area": "website builder band",
-      "role": "product film",
+      "page": "/",
+      "area": "website-demo",
+      "subject": "Website editor",
       "aspect": "16:10",
-      "status": "used-once"
+      "status": "needs-replacement",
+      "durationSeconds": 11.8,
+      "note": "Spec requires a new 18-25s editor recording with no text selection."
     },
     {
-      "id": "template-services",
-      "file": "/demo-media/sites/ido-card.jpg",
-      "area": "website template gallery",
-      "role": "professional services template",
-      "aspect": "3:4",
-      "status": "used-once"
-    },
-    {
-      "id": "template-commerce",
-      "file": "/demo-media/websites/my-sites.jpg",
-      "area": "website template gallery",
-      "role": "commerce template",
+      "id": "home-film-appointments",
+      "file": "/demo-media/home/appointments.mp4",
+      "poster": "/demo-media/home/appointments.jpg",
+      "page": "/",
+      "area": "appointments-demo",
+      "subject": "Appointment calendar",
       "aspect": "16:10",
-      "status": "used-once"
+      "status": "used-once-short-of-spec",
+      "durationSeconds": 6
     }
   ]
 }

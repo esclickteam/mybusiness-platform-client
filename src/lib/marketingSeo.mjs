@@ -12,7 +12,7 @@ import { getCollaborationsCopy } from "../pages/product/collaborations/runtime.j
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { HOME_SHELL } from "./homeShell.mjs";
-import { showcaseCrawlHtml, showcaseCopy } from "./homeShowcase.mjs";
+import { STORY } from "./homepageStory.mjs";
 import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
@@ -55,9 +55,9 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply | Business Management, CRM, Websites & SaaS Solutions",
+    title: "Bizuply | All-in-One Business Management Platform & CRM",
     description:
-      "Run your business with Bizuply. Explore CRM, WhatsApp, marketing, automations, website building, ready-made SaaS solutions, and professional business services.",
+      "Manage leads, customers, WhatsApp Business, Meta campaigns, appointments, websites and automations in one connected platform. Discover Bizuply.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
@@ -1036,7 +1036,30 @@ function localeHref(locale, path) {
 }
 
 function homeStoryHtml(locale) {
-  return showcaseCrawlHtml(locale, escapeText);
+  const story = STORY[locale] || STORY.en;
+  const ways = story.ways
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  const films = story.films
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p><ul>${item.points.map((point) => `<li>${escapeText(point)}</li>`).join("")}</ul>`)
+    .join("");
+  const steps = story.steps
+    .map((item, index) => `<h3>0${index + 1} ${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  const audiences = story.audiences
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  const why = story.whyCards
+    .map((item) => `<h3>${escapeText(item.title)}</h3><p>${escapeText(item.body)}</p>`)
+    .join("");
+  return [
+    `<section><h2>${escapeText(story.waysTitle)}</h2><p>${escapeText(story.waysLead)}</p>${ways}</section>`,
+    `<section><h2>${escapeText(story.showTitle)}</h2><p>${escapeText(story.showLead)}</p>${films}</section>`,
+    `<section><h2>${escapeText(story.journeyTitle)}</h2><p>${escapeText(story.journeyLead)}</p>${steps}</section>`,
+    `<section><h2>${escapeText(story.audienceTitle)}</h2><p>${escapeText(story.audienceLead)}</p>${audiences}</section>`,
+    `<section><h2>${escapeText(story.whyTitle)}</h2><p>${escapeText(story.whyLead)}</p>${why}</section>`,
+    `<section><h2>${escapeText(story.finalTitle)}</h2><p>${escapeText(story.finalLead)}</p></section>`,
+  ].join("");
 }
 
 function websiteSchema() {
@@ -1076,14 +1099,15 @@ function renderHomePrerender(locale) {
       ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
       : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`
   )).join("");
+  const row = (copy.channels || STORY.en.channels).map((name) => `<li class="home-channel"><span><strong>${escapeText(name)}</strong></span></li>`).join("");
+  const track = `<ul class="home-marquee__row">${row}</ul><ul class="home-marquee__row" aria-hidden="true">${row}</ul>`;
   const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
-  const page = showcaseCopy(locale);
   const faqs = faqItems("/", locale);
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
   return {
     lang: meta.htmlLang,
     dir: meta.dir,
-    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/register"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero hx-hero"><div class="hx-hero__copy"><p class="hx-eyebrow">${escapeText(page.eyebrow)}</p><h1 class="home-hero__title">${escapeText(page.headline)}</h1><p class="home-hero__lead">${escapeText(page.description)}</p><div class="hx-hero__actions"><a class="hx-btn hx-btn--navy" href="${escapeHtml(href("/platform"))}">${escapeText(page.ctaPlatform)}</a><a class="hx-btn hx-btn--line" href="${escapeHtml(href("/saas"))}">${escapeText(page.ctaSaas)}</a><a class="hx-btn hx-btn--quiet" href="#hx-journey">${escapeText(page.ctaWatch)}</a></div></div></section><div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(faqTitle)}</h2><p>${escapeText(page.faqLead)}</p>${faqBodyHtml(faqs)}</section></div></main>`,
+    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero"><div class="home-hero__glow" aria-hidden="true"></div><div class="home-hero__grid"><div><h1 class="home-hero__title">${escapeText(copy.headline)}</h1><p class="home-hero__lead">${escapeText(copy.subtitle)}</p><p class="home-hero__note">${escapeText(copy.supportLine)}</p><div class="home-hero__actions"><a class="home-cta home-cta--primary" href="${escapeHtml(href("/register"))}">${escapeText(copy.startTrial)}</a><a class="home-cta home-cta--ghost" href="${escapeHtml(href("/platform"))}">${escapeText(copy.explore)}</a></div></div><div class="home-stage"><img class="home-stage__main" src="/demo-media/crm/poster.jpg" alt="${escapeText(copy.stageAlt)}" width="960" height="600" fetchpriority="high" decoding="async"><img class="home-stage__float home-stage__float--a" src="/demo-media/whatsapp/poster.jpg" alt="${escapeText(copy.stageWhatsappAlt)}" width="640" height="400"><img class="home-stage__float home-stage__float--b" src="/demo-media/appointments/poster.jpg" alt="${escapeText(copy.stageAppointmentsAlt)}" width="640" height="400"><span class="home-cursor" aria-hidden="true"></span></div></div><div class="home-flow"><div class="home-flow__inner"><h2 class="home-flow__title">${escapeText(copy.flowTitle)}</h2><p class="home-flow__lead">${escapeText(copy.flowBody)}</p><div class="home-flow__board"><div class="home-marquee"><div class="home-marquee__track">${track}</div></div><div class="home-flow__line" aria-hidden="true"></div><div class="home-flow__crm"><p>${escapeText(copy.flowInto)}</p><strong>${escapeText(copy.flowCrm)}</strong><span>${escapeText(copy.flowSteps)}</span></div></div></div></div></section><div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(faqTitle)}</h2><p>${escapeText((STORY[locale] || STORY.en).faqLead)}</p>${faqBodyHtml(faqs)}</section></div></main>`,
   };
 }
 
