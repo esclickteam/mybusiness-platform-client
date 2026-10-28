@@ -55,6 +55,11 @@ import { readAutomationErrorMessage } from "./automationUiHelpers";
 import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
 import { getAiTemplateByKey } from "./aiAutomationCatalog";
 import {
+  automationBasePath,
+  whatsappConnectPath,
+  whatsappSettingsPath,
+} from "./automationHostPaths";
+import {
   aiTemplateDescription,
   aiTemplateTitle,
 } from "../../../../i18n/aiAutomationLabels";
@@ -95,6 +100,7 @@ import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal
 type OutletCtx = {
   businessId: string | null;
   readOnly: boolean;
+  basePath?: string;
 };
 
 type CardModel = {
@@ -132,7 +138,10 @@ export default function AutomationsTemplatesPage() {
   const dir = useLocaleDir();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { businessId, readOnly } = useOutletContext<OutletCtx>();
+  const { businessId, readOnly, basePath } = useOutletContext<OutletCtx>();
+  const automationBase = automationBasePath(businessId, basePath);
+  const waConnectPath = whatsappConnectPath(businessId, basePath);
+  const waSettingsPath = whatsappSettingsPath(businessId, basePath);
   const {
     usage: billingUsage,
     refresh: refreshBilling,
@@ -513,7 +522,7 @@ export default function AutomationsTemplatesPage() {
         )
       );
     }
-    navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+    navigate(`${automationBase}/${created._id}`);
   };
 
   const activateWorkflow = async (
@@ -558,7 +567,7 @@ export default function AutomationsTemplatesPage() {
           )
         );
       }
-      navigate(`/business/${businessId}/dashboard/automations/${created._id}${isAi ? "?configureAi=1" : ""}`);
+      navigate(`${automationBase}/${created._id}${isAi ? "?configureAi=1" : ""}`);
       return;
     }
 
@@ -666,7 +675,7 @@ export default function AutomationsTemplatesPage() {
         )
       );
     }
-    navigate(`/business/${businessId}/dashboard/automations/${created._id}${isAi ? "?configureAi=1" : ""}`);
+    navigate(`${automationBase}/${created._id}${isAi ? "?configureAi=1" : ""}`);
   };
 
   const handleActivate = async (card: CardModel) => {
@@ -693,7 +702,7 @@ export default function AutomationsTemplatesPage() {
           return;
         }
         toast.error(t("automations.toasts.connectWhatsApp"));
-        navigate(`/business/${businessId}/dashboard/whatsapp`);
+        navigate(waConnectPath);
         return;
       }
       toast.error(
@@ -725,7 +734,7 @@ export default function AutomationsTemplatesPage() {
             return;
           }
           toast.error(t("automations.toasts.connectWhatsApp"));
-          navigate(`/business/${businessId}/dashboard/whatsapp`);
+          navigate(waConnectPath);
           return;
         }
         if (!waTemplates.length) {
@@ -802,12 +811,12 @@ export default function AutomationsTemplatesPage() {
     }
     if (picker.emailProvider === "gmail" && !gmailConnected) {
       toast.error(t("automations.email.providerRequired"));
-      navigate(`/business/${businessId}/dashboard/automations/connections`);
+      navigate(`${automationBase}/connections`);
       return;
     }
     if (picker.emailProvider === "outlook" && !outlookConnected) {
       toast.error(t("automations.email.providerRequired"));
-      navigate(`/business/${businessId}/dashboard/automations/connections`);
+      navigate(`${automationBase}/connections`);
       return;
     }
     if (picker.emailProvider === "business" && !picker.senderId) {
@@ -1143,7 +1152,7 @@ export default function AutomationsTemplatesPage() {
                     <p>{t("automations.editor.wa.connectRequired")}</p>
                     <Link
                       className="af-toolbar__btn"
-                      to={`/business/${businessId}/dashboard/whatsapp/settings`}
+                      to={waSettingsPath}
                     >
                       {t("automations.editor.wa.connectAccountCta")}
                     </Link>

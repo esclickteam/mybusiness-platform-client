@@ -348,6 +348,8 @@ type Props = {
   businessId: string;
   workflow: AutomationWorkflow;
   readOnly?: boolean;
+  whatsappSettingsPath?: string;
+  emailSettingsPath?: string;
   onBack: () => void;
   onSaved: (workflow: AutomationWorkflow) => void;
 };
@@ -507,6 +509,8 @@ function EditorInner({
   businessId,
   workflow,
   readOnly: readOnlyProp = false,
+  whatsappSettingsPath,
+  emailSettingsPath,
   onBack,
   onSaved,
 }: Props) {
@@ -518,6 +522,13 @@ function EditorInner({
   const DELAY_UNITS = useMemo(() => getDelayUnits(t), [t]);
   const TRIGGER_CATEGORY_LABELS = useMemo(() => getTriggerCategoryLabels(t), [t]);
   const WA_MAPPING_PRESETS = useMemo(() => getWaMappingPresets(t), [t]);
+  const waSettingsHref =
+    whatsappSettingsPath ||
+    `/business/${businessId}/dashboard/whatsapp/settings`;
+  const emailSettingsHref =
+    emailSettingsPath ||
+    `/business/${businessId}/dashboard/integrations#email-senders`;
+  const adminHost = String(whatsappSettingsPath || "").startsWith("/admin");
   const readOnly = readOnlyProp || isAutomationsReadOnly();
   const writeBlockedTitle = readOnly
     ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
@@ -1625,6 +1636,7 @@ function EditorInner({
   };
 
   const openWhatsAppBillingGateModal = () => {
+    if (adminHost) return;
     if (businessId) {
       navigate(`/business/${businessId}/dashboard/whatsapp/billing`);
     }
@@ -2971,7 +2983,7 @@ function EditorInner({
                         <p>{t("automations.editor.wa.connectRequired")}</p>
                         <Link
                           className="af-toolbar__btn"
-                          to={`/business/${businessId}/dashboard/whatsapp/settings`}
+                          to={waSettingsHref}
                         >
                           {t("automations.editor.wa.connectAccountCta")}
                         </Link>
@@ -4047,7 +4059,7 @@ function EditorInner({
                         <p>
                           {t("automations.email.missingBody")}
                         </p>
-                        <a href={`/business/${businessId}/dashboard/integrations#email-senders`}>
+                        <a href={emailSettingsHref}>
                           {t("automations.email.settingsCta")}
                         </a>
                       </div>

@@ -1,176 +1,142 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import adminCrmApi from "../../api/adminCrmApi";
-import AdminHeader from "./AdminsHeader";
-import AdminPageHeader from "./shell/AdminPageHeader";
-import {
-  CrmCard,
-  ErrorState,
-  LoadingState,
-  PrimaryButton,
-  SecondaryButton,
-} from "./crm/AdminCrmUi";
-import { formatIsraelDate } from "./crm/adminCrmLabels";
-import { ADMIN_PAGE_SHELL_CLASS } from "../../utils/adminResponsive";
+import { Route, Routes } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import API from "../../api";
+import AutomationsLayout from "../business/dashboardPages/automations/AutomationsLayout";
+import AutomationsHomePage from "../business/dashboardPages/automations/AutomationsHomePage";
+import AutomationsTemplatesPage from "../business/dashboardPages/automations/AutomationsTemplatesPage";
+import AutomationsRunsPage from "../business/dashboardPages/automations/AutomationsRunsPage";
+import AutomationsAiResultsPage from "../business/dashboardPages/automations/AutomationsAiResultsPage";
+import AutomationsConnectionsPage from "../business/dashboardPages/automations/AutomationsConnectionsPage";
+import AutomationsEditorPage from "../business/dashboardPages/automations/AutomationsEditorPage";
+import { ADMIN_AUTOMATIONS_BASE } from "../business/dashboardPages/automations/automationHostPaths";
 
-const STATUS_HE: Record<string, string> = {
-  success: "הצליחה",
-  failed: "נכשלה",
-  skipped: "דולגה",
-  running: "בתהליך",
+type PlatformContext = {
+  businessId?: string;
+  connectionId?: string;
+  ready?: boolean;
+  displayPhoneMasked?: string;
 };
 
-export default function AdminAutomations() {
-  const navigate = useNavigate();
-  const [data, setData] = useState<any>(null);
-  const [runs, setRuns] = useState<any[]>([]);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+const COPY = {
+  he: {
+    ready: "מוכן לשליחה",
+    notReady: "החיבור אינו מוכן",
+    connection: "חיבור אמריקאי",
+    simulation:
+      "סימולציה מלאה זמינה בעורך ואינה שולחת הודעות. כל שלב מופיע בתוצאת הבדיקה.",
+    prepareSend: "הכנת בדיקת שליחה",
+    dialogTitle: "בדיקת שליחה אמיתית",
+    dialogBody:
+      "שליחת WhatsApp אמיתית למספר בדיקה מורשה אינה מתבצעת ממסך זה. לא נשלחה הודעה.",
+    close: "סגירה",
+    loadError: "טעינת אוטומציות הפלטפורמה נכשלה",
+    loading: "טוען את מערכת האוטומציות…",
+  },
+  en: {
+    ready: "Ready to send",
+    notReady: "Connection is not ready",
+    connection: "US connection",
+    simulation:
+      "A full simulation is available in the editor and does not send messages. Every step appears in the test result.",
+    prepareSend: "Prepare a real send test",
+    dialogTitle: "Real send test",
+    dialogBody:
+      "A real WhatsApp send to an authorized test number is not performed from this screen. No message was sent.",
+    close: "Close",
+    loadError: "Could not load platform automations",
+    loading: "Loading the automation system…",
+  },
+} as const;
 
-  async function load() {
-    setLoading(true);
-    setError("");
-    try {
-      const [list, history] = await Promise.all([
-        adminCrmApi.automationsList(),
-        adminCrmApi.automationRuns({ limit: 50 }),
-      ]);
-      setData(list.data);
-      setRuns(history.data.runs || []);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "טעינת האוטומציות נכשלה");
-    } finally {
-      setLoading(false);
-    }
-  }
+export default function AdminAutomations() {
+  const { i18n } = useTranslation();
+  const english = String(i18n.resolvedLanguage || i18n.language || "").startsWith(
+    "en"
+  );
+  const copy = english ? COPY.en : COPY.he;
+  const [context, setContext] = useState<PlatformContext | null>(null);
+  const [error, setError] = useState("");
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
-    load();
-  }, []);
+    let cancelled = false;
+    API.get("/admin/platform-automations/context")
+      .then((response: { data?: PlatformContext }) => {
+        if (!cancelled) setContext(response.data || null);
+      })
+      .catch(() => {
+        if (!cancelled) setError(copy.loadError);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [copy.loadError]);
 
-  const item = data?.items?.[0];
-
-  async function toggle(enabled: boolean) {
-    if (!item) return;
-    setSaving(true);
-    try {
-      const { data: res } = await adminCrmApi.setAutomationEnabled(item.key, enabled);
-      setData(res);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "עדכון האוטומציה נכשל");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function retry(id: string) {
-    try {
-      await adminCrmApi.retryAutomationRun(id);
-      load();
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "ניסיון חוזר נכשל");
-    }
-  }
+  const businessId = String(context?.businessId || "");
 
   return (
-    <div className={ADMIN_PAGE_SHELL_CLASS} dir="rtl">
-      <AdminHeader />
-      <main className="mx-auto max-w-[1480px] space-y-4 px-3 py-6 sm:px-6">
-        <AdminPageHeader
-          title="אוטומציות"
-          description="אוטומציות של CRM האדמין בלבד, לא האוטומציות של הלקוחות."
-        />
-
-        {loading ? <LoadingState /> : null}
-        {error ? <ErrorState message={error} onRetry={load} /> : null}
-
-        {item ? (
-          <CrmCard>
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div>
-                <h2 className="text-xl font-black text-purple-950">{item.name}</h2>
-                <p className="mt-1 font-bold text-slate-600">טריגר: {item.trigger}</p>
-                <p className="font-bold text-slate-600">
-                  פעולה: {item.action} · {item.templateName}
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2 text-sm font-black">
-                  <span className="rounded-full bg-slate-100 px-3 py-1">הרצות {item.executions || 0}</span>
-                  <span className="rounded-full bg-emerald-50 px-3 py-1 text-emerald-800">הצליחו {item.successful || 0}</span>
-                  <span className="rounded-full bg-rose-50 px-3 py-1 text-rose-800">נכשלו {item.failed || 0}</span>
-                  <span className="rounded-full bg-violet-50 px-3 py-1 text-[#7C4DFF]">
-                    ריצה אחרונה {item.lastRunAt ? formatIsraelDate(item.lastRunAt, true) : "—"}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm font-bold text-amber-800">
-                  ברירת המחדל בפרודקשן היא כבוי. אין שליחה היסטורית בעת הפעלה.
-                </p>
-                {item.enabledAt ? (
-                  <p className="text-sm font-bold text-slate-500">
-                    enabledAt: {formatIsraelDate(item.enabledAt, true)}
-                  </p>
-                ) : null}
-              </div>
-              <div className="flex gap-2">
-                {item.enabled ? (
-                  <SecondaryButton disabled={saving} onClick={() => toggle(false)}>Disable</SecondaryButton>
-                ) : (
-                  <PrimaryButton disabled={saving} onClick={() => toggle(true)}>הפעלה</PrimaryButton>
-                )}
-              </div>
-            </div>
-          </CrmCard>
-        ) : null}
-
-        <CrmCard>
-          <h3 className="font-black">יומן הרצות</h3>
-          <div className="mt-3 overflow-x-auto">
-            <table className="w-full min-w-[720px] text-right text-sm">
-              <thead>
-                <tr className="text-slate-500">
-                  <th className="pb-2">לקוח</th>
-                  <th className="pb-2">טריגר</th>
-                  <th className="pb-2">התחלה</th>
-                  <th className="pb-2">סיום</th>
-                  <th className="pb-2">תוצאה</th>
-                  <th className="pb-2">פעולות</th>
-                </tr>
-              </thead>
-              <tbody>
-                {runs.map((run) => (
-                  <tr key={run.id} className="border-t border-slate-100">
-                    <td className="py-3">
-                      <button
-                        type="button"
-                        className="font-black text-[#7C4DFF]"
-                        onClick={() => run.adminCustomerId && navigate(`/admin/crm/customers/${run.adminCustomerId}`)}
-                      >
-                        {run.customerName || run.adminCustomerId || "—"}
-                      </button>
-                    </td>
-                    <td className="py-3 font-bold">{run.trigger}</td>
-                    <td className="py-3">{formatIsraelDate(run.startedAt, true)}</td>
-                    <td className="py-3">{formatIsraelDate(run.completedAt, true)}</td>
-                    <td className="py-3">
-                      <div className="font-black">{STATUS_HE[run.status] || run.status}</div>
-                      {run.error ? <div className="text-xs font-bold text-rose-700">{run.error}</div> : null}
-                      {run.metadata?.providerMessageId ? (
-                        <div className="text-xs text-slate-500" dir="ltr">{run.metadata.providerMessageId}</div>
-                      ) : null}
-                    </td>
-                    <td className="py-3">
-                      {run.status === "failed" ? (
-                        <SecondaryButton compact onClick={() => retry(run.id)}>נסה שוב</SecondaryButton>
-                      ) : null}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {!runs.length ? <p className="py-6 font-bold text-slate-500">אין הרצות עדיין</p> : null}
+    <div className="admin-platform-automations">
+      <div className="ax-page" style={{ paddingBottom: 0 }}>
+        <div className="ax-connection-note">
+          <div>
+            <h2>{copy.connection}</h2>
+            <p>
+              {context?.ready ? copy.ready : copy.notReady}
+              {context?.displayPhoneMasked
+                ? ` · ${context.displayPhoneMasked}`
+                : ""}
+              {context?.connectionId ? ` · ${context.connectionId}` : ""}
+            </p>
+            <p>{copy.simulation}</p>
           </div>
-        </CrmCard>
-      </main>
+          <button
+            type="button"
+            className="ax-btn ax-btn--secondary"
+            onClick={() => setConfirmOpen(true)}
+          >
+            {copy.prepareSend}
+          </button>
+        </div>
+      </div>
+
+      {confirmOpen ? (
+        <div className="ax-modal-backdrop" role="presentation">
+          <div className="ax-create-modal" role="dialog" aria-modal="true">
+            <h2>{copy.dialogTitle}</h2>
+            <p>{copy.dialogBody}</p>
+            <button
+              type="button"
+              className="ax-btn ax-btn--primary"
+              onClick={() => setConfirmOpen(false)}
+            >
+              {copy.close}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {error ? <p className="ax-empty">{error}</p> : null}
+      {!error && !businessId ? <p className="ax-empty">{copy.loading}</p> : null}
+      {businessId ? (
+        <Routes>
+          <Route
+            element={
+              <AutomationsLayout
+                hostBusinessId={businessId}
+                hostBasePath={ADMIN_AUTOMATIONS_BASE}
+              />
+            }
+          >
+            <Route index element={<AutomationsHomePage />} />
+            <Route path="templates" element={<AutomationsTemplatesPage />} />
+            <Route path="runs" element={<AutomationsRunsPage />} />
+            <Route path="ai-results" element={<AutomationsAiResultsPage />} />
+            <Route path="connections" element={<AutomationsConnectionsPage />} />
+            <Route path=":workflowId" element={<AutomationsEditorPage />} />
+          </Route>
+        </Routes>
+      ) : null}
     </div>
   );
 }
