@@ -32,6 +32,7 @@ import {
 } from "../../../utils/adminSoftphoneStore";
 import { ensureMicrophoneAccess } from "../../../utils/softphoneMicrophone";
 import { NAV_GROUPS, findNavMatch, isNavItemActive, type NavItem } from "./adminNav";
+import { adminShellCopy } from "./adminShellCopy";
 import "./admin-system.css";
 
 const GROUP_ICONS = {
@@ -62,9 +63,8 @@ function readOpenGroups() {
   }
 }
 
-function itemLabel(item: NavItem, t: (key: string, options?: { defaultValue?: string }) => string) {
-  if (!item.labelKey) return item.label;
-  return t(item.labelKey, { defaultValue: item.label });
+function itemLabel(item: NavItem, labels: Record<string, string>) {
+  return labels[item.path] || item.label;
 }
 
 function openSoftphone() {
@@ -73,7 +73,8 @@ function openSoftphone() {
 }
 
 export default function AdminShell() {
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const shell = adminShellCopy(i18n.resolvedLanguage || i18n.language);
   const dir = useLocaleDir();
   const navigate = useNavigate();
   const location = useLocation();
@@ -102,7 +103,7 @@ export default function AdminShell() {
     getAdminSoftphoneState
   );
 
-  const displayName = user?.name || user?.email || "מנהל";
+  const displayName = user?.name || user?.email || shell.chrome.adminFallback;
   const initials =
     String(displayName)
       .trim()
@@ -125,12 +126,17 @@ export default function AdminShell() {
     return NAV_GROUPS.flatMap((group) =>
       group.items
         .filter((item) => {
-          const label = itemLabel(item, t).toLowerCase();
-          return label.includes(term) || group.label.toLowerCase().includes(term);
+          const label = itemLabel(item, shell.items).toLowerCase();
+          const groupLabel = shell.groups[group.id] || group.label;
+          return label.includes(term) || groupLabel.toLowerCase().includes(term);
         })
-        .map((item) => ({ ...item, groupLabel: group.label, labelText: itemLabel(item, t) }))
+        .map((item) => ({
+          ...item,
+          groupLabel: shell.groups[group.id] || group.label,
+          labelText: itemLabel(item, shell.items),
+        }))
     ).slice(0, 8);
-  }, [query, t]);
+  }, [query, shell]);
 
   useEffect(() => {
     setSidebarOpen(false);
@@ -232,7 +238,7 @@ export default function AdminShell() {
         <button
           type="button"
           className="biz-admin-menu-btn"
-          aria-label={sidebarOpen ? "סגירת תפריט" : "פתיחת תפריט"}
+          aria-label={sidebarOpen ? shell.chrome.closeMenu : shell.chrome.openMenu}
           onClick={() => setSidebarOpen((open) => !open)}
         >
           {sidebarOpen ? <X size={18} /> : <Menu size={18} />}
@@ -247,8 +253,8 @@ export default function AdminShell() {
           <input
             type="search"
             value={query}
-            placeholder="חיפוש"
-            aria-label="חיפוש במסכי הניהול"
+            placeholder={shell.chrome.search}
+            aria-label={shell.chrome.searchScreens}
             onChange={(event) => {
               setQuery(event.target.value);
               setSearchOpen(true);
@@ -289,7 +295,9 @@ export default function AdminShell() {
         <div className="biz-admin-tools">
           {liveCall ? (
             <button type="button" className="biz-call-chip" onClick={openSoftphone}>
-              {softphone.activeCall?.status === "incoming" ? "שיחה נכנסת" : "שיחה פעילה"}
+              {softphone.activeCall?.status === "incoming"
+                ? shell.chrome.incomingCall
+                : shell.chrome.activeCall}
             </button>
           ) : null}
           <AdminNotifications />
@@ -309,13 +317,13 @@ export default function AdminShell() {
               <div className="biz-admin-profile-menu" role="menu">
                 <div className="biz-admin-profile-meta">
                   <strong>{displayName}</strong>
-                  <small>מנהל מערכת</small>
+                  <small>{shell.chrome.systemAdmin}</small>
                 </div>
                 <button type="button" onClick={() => navigate("/admin/settings")}>
-                  הגדרות
+                  {shell.chrome.settings}
                 </button>
                 <button type="button" onClick={openSoftphone}>
-                  סופטפון
+                  {shell.chrome.softphone}
                 </button>
                 <button
                   type="button"
@@ -324,7 +332,7 @@ export default function AdminShell() {
                     void logout({ redirect: true });
                   }}
                 >
-                  התנתקות
+                  {shell.chrome.logout}
                 </button>
               </div>
             ) : null}
@@ -337,13 +345,13 @@ export default function AdminShell() {
           <button
             type="button"
             className="biz-admin-backdrop"
-            aria-label="סגירת תפריט"
+            aria-label={shell.chrome.closeMenu}
             onClick={() => setSidebarOpen(false)}
           />
         ) : null}
 
         <aside className={sidebarOpen ? "biz-admin-sidebar is-open" : "biz-admin-sidebar"}>
-          <nav aria-label="ניווט אדמין">
+          <nav aria-label={shell.chrome.navigation}>
             {NAV_GROUPS.map((group) => {
               const Icon = GROUP_ICONS[group.id as keyof typeof GROUP_ICONS] || LayoutDashboard;
               const open = Boolean(openGroups[group.id]);
@@ -364,7 +372,7 @@ export default function AdminShell() {
                     }
                   >
                     <Icon size={16} strokeWidth={1.75} />
-                    <span>{group.label}</span>
+                    <span>{shell.groups[group.id] || group.label}</span>
                     <ChevronDown className="biz-admin-chevron" size={14} />
                   </button>
                   {open ? (
@@ -379,7 +387,7 @@ export default function AdminShell() {
                             className={active ? "biz-admin-link is-active" : "biz-admin-link"}
                             aria-current={active ? "page" : undefined}
                           >
-                            <span>{itemLabel(item, t)}</span>
+                            <span>{itemLabel(item, shell.items)}</span>
                             {showBadge ? (
                               <span className="biz-admin-badge" data-testid="admin-support-unread-badge">
                                 {supportBadge > 9 ? "9+" : supportBadge}
@@ -397,14 +405,14 @@ export default function AdminShell() {
         </aside>
 
         <div className="biz-admin-maincol">
-          <div className="biz-admin-crumb" aria-label="מיקום">
-            <NavLink to="/admin/dashboard">אדמין</NavLink>
+          <div className="biz-admin-crumb" aria-label={shell.chrome.location}>
+            <NavLink to="/admin/dashboard">{shell.chrome.adminCrumb}</NavLink>
             {match ? (
               <>
                 <span aria-hidden="true">/</span>
-                <span>{match.group.label}</span>
+                <span>{shell.groups[match.group.id] || match.group.label}</span>
                 <span aria-hidden="true">/</span>
-                <strong>{itemLabel(match.item, t)}</strong>
+                <strong>{itemLabel(match.item, shell.items)}</strong>
               </>
             ) : null}
           </div>

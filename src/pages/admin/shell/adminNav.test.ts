@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { findNavMatch, isNavItemActive } from "./adminNav";
+import { getTextDirection } from "../../../i18n/languages";
+import { NAV_GROUPS, findNavMatch, isNavItemActive } from "./adminNav";
+import { adminNavPaths, adminShellCopy } from "./adminShellCopy";
 
 describe("admin nav active state", () => {
   it("highlights the dashboard only on the dashboard route", () => {
@@ -26,5 +28,27 @@ describe("admin nav active state", () => {
     expect(findNavMatch("/admin/crm/whatsapp")?.group.id).toBe("whatsapp");
     expect(findNavMatch("/admin/plans")?.group.id).toBe("billing");
     expect(findNavMatch("/admin/saas-deals")?.item.path).toBe("/admin/saas-deals");
+  });
+
+  it("translates every admin menu label in Hebrew and English", () => {
+    const he = adminShellCopy("he");
+    const en = adminShellCopy("en");
+    expect(getTextDirection("he")).toBe("rtl");
+    expect(getTextDirection("en")).toBe("ltr");
+    for (const group of NAV_GROUPS) {
+      expect(he.groups[group.id]).toBe(group.label);
+      expect(en.groups[group.id]).toBeTruthy();
+      expect(en.groups[group.id]).not.toMatch(/[\u0590-\u05FF]/);
+      for (const item of group.items) {
+        expect(he.items[item.path]).toBe(item.label);
+        expect(en.items[item.path]).toBeTruthy();
+        expect(en.items[item.path]).not.toMatch(/[\u0590-\u05FF]/);
+      }
+    }
+    expect(adminNavPaths()).toHaveLength(NAV_GROUPS.reduce((sum, group) => sum + group.items.length, 0));
+    expect(en.items["/admin/managed-whatsapp"]).toBe("Managed connection");
+    expect(en.chrome.search).toBe("Search");
+    expect(he.chrome.adminCrumb).toBe("אדמין");
+    expect(JSON.stringify(en.chrome)).not.toMatch(/[\u0590-\u05FF]/);
   });
 });

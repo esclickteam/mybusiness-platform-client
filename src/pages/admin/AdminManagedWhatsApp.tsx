@@ -35,7 +35,9 @@ import AdminPageHeader from "./shell/AdminPageHeader";
 import {
   ADMIN_MANAGED_PAGE_CONNECTION_ID,
   ADMIN_MANAGED_PAGE_SLOT,
+  adminManagedSyncFinished,
   adminManagedWhatsAppCopy,
+  type AdminManagedWhatsAppCopy,
   isAuthorizedAdminManagedConnection,
   isManagedConnectionReady,
   shouldShowManagedConnectButton,
@@ -105,11 +107,11 @@ function connectionTabLabel(conn: ManagedWhatsAppConnectionSummary) {
   return `${flag ? `${flag} ` : ""}${title}`;
 }
 
-function formatDate(value?: string | null) {
+function formatDate(value: string | null | undefined, locale: string) {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return new Intl.DateTimeFormat("he-IL", {
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -118,16 +120,16 @@ function formatDate(value?: string | null) {
   }).format(date);
 }
 
-function healthHeadline(status?: string) {
+function healthHeadline(status: string | undefined, copy: AdminManagedWhatsAppCopy) {
   switch (status) {
     case "healthy":
-      return { emoji: "🟢", label: "מחובר ותקין", color: "#047857", bg: "#ecfdf5" };
+      return { emoji: "🟢", label: copy.healthConnected, color: "#047857", bg: "#ecfdf5" };
     case "degraded":
-      return { emoji: "🟠", label: "מחובר אך קיימת בעיה", color: "#c2410c", bg: "#fff7ed" };
+      return { emoji: "🟠", label: copy.healthDegraded, color: "#c2410c", bg: "#fff7ed" };
     case "failed":
-      return { emoji: "🔴", label: "החיבור אינו תקין", color: "#b91c1c", bg: "#fef2f2" };
+      return { emoji: "🔴", label: copy.healthFailed, color: "#b91c1c", bg: "#fef2f2" };
     default:
-      return { emoji: "⚪", label: "לא הוגדר", color: "#475569", bg: "#f8fafc" };
+      return { emoji: "⚪", label: copy.healthUnset, color: "#475569", bg: "#f8fafc" };
   }
 }
 
@@ -180,28 +182,36 @@ function okLabel(ok: boolean, good: string, bad: string) {
   return ok ? good : bad;
 }
 
-function formatTokenExpiration(health?: AdminManagedWhatsAppHealth) {
+function formatTokenExpiration(
+  health: AdminManagedWhatsAppHealth | undefined,
+  copy: AdminManagedWhatsAppCopy
+) {
   if (health?.tokenExpirationStatus === "never" || health?.tokenExpiration === "never") {
-    return "Never expires";
+    return copy.neverExpires;
   }
   if (health?.tokenExpirationStatus === "dated" && health.tokenExpiration) {
-    return formatDate(health.tokenExpiration);
+    return formatDate(health.tokenExpiration, copy.dateLocale);
   }
-  return "לא ניתן להוכיח";
+  return copy.cannotProve;
 }
 
-function formatTokenValidity(health?: AdminManagedWhatsAppHealth) {
-  if (health?.tokenValidNow === true) return "Valid";
-  if (health?.tokenValidNow === false) return "Invalid";
-  return "לא ידוע";
+function formatTokenValidity(
+  health: AdminManagedWhatsAppHealth | undefined,
+  copy: AdminManagedWhatsAppCopy
+) {
+  if (health?.tokenValidNow === true) return copy.valid;
+  if (health?.tokenValidNow === false) return copy.invalid;
+  return copy.unknown;
 }
 
 function ManagedConnectionHealthPanel({
   health,
+  copy,
 }: {
   health?: AdminManagedWhatsAppHealth;
+  copy: AdminManagedWhatsAppCopy;
 }) {
-  const headline = healthHeadline(health?.status);
+  const headline = healthHeadline(health?.status, copy);
   return (
     <div
       style={{
@@ -213,7 +223,7 @@ function ManagedConnectionHealthPanel({
       }}
     >
       <strong style={{ color: headline.color, fontSize: 15 }}>
-        מצב חיבור: {headline.emoji} {headline.label}
+        {copy.connectionState}: {headline.emoji} {headline.label}
       </strong>
       <div
         style={{
@@ -225,41 +235,47 @@ function ManagedConnectionHealthPanel({
         }}
       >
         <div>
-          Token:{" "}
-          {okLabel(Boolean(health?.tokenConfigured), "מוגדר", "לא מוגדר")}
+          {copy.tokenLabel}:{" "}
+          {okLabel(Boolean(health?.tokenConfigured), copy.configured, copy.notConfigured)}
         </div>
         <div>
-          Token type: {health?.tokenTypeLabel || health?.tokenType || "לא ידוע"}
+          {copy.tokenType}: {health?.tokenTypeLabel || health?.tokenType || copy.unknown}
         </div>
-        <div>Token validity: {formatTokenValidity(health)}</div>
-        <div>Token expiration: {formatTokenExpiration(health)}</div>
+        <div>
+          {copy.tokenValidity}: {formatTokenValidity(health, copy)}
+        </div>
+        <div>
+          {copy.tokenExpiration}: {formatTokenExpiration(health, copy)}
+        </div>
         {health?.tokenExpirationStatus === "unknown" && health?.tokenExpirationReason ? (
           <div style={{ color: "#9a3412" }}>
-            הוכחת תפוגה: {health.tokenExpirationReason}
+            {copy.expirationProof}: {health.tokenExpirationReason}
           </div>
         ) : null}
         {health?.dataAccessExpiresAt && health.dataAccessExpiresAt !== "never" ? (
-          <div>Data access expires: {formatDate(health.dataAccessExpiresAt)}</div>
+          <div>
+            Data access expires: {formatDate(health.dataAccessExpiresAt, copy.dateLocale)}
+          </div>
         ) : null}
         <div>
-          הרשאות:{" "}
+          {copy.permissions}:{" "}
           {health?.requiredPermissionsOk === true
             ? "whatsapp_business_messaging + whatsapp_business_management"
             : health?.requiredPermissionsOk === false
-              ? `חסר: ${(health.missingPermissions || []).join(", ") || "לא ידוע"}`
-              : "לא נבדק"}
+              ? `${copy.missing}: ${(health.missingPermissions || []).join(", ") || copy.unknown}`
+              : copy.notChecked}
         </div>
         <div>
-          WABA assigned:{" "}
+          {copy.wabaAssigned}:{" "}
           {health?.wabaAssignmentStatus === "pass" ||
           health?.wabaAssignedToSystemUser === true
-            ? "תקין"
+            ? copy.ok
             : health?.wabaAssignmentStatus === "not_applicable"
-              ? "לא רלוונטי (לא BSP)"
+              ? copy.notRelevantBsp
               : health?.wabaAssignmentStatus === "fail" ||
                   health?.wabaAssignedToSystemUser === false
-                ? "לא משויך"
-                : "לא ניתן להוכיח"}
+                ? copy.notAssigned
+                : copy.cannotProve}
         </div>
         {health?.wabaAssignmentReason ? (
           <div style={{ color: "#64748b", fontSize: 12 }}>
@@ -267,22 +283,24 @@ function ManagedConnectionHealthPanel({
           </div>
         ) : null}
         <div>
-          WABA: {okLabel(Boolean(health?.wabaAccessible), "תקין", "שגיאה")}
+          {copy.wabaLabel}: {okLabel(Boolean(health?.wabaAccessible), copy.ok, copy.errorWord)}
         </div>
         <div>
-          מספר WhatsApp:{" "}
-          {okLabel(Boolean(health?.phoneNumberAccessible), "תקין", "שגיאה")}
-        </div>
-        <div>בדיקה אחרונה: {formatDate(health?.lastCheckedAt)}</div>
-        <div>
-          בדיקה מוצלחת אחרונה: {formatDate(health?.lastSuccessfulCheckAt)}
+          {copy.whatsappNumber}:{" "}
+          {okLabel(Boolean(health?.phoneNumberAccessible), copy.ok, copy.errorWord)}
         </div>
         <div>
-          שליחה מוצלחת אחרונה: {formatDate(health?.lastSuccessfulSendAt)}
+          {copy.lastCheck}: {formatDate(health?.lastCheckedAt, copy.dateLocale)}
+        </div>
+        <div>
+          {copy.lastSuccessfulCheck}: {formatDate(health?.lastSuccessfulCheckAt, copy.dateLocale)}
+        </div>
+        <div>
+          {copy.lastSuccessfulSend}: {formatDate(health?.lastSuccessfulSendAt, copy.dateLocale)}
         </div>
         {health?.errorMessage ? (
           <div style={{ color: "#b91c1c", marginTop: 4 }}>
-            שגיאה אחרונה: {health.errorMessage}
+            {copy.lastError}: {health.errorMessage}
           </div>
         ) : null}
       </div>
@@ -294,7 +312,10 @@ export default function AdminManagedWhatsApp() {
   const { user } = useAuth() as { user: { role?: string } | null };
   const { i18n } = useTranslation();
   const dir = useLocaleDir();
-  const copy = adminManagedWhatsAppCopy(i18n.resolvedLanguage || i18n.language);
+  const language = i18n.resolvedLanguage || i18n.language;
+  const copy = adminManagedWhatsAppCopy(language);
+  const copyRef = useRef(copy);
+  copyRef.current = copy;
   const navigate = useNavigate();
   const [status, setStatus] = useState<AdminManagedWhatsAppStatus | null>(null);
   const [audit, setAudit] = useState<AdminManagedWhatsAppAuditItem[]>([]);
@@ -347,7 +368,7 @@ export default function AdminManagedWhatsApp() {
         }
         setAudit(aud.items || []);
       } catch (err: any) {
-        setError(err?.message || "טעינת הסטטוס נכשלה");
+        setError(err?.message || copyRef.current.loadStatusFailed);
       } finally {
         setLoading(false);
       }
@@ -368,7 +389,7 @@ export default function AdminManagedWhatsApp() {
       const report = await getAdminWhatsAppBillingMargin();
       setMarginReport(report);
     } catch (err: any) {
-      setMarginError(err?.message || "טעינת דוח המרווח נכשלה");
+      setMarginError(err?.message || copyRef.current.loadMarginFailed);
     } finally {
       setMarginLoading(false);
     }
@@ -427,10 +448,10 @@ export default function AdminManagedWhatsApp() {
     try {
       const signup = await getAdminManagedEmbeddedSignupConfig();
       if (!signup.appId || !signup.configId) {
-        throw new Error("חסרה הגדרת Embedded Signup בשרת");
+        throw new Error(copyRef.current.signupMissing);
       }
       if (!signup.encryptionReady || !signup.ready) {
-        throw new Error("Embedded Signup אינו מוכן — בדוק META_APP_SECRET והרשאות");
+        throw new Error(copyRef.current.signupNotReady);
       }
 
       const FB = await loadFacebookSdk(
@@ -453,14 +474,14 @@ export default function AdminManagedWhatsApp() {
               try {
                 const code = response?.authResponse?.code;
                 if (!code) {
-                  finish(() => reject(new Error("חיבור Meta בוטל")));
+                  finish(() => reject(new Error(copyRef.current.signupCancelled)));
                   return;
                 }
                 await new Promise((r) => setTimeout(r, 600));
                 const assets = embeddedSessionRef.current;
                 if (!assets?.phoneNumberId || !assets?.wabaId) {
                   finish(() =>
-                    reject(new Error("חסרים phone_number_id / waba_id מ-Embedded Signup"))
+                    reject(new Error(copyRef.current.signupAssetsMissing))
                   );
                   return;
                 }
@@ -478,11 +499,9 @@ export default function AdminManagedWhatsApp() {
                   data.registration?.phoneRegistered || data.registration?.sendReady
                 );
                 if (registered) {
-                  setSyncFlash("חיבור USA הושלם — Embedded Signup + רישום");
+                  setSyncFlash(copyRef.current.signupUsaDone);
                 } else {
-                  setSyncFlash(
-                    "חיבור USA נשמר מול Meta — הזינו PIN דו-שלבי להשלמת הרישום לשליחה"
-                  );
+                  setSyncFlash(copyRef.current.signupUsaPin);
                   setRegisterPin("");
                 }
                 const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
@@ -496,7 +515,7 @@ export default function AdminManagedWhatsApp() {
                     new Error(
                       err?.response?.data?.error ||
                         err?.message ||
-                        "השלמת Embedded Signup נכשלה"
+                        copyRef.current.signupFailed
                     )
                   )
                 );
@@ -516,7 +535,7 @@ export default function AdminManagedWhatsApp() {
         );
       });
     } catch (err: any) {
-      setError(err?.message || "חיבור Embedded Signup נכשל");
+      setError(err?.message || copyRef.current.signupConnectFailed);
     } finally {
       setConnectingUs(false);
     }
@@ -540,7 +559,7 @@ export default function AdminManagedWhatsApp() {
       });
       applyStatus(data);
     } catch (err: any) {
-      setError(err?.message || "שמירת ההגדרה נכשלה");
+      setError(err?.message || copyRef.current.saveSettingsFailed);
     } finally {
       setSaving(false);
     }
@@ -562,7 +581,7 @@ export default function AdminManagedWhatsApp() {
       });
       applyStatus(data);
     } catch (err: any) {
-      setError(err?.message || "שמירת allowlist נכשלה");
+      setError(err?.message || copyRef.current.saveAllowlistFailed);
     } finally {
       setSaving(false);
     }
@@ -572,7 +591,7 @@ export default function AdminManagedWhatsApp() {
     if (!isAdmin || registering) return;
     const pin = registerPin.replace(/\D/g, "").slice(0, 6);
     if (!/^\d{6}$/.test(pin)) {
-      setError("הזינו PIN דו-שלבי בן 6 ספרות");
+      setError(copyRef.current.pinInvalid);
       return;
     }
     setRegistering(true);
@@ -587,15 +606,15 @@ export default function AdminManagedWhatsApp() {
       setRegisterPin("");
       setSyncFlash(
         data.registration?.phoneRegistered || data.registration?.sendReady
-          ? "המספר נרשם מול Meta — אפשר לשלוח הודעות"
-          : "הרישום נשלח, אך המספר עדיין לא מסומן כמוכן לשליחה"
+          ? copyRef.current.registeredCanSend
+          : copyRef.current.registeredNotReady
       );
       const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
         items: [],
       }));
       setAudit(aud.items || []);
     } catch (err: any) {
-      setError(err?.response?.data?.error || err?.message || "רישום המספר נכשל");
+      setError(err?.response?.data?.error || err?.message || copyRef.current.registerFailed);
     } finally {
       setRegistering(false);
     }
@@ -610,15 +629,13 @@ export default function AdminManagedWhatsApp() {
       const data = await syncAdminManagedWhatsAppTemplates(activeConnectionId);
       applyStatus(data);
       const c = data.sync?.counts || data.templates;
-      setSyncFlash(
-        `סנכרון הושלם (${activeConnectionId}): APPROVED ${c?.APPROVED ?? 0} · PENDING ${c?.PENDING ?? 0} · REJECTED ${c?.REJECTED ?? 0}`
-      );
+      setSyncFlash(adminManagedSyncFinished(language, activeConnectionId, c));
       const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
         items: [],
       }));
       setAudit(aud.items || []);
     } catch (err: any) {
-      setError(err?.message || "סנכרון תבניות נכשל");
+      setError(err?.message || copyRef.current.syncFailed);
     } finally {
       setSyncing(false);
     }
@@ -790,7 +807,7 @@ export default function AdminManagedWhatsApp() {
                             cursor: "pointer",
                           }}
                         >
-                          הזן PIN לרישום
+                          {copy.enterPin}
                         </button>
                       ) : null}
                       {isUs && ready ? (
@@ -808,7 +825,7 @@ export default function AdminManagedWhatsApp() {
                                 cursor: "pointer",
                               }}
                             >
-                              Open Inbox
+                              {copy.openInbox}
                             </button>
                           ) : null}
                           <button
@@ -826,7 +843,7 @@ export default function AdminManagedWhatsApp() {
                               cursor: "pointer",
                             }}
                           >
-                            Templates
+                            {copy.templates}
                           </button>
                           <button
                             type="button"
@@ -843,7 +860,7 @@ export default function AdminManagedWhatsApp() {
                               cursor: "pointer",
                             }}
                           >
-                            Connection status
+                            {copy.connectionStatus}
                           </button>
                           {!pinNeeded ? null : (
                             <button
@@ -859,7 +876,7 @@ export default function AdminManagedWhatsApp() {
                                 cursor: connectingUs ? "wait" : "pointer",
                               }}
                             >
-                              {connectingUs ? "מתחבר…" : "Reconnect"}
+                              {connectingUs ? copy.connecting : copy.reconnect}
                             </button>
                           )}
                         </>
@@ -900,7 +917,7 @@ export default function AdminManagedWhatsApp() {
         ) : null}
 
         {loading || !status ? (
-          <p>טוען…</p>
+          <p>{copy.loading}</p>
         ) : (
           <>
             <section
@@ -934,35 +951,35 @@ export default function AdminManagedWhatsApp() {
                       marginTop: 10,
                     }}
                   >
-                    <StatusPill ok={modeOn} labelOk="פעיל" labelBad="כבוי" />
+                    <StatusPill ok={modeOn} labelOk={copy.statusActive} labelBad={copy.statusInactive} />
                     <StatusPill
                       ok={wabaOk && connectionReady}
-                      labelOk="WABA מחובר"
-                      labelBad="WABA לא מחובר"
+                      labelOk={copy.wabaConnected}
+                      labelBad={copy.wabaDisconnected}
                     />
                     <StatusPill
                       ok={phoneOk && connectionReady}
-                      labelOk="Phone Number מחובר"
-                      labelBad="Phone Number לא מחובר"
+                      labelOk={copy.phoneConnected}
+                      labelBad={copy.phoneDisconnected}
                     />
                     <StatusPill
                       ok={tokenOk}
-                      labelOk="Access Token: Configured"
-                      labelBad="Access Token: Missing"
+                      labelOk={copy.tokenConfigured}
+                      labelBad={copy.tokenMissing}
                     />
                     <StatusPill
                       ok={connectionReady}
                       labelOk={
                         sendRegistered
-                          ? "Connection: READY"
-                          : "Connection: CONFIGURED"
+                          ? copy.connectionReadyLabel
+                          : copy.connectionConfiguredLabel
                       }
-                      labelBad="Connection: NOT READY"
+                      labelBad={copy.connectionNotReady}
                     />
                     <StatusPill
                       ok={sendRegistered}
-                      labelOk="רישום לשליחה: רשום"
-                      labelBad="רישום לשליחה: נדרש PIN"
+                      labelOk={copy.registrationRegistered}
+                      labelBad={copy.registrationPinNeeded}
                     />
                   </div>
                   <p
@@ -972,8 +989,7 @@ export default function AdminManagedWhatsApp() {
                       color: "#94a3b8",
                     }}
                   >
-                    סטטוסים אלה משקפים רק את החיבור המרכזי של Bizuply — לא חיבורי
-                    עסקים פרטיים.
+                    {copy.statusScopeNote}
                   </p>
                 </div>
                 <label
@@ -991,7 +1007,7 @@ export default function AdminManagedWhatsApp() {
                     disabled={saving}
                     onChange={(e) => void toggleManagedMode(e.target.checked)}
                   />
-                  הפעל WhatsApp מנוהל לכל העסקים
+                  {copy.enableManaged}
                 </label>
               </div>
 
@@ -1005,14 +1021,14 @@ export default function AdminManagedWhatsApp() {
               >
                 <div>
                   <div style={{ color: "#64748b", fontSize: 12 }}>
-                    תבניות APPROVED (Meta)
+                    {copy.approvedTemplates}
                   </div>
                   <div style={{ fontSize: 22, fontWeight: 700 }}>
                     {connectionReady ? status.templates?.APPROVED ?? 0 : 0}
                   </div>
                   {!connectionReady ? (
                     <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 4 }}>
-                      יוצג רק אחרי חיבור READY + סנכרון
+                      {copy.templatesAfterReady}
                     </div>
                   ) : null}
                 </div>
@@ -1029,7 +1045,7 @@ export default function AdminManagedWhatsApp() {
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: "#64748b", fontSize: 12 }}>רישום לשליחה</div>
+                  <div style={{ color: "#64748b", fontSize: 12 }}>{copy.registrationLabel}</div>
                   <div
                     style={{
                       fontSize: 16,
@@ -1043,25 +1059,25 @@ export default function AdminManagedWhatsApp() {
                   >
                     {status.registration?.sendReady ||
                     status.registration?.phoneRegistered
-                      ? "רשום"
-                      : "נדרש PIN"}
+                      ? copy.registered
+                      : copy.pinRequired}
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: "#64748b", fontSize: 12 }}>טלפון (מוסתר)</div>
+                  <div style={{ color: "#64748b", fontSize: 12 }}>{copy.phoneMasked}</div>
                   <div style={{ fontSize: 16, fontWeight: 600 }}>
                     {status.connection?.displayPhoneMasked || "—"}
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: "#64748b", fontSize: 12 }}>סנכרון אחרון</div>
+                  <div style={{ color: "#64748b", fontSize: 12 }}>{copy.lastSync}</div>
                   <div style={{ fontSize: 15 }}>
-                    {formatDate(status.connection?.lastTemplatesSyncAt)}
+                    {formatDate(status.connection?.lastTemplatesSyncAt, copy.dateLocale)}
                   </div>
                 </div>
                 <div>
                   <div style={{ color: "#64748b", fontSize: 12 }}>
-                    שגיאת חיבור אחרונה
+                    {copy.lastConnectionError}
                   </div>
                   <div
                     style={{
@@ -1072,11 +1088,11 @@ export default function AdminManagedWhatsApp() {
                     {sendRegistered
                       ? status.lastError ||
                         status.connection?.connectionReason ||
-                        "אין"
+                        copy.none
                       : status.lastError ||
                         status.registration?.lastError ||
                         status.connection?.connectionReason ||
-                        "אין"}
+                        copy.none}
                   </div>
                 </div>
               </div>
@@ -1090,7 +1106,7 @@ export default function AdminManagedWhatsApp() {
                   border: "1px solid #e2e8f0",
                 }}
               >
-                <strong style={{ fontSize: 14 }}>חיבורי עסקים (נפרד מהפלטפורמה)</strong>
+                <strong style={{ fontSize: 14 }}>{copy.businessConnections}</strong>
                 <div
                   style={{
                     display: "grid",
@@ -1101,7 +1117,7 @@ export default function AdminManagedWhatsApp() {
                 >
                   <div>
                     <div style={{ color: "#64748b", fontSize: 12 }}>
-                      Managed connection
+                      {copy.managedConnection}
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 700 }}>
                       {!connectionReady
@@ -1113,7 +1129,7 @@ export default function AdminManagedWhatsApp() {
                   </div>
                   <div>
                     <div style={{ color: "#64748b", fontSize: 12 }}>
-                      עסקים עם WhatsApp פרטי מחובר
+                      {copy.privateConnected}
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 700 }}>
                       {status.businessConnections?.privateConnected ?? 0}
@@ -1121,7 +1137,7 @@ export default function AdminManagedWhatsApp() {
                   </div>
                   <div>
                     <div style={{ color: "#64748b", fontSize: 12 }}>
-                      עסקים מנותקים (פרטי)
+                      {copy.privateDisconnected}
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 700 }}>
                       {status.businessConnections?.privateDisconnected ?? 0}
@@ -1132,8 +1148,8 @@ export default function AdminManagedWhatsApp() {
 
               <p style={{ marginTop: 16, color: "#475569", fontSize: 14 }}>
                 {modeOn
-                  ? "כאשר פעיל: המספר המרכזי זמין רק לעסק הפלטפורמה. כל עסק אחר שולח רק מחיבור ה-WhatsApp שלו."
-                  : "כאשר כבוי: גם עסק הפלטפורמה לא שולח מהמספר המרכזי. עסקים אחרים תמיד שולחים רק מהחיבור שלהם."}
+                  ? copy.modeOnExplain
+                  : copy.modeOffExplain}
               </p>
 
               <div ref={templatesSectionRef} style={{ marginTop: 8 }}>
@@ -1144,7 +1160,7 @@ export default function AdminManagedWhatsApp() {
                 title={
                   connectionReady
                     ? undefined
-                    : "יש לשמור ולבדוק חיבור לפני סנכרון תבניות"
+                    : copy.syncNeedConnection
                 }
                 style={{
                   marginTop: 8,
@@ -1161,7 +1177,7 @@ export default function AdminManagedWhatsApp() {
                 }}
               >
                 <RefreshCw size={16} />
-                {syncing ? "מסנכרן…" : "סנכרון תבניות Meta"}
+                {syncing ? copy.syncing : copy.syncTemplates}
               </button>
               </div>
             </section>
@@ -1179,7 +1195,7 @@ export default function AdminManagedWhatsApp() {
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Link2 size={18} />
                 <strong>
-                  חיבור WhatsApp מרכזי ·{" "}
+                  {copy.centralConnection} ·{" "}
                   {status.connectionMeta?.label || activeConnectionId}
                 </strong>
               </div>
@@ -1199,10 +1215,10 @@ export default function AdminManagedWhatsApp() {
                     checked={connectionEnabled}
                     onChange={(e) => setConnectionEnabled(e.target.checked)}
                   />
-                  Active / Enabled
+                  {copy.activeEnabled}
                 </label>
               ) : null}
-              <ManagedConnectionHealthPanel health={status.health} />
+              <ManagedConnectionHealthPanel health={status.health} copy={copy} />
               {showIlCredentialForm &&
               !status.connection?.managedBusinessIdConfigured ? (
                 <div
@@ -1215,9 +1231,7 @@ export default function AdminManagedWhatsApp() {
                     fontSize: 14,
                   }}
                 >
-                  חסר{" "}
-                  <code>BIZUPLY_MANAGED_WHATSAPP_BUSINESS_ID</code> בשרת — לא
-                  ניתן לשמור חיבור בלי מזהה עסק מרכזי.
+                  {copy.missingBusinessId}
                 </div>
               ) : null}
 
@@ -1234,7 +1248,7 @@ export default function AdminManagedWhatsApp() {
                     fontSize: 14,
                   }}
                 >
-                  רישום לשליחה: רשום
+                  {copy.registrationRegistered}
                 </div>
               ) : (showIlCredentialForm || showUsDetailPanel) && needsRegistration ? (
                 <div
@@ -1246,14 +1260,13 @@ export default function AdminManagedWhatsApp() {
                   border: "1px solid #fed7aa",
                 }}
               >
-                <strong style={{ fontSize: 14 }}>רישום מספר לשליחה (PIN)</strong>
+                <strong style={{ fontSize: 14 }}>{copy.pinTitle}</strong>
                 <p style={{ color: "#9a3412", fontSize: 13, margin: "8px 0 0" }}>
-                  חיבור WABA יכול להיות READY ועדיין חסום לשליחה. Meta דורשת
-                  רישום חד-פעמי עם PIN דו-שלבי של 6 ספרות של המספר{" "}
+                  {copy.pinBodyBefore}{" "}
                   {status.configForm?.displayPhoneNumber ||
                     status.connection?.displayPhoneMasked ||
                     ""}
-                  . זה לא קוד SMS — זה ה-PIN שהוגדר ב-Meta Business Manager למספר.
+                  {copy.pinBodyAfter}
                 </p>
                 {status.registration?.lastError ? (
                   <p style={{ color: "#b91c1c", fontSize: 13, marginTop: 8 }}>
@@ -1271,7 +1284,7 @@ export default function AdminManagedWhatsApp() {
                 >
                   <label style={{ display: "grid", gap: 6 }}>
                     <span style={{ fontWeight: 600, fontSize: 13 }}>
-                      PIN דו-שלבי
+                      {copy.pinLabel}
                     </span>
                     <input
                       style={{ ...fieldStyle, maxWidth: 180, letterSpacing: "0.35em" }}
@@ -1308,7 +1321,7 @@ export default function AdminManagedWhatsApp() {
                       cursor: registering ? "wait" : "pointer",
                     }}
                   >
-                    {registering ? "רושם מול Meta…" : "רישום מספר לשליחה"}
+                    {registering ? copy.registering : copy.registerPhone}
                   </button>
                 </div>
               </div>
@@ -1327,12 +1340,9 @@ export default function AdminManagedWhatsApp() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Shield size={18} />
-                <strong>עסקים מורשים</strong>
+                <strong>{copy.authorizedBusinesses}</strong>
               </div>
-              <p style={{ color: "#64748b", fontSize: 14 }}>
-                All entitled משתמש ב-entitlement / allowlist הקיימים. Allowlist
-                מגביל לרשימת מזהי עסקים בלבד.
-              </p>
+              <p style={{ color: "#64748b", fontSize: 14 }}>{copy.allowlistHelp}</p>
               <div
                 style={{
                   display: "flex",
@@ -1349,7 +1359,7 @@ export default function AdminManagedWhatsApp() {
                     onChange={() => void saveAllowlist("all_entitled")}
                     disabled={saving}
                   />
-                  All entitled businesses
+                  {copy.allEntitled}
                 </label>
                 <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <input
@@ -1359,7 +1369,7 @@ export default function AdminManagedWhatsApp() {
                     onChange={() => void saveAllowlist("allowlist")}
                     disabled={saving}
                   />
-                  Allowlist
+                  {copy.allowlist}
                 </label>
               </div>
               {status.allowlistMode === "allowlist" ? (
@@ -1368,7 +1378,7 @@ export default function AdminManagedWhatsApp() {
                     value={allowlistText}
                     onChange={(e) => setAllowlistText(e.target.value)}
                     rows={5}
-                    placeholder="businessId לכל שורה"
+                    placeholder={copy.allowlistPlaceholder}
                     style={{
                       width: "100%",
                       borderRadius: 10,
@@ -1392,7 +1402,7 @@ export default function AdminManagedWhatsApp() {
                       cursor: "pointer",
                     }}
                   >
-                    שמור Allowlist
+                    {copy.saveAllowlist}
                   </button>
                 </>
               ) : null}
@@ -1415,7 +1425,7 @@ export default function AdminManagedWhatsApp() {
                   flexWrap: "wrap",
                 }}
               >
-                <strong>WhatsApp usage billing — margin</strong>
+                <strong>{copy.billingTitle}</strong>
                 <button
                   type="button"
                   onClick={() => void loadMargin()}
@@ -1433,14 +1443,14 @@ export default function AdminManagedWhatsApp() {
                   }}
                 >
                   <RefreshCw size={14} />
-                  רענון
+                  {copy.refresh}
                 </button>
               </div>
               {marginError ? (
                 <p style={{ color: "#b91c1c", marginTop: 12 }}>{marginError}</p>
               ) : null}
               {marginLoading && !marginReport ? (
-                <p style={{ color: "#64748b", marginTop: 12 }}>טוען דוח...</p>
+                <p style={{ color: "#64748b", marginTop: 12 }}>{copy.loadingReport}</p>
               ) : null}
               {marginReport ? (
                 <>
@@ -1453,10 +1463,10 @@ export default function AdminManagedWhatsApp() {
                     }}
                   >
                     {[
-                      ["הודעות", marginReport.totals.messageCount],
-                      ["חיוב ₪", marginReport.totals.chargeIls],
-                      ["עלות Meta ₪", marginReport.totals.metaCostIls],
-                      ["מרווח ₪", marginReport.totals.marginIls],
+                      [copy.messages, marginReport.totals.messageCount],
+                      [copy.charge, marginReport.totals.chargeIls],
+                      [copy.metaCost, marginReport.totals.metaCostIls],
+                      [copy.margin, marginReport.totals.marginIls],
                     ].map(([label, value]) => (
                       <div
                         key={String(label)}
@@ -1472,7 +1482,7 @@ export default function AdminManagedWhatsApp() {
                         </div>
                         <div style={{ fontSize: 18, fontWeight: 800 }}>
                           {typeof value === "number"
-                            ? value.toLocaleString("he-IL")
+                            ? value.toLocaleString(copy.dateLocale)
                             : value}
                         </div>
                       </div>
@@ -1488,11 +1498,11 @@ export default function AdminManagedWhatsApp() {
                     >
                       <thead>
                         <tr style={{ textAlign: "start", color: "#64748b" }}>
-                          <th style={{ padding: "8px 6px" }}>Business</th>
-                          <th style={{ padding: "8px 6px" }}>Msgs</th>
-                          <th style={{ padding: "8px 6px" }}>Charge ₪</th>
-                          <th style={{ padding: "8px 6px" }}>Meta ₪</th>
-                          <th style={{ padding: "8px 6px" }}>Margin ₪</th>
+                          <th style={{ padding: "8px 6px" }}>{copy.business}</th>
+                          <th style={{ padding: "8px 6px" }}>{copy.msgs}</th>
+                          <th style={{ padding: "8px 6px" }}>{copy.charge}</th>
+                          <th style={{ padding: "8px 6px" }}>{copy.metaCost}</th>
+                          <th style={{ padding: "8px 6px" }}>{copy.margin}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1524,7 +1534,7 @@ export default function AdminManagedWhatsApp() {
                               colSpan={5}
                               style={{ padding: "12px 6px", color: "#94a3b8" }}
                             >
-                              אין שימוש מחויב עדיין
+                              {copy.noBilledUsage}
                             </td>
                           </tr>
                         ) : null}
@@ -1543,10 +1553,10 @@ export default function AdminManagedWhatsApp() {
                 boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
               }}
             >
-              <strong>Audit log</strong>
+              <strong>{copy.auditLog}</strong>
               <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0" }}>
                 {audit.length === 0 ? (
-                  <li style={{ color: "#94a3b8" }}>אין פעולות עדיין</li>
+                  <li style={{ color: "#94a3b8" }}>{copy.auditEmpty}</li>
                 ) : (
                   audit.map((row) => (
                     <li
@@ -1560,7 +1570,7 @@ export default function AdminManagedWhatsApp() {
                       <div style={{ fontWeight: 600 }}>{row.action}</div>
                       <div style={{ color: "#64748b" }}>
                         {row.actorEmail || row.actorUserId || "—"} ·{" "}
-                        {formatDate(row.createdAt)}
+                        {formatDate(row.createdAt, copy.dateLocale)}
                       </div>
                     </li>
                   ))
