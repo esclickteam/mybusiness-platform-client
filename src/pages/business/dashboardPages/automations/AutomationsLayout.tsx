@@ -33,10 +33,19 @@ import { workingTemplateCopy } from "../../../../i18n/workingTemplateCopy";
 import { localTemplateCopy } from "../../../../i18n/localTemplateCopy";
 import { getAiTemplateByKey } from "./aiAutomationCatalog";
 import { useAutomationsRealtime } from "./useAutomationsRealtime";
+import { automationBasePath } from "./automationHostPaths";
 import "./automationFlow.css";
 import "./automationsHome.css";
 
-export default function AutomationsLayout() {
+type LayoutProps = {
+  hostBusinessId?: string | null;
+  hostBasePath?: string | null;
+};
+
+export default function AutomationsLayout({
+  hostBusinessId = null,
+  hostBasePath = null,
+}: LayoutProps = {}) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
   const navigate = useNavigate();
@@ -47,15 +56,14 @@ export default function AutomationsLayout() {
     user?: { businessId?: string | null } | null;
   };
   const businessId =
+    normalizeBusinessId(hostBusinessId) ||
     normalizeBusinessId(urlBusinessId) ||
     normalizeBusinessId(user?.businessId) ||
     null;
 
   useAutomationsRealtime(businessId);
 
-  const basePath = businessId
-    ? `/business/${businessId}/dashboard/automations`
-    : "/";
+  const basePath = automationBasePath(businessId, hostBasePath);
 
   const tabs = [
     { to: basePath, end: true, label: t("automations.layout.myAutomations") },
@@ -272,7 +280,7 @@ export default function AutomationsLayout() {
         </nav>
       ) : null}
 
-      <Outlet context={{ businessId, readOnly }} />
+      <Outlet context={{ businessId, readOnly, basePath }} />
     </section>
   );
 }

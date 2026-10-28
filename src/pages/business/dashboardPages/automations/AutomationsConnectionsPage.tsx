@@ -2,10 +2,15 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useOutletContext } from "react-router-dom";
 import IntegrationsMain from "../integrations/IntegrationsMain";
+import {
+  automationBasePath,
+  whatsappSettingsPath,
+} from "./automationHostPaths";
 
 type OutletCtx = {
   businessId: string | null;
   readOnly: boolean;
+  basePath?: string;
 };
 
 /**
@@ -14,13 +19,9 @@ type OutletCtx = {
  */
 export default function AutomationsConnectionsPage() {
   const { t } = useTranslation();
-  const { businessId } = useOutletContext<OutletCtx>();
-  const returnPath = businessId
-    ? `/business/${businessId}/dashboard/automations/connections`
-    : "/";
-  const whatsappPath = businessId
-    ? `/business/${businessId}/dashboard/whatsapp/settings`
-    : null;
+  const { businessId, basePath } = useOutletContext<OutletCtx>();
+  const returnPath = `${automationBasePath(businessId, basePath)}/connections`;
+  const whatsappPath = whatsappSettingsPath(businessId, basePath) || null;
 
   return (
     <div className="ax-page">

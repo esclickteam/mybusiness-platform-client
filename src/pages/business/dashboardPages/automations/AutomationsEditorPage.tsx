@@ -13,17 +13,23 @@ import {
 } from "../../../../api/automationWorkflowApi";
 import AutomationFlowEditor from "./AutomationFlowEditor";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
+import {
+  whatsappSettingsPath,
+  isAdminAutomationHost,
+  automationBasePath,
+} from "./automationHostPaths";
 
 type OutletCtx = {
   businessId: string | null;
   readOnly: boolean;
+  basePath?: string;
 };
 
 export default function AutomationsEditorPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { workflowId = "" } = useParams<{ workflowId: string }>();
-  const { businessId, readOnly } = useOutletContext<OutletCtx>();
+  const { businessId, readOnly, basePath } = useOutletContext<OutletCtx>();
   const [workflow, setWorkflow] = useState<AutomationWorkflow | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -101,6 +107,12 @@ export default function AutomationsEditorPage() {
       businessId={businessId}
       workflow={workflow}
       readOnly={readOnly}
+      whatsappSettingsPath={whatsappSettingsPath(businessId, basePath)}
+      emailSettingsPath={
+        isAdminAutomationHost(basePath)
+          ? `${automationBasePath(businessId, basePath)}/connections`
+          : undefined
+      }
       onBack={() => navigate("..")}
       onSaved={(saved) => setWorkflow(saved)}
     />

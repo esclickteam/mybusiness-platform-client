@@ -46,6 +46,7 @@ import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxBut
 type OutletCtx = {
   businessId: string | null;
   readOnly: boolean;
+  basePath?: string;
 };
 
 const STATUS_FILTER_VALUES: WorkflowStatusFilter[] = [
@@ -63,7 +64,7 @@ export default function AutomationsHomePage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { businessId, readOnly } = useOutletContext<OutletCtx>();
+  const { businessId, readOnly, basePath } = useOutletContext<OutletCtx>();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<WorkflowStatusFilter>("all");
@@ -250,7 +251,9 @@ export default function AutomationsHomePage() {
             )
           );
         }
-        navigate(`/business/${businessId}/dashboard/whatsapp/billing`);
+        if (!String(basePath || "").startsWith("/admin")) {
+          navigate(`/business/${businessId}/dashboard/whatsapp/billing`);
+        }
         return;
       }
       const code = readAutomationBillingErrorCode(error);
@@ -499,6 +502,7 @@ export default function AutomationsHomePage() {
         open={showCreateModal}
         businessId={businessId}
         readOnly={readOnly}
+        basePath={basePath}
         onClose={() => setShowCreateModal(false)}
       />
 

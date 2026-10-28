@@ -10,11 +10,13 @@ import {
   isAutomationsReadOnly,
 } from "../../../../api/automationWorkflowApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
+import { automationBasePath } from "./automationHostPaths";
 
 type Props = {
   open: boolean;
   businessId: string | null;
   readOnly: boolean;
+  basePath?: string | null;
   onClose: () => void;
 };
 
@@ -22,6 +24,7 @@ export default function CreateAutomationModal({
   open,
   businessId,
   readOnly,
+  basePath = null,
   onClose,
 }: Props) {
   const { t } = useTranslation();
@@ -65,9 +68,7 @@ export default function CreateAutomationModal({
       });
       toast.success(t("automations.toasts.blankReady"));
       onClose();
-      navigate(
-        `/business/${businessId}/dashboard/automations/${created._id}`
-      );
+      navigate(`${automationBasePath(businessId, basePath)}/${created._id}`);
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, t("automations.toasts.createError")));
     } finally {
@@ -78,7 +79,7 @@ export default function CreateAutomationModal({
   const handleTemplates = () => {
     onClose();
     if (businessId) {
-      navigate(`/business/${businessId}/dashboard/automations/templates`);
+      navigate(`${automationBasePath(businessId, basePath)}/templates`);
     } else {
       navigate("templates");
     }

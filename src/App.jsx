@@ -1566,7 +1566,7 @@ export default function App() {
                         <Route path="saas-control-center" element={<AdminSaasControlCenter />} />
                         <Route path="managed-whatsapp" element={<AdminManagedWhatsApp />} />
                         <Route path="calendar" element={<AdminBizuplyCalendar />} />
-                        <Route path="automations" element={<AdminAutomations />} />
+                        <Route path="automations/*" element={<AdminAutomations />} />
                         <Route path="system" element={<AdminSystemHub />} />
                         <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
                         <Route path="logs" element={<AdminLogs />} />
