@@ -327,6 +327,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/automations`,
       icon: Workflow,
       moduleKey: "automations",
+      exact: true,
       demoTarget: "nav-automations",
     },
     {

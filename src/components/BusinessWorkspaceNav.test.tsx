@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { render, screen, cleanup, fireEvent } from "@testing-library/react";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 
 const ALLOWED_BUSINESS_ID = "6a452720016d081ad1d6e328";
 /** bdika — private WhatsApp connect allowlisted alongside Managed mode. */
@@ -29,12 +29,19 @@ afterEach(() => {
   vi.resetModules();
 });
 
+function NavPath() {
+  const { pathname } = useLocation();
+  return <div data-testid="nav-path">{pathname}</div>;
+}
+
 async function renderNav({
   user,
   urlBusinessId,
+  path = "dashboard",
 }: {
   user: Record<string, unknown> | null;
   urlBusinessId: string;
+  path?: string;
 }) {
   mockUser.mockReturnValue(user);
   const { default: BusinessWorkspaceNav } = await import(
@@ -42,11 +49,16 @@ async function renderNav({
   );
 
   render(
-    <MemoryRouter initialEntries={[`/business/${urlBusinessId}/dashboard`]}>
+    <MemoryRouter initialEntries={[`/business/${urlBusinessId}/${path}`]}>
       <Routes>
         <Route
           path="/business/:businessId/*"
-          element={<BusinessWorkspaceNav />}
+          element={
+            <>
+              <BusinessWorkspaceNav />
+              <NavPath />
+            </>
+          }
         />
       </Routes>
     </MemoryRouter>
@@ -164,9 +176,29 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
 
     expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "automations")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "automations")?.getAttribute("aria-current")).toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "billing")).not.toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "website")).not.toBeNull();
     expect(screen.getAllByRole("link").length).toBeGreaterThan(5);
+  });
+
+  it("keeps the automations menu on the list while an editor is open", async () => {
+    await renderNav({
+      user: { businessId: OTHER_BUSINESS_ID, role: "business" },
+      urlBusinessId: OTHER_BUSINESS_ID,
+      path: "dashboard/automations/wf-existing",
+    });
+
+    const link = navLink(OTHER_BUSINESS_ID, "automations");
+    expect(link).not.toBeNull();
+    expect(link?.getAttribute("href")).toBe(
+      `/business/${OTHER_BUSINESS_ID}/dashboard/automations`
+    );
+    expect(link?.getAttribute("aria-current")).toBeNull();
+    fireEvent.click(link as Element);
+    expect(screen.getByTestId("nav-path").textContent).toBe(
+      `/business/${OTHER_BUSINESS_ID}/dashboard/automations`
+    );
   });
 
   it("still respects module ACL for the allowed business", async () => {
