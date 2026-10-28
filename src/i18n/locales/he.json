@@ -1410,6 +1410,7 @@
         "connectAccountCta": "חבר WhatsApp",
         "reconnectRequired": "נדרש חיבור מחדש",
         "connectedAs": "המספר המחובר: {{phone}}",
+        "connectedReadyText": "ההודעות נשלחות מהמספר המחובר של העסק. המספר המרכזי של Bizuply לא משמש לשליחה.",
         "noneApproved": "אין תבניות WhatsApp מאושרות זמינות",
         "noneApprovedHint": "אחרי אישור תבנית ב-Meta, רעננו את הרשימה.",
         "chooseTemplate": "בחרו תבנית",
