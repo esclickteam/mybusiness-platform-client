@@ -59,6 +59,7 @@
     "grapesjs": "^0.23.2",
     "grapesjs-blocks-basic": "^1.0.2",
     "grapesjs-preset-webpage": "^1.0.3",
+    "gsap": "^3.15.0",
     "html-to-image": "^1.11.13",
     "html2pdf.js": "^0.10.3",
     "http-browserify": "^1.7.0",

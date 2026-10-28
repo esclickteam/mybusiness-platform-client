@@ -5,11 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import { marketingPublicUrl } from "../lib/localePathCore.mjs";
 
-import HeroSection from "../components/HeroSection";
-import { HomeAudiences, HomeJourney } from "../components/HomeNarrative";
-import PlatformDomains from "../components/PlatformDomains";
-import ScrollStory from "../components/ScrollStory";
-import WhyBizuply from "../components/WhyBizuply";
+import CinematicHome from "../components/CinematicHome";
 import FAQMini from "../components/FAQMini";
 
 const HREFLANG = [
@@ -63,13 +59,8 @@ export default function Home() {
   }, [canonical, i18n.language, t]);
 
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir={getTextDirection(i18n.language)}>
-      <HeroSection />
-      <PlatformDomains />
-      <ScrollStory />
-      <HomeJourney />
-      <HomeAudiences />
-      <WhyBizuply />
+    <main className="min-h-screen bg-white text-slate-900" dir={getTextDirection(i18n.language)}>
+      <CinematicHome />
       <FAQMini />
     </main>
   );

@@ -3,8 +3,8 @@ import { STORY } from "./homepageStory.mjs";
 /** Homepage first-paint copy. Same strings as the locale files. */
 export const HOME_SHELL = {
   "en": {
-    "headline": "Everything your business needs to grow in one place",
-    "subtitle": "Manage customers, capture leads, run marketing campaigns, communicate through WhatsApp, schedule appointments and automate everyday workflows — all from one connected business platform.",
+    "headline": "Your business. Working as one.",
+    "subtitle": "One connected platform to manage customers, conversations, marketing and everything that moves your business forward.",
     "supportLine": "Whether you prefer to manage everything yourself or need expert help setting things up, Bizuply gives your business the tools and support to move forward.",
     "startTrial": "Get Started",
     "explore": "Explore Bizuply",
@@ -22,8 +22,8 @@ export const HOME_SHELL = {
     "navAria": "Main navigation"
   },
   "he": {
-    "headline": "כל מה שהעסק שלכם צריך כדי לצמוח במקום אחד",
-    "subtitle": "נהלו לקוחות, קלטו פניות, הריצו קמפיינים, דברו ב־WhatsApp, קבעו פגישות והפכו עבודה יומיומית לאוטומטית — מפלטפורמה עסקית אחת ומחוברת.",
+    "headline": "העסק שלכם. עובד כיחידה אחת.",
+    "subtitle": "פלטפורמה אחת ומחוברת לניהול לקוחות, שיחות, שיווק וכל מה שמקדם את העסק.",
     "supportLine": "אם אתם מעדיפים לנהל הכול בעצמכם או שאתם צריכים עזרה מקצועית בהקמה, Bizuply נותנת לעסק כלים וליווי כדי להתקדם.",
     "startTrial": "מתחילים",
     "explore": "להכיר את Bizuply",
@@ -41,8 +41,8 @@ export const HOME_SHELL = {
     "navAria": "ניווט ראשי"
   },
   "es": {
-    "headline": "Todo lo que su negocio necesita para crecer en un solo lugar",
-    "subtitle": "Gestione clientes, capture leads, ejecute campañas, comuníquese por WhatsApp, programe citas y automatice el trabajo diario, todo desde una plataforma de negocio conectada.",
+    "headline": "Su negocio. Trabajando como uno.",
+    "subtitle": "Una plataforma conectada para gestionar clientes, conversaciones, marketing y todo lo que hace avanzar su negocio.",
     "supportLine": "Si prefiere gestionarlo todo o necesita ayuda experta para la puesta en marcha, Bizuply da a su negocio las herramientas y el apoyo para avanzar.",
     "startTrial": "Empezar",
     "explore": "Explorar Bizuply",
@@ -60,8 +60,8 @@ export const HOME_SHELL = {
     "navAria": "Navegación principal"
   },
   "pt-BR": {
-    "headline": "Tudo o que o seu negócio precisa para crescer em um só lugar",
-    "subtitle": "Gerencie clientes, capture leads, rode campanhas, converse pelo WhatsApp, marque compromissos e automatize o trabalho do dia — tudo em uma plataforma de negócios conectada.",
+    "headline": "O seu negócio. Funcionando como um só.",
+    "subtitle": "Uma plataforma conectada para gerir clientes, conversas, marketing e tudo o que faz o negócio avançar.",
     "supportLine": "Se você prefere cuidar de tudo ou precisa de ajuda especializada para começar, a Bizuply dá ao negócio as ferramentas e o apoio para avançar.",
     "startTrial": "Começar",
     "explore": "Explorar a Bizuply",
@@ -79,8 +79,8 @@ export const HOME_SHELL = {
     "navAria": "Navegação principal"
   },
   "ar": {
-    "headline": "كل ما يحتاجه عملكم للنمو في مكان واحد",
-    "subtitle": "أديروا العملاء، والتقطوا الطلبات، وشغّلوا الحملات، وتواصلوا عبر WhatsApp، ونظّموا المواعيد، وأتمتوا العمل اليومي — من منصة أعمال واحدة متصلة.",
+    "headline": "عملكم. يعمل كمنظومة واحدة.",
+    "subtitle": "منصة واحدة متصلة لإدارة العملاء والمحادثات والتسويق وكل ما يدفع العمل إلى الأمام.",
     "supportLine": "سواء فضّلتم إدارة كل شيء بأنفسكم أو احتجتم إلى مساعدة خبراء في التهيئة، تمنح Bizuply عملكم الأدوات والدعم للمضي قدمًا.",
     "startTrial": "ابدأوا",
     "explore": "استكشفوا Bizuply",
