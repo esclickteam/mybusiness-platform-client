@@ -2793,28 +2793,16 @@ function EditorInner({
                   selectedNode.data?.actionKey || "whatsapp_template"
                 ) ? (
                   <div className="af-wa-template">
-                    <div className="af-wa-banner" dir={dir}>
-                      <strong>
-                        {waManagedModeEnabled
-                          ? t("automations.editor.wa.bizuplyBannerTitle")
-                          : t("automations.editor.wa.ownNumberTitle")}
-                      </strong>
-                      <p>
-                        {waManagedModeEnabled
-                          ? t("automations.editor.wa.bizuplyBannerText")
-                          : waPrivateConnected
-                            ? t("automations.editor.wa.connectedReadyText")
-                            : t("automations.editor.wa.connectRequired")}
+                    {waManagedModeEnabled ? (
+                      <div className="af-wa-banner" dir={dir}>
+                        <strong>{t("automations.editor.wa.bizuplyBannerTitle")}</strong>
+                        <p>{t("automations.editor.wa.bizuplyBannerText")}</p>
+                      </div>
+                    ) : waPrivateConnected ? (
+                      <p className="af-wa-template__state" dir={dir} data-testid="wa-connected-ready">
+                        {t("automations.editor.wa.connectedReadyText")}
                       </p>
-                      {!waManagedModeEnabled && !waPrivateConnected ? (
-                        <Link
-                          className="af-toolbar__btn"
-                          to={`/business/${businessId}/dashboard/whatsapp/settings`}
-                        >
-                          {t("automations.editor.wa.connectAccountCta")}
-                        </Link>
-                      ) : null}
-                    </div>
+                    ) : null}
 
                     <p className="af-wa-cost__estimate" dir={dir}>
                       {t("whatsapp.viaMeta.chargesByMeta")}

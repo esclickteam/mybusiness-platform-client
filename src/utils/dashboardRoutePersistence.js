@@ -1,5 +1,32 @@
 const STORAGE_PREFIX = "bizuply:lastDashboard:";
 
+const AUTOMATION_SECTION_SEGMENTS = new Set([
+  "templates",
+  "runs",
+  "connections",
+  "ai-results",
+]);
+
+/**
+ * The Automations menu and session restore always land on the list.
+ * An open editor is not a menu destination.
+ */
+export function automationsListRoute(route) {
+  if (!route || typeof route !== "string") return route;
+  const hashIndex = route.indexOf("#");
+  const withoutHash = hashIndex >= 0 ? route.slice(0, hashIndex) : route;
+  const queryIndex = withoutHash.indexOf("?");
+  const pathname = queryIndex >= 0 ? withoutHash.slice(0, queryIndex) : withoutHash;
+  const search = queryIndex >= 0 ? withoutHash.slice(queryIndex) : "";
+  const match = pathname.match(/^(.*\/dashboard\/automations)(?:\/([^/]+))?\/?$/);
+  if (!match) return route;
+  const segment = match[2] || "";
+  if (!segment || AUTOMATION_SECTION_SEGMENTS.has(segment)) {
+    return `${pathname}${search}`;
+  }
+  return match[1];
+}
+
 export function lastDashboardStorageKey(businessId) {
   return `${STORAGE_PREFIX}${businessId}`;
 }
@@ -16,7 +43,7 @@ export function saveLastDashboardRoute(businessId, pathname, search = "") {
   try {
     sessionStorage.setItem(
       lastDashboardStorageKey(businessId),
-      `${pathname}${search || ""}`
+      automationsListRoute(`${pathname}${search || ""}`)
     );
   } catch {
     // ignore quota / private mode
@@ -33,7 +60,7 @@ export function getLastDashboardRoute(businessId) {
     const base = `/business/${businessId}/dashboard`;
     if (!saved.startsWith(base)) return null;
 
-    return saved;
+    return automationsListRoute(saved);
   } catch {
     return null;
   }

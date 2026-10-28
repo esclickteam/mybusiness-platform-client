@@ -905,17 +905,6 @@ export default function BusinessDashboardLayout() {
                   : "min-h-[calc(100vh-64px)] w-full max-w-none"
               }
             >
-              {!isWebsiteFullScreen &&
-              businessId &&
-              location.pathname.includes("/automations") ? (
-                <p
-                  dir={isRtlLanguage(i18n.language) ? "rtl" : "ltr"}
-                  className="mx-4 mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-950"
-                  data-testid="wa-own-number-notice"
-                >
-                  {t("automations.editor.wa.ownNumberText")}
-                </p>
-              ) : null}
               <Outlet />
             </div>
           </main>

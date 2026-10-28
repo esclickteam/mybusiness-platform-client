@@ -56,4 +56,32 @@ describe("BusinessDashboardLayout floating-assistant clearance", () => {
     expect(screen.queryByTestId("wa-api-portal-badge")).toBeNull();
     expect(screen.getByTestId("business-dashboard-main").className).not.toMatch(/\bpb-28\b/);
   });
+
+  it("does not show the global WhatsApp warning on the automations list or editor", () => {
+    authState.user = { role: "business", businessId: BUSINESS_ID, subscriptionPlan: "monthly" };
+    const { unmount } = render(
+      <MemoryRouter initialEntries={[`/business/${BUSINESS_ID}/dashboard/automations`]}>
+        <Routes>
+          <Route path="/business/:businessId/dashboard/*" element={<BusinessDashboardLayout />}>
+            <Route path="*" element={<h1>אוטומציות</h1>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+    expect(screen.queryByTestId("wa-own-number-notice")).toBeNull();
+    expect(screen.queryByText("automations.editor.wa.ownNumberText")).toBeNull();
+    unmount();
+
+    render(
+      <MemoryRouter initialEntries={[`/business/${BUSINESS_ID}/dashboard/automations/wf-1`]}>
+        <Routes>
+          <Route path="/business/:businessId/dashboard/*" element={<BusinessDashboardLayout />}>
+            <Route path="*" element={<div>editor</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+    expect(screen.queryByTestId("wa-own-number-notice")).toBeNull();
+    expect(screen.queryByText("automations.editor.wa.ownNumberText")).toBeNull();
+  });
 });
