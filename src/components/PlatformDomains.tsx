@@ -25,8 +25,8 @@ export default function PlatformDomains() {
           <p className="home-ways__lead">{t("home.domainsLead")}</p>
         </Reveal>
         <div className="home-ways__grid">
-          {WAYS.map((way) => (
-            <Reveal key={way.n} from="up" distance={20}>
+          {WAYS.map((way, index) => (
+            <Reveal key={way.n} className={`home-way-slot home-way-slot--${way.n}`} from="up" distance={18} delay={index * 0.06}>
               <article className="home-way">
                 <WayArt index={way.n - 1} />
                 <div>
