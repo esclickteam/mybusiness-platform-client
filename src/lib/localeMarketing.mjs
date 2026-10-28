@@ -68,10 +68,10 @@ const WHATSAPP_FAQ = {
 const PAGES = {
   es: {
     "/": page(
-      "Bizuply | Gestión empresarial, CRM, sitios web y soluciones SaaS",
-      "Gestione su negocio con Bizuply. Explore CRM, WhatsApp, marketing, automatizaciones, creación de sitios, soluciones SaaS listas y servicios profesionales.",
+      "Bizuply | Plataforma integral de gestión empresarial y CRM",
+      "Gestione leads, clientes, WhatsApp Business, campañas de Meta, citas, sitios y automatizaciones en una plataforma conectada. Descubra Bizuply.",
       "Bizuply",
-      "Todo lo que su negocio necesita. Un lugar potente para crecer.",
+      "Todo lo que su negocio necesita para crecer en un solo lugar",
       [
         "Gestione clientes, capture leads, ejecute campañas, comuníquese por WhatsApp, programe citas y automatice el trabajo diario, todo desde una plataforma de negocio conectada.",
         "Si prefiere gestionarlo todo o necesita ayuda experta para la puesta en marcha, Bizuply da a su negocio las herramientas y el apoyo para avanzar.",
@@ -240,10 +240,10 @@ function cloneShape(locale, dict) {
 
 cloneShape("pt-BR", {
   "/": page(
-    "Bizuply | Gestão de negócios, CRM, sites e soluções SaaS",
-    "Administre o negócio com a Bizuply. Explore CRM, WhatsApp, marketing, automações, criação de sites, soluções SaaS prontas e serviços profissionais.",
+    "Bizuply | Plataforma completa de gestão empresarial e CRM",
+    "Gerencie leads, clientes, WhatsApp Business, campanhas da Meta, compromissos, sites e automações em uma plataforma conectada. Conheça a Bizuply.",
     "Bizuply",
-    "Tudo o que o seu negócio precisa. Um lugar poderoso para crescer.",
+    "Tudo o que o seu negócio precisa para crescer em um só lugar",
     [
       "Gerencie clientes, capture leads, rode campanhas, converse pelo WhatsApp, marque compromissos e automatize o trabalho do dia — tudo em uma plataforma de negócios conectada.",
       "Se você prefere cuidar de tudo ou precisa de ajuda especializada para começar, a Bizuply dá ao negócio as ferramentas e o apoio para avançar.",
@@ -353,10 +353,10 @@ cloneShape("pt-BR", {
 
 cloneShape("ar", {
   "/": page(
-    "Bizuply | إدارة الأعمال وCRM والمواقع وحلول SaaS",
-    "أديروا عملكم مع Bizuply. استكشفوا CRM وWhatsApp والتسويق والأتمتة وبناء المواقع وحلول SaaS الجاهزة والخدمات المهنية.",
+    "Bizuply | منصة متكاملة لإدارة الأعمال وCRM",
+    "أديروا العملاء المحتملين والعملاء وWhatsApp Business وحملات Meta والمواعيد والمواقع والأتمتة في منصة واحدة متصلة. اكتشفوا Bizuply.",
     "Bizuply",
-    "كل ما يحتاجه عملكم. مكان واحد قوي للنمو.",
+    "كل ما يحتاجه عملكم للنمو في مكان واحد",
     [
       "أديروا العملاء، والتقطوا الطلبات، وشغّلوا الحملات، وتواصلوا عبر WhatsApp، ونظّموا المواعيد، وأتمتوا العمل اليومي — من منصة أعمال واحدة متصلة.",
       "سواء فضّلتم إدارة كل شيء بأنفسكم أو احتجتم إلى مساعدة خبراء في التهيئة، تمنح Bizuply عملكم الأدوات والدعم للمضي قدمًا.",
