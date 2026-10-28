@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
@@ -28,7 +28,25 @@ export default function HeaderView({
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const closeTimer = useRef<number | null>(null);
   const groups = marketingNav(normalizeMarketingLocale(i18n.language));
+  const loginLabel =
+    {
+      en: "Log In",
+      he: "התחברות",
+      es: "Iniciar sesión",
+      "pt-BR": "Entrar",
+      ar: "تسجيل الدخول",
+    }[normalizeMarketingLocale(i18n.language)] || "Log In";
+
+  const armGroup = (id: string) => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    setOpenGroup(id);
+  };
+  const scheduleClose = () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setOpenGroup(null), 220);
+  };
 
   const headerDir = getTextDirection(i18n.language);
   const accountPath =
@@ -85,9 +103,9 @@ export default function HeaderView({
               return (
                 <div
                   key={group.id}
-                  className={`site-nav__item${open ? " is-open" : ""}`}
-                  onMouseEnter={() => setOpenGroup(group.id)}
-                  onMouseLeave={() => setOpenGroup(null)}
+                  className={`site-nav__item${group.wide ? " site-nav__item--wide" : ""}${open ? " is-open" : ""}`}
+                  onMouseEnter={() => armGroup(group.id)}
+                  onMouseLeave={scheduleClose}
                   onKeyDown={(event) => {
                     if (event.key !== "Escape") return;
                     setOpenGroup(null);
@@ -100,10 +118,11 @@ export default function HeaderView({
                     aria-expanded={open}
                     aria-haspopup="true"
                     onClick={() => setOpenGroup(open ? null : group.id)}
+                    onFocus={() => armGroup(group.id)}
                     onKeyDown={(event) => {
                       if (event.key !== "ArrowDown") return;
                       event.preventDefault();
-                      setOpenGroup(group.id);
+                      armGroup(group.id);
                       const panel = event.currentTarget.nextElementSibling;
                       requestAnimationFrame(() => {
                         const link = panel?.querySelector("a");
@@ -131,9 +150,9 @@ export default function HeaderView({
             {!user ? (
               <>
                 <Link to="/login" className="site-header__signin">
-                  {t("common.login")}
+                  {loginLabel}
                 </Link>
-                <Link to="/pricing" className="site-header__cta">
+                <Link to="/register" className="site-header__cta">
                   {t("nav.cta")}
                 </Link>
               </>

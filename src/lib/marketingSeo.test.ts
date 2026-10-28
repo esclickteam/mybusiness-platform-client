@@ -80,7 +80,7 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
-      "<title>Bizuply | פלטפורמה לניהול עסק ו-CRM במקום אחד</title>",
+      "<title>Bizuply | ניהול עסק, CRM, אתרים ופתרונות SaaS</title>",
     );
     for (const page of MARKETING_PAGES) {
       expect(page.title).not.toContain("BizUply");

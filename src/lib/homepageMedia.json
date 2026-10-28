@@ -1,104 +1,67 @@
 {
   "page": "/",
-  "rule": "Each file is used once on the public site.",
+  "component": "src/components/HomeShowcase.tsx",
+  "rule": "Each file is used once on the public site. Video posters are the poster attribute of that same clip, not a second layout image. SaaS cards and the overview are original CSS, because catalog screenshots and product-page films are already used elsewhere.",
   "items": [
     {
-      "id": "home-hero-crm",
-      "file": "/demo-media/crm/poster.jpg",
-      "page": "/",
-      "area": "hero",
-      "subject": "Northwind Studio CRM lead list",
-      "aspect": "16:9",
-      "altKey": "home.stageAlt",
+      "id": "hero-lead-form",
+      "file": "/demo-media/forms/lead.webp",
+      "area": "hero website window",
+      "role": "real inquiry form capture",
+      "aspect": "16:10",
       "status": "used-once"
     },
     {
-      "id": "home-hero-whatsapp",
-      "file": "/demo-media/whatsapp/poster.jpg",
-      "page": "/",
-      "area": "hero",
-      "subject": "Northwind Studio WhatsApp inbox",
-      "aspect": "16:9",
-      "altKey": "home.stageWhatsappAlt",
-      "status": "used-once"
-    },
-    {
-      "id": "home-hero-appointments",
-      "file": "/demo-media/appointments/poster.jpg",
-      "page": "/",
-      "area": "hero",
-      "subject": "Northwind Studio appointment calendar",
-      "aspect": "16:9",
-      "altKey": "home.stageAppointmentsAlt",
-      "status": "used-once"
-    },
-    {
-      "id": "home-film-crm",
+      "id": "band-crm",
       "file": "/demo-media/home/crm.mp4",
       "poster": "/demo-media/home/crm.jpg",
-      "page": "/",
-      "area": "crm-demo",
-      "subject": "CRM lead workflow",
+      "area": "CRM product band",
+      "role": "product film",
       "aspect": "16:10",
-      "status": "used-once-short-of-spec",
-      "durationSeconds": 14.4,
-      "note": "Existing homepage clip. Spec asks for a new 18-25s recording."
+      "status": "used-once"
     },
     {
-      "id": "home-film-whatsapp",
+      "id": "band-whatsapp",
       "file": "/demo-media/home/whatsapp.mp4",
       "poster": "/demo-media/home/whatsapp.jpg",
-      "page": "/",
-      "area": "whatsapp-demo",
-      "subject": "WhatsApp conversation",
+      "area": "WhatsApp product band",
+      "role": "product film",
       "aspect": "16:10",
-      "status": "used-once-short-of-spec",
-      "durationSeconds": 13.8
+      "status": "used-once"
     },
     {
-      "id": "home-film-campaigns",
+      "id": "band-campaigns",
       "file": "/demo-media/home/campaigns.mp4",
       "poster": "/demo-media/home/campaigns.jpg",
-      "page": "/",
-      "area": "campaigns-demo",
-      "subject": "Campaign review",
+      "area": "marketing product band",
+      "role": "product film",
       "aspect": "16:10",
-      "status": "used-once-short-of-spec",
-      "durationSeconds": 4.2
+      "status": "used-once"
     },
     {
-      "id": "home-film-automations",
-      "file": "/demo-media/home/automations.mp4",
-      "poster": "/demo-media/home/automations.jpg",
-      "page": "/",
-      "area": "automations-demo",
-      "subject": "Automation workflow",
-      "aspect": "16:10",
-      "status": "used-once-short-of-spec",
-      "durationSeconds": 10.6
-    },
-    {
-      "id": "home-film-websites",
+      "id": "band-websites",
       "file": "/demo-media/home/websites.mp4",
       "poster": "/demo-media/home/websites.jpg",
-      "page": "/",
-      "area": "website-demo",
-      "subject": "Website editor",
+      "area": "website builder band",
+      "role": "product film",
       "aspect": "16:10",
-      "status": "needs-replacement",
-      "durationSeconds": 11.8,
-      "note": "Spec requires a new 18-25s editor recording with no text selection."
+      "status": "used-once"
     },
     {
-      "id": "home-film-appointments",
-      "file": "/demo-media/home/appointments.mp4",
-      "poster": "/demo-media/home/appointments.jpg",
-      "page": "/",
-      "area": "appointments-demo",
-      "subject": "Appointment calendar",
+      "id": "template-services",
+      "file": "/demo-media/sites/ido-card.jpg",
+      "area": "website template gallery",
+      "role": "professional services template",
+      "aspect": "3:4",
+      "status": "used-once"
+    },
+    {
+      "id": "template-commerce",
+      "file": "/demo-media/websites/my-sites.jpg",
+      "area": "website template gallery",
+      "role": "commerce template",
       "aspect": "16:10",
-      "status": "used-once-short-of-spec",
-      "durationSeconds": 6
+      "status": "used-once"
     }
   ]
 }

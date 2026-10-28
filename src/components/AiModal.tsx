@@ -35,20 +35,20 @@ export default function AiModal(props: AiModalProps) {
     rejectSuggestion: (id: string) => Promise<void> | void;
     closeModal: () => void;
     loading?: boolean;
-  };
+  } | null;
 
   const activeSuggestion =
-    props.activeSuggestion ?? aiContext.activeSuggestion ?? null;
+    props.activeSuggestion ?? aiContext?.activeSuggestion ?? null;
 
   const approveSuggestion =
-    props.approveSuggestion ?? aiContext.approveSuggestion;
+    props.approveSuggestion ?? aiContext?.approveSuggestion;
 
   const rejectSuggestion =
-    props.rejectSuggestion ?? aiContext.rejectSuggestion;
+    props.rejectSuggestion ?? aiContext?.rejectSuggestion;
 
-  const closeModal = props.closeModal ?? aiContext.closeModal;
+  const closeModal = props.closeModal ?? aiContext?.closeModal;
 
-  const loading = props.loading ?? aiContext.loading ?? false;
+  const loading = props.loading ?? aiContext?.loading ?? false;
 
   const location = useLocation();
   const navigate = useNavigate();
