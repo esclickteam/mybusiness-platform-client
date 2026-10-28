@@ -109,8 +109,8 @@ export default function LanguageSwitcher({
         onClick={() => setOpen((prev) => !prev)}
         className={
           compact
-            ? "site-header__icon-btn"
-            : `flex h-[58px] w-[58px] items-center justify-center rounded-2xl shadow-[0_12px_30px_rgba(79,70,229,0.22)] transition hover:-translate-y-0.5 ${
+            ? "site-header__icon-btn group"
+            : `group flex h-[58px] w-[58px] items-center justify-center rounded-2xl shadow-[0_12px_30px_rgba(79,70,229,0.22)] transition hover:-translate-y-0.5 ${
                 open
                   ? "bg-gradient-to-br from-indigo-600 to-violet-700 text-white"
                   : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
@@ -123,7 +123,7 @@ export default function LanguageSwitcher({
         title={t("common.changeLanguage")}
       >
         <span className="site-header__lang-code">{shortLabel}</span>
-        <FaGlobe size={compact ? 16 : 22} aria-hidden="true" />
+        <FaGlobe className="lang-globe transition-transform duration-300 group-hover:rotate-12 motion-reduce:transition-none motion-reduce:group-hover:rotate-0" size={compact ? 16 : 22} aria-hidden="true" />
       </button>
 
       {open && (

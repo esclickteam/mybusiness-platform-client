@@ -796,7 +796,8 @@ export default function BusinessDashboardLayout() {
             <header
               className="
                 fixed z-30 flex h-16 items-center justify-between
-                border-b border-slate-200 bg-white/95 px-4 shadow-sm
+                border-b border-white/70 bg-white/80 px-4
+                shadow-[0_10px_30px_rgba(79,70,229,0.06)]
                 backdrop-blur-xl transition-all duration-300 lg:px-6
               "
               style={{

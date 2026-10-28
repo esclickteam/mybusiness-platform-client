@@ -4,6 +4,7 @@ import {
   I18N_STORAGE_KEY,
   LANGUAGE_COOKIE,
   MANUAL_LANG_FLAG,
+  RESOLVED_LANG_KEY,
   SESSION_LANG_KEY,
   SUPPORTED_LANGUAGES,
   coerceSupportedLanguage,
@@ -17,6 +18,7 @@ import {
   languageFromBrowserLocale,
   languageFromCountry,
   normalizeLanguage,
+  recognizedCountryCode,
 } from "./languages";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 import { splitMarketingLocale } from "../lib/localePathCore.mjs";
@@ -27,6 +29,7 @@ export {
   I18N_STORAGE_KEY,
   LANGUAGE_COOKIE,
   MANUAL_LANG_FLAG,
+  RESOLVED_LANG_KEY,
   SESSION_LANG_KEY,
   SUPPORTED_LANGUAGES,
   coerceSupportedLanguage,
@@ -40,6 +43,7 @@ export {
   languageFromBrowserLocale,
   languageFromCountry,
   normalizeLanguage,
+  recognizedCountryCode,
 };
 
 /** Product fallback when no preference, geo, or browser locale can be resolved. */
@@ -62,12 +66,24 @@ export function setCookie(name, value, days = 365) {
   document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
 }
 
+function prefersReducedMotion() {
+  try {
+    return (
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
+    );
+  } catch {
+    return false;
+  }
+}
+
 export function applyDocumentLocale(lng) {
   if (typeof document === "undefined") return;
 
   const language = coerceSupportedLanguage(lng);
   const htmlLang = getHtmlLang(language);
   const dir = getTextDirection(language);
+  const previous = document.documentElement.getAttribute("lang");
 
   document.documentElement.lang = htmlLang;
   document.documentElement.dir = dir;
@@ -75,6 +91,12 @@ export function applyDocumentLocale(lng) {
   document.documentElement.setAttribute("dir", dir);
   if (document.body) {
     document.body.setAttribute("dir", dir);
+  }
+
+  if (previous && previous !== htmlLang && !prefersReducedMotion()) {
+    document.documentElement.classList.remove("locale-swap");
+    void document.documentElement.offsetWidth;
+    document.documentElement.classList.add("locale-swap");
   }
 }
 
@@ -162,6 +184,19 @@ export function getGeoLanguageHint() {
   return readStoredLanguage(getCookie(GEO_LANG_COOKIE));
 }
 
+/** Remember a language that came from the account or the business country. */
+export function rememberResolvedLanguage(lng) {
+  const language = normalizeLanguage(lng, { fallback: null });
+  if (!language || typeof localStorage === "undefined") return null;
+  localStorage.setItem(RESOLVED_LANG_KEY, language);
+  return language;
+}
+
+export function getResolvedLanguage() {
+  if (typeof localStorage === "undefined") return null;
+  return readStoredLanguage(localStorage.getItem(RESOLVED_LANG_KEY));
+}
+
 export function detectLanguageFromTimezone() {
   try {
     if (Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Jerusalem") {
@@ -197,35 +232,39 @@ export function applyLanguageFromUrl() {
 }
 
 /**
- * Resolve UI language using the product priority:
- * 1. Account preference (caller supplies)
- * 2. Explicit local selection
- * 3. Country / geo hint
- * 4. Browser locale
- * 5. English
+ * Resolve UI language. One order for the whole product:
+ * 1. Explicit URL or manual choice
+ * 2. Account / business language
+ * 3. Business country, when no language is stored
+ * 4. Last resolved account/country language (so refresh does not flash English)
+ * 5. Browser language, only when the caller is not a business session
+ * 6. English
  *
- * URL ?lang= is treated as an explicit local selection.
+ * Visitor IP geo is intentionally not a source. A person being in Israel
+ * does not make the business Israeli.
  */
 export function resolvePreferredLanguage({
   accountLanguage = null,
-  allowGeo = true,
+  businessCountry = null,
+  hasBusiness = false,
   allowBrowser = true,
 } = {}) {
-  const fromAccount = normalizeLanguage(accountLanguage, { fallback: null });
-  if (fromAccount) return fromAccount;
-
   const fromUrl = languageFromUrl();
   if (fromUrl) return fromUrl;
 
   const fromManual = getManualLanguageChoice();
   if (fromManual) return fromManual;
 
-  if (allowGeo) {
-    const fromGeo = getGeoLanguageHint();
-    if (fromGeo) return fromGeo;
-  }
+  const fromAccount = normalizeLanguage(accountLanguage, { fallback: null });
+  if (fromAccount) return fromAccount;
 
-  if (allowBrowser) {
+  const countryCode = recognizedCountryCode(businessCountry);
+  if (countryCode) return languageFromCountry(countryCode) || FALLBACK_LANGUAGE;
+
+  const fromResolved = getResolvedLanguage();
+  if (fromResolved) return fromResolved;
+
+  if (allowBrowser && !hasBusiness) {
     const fromBrowser = detectLanguageFromNavigator();
     if (fromBrowser) return fromBrowser;
   }
@@ -234,7 +273,7 @@ export function resolvePreferredLanguage({
 }
 
 export function detectLanguageFromBrowserSignals() {
-  return resolvePreferredLanguage({ allowGeo: true, allowBrowser: true });
+  return resolvePreferredLanguage({ allowBrowser: true });
 }
 
 /**
@@ -281,6 +320,7 @@ export async function fetchGeoLanguage() {
 
 export const LANGUAGE_STORAGE_KEYS = Object.freeze([
   MANUAL_LANG_FLAG,
+  RESOLVED_LANG_KEY,
   I18N_STORAGE_KEY,
   SESSION_LANG_KEY,
   LANGUAGE_COOKIE,

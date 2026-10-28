@@ -7,7 +7,10 @@ vi.mock("./i18n", () => {
       i18n.language = lng;
     }),
   };
-  return { default: i18n };
+  return {
+    default: i18n,
+    ensureLocale: vi.fn(async (lng) => lng),
+  };
 });
 
 vi.mock("../api", () => ({
@@ -23,6 +26,7 @@ import {
   GEO_LANG_COOKIE,
   LANGUAGE_COOKIE,
   MANUAL_LANG_FLAG,
+  RESOLVED_LANG_KEY,
   getManualLanguageChoice,
 } from "./localeUtils";
 
@@ -64,12 +68,35 @@ describe("persistLanguage", () => {
     expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "es" });
   });
 
-  it("applies account language when nothing was chosen locally", () => {
+  it("applies account language without locking it as a manual choice", () => {
     const result = syncLanguageOnLogin({ language: "ar" });
     expect(result).toBe("ar");
-    expect(getManualLanguageChoice()).toBe("ar");
+    expect(getManualLanguageChoice()).toBeNull();
+    expect(localStorage.getItem(RESOLVED_LANG_KEY)).toBe("ar");
     expect(document.documentElement.lang).toBe("ar");
     expect(document.documentElement.dir).toBe("rtl");
+    expect(API.patch).not.toHaveBeenCalled();
+  });
+
+  it("uses the business country when the account has no language", () => {
+    expect(
+      syncLanguageOnLogin({ billingCountry: "IL", businessId: "biz", role: "business" })
+    ).toBe("he");
+    expect(getManualLanguageChoice()).toBeNull();
+    expect(document.documentElement.lang).toBe("he");
+    expect(document.documentElement.dir).toBe("rtl");
+    expect(API.patch).not.toHaveBeenCalled();
+  });
+
+  it("maps a United States business to English and a manual choice still wins", () => {
+    expect(syncLanguageOnLogin({ billingCountry: "United States", role: "business" })).toBe("en");
+    expect(syncLanguageOnLogin({ billingCountry: "United Kingdom", role: "business" })).toBe("en");
+    localStorage.setItem(MANUAL_LANG_FLAG, "he");
+    localStorage.setItem("token", "test-token");
+    expect(
+      syncLanguageOnLogin({ billingCountry: "US", language: "en", role: "business" })
+    ).toBe("he");
+    expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "he" });
   });
 
   it("does not invent an account language from geo when nothing was chosen", () => {

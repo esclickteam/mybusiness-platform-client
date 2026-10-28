@@ -1,5 +1,6 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import { hasSessionHint } from "./sessionHint";
 
 const envApiUrl = String(import.meta.env.VITE_API_URL || "")
   .trim()
@@ -42,6 +43,33 @@ export function isAccessTokenExpired(token, { skewMs = 0 } = {}) {
   } catch {
     return true;
   }
+}
+
+/**
+ * Network, timeout, and temporary server failures must not log the user out.
+ * Only a definitive auth rejection (missing/revoked refresh cookie) is hard.
+ */
+export function isTransientRefreshFailure(err) {
+  if (!err || isHardRefreshFailure(err)) return false;
+  const status = Number(err.status || err.response?.status || 0);
+  const code = String(err.code || err.response?.data?.code || "");
+  if (
+    code === "REFRESH_UNAVAILABLE" ||
+    code === "NETWORK_ERROR" ||
+    code === "NETWORK_TIMEOUT" ||
+    code === "ECONNABORTED" ||
+    code === "ETIMEDOUT" ||
+    code === "ERR_NETWORK"
+  ) {
+    return true;
+  }
+  if (status === 408 || status === 429 || status >= 500) return true;
+  if (!err.response && !status) {
+    return /network|timeout|failed to fetch|econn|unavailable/i.test(
+      String(err.message || "")
+    );
+  }
+  return false;
 }
 
 export function isHardRefreshFailure(err) {
@@ -145,6 +173,10 @@ export function shouldAttemptRefresh() {
   }
   if (localStorage.getItem("token")) return true;
   if (localStorage.getItem("businessDetails")) return true;
+  // HttpOnly refresh cookie is invisible. The hint is set at login and shared
+  // across www/apex, so a return visit can restore the session without a
+  // localStorage access token.
+  if (hasSessionHint()) return true;
   // Returning from Stripe: access token may be gone/expired; try httpOnly cookie.
   if (typeof window !== "undefined" && isBillingReturnSearch(window.location.search)) {
     return true;

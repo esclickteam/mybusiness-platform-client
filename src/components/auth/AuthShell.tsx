@@ -16,6 +16,7 @@ import {
   partnerFacingName,
   type PublicPartnerBranding,
 } from "../../lib/partnerBranding";
+import "./AuthShell.css";
 
 const LoginBrandingContext = createContext<PublicPartnerBranding | null>(null);
 
@@ -84,78 +85,60 @@ export default function AuthShell({
 
   return (
     <LoginBrandingContext.Provider value={branding}>
-    <div
-      dir={dir}
-      className="relative min-h-screen overflow-hidden bg-[#F7F8FC] text-slate-800"
-      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
-    >
-      <div className="absolute inset-inline-end-4 top-4 z-20 sm:inset-inline-end-8 sm:top-6">
-        <LanguageSwitcher />
-      </div>
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-24 top-16 h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="absolute left-10 top-10 hidden h-40 w-40 bg-[radial-gradient(circle,#94a3b8_1.2px,transparent_1.2px)] opacity-30 [background-size:14px_14px] lg:block" />
-        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-sky-200/25 blur-3xl" />
-      </div>
-
-      <main className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-5 py-12 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:py-16">
-        <section
-          className={`mx-auto w-full ${cardMaxWidthClassName} lg:mx-0 lg:justify-self-start`}
-        >
-          {children}
-        </section>
-
-        {whiteLabel ? (
-          <section className="hidden text-center lg:flex lg:flex-col lg:items-center lg:justify-center">
-            <BrandMark />
-            {brandName ? (
-              <h2 className="mt-8 max-w-xl text-4xl font-black leading-[1.15] tracking-tight text-slate-900">
-                {brandName}
-              </h2>
-            ) : null}
+      <div dir={dir} className="auth-stage">
+        <div className="auth-stage__bg" aria-hidden="true">
+          <div className="auth-stage__gradient" />
+          <div className="auth-stage__grid" />
+          <div className="auth-orb auth-orb--a" />
+          <div className="auth-orb auth-orb--b" />
+          <div className="auth-orb auth-orb--c" />
+        </div>
+        <div className="auth-stage__lang">
+          <LanguageSwitcher />
+        </div>
+        <main className="auth-stage__main">
+          <section className={`auth-stage__panel ${cardMaxWidthClassName}`}>
+            {children}
           </section>
-        ) : (
-        <section className="hidden text-center lg:flex lg:flex-col lg:items-center lg:justify-center">
-          <BrandMark />
-
-          <h2 className="mt-8 max-w-xl text-4xl font-black leading-[1.15] tracking-tight text-slate-900 xl:text-5xl">
-            {headline || (
-              <>
-                {t("login.heroTitleTop")}{" "}
-                <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-                  {t("login.heroTitleHighlight")}
-                </span>
-              </>
-            )}
-          </h2>
-
-          <div className="mt-6 flex w-48 items-center gap-2">
-            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-sky-400 to-violet-500" />
-            <span className="h-2 w-2 rounded-full bg-violet-500" />
-          </div>
-
-          <div className="mt-8 flex max-w-xl flex-wrap items-stretch justify-center gap-3">
-            {featureCards.map(({ title, subtitle, icon: Icon }) => (
-              <div
-                key={title}
-                className="flex w-[148px] flex-col items-center rounded-[22px] border border-white bg-white px-4 py-4 text-center shadow-[0_10px_28px_rgba(15,23,42,0.06)]"
-              >
-                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-50 text-violet-600">
-                  <Icon size={18} />
-                </span>
-                <strong className="mt-3 text-sm font-black text-slate-900">
-                  {title}
-                </strong>
-                <span className="mt-1 text-xs font-semibold text-slate-500">
-                  {subtitle}
-                </span>
+          {whiteLabel ? (
+            <section className="auth-showcase">
+              <div className="auth-showcase__brand">
+                <BrandMark />
               </div>
-            ))}
-          </div>
-        </section>
-        )}
-      </main>
-    </div>
+              {brandName ? <h2 className="auth-showcase__title">{brandName}</h2> : null}
+            </section>
+          ) : (
+            <section className="auth-showcase">
+              <div className="auth-showcase__brand">
+                <BrandMark />
+              </div>
+              <h2 className="auth-showcase__title">
+                {headline || (
+                  <>
+                    {t("login.heroTitleTop")}{" "}
+                    <em>{t("login.heroTitleHighlight")}</em>
+                  </>
+                )}
+              </h2>
+              <div className="auth-showcase__line" aria-hidden="true">
+                <span />
+                <span />
+              </div>
+              <div className="auth-showcase__grid">
+                {featureCards.map(({ title, subtitle, icon: Icon }) => (
+                  <article key={title} className="auth-float">
+                    <span className="auth-float__icon">
+                      <Icon size={18} />
+                    </span>
+                    <strong>{title}</strong>
+                    <span>{subtitle}</span>
+                  </article>
+                ))}
+              </div>
+            </section>
+          )}
+        </main>
+      </div>
     </LoginBrandingContext.Provider>
   );
 }
@@ -172,22 +155,22 @@ export function AuthCard({
   const branding = useLoginBranding();
   const whiteLabel = Boolean(branding?.whiteLabelEnabled);
   return (
-    <div className="rounded-[32px] border border-white bg-white p-7 shadow-[0_28px_80px_rgba(15,23,42,0.10)] sm:p-9">
-      <div className="flex flex-col items-center text-center">
+    <div className="auth-card">
+      <div className="auth-card__mark">
         <BrandMark size="sm" />
-        <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-900">
+        <h1 className="auth-card__title">
           {whiteLabel && branding?.brandName ? branding.brandName : title}
         </h1>
         {subtitle && !whiteLabel ? (
-          <p className="mt-2 text-sm font-semibold text-slate-500">{subtitle}</p>
+          <p className="auth-card__subtitle">{subtitle}</p>
         ) : null}
-        <div className="mt-5 flex w-full items-center gap-3">
-          <span className="h-px flex-1 bg-slate-200" />
-          <span className="h-2 w-2 rounded-full border border-slate-300" />
-          <span className="h-px flex-1 bg-slate-200" />
+        <div className="auth-card__rule" aria-hidden="true">
+          <span />
+          <span />
+          <span />
         </div>
       </div>
-      <div className="mt-6">{children}</div>
+      <div className="auth-card__body">{children}</div>
     </div>
   );
 }

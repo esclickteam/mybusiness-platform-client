@@ -77,6 +77,9 @@ describe("country language mapping", () => {
     expect(languageFromCountry("US")).toBe("en");
     expect(languageFromCountry("GB")).toBe("en");
     expect(languageFromCountry("IE")).toBe("en");
+    expect(languageFromCountry("Israel")).toBe("he");
+    expect(languageFromCountry("United States")).toBe("en");
+    expect(languageFromCountry("United Kingdom")).toBe("en");
     expect(languageFromCountry("DE")).toBeNull();
     expect(languageFromCountry("")).toBeNull();
     expect(languageFromCountry("XX")).toBeNull();
@@ -98,21 +101,32 @@ describe("priority resolution", () => {
     expect(
       resolvePreferredLanguage({
         accountLanguage: null,
-        allowGeo: true,
         allowBrowser: true,
       })
     ).toBe("es");
   });
 
-  it("prefers the account language over local and geo", () => {
+  it("prefers a manual choice over the account language and the business country", () => {
     setSessionLanguageOverride("he");
     expect(
       resolvePreferredLanguage({
         accountLanguage: "ar",
-        allowGeo: true,
+        businessCountry: "US",
         allowBrowser: true,
       })
-    ).toBe("ar");
+    ).toBe("he");
+  });
+
+  it("uses the business country when nobody chose a language", () => {
+    expect(resolvePreferredLanguage({ businessCountry: "IL", allowBrowser: true })).toBe("he");
+    expect(resolvePreferredLanguage({ businessCountry: "United States", allowBrowser: true })).toBe("en");
+    expect(resolvePreferredLanguage({ businessCountry: "United Kingdom", allowBrowser: true })).toBe("en");
+    expect(resolvePreferredLanguage({ businessCountry: "DE", hasBusiness: true, allowBrowser: true })).toBe("en");
+  });
+
+  it("ignores a visitor geo cookie when resolving language", () => {
+    document.cookie = "bizuply_geo_lang=he; Path=/";
+    expect(resolvePreferredLanguage({ allowBrowser: false })).toBe("en");
   });
 });
 
@@ -182,7 +196,6 @@ describe("explicit preference persistence", () => {
     expect(
       resolvePreferredLanguage({
         accountLanguage: null,
-        allowGeo: true,
         allowBrowser: true,
       })
     ).toBe("en");

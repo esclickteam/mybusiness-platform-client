@@ -4,6 +4,7 @@ import {
   isAccessTokenExpired,
   isBillingReturnSearch,
   isHardRefreshFailure,
+  isTransientRefreshFailure,
   shouldAttemptRefresh,
 } from "./tokenRefresh";
 
@@ -44,6 +45,13 @@ describe("session-invalid hard refresh failures", () => {
     ).toBe(false);
   });
 
+  it("treats network and 503 refresh failures as transient", () => {
+    expect(isTransientRefreshFailure({ code: "NETWORK_ERROR", message: "Network error" })).toBe(true);
+    expect(isTransientRefreshFailure({ response: { status: 503, data: { code: "REFRESH_UNAVAILABLE" } } })).toBe(true);
+    expect(isTransientRefreshFailure({ code: "NO_REFRESH_TOKEN" })).toBe(false);
+    expect(isHardRefreshFailure({ code: "NO_REFRESH_TOKEN" })).toBe(true);
+  });
+
   it("abortAuthRefreshPipeline clears the access token", () => {
     localStorage.setItem("token", "abc");
     abortAuthRefreshPipeline();
@@ -55,6 +63,7 @@ describe("billing return refresh gate", () => {
   beforeEach(() => {
     localStorage.clear();
     sessionStorage.clear();
+    document.cookie = "bizuply_session=; Path=/; Max-Age=0";
   });
 
   it("detects portal/plugin billing return query params", () => {
@@ -77,5 +86,10 @@ describe("billing return refresh gate", () => {
   it("does not refresh for anonymous visits", () => {
     window.history.replaceState({}, "", "/login");
     expect(shouldAttemptRefresh()).toBe(false);
+  });
+
+  it("refreshes when a session hint survives without a local access token", () => {
+    document.cookie = "bizuply_session=1; Path=/";
+    expect(shouldAttemptRefresh()).toBe(true);
   });
 });
