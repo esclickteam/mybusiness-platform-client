@@ -1409,6 +1409,7 @@
         "connectRequired": "To send WhatsApp messages in automations, first connect your business WhatsApp account",
         "connectAccountCta": "Connect WhatsApp",
         "reconnectRequired": "Reconnect required",
+        "connectedTitle": "WhatsApp connected",
         "connectedAs": "Connected number: {{phone}}",
         "connectedReadyText": "Messages are sent from this business's connected number. Bizuply's central number is not used.",
         "noneApproved": "No approved WhatsApp templates available",

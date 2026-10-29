@@ -13,37 +13,14 @@ import { ADMIN_AUTOMATIONS_BASE } from "../business/dashboardPages/automations/a
 
 type PlatformContext = {
   businessId?: string;
-  connectionId?: string;
-  ready?: boolean;
-  displayPhoneMasked?: string;
 };
 
 const COPY = {
   he: {
-    ready: "מוכן לשליחה",
-    notReady: "החיבור אינו מוכן",
-    connection: "חיבור אמריקאי",
-    simulation:
-      "סימולציה מלאה זמינה בעורך ואינה שולחת הודעות. כל שלב מופיע בתוצאת הבדיקה.",
-    prepareSend: "הכנת בדיקת שליחה",
-    dialogTitle: "בדיקת שליחה אמיתית",
-    dialogBody:
-      "שליחת WhatsApp אמיתית למספר בדיקה מורשה אינה מתבצעת ממסך זה. לא נשלחה הודעה.",
-    close: "סגירה",
     loadError: "טעינת אוטומציות הפלטפורמה נכשלה",
     loading: "טוען את מערכת האוטומציות…",
   },
   en: {
-    ready: "Ready to send",
-    notReady: "Connection is not ready",
-    connection: "US connection",
-    simulation:
-      "A full simulation is available in the editor and does not send messages. Every step appears in the test result.",
-    prepareSend: "Prepare a real send test",
-    dialogTitle: "Real send test",
-    dialogBody:
-      "A real WhatsApp send to an authorized test number is not performed from this screen. No message was sent.",
-    close: "Close",
     loadError: "Could not load platform automations",
     loading: "Loading the automation system…",
   },
@@ -57,7 +34,6 @@ export default function AdminAutomations() {
   const copy = english ? COPY.en : COPY.he;
   const [context, setContext] = useState<PlatformContext | null>(null);
   const [error, setError] = useState("");
-  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,45 +53,6 @@ export default function AdminAutomations() {
 
   return (
     <div className="admin-platform-automations">
-      <div className="ax-page" style={{ paddingBottom: 0 }}>
-        <div className="ax-connection-note">
-          <div>
-            <h2>{copy.connection}</h2>
-            <p>
-              {context?.ready ? copy.ready : copy.notReady}
-              {context?.displayPhoneMasked
-                ? ` · ${context.displayPhoneMasked}`
-                : ""}
-              {context?.connectionId ? ` · ${context.connectionId}` : ""}
-            </p>
-            <p>{copy.simulation}</p>
-          </div>
-          <button
-            type="button"
-            className="ax-btn ax-btn--secondary"
-            onClick={() => setConfirmOpen(true)}
-          >
-            {copy.prepareSend}
-          </button>
-        </div>
-      </div>
-
-      {confirmOpen ? (
-        <div className="ax-modal-backdrop" role="presentation">
-          <div className="ax-create-modal" role="dialog" aria-modal="true">
-            <h2>{copy.dialogTitle}</h2>
-            <p>{copy.dialogBody}</p>
-            <button
-              type="button"
-              className="ax-btn ax-btn--primary"
-              onClick={() => setConfirmOpen(false)}
-            >
-              {copy.close}
-            </button>
-          </div>
-        </div>
-      ) : null}
-
       {error ? <p className="ax-empty">{error}</p> : null}
       {!error && !businessId ? <p className="ax-empty">{copy.loading}</p> : null}
       {businessId ? (

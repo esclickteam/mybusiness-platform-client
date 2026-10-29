@@ -1409,6 +1409,7 @@
         "connectRequired": "כדי לשלוח הודעות WhatsApp באוטומציות, יש לחבר תחילה את חשבון ה־WhatsApp העסקי שלך",
         "connectAccountCta": "חבר WhatsApp",
         "reconnectRequired": "נדרש חיבור מחדש",
+        "connectedTitle": "WhatsApp מחובר",
         "connectedAs": "המספר המחובר: {{phone}}",
         "connectedReadyText": "ההודעות נשלחות מהמספר המחובר של העסק. המספר המרכזי של Bizuply לא משמש לשליחה.",
         "noneApproved": "אין תבניות WhatsApp מאושרות זמינות",

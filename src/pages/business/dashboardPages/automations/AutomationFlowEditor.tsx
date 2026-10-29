@@ -84,13 +84,14 @@ import {
   type AutomationScheduleConfig,
 } from "./automationSchedule";
 import {
-  getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
   syncWhatsAppTemplatesForAutomation,
   type ApprovedWhatsAppTemplate,
+  type AutomationAvailableSender,
   type WhatsAppSenderMode,
   type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
+import { pickAutomationSenderRequest } from "./automationWhatsAppConnection";
 import {
   getGmailConnectUrl,
   getGmailStatus,
@@ -109,7 +110,7 @@ import {
 import { isBusinessAlertMetaTemplateName, isTestTemplateName } from "./whatsappAutomationMetaTemplates";
 import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
 import { WhatsAppActionPreview } from "./WhatsAppActionPreview";
-import { canPersistAutomationTemplateSelection, shouldShowAutomationTemplatePicker } from "./whatsAppTemplateSelectFormat";
+import { canPersistAutomationTemplateSelection } from "./whatsAppTemplateSelectFormat";
 import { EmailActionTemplateFields } from "./EmailActionTemplateFields";
 import {
   listVerifiedEmailSenders,
@@ -556,6 +557,17 @@ function EditorInner({
   const [waPrivateConnected, setWaPrivateConnected] = useState(false);
   const [waDisplayPhone, setWaDisplayPhone] = useState("");
   const [waNeedsReconnect, setWaNeedsReconnect] = useState(false);
+  const [waShowConnect, setWaShowConnect] = useState(false);
+  const [waBlockMessage, setWaBlockMessage] = useState("");
+  const [resolvedSenderMode, setResolvedSenderMode] =
+    useState<WhatsAppSenderMode>("business_connected");
+  const [explicitSender, setExplicitSender] = useState<WhatsAppSenderMode | null>(
+    null
+  );
+  const [waAvailableSenders, setWaAvailableSenders] = useState<
+    AutomationAvailableSender[]
+  >([]);
+  const [waStatusReady, setWaStatusReady] = useState(false);
   const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
   const [waLoading, setWaLoading] = useState(false);
   const [waSyncError, setWaSyncError] = useState("");
@@ -684,75 +696,69 @@ function EditorInner({
   }, [selectedId, nodes, inspectorBaseline]);
 
   const loadApprovedWhatsAppTemplates = useCallback(async (
-    senderMode: WhatsAppSenderMode = "business_connected"
+    senderChoice: WhatsAppSenderMode | null
   ) => {
     setWaLoading(true);
+    setWaStatusReady(false);
     setWaSyncError("");
-    setWaTemplates([]);
-    setWaConnected(false);
     try {
-      const [managedStatus, privateStatus, approved] = await Promise.all([
-        getWhatsAppIntegrationStatus(businessId, {
-          senderMode: "bizuply_managed",
-        }),
-        getWhatsAppIntegrationStatus(businessId, {
-          senderMode: "business_connected",
-        }),
-        listApprovedWhatsAppTemplates(businessId, {
-          usableForAutomation: true,
-          senderMode,
-        }),
-      ]);
-      const ready = shouldShowAutomationTemplatePicker(approved);
-      setWaPrivateConnected(ready);
-      setWaManagedModeEnabled(managedStatus.managedSenderAvailable === true);
-      setWaConnected(ready);
-      setWaNeedsReconnect(
-        !ready &&
-          (Boolean(approved.needsReconnect) ||
-            Boolean(privateStatus.needsReconnect) ||
-            Boolean(privateStatus.connected))
+      const request = pickAutomationSenderRequest(senderChoice);
+      const approved = await listApprovedWhatsAppTemplates(businessId, {
+        usableForAutomation: true,
+        senderMode: request,
+      });
+      const ready =
+        approved.readyToSend === true && approved.authorized !== false;
+      const mode = (
+        approved.senderMode === "bizuply_managed" ||
+        approved.senderMode === "business_connected"
+          ? approved.senderMode
+          : "business_connected"
+      ) as WhatsAppSenderMode;
+      setResolvedSenderMode(mode);
+      setWaAvailableSenders(approved.availableSenders || []);
+      setWaManagedModeEnabled(
+        (approved.availableSenders || []).some(
+          (row) => row.senderMode === "bizuply_managed" && row.authorized
+        )
       );
+      setWaPrivateConnected(
+        (approved.availableSenders || []).some(
+          (row) => row.senderMode === "business_connected" && row.readyToSend
+        )
+      );
+      setWaConnected(ready);
+      setWaNeedsReconnect(!ready && approved.needsReconnect === true);
+      setWaShowConnect(!ready && approved.showConnect === true);
+      setWaBlockMessage(ready ? "" : String(approved.message || ""));
       setWaDisplayPhone(
         ready
           ? String(
-              approved.displayPhoneNumber ||
-                privateStatus.displayPhoneNumber ||
-                ""
+              approved.displayPhoneMasked || approved.displayPhoneNumber || ""
             )
           : ""
       );
-      setWaLastSyncAt(
-        ready
-          ? approved.lastTemplatesSyncAt ||
-              privateStatus.lastTemplatesSyncAt ||
-              null
-          : null
-      );
+      setWaLastSyncAt(ready ? approved.lastTemplatesSyncAt || null : null);
       setWaTemplates(ready ? approved.templates || [] : []);
-      const unavailable =
-        managedStatus.customerUnavailableMessage ||
-        managedStatus.managedStatus?.customerUnavailableMessage ||
-        approved.customerUnavailableMessage ||
-        "";
-      if (!approved.connected) {
-        setWaSyncError(
-          unavailable ||
-            approved.message ||
-            (senderMode === "business_connected"
-              ? t("automations.editor.wa.connectBeforeSelect")
-              : t("automations.editor.wa.unavailable"))
-        );
+      if (!ready) {
+        setWaSyncError(String(approved.message || ""));
       } else if (approved.message) {
         setWaSyncError(approved.message);
+      } else {
+        setWaSyncError("");
       }
     } catch (error: unknown) {
       setWaTemplates([]);
+      setWaConnected(false);
+      setWaNeedsReconnect(false);
+      setWaShowConnect(false);
+      setWaBlockMessage("");
       setWaSyncError(readErrorMessage(error, t("automations.editor.wa.loadTemplatesError")));
     } finally {
       setWaLoading(false);
+      setWaStatusReady(true);
     }
-  }, [businessId]);
+  }, [businessId, t]);
 
   const refreshWhatsAppTemplatesFromMeta = useCallback(async (
     senderMode: WhatsAppSenderMode = "business_connected"
@@ -763,15 +769,19 @@ function EditorInner({
       const synced = await syncWhatsAppTemplatesForAutomation(businessId, {
         senderMode,
       });
-      setWaConnected(Boolean(synced.readyToSend));
+      const ready = synced.readyToSend === true && synced.authorized !== false;
+      setWaConnected(ready);
+      setWaNeedsReconnect(!ready && synced.needsReconnect === true);
+      setWaShowConnect(!ready && synced.showConnect === true);
+      setWaBlockMessage(ready ? "" : String(synced.message || ""));
       setWaDisplayPhone(
-        synced.readyToSend
-          ? String(synced.displayPhoneNumber || "")
+        ready
+          ? String(synced.displayPhoneMasked || synced.displayPhoneNumber || "")
           : ""
       );
-      setWaLastSyncAt(synced.readyToSend ? synced.lastTemplatesSyncAt || null : null);
-      setWaTemplates(synced.readyToSend ? synced.templates || [] : []);
-      if (!synced.connected) {
+      setWaLastSyncAt(ready ? synced.lastTemplatesSyncAt || null : null);
+      setWaTemplates(ready ? synced.templates || [] : []);
+      if (!ready) {
         setWaSyncError(
           synced.customerUnavailableMessage ||
             synced.message ||
@@ -794,7 +804,7 @@ function EditorInner({
     } finally {
       setWaLoading(false);
     }
-  }, [businessId, loadApprovedWhatsAppTemplates]);
+  }, [businessId, loadApprovedWhatsAppTemplates, t]);
 
   // Templates are loaded after selectedNode / senderMode is known (see effect below).
 
@@ -933,16 +943,60 @@ function EditorInner({
     [nodes, selectedId]
   );
 
-  const selectedWaSenderMode = useMemo<WhatsAppSenderMode>(() => {
-    if (!waManagedModeEnabled) return "business_connected";
-    const raw = String(selectedNode?.data?.senderMode || "").trim();
-    if (raw === "business_connected") return "business_connected";
-    return "bizuply_managed";
-  }, [selectedNode?.data?.senderMode, waManagedModeEnabled]);
+  const selectedWaSenderMode = explicitSender || resolvedSenderMode;
 
   useEffect(() => {
-    void loadApprovedWhatsAppTemplates(selectedWaSenderMode);
-  }, [loadApprovedWhatsAppTemplates, selectedWaSenderMode]);
+    setExplicitSender(null);
+  }, [businessId, selectedId]);
+
+  useEffect(() => {
+    void loadApprovedWhatsAppTemplates(explicitSender);
+  }, [loadApprovedWhatsAppTemplates, explicitSender, businessId]);
+
+  useEffect(() => {
+    if (explicitSender || !selectedId || waLoading || !waStatusReady) return;
+    const node = nodes.find((item) => item.id === selectedId);
+    if (!node || !isWhatsAppActionKey(node.data?.actionKey || "whatsapp_template")) {
+      return;
+    }
+    const current = String(node.data?.senderMode || "");
+    if (current === resolvedSenderMode) return;
+    const templateId = String(node.data?.templateId || "");
+    const templateStillValid =
+      Boolean(templateId) &&
+      waTemplates.some((tpl) => String(tpl._id || tpl.id || "") === templateId);
+    setNodes((prev) =>
+      prev.map((item) =>
+        item.id === selectedId
+          ? {
+              ...item,
+              data: {
+                ...(item.data || {}),
+                senderMode: resolvedSenderMode,
+                ...(templateStillValid
+                  ? {}
+                  : {
+                      templateId: "",
+                      metaTemplateId: "",
+                      metaTemplateName: "",
+                      language: "",
+                      componentMappings: [],
+                    }),
+              },
+            }
+          : item
+      )
+    );
+  }, [
+    explicitSender,
+    resolvedSenderMode,
+    selectedId,
+    waLoading,
+    waStatusReady,
+    waTemplates,
+    nodes,
+    setNodes,
+  ]);
 
   const selectedWaTemplate = useMemo(() => {
     if (
@@ -2825,13 +2879,14 @@ function EditorInner({
                         {t("automations.editor.wa.sender")}
                         <select
                           value={selectedWaSenderMode}
-                          disabled={readOnly || (!waManagedModeEnabled && !waPrivateConnected)}
+                          disabled={readOnly || waLoading}
                           onChange={(e) => {
                             const next = (
                               e.target.value === "business_connected"
                                 ? "business_connected"
                                 : "bizuply_managed"
                             ) as WhatsAppSenderMode;
+                            setExplicitSender(next);
                             updateSelectedData({
                               senderMode: next,
                               templateId: "",
@@ -2842,19 +2897,29 @@ function EditorInner({
                             });
                           }}
                         >
-                          {waManagedModeEnabled ? (
-                            <option value="bizuply_managed">
-                              {t("automations.editor.wa.managedNumber")}
-                            </option>
-                          ) : null}
-                          <option
-                            value="business_connected"
-                            disabled={!waPrivateConnected}
-                          >
-                            {waPrivateConnected
-                              ? t("automations.editor.wa.businessNumber")
-                              : t("automations.editor.wa.connectBusinessNumber")}
-                          </option>
+                          {(waAvailableSenders.length
+                            ? waAvailableSenders
+                            : [
+                                {
+                                  senderMode: "business_connected" as const,
+                                  authorized: true,
+                                },
+                              ]
+                          )
+                            .filter((row) => row.authorized !== false)
+                            .map((row) =>
+                              row.senderMode === "bizuply_managed" ? (
+                                <option key={row.senderMode} value="bizuply_managed">
+                                  {t("automations.editor.wa.managedNumber")}
+                                </option>
+                              ) : (
+                                <option key={row.senderMode} value="business_connected">
+                                  {waPrivateConnected
+                                    ? t("automations.editor.wa.businessNumber")
+                                    : t("automations.editor.wa.connectBusinessNumber")}
+                                </option>
+                              )
+                            )}
                         </select>
                       </label>
                     </div>
@@ -2957,11 +3022,18 @@ function EditorInner({
                     </div>
                     ) : null}
 
-                    {waConnected && waDisplayPhone ? (
-                      <p className="af-wa-template__state" dir={dir}>
-                        {t("automations.editor.wa.connectedAs", {
-                          phone: waDisplayPhone,
-                        })}
+                    {waConnected ? (
+                      <p
+                        className="af-wa-template__state"
+                        dir={dir}
+                        data-testid="wa-connected-status"
+                      >
+                        <strong>{t("automations.editor.wa.connectedTitle")}</strong>
+                        {waDisplayPhone
+                          ? ` · ${t("automations.editor.wa.connectedAs", {
+                              phone: waDisplayPhone,
+                            })}`
+                          : ""}
                       </p>
                     ) : null}
 
@@ -2975,18 +3047,21 @@ function EditorInner({
                         dir={dir}
                         data-testid="wa-template-connect-gate"
                       >
-                        {waNeedsReconnect ||
-                        String(selectedNode.data?.metaTemplateName || "") ||
-                        String(selectedNode.data?.templateId || "") ? (
+                        {waNeedsReconnect ? (
                           <strong>{t("automations.editor.wa.reconnectRequired")}</strong>
                         ) : null}
-                        <p>{t("automations.editor.wa.connectRequired")}</p>
-                        <Link
-                          className="af-toolbar__btn"
-                          to={waSettingsHref}
-                        >
-                          {t("automations.editor.wa.connectAccountCta")}
-                        </Link>
+                        <p>
+                          {waBlockMessage ||
+                            t("automations.editor.wa.connectRequired")}
+                        </p>
+                        {waShowConnect ? (
+                          <Link
+                            className="af-toolbar__btn"
+                            to={waSettingsHref}
+                          >
+                            {t("automations.editor.wa.connectAccountCta")}
+                          </Link>
+                        ) : null}
                       </div>
                     ) : waSyncError && waTemplates.length === 0 ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
