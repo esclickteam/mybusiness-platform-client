@@ -63,7 +63,7 @@ export default function Home() {
   }, [canonical, i18n.language, t]);
 
   return (
-    <main className="min-h-screen bg-white text-slate-800" dir={getTextDirection(i18n.language)}>
+    <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir={getTextDirection(i18n.language)}>
       <HeroSection />
       <PlatformDomains />
       <ScrollStory />

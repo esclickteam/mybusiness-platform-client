@@ -1,74 +1,59 @@
+import type { ReactNode } from "react";
+
 type ArtProps = { index: number };
+
+function Frame({ children, tone }: { children: ReactNode; tone: string }) {
+  return (
+    <svg viewBox="0 0 320 180" role="img" aria-hidden="true" className={`home-art home-art--${tone}`}>
+      <rect width="320" height="180" rx="18" fill="currentColor" opacity="0.08" />
+      {children}
+    </svg>
+  );
+}
 
 export function WayArt({ index }: ArtProps) {
   if (index === 0) {
     return (
-      <svg viewBox="0 0 360 220" aria-hidden="true" className="home-art home-art--workspace">
-        <defs>
-          <linearGradient id="way-desk" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#312e81" />
-            <stop offset="100%" stopColor="#1e1b4b" />
-          </linearGradient>
-        </defs>
-        <rect width="360" height="220" rx="24" fill="url(#way-desk)" />
-        <circle cx="300" cy="36" r="46" fill="#818cf8" opacity="0.35" />
-        <rect x="28" y="28" width="196" height="164" rx="16" fill="#ffffff" />
-        <rect x="44" y="44" width="72" height="8" rx="4" fill="#4f46e5" />
-        <rect x="44" y="64" width="148" height="28" rx="8" fill="#eef2ff" />
-        <rect x="44" y="102" width="148" height="28" rx="8" fill="#f8fafc" />
-        <rect x="44" y="140" width="96" height="28" rx="8" fill="#e0e7ff" />
-        <rect x="238" y="78" width="94" height="114" rx="16" fill="#ffffff" />
-        <circle cx="285" cy="112" r="16" fill="#4f46e5" />
-        <rect x="254" y="140" width="62" height="8" rx="4" fill="#c7d2fe" />
-        <rect x="262" y="156" width="46" height="8" rx="4" fill="#e0e7ff" />
-      </svg>
+      <Frame tone="indigo">
+        <rect x="28" y="36" width="120" height="16" rx="8" fill="#4f46e5" />
+        <rect x="28" y="64" width="168" height="10" rx="5" fill="#94a3b8" />
+        <rect x="28" y="84" width="140" height="10" rx="5" fill="#cbd5e1" />
+        <rect x="28" y="112" width="78" height="28" rx="8" fill="#4f46e5" />
+        <rect x="214" y="40" width="78" height="100" rx="12" fill="#eef2ff" />
+        <rect x="226" y="54" width="54" height="8" rx="4" fill="#4f46e5" />
+        <rect x="226" y="72" width="42" height="8" rx="4" fill="#a5b4fc" />
+        <rect x="226" y="90" width="48" height="8" rx="4" fill="#a5b4fc" />
+      </Frame>
     );
   }
   if (index === 1) {
     return (
-      <svg viewBox="0 0 360 220" aria-hidden="true" className="home-art home-art--site">
-        <rect width="360" height="220" rx="24" fill="#082f49" />
-        <circle cx="48" cy="40" r="28" fill="#22d3ee" opacity="0.35" />
-        <rect x="36" y="28" width="288" height="164" rx="16" fill="#0f172a" />
-        <rect x="36" y="28" width="288" height="28" rx="16" fill="#155e75" />
-        <circle cx="56" cy="42" r="5" fill="#67e8f9" />
-        <circle cx="74" cy="42" r="5" fill="#a5f3fc" />
-        <rect x="56" y="76" width="120" height="14" rx="6" fill="#ffffff" />
-        <rect x="56" y="100" width="168" height="8" rx="4" fill="#94a3b8" />
-        <rect x="56" y="124" width="78" height="28" rx="14" fill="#22d3ee" />
-        <rect x="214" y="76" width="86" height="86" rx="14" fill="#164e63" />
-        <rect x="226" y="90" width="62" height="8" rx="4" fill="#67e8f9" />
-        <rect x="226" y="108" width="46" height="8" rx="4" fill="#a5f3fc" />
-      </svg>
+      <Frame tone="sky">
+        <rect x="36" y="28" width="248" height="124" rx="14" fill="#0f172a" />
+        <rect x="52" y="44" width="72" height="8" rx="4" fill="#67e8f9" />
+        <rect x="52" y="64" width="150" height="16" rx="6" fill="#ffffff" />
+        <rect x="52" y="90" width="110" height="8" rx="4" fill="#94a3b8" />
+        <rect x="52" y="112" width="64" height="22" rx="11" fill="#22d3ee" />
+      </Frame>
     );
   }
   if (index === 2) {
     return (
-      <svg viewBox="0 0 360 220" aria-hidden="true" className="home-art home-art--market">
-        <rect width="360" height="220" rx="24" fill="#2e1065" />
-        <path d="M40 150c40-70 90-70 130-20s70 20 150-40" fill="none" stroke="#c4b5fd" strokeWidth="3" />
-        <circle cx="70" cy="78" r="22" fill="#7c3aed" />
-        <circle cx="168" cy="118" r="28" fill="#4f46e5" />
-        <circle cx="274" cy="72" r="24" fill="#0891b2" />
-        <rect x="196" y="132" width="120" height="52" rx="14" fill="#ffffff" />
-        <rect x="210" y="146" width="72" height="8" rx="4" fill="#4f46e5" />
-        <rect x="210" y="162" width="48" height="8" rx="4" fill="#c4b5fd" />
-      </svg>
+      <Frame tone="violet">
+        <circle cx="78" cy="90" r="28" fill="#7c3aed" />
+        <circle cx="160" cy="90" r="28" fill="#4f46e5" />
+        <circle cx="242" cy="90" r="28" fill="#0891b2" />
+        <path d="M106 90h26M188 90h26" stroke="#c4b5fd" strokeWidth="4" />
+      </Frame>
     );
   }
   return (
-    <svg viewBox="0 0 360 220" aria-hidden="true" className="home-art home-art--setup">
-      <rect width="360" height="220" rx="24" fill="#042f2e" />
-      <circle cx="292" cy="46" r="40" fill="#34d399" opacity="0.25" />
-      <rect x="36" y="36" width="196" height="148" rx="16" fill="#ffffff" />
-      <circle cx="68" cy="72" r="14" fill="#10b981" />
-      <rect x="94" y="64" width="110" height="8" rx="4" fill="#065f46" />
-      <rect x="94" y="80" width="78" height="8" rx="4" fill="#a7f3d0" />
-      <rect x="56" y="108" width="156" height="22" rx="8" fill="#ecfdf5" />
-      <rect x="56" y="140" width="156" height="22" rx="8" fill="#f0fdfa" />
-      <rect x="248" y="92" width="76" height="76" rx="38" fill="#10b981" />
-      <path d="M272 130l12 12 24-28" fill="none" stroke="#ffffff" strokeWidth="6" strokeLinecap="round" />
-    </svg>
+    <Frame tone="emerald">
+      <rect x="40" y="46" width="240" height="88" rx="16" fill="#ecfdf5" />
+      <circle cx="78" cy="90" r="18" fill="#10b981" />
+      <rect x="108" y="74" width="140" height="10" rx="5" fill="#065f46" />
+      <rect x="108" y="94" width="96" height="8" rx="4" fill="#6ee7b7" />
+    </Frame>
   );
 }
 
