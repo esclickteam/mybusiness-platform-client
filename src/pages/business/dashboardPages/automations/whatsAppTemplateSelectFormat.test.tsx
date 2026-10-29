@@ -1,5 +1,5 @@
 ﻿import { describe, expect, it, vi, beforeAll } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   SAVED_TEMPLATE_NOT_APPROVED_HE,
   TENANT_TEMPLATE_NOT_SENDABLE_HE,
@@ -17,7 +17,10 @@ import {
   resolveAutomationTemplateWarning,
   resolveWhatsAppTemplateDisplayName,
 } from "./whatsAppTemplateSelectFormat";
-import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
+import {
+  WhatsAppAutomationTemplateSelect,
+  downwardTemplateMenuStyle,
+} from "./WhatsAppAutomationTemplateSelect";
 import type { ApprovedWhatsAppTemplate } from "../../../../api/whatsappApi";
 
 beforeAll(() => {
@@ -274,6 +277,69 @@ describe("WhatsAppAutomationTemplateSelect selection guards", () => {
     expect(onChange).toHaveBeenCalledWith(
       expect.objectContaining({ _id: "m1", automationSendable: true })
     );
+  });
+
+  it("places the menu under the field even when the viewport is short", () => {
+    const cramped = downwardTemplateMenuStyle(
+      { top: 540, bottom: 580, left: 16, width: 280 },
+      { width: 390, height: 640 }
+    );
+    expect(cramped.position).toBe("fixed");
+    expect(cramped.top).toBe(584);
+    expect(Number(cramped.top)).toBeGreaterThan(580);
+    expect(Number(cramped.maxHeight)).toBeLessThanOrEqual(320);
+    expect(Number(cramped.maxHeight)).toBeLessThanOrEqual(640 - 584);
+
+    const zoomed = downwardTemplateMenuStyle(
+      { top: 80, bottom: 140, left: 8, width: 360 },
+      { width: 320, height: 480 }
+    );
+    expect(Number(zoomed.left)).toBeGreaterThanOrEqual(8);
+    expect(Number(zoomed.left) + Number(zoomed.width)).toBeLessThanOrEqual(312);
+    expect(Number(zoomed.top)).toBe(144);
+  });
+
+  it("opens the template list downward and closes after a choice", () => {
+    const onChange = vi.fn();
+    render(
+      <WhatsAppAutomationTemplateSelect
+        templates={[managedTpl, tenantOnlyTpl]}
+        value=""
+        onChange={onChange}
+      />
+    );
+    const button = screen.getByRole("button");
+    button.getBoundingClientRect = () =>
+      ({
+        x: 16,
+        y: 500,
+        top: 500,
+        left: 16,
+        right: 316,
+        bottom: 552,
+        width: 300,
+        height: 52,
+        toJSON() {
+          return {};
+        },
+      }) as DOMRect;
+    fireEvent.mouseDown(button, { button: 0 });
+
+    const menu = screen.getByTestId("wa-template-menu");
+    expect(menu.getAttribute("data-placement")).toBe("bottom");
+    expect(menu.getAttribute("data-anchor")).toBeNull();
+    expect(Number.parseFloat(menu.style.top)).toBeGreaterThanOrEqual(552);
+    expect(Number.parseFloat(menu.style.maxHeight)).toBeLessThanOrEqual(320);
+    expect(menu.querySelector(".af-wa-tpl-select__search")).toBeTruthy();
+    expect(menu.querySelector(".af-wa-tpl-select__list")).toBeTruthy();
+    expect(screen.getByText("אישור הזמנה")).toBeTruthy();
+    expect(screen.getAllByText(/עברית/).length).toBeGreaterThan(0);
+
+    fireEvent.mouseDown(screen.getByText("אישור הזמנה"), { button: 0 });
+    expect(onChange).toHaveBeenCalledWith(
+      expect.objectContaining({ _id: "m1" })
+    );
+    expect(screen.queryByTestId("wa-template-menu")).toBeNull();
   });
 
   it("keeps existing saved unsendable template visible with warning", () => {
