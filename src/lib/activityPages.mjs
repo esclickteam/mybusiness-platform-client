@@ -755,7 +755,7 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "מרקטפלייס"], ["/crm", "CRM"], ["/website-builder", "בונה אתרים"]],
   ),
   es: copy(
-    "Restaurantes | Bizuply",
+    "Restaurantes: consultas en el CRM | Bizuply",
     "Un restaurante que quiere un sistema de pedidos listo debe mirar el marketplace. El CRM de Bizuply es para consultas, no para la cocina.",
     "Restaurantes",
     "Consultas en el CRM, pedidos en el marketplace",
@@ -768,7 +768,7 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "Marketplace"], ["/crm", "CRM"], ["/website-builder", "Constructor"]],
   ),
   "pt-BR": copy(
-    "Restaurantes | Bizuply",
+    "Restaurantes: contatos no CRM | Bizuply",
     "Um restaurante que quer um sistema de pedidos pronto deve olhar o marketplace. O CRM da Bizuply é para pedidos de contato, não para a cozinha.",
     "Restaurantes",
     "Contatos no CRM, pedidos no marketplace",
