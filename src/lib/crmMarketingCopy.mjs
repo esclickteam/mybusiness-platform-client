@@ -948,6 +948,7 @@ export function renderCrmPrerender(language) {
 export function buildCrmHeaderPaint(language) {
   const c = getCrmCopy(language);
   const href = (path) => esc(marketingPublicUrl(path, c.lang).replace("https://bizuply.com", "") || "/");
+  const logoAlt = c.lang === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
   const links = [
     [c.chrome.about, "/about"],
     [c.chrome.website, "/website-builder"],
@@ -968,5 +969,5 @@ export function buildCrmHeaderPaint(language) {
 .crm-paint__cta{background:#0b1b33;color:#fff;font-weight:800;text-decoration:none;border-radius:.7rem;padding:.55rem .9rem}
 .crm-paint__mobile{display:inline-flex;align-items:center;gap:.7rem;color:#0b1b33;font-weight:800}
 @media(min-width:1100px){.crm-paint__nav,.crm-paint__actions{display:flex}.crm-paint__mobile{display:none}}
-</style><header class="crm-paint__header"><nav class="crm-paint__bar" aria-label="${esc(c.chrome.navAria)}"><a class="crm-paint__logo" href="${href("/")}"><img src="/android-chrome-192x192.png" width="36" height="36" alt="Bizuply" /><span>Bizuply</span></a><div class="crm-paint__nav">${links}</div><div class="crm-paint__actions"><span>${esc(c.chrome.langCode)}</span><a class="crm-paint__login" href="${href("/login")}">${esc(c.chrome.login)}</a><a class="crm-paint__cta" href="${href("/pricing")}">${esc(c.chrome.cta)}</a></div><div class="crm-paint__mobile"><span>${esc(c.chrome.langCode)}</span></div></nav></header></div>`;
+</style><header class="crm-paint__header"><nav class="crm-paint__bar" aria-label="${esc(c.chrome.navAria)}"><a class="crm-paint__logo" href="${href("/")}"><img src="/android-chrome-192x192.png" width="36" height="36" alt="${logoAlt}" /><span>Bizuply</span></a><div class="crm-paint__nav">${links}</div><div class="crm-paint__actions"><span>${esc(c.chrome.langCode)}</span><a class="crm-paint__login" href="${href("/login")}">${esc(c.chrome.login)}</a><a class="crm-paint__cta" href="${href("/pricing")}">${esc(c.chrome.cta)}</a></div><div class="crm-paint__mobile"><span>${esc(c.chrome.langCode)}</span></div></nav></header></div>`;
 }

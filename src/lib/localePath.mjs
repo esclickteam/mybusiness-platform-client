@@ -1,7 +1,7 @@
 /**
  * Public locale prefixes for the Bizuply marketing host.
  * English keeps the existing URLs. Other languages use a prefix:
- * /he/  /es/  /pt-br/  /ar/
+ * /he  /es  /pt-br  /ar
  */
 
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
