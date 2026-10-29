@@ -121,18 +121,18 @@ export default function ScrollStory() {
         const cards = gsap.utils.toArray<HTMLElement>(".home-show__block", node);
         const stage = node.querySelector<HTMLElement>(".home-show__stage");
         if (!cards.length || !stage) return;
-        const beat = 2.2;
-        const duration = cards.length * beat;
+        const beat = 2.6;
         gsap.set(cards, {
           xPercent: -50,
           yPercent: -50,
-          scale: 0.9,
+          scale: 0.46,
           autoAlpha: 0,
-          y: 36,
+          y: 0,
           zIndex: 1,
           force3D: true,
         });
-        gsap.set(cards[0], { scale: 0.92, autoAlpha: 1, y: 0, zIndex: 6 });
+        gsap.set(cards[0], { scale: 0.46, autoAlpha: 1, zIndex: 8 });
+        const depth = node.querySelector<HTMLElement>(".home-show__depth");
         const focus = (index: number) => {
           cards.forEach((card, cardIndex) => {
             card.classList.toggle("is-focus", cardIndex === index);
@@ -144,49 +144,70 @@ export default function ScrollStory() {
         };
         focus(0);
         let active = 0;
-        const timeline = gsap.timeline({
-          defaults: { ease: "power1.inOut" },
-          scrollTrigger: {
-            trigger: node.querySelector(".home-show__pin"),
-            start: "top 72px",
-            end: () => `+=${cards.length * 1400}`,
-            pin: stage,
-            scrub: 0.6,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            onUpdate: (self) => {
-              if (!self.isActive) return;
-              stage.style.zIndex = "1";
-              const time = self.progress * duration;
-              const index = Math.min(cards.length - 1, Math.floor(time / beat));
-              if (index === active) return;
-              active = index;
-              focus(index);
-            },
-          },
-        });
+        const timeline = gsap.timeline({ defaults: { ease: "power2.inOut" } });
         cards.forEach((card, index) => {
           const media = card.querySelector<HTMLElement>(".home-show__screen");
-          const at = index * beat;
-          timeline.fromTo(card, {
-            scale: index === 0 ? 0.92 : 0.9,
-            autoAlpha: index === 0 ? 1 : 0,
-            y: index === 0 ? 0 : 40,
-            zIndex: index === 0 ? 6 : 2,
-          }, {
-            scale: 1,
-            autoAlpha: 1,
-            y: 0,
-            zIndex: 6,
-            duration: 0.6,
-            immediateRender: false,
-          }, at);
-          if (media) timeline.fromTo(media, { scale: 1 }, { scale: 1.03, duration: beat - 0.7, ease: "none" }, at + 0.6);
-          if (index < cards.length - 1) {
-            timeline.to(card, { autoAlpha: 0, scale: 0.94, y: -28, zIndex: 1, duration: 0.5 }, at + beat - 0.45);
+          const start = index === 0 ? 0 : index * beat - 0.85;
+          if (index === 0) {
+            timeline.fromTo(card, { scale: 0.46, autoAlpha: 1, y: 0, zIndex: 8 }, {
+              scale: 1,
+              autoAlpha: 1,
+              y: 0,
+              zIndex: 8,
+              duration: 0.7,
+              immediateRender: true,
+            }, 0);
           } else {
-            timeline.to(card, { scale: 1, duration: beat - 0.6 }, at + 0.6);
+            timeline.fromTo(card, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.2, immediateRender: false }, start);
+            timeline.fromTo(card, { scale: 0.86, x: 0, y: 12, zIndex: 3 }, {
+              scale: 1,
+              x: 0,
+              y: 0,
+              zIndex: 3,
+              duration: 0.9,
+              immediateRender: false,
+            }, start);
+            timeline.set(card, { zIndex: 8 }, start + 0.7);
           }
+          if (media) {
+            timeline.fromTo(media, { scale: 0.92, y: 28 }, {
+              scale: 1,
+              y: 0,
+              duration: 0.9,
+              ease: "power2.out",
+            }, start);
+          }
+          if (index < cards.length - 1) {
+            const exitAt = (index + 1) * beat - 0.7;
+            timeline.to(card, { scale: 0.56, x: -720, y: -12, zIndex: 9, duration: 0.5 }, exitAt);
+            timeline.to(card, { autoAlpha: 0, x: -860, scale: 0.48, zIndex: 2, duration: 0.2 }, exitAt + 0.42);
+          }
+        });
+        if (depth) {
+          timeline.fromTo(depth, { scale: 0.8, autoAlpha: 0.3 }, {
+            scale: 1.06,
+            autoAlpha: 0.55,
+            duration: timeline.duration(),
+            ease: "none",
+          }, 0);
+        }
+        ScrollTrigger.create({
+          animation: timeline,
+          trigger: node.querySelector(".home-show__pin"),
+          start: "top 72px",
+          end: () => `+=${cards.length * 1600}`,
+          pin: stage,
+          scrub: 0.45,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            if (!self.isActive) return;
+            stage.style.zIndex = "1";
+            const index = Math.min(cards.length - 1, Math.max(0, Math.round((timeline.duration() * self.progress) / beat)));
+            if (index === active) return;
+            active = index;
+            focus(index);
+          },
         });
       });
     }, node);
@@ -198,9 +219,11 @@ export default function ScrollStory() {
       <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <h2 className="home-show__title">{t("home.showTitle")}</h2>
         <p className="home-show__lead">{t("home.showLead")}</p>
-        <div className="home-show__pin">
-          <div className="home-show__stage home-show__stack">
-            {BLOCKS.map((block) => {
+      </div>
+      <div className="home-show__pin">
+        <div className="home-show__stage home-show__stack">
+          <div className="home-show__depth" aria-hidden="true" />
+          {BLOCKS.map((block) => {
               const copy = COPY[block.id];
               return (
                 <article key={block.id} className={`home-show__block home-show__block--${block.layout} home-show__block--${block.side}`}>
@@ -218,7 +241,6 @@ export default function ScrollStory() {
                 </article>
               );
             })}
-          </div>
         </div>
       </div>
     </section>
