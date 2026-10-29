@@ -619,6 +619,7 @@ function faqBodyHtml(items) {
 }
 
 function faqSchemaTag(path, language) {
+  if (path === "/guides/crm-lead-management") return "";
   const items = faqItems(path, language);
   if (!items?.length) return "";
   return `<script type="application/ld+json">${jsonLd({
@@ -716,7 +717,7 @@ function guideHead(path, locale) {
     `<meta name="robots" content="index, follow" />`,
     `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
     hreflangTags(path),
-    ...sharedSocialTags(article.title, article.description, canonical, locale),
+    ...sharedSocialTags(article.title, article.description, canonical, locale, article.image),
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
     `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
@@ -725,12 +726,25 @@ function guideHead(path, locale) {
       "@type": "Article",
       headline: article.h1,
       description: article.description,
+      datePublished: article.published || article.updated,
       dateModified: article.updated,
+      image: article.image || undefined,
       inLanguage: locale,
       mainEntityOfPage: canonical,
       author: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
-      publisher: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
+      publisher: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/", logo: { "@type": "ImageObject", url: "https://bizuply.com/logo-mark.svg" } },
     })}</script>`,
+    ...(article.videos || []).map((video) => `<script type="application/ld+json">${jsonLd({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      name: video.name,
+      description: video.description,
+      thumbnailUrl: video.thumbnailUrl,
+      uploadDate: video.uploadDate,
+      duration: video.duration,
+      contentUrl: video.contentUrl,
+      inLanguage: locale,
+    })}</script>`),
     faqSchemaTag(path, locale),
   ].filter(Boolean).join("\n");
 }
@@ -873,7 +887,7 @@ export function buildMarketingSitemapXml() {
       localizedUrls.push({
         path,
         loc: marketingPublicUrl(path, entry.locale),
-        lastmod: "2026-10-23",
+        lastmod: path === "/guides/crm-lead-management" ? "2026-10-29" : "2026-10-23",
         changefreq: "monthly",
         priority: path.startsWith("/guides/") ? "0.6" : "0.7",
       });
@@ -883,7 +897,7 @@ export function buildMarketingSitemapXml() {
     ...MARKETING_PAGES.map((page) => ({ path: page.path, lastmod: page.lastmod, changefreq: page.changefreq, priority: page.priority })),
     ...GUIDE_SLUGS.map((slug) => ({
       path: guidePath(slug),
-      lastmod: "2026-10-23",
+      lastmod: slug === "crm-lead-management" ? "2026-10-29" : "2026-10-23",
       changefreq: "monthly",
       priority: "0.6",
     })),
@@ -992,7 +1006,8 @@ function renderSection(section) {
     const [heading, body] = section;
     return `<h2>${escapeText(heading)}</h2>${(body || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("")}`;
   }
-  const parts = [`<h2>${escapeText(section.heading)}</h2>`];
+  const tag = section.level === 3 ? "h3" : "h2";
+  const parts = [`<${tag}>${escapeText(section.heading)}</${tag}>`];
   for (const paragraph of section.paragraphs || []) parts.push(`<p>${escapeText(paragraph)}</p>`);
   if (section.steps?.length) parts.push(`<ol>${section.steps.map((step) => `<li>${escapeText(step)}</li>`).join("")}</ol>`);
   if (section.example?.body) parts.push(`<p><strong>${escapeText(section.example.title || "")}</strong> ${escapeText(section.example.body)}</p>`);
@@ -1003,7 +1018,10 @@ function renderSection(section) {
     parts.push(`<table>${head ? `<thead><tr>${head}</tr></thead>` : ""}${rows}</table>`);
   }
   for (const shot of section.shots || []) {
-    parts.push(`<figure><img src="${escapeHtml(shot.src)}" alt="${escapeText(shot.caption || section.heading)}" /><figcaption>${escapeText(shot.caption || "")}</figcaption></figure>`);
+    parts.push(`<figure><img src="${escapeHtml(shot.src)}" alt="${escapeText(shot.alt || shot.caption || section.heading)}" width="1440" height="900" /><figcaption>${escapeText(shot.caption || "")}</figcaption></figure>`);
+  }
+  for (const film of section.films || []) {
+    parts.push(`<figure><video controls preload="metadata" poster="${escapeHtml(film.poster)}" width="1440" height="900"><source src="${escapeHtml(film.src)}" type="video/mp4" /></video><figcaption><strong>${escapeText(film.title)}</strong> ${escapeText(film.caption || "")}</figcaption><p>${escapeText(film.transcript || "")}</p></figure>`);
   }
   return parts.join("");
 }

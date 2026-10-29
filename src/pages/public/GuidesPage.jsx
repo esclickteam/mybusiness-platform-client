@@ -9,6 +9,7 @@ import { getLocaleMarketingPage } from "../../lib/localeMarketing.mjs";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
 import ProductDemoVideo from "../../components/product-marketing/ProductDemoVideo";
 import GuideFigure from "./GuideFigure";
+import CrmLeadGuidePage from "./CrmLeadGuidePage";
 import "../../components/product-marketing/marketingKit.css";
 import "./guidesArticle.css";
 
@@ -163,6 +164,7 @@ function GuideSection({ section, locale }) {
 
 export function GuideArticlePage() {
   const { slug } = useParams();
+  if (slug === "crm-lead-management") return <CrmLeadGuidePage />;
   const { i18n } = useTranslation();
   const locale = normalizeMarketingLocale(i18n.language);
   const dir = getTextDirection(locale);
