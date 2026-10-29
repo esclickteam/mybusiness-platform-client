@@ -49,8 +49,8 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
 
       <div className="site-mobile__panel">
         <div className="site-mobile__top">
-          <Link to="/" onClick={onClose} className="site-mobile__brand" aria-label="BizUply">
-            <img src={logo} alt="BizUply" />
+          <Link to="/" onClick={onClose} className="site-mobile__brand" aria-label={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"}>
+            <img src={logo} alt={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"} />
           </Link>
 
           <button

@@ -63,8 +63,8 @@ export default function HeaderView({
     <>
       <header className="site-header" dir={headerDir}>
         <nav className="site-header__bar" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
-          <Link to="/" className="site-header__logo" aria-label="BizUply">
-            <img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchPriority="low" decoding="async" />
+          <Link to="/" className="site-header__logo" aria-label={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"}>
+            <img src="/logo-mark.svg" alt={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"} width="176" height="52" fetchPriority="low" decoding="async" />
           </Link>
 
           <div className="site-header__nav">

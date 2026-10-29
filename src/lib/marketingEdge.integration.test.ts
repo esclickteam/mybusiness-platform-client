@@ -55,7 +55,11 @@ describe("marketing edge integration", () => {
     expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(page.body).toContain('<h1 class="home-hero__title">Everything your business needs to grow in one place</h1>');
     expect(page.body.replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "").match(/<h1\b/gi)?.length).toBe(1);
-    expect(page.body).not.toContain("noindex");
+    expect(page.headers.get("x-robots-tag")).toBeNull();
+    const withoutScripts = page.body.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+    expect(withoutScripts).toContain('<meta name="robots" content="index, follow" />');
+    expect(withoutScripts).not.toContain("noindex");
+    expect(page.body).toContain('robots.content = "noindex, nofollow"');
   });
 
   it("gives product pages their own metadata and keeps dynamic routes untouched", async () => {

@@ -358,6 +358,13 @@ function organizationSchema() {
     alternateName: ["ביזאפלי", "BizUply"],
     url: `${MARKETING_ORIGIN}/`,
     logo: ORGANIZATION_LOGO,
+    brand: {
+      "@type": "Brand",
+      name: "Bizuply",
+      alternateName: "ביזאפלי",
+      url: `${MARKETING_ORIGIN}/`,
+      logo: ORGANIZATION_LOGO,
+    },
     image: OG_IMAGE,
     description:
       "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
@@ -423,8 +430,8 @@ const ABOUT_FAQ = {
   ],
   "he": [
     [
-      "מהי Bizuply?",
-      "Bizuply היא חברת טכנולוגיה עסקית המציעה פלטפורמת ניהול עסקי מחוברת ושירותים דיגיטליים. יכולות התוכנה שלה כוללות CRM, כלי שיווק נתמכים, תקשורת WhatsApp Business, יצירת אתרים, תיאום פגישות ואוטומציות עסקיות."
+      "מהי ביזאפלי?",
+      "ביזאפלי (Bizuply) היא חברת טכנולוגיה עסקית המציעה פלטפורמת ניהול עסקי מחוברת ושירותים דיגיטליים. יכולות התוכנה שלה כוללות CRM, כלי שיווק נתמכים, תקשורת WhatsApp Business, יצירת אתרים, תיאום פגישות ואוטומציות עסקיות."
     ],
     [
       "במה Bizuply מסייעת לעסקים?",
@@ -641,20 +648,16 @@ function pageSchema(page, canonical, language = "en") {
     description: page.description,
     url: canonical,
     inLanguage: language,
-    isPartOf: {
-      "@type": "WebSite",
-      name: "Bizuply",
-      url: `${MARKETING_ORIGIN}/`,
-    },
+    isPartOf: { "@id": `${MARKETING_ORIGIN}/#website` },
   };
 }
 
-function breadcrumbSchema(page, canonical) {
+function breadcrumbSchema(page, canonical, language = "en") {
   const items = [
     {
       "@type": "ListItem",
       position: 1,
-      name: "Bizuply",
+      name: language === "he" ? "ביזאפלי" : "Bizuply",
       item: `${MARKETING_ORIGIN}/`,
     },
   ];
@@ -719,7 +722,7 @@ function guideHead(path, locale) {
     ...sharedSocialTags(article.title, article.description, canonical, locale),
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
-    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, locale))}</script>`,
     `<script type="application/ld+json">${jsonLd({
       "@context": "https://schema.org",
       "@type": "Article",
@@ -728,8 +731,8 @@ function guideHead(path, locale) {
       dateModified: article.updated,
       inLanguage: locale,
       mainEntityOfPage: canonical,
-      author: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
-      publisher: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com/" },
+      author: { "@id": `${MARKETING_ORIGIN}/#organization` },
+      publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
     })}</script>`,
     faqSchemaTag(path, locale),
   ].filter(Boolean).join("\n");
@@ -743,6 +746,7 @@ function crmDocumentHead(locale) {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: "Bizuply CRM",
+    alternateName: ["ביזאפלי CRM", "ביזאפלי"],
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     url: "https://bizuply.com/crm",
@@ -762,7 +766,7 @@ function crmDocumentHead(locale) {
     ...sharedSocialTags(copy.title, copy.description, canonical, copy.lang),
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, copy.lang))}</script>`,
-    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, copy.lang))}</script>`,
     faqSchemaTag("/crm", copy.lang),
     `<script type="application/ld+json">${jsonLd(application)}</script>`,
   ].join("\n");
@@ -782,7 +786,7 @@ function collaborationsDocumentHead(locale) {
     ...sharedSocialTags(copy.seo.title, copy.seo.description, canonical, lang),
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, lang))}</script>`,
-    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, lang))}</script>`,
     ...collaborationsSchemas(lang, canonical).map((schema) => `<script type="application/ld+json">${jsonLd(schema)}</script>`),
   ].join("\n");
 }
@@ -823,7 +827,7 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
       path === "/" ? `<script type="application/ld+json">${jsonLd(websiteSchema())}</script>` : "",
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
-      `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical))}</script>`,
+      `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, locale))}</script>`,
       path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
       faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
@@ -1066,9 +1070,14 @@ function websiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": `${MARKETING_ORIGIN}/#website`,
     name: "Bizuply",
+    alternateName: ["ביזאפלי", "BizUply"],
     url: `${MARKETING_ORIGIN}/`,
+    description:
+      "Bizuply (ביזאפלי) is the business platform at https://bizuply.com, published by Bizuply LLC.",
     inLanguage: ["en", "he", "es", "pt-BR", "ar"],
+    publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
   };
 }
 
@@ -1077,6 +1086,7 @@ function softwareSchema(description, canonical) {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: "Bizuply",
+    alternateName: ["ביזאפלי", "BizUply"],
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description,
@@ -1093,6 +1103,7 @@ function softwareSchema(description, canonical) {
 function renderHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
   const copy = HOME_SHELL[locale] || HOME_SHELL.en;
+  const logoAlt = locale === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
   const href = (path) => localeHref(locale, path);
   const nav = marketingNav(locale).map((group) => (
     group.links
@@ -1107,7 +1118,7 @@ function renderHomePrerender(locale) {
   return {
     lang: meta.htmlLang,
     dir: meta.dir,
-    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="BizUply" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero"><div class="home-hero__glow" aria-hidden="true"></div><div class="home-hero__grid"><div><h1 class="home-hero__title">${escapeText(copy.headline)}</h1><p class="home-hero__lead">${escapeText(copy.subtitle)}</p><p class="home-hero__note">${escapeText(copy.supportLine)}</p><div class="home-hero__actions"><a class="home-cta home-cta--primary" href="${escapeHtml(href("/register"))}">${escapeText(copy.startTrial)}</a><a class="home-cta home-cta--ghost" href="${escapeHtml(href("/platform"))}">${escapeText(copy.explore)}</a></div></div><div class="home-stage"><img class="home-stage__main" src="/demo-media/crm/poster.jpg" alt="${escapeText(copy.stageAlt)}" width="960" height="600" fetchpriority="high" decoding="async"><img class="home-stage__float home-stage__float--a" src="/demo-media/whatsapp/poster.jpg" alt="${escapeText(copy.stageWhatsappAlt)}" width="640" height="400"><img class="home-stage__float home-stage__float--b" src="/demo-media/appointments/poster.jpg" alt="${escapeText(copy.stageAppointmentsAlt)}" width="640" height="400"><span class="home-cursor" aria-hidden="true"></span></div></div><div class="home-flow"><div class="home-flow__inner"><h2 class="home-flow__title">${escapeText(copy.flowTitle)}</h2><p class="home-flow__lead">${escapeText(copy.flowBody)}</p><div class="home-flow__board"><div class="home-marquee"><div class="home-marquee__track">${track}</div></div><div class="home-flow__line" aria-hidden="true"></div><div class="home-flow__crm"><p>${escapeText(copy.flowInto)}</p><strong>${escapeText(copy.flowCrm)}</strong><span>${escapeText(copy.flowSteps)}</span></div></div></div></div></section><div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(faqTitle)}</h2><p>${escapeText((STORY[locale] || STORY.en).faqLead)}</p>${faqBodyHtml(faqs)}</section></div></main>`,
+    inner: `<main class="home-shell" lang="${meta.htmlLang}" dir="${meta.dir}"><header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(copy.navAria)}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="${escapeHtml(logoAlt)}" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${short}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(copy.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(copy.cta)}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${short}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(copy.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header><section class="home-hero"><div class="home-hero__glow" aria-hidden="true"></div><div class="home-hero__grid"><div><h1 class="home-hero__title">${escapeText(copy.headline)}</h1><p class="home-hero__lead">${escapeText(copy.subtitle)}</p><p class="home-hero__note">${escapeText(copy.supportLine)}</p><div class="home-hero__actions"><a class="home-cta home-cta--primary" href="${escapeHtml(href("/register"))}">${escapeText(copy.startTrial)}</a><a class="home-cta home-cta--ghost" href="${escapeHtml(href("/platform"))}">${escapeText(copy.explore)}</a></div></div><div class="home-stage"><img class="home-stage__main" src="/demo-media/crm/poster.jpg" alt="${escapeText(copy.stageAlt)}" width="960" height="600" fetchpriority="high" decoding="async"><img class="home-stage__float home-stage__float--a" src="/demo-media/whatsapp/poster.jpg" alt="${escapeText(copy.stageWhatsappAlt)}" width="640" height="400"><img class="home-stage__float home-stage__float--b" src="/demo-media/appointments/poster.jpg" alt="${escapeText(copy.stageAppointmentsAlt)}" width="640" height="400"><span class="home-cursor" aria-hidden="true"></span></div></div><div class="home-flow"><div class="home-flow__inner"><h2 class="home-flow__title">${escapeText(copy.flowTitle)}</h2><p class="home-flow__lead">${escapeText(copy.flowBody)}</p><div class="home-flow__board"><div class="home-marquee"><div class="home-marquee__track">${track}</div></div><div class="home-flow__line" aria-hidden="true"></div><div class="home-flow__crm"><p>${escapeText(copy.flowInto)}</p><strong>${escapeText(copy.flowCrm)}</strong><span>${escapeText(copy.flowSteps)}</span></div></div></div></div></section><div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(faqTitle)}</h2><p>${escapeText((STORY[locale] || STORY.en).faqLead)}</p>${faqBodyHtml(faqs)}</section></div></main>`,
   };
 }
 

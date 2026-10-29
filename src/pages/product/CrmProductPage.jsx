@@ -96,18 +96,19 @@ export default function CrmProductPage() {
           name: copy.title,
           description: copy.description,
           inLanguage: htmlLang,
-          isPartOf: { "@type": "WebSite", name: "Bizuply", url: "https://bizuply.com/" },
+          isPartOf: { "@id": "https://bizuply.com/#website" },
         },
         {
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Bizuply", item: "https://bizuply.com/" },
+            { "@type": "ListItem", position: 1, name: htmlLang === "he" ? "ביזאפלי" : "Bizuply", item: "https://bizuply.com/" },
             { "@type": "ListItem", position: 2, name: copy.crumb, item: canonical },
           ],
         },
         {
           "@type": "SoftwareApplication",
           name: "Bizuply CRM",
+          alternateName: ["ביזאפלי CRM", "ביזאפלי"],
           applicationCategory: "BusinessApplication",
           operatingSystem: "Web",
           url: canonical,

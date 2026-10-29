@@ -41,7 +41,7 @@ const en = {
     "Organize leads, manage customers, track follow-ups, and connect supported Meta, Google Ads, and website inquiries with Bizuply CRM. Plans start at $49/month.",
   crumb: "CRM",
   hero: {
-    eyebrow: "BIZUPLY CRM SOFTWARE",
+    eyebrow: "Bizuply CRM",
     h1: "Manage every lead and customer relationship in one place",
     description:
       "Organize leads, manage customer information, track follow-ups, and keep your sales opportunities moving with Bizuply CRM. Connect inquiries from your marketing channels and website to one practical customer management workspace.",
@@ -252,12 +252,12 @@ function pack(lang, dir, title, description, hero, rest) {
 const he = pack(
   "he",
   "rtl",
-  "תוכנת CRM לעסקים קטנים וניהול לידים | Bizuply",
-  "ארגנו לידים, נהלו לקוחות, עקבו אחרי משימות המשך, וחברו פניות נתמכות מ־Meta, מ־Google Ads ומהאתר עם Bizuply CRM. המסלולים מתחילים ב־49 דולר לחודש.",
+  "תוכנת CRM לעסקים קטנים וניהול לידים | ביזאפלי",
+  "ארגנו לידים, נהלו לקוחות, עקבו אחרי משימות המשך, וחברו פניות נתמכות מ־Meta, מ־Google Ads ומהאתר עם ביזאפלי (Bizuply) CRM. המסלולים מתחילים ב־49 דולר לחודש.",
   {
-    eyebrow: "BIZUPLY CRM SOFTWARE",
+    eyebrow: "ביזאפלי CRM",
     h1: "נהלו כל ליד וכל קשר עם הלקוח במקום אחד",
-    description: "ארגנו לידים, נהלו את פרטי הלקוחות, עקבו אחרי המשך הטיפול, ושמרו על ההזדמנויות בתנועה עם Bizuply CRM. חברו פניות מערוצי השיווק ומהאתר לסביבת עבודה אחת לניהול לקוחות.",
+    description: "ארגנו לידים, נהלו את פרטי הלקוחות, עקבו אחרי המשך הטיפול, ושמרו על ההזדמנויות בתנועה עם ביזאפלי (Bizuply) CRM. חברו פניות מערוצי השיווק ומהאתר לסביבת עבודה אחת לניהול לקוחות.",
     primary: "מתחילים עם CRM",
     secondary: "כך זה עובד",
     points: ["ניהול לידים במקום אחד", "פרופיל לקוח והיסטוריית פעילות", "משימות המשך ותזכורות", "מקורות לידים מחוברים"],

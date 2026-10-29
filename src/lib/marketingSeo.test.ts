@@ -80,8 +80,10 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
-      "<title>Bizuply | פלטפורמה לניהול עסק ו-CRM במקום אחד</title>",
+      "<title>ביזאפלי (Bizuply) | פלטפורמה לניהול עסק ו-CRM במקום אחד</title>",
     );
+    expect(buildMarketingDocumentHead("/") || "").toContain('"@id":"https://bizuply.com/#website"');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"publisher":{"@id":"https://bizuply.com/#organization"}');
     for (const page of MARKETING_PAGES) {
       expect(page.title).not.toContain("BizUply");
       expect(page.description).not.toContain("BizUply");
@@ -92,7 +94,7 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
-    expect(hebrew).toContain("<title>תוכנת CRM לעסקים קטנים וניהול לידים | Bizuply</title>");
+    expect(hebrew).toContain("<title>תוכנת CRM לעסקים קטנים וניהול לידים | ביזאפלי</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
     expect(hebrew).toContain('hreflang="en" href="https://bizuply.com/crm"');
     expect(hebrew).toContain('hreflang="x-default" href="https://bizuply.com/crm"');
@@ -128,6 +130,24 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/es/terms") || "").toContain("noindex");
     expect(buildMarketingDocumentHead("/p/acme")).toBeNull();
     expect(buildMarketingDocumentHead("/s/northwind")).toBeNull();
+  });
+
+  it("keeps Spanish and Portuguese titles distinct where the wording used to match", () => {
+    const pairs = [
+      ["/es/agents", "/pt-br/agents", "Agentes del negocio | Bizuply", "Agentes do negócio | Bizuply"],
+      ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | Bizuply", "Restaurantes: contatos no CRM | Bizuply"],
+      ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp API para empresas | Bizuply", "API do WhatsApp para empresas | Bizuply"],
+    ];
+    for (const [esPath, ptPath, esTitle, ptTitle] of pairs) {
+      const esHead = buildMarketingDocumentHead(esPath) || "";
+      const ptHead = buildMarketingDocumentHead(ptPath) || "";
+      expect(esHead).toContain(`<title>${escapeHtml(esTitle)}</title>`);
+      expect(ptHead).toContain(`<title>${escapeHtml(ptTitle)}</title>`);
+      expect(esHead).toContain('hreflang="pt-BR"');
+      expect(ptHead).toContain('hreflang="es"');
+      expect(esHead).toContain('content="index, follow"');
+      expect(ptHead).not.toContain("noindex");
+    }
   });
 
   it("uses the visible homepage FAQ in structured data for every language", () => {
