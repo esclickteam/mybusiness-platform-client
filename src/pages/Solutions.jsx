@@ -70,16 +70,16 @@ function Solutions() {
         <title>{t("solutions.seoTitle")}</title>
         <meta name="description" content={t("solutions.seoDescription")} />
         <meta name="keywords" content={t("solutions.seoKeywords")} />
-        <meta name="author" content="BizUply" />
+        <meta name="author" content="Bizuply" />
         <meta property="og:title" content={t("solutions.ogTitle")} />
         <meta property="og:description" content={t("solutions.ogDescription")} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://www.bizuply.com/solutions" />
+        <meta property="og:url" content="https://bizuply.com/solutions" />
         <meta
           property="og:image"
-          content="https://www.bizuply.com/og-image.jpg"
+          content="https://bizuply.com/og-image.jpg"
         />
-        <link rel="canonical" href="https://www.bizuply.com/solutions" />
+        <link rel="canonical" href="https://bizuply.com/solutions" />
       </Helmet>
 
       {/* Background effects */}
