@@ -7,6 +7,7 @@
 
 import { EXTRA_GUIDE_SLUGS, getExtraGuide } from "./guidesExtra.mjs";
 import { getRichGuide, RICH_GUIDE_SLUGS } from "./guidesRich.mjs";
+import { getCrmLeadGuide } from "./crmLeadGuide.mjs";
 
 const UPDATED = "2026-10-23";
 
@@ -477,10 +478,10 @@ export const GUIDE_LOCALES = {
   ar: AR,
 };
 
-export const GUIDE_SLUGS = [...new Set([...Object.keys(EN), ...EXTRA_GUIDE_SLUGS, ...RICH_GUIDE_SLUGS])];
+export const GUIDE_SLUGS = [...new Set([...Object.keys(EN), ...EXTRA_GUIDE_SLUGS, ...RICH_GUIDE_SLUGS, "crm-lead-management"])];
 
 export function getGuide(slug, locale) {
-  return getRichGuide(slug, locale) || getExtraGuide(slug, locale) || (GUIDE_LOCALES[locale] || GUIDE_LOCALES.en)[slug] || null;
+  return getCrmLeadGuide(slug, locale) || getRichGuide(slug, locale) || getExtraGuide(slug, locale) || (GUIDE_LOCALES[locale] || GUIDE_LOCALES.en)[slug] || null;
 }
 
 export function guidePath(slug) {
