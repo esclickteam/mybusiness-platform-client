@@ -82,6 +82,12 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
       "<title>ביזאפלי (Bizuply) | פלטפורמה לניהול עסק ו-CRM במקום אחד</title>",
     );
+    expect(buildMarketingDocumentHead("/he/") || "").toContain('rel="canonical" href="https://bizuply.com/he"');
+    expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he</loc>");
+    expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/he/</loc>");
+    expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/es/</loc>");
+    expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/pt-br/</loc>");
+    expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/ar/</loc>");
     expect(buildMarketingDocumentHead("/") || "").toContain('"@id":"https://bizuply.com/#website"');
     expect(buildMarketingDocumentHead("/") || "").toContain('"publisher":{"@id":"https://bizuply.com/#organization"}');
     for (const page of MARKETING_PAGES) {

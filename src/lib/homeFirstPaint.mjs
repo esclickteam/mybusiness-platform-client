@@ -64,7 +64,7 @@ function escapeHtml(value) {
 }
 
 function href(locale, path) {
-  if (locale === "he") return path === "/" ? "/he/" : `/he${path}`;
+  if (locale === "he") return path === "/" ? "/he" : `/he${path}`;
   return path;
 }
 

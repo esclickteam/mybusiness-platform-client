@@ -42,7 +42,7 @@ export function withMarketingLocale(path, locale) {
   const { path: bare } = splitMarketingLocale(path);
   const prefix = localeUrlPrefix(locale);
   if (!prefix) return bare || "/";
-  return bare === "/" ? `${prefix}/` : `${prefix}${bare}`;
+  return bare === "/" ? prefix : `${prefix}${bare}`;
 }
 
 export function marketingLocaleBasename(pathname) {
@@ -50,7 +50,7 @@ export function marketingLocaleBasename(pathname) {
 }
 
 export function hebrewPublicUrl(path) {
-  return path === "/" ? "https://bizuply.com/he/" : `https://bizuply.com/he${path}`;
+  return path === "/" ? "https://bizuply.com/he" : `https://bizuply.com/he${path}`;
 }
 
 export function normalizeMarketingLocale(locale) {
@@ -70,5 +70,5 @@ export function marketingPublicUrl(path, locale = "en") {
   }
   const prefix = localeUrlPrefix(language);
   if (!prefix) return bare === "/" ? "https://bizuply.com/" : `https://bizuply.com${bare}`;
-  return bare === "/" ? `https://bizuply.com${prefix}/` : `https://bizuply.com${prefix}${bare}`;
+  return bare === "/" ? `https://bizuply.com${prefix}` : `https://bizuply.com${prefix}${bare}`;
 }

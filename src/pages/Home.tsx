@@ -13,12 +13,12 @@ import WhyBizuply from "../components/WhyBizuply";
 import FAQMini from "../components/FAQMini";
 
 const HREFLANG = [
-  ["en", "https://bizuply.com/"],
-  ["he", "https://bizuply.com/he/"],
-  ["es", "https://bizuply.com/es/"],
-  ["pt-BR", "https://bizuply.com/pt-br/"],
-  ["ar", "https://bizuply.com/ar/"],
-  ["x-default", "https://bizuply.com/"],
+  ["en", marketingPublicUrl("/", "en")],
+  ["he", marketingPublicUrl("/", "he")],
+  ["es", marketingPublicUrl("/", "es")],
+  ["pt-BR", marketingPublicUrl("/", "pt-BR")],
+  ["ar", marketingPublicUrl("/", "ar")],
+  ["x-default", marketingPublicUrl("/", "en")],
 ] as const;
 
 function setMeta(attr: "name" | "property", key: string, content: string) {

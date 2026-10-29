@@ -28,6 +28,8 @@ describe("marketing edge integration", () => {
     expect(robots.body).not.toMatch(/^Disallow: \/$/m);
     expect(sitemap.status).toBe(200);
     expect(sitemap.body).toContain("<loc>https://bizuply.com/</loc>");
+    expect(sitemap.body).toContain("<loc>https://bizuply.com/he</loc>");
+    expect(sitemap.body).not.toContain("<loc>https://bizuply.com/he/</loc>");
     expect(sitemap.body).toContain("<loc>https://bizuply.com/crm</loc>");
     expect(sitemap.body).not.toContain("/saas");
   });
@@ -75,6 +77,9 @@ describe("marketing edge integration", () => {
     expect(hebrewCrm.body).toContain('lang="he" dir="rtl"');
     expect(hebrewCrm.body).toContain("<h1>נהלו כל ליד וכל קשר עם הלקוח במקום אחד</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
+    expect(hebrewCrm.body).toContain('alt="ביזאפלי (Bizuply)"');
+    const hebrewHome = await read(await middleware(request("https://bizuply.com/he", "bizuply.com")));
+    expect(hebrewHome.body).toContain('rel="canonical" href="https://bizuply.com/he"');
     const whatsappHebrew = await read(await middleware(request("https://bizuply.com/he/whatsapp-api", "bizuply.com")));
     expect(whatsappHebrew.body).toContain("29 דולר");
     const whatsappEnglish = await middleware(request("https://bizuply.com/whatsapp-api", "bizuply.com"));
