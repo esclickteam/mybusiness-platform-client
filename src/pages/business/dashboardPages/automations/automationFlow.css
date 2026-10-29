@@ -1721,7 +1721,7 @@
   border-radius: 12px;
   background: #fff;
   padding: 10px 12px;
-  text-align: right;
+  text-align: start;
   cursor: pointer;
 }
 
@@ -1803,21 +1803,30 @@
 }
 
 .af-wa-tpl-select__options {
-  z-index: 80;
-  width: var(--button-width);
-  max-width: min(100vw - 24px, 420px);
-  max-height: min(320px, 50vh);
-  overflow: auto;
+  z-index: 1000;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: min(100vw - 16px, 420px);
+  max-width: min(100vw - 16px, 420px);
+  max-height: min(320px, calc(100vh - 16px));
+  overflow: hidden;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   background: #fff;
-  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.12);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
   padding: 6px;
 }
 
+.af-wa-tpl-select__list {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .af-wa-tpl-select__search {
-  position: sticky;
-  top: 0;
+  flex: 0 0 auto;
   z-index: 1;
   background: #fff;
   padding: 4px 4px 8px;
@@ -1885,7 +1894,7 @@
   }
 
   .af-wa-tpl-select__options {
-    max-width: calc(100vw - 24px);
+    max-width: calc(100vw - 16px);
   }
 
   .af-wa-tpl-option__meta {
