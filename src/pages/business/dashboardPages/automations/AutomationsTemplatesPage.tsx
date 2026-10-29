@@ -47,7 +47,6 @@ import {
 import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
-  listWhatsAppTemplates,
   type ApprovedWhatsAppTemplate,
   type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
@@ -158,6 +157,11 @@ export default function AutomationsTemplatesPage() {
   const [outlookConnected, setOutlookConnected] = useState(false);
   const [businessSenders, setBusinessSenders] = useState<EmailSender[]>([]);
   const [waCatalogReady, setWaCatalogReady] = useState(false);
+  const [waNeedsReconnect, setWaNeedsReconnect] = useState(false);
+  const [waShowConnect, setWaShowConnect] = useState(false);
+  const waSenderModeRef = useRef<"bizuply_managed" | "business_connected">(
+    "business_connected"
+  );
   const [managedWaReady, setManagedWaReady] = useState(false);
   const [managedModeEnabled, setManagedModeEnabled] = useState(true);
   const [waUnavailableMessage, setWaUnavailableMessage] = useState<string | null>(
@@ -197,22 +201,25 @@ export default function AutomationsTemplatesPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [recipeResult, catalog, approved, allTpl, calendar, gmail, outlook, waStatus, senders] =
+      const [recipeResult, catalog, approved, calendar, gmail, outlook, waStatus, senders] =
         await Promise.all([
           listAutomationRecipes(businessId),
           fetchAutomationTriggerCatalog(businessId).catch(() => ({
             triggers: [] as AutomationTriggerCatalogItem[],
           })),
           listApprovedWhatsAppTemplates(businessId, {
-            senderMode: "bizuply_managed",
+            senderMode: "auto",
+            usableForAutomation: true,
           }).catch(() => ({
             templates: [] as ApprovedWhatsAppTemplate[],
             connected: false,
             readyToSend: false,
+            authorized: false,
+            needsReconnect: false,
+            showConnect: false,
+            message: "",
+            senderMode: "business_connected" as const,
           })),
-          listWhatsAppTemplates(businessId, { approvedOnly: true }).catch(
-            () => [] as WhatsAppTemplate[]
-          ),
           getGoogleCalendarStatus(businessId).catch(() => null),
           getGmailStatus(businessId).catch(() => null),
           getOutlookStatus(businessId).catch(() => null),
@@ -223,13 +230,19 @@ export default function AutomationsTemplatesPage() {
         ]);
 
       const approvedReady =
-        approved.readyToSend === true && approved.connected === true;
+        approved.readyToSend === true && approved.authorized !== false;
+      waSenderModeRef.current =
+        approved.senderMode === "bizuply_managed"
+          ? "bizuply_managed"
+          : "business_connected";
+      setWaNeedsReconnect(!approvedReady && approved.needsReconnect === true);
+      setWaShowConnect(!approvedReady && approved.showConnect === true);
+      setWaUnavailableMessage(
+        approvedReady ? null : approved.message || approved.customerUnavailableMessage || null
+      );
       const byId = new Map<string, WhatsAppTemplate | ApprovedWhatsAppTemplate>();
       if (approvedReady) {
-        for (const tpl of [
-          ...(approved.templates || []),
-          ...(allTpl || []),
-        ]) {
+        for (const tpl of approved.templates || []) {
           const id = getWaTemplateId(tpl);
           if (id && !byId.has(id)) byId.set(id, tpl);
         }
@@ -253,13 +266,6 @@ export default function AutomationsTemplatesPage() {
         waStatus?.managedStatus?.managedModeEnabled ??
         true;
       setManagedModeEnabled(Boolean(modeOn));
-      setWaUnavailableMessage(
-        waStatus?.customerUnavailableMessage ||
-          waStatus?.managedStatus?.customerUnavailableMessage ||
-          (approved as { customerUnavailableMessage?: string })
-            .customerUnavailableMessage ||
-          null
-      );
       setCalendarConnected(
         Boolean(
           calendar?.calendar?.connected ||
@@ -473,7 +479,7 @@ export default function AutomationsTemplatesPage() {
           ...node,
           data: {
             ...node.data,
-            senderMode: "bizuply_managed",
+            senderMode: waSenderModeRef.current,
             templateId,
             // Meta identity — separate from blueprint key
             metaTemplateId: String(
@@ -637,7 +643,7 @@ export default function AutomationsTemplatesPage() {
           ...node,
           data: {
             ...node.data,
-            senderMode: "bizuply_managed",
+            senderMode: waSenderModeRef.current,
             templateId: resolvedId,
             metaTemplateId: String(resolvedTpl?.metaTemplateId || ""),
             metaTemplateName: String(
@@ -1149,13 +1155,21 @@ export default function AutomationsTemplatesPage() {
                 </p>
                 {!waCatalogReady ? (
                   <div data-testid="wa-template-connect-gate">
-                    <p>{t("automations.editor.wa.connectRequired")}</p>
-                    <Link
-                      className="af-toolbar__btn"
-                      to={waSettingsPath}
-                    >
-                      {t("automations.editor.wa.connectAccountCta")}
-                    </Link>
+                    {waNeedsReconnect ? (
+                      <strong>{t("automations.editor.wa.reconnectRequired")}</strong>
+                    ) : null}
+                    <p>
+                      {waUnavailableMessage ||
+                        t("automations.editor.wa.connectRequired")}
+                    </p>
+                    {waShowConnect ? (
+                      <Link
+                        className="af-toolbar__btn"
+                        to={waSettingsPath}
+                      >
+                        {t("automations.editor.wa.connectAccountCta")}
+                      </Link>
+                    ) : null}
                   </div>
                 ) : (
                 <label>

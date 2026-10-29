@@ -703,30 +703,48 @@ export type ApprovedWhatsAppTemplate = WhatsAppTemplate & {
   components?: unknown[];
 };
 
+export type AutomationAvailableSender = {
+  senderMode: WhatsAppSenderMode;
+  authorized: boolean;
+  readyToSend: boolean;
+  needsReconnect: boolean;
+  showConnect: boolean;
+  connectionId?: string;
+  displayPhoneMasked?: string;
+  code?: string;
+  message?: string;
+};
+
 /** Approved Meta templates. Pass senderMode to resolve Managed vs private catalog. */
 export async function listApprovedWhatsAppTemplates(
   businessId: string,
   opts?: {
-    senderMode?: WhatsAppSenderMode;
+    senderMode?: WhatsAppSenderMode | "auto";
     usableForAutomation?: boolean;
   }
 ) {
   const usableForAutomation = Boolean(opts?.usableForAutomation);
-  const senderMode = opts?.senderMode || "bizuply_managed";
+  const senderMode =
+    opts?.senderMode === "auto" ? "" : opts?.senderMode || "bizuply_managed";
   const { data } = await API.get("/whatsapp/templates/approved", {
     params: {
       businessId,
-      senderMode,
+      ...(senderMode ? { senderMode } : {}),
       ...(usableForAutomation ? { usableForAutomation: true } : {}),
     },
   });
   return data as {
     success: boolean;
     senderMode?: WhatsAppSenderMode;
+    preferredSenderMode?: WhatsAppSenderMode;
     usableForAutomation?: boolean;
     connected: boolean;
     readyToSend?: boolean;
     needsReconnect?: boolean;
+    authorized?: boolean;
+    showConnect?: boolean;
+    connectionId?: string;
+    availableSenders?: AutomationAvailableSender[];
     tenantConnected?: boolean;
     managedAllowed?: boolean;
     integrationId?: string;
@@ -766,7 +784,11 @@ export async function syncWhatsAppTemplatesForAutomation(
     connected: boolean;
     readyToSend?: boolean;
     needsReconnect?: boolean;
+    authorized?: boolean;
+    showConnect?: boolean;
     displayPhoneNumber?: string;
+    displayPhoneMasked?: string;
+    message?: string;
     tenantConnected?: boolean;
     managedAllowed?: boolean;
     templates: ApprovedWhatsAppTemplate[];
