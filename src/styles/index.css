@@ -42,12 +42,11 @@ body,
 
 html {
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body {
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow-x: clip;
   font-family: "Assistant", "Inter", system-ui, sans-serif;
   /* Direction comes from <html dir> / .app-layout[dir] — never force LTR here */
   text-align: start;
@@ -133,7 +132,7 @@ a.cta-soft {
   min-height: auto;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow-x: clip;
   overflow-y: visible;
   scrollbar-width: none; /* Firefox — keep invisible if overflow is forced */
   -ms-overflow-style: none; /* legacy Edge */
@@ -146,8 +145,8 @@ a.cta-soft {
 }
 
 .app-scroll-area--profile {
+  overflow-x: clip;
   overflow-y: visible;
-  overflow-x: hidden;
   min-height: auto;
   height: auto;
 }
