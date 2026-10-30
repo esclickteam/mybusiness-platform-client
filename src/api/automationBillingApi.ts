@@ -67,6 +67,11 @@ export type AutomationBillingUsageOverview = {
    * False when used >= actionLimit (or plan/payment blocks execution).
    */
   canPerformBillableAction?: boolean;
+  /**
+   * Server-derived complimentary Basic for a platform-admin-owned business.
+   * There is no checkout and no charge.
+   */
+  complimentary?: boolean;
   blockReason: string | null;
 };
 

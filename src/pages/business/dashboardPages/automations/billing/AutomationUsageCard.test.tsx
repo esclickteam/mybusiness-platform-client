@@ -346,6 +346,42 @@ describe("AutomationUsageCard", () => {
     expect(onReactivate).toHaveBeenCalled();
   });
 
+  it("platform admin complimentary basic shows quota without a purchase button", () => {
+    const { onOpenPlans, onOpenManage } = renderCard(
+      baseUsage({
+        complimentary: true,
+        plan: {
+          key: AUTOMATION_PLAN_KEYS.BASIC,
+          name: "Automation Basic",
+          nameHe: "Automation Basic",
+          status: "active",
+          amount: 19,
+          currency: "usd",
+          executionLimit: 2500,
+          actionLimit: 2500,
+        },
+        usage: {
+          used: 40,
+          limit: 2500,
+          remaining: 2460,
+          percentage: 1.6,
+          periodStart: "2026-10-01T00:00:00.000Z",
+          periodEnd: "2026-11-01T00:00:00.000Z",
+        },
+      })
+    );
+    expect(screen.getByText("חבילת אוטומציה בסיסית")).toBeInTheDocument();
+    expect(screen.getByText(formatHeNumber(40))).toBeInTheDocument();
+    expect(screen.getByText(formatHeNumber(2500))).toBeInTheDocument();
+    expect(
+      screen.getByText(`נשארו ${formatHeNumber(2460)} פעולות.`)
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "ניהול חבילה" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "בחירת חבילה" })).not.toBeInTheDocument();
+    expect(onOpenPlans).not.toHaveBeenCalled();
+    expect(onOpenManage).not.toHaveBeenCalled();
+  });
+
   it("usage API failure card shows retry and does not imply no plan", () => {
     renderCard(null, {
       error: "לא הצלחנו לטעון את נתוני החבילה כרגע.",
