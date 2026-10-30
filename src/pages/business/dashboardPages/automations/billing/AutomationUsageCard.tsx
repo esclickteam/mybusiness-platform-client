@@ -172,6 +172,8 @@ export default function AutomationUsageCard({
   const pendingKey = usage.subscription?.pendingDowngradePlanKey || null;
   const pendingName = pendingKey ? getAutomationPlanDisplayName(pendingKey, t) : null;
   const planName = getAutomationPlanDisplayName(plan?.key, t);
+  const complimentary = usage.complimentary === true;
+  const remaining = Math.max(0, limit - used);
   const inPaymentGrace =
     usage.canExecute &&
     (Boolean(usage.subscription?.paymentGraceEndsAt) ||
@@ -253,13 +255,15 @@ export default function AutomationUsageCard({
           <h3 className="ax-billing-card__title">{t("automations.billing.usageTitle")}</h3>
           <p className="ax-billing-card__plan">{t("automations.billing.planOf", { plan: planName })}</p>
         </div>
-        <button
-          type="button"
-          className="ax-btn ax-btn--secondary"
-          onClick={onOpenManage}
-        >
-          {t("automations.billing.managePlan")}
-        </button>
+        {complimentary ? null : (
+          <button
+            type="button"
+            className="ax-btn ax-btn--secondary"
+            onClick={onOpenManage}
+          >
+            {t("automations.billing.managePlan")}
+          </button>
+        )}
       </div>
 
       <div className="ax-billing-card__usage-row">
@@ -302,6 +306,9 @@ export default function AutomationUsageCard({
 
       <div className="ax-billing-card__meta">
         <span>{t("automations.billing.usedPercent", { percent: formatHeNumber(Number(percentage.toFixed(2))) })}</span>
+        {complimentary ? (
+          <span>{t("automations.billing.remainingActions", { count: formatHeNumber(remaining) })}</span>
+        ) : null}
         {periodEndLabel ? <span>{t("automations.billing.resetsOn", { date: periodEndLabel })}</span> : null}
       </div>
 
@@ -316,13 +323,15 @@ export default function AutomationUsageCard({
               })}
             </strong>
             <p>{t("automations.billing.warnHint")}</p>
-            <button
-              type="button"
-              className="ax-btn ax-btn--primary"
-              onClick={() => openUpgrade("quota_warning")}
-            >
-              {t("automations.billing.upgradePlan")}
-            </button>
+            {complimentary ? null : (
+              <button
+                type="button"
+                className="ax-btn ax-btn--primary"
+                onClick={() => openUpgrade("quota_warning")}
+              >
+                {t("automations.billing.upgradePlan")}
+              </button>
+            )}
           </div>
         </div>
       ) : null}
@@ -334,16 +343,18 @@ export default function AutomationUsageCard({
             <strong>{t("automations.billing.almostQuota")}</strong>
             <p>
               {t("automations.billing.remainingActions", {
-                count: formatHeNumber(Math.max(0, limit - used)),
+                count: formatHeNumber(remaining),
               })}
             </p>
-            <button
-              type="button"
-              className="ax-btn ax-btn--primary"
-              onClick={() => openUpgrade("quota_critical")}
-            >
-              {t("automations.billing.upgradeNow")}
-            </button>
+            {complimentary ? null : (
+              <button
+                type="button"
+                className="ax-btn ax-btn--primary"
+                onClick={() => openUpgrade("quota_critical")}
+              >
+                {t("automations.billing.upgradeNow")}
+              </button>
+            )}
           </div>
         </div>
       ) : null}
@@ -354,13 +365,15 @@ export default function AutomationUsageCard({
           <div>
             <strong>{t("automations.billing.quotaExhausted")}</strong>
             <p>{t("automations.billing.quotaExhaustedText")}</p>
-            <button
-              type="button"
-              className="ax-btn ax-btn--primary"
-              onClick={() => openUpgrade("quota_exhausted")}
-            >
-              {t("automations.billing.upgradePlan")}
-            </button>
+            {complimentary ? null : (
+              <button
+                type="button"
+                className="ax-btn ax-btn--primary"
+                onClick={() => openUpgrade("quota_exhausted")}
+              >
+                {t("automations.billing.upgradePlan")}
+              </button>
+            )}
           </div>
         </div>
       ) : null}
