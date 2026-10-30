@@ -68,10 +68,11 @@ Connection after pay was not driven live: that step is the existing portal Embed
 
 200 rows in `prospects-enriched.json` / `.csv`.
 
-- LinkedIn company pages mapped: 200/200 (company slug, not a person).
-- Public business emails: 12 (only listed addresses).
-- Public phone: 1 (Makeitfuture).
-- Personalized English message per row using that company’s `why` + segment.
+- LinkedIn company pages mapped: 200/200.
+- Named people from company team/about/press pages: 11 companies (owners, CEOs, BD).
+- Public person LinkedIn URLs: 3 (only URLs already public).
+- Public business emails: 12. Public phones: 1 (Makeitfuture UK/RO).
+- Personalized English message; greeting uses the named person when known.
 - `doNotMailUntilApproved: true`. Nothing was sent.
 
 Segments: 70 automation agencies, 50 WhatsApp implementers, 30 sales teams, 50 high-volume inboxes.
