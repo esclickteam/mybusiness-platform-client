@@ -119,6 +119,11 @@ export type PartnerMe = {
     centerOpen: boolean;
     status: string;
     agreementStatus?: string;
+    manualCollection?: {
+      amountUsd: number;
+      collectedOnSite: false;
+      chargedLive: false;
+    };
   };
   storefront?: Record<string, unknown>;
   compliance?: PartnerCompliance;

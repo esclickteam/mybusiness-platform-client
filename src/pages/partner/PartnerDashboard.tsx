@@ -27,6 +27,7 @@ import {
   PartnerMetricCard,
   PartnerQuickAction,
 } from "../../components/partner/partnerUi";
+import InternationalFeeNotice from "../../components/partner/InternationalFeeNotice";
 import {
   eventTypeLabel,
   formatPartnerDate,
@@ -68,6 +69,7 @@ export default function PartnerDashboard() {
   const [error, setError] = useState("");
   const [data, setData] = useState<PartnerDashboardPayload | null>(null);
   const [clients, setClients] = useState<PartnerClient[]>([]);
+  const [me, setMe] = useState<PartnerMe | null>(null);
   const [personalUrl, setPersonalUrl] = useState("");
   const [plansUrl, setPlansUrl] = useState("");
   const [copied, setCopied] = useState(false);
@@ -110,9 +112,10 @@ export default function PartnerDashboard() {
 
   useEffect(() => {
     fetchPartnerMe()
-      .then((me) => {
-        setPersonalUrl(me.urls?.personalUrl || me.urls?.slugUrl || (me.slug ? `${window.location.origin}/p/${me.slug}` : ""));
-        setPlansUrl(me.urls?.plansUrl || (me.slug ? `${window.location.origin}/p/${me.slug}/plans` : ""));
+      .then((next) => {
+        setMe(next);
+        setPersonalUrl(next.urls?.personalUrl || next.urls?.slugUrl || (next.slug ? `${window.location.origin}/p/${next.slug}` : ""));
+        setPlansUrl(next.urls?.plansUrl || (next.slug ? `${window.location.origin}/p/${next.slug}/plans` : ""));
       })
       .catch(() => {});
   }, []);
@@ -149,6 +152,8 @@ export default function PartnerDashboard() {
             onTo={setTo}
             t={t}
           />
+
+          {me ? <InternationalFeeNotice me={me} /> : null}
 
           {personalUrl ? (
             <PartnerCard className="flex flex-wrap items-center justify-between gap-3 p-5">

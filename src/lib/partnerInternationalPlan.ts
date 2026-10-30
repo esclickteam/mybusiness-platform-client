@@ -131,6 +131,40 @@ export function internationalOneTimeCommission(amountUsd: number) {
   return { rate, commissionUsd, chargedLive: false as const };
 }
 
+export type ManualInternationalPaymentInput = {
+  amount?: string | number | null;
+  paidAt?: string | null;
+  reference?: string | null;
+  periodStart?: string | null;
+  periodEnd?: string | null;
+};
+
+export function validateManualInternationalPayment(input: ManualInternationalPaymentInput) {
+  const amount = Number(input.amount);
+  const reference = String(input.reference || "").trim();
+  const paidAt = String(input.paidAt || "").trim();
+  const periodStart = String(input.periodStart || "").trim();
+  const periodEnd = String(input.periodEnd || "").trim();
+  if (!Number.isFinite(amount) || amount <= 0) {
+    return { ok: false as const, error: "Payment amount is required." };
+  }
+  if (!paidAt) return { ok: false as const, error: "Payment date is required." };
+  if (!reference) return { ok: false as const, error: "Payment reference is required." };
+  if (!periodStart || !periodEnd || new Date(periodEnd).getTime() <= new Date(periodStart).getTime()) {
+    return { ok: false as const, error: "Billing period is required." };
+  }
+  return {
+    ok: true as const,
+    payload: {
+      amountUsd: amount,
+      paidAt,
+      reference,
+      periodStart,
+      periodEnd,
+    },
+  };
+}
+
 export function internationalAnnualFeeUsd() {
   return {
     amountUsd: INTERNATIONAL_PARTNER_PLAN.annualUsd || 5000,

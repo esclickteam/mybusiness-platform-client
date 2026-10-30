@@ -12,6 +12,7 @@ import {
   plansForRegisterForm,
   requireInternationalPlanKey,
   resolvePartnerRegisterPlanKey,
+  validateManualInternationalPayment,
 } from "./partnerInternationalPlan";
 
 const legacyCatalog = LEGACY_PLAN_KEYS.map((planKey) => ({
@@ -145,5 +146,18 @@ describe("partner_international is additive", () => {
       }).ok
     ).toBe(true);
     expect(canOpenPartnerCenter({ role: "customer", status: "active" }).ok).toBe(false);
+  });
+
+  it("requires amount, date, reference, and billing period before a manual payment", () => {
+    expect(validateManualInternationalPayment({ amount: 5000 }).ok).toBe(false);
+    expect(
+      validateManualInternationalPayment({
+        amount: 5000,
+        paidAt: "2026-10-30",
+        reference: "WIRE-1",
+        periodStart: "2026-10-30",
+        periodEnd: "2027-10-30",
+      }).ok
+    ).toBe(true);
   });
 });

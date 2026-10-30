@@ -31,5 +31,7 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByText(/10%/)).toBeInTheDocument();
     expect(screen.getByText(/Partner Center/)).toBeInTheDocument();
     expect(screen.getByText(/does not start a live charge/)).toBeInTheDocument();
+    expect(screen.getByText(/free and waits for admin approval/)).toBeInTheDocument();
+    expect(screen.getByText(/payment_due/)).toBeInTheDocument();
   });
 });

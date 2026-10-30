@@ -17839,7 +17839,13 @@
       "freePlan": "Gratis · {{percent}}% de cada trato · equipo {{team}}",
       "paidPlan": "Alta ${{setup}} · mensual ${{monthly}} · parte de comisión {{share}}% · equipo {{team}}",
       "internationalPlan": "${{annual}} / año · recurrente {{recurring}}% · único {{oneTime}}%",
-      "internationalLocked": "Pista International Partner — $5,000 / año. Otros planes ocultos. Sin cobro en vivo."
+      "internationalLocked": "El registro internacional es gratis en el sitio y espera la aprobación de un administrador. Este formulario no cobra. Tras la aprobación el estado es payment_due, y los $5,000 se cobran fuera del sistema."
+    },
+    "internationalFee": {
+      "pendingTitle": "Esperando aprobación del administrador",
+      "pendingBody": "El registro internacional es gratis en el sitio. No se cobra tarjeta. Tras la aprobación el estado será payment_due.",
+      "dueTitle": "Estado: payment_due",
+      "dueBody": "La cuota anual de ${{amount}} se cobra fuera de Bizuply. Las instrucciones de pago se envían por separado. El sitio no cobra tarjeta. Solo un administrador registra el pago después de que llegue el dinero, con importe, fecha, referencia y período. El centro de formación se abre tras ese pago verificado y un acuerdo activo."
     },
     "workboard": {
       "reminders": "Recordatorios",

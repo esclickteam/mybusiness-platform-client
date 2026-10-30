@@ -441,8 +441,31 @@ export async function adminPostMonthly(id: string) {
   return data;
 }
 
-export async function adminRecordPayment(id: string, amountIls: number) {
-  const { data } = await API.post(`/admin/partners/${id}/record-payment`, { amountIls });
+export async function adminRecordPayment(
+  id: string,
+  amountOrPayload:
+    | number
+    | {
+        amountUsd: number;
+        paidAt: string;
+        reference: string;
+        periodStart: string;
+        periodEnd: string;
+        note?: string;
+      }
+) {
+  const body =
+    typeof amountOrPayload === "number"
+      ? { amountIls: amountOrPayload }
+      : {
+          amountUsd: amountOrPayload.amountUsd,
+          paidAt: amountOrPayload.paidAt,
+          reference: amountOrPayload.reference,
+          periodStart: amountOrPayload.periodStart,
+          periodEnd: amountOrPayload.periodEnd,
+          note: amountOrPayload.note || "Verified manual collection",
+        };
+  const { data } = await API.post(`/admin/partners/${id}/record-payment`, body);
   return data;
 }
 

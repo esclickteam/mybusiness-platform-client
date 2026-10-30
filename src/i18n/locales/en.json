@@ -18809,7 +18809,13 @@
       "freePlan": "Free · {{percent}}% of every deal · team {{team}}",
       "paidPlan": "Setup ${{setup}} · monthly ${{monthly}} · commission share {{share}}% · team {{team}}",
       "internationalPlan": "${{annual}} / year · recurring {{recurring}}% · one-time {{oneTime}}%",
-      "internationalLocked": "International Partner track — $5,000 / year. Other plans are hidden. No live charge from this form."
+      "internationalLocked": "International registration is free on this site and waits for admin approval. This form does not charge a card. After approval the status is payment_due, and the $5,000 fee is collected outside the system."
+    },
+    "internationalFee": {
+      "pendingTitle": "Waiting for admin approval",
+      "pendingBody": "International registration is free on this site. No card is charged. After approval the status becomes payment_due.",
+      "dueTitle": "Status: payment_due",
+      "dueBody": "The ${{amount}} annual fee is collected outside Bizuply. Payment instructions are sent separately. This site does not charge a card. Only an admin records a payment after the money arrives, including the amount, date, reference, and billing period. The Partner Center opens after that verified payment and an active partnership agreement."
     },
     "workboard": {
       "reminders": "Reminders",
