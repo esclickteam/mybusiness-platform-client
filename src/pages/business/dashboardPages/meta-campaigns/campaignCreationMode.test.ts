@@ -8,6 +8,7 @@ import {
   META_CAMPAIGNS_CREATE_PATH,
   metaAiCampaignStudioDeepLink,
   metaCampaignsChildPath,
+  parseMetaAiCampaignStudioSeed,
 } from "./campaignCreationMode";
 
 describe("campaignCreationMode helpers", () => {
@@ -30,6 +31,22 @@ describe("campaignCreationMode helpers", () => {
     expect(metaAiCampaignStudioDeepLink("biz-9", { objective: "LEADS" })).toBe(
       `/business/biz-9/dashboard/meta-campaigns/create-ai?from=${META_AI_CAMPAIGN_STUDIO_FROM}&objective=LEADS`
     );
+  });
+
+  it("parses Studio seed query params for the existing wizard boot", () => {
+    expect(parseMetaAiCampaignStudioSeed("")).toEqual({ fromStudio: false });
+    expect(
+      parseMetaAiCampaignStudioSeed(
+        `from=${META_AI_CAMPAIGN_STUDIO_FROM}&objective=WHATSAPP&destination=WHATSAPP`
+      )
+    ).toEqual({
+      fromStudio: true,
+      seed: { objective: "WHATSAPP", destination: "WHATSAPP" },
+    });
+    expect(parseMetaAiCampaignStudioSeed("objective=TRAFFIC")).toEqual({
+      fromStudio: false,
+      seed: { objective: "TRAFFIC" },
+    });
   });
 
   it("treats create-ai as a known Meta Campaigns child", () => {

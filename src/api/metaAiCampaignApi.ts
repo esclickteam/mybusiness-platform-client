@@ -272,7 +272,13 @@ export async function getAiCampaignContext(businessId?: string) {
 
 export async function startAiCampaignSession(
   businessId: string | undefined,
-  body: { action?: "new" | "resume" | "restart"; sessionId?: string; language?: string } = {}
+  body: {
+    action?: "new" | "resume" | "restart";
+    sessionId?: string;
+    language?: string;
+    /** AI Studio / Advisor deep-link seed (objective / destination catalog keys). */
+    seed?: { objective?: string | null; destination?: string | null };
+  } = {}
 ) {
   const { data } = await API.post<AiCampaignSessionResponse>(
     `${BASE}/sessions`,
