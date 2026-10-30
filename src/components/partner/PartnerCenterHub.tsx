@@ -150,11 +150,14 @@ export default function PartnerCenterHub({
       if (!admin) {
         const me = await fetchPartnerMe().catch(() => null);
         if (me) {
+          const activation = me.internationalActivation;
           const access = canOpenPartnerCenter({
             role: "partner",
-            status: me.status,
+            status: activation?.status || me.status,
             planKey: me.planKey || me.plan?.planKey,
             permissions: me.membership?.permissions,
+            feeReady: activation?.feeReady,
+            agreementReady: activation?.agreementReady,
           });
           if (!access.ok) {
             setItems([]);

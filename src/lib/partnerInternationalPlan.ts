@@ -144,6 +144,8 @@ export function canOpenPartnerCenter(input: {
   status?: string | null;
   planKey?: string | null;
   permissions?: string[] | null;
+  feeReady?: boolean | null;
+  agreementReady?: boolean | null;
 }) {
   const role = String(input.role || "").toLowerCase();
   if (role === "admin") return { ok: true as const, reason: "admin" };
@@ -152,14 +154,25 @@ export function canOpenPartnerCenter(input: {
   }
   const status = String(input.status || "");
   const planKey = String(input.planKey || "");
-  if (isInternationalPlanKey(planKey) && status !== "active" && status !== "payment_due") {
-    return {
-      ok: false as const,
-      reason: "Partner Center opens only after admin approval (status active).",
-    };
-  }
-  if (input.permissions && input.permissions.length === 0 && isInternationalPlanKey(planKey)) {
-    return { ok: false as const, reason: "Partner Center requires partner permissions." };
+  if (isInternationalPlanKey(planKey)) {
+    if (status !== "active") {
+      return {
+        ok: false as const,
+        reason: "Partner Center opens only for an active international partner.",
+      };
+    }
+    if (input.feeReady !== true) {
+      return { ok: false as const, reason: "A $5,000 ledger entry is not proof of payment." };
+    }
+    if (input.agreementReady !== true) {
+      return {
+        ok: false as const,
+        reason: "Partner Center opens after the partnership agreement is active.",
+      };
+    }
+    if (input.permissions && input.permissions.length === 0) {
+      return { ok: false as const, reason: "Partner Center requires partner permissions." };
+    }
   }
   return { ok: true as const, reason: "partner" };
 }

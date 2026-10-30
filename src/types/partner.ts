@@ -110,6 +110,16 @@ export type PartnerMe = {
     personalUrl?: string;
   };
   billingCheckoutAvailable?: boolean;
+  internationalActivation?: {
+    feeReady: boolean;
+    agreementReady: boolean;
+    coveredByPayment: boolean;
+    waived: boolean;
+    ledgerChargeIsPaymentProof: false;
+    centerOpen: boolean;
+    status: string;
+    agreementStatus?: string;
+  };
   storefront?: Record<string, unknown>;
   compliance?: PartnerCompliance;
   teamSeatLimit: number;

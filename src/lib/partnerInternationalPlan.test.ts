@@ -97,7 +97,7 @@ describe("partner_international is additive", () => {
     });
   });
 
-  it("opens Partner Center after approval for international, and leaves legacy pending partners unchanged", () => {
+  it("opens Partner Center only after payment proof and an active agreement", () => {
     expect(
       canOpenPartnerCenter({
         role: "partner",
@@ -110,6 +110,8 @@ describe("partner_international is additive", () => {
         role: "partner",
         status: "pending_setup",
         planKey: INTERNATIONAL_PLAN_KEY,
+        feeReady: false,
+        agreementReady: false,
       }).ok
     ).toBe(false);
     expect(
@@ -117,6 +119,28 @@ describe("partner_international is additive", () => {
         role: "partner",
         status: "active",
         planKey: INTERNATIONAL_PLAN_KEY,
+        feeReady: false,
+        agreementReady: true,
+        permissions: ["view_clients"],
+      }).reason
+    ).toMatch(/not proof of payment/);
+    expect(
+      canOpenPartnerCenter({
+        role: "partner",
+        status: "payment_due",
+        planKey: INTERNATIONAL_PLAN_KEY,
+        feeReady: false,
+        agreementReady: true,
+        permissions: ["view_clients"],
+      }).ok
+    ).toBe(false);
+    expect(
+      canOpenPartnerCenter({
+        role: "partner",
+        status: "active",
+        planKey: INTERNATIONAL_PLAN_KEY,
+        feeReady: true,
+        agreementReady: true,
         permissions: ["view_clients"],
       }).ok
     ).toBe(true);

@@ -1162,7 +1162,7 @@ export function buildMarketingPrerender(pathname) {
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
   const extra = path === "/partners"
-    ? `<p>Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%. Existing partner tracks keep their current terms.</p><p>Training and marketing materials stay in the existing Partner Center and open after admin approval.</p><p><a href="/partner/register?planKey=partner_international">Apply for International Partner</a></p>`
+    ? `<p>Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%. Existing partner tracks keep their current terms.</p><p>Training and marketing materials stay in the existing Partner Center. They open only after the partner is active, the partnership agreement is active, and the annual fee is covered by a recorded payment or an admin waiver. A ledger charge alone does not open the center.</p><p><a href="/partner/register?planKey=partner_international">Apply for International Partner</a></p>`
     : path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
     : path === "/about" && aboutFaqs
