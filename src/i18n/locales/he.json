@@ -18794,7 +18794,9 @@
       "freePlan": "חינם · {{percent}}% מכל עסקה · צוות {{team}}",
       "paidPlan": "הקמה ${{setup}} · חודשי ${{monthly}} · חלק עמלה {{share}}% · צוות {{team}}",
       "internationalPlan": "${{annual}} לשנה · עמלה חוזרת {{recurring}}% · חד-פעמי {{oneTime}}%",
-      "internationalLocked": "ההרשמה למסלול הבינלאומי היא ללא תשלום באתר וממתינה לאישור אדמין. אין חיוב בטופס. אחרי האישור הסטטוס הוא payment_due, וגביית $5,000 מתבצעת מחוץ למערכת."
+      "internationalPrice": "${{annual}} לשנה",
+      "internationalManual": "גבייה ידנית בלבד. ההרשמה ללא תשלום וממתינה לאישור אדמין.",
+      "internationalLocked": "ההרשמה למסלול הבינלאומי היא ללא תשלום באתר וממתינה לאישור אדמין. אין חיוב בטופס."
     },
     "internationalFee": {
       "pendingTitle": "הבקשה ממתינה לאישור אדמין",

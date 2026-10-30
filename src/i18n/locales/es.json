@@ -17839,7 +17839,9 @@
       "freePlan": "Gratis · {{percent}}% de cada trato · equipo {{team}}",
       "paidPlan": "Alta ${{setup}} · mensual ${{monthly}} · parte de comisión {{share}}% · equipo {{team}}",
       "internationalPlan": "${{annual}} / año · recurrente {{recurring}}% · único {{oneTime}}%",
-      "internationalLocked": "El registro internacional es gratis en el sitio y espera la aprobación de un administrador. Este formulario no cobra. Tras la aprobación el estado es payment_due, y los $5,000 se cobran fuera del sistema."
+      "internationalPrice": "${{annual}} / año",
+      "internationalManual": "Cobro manual solamente. El registro es gratis y espera la aprobación de un administrador.",
+      "internationalLocked": "El registro internacional es gratis en el sitio y espera la aprobación de un administrador. Este formulario no cobra."
     },
     "internationalFee": {
       "pendingTitle": "Esperando aprobación del administrador",

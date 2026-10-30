@@ -17839,7 +17839,9 @@
       "freePlan": "مجاني · {{percent}}% من كل صفقة · فريق {{team}}",
       "paidPlan": "إعداد ${{setup}} · شهري ${{monthly}} · حصة العمولة {{share}}% · فريق {{team}}",
       "internationalPlan": "${{annual}} / سنة · متكرر {{recurring}}% · لمرة واحدة {{oneTime}}%",
-      "internationalLocked": "التسجيل في المسار الدولي مجاني على الموقع وينتظر موافقة المسؤول. هذا النموذج لا يخصم مبلغاً. بعد الموافقة تصبح الحالة payment_due، ويتم تحصيل 5000$ خارج النظام."
+      "internationalPrice": "${{annual}} / سنة",
+      "internationalManual": "تحصيل يدوي فقط. التسجيل مجاني وينتظر موافقة المسؤول.",
+      "internationalLocked": "التسجيل في المسار الدولي مجاني على الموقع وينتظر موافقة المسؤول. هذا النموذج لا يخصم مبلغاً."
     },
     "internationalFee": {
       "pendingTitle": "الطلب بانتظار موافقة المسؤول",

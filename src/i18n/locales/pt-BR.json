@@ -17839,7 +17839,9 @@
       "freePlan": "Grátis · {{percent}}% de cada negócio · equipe {{team}}",
       "paidPlan": "Setup ${{setup}} · mensal ${{monthly}} · parte da comissão {{share}}% · equipe {{team}}",
       "internationalPlan": "${{annual}} / ano · recorrente {{recurring}}% · único {{oneTime}}%",
-      "internationalLocked": "O cadastro internacional é gratuito no site e aguarda aprovação do administrador. Este formulário não cobra. Após a aprovação o status é payment_due, e a taxa de $5,000 é cobrada fora do sistema."
+      "internationalPrice": "${{annual}} / ano",
+      "internationalManual": "Cobrança manual apenas. O cadastro é gratuito e aguarda aprovação do administrador.",
+      "internationalLocked": "O cadastro internacional é gratuito no site e aguarda aprovação do administrador. Este formulário não cobra."
     },
     "internationalFee": {
       "pendingTitle": "Aguardando aprovação do administrador",

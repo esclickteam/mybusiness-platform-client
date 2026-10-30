@@ -128,24 +128,35 @@ export default function PartnerRegister() {
             placeholder={t("common.password")}
             className="w-full rounded-xl border border-slate-200 px-3 py-2"
           />
-          <div className="grid gap-2">
-            {visiblePlans.map((plan) => (
-              <label key={plan.planKey} className="rounded-xl border border-slate-200 p-3 text-sm">
-                <input
-                  type="radio"
-                  name="plan"
-                  checked={form.planKey === plan.planKey}
-                  disabled={lockedToInternational}
-                  onChange={() => {
-                    if (lockedToInternational) return;
-                    setForm({ ...form, planKey: plan.planKey });
-                  }}
-                />{" "}
-                <strong>{partnerPlanDisplayName(t, plan)}</strong>
-                {` · ${planSummary(t, plan)}`}
-              </label>
-            ))}
-          </div>
+          {lockedToInternational ? (
+            <div
+              className="rounded-xl border border-slate-200 p-3 text-sm"
+              data-testid="international-plan-only"
+            >
+              <p className="font-black">{t("partner.planNames.partner_international")}</p>
+              <p className="mt-1 text-lg font-black" data-testid="international-annual-price">
+                {t("partner.register.internationalPrice", {
+                  annual: (INTERNATIONAL_PARTNER_PLAN.annualUsd || 5000).toLocaleString("en-US"),
+                })}
+              </p>
+              <p className="mt-1 text-slate-600">{t("partner.register.internationalManual")}</p>
+            </div>
+          ) : (
+            <div className="grid gap-2">
+              {visiblePlans.map((plan) => (
+                <label key={plan.planKey} className="rounded-xl border border-slate-200 p-3 text-sm">
+                  <input
+                    type="radio"
+                    name="plan"
+                    checked={form.planKey === plan.planKey}
+                    onChange={() => setForm({ ...form, planKey: plan.planKey })}
+                  />{" "}
+                  <strong>{partnerPlanDisplayName(t, plan)}</strong>
+                  {` · ${planSummary(t, plan)}`}
+                </label>
+              ))}
+            </div>
+          )}
           <button type="submit" className="w-full rounded-xl bg-slate-900 py-2 font-black text-white">
             {t("partner.register.createAccount")}
           </button>

@@ -74,6 +74,13 @@ describe("PartnerRegister international lock", () => {
     renderAt("/partner/register?planKey=partner_international");
     expect(await screen.findByText(/partner.planNames.partner_international/)).toBeInTheDocument();
     expect(screen.queryByText(/partner.planNames.partner_pro/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/partner.planNames.partner_basic/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/partner.planNames.partner_premium/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/partner.planNames.partner_percent/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/stagingOnly|Stripe/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId("international-plan-only")).toBeInTheDocument();
+    expect(screen.getByTestId("international-annual-price").textContent).toContain("5,000");
+    expect(screen.getByText(/partner.register.internationalManual/)).toBeInTheDocument();
     expect(screen.getByText(/partner.register.internationalLocked/)).toBeInTheDocument();
   });
 });
