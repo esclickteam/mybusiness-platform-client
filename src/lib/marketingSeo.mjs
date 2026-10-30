@@ -83,6 +83,16 @@ export const MARKETING_PAGES = [
     priority: "0.7",
   },
   {
+    path: "/partners",
+    title: "International Partner Program | Bizuply",
+    description:
+      "Join the Bizuply International Partner program for $5,000 per year. Recurring commission is 30%, 35%, or 40% under the partner agreement, and eligible one-time deals earn 10%. The recruitment form does not start a live charge.",
+    crumb: "Partners",
+    lastmod: "2026-10-30",
+    changefreq: "monthly",
+    priority: "0.7",
+  },
+  {
     path: "/terms",
     title: "Terms of Service - Bizuply",
     description:
@@ -1151,7 +1161,9 @@ export function buildMarketingPrerender(pathname) {
       : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
-  const extra = path === "/crm"
+  const extra = path === "/partners"
+    ? `<p>Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%. Existing partner tracks keep their current terms.</p><p>Training and marketing materials stay in the existing Partner Center and open after admin approval.</p><p><a href="/partner/register?planKey=partner_international">Apply for International Partner</a></p>`
+    : path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
     : path === "/about" && aboutFaqs
       ? `<p>Bizuply develops software for customers, communication, marketing, websites and day-to-day operations, together with professional services that help a business put that software to work.</p><p>Bizuply LLC is registered in the United States. Support is at support@bizuply.com.</p><h2>Business Platform</h2><p>A connected workspace for managing customers, communication, marketing, and everyday business operations.</p><h2>Ready-Made SaaS Solutions</h2><p>Industry-focused software solutions designed around specific business workflows.</p><h2>Professional Digital Services</h2><p>Practical assistance with websites, technology setup, and connected business solutions.</p><p><a href="/platform">Explore Bizuply</a> <a href="/contact">Contact Our Team</a></p><h2>Frequently asked questions about Bizuply</h2>${faqBodyHtml(aboutFaqs)}`

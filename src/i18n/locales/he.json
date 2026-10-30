@@ -18792,7 +18792,9 @@
       "alreadyRegistered": "כבר רשומים?",
       "signIn": "התחברות",
       "freePlan": "חינם · {{percent}}% מכל עסקה · צוות {{team}}",
-      "paidPlan": "הקמה ${{setup}} · חודשי ${{monthly}} · חלק עמלה {{share}}% · צוות {{team}}"
+      "paidPlan": "הקמה ${{setup}} · חודשי ${{monthly}} · חלק עמלה {{share}}% · צוות {{team}}",
+      "internationalPlan": "${{annual}} לשנה · עמלה חוזרת {{recurring}}% · חד-פעמי {{oneTime}}%",
+      "internationalLocked": "מסלול שותף בינלאומי — $5,000 לשנה. מסלולים אחרים מוסתרים. אין חיוב חי מטופס זה."
     },
     "workboard": {
       "reminders": "תזכורות",
@@ -19025,7 +19027,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "אחוזים בלבד"
+      "partner_percent": "אחוזים בלבד",
+      "partner_international": "שותף בינלאומי"
     },
     "poweredBy": "מופעל על ידי Bizuply",
     "money": {

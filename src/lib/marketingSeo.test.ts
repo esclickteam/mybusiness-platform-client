@@ -41,6 +41,12 @@ describe("marketing crawl files", () => {
     for (const page of ["/crm", "/appointments", "/automations", "/agents", "/website-builder", "/collaborations", "/business"]) {
       expect(sitemap).toContain(`<loc>https://bizuply.com${page}</loc>`);
     }
+    expect(sitemap).toContain("<loc>https://bizuply.com/partners</loc>");
+    expect(isUnknownMarketingPath("/partners")).toBe(false);
+    expect(buildMarketingDocumentHead("/partners") || "").toContain('href="https://bizuply.com/partners"');
+    expect(buildMarketingPrerender("/partners")?.inner || "").toContain(
+      "/partner/register?planKey=partner_international"
+    );
     expect(sitemap).not.toContain("bizuply.com/saas");
     expect(sitemap).not.toContain("bizuply.com/join");
     expect(sitemap).not.toContain("privacy-policy");

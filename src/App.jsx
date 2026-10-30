@@ -249,6 +249,7 @@ const PartnerWorkboard = lazy(() => import("./pages/partner/PartnerWorkboard"));
 const PartnerDealDetail = lazy(() => import("./pages/partner/PartnerDealDetail"));
 const PartnerPublicDeal = lazy(() => import("./pages/partner/PartnerPublicDeal"));
 const PartnerRegister = lazy(() => import("./pages/partner/PartnerRegister"));
+const PartnersRecruitment = lazy(() => import("./pages/public/PartnersRecruitment"));
 const PartnerAcceptInvite = lazy(() => import("./pages/partner/PartnerAcceptInvite"));
 const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"));
 const PartnerPublicPlans = lazy(() => import("./pages/public/PartnerPublicPlans"));
@@ -1283,6 +1284,7 @@ export default function App() {
                         <Route path="/accessibility" element={<Accessibility />} />
                         <Route path="/terms" element={<Terms />} />
                         <Route path="/contact" element={<Contact />} />
+                        <Route path="/partners" element={<PartnersRecruitment />} />
 
                         <Route
                           path="/business-support"

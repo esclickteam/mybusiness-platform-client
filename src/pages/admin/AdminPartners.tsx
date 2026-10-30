@@ -297,6 +297,13 @@ export default function AdminPartners() {
                             },
                           },
                           {
+                            label: "מסלול International ($5,000 / שנה)",
+                            onClick: async () => {
+                              await adminChangePartnerPlan(row.partnerId, "partner_international");
+                              await refresh();
+                            },
+                          },
+                          {
                             label: "ייצוא",
                             onClick: async () => {
                               const { data } = await API.get(

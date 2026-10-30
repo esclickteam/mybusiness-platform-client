@@ -18807,7 +18807,9 @@
       "alreadyRegistered": "Already registered?",
       "signIn": "Sign in",
       "freePlan": "Free · {{percent}}% of every deal · team {{team}}",
-      "paidPlan": "Setup ${{setup}} · monthly ${{monthly}} · commission share {{share}}% · team {{team}}"
+      "paidPlan": "Setup ${{setup}} · monthly ${{monthly}} · commission share {{share}}% · team {{team}}",
+      "internationalPlan": "${{annual}} / year · recurring {{recurring}}% · one-time {{oneTime}}%",
+      "internationalLocked": "International Partner track — $5,000 / year. Other plans are hidden. No live charge from this form."
     },
     "workboard": {
       "reminders": "Reminders",
@@ -19040,7 +19042,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "Percent only"
+      "partner_percent": "Percent only",
+      "partner_international": "International Partner"
     },
     "poweredBy": "Powered by Bizuply",
     "money": {

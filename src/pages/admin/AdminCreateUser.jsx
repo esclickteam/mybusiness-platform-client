@@ -47,6 +47,11 @@ const PARTNER_PLAN_OPTIONS = [
     label: "אחוזים בלבד",
     details: "חינם · בלי דמי הקמה ובלי מנוי · 15% מכל עסקה · עד 2 משתמשי צוות נוספים · אין עמלה ₪500 על צירוף פרטנר במסלול זה",
   },
+  {
+    planKey: "partner_international",
+    label: "International Partner",
+    details: "$5,000 לשנה · עמלה חוזרת 30%/35%/40% לפי הסכם · 10% חד-פעמי · בלי חיוב חי מטופס זה",
+  },
 ];
 
 const PAYMENT_MODES = [

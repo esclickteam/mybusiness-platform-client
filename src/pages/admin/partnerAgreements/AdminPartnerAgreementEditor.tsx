@@ -449,6 +449,21 @@ export default function AdminPartnerAgreementEditor() {
       incorporationCountryCode: prefill.incorporationCountryCode || current.incorporationCountryCode,
       startDate: prefill.startDate || current.startDate,
       endDate: prefill.endDate || current.endDate,
+      ...(prefill.planKey === "partner_international"
+        ? {
+            licenseFee:
+              current.licenseFee == null || current.licenseFee === ""
+                ? prefill.licenseFee ?? 5000
+                : current.licenseFee,
+            currency: current.currency || prefill.currency || "USD",
+            renewalPrice:
+              current.renewalPrice == null || current.renewalPrice === ""
+                ? prefill.renewalPrice ?? 5000
+                : current.renewalPrice,
+            renewalTerm: current.renewalTerm || prefill.renewalTerm || "12 months",
+            licenseTerm: current.licenseTerm || prefill.licenseTerm || "12 months",
+          }
+        : {}),
     }));
     setCommissionNote(
       prefill.currentCustomCommissionPercent == null

@@ -2,7 +2,8 @@ export type PartnerPlanKey =
   | "partner_basic"
   | "partner_pro"
   | "partner_premium"
-  | "partner_percent";
+  | "partner_percent"
+  | "partner_international";
 
 export type PartnerStatus =
   | "pending_setup"
@@ -39,17 +40,25 @@ export type PartnerPlan = {
   nameEn: string;
   setupIls: number;
   monthlyIls: number;
+  setupSku?: string;
+  monthlySku?: string;
+  currency?: string;
+  annualUsd?: number;
   softwareDiscountCap: number;
   humanServiceDiscountCap: number;
   aiDiscountCap: number;
-  whatsappDiscountCap: number;
+  whatsappDiscountCap?: number;
   partnerMarkupShare: number;
   additionalTeamUsers: number;
   customDomainEligible: boolean;
   canHideBizuplyBranding: boolean;
   isPaid?: boolean;
-  commissionModel?: "markup_share" | "percent_of_sale";
+  commissionModel?: "markup_share" | "percent_of_sale" | "agreement_percent";
   saleCommissionRate?: number;
+  oneTimeSaleCommissionRate?: number;
+  recurringTiers?: Array<{ minCustomers: number; maxCustomers: number | null; rate: number }>;
+  billing?: "monthly" | "annual";
+  liveBillingEnabled?: boolean;
 };
 
 export type PartnerComplianceDocument = {

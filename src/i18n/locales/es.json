@@ -17837,7 +17837,9 @@
       "alreadyRegistered": "¿Ya está registrado?",
       "signIn": "Iniciar sesión",
       "freePlan": "Gratis · {{percent}}% de cada trato · equipo {{team}}",
-      "paidPlan": "Alta ${{setup}} · mensual ${{monthly}} · parte de comisión {{share}}% · equipo {{team}}"
+      "paidPlan": "Alta ${{setup}} · mensual ${{monthly}} · parte de comisión {{share}}% · equipo {{team}}",
+      "internationalPlan": "${{annual}} / año · recurrente {{recurring}}% · único {{oneTime}}%",
+      "internationalLocked": "Pista International Partner — $5,000 / año. Otros planes ocultos. Sin cobro en vivo."
     },
     "workboard": {
       "reminders": "Recordatorios",
@@ -18070,7 +18072,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "Solo porcentaje"
+      "partner_percent": "Solo porcentaje",
+      "partner_international": "Socio internacional"
     },
     "poweredBy": "Con tecnología de Bizuply",
     "money": {

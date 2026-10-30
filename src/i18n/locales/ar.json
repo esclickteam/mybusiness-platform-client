@@ -17837,7 +17837,9 @@
       "alreadyRegistered": "مسجّل بالفعل؟",
       "signIn": "تسجيل الدخول",
       "freePlan": "مجاني · {{percent}}% من كل صفقة · فريق {{team}}",
-      "paidPlan": "إعداد ${{setup}} · شهري ${{monthly}} · حصة العمولة {{share}}% · فريق {{team}}"
+      "paidPlan": "إعداد ${{setup}} · شهري ${{monthly}} · حصة العمولة {{share}}% · فريق {{team}}",
+      "internationalPlan": "${{annual}} / سنة · متكرر {{recurring}}% · لمرة واحدة {{oneTime}}%",
+      "internationalLocked": "مسار الشريك الدولي — 5000$ سنوياً. الخطط الأخرى مخفية. لا يوجد تحصيل حي."
     },
     "workboard": {
       "reminders": "تذكيرات",
@@ -18070,7 +18072,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "نسبة فقط"
+      "partner_percent": "نسبة فقط",
+      "partner_international": "شريك دولي"
     },
     "poweredBy": "مدعوم من Bizuply",
     "money": {

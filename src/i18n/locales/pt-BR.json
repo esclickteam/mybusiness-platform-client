@@ -17837,7 +17837,9 @@
       "alreadyRegistered": "Já tem cadastro?",
       "signIn": "Entrar",
       "freePlan": "Grátis · {{percent}}% de cada negócio · equipe {{team}}",
-      "paidPlan": "Setup ${{setup}} · mensal ${{monthly}} · parte da comissão {{share}}% · equipe {{team}}"
+      "paidPlan": "Setup ${{setup}} · mensal ${{monthly}} · parte da comissão {{share}}% · equipe {{team}}",
+      "internationalPlan": "${{annual}} / ano · recorrente {{recurring}}% · único {{oneTime}}%",
+      "internationalLocked": "Trilha International Partner — $5,000 / ano. Outros planos ocultos. Sem cobrança ao vivo."
     },
     "workboard": {
       "reminders": "Lembretes",
@@ -18070,7 +18072,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "Somente percentual"
+      "partner_percent": "Somente percentual",
+      "partner_international": "Parceiro internacional"
     },
     "poweredBy": "Desenvolvido por Bizuply",
     "money": {

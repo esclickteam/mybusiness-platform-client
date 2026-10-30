@@ -449,3 +449,22 @@ test("partner settings expose white-label branding fields and personal link acti
   assert.equal(hook.includes("fetchPublicPartnerBranding"), true);
   assert.equal(hook.includes("whiteLabelEnabled"), true);
 });
+
+test("international register lock never coerces partner_basic", () => {
+  const register = readFileSync(join(ROOT, "pages/partner/PartnerRegister.tsx"), "utf8");
+  assert.equal(register.includes("resolvePartnerRegisterPlanKey"), true);
+  assert.equal(register.includes("lockedToInternational"), true);
+  assert.equal(register.includes("INTERNATIONAL_PLAN_KEY"), true);
+  assert.equal(register.includes("planKey: \"partner_international\""), false);
+  const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
+  assert.equal(api.includes("resolvePartnerRegisterPlanKey"), true);
+  assert.equal(api.includes("mergeInternationalCatalogRow"), true);
+  const admin = readFileSync(join(ROOT, "pages/admin/AdminPartners.tsx"), "utf8");
+  assert.equal(admin.includes("partner_international"), true);
+  assert.equal(admin.includes('adminChangePartnerPlan(row.partnerId, "partner_basic")'), true);
+  const center = readFileSync(join(ROOT, "components/partner/PartnerCenterHub.tsx"), "utf8");
+  assert.equal(center.includes("canOpenPartnerCenter"), true);
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes('path="center"'), true);
+  assert.equal(app.includes('roles={["partner"]}'), true);
+});
