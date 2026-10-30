@@ -1,0 +1,150 @@
+{
+  "base": "http://127.0.0.1:3000/whatsapp-api",
+  "liveCharge": false,
+  "liveWhatsAppSend": false,
+  "failed": 0,
+  "total": 27,
+  "blockedHits": [
+    {
+      "method": "POST",
+      "url": "http://127.0.0.1:59999/api/whatsapp-api/signup-checkout"
+    }
+  ],
+  "results": [
+    {
+      "name": "GET /whatsapp-api/",
+      "ok": true,
+      "detail": "status 200"
+    },
+    {
+      "name": "Home states $29",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home separates Meta fees",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Home CTA Get Started",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "GET /guides",
+      "ok": true,
+      "detail": "status 200"
+    },
+    {
+      "name": "Guides: connect",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Guides: app vs API",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Guides: extra costs",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Guides: no live send claim",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Guides: Meta billed separately",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "GET /pricing",
+      "ok": true,
+      "detail": "status 200"
+    },
+    {
+      "name": "Pricing $29",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pricing Meta additional",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pricing no trial",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Pricing calculator present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "GET /help",
+      "ok": true,
+      "detail": "status 200"
+    },
+    {
+      "name": "Help does not ask for access request",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Help start is self-serve $29",
+      "ok": true,
+      "detail": "Create a WhatsApp API account on Get Started, pay $29/month for one number, then open WhatsApp → Connection and run Meta's Embedded Signup. Existing Bizuply cus"
+    },
+    {
+      "name": "Help connection test",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Help replies not on webhooks",
+      "ok": true,
+      "detail": "Not yet. Webhooks cover outbound message status: accepted, sent, delivered, read and failed. Customer replies appear in the Bizuply WhatsApp inbox."
+    },
+    {
+      "name": "GET /get-started",
+      "ok": true,
+      "detail": "status 200"
+    },
+    {
+      "name": "Get Started uses existing signup",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Get Started mentions Lemon Squeezy",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Get Started $29",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Signup POST blocked from live Lemon",
+      "ok": true,
+      "detail": "POST http://127.0.0.1:59999/api/whatsapp-api/signup-checkout"
+    },
+    {
+      "name": "No OAuth start reached live IdP",
+      "ok": true,
+      "detail": "OAuth start intercepted if attempted"
+    },
+    {
+      "name": "Blocked live-billing requests count",
+      "ok": true,
+      "detail": "1"
+    }
+  ]
+}
