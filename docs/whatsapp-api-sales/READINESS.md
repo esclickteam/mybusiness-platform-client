@@ -4,9 +4,13 @@ Date: 2026-10-30 (Asia/Jerusalem). No merge, no production deploy, no live Lemon
 
 ## Product repo
 
-Fixes live on branch `cursor/whatsapp-api-sales-62be` in `esclickteam/mybusiness-platform-client` (local clone). Price remains `$29/month` per connected number (`PRICE_PER_NUMBER_USD = 29`). Signup is still Get Started → existing Google/Microsoft/email → Lemon Squeezy. Connection is still Meta Embedded Signup on WhatsApp → Connection.
+Branch `cursor/whatsapp-api-sales-62be` was rebased onto `origin/main` (`b60faa3`, includes PR #982 automation-basic). File overlap with that main commit: none. Merge-tree vs current main is clean.
 
-If this environment cannot push that repo (403 for cursor[bot]), apply the bundle from BeautyFlow:
+Price remains `$29/month` per connected number (`PRICE_PER_NUMBER_USD = 29`). Signup is still Get Started → existing Google/Microsoft/email → Lemon Squeezy. Connection is still Meta Embedded Signup on WhatsApp → Connection.
+
+Tests below ran in the original clone (`/tmp/bizuply-main` tracking `esclickteam/mybusiness-platform-client`), not a file-copy tree.
+
+Push of this branch by `cursor[bot]` is still **403**. Open the product PR from an account with write access after applying the BeautyFlow bundle:
 
 ```bash
 docs/whatsapp-api-sales/apply-to-mybusiness.sh /path/to/mybusiness-platform-client

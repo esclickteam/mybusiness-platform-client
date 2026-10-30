@@ -218,7 +218,7 @@ const PUBLIC_CONTACT = {
   "makeitfuture.com": {
     email: "contact@makeitfuture.com",
     contactUrl: "https://www.makeitfuture.com/contact",
-    phone: "+44 1992 932808",
+    phone: "+44 1992 932808 / +40 733 090 090",
     emailStatus: "public_on_site",
   },
   "genbia.com": { contactUrl: "https://genbia.com/contact", emailStatus: "contact_form_only" },
@@ -270,6 +270,102 @@ const PUBLIC_CONTACT = {
   "epam.com": { contactUrl: "https://www.epam.com/about/who-we-are/contact", emailStatus: "contact_form_only" },
 };
 
+/** Named people from company team/about/press pages. Person LinkedIn only when the URL was already public. */
+const PEOPLE = {
+  "zapier.com": [
+    { name: "Wade Foster", title: "Co-founder & CEO", roleType: "agency_owner", linkedin: null, source: "https://zapier.com" },
+  ],
+  "n8n.io": [
+    {
+      name: "Jan Oberhauser",
+      title: "Founder & CEO",
+      roleType: "agency_owner",
+      linkedin: "https://www.linkedin.com/in/janoberhauser",
+      source: "https://n8n.io/press/",
+    },
+  ],
+  "makeitfuture.com": [
+    {
+      name: "Tiberiu Socaci",
+      title: "CEO & Co-founder",
+      roleType: "agency_owner",
+      linkedin: null,
+      source: "https://www.makeitfuture.com/team",
+    },
+    {
+      name: "Jean-Luc Goutagny",
+      title: "Business Development Director",
+      roleType: "business_development",
+      linkedin: null,
+      source: "https://www.makeitfuture.com/team",
+    },
+    {
+      name: "Paul Hamill",
+      title: "UK Business Development",
+      roleType: "business_development",
+      linkedin: null,
+      source: "https://www.makeitfuture.com/team",
+    },
+  ],
+  "gallabox.com": [
+    {
+      name: "Karthik Jagannathan",
+      title: "CEO & Co-founder",
+      roleType: "agency_owner",
+      linkedin: null,
+      source: "https://gallabox.com/about",
+    },
+    {
+      name: "Yogesh Narayanan",
+      title: "CTO & Co-founder",
+      roleType: "agency_owner",
+      linkedin: null,
+      source: "https://gallabox.com/about",
+    },
+  ],
+  "wati.io": [
+    { name: "Bianca Ho", title: "Co-founder", roleType: "agency_owner", linkedin: null, source: "https://www.peakxv.com/companies/wati" },
+    { name: "Ken Yeung", title: "Co-founder", roleType: "agency_owner", linkedin: null, source: "https://www.peakxv.com/companies/wati" },
+  ],
+  "aisensy.com": [
+    {
+      name: "Gautam Rajesh Shelley",
+      title: "Founder & CEO",
+      roleType: "agency_owner",
+      linkedin: "https://www.linkedin.com/in/gautam-rajesh-shelley",
+      source: "https://www.linkedin.com/in/gautam-rajesh-shelley",
+    },
+  ],
+  "interakt.ai": [
+    {
+      name: "Ahshad Jussawala",
+      title: "CEO (Jio Haptik / Interakt)",
+      roleType: "sales_lead",
+      linkedin: "https://www.linkedin.com/in/ahshad-jussawalla",
+      source: "https://www.linkedin.com/in/ahshad-jussawalla",
+    },
+  ],
+  "landbot.io": [
+    { name: "Jiaqi Pan", title: "Co-founder & CEO", roleType: "agency_owner", linkedin: null, source: "https://landbot.io/author/jiaqi-pan" },
+    { name: "Cris Villar", title: "Co-founder & VP Customer Success", roleType: "sales_lead", linkedin: null, source: "https://landbot.io/ungated-conversations/ai-development-co-founder-cris-villar" },
+  ],
+  "manychat.com": [
+    { name: "Mike Yan", title: "Co-founder & CEO", roleType: "agency_owner", linkedin: null, source: "https://manychat.com/about" },
+    { name: "Antony Gorin", title: "Co-founder & Chief Architect", roleType: "agency_owner", linkedin: null, source: "https://manychat.com/about" },
+  ],
+  "respond.io": [
+    { name: "Gerardo Salandra", title: "Co-founder & CEO", roleType: "agency_owner", linkedin: null, source: "https://respond.io/about" },
+    { name: "Iaroslav Kudritskiy", title: "Co-founder & COO", roleType: "business_development", linkedin: null, source: "https://respond.io/about" },
+  ],
+  "crisp.chat": [
+    { name: "Baptiste Jamin", title: "Co-founder & CEO", roleType: "agency_owner", linkedin: null, source: "https://crisp.chat" },
+  ],
+  "chatwoot.com": [
+    { name: "Pranav Raj", title: "Co-founder & CEO", roleType: "agency_owner", linkedin: null, source: "https://www.ycombinator.com/companies/chatwoot" },
+    { name: "Sojan Jose", title: "Co-founder & CTO", roleType: "agency_owner", linkedin: null, source: "https://www.ycombinator.com/companies/chatwoot" },
+  ],
+};
+
 const ROLE = {
   automation_agency: "Founder / Head of Delivery",
   whatsapp_implementer: "WhatsApp / Messaging lead",
@@ -297,9 +393,14 @@ function subject(row) {
   return `${row.company}: stop losing WhatsApp in a personal chat`;
 }
 
-function message(row) {
+function primaryPerson(host) {
+  const list = (PEOPLE[host] || []).filter((p) => p.name);
+  return list[0] || null;
+}
+
+function message(row, person) {
   const role = ROLE[row.segment];
-  const greeting = role.split(" / ")[0].split(" or ")[0];
+  const greeting = person ? person.name.split(" ")[0] : role.split(" / ")[0].split(" or ")[0];
   return `Hi ${greeting},
 
 I am writing to ${row.company} because ${row.why}
@@ -312,7 +413,7 @@ Guides: https://whatsapp.bizuply.com/guides
 Pricing (Meta calculator, billed separately): https://whatsapp.bizuply.com/pricing
 Start: https://whatsapp.bizuply.com/get-started
 
-If this is not the right desk, I would appreciate a pointer to ${role}.
+If this is not the right desk, I would appreciate a pointer to ${person ? `${person.title} or ${role}` : role}.
 
 Ido, Bizuply
 support@bizuply.com`;
@@ -326,24 +427,32 @@ const rows = src.rows.map((row) => {
     contactUrl: row.website,
     emailStatus: "company_site_only",
   };
+  const people = (PEOPLE[host] || []).filter((p) => p.name);
+  const person = primaryPerson(host);
   const linkedinCompanyUrl = typeof li === "string" ? li : li.url;
-  const linkedinNote = typeof li === "string" ? "Company page slug from public brand mapping. Not a person profile." : li.note;
+  const linkedinNote = typeof li === "string" ? "Company page slug from public brand mapping." : li.note;
   return {
     ...row,
-    targetRole: ROLE[row.segment],
+    targetRole: person ? person.title : ROLE[row.segment],
+    namedContacts: people,
     linkedinCompany: linkedinCompanyUrl,
-    linkedinPerson: null,
-    linkedinPersonStatus: "not_claimed — no personal profile scraped",
+    linkedinPerson: person?.linkedin || null,
+    linkedinPersonStatus: person?.linkedin
+      ? "public_profile_url_from_press_or_linkedin_company_page"
+      : people.length
+        ? "name_from_company_team_page — person URL not claimed without a public link"
+        : "not_claimed — no personal profile scraped",
     email: pub.email || null,
     emailStatus: pub.emailStatus,
     contactUrl: pub.contactUrl || row.website,
     phone: pub.phone || null,
     outreachSubject: subject(row),
-    outreachMessage: message(row),
+    outreachMessage: message(row, person),
     verification: {
       website: "public_homepage",
       linkedin: typeof li === "string" ? "company_slug_mapped" : "company_search_only",
       email: pub.email ? "published_on_or_widely_listed" : "use_contact_page",
+      person: people.length ? "named_on_company_or_press_page" : "role_only",
       mailed: false,
     },
     linkedinNote,
@@ -357,22 +466,39 @@ const out = {
   priceUsdPerNumber: 29,
   doNotMailUntilApproved: true,
   contactHonesty:
-    "Company LinkedIn URLs are mapped where the slug is known; otherwise a company search URL. No personal LinkedIn profiles were scraped. Emails are included only when they are publicly listed; otherwise use the contact page. No message was sent.",
+    "Company LinkedIn URLs are mapped where the slug is known. Named people are taken from company team/about/press pages. Person LinkedIn URLs are included only when that URL was already public. Emails are included only when publicly listed. No message was sent.",
   rows,
 };
 const dir = path.join(root, "docs/whatsapp-api-sales");
 writeFileSync(path.join(dir, "prospects-enriched.json"), JSON.stringify(out, null, 2));
-const header = "id,company,website,country,segment,targetRole,email,emailStatus,linkedinCompany,contactUrl,phone,outreachSubject\n";
+const header = "id,company,website,country,segment,targetRole,namedContacts,email,emailStatus,linkedinCompany,linkedinPerson,contactUrl,phone,outreachSubject\n";
 const csv =
   header +
   rows
     .map((r) =>
-      [r.id, r.company, r.website, r.country, r.segment, r.targetRole, r.email || "", r.emailStatus, r.linkedinCompany, r.contactUrl, r.phone || "", JSON.stringify(r.outreachSubject)].join(",")
+      [
+        r.id,
+        r.company,
+        r.website,
+        r.country,
+        r.segment,
+        r.targetRole,
+        JSON.stringify((r.namedContacts || []).map((p) => `${p.name} (${p.title})`).join("; ")),
+        r.email || "",
+        r.emailStatus,
+        r.linkedinCompany,
+        r.linkedinPerson || "",
+        r.contactUrl,
+        r.phone || "",
+        JSON.stringify(r.outreachSubject),
+      ].join(",")
     )
     .join("\n");
 writeFileSync(path.join(dir, "prospects-enriched.csv"), csv);
 const mapped = rows.filter((r) => r.verification.linkedin === "company_slug_mapped").length;
 const emailed = rows.filter((r) => r.email).length;
 const phoned = rows.filter((r) => r.phone).length;
+const named = rows.filter((r) => (r.namedContacts || []).length).length;
+const personLi = rows.filter((r) => r.linkedinPerson).length;
 const bySeg = Object.fromEntries(["automation_agency", "whatsapp_implementer", "sales_team", "high_volume_inbox"].map((s) => [s, rows.filter((r) => r.segment === s).length]));
-console.log(JSON.stringify({ count: rows.length, linkedinCompanyMapped: mapped, publicEmails: emailed, publicPhones: phoned, bySegment: bySeg }, null, 2));
+console.log(JSON.stringify({ count: rows.length, linkedinCompanyMapped: mapped, publicEmails: emailed, publicPhones: phoned, rowsWithNamedPeople: named, publicPersonLinkedin: personLi, bySegment: bySeg }, null, 2));
