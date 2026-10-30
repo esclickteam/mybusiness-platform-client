@@ -167,11 +167,11 @@ function questionSession(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function renderWizard() {
+function renderWizard(
+  entry = "/business/biz-1/dashboard/meta-campaigns/create-ai"
+) {
   return render(
-    <MemoryRouter
-      initialEntries={["/business/biz-1/dashboard/meta-campaigns/create-ai"]}
-    >
+    <MemoryRouter initialEntries={[entry]}>
       <Routes>
         <Route
           path="/business/:businessId/dashboard/meta-campaigns"
@@ -219,6 +219,37 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     resolveStart(questionSession());
     await waitFor(() => expect(screen.getByTestId("meta-ai-owner-lite")).toBeTruthy());
     expect(api.startAiCampaignSession).toHaveBeenCalled();
+  });
+
+  it("boots from AI Studio deep-link with a fresh seeded session", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        intent: {
+          objective: {
+            state: "CONFIRMED",
+            value: { key: "WHATSAPP", metaObjective: "OUTCOME_ENGAGEMENT" },
+            source: "ai_studio",
+          },
+          destination: {
+            state: "CONFIRMED",
+            value: { key: "WHATSAPP" },
+            source: "ai_studio",
+          },
+        },
+      })
+    );
+    renderWizard(
+      "/business/biz-1/dashboard/meta-campaigns/create-ai?from=ai-studio&objective=WHATSAPP&destination=WHATSAPP"
+    );
+    await waitFor(() => expect(screen.getByTestId("meta-ai-owner-lite")).toBeTruthy());
+    expect(api.startAiCampaignSession).toHaveBeenCalledWith(
+      "biz-1",
+      expect.objectContaining({
+        action: "new",
+        seed: { objective: "WHATSAPP", destination: "WHATSAPP" },
+      })
+    );
+    expect(api.getAiCampaignSession).not.toHaveBeenCalled();
   });
 
   it("asks for the service when the profile has no offerings", async () => {

@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useOutletContext,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
@@ -44,6 +50,7 @@ import MetaAiAutomationRecommendations, {
   type EnableAllResult,
 } from "./MetaAiAutomationRecommendations";
 import type { AiProposalHandoff } from "./ads-manager/adsManagerFromAiProposal";
+import { parseMetaAiCampaignStudioSeed } from "./campaignCreationMode";
 
 type OutletCtx = { businessId: string | null };
 
@@ -124,6 +131,7 @@ export default function MetaAiCampaignWizardPage() {
   const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
+  const [searchParams] = useSearchParams();
   const tenantId = urlBusinessId || businessId || "";
   const overviewPath = `/business/${tenantId}/dashboard/meta-campaigns/overview`;
   const settingsPath = `/business/${tenantId}/dashboard/meta-campaigns/settings`;
@@ -131,6 +139,10 @@ export default function MetaAiCampaignWizardPage() {
   const language = String(i18n.language || "he").toLowerCase().startsWith("en")
     ? "en"
     : "he";
+  const studioEntry = useMemo(
+    () => parseMetaAiCampaignStudioSeed(searchParams),
+    [searchParams]
+  );
 
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -182,6 +194,18 @@ export default function MetaAiCampaignWizardPage() {
     setLoading(true);
     setError(null);
     try {
+      // AI Studio deep-link: always start a fresh seeded session (no silent resume).
+      if (studioEntry.fromStudio || studioEntry.seed) {
+        clearPersisted(tenantId);
+        const started = await startAiCampaignSession(tenantId, {
+          language,
+          action: "new",
+          seed: studioEntry.seed,
+        });
+        applySession(started);
+        return;
+      }
+
       const stored = readPersisted(tenantId);
       if (stored) {
         try {
@@ -205,13 +229,13 @@ export default function MetaAiCampaignWizardPage() {
     } finally {
       setLoading(false);
     }
-  }, [applySession, language, t, tenantId]);
+  }, [applySession, language, studioEntry.fromStudio, studioEntry.seed, t, tenantId]);
 
   useEffect(() => {
     void boot();
-    // Start once per tenant. Language is read from i18n at boot time.
+    // Start once per tenant / Studio deep-link. Language is read from i18n at boot time.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenantId]);
+  }, [tenantId, studioEntry.fromStudio, studioEntry.seed?.objective, studioEntry.seed?.destination]);
 
   const handleAnswer = async (field: string, answer: unknown) => {
     if (!session?.sessionId || busy) return;

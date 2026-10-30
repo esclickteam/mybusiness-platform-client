@@ -27,6 +27,31 @@ export function metaAiCampaignStudioDeepLink(
   return `/business/${businessId}/dashboard/meta-campaigns/${META_CAMPAIGNS_CREATE_AI_PATH}?${params.toString()}`;
 }
 
+/** Parse Studio/Advisor query seed from the /create-ai URL. */
+export function parseMetaAiCampaignStudioSeed(
+  search: string | URLSearchParams
+): {
+  fromStudio: boolean;
+  seed?: { objective?: string; destination?: string };
+} {
+  const params =
+    typeof search === "string" ? new URLSearchParams(search) : search;
+  const fromStudio = params.get("from") === META_AI_CAMPAIGN_STUDIO_FROM;
+  const objective = String(params.get("objective") || "").trim();
+  const destination = String(params.get("destination") || "").trim();
+  if (!fromStudio && !objective && !destination) {
+    return { fromStudio: false };
+  }
+  const seed =
+    objective || destination
+      ? {
+          ...(objective ? { objective } : {}),
+          ...(destination ? { destination } : {}),
+        }
+      : undefined;
+  return { fromStudio, seed };
+}
+
 export function isMetaCampaignsKnownChildPath(pathSegment: string): boolean {
   return (
     pathSegment === "overview" ||
