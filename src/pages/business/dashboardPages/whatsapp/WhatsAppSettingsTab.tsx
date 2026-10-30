@@ -53,12 +53,17 @@ import {
 import {
   extractEmbeddedSignupEnteredPhone,
   normalizeEnteredSignupPhone,
-  splitE164ForMetaPrefill,
 } from "./embeddedSignupEnteredPhone";
 import {
   extractEmbeddedSignupSessionAssets,
   embeddedSignupAssetsLogFields,
 } from "./embeddedSignupSessionAssets";
+import {
+  buildCloudApiEmbeddedSignupExtras,
+  buildCoexistenceEmbeddedSignupExtras,
+  type WhatsAppConnectionPath,
+} from "./embeddedSignupCoexistence";
+import WhatsAppCoexistencePathPicker from "./WhatsAppCoexistencePathPicker";
 import {
   btnPrimary,
   btnSecondary,
@@ -184,6 +189,8 @@ export default function WhatsAppSettingsTab() {
     []
   );
   const [testPhone, setTestPhone] = useState("");
+  const [connectionPath, setConnectionPath] =
+    useState<WhatsAppConnectionPath>("cloud_api");
   const [enteredSignupPhone, setEnteredSignupPhone] = useState("");
   const enteredSignupPhoneRef = useRef("");
   enteredSignupPhoneRef.current = enteredSignupPhone;
@@ -380,7 +387,7 @@ export default function WhatsAppSettingsTab() {
     return () => window.removeEventListener("message", onMessage);
   }, [businessId, keepEmbeddedSignupVoiceSession]);
 
-  const handleConnect = async () => {
+  const handleConnect = async (path: WhatsAppConnectionPath = connectionPath) => {
     setActionError("");
     setActionInfo(t("whatsapp.settings.connecting"));
     console.info("[whatsapp] Connect clicked", { businessId });
@@ -440,50 +447,52 @@ export default function WhatsAppSettingsTab() {
       if (!signup.ready) {
         throw new Error(t("whatsapp.settings.configMissing"));
       }
+      if (path === "coexistence" && !signup.coexistenceEnabled) {
+        throw new Error(t("whatsapp.settings.coexistence.disabled"));
+      }
 
-      // Create waiting_for_call session BEFORE Meta popup can place a voice OTP call.
-      // Keep it alive until FB.login returns — Meta "send code again" does not
-      // re-enter handleConnect, and phone_number_id is not available yet.
-      try {
-        setActionInfo(t("whatsapp.settings.voicePreparing"));
-        const voice = await keepEmbeddedSignupVoiceSession();
-        console.info("[whatsapp] Voice verification session ready", {
-          sessionId: voice?.session?.sessionId,
-          created: voice?.created,
-          status: voice?.session?.status,
-          telnyxDid: voice?.session?.telnyxDid,
-        });
-        voiceKeepAlive = window.setInterval(() => {
-          void keepEmbeddedSignupVoiceSession().catch(() => {});
-        }, 20000);
-      } catch (voiceError: any) {
-        const code = voiceVerificationErrorCode(voiceError);
-        console.warn("[whatsapp] Voice session start before ES failed", {
-          code,
-          message: voiceError?.response?.data?.error || voiceError?.message,
-        });
-        if (
-          shouldAbortEmbeddedSignupForVoiceError(code) &&
-          code !== "ENTERED_PHONE_REQUIRED"
-        ) {
-          const msg = t("whatsapp.settings.verificationDidMissing");
-          setActionError(msg);
-          setActionInfo("");
-          toast.error(msg);
-          return;
-        }
-        // Number arrives from Embedded Signup; keep retrying so the session
-        // can be created as soon as Meta posts the phone.
-        voiceKeepAlive = window.setInterval(() => {
-          void keepEmbeddedSignupVoiceSession().catch(() => {});
-        }, 20000);
-        if (code !== "ENTERED_PHONE_REQUIRED") {
-          toast.warning(
-            getApiErrorMessage(
-              voiceError,
-              t("whatsapp.settings.voicePrepareWarn")
-            )
-          );
+      // Voice OTP is only for regular Cloud API onboarding. Coexistence verifies
+      // inside the WhatsApp Business app and must not start a Telnyx session.
+      if (path !== "coexistence") {
+        try {
+          setActionInfo(t("whatsapp.settings.voicePreparing"));
+          const voice = await keepEmbeddedSignupVoiceSession();
+          console.info("[whatsapp] Voice verification session ready", {
+            sessionId: voice?.session?.sessionId,
+            created: voice?.created,
+            status: voice?.session?.status,
+            telnyxDid: voice?.session?.telnyxDid,
+          });
+          voiceKeepAlive = window.setInterval(() => {
+            void keepEmbeddedSignupVoiceSession().catch(() => {});
+          }, 20000);
+        } catch (voiceError: any) {
+          const code = voiceVerificationErrorCode(voiceError);
+          console.warn("[whatsapp] Voice session start before ES failed", {
+            code,
+            message: voiceError?.response?.data?.error || voiceError?.message,
+          });
+          if (
+            shouldAbortEmbeddedSignupForVoiceError(code) &&
+            code !== "ENTERED_PHONE_REQUIRED"
+          ) {
+            const msg = t("whatsapp.settings.verificationDidMissing");
+            setActionError(msg);
+            setActionInfo("");
+            toast.error(msg);
+            return;
+          }
+          voiceKeepAlive = window.setInterval(() => {
+            void keepEmbeddedSignupVoiceSession().catch(() => {});
+          }, 20000);
+          if (code !== "ENTERED_PHONE_REQUIRED") {
+            toast.warning(
+              getApiErrorMessage(
+                voiceError,
+                t("whatsapp.settings.voicePrepareWarn")
+              )
+            );
+          }
         }
       }
 
@@ -545,6 +554,7 @@ export default function WhatsAppSettingsTab() {
                       wabaId: assets.wabaId,
                       metaBusinessId: assets.metaBusinessId,
                       metaEventType: assets.event,
+                      connectionPath: path,
                     }
                   );
 
@@ -602,16 +612,9 @@ export default function WhatsAppSettingsTab() {
               override_default_response_type: true,
               extras: isInvistimoShareTenant(businessId)
                 ? buildInvistimoAccountShareExtras()
-                : {
-                    setup: (() => {
-                      const prefill = splitE164ForMetaPrefill(entered?.e164);
-                      return prefill
-                        ? { business: { phone: prefill } }
-                        : {};
-                    })(),
-                    featureType: "",
-                    sessionInfoVersion: "3",
-                  },
+                : path === "coexistence"
+                  ? buildCoexistenceEmbeddedSignupExtras(entered?.e164)
+                  : buildCloudApiEmbeddedSignupExtras(entered?.e164),
             }
           );
         } catch (error: any) {
@@ -1030,10 +1033,15 @@ export default function WhatsAppSettingsTab() {
   const usingManagedWithoutPrivate =
     Boolean(connection?.usingManagedWithoutPrivate) && !isStandaloneApiAccount;
   const readyToSend = Boolean(connection?.readyToSend);
+  const coexistenceEnabled = Boolean(
+    connection?.embeddedSignup?.coexistenceEnabled
+  );
+  const coexistenceActive = Boolean(connection?.coexistence?.enabled);
   const needsRegistration = Boolean(
     linked &&
       !isPlatformManaged &&
       !readyToSend &&
+      !coexistenceActive &&
       connection?.registrationStatus !== "registered"
   );
   const tone = readinessTone(connection);
@@ -1107,13 +1115,38 @@ export default function WhatsAppSettingsTab() {
                 ? t("whatsapp.settings.connectOwnIntro")
                 : t("whatsapp.settings.connectIntro")}
             </p>
+            {canConnectOwn && coexistenceEnabled ? (
+              <WhatsAppCoexistencePathPicker
+                path={connectionPath}
+                disabled={connecting}
+                onChange={setConnectionPath}
+                copy={{
+                  cloudTitle: t("whatsapp.settings.coexistence.cloudTitle"),
+                  cloudBody: t("whatsapp.settings.coexistence.cloudBody"),
+                  appTitle: t("whatsapp.settings.coexistence.appTitle"),
+                  appBody: t("whatsapp.settings.coexistence.appBody"),
+                  limitsTitle: t("whatsapp.settings.coexistence.limitsTitle"),
+                  limits: [
+                    t("whatsapp.settings.coexistence.limitThroughput"),
+                    t("whatsapp.settings.coexistence.limitHistory"),
+                    t("whatsapp.settings.coexistence.limitGroups"),
+                    t("whatsapp.settings.coexistence.limitBroadcasts"),
+                    t("whatsapp.settings.coexistence.limitWindow"),
+                    t("whatsapp.settings.coexistence.limitLinked"),
+                    t("whatsapp.settings.coexistence.limitPrice"),
+                  ],
+                }}
+              />
+            ) : null}
             {canConnectOwn ? (
               <button
                 type="button"
                 className={btnPrimary}
                 disabled={connecting}
                 onClick={() => {
-                  void handleConnect();
+                  void handleConnect(
+                    coexistenceEnabled ? connectionPath : "cloud_api"
+                  );
                 }}
               >
                 {connecting ? (
@@ -1123,9 +1156,11 @@ export default function WhatsAppSettingsTab() {
                 )}
                 {connecting
                   ? t("whatsapp.settings.connecting")
-                  : usingManagedWithoutPrivate
-                    ? t("whatsapp.settings.connectOwnCta")
-                    : t("whatsapp.settings.connectCta")}
+                  : coexistenceEnabled && connectionPath === "coexistence"
+                    ? t("whatsapp.settings.coexistence.connectCta")
+                    : usingManagedWithoutPrivate
+                      ? t("whatsapp.settings.connectOwnCta")
+                      : t("whatsapp.settings.connectCta")}
               </button>
             ) : (
               <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
@@ -1253,6 +1288,23 @@ export default function WhatsAppSettingsTab() {
                 </div>
               </dl>
             </div>
+            {coexistenceActive ? (
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-950">
+                <p className="font-black">
+                  {t("whatsapp.settings.coexistence.connectedTitle")}
+                </p>
+                <p className="mt-1 text-xs font-medium">
+                  {t("whatsapp.settings.coexistence.connectedBody")}
+                </p>
+                <p className="mt-2 text-xs font-semibold" dir="ltr">
+                  {t("whatsapp.settings.coexistence.syncContacts")}:{" "}
+                  {connection?.coexistence?.contactsSyncStatus || "—"}
+                  {" · "}
+                  {t("whatsapp.settings.coexistence.syncHistory")}:{" "}
+                  {connection?.coexistence?.historySyncStatus || "—"}
+                </p>
+              </div>
+            ) : null}
 
             {needsRegistration ? (
               <div

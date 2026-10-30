@@ -118,8 +118,8 @@ const EN: GetStartedCopy = {
   migrate: {
     strong: "Using the number in the WhatsApp app today?",
     before:
-      "Depending on what Meta supports for that number, you may need to migrate it or remove it from the app before it can be registered on the Cloud API. Email",
-    after: "before you connect and we'll check it with you first.",
+      "The WhatsApp connection screen in the portal explains the two options: Cloud API only, or Coexistence so you can keep the WhatsApp Business app on the same number when that path is enabled. Do not migrate or delete the number yourself first. Email",
+    after: "if you need us to confirm which path applies.",
   },
   statuses: {
     eyebrow: "After you connect",
@@ -245,8 +245,8 @@ const HE: GetStartedCopy = {
   migrate: {
     strong: "משתמשים היום במספר באפליקציית WhatsApp?",
     before:
-      "בהתאם למה ש-Meta תומכת בו עבור המספר, ייתכן שתצטרכו להעביר אותו או להסיר אותו מהאפליקציה לפני שאפשר לרשום אותו ב-Cloud API. כתבו אל",
-    after: "לפני החיבור, ונבדוק את זה איתכם קודם.",
+      "מסך החיבור בפורטל מסביר שתי אפשרויות: Cloud API בלבד, או Coexistence כדי להמשיך להשתמש באפליקציית WhatsApp Business על אותו מספר כשהמסלול מופעל. אל תעבירו או תמחקו את המספר בעצמכם קודם. כתבו אל",
+    after: "אם צריך שנאשר איזה מסלול מתאים.",
   },
   statuses: {
     eyebrow: "אחרי החיבור",

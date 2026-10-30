@@ -118,6 +118,16 @@ export type WhatsAppConnection = {
   lastError: string;
   connectedAt: string | null;
   signupReady?: boolean;
+  coexistence?: {
+    enabled?: boolean;
+    isOnBizApp?: boolean;
+    finishEvent?: string;
+    contactsSyncStatus?: string;
+    historySyncStatus?: string;
+    historyShareErrorCode?: string;
+    syncDeadlineAt?: string | null;
+    partnerRemovedAt?: string | null;
+  };
   embeddedSignup?: WhatsAppEmbeddedSignupConfig;
   wabaBillingHealth?: WhatsAppWabaBillingHealth | null;
   whatsappManagerUrl?: string;
@@ -260,6 +270,14 @@ export type WhatsAppEmbeddedSignupConfig = {
   graphVersion: string;
   encryptionReady?: boolean;
   permissions?: string[];
+  coexistenceEnabled?: boolean;
+  coexistence?: {
+    enabled?: boolean;
+    featureType?: string;
+    finishEvent?: string;
+    skipPhoneRegistration?: boolean;
+    webhookFields?: string[];
+  };
   genericConnectBlocked?: boolean;
   extras?: Record<string, unknown>;
   invistimoAccountShare?: {
@@ -842,6 +860,7 @@ export async function completeWhatsAppEmbeddedSignup(
     wabaId: string;
     metaBusinessId?: string;
     metaEventType?: string;
+    connectionPath?: "cloud_api" | "coexistence";
     pin?: string;
     confirmInvistimoAccountShare?: string;
   }

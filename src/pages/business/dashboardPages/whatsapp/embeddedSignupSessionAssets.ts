@@ -8,6 +8,7 @@ export const EMBEDDED_SIGNUP_SUCCESS_EVENTS = [
   "FINISH",
   "FINISH_ONLY_WABA",
   "FINISH_OBO_MIGRATION",
+  "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING",
 ] as const;
 
 export type EmbeddedSignupSuccessEvent =
@@ -44,7 +45,8 @@ export function isEmbeddedSignupSuccessEvent(
 
 /**
  * Extract phone/WABA/portfolio IDs from a Meta WA_EMBEDDED_SIGNUP postMessage.
- * Supports FINISH, FINISH_ONLY_WABA, and FINISH_OBO_MIGRATION.
+ * Supports FINISH, FINISH_ONLY_WABA, FINISH_OBO_MIGRATION, and
+ * FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING.
  * Returns null when the event is not a recognized success completion or IDs are missing.
  */
 export function extractEmbeddedSignupSessionAssets(
@@ -92,7 +94,7 @@ export function extractEmbeddedSignupSessionAssets(
     };
   }
 
-  // FINISH and FINISH_OBO_MIGRATION require both phone and WABA (fail closed).
+  // FINISH, Coexistence, and FINISH_OBO_MIGRATION require both phone and WABA.
   if (!phoneNumberId || !wabaId) {
     return null;
   }
