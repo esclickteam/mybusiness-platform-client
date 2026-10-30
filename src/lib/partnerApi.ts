@@ -9,10 +9,15 @@ import type {
   PartnerPriceLine,
   PartnerCompliance,
 } from "../types/partner";
+import {
+  isInternationalRegisterLock,
+  mergeInternationalCatalogRow,
+  resolvePartnerRegisterPlanKey,
+} from "./partnerInternationalPlan";
 
 export async function fetchPartnerPlans() {
   const { data } = await API.get("/public/partner-plans");
-  return (data.plans || []) as PartnerPlan[];
+  return mergeInternationalCatalogRow((data.plans || []) as PartnerPlan[]);
 }
 
 export async function registerPartner(payload: {
@@ -22,7 +27,19 @@ export async function registerPartner(payload: {
   businessName: string;
   planKey: string;
 }) {
-  const { data } = await API.post("/partner/register", payload);
+  const locked =
+    typeof window !== "undefined" &&
+    isInternationalRegisterLock(window.location.search || "");
+  const resolved = resolvePartnerRegisterPlanKey({
+    requested: payload.planKey,
+    lockedToInternational: locked,
+  });
+  if (!resolved.ok) {
+    const error = new Error(resolved.error) as Error & { response?: { data?: { error?: string } } };
+    error.response = { data: { error: resolved.error } };
+    throw error;
+  }
+  const { data } = await API.post("/partner/register", { ...payload, planKey: resolved.planKey });
   return data;
 }
 
@@ -424,8 +441,31 @@ export async function adminPostMonthly(id: string) {
   return data;
 }
 
-export async function adminRecordPayment(id: string, amountIls: number) {
-  const { data } = await API.post(`/admin/partners/${id}/record-payment`, { amountIls });
+export async function adminRecordPayment(
+  id: string,
+  amountOrPayload:
+    | number
+    | {
+        amountUsd: number;
+        paidAt: string;
+        reference: string;
+        periodStart: string;
+        periodEnd: string;
+        note?: string;
+      }
+) {
+  const body =
+    typeof amountOrPayload === "number"
+      ? { amountIls: amountOrPayload }
+      : {
+          amountUsd: amountOrPayload.amountUsd,
+          paidAt: amountOrPayload.paidAt,
+          reference: amountOrPayload.reference,
+          periodStart: amountOrPayload.periodStart,
+          periodEnd: amountOrPayload.periodEnd,
+          note: amountOrPayload.note || "Verified manual collection",
+        };
+  const { data } = await API.post(`/admin/partners/${id}/record-payment`, body);
   return data;
 }
 

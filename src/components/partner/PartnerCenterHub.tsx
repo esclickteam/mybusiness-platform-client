@@ -36,6 +36,8 @@ import {
   type PartnerMaterial,
   type PartnerOnboardingSnapshot,
 } from "../../lib/partnerCenterApi";
+import { fetchPartnerMe } from "../../lib/partnerApi";
+import { canOpenPartnerCenter } from "../../lib/partnerInternationalPlan";
 import PartnerOnboardingPanel from "./PartnerOnboardingPanel";
 import { partnerProductDemoUrl } from "../../lib/partnerOnboardingDemo";
 
@@ -145,6 +147,26 @@ export default function PartnerCenterHub({
     setLoading(true);
     setError("");
     try {
+      if (!admin) {
+        const me = await fetchPartnerMe().catch(() => null);
+        if (me) {
+          const activation = me.internationalActivation;
+          const access = canOpenPartnerCenter({
+            role: "partner",
+            status: activation?.status || me.status,
+            planKey: me.planKey || me.plan?.planKey,
+            permissions: me.membership?.permissions,
+            feeReady: activation?.feeReady,
+            agreementReady: activation?.agreementReady,
+          });
+          if (!access.ok) {
+            setItems([]);
+            setError(access.reason);
+            setLoading(false);
+            return;
+          }
+        }
+      }
       const data = await fetchPartnerCenterMaterials(
         {
           locale,

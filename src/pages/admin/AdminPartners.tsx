@@ -19,6 +19,9 @@ import {
   fetchAdminPartnerPaymentsRecent,
 } from "../../lib/partnerApi";
 import type { AdminPartnerRow } from "../../types/partner";
+import InternationalManualPaymentForm, {
+  type InternationalManualPaymentTarget,
+} from "./InternationalManualPaymentForm";
 
 function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
@@ -33,6 +36,7 @@ export default function AdminPartners() {
   const [financeRows, setFinanceRows] = useState<any[]>([]);
   const [monthSummary, setMonthSummary] = useState<any>(null);
   const [recentPayments, setRecentPayments] = useState<any[]>([]);
+  const [manualPayment, setManualPayment] = useState<InternationalManualPaymentTarget | null>(null);
   const [showcaseBusy, setShowcaseBusy] = useState(false);
   const [showcaseResult, setShowcaseResult] = useState<any>(null);
 
@@ -166,6 +170,20 @@ export default function AdminPartners() {
             </table>
           </section>
         ) : null}
+        <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-4 text-right">
+          <p className="text-xs font-black uppercase tracking-wide text-violet-700">partner_international</p>
+          <h2 className="mt-1 text-lg font-black text-slate-900">גבייה ידנית, בלי חיוב באתר</h2>
+          <p className="mt-2 max-w-4xl text-sm font-bold text-slate-700">
+            ההרשמה למסלול היא ללא תשלום וממתינה לאישור. אחרי האישור השותף רואה סטטוס payment_due. גביית $5,000 מתבצעת מחוץ למערכת באמצעי תשלום שנמסר לשותף. רק אדמין מתעד תשלום אחרי שהכסף התקבל, כולל סכום, תאריך, אסמכתה ותקופת חיוב. השותף מופעל ומרכז ההכשרה נפתח רק אחרי תשלום מאומת והסכם פעיל. חידוש שנתי נרשם פעם אחת. אין חיוב אוטומטי, ומסלולי השותפים הקיימים לא משתנים.
+          </p>
+        </section>
+        {manualPayment ? (
+          <InternationalManualPaymentForm
+            target={manualPayment}
+            onClose={() => setManualPayment(null)}
+            onSaved={refresh}
+          />
+        ) : null}
         {error ? <p className="mb-3 font-bold text-rose-600">{error}</p> : null}
         {loading ? <p className="mb-3 text-sm font-bold text-slate-500">טוען פרטנרים...</p> : null}
         <input
@@ -260,8 +278,27 @@ export default function AdminPartners() {
                             },
                           },
                           {
-                            label: "רשום תשלום",
+                            label: row.planKey === "partner_international" ? "תעד תשלום ידני" : "רשום תשלום",
                             onClick: async () => {
+                              if (row.planKey === "partner_international") {
+                                const startIso = row.nextPartnerSubscriptionRenewal || "";
+                                const start = startIso ? startIso.slice(0, 10) : "";
+                                let end = "";
+                                if (startIso) {
+                                  const date = new Date(startIso);
+                                  if (!Number.isNaN(date.getTime())) {
+                                    date.setUTCFullYear(date.getUTCFullYear() + 1);
+                                    end = date.toISOString().slice(0, 10);
+                                  }
+                                }
+                                setManualPayment({
+                                  partnerId: row.partnerId,
+                                  name: row.name,
+                                  periodStart: start,
+                                  periodEnd: end,
+                                });
+                                return;
+                              }
                               const amount = Number(window.prompt("סכום תשלום", "499"));
                               if (!amount) return;
                               await adminRecordPayment(row.partnerId, amount);
@@ -293,6 +330,13 @@ export default function AdminPartners() {
                             label: "מסלול אחוזים בלבד",
                             onClick: async () => {
                               await adminChangePartnerPlan(row.partnerId, "partner_percent");
+                              await refresh();
+                            },
+                          },
+                          {
+                            label: "מסלול International ($5,000 / שנה)",
+                            onClick: async () => {
+                              await adminChangePartnerPlan(row.partnerId, "partner_international");
                               await refresh();
                             },
                           },

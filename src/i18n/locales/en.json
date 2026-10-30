@@ -18807,7 +18807,17 @@
       "alreadyRegistered": "Already registered?",
       "signIn": "Sign in",
       "freePlan": "Free · {{percent}}% of every deal · team {{team}}",
-      "paidPlan": "Setup ${{setup}} · monthly ${{monthly}} · commission share {{share}}% · team {{team}}"
+      "paidPlan": "Setup ${{setup}} · monthly ${{monthly}} · commission share {{share}}% · team {{team}}",
+      "internationalPlan": "${{annual}} / year · recurring {{recurring}}% · one-time {{oneTime}}%",
+      "internationalPrice": "${{annual}} / year",
+      "internationalManual": "Manual collection only. Registration is free and waits for admin approval.",
+      "internationalLocked": "International registration is free on this site and waits for admin approval. This form does not charge a card."
+    },
+    "internationalFee": {
+      "pendingTitle": "Waiting for admin approval",
+      "pendingBody": "International registration is free on this site. No card is charged. After approval the status becomes payment_due.",
+      "dueTitle": "Status: payment_due",
+      "dueBody": "The ${{amount}} annual fee is collected outside Bizuply. Payment instructions are sent separately. This site does not charge a card. Only an admin records a payment after the money arrives, including the amount, date, reference, and billing period. The Partner Center opens after that verified payment and an active partnership agreement."
     },
     "workboard": {
       "reminders": "Reminders",
@@ -19040,7 +19050,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "Percent only"
+      "partner_percent": "Percent only",
+      "partner_international": "International Partner"
     },
     "poweredBy": "Powered by Bizuply",
     "money": {

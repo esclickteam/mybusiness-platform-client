@@ -17837,7 +17837,17 @@
       "alreadyRegistered": "مسجّل بالفعل؟",
       "signIn": "تسجيل الدخول",
       "freePlan": "مجاني · {{percent}}% من كل صفقة · فريق {{team}}",
-      "paidPlan": "إعداد ${{setup}} · شهري ${{monthly}} · حصة العمولة {{share}}% · فريق {{team}}"
+      "paidPlan": "إعداد ${{setup}} · شهري ${{monthly}} · حصة العمولة {{share}}% · فريق {{team}}",
+      "internationalPlan": "${{annual}} / سنة · متكرر {{recurring}}% · لمرة واحدة {{oneTime}}%",
+      "internationalPrice": "${{annual}} / سنة",
+      "internationalManual": "تحصيل يدوي فقط. التسجيل مجاني وينتظر موافقة المسؤول.",
+      "internationalLocked": "التسجيل في المسار الدولي مجاني على الموقع وينتظر موافقة المسؤول. هذا النموذج لا يخصم مبلغاً."
+    },
+    "internationalFee": {
+      "pendingTitle": "الطلب بانتظار موافقة المسؤول",
+      "pendingBody": "التسجيل في المسار الدولي مجاني على الموقع. لا يتم خصم بطاقة. بعد الموافقة تصبح الحالة payment_due.",
+      "dueTitle": "الحالة: payment_due",
+      "dueBody": "يتم تحصيل الرسوم السنوية البالغة ${{amount}} خارج Bizuply. تُرسل تعليمات الدفع بشكل منفصل. الموقع لا يخصم بطاقة. يسجل المسؤول الدفع فقط بعد وصول المال، مع المبلغ والتاريخ والمرجع وفترة الفوترة. يفتح مركز التدريب بعد هذا الدفع الموثق واتفاقية نشطة."
     },
     "workboard": {
       "reminders": "تذكيرات",
@@ -18070,7 +18080,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "نسبة فقط"
+      "partner_percent": "نسبة فقط",
+      "partner_international": "شريك دولي"
     },
     "poweredBy": "مدعوم من Bizuply",
     "money": {

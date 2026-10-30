@@ -17837,7 +17837,17 @@
       "alreadyRegistered": "Já tem cadastro?",
       "signIn": "Entrar",
       "freePlan": "Grátis · {{percent}}% de cada negócio · equipe {{team}}",
-      "paidPlan": "Setup ${{setup}} · mensal ${{monthly}} · parte da comissão {{share}}% · equipe {{team}}"
+      "paidPlan": "Setup ${{setup}} · mensal ${{monthly}} · parte da comissão {{share}}% · equipe {{team}}",
+      "internationalPlan": "${{annual}} / ano · recorrente {{recurring}}% · único {{oneTime}}%",
+      "internationalPrice": "${{annual}} / ano",
+      "internationalManual": "Cobrança manual apenas. O cadastro é gratuito e aguarda aprovação do administrador.",
+      "internationalLocked": "O cadastro internacional é gratuito no site e aguarda aprovação do administrador. Este formulário não cobra."
+    },
+    "internationalFee": {
+      "pendingTitle": "Aguardando aprovação do administrador",
+      "pendingBody": "O cadastro internacional é gratuito no site. Nenhum cartão é cobrado. Após a aprovação o status será payment_due.",
+      "dueTitle": "Status: payment_due",
+      "dueBody": "A taxa anual de ${{amount}} é cobrada fora da Bizuply. As instruções de pagamento são enviadas separadamente. O site não cobra cartão. Somente um administrador registra o pagamento depois que o dinheiro chega, com valor, data, referência e período. O centro de treinamento abre após esse pagamento verificado e um contrato ativo."
     },
     "workboard": {
       "reminders": "Lembretes",
@@ -18070,7 +18080,8 @@
       "partner_basic": "Partner",
       "partner_pro": "Partner Pro",
       "partner_premium": "Partner Premium",
-      "partner_percent": "Somente percentual"
+      "partner_percent": "Somente percentual",
+      "partner_international": "Parceiro internacional"
     },
     "poweredBy": "Desenvolvido por Bizuply",
     "money": {

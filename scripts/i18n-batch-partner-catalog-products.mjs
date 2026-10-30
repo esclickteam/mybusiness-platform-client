@@ -30,6 +30,13 @@ const PLAN_NAMES = {
   partner_pro: row("Partner Pro", "Partner Pro", "Partner Pro", "Partner Pro", "Partner Pro"),
   partner_premium: row("Partner Premium", "Partner Premium", "Partner Premium", "Partner Premium", "Partner Premium"),
   partner_percent: row("Percent only", "אחוזים בלבד", "Solo porcentaje", "Somente percentual", "نسبة فقط"),
+  partner_international: row(
+    "International Partner",
+    "שותף בינלאומי",
+    "Socio internacional",
+    "Parceiro internacional",
+    "شريك دولي"
+  ),
 };
 
 const AUTOMATION_PLAN_NAMES = {

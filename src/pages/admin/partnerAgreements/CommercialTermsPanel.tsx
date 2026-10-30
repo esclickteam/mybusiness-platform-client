@@ -211,6 +211,9 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
 
       <div className="mt-3" data-testid="commission-section">
         <TermField field="commission" label={c.commission} mode={modeOf(form, "commission")} editable={editable} onMode={(mode) => setMode("commission", mode)} onReset={() => resetField("commission")} labels={labels} defaultText={c.commissionDefault}>
+          <p className="text-xs font-bold text-slate-500" data-testid="international-one-time-note">
+            {c.internationalOneTime || "International Partner eligible one-time deals: 10%. Existing tracks keep their current split."}
+          </p>
           <div className="space-y-2">
             <select className={inputClass} disabled={!editable} value={structure} onChange={(e) => set("commissionStructure", e.target.value as AgreementInput["commissionStructure"])}>
               <option value="tiers">{c.tiers}</option>

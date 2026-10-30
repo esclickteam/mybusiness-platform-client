@@ -321,6 +321,14 @@ export async function prefillAgreementPartner(partnerId: string) {
       endDate: string;
       currentCustomCommissionPercent: number | null;
       publicName: string;
+      planKey?: string;
+      licenseFee?: number;
+      currency?: string;
+      renewalPrice?: number;
+      renewalTerm?: string;
+      licenseTerm?: string;
+      oneTimeCommissionPercent?: number;
+      liveBillingEnabled?: boolean;
     };
   };
 }
