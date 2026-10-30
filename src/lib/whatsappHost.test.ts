@@ -28,6 +28,15 @@ describe("whatsapp host", () => {
     expect(isBizuplyWhatsAppHost("acme.bizuply.com")).toBe(false);
     expect(isBizuplyWhatsAppHost("whatsapp.sites.bizuply.com")).toBe(false);
     expect(isBizuplyWhatsAppHost("localhost")).toBe(false);
+    expect(isBizuplyWhatsAppHost("wa-staging.bizuply.com")).toBe(true);
+    expect(isBizuplyWhatsAppHost("www.wa-staging.bizuply.com")).toBe(true);
+  });
+
+  it("renders the WhatsApp landing on the staging product host", () => {
+    expect(shouldRenderWhatsAppLanding("wa-staging.bizuply.com", "/")).toBe(true);
+    expect(shouldRenderWhatsAppLanding("wa-staging.bizuply.com", "/pricing")).toBe(true);
+    expect(shouldRenderWhatsAppLanding("wa-staging.bizuply.com", "/get-started")).toBe(true);
+    expect(whatsappSiteBase("wa-staging.bizuply.com")).toBe("");
   });
 
   it("keeps a localhost preview path off the public host", () => {
@@ -126,6 +135,16 @@ describe("whatsapp host", () => {
       }
       const bare = await call("/login");
       expect(bare.headers.get("location")).toBe("https://bizuply.com/whatsapp-api/login");
+
+      const stagingLogin = await middleware(
+        new Request("https://wa-staging.bizuply.com/login?lang=en", {
+          headers: { host: "wa-staging.bizuply.com", accept: "text/html" },
+        }),
+      );
+      expect(stagingLogin.status).toBe(302);
+      expect(stagingLogin.headers.get("location")).toBe(
+        "https://mybusiness-platform-client-staging.vercel.app/whatsapp-api/login?lang=en",
+      );
     } finally {
       globalThis.fetch = realFetch;
     }
@@ -146,6 +165,8 @@ describe("whatsapp host", () => {
     expect(app).toContain("shouldRenderWhatsAppLanding");
     expect(app).toContain("WhatsAppApiLanding");
     expect(indexHtml).toContain("whatsapp.bizuply.com");
+    expect(indexHtml).toContain("wa-staging.bizuply.com");
+    expect(app).toContain('path="/whatsapp-api/*"');
     expect(partnerHost).toContain('"whatsapp"');
   });
 });

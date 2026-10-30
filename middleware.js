@@ -23,9 +23,11 @@ import {
   WHATSAPP_OG_IMAGE,
   WHATSAPP_PRODUCT_SCHEMA,
   WHATSAPP_SEO_KEYWORDS,
+  WHATSAPP_STAGING_LOGIN_APP_URL,
   buildWhatsAppSitemapXml,
   getWhatsAppPageMeta,
   isBizuplyWhatsAppHost,
+  isBizuplyWhatsAppStagingHost,
   normalizeWhatsAppPath,
   whatsappCanonicalUrl,
   whatsappHomepagePrerender,
@@ -654,7 +656,12 @@ function injectRootInner(html, inner) {
 
 /** The sign-in runs on bizuply.com, where the host-only auth session lives; the query (lang, etc.) carries over. */
 function whatsappLoginRedirect(request) {
-  const target = new URL(WHATSAPP_LOGIN_APP_URL);
+  const host = getHost(request);
+  const target = new URL(
+    isBizuplyWhatsAppStagingHost(host)
+      ? WHATSAPP_STAGING_LOGIN_APP_URL
+      : WHATSAPP_LOGIN_APP_URL,
+  );
   target.search = new URL(request.url).search;
   return new Response(null, {
     status: 302,
