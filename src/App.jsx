@@ -1299,6 +1299,7 @@ export default function App() {
 
                         <Route path="/login" element={<Login />} />
                         <Route path={WHATSAPP_API_LOGIN_PATH} element={<WhatsAppApiLoginPage />} />
+                        <Route path="/whatsapp-api/*" element={<WhatsAppApiLanding />} />
                         {import.meta.env.DEV && AiAutomationTemplatesVisualPage ? (
                           <Route
                             path="/dev/ai-automation-templates-visual"

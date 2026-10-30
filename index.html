@@ -43,7 +43,9 @@
           }
           if (
             earlyHost === "whatsapp.bizuply.com" ||
-            earlyHost === "www.whatsapp.bizuply.com"
+            earlyHost === "www.whatsapp.bizuply.com" ||
+            earlyHost === "wa-staging.bizuply.com" ||
+            earlyHost === "www.wa-staging.bizuply.com"
           ) {
             document.documentElement.setAttribute("data-wa-host", "true");
             var waLang = null;
@@ -129,7 +131,9 @@
             host === "travel.bizuply.com" ||
             host === "www.travel.bizuply.com" ||
             host === "whatsapp.bizuply.com" ||
-            host === "www.whatsapp.bizuply.com"
+            host === "www.whatsapp.bizuply.com" ||
+            host === "wa-staging.bizuply.com" ||
+            host === "www.wa-staging.bizuply.com"
           ) {
             return;
           }
@@ -246,7 +250,9 @@
         var host = String(location.hostname || "").toLowerCase();
         if (
           host === "whatsapp.bizuply.com" ||
-          host === "www.whatsapp.bizuply.com"
+          host === "www.whatsapp.bizuply.com" ||
+          host === "wa-staging.bizuply.com" ||
+          host === "www.wa-staging.bizuply.com"
         ) {
           document.documentElement.style.background = "#05070d";
           if (document.body) document.body.style.backgroundColor = "#05070d";

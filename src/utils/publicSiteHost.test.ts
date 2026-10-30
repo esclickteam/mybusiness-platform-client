@@ -45,6 +45,8 @@ describe("publicSiteHost", () => {
     expect(isPublicCustomerSiteHost("www.travel.bizuply.com")).toBe(false);
     expect(isPublicCustomerSiteHost("whatsapp.bizuply.com")).toBe(false);
     expect(isPublicCustomerSiteHost("www.whatsapp.bizuply.com")).toBe(false);
+    expect(isPublicCustomerSiteHost("wa-staging.bizuply.com")).toBe(false);
+    expect(isPublicCustomerSiteHost("www.wa-staging.bizuply.com")).toBe(false);
     expect(isPublicCustomerSiteHost("acme.bizuply.com")).toBe(true);
     expect(isPublicCustomerSiteHost("mybusiness-platform-client-staging.vercel.app")).toBe(false);
     expect(isPublicCustomerSiteHost("chain-bouquet-francisco-sister.trycloudflare.com")).toBe(false);
