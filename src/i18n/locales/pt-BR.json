@@ -23654,13 +23654,13 @@
         },
         "webhook": {
           "title": "Configure seu webhook",
-          "text": "Receba no seu servidor os status das mensagens e as respostas.",
+          "text": "Receba status de entrega, leitura e falha das mensagens que você envia. As respostas dos clientes ficam na caixa do Bizuply.",
           "cta": "Configurar webhook"
         },
         "firstMessage": {
           "title": "Envie sua primeira mensagem",
-          "text": "Envie um modelo aprovado pela API.",
-          "cta": "Abrir guia da API"
+          "text": "Em Conexão, envie um modelo de teste aprovado para um número seu. A Meta pode cobrar esse envio. Você também pode enviar pela API.",
+          "cta": "Testar conexão"
         },
         "details": {
           "title": "Adicione os dados da sua empresa",

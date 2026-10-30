@@ -1,0 +1,201 @@
+id,company,website,country,segment,template,why,contactPath
+1,Make (Celonis),https://www.make.com,CZ,automation_agency,A,"Builds WhatsApp and CRM scenarios for clients; needs a Cloud API number per workspace.",https://www.make.com
+2,n8n,https://n8n.io,DE,automation_agency,A,"Self-hosted automation; agencies wrap WhatsApp nodes around a BSP/API.",https://n8n.io
+3,Zapier,https://zapier.com,US,automation_agency,A,"WhatsApp zaps still need an official Cloud API backend.",https://zapier.com
+4,Makeitfuture,https://www.makeitfuture.com,MT,automation_agency,A,"Sells WhatsApp Business Platform automation and CRM wiring.",https://www.makeitfuture.com
+5,Genbia,https://genbia.com,ES,automation_agency,A,"n8n + WhatsApp Cloud API implementation.",https://genbia.com
+6,Samify Solutions,https://samifysolutions.com,IN,automation_agency,A,"HubSpot + WhatsApp API via n8n.",https://samifysolutions.com
+7,Octo360,https://octo360.agency,AE,automation_agency,A,"HubSpot Elite-style WhatsApp Cloud API builds.",https://octo360.agency
+8,MO Agency,https://www.mo.agency,ZA,automation_agency,A,"HubSpot Conversations × WhatsApp Business API.",https://www.mo.agency
+9,Latenode,https://latenode.com,US,automation_agency,A,"Low-code automation with WhatsApp modules.",https://latenode.com
+10,Pabbly Connect,https://www.pabbly.com,IN,automation_agency,A,"Automation agency-friendly WhatsApp connectors.",https://www.pabbly.com
+11,Integrately,https://integrately.com,IN,automation_agency,A,"One-click automations including WhatsApp.",https://integrately.com
+12,Albato,https://albato.com,CY,automation_agency,A,"iPaaS used by agencies for messengers + CRM.",https://albato.com
+13,KonnectzIT,https://konnectzit.com,IN,automation_agency,A,"Automation marketplace; WhatsApp is a frequent ask.",https://konnectzit.com
+14,SyncSpider,https://syncspider.com,LT,automation_agency,A,"eCom automation that often needs WhatsApp order alerts.",https://syncspider.com
+15,Skyvia,https://skyvia.com,US,automation_agency,A,"Data integration shops that add WhatsApp as a channel.",https://skyvia.com
+16,Workato,https://www.workato.com,US,automation_agency,A,"Enterprise iPaaS; WhatsApp Cloud API as a custom connector.",https://www.workato.com
+17,Tray.ai,https://tray.ai,US,automation_agency,A,"Automation for GTM teams that want WhatsApp templates.",https://tray.ai
+18,Boeisto,https://www.boeisto.com,NL,automation_agency,A,"Make partner building client WhatsApp flows.",https://www.boeisto.com
+19,Hike.Digital,https://hike.digital,UK,automation_agency,A,"Revops + automation; WhatsApp for pipeline alerts.",https://hike.digital
+20,RevOps Co-op shops like Pavilion partners,https://www.joinpavilion.com,US,automation_agency,A,"Sales-ops network; members implement WhatsApp for AEs.",https://www.joinpavilion.com
+21,Automation Aide,https://automationaide.com,US,automation_agency,A,"Make/Zapier implementer.",https://automationaide.com
+22,ProcessDriven,https://processdriven.co,US,automation_agency,A,"ClickUp + automation agencies needing WhatsApp pings.",https://processdriven.co
+23,Unito,https://unito.io,CA,automation_agency,A,"Work-item sync; WhatsApp as an alerting layer.",https://unito.io
+24,Bardeen,https://www.bardeen.ai,US,automation_agency,A,"Browser automation used by SDRs; WhatsApp follow-up is a gap.",https://www.bardeen.ai
+25,Relay.app,https://www.relay.app,US,automation_agency,A,"AI workflows; WhatsApp as a human channel.",https://www.relay.app
+26,Activepieces,https://www.activepieces.com,US,automation_agency,A,"Open-source Zapier alternative with WhatsApp pieces.",https://www.activepieces.com
+27,Windmill,https://www.windmill.dev,FR,automation_agency,A,"Internal tools that often send WhatsApp ops alerts.",https://www.windmill.dev
+28,Budibase,https://budibase.com,UK,automation_agency,A,"Internal apps that need a WhatsApp connector.",https://budibase.com
+29,Appsmith,https://www.appsmith.com,US,automation_agency,A,"Internal tools; WhatsApp for field teams.",https://www.appsmith.com
+30,Retool,https://retool.com,US,automation_agency,A,"Internal tools used by ops; WhatsApp via REST.",https://retool.com
+31,Gadget,https://gadget.dev,CA,automation_agency,A,"Shopify app builders needing WhatsApp order templates.",https://gadget.dev
+32,Stacker,https://www.stackerhq.com,UK,automation_agency,A,"Client portals that should ping WhatsApp.",https://www.stackerhq.com
+33,Softr,https://www.softr.io,DE,automation_agency,A,"Airtable apps; agencies add WhatsApp.",https://www.softr.io
+34,Fillout,https://www.fillout.com,US,automation_agency,A,"Forms to WhatsApp follow-up.",https://www.fillout.com
+35,Tally,https://tally.so,BE,automation_agency,A,"Form tools whose users want WhatsApp confirmation.",https://tally.so
+36,Typeform,https://www.typeform.com,ES,automation_agency,A,"Lead forms; WhatsApp as the next step.",https://www.typeform.com
+37,Jotform,https://www.jotform.com,US,automation_agency,A,"WhatsApp widgets plus Cloud API for templates.",https://www.jotform.com
+38,Landbot,https://landbot.io,ES,automation_agency,A,"Chatbots; many clients still need official Cloud API.",https://landbot.io
+39,Manychat,https://manychat.com,US,automation_agency,A,"WhatsApp flows; agencies resell onboarding.",https://manychat.com
+40,Respond.io,https://respond.io,MY,automation_agency,A,"Inbox competitors whose agencies also need a cheap API number.",https://respond.io
+41,Trengo,https://trengo.com,NL,automation_agency,A,"Shared inbox; WhatsApp Cloud API behind it.",https://trengo.com
+42,Richpanel,https://www.richpanel.com,US,automation_agency,A,"eCom CX; WhatsApp templates for orders.",https://www.richpanel.com
+43,Gorgias,https://www.gorgias.com,US,automation_agency,A,"Shopify helpdesk; WhatsApp channel demand.",https://www.gorgias.com
+44,Zendesk,https://www.zendesk.com,US,automation_agency,A,"WhatsApp Sunshine channel; some teams want a simpler $29 number.",https://www.zendesk.com
+45,Freshdesk,https://www.freshworks.com,IN,automation_agency,A,"WhatsApp via Freshchat; implementers need Cloud API.",https://www.freshworks.com
+46,Help Scout,https://www.helpscout.com,US,automation_agency,A,"Shared inbox shops adding WhatsApp.",https://www.helpscout.com
+47,Crisp,https://crisp.chat,FR,automation_agency,A,"Chat + WhatsApp; agencies connect numbers.",https://crisp.chat
+48,Tidio,https://www.tidio.com,PL,automation_agency,A,"Live chat with WhatsApp add-on demand.",https://www.tidio.com
+49,LiveChat,https://www.livechat.com,PL,automation_agency,A,"Text + WhatsApp for commerce.",https://www.livechat.com
+50,Chatwoot,https://www.chatwoot.com,IN,automation_agency,A,"Open-source inbox; Cloud API number still required.",https://www.chatwoot.com
+51,360dialog,https://www.360dialog.com,DE,whatsapp_implementer,D,"BSP; agencies that outgrow BSP UI still need a simple API layer — do not pitch as a replacement for their BSP contract without care.",https://www.360dialog.com
+52,MessageBird / Bird,https://bird.com,NL,whatsapp_implementer,D,"CPaaS; smaller agencies want a $29 Meta Embedded Signup path.",https://bird.com
+53,Twilio,https://www.twilio.com,US,whatsapp_implementer,D,"WhatsApp sender; some product teams want dashboard + inbox, not only Programmable Messaging.",https://www.twilio.com
+54,Vonage,https://www.vonage.com,US,whatsapp_implementer,D,"CPaaS WhatsApp; same split between API-only and workspace.",https://www.vonage.com
+55,Infobip,https://www.infobip.com,HR,whatsapp_implementer,D,"Enterprise CPaaS; mid-market agencies look for cheaper per-number UX.",https://www.infobip.com
+56,Gupshup,https://www.gupshup.io,US,whatsapp_implementer,D,"WhatsApp BSP; partners implement for SMBs.",https://www.gupshup.io
+57,Wati,https://www.wati.io,IN,whatsapp_implementer,D,"Shared inbox SaaS; agencies who resell it also build custom API.",https://www.wati.io
+58,AiSensy,https://aisensy.com,IN,whatsapp_implementer,D,"WhatsApp marketing platform implementers.",https://aisensy.com
+59,Interakt,https://www.interakt.ai,IN,whatsapp_implementer,D,"WhatsApp CRM for SMBs; agencies onboard numbers.",https://www.interakt.ai
+60,Gallabox,https://gallabox.com,IN,whatsapp_implementer,D,"WhatsApp inbox + CRM.",https://gallabox.com
+61,DoubleTick,https://www.doubletick.io,IN,whatsapp_implementer,D,"WhatsApp business inbox.",https://www.doubletick.io
+62,TimelinesAI,https://timelines.ai,IL,whatsapp_implementer,D,"WhatsApp-to-CRM; Cloud API vs QR is the fork.",https://timelines.ai
+63,Wazzup,https://wazzup24.com,CY,whatsapp_implementer,D,"WhatsApp CRM connectors.",https://wazzup24.com
+64,Chatfuel,https://chatfuel.com,US,whatsapp_implementer,D,"WhatsApp bots; still need a WABA.",https://chatfuel.com
+65,Turn.io,https://www.turn.io,ZA,whatsapp_implementer,D,"WhatsApp for impact orgs; implementers in Africa.",https://www.turn.io
+66,Clickatell,https://www.clickatell.com,ZA,whatsapp_implementer,D,"CPaaS WhatsApp in Africa.",https://www.clickatell.com
+67,Africa's Talking,https://africastalking.com,KE,whatsapp_implementer,D,"Regional CPaaS; WhatsApp add-on.",https://africastalking.com
+68,Route Mobile,https://routemobile.com,IN,whatsapp_implementer,D,"CPaaS with WhatsApp.",https://routemobile.com
+69,Kaleyra,https://www.kaleyra.com,US,whatsapp_implementer,D,"CPaaS WhatsApp.",https://www.kaleyra.com
+70,Sinch,https://www.sinch.com,SE,whatsapp_implementer,D,"CPaaS; product teams sometimes want a simpler portal.",https://www.sinch.com
+71,HubSpot,https://www.hubspot.com,US,sales_team,B,"Huge partner channel; WhatsApp is not native enough for many portals.",https://www.hubspot.com
+72,Salesforce,https://www.salesforce.com,US,sales_team,B,"Service Cloud WhatsApp; SI partners need a cheap WABA for mid-market.",https://www.salesforce.com
+73,Pipedrive,https://www.pipedrive.com,US,sales_team,B,"SMB CRM; WhatsApp follow-up is a constant ask.",https://www.pipedrive.com
+74,Zoho CRM,https://www.zoho.com,IN,sales_team,B,"WhatsApp via Zoho Marketing; some teams want Cloud API directly.",https://www.zoho.com
+75,Monday.com,https://monday.com,IL,sales_team,B,"Work OS + CRM; WhatsApp updates for deals.",https://monday.com
+76,Close,https://www.close.com,US,sales_team,B,"Sales CRM with calling; WhatsApp for international AEs.",https://www.close.com
+77,Copper,https://www.copper.com,US,sales_team,B,"Google Workspace CRM; WhatsApp for LATAM/IL deals.",https://www.copper.com
+78,Attio,https://attio.com,UK,sales_team,B,"Modern CRM; WhatsApp via API.",https://attio.com
+79,Folk,https://www.folk.app,FR,sales_team,B,"Network CRM; WhatsApp as the real channel.",https://www.folk.app
+80,Lemlist,https://www.lemlist.com,FR,sales_team,B,"Outbound; WhatsApp sequences for some markets.",https://www.lemlist.com
+81,Instantly,https://instantly.ai,US,sales_team,B,"Outbound shops adding WhatsApp where email dies.",https://instantly.ai
+82,Apollo.io,https://www.apollo.io,US,sales_team,B,"Sales intelligence; SDRs in WhatsApp-first markets.",https://www.apollo.io
+83,Outreach,https://www.outreach.io,US,sales_team,B,"Sales engagement; WhatsApp as a custom step.",https://www.outreach.io
+84,Salesloft,https://www.salesloft.com,US,sales_team,B,"Cadences; WhatsApp for EMEA.",https://www.salesloft.com
+85,Gong,https://www.gong.io,US,sales_team,B,"Revenue teams that still chat on WhatsApp with customers.",https://www.gong.io
+86,Chorus / Zoominfo,https://www.zoominfo.com,US,sales_team,B,"GTM orgs in WhatsApp-heavy regions.",https://www.zoominfo.com
+87,Freshsales,https://www.freshworks.com/freshsales-crm,IN,sales_team,B,"SMB CRM + WhatsApp.",https://www.freshworks.com/freshsales-crm
+88,Capsule CRM,https://capsulecrm.com,UK,sales_team,B,"Simple CRM; WhatsApp logging.",https://capsulecrm.com
+89,Less Annoying CRM,https://www.lessannoyingcrm.com,US,sales_team,B,"Very SMB; WhatsApp is how they actually talk.",https://www.lessannoyingcrm.com
+90,Teamgate,https://www.teamgate.com,UK,sales_team,B,"Sales CRM.",https://www.teamgate.com
+91,Nutshell,https://www.nutshell.com,US,sales_team,B,"CRM + marketing; WhatsApp templates.",https://www.nutshell.com
+92,Keap,https://keap.com,US,sales_team,B,"Small business automation + messaging.",https://keap.com
+93,ActiveCampaign,https://www.activecampaign.com,US,sales_team,B,"Automation; WhatsApp as a channel gap.",https://www.activecampaign.com
+94,Klaviyo,https://www.klaviyo.com,US,sales_team,B,"eCom SMS/email; WhatsApp for international stores.",https://www.klaviyo.com
+95,Omnisend,https://www.omnisend.com,LT,sales_team,B,"eCom messaging; WhatsApp demand in EU/IL.",https://www.omnisend.com
+96,Yotpo,https://www.yotpo.com,IL,sales_team,B,"Reviews + SMS; WhatsApp for Israeli/EU brands.",https://www.yotpo.com
+97,Smile.io,https://smile.io,CA,sales_team,B,"Loyalty; WhatsApp for balance alerts.",https://smile.io
+98,Recharge,https://rechargepayments.com,US,sales_team,B,"Subscriptions; WhatsApp renewal notices.",https://rechargepayments.com
+99,Stay.ai,https://www.stay.ai,US,sales_team,B,"Subscription brands; WhatsApp dunning.",https://www.stay.ai
+100,Skio,https://skio.com,US,sales_team,B,"Subscriptions; WhatsApp for support.",https://skio.com
+101,Gett Business,https://www.gett.com,IL,high_volume_inbox,C,"Dispatch + driver/customer WhatsApp.",https://www.gett.com
+102,Fiverr Business,https://www.fiverr.com,IL,high_volume_inbox,C,"Seller success teams on WhatsApp.",https://www.fiverr.com
+103,Wix Partners,https://www.wix.com/partners,IL,high_volume_inbox,C,"Agencies with many SMB inboxes.",https://www.wix.com/partners
+104,Elementor,https://elementor.com,IL,high_volume_inbox,C,"Partner agencies building SMB sites + WhatsApp CTAs.",https://elementor.com
+105,Monday Partners,https://monday.com/partners,IL,high_volume_inbox,C,"Implementation partners for sales teams.",https://monday.com/partners
+106,Papaya Global,https://www.papayaglobal.com,IL,high_volume_inbox,C,"High-touch customer success on WhatsApp in emerging markets.",https://www.papayaglobal.com
+107,Payoneer,https://www.payoneer.com,US,high_volume_inbox,C,"Seller support in WhatsApp-first countries.",https://www.payoneer.com
+108,Deel,https://www.deel.com,US,high_volume_inbox,C,"Global employment; regional WhatsApp support.",https://www.deel.com
+109,Remote.com,https://remote.com,US,high_volume_inbox,C,"Same pattern: regional WhatsApp.",https://remote.com
+110,Melio,https://meliopayments.com,IL,high_volume_inbox,C,"AP/AR follow-up often on WhatsApp in IL.",https://meliopayments.com
+111,Pagaya,https://pagaya.com,IL,high_volume_inbox,C,"Lending ops.",https://pagaya.com
+112,Hippo Insurance,https://www.hippo.com,US,high_volume_inbox,C,"Insurance inbound.",https://www.hippo.com
+113,Lemonade,https://www.lemonade.com,IL,high_volume_inbox,C,"Insurance CX.",https://www.lemonade.com
+114,Next Insurance,https://www.nextinsurance.com,US,high_volume_inbox,C,"SMB insurance inbound.",https://www.nextinsurance.com
+115,Policybazaar,https://www.policybazaar.com,IN,high_volume_inbox,C,"High WhatsApp sales volume.",https://www.policybazaar.com
+116,ACKO,https://www.acko.com,IN,high_volume_inbox,C,"Insurance WhatsApp.",https://www.acko.com
+117,Razorpay,https://razorpay.com,IN,high_volume_inbox,C,"Merchant support WhatsApp.",https://razorpay.com
+118,Paytm,https://paytm.com,IN,high_volume_inbox,C,"Huge WhatsApp commerce.",https://paytm.com
+119,PhonePe,https://www.phonepe.com,IN,high_volume_inbox,C,"Merchant WhatsApp.",https://www.phonepe.com
+120,Mercado Libre,https://www.mercadolibre.com,AR,high_volume_inbox,C,"LATAM commerce WhatsApp.",https://www.mercadolibre.com
+121,Nubank,https://nubank.com.br,BR,high_volume_inbox,C,"Fintech CX on WhatsApp.",https://nubank.com.br
+122,iFood,https://www.ifood.com.br,BR,high_volume_inbox,C,"Orders + couriers on WhatsApp.",https://www.ifood.com.br
+123,Rappi,https://www.rappi.com,CO,high_volume_inbox,C,"On-demand WhatsApp.",https://www.rappi.com
+124,PedidosYa,https://www.pedidosya.com,UY,high_volume_inbox,C,"Food delivery WhatsApp.",https://www.pedidosya.com
+125,Glovo,https://glovoapp.com,ES,high_volume_inbox,C,"Courier/customer WhatsApp.",https://glovoapp.com
+126,Wolt,https://wolt.com,FI,high_volume_inbox,C,"Delivery support.",https://wolt.com
+127,DoorDash Drive,https://www.doordash.com,US,high_volume_inbox,C,"Merchant WhatsApp in some markets.",https://www.doordash.com
+128,Uber for Business,https://www.uber.com/business,US,high_volume_inbox,C,"Local ops WhatsApp.",https://www.uber.com/business
+129,Booking.com Partner,https://partner.booking.com,NL,high_volume_inbox,C,"Hotel partners live on WhatsApp.",https://partner.booking.com
+130,Airbnb for Work / hosts,https://www.airbnb.com,US,high_volume_inbox,C,"Host ops WhatsApp.",https://www.airbnb.com
+131,Expedia Partner,https://www.expediapartnercentral.com,US,high_volume_inbox,C,"Property WhatsApp.",https://www.expediapartnercentral.com
+132,Hostelworld,https://www.hostelworld.com,IE,high_volume_inbox,C,"Guest WhatsApp.",https://www.hostelworld.com
+133,GetYourGuide,https://www.getyourguide.com,DE,high_volume_inbox,C,"Tour ops WhatsApp.",https://www.getyourguide.com
+134,Viator,https://www.viator.com,US,high_volume_inbox,C,"Experiences WhatsApp.",https://www.viator.com
+135,Klook,https://www.klook.com,HK,high_volume_inbox,C,"APAC WhatsApp.",https://www.klook.com
+136,Traveloka,https://www.traveloka.com,ID,high_volume_inbox,C,"SEA WhatsApp-first.",https://www.traveloka.com
+137,MakeMyTrip,https://www.makemytrip.com,IN,high_volume_inbox,C,"Travel WhatsApp.",https://www.makemytrip.com
+138,Cleartrip,https://www.cleartrip.com,IN,high_volume_inbox,C,"Travel WhatsApp.",https://www.cleartrip.com
+139,El Al cargo/tourism partners,https://www.elal.com,IL,high_volume_inbox,C,"Travel ops WhatsApp in IL.",https://www.elal.com
+140,Issta,https://www.issta.co.il,IL,high_volume_inbox,C,"Israeli travel agency volume.",https://www.issta.co.il
+141,Lametayel,https://www.lametayel.co.il,IL,high_volume_inbox,C,"Travel + shop WhatsApp.",https://www.lametayel.co.il
+142,Olam Liyarok / similar,https://www.lametayel.co.il,IL,high_volume_inbox,C,"High-touch travel groups.",https://www.lametayel.co.il
+143,Arkia,https://www.arkia.co.il,IL,high_volume_inbox,C,"Airline service WhatsApp.",https://www.arkia.co.il
+144,Isrotel,https://www.isrotel.co.il,IL,high_volume_inbox,C,"Hotel group reservations WhatsApp.",https://www.isrotel.co.il
+145,Fattal Hotels,https://www.fattal-hotels.com,IL,high_volume_inbox,C,"Hotel group.",https://www.fattal-hotels.com
+146,Dan Hotels,https://www.danhotels.com,IL,high_volume_inbox,C,"Hotel reservations WhatsApp.",https://www.danhotels.com
+147,Malam Team,https://www.malam-team.com,IL,high_volume_inbox,C,"IT services with many client lines.",https://www.malam-team.com
+148,Matrix,https://www.matrix.co.il,IL,high_volume_inbox,C,"SI; WhatsApp for project comms with clients.",https://www.matrix.co.il
+149,One1,https://www.one1.co.il,IL,high_volume_inbox,C,"Israeli SI.",https://www.one1.co.il
+150,Hilan,https://www.hilan.co.il,IL,high_volume_inbox,C,"Payroll/HR high inbound.",https://www.hilan.co.il
+151,Digitalent,https://www.digitalent.co.il,IL,automation_agency,A,"Performance agency; WhatsApp for lead follow-up.",https://www.digitalent.co.il
+152,Web3,https://www.web3.co.il,IL,automation_agency,A,"Israeli digital agency.",https://www.web3.co.il
+153,Kozmedia,https://www.kozmedia.com,IL,automation_agency,A,"Media + leads.",https://www.kozmedia.com
+154,Runa,https://www.runa.co.il,IL,automation_agency,A,"Digital marketing.",https://www.runa.co.il
+155,Convert,https://www.convert.co.il,IL,automation_agency,A,"CRO + paid; WhatsApp as conversion step.",https://www.convert.co.il
+156,Avela,https://www.avela.co.il,IL,automation_agency,A,"Performance.",https://www.avela.co.il
+157,Bizzabo agencies using event WhatsApp,https://www.bizzabo.com,IL,automation_agency,A,"Event tech; attendee WhatsApp.",https://www.bizzabo.com
+158,Melingo,https://www.melingo.co.il,IL,automation_agency,A,"Hebrew NLP; WhatsApp bots on official API.",https://www.melingo.co.il
+159,Anyword partners,https://www.anyword.com,IL,automation_agency,A,"Copy + campaigns; WhatsApp templates.",https://www.anyword.com
+160,SimilarWeb agencies,https://www.similarweb.com,IL,automation_agency,A,"Sales teams in WhatsApp markets.",https://www.similarweb.com
+161,WalkMe partners,https://www.walkme.com,IL,automation_agency,A,"CS teams.",https://www.walkme.com
+162,AppsFlyer agencies,https://www.appsflyer.com,IL,automation_agency,A,"App growth; WhatsApp for retargeting ops.",https://www.appsflyer.com
+163,ironSource / Unity ads partners,https://www.unity.com,US,automation_agency,A,"UA teams.",https://www.unity.com
+164,MoonActive ops vendors,https://www.moonactive.com,IL,automation_agency,A,"Player support volume.",https://www.moonactive.com
+165,Playtika support vendors,https://www.playtika.com,IL,automation_agency,A,"Player support.",https://www.playtika.com
+166,Outbrain agencies,https://www.outbrain.com,IL,automation_agency,A,"Publisher/advertiser WhatsApp.",https://www.outbrain.com
+167,Taboola agencies,https://www.taboola.com,IL,automation_agency,A,"Same.",https://www.taboola.com
+168,Riskified merchants,https://www.riskified.com,IL,automation_agency,A,"Fraud ops WhatsApp with merchants.",https://www.riskified.com
+169,Forter merchants,https://www.forter.com,IL,automation_agency,A,"Merchant success WhatsApp.",https://www.forter.com
+170,Global-e merchants,https://www.global-e.com,IL,automation_agency,A,"Cross-border eCom WhatsApp.",https://www.global-e.com
+171,VaynerMedia,https://vaynermedia.com,US,whatsapp_implementer,D,"Social + commerce; WhatsApp for client markets.",https://vaynermedia.com
+172,OMD,https://www.omd.com,US,whatsapp_implementer,D,"Media network; WhatsApp activation.",https://www.omd.com
+173,GroupM,https://www.groupm.com,US,whatsapp_implementer,D,"Holding company agencies.",https://www.groupm.com
+174,Publicis Sapient,https://www.publicissapient.com,US,whatsapp_implementer,D,"Digital transformation + messaging.",https://www.publicissapient.com
+175,Accenture Song,https://www.accenture.com,IE,whatsapp_implementer,D,"CX builds including WhatsApp.",https://www.accenture.com
+176,Deloitte Digital,https://www.deloittedigital.com,US,whatsapp_implementer,D,"CRM + WhatsApp programmes.",https://www.deloittedigital.com
+177,PwC Digital,https://www.pwc.com,UK,whatsapp_implementer,D,"CRM implementations.",https://www.pwc.com
+178,KPMG Connected Enterprise,https://kpmg.com,NL,whatsapp_implementer,D,"CRM.",https://kpmg.com
+179,Capgemini Invent,https://www.capgemini.com,FR,whatsapp_implementer,D,"Service design + WhatsApp.",https://www.capgemini.com
+180,Thoughtworks,https://www.thoughtworks.com,US,whatsapp_implementer,D,"Custom software; WhatsApp API.",https://www.thoughtworks.com
+181,EPAM,https://www.epam.com,US,whatsapp_implementer,D,"Engineering + integrations.",https://www.epam.com
+182,Globant,https://www.globant.com,AR,whatsapp_implementer,D,"LATAM WhatsApp-heavy builds.",https://www.globant.com
+183,Endava,https://www.endava.com,UK,whatsapp_implementer,D,"Payments + messaging.",https://www.endava.com
+184,Nagarro,https://www.nagarro.com,DE,whatsapp_implementer,D,"Integration shops.",https://www.nagarro.com
+185,Cognizant,https://www.cognizant.com,US,whatsapp_implementer,D,"CRM factories.",https://www.cognizant.com
+186,TCS,https://www.tcs.com,IN,whatsapp_implementer,D,"Large SI WhatsApp programmes.",https://www.tcs.com
+187,Infosys,https://www.infosys.com,IN,whatsapp_implementer,D,"Same.",https://www.infosys.com
+188,Wipro,https://www.wipro.com,IN,whatsapp_implementer,D,"Same.",https://www.wipro.com
+189,HCLTech,https://www.hcltech.com,IN,whatsapp_implementer,D,"Same.",https://www.hcltech.com
+190,Persistent,https://www.persistent.com,IN,whatsapp_implementer,D,"Product engineering + APIs.",https://www.persistent.com
+191,Razorfish,https://www.razorfish.com,US,whatsapp_implementer,D,"Digital agency.",https://www.razorfish.com
+192,R/GA,https://rga.com,US,whatsapp_implementer,D,"Product + CRM.",https://rga.com
+193,AKQA,https://www.akqa.com,US,whatsapp_implementer,D,"Experience + commerce.",https://www.akqa.com
+194,Huge,https://www.hugeinc.com,US,whatsapp_implementer,D,"Digital.",https://www.hugeinc.com
+195,Frog,https://www.frog.co,US,whatsapp_implementer,D,"Design + product.",https://www.frog.co
+196,IDEO,https://www.ideo.com,US,whatsapp_implementer,D,"Service design.",https://www.ideo.com
+197,Fjord,https://www.accenture.com/us-en/about/accenture-song,US,whatsapp_implementer,D,"Service design.",https://www.accenture.com/us-en/about/accenture-song
+198,Brainstation,https://brainstation.io,CA,whatsapp_implementer,D,"Training + digital.",https://brainstation.io
+199,General Assembly B2B,https://generalassemb.ly,US,whatsapp_implementer,D,"Ops enablement.",https://generalassemb.ly
+200,Productized agencies like ustwo,https://ustwo.com,UK,whatsapp_implementer,D,"Product studios.",https://ustwo.com

@@ -55,27 +55,51 @@ const FAQ = [
   },
 ];
 
+const HE = {
+  eyebrow: "מחירים",
+  title: "29 דולר לחודש לכל מספר WhatsApp.",
+  lead: "מנוי ביזאפלי קבוע לכל מספר מחובר. חיובי ההודעות של Meta נפרדים, והמחשבון למטה מעריך אותם לפי לוח התעריפים שפרסמה Meta.",
+  start: "התחילו ב־29 דולר",
+  estimate: "הערכת עלויות Meta",
+  facts: ["מנוי אחד = מספר WhatsApp אחד", "חיובי ההודעות של Meta נפרדים", "אין ניסיון חינם", "ייתכן מס במקומות שנדרש"],
+  includedTitle: "מנוי ביזאפלי",
+  includedLead: "כל מה שצריך כדי לחבר מספר ולשלב אותו במערכות שלכם.",
+  perMonth: "לחודש לכל מספר WhatsApp",
+  several: "כמה מספרים?",
+  metaTitle: "חיובי הודעות של Meta",
+  additional: "נוסף",
+  metaLead: "נקבעים ומחויבים על ידי Meta, בנפרד ממנוי ביזאפלי.",
+  ratesTitle: "מאיפה התעריפים:",
+  ratesText:
+    "ביזאפלי מייבאת את חוברות לוח התעריפים שפרסמה Meta ובודקת עדכונים אוטומטית. המחשבון מציג את תאריך התוקף, מתי הייבוא האחרון, וקישור למקור. אם ייבוא חדש נכשל תופיע אזהרה במקום תעריף ישן שמוצג כעדכני.",
+  estimateWarn:
+    "הערכות בלבד. החשבונית של Meta היא הקובעת. החיוב בפועל תלוי בהודעות שנמסרו, בהודעות חינם שמגיעות לכם, בהמרת מטבע, במסים ובתעריפים העדכניים של Meta.",
+  faqEyebrow: "שאלות על מחיר",
+  faqTitle: "שאלות על המחיר, עם תשובות.",
+};
+
 export default function PricingPage() {
   const { i18n } = useTranslation();
   const lang = coerceSupportedLanguage(i18n.language);
+  const he = lang === "he";
   return (
     <>
       <section className="wa-page-hero">
         <div className="wa-wrap">
           <SectionHead
             as="h1"
-            eyebrow="Pricing"
-            title="$29/month per WhatsApp number."
-            lead="One flat Bizuply subscription for each connected number. Meta's messaging charges are separate, and the calculator below estimates them from Meta's published rate card."
+            eyebrow={he ? HE.eyebrow : "Pricing"}
+            title={he ? HE.title : "$29/month per WhatsApp number."}
+            lead={he ? HE.lead : "One flat Bizuply subscription for each connected number. Meta's messaging charges are separate, and the calculator below estimates them from Meta's published rate card."}
           />
           <div className="wa-actions">
             <SiteLink to="/get-started" className="wa-btn wa-btn-primary wa-btn-lg">
-              Start for $29 <ArrowRight size={16} aria-hidden="true" />
+              {he ? HE.start : "Start for $29"} {he ? null : <ArrowRight size={16} aria-hidden="true" />}
             </SiteLink>
-            <a href="#calculator" className="wa-link">Estimate Meta costs <ArrowRight size={14} aria-hidden="true" /></a>
+            <a href="#calculator" className="wa-link">{he ? HE.estimate : "Estimate Meta costs"} {he ? null : <ArrowRight size={14} aria-hidden="true" />}</a>
           </div>
-          <ul className="wa-hero-trust" aria-label="Plan terms">
-            {FACTS.map((item) => (
+          <ul className="wa-hero-trust" aria-label={he ? "תנאי המסלול" : "Plan terms"}>
+            {(he ? HE.facts : FACTS).map((item) => (
               <li key={item}><Check size={14} aria-hidden="true" /> {item}</li>
             ))}
           </ul>
@@ -85,12 +109,12 @@ export default function PricingPage() {
       <section className="wa-section is-tight" aria-labelledby="wa-plan">
         <div className="wa-wrap wa-grid-2" style={{ alignItems: "stretch" }}>
           <article className="wa-card is-featured wa-plan">
-            <h2 id="wa-plan" className="wa-eyebrow">Bizuply subscription</h2>
+            <h2 id="wa-plan" className="wa-eyebrow">{he ? HE.includedTitle : "Bizuply subscription"}</h2>
             <div className="wa-price">
               <strong>$29</strong>
-              <span>/ month per WhatsApp number</span>
+              <span>{he ? HE.perMonth : "/ month per WhatsApp number"}</span>
             </div>
-            <p>Everything you need to connect a number and integrate it with your systems.</p>
+            <p>{he ? HE.includedLead : "Everything you need to connect a number and integrate it with your systems."}</p>
             <ul className="wa-list">
               {INCLUDED.map((item) => (
                 <li key={item}><Check size={16} aria-hidden="true" /> {item}</li>
@@ -98,17 +122,17 @@ export default function PricingPage() {
             </ul>
             <div className="wa-actions">
               <SiteLink to="/get-started" className="wa-btn wa-btn-primary">
-                Start for $29 <ArrowRight size={16} aria-hidden="true" />
+                {he ? HE.start : "Start for $29"} {he ? null : <ArrowRight size={16} aria-hidden="true" />}
               </SiteLink>
-              <SiteLink to="/agencies" className="wa-link">Several numbers? <ArrowRight size={14} aria-hidden="true" /></SiteLink>
+              <SiteLink to="/agencies" className="wa-link">{he ? HE.several : "Several numbers?"} {he ? null : <ArrowRight size={14} aria-hidden="true" />}</SiteLink>
             </div>
           </article>
           <article className="wa-card wa-plan">
-            <h2 className="wa-eyebrow" style={{ color: "var(--wa-cyan)" }}>Meta messaging charges</h2>
+            <h2 className="wa-eyebrow" style={{ color: "var(--wa-cyan)" }}>{he ? HE.metaTitle : "Meta messaging charges"}</h2>
             <div className="wa-price">
-              <strong style={{ fontSize: "2.2rem" }}>Additional</strong>
+              <strong style={{ fontSize: "2.2rem" }}>{he ? HE.additional : "Additional"}</strong>
             </div>
-            <p>Set and billed by Meta, separate from your Bizuply subscription.</p>
+            <p>{he ? HE.metaLead : "Set and billed by Meta, separate from your Bizuply subscription."}</p>
             <ul className="wa-list is-muted">
               <li><Check size={16} aria-hidden="true" /> Priced per message by recipient country and category: marketing, utility, authentication or service</li>
               <li><Check size={16} aria-hidden="true" /> Volume tiers can lower utility and authentication rates</li>
@@ -116,7 +140,7 @@ export default function PricingPage() {
               <li><Check size={16} aria-hidden="true" /> Rates are set by Meta and can change</li>
             </ul>
             <div className="wa-actions">
-              <a href="#calculator" className="wa-btn wa-btn-ghost">Estimate Meta costs</a>
+              <a href="#calculator" className="wa-btn wa-btn-ghost">{he ? HE.estimate : "Estimate Meta costs"}</a>
               <a href={META_PRICING_URL} className="wa-btn wa-btn-quiet" target="_blank" rel="noreferrer">
                 Meta's pricing page <ExternalLink size={14} aria-hidden="true" />
               </a>
@@ -129,10 +153,10 @@ export default function PricingPage() {
         <div className="wa-wrap">
           <Callout tone="info">
             <p>
-              <strong>Where the rates come from:</strong> Bizuply imports Meta's published rate card workbooks and checks for
-              updates automatically. The calculator shows the rate card's effective date, when it was last imported, and a
-              link to the source. If a fresh import fails, you'll see a warning rather than an outdated rate presented as
-              current.
+              <strong>{he ? HE.ratesTitle : "Where the rates come from:"}</strong>{" "}
+              {he
+                ? HE.ratesText
+                : "Bizuply imports Meta's published rate card workbooks and checks for updates automatically. The calculator shows the rate card's effective date, when it was last imported, and a link to the source. If a fresh import fails, you'll see a warning rather than an outdated rate presented as current."}
             </p>
           </Callout>
           <div style={{ marginTop: 24 }}>
@@ -142,9 +166,9 @@ export default function PricingPage() {
           </div>
           <Callout tone="warn">
             <p>
-              Estimates only. Meta's invoice is final. Your actual charges depend on delivered messages, free messages you're
-              eligible for, currency conversion, taxes and Meta's current rates. Using the WhatsApp Business Platform is
-              subject to Meta's terms, commerce and messaging policies.
+              {he
+                ? HE.estimateWarn
+                : "Estimates only. Meta's invoice is final. Your actual charges depend on delivered messages, free messages you're eligible for, currency conversion, taxes and Meta's current rates. Using the WhatsApp Business Platform is subject to Meta's terms, commerce and messaging policies."}
             </p>
           </Callout>
         </div>
@@ -152,7 +176,7 @@ export default function PricingPage() {
 
       <section className="wa-section is-band" aria-labelledby="wa-pricing-faq">
         <div className="wa-wrap" style={{ maxWidth: 860 }}>
-          <SectionHead eyebrow="Pricing FAQ" title={<span id="wa-pricing-faq">Pricing questions, answered.</span>} />
+          <SectionHead eyebrow={he ? HE.faqEyebrow : "Pricing FAQ"} title={<span id="wa-pricing-faq">{he ? HE.faqTitle : "Pricing questions, answered."}</span>} />
           <Accordion items={FAQ} defaultOpen={0} />
         </div>
       </section>

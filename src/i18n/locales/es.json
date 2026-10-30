@@ -23654,13 +23654,13 @@
         },
         "webhook": {
           "title": "Configura tu webhook",
-          "text": "Recibe en tu servidor los estados de los mensajes y las respuestas.",
+          "text": "Recibe el estado de entrega, lectura y error de los mensajes que envías. Las respuestas de clientes se quedan en la bandeja de Bizuply.",
           "cta": "Configurar webhook"
         },
         "firstMessage": {
           "title": "Envía tu primer mensaje",
-          "text": "Envía una plantilla aprobada a través de la API.",
-          "cta": "Abrir guía de la API"
+          "text": "Desde Conexión, envía una plantilla de prueba aprobada a un número tuyo. Meta puede cobrar ese envío. También puedes enviar por la API.",
+          "cta": "Probar conexión"
         },
         "details": {
           "title": "Añade los datos de tu empresa",
