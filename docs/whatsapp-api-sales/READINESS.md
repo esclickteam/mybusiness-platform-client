@@ -79,9 +79,29 @@ No server code change required for this launch path.
 
 Segments: 70 automation agencies, 50 WhatsApp implementers, 30 sales teams, 50 high-volume inboxes.
 
+## Launch checks (2026-10-30, Asia/Jerusalem)
+
+### CI (PR #983)
+Only workflow on this repo: **Bridge safety**. Head `1d1c6f7` — **success**. No other required checks.
+
+### Lemon Squeezy Test Mode
+- Staging and production `POST /whatsapp-api/signup-checkout` without Turnstile both return `BOT_CHECK_FAILED` (no Lemon URL, no charge).
+- This environment has no Lemon API keys, so a real Test Mode checkout (test card `4242`) was **not** opened.
+- Local dispatcher with Lemon `test_mode: true` payloads: create → active $29 sub, renewal, cancel-until-period-end, payment failure + 7-day grace, recovery. **39/39** (assertion on `WhatsAppApiSubscription.lemonSubscriptionId` only; not committed on the server).
+- Staging Lemon outbound guard requires `LEMONSQUEEZY_TEST_MODE=true`. Completing Test Mode pay on staging still needs a human Turnstile pass.
+
+### Meta Embedded Signup
+Stopped before Facebook login. Config is `GET /api/whatsapp/embedded-signup/config` (auth required; unauthenticated = 401). Client then `FB.login` with `config_id`, `response_type=code`, extras `sessionInfoVersion: 3`. Required scopes in code: `whatsapp_business_messaging`, `whatsapp_business_management`. Also needs `META_APP_ID`, `WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID`, `WHATSAPP_TOKEN_ENCRYPTION_KEY` on the server. Opening the Meta popup needs your approval.
+
+### Existing Bizuply customers
+Plans `monthly` / `yearly` / `earlybird` / `trial` include gated `whatsapp` (`includedInPlan`). Checkout throws `WHATSAPP_API_INCLUDED_IN_PLAN`. Portal does not show Subscribe · $29 when `allowed` via `plan`. `website` / `crm_only` do **not** include WhatsApp and would pay $29.
+
+### Production site (live, not this branch)
+https://whatsapp.bizuply.com/get-started already shows the self-serve $29 + Lemon form, not a contact-only path. `/guides` 404 until this branch is deployed.
+
 ## Not done (needs your approval)
 
-- Push/PR on `mybusiness-platform-client` if this bot still has 403
 - Merge or production deploy
-- Live Lemon billing
-- Any outbound email/LinkedIn/WhatsApp
+- Human Turnstile + Lemon **Test Mode** card on staging (webhook already proven locally)
+- Facebook login to prove Embedded Signup `ready` / `appId` / `configId` / `encryptionReady`
+- Any WhatsApp send or outreach email
