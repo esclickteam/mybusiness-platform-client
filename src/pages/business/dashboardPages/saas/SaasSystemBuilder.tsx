@@ -56,7 +56,7 @@ export default function SaasSystemBuilder() {
   const [section, setSection] = useState("data");
   const [versions, setVersions] = useState<{ revision: number; summary?: string; hasSnapshot?: boolean }[]>([]);
   const [roles, setRoles] = useState<{ name: string; permissions: string[] }[]>([]);
-  const [bridge, setBridge] = useState<{ connected?: boolean; reason?: string } | null>(null);
+  const [bridge, setBridge] = useState<{ connected?: boolean; reason?: string; protocol?: string; engine?: string } | null>(null);
   const [typeLabel, setTypeLabel] = useState("");
   const [fieldDraft, setFieldDraft] = useState({ recordTypeId: "", label: "", type: "text", required: false, unique: false, visibility: "internal", options: "", relationRecordTypeId: "" });
   const [recordTypeId, setRecordTypeId] = useState("");
