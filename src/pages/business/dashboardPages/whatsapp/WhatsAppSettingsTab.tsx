@@ -63,6 +63,7 @@ import {
   buildCoexistenceEmbeddedSignupExtras,
   type WhatsAppConnectionPath,
 } from "./embeddedSignupCoexistence";
+import { resolveEmbeddedSignupMetaApp } from "./embeddedSignupMetaApp";
 import WhatsAppCoexistencePathPicker from "./WhatsAppCoexistencePathPicker";
 import {
   btnPrimary,
@@ -435,10 +436,11 @@ export default function WhatsAppSettingsTab() {
         graphVersion: signup.graphVersion,
       });
 
-      if (!signup.appId) {
+      const metaApp = resolveEmbeddedSignupMetaApp(signup, path);
+      if (!metaApp.appId) {
         throw new Error(t("whatsapp.settings.configMissing"));
       }
-      if (!signup.configId) {
+      if (!metaApp.configId) {
         throw new Error(t("whatsapp.settings.configMissing"));
       }
       if (!signup.encryptionReady) {
@@ -499,7 +501,7 @@ export default function WhatsAppSettingsTab() {
       setActionInfo(t("whatsapp.settings.connecting"));
       sessionRef.current = null;
       const FB = await loadFacebookSdk(
-        signup.appId,
+        metaApp.appId,
         signup.graphVersion || "v21.0"
       );
       console.info("[whatsapp] Facebook SDK ready");
@@ -607,7 +609,7 @@ export default function WhatsAppSettingsTab() {
               })();
             },
             {
-              config_id: signup.configId,
+              config_id: metaApp.configId,
               response_type: "code",
               override_default_response_type: true,
               extras: isInvistimoShareTenant(businessId)

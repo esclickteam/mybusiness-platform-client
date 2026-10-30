@@ -277,6 +277,8 @@ export type WhatsAppEmbeddedSignupConfig = {
     finishEvent?: string;
     skipPhoneRegistration?: boolean;
     webhookFields?: string[];
+    appId?: string;
+    configId?: string;
   };
   genericConnectBlocked?: boolean;
   extras?: Record<string, unknown>;
