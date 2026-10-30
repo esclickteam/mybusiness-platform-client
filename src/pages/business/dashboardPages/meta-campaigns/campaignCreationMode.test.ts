@@ -3,8 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {
   isMetaCampaignsKnownChildPath,
+  META_AI_CAMPAIGN_STUDIO_FROM,
   META_CAMPAIGNS_CREATE_AI_PATH,
   META_CAMPAIGNS_CREATE_PATH,
+  metaAiCampaignStudioDeepLink,
   metaCampaignsChildPath,
 } from "./campaignCreationMode";
 
@@ -22,6 +24,12 @@ describe("campaignCreationMode helpers", () => {
         META_CAMPAIGNS_CREATE_AI_PATH
       )
     ).toBe("/business/biz-1/dashboard/meta-campaigns/create-ai");
+  });
+
+  it("builds an AI Studio deep-link into the existing /create-ai wizard", () => {
+    expect(metaAiCampaignStudioDeepLink("biz-9", { objective: "LEADS" })).toBe(
+      `/business/biz-9/dashboard/meta-campaigns/create-ai?from=${META_AI_CAMPAIGN_STUDIO_FROM}&objective=LEADS`
+    );
   });
 
   it("treats create-ai as a known Meta Campaigns child", () => {
