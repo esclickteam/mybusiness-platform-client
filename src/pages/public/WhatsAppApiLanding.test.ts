@@ -89,6 +89,11 @@ describe("WhatsApp API site copy", () => {
     }
     expect(help).not.toMatch(/send the onboarding request/i);
     expect(help).toContain("pay $29/month for one number");
+    const started = read("whatsapp/getStartedCopy.ts") + read("whatsapp/pages/GetStartedPage.tsx");
+    expect(started).not.toMatch(/incoming messages/i);
+    expect(started).toContain("SignupCheckoutForm");
+    expect(started).toContain("isWhatsAppApiSelfServe");
+    expect(started).toContain("outbound message status");
   });
 
   it("labels the hero simulation as sample data and only shows status webhooks", () => {

@@ -2,12 +2,39 @@
   "base": "http://127.0.0.1:3000/whatsapp-api",
   "liveCharge": false,
   "liveWhatsAppSend": false,
+  "mockPayment": true,
   "failed": 0,
-  "total": 27,
-  "blockedHits": [
+  "total": 35,
+  "hits": [
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3000/api/whatsapp-api/availability",
+      "kind": "availability"
+    },
     {
       "method": "POST",
-      "url": "http://127.0.0.1:59999/api/whatsapp-api/signup-checkout"
+      "url": "http://127.0.0.1:3000/api/whatsapp-api/signup-checkout",
+      "kind": "signup-checkout-mock"
+    },
+    {
+      "method": "GET",
+      "url": "https://lemonsqueezy.com/checkout/mock-wa-api-test",
+      "kind": "lemon-mock"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3000/api/whatsapp-api/availability",
+      "kind": "availability"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3000/api/whatsapp-api/signup-status?ref=507f1f77bcf86cd799439011&email=qa.mock-pay%40bizuply.test",
+      "kind": "signup-status"
+    },
+    {
+      "method": "GET",
+      "url": "http://127.0.0.1:3000/api/whatsapp-api/signup-status?ref=507f1f77bcf86cd799439011&email=qa.mock-pay%40bizuply.test",
+      "kind": "signup-status"
     }
   ],
   "results": [
@@ -132,19 +159,59 @@
       "detail": ""
     },
     {
-      "name": "Signup POST blocked from live Lemon",
+      "name": "Get Started is not a contact-only path",
       "ok": true,
-      "detail": "POST http://127.0.0.1:59999/api/whatsapp-api/signup-checkout"
+      "detail": ""
     },
     {
-      "name": "No OAuth start reached live IdP",
+      "name": "Get Started stays self-serve if availability is down",
       "ok": true,
-      "detail": "OAuth start intercepted if attempted"
+      "detail": ""
     },
     {
-      "name": "Blocked live-billing requests count",
+      "name": "Mock Lemon checkout opened",
       "ok": true,
-      "detail": "1"
+      "detail": "https://lemonsqueezy.com/checkout/mock-wa-api-test"
+    },
+    {
+      "name": "Mock checkout is $29 with no trial",
+      "ok": true,
+      "detail": "Test mode\n\nBizuply WhatsApp API\n\nWhatsApp API – Monthly\n\n$29.00 USD / month\n\nNo free trial. Due today: $29.00\n\nMeta messaging fees billed separately.\n\nPay $29"
+    },
+    {
+      "name": "Mock checkout is test mode",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mock checkout separates Meta fees",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Mock pay returns to WhatsApp API login",
+      "ok": true,
+      "detail": "/whatsapp-api/login?product=whatsapp_api&checkout=whatsapp_api&email=qa.mock-pay%40bizuply.test&ref=507f1f77bcf86cd799439011"
+    },
+    {
+      "name": "Activation banner ready after mock webhook",
+      "ok": true,
+      "detail": "state ready"
+    },
+    {
+      "name": "Live IdP/Meta never attempted",
+      "ok": true,
+      "detail": "hits=6"
+    },
+    {
+      "name": "Signup used mock checkout URL only",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Lemon host was intercepted",
+      "ok": true,
+      "detail": ""
     }
   ]
 }

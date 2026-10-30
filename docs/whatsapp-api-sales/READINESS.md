@@ -4,18 +4,11 @@ Date: 2026-10-30 (Asia/Jerusalem). No merge, no production deploy, no live Lemon
 
 ## Product repo
 
-Branch `cursor/whatsapp-api-sales-62be` was rebased onto `origin/main` (`b60faa3`, includes PR #982 automation-basic). File overlap with that main commit: none. Merge-tree vs current main is clean.
+Branch `cursor/whatsapp-api-sales-62be` on `mybusiness-platform-client`, PR [#983](https://github.com/esclickteam/mybusiness-platform-client/pull/983).
 
 Price remains `$29/month` per connected number (`PRICE_PER_NUMBER_USD = 29`). Signup is still Get Started → existing Google/Microsoft/email → Lemon Squeezy. Connection is still Meta Embedded Signup on WhatsApp → Connection.
 
-Tests below ran in the original clone (`/tmp/bizuply-main` tracking `esclickteam/mybusiness-platform-client`), not a file-copy tree.
-
-Push of this branch by `cursor[bot]` is still **403**. Open the product PR from an account with write access after applying the BeautyFlow bundle:
-
-```bash
-docs/whatsapp-api-sales/apply-to-mybusiness.sh /path/to/mybusiness-platform-client
-git -C /path/to/mybusiness-platform-client push -u origin cursor/whatsapp-api-sales-62be
-```
+Get Started no longer falls back to the sales-request form when `/whatsapp-api/availability` is slow or down. Self-serve checkout stays on screen unless the server has loaded and explicitly closed it (`selfServe: false` kill switch). Production and staging currently return `selfServe: true`.
 
 Do not merge to production without explicit approval.
 
@@ -39,16 +32,25 @@ Production (unchanged until the product branch is deployed):
 
 Hebrew is the language switcher, not `/he` (that URL 404s by design).
 
-## Funnel test (no live charge, no send)
+## Funnel test (mock payment only, no send)
 
-`node scripts/qa-whatsapp-api-funnel.mjs`
+`node scripts/qa-whatsapp-api-funnel.mjs` against local Vite (`VITE_API_PROXY_TARGET=http://127.0.0.1:59999`).
 
-- Intercepts `signup-checkout`, Lemon Squeezy, OAuth start, and Facebook/WhatsApp graph URLs with HTTP 409 `TEST_BILLING_BLOCKED`.
-- Result: **27/27 PASS**. Signup POST was issued to the local dead API (`POST http://127.0.0.1:59999/api/whatsapp-api/signup-checkout`) and blocked. Lemon checkout never opened. Meta Embedded Signup never opened. No template send.
+- Signup POST is fulfilled with a mock Lemon URL. The Lemon host is intercepted with a $29 / no-trial / test-mode page. Pay returns to `/whatsapp-api/login` with `checkout=whatsapp_api`. `signup-status` is mocked `ready`.
+- OAuth start, Facebook Graph, and live Lemon are never reached. Meta Embedded Signup is not opened. No template send.
+- Result: **35/35 PASS** (includes Get Started still self-serve when availability is down, mock checkout $29, activation banner `ready`).
 - Saved: `docs/whatsapp-api-sales/funnel-qa.json`
-- Vitest copy/funnel tests: 27 passed in 3 files (landing, host SEO, setup steps).
+- Vitest: Get Started, auth config, landing copy, host SEO, setup steps, login.
 
-Connection after pay was not driven live: that step is the existing portal Embedded Signup. Opening it would hit Meta. The Connection test CTA and first-message step now point at `/connection`, not Developers.
+## Server billing (existing `mybusiness-platform-server`, no product PR)
+
+`node --test tests/whatsappApiBilling.mongo.test.js` on current server `main`: **39/39 PASS** after aligning one stale assertion (`User.lemonSubscriptionId` is the platform plan; the WhatsApp Lemon id lives on `WhatsAppApiSubscription`). That assertion was not committed — product behavior was already correct.
+
+Covered with mock Lemon webhooks: signup create, renewal, cancel-until-period-end, resume, payment failure + 7-day grace then block, recovery, expiry, refund, duplicate refund, existing Bizuply plan customers keep WhatsApp without this $29 add-on.
+
+Catalog: `whatsapp_api_monthly` = 2900 USD cents, `trialDays: 0`.
+
+No server code change required for this launch path.
 
 ## Copy vs shipped product
 
