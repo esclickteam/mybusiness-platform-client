@@ -167,11 +167,11 @@ function questionSession(overrides: Record<string, unknown> = {}) {
   };
 }
 
-function renderWizard() {
+function renderWizard(
+  entry = "/business/biz-1/dashboard/meta-campaigns/create-ai"
+) {
   return render(
-    <MemoryRouter
-      initialEntries={["/business/biz-1/dashboard/meta-campaigns/create-ai"]}
-    >
+    <MemoryRouter initialEntries={[entry]}>
       <Routes>
         <Route
           path="/business/:businessId/dashboard/meta-campaigns"
@@ -219,6 +219,37 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     resolveStart(questionSession());
     await waitFor(() => expect(screen.getByTestId("meta-ai-owner-lite")).toBeTruthy());
     expect(api.startAiCampaignSession).toHaveBeenCalled();
+  });
+
+  it("boots from AI Studio deep-link with a fresh seeded session", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        intent: {
+          objective: {
+            state: "CONFIRMED",
+            value: { key: "WHATSAPP", metaObjective: "OUTCOME_ENGAGEMENT" },
+            source: "ai_studio",
+          },
+          destination: {
+            state: "CONFIRMED",
+            value: { key: "WHATSAPP" },
+            source: "ai_studio",
+          },
+        },
+      })
+    );
+    renderWizard(
+      "/business/biz-1/dashboard/meta-campaigns/create-ai?from=ai-studio&objective=WHATSAPP&destination=WHATSAPP"
+    );
+    await waitFor(() => expect(screen.getByTestId("meta-ai-owner-lite")).toBeTruthy());
+    expect(api.startAiCampaignSession).toHaveBeenCalledWith(
+      "biz-1",
+      expect.objectContaining({
+        action: "new",
+        seed: { objective: "WHATSAPP", destination: "WHATSAPP" },
+      })
+    );
+    expect(api.getAiCampaignSession).not.toHaveBeenCalled();
   });
 
   it("asks for the service when the profile has no offerings", async () => {
@@ -848,10 +879,13 @@ describe("Meta AI draft + explicit publish", () => {
     api.getAiCampaignSession.mockRejectedValue(new Error("missing"));
   });
 
-  it("auto-creates the paused Meta draft when the proposal is ready", async () => {
+  it("requires explicit preview approval before creating the paused Meta draft", async () => {
     api.startAiCampaignSession.mockResolvedValue(proposalReady());
     api.createAiCampaignMetaDraft.mockResolvedValue(draftedSession());
     renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-preview"));
+    expect(api.createAiCampaignMetaDraft).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
     await waitFor(() =>
       expect(api.createAiCampaignMetaDraft).toHaveBeenCalledWith("biz-1", "sess-1")
     );
@@ -875,6 +909,8 @@ describe("Meta AI draft + explicit publish", () => {
       })
     );
     renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
+    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
     await waitFor(() => screen.getByTestId("meta-ai-draft-progress"));
     expect(screen.getByText(he.metaCampaigns.ai.draft.creating)).toBeTruthy();
     expect(screen.queryByText("%")).toBeNull();
@@ -893,6 +929,8 @@ describe("Meta AI draft + explicit publish", () => {
         })
     );
     renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
+    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
     await waitFor(() => expect(api.createAiCampaignMetaDraft).toHaveBeenCalledTimes(1));
     fireEvent.click(screen.queryByTestId("meta-ai-create-draft") || document.body);
     expect(screen.queryByTestId("meta-ai-create-draft")).toBeNull();
@@ -1049,6 +1087,8 @@ describe("Meta AI draft + explicit publish", () => {
     api.startAiCampaignSession.mockResolvedValue(proposalReady());
     api.createAiCampaignMetaDraft.mockResolvedValue(draftedSession());
     renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
+    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
     await waitFor(() => screen.getByTestId("meta-ai-draft-success"));
     expect(screen.getByText(en.metaCampaigns.ai.draft.successTitle)).toBeTruthy();
   });
@@ -1147,7 +1187,7 @@ describe("Meta AI campaign cancel draft", () => {
   });
 });
 
-describe("Meta AI campaign automations (H hidden from wizard)", () => {
+describe("Meta AI campaign automations (shown after Meta draft)", () => {
   beforeEach(() => {
     localeRef.current = he as Record<string, unknown>;
     sessionStorage.clear();
@@ -1155,7 +1195,7 @@ describe("Meta AI campaign automations (H hidden from wizard)", () => {
     api.getAiCampaignSession.mockRejectedValue(new Error("missing"));
   });
 
-  it("does not load or show lead-follow-up automations in the wizard", async () => {
+  it("does not show automations before a Meta draft exists", async () => {
     api.startAiCampaignSession.mockResolvedValue(
       proposalReady({
         automationRecommendations: [
@@ -1170,12 +1210,47 @@ describe("Meta AI campaign automations (H hidden from wizard)", () => {
     renderWizard();
     await waitFor(() => screen.getByTestId("meta-ai-preview"));
     expect(api.recommendAiCampaignAutomations).not.toHaveBeenCalled();
-    expect(api.enableAiCampaignAutomation).not.toHaveBeenCalled();
-    expect(api.enableAllAiCampaignAutomations).not.toHaveBeenCalled();
-    expect(api.dismissAiCampaignAutomation).not.toHaveBeenCalled();
     expect(screen.queryByTestId("meta-ai-automations")).toBeNull();
-    expect(screen.queryByTestId("meta-ai-automation-card")).toBeNull();
-    expect(screen.queryByText(he.metaCampaigns.ai.automations.title)).toBeNull();
+  });
+
+  it("loads and shows automations after META_DRAFT_CREATED with enable confirmation", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      draftedSession({
+        automationRecommendations: [
+          {
+            key: "meta_lead_whatsapp",
+            status: "RECOMMENDED",
+            name: "שליחת WhatsApp לליד חדש",
+          },
+        ],
+      })
+    );
+    api.enableAiCampaignAutomation.mockResolvedValue(
+      draftedSession({
+        automationRecommendations: [
+          {
+            key: "meta_lead_whatsapp",
+            status: "CREATED",
+            name: "שליחת WhatsApp לליד חדש",
+          },
+        ],
+      })
+    );
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-automations"));
+    expect(screen.getByText(he.metaCampaigns.ai.automations.title)).toBeTruthy();
+    const enableBtn = screen.getByTestId("meta-ai-automation-enable");
+    fireEvent.click(enableBtn);
+    expect(confirmSpy).toHaveBeenCalled();
+    await waitFor(() =>
+      expect(api.enableAiCampaignAutomation).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        "meta_lead_whatsapp"
+      )
+    );
+    confirmSpy.mockRestore();
   });
 });
 

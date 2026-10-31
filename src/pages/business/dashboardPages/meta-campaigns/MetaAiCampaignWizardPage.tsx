@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useOutletContext,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
@@ -23,9 +29,13 @@ import {
   cancelAiCampaignSession,
   confirmAiDraftLocations,
   createAiCampaignMetaDraft,
+  dismissAiCampaignAutomation,
+  enableAiCampaignAutomation,
+  enableAllAiCampaignAutomations,
   generateAiCampaign,
   getAiCampaignSession,
   patchAiCampaignProposal,
+  recommendAiCampaignAutomations,
   retryAiCampaignMetaDraft,
   reviseAiCampaign,
   sendAiCampaignMessage,
@@ -36,7 +46,11 @@ import {
   type AiUnresolvedLocation,
 } from "../../../../api/metaAiCampaignApi";
 import MetaAiCampaignPreview from "./MetaAiCampaignPreview";
+import MetaAiAutomationRecommendations, {
+  type EnableAllResult,
+} from "./MetaAiAutomationRecommendations";
 import type { AiProposalHandoff } from "./ads-manager/adsManagerFromAiProposal";
+import { parseMetaAiCampaignStudioSeed } from "./campaignCreationMode";
 
 type OutletCtx = { businessId: string | null };
 
@@ -117,6 +131,7 @@ export default function MetaAiCampaignWizardPage() {
   const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
+  const [searchParams] = useSearchParams();
   const tenantId = urlBusinessId || businessId || "";
   const overviewPath = `/business/${tenantId}/dashboard/meta-campaigns/overview`;
   const settingsPath = `/business/${tenantId}/dashboard/meta-campaigns/settings`;
@@ -124,6 +139,10 @@ export default function MetaAiCampaignWizardPage() {
   const language = String(i18n.language || "he").toLowerCase().startsWith("en")
     ? "en"
     : "he";
+  const studioEntry = useMemo(
+    () => parseMetaAiCampaignStudioSeed(searchParams),
+    [searchParams]
+  );
 
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -138,10 +157,15 @@ export default function MetaAiCampaignWizardPage() {
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const draftLockRef = useRef(false);
   const autoGenRef = useRef<string | null>(null);
-  const autoDraftRef = useRef<string | null>(null);
+  const automationsRequestedRef = useRef<string | null>(null);
   const [confirmPublish, setConfirmPublish] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [failedAction, setFailedAction] = useState<string | null>(null);
+  const [automationsLoading, setAutomationsLoading] = useState(false);
+  const [enablingAutomationKey, setEnablingAutomationKey] = useState<string | null>(
+    null
+  );
+  const [enableAllResult, setEnableAllResult] = useState<EnableAllResult>(null);
   const [activationTree, setActivationTree] = useState<
     { campaign?: string | null; adSet?: string | null; ad?: string | null } | undefined
   >(undefined);
@@ -170,6 +194,18 @@ export default function MetaAiCampaignWizardPage() {
     setLoading(true);
     setError(null);
     try {
+      // AI Studio deep-link: always start a fresh seeded session (no silent resume).
+      if (studioEntry.fromStudio || studioEntry.seed) {
+        clearPersisted(tenantId);
+        const started = await startAiCampaignSession(tenantId, {
+          language,
+          action: "new",
+          seed: studioEntry.seed,
+        });
+        applySession(started);
+        return;
+      }
+
       const stored = readPersisted(tenantId);
       if (stored) {
         try {
@@ -193,13 +229,13 @@ export default function MetaAiCampaignWizardPage() {
     } finally {
       setLoading(false);
     }
-  }, [applySession, language, t, tenantId]);
+  }, [applySession, language, studioEntry.fromStudio, studioEntry.seed, t, tenantId]);
 
   useEffect(() => {
     void boot();
-    // Start once per tenant. Language is read from i18n at boot time.
+    // Start once per tenant / Studio deep-link. Language is read from i18n at boot time.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tenantId]);
+  }, [tenantId, studioEntry.fromStudio, studioEntry.seed?.objective, studioEntry.seed?.destination]);
 
   const handleAnswer = async (field: string, answer: unknown) => {
     if (!session?.sessionId || busy) return;
@@ -374,14 +410,52 @@ export default function MetaAiCampaignWizardPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleManualEdit = () => {
-    if (!session?.proposal) return;
+  const buildAiHandoff = (): AiProposalHandoff | null => {
+    if (!session?.proposal) return null;
     const dest = (session.intent as { destination?: { value?: { key?: string } } })
       ?.destination?.value?.key;
-    const handoff: AiProposalHandoff = {
+    const assets =
+      (session as { metaAssets?: Record<string, unknown> | null }).metaAssets || {};
+    const metaDraft = session.metaDraft || {};
+    return {
       proposal: session.proposal,
       destinationKey: dest || (session.proposal.leadForm ? "LEAD_FORM" : null),
+      websiteUrl:
+        (session.intent as { websiteUrl?: { value?: { url?: string } } })?.websiteUrl
+          ?.value?.url || null,
+      metaAssets: {
+        campaignId: metaDraft.campaignId || session.meta?.campaignId || null,
+        adSetId: metaDraft.adSetId || session.meta?.adSetId || null,
+        adId: metaDraft.adId || session.meta?.adId || null,
+        leadFormId:
+          (assets.leadFormId as string | undefined) ||
+          session.proposal.leadForm?.existingFormId ||
+          null,
+        imageHash: (assets.imageHash as string | undefined) || null,
+        videoId: (assets.videoId as string | undefined) || null,
+        whatsappPhone:
+          (assets.whatsappPhone as string | undefined) ||
+          (
+            session.intent as { whatsappPhone?: { value?: { phone?: string } } }
+          )?.whatsappPhone?.value?.phone ||
+          null,
+        resolvedLocations: Array.isArray(assets.resolvedLocations)
+          ? (assets.resolvedLocations as NonNullable<
+              AiProposalHandoff["metaAssets"]
+            >["resolvedLocations"])
+          : undefined,
+        resolvedInterests: Array.isArray(assets.resolvedInterests)
+          ? (assets.resolvedInterests as NonNullable<
+              AiProposalHandoff["metaAssets"]
+            >["resolvedInterests"])
+          : undefined,
+      },
     };
+  };
+
+  const handleManualEdit = () => {
+    const handoff = buildAiHandoff();
+    if (!handoff) return;
     navigate(manualPath, { state: { aiProposal: handoff } });
   };
 
@@ -564,41 +638,86 @@ export default function MetaAiCampaignWizardPage() {
     return () => window.clearTimeout(timer);
   }, [applySession, hasProposal, loading, session, tenantId]);
 
+  // Preview-first: do not auto-create a Meta draft. The owner must review the
+  // full preview and click "approve / create draft" explicitly.
+
+  const showAutomations =
+    session?.lifecycle === "META_DRAFT_CREATED" ||
+    session?.lifecycle === "PUBLISHED" ||
+    session?.metaDraft?.status === "META_DRAFT_CREATED" ||
+    session?.metaDraft?.status === "PUBLISHED";
+
   useEffect(() => {
-    if (!session?.sessionId || !tenantId || busy || loading) return;
-    if (!hasProposal) return;
-    const media = session.proposal?.creative?.media as
-      | { status?: string; url?: string | null; imageHash?: string | null }
-      | undefined;
-    const mediaOk =
-      media?.status === "PROVIDED" || Boolean(media?.url) || Boolean(media?.imageHash);
-    if (!mediaOk) return;
-    const status = String(session.lifecycle || session.metaDraft?.status || "");
-    if (status && !["IDLE", "PROPOSAL_READY", "READY_FOR_GENERATION"].includes(status)) {
+    if (!showAutomations || !session?.sessionId || !tenantId) return;
+    if (automationsRequestedRef.current === session.sessionId) return;
+    if ((session.automationRecommendations || []).length) {
+      automationsRequestedRef.current = session.sessionId;
       return;
     }
-    if (session.metaDraft?.campaignId || session.metaDraft?.publishId) return;
-    if ((session.metaDraft?.pendingLocations || []).length) return;
-    if (autoDraftRef.current === session.sessionId) return;
-    autoDraftRef.current = session.sessionId;
-    draftLockRef.current = true;
-    setBusy(true);
-    setPendingAction("draft");
-    setError(null);
-    void Promise.resolve(createAiCampaignMetaDraft(tenantId, session.sessionId))
+    automationsRequestedRef.current = session.sessionId;
+    setAutomationsLoading(true);
+    void Promise.resolve(recommendAiCampaignAutomations(tenantId, session.sessionId))
       .then((next) => {
-        if (next?.sessionId) {
-          applySession(next);
-          setFailedAction(null);
-        }
+        if (next?.sessionId) applySession(next);
       })
-      .catch((err) => mergeDraftError(err, t("metaCampaigns.ai.errorGeneric")))
-      .finally(() => {
-        draftLockRef.current = false;
-        setBusy(false);
-        setPendingAction(null);
-      });
-  }, [applySession, busy, hasProposal, loading, mergeDraftError, session, t, tenantId]);
+      .catch(() => undefined)
+      .finally(() => setAutomationsLoading(false));
+  }, [applySession, session, showAutomations, tenantId]);
+
+  const handleEnableAutomation = async (key: string) => {
+    if (!session?.sessionId || !tenantId) return;
+    const ok = window.confirm(
+      t("metaCampaigns.ai.automations.confirmEnable", {
+        defaultValue: "Enable this automation for the campaign?",
+      })
+    );
+    if (!ok) return;
+    setEnablingAutomationKey(key);
+    setEnableAllResult(null);
+    try {
+      const next = await enableAiCampaignAutomation(tenantId, session.sessionId, key);
+      if (next?.sessionId) applySession(next);
+    } catch (err) {
+      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
+    } finally {
+      setEnablingAutomationKey(null);
+    }
+  };
+
+  const handleEnableAllAutomations = async () => {
+    if (!session?.sessionId || !tenantId) return;
+    const ok = window.confirm(
+      t("metaCampaigns.ai.automations.confirmEnableAll", {
+        defaultValue: "Enable all recommended automations for this campaign?",
+      })
+    );
+    if (!ok) return;
+    setEnablingAutomationKey("__all__");
+    setEnableAllResult(null);
+    try {
+      const next = await enableAllAiCampaignAutomations(tenantId, session.sessionId);
+      if (next?.sessionId) applySession(next);
+      const result = (next as { enableAllResult?: EnableAllResult })?.enableAllResult;
+      if (result) setEnableAllResult(result);
+    } catch (err) {
+      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
+    } finally {
+      setEnablingAutomationKey(null);
+    }
+  };
+
+  const handleDismissAutomation = async (key: string) => {
+    if (!session?.sessionId || !tenantId) return;
+    setEnablingAutomationKey(key);
+    try {
+      const next = await dismissAiCampaignAutomation(tenantId, session.sessionId, key);
+      if (next?.sessionId) applySession(next);
+    } catch (err) {
+      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
+    } finally {
+      setEnablingAutomationKey(null);
+    }
+  };
 
   return (
     <div dir={dir} className="space-y-4" data-testid="meta-ai-campaign-wizard">
@@ -704,27 +823,41 @@ export default function MetaAiCampaignWizardPage() {
             </div>
           </div>
         ) : isReady && hasProposal && session.proposal ? (
-          <MetaAiCampaignPreview
-            session={session}
-            busy={busy}
-            pendingAction={pendingAction}
-            onRevise={(instruction) => void handleRevise(instruction)}
-            onRegenerate={() => void handleGenerate(true)}
-            onManualEdit={handleManualEdit}
-            onPatch={(patch) => void handlePatch(patch)}
-            onUploadCreative={handleUploadCreative}
-            onCreateDraft={handleCreateDraft}
-            onRetryDraft={handleRetryDraft}
-            onConfirmLocations={handleConfirmLocations}
-            onRequestPublish={() => setConfirmPublish(true)}
-            onConfirmPublish={handleConfirmPublish}
-            onCancelPublish={() => setConfirmPublish(false)}
-            confirmOpen={confirmPublish}
-            activationTree={activationTree}
-            onEditBeforePublish={handleEditBeforePublish}
-            onViewCampaign={() => navigate(editPath)}
-            onBackToCampaigns={() => navigate(overviewPath)}
-          />
+          <>
+            <MetaAiCampaignPreview
+              session={session}
+              busy={busy}
+              pendingAction={pendingAction}
+              onRevise={(instruction) => void handleRevise(instruction)}
+              onRegenerate={() => void handleGenerate(true)}
+              onManualEdit={handleManualEdit}
+              onPatch={(patch) => void handlePatch(patch)}
+              onUploadCreative={handleUploadCreative}
+              onCreateDraft={handleCreateDraft}
+              onRetryDraft={handleRetryDraft}
+              onConfirmLocations={handleConfirmLocations}
+              onRequestPublish={() => setConfirmPublish(true)}
+              onConfirmPublish={handleConfirmPublish}
+              onCancelPublish={() => setConfirmPublish(false)}
+              confirmOpen={confirmPublish}
+              activationTree={activationTree}
+              onEditBeforePublish={handleEditBeforePublish}
+              onViewCampaign={() => navigate(editPath)}
+              onBackToCampaigns={() => navigate(overviewPath)}
+            />
+            {showAutomations ? (
+              <MetaAiAutomationRecommendations
+                session={session}
+                businessId={tenantId}
+                loading={automationsLoading}
+                enablingKey={enablingAutomationKey}
+                enableAllResult={enableAllResult}
+                onEnable={(key) => void handleEnableAutomation(key)}
+                onEnableAll={() => void handleEnableAllAutomations()}
+                onDismiss={(key) => void handleDismissAutomation(key)}
+              />
+            ) : null}
+          </>
         ) : isReady && session?.ready ? (
           <div className="space-y-4" data-testid="meta-ai-ready">
             {question?.field === "creative" ? (

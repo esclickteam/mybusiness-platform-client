@@ -76,6 +76,58 @@ describe("adsManagerFromAiProposal", () => {
     expect(state.campaign.objective).toBe("OUTCOME_LEADS");
   });
 
+  it("hydrates resolved interests, media hashes, form id, and WhatsApp from metaAssets", () => {
+    const state = adsManagerStateFromAiProposal({
+      proposal: {
+        ...proposal,
+        campaign: {
+          name: "WA — הודעות",
+          objectiveKey: "WHATSAPP",
+          metaObjective: "OUTCOME_ENGAGEMENT",
+        },
+        graphSafe: {
+          objective: "OUTCOME_ENGAGEMENT",
+          optimizationGoal: "CONVERSATIONS",
+          cta: "WHATSAPP_MESSAGE",
+        },
+        creative: {
+          ...proposal.creative,
+          ctaKey: "WHATSAPP_MESSAGE",
+          media: {
+            status: "PROVIDED",
+            url: "https://cdn.example/a.jpg",
+            kind: "image",
+            imageHash: "hash_from_proposal",
+          },
+        },
+      },
+      destinationKey: "WHATSAPP",
+      metaAssets: {
+        leadFormId: null,
+        imageHash: "hash_from_meta",
+        whatsappPhone: "972501234567",
+        resolvedLocations: [
+          {
+            key: "115050",
+            name: "Tel Aviv",
+            type: "city",
+            countryCode: "IL",
+            countryName: "Israel",
+            include: true,
+          },
+        ],
+        resolvedInterests: [{ id: "6003123294", name: "Beauty", type: "interests" }],
+      },
+    });
+    expect(state.adSets[0].conversionLocation).toBe("WhatsApp");
+    expect(state.adSets[0].whatsappPhone).toBe("972501234567");
+    expect(state.adSets[0].optimizationGoal).toBe("CONVERSATIONS");
+    expect(state.adSets[0].locations[0].name).toBe("Tel Aviv");
+    expect(state.adSets[0].interests[0].id).toBe("6003123294");
+    expect(state.ads[0].imageHash).toBe("hash_from_meta");
+    expect(state.ads[0].callToAction).toBe("WHATSAPP_MESSAGE");
+  });
+
   it("keeps default Ads Manager state shape when no AI handoff is used", () => {
     const fresh = createDefaultAdsManagerState();
     expect(fresh.campaign.name).toBe("New leads campaign");
