@@ -9,8 +9,8 @@ const platform = {
   coexistenceEnabled: true,
   coexistence: {
     enabled: true,
-    appId: "2227158505349054",
-    configId: "1685850526585700",
+    appId: "1737199444319263",
+    configId: "1057504196895353",
   },
 };
 
@@ -22,10 +22,10 @@ describe("resolveEmbeddedSignupMetaApp", () => {
     });
   });
 
-  it("uses the Coexistence Test App when the server sent dedicated ids", () => {
+  it("uses the approved Tech Provider Coexistence config when the server sent it", () => {
     expect(resolveEmbeddedSignupMetaApp(platform, "coexistence")).toEqual({
-      appId: "2227158505349054",
-      configId: "1685850526585700",
+      appId: "1737199444319263",
+      configId: "1057504196895353",
     });
   });
 

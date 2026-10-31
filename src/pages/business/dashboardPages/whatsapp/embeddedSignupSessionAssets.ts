@@ -19,6 +19,9 @@ export type EmbeddedSignupSessionAssets = {
   wabaId: string;
   metaBusinessId: string;
   event: EmbeddedSignupSuccessEvent;
+  isOnBizApp: boolean;
+  messagingAccountIds: string[];
+  primaryWaacIds: string[];
 };
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -30,8 +33,28 @@ function asRecord(value: unknown): Record<string, unknown> {
 function firstString(...values: unknown[]): string {
   for (const value of values) {
     if (typeof value === "string" && value.trim()) return value.trim();
+    if (Array.isArray(value)) {
+      const nested = firstString(...value);
+      if (nested) return nested;
+    } else if (value && typeof value === "object") {
+      const rec = value as Record<string, unknown>;
+      const nested = firstString(
+        rec.id,
+        rec.waba_id,
+        rec.phone_number_id,
+        rec.messaging_account_id
+      );
+      if (nested) return nested;
+    }
   }
   return "";
+}
+
+function stringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => firstString(item))
+    .filter(Boolean);
 }
 
 export function isEmbeddedSignupSuccessEvent(
@@ -63,17 +86,20 @@ export function extractEmbeddedSignupSessionAssets(
   }
 
   const data = asRecord(root.data);
+  const messagingAccountIds = stringList(data.messaging_account_ids);
+  const primaryWaacIds = stringList(data.primary_waac_ids);
+  const isOnBizApp =
+    data.is_on_biz_app === true || data.isOnBizApp === true;
   const phoneNumberId = firstString(
     data.phone_number_id,
     data.phoneNumberId,
-    data.phone_number_ids && Array.isArray(data.phone_number_ids)
-      ? data.phone_number_ids[0]
-      : ""
+    data.phone_number_ids
   );
   const wabaId = firstString(
     data.waba_id,
     data.wabaId,
-    data.waba_ids && Array.isArray(data.waba_ids) ? data.waba_ids[0] : ""
+    data.waba_ids,
+    messagingAccountIds
   );
   const metaBusinessId = firstString(
     data.business_id,
@@ -91,6 +117,9 @@ export function extractEmbeddedSignupSessionAssets(
       wabaId,
       metaBusinessId,
       event,
+      isOnBizApp,
+      messagingAccountIds,
+      primaryWaacIds,
     };
   }
 
@@ -104,6 +133,9 @@ export function extractEmbeddedSignupSessionAssets(
     wabaId,
     metaBusinessId,
     event,
+    isOnBizApp,
+    messagingAccountIds,
+    primaryWaacIds,
   };
 }
 
@@ -121,5 +153,6 @@ export function embeddedSignupAssetsLogFields(
       ? String(assets.phoneNumberId).slice(-6)
       : null,
     wabaIdSuffix: assets?.wabaId ? String(assets.wabaId).slice(-6) : null,
+    isOnBizApp: Boolean(assets?.isOnBizApp),
   };
 }
