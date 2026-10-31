@@ -105,6 +105,10 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/login")).toBe(false);
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
+    expect(isMarketingNoindexPath("/home-preview")).toBe(true);
+    expect(isUnknownMarketingPath("/home-preview")).toBe(false);
+    expect(buildMarketingDocumentHead("/home-preview") || "").toContain("noindex, nofollow");
+    expect(buildMarketingSitemapXml()).not.toContain("/home-preview");
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
     expect(hebrew).toContain("<title>תוכנת CRM לעסקים קטנים וניהול לידים | ביזאפלי</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');

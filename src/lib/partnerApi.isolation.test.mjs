@@ -411,7 +411,7 @@ test("white-label host home sends anonymous visitors to plans without changing p
   assert.equal(home.includes("whiteLabelEnabled"), true);
   assert.equal(home.includes('to="/plans"'), true);
   assert.equal(home.includes("/partner/dashboard"), false);
-  assert.equal(home.includes("HomePage"), true);
+  assert.equal(home.includes("HomeExperience"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes("PartnerHostHome"), true);
   assert.equal(app.includes("partnerHostAllowsPath"), true);

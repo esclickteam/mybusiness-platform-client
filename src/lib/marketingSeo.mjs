@@ -303,6 +303,7 @@ const NOINDEX_PREFIXES = [
   "/integrations",
   "/store",
   "/whatsapp-api/login",
+  "/home-preview",
 ];
 
 export function isSeoDiscoveryPath(pathname) {
