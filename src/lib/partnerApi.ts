@@ -26,6 +26,7 @@ export async function registerPartner(payload: {
   password: string;
   businessName: string;
   planKey: string;
+  billingInterval?: "monthly" | "annual";
 }) {
   const locked =
     typeof window !== "undefined" &&
@@ -39,7 +40,15 @@ export async function registerPartner(payload: {
     error.response = { data: { error: resolved.error } };
     throw error;
   }
-  const { data } = await API.post("/partner/register", { ...payload, planKey: resolved.planKey });
+  const body = {
+    ...payload,
+    planKey: resolved.planKey,
+    ...(resolved.planKey === "partner_international" && payload.billingInterval
+      ? { billingInterval: payload.billingInterval }
+      : {}),
+  };
+  if (resolved.planKey !== "partner_international") delete body.billingInterval;
+  const { data } = await API.post("/partner/register", body);
   return data;
 }
 
@@ -471,6 +480,14 @@ export async function adminRecordPayment(
 
 export async function adminSeedShowcaseDemo() {
   const { data } = await API.post("/admin/partners/showcase-demo");
+  return data;
+}
+
+export async function adminScheduleInternationalBilling(
+  id: string,
+  billingInterval: "monthly" | "annual"
+) {
+  const { data } = await API.post(`/admin/partners/${id}/billing-interval`, { billingInterval });
   return data;
 }
 

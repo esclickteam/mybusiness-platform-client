@@ -13,6 +13,10 @@ import {
   requireInternationalPlanKey,
   resolvePartnerRegisterPlanKey,
   validateManualInternationalPayment,
+  readInternationalBillingInterval,
+  rememberInternationalBillingInterval,
+  internationalBillingOptionsFromPlan,
+  defaultManualAmountUsd,
 } from "./partnerInternationalPlan";
 
 const legacyCatalog = LEGACY_PLAN_KEYS.map((planKey) => ({
@@ -159,5 +163,23 @@ describe("partner_international is additive", () => {
         periodEnd: "2027-10-30",
       }).ok
     ).toBe(true);
+  });
+
+  it("keeps annual as the default and honors a monthly link", () => {
+    sessionStorage.clear();
+    expect(readInternationalBillingInterval("?planKey=partner_international")).toBe("annual");
+    expect(readInternationalBillingInterval("?planKey=partner_international&billing=monthly")).toBe("monthly");
+    rememberInternationalBillingInterval("monthly");
+    expect(readInternationalBillingInterval("")).toBe("monthly");
+    const priced = internationalBillingOptionsFromPlan({
+      billingOptions: [
+        { interval: "monthly", amountUsd: 499, labelEn: "Monthly Partner", labelHe: "שותף חודשי" },
+        { interval: "annual", amountUsd: 5000, labelEn: "Annual Partner", labelHe: "שותף שנתי", bestValue: true },
+      ],
+    });
+    expect(priced[1].savingsUsd).toBe(988);
+    expect(defaultManualAmountUsd("monthly", priced)).toBe(499);
+    expect(defaultManualAmountUsd("annual", priced)).toBe(5000);
+    expect(JSON.stringify(priced).includes("549")).toBe(false);
   });
 });

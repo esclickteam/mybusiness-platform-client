@@ -1,6 +1,12 @@
+/**
+ * Coexistence Embedded Signup extras for the approved Tech Provider app.
+ * The Settings UI only renders this path when the server sets
+ * embeddedSignup.coexistenceEnabled for the current business (allowlist).
+ */
 export const COEXISTENCE_FINISH_EVENT =
   "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING";
 export const COEXISTENCE_FEATURE_TYPE = "whatsapp_business_app_onboarding";
+export const COEXISTENCE_EXTRAS_VERSION = "v5";
 
 export type WhatsAppConnectionPath = "cloud_api" | "coexistence";
 
@@ -18,9 +24,8 @@ export function buildCloudApiEmbeddedSignupExtras(enteredE164?: string) {
 
 export function buildCoexistenceEmbeddedSignupExtras(enteredE164?: string) {
   return {
+    version: COEXISTENCE_EXTRAS_VERSION,
     setup: extrasSetup(enteredE164),
-    featureType: COEXISTENCE_FEATURE_TYPE,
-    sessionInfoVersion: "3" as const,
   };
 }
 

@@ -11,6 +11,7 @@ import {
   adminPostMonthly,
   adminRecordPayment,
   adminReverseCommission,
+  adminScheduleInternationalBilling,
   adminSeedShowcaseDemo,
   adminSuspendPartner,
   fetchAdminPartners,
@@ -174,7 +175,7 @@ export default function AdminPartners() {
           <p className="text-xs font-black uppercase tracking-wide text-violet-700">partner_international</p>
           <h2 className="mt-1 text-lg font-black text-slate-900">גבייה ידנית, בלי חיוב באתר</h2>
           <p className="mt-2 max-w-4xl text-sm font-bold text-slate-700">
-            ההרשמה למסלול היא ללא תשלום וממתינה לאישור. אחרי האישור השותף רואה סטטוס payment_due. גביית $5,000 מתבצעת מחוץ למערכת באמצעי תשלום שנמסר לשותף. רק אדמין מתעד תשלום אחרי שהכסף התקבל, כולל סכום, תאריך, אסמכתה ותקופת חיוב. השותף מופעל ומרכז ההכשרה נפתח רק אחרי תשלום מאומת והסכם פעיל. חידוש שנתי נרשם פעם אחת. אין חיוב אוטומטי, ומסלולי השותפים הקיימים לא משתנים.
+            ההרשמה למסלול היא ללא תשלום וממתינה לאישור. אחרי האישור השותף רואה סטטוס payment_due. גביית $499 לחודש או $5,000 לשנה מתבצעת מחוץ למערכת. רק אדמין מתעד תשלום אחרי שהכסף התקבל, כולל סכום, תאריך, אסמכתה ותקופת חיוב. אישור אדמין לבדו אינו אישור תשלום. השותף מופעל ומרכז ההכשרה נפתח רק אחרי תשלום מאומת והסכם פעיל. חידוש נרשם פעם אחת לתקופה. אין חיוב אוטומטי, ומסלולי השותפים הקיימים לא משתנים.
           </p>
         </section>
         {manualPayment ? (
@@ -228,7 +229,15 @@ export default function AdminPartners() {
                       </p>
                     ) : null}
                   </td>
-                  <td className="px-3 py-3">{row.planName || row.planKey}</td>
+                  <td className="px-3 py-3">
+                    {row.planName || row.planKey}
+                    {row.planKey === "partner_international" ? (
+                      <p className="text-xs font-bold text-slate-500">
+                        {row.billingInterval === "monthly" ? "$499 / חודש" : "$5,000 / שנה"}
+                        {row.pendingBillingInterval ? ` · הבא: ${row.pendingBillingInterval === "monthly" ? "חודשי" : "שנתי"}` : ""}
+                      </p>
+                    ) : null}
+                  </td>
                   <td className="px-3 py-3">{row.status}</td>
                   <td className="px-3 py-3">{ils(row.totalCustomerSales)}</td>
                   <td className="px-3 py-3">{ils(row.commissionAccrued)}</td>
@@ -281,13 +290,16 @@ export default function AdminPartners() {
                             label: row.planKey === "partner_international" ? "תעד תשלום ידני" : "רשום תשלום",
                             onClick: async () => {
                               if (row.planKey === "partner_international") {
-                                const startIso = row.nextPartnerSubscriptionRenewal || "";
-                                const start = startIso ? startIso.slice(0, 10) : "";
-                                let end = "";
-                                if (startIso) {
+                                const interval = row.openMembershipCharge?.interval || row.billingInterval || "annual";
+                                const startIso = row.openMembershipCharge?.periodStart || row.nextPartnerSubscriptionRenewal || "";
+                                const endIso = row.openMembershipCharge?.periodEnd || "";
+                                const start = startIso ? String(startIso).slice(0, 10) : "";
+                                let end = endIso ? String(endIso).slice(0, 10) : "";
+                                if (!end && startIso) {
                                   const date = new Date(startIso);
                                   if (!Number.isNaN(date.getTime())) {
-                                    date.setUTCFullYear(date.getUTCFullYear() + 1);
+                                    if (interval === "monthly") date.setUTCMonth(date.getUTCMonth() + 1);
+                                    else date.setUTCFullYear(date.getUTCFullYear() + 1);
                                     end = date.toISOString().slice(0, 10);
                                   }
                                 }
@@ -296,6 +308,8 @@ export default function AdminPartners() {
                                   name: row.name,
                                   periodStart: start,
                                   periodEnd: end,
+                                  billingInterval: interval === "monthly" ? "monthly" : "annual",
+                                  defaultAmount: row.openMembershipCharge?.amountUsd || row.expectedMembershipAmountUsd || (interval === "monthly" ? 499 : 5000),
                                 });
                                 return;
                               }
@@ -340,6 +354,24 @@ export default function AdminPartners() {
                               await refresh();
                             },
                           },
+                          ...(row.planKey === "partner_international"
+                            ? [
+                                {
+                                  label: "חיוב חודשי מהתקופה הבאה ($499)",
+                                  onClick: async () => {
+                                    await adminScheduleInternationalBilling(row.partnerId, "monthly");
+                                    await refresh();
+                                  },
+                                },
+                                {
+                                  label: "חיוב שנתי מהתקופה הבאה ($5,000)",
+                                  onClick: async () => {
+                                    await adminScheduleInternationalBilling(row.partnerId, "annual");
+                                    await refresh();
+                                  },
+                                },
+                              ]
+                            : []),
                           {
                             label: "ייצוא",
                             onClick: async () => {

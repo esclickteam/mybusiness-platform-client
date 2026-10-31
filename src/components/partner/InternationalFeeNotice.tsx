@@ -7,7 +7,9 @@ export default function InternationalFeeNotice({ me }: { me: PartnerMe }) {
   const planKey = me.planKey || me.plan?.planKey || "";
   if (!isInternationalPlanKey(planKey)) return null;
   const status = me.internationalActivation?.status || me.status;
-  const amount = me.internationalActivation?.manualCollection?.amountUsd || me.plan?.annualUsd || 5000;
+  const interval = me.internationalActivation?.manualCollection?.interval || me.internationalActivation?.billingInterval;
+  const amount = me.internationalActivation?.manualCollection?.amountUsd || (interval === "monthly" ? 499 : me.plan?.annualUsd || 5000);
+  const cadence = t(interval === "monthly" ? "partner.internationalFee.perMonth" : "partner.internationalFee.perYear");
   if (status === "pending_setup") {
     return (
       <section data-testid="international-fee-notice" className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
@@ -21,7 +23,7 @@ export default function InternationalFeeNotice({ me }: { me: PartnerMe }) {
   return (
     <section data-testid="international-fee-notice" className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
       <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">{t("partner.internationalFee.dueTitle")}</p>
-      <p className="mt-2 text-sm font-bold text-amber-950">{t("partner.internationalFee.dueBody", { amount })}</p>
+      <p className="mt-2 text-sm font-bold text-amber-950">{t("partner.internationalFee.dueBody", { amount, cadence })}</p>
     </section>
   );
 }

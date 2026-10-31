@@ -85,6 +85,8 @@ type SessionAssets = {
   wabaId: string;
   metaBusinessId?: string;
   event?: string;
+  isOnBizApp?: boolean;
+  messagingAccountIds?: string[];
 };
 
 function voiceSessionStatusLabel(
@@ -356,6 +358,8 @@ export default function WhatsAppSettingsTab() {
             wabaId: assets.wabaId,
             metaBusinessId: assets.metaBusinessId,
             event: assets.event,
+            isOnBizApp: assets.isOnBizApp,
+            messagingAccountIds: assets.messagingAccountIds,
           };
         } else if (
           typeof data?.event === "string" &&
@@ -557,6 +561,14 @@ export default function WhatsAppSettingsTab() {
                       metaBusinessId: assets.metaBusinessId,
                       metaEventType: assets.event,
                       connectionPath: path,
+                      isOnBizApp: Boolean(assets.isOnBizApp),
+                      session: {
+                        phone_number_id: assets.phoneNumberId,
+                        waba_id: assets.wabaId,
+                        messaging_account_ids: assets.messagingAccountIds,
+                        is_on_biz_app: Boolean(assets.isOnBizApp),
+                        event: assets.event,
+                      },
                     }
                   );
 

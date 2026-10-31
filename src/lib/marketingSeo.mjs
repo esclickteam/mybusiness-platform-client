@@ -6,6 +6,7 @@
  * Hebrew and other UI languages stay client-side until dedicated locale URLs exist.
  */
 
+import { partnerFaqPairs } from "../pages/public/partners/partnerFaq.mjs";
 import { crmFaqPairs, getCrmCopy, renderCrmPrerender } from "./crmMarketingCopy.mjs";
 import { collaborationsPrerender, collaborationsSchemas } from "./collaborationsSeo.mjs";
 import { getCollaborationsCopy } from "../pages/product/collaborations/runtime.js";
@@ -84,9 +85,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/partners",
-    title: "International Partner Program | Bizuply",
+    title: "Build Your Business with Bizuply | International Partner Program",
     description:
-      "Join the Bizuply International Partner program for $5,000 per year. Recurring commission is 30%, 35%, or 40% under the partner agreement, and eligible one-time deals earn 10%. The recruitment form does not start a live charge.",
+      "Apply free to the Bizuply International Partner Program. After approval, choose $499 per month or $5,000 per year. Eligible recurring commission is 30% to 40%, and eligible one-time deals earn 10%.",
     crumb: "Partners",
     lastmod: "2026-10-30",
     changefreq: "monthly",
@@ -593,6 +594,7 @@ const ABOUT_FAQ = {
 };
 
 function faqItems(path, language) {
+  if (path === "/partners") return partnerFaqPairs(language);
   if (path === "/crm") return crmFaqPairs(language);
   if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
   if (path === "/") return HOME_FAQ[language] || HOME_FAQ.en;
@@ -1154,15 +1156,18 @@ export function buildMarketingPrerender(pathname) {
   }
   const found = findMarketingPage(path);
   if (!found?.page) return null;
-  const heading = path === "/crm"
+  const heading = path === "/partners"
+    ? "Build Your Business with Bizuply"
+    : path === "/crm"
     ? "Every lead, every client, every appointment in one place"
     : path === "/about"
       ? "Built for businesses that want their work connected"
       : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
+  const partnerFaqs = path === "/partners" ? faqItems("/partners", "en") : null;
   const extra = path === "/partners"
-    ? `<p>Registration is free on this site and waits for admin approval. After approval the partner status is payment_due. The $5,000 annual fee is collected outside Bizuply. An admin records the payment only after the money arrives, with the amount, date, reference, and billing period. This page does not start a live charge.</p><p>Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%. Existing partner tracks keep their current terms.</p><p>Training and marketing materials stay in the existing Partner Center. They open only after the partner is active, the partnership agreement is active, and the annual fee is covered by a recorded payment or an admin waiver. A ledger charge alone does not open the center.</p><p><a href="/partner/register?planKey=partner_international">Apply for International Partner</a></p>`
+    ? `<p>Submitting an application is free and waits for admin approval. This page does not start a live charge. Payment happens only after approval.</p><p>Monthly Partner is $499 per month and Annual Partner is $5,000 per year, a saving of $988 a year. Both intervals include the same rights. Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%.</p><h2>Questions partners ask</h2>${faqBodyHtml(partnerFaqs)}<p><a href="/partner/register?planKey=partner_international&billing=annual">Apply to Become a Partner</a> <a href="/crm">CRM</a> <a href="/whatsapp-api">WhatsApp Business API</a> <a href="/meta-campaigns">Meta campaigns</a> <a href="/website-builder">Websites</a> <a href="/automations">Automations</a></p>`
     : path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
     : path === "/about" && aboutFaqs

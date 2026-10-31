@@ -276,9 +276,12 @@ export type WhatsAppEmbeddedSignupConfig = {
     featureType?: string;
     finishEvent?: string;
     skipPhoneRegistration?: boolean;
+    extrasVersion?: string;
     webhookFields?: string[];
     appId?: string;
     configId?: string;
+    approvedAppId?: string;
+    approvedConfigId?: string;
   };
   genericConnectBlocked?: boolean;
   extras?: Record<string, unknown>;
@@ -863,6 +866,8 @@ export async function completeWhatsAppEmbeddedSignup(
     metaBusinessId?: string;
     metaEventType?: string;
     connectionPath?: "cloud_api" | "coexistence";
+    isOnBizApp?: boolean;
+    session?: Record<string, unknown>;
     pin?: string;
     confirmInvistimoAccountShare?: string;
   }

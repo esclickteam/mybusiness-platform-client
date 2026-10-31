@@ -327,17 +327,17 @@ a.cta-soft {
   border-radius: 1rem 0 0 1rem !important;
 }
 
-/* Mobile public pages: keep the assistant and accessibility buttons
-   in a bottom lane so they do not sit on cards or calls to action. */
+/* Public pages: keep the assistant and accessibility buttons in a bottom
+   lane so they do not cover the last buttons or forms. */
+.app-scroll-area.has-public-widgets {
+  padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
+}
+
 .bizuply-widget-lane {
   display: none;
 }
 
 @media (max-width: 760px) {
-  .app-scroll-area.has-public-widgets {
-    padding-bottom: calc(5.75rem + env(safe-area-inset-bottom));
-  }
-
   .bizuply-widget-lane {
     display: block;
     position: fixed;

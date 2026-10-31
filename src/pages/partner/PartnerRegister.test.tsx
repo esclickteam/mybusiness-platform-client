@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PartnerRegister from "./PartnerRegister";
@@ -62,6 +62,7 @@ function renderAt(path: string) {
 describe("PartnerRegister international lock", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    sessionStorage.clear();
   });
 
   it("keeps legacy radios on the generic register URL", async () => {
@@ -82,5 +83,19 @@ describe("PartnerRegister international lock", () => {
     expect(screen.getByTestId("international-annual-price").textContent).toContain("5,000");
     expect(screen.getByText(/partner.register.internationalManual/)).toBeInTheDocument();
     expect(screen.getByText(/partner.register.internationalLocked/)).toBeInTheDocument();
+    expect(screen.getByTestId("international-annual-price")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByTestId("international-monthly-price").textContent).toContain("499");
+  });
+
+  it("opens monthly from the link and keeps it across the account step and a refresh", () => {
+    const view = renderAt("/partner/register?planKey=partner_international&billing=monthly");
+    expect(screen.getByTestId("international-monthly-price")).toHaveAttribute("aria-pressed", "true");
+    fireEvent.click(screen.getByTestId("international-continue"));
+    expect(screen.getByPlaceholderText("partner.register.fullName")).toBeInTheDocument();
+    expect(screen.getByTestId("international-monthly-price")).toHaveAttribute("aria-pressed", "true");
+    view.unmount();
+    renderAt("/partner/register?planKey=partner_international&billing=monthly&step=account");
+    expect(screen.getByTestId("international-monthly-price")).toHaveAttribute("aria-pressed", "true");
+    expect(screen.getByPlaceholderText("partner.register.fullName")).toBeInTheDocument();
   });
 });

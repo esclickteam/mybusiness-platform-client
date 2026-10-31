@@ -18830,14 +18830,21 @@
       "paidPlan": "Setup ${{setup}} · monthly ${{monthly}} · commission share {{share}}% · team {{team}}",
       "internationalPlan": "${{annual}} / year · recurring {{recurring}}% · one-time {{oneTime}}%",
       "internationalPrice": "${{annual}} / year",
-      "internationalManual": "Manual collection only. Registration is free and waits for admin approval.",
-      "internationalLocked": "International registration is free on this site and waits for admin approval. This form does not charge a card."
+      "internationalMonthlyPrice": "${{monthly}} / month",
+      "annualSavings": "Save ${{amount}} a year",
+      "internationalManual": "Manual collection only. Registration is free and waits for admin approval. Payment happens only after approval.",
+      "internationalLocked": "International registration is free on this site and waits for admin approval. This form does not charge a card.",
+      "noAutoCharge": "There is no automatic charge.",
+      "continue": "Continue",
+      "backToInterval": "Change interval"
     },
     "internationalFee": {
       "pendingTitle": "Waiting for admin approval",
       "pendingBody": "International registration is free on this site. No card is charged. After approval the status becomes payment_due.",
       "dueTitle": "Status: payment_due",
-      "dueBody": "The ${{amount}} annual fee is collected outside Bizuply. Payment instructions are sent separately. This site does not charge a card. Only an admin records a payment after the money arrives, including the amount, date, reference, and billing period. The Partner Center opens after that verified payment and an active partnership agreement."
+      "perMonth": "monthly",
+      "perYear": "annual",
+      "dueBody": "The ${{amount}} {{cadence}} membership fee is collected outside Bizuply. Payment instructions are sent separately. This site does not charge a card and does not renew automatically. Only an admin records a payment after the money arrives, including the amount, date, reference, and billing period. Admin approval alone is not proof of payment. The Partner Center opens after that verified payment and an active partnership agreement."
     },
     "workboard": {
       "reminders": "Reminders",

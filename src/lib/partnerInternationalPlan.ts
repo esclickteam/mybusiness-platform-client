@@ -2,6 +2,43 @@ import type { PartnerPlan, PartnerPlanKey } from "../types/partner";
 
 export const INTERNATIONAL_PLAN_KEY = "partner_international" as const;
 
+export type InternationalBillingInterval = "monthly" | "annual";
+
+export type InternationalBillingOption = {
+  interval: InternationalBillingInterval;
+  amountUsd: number;
+  sku?: string;
+  labelEn: string;
+  labelHe: string;
+  bestValue?: boolean;
+  savingsUsd?: number;
+};
+
+/**
+ * Display fallback only. Ledger amounts are calculated on the server.
+ * These figures match the approved catalog: $499 / month and $5,000 / year.
+ */
+export const INTERNATIONAL_BILLING_OPTIONS: InternationalBillingOption[] = [
+  {
+    interval: "monthly",
+    amountUsd: 499,
+    labelEn: "Monthly Partner",
+    labelHe: "שותף חודשי",
+    bestValue: false,
+  },
+  {
+    interval: "annual",
+    amountUsd: 5000,
+    labelEn: "Annual Partner",
+    labelHe: "שותף שנתי",
+    bestValue: true,
+    savingsUsd: 988,
+  },
+];
+
+export const INTERNATIONAL_BILLING_STORAGE_KEY = "bizuply.partnerInternational.billing";
+export const INTERNATIONAL_REGISTER_STEP_KEY = "bizuply.partnerInternational.registerStep";
+
 export const LEGACY_PLAN_KEYS = [
   "partner_basic",
   "partner_pro",
@@ -49,6 +86,83 @@ export function isLegacyPlanKey(value: string) {
 
 export function isInternationalPlanKey(value: string) {
   return value === INTERNATIONAL_PLAN_KEY;
+}
+
+export function normalizeInternationalBillingInterval(value: unknown): InternationalBillingInterval | null {
+  const raw = String(value || "").trim().toLowerCase();
+  if (raw === "monthly" || raw === "month") return "monthly";
+  if (raw === "annual" || raw === "yearly" || raw === "year") return "annual";
+  return null;
+}
+
+export function internationalBillingOptionsFromPlan(plan?: {
+  billingOptions?: InternationalBillingOption[] | null;
+  annualUsd?: number | null;
+  monthlyMembershipUsd?: number | null;
+  annualSavingsUsd?: number | null;
+} | null): InternationalBillingOption[] {
+  const rows = Array.isArray(plan?.billingOptions) ? plan.billingOptions : [];
+  const monthly = rows.find((row) => row.interval === "monthly");
+  const annual = rows.find((row) => row.interval === "annual");
+  if (monthly?.amountUsd && annual?.amountUsd) {
+    return [
+      { ...INTERNATIONAL_BILLING_OPTIONS[0], ...monthly, interval: "monthly" },
+      {
+        ...INTERNATIONAL_BILLING_OPTIONS[1],
+        ...annual,
+        interval: "annual",
+        bestValue: true,
+        savingsUsd: annual.savingsUsd || Math.round((monthly.amountUsd * 12 - annual.amountUsd) * 100) / 100,
+      },
+    ];
+  }
+  return INTERNATIONAL_BILLING_OPTIONS.map((row) => ({ ...row }));
+}
+
+export function readInternationalBillingInterval(search: string): InternationalBillingInterval {
+  const params = new URLSearchParams(String(search || "").replace(/^\?/, ""));
+  const fromUrl = normalizeInternationalBillingInterval(
+    params.get("billing") || params.get("interval") || params.get("billingInterval")
+  );
+  if (fromUrl) return fromUrl;
+  try {
+    const stored = normalizeInternationalBillingInterval(sessionStorage.getItem(INTERNATIONAL_BILLING_STORAGE_KEY));
+    if (stored) return stored;
+  } catch {
+    /* session storage is optional */
+  }
+  return "annual";
+}
+
+export function rememberInternationalBillingInterval(interval: InternationalBillingInterval) {
+  try {
+    sessionStorage.setItem(INTERNATIONAL_BILLING_STORAGE_KEY, interval);
+  } catch {
+    /* session storage is optional */
+  }
+}
+
+export function readInternationalRegisterStep(search: string): "plan" | "account" {
+  const params = new URLSearchParams(String(search || "").replace(/^\?/, ""));
+  if (params.get("step") === "account") return "account";
+  try {
+    if (sessionStorage.getItem(INTERNATIONAL_REGISTER_STEP_KEY) === "account") return "account";
+  } catch {
+    /* session storage is optional */
+  }
+  return "plan";
+}
+
+export function rememberInternationalRegisterStep(step: "plan" | "account") {
+  try {
+    sessionStorage.setItem(INTERNATIONAL_REGISTER_STEP_KEY, step);
+  } catch {
+    /* session storage is optional */
+  }
+}
+
+export function defaultManualAmountUsd(interval: InternationalBillingInterval, options = INTERNATIONAL_BILLING_OPTIONS) {
+  return options.find((row) => row.interval === interval)?.amountUsd || (interval === "monthly" ? 499 : 5000);
 }
 
 export function isKnownPartnerPlanKey(value: string): value is PartnerPlanKey {
