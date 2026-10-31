@@ -17867,7 +17867,9 @@
       "pendingTitle": "Aguardando aprovação do administrador",
       "pendingBody": "O cadastro internacional é gratuito no site. Nenhum cartão é cobrado. Após a aprovação o status será payment_due.",
       "dueTitle": "Status: payment_due",
-      "dueBody": "A taxa anual de ${{amount}} é cobrada fora da Bizuply. As instruções de pagamento são enviadas separadamente. O site não cobra cartão. Somente um administrador registra o pagamento depois que o dinheiro chega, com valor, data, referência e período. O centro de treinamento abre após esse pagamento verificado e um contrato ativo."
+      "perMonth": "mensal",
+      "perYear": "anual",
+      "dueBody": "A taxa {{cadence}} de ${{amount}} é cobrada fora da Bizuply. As instruções de pagamento são enviadas separadamente. O site não cobra cartão e não renova automaticamente. Somente um administrador registra o pagamento depois que o dinheiro chega, com valor, data, referência e período. A aprovação do administrador não é comprovante de pagamento. O centro de treinamento abre após esse pagamento verificado e um contrato ativo."
     },
     "workboard": {
       "reminders": "Lembretes",

@@ -28,4 +28,23 @@ describe("international manual payment form", () => {
     expect(await screen.findByText(/Payment date is required/)).toBeInTheDocument();
     expect(onSaved).not.toHaveBeenCalled();
   });
+
+  it("defaults a monthly partner to $499", () => {
+    render(
+      <InternationalManualPaymentForm
+        target={{
+          partnerId: "partner-2",
+          name: "Monthly",
+          periodStart: "2026-01-31",
+          periodEnd: "2026-02-28",
+          billingInterval: "monthly",
+          defaultAmount: 499,
+        }}
+        onClose={() => {}}
+        onSaved={() => {}}
+      />
+    );
+    expect(screen.getByTestId("manual-payment-amount")).toHaveValue("499");
+    expect(screen.getByText(/\$499 לחודש/)).toBeInTheDocument();
+  });
 });
