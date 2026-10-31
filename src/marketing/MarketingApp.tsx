@@ -1,13 +1,8 @@
-import { lazy, Suspense, useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
-import HeaderView from "../components/HeaderView";
-import Footer from "../components/Footer";
-import Home from "../pages/Home";
+import HomeExperience from "../pages/HomeExperiencePreview";
 import { getHtmlLang, getTextDirection } from "../i18n/localeUtils";
 import { splitMarketingLocale } from "../lib/localePathCore.mjs";
-
-const AccessibilityWidget = lazy(() => import("../components/site-plugins/accessibility/AccessibilityWidget"));
-const SupportChatWidget = lazy(() => import("../components/SupportChatWidget"));
 
 function leaveMarketingSite(href: string) {
   const locale = splitMarketingLocale(window.location.pathname).locale || "en";
@@ -43,18 +38,20 @@ export function installMarketingNavigation() {
 
 export default function MarketingApp() {
   const { i18n } = useTranslation();
-  const [widgets, setWidgets] = useState(false);
 
   useLayoutEffect(() => {
-    if (!document.getElementById("bizuply-first-paint")) return undefined;
     const release = () => {
       const shell = document.getElementById("bizuply-first-paint");
+      document.getElementById("root")?.removeAttribute("hidden");
+      if (document.querySelector("#root .hx-page")) {
+        shell?.remove();
+        return;
+      }
       const hero = shell?.querySelector(".home-hero");
       if (hero && document.querySelector("#root .app-main")) {
         shell.replaceChildren(hero);
         hero.setAttribute("data-kept-hero", "true");
       }
-      document.getElementById("root")?.removeAttribute("hidden");
       if (!hero) shell?.remove();
     };
     const root = document.getElementById("root");
@@ -74,27 +71,13 @@ export default function MarketingApp() {
 
   useEffect(() => installMarketingNavigation(), []);
 
-  useEffect(() => {
-    const start = () => setWidgets(true);
-    const timer = window.setTimeout(start, 4000);
-    return () => window.clearTimeout(timer);
-  }, []);
-
   return (
     <div className="app-layout" dir={getTextDirection(i18n.language)} lang={getHtmlLang(i18n.language)}>
-      <HeaderView />
       <main className="app-main">
-        <div className="app-scroll-area has-public-widgets">
-          <Home />
+        <div className="app-scroll-area home-preview-scroll">
+          <HomeExperience indexed />
         </div>
       </main>
-      <Footer />
-      {widgets ? (
-        <Suspense fallback={null}>
-          <SupportChatWidget />
-          <AccessibilityWidget />
-        </Suspense>
-      ) : null}
     </div>
   );
 }
