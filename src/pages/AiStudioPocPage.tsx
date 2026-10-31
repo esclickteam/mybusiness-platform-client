@@ -20,6 +20,7 @@ import { materializeAiSitePlan, type AiSitePlan } from "../utils/materializeAiSi
 import { createMySite } from "../api/mySitesApi";
 import API from "../api";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import PublicVisualSiteRenderer from "../components/site-builder/public/PublicVisualSiteRenderer";
 
 type ChatRow = { role: "user" | "assistant"; content: string; action?: string; via?: string };
 
@@ -37,6 +38,7 @@ export default function AiStudioPocPage() {
   const [error, setError] = useState("");
   const [credits, setCredits] = useState<number | null>(null);
   const [linkedSiteId, setLinkedSiteId] = useState<string>("");
+  const [previewPath, setPreviewPath] = useState("/");
 
   useEffect(() => {
     let cancelled = false;
@@ -68,7 +70,17 @@ export default function AiStudioPocPage() {
   const preview = useMemo(() => {
     if (!plan) return null;
     try {
-      return materializeAiSitePlan(plan);
+      const materialized = materializeAiSitePlan(plan);
+      return {
+        materialized,
+        site: {
+          name: plan.siteName,
+          templateKey: materialized.hostTemplateKey,
+          pages: materialized.pages,
+          templateData: materialized.homeVisual,
+          activePageId: materialized.activePageId,
+        },
+      };
     } catch {
       return null;
     }
@@ -97,7 +109,10 @@ export default function AiStudioPocPage() {
       const id = await ensureProject();
       const result = await chatAiStudioProject(id, text);
       setPlan(result.summary ? (result.project?.plan as AiSitePlan) : result.project?.plan || null);
-      if (result.project?.plan) setPlan(result.project.plan as AiSitePlan);
+      if (result.project?.plan) {
+        setPlan(result.project.plan as AiSitePlan);
+        setPreviewPath("/");
+      }
       setVersions(result.project?.versions || []);
       setCredits(result.credits?.balance ?? null);
       setMessages((prev) => [
@@ -117,7 +132,7 @@ export default function AiStudioPocPage() {
   }
 
   async function saveAsDraftSite() {
-    if (!plan || busy) return;
+    if (!plan || busy) return "";
     setBusy(true);
     setError("");
     try {
@@ -129,7 +144,7 @@ export default function AiStudioPocPage() {
       });
       const siteId = String((created as any)?._id || (created as any)?.id || "");
       if (!siteId) throw new Error("create site failed");
-      const materialized = materializeAiSitePlan(plan);
+      const materialized = preview?.materialized || materializeAiSitePlan(plan);
       const home = materialized.pages.find((p) => p.isHome) || materialized.pages[0];
       await API.put("/site-builder/site", {
         businessId,
@@ -154,18 +169,17 @@ export default function AiStudioPocPage() {
         await linkAiStudioSite(projectId, siteId);
       }
       setLinkedSiteId(siteId);
+      return siteId;
     } catch (e: any) {
       setError(e?.response?.data?.error || e?.message || "שמירת טיוטה נכשלה");
+      return "";
     } finally {
       setBusy(false);
     }
   }
 
   async function openInStudio() {
-    if (!linkedSiteId) {
-      await saveAsDraftSite();
-    }
-    const id = linkedSiteId;
+    const id = linkedSiteId || (await saveAsDraftSite());
     if (!id) return;
     navigate(`/business/${businessId}/dashboard/website/sites/${id}/edit?template=adion&ai=1`);
   }
@@ -327,44 +341,40 @@ export default function AiStudioPocPage() {
 
         <section className="rounded-xl border border-slate-200 bg-white">
           <div className="border-b border-slate-100 px-4 py-3 text-sm font-semibold text-slate-800">
-            מבנה הטיוטה
+            תצוגת הטיוטה
           </div>
           <div className="space-y-3 p-4">
-            {!plan && (
-              <p className="text-sm text-slate-500">האתר יופיע כאן אחרי יצירה בשיחה.</p>
+            {!preview && (
+              <p className="text-sm text-slate-500">האתר המעוצב יופיע כאן אחרי יצירה בשיחה.</p>
             )}
-            {plan && (
+            {preview && (
               <>
-                <div
-                  className="rounded-lg p-4 text-white"
-                  style={{
-                    background: `linear-gradient(120deg, ${plan.palette?.primary || "#4c1d95"}, ${
-                      plan.palette?.secondary || "#0ea5e9"
-                    })`,
-                  }}
-                >
-                  <div className="text-xs opacity-80">{plan.brand?.tagline || plan.niche}</div>
-                  <div className="text-2xl font-black">{plan.siteName}</div>
+                <div className="flex flex-wrap gap-2">
+                  {(plan?.pages || []).map((page) => {
+                    const path = page.isHome ? "/" : `/${String(page.slug || page.id).replace(/^\//, "")}`;
+                    const active = previewPath === path;
+                    return (
+                      <button
+                        key={page.id}
+                        type="button"
+                        onClick={() => setPreviewPath(path)}
+                        className={`rounded-full px-3 py-1 text-xs ${
+                          active ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700"
+                        }`}
+                      >
+                        {page.title}
+                      </button>
+                    );
+                  })}
                 </div>
-                {(plan.pages || []).map((page) => (
-                  <div key={page.id} className="rounded-lg border border-slate-100 p-3">
-                    <div className="text-sm font-semibold text-slate-900">
-                      {page.title}
-                      {page.isHome ? " · בית" : ""}
-                    </div>
-                    <ul className="mt-2 space-y-1 text-xs text-slate-600">
-                      {(page.sections || []).map((s, i) => (
-                        <li key={`${page.id}-${i}`}>
-                          {s.libraryId}
-                          {s.content?.title ? ` — ${String(s.content.title)}` : ""}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-                {preview && (
-                  <p className="text-xs text-slate-400">{preview.pages.length} עמודים בטיוטה</p>
-                )}
+                <div className="h-[70vh] overflow-auto rounded-lg border border-slate-200 bg-white">
+                  <PublicVisualSiteRenderer
+                    site={preview.site}
+                    pathname={previewPath}
+                    disableAnalytics
+                  />
+                </div>
+                <p className="text-xs text-slate-400">טיוטה מעוצבת. האתר אינו מפורסם.</p>
               </>
             )}
           </div>
