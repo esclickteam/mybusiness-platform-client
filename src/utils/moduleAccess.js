@@ -114,6 +114,12 @@ export function isDashboardPathAllowed(
   const alwaysAllowed = new Set(["help-center"]);
   if (alwaysAllowed.has(segment)) return true;
 
+  // AI Studio drafts a website. A website plan can open it while CRM and the
+  // rest of the business dashboard stay closed.
+  if (segment === "ai-studio" && isModuleEnabled(enabledModules, "website")) {
+    return true;
+  }
+
   return isModuleEnabled(enabledModules, moduleKey);
 }
 

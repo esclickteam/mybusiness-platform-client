@@ -17,6 +17,15 @@ test("WhatsApp-only package is dashboard plus whatsapp", () => {
   assert.equal(isWhatsappOnlyPackage([]), false);
 });
 
+test("Website plans can open AI Studio and stay out of CRM", () => {
+  const base = `/business/${businessId}/dashboard`;
+  const modules = ["website", "billing"];
+  assert.equal(isDashboardPathAllowed(`${base}/ai-studio`, modules), true);
+  assert.equal(isDashboardPathAllowed(`${base}/website`, modules), true);
+  assert.equal(isDashboardPathAllowed(`${base}/crm`, modules), false);
+  assert.equal(isDashboardPathAllowed(`${base}/ai-studio`, ["dashboard", "whatsapp"]), false);
+});
+
 test("WhatsApp-only accounts cannot open the club route", () => {
   const club = `/business/${businessId}/dashboard/global-club`;
   const help = `/business/${businessId}/dashboard/help-center`;
