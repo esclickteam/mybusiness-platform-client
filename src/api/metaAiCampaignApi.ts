@@ -91,6 +91,12 @@ export type AiCampaignProposal = {
     creativeWhy: string;
     settingsWhy: string;
   };
+  copyAlternatives?: Array<{
+    id?: string;
+    primaryText?: string;
+    headline?: string;
+    description?: string;
+  }>;
   graphSafe?: {
     objective: string | null;
     optimizationGoal: string | null;
@@ -163,7 +169,24 @@ export type AiCampaignSessionResponse = {
   assistantMessage: string;
   question: AiCampaignQuestion | null;
   missingFields: string[];
-  progress: { confirmed: number; required: number; missing?: string[] };
+  progress: {
+    confirmed: number;
+    required: number;
+    remaining?: number;
+    missing?: string[];
+  };
+  metaAssets?: {
+    campaignId?: string | null;
+    adSetId?: string | null;
+    creativeId?: string | null;
+    adId?: string | null;
+    leadFormId?: string | null;
+    imageHash?: string | null;
+    videoId?: string | null;
+    whatsappPhone?: string | null;
+    resolvedLocations?: Array<Record<string, unknown>>;
+    resolvedInterests?: Array<{ id: string; name?: string }>;
+  } | null;
   intent?: unknown;
   messages?: AiCampaignMessage[];
   ready?: {
@@ -210,7 +233,6 @@ export type AiCampaignSessionResponse = {
     primaryLesson?: string | null;
   };
   creativeReview?: AiCreativeReview | null;
-  creativeReview?: AiCreativeReview | null;
 };
 
 export type AiAutomationRecommendationStatus =
@@ -250,7 +272,13 @@ export async function getAiCampaignContext(businessId?: string) {
 
 export async function startAiCampaignSession(
   businessId: string | undefined,
-  body: { action?: "new" | "resume" | "restart"; sessionId?: string; language?: string } = {}
+  body: {
+    action?: "new" | "resume" | "restart";
+    sessionId?: string;
+    language?: string;
+    /** AI Studio / Advisor deep-link seed (objective / destination catalog keys). */
+    seed?: { objective?: string | null; destination?: string | null };
+  } = {}
 ) {
   const { data } = await API.post<AiCampaignSessionResponse>(
     `${BASE}/sessions`,

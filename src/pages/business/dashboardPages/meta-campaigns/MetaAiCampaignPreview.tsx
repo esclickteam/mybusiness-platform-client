@@ -160,10 +160,14 @@ export default function MetaAiCampaignPreview({
 }) {
   const { t, i18n } = useTranslation();
   const [reviseDraft, setReviseDraft] = useState("");
+  const [selectedAltId, setSelectedAltId] = useState<string | null>(null);
   const [formScreen, setFormScreen] = useState<"intro" | "questions" | "privacy" | "thanks">(
     "intro"
   );
   const proposal = session.proposal as AiCampaignProposal;
+  const copyAlternatives = Array.isArray(proposal.copyAlternatives)
+    ? proposal.copyAlternatives
+    : [];
   const language = String(i18n.language || "he").toLowerCase().startsWith("en")
     ? "en"
     : "he";
@@ -269,6 +273,56 @@ export default function MetaAiCampaignPreview({
           </div>
         ))}
       </dl>
+
+      {copyAlternatives.length > 1 && !lockedAfterDraft ? (
+        <div className="space-y-2" data-testid="meta-ai-copy-alternatives">
+          <p className="text-xs font-black uppercase tracking-wide text-slate-500">
+            {t("metaCampaigns.ai.preview.copyAlternatives", {
+              defaultValue: "Copy alternatives",
+            })}
+          </p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {copyAlternatives.map((alt, index) => {
+              const id = alt.id || `alt-${index}`;
+              const active =
+                selectedAltId === id ||
+                (!selectedAltId &&
+                  alt.headline === proposal.creative.headline &&
+                  alt.primaryText === proposal.creative.primaryText);
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  disabled={busy}
+                  data-testid={`meta-ai-copy-alt-${id}`}
+                  className={`rounded-md border px-3 py-2 text-start transition ${
+                    active
+                      ? "border-violet-400 bg-violet-50"
+                      : "border-slate-200 bg-white hover:border-violet-200"
+                  }`}
+                  onClick={() => {
+                    setSelectedAltId(id);
+                    onPatch({
+                      creative: {
+                        primaryText: alt.primaryText,
+                        headline: alt.headline,
+                        description: alt.description,
+                      },
+                    });
+                  }}
+                >
+                  <p className="text-sm font-black text-slate-900">
+                    {alt.headline || `Option ${index + 1}`}
+                  </p>
+                  <p className="mt-1 line-clamp-3 text-xs font-semibold text-slate-600">
+                    {alt.primaryText}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
 
       {(proposal.strategy.audienceWhy ||
         proposal.strategy.creativeWhy ||
