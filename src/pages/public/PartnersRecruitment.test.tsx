@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import PartnersRecruitment from "./PartnersRecruitment";
@@ -42,12 +42,27 @@ describe("bizuply.com/partners recruitment", () => {
       "/partner/register?planKey=partner_international&billing=monthly"
     );
     expect(screen.getByTestId("international-price-cards").className).toContain("md:grid-cols-2");
-    expect(screen.getByText(/30%/)).toBeInTheDocument();
-    expect(screen.getByText(/10%/)).toBeInTheDocument();
-    expect(screen.getByText(/Partner Center/)).toBeInTheDocument();
+    expect(screen.getAllByText(/30%/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/10%/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Partner Center/).length).toBeGreaterThan(0);
     expect(screen.getByText(/does not start a live charge/i)).toBeInTheDocument();
-    expect(screen.getByText(/Application is free/)).toBeInTheDocument();
-    expect(screen.getByText(/payment_due/)).toBeInTheDocument();
+    expect(screen.getAllByText(/Application is free/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/payment_due/).length).toBeGreaterThan(0);
+    expect(screen.getByRole("heading", { level: 1, name: "Build Your Business with Bizuply" })).toBeInTheDocument();
+  });
+
+  it("estimates commission from the published tiers", () => {
+    render(
+      <MemoryRouter>
+        <PartnersRecruitment />
+      </MemoryRouter>
+    );
+    fireEvent.change(screen.getByTestId("calc-customers"), { target: { value: "20" } });
+    fireEvent.change(screen.getByTestId("calc-price"), { target: { value: "100" } });
+    expect(screen.getByTestId("calc-revenue")).toHaveTextContent("$2,000");
+    expect(screen.getByTestId("calc-month")).toHaveTextContent("$700");
+    expect(screen.getByTestId("calc-year")).toHaveTextContent("$8,400");
+    expect(screen.getByText(/Illustrative estimates only/)).toBeInTheDocument();
   });
 
   it("shows both prices in Hebrew", () => {
@@ -61,6 +76,6 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("international-monthly-price").textContent).toContain("$499");
     expect(screen.getByTestId("international-annual-price").textContent).toContain("$5,000");
     expect(screen.getByTestId("annual-savings").textContent).toContain("$988");
-    expect(screen.getByText(/הגשת הבקשה היא ללא תשלום/)).toBeInTheDocument();
+    expect(screen.getAllByText(/הגשת הבקשה היא ללא תשלום/).length).toBeGreaterThan(0);
   });
 });
