@@ -44,6 +44,18 @@ export type PartnerPlan = {
   monthlySku?: string;
   currency?: string;
   annualUsd?: number;
+  monthlyMembershipUsd?: number;
+  annualSavingsUsd?: number;
+  defaultBillingInterval?: "monthly" | "annual";
+  billingOptions?: Array<{
+    interval: "monthly" | "annual";
+    amountUsd: number;
+    sku?: string;
+    labelEn?: string;
+    labelHe?: string;
+    bestValue?: boolean;
+    savingsUsd?: number;
+  }>;
   softwareDiscountCap: number;
   humanServiceDiscountCap: number;
   aiDiscountCap: number;
@@ -119,8 +131,11 @@ export type PartnerMe = {
     centerOpen: boolean;
     status: string;
     agreementStatus?: string;
+    billingInterval?: "monthly" | "annual";
+    pendingBillingInterval?: "monthly" | "annual" | null;
     manualCollection?: {
       amountUsd: number;
+      interval?: "monthly" | "annual";
       collectedOnSite: false;
       chargedLive: false;
     };
@@ -413,6 +428,15 @@ export type AdminPartnerRow = {
   name: string;
   planKey: PartnerPlanKey;
   planName?: string;
+  billingInterval?: "monthly" | "annual";
+  pendingBillingInterval?: "monthly" | "annual" | null;
+  expectedMembershipAmountUsd?: number;
+  openMembershipCharge?: {
+    amountUsd: number;
+    interval?: "monthly" | "annual";
+    periodStart?: string | null;
+    periodEnd?: string | null;
+  } | null;
   status: PartnerStatus;
   amountDueToBizuply?: number;
   totalCustomerSales?: number;

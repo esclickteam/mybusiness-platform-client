@@ -7,6 +7,8 @@ export type InternationalManualPaymentTarget = {
   name: string;
   periodStart: string;
   periodEnd: string;
+  defaultAmount?: string | number;
+  billingInterval?: "monthly" | "annual";
 };
 
 export default function InternationalManualPaymentForm({
@@ -18,7 +20,7 @@ export default function InternationalManualPaymentForm({
   onClose: () => void;
   onSaved: () => Promise<void> | void;
 }) {
-  const [amount, setAmount] = useState("5000");
+  const [amount, setAmount] = useState(String(target.defaultAmount ?? (target.billingInterval === "monthly" ? 499 : 5000)));
   const [paidAt, setPaidAt] = useState("");
   const [reference, setReference] = useState("");
   const [periodStart, setPeriodStart] = useState(target.periodStart);
@@ -64,6 +66,7 @@ export default function InternationalManualPaymentForm({
           <h2 className="mt-1 text-lg font-black text-slate-900">תיעוד תשלום עבור {target.name}</h2>
           <p className="mt-1 max-w-3xl text-sm font-bold text-slate-700">
             הגבייה מתבצעת מחוץ למערכת. הכפתור לא מחייב כרטיס ולא יוצר חיוב אוטומטי. תעדו את התשלום רק אחרי שהכסף התקבל בפועל.
+            ברירת המחדל היא {target.billingInterval === "monthly" ? "$499 לחודש" : "$5,000 לשנה"}. אישור אדמין לבדו אינו אישור תשלום.
           </p>
         </div>
         <button type="button" className="text-sm font-black text-slate-500" onClick={onClose}>

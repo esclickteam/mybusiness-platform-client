@@ -17867,7 +17867,9 @@
       "pendingTitle": "Esperando aprobación del administrador",
       "pendingBody": "El registro internacional es gratis en el sitio. No se cobra tarjeta. Tras la aprobación el estado será payment_due.",
       "dueTitle": "Estado: payment_due",
-      "dueBody": "La cuota anual de ${{amount}} se cobra fuera de Bizuply. Las instrucciones de pago se envían por separado. El sitio no cobra tarjeta. Solo un administrador registra el pago después de que llegue el dinero, con importe, fecha, referencia y período. El centro de formación se abre tras ese pago verificado y un acuerdo activo."
+      "perMonth": "mensual",
+      "perYear": "anual",
+      "dueBody": "La cuota {{cadence}} de ${{amount}} se cobra fuera de Bizuply. Las instrucciones de pago se envían por separado. El sitio no cobra tarjeta ni renueva automáticamente. Solo un administrador registra el pago después de que llegue el dinero, con importe, fecha, referencia y período. La aprobación del administrador no es prueba de pago. El centro de formación se abre tras ese pago verificado y un acuerdo activo."
     },
     "workboard": {
       "reminders": "Recordatorios",
