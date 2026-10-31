@@ -32,7 +32,7 @@ describe("bizuply.com/partners recruitment", () => {
       </MemoryRouter>
     );
     const link = screen.getByTestId("international-register-link");
-    expect(link).toHaveAttribute("href", "/partner/register?planKey=partner_international");
+    expect(link).toHaveAttribute("href", "/partner/register?planKey=partner_international&billing=annual");
     expect(screen.getAllByText(/\$5,000/).length).toBeGreaterThan(0);
     expect(screen.getByTestId("international-monthly-price").textContent).toContain("$499");
     expect(screen.getByTestId("annual-best-value")).toHaveTextContent("Best Value");

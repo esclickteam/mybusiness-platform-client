@@ -389,7 +389,7 @@ export default function PartnersRecruitment() {
   const monthly = options.find((row) => row.interval === "monthly") || INTERNATIONAL_BILLING_OPTIONS[0];
   const annual = options.find((row) => row.interval === "annual") || INTERNATIONAL_BILLING_OPTIONS[1];
   const savings = annual.savingsUsd || 988;
-  const annualHref = `/partner/register?planKey=${INTERNATIONAL_PLAN_KEY}`;
+  const annualHref = `/partner/register?planKey=${INTERNATIONAL_PLAN_KEY}&billing=annual`;
   const monthlyHref = `/partner/register?planKey=${INTERNATIONAL_PLAN_KEY}&billing=monthly`;
   const rate = commissionRateForCustomers(customers);
   const estimate = useMemo(() => {

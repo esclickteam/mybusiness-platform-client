@@ -1,4 +1,5 @@
 .ipartner {
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
   --ink: #0f172a;
   --muted: #475569;
   --violet: #6d28d9;
@@ -269,6 +270,14 @@
 }
 
 .ip-section, .ip-close { scroll-margin-top: 88px; }
+
+@media (max-width: 1320px) {
+  .ip-wrap {
+    width: auto;
+    margin-left: max(1rem, 5.25rem);
+    margin-right: max(1rem, 5.25rem);
+  }
+}
 
 @media (min-width: 720px) {
   .ip-facts, .ip-grid-2, .ip-plans, .ip-results { grid-template-columns: 1fr 1fr; }

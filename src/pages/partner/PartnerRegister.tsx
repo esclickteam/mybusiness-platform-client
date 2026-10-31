@@ -80,6 +80,12 @@ export default function PartnerRegister() {
     }
   }, [lockedToInternational, form.planKey]);
 
+  useEffect(() => {
+    if (!lockedToInternational) return;
+    const requested = params.get("billing") || params.get("interval") || params.get("billingInterval");
+    if (requested) rememberInternationalBillingInterval(billingInterval);
+  }, [lockedToInternational, billingInterval, params]);
+
   const billingOptions = internationalBillingOptionsFromPlan(
     plans.find((plan) => isInternationalPlanKey(plan.planKey))
   );
