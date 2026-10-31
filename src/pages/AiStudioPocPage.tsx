@@ -204,15 +204,17 @@ export default function AiStudioPocPage() {
   if (!status?.enabled) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center" dir="rtl">
+        <div className="mx-auto mb-4 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-800">
+          בטא
+        </div>
         <Sparkles className="mx-auto mb-4 h-10 w-10 text-violet-600" />
         <h1 className="text-2xl font-black text-slate-900">Bizuply AI Studio</h1>
         <p className="mt-3 text-slate-600">
-          ה־PoC כבוי כברירת מחדל (feature flag). להפעלה בסביבת staging בלבד הגדירו
-          `AI_STUDIO_ENABLED=true` ו־`AI_STUDIO_BUSINESS_ALLOWLIST` ל־businessId שלכם.
+          הבטא סגורה לעסק הזה. כשהיא פתוחה אפשר ליצור טיוטת אתר בשיחה, לשנות צבעים
+          ועמודים, ולשמור אותה כדי לפתוח אותה שוב.
         </p>
-        <p className="mt-2 text-sm text-slate-500">
-          flagOn={String(status?.flagOn)} · allowlisted={String(status?.allowlisted)} ·
-          openai={String(status?.provider?.openaiConfigured)}
+        <p className="mt-3 text-sm text-slate-500">
+          בגרסה הזו אין פרסום אתר, אין תשלום, ואין בניית אפליקציה או SaaS.
         </p>
         <button
           type="button"
@@ -232,14 +234,18 @@ export default function AiStudioPocPage() {
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div>
             <div className="text-xs font-semibold tracking-wide text-violet-600">
-              BIZUPLY AI STUDIO · POC
+              BIZUPLY AI STUDIO · בטא
             </div>
-            <h1 className="text-lg font-black text-slate-900">שיחה ← אתר ויזואלי</h1>
+            <h1 className="text-lg font-black text-slate-900">טיוטת אתר בשיחה</h1>
+            <p className="mt-1 max-w-xl text-xs text-slate-500">
+              אפשר ליצור טיוטה, לשנות צבעים ועמודים, ולשמור. התצוגה היא מבנה הטיוטה, לא אתר
+              מפורסם. פרסום ותשלום סגורים בבטא הזו.
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             {credits != null && (
               <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
-                קרדיטים רכים: {credits}
+                ניסיונות בבטא, בלי חיוב: {credits}
               </span>
             )}
             <button
@@ -321,7 +327,7 @@ export default function AiStudioPocPage() {
 
         <section className="rounded-xl border border-slate-200 bg-white">
           <div className="border-b border-slate-100 px-4 py-3 text-sm font-semibold text-slate-800">
-            תצוגה מקדימה חיה (מבנה)
+            מבנה הטיוטה
           </div>
           <div className="space-y-3 p-4">
             {!plan && (
@@ -357,9 +363,7 @@ export default function AiStudioPocPage() {
                   </div>
                 ))}
                 {preview && (
-                  <p className="text-xs text-slate-400">
-                    materialize OK · {preview.pages.length} pages · host {preview.hostTemplateKey}
-                  </p>
+                  <p className="text-xs text-slate-400">{preview.pages.length} עמודים בטיוטה</p>
                 )}
               </>
             )}
