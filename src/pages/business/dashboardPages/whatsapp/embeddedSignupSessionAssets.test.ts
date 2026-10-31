@@ -21,6 +21,9 @@ describe("embeddedSignupSessionAssets", () => {
       wabaId: "222",
       metaBusinessId: "333",
       event: "FINISH",
+      isOnBizApp: false,
+      messagingAccountIds: [],
+      primaryWaacIds: [],
     });
   });
 
@@ -39,6 +42,9 @@ describe("embeddedSignupSessionAssets", () => {
       wabaId: "888777666555",
       metaBusinessId: "portfolio-1",
       event: "FINISH_OBO_MIGRATION",
+      isOnBizApp: false,
+      messagingAccountIds: [],
+      primaryWaacIds: [],
     });
     expect(isEmbeddedSignupSuccessEvent("FINISH_OBO_MIGRATION")).toBe(true);
   });
@@ -55,6 +61,9 @@ describe("embeddedSignupSessionAssets", () => {
       wabaId: "waba-only",
       metaBusinessId: "biz",
       event: "FINISH_ONLY_WABA",
+      isOnBizApp: false,
+      messagingAccountIds: [],
+      primaryWaacIds: [],
     });
   });
 
@@ -89,6 +98,9 @@ describe("embeddedSignupSessionAssets", () => {
         wabaId: "1795723778519344",
         metaBusinessId: "497710782903804",
         event: "FINISH_OBO_MIGRATION",
+        isOnBizApp: false,
+        messagingAccountIds: [],
+        primaryWaacIds: [],
       },
       "FINISH_OBO_MIGRATION"
     );

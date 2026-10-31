@@ -8,6 +8,7 @@ export const EMBEDDED_SIGNUP_SUCCESS_EVENTS = [
   "FINISH",
   "FINISH_ONLY_WABA",
   "FINISH_OBO_MIGRATION",
+  "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING",
 ] as const;
 
 export type EmbeddedSignupSuccessEvent =
@@ -18,6 +19,9 @@ export type EmbeddedSignupSessionAssets = {
   wabaId: string;
   metaBusinessId: string;
   event: EmbeddedSignupSuccessEvent;
+  isOnBizApp: boolean;
+  messagingAccountIds: string[];
+  primaryWaacIds: string[];
 };
 
 function asRecord(value: unknown): Record<string, unknown> {
@@ -29,8 +33,28 @@ function asRecord(value: unknown): Record<string, unknown> {
 function firstString(...values: unknown[]): string {
   for (const value of values) {
     if (typeof value === "string" && value.trim()) return value.trim();
+    if (Array.isArray(value)) {
+      const nested = firstString(...value);
+      if (nested) return nested;
+    } else if (value && typeof value === "object") {
+      const rec = value as Record<string, unknown>;
+      const nested = firstString(
+        rec.id,
+        rec.waba_id,
+        rec.phone_number_id,
+        rec.messaging_account_id
+      );
+      if (nested) return nested;
+    }
   }
   return "";
+}
+
+function stringList(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .map((item) => firstString(item))
+    .filter(Boolean);
 }
 
 export function isEmbeddedSignupSuccessEvent(
@@ -44,7 +68,8 @@ export function isEmbeddedSignupSuccessEvent(
 
 /**
  * Extract phone/WABA/portfolio IDs from a Meta WA_EMBEDDED_SIGNUP postMessage.
- * Supports FINISH, FINISH_ONLY_WABA, and FINISH_OBO_MIGRATION.
+ * Supports FINISH, FINISH_ONLY_WABA, FINISH_OBO_MIGRATION, and
+ * FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING.
  * Returns null when the event is not a recognized success completion or IDs are missing.
  */
 export function extractEmbeddedSignupSessionAssets(
@@ -61,17 +86,20 @@ export function extractEmbeddedSignupSessionAssets(
   }
 
   const data = asRecord(root.data);
+  const messagingAccountIds = stringList(data.messaging_account_ids);
+  const primaryWaacIds = stringList(data.primary_waac_ids);
+  const isOnBizApp =
+    data.is_on_biz_app === true || data.isOnBizApp === true;
   const phoneNumberId = firstString(
     data.phone_number_id,
     data.phoneNumberId,
-    data.phone_number_ids && Array.isArray(data.phone_number_ids)
-      ? data.phone_number_ids[0]
-      : ""
+    data.phone_number_ids
   );
   const wabaId = firstString(
     data.waba_id,
     data.wabaId,
-    data.waba_ids && Array.isArray(data.waba_ids) ? data.waba_ids[0] : ""
+    data.waba_ids,
+    messagingAccountIds
   );
   const metaBusinessId = firstString(
     data.business_id,
@@ -89,10 +117,13 @@ export function extractEmbeddedSignupSessionAssets(
       wabaId,
       metaBusinessId,
       event,
+      isOnBizApp,
+      messagingAccountIds,
+      primaryWaacIds,
     };
   }
 
-  // FINISH and FINISH_OBO_MIGRATION require both phone and WABA (fail closed).
+  // FINISH, Coexistence, and FINISH_OBO_MIGRATION require both phone and WABA.
   if (!phoneNumberId || !wabaId) {
     return null;
   }
@@ -102,6 +133,9 @@ export function extractEmbeddedSignupSessionAssets(
     wabaId,
     metaBusinessId,
     event,
+    isOnBizApp,
+    messagingAccountIds,
+    primaryWaacIds,
   };
 }
 
@@ -119,5 +153,6 @@ export function embeddedSignupAssetsLogFields(
       ? String(assets.phoneNumberId).slice(-6)
       : null,
     wabaIdSuffix: assets?.wabaId ? String(assets.wabaId).slice(-6) : null,
+    isOnBizApp: Boolean(assets?.isOnBizApp),
   };
 }
