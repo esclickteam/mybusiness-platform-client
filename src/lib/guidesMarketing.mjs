@@ -7,6 +7,7 @@
 
 import { EXTRA_GUIDE_SLUGS, getExtraGuide } from "./guidesExtra.mjs";
 import { getRichGuide, RICH_GUIDE_SLUGS } from "./guidesRich.mjs";
+import { getWhatsAppSalesGuide, WHATSAPP_SALES_GUIDE_SLUGS } from "./guidesWhatsappSales.mjs";
 
 const UPDATED = "2026-10-23";
 
@@ -477,10 +478,10 @@ export const GUIDE_LOCALES = {
   ar: AR,
 };
 
-export const GUIDE_SLUGS = [...new Set([...Object.keys(EN), ...EXTRA_GUIDE_SLUGS, ...RICH_GUIDE_SLUGS])];
+export const GUIDE_SLUGS = [...new Set([...Object.keys(EN), ...EXTRA_GUIDE_SLUGS, ...RICH_GUIDE_SLUGS, ...WHATSAPP_SALES_GUIDE_SLUGS])];
 
 export function getGuide(slug, locale) {
-  return getRichGuide(slug, locale) || getExtraGuide(slug, locale) || (GUIDE_LOCALES[locale] || GUIDE_LOCALES.en)[slug] || null;
+  return getWhatsAppSalesGuide(slug, locale) || getRichGuide(slug, locale) || getExtraGuide(slug, locale) || (GUIDE_LOCALES[locale] || GUIDE_LOCALES.en)[slug] || null;
 }
 
 export function guidePath(slug) {

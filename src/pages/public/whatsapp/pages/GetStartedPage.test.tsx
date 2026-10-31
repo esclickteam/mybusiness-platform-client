@@ -3,6 +3,12 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 const i18nState = vi.hoisted(() => ({ language: "he" }));
+const authState = vi.hoisted(() => ({
+  loaded: true,
+  selfServe: true,
+  providers: ["google", "microsoft"] as Array<"google" | "microsoft">,
+  turnstileSiteKey: null as string | null,
+}));
 
 vi.mock("react-i18next", async () => {
   const he = (await import("../../../../i18n/locales/he.json")).default as Record<string, unknown>;
@@ -18,10 +24,16 @@ vi.mock("react-i18next", async () => {
   };
 });
 
-vi.mock("../../../../components/whatsappApiAuth/authConfig", () => ({
-  useWhatsAppApiAuthConfig: () => ({ loaded: true, selfServe: true, providers: ["google", "microsoft"], turnstileSiteKey: null }),
-  startSocialAuth: vi.fn(),
-}));
+vi.mock("../../../../components/whatsappApiAuth/authConfig", async () => {
+  const actual = await vi.importActual<typeof import("../../../../components/whatsappApiAuth/authConfig")>(
+    "../../../../components/whatsappApiAuth/authConfig"
+  );
+  return {
+    ...actual,
+    useWhatsAppApiAuthConfig: () => ({ ...authState }),
+    startSocialAuth: vi.fn(),
+  };
+});
 
 vi.mock("../../../../api", () => ({ default: { post: vi.fn(), defaults: { baseURL: "https://api.test/api" } } }));
 
@@ -44,6 +56,10 @@ const ALLOWED_LATIN = new Set([
 afterEach(() => {
   cleanup();
   i18nState.language = "he";
+  authState.loaded = true;
+  authState.selfServe = true;
+  authState.providers = ["google", "microsoft"];
+  authState.turnstileSiteKey = null;
 });
 
 describe("GetStartedPage", () => {
@@ -70,5 +86,25 @@ describe("GetStartedPage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Connect your WhatsApp number." })).toBeInTheDocument();
     expect(screen.getByText("Sign up with Google or Microsoft, or with your email and a password.")).toBeInTheDocument();
     expect(screen.getAllByRole("heading", { name: "Create your WhatsApp API account" }).length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: /Continue$/ })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Send request/i })).not.toBeInTheDocument();
+  });
+
+  it("shows the existing signup/checkout form while availability is still loading", () => {
+    i18nState.language = "en";
+    authState.loaded = false;
+    authState.selfServe = true;
+    renderPage();
+    expect(screen.getAllByRole("heading", { name: "Create your WhatsApp API account" }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: /Send request/i })).not.toBeInTheDocument();
+  });
+
+  it("only shows the contact form when the server has closed self-serve", () => {
+    i18nState.language = "en";
+    authState.loaded = true;
+    authState.selfServe = false;
+    renderPage();
+    expect(screen.getByRole("button", { name: /Send request/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /Continue$/ })).not.toBeInTheDocument();
   });
 });

@@ -24657,13 +24657,13 @@
         },
         "webhook": {
           "title": "Configure your webhook",
-          "text": "Receive message status updates and replies on your server.",
+          "text": "Receive delivery, read and failed status for messages you send. Customer replies stay in the Bizuply inbox.",
           "cta": "Set up webhook"
         },
         "firstMessage": {
           "title": "Send your first message",
-          "text": "Send an approved template through the API.",
-          "cta": "Open API guide"
+          "text": "From Connection, send an approved test template to a number you own. Meta may charge for that send. You can also send through the API.",
+          "cta": "Test connection"
         },
         "details": {
           "title": "Add your business details",

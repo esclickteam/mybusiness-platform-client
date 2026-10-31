@@ -22,6 +22,7 @@ const AgenciesPage = lazy(() => import("./whatsapp/pages/AgenciesPage"));
 const PricingPage = lazy(() => import("./whatsapp/pages/PricingPage"));
 const DocsPage = lazy(() => import("./whatsapp/pages/DocsPage"));
 const HelpPage = lazy(() => import("./whatsapp/pages/HelpPage"));
+const GuidesPage = lazy(() => import("./whatsapp/pages/GuidesPage"));
 const GetStartedPage = lazy(() => import("./whatsapp/pages/GetStartedPage"));
 const SecurityPage = lazy(() => import("./whatsapp/pages/SecurityPage"));
 
@@ -137,6 +138,9 @@ function SiteRoutes({ lang }: { lang: string }) {
     case "/help":
       page = <HelpPage />;
       break;
+    case "/guides":
+      page = <GuidesPage />;
+      break;
     case "/get-started":
       page = <GetStartedPage />;
       break;
@@ -172,7 +176,7 @@ function SiteRoutes({ lang }: { lang: string }) {
 }
 
 /** Pages with copy in every site language; the rest are wrapped as English-only LTR. */
-const LOCALIZED_PATHS = new Set(["/", "/get-started"]);
+const LOCALIZED_PATHS = new Set(["/", "/get-started", "/help", "/pricing", "/guides"]);
 
 const FONT_HREF =
   "https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap";

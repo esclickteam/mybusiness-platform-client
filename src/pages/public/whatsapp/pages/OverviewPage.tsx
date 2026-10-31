@@ -591,6 +591,9 @@ export default function OverviewPage({ lang }: { lang: string }) {
             <a className="wa-link" href={he ? "https://bizuply.com/he/appointments" : "https://bizuply.com/appointments"}>
               {he ? "תורים" : "Appointments"} <Arrow size={14} aria-hidden="true" />
             </a>
+            <SiteLink to="/guides" className="wa-link">
+              {he ? "מדריכי וואטסאפ" : "WhatsApp guides"} <Arrow size={14} aria-hidden="true" />
+            </SiteLink>
           </div>
         </div>
       </section>
