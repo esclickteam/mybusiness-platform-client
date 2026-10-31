@@ -1,3 +1,8 @@
+/**
+ * Coexistence Embedded Signup extras for the approved Tech Provider app.
+ * The Settings UI only renders this path when the server sets
+ * embeddedSignup.coexistenceEnabled for the current business (allowlist).
+ */
 export const COEXISTENCE_FINISH_EVENT =
   "FINISH_WHATSAPP_BUSINESS_APP_ONBOARDING";
 export const COEXISTENCE_FEATURE_TYPE = "whatsapp_business_app_onboarding";
