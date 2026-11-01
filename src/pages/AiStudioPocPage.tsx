@@ -13,6 +13,7 @@ import {
   createAiStudioProject,
   getAiStudioProject,
   getAiStudioStatus,
+  listAiStudioProjects,
   restoreAiStudioVersion,
   type AiStudioStatus,
 } from "../api/aiStudioApi";
@@ -46,6 +47,29 @@ export default function AiStudioPocPage() {
       try {
         const st = await getAiStudioStatus(false);
         if (!cancelled) setStatus(st);
+        if (st?.enabled && !cancelled) {
+          const listed = await listAiStudioProjects();
+          const latest = listed?.projects?.[0];
+          if (latest?._id) {
+            const full = await getAiStudioProject(String(latest._id));
+            const project = full?.project;
+            if (project?.plan && !cancelled) {
+              setProjectId(String(project._id));
+              setPlan(project.plan as AiSitePlan);
+              setVersions(project.versions || []);
+              setLinkedSiteId(String(project.linkedSiteId || ""));
+              setMessages(
+                (project.messages || []).map((m: any) => ({
+                  role: m.role === "user" ? "user" : "assistant",
+                  content: String(m.content || ""),
+                  action: m.action,
+                  via: m.via,
+                }))
+              );
+              setInput("");
+            }
+          }
+        }
       } catch (e: any) {
         if (!cancelled) {
           setStatus({

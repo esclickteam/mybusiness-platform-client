@@ -50,9 +50,11 @@ export async function listAiStudioProjects() {
 }
 
 export async function chatAiStudioProject(projectId: string, message: string) {
-  const { data } = await API.post(`/ai-studio/projects/${projectId}/chat`, {
-    message,
-  });
+  const { data } = await API.post(
+    `/ai-studio/projects/${projectId}/chat`,
+    { message },
+    { timeout: 120000 }
+  );
   return data;
 }
 
