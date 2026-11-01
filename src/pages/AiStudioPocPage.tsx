@@ -25,6 +25,29 @@ import PublicVisualSiteRenderer from "../components/site-builder/public/PublicVi
 
 type ChatRow = { role: "user" | "assistant"; content: string; action?: string; via?: string };
 
+const DAILY_QUOTA_TEXT =
+  "הגעת למכסת השימוש היומית ב־AI Studio. ניתן להמשיך לערוך את האתר באופן ידני. האפשרות להמשיך ליצור ולערוך באמצעות AI תתחדש לאחר איפוס המכסה.";
+const MONTHLY_QUOTA_TEXT =
+  "הגעת למכסת השימוש החודשית ב־AI Studio. האתרים שיצרת נשמרו וניתן להמשיך לערוך ולנהל אותם. השימוש ב־AI יתחדש בתחילת תקופת השימוש הבאה.";
+
+function aiStudioErrorText(
+  data: { code?: string; error?: string; resetsAtLabel?: string } | undefined,
+  fallback: string
+) {
+  const code = String(data?.code || "");
+  const serverText = String(data?.error || "");
+  const leaked = /[$]|USD|דולר/i.test(serverText);
+  const renewal = data?.resetsAtLabel ? ` המכסה תתחדש ב־${data.resetsAtLabel}.` : "";
+  if (code === "AI_STUDIO_DAILY_QUOTA") {
+    return !leaked && serverText.startsWith(DAILY_QUOTA_TEXT) ? serverText : `${DAILY_QUOTA_TEXT}${renewal}`;
+  }
+  if (code === "AI_STUDIO_MONTHLY_QUOTA") {
+    return !leaked && serverText.startsWith(MONTHLY_QUOTA_TEXT) ? serverText : `${MONTHLY_QUOTA_TEXT}${renewal}`;
+  }
+  if (leaked) return "ניתן להמשיך לערוך את האתר באופן ידני. השימוש ב־AI Studio אינו זמין כרגע.";
+  return serverText || fallback;
+}
+
 function publishSlug(name: string | undefined, siteId: string) {
   const ascii = String(name || "")
     .toLowerCase()
@@ -165,7 +188,7 @@ export default function AiStudioPocPage() {
         await persistSite(nextPlan, { siteId: linkedSiteId, publish: sitePublished });
       }
     } catch (e: any) {
-      setError(e?.response?.data?.error || e?.message || "שגיאה בשיחה");
+      setError(aiStudioErrorText(e?.response?.data, e?.message || "שגיאה בשיחה"));
     } finally {
       setBusy(false);
     }
