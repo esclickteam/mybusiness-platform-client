@@ -3,7 +3,7 @@ import { STORY } from "./homepageStory.mjs";
 /** Homepage first-paint copy. Same strings as the locale files. */
 export const HOME_SHELL = {
   "en": {
-    "headline": "Everything your business needs to grow in one place",
+    "headline": "Everything your business needs. One powerful platform.",
     "subtitle": "Manage customers, capture leads, run marketing campaigns, communicate through WhatsApp, schedule appointments and automate everyday workflows — all from one connected business platform.",
     "supportLine": "Whether you prefer to manage everything yourself or need expert help setting things up, Bizuply gives your business the tools and support to move forward.",
     "startTrial": "Get Started",
@@ -22,7 +22,7 @@ export const HOME_SHELL = {
     "navAria": "Main navigation"
   },
   "he": {
-    "headline": "כל מה שהעסק שלכם צריך כדי לצמוח במקום אחד",
+    "headline": "כל מה שהעסק שלך צריך. פלטפורמה אחת חזקה.",
     "subtitle": "נהלו לקוחות, קלטו פניות, הריצו קמפיינים, דברו ב־WhatsApp, קבעו פגישות והפכו עבודה יומיומית לאוטומטית — מפלטפורמה עסקית אחת ומחוברת.",
     "supportLine": "אם אתם מעדיפים לנהל הכול בעצמכם או שאתם צריכים עזרה מקצועית בהקמה, ביזאפלי (Bizuply) נותנת לעסק כלים וליווי כדי להתקדם.",
     "startTrial": "מתחילים",

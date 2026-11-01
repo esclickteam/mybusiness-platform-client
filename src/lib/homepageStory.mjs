@@ -205,8 +205,8 @@ export const STORY = {
     "finalLead": "Discover a more connected way to manage customers, marketing, communication and everyday work. Choose the tools that fit your business and start building a workspace around the way you operate.",
     "finalPrimary": "Get Started",
     "finalSecondary": "Explore Pricing",
-    "seoTitle": "Bizuply | All-in-One Business Management Platform & CRM",
-    "seoDescription": "Manage leads, customers, WhatsApp Business, Meta campaigns, appointments, websites and automations in one connected platform. Discover Bizuply."
+    "seoTitle": "Bizuply | CRM, lead management, WhatsApp Business API and business tools",
+    "seoDescription": "Meet Bizuply: a platform for customer and lead management, WhatsApp Business API, paid campaigns, website building and business automations in one place."
   },
   "he": {
     "flowTitle": "כל פנייה. סביבת עבודה אחת ומחוברת.",
@@ -413,8 +413,8 @@ export const STORY = {
     "finalLead": "גלו דרך מחוברת יותר לנהל לקוחות, שיווק, תקשורת ועבודה יומיומית. בחרו את הכלים שמתאימים לעסק והתחילו לבנות סביבת עבודה סביב הדרך שבה אתם עובדים.",
     "finalPrimary": "מתחילים",
     "finalSecondary": "לצפייה במחירים",
-    "seoTitle": "ביזאפלי (Bizuply) | פלטפורמה לניהול עסק ו-CRM במקום אחד",
-    "seoDescription": "ביזאפלי (Bizuply) היא פלטפורמה לניהול עסק: לידים, לקוחות, WhatsApp Business, קמפיינים של Meta, פגישות, אתרים ואוטומציות במקום אחד."
+    "seoTitle": "Bizuply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים",
+    "seoDescription": "הכירו את Bizuply: פלטפורמה לניהול לקוחות ולידים, WhatsApp Business API, קמפיינים ממומנים, בניית אתרים ואוטומציות עסקיות במקום אחד."
   },
   "es": {
     "flowTitle": "Cada consulta. Un espacio de trabajo conectado.",
