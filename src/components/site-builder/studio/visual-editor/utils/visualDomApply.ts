@@ -3394,7 +3394,18 @@ export function applyVisualLibraryPageMode(
         'header, footer, [data-template-section-type="header"], [data-template-section-type="footer"], [data-section-kind="header"], [data-section-kind="footer"]',
       ) ||
       child.getAttribute("data-bizuply-nav-item") !== null;
-    const replaceTemplate = data?.__aiStudioPage === true;
+    const insertedSections = data?.__insertedSections;
+    const sectionReplacesTemplate =
+      insertedSections &&
+      typeof insertedSections === "object" &&
+      Object.values(insertedSections).some(
+        (section) =>
+          Boolean(section) &&
+          typeof section === "object" &&
+          (section as { aiStudio?: boolean }).aiStudio === true,
+      );
+    const replaceTemplate =
+      data?.__aiStudioPage === true || sectionReplacesTemplate;
 
     /*
       Library / blank pages hide the template's default page bodies, but keep
