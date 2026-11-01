@@ -25,6 +25,16 @@ import PublicVisualSiteRenderer from "../components/site-builder/public/PublicVi
 
 type ChatRow = { role: "user" | "assistant"; content: string; action?: string; via?: string };
 
+function publishSlug(name: string | undefined, siteId: string) {
+  const ascii = String(name || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+  if (ascii && ascii !== "your-business") return ascii;
+  return `ai-${String(siteId).slice(-8).toLowerCase()}`;
+}
+
 export default function AiStudioPocPage() {
   const { businessId = "" } = useParams<{ businessId: string }>();
   const navigate = useNavigate();
@@ -39,6 +49,8 @@ export default function AiStudioPocPage() {
   const [error, setError] = useState("");
   const [credits, setCredits] = useState<number | null>(null);
   const [linkedSiteId, setLinkedSiteId] = useState<string>("");
+  const [sitePublished, setSitePublished] = useState(false);
+  const [publishArmed, setPublishArmed] = useState(false);
   const [previewPath, setPreviewPath] = useState("/");
 
   useEffect(() => {
@@ -148,6 +160,10 @@ export default function AiStudioPocPage() {
           via: result.via,
         },
       ]);
+      const nextPlan = (result.project?.plan || null) as AiSitePlan | null;
+      if (nextPlan && linkedSiteId) {
+        await persistSite(nextPlan, { siteId: linkedSiteId, publish: sitePublished });
+      }
     } catch (e: any) {
       setError(e?.response?.data?.error || e?.message || "שגיאה בשיחה");
     } finally {
@@ -155,48 +171,81 @@ export default function AiStudioPocPage() {
     }
   }
 
+  async function persistSite(
+    nextPlan: AiSitePlan,
+    options?: { siteId?: string; publish?: boolean }
+  ) {
+    let siteId = options?.siteId || linkedSiteId;
+    if (!siteId) {
+      const created = await createMySite({
+        businessId,
+        name: nextPlan.siteName || "AI Studio draft",
+        templateKey: "adion",
+        templateName: "Adion",
+      });
+      siteId = String((created as any)?._id || (created as any)?.id || "");
+    }
+    if (!siteId) throw new Error("create site failed");
+    const materialized = materializeAiSitePlan(nextPlan);
+    const home = materialized.pages.find((p) => p.isHome) || materialized.pages[0];
+    const publish = Boolean(options?.publish);
+    const slug = publish ? publishSlug(nextPlan.siteName, siteId) : undefined;
+    await API.put("/site-builder/site", {
+      businessId,
+      siteId,
+      ...(slug ? { slug } : {}),
+      name: nextPlan.siteName,
+      templateKey: "adion",
+      editorMode: "visual-react",
+      templateEditorMode: "visual-react",
+      published: publish,
+      status: publish ? "published" : "draft",
+      activePageId: materialized.activePageId,
+      pages: materialized.pages,
+      data: home?.data,
+      templateData: home?.templateData,
+      projectData: home?.projectData,
+      visualEditorPayload: home?.visualEditorPayload,
+      brand: nextPlan.brand,
+      seoSettings: nextPlan.seo,
+    });
+    if (projectId && siteId !== linkedSiteId) {
+      const { linkAiStudioSite } = await import("../api/aiStudioApi");
+      await linkAiStudioSite(projectId, siteId);
+    }
+    setLinkedSiteId(siteId);
+    if (publish) setSitePublished(true);
+    return siteId;
+  }
+
   async function saveAsDraftSite() {
     if (!plan || busy) return "";
     setBusy(true);
     setError("");
+    setPublishArmed(false);
     try {
-      const created = await createMySite({
-        businessId,
-        name: plan.siteName || "AI Studio draft",
-        templateKey: "adion",
-        templateName: "Adion",
-      });
-      const siteId = String((created as any)?._id || (created as any)?.id || "");
-      if (!siteId) throw new Error("create site failed");
-      const materialized = preview?.materialized || materializeAiSitePlan(plan);
-      const home = materialized.pages.find((p) => p.isHome) || materialized.pages[0];
-      await API.put("/site-builder/site", {
-        businessId,
-        siteId,
-        name: plan.siteName,
-        templateKey: "adion",
-        editorMode: "visual-react",
-        templateEditorMode: "visual-react",
-        published: false,
-        status: "draft",
-        activePageId: materialized.activePageId,
-        pages: materialized.pages,
-        data: home?.data,
-        templateData: home?.templateData,
-        projectData: home?.projectData,
-        visualEditorPayload: home?.visualEditorPayload,
-        brand: plan.brand,
-        seoSettings: plan.seo,
-      });
-      if (projectId) {
-        const { linkAiStudioSite } = await import("../api/aiStudioApi");
-        await linkAiStudioSite(projectId, siteId);
-      }
-      setLinkedSiteId(siteId);
-      return siteId;
+      return await persistSite(plan, { publish: sitePublished });
     } catch (e: any) {
       setError(e?.response?.data?.error || e?.message || "שמירת טיוטה נכשלה");
       return "";
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function publishSite() {
+    if (!plan || busy) return;
+    if (!publishArmed) {
+      setPublishArmed(true);
+      return;
+    }
+    setBusy(true);
+    setError("");
+    try {
+      await persistSite(plan, { publish: true });
+      setPublishArmed(false);
+    } catch (e: any) {
+      setError(e?.response?.data?.error || e?.message || "הפרסום נכשל");
     } finally {
       setBusy(false);
     }
@@ -248,11 +297,11 @@ export default function AiStudioPocPage() {
         <Sparkles className="mx-auto mb-4 h-10 w-10 text-violet-600" />
         <h1 className="text-2xl font-black text-slate-900">Bizuply AI Studio</h1>
         <p className="mt-3 text-slate-600">
-          הבטא סגורה לעסק הזה. כשהיא פתוחה אפשר ליצור טיוטת אתר בשיחה, לשנות צבעים
-          ועמודים, ולשמור אותה כדי לפתוח אותה שוב.
+          AI Studio כלול בחבילה העסקית הפעילה. לעסק הזה אין כרגע חבילה עסקית פעילה
+          או הרשאת בדיקה.
         </p>
         <p className="mt-3 text-sm text-slate-500">
-          בגרסה הזו אין פרסום אתר, אין תשלום, ואין בניית אפליקציה או SaaS.
+          אין תשלום נפרד. פרסום האתר נעשה רק אחרי אישור מפורש.
         </p>
         <button
           type="button"
@@ -276,8 +325,8 @@ export default function AiStudioPocPage() {
             </div>
             <h1 className="text-lg font-black text-slate-900">טיוטת אתר בשיחה</h1>
             <p className="mt-1 max-w-xl text-xs text-slate-500">
-              אפשר ליצור טיוטה, לשנות צבעים ועמודים, ולשמור. התצוגה היא מבנה הטיוטה, לא אתר
-              מפורסם. פרסום ותשלום סגורים בבטא הזו.
+              האתר נוצר בשיחה, נשמר, ונפתח לעריכה ב-Website Studio. הפרסום משתמש
+              במנגנון הקיים ורק אחרי אישור מפורש. השירות כלול בחבילה העסקית, בלי תשלום נפרד.
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -292,7 +341,15 @@ export default function AiStudioPocPage() {
               onClick={saveAsDraftSite}
               className="rounded-md border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50"
             >
-              שמור טיוטת אתר
+              שמור אתר
+            </button>
+            <button
+              type="button"
+              disabled={!plan || busy}
+              onClick={publishSite}
+              className="rounded-md border border-violet-200 bg-violet-50 px-3 py-1.5 text-violet-900 disabled:opacity-50"
+            >
+              {publishArmed ? "אישור פרסום" : sitePublished ? "פרסם עדכון" : "פרסם אתר"}
             </button>
             <button
               type="button"

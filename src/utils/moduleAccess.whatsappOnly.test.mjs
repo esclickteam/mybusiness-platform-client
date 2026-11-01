@@ -17,6 +17,17 @@ test("WhatsApp-only package is dashboard plus whatsapp", () => {
   assert.equal(isWhatsappOnlyPackage([]), false);
 });
 
+test("A business package can open AI Studio and the saved site editor", () => {
+  const base = `/business/${businessId}/dashboard`;
+  const modules = ["dashboard", "crm", "automations", "billing"];
+  assert.equal(isDashboardPathAllowed(`${base}/ai-studio`, modules), true);
+  assert.equal(
+    isDashboardPathAllowed(`${base}/website/sites/abc/edit`, modules),
+    true
+  );
+  assert.equal(isDashboardPathAllowed(`${base}/website`, modules), false);
+});
+
 test("Website plans can open AI Studio and stay out of CRM", () => {
   const base = `/business/${businessId}/dashboard`;
   const modules = ["website", "billing"];

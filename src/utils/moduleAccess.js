@@ -114,9 +114,24 @@ export function isDashboardPathAllowed(
   const alwaysAllowed = new Set(["help-center"]);
   if (alwaysAllowed.has(segment)) return true;
 
-  // AI Studio drafts a website. A website plan can open it while CRM and the
-  // rest of the business dashboard stay closed.
-  if (segment === "ai-studio" && isModuleEnabled(enabledModules, "website")) {
+  // AI Studio is part of the business package. A website plan can still open
+  // the screen so an admin test grant can load it; the server decides access.
+  // A business package without the website module can open AI Studio and the
+  // saved site editor, while the rest of the website product stays closed.
+  const businessPackage =
+    isModuleEnabled(enabledModules, "crm") ||
+    isModuleEnabled(enabledModules, "automations");
+  if (
+    segment === "ai-studio" &&
+    (isModuleEnabled(enabledModules, "website") || businessPackage)
+  ) {
+    return true;
+  }
+  if (
+    segment === "website" &&
+    businessPackage &&
+    String(pathname || "").includes("/sites/")
+  ) {
     return true;
   }
 

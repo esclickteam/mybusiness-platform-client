@@ -3355,13 +3355,16 @@ export function applyVisualLibraryPageMode(
         'header, footer, [data-template-section-type="header"], [data-template-section-type="footer"], [data-section-kind="header"], [data-section-kind="footer"]',
       ) ||
       child.getAttribute("data-bizuply-nav-item") !== null;
+    const replaceTemplate = data?.__aiStudioPage === true;
 
     /*
       Library / blank pages hide the template's default page bodies, but keep
       header/footer chrome + insert host so nested Site Pages stay navigable
       and inserted library sections can mount.
+      An AI Studio page replaces that chrome too. Its own sections carry the
+      navigation, and the inserted sections stay editable.
     */
-    if (blankPage && !inserted && !isInsertHost && !isChrome) {
+    if (blankPage && !inserted && !isInsertHost && (!isChrome || replaceTemplate)) {
       if (
         !child.hasAttribute(
           "data-bizuply-library-original-display",

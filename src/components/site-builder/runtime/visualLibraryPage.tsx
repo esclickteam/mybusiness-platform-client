@@ -160,6 +160,8 @@ export function shouldApplyLibraryBlankMode(
       "",
   ).trim();
 
+  if (source.__aiStudioPage === true) return true;
+
   if (isStudioGeneratedPageId(pageId)) return true;
 
   if (isCommonTemplatePageId(pageId)) return false;
