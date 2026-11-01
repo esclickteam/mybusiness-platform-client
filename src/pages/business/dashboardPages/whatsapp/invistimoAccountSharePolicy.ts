@@ -2,7 +2,12 @@ import { INVISTIMO_BUSINESS_ID } from "../../../../utils/invistimoAdmin";
 
 export const INVISTIMO_SHARE_PORTFOLIO_ID = "2915799725325699";
 export const INVISTIMO_SHARE_WABA_ID = "1042912532080617";
-export const INVISTIMO_SHARE_PHONE_NUMBER_ID = "976924655507470";
+export const INVISTIMO_SHARE_PHONE_NUMBER_ID = "1325815400610124";
+export const STALE_INVISTIMO_SHARE_PHONE_NUMBER_ID = "976924655507470";
+/** Shared production Embedded Signup config. Coexistence and other customers stay on it. */
+export const PRODUCTION_EMBEDDED_SIGNUP_CONFIG_ID = "1057504196895353";
+/** Account-share config diagnosed for the existing INVISTIMO number. Not used by other customers. */
+export const INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID = "1873773577318198";
 export const INVISTIMO_SHARE_E164 = "+972515953390";
 export const INVISTIMO_SHARE_CONFIRM_PHRASE =
   "SHARE_INVISTIMO_WHATSAPP_ACCOUNT_WITH_BIZUPLY";
@@ -32,19 +37,83 @@ export function isInvistimoShareTenant(businessId?: string | null): boolean {
   return String(businessId || "").trim() === INVISTIMO_BUSINESS_ID;
 }
 
-export function buildInvistimoAccountShareExtras() {
-  return {
-    setup: {
-      business: {
-        id: INVISTIMO_SHARE_PORTFOLIO_ID,
-        phone: { code: 972, number: "515953390" },
-      },
-      whatsAppBusinessAccount: { id: INVISTIMO_SHARE_WABA_ID },
-      preVerifiedPhone: { ids: [INVISTIMO_SHARE_PHONE_NUMBER_ID] },
-    },
-    featureType: "",
-    sessionInfoVersion: "3" as const,
-  };
+type ServerShareExtras = Record<string, unknown>;
+
+function readObject(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
+function readString(source: Record<string, unknown> | null, key: string): string {
+  const value = source?.[key];
+  return typeof value === "string" ? value.trim() : "";
+}
+
+export function serverShareExtrasFromSignup(signup: {
+  extras?: unknown;
+  invistimoAccountShare?: { extras?: unknown } | null;
+} | null | undefined): ServerShareExtras | null {
+  return (
+    readObject(signup?.invistimoAccountShare?.extras) ||
+    readObject(signup?.extras)
+  );
+}
+
+export function serverShareExtrasMatchInvistimo(extras: ServerShareExtras | null): boolean {
+  const setup = readObject(extras?.setup);
+  const business = readObject(setup?.business);
+  const phone = readObject(business?.phone);
+  const waba = readObject(setup?.whatsAppBusinessAccount);
+  const preverified = readObject(setup?.preVerifiedPhone);
+  const ids = Array.isArray(preverified?.ids)
+    ? preverified.ids.map((id) => String(id || "").replace(/\D/g, "")).filter(Boolean)
+    : [];
+  if (ids.length !== 1 || ids[0] !== INVISTIMO_SHARE_PHONE_NUMBER_ID) return false;
+  if (ids.includes(STALE_INVISTIMO_SHARE_PHONE_NUMBER_ID)) return false;
+  if (readString(waba, "id") !== INVISTIMO_SHARE_WABA_ID) return false;
+  if (readString(business, "id") !== INVISTIMO_SHARE_PORTFOLIO_ID) return false;
+  const display = String(phone?.number || "").replace(/\D/g, "");
+  if (display && !display.endsWith("515953390")) return false;
+  if (readString(extras, "sessionInfoVersion") !== "3") return false;
+  return true;
+}
+
+/**
+ * The production config is the shared coexistence configuration.
+ * The INVISTIMO share screen uses the v4 account-share configuration instead.
+ * Every other customer keeps the config id the server returned.
+ */
+export function selectInvistimoShareConfigId(serverConfigId?: string | null):
+  | { ok: true; configId: string }
+  | { ok: false; reason: "config_unrecognized" } {
+  const id = String(serverConfigId || "").trim();
+  if (
+    id === INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID ||
+    id === PRODUCTION_EMBEDDED_SIGNUP_CONFIG_ID
+  ) {
+    return { ok: true, configId: INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID };
+  }
+  return { ok: false, reason: "config_unrecognized" };
+}
+
+export function planInvistimoShareLaunch(signup: {
+  configId?: string | null;
+  extras?: unknown;
+  invistimoAccountShare?: { extras?: unknown } | null;
+} | null | undefined):
+  | { ok: true; configId: string; extras: ServerShareExtras }
+  | {
+      ok: false;
+      reason: "server_extras_missing" | "server_extras_mismatch" | "config_unrecognized";
+    } {
+  const extras = serverShareExtrasFromSignup(signup);
+  if (!extras) return { ok: false, reason: "server_extras_missing" };
+  if (!serverShareExtrasMatchInvistimo(extras)) {
+    return { ok: false, reason: "server_extras_mismatch" };
+  }
+  const config = selectInvistimoShareConfigId(signup?.configId);
+  if (!config.ok) return config;
+  return { ok: true, configId: config.configId, extras };
 }
 
 export function evaluateInvistimoShareEvent(event?: string | null): {

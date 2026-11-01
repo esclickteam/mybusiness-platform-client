@@ -86,7 +86,7 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
-      "<title>ביזאפלי (Bizuply) | פלטפורמה לניהול עסק ו-CRM במקום אחד</title>",
+      "<title>Bizuply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים</title>",
     );
     expect(buildMarketingDocumentHead("/he/") || "").toContain('rel="canonical" href="https://bizuply.com/he"');
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he</loc>");
@@ -105,6 +105,10 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/login")).toBe(false);
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
+    expect(isMarketingNoindexPath("/home-preview")).toBe(true);
+    expect(isUnknownMarketingPath("/home-preview")).toBe(false);
+    expect(buildMarketingDocumentHead("/home-preview") || "").toContain("noindex, nofollow");
+    expect(buildMarketingSitemapXml()).not.toContain("/home-preview");
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
     expect(hebrew).toContain("<title>תוכנת CRM לעסקים קטנים וניהול לידים | ביזאפלי</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');

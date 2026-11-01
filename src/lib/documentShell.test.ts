@@ -64,17 +64,17 @@ describe("first paint document shell", () => {
     const page = await documentFor("https://bizuply.com/", "bizuply.com");
     expect(page.status).toBe(200);
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("marketing");
-    expect(page.body).toContain("<title>Bizuply | All-in-One Business Management Platform &amp; CRM</title>");
+    expect(page.body).toContain("<title>Bizuply | CRM, lead management, WhatsApp Business API and business tools</title>");
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"@type":"Organization"');
     expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(page.body).toContain("In Hebrew, the brand name is ביזאפלי.");
     expect(page.body).toContain('class="home-hero"');
-    expect(page.body).toContain('<h1 class="home-hero__title">Everything your business needs to grow in one place</h1>');
+    expect(page.body).toContain('<h1 class="home-hero__title">Everything your business needs. One powerful platform.</h1>');
     expect(visibleH1Count(page.body)).toBe(1);
     expect(noscriptCrawl(page.body)).toBe("");
     expect(rootInner(page.body)).toContain("home-hero__title");
-    expect(rootInner(page.body)).toContain("Everything your business needs to grow in one place");
+    expect(rootInner(page.body)).toContain("Everything your business needs. One powerful platform.");
     expect(rootInner(page.body)).not.toContain("The official website is bizuply.com");
     expect(rootInner(page.body)).not.toContain("<h1>Bizuply</h1>");
     expect(page.body).not.toContain("position:absolute;width:1px;height:1px");
@@ -83,7 +83,7 @@ describe("first paint document shell", () => {
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
     const hebrew = await documentFor("https://bizuply.com/he/", "bizuply.com");
     expect(hebrew.body).toContain('lang="he" dir="rtl"');
-    expect(hebrew.body).toContain("כל מה שהעסק שלכם צריך כדי לצמוח במקום אחד");
+    expect(hebrew.body).toContain("כל מה שהעסק שלך צריך. פלטפורמה אחת חזקה.");
     expect(hebrew.body).toContain("ביזאפלי");
     expect(visibleH1Count(hebrew.body)).toBe(1);
     expect(noscriptCrawl(hebrew.body)).toBe("");

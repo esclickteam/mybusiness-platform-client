@@ -85,7 +85,7 @@ const EmbedTemplatePreviewPage = lazy(() =>
 );
 
 /* Public Pages */
-const HomePage = lazy(() => import("./pages/Home"));
+const HomeExperiencePreview = lazy(() => import("./pages/HomeExperiencePreview"));
 const BizuplyEarlyAccessLanding = lazy(() =>
   import("./pages/BizuplyEarlyAccessLanding")
 );
@@ -861,15 +861,18 @@ export default function App() {
   const { user, loading, initialized } = useAuth();
   const { i18n } = useTranslation();
   useLayoutEffect(() => {
-    if (!document.getElementById("bizuply-first-paint")) return undefined;
     const release = () => {
       const shell = document.getElementById("bizuply-first-paint");
+      document.getElementById("root")?.removeAttribute("hidden");
+      if (document.querySelector("#root .hx-page")) {
+        shell?.remove();
+        return;
+      }
       const hero = shell?.querySelector(".home-hero");
       if (hero && document.querySelector("#root .app-main")) {
         shell.replaceChildren(hero);
         hero.setAttribute("data-kept-hero", "true");
       }
-      document.getElementById("root")?.removeAttribute("hidden");
       if (!hero) shell?.remove();
     };
     const root = document.getElementById("root");
@@ -902,6 +905,8 @@ export default function App() {
   const whatsappLanding = shouldRenderWhatsAppLanding(hostname, location.pathname, location.search);
   const publicMarketingHost = travelHost || whatsappLanding;
   const isEarlyAccessLanding = location.pathname === "/early-access";
+  const isHomePreview = location.pathname === "/home-preview";
+  const isCinematicHome = location.pathname === "/" || isHomePreview;
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -1071,6 +1076,7 @@ export default function App() {
     !isDashboardRoute &&
     !isBusinessChatRoute &&
     !isEarlyAccessLanding &&
+    !isCinematicHome &&
     !isSaasMarketplaceRoute &&
     !isSaasPublicSite &&
     !isDevVisualRoute &&
@@ -1083,7 +1089,7 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <div className="app-layout" dir={appDir} lang={appLang}>
+      <div className={`app-layout${isCinematicHome ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
           !isSaasMarketplaceRoute && !isSaasPublicSite &&
@@ -1126,7 +1132,7 @@ export default function App() {
               className={
                 isPublicBusinessProfile
                   ? "app-scroll-area app-scroll-area--profile"
-                  : `app-scroll-area${showPublicWidgets ? " has-public-widgets" : ""}`
+                  : `app-scroll-area${showPublicWidgets ? " has-public-widgets" : ""}${isCinematicHome ? " home-preview-scroll" : ""}`
               }
             >
               <AiProvider>
@@ -1184,7 +1190,7 @@ export default function App() {
                               ) : user.role === "partner" ? (
                                 <Navigate to="/partner/dashboard" replace />
                               ) : (
-                                <HomePage />
+                                <HomeExperiencePreview indexed />
                               )
                             ) : (
                               <PartnerHostHome />
@@ -1196,6 +1202,7 @@ export default function App() {
                           path="/early-access"
                           element={<BizuplyEarlyAccessLanding />}
                         />
+                        <Route path="/home-preview" element={<HomeExperiencePreview />} />
                         <Route path="/s/:slug" element={<SaasPublicSite />} />
                         <Route path="/saas" element={<SaasMarketplacePage />} />
                         <Route path="/saas/:slug/demo" element={<SaasTemplateDemoPage />} />
@@ -1678,6 +1685,7 @@ export default function App() {
 
         {!isDashboardRoute &&
           !isPublicBusinessProfile &&
+          !isCinematicHome &&
           !isEarlyAccessLanding &&
           !isSaasMarketplaceRoute && !isSaasPublicSite &&
           !isDevVisualRoute &&
@@ -1694,7 +1702,7 @@ export default function App() {
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!user && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && (
+      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
@@ -1709,6 +1717,7 @@ export default function App() {
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
+        !isCinematicHome &&
         !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
         !isBusinessChatRoute &&
@@ -1738,6 +1747,7 @@ export default function App() {
         !isPartnerSignRoute &&
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
+        !isCinematicHome &&
         !isBizuplyPublicBookingRoute && (
           <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
         )}

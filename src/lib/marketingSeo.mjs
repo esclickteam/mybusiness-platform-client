@@ -56,9 +56,9 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply | All-in-One Business Management Platform & CRM",
+    title: "Bizuply | CRM, lead management, WhatsApp Business API and business tools",
     description:
-      "Manage leads, customers, WhatsApp Business, Meta campaigns, appointments, websites and automations in one connected platform. Discover Bizuply.",
+      "Meet Bizuply: a platform for customer and lead management, WhatsApp Business API, paid campaigns, website building and business automations in one place.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
@@ -303,6 +303,7 @@ const NOINDEX_PREFIXES = [
   "/integrations",
   "/store",
   "/whatsapp-api/login",
+  "/home-preview",
 ];
 
 export function isSeoDiscoveryPath(pathname) {

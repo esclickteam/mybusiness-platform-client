@@ -2,7 +2,7 @@ import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
 import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
 
-const HomePage = lazy(() => import("../Home"));
+const HomeExperience = lazy(() => import("../HomeExperiencePreview"));
 
 export default function PartnerHostHome() {
   const { ready, whiteLabelEnabled } = usePartnerHostBranding();
@@ -10,5 +10,5 @@ export default function PartnerHostHome() {
   if (whiteLabelEnabled) {
     return <Navigate to="/plans" replace />;
   }
-  return <HomePage />;
+  return <HomeExperience indexed />;
 }
