@@ -1089,10 +1089,9 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <div className="app-layout" dir={appDir} lang={appLang}>
+      <div className={`app-layout${isCinematicHome ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
-          !isCinematicHome &&
           !isSaasMarketplaceRoute && !isSaasPublicSite &&
           !isDevVisualRoute &&
           !isHiddenOffer &&

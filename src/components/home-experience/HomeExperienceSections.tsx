@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "../LanguageSwitcher";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { useOpenFilm, type Film } from "./film";
 
@@ -150,9 +149,10 @@ function Play({ label, onClick }: { label: string; onClick: () => void }) {
 }
 
 export default function HomeExperienceSections() {
+  const { text } = useCopy();
   return (
     <>
-      <Nav />
+      <a className="hx-skip" href="#story">{text("דילוג לתוכן", "Skip to content")}</a>
       <main>
         <Hero />
         <SplitStory />
@@ -167,73 +167,6 @@ export default function HomeExperienceSections() {
         <Close />
       </main>
     </>
-  );
-}
-
-function Nav() {
-  const { text } = useCopy();
-  const [open, setOpen] = useState(false);
-  const firstLink = useRef<HTMLAnchorElement | null>(null);
-  useEffect(() => {
-    if (!open) return undefined;
-    firstLink.current?.focus();
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = previous;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open]);
-
-  const links = [
-    ["#story", text("הסיפור", "The story")],
-    ["#products", text("המוצרים", "Products")],
-    ["/pricing", text("מחירים", "Pricing")],
-  ] as const;
-
-  return (
-    <header className="hx-nav">
-      <a className="hx-skip" href="#story">{text("דילוג לתוכן", "Skip to content")}</a>
-      <Link className="hx-brand" to="/" aria-label="Bizuply">
-        <img src="/logo-mark.svg" alt="" width="148" height="40" decoding="async" fetchPriority="low" />
-      </Link>
-      <nav className="hx-nav-links" aria-label={text("ניווט ראשי", "Primary")}>
-        {links.map(([to, label]) => (
-          to.startsWith("#")
-            ? <a key={to} href={to}>{label}</a>
-            : <Link key={to} to={to}>{label}</Link>
-        ))}
-      </nav>
-      <div className="hx-nav-end">
-        <LanguageSwitcher />
-        <Link className="hx-login" to="/login">{text("כניסה", "Log in")}</Link>
-        <Cta to="/register">{text("התחילו בחינם", "Start free")}</Cta>
-        <button
-          type="button"
-          className="hx-menu-btn text-inherit"
-          aria-expanded={open}
-          aria-controls="hx-menu"
-          onClick={() => setOpen((value) => !value)}
-        >
-          {open ? text("סגירה", "Close") : text("תפריט", "Menu")}
-        </button>
-      </div>
-      {open ? (
-        <div className="hx-menu" id="hx-menu">
-          {links.map(([to, label], index) => (
-            to.startsWith("#")
-              ? <a key={to} href={to} ref={index === 0 ? firstLink : undefined} onClick={() => setOpen(false)}>{label}</a>
-              : <Link key={to} to={to} onClick={() => setOpen(false)}>{label}</Link>
-          ))}
-          <Link to="/login" onClick={() => setOpen(false)}>{text("כניסה", "Log in")}</Link>
-          <Link to="/register" onClick={() => setOpen(false)}>{text("התחילו בחינם", "Start free")}</Link>
-        </div>
-      ) : null}
-    </header>
   );
 }
 
