@@ -160,6 +160,19 @@ export function shouldApplyLibraryBlankMode(
       "",
   ).trim();
 
+  if (source.__aiStudioPage === true) return true;
+
+  const insertedSections = source.__insertedSections;
+  if (insertedSections && typeof insertedSections === "object") {
+    const replacesTemplate = Object.values(insertedSections).some(
+      (section) =>
+        Boolean(section) &&
+        typeof section === "object" &&
+        (section as { aiStudio?: boolean }).aiStudio === true,
+    );
+    if (replacesTemplate) return true;
+  }
+
   if (isStudioGeneratedPageId(pageId)) return true;
 
   if (isCommonTemplatePageId(pageId)) return false;
