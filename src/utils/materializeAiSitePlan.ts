@@ -83,6 +83,7 @@ function addAiPageNav(
     id: sectionId,
     placement: "append",
     label: "ניווט",
+    aiStudio: true,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });
@@ -201,6 +202,7 @@ export function materializePageVisualData(
       anchorId: previousSectionId || undefined,
       placement: previousSectionId ? "after" : "append",
       label: template.title,
+      aiStudio: true,
       libraryId: template.id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
