@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
+import HeaderView from "../components/HeaderView";
 import HomeExperience from "../pages/HomeExperiencePreview";
 import { getHtmlLang, getTextDirection } from "../i18n/localeUtils";
 import { splitMarketingLocale } from "../lib/localePathCore.mjs";
@@ -72,7 +73,8 @@ export default function MarketingApp() {
   useEffect(() => installMarketingNavigation(), []);
 
   return (
-    <div className="app-layout" dir={getTextDirection(i18n.language)} lang={getHtmlLang(i18n.language)}>
+    <div className="app-layout hx-has-site-header" dir={getTextDirection(i18n.language)} lang={getHtmlLang(i18n.language)}>
+      <HeaderView />
       <main className="app-main">
         <div className="app-scroll-area home-preview-scroll">
           <HomeExperience indexed />
