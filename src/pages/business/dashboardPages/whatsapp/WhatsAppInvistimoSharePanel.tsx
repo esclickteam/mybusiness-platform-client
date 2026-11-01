@@ -17,8 +17,8 @@ import {
   INVISTIMO_SHARE_CONFIRM_PHRASE,
   INVISTIMO_SHARE_SCREENS,
   assertInvistimoShareAssets,
-  buildInvistimoAccountShareExtras,
   evaluateInvistimoShareEvent,
+  planInvistimoShareLaunch,
 } from "./invistimoAccountSharePolicy";
 
 type Props = {
@@ -153,6 +153,10 @@ export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
       if (!signup.invistimoAccountShare?.shareExecutionAllowed) {
         throw new Error(t("whatsapp.settings.invistimoShareStartBlocked"));
       }
+      const launch = planInvistimoShareLaunch(signup);
+      if (!launch.ok) {
+        throw new Error(t("whatsapp.settings.invistimoShareStartBlocked"));
+      }
       const FB = await loadFacebookSdk(
         signup.appId,
         signup.graphVersion || "v21.0"
@@ -207,13 +211,10 @@ export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
             })();
           },
           {
-            config_id: signup.configId,
+            config_id: launch.configId,
             response_type: "code",
             override_default_response_type: true,
-            extras:
-              signup.invistimoAccountShare?.extras ||
-              signup.extras ||
-              buildInvistimoAccountShareExtras(),
+            extras: launch.extras,
           }
         );
       });
