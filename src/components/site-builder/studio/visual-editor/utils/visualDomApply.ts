@@ -3333,6 +3333,45 @@ function applyInsertedSpecialContent(
   return false;
 }
 
+function hideTemplateNode(child: HTMLElement) {
+  if (
+    !child.hasAttribute(
+      "data-bizuply-library-original-display",
+    )
+  ) {
+    child.setAttribute(
+      "data-bizuply-library-original-display",
+      child.style.display || "",
+    );
+  }
+
+  child.style.display = "none";
+  child.setAttribute(
+    "data-bizuply-library-default-hidden",
+    "true",
+  );
+}
+
+function hideTemplateExceptInserted(node: HTMLElement) {
+  Array.from(node.children).forEach((inner) => {
+    if (!(inner instanceof HTMLElement)) return;
+    const keep =
+      inner.getAttribute("data-visual-insert-host") === "true" ||
+      inner.getAttribute("data-visual-runtime-host") === "true" ||
+      inner.getAttribute("data-visual-inserted-section") === "true";
+    if (keep) return;
+    if (
+      inner.querySelector(
+        "[data-visual-insert-host], [data-visual-inserted-section]",
+      )
+    ) {
+      hideTemplateExceptInserted(inner);
+      return;
+    }
+    hideTemplateNode(inner);
+  });
+}
+
 export function applyVisualLibraryPageMode(
   root: HTMLElement | null,
   data: Record<string, any>,
@@ -3366,21 +3405,15 @@ export function applyVisualLibraryPageMode(
     */
     if (blankPage && !inserted && !isInsertHost && (!isChrome || replaceTemplate)) {
       if (
-        !child.hasAttribute(
-          "data-bizuply-library-original-display",
+        replaceTemplate &&
+        child.querySelector(
+          "[data-visual-insert-host], [data-visual-inserted-section]",
         )
       ) {
-        child.setAttribute(
-          "data-bizuply-library-original-display",
-          child.style.display || "",
-        );
+        hideTemplateExceptInserted(child);
+        return;
       }
-
-      child.style.display = "none";
-      child.setAttribute(
-        "data-bizuply-library-default-hidden",
-        "true",
-      );
+      hideTemplateNode(child);
       return;
     }
 
