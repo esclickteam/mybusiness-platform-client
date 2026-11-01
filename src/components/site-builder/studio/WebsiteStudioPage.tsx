@@ -2556,6 +2556,7 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     "__blankVisualPage",
     "__libraryPage",
     "__libraryPageTemplateId",
+    "__aiStudioPage",
     // Shared header/footer edits must survive every save path.
     VISUAL_SHARED_CHROME_KEY,
     "snapshotPageId",
