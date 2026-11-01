@@ -19,6 +19,9 @@ export {
   normalizeMarketingLocale,
   splitMarketingLocale,
   withMarketingLocale,
+  marketingLanguageRedirectPath,
+  localeFromAcceptLanguage,
+  localeFromLanguageTag,
 } from "./localePathCore.mjs";
 import {
   MARKETING_LOCALE_PREFIXES,

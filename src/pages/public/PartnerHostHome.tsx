@@ -6,8 +6,7 @@ const HomeExperience = lazy(() => import("../HomeExperiencePreview"));
 
 export default function PartnerHostHome() {
   const { ready, whiteLabelEnabled } = usePartnerHostBranding();
-  if (!ready) return null;
-  if (whiteLabelEnabled) {
+  if (ready && whiteLabelEnabled) {
     return <Navigate to="/plans" replace />;
   }
   return <HomeExperience indexed />;

@@ -96,6 +96,20 @@ export function syncLanguageOnLogin(user) {
 
   const accountLanguage = normalizeLanguage(user?.language, { fallback: null });
   if (accountLanguage) {
+    const current = normalizeLanguage(
+      typeof document !== "undefined" ? document.documentElement.lang : "",
+      { fallback: null },
+    );
+    // An unset account defaults to English on the server. That default must
+    // not replace a language already chosen from the browser or the URL.
+    if (
+      accountLanguage === FALLBACK_LANGUAGE &&
+      current &&
+      current !== FALLBACK_LANGUAGE
+    ) {
+      rememberResolvedLanguage(current);
+      return current;
+    }
     rememberResolvedLanguage(accountLanguage);
     applyUiLanguage(accountLanguage);
     return accountLanguage;
@@ -113,7 +127,11 @@ export function syncLanguageOnLogin(user) {
   const hasBusiness = Boolean(user?.businessId) || role === "business" || role === "worker" || role === "manager";
   if (hasBusiness) {
     const cached = getResolvedLanguage();
-    const language = cached || FALLBACK_LANGUAGE;
+    const current = normalizeLanguage(
+      typeof document !== "undefined" ? document.documentElement.lang : "",
+      { fallback: null },
+    );
+    const language = cached || current || FALLBACK_LANGUAGE;
     rememberResolvedLanguage(language);
     applyUiLanguage(language);
     return language;

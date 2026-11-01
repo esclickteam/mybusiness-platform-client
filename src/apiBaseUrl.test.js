@@ -17,14 +17,21 @@ describe("resolveApiBaseUrl", () => {
     ).toBe(RAILWAY_STAGING_API);
   });
 
-  it("keeps production hosts on the production API", () => {
+  it("uses the same-origin /api proxy on production hosts so the session cookie is sent", () => {
     expect(
       resolveApiBaseUrl({
         envApiUrl: "https://api.bizuply.com/api",
         mode: "production",
         hostname: "www.bizuply.com",
       })
-    ).toBe(PRODUCTION_API);
+    ).toBe("/api");
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "bizuply.co.il",
+      })
+    ).toBe("/api");
   });
 
   it("does not treat unrelated vercel.app hosts as this project's preview", () => {

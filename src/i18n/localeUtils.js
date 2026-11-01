@@ -63,7 +63,14 @@ export function setCookie(name, value, days = 365) {
   if (typeof document === "undefined") return;
 
   const maxAge = days * 24 * 60 * 60;
-  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+  const host = window.location.hostname.toLowerCase();
+  const domain =
+    host === "bizuply.com" || host.endsWith(".bizuply.com")
+      ? "; Domain=.bizuply.com"
+      : host === "bizuply.co.il" || host.endsWith(".bizuply.co.il")
+        ? "; Domain=.bizuply.co.il"
+        : "";
+  document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${domain}`;
 }
 
 function prefersReducedMotion() {
@@ -114,6 +121,16 @@ export function clearStoredLanguageOverrides() {
   }
   if (typeof document !== "undefined") {
     document.cookie = `${LANGUAGE_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
+    const host = window.location.hostname.toLowerCase();
+    const domain =
+      host === "bizuply.com" || host.endsWith(".bizuply.com")
+        ? ".bizuply.com"
+        : host === "bizuply.co.il" || host.endsWith(".bizuply.co.il")
+          ? ".bizuply.co.il"
+          : "";
+    if (domain) {
+      document.cookie = `${LANGUAGE_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax; Domain=${domain}`;
+    }
   }
 }
 

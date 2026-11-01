@@ -1,15 +1,13 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import { browserHostname, resolveApiBaseUrl } from "../apiBaseUrl";
 import { hasSessionHint } from "./sessionHint";
 
-const envApiUrl = String(import.meta.env.VITE_API_URL || "")
-  .trim()
-  .replace(/\/+$/, "");
-const BASE_URL =
-  envApiUrl ||
-  (import.meta.env.MODE === "production"
-    ? "https://api.bizuply.com/api"
-    : "/api");
+const BASE_URL = resolveApiBaseUrl({
+  envApiUrl: import.meta.env.VITE_API_URL,
+  mode: import.meta.env.MODE,
+  hostname: browserHostname(),
+});
 
 const REFRESH_DEAD_KEY = "bizuply:refreshDead";
 
