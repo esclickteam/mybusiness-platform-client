@@ -186,7 +186,7 @@ function LocaleShot({
       poster={src}
       muted
       playsInline
-      preload="auto"
+      preload="none"
       aria-label={alt}
       width={width}
       height={height}
@@ -302,7 +302,6 @@ function Hero() {
         <div className="hx-geo hx-geo-b" aria-hidden="true" />
         <div className="hx-geo hx-geo-c" aria-hidden="true" />
         <div className="hx-hero-copy">
-          <p className="hx-kicker">Bizuply</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={lineOne} />
             <Words text={lineTwo} hot={1} delay={280} />
@@ -529,7 +528,6 @@ function SplitPinned() {
         <svg className="hx-seam" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
           <line ref={seam} x1="50" y1="0" x2="36" y2="100" />
         </svg>
-        <p className="hx-index" aria-hidden="true">01</p>
         <div className="hx-shots">
           {beats.map((beat, index) => (
             <div className={`hx-shot hx-shot-${index + 1}`} key={beat.img}>
@@ -615,7 +613,6 @@ function CrmDepth() {
     <section className="hx-depth" aria-labelledby="hx-crm-title">
       <div className="hx-depth-wrap">
         <div>
-          <p className="hx-kicker">CRM</p>
           <h2 id="hx-crm-title">{text("כל ליד במקום הנכון. כל הזדמנות מקבלת תשומת לב.", "Every lead in the right place. Every opportunity gets attention.")}</h2>
           <p className="hx-prose">
             {text(
@@ -637,14 +634,18 @@ function CrmDepth() {
             />
           </div>
         </div>
-        <ol className="hx-shots-row">
-          {shots.map(([src, label]) => (
-            <li key={src}>
-              <LocaleShot language={language} src={src} alt={label} width={1200} height={750} loading="lazy" decoding="async" />
-              <span>{label}</span>
-            </li>
-          ))}
-        </ol>
+        <div className="hx-crm-stage">
+          <LocaleShot language={language} src={shots[0][0]} alt={shots[0][1]} width={1200} height={750} loading="lazy" decoding="async" />
+          <div className="hx-crm-float">
+            <LocaleShot language={language} src={shots[1][0]} alt={shots[1][1]} width={1200} height={750} loading="lazy" decoding="async" />
+            <p>{shots[1][1]}</p>
+          </div>
+          <div className="hx-crm-task">
+            <LocaleShot language={language} src={shots[2][0]} alt={shots[2][1]} width={1200} height={750} loading="lazy" decoding="async" />
+            <p>{shots[2][1]}</p>
+          </div>
+          <p className="hx-crm-toast">{text("ליד חדש התקבל", "A new lead arrived")}</p>
+        </div>
         <ul className="hx-points">
           {points.map(([title, body]) => (
             <li key={title}>
@@ -698,7 +699,6 @@ function WhatsApp() {
       <div className="hx-chapter-pin">
         <div className="hx-wa-grid">
           <div>
-            <p className="hx-kicker">02 — WhatsApp</p>
             <h2 id="hx-wa-title">{text("הלקוחות שלך כבר ב־WhatsApp. עכשיו גם העסק יכול לעבוד שם בצורה מסודרת.", "Your customers are already on WhatsApp. The business can work there in a more orderly way.")}</h2>
             <p className="hx-prose">
               {text(
@@ -776,7 +776,6 @@ function Campaigns() {
       <div className="hx-chapter-pin">
         <div className="hx-camp-grid">
           <div className="hx-camp-copy">
-            <p className="hx-kicker">03 — Meta</p>
             <h2 id="hx-camp-title">{text("הקמפיין מביא את הליד. עכשיו מתחילה העבודה החשובה.", "The campaign brings the lead. Then the important work begins.")}</h2>
             <p className="hx-prose">
               {text(
@@ -849,7 +848,6 @@ function Websites() {
       <div className="hx-chapter-pin hx-sites-pin">
         <div className="hx-sites-head">
           <div>
-            <p className="hx-kicker">04 — Website Studio</p>
             <h2 id="hx-sites-title">{text("הנוכחות הדיגיטלית שלך צריכה לעשות יותר מלהיראות טוב.", "Your digital presence should do more than look good.")}</h2>
           </div>
           <p>
@@ -872,7 +870,6 @@ function Websites() {
                     setStep(index);
                   }}
                 >
-                  <b>{String(index + 1).padStart(2, "0")}</b>
                   <span>
                     <strong>{stage[1]}</strong>
                     <small>{stage[2]}</small>
@@ -963,7 +960,6 @@ function Automations() {
     <section className="hx-auto" ref={ref} aria-labelledby="hx-auto-title">
       <div className="hx-auto-top">
         <div className="hx-auto-wrap">
-          <p className="hx-kicker">05</p>
           <h2 id="hx-auto-title">{text("פחות פעולות שחוזרות על עצמן. יותר זמן לנהל את העסק.", "Fewer repeated actions. More time to run the business.")}</h2>
           <p className="hx-prose">
             {text(
@@ -980,7 +976,6 @@ function Automations() {
                   aria-expanded={index === active}
                   onClick={() => setActive(index)}
                 >
-                  <b>{String(index + 1).padStart(2, "0")}</b>
                   <span>{step.title}</span>
                 </button>
               </li>
@@ -1014,10 +1009,72 @@ function Automations() {
 
 function ReadySystems() {
   const { text, dir, language } = useCopy();
-  const ref = useRef<HTMLElement | null>(null);
-  useScrollSpan(ref, (progress) => {
-    const sign = dir === "rtl" ? 1 : -1;
-    ref.current?.style.setProperty("--rail", (progress * 62 * sign).toFixed(3));
+  const stageRef = useRef<HTMLDivElement | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const [slideIndex, setSlideIndex] = useState(0);
+  const reduced = useReduced();
+  useEffect(() => {
+    const stage = stageRef.current;
+    const view = railRef.current;
+    const rail = view?.querySelector<HTMLElement>(".hx-rail");
+    if (!stage || !view || !rail) return undefined;
+    const measure = () => {
+      const narrow = window.matchMedia("(max-width: 900px)").matches;
+      if (narrow || reduced) {
+        stage.style.height = "";
+        stage.style.setProperty("--rail-x", "0px");
+        return;
+      }
+      const travel = Math.max(0, rail.scrollWidth - view.clientWidth);
+      stage.style.height = `${window.innerHeight + travel}px`;
+    };
+    measure();
+    rail.querySelectorAll("img").forEach((img) => {
+      if (!img.complete) img.addEventListener("load", measure, { once: true });
+    });
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [reduced]);
+  useEffect(() => {
+    const node = railRef.current;
+    if (!node) return undefined;
+    const update = () => {
+      const slides = [...node.querySelectorAll(".hx-slide")];
+      const origin = node.getBoundingClientRect().left;
+      let nearest = 0;
+      let best = Number.POSITIVE_INFINITY;
+      slides.forEach((slide, index) => {
+        const distance = Math.abs(slide.getBoundingClientRect().left - origin);
+        if (distance < best) {
+          best = distance;
+          nearest = index;
+        }
+      });
+      setSlideIndex((current) => (current === nearest ? current : nearest));
+    };
+    update();
+    node.addEventListener("scroll", update, { passive: true });
+    return () => node.removeEventListener("scroll", update);
+  }, []);
+  useScrollSpan(stageRef, (progress) => {
+    const view = railRef.current;
+    const rail = view?.querySelector<HTMLElement>(".hx-rail");
+    const stage = stageRef.current;
+    if (!view || !rail || !stage) return;
+    const travel = Math.max(0, rail.scrollWidth - view.clientWidth);
+    view.scrollLeft = progress * travel;
+    const slides = [...view.querySelectorAll(".hx-slide")];
+    const origin = view.getBoundingClientRect().left;
+    let nearest = 0;
+    let best = Number.POSITIVE_INFINITY;
+    slides.forEach((slide, index) => {
+      const distance = Math.abs(slide.getBoundingClientRect().left - origin);
+      if (distance < best) {
+        best = distance;
+        nearest = index;
+      }
+    });
+    setSlideIndex((current) => (current === nearest ? current : nearest));
   });
   const slides = [
     ["/template-screenshots/studiora.webp", text("סטודיו", "Studio")],
@@ -1029,10 +1086,8 @@ function ReadySystems() {
     ["/template-screenshots/soleora.webp", text("מותג", "Brand")],
   ] as const;
   return (
-    <section className="hx-chapter hx-saas" ref={ref} aria-labelledby="hx-saas-title">
-      <div className="hx-chapter-pin hx-saas-pin">
-        <div className="hx-saas-head">
-          <p className="hx-kicker">06</p>
+    <section className="hx-chapter hx-saas" aria-labelledby="hx-saas-title">
+      <div className="hx-saas-head">
           <h2 id="hx-saas-title">{text("רוצים להקים עסק דיגיטלי? לא תמיד חייבים להתחיל מאפס.", "Want to launch a digital business? You do not always have to start from a blank page.")}</h2>
           <p className="hx-prose">
             {text(
@@ -1057,16 +1112,35 @@ function ReadySystems() {
             <Cta to="/saas" tone="ink">{text("לגלות את מערכות ה־SaaS", "Explore the SaaS systems")}</Cta>
             <Cta to="/contact">{text("לדבר איתנו על המערכת שלכם", "Talk with us about your system")}</Cta>
           </div>
-        </div>
-        <div className="hx-rail-viewport">
+      </div>
+      <div className="hx-saas-stage" ref={stageRef}>
+        <div className="hx-saas-pin">
+        <p className="hx-rail-pos" aria-live="polite">{slideIndex + 1} / {slides.length}</p>
+        <div className="hx-rail-viewport" ref={railRef}>
           <div className="hx-rail" dir="ltr">
             {slides.map(([src, label]) => (
               <figure className="hx-slide" key={src}>
                 <div className="hx-slide-frame">
-                  <LocaleShot language={language} src={src} alt={label} width={1200} height={800} loading="lazy" decoding="async" />
+                  <LocaleShot language={language} src={src} alt={label} width={1200} height={800} loading="eager" decoding="async" />
                 </div>
                 <figcaption dir={dir}>{label}</figcaption>
               </figure>
+            ))}
+          </div>
+        </div>
+          <div className="hx-rail-dots">
+            {slides.map(([, label], index) => (
+              <button
+                key={label}
+                type="button"
+                className={index === slideIndex ? "is-on" : undefined}
+                aria-label={label}
+                aria-current={index === slideIndex ? "true" : undefined}
+                onClick={() => {
+                  const slide = railRef.current?.querySelectorAll(".hx-slide")[index];
+                  slide?.scrollIntoView({ inline: "start", block: "nearest", behavior: "smooth" });
+                }}
+              />
             ))}
           </div>
         </div>
@@ -1088,7 +1162,6 @@ function Films() {
   return (
     <section className="hx-films" aria-labelledby="hx-films-title">
       <div className="hx-films-head">
-        <p className="hx-kicker">{text("הקלטות", "Recordings")}</p>
         <h2 id="hx-films-title">{text("מתוך סביבת הדמו.", "From the demo workspace.")}</h2>
         <p className="hx-prose">
           {text(
@@ -1174,7 +1247,6 @@ function Audiences() {
   return (
     <section className="hx-who" aria-labelledby="hx-who-title">
       <div className="hx-who-wrap">
-        <p className="hx-kicker">{text("למי זה מתאים", "Who it is for")}</p>
         <h2 id="hx-who-title">{text("הכלים הנכונים לעסק שלך, בשלב שבו הוא נמצא.", "The right tools for the stage your business is in.")}</h2>
         <ul className="hx-points">
           {rows.map(([to, title, body]) => (
@@ -1202,36 +1274,56 @@ function Audiences() {
 function Faq() {
   const { text, t } = useCopy();
   const items = [
-    [text("מה זה Bizuply?", "What is Bizuply?"), text("Bizuply היא פלטפורמה עסקית המרכזת כלים לניהול לקוחות ולידים, תקשורת WhatsApp עסקית, קמפיינים, בניית אתרים ואוטומציות. המטרה היא לעזור לעסקים לנהל תהליכים מרכזיים מתוך סביבת עבודה אחת.", "Bizuply is a business platform that brings together customer and lead management, business WhatsApp, campaigns, website building, and automations. The aim is to help a business run its main processes from one workspace.")],
-    [text("מה ההבדל בין CRM לבין מערכת לניהול לידים?", "What is the difference between a CRM and a lead system?"), text("ניהול לידים מתמקד בפניות ובהזדמנויות מכירה. מערכת CRM רחבה יותר ומאפשרת לנהל מידע על לקוחות, את היסטוריית הטיפול ותהליכים הקשורים לקשר עם הלקוח. ב־Bizuply ניהול הלידים הוא חלק מסביבת ה־CRM.", "Lead management focuses on enquiries and sales opportunities. A CRM is broader: customer information, the history of the work, and the processes around the relationship. In Bizuply, lead management is part of the CRM.")],
-    [text("האם אפשר להשתמש רק במערכת CRM?", "Can I use only the CRM?"), text("כן, Bizuply מציעה גם מסלול CRM נפרד. את פרטי המסלול המעודכנים אפשר לבדוק בעמוד המחירים.", "Yes. Bizuply also offers a separate CRM plan. The current plan details are on the pricing page.")],
-    [text("האם אפשר לחבר WhatsApp Business API?", "Can I connect the WhatsApp Business API?"), text("Bizuply מציעה פתרון WhatsApp Business API. החיבור והשימוש תלויים בתנאי הזכאות, בהגדרות החשבון ובמדיניות של Meta.", "Bizuply offers a WhatsApp Business API solution. Connection and use depend on eligibility, the account setup, and Meta’s policies.")],
-    [text("האם Bizuply מתאימה לעסק קטן?", "Is Bizuply a fit for a small business?"), text("כן. עסקים קטנים יכולים להיעזר בכלים לניהול פניות, לקוחות ומשימות. בחירת המסלול המתאים תלויה בצרכים ובכלים שהעסק מעוניין להפעיל.", "Yes. Small businesses can use the tools for enquiries, customers, and tasks. The right plan depends on the needs and on the tools the business wants to run.")],
-    [text("האם אפשר לנהל קמפיינים ממומנים דרך Bizuply?", "Can I manage paid campaigns in Bizuply?"), text("Bizuply כוללת יכולות לניהול קמפיינים של Meta. השימוש תלוי בחיבור חשבון מודעות מתאים ובהרשאות הרלוונטיות.", "Bizuply includes tools for managing Meta campaigns. Use depends on connecting a suitable ads account and on the relevant permissions.")],
-    [text("האם אפשר לבנות אתר בלי לדעת לתכנת?", "Can I build a website without knowing how to code?"), text("כלי בניית האתרים של Bizuply מיועדים לפשט את תהליך יצירת האתר ועריכתו. האפשרויות הזמינות תלויות בסוג האתר וביכולות הפעילות במוצר.", "Bizuply’s website tools are meant to simplify creating and editing a site. What is available depends on the kind of site and on the features active in the product.")],
-    [text("האם אפשר ליצור אוטומציות עסקיות?", "Can I create business automations?"), text("כן, בהתאם למסלול וליכולות הפעילות. ניתן להגדיר תהליכים המחברים בין אירועים לבין פעולות עסקיות.", "Yes, depending on the plan and the features that are active. You can define processes that connect events to business actions.")],
-    [text("האם אפשר לרכוש מערכת SaaS מוכנה?", "Can I buy a ready-made SaaS system?"), text("Bizuply מפתחת ומציעה פתרונות SaaS. בקטלוג אפשר לבדוק אילו מערכות זמינות לרכישה, אילו נמצאות בהכנה ומהן אפשרויות ההתאמה.", "Bizuply develops and offers SaaS products. The catalog shows which systems are available to buy, which are still in preparation, and what can be adapted.")],
-    [text("האם חייבים לרכוש את כל הכלים?", "Do I have to buy every tool?"), text("לא בהכרח. קיימים מסלולים ופתרונות שונים. מומלץ לעיין בעמוד המחירים כדי להבין אילו יכולות נכללות בכל הצעה.", "Not necessarily. There are different plans and products. The pricing page shows which capabilities are included in each offer.")],
-    [text("האם Bizuply מתאימה לעסקים מחוץ לישראל?", "Does Bizuply work for businesses outside Israel?"), text("Bizuply פונה גם לשוק הבינלאומי. זמינות השירותים, השפות, אפשרויות התשלום והאינטגרציות עשויה להשתנות לפי המדינה והמוצר.", "Bizuply also serves an international market. Service availability, languages, payment options, and integrations can vary by country and product.")],
+    [text("מהי Bizuply ולמי היא מתאימה?", "What is Bizuply, and who is it for?"), text("Bizuply היא סביבת עבודה לעסקים שרוצים לנהל לקוחות, פניות ותהליכים בלי לקפוץ בין מערכות. היא מתאימה לעסק קטן שמתחיל לרכז פניות, ולצוות שכבר מנהל כמה ערוצים במקביל. מתחילים מהכלים שפעילים בחשבון, ואפשר להוסיף עוד כשהצורך משתנה.", "Bizuply is a workspace for businesses that want to manage customers, enquiries and processes without jumping between systems. It fits a small business that is starting to collect enquiries, and a team that already runs several channels. You begin with the tools active on the account, and can add more as the need changes.")],
+    [text("אילו כלים אפשר לנהל בפלטפורמה?", "Which tools can I manage on the platform?"), text("באותו חשבון אפשר לעבוד עם CRM ולידים, WhatsApp Business API, אוטומציות, קמפיינים של Meta ובניית אתר. לא כל כלי פעיל בכל מסלול. בעמוד המחירים רואים מה כלול, ובקטלוג ה־SaaS רואים אילו מערכות מוכנות זמינות.", "On the same account you can work with CRM and leads, the WhatsApp Business API, automations, Meta campaigns and website building. Not every tool is active on every plan. The pricing page shows what is included, and the SaaS catalog shows which ready-made systems are available.")],
+    [text("איך מערכת ה־CRM עובדת?", "How does the CRM work?"), text("רשימת הלידים מרכזת את הפניות. פותחים כרטיס, רואים את הפרטים, משנים סטטוס ומוסיפים משימת המשך. אחרי השמירה הסטטוס המעודכן נשאר על הרשומה, כך שהצוות רואה מי פנה ומה הצעד הבא.", "The lead list collects enquiries. You open a record, read the details, change the status and add a follow-up task. After you save, the updated status stays on the record, so the team can see who got in touch and what the next step is.")],
+    [text("איך מגיעים לידים למערכת?", "How do leads reach the system?"), text("ליד יכול להגיע מטופס באתר שנבנה ב־Bizuply, ומערוצי שיווק מחוברים כמו Meta, כשהחיבור וההרשאות פעילים. לכל רשומה נשמר המקור שלה, כדי להבין מאיפה הפנייה הגיעה.", "A lead can arrive from a form on a site built in Bizuply, and from connected marketing channels such as Meta, when the connection and permissions are active. Each record keeps its source, so you can see where the enquiry came from.")],
+    [text("איך מתבצע מעקב אחרי לידים ולקוחות?", "How do you follow up on leads and customers?"), text("בכרטיס מתעדים את המשך הטיפול ופותחים משימה עם מועד. ברשימה מסננים לפי סטטוס ומאתרים פניות שעדיין פתוחות. לדוגמה: פנייה חדשה עוברת לסטטוס ״נוצר קשר״, ונפתחת משימה לחזור אל הלקוח.", "On the record you log what happens next and open a task with a time. In the list you filter by status and find enquiries that are still open. For example, a new enquiry can move to “contacted”, and a task can be opened to call the customer back.")],
+    [text("מה כולל WhatsApp Business API?", "What does the WhatsApp Business API include?"), text("אפשר לנהל שיחות עסקיות מתוך תיבת השיחות, לענות ללקוח ולשמור את השיחה ליד כרטיס הלקוח כשהקישור קיים בחשבון. החיבור תלוי בזכאות, בהגדרות ובמדיניות של Meta. חיובי ההודעות של Meta נפרדים ממנוי Bizuply.", "You can manage business conversations from the inbox, reply to a customer, and keep the conversation next to the customer record when that link exists on the account. Connection depends on eligibility, setup and Meta’s policies. Meta’s message charges are separate from the Bizuply subscription.")],
+    [text("מה ההבדל בין WhatsApp Business רגיל לבין API?", "What is the difference between regular WhatsApp Business and the API?"), text("אפליקציית WhatsApp Business מיועדת לעבודה מהטלפון של העסק. ה־API מחבר את המספר לסביבת עבודה, כדי שצוות ינהל שיחות מתוך Bizuply ויהיה אפשר לחבר הודעות לתהליך הליד. זה לא אותו מסך, וההפעלה דורשת חיבור שעומד בתנאי Meta.", "The WhatsApp Business app is for working from the business phone. The API connects the number to a workspace, so a team can handle conversations inside Bizuply and relate messages to the lead process. It is not the same screen, and activation requires a connection that meets Meta’s conditions.")],
+    [text("איך האוטומציות עובדות?", "How do automations work?"), text("בוחרים אוטומציה, מגדירים אירוע שמתחיל אותה ופעולה שתתבצע, ושומרים. בסביבת דמו אפשר לבדוק את ההפעלה ולראות את התוצאה לפני שמסתמכים עליה בעבודה השוטפת. הפעולות הזמינות תלויות במסלול ובהגדרות הפעילות.", "You choose an automation, set the event that starts it and the action it should take, then save. In a demo environment you can test the run and see the result before relying on it in daily work. The available actions depend on the plan and the active settings.")],
+    [text("האם ניתן לנהל קמפיינים של Meta?", "Can I manage Meta campaigns?"), text("כן, כשמחובר חשבון מודעות עם ההרשאות המתאימות. אפשר לפתוח קמפיין, לבחור מטרה, למלא פרטים ולשמור טיוטה. פרסום בפועל והפעלת תקציב נעשים רק כשמאשרים אותם, והחיוב על המדיה הוא מול Meta.", "Yes, when an ads account is connected with the right permissions. You can open a campaign, choose an objective, fill in the details and save a draft. Publishing and spending a budget happen only when you approve them, and media charges are billed by Meta.")],
+    [text("האם אפשר לבנות אתר או דף נחיתה?", "Can I build a website or a landing page?"), text("בעורך האתרים פותחים אתר קיים, בוחרים רכיב, משנים כותרת או צבע, רואים תצוגה מקדימה ושומרים טיוטה. השינוי מופיע באתר אחרי השמירה. אין צורך לכתוב קוד כדי לבצע את העריכה הזו.", "In the website editor you open an existing site, select a component, change a heading or a color, preview it and save a draft. The change appears on the site after you save. You do not need to write code for that edit.")],
+    [text("האם ניתן לחבר טפסים מהאתר ל־CRM?", "Can website forms be connected to the CRM?"), text("טופס באתר שנבנה ב־Bizuply יכול ליצור רשומת ליד ב־CRM, כך שפנייה מהאתר לא נשארת רק בתיבת מייל. אחרי שהרשומה נוצרת ממשיכים לטפל בה כמו בכל ליד אחר: סטטוס, משימה ומעקב.", "A form on a site built in Bizuply can create a lead record in the CRM, so a website enquiry does not stay only in an email inbox. Once the record exists, you handle it like any other lead: status, task and follow-up.")],
+    [text("האם Bizuply מתאימה לעסקים קטנים?", "Is Bizuply a fit for a small business?"), text("כן. עסק קטן יכול להתחיל ברשימת לידים ובמשימות המשך, בלי להפעיל כל מוצר ביום הראשון. המסלול הנכון תלוי בכלים שבאמת צריך, והפירוט נמצא בעמוד המחירים.", "Yes. A small business can start with the lead list and follow-up tasks, without turning on every product on the first day. The right plan depends on the tools you actually need, and the details are on the pricing page.")],
+    [text("האם היא מתאימה לצוותים ולעסקים בצמיחה?", "Does it fit teams and growing businesses?"), text("צוות יכול לעבוד על אותן רשומות, לפי ההרשאות שמוגדרות בחשבון. ככל שנוספים ערוצים — אתר, וואטסאפ או קמפיין — המידע על הלקוח נשאר באותה סביבה, במקום להתפצל בין כלים נפרדים.", "A team can work on the same records, according to the permissions set on the account. As more channels are added — a site, WhatsApp or a campaign — the customer information stays in the same workspace instead of splitting across separate tools.")],
+    [text("האם אפשר להתחיל עם מוצר אחד ולהוסיף מוצרים בהמשך?", "Can I start with one product and add more later?"), text("כן. אפשר להתחיל ב־CRM בלבד, ואחר כך לחבר וואטסאפ, אוטומציה, קמפיינים או אתר כשהם זמינים במסלול. אין חובה להפעיל את כל המוצרים יחד.", "Yes. You can start with CRM only, then connect WhatsApp, an automation, campaigns or a website when they are available on the plan. You do not have to run every product at once.")],
+    [text("האם אפשר לנהל כמה תהליכים עסקיים באותה מערכת?", "Can I manage several business processes in the same system?"), text("אפשר לנהל במקביל קליטת ליד, מעקב בכרטיס, שיחת וואטסאפ ומשימת המשך. כל תהליך נשאר קשור לאותו לקוח, ולכן רואים את הרצף ולא רק פעולה בודדת.", "You can run lead intake, record follow-up, a WhatsApp conversation and a next task at the same time. Each process stays tied to the same customer, so you see the sequence rather than a single isolated action.")],
+    [text("האם אפשר להשתמש ב־Bizuply ממכשיר נייד?", "Can I use Bizuply from a mobile device?"), text("אפשר לפתוח את סביבת העבודה מהדפדפן בטלפון ולטפל בליד, בשיחה או במשימה כשלא נמצאים מול המחשב. מסכים צפופים נוחים יותר במחשב, אבל הפעולות המרכזיות זמינות גם במסך קטן.", "You can open the workspace in a phone browser and handle a lead, a conversation or a task when you are away from the computer. Dense screens are more comfortable on a computer, but the main actions are available on a small screen too.")],
+    [text("איך מתחילים להשתמש במערכת?", "How do I start using the system?"), text("נרשמים, נכנסים לסביבת העבודה ופותחים את הכלי הראשון — לרוב רשימת הלידים. משם מחברים טופס, מספר וואטסאפ או חשבון מודעות רק כשהחיבור רלוונטי. מדריכים קצרים נמצאים בעמוד המדריכים.", "You register, enter the workspace and open the first tool — usually the lead list. From there you connect a form, a WhatsApp number or an ads account only when that connection is relevant. Short guides are on the guides page.")],
+    [text("איך עובדות החבילות והתמחור?", "How do the plans and pricing work?"), text("Bizuply מציעה מסלולים ושירותים שונים לפי הכלים שהעסק צריך. מסלול ה־CRM מתחיל ב־49$ לחודש, והמסלול העסקי עולה 99$ לחודש או 990$ לשנה. WhatsApp Business API עולה 29$ לחודש לכל מספר מחובר, וחיובי ההודעות של Meta מחויבים בנפרד. בעמוד המחירים מופיעים המסלולים והשירותים העדכניים.", "Bizuply offers different plans and services depending on the tools a business needs. The CRM plan starts at $49 per month, while the Business plan is $99 per month or $990 per year. WhatsApp Business API is $29 per month per connected number, with Meta messaging charges billed separately. Visit the pricing page for current plans and service details.")],
   ] as const;
   return (
     <section className="hx-faq" aria-labelledby="hx-faq-title">
-      <div className="hx-faq-wrap">
-        <h2 id="hx-faq-title">{text("שאלות נפוצות", t("home.faqTitle"))}</h2>
-        <p className="hx-prose">{text("תשובות קצרות על המערכת, על החיבורים ועל הדרך להתחיל.", t("home.faqLead"))}</p>
-        {items.map(([question, answer]) => (
-          <details key={question}>
-            <summary>
-              <h3>{question}</h3>
-            </summary>
-            <div>
-              <p>{answer}</p>
-            </div>
-          </details>
-        ))}
-        <div className="hx-actions">
-          <Cta to="/faq" tone="ink">{text("לכל השאלות", "All questions")}</Cta>
-          <Cta to="/guides">{text("למדריכים", "Guides")}</Cta>
+      <div className="hx-faq-split">
+        <div className="hx-faq-intro">
+          <h2 id="hx-faq-title">{text("שאלות נפוצות", t("home.faqTitle"))}</h2>
+          <p>{text("תשובות על הכלים, על החיבורים ועל הדרך להתחיל.", t("home.faqLead"))}</p>
+          <div className="hx-actions">
+            <Cta to="/faq">{text("לכל השאלות", "All questions")}</Cta>
+            <Cta to="/pricing" tone="line">{text("למחירים", "Pricing")}</Cta>
+          </div>
+        </div>
+        <div className="hx-faq-list">
+          {items.map(([question, answer]) => (
+            <details key={question}>
+              <summary>
+                <h3>{question}</h3>
+              </summary>
+              <div>
+                <p>{answer}</p>
+              </div>
+            </details>
+          ))}
+          <nav className="hx-faq-links" aria-label={text("עמודים קשורים", "Related pages")}>
+            <Link to="/crm">CRM</Link>
+            <Link to="/whatsapp-api">WhatsApp</Link>
+            <Link to="/automations">{text("אוטומציות", "Automations")}</Link>
+            <Link to="/meta-campaigns">{text("קמפיינים", "Campaigns")}</Link>
+            <Link to="/website-builder">{text("בניית אתרים", "Website builder")}</Link>
+            <Link to="/pricing">{text("מחירים", "Pricing")}</Link>
+            <Link to="/guides">{text("מדריכים", "Guides")}</Link>
+          </nav>
         </div>
       </div>
     </section>
@@ -1248,7 +1340,6 @@ function Close() {
   return (
     <section className="hx-close" ref={ref} aria-labelledby="hx-close-title">
       <div className="hx-close-a">
-        <p className="hx-kicker">Bizuply</p>
         <h2 id="hx-close-title">{text("העסק שלך יכול לעבוד אחרת.", "Your business can work differently.")}</h2>
         <p className="hx-prose">
           {text(

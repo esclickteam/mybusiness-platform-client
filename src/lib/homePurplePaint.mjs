@@ -152,7 +152,7 @@ export function renderPurpleHomePrerender(locale) {
     hx.login,
   )}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header>`;
 
-  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy"><p class="hx-kicker">Bizuply</p><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy"><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(
     hx.lineTwo,
