@@ -23,8 +23,15 @@ import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import { isPublicCustomerSiteHost } from "./utils/publicSiteHost";
 import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
 import { isBizuplyWhatsAppHost } from "./lib/whatsappHost.mjs";
+import { isMarketingHomePath } from "./lib/homeSessionRedirect.mjs";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
 import App from "./App.jsx";
+
+function isMarketingHomeBootPath(pathname: string) {
+  if (isMarketingHomePath(pathname)) return true;
+  const path = String(pathname || "").split(/[?#]/)[0];
+  return path === "/home-preview" || path.endsWith("/home-preview");
+}
 
 /* ==========================================================
    Types
@@ -134,6 +141,8 @@ function AppLoader() {
     return <PublicSiteLoader fullScreen label="Loading" />;
   }
   if (document.getElementById("bizuply-first-paint")) return null;
+  // Marketing home: never splash Bizuply Loading during Suspense boot.
+  if (isMarketingHomeBootPath(window.location.pathname)) return null;
   return <BizuplyLoader fullScreen label="Loading Bizuply..." />;
 }
 

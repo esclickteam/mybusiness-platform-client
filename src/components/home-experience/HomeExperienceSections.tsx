@@ -294,10 +294,15 @@ function Hero() {
   useScrollSpan(ref, (progress) => {
     const node = ref.current;
     if (!node) return;
+    // Keep a product layer always opaque so the purple frame never flashes empty.
+    const s2 = band(progress, 0.3, 0.44, 0.6, 0.74);
+    const s3 = progress < 0.6 ? 0 : Math.min(1, (progress - 0.6) / 0.14);
+    const s1Fade = progress < 0.3 ? 1 : progress < 0.44 ? 1 - (progress - 0.3) / 0.14 : 0;
+    const s1 = Math.max(s1Fade, 1 - Math.max(s2, s3));
     node.style.setProperty("--hp", progress.toFixed(3));
-    node.style.setProperty("--s1", (progress < 0.3 ? 1 : progress < 0.44 ? 1 - (progress - 0.3) / 0.14 : 0).toFixed(3));
-    node.style.setProperty("--s2", band(progress, 0.3, 0.44, 0.6, 0.74).toFixed(3));
-    node.style.setProperty("--s3", (progress < 0.6 ? 0 : Math.min(1, (progress - 0.6) / 0.14)).toFixed(3));
+    node.style.setProperty("--s1", s1.toFixed(3));
+    node.style.setProperty("--s2", s2.toFixed(3));
+    node.style.setProperty("--s3", s3.toFixed(3));
   });
   const lineOne = text("כל מה שהעסק שלך צריך", "Everything your business needs");
   const lineTwo = text("בפלטפורמה אחת חזקה.", "in one powerful platform.");
@@ -356,6 +361,7 @@ function Hero() {
               width={1600}
               height={1000}
               decoding="async"
+              forceStill
             />
             <LocaleShot
               className="hx-hero-shot hx-hero-shot-3 hx-crop-campaigns"
@@ -365,6 +371,7 @@ function Hero() {
               width={1600}
               height={1000}
               decoding="async"
+              forceStill
             />
             <div className="hx-hero-shine" aria-hidden="true" />
           </div>
