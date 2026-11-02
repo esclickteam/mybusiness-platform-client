@@ -31,14 +31,23 @@ export default function LanguageSwitcher({
         host === "127.0.0.1" ||
         host.endsWith(".vercel.app"));
     const bare = splitMarketingLocale(window.location.pathname).path;
+
+    const softOrAssign = async (next) => {
+      if (next === window.location.pathname) return false;
+      const { softMarketingLocaleNavigate } = await import("../lib/softMarketingLocaleNavigate");
+      if (softMarketingLocaleNavigate(next, lng)) {
+        setOpen(false);
+        return true;
+      }
+      window.location.assign(next);
+      return true;
+    };
+
     if (bare === "/") {
       const { changeAppLanguage } = await import("../i18n/persistLanguage");
       await changeAppLanguage(lng);
       const next = withMarketingLocale("/", lng);
-      if (onMarketingHost && next !== window.location.pathname) {
-        window.location.assign(next);
-        return;
-      }
+      if (onMarketingHost && (await softOrAssign(next))) return;
       setOpen(false);
       return;
     }
@@ -53,8 +62,7 @@ export default function LanguageSwitcher({
       const next = withMarketingLocale(bare, lng);
       if (next !== window.location.pathname) {
         await changeAppLanguage(lng);
-        window.location.assign(next);
-        return;
+        if (await softOrAssign(next)) return;
       }
     }
     await changeAppLanguage(lng);
