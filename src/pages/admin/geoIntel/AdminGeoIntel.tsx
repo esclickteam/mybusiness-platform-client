@@ -21,6 +21,7 @@ type Metrics = {
   citations: number;
   visibilityPct: number | null;
   visibilityNote?: string;
+  sampleSources?: Array<{ method: string; labelHe: string; count: number }>;
   byEngine: Array<{
     engine: string;
     label: string;
@@ -30,6 +31,7 @@ type Metrics = {
     n: number;
     appeared: number;
     visibilityPct: number | null;
+    sampleSources?: Array<{ method: string; labelHe: string; count: number }>;
   }>;
   byDay: Array<{
     day: string;
@@ -53,12 +55,22 @@ type QuestionRow = {
       competitors?: string[];
     };
     sourcesCount?: number;
+    engine?: string;
+    model?: string;
+    collectionMethod?: string;
+    dataClass?: string;
+    originLabel?: string;
+    apiCallMade?: boolean;
+    consumerUi?: boolean;
+    country?: string;
+    language?: string;
   };
 };
 
 type Tab =
   | "dashboard"
   | "questions"
+  | "manual"
   | "competitors"
   | "recommendations"
   | "alerts"
@@ -118,6 +130,17 @@ export default function AdminGeoIntel({
   const [menuOpen, setMenuOpen] = useState(false);
   const [truthResults, setTruthResults] = useState<any>(null);
   const [preflight, setPreflight] = useState<any>(null);
+  const [prompts, setPrompts] = useState<any[]>([]);
+  const [manualForm, setManualForm] = useState({
+    promptId: "",
+    engine: "openai",
+    language: "he",
+    country: "IL",
+    rawAnswer: "",
+    sourcesText: "",
+    model: "",
+  });
+  const [fixtureInfo, setFixtureInfo] = useState<any>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [brandId, setBrandId] = useState("");
   const [status, setStatus] = useState<any>(null);
@@ -129,7 +152,7 @@ export default function AdminGeoIntel({
   const [detail, setDetail] = useState<any>(null);
   const [csvText, setCsvText] = useState("");
   const [gscImports, setGscImports] = useState<any[]>([]);
-  const [engineFilter, setEngineFilter] = useState("gemini");
+  const [engineFilter, setEngineFilter] = useState("");
   const [langFilter, setLangFilter] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
@@ -158,7 +181,9 @@ export default function AdminGeoIntel({
     const { data } = await API.get("/geo-intel/dashboard", {
       params: {
         brandId,
-        ...(engineFilter ? { engine: engineFilter } : {}),
+        ...(engineFilter && engineFilter !== "all"
+          ? { engine: engineFilter }
+          : {}),
         ...(fromDate ? { from: fromDate } : {}),
         ...(toDate ? { to: toDate } : {}),
       },
@@ -171,13 +196,29 @@ export default function AdminGeoIntel({
     const { data } = await API.get("/geo-intel/questions", {
       params: {
         brandId,
-        engine: engineFilter,
+        ...(engineFilter && engineFilter !== "all"
+          ? { engine: engineFilter }
+          : {}),
         ...(langFilter ? { language: langFilter } : {}),
       },
     });
     setRows(data.rows || []);
     setPage(1);
   }, [brandId, engineFilter, langFilter]);
+
+  const loadPrompts = useCallback(async () => {
+    if (!brandId) return;
+    const { data } = await API.get("/geo-intel/prompts", {
+      params: { brandId, active: "1" },
+    });
+    const list = data.prompts || [];
+    setPrompts(list);
+    setManualForm((prev) => ({
+      ...prev,
+      promptId: prev.promptId || list[0]?._id || "",
+      language: list[0]?.language || prev.language,
+    }));
+  }, [brandId]);
 
   const loadGsc = useCallback(async () => {
     if (!brandId) return;
@@ -228,6 +269,7 @@ export default function AdminGeoIntel({
       setError(err?.response?.data?.error || err.message)
     );
     void loadQuestions().catch(() => {});
+    void loadPrompts().catch(() => {});
     void loadGsc().catch(() => {});
     void loadCompetitors().catch(() => {});
     void loadRecommendations().catch(() => {});
@@ -235,6 +277,7 @@ export default function AdminGeoIntel({
     brandId,
     loadDashboard,
     loadQuestions,
+    loadPrompts,
     loadGsc,
     loadCompetitors,
     loadRecommendations,
@@ -294,6 +337,55 @@ export default function AdminGeoIntel({
     try {
       const { data } = await API.post("/geo-intel/prepare-truth-checks");
       setTruthPlan(data);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onSaveManual = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const sources = manualForm.sourcesText
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean)
+        .map((url) => ({ url }));
+      await API.post("/geo-intel/manual-check", {
+        brandId,
+        promptId: manualForm.promptId,
+        engine: manualForm.engine,
+        language: manualForm.language,
+        country: manualForm.country,
+        rawAnswer: manualForm.rawAnswer,
+        sources,
+        model: manualForm.model || undefined,
+        dataClass: "measurement",
+      });
+      setManualForm((prev) => ({ ...prev, rawAnswer: "", sourcesText: "" }));
+      await loadQuestions();
+      await loadDashboard();
+      await loadCompetitors();
+      await loadRecommendations();
+      setTab("questions");
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onSeedFixtures = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const { data } = await API.post("/geo-intel/seed-test-fixtures");
+      setFixtureInfo(data);
+      await loadQuestions();
+      // Scores stay measurement-only; fixtures excluded unless explicitly included.
+      await loadDashboard();
     } catch (err: any) {
       setError(err?.response?.data?.error || err.message);
     } finally {
@@ -398,6 +490,7 @@ export default function AdminGeoIntel({
   const nav = [
     { id: "dashboard" as Tab, label: copy.navOverview },
     { id: "questions" as Tab, label: copy.navQuestions },
+    { id: "manual" as Tab, label: copy.navManual },
     { id: "competitors" as Tab, label: copy.navCompetitors },
     { id: "recommendations" as Tab, label: copy.navRecommendations },
     { id: "alerts" as Tab, label: copy.navAlerts },
@@ -438,20 +531,24 @@ export default function AdminGeoIntel({
   const title =
     tab === "questions"
       ? copy.questionsTitle
-      : tab === "competitors"
-        ? copy.competitorsTitle
-        : tab === "recommendations"
-          ? copy.recommendationsTitle
-          : copy.title;
+      : tab === "manual"
+        ? copy.manualTitle
+        : tab === "competitors"
+          ? copy.competitorsTitle
+          : tab === "recommendations"
+            ? copy.recommendationsTitle
+            : copy.title;
 
   const subtitle =
     tab === "questions"
       ? copy.questionsSubtitle
-      : tab === "competitors"
-        ? copy.competitorsSubtitle
-        : tab === "recommendations"
-          ? copy.recommendationsSubtitle
-          : copy.subtitle;
+      : tab === "manual"
+        ? copy.manualSubtitle
+        : tab === "competitors"
+          ? copy.competitorsSubtitle
+          : tab === "recommendations"
+            ? copy.recommendationsSubtitle
+            : copy.subtitle;
 
   return (
     <div className="geo-intel-root geo-intel-standalone" dir={dir} lang="he">
@@ -586,18 +683,12 @@ export default function AdminGeoIntel({
                 onChange={(e) => setEngineFilter(e.target.value)}
                 aria-label={copy.engine}
               >
-                <option value="gemini">Gemini</option>
-                {engines
-                  .filter((e) => e.id !== "gemini")
-                  .map((e) => (
-                    <option
-                      key={e.id}
-                      value={e.id}
-                      disabled={e.status !== "ready"}
-                    >
-                      {e.labelHe || e.label} ({engineStatusHe(copy, e)})
-                    </option>
-                  ))}
+                <option value="">{copy.allEngines}</option>
+                {engines.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.labelHe || e.label} ({engineStatusHe(copy, e)})
+                  </option>
+                ))}
               </select>
               <select
                 value={langFilter}
@@ -639,6 +730,7 @@ export default function AdminGeoIntel({
                 type="button"
                 className="geo-btn geo-btn-ghost"
                 onClick={() => {
+                  setEngineFilter("");
                   setLangFilter("");
                   setFromDate("");
                   setToDate("");
@@ -652,6 +744,19 @@ export default function AdminGeoIntel({
 
           {tab === "dashboard" ? (
             <section>
+              <p className="geo-hint">{copy.measurementOnlyNote}</p>
+              {metrics?.sampleSources?.length ? (
+                <div className="geo-pill muted" style={{ marginBottom: 12 }}>
+                  {copy.sampleSource}: n={n} ·{" "}
+                  {metrics.sampleSources
+                    .map((s) => `${s.labelHe} (${s.count})`)
+                    .join(" · ")}
+                </div>
+              ) : (
+                <div className="geo-pill wait" style={{ marginBottom: 12 }}>
+                  {copy.sampleSource}: {copy.notCheckedYet}
+                </div>
+              )}
               <div className="geo-kpi-grid">
                 <div className="geo-kpi">
                   <div className="geo-kpi-label">
@@ -773,13 +878,132 @@ export default function AdminGeoIntel({
                         <div className="geo-engine-meta">
                           {unchecked
                             ? copy.notChecked
-                            : `${e.appeared}/${e.n} · ${pct}%`}
+                            : `${e.appeared}/${e.n} · ${pct}%${
+                                e.sampleSources?.length
+                                  ? ` · ${e.sampleSources
+                                      .map((s) => s.labelHe)
+                                      .join("/")}`
+                                  : ""
+                              }`}
                         </div>
                       </div>
                     );
                   })}
                 </div>
               </div>
+            </section>
+          ) : null}
+
+          {tab === "manual" ? (
+            <section className="geo-card geo-stack">
+              <p className="geo-hint">{copy.manualSubtitle}</p>
+              <label className="geo-date-label">
+                {copy.question}
+                <select
+                  value={manualForm.promptId}
+                  onChange={(e) => {
+                    const id = e.target.value;
+                    const p = prompts.find((x) => x._id === id);
+                    setManualForm((prev) => ({
+                      ...prev,
+                      promptId: id,
+                      language: p?.language || prev.language,
+                    }));
+                  }}
+                >
+                  {prompts.map((p) => (
+                    <option key={p._id} value={p._id}>
+                      [{p.language}] {p.text.slice(0, 80)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="geo-filters">
+                <select
+                  value={manualForm.engine}
+                  onChange={(e) =>
+                    setManualForm((prev) => ({ ...prev, engine: e.target.value }))
+                  }
+                  aria-label={copy.engine}
+                >
+                  {(engines.length ? engines : [{ id: "openai", label: "ChatGPT" }]).map(
+                    (e) => (
+                      <option key={e.id} value={e.id}>
+                        {e.labelHe || e.label || e.id}
+                      </option>
+                    )
+                  )}
+                </select>
+                <select
+                  value={manualForm.language}
+                  onChange={(e) =>
+                    setManualForm((prev) => ({
+                      ...prev,
+                      language: e.target.value,
+                    }))
+                  }
+                >
+                  <option value="he">עברית (he)</option>
+                  <option value="en">English (en)</option>
+                </select>
+                <input
+                  value={manualForm.country}
+                  onChange={(e) =>
+                    setManualForm((prev) => ({
+                      ...prev,
+                      country: e.target.value,
+                    }))
+                  }
+                  placeholder={copy.manualCountry}
+                  aria-label={copy.manualCountry}
+                />
+                <input
+                  value={manualForm.model}
+                  onChange={(e) =>
+                    setManualForm((prev) => ({ ...prev, model: e.target.value }))
+                  }
+                  placeholder={copy.model}
+                  aria-label={copy.model}
+                />
+              </div>
+              <label className="geo-date-label" style={{ display: "grid", gap: 6 }}>
+                {copy.manualAnswer}
+                <textarea
+                  className="geo-textarea"
+                  value={manualForm.rawAnswer}
+                  onChange={(e) =>
+                    setManualForm((prev) => ({
+                      ...prev,
+                      rawAnswer: e.target.value,
+                    }))
+                  }
+                />
+              </label>
+              <label className="geo-date-label" style={{ display: "grid", gap: 6 }}>
+                {copy.manualSources}
+                <textarea
+                  className="geo-textarea"
+                  value={manualForm.sourcesText}
+                  onChange={(e) =>
+                    setManualForm((prev) => ({
+                      ...prev,
+                      sourcesText: e.target.value,
+                    }))
+                  }
+                  placeholder="https://example.com/page"
+                />
+              </label>
+              <p className="geo-hint">{copy.manualSourcesHelp}</p>
+              <button
+                type="button"
+                className="geo-btn geo-btn-primary"
+                disabled={
+                  busy || !manualForm.promptId || !manualForm.rawAnswer.trim()
+                }
+                onClick={onSaveManual}
+              >
+                {copy.manualSave}
+              </button>
             </section>
           ) : null}
 
@@ -848,9 +1072,26 @@ export default function AdminGeoIntel({
                                 ? copy.topicStarter
                                 : r.prompt.topic}
                             </div>
+                            {r.latestCheck?.dataClass === "test_fixture" ? (
+                              <div className="geo-pill wait" style={{ marginTop: 6 }}>
+                                {copy.testFixtureBadge}
+                              </div>
+                            ) : null}
+                            {r.latestCheck?.collectionMethod === "manual_paste" ? (
+                              <div className="geo-pill muted" style={{ marginTop: 6 }}>
+                                {copy.manualBadge}
+                              </div>
+                            ) : null}
+                            {r.latestCheck?.apiCallMade ? (
+                              <div className="geo-pill ok" style={{ marginTop: 6 }}>
+                                {copy.apiBadge}
+                              </div>
+                            ) : null}
                           </td>
                           <td>
-                            <span className="geo-pill">{r.engine}</span>
+                            <span className="geo-pill">
+                              {r.latestCheck?.engine || r.engine || "—"}
+                            </span>
                           </td>
                           <td>{r.prompt.language}</td>
                           <td>
@@ -1183,6 +1424,10 @@ export default function AdminGeoIntel({
               <div className="geo-card">
                 <h3>{copy.settingsGeminiTitle}</h3>
                 <p className="geo-hint">{copy.settingsGeminiHelp}</p>
+                <div className="geo-pill muted">{copy.automationPrepared}</div>
+                {status?.automation?.noteHe ? (
+                  <p className="geo-hint">{status.automation.noteHe}</p>
+                ) : null}
                 {!status?.gemini?.configured ? (
                   <div className="geo-pill wait">{copy.waitingKeyApproval}</div>
                 ) : (
@@ -1208,6 +1453,14 @@ export default function AdminGeoIntel({
                   <button
                     type="button"
                     className="geo-btn geo-btn-primary"
+                    disabled={busy}
+                    onClick={onSeedFixtures}
+                  >
+                    {copy.seedTestFixtures}
+                  </button>
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-ghost"
                     disabled={busy || !status?.gemini?.configured}
                     onClick={onRunTruthPair}
                     title={
@@ -1219,6 +1472,19 @@ export default function AdminGeoIntel({
                     {copy.runTruthPair}
                   </button>
                 </div>
+                {fixtureInfo ? (
+                  <div className="geo-tip geo-tip-info" style={{ marginTop: 12 }}>
+                    <strong>{copy.testFixtureBadge}</strong>
+                    <p>
+                      {(fixtureInfo.created || [])
+                        .map(
+                          (c: any) =>
+                            `${c.brandSlug}: appeared=${String(c.appeared)} hasLink=${String(c.hasLink)}`
+                        )
+                        .join(" · ")}
+                    </p>
+                  </div>
+                ) : null}
                 <p className="geo-hint" style={{ marginTop: 10 }}>
                   {copy.preflightHelp}
                 </p>
@@ -1330,6 +1596,40 @@ export default function AdminGeoIntel({
                       : "—"}
                   </span>
                 </div>
+                <div>
+                  <span className="geo-meta-k">{copy.originLabel}</span>
+                  <span>
+                    {detail.check.originLabel ||
+                      detail.check.collectionMethod ||
+                      "—"}
+                  </span>
+                </div>
+                <div>
+                  <span className="geo-meta-k">{copy.countryLang}</span>
+                  <span>
+                    {detail.check.language || "—"}
+                    {detail.check.country ? ` / ${detail.check.country}` : ""}
+                  </span>
+                </div>
+              </div>
+              <div className="geo-filters">
+                {detail.check.dataClass === "test_fixture" ? (
+                  <span className="geo-pill wait">{copy.testFixtureBadge}</span>
+                ) : null}
+                {detail.check.collectionMethod === "manual_paste" ||
+                detail.check.consumerUi ? (
+                  <span className="geo-pill muted">{copy.manualBadge}</span>
+                ) : null}
+                {detail.check.apiCallMade ? (
+                  <span className="geo-pill ok">{copy.apiBadge}</span>
+                ) : (
+                  <span className="geo-pill muted">{copy.proofNotApi}</span>
+                )}
+                {detail.check.country ? (
+                  <span className="geo-pill muted">
+                    {copy.country}: {detail.check.country}
+                  </span>
+                ) : null}
               </div>
               {detail.check.promptId?.text ? (
                 <div>

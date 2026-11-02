@@ -135,6 +135,27 @@ export function geoIntelCopy() {
     preflight: "בדיקת מוכנות Gemini (ללא עלות)",
     preflightHelp:
       "בודק מפתח, $0, ומודלים זמינים — בלי generateContent ובלי הרצת בדיקות אמת.",
+    navManual: "הזנה ידנית",
+    manualTitle: "הזנת תשובת מנוע (ידנית)",
+    manualSubtitle:
+      "הדביקו תשובה אמיתית מממשק צרכני (ChatGPT / Gemini / Claude / Perplexity וכו'). לא מסומן כ־API.",
+    manualSave: "שמור בדיקה ידנית",
+    manualAnswer: "התשובה המלאה",
+    manualSources: "מקורות (כתובת בכל שורה)",
+    manualSourcesHelp:
+      "רק מקורות שצוטטו בפועל. אל תייחסו ציטוט לאתר רק כי השם הופיע בטקסט.",
+    manualCountry: "מדינה (אופציונלי)",
+    seedTestFixtures: "צור נתוני בדיקת קצה (לא מדידות אמת)",
+    testFixtureBadge: "נתוני בדיקה — לא מדידת אמת",
+    manualBadge: "הזנה ידנית · ממשק צרכני",
+    apiBadge: "API",
+    sampleSource: "מקור מדגם",
+    automationPrepared: "חיבור אוטומטי עתידי מוכן בקוד — כבוי כעת",
+    measurementOnlyNote: "ציוני נראות מבוססים על מדידות אמת בלבד (ללא נתוני בדיקה).",
+    allEngines: "כל המנועים",
+    originLabel: "מקור האיסוף",
+    proofNotApi: "לא התקבל מ־API",
+    countryLang: "שפה / מדינה",
   };
 }
 
