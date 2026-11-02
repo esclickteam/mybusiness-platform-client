@@ -82,8 +82,9 @@ export default function HomeExperiencePreview({ indexed = false }: { indexed?: b
   useLayoutEffect(() => {
     document.documentElement.classList.add("hx-preview");
     if (indexed) {
-      document.getElementById("bizuply-first-paint")?.remove();
+      // Swap only after this cinematic tree is committed (same gate as App release).
       document.getElementById("root")?.removeAttribute("hidden");
+      document.getElementById("bizuply-first-paint")?.remove();
       return () => {
         document.documentElement.classList.remove("hx-preview");
       };

@@ -422,6 +422,7 @@ html.hx-preview body {
 }
 
 .hx-hero {
+  --hp: 0;
   --s1: 1;
   --s2: 0;
   --s3: 0;
@@ -565,7 +566,7 @@ html.hx-preview body {
   height: 100%;
   object-fit: cover;
   object-position: left center;
-  animation: hx-unmask 0.9s var(--hx-ease) both;
+  /* No entrance unmask — remounting on hydration re-ran clip-path and looked like a layout rebuild. */
 }
 
 .hx-hero-shot-1 { opacity: var(--s1); }

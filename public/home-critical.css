@@ -165,14 +165,22 @@ html.bizuply-home body {
   font-family: Assistant, Inter, system-ui, sans-serif;
 }
 .hx-hero {
+  --hp: 0;
+  --s1: 1;
+  --s2: 0;
+  --s3: 0;
+  --hx-header: 4.75rem;
   position: relative;
+  height: 168vh;
   min-height: calc(100svh - 4.75rem);
   background: #5b21b6;
   color: #fff;
 }
 .hx-hero-pin {
-  position: relative;
-  min-height: calc(100svh - 4.75rem);
+  position: sticky;
+  top: var(--hx-header, 4.75rem);
+  height: calc(100svh - var(--hx-header, 4.75rem));
+  min-height: calc(100svh - var(--hx-header, 4.75rem));
   overflow: hidden;
 }
 .hx-geo {
@@ -199,8 +207,10 @@ html.bizuply-home body {
 .hx-hero-copy {
   position: relative;
   z-index: 2;
-  width: min(38rem, 92%);
+  width: min(38rem, 46%);
   padding: 2.2rem clamp(1.25rem, 4vw, 4.5rem) 0;
+  transform: translate3d(0, 0, 0) scale(1);
+  transform-origin: top center;
 }
 .hx-kicker {
   margin: 0;
@@ -288,16 +298,32 @@ html.bizuply-home body {
   color: #fff;
 }
 .hx-hero-frame {
-  position: relative;
+  position: absolute;
   z-index: 1;
   overflow: hidden;
-  width: min(92%, 740px);
-  margin: 1.4rem clamp(0.6rem, 4vw, 2rem) 1.5rem;
+  width: min(46vw, 740px);
+  inset-inline-end: 2vw;
+  bottom: 5vh;
+  margin: 0;
   aspect-ratio: 16 / 10;
   background: #5b21b6;
   box-shadow: 1rem 1rem 0 #efe4ff;
+  transform: translate3d(0, 0, 0) scale(1);
 }
-.hx-hero-frame img {
+.hx-hero-frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(to right, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
+}
+[dir="rtl"] .hx-hero-frame::after {
+  background: linear-gradient(to left, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
+}
+.hx-hero-frame img,
+.hx-hero-frame video {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
@@ -319,31 +345,46 @@ html.bizuply-home body {
   font-size: 1.6rem;
 }
 
-@media (min-width: 1024px) {
+/* Match live homeExperience.css mobile breakpoint (max-width: 900px). */
+@media (max-width: 900px) {
+  .hx-hero {
+    height: auto;
+  }
   .hx-hero-pin {
-    display: block;
+    position: relative;
+    top: auto;
+    height: auto;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 1.2rem;
   }
-  .hx-hero-copy {
-    width: min(38rem, 46%);
-  }
-  .hx-hero-frame {
-    position: absolute;
-    inset-inline-end: 2vw;
-    bottom: 5vh;
-    width: min(46vw, 740px);
+  .hx-hero-copy,
+  [dir="rtl"] .hx-hero-copy {
+    width: auto;
     margin: 0;
+    padding: 1.4rem 1.1rem 0;
+    transform: none;
   }
-  .hx-hero-frame::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(to right, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
+  .hx-hero-frame,
+  [dir="rtl"] .hx-hero-frame {
+    position: relative;
+    inset: auto;
+    right: auto;
+    left: auto;
+    bottom: auto;
+    width: calc(100% - 1.2rem);
+    margin: 1.4rem 0.6rem 0;
+    transform: none;
+    box-shadow: 10px 10px 0 #efe4ff;
   }
-  [dir="rtl"] .hx-hero-frame::after {
-    background: linear-gradient(to left, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
+  .hx-hero-frame::after,
+  .hx-geo-c {
+    display: none;
   }
-  .hx-hero-frame img {
+  .hx-hero-frame img,
+  .hx-hero-frame video {
     position: absolute;
     inset: 0;
   }

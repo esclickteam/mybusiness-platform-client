@@ -37,4 +37,12 @@ describe("purple home first paint", () => {
     expect(criticalCss).not.toContain("#070b18");
     expect(criticalCss).not.toContain("home-hero__title");
   });
+
+  it("critical CSS matches live resting hero geometry (sticky + 900px)", () => {
+    expect(criticalCss).toContain("position: sticky");
+    expect(criticalCss).toContain("aspect-ratio: 16 / 10");
+    expect(criticalCss).toContain("max-width: 900px");
+    expect(criticalCss).toContain("--hp: 0");
+    expect(criticalCss).not.toContain("min-width: 1024px");
+  });
 });

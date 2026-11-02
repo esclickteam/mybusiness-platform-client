@@ -21,6 +21,9 @@ import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
 import { shouldRenderWhatsAppLanding } from "./lib/whatsappHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
+/* Home is eager so the purple SSR shell never drops into a Suspense null gap. */
+import HomeExperiencePreview from "./pages/HomeExperiencePreview";
+import PartnerHostHome from "./pages/public/PartnerHostHome";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
@@ -85,7 +88,6 @@ const EmbedTemplatePreviewPage = lazy(() =>
 );
 
 /* Public Pages */
-const HomeExperiencePreview = lazy(() => import("./pages/HomeExperiencePreview"));
 const BizuplyEarlyAccessLanding = lazy(() =>
   import("./pages/BizuplyEarlyAccessLanding")
 );
@@ -253,7 +255,6 @@ const PartnersRecruitment = lazy(() => import("./pages/public/PartnersRecruitmen
 const PartnerAcceptInvite = lazy(() => import("./pages/partner/PartnerAcceptInvite"));
 const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"));
 const PartnerPublicPlans = lazy(() => import("./pages/public/PartnerPublicPlans"));
-const PartnerHostHome = lazy(() => import("./pages/public/PartnerHostHome"));
 const TravelLanding = lazy(() => import("./pages/public/TravelLanding"));
 const WhatsAppApiLanding = lazy(() => import("./pages/public/WhatsAppApiLanding"));
 const PartnerCheckoutSuccess = lazy(() => import("./pages/public/PartnerCheckoutSuccess"));
@@ -861,21 +862,23 @@ export default function App() {
   const { user, loading, initialized } = useAuth();
   const { i18n } = useTranslation();
   useLayoutEffect(() => {
+    const cinematicReady = () =>
+      Boolean(document.querySelector("#root .hx-page, #root .hx-hero"));
     const release = () => {
+      // Keep purple SSR hero visible until React cinematic home exists.
+      // Releasing on .app-main alone left a Suspense null gap (image vanish / layout jump).
+      if (!cinematicReady()) return;
       const shell = document.getElementById("bizuply-first-paint");
       document.getElementById("root")?.removeAttribute("hidden");
-      // Drop SSR shell after cinematic home mounts. Do not keep legacy .home-hero.
-      if (document.querySelector("#root .hx-page") || document.querySelector("#root .app-main")) {
-        shell?.remove();
-      }
+      shell?.remove();
     };
     const root = document.getElementById("root");
-    if (root?.querySelector(".app-main")) {
+    if (cinematicReady()) {
       release();
       return undefined;
     }
     const observer = new MutationObserver(() => {
-      if (root?.querySelector(".app-main")) {
+      if (cinematicReady()) {
         observer.disconnect();
         release();
       }

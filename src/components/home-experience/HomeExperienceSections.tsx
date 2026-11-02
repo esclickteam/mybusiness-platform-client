@@ -143,6 +143,7 @@ function LocaleShot({
   loading,
   decoding,
   fetchPriority,
+  forceStill = false,
 }: {
   src: string;
   language: string;
@@ -153,10 +154,12 @@ function LocaleShot({
   loading?: "eager" | "lazy";
   decoding?: "async" | "auto" | "sync";
   fetchPriority?: "high" | "low" | "auto";
+  /** Keep the SSR still — avoids img→posterless-video remount flash on first paint. */
+  forceStill?: boolean;
 }) {
-  const video = localeClip(src, language);
+  const video = forceStill ? null : localeClip(src, language);
   if (!video) {
-    if (!language.toLowerCase().startsWith("he") && src.startsWith("/demo-media/")) {
+    if (!forceStill && !language.toLowerCase().startsWith("he") && src.startsWith("/demo-media/")) {
       return (
         <div className={className ? `${className} hx-locale-pending` : "hx-locale-pending"} role="img" aria-label={alt}>
           {alt}
@@ -180,6 +183,7 @@ function LocaleShot({
     <video
       className={className}
       src={video}
+      poster={src}
       muted
       playsInline
       preload="auto"
@@ -336,6 +340,7 @@ function Hero() {
             height={1000}
             fetchPriority="high"
             decoding="async"
+            forceStill
           />
           <LocaleShot
             className="hx-hero-shot hx-hero-shot-2"
