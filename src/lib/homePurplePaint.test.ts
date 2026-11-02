@@ -51,4 +51,14 @@ describe("purple home first paint", () => {
     expect(criticalCss).toContain("html.bizuply-home #initial-bg");
     expect(criticalCss).toContain("background: #5b21b6 !important");
   });
+
+  it("critical CSS keeps border-box after hydration replaces .home-shell", () => {
+    expect(criticalCss).toContain("html.bizuply-home *");
+    expect(criticalCss).toContain("box-sizing: border-box");
+    expect(criticalCss).not.toContain(".home-shell *");
+    expect(criticalCss).toContain("font-size: 0.78rem");
+    expect(criticalCss).toMatch(/\.hx-display\s*\{[^}]*margin:\s*0;/);
+    expect(criticalCss).toContain(".hx-skip");
+    expect(criticalCss).toContain("overflow: visible");
+  });
 });
