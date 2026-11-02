@@ -3333,6 +3333,45 @@ function applyInsertedSpecialContent(
   return false;
 }
 
+function hideTemplateNode(child: HTMLElement) {
+  if (
+    !child.hasAttribute(
+      "data-bizuply-library-original-display",
+    )
+  ) {
+    child.setAttribute(
+      "data-bizuply-library-original-display",
+      child.style.display || "",
+    );
+  }
+
+  child.style.display = "none";
+  child.setAttribute(
+    "data-bizuply-library-default-hidden",
+    "true",
+  );
+}
+
+function hideTemplateExceptInserted(node: HTMLElement) {
+  Array.from(node.children).forEach((inner) => {
+    if (!(inner instanceof HTMLElement)) return;
+    const keep =
+      inner.getAttribute("data-visual-insert-host") === "true" ||
+      inner.getAttribute("data-visual-runtime-host") === "true" ||
+      inner.getAttribute("data-visual-inserted-section") === "true";
+    if (keep) return;
+    if (
+      inner.querySelector(
+        "[data-visual-insert-host], [data-visual-inserted-section]",
+      )
+    ) {
+      hideTemplateExceptInserted(inner);
+      return;
+    }
+    hideTemplateNode(inner);
+  });
+}
+
 export function applyVisualLibraryPageMode(
   root: HTMLElement | null,
   data: Record<string, any>,
@@ -3355,29 +3394,37 @@ export function applyVisualLibraryPageMode(
         'header, footer, [data-template-section-type="header"], [data-template-section-type="footer"], [data-section-kind="header"], [data-section-kind="footer"]',
       ) ||
       child.getAttribute("data-bizuply-nav-item") !== null;
+    const insertedSections = data?.__insertedSections;
+    const sectionReplacesTemplate =
+      insertedSections &&
+      typeof insertedSections === "object" &&
+      Object.values(insertedSections).some(
+        (section) =>
+          Boolean(section) &&
+          typeof section === "object" &&
+          (section as { aiStudio?: boolean }).aiStudio === true,
+      );
+    const replaceTemplate =
+      data?.__aiStudioPage === true || sectionReplacesTemplate;
 
     /*
       Library / blank pages hide the template's default page bodies, but keep
       header/footer chrome + insert host so nested Site Pages stay navigable
       and inserted library sections can mount.
+      An AI Studio page replaces that chrome too. Its own sections carry the
+      navigation, and the inserted sections stay editable.
     */
-    if (blankPage && !inserted && !isInsertHost && !isChrome) {
+    if (blankPage && !inserted && !isInsertHost && (!isChrome || replaceTemplate)) {
       if (
-        !child.hasAttribute(
-          "data-bizuply-library-original-display",
+        replaceTemplate &&
+        child.querySelector(
+          "[data-visual-insert-host], [data-visual-inserted-section]",
         )
       ) {
-        child.setAttribute(
-          "data-bizuply-library-original-display",
-          child.style.display || "",
-        );
+        hideTemplateExceptInserted(child);
+        return;
       }
-
-      child.style.display = "none";
-      child.setAttribute(
-        "data-bizuply-library-default-hidden",
-        "true",
-      );
+      hideTemplateNode(child);
       return;
     }
 

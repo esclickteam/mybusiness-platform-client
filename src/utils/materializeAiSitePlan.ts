@@ -51,6 +51,59 @@ export type AiSitePlan = {
   pages: AiPagePlan[];
 };
 
+function escapeHtml(value: string) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function addAiPageNav(
+  data: Record<string, any>,
+  pages: Array<{ id?: string; title?: string; slug?: string; isHome?: boolean }>,
+  palette?: AiSitePlan["palette"]
+) {
+  const list = Array.isArray(pages) ? pages.filter((page) => page?.title || page?.id) : [];
+  if (list.length < 2) return { data, navId: "" };
+
+  const sectionId = uid("sec-nav");
+  const htmlId = uid("el-nav");
+  const links = list
+    .map((page) => {
+      const home = Boolean(page.isHome || page.id === "home");
+      const href = home
+        ? "/"
+        : `/${String(page.slug || page.id || "").replace(/^\//, "")}`;
+      return `<a href="${escapeHtml(href)}" style="color:inherit;text-decoration:none;font-weight:700">${escapeHtml(page.title || page.id || "")}</a>`;
+    })
+    .join("");
+
+  let next = writeVisualInsertedSection(data, {
+    id: sectionId,
+    placement: "append",
+    label: "ניווט",
+    aiStudio: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  next = writeVisualInsertedElement(next, {
+    id: htmlId,
+    type: "html",
+    parentId: sectionId,
+    sectionId,
+    label: "ניווט",
+    html: `<nav dir="rtl" style="display:flex;flex-wrap:wrap;gap:18px;justify-content:center;width:100%">${links}</nav>`,
+  });
+  next = writeVisualStyleItem(next, sectionId, {
+    minHeight: "72px",
+    padding: "18px 24px",
+    backgroundColor: palette?.background || "#111111",
+    color: "#f8f5f0",
+  });
+  return { data: next, navId: sectionId };
+}
+
 function uid(prefix: string) {
   return `${prefix}-${Date.now().toString(36)}-${Math.random()
     .toString(36)
@@ -118,11 +171,13 @@ function normalizeContentOverride(
  */
 export function materializePageVisualData(
   page: AiPagePlan,
-  palette?: AiSitePlan["palette"]
+  palette?: AiSitePlan["palette"],
+  navPages?: Array<{ id?: string; title?: string; slug?: string; isHome?: boolean }>
 ) {
   let data: Record<string, any> = {
     __blankVisualPage: true,
     __libraryPage: true,
+    __aiStudioPage: true,
     __activePageId: page.id,
     __insertedSections: {},
     __insertedElements: {},
@@ -132,7 +187,9 @@ export function materializePageVisualData(
     __attributes: {},
   };
 
-  let previousSectionId = "";
+  const nav = addAiPageNav(data, navPages || [], palette);
+  data = nav.data;
+  let previousSectionId = nav.navId || "";
 
   (page.sections || []).forEach((sectionPlan, index) => {
     const template = getSectionTemplateById(sectionPlan.libraryId);
@@ -143,8 +200,9 @@ export function materializePageVisualData(
     data = writeVisualInsertedSection(data, {
       id: sectionId,
       anchorId: previousSectionId || undefined,
-      placement: index === 0 ? "append" : "after",
+      placement: previousSectionId ? "after" : "append",
       label: template.title,
+      aiStudio: true,
       libraryId: template.id,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
@@ -270,8 +328,15 @@ export function materializeAiSitePlan(plan: AiSitePlan) {
     plan.hostTemplateKey || plan.templateKey || "adion"
   ).toLowerCase();
 
+  const navPages = (plan.pages || []).map((page, index) => ({
+    id: page.id || (index === 0 ? "home" : `page-${index + 1}`),
+    title: page.title || page.id,
+    slug: page.slug || page.id,
+    isHome: Boolean(page.isHome || index === 0),
+  }));
+
   const pages = (plan.pages || []).map((page, index) => {
-    const visual = materializePageVisualData(page, plan.palette);
+    const visual = materializePageVisualData(page, plan.palette, navPages);
     const pageId = page.id || (index === 0 ? "home" : `page-${index + 1}`);
     const isHome = Boolean(page.isHome || index === 0);
 

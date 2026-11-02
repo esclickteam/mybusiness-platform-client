@@ -73,10 +73,7 @@ import {
 } from "../../../../styles/bizuplyUi";
 import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
 import WhatsAppInvistimoSharePanel from "./WhatsAppInvistimoSharePanel";
-import {
-  buildInvistimoAccountShareExtras,
-  isInvistimoShareTenant,
-} from "./invistimoAccountSharePolicy";
+import { isInvistimoShareTenant } from "./invistimoAccountSharePolicy";
 
 type OutletCtx = { businessId: string | null };
 
@@ -624,9 +621,8 @@ export default function WhatsAppSettingsTab() {
               config_id: metaApp.configId,
               response_type: "code",
               override_default_response_type: true,
-              extras: isInvistimoShareTenant(businessId)
-                ? buildInvistimoAccountShareExtras()
-                : path === "coexistence"
+              extras:
+                path === "coexistence"
                   ? buildCoexistenceEmbeddedSignupExtras(entered?.e164)
                   : buildCloudApiEmbeddedSignupExtras(entered?.e164),
             }
