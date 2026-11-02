@@ -114,6 +114,82 @@ function clipFile(folder: string, name: string, language: string) {
   return `/demo-media/${folder}/${name}-${code}.mp4`;
 }
 
+function localeClip(src: string, language: string) {
+  if (language.toLowerCase().startsWith("he")) return null;
+  const folder = src.includes("/whatsapp/")
+    ? "whatsapp"
+    : src.includes("campaign")
+      ? "campaigns"
+      : src.includes("website")
+        ? "websites"
+        : src.includes("automation")
+          ? "automations"
+          : src.includes("appointment")
+            ? "appointments"
+            : src.includes("crm")
+              ? "crm"
+              : "";
+  if (!folder) return null;
+  return `${clipFile(folder, folder, language)}#t=0.1`;
+}
+
+function LocaleShot({
+  src,
+  language,
+  className,
+  alt,
+  width,
+  height,
+  loading,
+  decoding,
+  fetchPriority,
+}: {
+  src: string;
+  language: string;
+  className?: string;
+  alt: string;
+  width?: number;
+  height?: number;
+  loading?: "eager" | "lazy";
+  decoding?: "async" | "auto" | "sync";
+  fetchPriority?: "high" | "low" | "auto";
+}) {
+  const video = localeClip(src, language);
+  if (!video) {
+    if (!language.toLowerCase().startsWith("he") && src.startsWith("/demo-media/")) {
+      return (
+        <div className={className ? `${className} hx-locale-pending` : "hx-locale-pending"} role="img" aria-label={alt}>
+          {alt}
+        </div>
+      );
+    }
+    return (
+      <img
+        className={className}
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        loading={loading}
+        decoding={decoding}
+        fetchPriority={fetchPriority}
+      />
+    );
+  }
+  return (
+    <video
+      className={className}
+      src={video}
+      muted
+      playsInline
+      preload="auto"
+      aria-label={alt}
+      width={width}
+      height={height}
+    />
+  );
+}
+
 function Words({ text, hot = -1, delay = 0 }: { text: string; hot?: number; delay?: number }) {
   const words = text.split(" ");
   return (
@@ -179,7 +255,7 @@ export default function HomeExperienceSections() {
 }
 
 function Hero() {
-  const { text } = useCopy();
+  const { text, language } = useCopy();
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
     const node = ref.current;
@@ -228,29 +304,32 @@ function Hero() {
           </p>
         </div>
         <div className="hx-hero-frame">
-          <img
+          <LocaleShot
             className="hx-hero-shot hx-hero-shot-1"
+            language={language}
             src="/demo-media/home/crm.jpg"
             alt={text("רשימת הלידים של Northwind Studio בתוך Bizuply", "Northwind Studio lead list inside Bizuply")}
-            width="1600"
-            height="1000"
+            width={1600}
+            height={1000}
             fetchPriority="high"
             decoding="async"
           />
-          <img
+          <LocaleShot
             className="hx-hero-shot hx-hero-shot-2"
+            language={language}
             src="/demo-media/whatsapp/still-3.jpg"
             alt={text("שיחת WhatsApp של Northwind Studio בתוך Bizuply", "A Northwind Studio WhatsApp conversation inside Bizuply")}
-            width="1600"
-            height="1000"
+            width={1600}
+            height={1000}
             decoding="async"
           />
-          <img
+          <LocaleShot
             className="hx-hero-shot hx-hero-shot-3"
+            language={language}
             src="/demo-media/home/campaigns.jpg"
             alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
-            width="1600"
-            height="1000"
+            width={1600}
+            height={1000}
             decoding="async"
           />
         </div>
@@ -426,7 +505,7 @@ function SplitPinned() {
         <div className="hx-shots">
           {beats.map((beat, index) => (
             <div className={`hx-shot hx-shot-${index + 1}`} key={beat.img}>
-              <img src={beat.img} alt={beat.alt} width="1600" height="1000" decoding="async" />
+              <LocaleShot language={language} src={beat.img} alt={beat.alt} width={1600} height={1000} decoding="async" />
             </div>
           ))}
           <div className="hx-vig" aria-hidden="true" />
@@ -474,7 +553,7 @@ function SplitStack() {
           <article key={beat.title}>
             <h3>{beat.title}</h3>
             <p>{beat.body}</p>
-            <img src={beat.img} alt={beat.alt} width="1600" height="1000" loading="lazy" decoding="async" />
+            <LocaleShot language={language} src={beat.img} alt={beat.alt} width={1600} height={1000} loading="lazy" decoding="async" />
           </article>
         ))}
       </div>
@@ -533,7 +612,7 @@ function CrmDepth() {
         <ol className="hx-shots-row">
           {shots.map(([src, label]) => (
             <li key={src}>
-              <img src={src} alt={label} width="1200" height="750" loading="lazy" decoding="async" />
+              <LocaleShot language={language} src={src} alt={label} width={1200} height={750} loading="lazy" decoding="async" />
               <span>{label}</span>
             </li>
           ))}
@@ -562,7 +641,7 @@ function filmOf(
 ): Film {
   return {
     src: clipFile(folder, name, language),
-    poster,
+    poster: language.toLowerCase().startsWith("he") ? poster : "",
     title,
     caption,
     tag: text("הקלטת דמו", "Demo recording"),
@@ -636,11 +715,12 @@ function WhatsApp() {
             </div>
           </div>
           <div className="hx-wa-frame">
-            <img
+            <LocaleShot
+              language={language}
               src="/demo-media/whatsapp/still-3.jpg"
               alt={text("שיחת WhatsApp של Northwind Studio בתוך Bizuply", "A Northwind Studio WhatsApp conversation inside Bizuply")}
-              width="1600"
-              height="1000"
+              width={1600}
+              height={1000}
               loading="lazy"
               decoding="async"
             />
@@ -700,11 +780,12 @@ function Campaigns() {
           </div>
           <div className="hx-camp-visual">
             <div className="hx-camp-frame">
-              <img
+              <LocaleShot
+                language={language}
                 src="/demo-media/home/campaigns.jpg"
                 alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
-                width="1600"
-                height="1000"
+                width={1600}
+                height={1000}
                 loading="lazy"
                 decoding="async"
               />
@@ -774,13 +855,14 @@ function Websites() {
           </ol>
           <div className="hx-sites-visual">
             {stages.map((stage, index) => (
-              <img
+              <LocaleShot
                 key={stage[0]}
                 className={index === step ? "is-on" : undefined}
+                language={language}
                 src={stage[0]}
                 alt={stage[1]}
-                width="1600"
-                height="1000"
+                width={1600}
+                height={1000}
                 loading="lazy"
                 decoding="async"
               />
@@ -800,7 +882,7 @@ function Websites() {
 }
 
 function Automations() {
-  const { text } = useCopy();
+  const { text, language } = useCopy();
   const ref = useRef<HTMLElement | null>(null);
   const litRef = useRef(0);
   const [active, setActive] = useState(0);
@@ -894,7 +976,7 @@ function Automations() {
             </div>
           </div>
           <div className="hx-step">
-            <img src={shown.img} alt={shown.alt} width="1600" height="1000" decoding="async" />
+            <LocaleShot language={language} src={shown.img} alt={shown.alt} width={1600} height={1000} decoding="async" />
           </div>
         </div>
       </div>
@@ -903,7 +985,7 @@ function Automations() {
 }
 
 function ReadySystems() {
-  const { text, dir } = useCopy();
+  const { text, dir, language } = useCopy();
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
     const sign = dir === "rtl" ? 1 : -1;
@@ -953,7 +1035,7 @@ function ReadySystems() {
             {slides.map(([src, label]) => (
               <figure className="hx-slide" key={src}>
                 <div className="hx-slide-frame">
-                  <img src={src} alt={label} width="1200" height="800" loading="lazy" decoding="async" />
+                  <LocaleShot language={language} src={src} alt={label} width={1200} height={800} loading="lazy" decoding="async" />
                 </div>
                 <figcaption dir={dir}>{label}</figcaption>
               </figure>
@@ -993,7 +1075,7 @@ function Films() {
           className="hx-film-lead text-inherit"
           onClick={() => open(filmOf(films[0][0], films[0][1], films[0][2], films[0][3], films[0][5], language, text))}
         >
-          <img src={films[0][2]} alt="" width="1600" height="1000" loading="lazy" decoding="async" />
+          <LocaleShot language={language} src={films[0][2]} alt="" width={1600} height={1000} loading="lazy" decoding="async" />
           <span>{text(`הפעלה: ${films[0][4]}`, `Play: ${films[0][4]}`)}</span>
         </button>
         <div className="hx-film-side">
@@ -1004,7 +1086,7 @@ function Films() {
               key={film[0]}
               onClick={() => open(filmOf(film[0], film[1], film[2], film[3], film[5], language, text))}
             >
-              <img src={film[2]} alt="" width="800" height="500" loading="lazy" decoding="async" />
+              <LocaleShot language={language} src={film[2]} alt="" width={800} height={500} loading="lazy" decoding="async" />
               <span>{text(`הפעלה: ${film[4]}`, `Play: ${film[4]}`)}</span>
             </button>
           ))}
@@ -1129,7 +1211,7 @@ function Faq() {
 }
 
 function Close() {
-  const { text } = useCopy();
+  const { text, language } = useCopy();
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
     ref.current?.style.setProperty("--join", progress.toFixed(3));
@@ -1157,11 +1239,12 @@ function Close() {
           <li>{text("מהפנייה הראשונה ועד המשך הטיפול.", "From the first enquiry through the follow-up.")}</li>
           <li>{text("מתחילים במסלול שמתאים לשלב של העסק.", "Start with the plan that fits the stage of the business.")}</li>
         </ol>
-        <img
+        <LocaleShot
+          language={language}
           src="/demo-media/home/crm.jpg"
           alt={text("רשימת לידים בתוך Bizuply", "A lead list inside Bizuply")}
-          width="960"
-          height="600"
+          width={960}
+          height={600}
           loading="lazy"
           decoding="async"
         />

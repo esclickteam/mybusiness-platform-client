@@ -193,6 +193,19 @@ function isPublicRoute(pathname) {
   });
 }
 
+/** Only protected product areas bounce to login when a session cannot be restored. */
+function shouldSendToLogin(pathname) {
+  const path = String(pathname || "");
+  return (
+    path.startsWith("/admin") ||
+    path.startsWith("/business/") ||
+    path.startsWith("/dashboard") ||
+    path.startsWith("/staff") ||
+    path.startsWith("/marketer") ||
+    path.startsWith("/partner/dashboard")
+  );
+}
+
 /** Routes where an authenticated business must stay to finish payment/signup. */
 function isCheckoutContinuationPath(pathname) {
   const path = String(pathname || "");
@@ -758,7 +771,7 @@ export function AuthProvider({ children }) {
       setUser(null);
       setLoading(false);
       setInitialized(true);
-      if (!isPublicRoute(location.pathname)) {
+      if (shouldSendToLogin(location.pathname)) {
         navigate(loginPath(), { replace: true });
       }
       return;
@@ -1135,7 +1148,7 @@ export function AuthProvider({ children }) {
               setSocket(null);
             }
 
-            if (!isPublicRoute(location.pathname) && !isSessionInvalidated()) {
+            if (shouldSendToLogin(location.pathname) && !isSessionInvalidated()) {
               navigate(loginPath(), { replace: true });
             }
           }
@@ -1151,7 +1164,7 @@ export function AuthProvider({ children }) {
     return () => {
       cancelled = true;
     };
-  }, [token, initialized, location.pathname]);
+  }, [token, initialized]);
 
   useEffect(() => {
     if (!initialized || !user || socket) return;

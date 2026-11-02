@@ -40,7 +40,7 @@ import {
   isUnknownMarketingPath,
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
-import { splitMarketingLocale } from "./src/lib/localePath.mjs";
+import { marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
 
 const PUBLIC_SITE_DOMAIN =
@@ -822,6 +822,40 @@ async function handleMarketingDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   const pathname = getPathname(request);
   const headHtml = buildMarketingDocumentHead(pathname);
+  if (headHtml) {
+    const cookie = request.headers.get("cookie") || "";
+    const saved = cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith("bizuply_lang="));
+    let savedValue = saved ? saved.slice("bizuply_lang=".length) : "";
+    try {
+      savedValue = decodeURIComponent(savedValue);
+    } catch {
+      /* Keep the raw cookie value. */
+    }
+    const target = marketingLanguageRedirectPath(pathname, {
+      cookie: savedValue,
+      acceptLanguage: request.headers.get("accept-language") || "",
+    });
+    if (target) {
+      const current = new URL(request.url);
+      const headers = {
+        location: `${target}${current.search}`,
+        "cache-control": "private, no-store",
+        vary: "Accept-Language, Cookie",
+        "x-bizuply-seo-edge": "marketing-language",
+      };
+      if (!savedValue) {
+        const locale = splitMarketingLocale(target).locale;
+        const host = getHost(request);
+        const domain = host === "bizuply.com" || host.endsWith(".bizuply.com")
+          ? "; Domain=.bizuply.com"
+          : host === "bizuply.co.il" || host.endsWith(".bizuply.co.il")
+            ? "; Domain=.bizuply.co.il"
+            : "";
+        headers["set-cookie"] = `bizuply_lang=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax${domain}`;
+      }
+      return new Response(null, { status: 302, headers });
+    }
+  }
   if (!headHtml) {
     if (isUnknownMarketingPath(pathname)) {
       return new Response(buildNotFoundHtml(), {

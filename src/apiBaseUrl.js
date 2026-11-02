@@ -36,6 +36,21 @@ export function resolveApiBaseUrl({
   hostname = "",
 } = {}) {
   if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
+  const host = String(hostname || "")
+    .toLowerCase()
+    .trim()
+    .split(":")[0];
+  // Login and refresh must stay on the site host. A cross-site POST to
+  // api.bizuply.com does not send a SameSite=Lax session cookie, so the
+  // access token expires and the user looks logged out. Vercel proxies /api.
+  if (
+    host === "bizuply.com" ||
+    host === "www.bizuply.com" ||
+    host === "bizuply.co.il" ||
+    host === "www.bizuply.co.il"
+  ) {
+    return "/api";
+  }
   const trimmed = trimApiUrl(envApiUrl);
   if (trimmed) return trimmed;
   if (mode === "production") return PRODUCTION_API;

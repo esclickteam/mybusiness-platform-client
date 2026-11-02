@@ -62,6 +62,69 @@ export function normalizeMarketingLocale(locale) {
   return "en";
 }
 
+const LOCALE_FROM_TAG = [
+  ["pt", "pt-BR"],
+  ["he", "he"],
+  ["es", "es"],
+  ["ar", "ar"],
+  ["en", "en"],
+];
+
+export function localeFromLanguageTag(tag) {
+  const raw = String(tag || "").trim().toLowerCase();
+  for (const [prefix, locale] of LOCALE_FROM_TAG) {
+    if (raw === prefix || raw.startsWith(`${prefix}-`)) return locale;
+  }
+  return null;
+}
+
+export function readRequestCookie(cookieHeader, name) {
+  const source = String(cookieHeader || "");
+  const needle = `${name}=`;
+  for (const part of source.split(";")) {
+    const item = part.trim();
+    if (!item.startsWith(needle)) continue;
+    try {
+      return decodeURIComponent(item.slice(needle.length));
+    } catch {
+      return item.slice(needle.length);
+    }
+  }
+  return "";
+}
+
+export function localeFromAcceptLanguage(header) {
+  const ranked = String(header || "")
+    .split(",")
+    .map((part, index) => {
+      const [tag, ...params] = part.trim().split(";");
+      const qParam = params.find((item) => item.trim().startsWith("q="));
+      const q = qParam ? Number(qParam.trim().slice(2)) : 1;
+      return { tag, q: Number.isFinite(q) ? q : 0, index };
+    })
+    .filter((item) => item.tag)
+    .sort((a, b) => b.q - a.q || a.index - b.index);
+  for (const item of ranked) {
+    const locale = localeFromLanguageTag(item.tag);
+    if (locale) return locale;
+  }
+  return null;
+}
+
+/**
+ * First-visit locale for a marketing URL.
+ * A saved bizuply_lang cookie wins. Otherwise an unprefixed English URL
+ * follows Accept-Language. An explicit /he, /es, /ar, or /pt-br URL stays.
+ * Returns a path when the response should redirect, otherwise null.
+ */
+export function marketingLanguageRedirectPath(pathname, { cookie = "", acceptLanguage = "" } = {}) {
+  const { locale } = splitMarketingLocale(pathname);
+  const saved = localeFromLanguageTag(cookie);
+  const desired = saved || (locale === "en" ? localeFromAcceptLanguage(acceptLanguage) || "en" : locale);
+  if (!desired || desired === locale) return null;
+  return withMarketingLocale(pathname, desired);
+}
+
 export function marketingPublicUrl(path, locale = "en") {
   const language = normalizeMarketingLocale(locale);
   const { path: bare } = splitMarketingLocale(path);

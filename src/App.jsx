@@ -1048,7 +1048,14 @@ export default function App() {
   // Only block the tree during the initial auth boot. Login/staffLogin also
   // flip `loading`, and unmounting /login mid-submit drops the form error
   // state and makes it look like "nothing happened".
-  if (loading && !initialized && location.pathname !== "/crm") {
+  const waitForAuth =
+    location.pathname.startsWith("/admin") ||
+    location.pathname.startsWith("/business/") ||
+    location.pathname.startsWith("/dashboard") ||
+    location.pathname.startsWith("/staff") ||
+    location.pathname.startsWith("/marketer") ||
+    location.pathname.startsWith("/partner/dashboard");
+  if (loading && !initialized && waitForAuth) {
     if (isWhatsAppApiLogin) return <div className="min-h-screen bg-[#05070d]" />;
     // The /login route has its own layout-matched skeleton to avoid a large
     // layout shift when this app-level auth check resolves and the real
@@ -1154,7 +1161,7 @@ export default function App() {
                     }
                   >
                     <motion.div
-                      key={location.pathname}
+                      key={isWorkspaceRoute ? location.pathname : "site"}
                       initial={
                         isDevVisualRoute || isAdminRoute || !isWorkspaceRoute ? false : { opacity: 0, y: 10 }
                       }
@@ -1165,11 +1172,11 @@ export default function App() {
                           : { opacity: 0, y: -10 }
                       }
                       transition={{
-                        duration: isDevVisualRoute || isAdminRoute ? 0 : 0.35,
+                        duration: isDevVisualRoute || isAdminRoute || !isWorkspaceRoute ? 0 : 0.35,
                         ease: "easeInOut",
                       }}
                     >
-                      <Routes location={location} key={location.pathname}>
+                      <Routes location={location}>
                         <Route
                           path="/"
                           element={

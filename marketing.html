@@ -61,30 +61,6 @@
             return;
           }
 
-          var first = String(location.pathname || "/").split("/")[1] || "";
-          var fromPath = normalize(first);
-          if (fromPath && fromPath !== "en") {
-            document.documentElement.lang = fromPath;
-            document.documentElement.dir = fromPath === "he" || fromPath === "ar" ? "rtl" : "ltr";
-            return;
-          }
-          var appRoute = {
-            business: 1,
-            admin: 1,
-            staff: 1,
-            client: 1,
-            partner: 1,
-            login: 1,
-            register: 1,
-            dashboard: 1,
-            embed: 1,
-          };
-          if (!appRoute[first.toLowerCase()]) {
-            document.documentElement.lang = "en";
-            document.documentElement.dir = "ltr";
-            return;
-          }
-
           function readCookie(name) {
             var match = document.cookie.match(
               new RegExp("(?:^|; )" + name.replace(/[.*+?^${}()|[\\]\\\\]/g, "\\$&") + "=([^;]*)")
@@ -95,7 +71,8 @@
           var lang = null;
 
           try {
-            lang = normalize(new URLSearchParams(location.search).get("lang"));
+            var queryLang = normalize(new URLSearchParams(location.search).get("lang"));
+            if (queryLang && queryLang !== "en") lang = queryLang;
           } catch (eUrl) {}
 
           if (!lang) {
@@ -113,6 +90,43 @@
             } catch (eNav) {}
           }
           if (!lang) lang = "en";
+
+          var parts = String(location.pathname || "/").split("/");
+          var pathLocale = normalize(parts[1] || "");
+          var current = pathLocale && pathLocale !== "en" ? pathLocale : "en";
+          var bare = current === "en" ? (location.pathname || "/") : "/" + parts.slice(2).join("/");
+          if (bare.length > 1 && bare.charAt(bare.length - 1) === "/") bare = bare.slice(0, -1);
+          if (!bare) bare = "/";
+          var bareFirst = (bare.split("/")[1] || "").toLowerCase();
+          var appRoute = {
+            business: 1,
+            admin: 1,
+            staff: 1,
+            client: 1,
+            partner: 1,
+            login: 1,
+            register: 1,
+            dashboard: 1,
+            embed: 1,
+            marketer: 1,
+            checkout: 1,
+            "guided-demo": 1,
+            "change-password": 1,
+            offer: 1,
+            api: 1,
+            auth: 1,
+            "partner-materials": 1,
+            onboarding: 1,
+          };
+          if (!appRoute[bareFirst] && lang !== current) {
+            var prefix = lang === "pt-BR" ? "/pt-br" : lang === "en" ? "" : "/" + lang;
+            var next = prefix + (bare === "/" ? "" : bare);
+            if (!next) next = "/";
+            if (next !== location.pathname) {
+              location.replace(next + location.search + location.hash);
+              return;
+            }
+          }
 
           document.documentElement.lang = lang;
           document.documentElement.dir = lang === "he" || lang === "ar" ? "rtl" : "ltr";

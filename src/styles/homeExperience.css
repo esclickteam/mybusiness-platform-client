@@ -525,7 +525,32 @@ html.hx-preview body {
   background: linear-gradient(to left, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
 }
 
-.hx-hero-frame img {
+.hx-locale-pending {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 8rem;
+  padding: 1.5rem;
+  background: #5b21b6;
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+}
+
+.hx-hero-frame .hx-locale-pending,
+.hx-shot .hx-locale-pending,
+.hx-sites-visual .hx-locale-pending,
+.hx-wa-frame .hx-locale-pending,
+.hx-camp-frame .hx-locale-pending,
+.hx-step .hx-locale-pending,
+.hx-shots-row .hx-locale-pending {
+  position: absolute;
+  inset: 0;
+}
+
+.hx-hero-frame img,
+.hx-hero-frame video {
   position: absolute;
   inset: 0;
   display: block;
@@ -632,7 +657,8 @@ html.hx-preview body {
   opacity: 0;
 }
 
-.hx-shot img {
+.hx-shot img,
+.hx-shot video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -897,12 +923,19 @@ html.hx-preview body {
 }
 
 .hx-wa-frame img,
+.hx-wa-frame video,
 .hx-camp-frame img,
+.hx-camp-frame video,
 .hx-sites-frame img,
+.hx-sites-frame video,
 .hx-step img,
+.hx-step video,
 .hx-slide img,
+.hx-slide video,
 .hx-film-lead img,
-.hx-film-side img {
+.hx-film-lead video,
+.hx-film-side img,
+.hx-film-side video {
   display: block;
   width: 100%;
   height: 100%;
@@ -1173,6 +1206,7 @@ html.hx-preview body {
 }
 
 .hx-step {
+  position: relative;
   background: #5b21b6;
   aspect-ratio: 16 / 10;
 }
@@ -1584,7 +1618,8 @@ html.hx-preview body {
   list-style: none;
 }
 
-.hx-shots-row img {
+.hx-shots-row img,
+.hx-shots-row video {
   display: block;
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -1668,7 +1703,8 @@ html.hx-preview body {
   background: #5b21b6;
 }
 
-.hx-sites-visual img {
+.hx-sites-visual img,
+.hx-sites-visual video {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -1678,7 +1714,8 @@ html.hx-preview body {
   opacity: 0;
 }
 
-.hx-sites-visual img.is-on {
+.hx-sites-visual img.is-on,
+.hx-sites-visual video.is-on {
   opacity: 1;
 }
 
@@ -2228,6 +2265,7 @@ html.hx-preview body {
 
   .hx-camp-frame,
   .hx-camp-frame img,
+  .hx-camp-frame video,
   .hx-sites-top {
     transform: none;
     clip-path: none;
@@ -2341,6 +2379,7 @@ html.hx-preview body {
 
   .hx-word > span,
   .hx-hero-frame img,
+  .hx-hero-frame video,
   .hx-btn,
   .hx-btn::before,
   .hx-aud a::before,
