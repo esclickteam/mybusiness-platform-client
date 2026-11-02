@@ -130,12 +130,45 @@ describe("first paint document shell", () => {
     expect(body).toContain('style="background:#5b21b6"');
     expect(body).toContain('id="home-critical"');
     expect(body).toMatch(/href="\/assets\/index-TEST\.css"[^>]*media="print"/);
-    expect(body).toContain("onload=\"this.media='all'\"");
+    expect(body).not.toContain("onload=\"this.media='all'\"");
+    expect(body).toContain('src="/home-css-promote.js"');
     const deferred = body.match(
       /<link\b[^>]*href="\/assets\/index-TEST\.css"[^>]*media="print"[^>]*>/g,
     );
     expect(deferred?.length).toBe(1);
     expect(body).toContain('<noscript><link rel="stylesheet" href="/assets/index-TEST.css"></noscript>');
+  });
+
+  it("does not defer Vite CSS on non-home marketing routes", async () => {
+    const withAssets = marketingHtml.replace(
+      "</head>",
+      '<link rel="stylesheet" crossorigin href="/assets/index-TEST.css"></head>',
+    );
+    globalThis.fetch = (async (input: RequestInfo | URL) => {
+      const url = String(input instanceof Request ? input.url : input);
+      if (url.includes("/marketing.html")) {
+        return new Response(withAssets, { status: 200, headers: { "content-type": "text/html" } });
+      }
+      if (url.includes("/home-critical.css")) {
+        return new Response(homeCriticalCss, { status: 200, headers: { "content-type": "text/css" } });
+      }
+      if (url.includes("/index.html")) {
+        return new Response(indexHtml, { status: 200, headers: { "content-type": "text/html" } });
+      }
+      return realFetch(input);
+    }) as typeof fetch;
+
+    // /crm uses the marketing shell; home-only deferral must not apply.
+    const crm = await middleware(
+      new Request("https://bizuply.com/crm", {
+        headers: { accept: "text/html", "x-forwarded-host": "bizuply.com" },
+      }),
+    );
+    const body = await crm.text();
+    expect(body).not.toContain("/home-css-promote.js");
+    expect(body).not.toContain('media="print"');
+    expect(body).not.toContain('class="bizuply-home');
+    expect(body).toContain("CRM Software for Small Businesses");
   });
 
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {

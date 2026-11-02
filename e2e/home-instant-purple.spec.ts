@@ -150,6 +150,8 @@ test.describe("homepage paints purple before Vite CSS arrives", () => {
     const en = await edgeHtml("/");
     const he = await edgeHtml("/he");
     expect(en).toMatch(/media="print"/);
+    expect(en).toContain('src="/home-css-promote.js"');
+    expect(en).not.toContain("onload=\"this.media='all'\"");
     expect(en).toContain('id="home-critical"');
     const server = await startServer({ "/": en, "/he": he, "/he/": he }, 3000);
     testInfo.annotations.push({ type: "server", description: server.origin });

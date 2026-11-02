@@ -911,7 +911,8 @@ async function handleMarketingDocument(request) {
         const hrefMatch = tag.match(/href=["'](\/assets\/[^"']+\.css)["']/i);
         if (!hrefMatch) return tag;
         if (/media=["']print["']/i.test(tag)) return tag;
-        const deferred = tag.replace(/>$/, ' media="print" onload="this.media=\'all\'">');
+        // No inline onload (CSP-safe). /home-css-promote.js flips media to all.
+        const deferred = tag.replace(/>$/, ' media="print">');
         return `${deferred}<noscript><link rel="stylesheet" href="${hrefMatch[1]}"></noscript>`;
       });
       documentHtml = documentHtml.replace(
@@ -919,6 +920,7 @@ async function handleMarketingDocument(request) {
         [
           '<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high">',
           '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
+          '<script src="/home-css-promote.js" defer></script>',
           "</head>",
         ].join(""),
       );
