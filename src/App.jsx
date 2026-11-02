@@ -921,6 +921,8 @@ export default function App() {
   // Header, no Footer, no public chrome — reachable only via a direct link.
   const isHiddenOffer = location.pathname.startsWith("/offer/");
   const isAdminRoute = location.pathname.startsWith("/admin");
+  // Isolated GEO staging surface — no public Header / language switcher / Get Started.
+  const isGeoStagingRoute = location.pathname.startsWith("/geo-staging");
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   // The WhatsApp API product login is a standalone page with its own branding.
@@ -1092,6 +1094,7 @@ export default function App() {
     !isSaasMarketplaceRoute &&
     !isSaasPublicSite &&
     !isDevVisualRoute &&
+    !isGeoStagingRoute &&
     !isMiniSiteHost &&
     !isPublicProposalRoute &&
     !isPartnerSignRoute &&
@@ -1108,6 +1111,7 @@ export default function App() {
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
+          !isGeoStagingRoute &&
           !isStaffRoute &&
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
@@ -1721,12 +1725,13 @@ export default function App() {
           !isPublicPartnerSales &&
           !isWhatsAppApiLogin &&
           !isAuthShellRoute &&
+          !isGeoStagingRoute &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && (
+      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isGeoStagingRoute && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 

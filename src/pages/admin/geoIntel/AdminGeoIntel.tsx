@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import API from "../../../api";
-import { ADMIN_PAGE_SHELL_CLASS } from "../../../utils/adminResponsive";
-import { geoIntelCopy } from "./geoIntelCopy";
+import { geoIntelCopy, type GeoCopy } from "./geoIntelCopy";
 import "./geoIntel.css";
 
 type Brand = { _id: string; slug: string; name: string; domains: string[] };
@@ -12,6 +10,8 @@ type Engine = {
   labelHe: string;
   status: string;
   notes?: string;
+  notesHe?: string;
+  consumerUiMatch?: string;
 };
 type Metrics = {
   sampleSize: number;
@@ -56,26 +56,62 @@ type QuestionRow = {
   };
 };
 
-type Tab = "dashboard" | "questions" | "competitors" | "gsc" | "engines" | "settings";
+type Tab =
+  | "dashboard"
+  | "questions"
+  | "competitors"
+  | "recommendations"
+  | "alerts"
+  | "gsc"
+  | "engines"
+  | "settings";
 
-function statusLabel(
-  copy: ReturnType<typeof geoIntelCopy>,
-  unchecked: boolean,
-  value?: boolean
-) {
+const PAGE_SIZE = 8;
+
+function statusLabel(copy: GeoCopy, unchecked: boolean, value?: boolean) {
   if (unchecked) return copy.waitingCheck;
   if (value === true) return copy.yes;
   if (value === false) return copy.no;
   return "—";
 }
 
+function engineStatusHe(copy: GeoCopy, e: Engine) {
+  if (e.consumerUiMatch === "dev_tool") return copy.statusDevTool;
+  if (e.status === "ready") return copy.statusReady;
+  if (e.status === "planned") return copy.statusPlanned;
+  return copy.statusUnavailable;
+}
+
+function highlightAnswer(
+  text: string,
+  aliases: string[]
+): React.ReactNode {
+  if (!text) return "—";
+  const terms = aliases.map((a) => String(a || "").trim()).filter(Boolean);
+  if (!terms.length) return text;
+  const re = new RegExp(
+    `(${terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`,
+    "giu"
+  );
+  const parts = String(text).split(re);
+  return parts.map((part, i) => {
+    const hit = terms.some((t) => t.toLowerCase() === part.toLowerCase());
+    return hit ? (
+      <mark key={i} className="geo-mark">
+        {part}
+      </mark>
+    ) : (
+      <React.Fragment key={i}>{part}</React.Fragment>
+    );
+  });
+}
+
 export default function AdminGeoIntel() {
-  const { i18n } = useTranslation();
-  const lang = i18n.resolvedLanguage || i18n.language;
-  const copy = geoIntelCopy(lang);
-  const dir = String(lang).toLowerCase().startsWith("he") ? "rtl" : "ltr";
+  const copy = geoIntelCopy();
+  const dir = "rtl";
 
   const [tab, setTab] = useState<Tab>("dashboard");
+  const [menuOpen, setMenuOpen] = useState(false);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [brandId, setBrandId] = useState("");
   const [status, setStatus] = useState<any>(null);
@@ -89,6 +125,14 @@ export default function AdminGeoIntel() {
   const [gscImports, setGscImports] = useState<any[]>([]);
   const [engineFilter, setEngineFilter] = useState("gemini");
   const [langFilter, setLangFilter] = useState("");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<"newest" | "oldest" | "alpha">("newest");
+  const [page, setPage] = useState(1);
+  const [compData, setCompData] = useState<any>(null);
+  const [recData, setRecData] = useState<any>(null);
+  const [truthPlan, setTruthPlan] = useState<any>(null);
 
   const loadStatus = useCallback(async () => {
     const { data } = await API.get("/geo-intel/status");
@@ -105,9 +149,16 @@ export default function AdminGeoIntel() {
 
   const loadDashboard = useCallback(async () => {
     if (!brandId) return;
-    const { data } = await API.get("/geo-intel/dashboard", { params: { brandId } });
+    const { data } = await API.get("/geo-intel/dashboard", {
+      params: {
+        brandId,
+        ...(engineFilter ? { engine: engineFilter } : {}),
+        ...(fromDate ? { from: fromDate } : {}),
+        ...(toDate ? { to: toDate } : {}),
+      },
+    });
     setMetrics(data.metrics);
-  }, [brandId]);
+  }, [brandId, engineFilter, fromDate, toDate]);
 
   const loadQuestions = useCallback(async () => {
     if (!brandId) return;
@@ -119,6 +170,7 @@ export default function AdminGeoIntel() {
       },
     });
     setRows(data.rows || []);
+    setPage(1);
   }, [brandId, engineFilter, langFilter]);
 
   const loadGsc = useCallback(async () => {
@@ -127,13 +179,39 @@ export default function AdminGeoIntel() {
     setGscImports(data.imports || []);
   }, [brandId]);
 
+  const loadCompetitors = useCallback(async () => {
+    if (!brandId) return;
+    const { data } = await API.get("/geo-intel/competitors", {
+      params: {
+        brandId,
+        ...(engineFilter ? { engine: engineFilter } : {}),
+        ...(fromDate ? { from: fromDate } : {}),
+        ...(toDate ? { to: toDate } : {}),
+      },
+    });
+    setCompData(data);
+  }, [brandId, engineFilter, fromDate, toDate]);
+
+  const loadRecommendations = useCallback(async () => {
+    if (!brandId) return;
+    const { data } = await API.get("/geo-intel/recommendations", {
+      params: { brandId },
+    });
+    setRecData(data);
+  }, [brandId]);
+
+  useEffect(() => {
+    document.documentElement.lang = "he";
+    document.documentElement.dir = "rtl";
+  }, []);
+
   useEffect(() => {
     void (async () => {
       try {
         await loadStatus();
         await loadBrands();
       } catch (err: any) {
-        setError(err?.response?.data?.error || err.message || "Failed to load");
+        setError(err?.response?.data?.error || err.message || "טעינה נכשלה");
       }
     })();
   }, [loadStatus, loadBrands]);
@@ -145,9 +223,49 @@ export default function AdminGeoIntel() {
     );
     void loadQuestions().catch(() => {});
     void loadGsc().catch(() => {});
-  }, [brandId, loadDashboard, loadQuestions, loadGsc]);
+    void loadCompetitors().catch(() => {});
+    void loadRecommendations().catch(() => {});
+  }, [
+    brandId,
+    loadDashboard,
+    loadQuestions,
+    loadGsc,
+    loadCompetitors,
+    loadRecommendations,
+  ]);
+
+  useEffect(() => {
+    if (!error) return;
+    document
+      .getElementById("geo-intel-error")
+      ?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [error]);
 
   const activeBrand = brands.find((b) => b._id === brandId);
+
+  const filteredRows = useMemo(() => {
+    let list = [...rows];
+    const q = search.trim().toLowerCase();
+    if (q) {
+      list = list.filter((r) => r.prompt.text.toLowerCase().includes(q));
+    }
+    list.sort((a, b) => {
+      if (sortBy === "alpha") {
+        return a.prompt.text.localeCompare(b.prompt.text, "he");
+      }
+      const ta = a.latestCheck?.checkedAt
+        ? new Date(a.latestCheck.checkedAt).getTime()
+        : 0;
+      const tb = b.latestCheck?.checkedAt
+        ? new Date(b.latestCheck.checkedAt).getTime()
+        : 0;
+      return sortBy === "oldest" ? ta - tb : tb - ta;
+    });
+    return list;
+  }, [rows, search, sortBy]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
+  const pageRows = filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   const onSeed = async () => {
     setBusy(true);
@@ -157,6 +275,19 @@ export default function AdminGeoIntel() {
       await loadBrands();
       await loadQuestions();
       await loadDashboard();
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onPrepareTruth = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const { data } = await API.post("/geo-intel/prepare-truth-checks");
+      setTruthPlan(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || err.message);
     } finally {
@@ -177,6 +308,8 @@ export default function AdminGeoIntel() {
       await loadQuestions();
       await loadDashboard();
       await loadStatus();
+      await loadCompetitors();
+      await loadRecommendations();
     } catch (err: any) {
       const code = err?.response?.data?.code;
       const msg = err?.response?.data?.error || err.message;
@@ -185,12 +318,6 @@ export default function AdminGeoIntel() {
       setBusy(false);
     }
   };
-
-  useEffect(() => {
-    if (!error) return;
-    const el = document.getElementById("geo-intel-error");
-    el?.scrollIntoView({ behavior: "smooth", block: "center" });
-  }, [error]);
 
   const openDetail = async (checkId: string) => {
     setBusy(true);
@@ -222,18 +349,21 @@ export default function AdminGeoIntel() {
     }
   };
 
-  const nav = useMemo(
-    () =>
-      [
-        { id: "dashboard" as Tab, label: copy.navOverview },
-        { id: "questions" as Tab, label: copy.navQuestions },
-        { id: "competitors" as Tab, label: copy.navCompetitors },
-        { id: "gsc" as Tab, label: copy.gsc },
-        { id: "engines" as Tab, label: copy.engines },
-        { id: "settings" as Tab, label: copy.navSettings },
-      ] as const,
-    [copy]
-  );
+  const nav = [
+    { id: "dashboard" as Tab, label: copy.navOverview },
+    { id: "questions" as Tab, label: copy.navQuestions },
+    { id: "competitors" as Tab, label: copy.navCompetitors },
+    { id: "recommendations" as Tab, label: copy.navRecommendations },
+    { id: "alerts" as Tab, label: copy.navAlerts },
+    { id: "gsc" as Tab, label: copy.gsc },
+    { id: "engines" as Tab, label: copy.engines },
+    { id: "settings" as Tab, label: copy.navSettings },
+  ];
+
+  const selectTab = (id: Tab) => {
+    setTab(id);
+    setMenuOpen(false);
+  };
 
   const engineRows =
     metrics?.byEngine ||
@@ -248,16 +378,41 @@ export default function AdminGeoIntel() {
       visibilityPct: null as number | null,
     }));
 
-  const visibilityDisplay =
-    metrics?.visibilityPct == null ? "—" : `${metrics.visibilityPct}%`;
   const n = metrics?.sampleSize ?? 0;
+  const visibilityDisplay =
+    metrics?.visibilityPct == null ? null : metrics.visibilityPct;
+  const mentionPct =
+    n > 0 ? Math.round(((metrics?.mentions || 0) / n) * 1000) / 10 : null;
+
+  const brandAliases = [
+    activeBrand?.name,
+    ...(activeBrand?.domains || []).map((d) => d.split(".")[0]),
+  ].filter(Boolean) as string[];
+
+  const title =
+    tab === "questions"
+      ? copy.questionsTitle
+      : tab === "competitors"
+        ? copy.competitorsTitle
+        : tab === "recommendations"
+          ? copy.recommendationsTitle
+          : copy.title;
+
+  const subtitle =
+    tab === "questions"
+      ? copy.questionsSubtitle
+      : tab === "competitors"
+        ? copy.competitorsSubtitle
+        : tab === "recommendations"
+          ? copy.recommendationsSubtitle
+          : copy.subtitle;
 
   return (
-    <div className={`${ADMIN_PAGE_SHELL_CLASS} geo-intel-root`} dir={dir}>
-      <div className="geo-intel-shell">
-        <aside className="geo-intel-side">
+    <div className="geo-intel-root geo-intel-standalone" dir={dir} lang="he">
+      <div className={`geo-intel-shell${menuOpen ? " menu-open" : ""}`}>
+        <aside className="geo-intel-side" aria-label="ניווט GEO">
           <div className="geo-intel-brand">
-            <div className="geo-intel-brand-mark" />
+            <div className="geo-intel-brand-mark" aria-hidden />
             <span>Bizuply GEO</span>
           </div>
           {nav.map((item) => (
@@ -265,27 +420,40 @@ export default function AdminGeoIntel() {
               key={item.id}
               type="button"
               className={`geo-intel-nav-btn${tab === item.id ? " active" : ""}`}
-              onClick={() => setTab(item.id)}
+              onClick={() => selectTab(item.id)}
             >
               {item.label}
             </button>
           ))}
           <div className="geo-intel-side-foot">
-            {copy.freeOnly}
+            {copy.hebrewUiOnly}
             <br />
             {copy.plannedHost}
           </div>
         </aside>
 
+        {menuOpen ? (
+          <button
+            type="button"
+            className="geo-menu-backdrop"
+            aria-label={copy.closeMenu}
+            onClick={() => setMenuOpen(false)}
+          />
+        ) : null}
+
         <main className="geo-intel-main">
           <div className="geo-intel-topbar">
+            <button
+              type="button"
+              className="geo-menu-toggle"
+              aria-label={copy.openMenu}
+              onClick={() => setMenuOpen((v) => !v)}
+            >
+              ☰ {copy.menu}
+            </button>
             <div className="geo-intel-title">
-              <h1>
-                {tab === "questions" ? copy.questionsTitle : copy.title}
-              </h1>
-              <p>
-                {tab === "questions" ? copy.questionsSubtitle : copy.subtitle}
-              </p>
+              <h1>{title}</h1>
+              <p>{subtitle}</p>
             </div>
             <div className="geo-intel-switcher" aria-label={copy.brand}>
               {brands.map((b) => (
@@ -331,24 +499,110 @@ export default function AdminGeoIntel() {
             <button
               type="button"
               className="geo-btn geo-btn-ghost"
-              onClick={() => setTab("questions")}
+              disabled={busy}
+              onClick={onPrepareTruth}
             >
-              {copy.navQuestions}
+              {copy.prepareTruth}
             </button>
             <button
               type="button"
               className="geo-btn geo-btn-ghost"
-              onClick={() => setTab("gsc")}
+              onClick={() => selectTab("questions")}
             >
-              {copy.importCsv}
+              {copy.navQuestions}
             </button>
           </div>
+
+          {truthPlan ? (
+            <div className="geo-intel-banner">
+              <strong>{copy.prepareTruthDone}</strong>
+              <div className="meta">
+                {(truthPlan.plans || [])
+                  .map(
+                    (p: any) =>
+                      `${p.brandName}: ${p.prompts?.length || 0} שאלות · ${p.status}`
+                  )
+                  .join(" · ")}
+              </div>
+            </div>
+          ) : null}
 
           {error ? (
             <div className="geo-error" role="alert" id="geo-intel-error">
               {error}
             </div>
           ) : null}
+
+          {(tab === "dashboard" || tab === "questions") && (
+            <div className="geo-filters">
+              <select
+                value={engineFilter}
+                onChange={(e) => setEngineFilter(e.target.value)}
+                aria-label={copy.engine}
+              >
+                <option value="gemini">Gemini</option>
+                {engines
+                  .filter((e) => e.id !== "gemini")
+                  .map((e) => (
+                    <option
+                      key={e.id}
+                      value={e.id}
+                      disabled={e.status !== "ready"}
+                    >
+                      {e.labelHe || e.label} ({engineStatusHe(copy, e)})
+                    </option>
+                  ))}
+              </select>
+              <select
+                value={langFilter}
+                onChange={(e) => setLangFilter(e.target.value)}
+                aria-label={copy.language}
+              >
+                <option value="">{copy.allLanguages}</option>
+                <option value="he">עברית (he)</option>
+                <option value="en">English (en)</option>
+              </select>
+              <label className="geo-date-label">
+                {copy.fromDate}
+                <input
+                  type="date"
+                  value={fromDate}
+                  onChange={(e) => setFromDate(e.target.value)}
+                />
+              </label>
+              <label className="geo-date-label">
+                {copy.toDate}
+                <input
+                  type="date"
+                  value={toDate}
+                  onChange={(e) => setToDate(e.target.value)}
+                />
+              </label>
+              <button
+                type="button"
+                className="geo-btn geo-btn-ghost"
+                onClick={() => {
+                  void loadDashboard();
+                  void loadQuestions();
+                  void loadCompetitors();
+                }}
+              >
+                {copy.applyFilters}
+              </button>
+              <button
+                type="button"
+                className="geo-btn geo-btn-ghost"
+                onClick={() => {
+                  setLangFilter("");
+                  setFromDate("");
+                  setToDate("");
+                  setSearch("");
+                }}
+              >
+                {copy.clearFilters}
+              </button>
+            </div>
+          )}
 
           {tab === "dashboard" ? (
             <section>
@@ -362,7 +616,9 @@ export default function AdminGeoIntel() {
                     {n === 0 ? "—" : metrics?.mentions ?? 0}
                   </div>
                   <div className="geo-kpi-sub">
-                    {n === 0 ? copy.notCheckedYet : `n=${n}`}
+                    {n === 0
+                      ? copy.notCheckedYet
+                      : `${mentionPct}% ${copy.pctOfChecked} · n=${n}`}
                   </div>
                 </div>
                 <div className="geo-kpi">
@@ -392,67 +648,83 @@ export default function AdminGeoIntel() {
                 <div className="geo-kpi">
                   <div className="geo-kpi-label">
                     <span className="geo-kpi-icon">▦</span>
-                    {copy.competitorRank}
+                    {copy.questionsChecked}
                   </div>
-                  <div className="geo-kpi-value">—</div>
-                  <div className="geo-kpi-sub">{copy.notCheckedYet}</div>
+                  <div className="geo-kpi-value">
+                    {n === 0 ? "—" : metrics?.questionsChecked ?? 0}
+                  </div>
+                  <div className="geo-kpi-sub">
+                    {n === 0 ? copy.notCheckedYet : copy.sampleSize}
+                  </div>
                 </div>
               </div>
 
               <div className="geo-dash-grid">
                 <div className="geo-card">
                   <h3>{copy.visibilityOverTime}</h3>
-                  <div className="geo-empty-chart">
-                    <div>
-                      <div className="orb">✦</div>
-                      <div style={{ fontWeight: 800 }}>{copy.waitingFirstChecks}</div>
-                      <div
-                        style={{
-                          marginTop: 6,
-                          color: "#64748b",
-                          fontSize: 13,
-                          fontWeight: 600,
-                        }}
-                      >
-                        {copy.noData}
+                  {metrics?.byDay?.length ? (
+                    <div className="geo-trend">
+                      {metrics.byDay.map((d) => (
+                        <div key={d.day} className="geo-trend-row">
+                          <span>{d.day}</span>
+                          <div className="geo-bar">
+                            <span
+                              style={{
+                                width: `${d.visibilityPct ?? 0}%`,
+                              }}
+                            />
+                          </div>
+                          <span>
+                            {d.visibilityPct == null
+                              ? copy.notChecked
+                              : `${d.visibilityPct}%`}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="geo-empty-chart">
+                      <div>
+                        <div className="orb">✦</div>
+                        <div style={{ fontWeight: 800 }}>
+                          {copy.waitingFirstChecks}
+                        </div>
+                        <div className="geo-empty-sub">{copy.noData}</div>
                       </div>
                     </div>
-                  </div>
+                  )}
                 </div>
                 <div className="geo-card geo-score-card">
-                  <div style={{ color: "#64748b", fontWeight: 700, fontSize: 13 }}>
-                    {copy.visibility}
-                  </div>
+                  <div className="geo-score-label">{copy.visibility}</div>
                   <div className="score">
-                    {visibilityDisplay === "—"
-                      ? "—"
-                      : visibilityDisplay.replace("%", "")}
+                    {visibilityDisplay == null ? "—" : visibilityDisplay}
                   </div>
                   <div style={{ fontWeight: 800, marginTop: 4 }}>
-                    {visibilityDisplay === "—"
+                    {visibilityDisplay == null
                       ? copy.noScoreData
-                      : `${visibilityDisplay}`}
+                      : `${visibilityDisplay}%`}
                   </div>
-                  <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 6, fontWeight: 600 }}>
-                    n={n} · {n === 0 ? copy.notCheckedYet : copy.sampleSize}
+                  <div className="geo-empty-sub">
+                    n={n} · {n === 0 ? copy.notCheckedYet : metrics?.visibilityNote}
                   </div>
                 </div>
               </div>
 
               <div className="geo-card">
                 <h3>{copy.engineCompare}</h3>
+                <p className="geo-hint">{copy.apiVsConsumer}</p>
                 <div className="geo-engine-row">
                   {engineRows.map((e) => {
                     const unchecked = e.checkStatus !== "checked";
-                    const label = dir === "rtl" ? e.labelHe || e.label : e.label;
+                    const label = e.labelHe || e.label;
                     const pct = e.visibilityPct == null ? 0 : e.visibilityPct;
                     return (
                       <div className="geo-engine-item" key={e.engine}>
-                        <div style={{ fontWeight: 800, fontSize: 13 }}>{label}</div>
+                        <div className="geo-engine-name">{label}</div>
                         <div className="geo-bar">
                           <span style={{ width: unchecked ? "0%" : `${pct}%` }} />
                         </div>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: "#64748b" }}>
+                        <div className="geo-engine-meta">
                           {unchecked
                             ? copy.notChecked
                             : `${e.appeared}/${e.n} · ${pct}%`}
@@ -468,31 +740,28 @@ export default function AdminGeoIntel() {
           {tab === "questions" ? (
             <section>
               <div className="geo-filters">
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  placeholder={copy.search}
+                  aria-label={copy.search}
+                />
                 <select
-                  value={engineFilter}
-                  onChange={(e) => setEngineFilter(e.target.value)}
-                  aria-label={copy.engine}
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  aria-label={copy.sortBy}
                 >
-                  <option value="gemini">gemini</option>
-                  {engines
-                    .filter((e) => e.id !== "gemini")
-                    .map((e) => (
-                      <option key={e.id} value={e.id} disabled={e.status !== "ready"}>
-                        {e.id} ({e.status})
-                      </option>
-                    ))}
-                </select>
-                <select
-                  value={langFilter}
-                  onChange={(e) => setLangFilter(e.target.value)}
-                  aria-label={copy.language}
-                >
-                  <option value="">{copy.allLanguages}</option>
-                  <option value="he">he</option>
-                  <option value="en">en</option>
+                  <option value="newest">{copy.sortNewest}</option>
+                  <option value="oldest">{copy.sortOldest}</option>
+                  <option value="alpha">{copy.sortAlpha}</option>
                 </select>
                 <span className="geo-pill muted">
-                  {copy.showing} {rows.length} {copy.questions}
+                  {copy.showing} {pageRows.length} {copy.of} {filteredRows.length}{" "}
+                  {copy.questions}
                 </span>
               </div>
 
@@ -502,6 +771,7 @@ export default function AdminGeoIntel() {
                     <tr>
                       <th>{copy.question}</th>
                       <th>{copy.engine}</th>
+                      <th>{copy.language}</th>
                       <th>{copy.appeared}</th>
                       <th>{copy.recommended}</th>
                       <th>{copy.link}</th>
@@ -511,7 +781,7 @@ export default function AdminGeoIntel() {
                     </tr>
                   </thead>
                   <tbody>
-                    {rows.map((r) => {
+                    {pageRows.map((r) => {
                       const unchecked = r.engineCheckStatus === "not_checked";
                       return (
                         <tr key={r.prompt._id}>
@@ -521,21 +791,24 @@ export default function AdminGeoIntel() {
                               className="geo-q-text"
                               disabled={!r.latestCheck?.id}
                               onClick={() =>
-                                r.latestCheck?.id && openDetail(r.latestCheck.id)
+                                r.latestCheck?.id &&
+                                openDetail(r.latestCheck.id)
                               }
                             >
                               {r.prompt.text}
                             </button>
                             <div className="geo-tag">
-                              {(r.prompt.topic || "starter").toUpperCase()} ·{" "}
-                              {r.prompt.language}
+                              {(r.prompt.topic || "starter").toUpperCase()}
                             </div>
                           </td>
                           <td>
                             <span className="geo-pill">{r.engine}</span>
                           </td>
+                          <td>{r.prompt.language}</td>
                           <td>
-                            <span className={`geo-pill ${unchecked ? "wait" : ""}`}>
+                            <span
+                              className={`geo-pill ${unchecked ? "wait" : ""}`}
+                            >
                               {statusLabel(
                                 copy,
                                 unchecked,
@@ -544,7 +817,9 @@ export default function AdminGeoIntel() {
                             </span>
                           </td>
                           <td>
-                            <span className={`geo-pill ${unchecked ? "wait" : ""}`}>
+                            <span
+                              className={`geo-pill ${unchecked ? "wait" : ""}`}
+                            >
                               {statusLabel(
                                 copy,
                                 unchecked,
@@ -553,7 +828,9 @@ export default function AdminGeoIntel() {
                             </span>
                           </td>
                           <td>
-                            <span className={`geo-pill ${unchecked ? "wait" : ""}`}>
+                            <span
+                              className={`geo-pill ${unchecked ? "wait" : ""}`}
+                            >
                               {unchecked
                                 ? copy.notCheckedYet
                                 : r.latestCheck?.detected?.hasLink
@@ -570,7 +847,11 @@ export default function AdminGeoIntel() {
                           </td>
                           <td>
                             {r.latestCheck?.checkedAt
-                              ? new Date(r.latestCheck.checkedAt).toLocaleString()
+                              ? new Date(
+                                  r.latestCheck.checkedAt
+                                ).toLocaleString("he-IL", {
+                                  timeZone: "Asia/Jerusalem",
+                                })
                               : copy.notCheckedYet}
                           </td>
                           <td>
@@ -589,34 +870,157 @@ export default function AdminGeoIntel() {
                   </tbody>
                 </table>
               </div>
+
+              <div className="geo-pager">
+                <button
+                  type="button"
+                  className="geo-btn geo-btn-ghost"
+                  disabled={page <= 1}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                >
+                  {copy.prev}
+                </button>
+                <span>
+                  {copy.page} {page} {copy.of} {pageCount}
+                </span>
+                <button
+                  type="button"
+                  className="geo-btn geo-btn-ghost"
+                  disabled={page >= pageCount}
+                  onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                >
+                  {copy.next}
+                </button>
+              </div>
             </section>
           ) : null}
 
           {tab === "competitors" ? (
+            <section className="geo-stack">
+              <div className="geo-card">
+                <h3>{copy.competitorsTitle}</h3>
+                <p className="geo-hint">
+                  {compData?.note || copy.competitorsEmpty}
+                </p>
+                {(compData?.competitors || []).length === 0 ? (
+                  <div className="geo-pill wait">{copy.notCheckedYet}</div>
+                ) : (
+                  <div className="geo-table-wrap">
+                    <table className="geo-table">
+                      <thead>
+                        <tr>
+                          <th>{copy.competitors}</th>
+                          <th>{copy.mentions}</th>
+                          <th>{copy.recommendations}</th>
+                          <th>לבד בלי המותג</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {compData.competitors.map((c: any) => (
+                          <tr key={c.name}>
+                            <td style={{ fontWeight: 800 }}>{c.name}</td>
+                            <td>{c.mentions}</td>
+                            <td>{c.recommendationsOverlap}</td>
+                            <td>{c.aloneWins}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+              <div className="geo-card">
+                <h3>{copy.gapsTitle}</h3>
+                {(compData?.gapsWhereCompetitorsWin || []).length === 0 ? (
+                  <div className="geo-pill muted">{copy.notCheckedYet}</div>
+                ) : (
+                  <ul className="geo-list">
+                    {compData.gapsWhereCompetitorsWin.map((g: any) => (
+                      <li key={String(g.checkId)}>
+                        <button
+                          type="button"
+                          className="geo-q-text"
+                          onClick={() => openDetail(g.checkId)}
+                        >
+                          {g.question}
+                        </button>
+                        <div className="geo-tag">
+                          {g.engine} · {(g.competitors || []).join(", ")}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div className="geo-card">
+                <h3>{copy.topSourcesTitle}</h3>
+                {(compData?.topSources || []).length === 0 ? (
+                  <div className="geo-pill muted">{copy.notCheckedYet}</div>
+                ) : (
+                  <ul className="geo-list">
+                    {compData.topSources.map((s: any) => (
+                      <li key={s.domain}>
+                        <strong>{s.domain}</strong> · {s.count}
+                        {s.isBrand ? " · מותג" : ""}
+                        {s.isCompetitor ? " · מתחרה" : ""}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </section>
+          ) : null}
+
+          {tab === "recommendations" ? (
+            <section className="geo-stack">
+              <div className="geo-kpi-grid geo-kpi-grid-3">
+                <div className="geo-kpi">
+                  <div className="geo-kpi-label">{copy.visibility}</div>
+                  <div className="geo-kpi-value">
+                    {recData?.visibilityPct == null
+                      ? "—"
+                      : `${recData.visibilityPct}%`}
+                  </div>
+                </div>
+                <div className="geo-kpi">
+                  <div className="geo-kpi-label">{copy.mentions}</div>
+                  <div className="geo-kpi-value">
+                    {recData?.checkStatus === "not_checked"
+                      ? "—"
+                      : recData?.mentions ?? "—"}
+                  </div>
+                </div>
+                <div className="geo-kpi">
+                  <div className="geo-kpi-label">{copy.citations}</div>
+                  <div className="geo-kpi-value">
+                    {recData?.checkStatus === "not_checked"
+                      ? "—"
+                      : recData?.citations ?? "—"}
+                  </div>
+                </div>
+              </div>
+              {(recData?.tips || []).map((t: any) => (
+                <div key={t.id} className={`geo-tip geo-tip-${t.severity}`}>
+                  <strong>{t.title}</strong>
+                  <p>{t.body}</p>
+                </div>
+              ))}
+            </section>
+          ) : null}
+
+          {tab === "alerts" ? (
             <section className="geo-card">
-              <h3>{copy.navCompetitors}</h3>
-              <p style={{ color: "#64748b", fontWeight: 600 }}>
-                {copy.competitorsEmpty}
-              </p>
+              <h3>{copy.navAlerts}</h3>
+              <p className="geo-hint">{copy.alertsEmpty}</p>
             </section>
           ) : null}
 
           {tab === "gsc" ? (
-            <section className="geo-card" style={{ display: "grid", gap: 12 }}>
+            <section className="geo-card geo-stack">
               <h3>{copy.gsc}</h3>
-              <p style={{ color: "#64748b", fontWeight: 600, margin: 0 }}>
-                {copy.gscHelp}
-              </p>
+              <p className="geo-hint">{copy.gscHelp}</p>
               <textarea
-                style={{
-                  minHeight: 140,
-                  width: "100%",
-                  borderRadius: 12,
-                  border: "1px solid #e2e8f0",
-                  padding: 12,
-                  fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
-                  fontSize: 12,
-                }}
+                className="geo-textarea"
                 value={csvText}
                 onChange={(e) => setCsvText(e.target.value)}
                 placeholder="Page,Country,Device,Date,Impressions"
@@ -631,21 +1035,15 @@ export default function AdminGeoIntel() {
                   {copy.importCsv}
                 </button>
               </div>
-              <ul style={{ margin: 0, padding: 0, listStyle: "none" }}>
+              <ul className="geo-list">
                 {gscImports.map((g) => (
-                  <li
-                    key={g._id}
-                    style={{
-                      border: "1px solid #e2e8f0",
-                      borderRadius: 12,
-                      padding: "10px 12px",
-                      marginBottom: 8,
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
-                  >
-                    {g.filename} · {g.rowCount} rows ·{" "}
-                    {g.createdAt ? new Date(g.createdAt).toLocaleString() : ""}
+                  <li key={g._id} className="geo-import-row">
+                    {g.filename} · {g.rowCount} שורות ·{" "}
+                    {g.createdAt
+                      ? new Date(g.createdAt).toLocaleString("he-IL", {
+                          timeZone: "Asia/Jerusalem",
+                        })
+                      : ""}
                   </li>
                 ))}
               </ul>
@@ -653,39 +1051,44 @@ export default function AdminGeoIntel() {
           ) : null}
 
           {tab === "engines" || tab === "settings" ? (
-            <section className="geo-table-wrap">
-              <table className="geo-table">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>{copy.status}</th>
-                    <th>Notes</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {engines.map((e) => (
-                    <tr key={e.id}>
-                      <td style={{ fontWeight: 800 }}>
-                        {dir === "rtl" ? e.labelHe : e.label}
-                      </td>
-                      <td>
-                        <span
-                          className={`geo-pill ${
-                            e.status === "ready"
-                              ? "ok"
-                              : e.status === "planned"
-                                ? "wait"
-                                : "muted"
-                          }`}
-                        >
-                          {e.status}
-                        </span>
-                      </td>
-                      <td style={{ color: "#64748b" }}>{e.notes}</td>
+            <section>
+              <p className="geo-hint">{copy.apiVsConsumer}</p>
+              <div className="geo-table-wrap">
+                <table className="geo-table">
+                  <thead>
+                    <tr>
+                      <th>מנוע</th>
+                      <th>{copy.status}</th>
+                      <th>הערות</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {engines.map((e) => (
+                      <tr key={e.id}>
+                        <td style={{ fontWeight: 800 }}>
+                          {e.labelHe || e.label}
+                        </td>
+                        <td>
+                          <span
+                            className={`geo-pill ${
+                              e.status === "ready"
+                                ? "ok"
+                                : e.status === "planned"
+                                  ? "wait"
+                                  : "muted"
+                            }`}
+                          >
+                            {engineStatusHe(copy, e)}
+                          </span>
+                        </td>
+                        <td className="geo-muted-cell">
+                          {e.notesHe || e.notes}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </section>
           ) : null}
         </main>
@@ -693,7 +1096,7 @@ export default function AdminGeoIntel() {
 
       {detail?.check ? (
         <div className="geo-drawer-backdrop">
-          <div className="geo-drawer" dir={dir}>
+          <div className="geo-drawer" dir="rtl" lang="he">
             <div className="geo-drawer-head">
               <strong>
                 {copy.sources} / {copy.rawAnswer}
@@ -707,51 +1110,127 @@ export default function AdminGeoIntel() {
               </button>
             </div>
             <div className="geo-drawer-body">
-              <div>
-                <h3 style={{ margin: "0 0 8px" }}>{copy.rawAnswer}</h3>
-                <pre className="geo-pre">{detail.check.rawAnswer || "—"}</pre>
-              </div>
-              <div>
-                <h3 style={{ margin: "0 0 8px" }}>{copy.sources}</h3>
-                <div style={{ display: "grid", gap: 8 }}>
-                  {(detail.check.sources || []).map((s: any, i: number) => (
-                    <div
-                      key={`${s.url}-${i}`}
-                      className={`geo-source${s.isBrand ? " brand" : ""}`}
-                    >
-                      <a
-                        href={s.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ fontWeight: 800, color: "#4f46e5" }}
-                      >
-                        {s.title || s.domain || s.url}
-                      </a>
-                      <div style={{ fontSize: 12, color: "#64748b" }}>{s.url}</div>
-                    </div>
-                  ))}
-                  {(detail.check.sources || []).length === 0 ? (
-                    <div className="geo-pill wait">{copy.notCheckedYet}</div>
-                  ) : null}
+              <div className="geo-meta-grid">
+                <div>
+                  <span className="geo-meta-k">{copy.engine}</span>
+                  <span>{detail.check.engine}</span>
+                </div>
+                <div>
+                  <span className="geo-meta-k">{copy.model}</span>
+                  <span>{detail.check.model || "—"}</span>
+                </div>
+                <div>
+                  <span className="geo-meta-k">{copy.checkedAt}</span>
+                  <span>
+                    {detail.check.checkedAt
+                      ? new Date(detail.check.checkedAt).toLocaleString(
+                          "he-IL",
+                          { timeZone: "Asia/Jerusalem" }
+                        )
+                      : "—"}
+                  </span>
                 </div>
               </div>
               <div>
-                <h3 style={{ margin: "0 0 8px" }}>{copy.history}</h3>
-                <ul style={{ margin: 0, paddingInlineStart: 18 }}>
+                <h3>
+                  {copy.rawAnswer} · {copy.mentionHighlight}
+                </h3>
+                <div className="geo-pre">
+                  {highlightAnswer(
+                    detail.check.rawAnswer || "",
+                    [
+                      ...brandAliases,
+                      ...(detail.check.brandId?.aliases || []),
+                      detail.check.brandId?.name,
+                    ].filter(Boolean)
+                  )}
+                </div>
+              </div>
+              <div>
+                <h3>{copy.competitors}</h3>
+                <div>
+                  {(detail.check.detected?.competitors || []).join(", ") ||
+                    "—"}
+                </div>
+              </div>
+              <div>
+                <h3>{copy.ourSources}</h3>
+                <SourceList
+                  sources={(detail.check.sources || []).filter(
+                    (s: any) => s.isBrand
+                  )}
+                  empty={copy.notCheckedYet}
+                />
+              </div>
+              <div>
+                <h3>{copy.competitorSources}</h3>
+                <SourceList
+                  sources={(detail.check.sources || []).filter(
+                    (s: any) => s.isCompetitor && !s.isBrand
+                  )}
+                  empty="—"
+                />
+              </div>
+              <div>
+                <h3>{copy.otherSources}</h3>
+                <SourceList
+                  sources={(detail.check.sources || []).filter(
+                    (s: any) => !s.isBrand && !s.isCompetitor
+                  )}
+                  empty="—"
+                />
+              </div>
+              <div>
+                <h3>{copy.history}</h3>
+                <ul className="geo-list">
                   {(detail.history || []).map((h: any) => (
-                    <li key={h._id} style={{ marginBottom: 6, fontSize: 13 }}>
+                    <li key={h._id}>
                       {h.checkedAt
-                        ? new Date(h.checkedAt).toLocaleString()
+                        ? new Date(h.checkedAt).toLocaleString("he-IL", {
+                            timeZone: "Asia/Jerusalem",
+                          })
                         : h.dayBucket}{" "}
-                      · appeared={String(h.detected?.appeared)} · model={h.model}
+                      · הופיע={String(h.detected?.appeared)} · מודל={h.model}
                     </li>
                   ))}
+                  {(detail.history || []).length === 0 ? (
+                    <li>{copy.notCheckedYet}</li>
+                  ) : null}
                 </ul>
               </div>
             </div>
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+function SourceList({
+  sources,
+  empty,
+}: {
+  sources: Array<{ url?: string; title?: string; domain?: string; isBrand?: boolean }>;
+  empty: string;
+}) {
+  if (!sources.length) return <div className="geo-pill muted">{empty}</div>;
+  return (
+    <div className="geo-source-list">
+      {sources.map((s, i) => (
+        <div
+          key={`${s.url}-${i}`}
+          className={`geo-source${s.isBrand ? " brand" : ""}`}
+        >
+          {s.url ? (
+            <a href={s.url} target="_blank" rel="noreferrer">
+              {s.title || s.domain || s.url}
+            </a>
+          ) : (
+            <strong>{s.title || s.domain || "—"}</strong>
+          )}
+          <div className="geo-source-url">{s.url}</div>
+        </div>
+      ))}
     </div>
   );
 }
