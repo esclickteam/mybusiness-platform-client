@@ -59,9 +59,16 @@ import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
 import { isBizuplyWhatsAppHost } from "../lib/whatsappHost.mjs";
+import { isMarketingHomePath } from "../lib/homeSessionRedirect.mjs";
 import { syncLanguageOnLogin } from "../i18n/persistLanguage";
 import i18n from "../i18n/i18n";
 import { clearPushEnabledPreferenceCache } from "../utils/pushPreference";
+
+function isMarketingHomeBootPath(pathname) {
+  if (isMarketingHomePath(pathname)) return true;
+  const path = String(pathname || "").split(/[?#]/)[0];
+  return path === "/home-preview" || path.endsWith("/home-preview");
+}
 
 /* ===========================
    🧩 Normalize User
@@ -1273,6 +1280,8 @@ export function AuthProvider({ children }) {
      Loader while initializing
   =========================== */
   // Never block published customer sites behind the Bizuply splash.
+  // Marketing home must paint content immediately for guests (no Loading splash).
+  // When a session is likely, hold blank so we don't flash home before dashboard redirect.
   if (
     loading &&
     !initialized &&
@@ -1283,7 +1292,19 @@ export function AuthProvider({ children }) {
         isBizuplyWhatsAppHost(window.location.hostname))
     )
   ) {
-    return <BizuplyLoader fullScreen label={i18n.t("common.loading")} />;
+    const bootPath =
+      typeof window !== "undefined" ? window.location.pathname : location.pathname;
+    const onMarketingHome =
+      isMarketingHomePath(bootPath) || isMarketingHomePath(location.pathname);
+    const onHomePreview =
+      isMarketingHomeBootPath(bootPath) || isMarketingHomeBootPath(location.pathname);
+    if (onMarketingHome) {
+      // Likely session: hold blank until auth resolves → App Navigate to dashboard.
+      // Guests: fall through and paint home immediately.
+      if (shouldAttemptRefresh()) return null;
+    } else if (!onHomePreview) {
+      return <BizuplyLoader fullScreen label={i18n.t("common.loading")} />;
+    }
   }
 
   /* ===========================

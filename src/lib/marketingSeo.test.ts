@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { HOME_FAQ } from "./homeFaq.mjs";
 import {
   MARKETING_PAGES,
   buildMarketingDocumentHead,
@@ -179,7 +180,7 @@ describe("marketing crawl files", () => {
       const head = buildMarketingDocumentHead(route) || "";
       const body = buildMarketingPrerender(route)?.inner || "";
       expect(head.match(/"@type":"FAQPage"/g)?.length).toBe(1);
-      expect(head.match(/"@type":"Question"/g)?.length).toBe(10);
+      expect(head.match(/"@type":"Question"/g)?.length).toBe(HOME_FAQ[locale].length);
       expect(head).toContain(home.faq1q);
       expect(head).toContain(home.faq10a);
       expect(body).toContain('class="hx-hero"');
@@ -199,7 +200,7 @@ describe("marketing crawl files", () => {
         expect(body).toContain(">platform.</span>");
       }
       expect(body).toContain(home.faqTitle);
-      expect(body).toContain(home.faq8a);
+      expect(body).toContain(HOME_FAQ[locale][7][1]);
     }
   });
 });
