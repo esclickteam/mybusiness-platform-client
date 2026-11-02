@@ -106,12 +106,17 @@ function highlightAnswer(
   });
 }
 
-export default function AdminGeoIntel() {
+export default function AdminGeoIntel({
+  stagingInfo = null,
+}: {
+  stagingInfo?: any;
+}) {
   const copy = geoIntelCopy();
   const dir = "rtl";
 
   const [tab, setTab] = useState<Tab>("dashboard");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [truthResults, setTruthResults] = useState<any>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [brandId, setBrandId] = useState("");
   const [status, setStatus] = useState<any>(null);
@@ -290,6 +295,32 @@ export default function AdminGeoIntel() {
       setTruthPlan(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onRunTruthPair = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const { data } = await API.post("/geo-intel/run-truth-pair", {
+        confirm: true,
+      });
+      setTruthResults(data);
+      await loadQuestions();
+      await loadDashboard();
+      await loadCompetitors();
+      await loadRecommendations();
+      await loadStatus();
+      setTab("settings");
+    } catch (err: any) {
+      const code = err?.response?.data?.code;
+      const msg = err?.response?.data?.error || err.message;
+      if (code === "GEO_GEMINI_KEY_MISSING") setError(copy.geminiMissing);
+      else if (code === "GEO_GEMINI_BILLING_REQUIRED")
+        setError(msg || "Gemini דורש Billing — נעצר.");
+      else setError(msg);
     } finally {
       setBusy(false);
     }
@@ -798,7 +829,9 @@ export default function AdminGeoIntel() {
                               {r.prompt.text}
                             </button>
                             <div className="geo-tag">
-                              {(r.prompt.topic || "starter").toUpperCase()}
+                              {r.prompt.topic === "starter" || !r.prompt.topic
+                                ? copy.topicStarter
+                                : r.prompt.topic}
                             </div>
                           </td>
                           <td>
@@ -912,7 +945,7 @@ export default function AdminGeoIntel() {
                           <th>{copy.competitors}</th>
                           <th>{copy.mentions}</th>
                           <th>{copy.recommendations}</th>
-                          <th>לבד בלי המותג</th>
+                          <th>{copy.aloneWithoutUs}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1050,7 +1083,7 @@ export default function AdminGeoIntel() {
             </section>
           ) : null}
 
-          {tab === "engines" || tab === "settings" ? (
+          {tab === "engines" ? (
             <section>
               <p className="geo-hint">{copy.apiVsConsumer}</p>
               <div className="geo-table-wrap">
@@ -1089,6 +1122,131 @@ export default function AdminGeoIntel() {
                   </tbody>
                 </table>
               </div>
+            </section>
+          ) : null}
+
+          {tab === "settings" ? (
+            <section className="geo-stack">
+              <div className="geo-card">
+                <h3>{copy.settingsEnvTitle}</h3>
+                <p className="geo-hint">{copy.settingsEnvHelp}</p>
+                <ul className="geo-list">
+                  <li>
+                    סביבה: {stagingInfo?.env || status?.phase || "A"} · כתובת
+                    מתוכננת: geo.bizuply.com (DNS לא שונה)
+                  </li>
+                  <li>
+                    תשלום API: {String(stagingInfo?.paidApis ?? false)} · OpenAI:{" "}
+                    {String(
+                      stagingInfo?.openaiKeyPresent ?? status?.openaiUsed ?? false
+                    )}{" "}
+                    · {copy.settingsOpenaiBlocked}
+                  </li>
+                  <li>
+                    מפתח Gemini:{" "}
+                    {status?.gemini?.configured
+                      ? copy.keyConfigured
+                      : copy.keyMissing}{" "}
+                    · מודל: {status?.gemini?.model || "gemini-2.0-flash"}
+                  </li>
+                  <li>
+                    {copy.quota}: {status?.gemini?.budget?.dailyFreeUsed ?? 0}/
+                    {status?.gemini?.budget?.dailyFreeCap ?? 400} {copy.day} ·{" "}
+                    {status?.gemini?.budget?.monthlyFreeUsed ?? 0}/
+                    {status?.gemini?.budget?.monthlyFreeCap ?? 4500}{" "}
+                    {copy.month}
+                  </li>
+                  {stagingInfo?.mongoDb ? (
+                    <li>מסד נתונים: {stagingInfo.mongoDb}</li>
+                  ) : null}
+                  {stagingInfo?.isolation ? (
+                    <li>בידוד: {stagingInfo.isolation}</li>
+                  ) : null}
+                </ul>
+              </div>
+
+              <div className="geo-card">
+                <h3>{copy.settingsGeminiTitle}</h3>
+                <p className="geo-hint">{copy.settingsGeminiHelp}</p>
+                {!status?.gemini?.configured ? (
+                  <div className="geo-pill wait">{copy.waitingKeyApproval}</div>
+                ) : (
+                  <div className="geo-pill ok">{copy.keyConfigured}</div>
+                )}
+                <div style={{ marginTop: 12, display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-ghost"
+                    disabled={busy}
+                    onClick={onPrepareTruth}
+                  >
+                    {copy.prepareTruth}
+                  </button>
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-primary"
+                    disabled={busy || !status?.gemini?.configured}
+                    onClick={onRunTruthPair}
+                    title={
+                      status?.gemini?.configured
+                        ? copy.runTruthPairHelp
+                        : copy.waitingKeyApproval
+                    }
+                  >
+                    {copy.runTruthPair}
+                  </button>
+                </div>
+                <p className="geo-hint" style={{ marginTop: 10 }}>
+                  {copy.runTruthPairHelp}
+                </p>
+              </div>
+
+              {truthPlan ? (
+                <div className="geo-card">
+                  <strong>{copy.prepareTruthDone}</strong>
+                  <ul className="geo-list" style={{ marginTop: 8 }}>
+                    {(truthPlan.plans || []).map((p: any) => (
+                      <li key={p.brandSlug}>
+                        {p.brandName}: {p.prompts?.length || 0} שאלות · {p.status}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+
+              {truthResults ? (
+                <div className="geo-card">
+                  <h3>{copy.proofTitle}</h3>
+                  <p className="geo-hint">
+                    OpenAI={String(truthResults.openaiUsed)} · תשלום=
+                    {String(truthResults.paidApis)} · Billing=
+                    {String(truthResults.billingEnabled)}
+                  </p>
+                  {(truthResults.results || []).map((r: any) => (
+                    <div key={r.brandSlug} className="geo-tip geo-tip-info">
+                      <strong>
+                        {r.brandName || r.brandSlug}:{" "}
+                        {r.ok ? "הושלם" : `נכשל — ${r.error}`}
+                      </strong>
+                      {r.proof ? (
+                        <div style={{ marginTop: 8 }}>
+                          <div>
+                            {copy.estimatedCost}: ${r.estimatedCostUsd ?? 0}
+                          </div>
+                          <button
+                            type="button"
+                            className="geo-btn geo-btn-outline"
+                            style={{ marginTop: 8 }}
+                            onClick={() => openDetail(r.proof.checkId)}
+                          >
+                            הצג הוכחה מלאה
+                          </button>
+                        </div>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </section>
           ) : null}
         </main>
@@ -1131,19 +1289,62 @@ export default function AdminGeoIntel() {
                   </span>
                 </div>
               </div>
+              {detail.check.promptId?.text ? (
+                <div>
+                  <h3>{copy.question}</h3>
+                  <div className="geo-pre">{detail.check.promptId.text}</div>
+                </div>
+              ) : null}
+              <div>
+                <h3>{copy.detectedSummary}</h3>
+                <div className="geo-meta-grid">
+                  <div>
+                    <span className="geo-meta-k">{copy.brandMentioned}</span>
+                    <span>
+                      {detail.check.detected?.appeared == null
+                        ? copy.notChecked
+                        : detail.check.detected.appeared
+                          ? copy.yes
+                          : copy.no}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="geo-meta-k">{copy.brandRecommended}</span>
+                    <span>
+                      {detail.check.detected?.recommended == null
+                        ? copy.notChecked
+                        : detail.check.detected.recommended
+                          ? copy.yes
+                          : copy.no}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="geo-meta-k">{copy.brandCited}</span>
+                    <span>
+                      {detail.check.detected?.hasLink == null
+                        ? copy.notChecked
+                        : detail.check.detected.hasLink
+                          ? copy.yes
+                          : copy.no}
+                    </span>
+                  </div>
+                </div>
+              </div>
               <div>
                 <h3>
                   {copy.rawAnswer} · {copy.mentionHighlight}
                 </h3>
                 <div className="geo-pre">
-                  {highlightAnswer(
-                    detail.check.rawAnswer || "",
-                    [
-                      ...brandAliases,
-                      ...(detail.check.brandId?.aliases || []),
-                      detail.check.brandId?.name,
-                    ].filter(Boolean)
-                  )}
+                  {detail.check.rawAnswer
+                    ? highlightAnswer(
+                        detail.check.rawAnswer,
+                        [
+                          ...brandAliases,
+                          ...(detail.check.brandId?.aliases || []),
+                          detail.check.brandId?.name,
+                        ].filter(Boolean)
+                      )
+                    : copy.notCheckedYet}
                 </div>
               </div>
               <div>
@@ -1159,7 +1360,11 @@ export default function AdminGeoIntel() {
                   sources={(detail.check.sources || []).filter(
                     (s: any) => s.isBrand
                   )}
-                  empty={copy.notCheckedYet}
+                  empty={
+                    (detail.check.sources || []).length
+                      ? "המנוע לא ציטט את דומיין המותג בבדיקה זו"
+                      : copy.noSourcesCited
+                  }
                 />
               </div>
               <div>
@@ -1177,9 +1382,19 @@ export default function AdminGeoIntel() {
                   sources={(detail.check.sources || []).filter(
                     (s: any) => !s.isBrand && !s.isCompetitor
                   )}
-                  empty="—"
+                  empty={
+                    (detail.check.sources || []).length
+                      ? "—"
+                      : copy.noSourcesCited
+                  }
                 />
               </div>
+              {detail.check.meta?.collectionMethod ? (
+                <div className="geo-hint">
+                  {copy.collectionMethod}: {detail.check.meta.collectionMethod} ·{" "}
+                  {copy.estimatedCost}: ${detail.check.estimatedCostUsd ?? 0}
+                </div>
+              ) : null}
               <div>
                 <h3>{copy.history}</h3>
                 <ul className="geo-list">

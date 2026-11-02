@@ -110,6 +110,28 @@ export function geoIntelCopy() {
     clearFilters: "נקה הכל",
     pctOfChecked: "מתוך שנבדקו",
     noHorizontalScroll: "תצוגת מובייל מותאמת",
+    topicStarter: "בסיסי",
+    settingsEnvTitle: "סביבה והגדרות טכניות",
+    settingsEnvHelp:
+      "מידע טכני על סביבת העבודה מוצג כאן בלבד — לא בדשבורד הראשי.",
+    settingsGeminiTitle: "חיבור Gemini Free Tier",
+    settingsGeminiHelp:
+      "יש ליצור מפתח ב־Google AI Studio רק במסלול חינמי, ללא Billing וללא אמצעי תשלום. אם נדרש Billing — עצרו.",
+    settingsOpenaiBlocked: "שימוש ב־OpenAI חסום ב־Phase A",
+    runTruthPair: "הרץ שתי בדיקות אמת (Bizuply + Invistimo)",
+    runTruthPairHelp:
+      "יופעל רק אחרי אישור מפתח Free Tier. בדיקה אחת לכל מותג, ללא OpenAI.",
+    truthConfirmNeeded: "נדרש אישור מפורש לפני הרצה",
+    proofTitle: "הוכחת בדיקה",
+    detectedSummary: "סיכום זיהוי",
+    brandMentioned: "המותג הוזכר",
+    brandRecommended: "המותג הומלץ",
+    brandCited: "האתר צוטט",
+    noSourcesCited: "לא צוטטו מקורות בבדיקה זו",
+    estimatedCost: "עלות משוערת",
+    collectionMethod: "שיטת איסוף",
+    waitingKeyApproval: "ממתין לאישור מפתח Gemini Free Tier",
+    aloneWithoutUs: "לבד בלי המותג",
   };
 }
 

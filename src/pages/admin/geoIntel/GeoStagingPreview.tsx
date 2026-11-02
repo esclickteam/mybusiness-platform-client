@@ -4,7 +4,7 @@ import AdminGeoIntel from "./AdminGeoIntel";
 
 /**
  * תצוגת Staging מבודדת (VITE_GEO_STAGING=1).
- * ממשק עברי בלבד, ללא Header ציבורי / בורר שפה.
+ * ממשק עברי בלבד — פס טכני הועבר למסך הגדרות.
  */
 export default function GeoStagingPreview() {
   const [ready, setReady] = useState(false);
@@ -67,22 +67,7 @@ export default function GeoStagingPreview() {
 
   return (
     <div dir="rtl" lang="he">
-      <div
-        style={{
-          background: "#0f172a",
-          color: "#e2e8f0",
-          padding: "8px 14px",
-          fontSize: 12,
-          fontWeight: 700,
-          fontFamily: "Assistant, Heebo, sans-serif",
-        }}
-      >
-        סביבת Staging מבודדת · תשלום=
-        {String(info?.paidApis)} · מפתח Gemini=
-        {String(info?.geminiKeyPresent)} · מפתח OpenAI=
-        {String(info?.openaiKeyPresent)} · DB={info?.mongoDb}
-      </div>
-      <AdminGeoIntel />
+      <AdminGeoIntel stagingInfo={info} />
     </div>
   );
 }
