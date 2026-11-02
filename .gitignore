@@ -25,6 +25,10 @@ ehthumbs.db
 .cache/
 .next/
 dist/
+e2e-results/
+e2e-report/
+test-results/
+playwright-report/
 scripts/__pycache__/
 scripts/i18n-fragments/__pycache__/
 scripts/i18n-hardcoded-audit.json

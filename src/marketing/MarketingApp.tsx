@@ -44,16 +44,11 @@ export default function MarketingApp() {
     const release = () => {
       const shell = document.getElementById("bizuply-first-paint");
       document.getElementById("root")?.removeAttribute("hidden");
-      if (document.querySelector("#root .hx-page")) {
+      // Always drop the SSR shell once the cinematic page mounts.
+      // Never keep a legacy .home-hero — that caused the purple↔dark flash.
+      if (document.querySelector("#root .hx-page") || document.querySelector("#root .app-main")) {
         shell?.remove();
-        return;
       }
-      const hero = shell?.querySelector(".home-hero");
-      if (hero && document.querySelector("#root .app-main")) {
-        shell.replaceChildren(hero);
-        hero.setAttribute("data-kept-hero", "true");
-      }
-      if (!hero) shell?.remove();
     };
     const root = document.getElementById("root");
     if (root?.querySelector(".app-main")) {

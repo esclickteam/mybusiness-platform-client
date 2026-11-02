@@ -1,5 +1,32 @@
-import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import middleware from "../../middleware.js";
+
+const marketingHtml = readFileSync(path.resolve(process.cwd(), "marketing.html"), "utf8");
+const indexHtml = readFileSync(path.resolve(process.cwd(), "index.html"), "utf8");
+const homeCriticalCss = readFileSync(path.resolve(process.cwd(), "public/home-critical.css"), "utf8");
+const realFetch = globalThis.fetch;
+
+afterEach(() => {
+  globalThis.fetch = realFetch;
+});
+
+function stubShellFetch() {
+  globalThis.fetch = (async (input: RequestInfo | URL) => {
+    const url = String(input instanceof Request ? input.url : input);
+    if (url.includes("/marketing.html")) {
+      return new Response(marketingHtml, { status: 200, headers: { "content-type": "text/html" } });
+    }
+    if (url.includes("/home-critical.css")) {
+      return new Response(homeCriticalCss, { status: 200, headers: { "content-type": "text/css" } });
+    }
+    if (url.includes("/index.html")) {
+      return new Response(indexHtml, { status: 200, headers: { "content-type": "text/html" } });
+    }
+    return realFetch(input);
+  }) as typeof fetch;
+}
 
 function request(url: string, host: string, accept = "text/html") {
   return new Request(url, {
@@ -19,6 +46,10 @@ async function read(response: Response) {
 }
 
 describe("marketing edge integration", () => {
+  beforeEach(() => {
+    stubShellFetch();
+  });
+
   it("serves robots and sitemap for the marketing host", async () => {
     const robots = await read(await middleware(request("https://bizuply.com/robots.txt", "bizuply.com", "*/*")));
     const sitemap = await read(await middleware(request("https://bizuply.com/sitemap.xml", "bizuply.com", "*/*")));
@@ -55,7 +86,13 @@ describe("marketing edge integration", () => {
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"name":"Bizuply"');
     expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
-    expect(page.body).toContain('<h1 class="home-hero__title">Everything your business needs. One powerful platform.</h1>');
+    expect(page.body).toContain('class="hx-hero"');
+    expect(page.body).toContain('data-home-design="purple"');
+    expect(page.body).toContain(">Everything</span>");
+    expect(page.body).toContain(">platform.</span>");
+    expect(page.body).not.toContain('class="home-hero"');
+    expect(page.body).not.toContain("home-hero__title");
+    expect(page.body).toContain('class="bizuply-home hx-preview"');
     expect(page.body.replace(/<noscript\b[^>]*>[\s\S]*?<\/noscript>/gi, "").match(/<h1\b/gi)?.length).toBe(1);
     expect(page.headers.get("x-robots-tag")).toBeNull();
     const withoutScripts = page.body.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
