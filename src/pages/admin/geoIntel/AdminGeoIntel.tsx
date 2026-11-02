@@ -117,6 +117,7 @@ export default function AdminGeoIntel({
   const [tab, setTab] = useState<Tab>("dashboard");
   const [menuOpen, setMenuOpen] = useState(false);
   const [truthResults, setTruthResults] = useState<any>(null);
+  const [preflight, setPreflight] = useState<any>(null);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [brandId, setBrandId] = useState("");
   const [status, setStatus] = useState<any>(null);
@@ -293,6 +294,20 @@ export default function AdminGeoIntel({
     try {
       const { data } = await API.post("/geo-intel/prepare-truth-checks");
       setTruthPlan(data);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onPreflight = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const { data } = await API.get("/geo-intel/gemini-preflight");
+      setPreflight(data);
+      setTab("settings");
     } catch (err: any) {
       setError(err?.response?.data?.error || err.message);
     } finally {
@@ -1178,6 +1193,14 @@ export default function AdminGeoIntel({
                     type="button"
                     className="geo-btn geo-btn-ghost"
                     disabled={busy}
+                    onClick={onPreflight}
+                  >
+                    {copy.preflight}
+                  </button>
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-ghost"
+                    disabled={busy}
                     onClick={onPrepareTruth}
                   >
                     {copy.prepareTruth}
@@ -1197,9 +1220,28 @@ export default function AdminGeoIntel({
                   </button>
                 </div>
                 <p className="geo-hint" style={{ marginTop: 10 }}>
-                  {copy.runTruthPairHelp}
+                  {copy.preflightHelp}
                 </p>
+                <p className="geo-hint">{copy.runTruthPairHelp}</p>
               </div>
+
+              {preflight ? (
+                <div className="geo-card">
+                  <h3>{copy.preflight}</h3>
+                  <p className="geo-hint">
+                    מוכן להרצה={String(preflight.canRunTruthChecks)} · תקרה=$
+                    {preflight.spendCapUsd} · מודל=
+                    {preflight.modelConfigured}
+                  </p>
+                  <ul className="geo-list">
+                    {(preflight.checks || []).map((c: any) => (
+                      <li key={c.id}>
+                        {c.pass ? "✓" : "✗"} {c.detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
 
               {truthPlan ? (
                 <div className="geo-card">

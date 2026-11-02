@@ -132,6 +132,9 @@ export function geoIntelCopy() {
     collectionMethod: "שיטת איסוף",
     waitingKeyApproval: "ממתין לאישור מפתח Gemini Free Tier",
     aloneWithoutUs: "לבד בלי המותג",
+    preflight: "בדיקת מוכנות Gemini (ללא עלות)",
+    preflightHelp:
+      "בודק מפתח, $0, ומודלים זמינים — בלי generateContent ובלי הרצת בדיקות אמת.",
   };
 }
 
