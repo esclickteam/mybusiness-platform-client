@@ -5,11 +5,14 @@
 
 export const WHATSAPP_CANONICAL_HOST = "whatsapp.bizuply.com";
 export const WHATSAPP_CANONICAL_URL = "https://whatsapp.bizuply.com/";
+export const WHATSAPP_STAGING_HOST = "wa-staging.bizuply.com";
 export const WHATSAPP_PREVIEW_BASE = "/whatsapp-api";
 
 const WHATSAPP_HOSTS = new Set([
   WHATSAPP_CANONICAL_HOST,
   "www.whatsapp.bizuply.com",
+  WHATSAPP_STAGING_HOST,
+  `www.${WHATSAPP_STAGING_HOST}`,
 ]);
 
 export const WHATSAPP_SEO_TITLE =
@@ -143,6 +146,11 @@ export function isBizuplyWhatsAppHost(hostname) {
   return WHATSAPP_HOSTS.has(bareHost(hostname));
 }
 
+export function isBizuplyWhatsAppStagingHost(hostname) {
+  const host = bareHost(hostname);
+  return host === WHATSAPP_STAGING_HOST || host === `www.${WHATSAPP_STAGING_HOST}`;
+}
+
 function isPreviewHost(hostname) {
   const host = bareHost(hostname);
   return host === "localhost" || host === "127.0.0.1" || host.endsWith(".vercel.app");
@@ -151,6 +159,7 @@ function isPreviewHost(hostname) {
 /** The WhatsApp API customer login lives in the main app, where the auth session is. */
 export const WHATSAPP_LOGIN_APP_PATH = `${WHATSAPP_PREVIEW_BASE}/login`;
 export const WHATSAPP_LOGIN_APP_URL = `https://bizuply.com${WHATSAPP_LOGIN_APP_PATH}`;
+export const WHATSAPP_STAGING_LOGIN_APP_URL = `https://mybusiness-platform-client-staging.vercel.app${WHATSAPP_LOGIN_APP_PATH}`;
 
 function isUnderPreviewBase(pathname) {
   const path = String(pathname || "").split("?")[0] || "/";
