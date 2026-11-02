@@ -897,17 +897,30 @@ async function handleMarketingDocument(request) {
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,
-        `<html lang="${lang}" dir="${dir}"${isHome ? ' class="bizuply-home hx-preview"' : ""}>`,
+        `<html lang="${lang}" dir="${dir}"${
+          isHome ? ' class="bizuply-home hx-preview" style="background:#5b21b6"' : ""
+        }>`,
       );
     }
     if (isHome) {
-      // Preload the cinematic hero still + brand font. Keep stylesheets blocking —
-      // deferring them made the React hero paint unstyled, then reflow/clip the title.
+      // Inlined home-critical paints the purple hero immediately. The Vite app CSS
+      // (~0.9MB) must NOT be render-blocking — that left a white browser canvas until
+      // the bundle downloaded. Defer only /assets/*.css; keep critical CSS inlined.
+      documentHtml = documentHtml.replace(/<link\b[^>]*>/gi, (tag) => {
+        if (!/\brel=["']stylesheet["']/i.test(tag)) return tag;
+        const hrefMatch = tag.match(/href=["'](\/assets\/[^"']+\.css)["']/i);
+        if (!hrefMatch) return tag;
+        if (/media=["']print["']/i.test(tag)) return tag;
+        // No inline onload (CSP-safe). /home-css-promote.js flips media to all.
+        const deferred = tag.replace(/>$/, ' media="print">');
+        return `${deferred}<noscript><link rel="stylesheet" href="${hrefMatch[1]}"></noscript>`;
+      });
       documentHtml = documentHtml.replace(
         "</head>",
         [
           '<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high">',
           '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
+          '<script src="/home-css-promote.js" defer></script>',
           "</head>",
         ].join(""),
       );
