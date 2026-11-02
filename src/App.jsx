@@ -192,6 +192,7 @@ const AdminManagedWhatsApp = lazy(
 );
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
+const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
@@ -1588,6 +1589,7 @@ export default function App() {
                         <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
                         <Route path="logs" element={<AdminLogs />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
+                        <Route path="geo-intel" element={<AdminGeoIntel />} />
                         <Route path="plans" element={<AdminPlans />} />
                         <Route path="settings/legal" element={<AdminLegalProfile />} />
                         <Route path="settings/partner-program" element={<AdminSubPartnerPricing />} />
