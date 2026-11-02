@@ -270,6 +270,7 @@ export default function HomeExperienceSections() {
       <main>
       <Hero />
       <Why />
+      <ProductShowcase />
       <SplitStory />
       <CrmDepth />
       <WhatsApp />
@@ -294,9 +295,9 @@ function Hero() {
     const node = ref.current;
     if (!node) return;
     node.style.setProperty("--hp", progress.toFixed(3));
-    node.style.setProperty("--s1", (progress < 0.28 ? 1 : progress < 0.42 ? 1 - (progress - 0.28) / 0.14 : 0).toFixed(3));
-    node.style.setProperty("--s2", band(progress, 0.28, 0.42, 0.58, 0.72).toFixed(3));
-    node.style.setProperty("--s3", (progress < 0.58 ? 0 : Math.min(1, (progress - 0.58) / 0.14)).toFixed(3));
+    node.style.setProperty("--s1", (progress < 0.3 ? 1 : progress < 0.44 ? 1 - (progress - 0.3) / 0.14 : 0).toFixed(3));
+    node.style.setProperty("--s2", band(progress, 0.3, 0.44, 0.6, 0.74).toFixed(3));
+    node.style.setProperty("--s3", (progress < 0.6 ? 0 : Math.min(1, (progress - 0.6) / 0.14)).toFixed(3));
   });
   const lineOne = text("כל מה שהעסק שלך צריך.", "Everything your business needs.");
   const lineTwo = text("פלטפורמה אחת חזקה.", "One powerful platform.");
@@ -304,61 +305,95 @@ function Hero() {
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
       <div className="hx-hero-pin">
+        <div className="hx-hero-atmosphere" aria-hidden="true">
+          <div className="hx-hero-glow hx-hero-glow-a" />
+          <div className="hx-hero-glow hx-hero-glow-b" />
+          <div className="hx-hero-glow hx-hero-glow-c" />
+          <div className="hx-hero-mesh" />
+          <div className="hx-hero-beam" />
+        </div>
         <div className="hx-geo hx-geo-a" aria-hidden="true" />
         <div className="hx-geo hx-geo-b" aria-hidden="true" />
         <div className="hx-geo hx-geo-c" aria-hidden="true" />
         <div className="hx-hero-copy">
+          <p className="hx-hero-brand">Bizuply</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={lineOne} />
             <Words text={lineTwo} hot={1} delay={280} />
           </h1>
           <p className="hx-lead">
             {text(
-              "מנהלים לידים, מדברים עם לקוחות, יוצרים קמפיינים, בונים אתרים ומחברים תהליכים אוטומטיים — הכול מתוך סביבת עבודה אחת.",
-              "Manage leads, talk with customers, run campaigns, build websites, and connect automated processes — from one workspace.",
-            )}
-          </p>
-          <p className="hx-lead">
-            {text(
-              "Bizuply מרכזת את הכלים שעוזרים לעסקים לנהל את הפעילות השוטפת, לפתח קשרים עם לקוחות וליצור תהליכי עבודה מסודרים, בלי לעבור כל הזמן בין מערכות שונות.",
-              "Bizuply brings together the tools that help a business run day-to-day work, stay in touch with customers, and keep processes in order, without jumping between separate systems.",
+              "לידים, WhatsApp, קמפיינים, אתרים ואוטומציות — בסביבת עבודה אחת לעסק.",
+              "Leads, WhatsApp, campaigns, websites, and automations — in one workspace for the business.",
             )}
           </p>
           <div className="hx-actions">
             <Cta to="/register">{text("התחילו בחינם", "Start free")}</Cta>
-            <Cta to="#story" tone="line">{text("לראות את המערכת", "See the system")}</Cta>
+            <Cta to="#products" tone="line">{text("לראות את המערכת", "See the system")}</Cta>
           </div>
         </div>
-        <div className="hx-hero-frame">
-          <LocaleShot
-            className="hx-hero-shot hx-hero-shot-1"
-            language={language}
-            src="/demo-media/home/crm.jpg"
-            alt={text("רשימת הלידים של Northwind Studio בתוך Bizuply", "Northwind Studio lead list inside Bizuply")}
-            width={1600}
-            height={1000}
-            fetchPriority="high"
-            decoding="async"
-            forceStill
-          />
-          <LocaleShot
-            className="hx-hero-shot hx-hero-shot-2"
-            language={language}
-            src="/demo-media/whatsapp/still-3.jpg"
-            alt={text("שיחת WhatsApp של Northwind Studio בתוך Bizuply", "A Northwind Studio WhatsApp conversation inside Bizuply")}
-            width={1600}
-            height={1000}
-            decoding="async"
-          />
-          <LocaleShot
-            className="hx-hero-shot hx-hero-shot-3"
-            language={language}
-            src="/demo-media/home/campaigns.jpg"
-            alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
-            width={1600}
-            height={1000}
-            decoding="async"
-          />
+        <div className="hx-hero-stage">
+          <div className="hx-hero-frame">
+            <div className="hx-hero-chrome" aria-hidden="true">
+              <span /><span /><span />
+            </div>
+            <LocaleShot
+              className="hx-hero-shot hx-hero-shot-1 hx-crop-leads"
+              language={language}
+              src="/demo-media/home/crm.jpg"
+              alt={text("רשימת הלידים של Northwind Studio בתוך Bizuply", "Northwind Studio lead list inside Bizuply")}
+              width={1600}
+              height={1000}
+              fetchPriority="high"
+              decoding="async"
+              forceStill
+            />
+            <LocaleShot
+              className="hx-hero-shot hx-hero-shot-2 hx-crop-chat"
+              language={language}
+              src="/demo-media/whatsapp/still-3.jpg"
+              alt={text("שיחת WhatsApp של Northwind Studio בתוך Bizuply", "A Northwind Studio WhatsApp conversation inside Bizuply")}
+              width={1600}
+              height={1000}
+              decoding="async"
+            />
+            <LocaleShot
+              className="hx-hero-shot hx-hero-shot-3 hx-crop-campaigns"
+              language={language}
+              src="/demo-media/home/campaigns.jpg"
+              alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
+              width={1600}
+              height={1000}
+              decoding="async"
+            />
+            <div className="hx-hero-shine" aria-hidden="true" />
+          </div>
+          <div className="hx-hero-float hx-hero-float-a" aria-hidden="true">
+            <LocaleShot
+              language={language}
+              src="/demo-media/crm/lead-file.png"
+              alt=""
+              width={900}
+              height={560}
+              decoding="async"
+              fetchPriority="low"
+              className="hx-crop-record"
+              forceStill
+            />
+          </div>
+          <div className="hx-hero-float hx-hero-float-b" aria-hidden="true">
+            <LocaleShot
+              language={language}
+              src="/demo-media/whatsapp/still-3.jpg"
+              alt=""
+              width={900}
+              height={560}
+              decoding="async"
+              fetchPriority="low"
+              className="hx-crop-chat"
+              forceStill
+            />
+          </div>
         </div>
       </div>
     </section>
@@ -371,22 +406,22 @@ function Why() {
     {
       title: text("רואים את התמונה המלאה", "See the whole picture"),
       body: text(
-        "לידים, לקוחות, שיחות ומשימות — מידע חשוב שנמצא במקום שבו הצוות עובד.",
-        "Leads, customers, conversations, and tasks stay in the place where the team already works.",
+        "לידים, לקוחות, שיחות ומשימות — במקום שבו הצוות עובד.",
+        "Leads, customers, conversations, and tasks — where the team already works.",
       ),
     },
     {
       title: text("מתקדמים בלי לאבד פניות", "Move forward without losing enquiries"),
       body: text(
-        "מעקב אחר שלבי הטיפול עוזר להבין מה דורש תשומת לב ומה הצעד הבא.",
-        "Following each stage makes it clearer what needs attention and what should happen next.",
+        "כל שלב ברור: מה דורש תשומת לב ומה הצעד הבא.",
+        "Each stage is clear: what needs attention and what comes next.",
       ),
     },
     {
       title: text("מחברים בין שיווק למכירות", "Connect marketing with sales"),
       body: text(
-        "פניות שמגיעות מהפעילות השיווקית יכולות להפוך לחלק מתהליך העבודה של העסק.",
-        "Enquiries that start in marketing can become part of the business’s working process.",
+        "פנייה מהקמפיין הופכת לחלק מתהליך העבודה.",
+        "An enquiry from a campaign becomes part of the working process.",
       ),
     },
   ];
@@ -402,20 +437,8 @@ function Why() {
         <div className="hx-why-copy">
           <p>
             {text(
-              "מכירים את המצב שבו פנייה נכנסת מפייסבוק, שיחה מתנהלת ב־WhatsApp, הפרטים נשמרים בגיליון ומשימה נרשמת במקום אחר?",
-              "An enquiry arrives from Facebook, the conversation continues on WhatsApp, the details sit in a spreadsheet, and the task is written down somewhere else.",
-            )}
-          </p>
-          <p>
-            {text(
-              "ככל שהעסק גדל, כך קשה יותר לעקוב אחר כל מה שקורה. Bizuply נועדה לעזור לעסקים לרכז את הפעילות במקום אחד: מהפנייה הראשונה של הלקוח, דרך השיחה והמעקב, ועד המשך הטיפול והפעילות השיווקית.",
-              "As the business grows, it gets harder to follow everything that is happening. Bizuply is meant to keep that work in one place: from the first enquiry, through the conversation and the follow-up, to the next step and the marketing around it.",
-            )}
-          </p>
-          <p>
-            {text(
-              "במקום לנסות לזכור מה קרה עם כל לקוח, אפשר לראות את המידע הרלוונטי ולעבוד בצורה מסודרת יותר.",
-              "Instead of trying to remember what happened with each customer, the team can see the relevant information and work in a more orderly way.",
+              "פנייה מפייסבוק, שיחה ב־WhatsApp, פרטים בגיליון ומשימה במקום אחר — Bizuply מרכזת את זה במקום אחד.",
+              "An enquiry from Facebook, a WhatsApp chat, details in a spreadsheet, and a task somewhere else — Bizuply keeps that work in one place.",
             )}
           </p>
         </div>
@@ -427,6 +450,216 @@ function Why() {
             </li>
           ))}
         </ul>
+      </div>
+    </section>
+  );
+}
+
+function ProductShowcase() {
+  const { text, dir, language } = useCopy();
+  const stageRef = useRef<HTMLElement | null>(null);
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const [active, setActive] = useState(0);
+  const reduced = useReduced();
+  const narrow = useNarrow();
+  const products = [
+    {
+      key: "crm",
+      title: "CRM",
+      body: text("רשימת לידים, כרטיס לקוח ומשימת המשך — במסך אחד.", "Lead list, customer record, and follow-up task — on one stage."),
+      img: "/demo-media/crm/lead-file.png",
+      crop: "hx-crop-record",
+      href: "/crm",
+      film: "crm" as const,
+      caption: text("לידים → כרטיס לקוח → משימה.", "Leads → customer record → task."),
+    },
+    {
+      key: "whatsapp",
+      title: "WhatsApp",
+      body: text("תיבת שיחות עסקית שממשיכה את אותו לקוח מה־CRM.", "A business inbox that continues the same customer from the CRM."),
+      img: "/demo-media/whatsapp/still-3.jpg",
+      crop: "hx-crop-chat",
+      href: "/whatsapp-api",
+      film: "whatsapp" as const,
+      caption: text("שיחה עסקית מסודרת בתוך סביבת העבודה.", "An orderly business conversation inside the workspace."),
+    },
+    {
+      key: "campaigns",
+      title: text("קמפיינים", "Campaigns"),
+      body: text("קמפיין Meta שמביא ליד — והטיפול ממשיך במערכת.", "A Meta campaign that brings a lead — then follow-up continues in the system."),
+      img: "/demo-media/home/campaigns.jpg",
+      crop: "hx-crop-campaigns",
+      href: "/meta-campaigns",
+      film: "campaigns" as const,
+      caption: text("מהמודעה אל הטיפול בליד.", "From the ad into lead follow-up."),
+    },
+    {
+      key: "websites",
+      title: text("Website Studio", "Website Studio"),
+      body: text("עריכת אתר אמיתית — והשינוי נראה מיד בתצוגה.", "Real site editing — and the change shows up in preview."),
+      img: "/demo-media/home/websites.jpg",
+      crop: "hx-crop-studio",
+      href: "/website-builder",
+      film: "websites" as const,
+      caption: text("עורך, תצוגה, והתוצאה.", "Editor, preview, and the result."),
+    },
+    {
+      key: "automations",
+      title: text("אוטומציות", "Automations"),
+      body: text("פנייה נכנסת → רשומה → פעולה להמשך — בלי לעבוד ידנית בכל שלב.", "An enquiry arrives → a record → a next action — without doing every step by hand."),
+      img: "/demo-media/home/automations.jpg",
+      crop: "hx-crop-auto",
+      href: "/automations",
+      film: "automations" as const,
+      caption: text("אירוע עסקי שהופך לפעולה מוגדרת.", "A business event that becomes a defined action."),
+    },
+  ] as const;
+  const open = useOpenFilm();
+
+  useEffect(() => {
+    const stage = stageRef.current;
+    const view = railRef.current;
+    const rail = view?.querySelector<HTMLElement>(".hx-show-rail");
+    if (!stage || !view || !rail) return undefined;
+    const measure = () => {
+      if (narrow || reduced) {
+        stage.style.height = "";
+        return;
+      }
+      const travel = Math.max(0, rail.scrollWidth - view.clientWidth);
+      const pin = stage.querySelector<HTMLElement>(".hx-show-pin");
+      const pinHeight = pin?.getBoundingClientRect().height || window.innerHeight;
+      stage.style.height = `${Math.ceil(pinHeight + travel)}px`;
+    };
+    measure();
+    rail.querySelectorAll("img, video").forEach((media) => {
+      if (media instanceof HTMLImageElement && !media.complete) {
+        media.addEventListener("load", measure, { once: true });
+      }
+    });
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, [narrow, reduced]);
+
+  useEffect(() => {
+    const view = railRef.current;
+    if (!view || !(narrow || reduced)) return undefined;
+    const update = () => {
+      const slides = [...view.querySelectorAll(".hx-show-slide")];
+      const origin = view.getBoundingClientRect().left + view.clientWidth * 0.2;
+      let nearest = 0;
+      let best = Number.POSITIVE_INFINITY;
+      slides.forEach((slide, index) => {
+        const distance = Math.abs(slide.getBoundingClientRect().left - origin);
+        if (distance < best) {
+          best = distance;
+          nearest = index;
+        }
+      });
+      setActive((current) => (current === nearest ? current : nearest));
+    };
+    update();
+    view.addEventListener("scroll", update, { passive: true });
+    return () => view.removeEventListener("scroll", update);
+  }, [narrow, reduced]);
+
+  useScrollSpan(stageRef, (progress) => {
+    const view = railRef.current;
+    const rail = view?.querySelector<HTMLElement>(".hx-show-rail");
+    const stage = stageRef.current;
+    if (!view || !rail || !stage || narrow || reduced) return;
+    const travel = Math.max(0, rail.scrollWidth - view.clientWidth);
+    view.scrollLeft = progress * travel;
+    const slides = [...view.querySelectorAll(".hx-show-slide")];
+    const origin = view.getBoundingClientRect().left + view.clientWidth * 0.18;
+    let nearest = 0;
+    let best = Number.POSITIVE_INFINITY;
+    slides.forEach((slide, index) => {
+      const distance = Math.abs(slide.getBoundingClientRect().left - origin);
+      if (distance < best) {
+        best = distance;
+        nearest = index;
+      }
+    });
+    setActive((current) => (current === nearest ? current : nearest));
+    stage.style.setProperty("--show-p", progress.toFixed(3));
+    stage.style.setProperty("--show-i", String(nearest));
+  });
+
+  const current = products[active] || products[0];
+
+  return (
+    <section className="hx-showcase" id="products" ref={stageRef} aria-labelledby="hx-show-title">
+      <div className="hx-show-pin">
+        <div className="hx-show-head">
+          <h2 id="hx-show-title">{text("המוצרים על הבמה.", "Products on stage.")}</h2>
+          <p className="hx-show-live" aria-live="polite">
+            <strong>{current.title}</strong>
+            <span>{current.body}</span>
+          </p>
+          <div className="hx-actions hx-show-actions">
+            <Cta to={current.href} tone="ink">{current.title}</Cta>
+            <DemoButton
+              label={text("לצפות בהדגמה", "Watch the demo")}
+              onClick={() => open(filmOf(current.film, current.film, "", current.title, current.caption, language, text))}
+            />
+          </div>
+        </div>
+        <div className="hx-show-viewport" ref={railRef}>
+          <div className="hx-show-rail" dir="ltr">
+            {products.map((product, index) => (
+              <figure
+                className={`hx-show-slide${index === active ? " is-on" : ""}`}
+                key={product.key}
+                data-product={product.key}
+              >
+                <div className="hx-show-frame">
+                  <LocaleShot
+                    language={language}
+                    src={product.img}
+                    alt={product.title}
+                    width={1600}
+                    height={1000}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    decoding="async"
+                    className={product.crop}
+                    forceStill
+                  />
+                  <div className="hx-show-veil" aria-hidden="true" />
+                </div>
+                <figcaption dir={dir}>
+                  <strong>{product.title}</strong>
+                  <span>{product.body}</span>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+        <div className="hx-show-dots" role="tablist" aria-label={text("מוצרים", "Products")}>
+          {products.map((product, index) => (
+            <button
+              key={product.key}
+              type="button"
+              role="tab"
+              aria-selected={index === active}
+              className={index === active ? "is-on" : undefined}
+              onClick={() => {
+                const slide = railRef.current?.querySelectorAll(".hx-show-slide")[index];
+                if (narrow || reduced) {
+                  slide?.scrollIntoView({ inline: "start", block: "nearest", behavior: "smooth" });
+                } else {
+                  const view = railRef.current;
+                  if (!view || !slide) return;
+                  const left = (slide as HTMLElement).offsetLeft - 24;
+                  view.scrollLeft = left;
+                  setActive(index);
+                }
+              }}
+            >
+              {product.title}
+            </button>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -569,17 +802,28 @@ function SplitStack() {
   const { text, language } = useCopy();
   const beats = useStory();
   const open = useOpenFilm();
+  const crops = ["hx-crop-leads", "hx-crop-record", "hx-crop-chat"];
   return (
     <section className="hx-split" id="story" aria-labelledby="hx-story-title">
       <h2 className="hx-sr" id="hx-story-title">
         {text("מהליד ועד השיחה ב-WhatsApp", "From the lead to the WhatsApp conversation")}
       </h2>
       <div className="hx-stack">
-        {beats.map((beat) => (
+        {beats.map((beat, index) => (
           <article key={beat.title}>
             <h3>{beat.title}</h3>
             <p>{beat.body}</p>
-            <LocaleShot language={language} src={beat.img} alt={beat.alt} width={1600} height={1000} loading="lazy" decoding="async" />
+            <LocaleShot
+              language={language}
+              src={beat.img}
+              alt={beat.alt}
+              width={1600}
+              height={1000}
+              loading="lazy"
+              decoding="async"
+              className={crops[index]}
+              forceStill
+            />
           </article>
         ))}
       </div>
@@ -587,7 +831,7 @@ function SplitStack() {
         <Cta to="/crm" tone="ink">{text("ל־CRM", "CRM")}</Cta>
         <DemoButton
           label={text("לצפות בהדגמה", "Watch the demo")}
-          onClick={() => open(filmOf("crm", "crm", "/demo-media/crm/poster.jpg", "CRM", text("הקלטת מסך של עבודת הלידים מתוך סביבת הדמו.", "A screen recording of the lead workspace from the demo."), language, text))}
+          onClick={() => open(filmOf("crm", "crm", "/demo-media/crm/poster.jpg", "CRM", text("לידים, כרטיס לקוח ומשימת המשך מתוך סביבת הדמו.", "Leads, customer record, and follow-up task from the demo workspace."), language, text))}
         />
       </div>
     </section>
@@ -630,7 +874,7 @@ function CrmDepth() {
             <Cta to="/crm" tone="ink">{text("לגלות את מערכת ה־CRM", "Explore Bizuply CRM")}</Cta>
             <DemoButton
               label={text("לצפות בהדגמה", "Watch the demo")}
-              onClick={() => open(filmOf("crm", "crm", "/demo-media/crm/poster.jpg", "CRM", text("הקלטת מסך של עבודת הלידים: רשימה, כרטיס, סטטוס ומשימה.", "A screen recording of the lead workspace: list, record, status, and task."), language, text))}
+              onClick={() => open(filmOf("crm", "crm", "/demo-media/crm/poster.jpg", "CRM", text("לידים → כרטיס לקוח → משימת המשך.", "Leads → customer record → follow-up task."), language, text))}
             />
           </div>
         </div>
@@ -693,7 +937,7 @@ function WhatsApp() {
     [text("אוליביה בנט", "Olivia Bennett"), text("ההצעה מוכנה לבדיקה.", "The proposal is ready whenever you want to review it.")],
   ];
   return (
-    <section className="hx-chapter hx-wa" id="products" ref={ref} aria-labelledby="hx-wa-title">
+    <section className="hx-chapter hx-wa" ref={ref} aria-labelledby="hx-wa-title">
       <div className="hx-chapter-pin">
         <div className="hx-wa-grid">
           <div>
@@ -1077,13 +1321,13 @@ function ReadySystems() {
     setSlideIndex((current) => (current === nearest ? current : nearest));
   });
   const slides = [
-    ["/template-screenshots/studiora.webp", text("סטודיו", "Studio")],
-    ["/template-screenshots/vitalcare.webp", text("קליניקה", "Clinic")],
-    ["/template-screenshots/wantravel.webp", text("תיירות", "Travel")],
-    ["/demo-media/home/appointments.jpg", text("יומן פגישות", "Appointments")],
-    ["/template-screenshots/summitops.webp", text("שירותים", "Services")],
-    ["/template-screenshots/serenova.webp", text("אירוח", "Hospitality")],
-    ["/template-screenshots/soleora.webp", text("מותג", "Brand")],
+    ["/template-screenshots/studiora.webp", text("סטודיו", "Studio"), "hx-crop-studio"],
+    ["/template-screenshots/vitalcare.webp", text("קליניקה", "Clinic"), "hx-crop-leads"],
+    ["/template-screenshots/wantravel.webp", text("תיירות", "Travel"), "hx-crop-campaigns"],
+    ["/demo-media/home/appointments.jpg", text("יומן פגישות", "Appointments"), "hx-crop-record"],
+    ["/template-screenshots/summitops.webp", text("שירותים", "Services"), "hx-crop-auto"],
+    ["/template-screenshots/serenova.webp", text("אירוח", "Hospitality"), "hx-crop-chat"],
+    ["/template-screenshots/soleora.webp", text("מותג", "Brand"), "hx-crop-studio"],
   ] as const;
   return (
     <section className="hx-chapter hx-saas" aria-labelledby="hx-saas-title">
@@ -1091,8 +1335,8 @@ function ReadySystems() {
           <h2 id="hx-saas-title">{text("רוצים להקים עסק דיגיטלי? לא תמיד חייבים להתחיל מאפס.", "Want to launch a digital business? You do not always have to start from a blank page.")}</h2>
           <p className="hx-prose">
             {text(
-              "פיתוח מערכת תוכנה חדשה דורש תכנון, עיצוב, פיתוח, בדיקות ותשתית. Bizuply מפתחת פתרונות SaaS לעסקים וליזמים שרוצים לבחון אפשרות להפעיל מוצר תוכנה משלהם. בקטלוג אפשר לבדוק אילו מערכות זמינות, אילו בהכנה, ומהן אפשרויות ההתאמה.",
-              "Building new software takes planning, design, development, testing, and infrastructure. Bizuply develops SaaS products for businesses and founders who want to explore running a software product of their own. The catalog shows which systems are available, which are still in preparation, and what can be adapted.",
+              "Bizuply מפתחת מערכות SaaS מוכנות לעסקים וליזמים. בקטלוג רואים מה זמין, מה בהכנה, ומה אפשר להתאים.",
+              "Bizuply builds ready SaaS systems for businesses and founders. The catalog shows what is available, what is in preparation, and what can be adapted.",
             )}
           </p>
           <ul className="hx-saas-links">
@@ -1117,10 +1361,10 @@ function ReadySystems() {
         <div className="hx-saas-pin">
         <div className="hx-rail-viewport" ref={railRef}>
           <div className="hx-rail" dir="ltr">
-            {slides.map(([src, label]) => (
+            {slides.map(([src, label, crop]) => (
               <figure className="hx-slide" key={src}>
                 <div className="hx-slide-frame">
-                  <LocaleShot language={language} src={src} alt={label} width={1200} height={800} loading="eager" decoding="async" />
+                  <LocaleShot language={language} src={src} alt={label} width={1200} height={800} loading="eager" decoding="async" className={crop} forceStill />
                 </div>
                 <figcaption dir={dir}>{label}</figcaption>
               </figure>
@@ -1168,11 +1412,11 @@ function Films() {
   const { text, language } = useCopy();
   const open = useOpenFilm();
   const films = [
-    ["crm", "crm", "CRM", text("עבודת הלידים", "Lead work"), text("הקלטת מסך של סביבת ה-CRM.", "A screen recording of the CRM workspace.")],
-    ["whatsapp", "whatsapp", "WhatsApp", "WhatsApp", text("הקלטת מסך של תיבת ההודעות.", "A screen recording of the inbox.")],
-    ["campaigns", "campaigns", text("קמפיינים", "Campaigns"), text("קמפיינים", "Campaigns"), text("הקלטת מסך קצרה של מסך הקמפיינים.", "A short screen recording of the campaigns screen.")],
-    ["websites", "websites", text("אתרים", "Websites"), text("אתרים", "Websites"), text("הקלטת מסך של בונה האתרים.", "A screen recording of the website builder.")],
-    ["automations", "automations", text("אוטומציות", "Automations"), text("אוטומציות", "Automations"), text("הקלטת מסך של רשימת האוטומציות.", "A screen recording of the automation list.")],
+    ["crm", "crm", "CRM", text("לידים → כרטיס → משימה", "Leads → record → task"), text("עבודת לידים: רשימה, כרטיס לקוח ומשימת המשך.", "Lead work: list, customer record, and follow-up task.")],
+    ["whatsapp", "whatsapp", "WhatsApp", "WhatsApp", text("תיבת שיחות עסקית מתוך סביבת הדמו.", "A business inbox from the demo workspace.")],
+    ["campaigns", "campaigns", text("קמפיינים", "Campaigns"), text("קמפיינים", "Campaigns"), text("ניהול קמפיין Meta והמשך הטיפול בליד.", "Meta campaign management and lead follow-up.")],
+    ["websites", "websites", text("אתרים", "Websites"), text("Website Studio", "Website Studio"), text("עריכת אתר אמיתית ושינוי שנראה בתצוגה.", "Real site editing with a change that shows in preview.")],
+    ["automations", "automations", text("אוטומציות", "Automations"), text("אוטומציות", "Automations"), text("מאירוע עסקי לפעולה מוגדרת להמשך.", "From a business event to a defined next action.")],
   ] as const;
   return (
     <section className="hx-films" aria-labelledby="hx-films-title">
