@@ -867,13 +867,15 @@ async function handleMarketingDocument(request) {
       );
     }
     if (isHome) {
+      // Preload the cinematic hero still + brand font. Keep stylesheets blocking —
+      // deferring them made the React hero paint unstyled, then reflow/clip the title.
       documentHtml = documentHtml.replace(
         "</head>",
-        '<link rel="preload" as="image" href="/demo-media/crm/poster.jpg" fetchpriority="high"></head>',
-      );
-      documentHtml = documentHtml.replace(
-        /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
-        '<link rel="preload" as="style" href="$1" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link rel="stylesheet" href="$1"></noscript>',
+        [
+          '<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high">',
+          '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
+          "</head>",
+        ].join(""),
       );
       try {
         const criticalRes = await fetch(new URL("/home-critical.css", request.url), {

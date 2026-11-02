@@ -215,10 +215,10 @@
         pre2.href = "https://fonts.gstatic.com";
         pre2.crossOrigin = "anonymous";
         document.head.appendChild(pre2);
+        // Load immediately (not via media=print) so the home headline does not
+        // reflow after first paint when Assistant/Inter finally apply.
         var css = document.createElement("link");
         css.rel = "stylesheet";
-        css.media = "print";
-        css.onload = function () { this.media = "all"; };
         css.href =
           "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap";
         // Required so cssRules can be read (html-to-image / capture tools).

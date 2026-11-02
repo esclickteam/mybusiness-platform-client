@@ -116,12 +116,35 @@ function clipFile(folder: string, name: string, language: string) {
 
 function Words({ text, hot = -1, delay = 0 }: { text: string; hot?: number; delay?: number }) {
   const words = text.split(" ");
+  const reduced = useReduced();
+  // First paint must show the full headline. Enable motion only after that frame.
+  const [motionReady, setMotionReady] = useState(false);
+  useEffect(() => {
+    if (reduced) {
+      setMotionReady(false);
+      return undefined;
+    }
+    let inner = 0;
+    const outer = window.requestAnimationFrame(() => {
+      inner = window.requestAnimationFrame(() => setMotionReady(true));
+    });
+    return () => {
+      window.cancelAnimationFrame(outer);
+      window.cancelAnimationFrame(inner);
+    };
+  }, [reduced, text]);
+
   return (
     <span className="hx-line">
       {words.map((word, index) => (
         <Fragment key={`${word}-${index}`}>
           <span className={index === hot ? "hx-word is-hot" : "hx-word"}>
-            <span style={{ animationDelay: `${delay + index * 75}ms` }}>{word}</span>
+            <span
+              className={motionReady ? "hx-word__in" : undefined}
+              style={motionReady ? { animationDelay: `${delay + index * 75}ms` } : undefined}
+            >
+              {word}
+            </span>
           </span>
           {index < words.length - 1 ? " " : null}
         </Fragment>
