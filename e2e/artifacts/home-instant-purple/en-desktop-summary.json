@@ -1,0 +1,95 @@
+{
+  "frames": [
+    {
+      "bg": "rgb(91, 33, 182)",
+      "rootBg": "rgb(91, 33, 182)",
+      "htmlBg": "rgb(91, 33, 182)",
+      "purple": true,
+      "legacy": false,
+      "mediaVisible": true,
+      "h1": "Everything your business needs.One powerful platform.",
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 380
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 380
+        }
+      ],
+      "whiteish": false
+    },
+    {
+      "bg": "rgb(91, 33, 182)",
+      "rootBg": "rgb(91, 33, 182)",
+      "htmlBg": "rgb(91, 33, 182)",
+      "purple": true,
+      "legacy": false,
+      "mediaVisible": true,
+      "h1": "Everything your business needs.One powerful platform.",
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 380
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 380
+        }
+      ],
+      "whiteish": false
+    },
+    {
+      "bg": "rgb(91, 33, 182)",
+      "rootBg": "rgb(91, 33, 182)",
+      "htmlBg": "rgb(91, 33, 182)",
+      "purple": true,
+      "legacy": false,
+      "mediaVisible": true,
+      "h1": "Everything your business needs.One powerful platform.",
+      "paints": [
+        {
+          "name": "first-paint",
+          "startTime": 380
+        },
+        {
+          "name": "first-contentful-paint",
+          "startTime": 380
+        }
+      ],
+      "whiteish": false
+    }
+  ],
+  "afterCss": {
+    "bg": "rgb(91, 33, 182)",
+    "rootBg": "rgb(91, 33, 182)",
+    "htmlBg": "rgb(91, 33, 182)",
+    "purple": true,
+    "legacy": false,
+    "mediaVisible": true,
+    "h1": "Everything your business needs.One powerful platform.",
+    "paints": [
+      {
+        "name": "first-paint",
+        "startTime": 380
+      },
+      {
+        "name": "first-contentful-paint",
+        "startTime": 380
+      }
+    ],
+    "whiteish": false
+  },
+  "cls": 0.06701050209914051,
+  "paints": [
+    {
+      "name": "first-paint",
+      "startTime": 380
+    },
+    {
+      "name": "first-contentful-paint",
+      "startTime": 380
+    }
+  ]
+}

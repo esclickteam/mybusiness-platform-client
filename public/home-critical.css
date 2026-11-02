@@ -1,11 +1,20 @@
 /* First paint for the marketing homepage — cinematic purple (hx-*), not legacy dark home-hero. */
 html.bizuply-home,
-html.bizuply-home body {
+html.bizuply-home body,
+html.hx-preview,
+html.hx-preview body {
   margin: 0;
   background: #5b21b6;
   color: #1a0b33;
 }
-html.bizuply-home body {
+html.bizuply-home #root,
+html.hx-preview #root,
+html.bizuply-home #initial-bg,
+html.hx-preview #initial-bg {
+  background: #5b21b6 !important;
+}
+html.bizuply-home body,
+html.hx-preview body {
   font-family: "Assistant", "Inter", "Segoe UI", system-ui, sans-serif;
 }
 .home-shell,

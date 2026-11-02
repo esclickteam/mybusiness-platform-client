@@ -45,4 +45,10 @@ describe("purple home first paint", () => {
     expect(criticalCss).toContain("--hp: 0");
     expect(criticalCss).not.toContain("min-width: 1024px");
   });
+
+  it("critical CSS forces purple on #root and #initial-bg for home", () => {
+    expect(criticalCss).toContain("html.bizuply-home #root");
+    expect(criticalCss).toContain("html.bizuply-home #initial-bg");
+    expect(criticalCss).toContain("background: #5b21b6 !important");
+  });
 });
