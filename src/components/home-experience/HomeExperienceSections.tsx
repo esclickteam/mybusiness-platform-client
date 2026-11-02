@@ -299,8 +299,8 @@ function Hero() {
     node.style.setProperty("--s2", band(progress, 0.3, 0.44, 0.6, 0.74).toFixed(3));
     node.style.setProperty("--s3", (progress < 0.6 ? 0 : Math.min(1, (progress - 0.6) / 0.14)).toFixed(3));
   });
-  const lineOne = text("כל מה שהעסק שלך צריך.", "Everything your business needs.");
-  const lineTwo = text("פלטפורמה אחת חזקה.", "One powerful platform.");
+  const lineOne = text("כל מה שהעסק שלך צריך", "Everything your business needs");
+  const lineTwo = text("בפלטפורמה אחת חזקה.", "in one powerful platform.");
 
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
@@ -319,7 +319,7 @@ function Hero() {
           <p className="hx-hero-brand">Bizuply</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={lineOne} />
-            <Words text={lineTwo} hot={1} delay={280} />
+            <Words text={lineTwo} hot={2} delay={280} />
           </h1>
           <p className="hx-lead">
             {text(
@@ -328,7 +328,7 @@ function Hero() {
             )}
           </p>
           <div className="hx-actions">
-            <Cta to="/register">{text("התחילו בחינם", "Start free")}</Cta>
+            <Cta to="/register">{text("להתחיל", "Get started")}</Cta>
             <Cta to="#products" tone="line">{text("לראות את המערכת", "See the system")}</Cta>
           </div>
         </div>
@@ -360,7 +360,7 @@ function Hero() {
             <LocaleShot
               className="hx-hero-shot hx-hero-shot-3 hx-crop-campaigns"
               language={language}
-              src="/demo-media/home/campaigns.jpg"
+              src="/demo-media/campaigns/still-chart.jpg"
               alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
               width={1600}
               height={1000}
@@ -467,11 +467,12 @@ function ProductShowcase() {
       key: "crm",
       title: "CRM",
       body: text("רשימת לידים, כרטיס לקוח ומשימת המשך — במסך אחד.", "Lead list, customer record, and follow-up task — on one stage."),
-      img: "/demo-media/crm/lead-file.png",
-      crop: "hx-crop-record",
+      img: "/demo-media/crm/leads-list.png",
+      crop: "hx-crop-leads",
+      tab: text("CRM", "CRM"),
       href: "/crm",
       film: "crm" as const,
-      caption: text("לידים → כרטיס לקוח → משימה.", "Leads → customer record → task."),
+      caption: text("סיור מוצר: לידים → כרטיס לקוח → משימה.", "Product walkthrough: leads → customer record → task."),
     },
     {
       key: "whatsapp",
@@ -479,29 +480,32 @@ function ProductShowcase() {
       body: text("תיבת שיחות עסקית שממשיכה את אותו לקוח מה־CRM.", "A business inbox that continues the same customer from the CRM."),
       img: "/demo-media/whatsapp/still-3.jpg",
       crop: "hx-crop-chat",
+      tab: "WhatsApp",
       href: "/whatsapp-api",
       film: "whatsapp" as const,
-      caption: text("שיחה עסקית מסודרת בתוך סביבת העבודה.", "An orderly business conversation inside the workspace."),
+      caption: text("סיור מוצר: תיבת שיחות עסקית.", "Product walkthrough: business inbox."),
     },
     {
       key: "campaigns",
       title: text("קמפיינים", "Campaigns"),
-      body: text("קמפיין Meta שמביא ליד — והטיפול ממשיך במערכת.", "A Meta campaign that brings a lead — then follow-up continues in the system."),
-      img: "/demo-media/home/campaigns.jpg",
+      body: text("קמפיין Meta עם נתוני ביצוע — והטיפול בליד ממשיך במערכת.", "A Meta campaign with performance data — then lead follow-up continues in the system."),
+      img: "/demo-media/campaigns/still-chart.jpg",
       crop: "hx-crop-campaigns",
+      tab: text("קמפיינים", "Campaigns"),
       href: "/meta-campaigns",
       film: "campaigns" as const,
-      caption: text("מהמודעה אל הטיפול בליד.", "From the ad into lead follow-up."),
+      caption: text("סיור מוצר: ביצועי קמפיין וטיפול בליד.", "Product walkthrough: campaign performance and lead follow-up."),
     },
     {
       key: "websites",
       title: text("Website Studio", "Website Studio"),
-      body: text("עריכת אתר אמיתית — והשינוי נראה מיד בתצוגה.", "Real site editing — and the change shows up in preview."),
+      body: text("עריכת אתר — והשינוי נראה מיד בתצוגה.", "Site editing — and the change shows up in preview."),
       img: "/demo-media/home/websites.jpg",
       crop: "hx-crop-studio",
+      tab: text("אתרים", "Sites"),
       href: "/website-builder",
       film: "websites" as const,
-      caption: text("עורך, תצוגה, והתוצאה.", "Editor, preview, and the result."),
+      caption: text("סיור מוצר: רשימת אתרים → עורך → תצוגה.", "Product walkthrough: site list → editor → preview."),
     },
     {
       key: "automations",
@@ -509,9 +513,10 @@ function ProductShowcase() {
       body: text("פנייה נכנסת → רשומה → פעולה להמשך — בלי לעבוד ידנית בכל שלב.", "An enquiry arrives → a record → a next action — without doing every step by hand."),
       img: "/demo-media/home/automations.jpg",
       crop: "hx-crop-auto",
+      tab: text("אוטומציות", "Automations"),
       href: "/automations",
       film: "automations" as const,
-      caption: text("אירוע עסקי שהופך לפעולה מוגדרת.", "A business event that becomes a defined action."),
+      caption: text("סיור מוצר: מאירוע עסקי לפעולה מוגדרת.", "Product walkthrough: from a business event to a defined action."),
     },
   ] as const;
   const open = useOpenFilm();
@@ -635,30 +640,35 @@ function ProductShowcase() {
             ))}
           </div>
         </div>
-        <div className="hx-show-dots" role="tablist" aria-label={text("מוצרים", "Products")}>
-          {products.map((product, index) => (
-            <button
-              key={product.key}
-              type="button"
-              role="tab"
-              aria-selected={index === active}
-              className={index === active ? "is-on" : undefined}
-              onClick={() => {
-                const slide = railRef.current?.querySelectorAll(".hx-show-slide")[index];
-                if (narrow || reduced) {
-                  slide?.scrollIntoView({ inline: "start", block: "nearest", behavior: "smooth" });
-                } else {
-                  const view = railRef.current;
-                  if (!view || !slide) return;
-                  const left = (slide as HTMLElement).offsetLeft - 24;
-                  view.scrollLeft = left;
-                  setActive(index);
-                }
-              }}
-            >
-              {product.title}
-            </button>
-          ))}
+        <div className="hx-show-nav">
+          <p className="hx-show-scroll-hint" aria-hidden="true">
+            {text("בחרו מוצר", "Choose a product")}
+          </p>
+          <div className="hx-show-dots" role="tablist" aria-label={text("מוצרים", "Products")}>
+            {products.map((product, index) => (
+              <button
+                key={product.key}
+                type="button"
+                role="tab"
+                aria-selected={index === active}
+                className={index === active ? "is-on" : undefined}
+                onClick={() => {
+                  const slide = railRef.current?.querySelectorAll(".hx-show-slide")[index];
+                  if (narrow || reduced) {
+                    slide?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+                  } else {
+                    const view = railRef.current;
+                    if (!view || !slide) return;
+                    const left = (slide as HTMLElement).offsetLeft - 24;
+                    view.scrollLeft = left;
+                    setActive(index);
+                  }
+                }}
+              >
+                {product.tab || product.title}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -915,7 +925,7 @@ function filmOf(
     poster: `/demo-media/${folder}/poster-product.jpg`,
     title,
     caption,
-    tag: text("הדגמה באנגלית", "English demo"),
+    tag: text("סיור מוצר באנגלית", "English product walkthrough"),
   };
 }
 
@@ -1043,7 +1053,7 @@ function Campaigns() {
               <Cta to="/meta-campaigns" tone="ink">{text("לגלות את ניהול הקמפיינים", "Explore campaign management")}</Cta>
               <DemoButton
                 label={text("לצפות בהדגמה", "Watch the demo")}
-                onClick={() => open(filmOf("campaigns", "campaigns", "/demo-media/campaigns/poster.jpg", text("קמפיינים", "Campaigns"), text("הקלטת מסך של מסך הקמפיינים, בלי פרסום קמפיין אמיתי.", "A screen recording of the campaigns screen. No live campaign is published."), language, text))}
+                onClick={() => open(filmOf("campaigns", "campaigns", "/demo-media/campaigns/poster.jpg", text("קמפיינים", "Campaigns"), text("סיור מוצר של מסך הקמפיינים עם נתוני דמו.", "Product walkthrough of the campaigns screen with demo data."), language, text))}
               />
             </div>
           </div>
@@ -1051,8 +1061,8 @@ function Campaigns() {
             <div className="hx-camp-frame">
               <LocaleShot
                 language={language}
-                src="/demo-media/home/campaigns.jpg"
-                alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
+                src="/demo-media/campaigns/still-chart.jpg"
+                alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply עם נתוני ביצוע", "Meta campaign management inside Bizuply with performance data")}
                 width={1600}
                 height={1000}
                 loading="lazy"
@@ -1412,11 +1422,11 @@ function Films() {
   const { text, language } = useCopy();
   const open = useOpenFilm();
   const films = [
-    ["crm", "crm", "CRM", text("לידים → כרטיס → משימה", "Leads → record → task"), text("עבודת לידים: רשימה, כרטיס לקוח ומשימת המשך.", "Lead work: list, customer record, and follow-up task.")],
-    ["whatsapp", "whatsapp", "WhatsApp", "WhatsApp", text("תיבת שיחות עסקית מתוך סביבת הדמו.", "A business inbox from the demo workspace.")],
-    ["campaigns", "campaigns", text("קמפיינים", "Campaigns"), text("קמפיינים", "Campaigns"), text("ניהול קמפיין Meta והמשך הטיפול בליד.", "Meta campaign management and lead follow-up.")],
-    ["websites", "websites", text("אתרים", "Websites"), text("Website Studio", "Website Studio"), text("עריכת אתר אמיתית ושינוי שנראה בתצוגה.", "Real site editing with a change that shows in preview.")],
-    ["automations", "automations", text("אוטומציות", "Automations"), text("אוטומציות", "Automations"), text("מאירוע עסקי לפעולה מוגדרת להמשך.", "From a business event to a defined next action.")],
+    ["crm", "crm", "CRM", text("לידים → כרטיס → משימה", "Leads → record → task"), text("סיור מוצר: רשימת לידים, כרטיס לקוח ומשימת המשך.", "Product walkthrough: lead list, customer record, and follow-up task.")],
+    ["whatsapp", "whatsapp", "WhatsApp", "WhatsApp", text("סיור מוצר: תיבת שיחות עסקית.", "Product walkthrough: business inbox.")],
+    ["campaigns", "campaigns", text("קמפיינים", "Campaigns"), text("קמפיינים", "Campaigns"), text("סיור מוצר: ביצועי קמפיין Meta וטיפול בליד.", "Product walkthrough: Meta campaign performance and lead follow-up.")],
+    ["websites", "websites", text("אתרים", "Websites"), text("Website Studio", "Website Studio"), text("סיור מוצר: רשימת אתרים, עורך ותצוגה.", "Product walkthrough: site list, editor, and preview.")],
+    ["automations", "automations", text("אוטומציות", "Automations"), text("אוטומציות", "Automations"), text("סיור מוצר: מאירוע עסקי לפעולה מוגדרת.", "Product walkthrough: from a business event to a defined action.")],
   ] as const;
   return (
     <section className="hx-films" aria-labelledby="hx-films-title">
@@ -1611,7 +1621,7 @@ function Close() {
           decoding="async"
         />
         <div className="hx-actions">
-          <Cta to="/register" tone="ink">{text("התחילו בחינם", "Start free")}</Cta>
+          <Cta to="/register" tone="ink">{text("להתחיל", "Get started")}</Cta>
           <Cta to="/pricing">{text("הכירו את המסלולים", "See the plans")}</Cta>
           <Cta to="/contact">{text("דברו איתנו", "Talk with us")}</Cta>
         </div>
