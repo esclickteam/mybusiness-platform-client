@@ -196,14 +196,19 @@ html.hx-preview img {
 .hx-skip:focus {
   top: 0.6rem;
 }
-.app-layout {
+/* Shell flex/overflow helpers are home-only — this file is also linked on app shells. */
+html.bizuply-home .app-layout,
+html.hx-preview .app-layout {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
-.app-main,
-.app-scroll-area,
-.app-scroll-area.home-preview-scroll {
+html.bizuply-home .app-main,
+html.hx-preview .app-main,
+html.bizuply-home .app-scroll-area,
+html.hx-preview .app-scroll-area,
+html.bizuply-home .app-scroll-area.home-preview-scroll,
+html.hx-preview .app-scroll-area.home-preview-scroll {
   flex: 1 0 auto;
   min-height: 0;
   display: flex;
@@ -211,8 +216,10 @@ html.hx-preview img {
 }
 /* Both axes must be visible: overflow-x:hidden forces overflow-y to auto and
    creates a sticky scrollport that double-offsets .hx-hero-pin by --hx-header. */
-.app-scroll-area,
-.app-scroll-area.home-preview-scroll {
+html.bizuply-home .app-scroll-area,
+html.hx-preview .app-scroll-area,
+html.bizuply-home .app-scroll-area.home-preview-scroll,
+html.hx-preview .app-scroll-area.home-preview-scroll {
   overflow: visible;
 }
 .hx-hero {
