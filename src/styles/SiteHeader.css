@@ -165,6 +165,15 @@
     0 0 22px rgba(124, 58, 237, 0.35);
 }
 
+.site-header__end {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
 .site-header__actions {
   display: none;
   align-items: center;
