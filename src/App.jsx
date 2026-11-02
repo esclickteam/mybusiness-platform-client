@@ -193,6 +193,9 @@ const AdminManagedWhatsApp = lazy(
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
+const GeoStagingPreview = lazy(() =>
+  import("./pages/admin/geoIntel/GeoStagingPreview")
+);
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
@@ -1567,6 +1570,17 @@ export default function App() {
                           path="/sign/partner-agreement/:token"
                           element={<PartnerAgreementSign />}
                         />
+
+                        {import.meta.env.VITE_GEO_STAGING === "1" ? (
+                          <Route
+                            path="/geo-staging"
+                            element={
+                              <Suspense fallback={null}>
+                                <GeoStagingPreview />
+                              </Suspense>
+                            }
+                          />
+                        ) : null}
 
                         <Route
                           path="/admin"
