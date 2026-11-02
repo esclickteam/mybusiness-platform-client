@@ -17,13 +17,18 @@ html.bizuply-home body,
 html.hx-preview body {
   font-family: "Assistant", "Inter", "Segoe UI", system-ui, sans-serif;
 }
-.home-shell,
-.home-shell *,
-.home-shell *::before,
-.home-shell *::after {
+/* Must survive hydration: React replaces .home-shell with .app-layout/.hx-page
+   before deferred Vite CSS is promoted, so box-sizing cannot depend on .home-shell. */
+html.bizuply-home *,
+html.bizuply-home *::before,
+html.bizuply-home *::after,
+html.hx-preview *,
+html.hx-preview *::before,
+html.hx-preview *::after {
   box-sizing: border-box;
 }
-.home-shell img {
+html.bizuply-home img,
+html.hx-preview img {
   max-width: 100%;
 }
 
@@ -45,8 +50,10 @@ html.hx-preview body {
   width: 100%;
   max-width: 1280px;
   height: 4.5rem;
+  min-height: 4.5rem;
   margin-inline: auto;
   padding-inline: clamp(0.85rem, 2.5vw, 1.5rem);
+  box-sizing: border-box;
 }
 .site-header__logo {
   display: inline-flex;
@@ -152,6 +159,7 @@ html.hx-preview body {
 @media (min-width: 1100px) {
   .site-header__bar {
     height: 4.75rem;
+    min-height: 4.75rem;
   }
   .site-header__logo img {
     height: 3.25rem;
@@ -169,9 +177,43 @@ html.hx-preview body {
 
 .hx-paint,
 .hx-page {
+  --hx-header: 4.75rem;
+  position: relative;
   color: #1a0b33;
   background: #5b21b6;
   font-family: Assistant, Inter, system-ui, sans-serif;
+}
+/* Keep skip-link out of flow so it cannot push the hero down before Vite CSS promotes. */
+.hx-skip {
+  position: absolute;
+  inset-inline-start: 1rem;
+  top: -4rem;
+  z-index: 80;
+  background: #fff;
+  color: #1a0b33;
+  padding: 0.6rem 0.9rem;
+}
+.hx-skip:focus {
+  top: 0.6rem;
+}
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+.app-main,
+.app-scroll-area,
+.app-scroll-area.home-preview-scroll {
+  flex: 1 0 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* Both axes must be visible: overflow-x:hidden forces overflow-y to auto and
+   creates a sticky scrollport that double-offsets .hx-hero-pin by --hx-header. */
+.app-scroll-area,
+.app-scroll-area.home-preview-scroll {
+  overflow: visible;
 }
 .hx-hero {
   --hp: 0;
@@ -222,15 +264,15 @@ html.hx-preview body {
   transform-origin: top center;
 }
 .hx-kicker {
-  margin: 0;
-  font-size: 0.95rem;
+  margin: 0 0 0.8rem;
+  font-size: 0.78rem;
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: #e4d4ff;
 }
 .hx-display {
-  margin: 0.7rem 0 0;
+  margin: 0;
   font-family: Assistant, Inter, system-ui, sans-serif;
   font-size: clamp(2.3rem, 4.6vw, 5.2rem);
   font-weight: 800;
@@ -270,9 +312,13 @@ html.hx-preview body {
   margin-top: 1.6rem;
 }
 .hx-btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex: 0 0 auto;
   gap: 0.7rem;
   min-height: 3.1rem;
   padding: 0.75rem 1.25rem;
@@ -283,9 +329,11 @@ html.hx-preview body {
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
+  white-space: nowrap;
   text-decoration: none;
 }
 .hx-btn i {
+  flex: 0 0 auto;
   width: 0.55rem;
   height: 0.55rem;
   border-top: 2px solid currentColor;
@@ -297,11 +345,12 @@ html.hx-preview body {
 }
 .hx-btn-line {
   background: transparent;
-  border-color: rgba(255, 255, 255, 0.55);
+  border-color: #fff;
   color: #fff;
 }
 .hx-note {
   margin: 1rem 0 0;
+  font-size: 0.85rem;
   font-weight: 750;
   line-height: 1.4;
   color: #fff;

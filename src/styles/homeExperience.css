@@ -2080,6 +2080,8 @@ html.hx-preview body {
 
   .hx-hero-pin {
     position: relative;
+    /* Reset sticky desktop top — relative + top:var(--hx-header) shifts the whole pin. */
+    top: auto;
     height: auto;
     min-height: 100svh;
     display: flex;
