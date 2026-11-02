@@ -147,12 +147,12 @@ test.describe("homepage first paint stays purple only", () => {
       expect(frames.some((frame) => frame.purple)).toBe(true);
       await assertPurpleOnly(page);
 
-      // Simulate React takeover: drop SSR shell, keep purple cinematic page.
+      // Simulate React takeover: cinematic hx-page with hero media first, then drop SSR shell.
       await page.evaluate(() => {
         const shell = document.getElementById("bizuply-first-paint");
         const root = document.getElementById("root");
         if (root) {
-          root.innerHTML = `<div class="app-layout hx-has-site-header"><main class="app-main"><div class="hx-page" data-home-design="purple"><section class="hx-hero"><div class="hx-hero-pin"><div class="hx-hero-copy"><h1 class="hx-display">Everything your business needs. One powerful platform.</h1></div></div></section></div></main></div>`;
+          root.innerHTML = `<div class="app-layout hx-has-site-header"><main class="app-main"><div class="hx-page" data-home-design="purple"><section class="hx-hero"><div class="hx-hero-pin"><div class="hx-hero-copy"><h1 class="hx-display">Everything your business needs. One powerful platform.</h1></div><div class="hx-hero-frame"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/crm.jpg" alt="" width="1600" height="1000"></div></div></section></div></main></div>`;
           root.removeAttribute("hidden");
         }
         shell?.remove();

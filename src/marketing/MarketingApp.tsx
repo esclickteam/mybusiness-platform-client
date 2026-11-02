@@ -41,22 +41,22 @@ export default function MarketingApp() {
   const { i18n } = useTranslation();
 
   useLayoutEffect(() => {
+    const cinematicReady = () =>
+      Boolean(document.querySelector("#root .hx-page, #root .hx-hero"));
     const release = () => {
+      // Keep purple SSR hero until React cinematic home mounts — never on chrome alone.
+      if (!cinematicReady()) return;
       const shell = document.getElementById("bizuply-first-paint");
       document.getElementById("root")?.removeAttribute("hidden");
-      // Always drop the SSR shell once the cinematic page mounts.
-      // Never keep a legacy .home-hero — that caused the purple↔dark flash.
-      if (document.querySelector("#root .hx-page") || document.querySelector("#root .app-main")) {
-        shell?.remove();
-      }
+      shell?.remove();
     };
     const root = document.getElementById("root");
-    if (root?.querySelector(".app-main")) {
+    if (cinematicReady()) {
       release();
       return undefined;
     }
     const observer = new MutationObserver(() => {
-      if (root?.querySelector(".app-main")) {
+      if (cinematicReady()) {
         observer.disconnect();
         release();
       }
