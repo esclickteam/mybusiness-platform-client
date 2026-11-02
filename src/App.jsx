@@ -1759,6 +1759,7 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute &&
+        !isGeoStagingRoute &&
         !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
@@ -1771,6 +1772,7 @@ export default function App() {
         !isEarlyAccessLanding &&
         !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
+        !isGeoStagingRoute &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
         !isPartnerSignRoute &&
