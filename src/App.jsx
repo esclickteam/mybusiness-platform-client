@@ -4,6 +4,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import i18n, { ensureLocale } from "./i18n/i18n";
 import { getHtmlLang, getTextDirection } from "./i18n/localeUtils";
+import {
+  clearHomeDocumentPaint,
+  isHomePaintPath,
+} from "./lib/clearHomeDocumentPaint";
 
 import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
 const PreLoginBot = lazy(() => import("./components/PreLoginBot"));
@@ -861,7 +865,14 @@ function PageLoader() {
 export default function App() {
   const { user, loading, initialized } = useAuth();
   const { i18n } = useTranslation();
+  const location = useLocation();
   useLayoutEffect(() => {
+    // Never leave home purple chrome on app routes (login/dashboard/CRM).
+    if (!isHomePaintPath(location.pathname)) {
+      clearHomeDocumentPaint();
+      void ensureLocale(i18n.language);
+      return undefined;
+    }
     const cinematicReady = () =>
       Boolean(document.querySelector("#root .hx-page, #root .hx-hero"));
     const release = () => {
@@ -885,13 +896,6 @@ export default function App() {
     });
     if (root) observer.observe(root, { childList: true, subtree: true });
     return () => observer.disconnect();
-  }, []);
-  const location = useLocation();
-  useLayoutEffect(() => {
-    if (location.pathname !== "/") {
-      document.getElementById("bizuply-first-paint")?.remove();
-      void ensureLocale(i18n.language);
-    }
   }, [location.pathname, i18n.language]);
   const appDir = getTextDirection(i18n.language);
   const appLang = getHtmlLang(i18n.language);

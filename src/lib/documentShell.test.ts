@@ -168,6 +168,8 @@ describe("first paint document shell", () => {
     expect(body).not.toContain("/home-css-promote.js");
     expect(body).not.toContain('media="print"');
     expect(body).not.toContain('class="bizuply-home');
+    expect(body).not.toContain("/home-critical.css");
+    expect(body).not.toContain('id="home-critical"');
     expect(body).toContain("CRM Software for Small Businesses");
   });
 

@@ -60,5 +60,7 @@ describe("purple home first paint", () => {
     expect(criticalCss).toMatch(/\.hx-display\s*\{[^}]*margin:\s*0;/);
     expect(criticalCss).toContain(".hx-skip");
     expect(criticalCss).toContain("overflow: visible");
+    expect(criticalCss).toContain("html.bizuply-home .app-scroll-area");
+    expect(criticalCss).not.toMatch(/(?:^|\n)\.app-scroll-area\s*,/);
   });
 });

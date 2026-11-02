@@ -941,11 +941,18 @@ async function handleMarketingDocument(request) {
         /* The linked stylesheet remains. */
       }
       if (prerender) documentHtml = injectRootInner(documentHtml, prerender.inner);
-    } else if (locale.path === "/crm") {
-      if (prerender) documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
-      documentHtml = injectRootInner(documentHtml, buildCrmHeaderPaint(locale.locale));
-    } else if (prerender) {
-      documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
+    } else {
+      // Never ship homepage critical CSS to login/dashboard/CRM shells.
+      documentHtml = documentHtml.replace(
+        /<link\s+rel=["']stylesheet["']\s+href=["']\/home-critical\.css["']\s*\/>\s*/i,
+        "",
+      );
+      if (locale.path === "/crm") {
+        if (prerender) documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
+        documentHtml = injectRootInner(documentHtml, buildCrmHeaderPaint(locale.locale));
+      } else if (prerender) {
+        documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
+      }
     }
     return new Response(documentHtml, {
       status: 200,
