@@ -897,7 +897,7 @@ async function handleMarketingDocument(request) {
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,
-        `<html lang="${lang}" dir="${dir}"${isHome ? ' class="bizuply-home"' : ""}>`,
+        `<html lang="${lang}" dir="${dir}"${isHome ? ' class="bizuply-home hx-preview"' : ""}>`,
       );
     }
     if (isHome) {

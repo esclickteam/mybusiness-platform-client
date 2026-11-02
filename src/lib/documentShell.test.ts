@@ -4,6 +4,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import middleware from "../../middleware.js";
 
 const indexHtml = readFileSync(path.resolve(process.cwd(), "index.html"), "utf8");
+const marketingHtml = readFileSync(path.resolve(process.cwd(), "marketing.html"), "utf8");
+const homeCriticalCss = readFileSync(path.resolve(process.cwd(), "public/home-critical.css"), "utf8");
 const realFetch = globalThis.fetch;
 
 function rootInner(html: string) {
@@ -31,6 +33,18 @@ afterEach(() => {
 function serveLocalShell() {
   globalThis.fetch = (async (input: RequestInfo | URL) => {
     const url = String(input instanceof Request ? input.url : input);
+    if (url.includes("/marketing.html")) {
+      return new Response(marketingHtml, {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      });
+    }
+    if (url.includes("/home-critical.css")) {
+      return new Response(homeCriticalCss, {
+        status: 200,
+        headers: { "content-type": "text/css" },
+      });
+    }
     if (url.includes("/index.html")) {
       return new Response(indexHtml, {
         status: 200,
@@ -69,12 +83,19 @@ describe("first paint document shell", () => {
     expect(page.body).toContain('"@type":"Organization"');
     expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(page.body).toContain("In Hebrew, the brand name is ביזאפלי.");
-    expect(page.body).toContain('class="home-hero"');
-    expect(page.body).toContain('<h1 class="home-hero__title">Everything your business needs. One powerful platform.</h1>');
+    expect(page.body).toContain('class="hx-hero"');
+    expect(page.body).toContain('data-home-design="purple"');
+    expect(page.body).toContain('class="hx-display"');
+    expect(page.body).toContain(">Everything</span>");
+    expect(page.body).toContain(">platform.</span>");
+    expect(page.body).not.toContain('class="home-hero"');
+    expect(page.body).not.toContain("home-hero__title");
+    expect(page.body).not.toContain("#070b18");
     expect(visibleH1Count(page.body)).toBe(1);
     expect(noscriptCrawl(page.body)).toBe("");
-    expect(rootInner(page.body)).toContain("home-hero__title");
-    expect(rootInner(page.body)).toContain("Everything your business needs. One powerful platform.");
+    expect(rootInner(page.body)).toContain("hx-display");
+    expect(rootInner(page.body)).toContain(">Everything</span>");
+    expect(rootInner(page.body)).toContain(">platform.</span>");
     expect(rootInner(page.body)).not.toContain("The official website is bizuply.com");
     expect(rootInner(page.body)).not.toContain("<h1>Bizuply</h1>");
     expect(page.body).not.toContain("position:absolute;width:1px;height:1px");
@@ -83,11 +104,14 @@ describe("first paint document shell", () => {
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
     const hebrew = await documentFor("https://bizuply.com/he/", "bizuply.com");
     expect(hebrew.body).toContain('lang="he" dir="rtl"');
-    expect(hebrew.body).toContain("כל מה שהעסק שלך צריך. פלטפורמה אחת חזקה.");
+    expect(hebrew.body).toContain(">צריך.</span>");
+    expect(hebrew.body).toContain(">חזקה.</span>");
     expect(hebrew.body).toContain("ביזאפלי");
     expect(visibleH1Count(hebrew.body)).toBe(1);
     expect(noscriptCrawl(hebrew.body)).toBe("");
-    expect(rootInner(hebrew.body)).toContain("home-hero__title");
+    expect(rootInner(hebrew.body)).toContain("hx-display");
+    expect(rootInner(hebrew.body)).toContain('data-home-design="purple"');
+    expect(rootInner(hebrew.body)).not.toContain("home-hero__title");
     expect(rootInner(hebrew.body)).not.toContain("<h1>Bizuply</h1>");
 
     const crm = await documentFor("https://bizuply.com/crm", "bizuply.com");

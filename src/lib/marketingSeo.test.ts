@@ -182,9 +182,22 @@ describe("marketing crawl files", () => {
       expect(head.match(/"@type":"Question"/g)?.length).toBe(10);
       expect(head).toContain(home.faq1q);
       expect(head).toContain(home.faq10a);
-      expect(body).toContain(`<h1 class="home-hero__title">${home.headline}</h1>`);
-      expect(body).toContain("home-hero");
-      expect(body).toContain(home.supportLine);
+      expect(body).toContain('class="hx-hero"');
+      expect(body).toContain('data-home-design="purple"');
+      expect(body).toContain('class="hx-display"');
+      expect(body).not.toContain('class="home-hero"');
+      expect(body).not.toContain("home-hero__title");
+      if (locale === "he") {
+        expect(body).toContain(">כל</span>");
+        expect(body).toContain(">צריך.</span>");
+        expect(body).toContain(">פלטפורמה</span>");
+        expect(body).toContain(">חזקה.</span>");
+      } else {
+        expect(body).toContain(">Everything</span>");
+        expect(body).toContain(">needs.</span>");
+        expect(body).toContain(">One</span>");
+        expect(body).toContain(">platform.</span>");
+      }
       expect(body).toContain(home.faqTitle);
       expect(body).toContain(home.faq8a);
     }

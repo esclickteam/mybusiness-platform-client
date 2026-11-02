@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:home-first-paint": "playwright test e2e/home-first-paint.spec.ts",
     "test:partner-isolation": "node --test src/lib/partnerApi.isolation.test.mjs src/lib/partnerHost.node.test.mjs src/utils/safeInternalRedirect.node.test.mjs src/lib/decodeJwtPayload.test.mjs",
     "generate-sitemap": "node generate-sitemap.js",
     "generate-template-screenshots": "node scripts/generate-template-screenshots.mjs",

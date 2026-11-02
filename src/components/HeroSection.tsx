@@ -15,9 +15,12 @@ export default function HeroSection() {
   const dir = getTextDirection(i18n.language);
   if (
     typeof document !== "undefined" &&
-    (document.querySelector("#bizuply-first-paint .home-hero") ||
-      document.querySelector("[data-kept-hero]"))
+    (document.querySelector("#bizuply-first-paint .hx-hero") ||
+      document.querySelector("#bizuply-first-paint .home-hero") ||
+      document.querySelector("[data-kept-hero]") ||
+      document.querySelector(".hx-page"))
   ) {
+    // Cinematic purple home owns the landing route — never paint legacy home-hero.
     return null;
   }
 
