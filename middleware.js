@@ -42,6 +42,13 @@ import {
 } from "./src/lib/marketingSeo.mjs";
 import { marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
+import {
+  buildHomeSessionRedirectResponse,
+  fetchHomeSessionRedirectUrl,
+  hasRefreshSessionCookie,
+  isHomeSessionRedirectEnabled,
+  isMarketingHomePath,
+} from "./src/lib/homeSessionRedirect.mjs";
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -818,9 +825,30 @@ function marketingLegacyRedirect(request, host, pathname) {
   });
 }
 
+async function maybeRedirectAuthenticatedHome(request) {
+  if (!isHomeSessionRedirectEnabled()) return null;
+  if (!isDocumentNavigation(request)) return null;
+  const pathname = getPathname(request);
+  if (!isMarketingHomePath(pathname)) return null;
+  const cookie = request.headers.get("cookie") || "";
+  // Guests: never call the API — keep marketing first-paint fast.
+  if (!hasRefreshSessionCookie(cookie)) return null;
+  const redirectPath = await fetchHomeSessionRedirectUrl({
+    request,
+    host: getHost(request),
+  });
+  if (!redirectPath) return null;
+  return buildHomeSessionRedirectResponse(request, redirectPath);
+}
+
 async function handleMarketingDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   const pathname = getPathname(request);
+
+  // Authenticated revisit: 302 to dashboard before any marketing HTML/CSS.
+  const sessionRedirect = await maybeRedirectAuthenticatedHome(request);
+  if (sessionRedirect) return sessionRedirect;
+
   const headHtml = buildMarketingDocumentHead(pathname);
   if (headHtml) {
     const cookie = request.headers.get("cookie") || "";
