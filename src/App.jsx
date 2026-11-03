@@ -22,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
 import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
+import { isGeoIntelHost } from "./lib/geoHost.mjs";
 import { shouldRenderWhatsAppLanding } from "./lib/whatsappHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
@@ -911,7 +912,11 @@ export default function App() {
   const publicMarketingHost = travelHost || whatsappLanding;
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isHomePreview = location.pathname === "/home-preview";
-  const isCinematicHome = location.pathname === "/" || isHomePreview;
+  // Production GEO host (geo.bizuply.com) — admin-only internal shell, Hebrew RTL.
+  const isGeoProductionHost = isGeoIntelHost(hostname);
+  const isCinematicHome =
+    !isGeoProductionHost &&
+    (location.pathname === "/" || isHomePreview);
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -923,6 +928,7 @@ export default function App() {
   const isAdminRoute = location.pathname.startsWith("/admin");
   // Isolated GEO staging surface — no public Header / language switcher / Get Started.
   const isGeoStagingRoute = location.pathname.startsWith("/geo-staging");
+  const isGeoSurface = isGeoStagingRoute || isGeoProductionHost;
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   // The WhatsApp API product login is a standalone page with its own branding.
@@ -1094,7 +1100,7 @@ export default function App() {
     !isSaasMarketplaceRoute &&
     !isSaasPublicSite &&
     !isDevVisualRoute &&
-    !isGeoStagingRoute &&
+    !isGeoSurface &&
     !isMiniSiteHost &&
     !isPublicProposalRoute &&
     !isPartnerSignRoute &&
@@ -1111,7 +1117,7 @@ export default function App() {
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
-          !isGeoStagingRoute &&
+          !isGeoSurface &&
           !isStaffRoute &&
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
@@ -1586,6 +1592,36 @@ export default function App() {
                           />
                         ) : null}
 
+                        {isGeoProductionHost ? (
+                          <>
+                            <Route
+                              path="/"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGeoIntel />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/geo-intel"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGeoIntel />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            {/* /login stays on the shared AuthShell route below */}
+                            <Route
+                              path="*"
+                              element={<Navigate to="/" replace />}
+                            />
+                          </>
+                        ) : null}
+
                         <Route
                           path="/admin"
                           element={
@@ -1725,13 +1761,13 @@ export default function App() {
           !isPublicPartnerSales &&
           !isWhatsAppApiLogin &&
           !isAuthShellRoute &&
-          !isGeoStagingRoute &&
+          !isGeoSurface &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isGeoStagingRoute && (
+      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isGeoSurface && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
@@ -1759,7 +1795,7 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute &&
-        !isGeoStagingRoute &&
+        !isGeoSurface &&
         !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
@@ -1772,7 +1808,7 @@ export default function App() {
         !isEarlyAccessLanding &&
         !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
-        !isGeoStagingRoute &&
+        !isGeoSurface &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
         !isPartnerSignRoute &&

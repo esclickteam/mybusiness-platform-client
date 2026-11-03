@@ -1450,14 +1450,17 @@ export default function AdminGeoIntel({
                   >
                     {copy.prepareTruth}
                   </button>
-                  <button
-                    type="button"
-                    className="geo-btn geo-btn-primary"
-                    disabled={busy}
-                    onClick={onSeedFixtures}
-                  >
-                    {copy.seedTestFixtures}
-                  </button>
+                  {status?.fixturesAllowed !== false &&
+                  !status?.production ? (
+                    <button
+                      type="button"
+                      className="geo-btn geo-btn-primary"
+                      disabled={busy}
+                      onClick={onSeedFixtures}
+                    >
+                      {copy.seedTestFixtures}
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     className="geo-btn geo-btn-ghost"
