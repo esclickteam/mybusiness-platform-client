@@ -569,6 +569,8 @@ export default function AdminGeoIntel({
             </button>
           ))}
           <div className="geo-intel-side-foot">
+            {copy.privateOwnerOnly}
+            <br />
             {copy.hebrewUiOnly}
             <br />
             {copy.plannedHost}
@@ -615,6 +617,8 @@ export default function AdminGeoIntel({
           <div className="geo-intel-banner">
             <strong>{copy.freeOnly}</strong>
             <div className="meta">
+              {copy.privateOwnerOnly}
+              {" · "}
               Gemini:{" "}
               {status?.gemini?.configured ? copy.keyConfigured : copy.keyMissing} ·{" "}
               {copy.quota}: {status?.gemini?.budget?.dailyFreeUsed ?? 0}/
@@ -627,6 +631,10 @@ export default function AdminGeoIntel({
               {activeBrand
                 ? ` · ${activeBrand.name} (${(activeBrand.domains || []).join(", ")})`
                 : ""}
+              {status?.access?.ownerAllowlistConfigured === false
+                ? " · Allowlist לא הוגדר בשרת (fail-closed)"
+                : ""}
+              {status?.automation?.enabled ? " · אוטומציה פעילה" : " · אוטומציה כבויה"}
             </div>
           </div>
 
