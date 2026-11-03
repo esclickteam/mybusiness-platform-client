@@ -1763,6 +1763,18 @@ export default function AdminGeoIntel({
   );
 }
 
+function safeHttpHref(url?: string): string | null {
+  const u = String(url || "").trim();
+  if (!u) return null;
+  try {
+    const parsed = new URL(u.includes("://") ? u : `https://${u}`);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return null;
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 function SourceList({
   sources,
   empty,
@@ -1773,21 +1785,24 @@ function SourceList({
   if (!sources.length) return <div className="geo-pill muted">{empty}</div>;
   return (
     <div className="geo-source-list">
-      {sources.map((s, i) => (
-        <div
-          key={`${s.url}-${i}`}
-          className={`geo-source${s.isBrand ? " brand" : ""}`}
-        >
-          {s.url ? (
-            <a href={s.url} target="_blank" rel="noreferrer">
-              {s.title || s.domain || s.url}
-            </a>
-          ) : (
-            <strong>{s.title || s.domain || "—"}</strong>
-          )}
-          <div className="geo-source-url">{s.url}</div>
-        </div>
-      ))}
+      {sources.map((s, i) => {
+        const href = safeHttpHref(s.url);
+        return (
+          <div
+            key={`${s.url}-${i}`}
+            className={`geo-source${s.isBrand ? " brand" : ""}`}
+          >
+            {href ? (
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                {s.title || s.domain || s.url}
+              </a>
+            ) : (
+              <strong>{s.title || s.domain || s.url || "—"}</strong>
+            )}
+            <div className="geo-source-url">{s.url || ""}</div>
+          </div>
+        );
+      })}
     </div>
   );
 }
