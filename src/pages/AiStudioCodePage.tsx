@@ -46,6 +46,8 @@ const ISSUE_LABELS: Record<string, string> = {
   "quality-timeout": "בדיקת התצוגה לא הושלמה",
   "stacked-screens": "יותר מעמוד אחד מוצג",
   compare: "ההשוואה לא מגיבה",
+  inquiry: "טופס הפנייה לא שומר",
+  booking: "קביעת התור לא מוכנה",
 };
 
 function isolatedPreviewUrl(projectId: string, token: string) {
@@ -74,6 +76,7 @@ export default function AiStudioCodePage() {
   const [savedProjects, setSavedProjects] = useState<ProjectRow[]>([]);
   const [viewport, setViewport] = useState<1440 | 390>(1440);
   const [frameNonce, setFrameNonce] = useState(0);
+  const [publishNote, setPublishNote] = useState("");
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const loadWait = useRef<(() => void) | null>(null);
   const probeWait = useRef<((report: ProbeReport) => void) | null>(null);
@@ -230,6 +233,19 @@ export default function AiStudioCodePage() {
     }
   }
 
+  async function checkPublish() {
+    if (!project) return;
+    setBusy(true);
+    setPublishNote("");
+    try {
+      const { data } = await API.post(`/ai-studio/code-projects/${project.projectId}/publish-plan`, {}, { timeout: 30000 });
+      setPublishNote(data?.published ? "האתר פורסם" : "הפרסום נשאר כבוי. הבדיקה לא פרסמה אתר.");
+    } catch (err: any) {
+      setPublishNote(err?.response?.data?.error || "בדיקת הפרסום נכשלה");
+    }
+    setBusy(false);
+  }
+
   async function openSaved(projectId: string) {
     setBusy(true);
     setError("");
@@ -253,7 +269,7 @@ export default function AiStudioCodePage() {
         <div className="text-xs font-semibold tracking-wide text-amber-200">AI STUDIO · REACT RUNTIME</div>
         <h1 className="mt-1 text-xl font-black">אתר שנכתב בקוד, בלי תבנית מארחת</h1>
         <p className="mt-1 max-w-3xl text-sm text-slate-400">
-          התצוגה נטענת מדומיין נפרד, בלי עוגיות ההתחברות ובלי גישה לרשת. רענון העמוד פותח מחדש את הפרויקט השמור.
+          התצוגה נטענת מדומיין נפרד, בלי עוגיות ההתחברות. שמירת פנייה או תור עוברת רק דרך הממשק של הפרויקט. רענון העמוד פותח מחדש את הפרויקט השמור.
           העסק הפעיל: {businessId}
         </p>
       </div>
@@ -317,6 +333,15 @@ export default function AiStudioCodePage() {
                   שלח
                 </button>
               </div>
+              <button
+                type="button"
+                disabled={busy || checking}
+                onClick={checkPublish}
+                className="rounded-md border border-white/10 px-3 py-2 text-xs text-slate-300"
+              >
+                בדיקת פרסום
+              </button>
+              {publishNote ? <p className="text-xs text-slate-400">{publishNote}</p> : null}
               <div className="space-y-2">
                 {(project.versions || []).map((version) => (
                   <button
