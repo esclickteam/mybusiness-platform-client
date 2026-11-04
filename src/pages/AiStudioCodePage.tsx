@@ -19,7 +19,7 @@ type CodeResult = {
   quality?: QualityReport | null;
 };
 type ProjectRow = { projectId: string; title: string; status?: string; updatedAt?: string };
-type ProbeReport = { width?: number; ready?: boolean; issues?: QualityIssue[] };
+type ProbeReport = { width?: number; status?: string; ready?: boolean; issues?: QualityIssue[] };
 
 const BRIEF =
   "צור אתר נדל״ן יוקרתי בדובאי בשם AURELIA ESTATES. עצב כל מסך במלואו: בית, נכסים, מחשבון וקשר. Hero מלא, טיפוגרפיה עם היררכיה, קומפוזיציות שונות, תמונות אדריכלות, אנימציה ומעברים. בלי שטחים ריקים, בלי חפיפת כותרות ובלי חיתוך. עברית מימין לשמאל, והשם באנגלית נשאר קריא. ארבעה נכסי דמו עם סינון לפי אזור, מחיר וחדרי שינה. מחשבון משכנתה שההחזר שלו משתנה. גלריה שנפתחת ומחליפה תמונות. התאמה ל־1440 ול־390. כל התוכן הוא הדגמה.";
@@ -44,6 +44,8 @@ const ISSUE_LABELS: Record<string, string> = {
   state: "חסרה אינטראקציה",
   invalid: "הקוד לא עמד בבדיקה",
   "quality-timeout": "בדיקת התצוגה לא הושלמה",
+  "stacked-screens": "יותר מעמוד אחד מוצג",
+  compare: "ההשוואה לא מגיבה",
 };
 
 function isolatedPreviewUrl(projectId: string, token: string) {
@@ -133,8 +135,8 @@ export default function AiStudioCodePage() {
     return new Promise<ProbeReport>((resolve) => {
       const timer = window.setTimeout(() => {
         probeWait.current = null;
-        resolve({ width, ready: false, issues: [{ code: "quality-timeout", severity: "error", detail: String(width) }] });
-      }, 7000);
+        resolve({ width, status: "timeout", ready: false, issues: [{ code: "quality-timeout", severity: "timeout", detail: String(width) }] });
+      }, 12000);
       probeWait.current = (report) => {
         window.clearTimeout(timer);
         probeWait.current = null;
@@ -144,7 +146,7 @@ export default function AiStudioCodePage() {
     });
   }
 
-  async function review(current: CodeResult, allowRepair: boolean) {
+  async function review(current: CodeResult) {
     if (!current?.projectId || !current.previewToken) return;
     setChecking(true);
     setError("");
@@ -152,27 +154,14 @@ export default function AiStudioCodePage() {
       const desktop = await measureWidth(1440);
       const mobile = await measureWidth(390);
       const issues = [...(desktop.issues || []), ...(mobile.issues || [])];
-      const actionable = issues.filter((item) => item.code !== "quality-timeout");
-      if (allowRepair && actionable.length) {
-        const repair = [
-          "תקן בקוד את בעיות האיכות הבאות. שנה פריסה, מבנה והתנהגות לפי הצורך.",
-          "השאר ארבעה נכסים, סינון עובד, מחשבון עובד, גלריה עובדת ואת כל המסכים.",
-          ...actionable.map((item) => `- ${issueText(item)}` ),
-        ].join("\n");
-        const { data } = await API.post(
-          `/ai-studio/code-projects/${current.projectId}/chat`,
-          { message: repair },
-          { timeout: 180000 }
-        );
-        remember(data);
-        await review(data, false);
-        return;
-      }
+      const measured = desktop.status === "measured" && mobile.status === "measured";
+      const failures = issues.filter((item) => item.severity !== "timeout" && item.code !== "quality-timeout");
       const { data } = await API.post(
         `/ai-studio/code-projects/${current.projectId}/quality`,
         {
           versionId: current.versionId,
-          ready: issues.length === 0,
+          status: measured ? "measured" : "timeout",
+          ready: measured && failures.length === 0,
           issues,
           widths: [1440, 390],
         },
@@ -195,7 +184,7 @@ export default function AiStudioCodePage() {
       remember(data);
       setMessage("");
       setBusy(false);
-      await review(data, true);
+      await review(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || "יצירת האתר נכשלה");
       setBusy(false);
@@ -215,7 +204,7 @@ export default function AiStudioCodePage() {
       remember(data);
       setMessage("");
       setBusy(false);
-      await review(data, true);
+      await review(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || "השינוי נכשל");
       setBusy(false);
@@ -234,7 +223,7 @@ export default function AiStudioCodePage() {
       );
       remember(data);
       setBusy(false);
-      await review(data, false);
+      await review(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || "השחזור נכשל");
       setBusy(false);
@@ -248,7 +237,7 @@ export default function AiStudioCodePage() {
       const { data } = await API.get(`/ai-studio/code-projects/${projectId}`, { timeout: 30000 });
       remember(data);
       setBusy(false);
-      await review(data, false);
+      await review(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || "פתיחת הפרויקט נכשלה");
       setBusy(false);
