@@ -25,7 +25,7 @@ type Schema = {
   signedDocuments?: { id: string; title: string; signerName: string; hash: string }[];
   reports?: Report[];
   webhooks?: { id: string; url: string; secretHint?: string; events?: string[] }[];
-  bridge?: { connected?: boolean; reason?: string };
+  bridge?: { connected?: boolean; reason?: string; protocol?: string; engine?: string };
 };
 
 type Screen = {
@@ -111,7 +111,7 @@ export default function SaasStudio({
   published: Schema | null;
   versions: Version[];
   roles: Role[];
-  bridge?: { connected?: boolean; reason?: string } | null;
+  bridge?: { connected?: boolean; reason?: string; protocol?: string; engine?: string } | null;
   onReload: () => Promise<void>;
 }) {
   const he = lang === "he";
@@ -923,12 +923,15 @@ function WebhookTools({ tenantId, he, hooks, onError, onMessage, onReload }: {
   );
 }
 
-function TemplateTools({ he, bridge, onSave }: { he: boolean; bridge?: { connected?: boolean; reason?: string } | null; onSave: (path: string, body: unknown, ok: string) => Promise<void> }) {
+function TemplateTools({ he, bridge, onSave }: { he: boolean; bridge?: { connected?: boolean; reason?: string; protocol?: string; engine?: string } | null; onSave: (path: string, body: unknown, ok: string) => Promise<void> }) {
   return (
     <article className="rounded-2xl border bg-white p-4">
       <h2 className="font-black">{he ? "מבנה התחלה" : "Starter structure"}</h2>
       <p className="text-sm">{bridge?.reason || (he ? "המבנה נשמר ב־Bizuply בלבד." : "Stored in Bizuply only.")}</p>
       <p className="mt-2 text-sm font-bold">{he ? "מחובר לאפליקציה החיצונית: " : "External app connected: "}{bridge?.connected ? "yes" : "no"}</p>
+      {bridge?.protocol ? (
+        <p className="mt-1 text-sm">{he ? "פרוטוקול מנוע תבניות: " : "Template Engine protocol: "}{bridge.protocol}{bridge.engine ? ` (${bridge.engine})` : ""}</p>
+      ) : null}
       <button type="button" className="mt-3 rounded-full bg-[#24124d] px-4 py-2 text-sm font-bold text-white" onClick={() => onSave("template-seed", {}, he ? "מבנה ההתחלה נשמר כטיוטה" : "Starter saved")}>{he ? "טעינת מבנה התבנית" : "Load starter"}</button>
     </article>
   );
