@@ -136,7 +136,7 @@ export default function AiStudioCodePage() {
       const timer = window.setTimeout(() => {
         probeWait.current = null;
         resolve({ width, status: "timeout", ready: false, issues: [{ code: "quality-timeout", severity: "timeout", detail: String(width) }] });
-      }, 12000);
+      }, 20000);
       probeWait.current = (report) => {
         window.clearTimeout(timer);
         probeWait.current = null;
