@@ -2040,9 +2040,17 @@ function pageHasLibraryOrigin(page: StudioSitePageWithPortal): boolean {
       (page as any)?.visualEditorPayload?.data,
   );
   return Boolean(
+    (page as { __aiStudioPage?: boolean }).__aiStudioPage === true ||
+    data.__aiStudioPage === true ||
     data.__libraryPage ||
       data.__libraryPageTemplateId ||
-      (page as any)?.__libraryPageTemplateId,
+      (page as any)?.__libraryPageTemplateId ||
+      Object.values(asPlainObject(data.__insertedSections)).some(
+        (section) =>
+          Boolean(section) &&
+          typeof section === "object" &&
+          (section as { aiStudio?: boolean }).aiStudio === true,
+      ),
   );
 }
 
@@ -4843,6 +4851,7 @@ export default function WebsiteStudioPage({
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
 
   const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() => {
+    if (/(?:\?|&)ai=1(?:&|$)/.test(location.search)) return [];
     if (selectedTemplateSeed) {
       // Shells only — full SSR of every template page here blocked first paint.
       return createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
@@ -5256,11 +5265,18 @@ export default function WebsiteStudioPage({
         // Hydrate studio pages from saved payloads, but never drop template pages
         // (server often persists only the active page — e.g. home only).
         // Shells only: visual-react renders live; full SSR of all pages blocks open.
-        const templatePages = selectedTemplateSeed
-          ? createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
-              htmlMode: "none",
-            }).pages
-          : [];
+        const savedAiStudio = (data.site.pages || []).some(
+          (page: { __aiStudioPage?: boolean; data?: { __aiStudioPage?: boolean } }) =>
+            page?.__aiStudioPage === true || page?.data?.__aiStudioPage === true,
+        );
+        const templatePages =
+          savedAiStudio || /(?:\?|&)ai=1(?:&|$)/.test(location.search)
+            ? []
+            : selectedTemplateSeed
+              ? createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
+                  htmlMode: "none",
+                }).pages
+              : [];
 
         if (Array.isArray(data.site.pages) && data.site.pages.length) {
           const savedPages = data.site.pages.map((page: any) => {
@@ -5370,6 +5386,7 @@ export default function WebsiteStudioPage({
     businessId,
     siteId,
     initialSlug,
+    location.search,
     selectedTemplateRenderer?.key,
     selectedTemplateSeed,
   ]);

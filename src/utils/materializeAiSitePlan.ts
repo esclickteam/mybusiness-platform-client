@@ -1,5 +1,6 @@
 import i18n from "../i18n/i18n";
 import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
+import { renderAiSectionHtml } from "./aiStudioSections";
 import {
   getSectionTemplateById,
   SECTION_LIBRARY,
@@ -16,7 +17,7 @@ import {
 
 export type AiSectionPlan = {
   libraryId: string;
-  content?: Record<string, string | VisualContentItem>;
+  content?: Record<string, any>;
 };
 
 export type AiPagePlan = {
@@ -49,6 +50,10 @@ export type AiSitePlan = {
     keywords?: string[];
   };
   pages: AiPagePlan[];
+  domain?: string;
+  spec?: {
+    motion?: string;
+  };
 };
 
 function escapeHtml(value: string) {
@@ -172,7 +177,8 @@ function normalizeContentOverride(
 export function materializePageVisualData(
   page: AiPagePlan,
   palette?: AiSitePlan["palette"],
-  navPages?: Array<{ id?: string; title?: string; slug?: string; isHome?: boolean }>
+  navPages?: Array<{ id?: string; title?: string; slug?: string; isHome?: boolean }>,
+  options?: { motion?: string }
 ) {
   let data: Record<string, any> = {
     __blankVisualPage: true,
@@ -187,11 +193,58 @@ export function materializePageVisualData(
     __attributes: {},
   };
 
-  const nav = addAiPageNav(data, navPages || [], palette);
+  const nativeAi = (page.sections || []).some((section) =>
+    String(section.libraryId || "").startsWith("section-ai-")
+  );
+  const nav = nativeAi
+    ? { data, navId: "" }
+    : addAiPageNav(data, navPages || [], palette);
   data = nav.data;
   let previousSectionId = nav.navId || "";
 
   (page.sections || []).forEach((sectionPlan, index) => {
+    if (String(sectionPlan.libraryId || "").startsWith("section-ai-")) {
+      const sectionId = uid("sec-ai");
+      const htmlId = uid("el-ai");
+      const html = renderAiSectionHtml({
+        libraryId: sectionPlan.libraryId,
+        content: (sectionPlan.content || {}) as Record<string, any>,
+        palette,
+        pages: navPages,
+        motion: options?.motion,
+      });
+      data = writeVisualInsertedSection(data, {
+        id: sectionId,
+        anchorId: previousSectionId || undefined,
+        placement: previousSectionId ? "after" : "append",
+        label: String(sectionPlan.content?.title || sectionPlan.libraryId),
+        aiStudio: true,
+        libraryId: sectionPlan.libraryId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+      data = writeVisualInsertedElement(data, {
+        id: htmlId,
+        type: "html",
+        parentId: sectionId,
+        sectionId,
+        label: String(sectionPlan.content?.title || "מקטע"),
+        html,
+      });
+      data = writeVisualStyleItem(data, sectionId, {
+        width: "100%",
+        maxWidth: "100%",
+        overflow: "visible",
+      } as any);
+      data = writeVisualLayoutItem(data, sectionId, {
+        position: "relative",
+        width: "100%",
+        maxWidth: "100%",
+      });
+      previousSectionId = sectionId;
+      return;
+    }
+
     const template = getSectionTemplateById(sectionPlan.libraryId);
     if (!template) return;
 
@@ -336,7 +389,9 @@ export function materializeAiSitePlan(plan: AiSitePlan) {
   }));
 
   const pages = (plan.pages || []).map((page, index) => {
-    const visual = materializePageVisualData(page, plan.palette, navPages);
+    const visual = materializePageVisualData(page, plan.palette, navPages, {
+      motion: plan.spec?.motion,
+    });
     const pageId = page.id || (index === 0 ? "home" : `page-${index + 1}`);
     const isHome = Boolean(page.isHome || index === 0);
 
@@ -372,6 +427,7 @@ export function materializeAiSitePlan(plan: AiSitePlan) {
         snapshotPageId: pageId,
       },
       snapshotPageId: pageId,
+      __aiStudioPage: true,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
