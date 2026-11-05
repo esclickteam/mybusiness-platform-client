@@ -32,7 +32,7 @@ export function geoIntelCopy() {
     navQuestions: "שאלות",
     navCompetitors: "מתחרים",
     navRecommendations: "המלצות",
-    navImprovementPlan: "תוכנית שיפור GEO",
+    navImprovementPlan: "תוכנית שיפור",
     improvementPlanHint:
       "המלצות מבוססות מדידות אמת בלבד · ללא קריאות ספק חדשות · שינוי באתרים רק באישור",
     improvementProven: "ממצאים מוכחים",
@@ -110,11 +110,11 @@ export function geoIntelCopy() {
     competitorsSubtitle: "השוואת אזכורים, פערים ומקורות — מנתונים אמיתיים בלבד",
     gapsTitle: "שאלות שבהן מתחרים מופיעים ואנחנו לא",
     topSourcesTitle: "מקורות שהמנועים מסתמכים עליהם",
-    recommendationsTitle: "המלצות לשיפור GEO",
+    recommendationsTitle: "המלצות לשיפור",
     recommendationsSubtitle: "ייעוץ מבוסס בדיקות — ללא שינוי אוטומטי באתרים",
     alertsEmpty: "אין התראות פעילות. התראות יופיעו אחרי בדיקות אמת וירידות נראות.",
     gscHelp:
-      "ייבוא CSV מ־Search Console (GenAI/Performance) ללא עלות וללא קריאת Google API. מופרד מציוני GEO.",
+      "ייבוא CSV מ־Search Console ללא עלות וללא קריאת Google API. מופרד מציוני הנראות.",
     model: "מודל",
     checkedAt: "נבדק ב־",
     mentionHighlight: "הדגשת אזכור מותג",

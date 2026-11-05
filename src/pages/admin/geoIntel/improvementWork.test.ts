@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { geoIntelCopy } from "./geoIntelCopy";
 import { canShowMeasurementActions } from "./runActionVisibility";
 import {
   WORK_LABELS,
@@ -21,6 +22,8 @@ describe("improvement work cards", () => {
     for (const label of Object.values(WORK_LABELS)) {
       expect(workHasPublicJargon(label)).toBe(false);
     }
+    expect(workHasPublicJargon(geoIntelCopy().navImprovementPlan)).toBe(false);
+    expect(workHasPublicJargon(geoIntelCopy().recommendationsTitle)).toBe(false);
   });
 
   it("uses the measured work card and does not invent a gap reason", () => {
