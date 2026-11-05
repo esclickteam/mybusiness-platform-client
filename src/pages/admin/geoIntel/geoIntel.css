@@ -439,6 +439,17 @@
   background: #fbfcff;
 }
 
+.geo-q-text--ltr {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+.geo-q-text--rtl {
+  direction: rtl;
+  text-align: right;
+}
+
 .geo-q-text {
   font-weight: 800;
   color: var(--geo-ink);

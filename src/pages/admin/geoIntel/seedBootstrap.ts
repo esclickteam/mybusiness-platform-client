@@ -3,11 +3,14 @@
 export type SeedSummary = {
   brandCount?: number;
   promptsCreated?: number;
+  promptsUpdated?: number;
+  promptsDeactivated?: number;
   promptsSkipped?: number;
   promptsTotalNow?: number;
   expectedPrompts?: number;
   complete?: boolean;
   deleted?: number;
+  catalogVersion?: number;
   noteHe?: string;
 };
 
