@@ -1,9 +1,9 @@
 /** GEO Intelligence UI — עברית בלבד (Phase A). אין בורר שפה. */
 export function geoIntelCopy() {
   return {
-    title: "GEO Intelligence",
-    subtitle: "ניטור נראות מותגים במנועי AI — שימוש פנימי בלבד",
-    questionsTitle: "שאלות GEO Intelligence",
+    title: "נראות במנועי מענה",
+    subtitle: "מעקב אחרי הופעת מותגים בתשובות — שימוש פנימי בלבד",
+    questionsTitle: "שאלות",
     questionsSubtitle: "מעקב אחר שאלות שוק, מענה AI, מקורות ותחרות",
     seed: "אתחול נתונים",
     seedConfirmTitle: "לאשר אתחול נתונים?",
@@ -58,7 +58,7 @@ export function geoIntelCopy() {
     checkNow: "בדוק עכשיו",
     noData: "התחל את המעקב כדי לראות נראות לאורך זמן. אין ציון מפוברק.",
     brand: "מותג",
-    importCsv: "ייבוא CSV מ־GSC",
+    importCsv: "ייבוא מ־Search Console",
     freeOnly: "מערכת פרטית לבעלים · Phase A · מכסה חינמית · ללא OpenAI · ללא Billing",
     plannedHost: "geo.bizuply.com — דומיין פרטי פעיל · בעלים בלבד · noindex",
     privateOwnerOnly: "גישה לחשבון המנהל המורשה בלבד · לא מוצר ללקוחות",
@@ -127,7 +127,7 @@ export function geoIntelCopy() {
     menu: "תפריט",
     openMenu: "פתח תפריט",
     closeMenu: "סגור תפריט",
-    hebrewUiOnly: "ממשק בעברית בלבד · פלטפורמת AI Search Intelligence · Invistimo עברית/IL · Bizuply אנגלית/בינלאומי",
+    hebrewUiOnly: "ממשק בעברית בלבד · Invistimo בעברית · Bizuply באנגלית",
     intent: "כוונה",
     intentPurchase: "כוונת רכישה",
     intentComparison: "השוואת פתרונות",

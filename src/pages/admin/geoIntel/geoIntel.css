@@ -995,3 +995,61 @@
   padding: 0.35rem 0.55rem;
   background: #fff;
 }
+.geo-work-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+.geo-work-filters button {
+  border: 1px solid var(--geo-line);
+  background: #fff;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+}
+.geo-work-filters button.active {
+  background: var(--geo-accent-soft);
+  border-color: transparent;
+  font-weight: 700;
+}
+.geo-work-fields {
+  display: grid;
+  gap: 0.55rem;
+  margin: 0.75rem 0;
+}
+.geo-work-fields div {
+  display: grid;
+  grid-template-columns: 9.5rem minmax(0, 1fr);
+  gap: 0.75rem;
+}
+.geo-work-fields dt {
+  margin: 0;
+  color: var(--geo-muted);
+  font-weight: 700;
+}
+.geo-work-fields dd {
+  margin: 0;
+}
+.geo-work-fields ul {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+}
+.geo-work-status,
+.geo-work-note {
+  display: grid;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+}
+.geo-work-note textarea {
+  width: 100%;
+  border: 1px solid var(--geo-line);
+  border-radius: 10px;
+  padding: 0.45rem 0.6rem;
+  font: inherit;
+}
+@media (max-width: 720px) {
+  .geo-work-fields div {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
+}
