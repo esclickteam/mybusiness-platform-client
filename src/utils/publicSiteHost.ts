@@ -8,6 +8,7 @@
 
 import { isBizuplyTravelHost } from "../lib/travelHost.mjs";
 import { isBizuplyWhatsAppHost } from "../lib/whatsappHost.mjs";
+import { isGeoIntelHost } from "../lib/geoHost.mjs";
 
 export const PRODUCTION_PUBLIC_SITE_DOMAIN = "sites.bizuply.com";
 export const STAGING_PUBLIC_SITE_DOMAIN = "sites-staging.bizuply.com";
@@ -83,6 +84,8 @@ export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
   const host = normalizeHostname(hostname ?? getBrowserHostname());
   if (!host) return false;
   if (isBizuplyTravelHost(host) || isBizuplyWhatsAppHost(host)) return false;
+  // Private GEO Intelligence owner host — never treat as a customer mini-site.
+  if (isGeoIntelHost(host)) return false;
 
   const publicDomain = getPublicSiteDomain(host);
   if (host === publicDomain) return false;
@@ -90,7 +93,13 @@ export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
   if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
   if (host.endsWith(`.${PRODUCTION_PUBLIC_SITE_DOMAIN}`)) return true;
 
-  if (host.endsWith(".bizuply.com") && host !== "bizuply.com" && host !== "www.bizuply.com") {
+  if (
+    host.endsWith(".bizuply.com") &&
+    host !== "bizuply.com" &&
+    host !== "www.bizuply.com" &&
+    host !== "app.bizuply.com" &&
+    !isGeoIntelHost(host)
+  ) {
     return true;
   }
 
