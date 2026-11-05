@@ -17,6 +17,7 @@ export type Tab =
   | "competitors"
   | "citations"
   | "opportunities"
+  | "improvementPlan"
   | "content"
   | "tech"
   | "trends"

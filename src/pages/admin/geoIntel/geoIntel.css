@@ -899,3 +899,99 @@
   padding: 0.75rem 0.9rem;
   margin: 0.5rem 0;
 }
+
+/* תוכנית שיפור GEO */
+.geo-plan {
+  display: grid;
+  gap: 1rem;
+}
+.geo-plan-hero h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.45rem;
+}
+.geo-plan-hero p {
+  margin: 0.25rem 0;
+  color: var(--geo-muted);
+}
+.geo-plan-disclaimer {
+  background: var(--geo-warn-bg);
+  color: var(--geo-warn);
+  border-radius: 12px;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+}
+.geo-plan-tasks {
+  display: grid;
+  gap: 0.85rem;
+}
+.geo-plan-task {
+  background: var(--geo-card);
+  border: 1px solid var(--geo-line);
+  border-radius: var(--geo-radius);
+  padding: 1rem 1.1rem;
+  box-shadow: var(--geo-shadow);
+}
+.geo-plan-task-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+.geo-plan-task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--geo-muted);
+}
+.geo-plan-task-meta span {
+  background: var(--geo-accent-soft);
+  border-radius: 999px;
+  padding: 0.15rem 0.55rem;
+}
+.geo-plan-task-meta span[data-prov="proven"] {
+  background: var(--geo-ok-bg);
+  color: var(--geo-ok);
+}
+.geo-plan-task-meta span[data-prov="hypothesis_needs_verification"] {
+  background: var(--geo-warn-bg);
+  color: var(--geo-warn);
+}
+.geo-plan-action {
+  font-weight: 600;
+  margin: 0.4rem 0;
+}
+.geo-plan-evidence {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+  align-items: center;
+}
+.geo-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  border: 1px solid var(--geo-line);
+  padding: 0.15rem 0.55rem;
+  font-size: 0.75rem;
+  color: var(--geo-muted);
+}
+.geo-plan-approval {
+  margin: 0.65rem 0 0;
+  font-size: 0.82rem;
+  color: var(--geo-warn);
+}
+.geo-muted {
+  color: var(--geo-muted);
+  font-size: 0.88rem;
+}
+.geo-plan-status {
+  min-width: 8rem;
+  border-radius: 10px;
+  border: 1px solid var(--geo-line);
+  padding: 0.35rem 0.55rem;
+  background: #fff;
+}

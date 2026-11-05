@@ -32,6 +32,13 @@ export function geoIntelCopy() {
     navQuestions: "שאלות",
     navCompetitors: "מתחרים",
     navRecommendations: "המלצות",
+    navImprovementPlan: "תוכנית שיפור GEO",
+    improvementPlanHint:
+      "המלצות מבוססות מדידות אמת בלבד · ללא קריאות ספק חדשות · שינוי באתרים רק באישור",
+    improvementProven: "ממצאים מוכחים",
+    improvementHypothesis: "השערות לבדיקה",
+    improvementTasks: "משימות",
+    improvementProgress: "התקדמות",
     navAlerts: "התראות",
     navSettings: "הגדרות",
     visibility: "ציון נראות AI",

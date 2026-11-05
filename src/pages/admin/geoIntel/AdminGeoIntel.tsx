@@ -12,7 +12,7 @@ import {
   Legend,
 } from "recharts";
 import { geoIntelCopy } from "./geoIntelCopy";
-import { geoGet, geoPost } from "./geoApi";
+import { geoGet, geoPatch, geoPost } from "./geoApi";
 import {
   formatSeedResultHe,
   shouldShowSeedInitButton,
@@ -114,6 +114,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [competitors, setCompetitors] = useState<any>(null);
   const [citations, setCitations] = useState<any>(null);
   const [opportunities, setOpportunities] = useState<any>(null);
+  const [improvementPlan, setImprovementPlan] = useState<any>(null);
   const [trends, setTrends] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
   const [tech, setTech] = useState<any>(null);
@@ -175,6 +176,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         comp,
         cit,
         opp,
+        plan,
         tr,
         cont,
         ta,
@@ -189,6 +191,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         geoGet("/competitor-intel", filterParams),
         geoGet("/citations", filterParams),
         geoGet("/opportunities", filterParams),
+        geoGet("/improvement-plan", { ...filterParams, engine: "perplexity" }),
         geoGet("/trends", filterParams),
         geoGet("/content-intel", { brandId }),
         geoGet("/tech-audit", { brandId }),
@@ -203,6 +206,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
       setCompetitors(comp);
       setCitations(cit);
       setOpportunities(opp);
+      setImprovementPlan(plan);
       setTrends(tr);
       setContent(cont);
       setTech(ta);
@@ -253,6 +257,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "competitors", label: copy.navCompetitors },
     { id: "citations", label: "מקורות וציטוטים" },
     { id: "opportunities", label: "הזדמנויות" },
+    { id: "improvementPlan", label: copy.navImprovementPlan },
     { id: "content", label: "ניתוח תוכן" },
     { id: "tech", label: "ביקורת GEO טכנית" },
     { id: "trends", label: "מגמות" },
@@ -940,6 +945,180 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     ),
                   ])}
                 />
+              )}
+            </section>
+          ) : null}
+
+          {tab === "improvementPlan" ? (
+            <section className="geo-plan" dir="rtl" lang="he">
+              <div className="geo-plan-hero">
+                <h2>{copy.navImprovementPlan}</h2>
+                <p>{copy.improvementPlanHint}</p>
+                {improvementPlan?.disclaimerHe ? (
+                  <p className="geo-plan-disclaimer">
+                    {improvementPlan.disclaimerHe}
+                  </p>
+                ) : null}
+              </div>
+              {improvementPlan?.awaitingData ? (
+                <AwaitBox message={improvementPlan.messageHe} />
+              ) : (
+                <>
+                  <div className="geo-kpi-grid">
+                    <Kpi
+                      label={copy.improvementProgress}
+                      value={
+                        improvementPlan?.progress?.pctDone == null
+                          ? "—"
+                          : `${improvementPlan.progress.pctDone}%`
+                      }
+                      denom={`${improvementPlan?.progress?.done || 0}/${improvementPlan?.progress?.total || 0} הושלמו`}
+                    />
+                    <Kpi
+                      label="מדגם מדידות"
+                      value={improvementPlan?.sampleSize ?? "—"}
+                    />
+                    <Kpi
+                      label="שיעור הופעה"
+                      value={
+                        improvementPlan?.appearanceRatePct == null
+                          ? "—"
+                          : `${improvementPlan.appearanceRatePct}%`
+                      }
+                    />
+                    <Kpi
+                      label="חסרים עם מתחרים"
+                      value={
+                        improvementPlan?.missingWithCompetitorsCount ?? "—"
+                      }
+                    />
+                  </div>
+
+                  <h3>{copy.improvementProven}</h3>
+                  <Table
+                    columns={["סוג", "כותרת", "פירוט", "ראיות"]}
+                    rows={(improvementPlan?.findingsProven || []).map(
+                      (f: any) => [
+                        f.kind,
+                        f.titleHe,
+                        f.bodyHe,
+                        (f.evidenceCheckIds || []).length
+                          ? `${f.evidenceCheckIds.length} מדידות`
+                          : "—",
+                      ]
+                    )}
+                  />
+
+                  <h3>{copy.improvementHypothesis}</h3>
+                  <Table
+                    columns={["סוג", "כותרת", "פירוט", "סטטוס אימות"]}
+                    rows={(improvementPlan?.findingsHypothesis || []).map(
+                      (f: any) => [
+                        f.kind,
+                        f.titleHe,
+                        f.bodyHe,
+                        "דורש בדיקה ידנית",
+                      ]
+                    )}
+                  />
+
+                  <h3>{copy.improvementTasks}</h3>
+                  <div className="geo-plan-tasks">
+                    {(improvementPlan?.tasks || []).map((t: any) => (
+                      <article key={t.taskKey} className="geo-plan-task">
+                        <header className="geo-plan-task-head">
+                          <div>
+                            <strong>{t.titleHe}</strong>
+                            <div className="geo-plan-task-meta">
+                              <span data-prov={t.provenance}>
+                                {t.provenance === "proven"
+                                  ? "מוכח"
+                                  : "השערה"}
+                              </span>
+                              <span>השפעה: {t.impact}</span>
+                              <span>מאמץ: {t.effort}</span>
+                              <span>ביטחון: {t.confidence}</span>
+                              {t.suggestedPath ? (
+                                <span>יעד: {t.suggestedPath}</span>
+                              ) : null}
+                            </div>
+                          </div>
+                          <select
+                            className="geo-plan-status"
+                            value={t.status || "todo"}
+                            disabled={busy}
+                            onChange={async (e) => {
+                              const status = e.target.value;
+                              setBusy(true);
+                              try {
+                                await geoPatch(
+                                  `/improvement-plan/tasks/${encodeURIComponent(
+                                    t.taskKey
+                                  )}`,
+                                  { status },
+                                  { brandId }
+                                );
+                                await loadBrandData();
+                              } catch (err: any) {
+                                setError(
+                                  err?.response?.data?.error ||
+                                    err.message ||
+                                    "עדכון סטטוס נכשל"
+                                );
+                              } finally {
+                                setBusy(false);
+                              }
+                            }}
+                          >
+                            <option value="todo">לביצוע</option>
+                            <option value="in_progress">בתהליך</option>
+                            <option value="done">הושלם</option>
+                            <option value="dismissed">נדחה</option>
+                          </select>
+                        </header>
+                        <p>{t.bodyHe}</p>
+                        <p className="geo-plan-action">{t.actionHe}</p>
+                        {t.competitors?.length ? (
+                          <p className="geo-muted">
+                            מתחרים במדידה: {t.competitors.join(", ")}
+                          </p>
+                        ) : null}
+                        {t.promptText ? (
+                          <p className="geo-muted">שאלה: {t.promptText}</p>
+                        ) : null}
+                        <div className="geo-plan-evidence">
+                          {(t.evidenceCheckIds || []).slice(0, 3).map(
+                            (id: string) => (
+                              <button
+                                key={id}
+                                type="button"
+                                className="geo-btn geo-btn-ghost"
+                                onClick={() => openCheck(id)}
+                              >
+                                מדידה {String(id).slice(-6)}
+                              </button>
+                            )
+                          )}
+                          {(t.evidenceSources || [])
+                            .slice(0, 4)
+                            .map((s: any, i: number) => (
+                              <span key={`${t.taskKey}-src-${i}`} className="geo-chip">
+                                {s.domain || s.title || "מקור"}
+                              </span>
+                            ))}
+                        </div>
+                        {t.siteChangeRequiresApproval ? (
+                          <p className="geo-plan-approval">
+                            שינוי באתר המותג דורש אישור Owner — לא מבוצע אוטומטית.
+                          </p>
+                        ) : null}
+                      </article>
+                    ))}
+                    {!improvementPlan?.tasks?.length ? (
+                      <AwaitBox message="אין משימות — אין פערים שנגזרו ממדידות." />
+                    ) : null}
+                  </div>
+                </>
               )}
             </section>
           ) : null}
