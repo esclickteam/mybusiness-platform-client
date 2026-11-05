@@ -1,6 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import API from "../../../api";
 import { geoIntelCopy, type GeoCopy } from "./geoIntelCopy";
+import {
+  formatSeedResultHe,
+  shouldShowSeedInitButton,
+  type SeedSummary,
+} from "./seedBootstrap";
 import "./geoIntel.css";
 
 type Brand = { _id: string; slug: string; name: string; domains: string[] };
@@ -162,11 +167,17 @@ export default function AdminGeoIntel({
   const [compData, setCompData] = useState<any>(null);
   const [recData, setRecData] = useState<any>(null);
   const [truthPlan, setTruthPlan] = useState<any>(null);
+  const [seedConfirmOpen, setSeedConfirmOpen] = useState(false);
+  const [seedSummary, setSeedSummary] = useState<SeedSummary | null>(null);
+  const [seedInitConsumed, setSeedInitConsumed] = useState(false);
 
   const loadStatus = useCallback(async () => {
     const { data } = await API.get("/geo-intel/status");
     setStatus(data);
     setEngines(data.engines || []);
+    if (data?.seedBootstrap?.complete) {
+      setSeedInitConsumed(true);
+    }
   }, []);
 
   const loadBrands = useCallback(async () => {
@@ -316,14 +327,29 @@ export default function AdminGeoIntel({
   const pageCount = Math.max(1, Math.ceil(filteredRows.length / PAGE_SIZE));
   const pageRows = filteredRows.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  const onSeed = async () => {
+  const showSeedInitButton = shouldShowSeedInitButton(
+    status?.seedBootstrap,
+    seedInitConsumed
+  );
+
+  const onSeedConfirm = async () => {
+    setSeedConfirmOpen(false);
     setBusy(true);
     setError("");
     try {
-      await API.post("/geo-intel/seed");
+      const { data } = await API.post("/geo-intel/seed");
+      const summary = (data?.summary || data?.result?.summary || null) as SeedSummary | null;
+      setSeedSummary(summary);
+      setSeedInitConsumed(true);
+      if (data?.seedBootstrap) {
+        setStatus((prev: any) =>
+          prev ? { ...prev, seedBootstrap: data.seedBootstrap } : prev
+        );
+      }
       await loadBrands();
       await loadQuestions();
       await loadDashboard();
+      await loadStatus();
     } catch (err: any) {
       setError(err?.response?.data?.error || err.message);
     } finally {
@@ -639,14 +665,26 @@ export default function AdminGeoIntel({
           </div>
 
           <div className="geo-intel-actions">
-            <button
-              type="button"
-              className="geo-btn geo-btn-primary"
-              disabled={busy}
-              onClick={onSeed}
-            >
-              {copy.seed}
-            </button>
+            {showSeedInitButton ? (
+              <button
+                type="button"
+                className="geo-btn geo-btn-primary"
+                disabled={busy || !status?.canRun}
+                title={copy.seedButtonHint}
+                onClick={() => setSeedConfirmOpen(true)}
+              >
+                {copy.seed}
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="geo-btn geo-btn-ghost"
+                disabled
+                title={copy.seedAlreadyDone}
+              >
+                {copy.seedAlreadyDone}
+              </button>
+            )}
             <button
               type="button"
               className="geo-btn geo-btn-ghost"
@@ -664,6 +702,13 @@ export default function AdminGeoIntel({
             </button>
           </div>
 
+          {seedSummary ? (
+            <div className="geo-intel-banner geo-seed-result" role="status">
+              <strong>{copy.seedDoneTitle}</strong>
+              <div className="meta">{formatSeedResultHe(seedSummary)}</div>
+            </div>
+          ) : null}
+
           {truthPlan ? (
             <div className="geo-intel-banner">
               <strong>{copy.prepareTruthDone}</strong>
@@ -674,6 +719,43 @@ export default function AdminGeoIntel({
                       `${p.brandName}: ${p.prompts?.length || 0} שאלות · ${p.status}`
                   )
                   .join(" · ")}
+              </div>
+            </div>
+          ) : null}
+
+          {seedConfirmOpen ? (
+            <div
+              className="geo-confirm-backdrop"
+              role="presentation"
+              onClick={() => !busy && setSeedConfirmOpen(false)}
+            >
+              <div
+                className="geo-confirm-dialog"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="geo-seed-confirm-title"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <h3 id="geo-seed-confirm-title">{copy.seedConfirmTitle}</h3>
+                <p>{copy.seedConfirmBody}</p>
+                <div className="geo-confirm-actions">
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-ghost"
+                    disabled={busy}
+                    onClick={() => setSeedConfirmOpen(false)}
+                  >
+                    {copy.seedCancel}
+                  </button>
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-primary"
+                    disabled={busy || !status?.canRun}
+                    onClick={onSeedConfirm}
+                  >
+                    {copy.seedConfirmAction}
+                  </button>
+                </div>
               </div>
             </div>
           ) : null}

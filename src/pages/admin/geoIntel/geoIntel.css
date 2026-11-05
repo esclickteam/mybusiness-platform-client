@@ -217,6 +217,55 @@
   margin-bottom: 12px;
 }
 
+.geo-seed-result {
+  border-color: #bbf7d0;
+  background: #f0fdf4;
+}
+
+.geo-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.geo-confirm-dialog {
+  width: min(420px, 100%);
+  background: #fff;
+  border: 1px solid var(--geo-line);
+  border-radius: 16px;
+  padding: 18px 16px 14px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
+  direction: rtl;
+  text-align: right;
+}
+
+.geo-confirm-dialog h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.geo-confirm-dialog p {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #475569;
+  font-weight: 600;
+}
+
+.geo-confirm-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
+
 .geo-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
