@@ -17,6 +17,7 @@ type CodeResult = {
   versionId?: string;
   ready?: boolean;
   quality?: QualityReport | null;
+  reverted?: boolean;
 };
 type ProjectRow = { projectId: string; title: string; status?: string; updatedAt?: string };
 type ProbeReport = { width?: number; status?: string; ready?: boolean; issues?: QualityIssue[] };
@@ -32,6 +33,8 @@ const ISSUE_LABELS: Record<string, string> = {
   "dead-link": "קישור בלי פעולה",
   "missing-screen": "מסך חסר",
   "missing-nav": "ניווט חסר",
+  "missing-text": "הטקסט המבוקש לא מופיע",
+  "leftover-text": "הטקסט הישן נשאר",
   filter: "הסינון לא משנה את הרשימה",
   calculator: "המחשבון לא מגיב",
   gallery: "הגלריה לא עובדת",
@@ -80,6 +83,7 @@ export default function AiStudioCodePage() {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const loadWait = useRef<(() => void) | null>(null);
   const probeWait = useRef<((report: ProbeReport) => void) | null>(null);
+  const expectVersion = useRef("");
 
   const previewUrl = useMemo(
     () => (project ? isolatedPreviewUrl(project.projectId, project.previewToken) : ""),
@@ -91,6 +95,7 @@ export default function AiStudioCodePage() {
       const data = event.data || {};
       if (data.source !== "bizuply-preview" || data.type !== "quality") return;
       if (iframeRef.current && event.source !== iframeRef.current.contentWindow) return;
+      if (data.versionId && expectVersion.current && data.versionId !== expectVersion.current) return;
       probeWait.current?.(data);
     }
     window.addEventListener("message", onMessage);
@@ -151,6 +156,7 @@ export default function AiStudioCodePage() {
 
   async function review(current: CodeResult) {
     if (!current?.projectId || !current.previewToken) return;
+    expectVersion.current = current.versionId || "";
     setChecking(true);
     setError("");
     try {
@@ -171,6 +177,10 @@ export default function AiStudioCodePage() {
         { timeout: 30000 }
       );
       remember(data);
+      if (data.reverted) {
+        setError("הבקשה לא הושלמה במלואה. השינוי לא נשמר והגרסה הקודמת נשארה.");
+        return;
+      }
       setFrameNonce((value) => value + 1);
     } catch (err: any) {
       setError(err?.response?.data?.error || "בדיקת האיכות נכשלה");
@@ -261,7 +271,9 @@ export default function AiStudioCodePage() {
   }
 
   const qualityIssues = project?.quality?.issues || [];
-  const ready = project?.quality?.stage === "visual" && project?.quality?.ready === true;
+  const ready = project?.quality?.stage === "visual"
+    && project?.quality?.ready === true
+    && project?.quality?.versionId === project?.versionId;
 
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-slate-950 text-slate-100" dir="rtl">
