@@ -1479,7 +1479,7 @@ export default function AdminGeoIntel({
                 <ul className="geo-list">
                   <li>
                     סביבה: {stagingInfo?.env || status?.phase || "A"} · כתובת
-                    מתוכננת: geo.bizuply.com (DNS לא שונה)
+                    {copy.plannedHost}
                   </li>
                   <li>
                     תשלום API: {String(stagingInfo?.paidApis ?? false)} · OpenAI:{" "}

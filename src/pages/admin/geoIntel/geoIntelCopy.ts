@@ -45,7 +45,7 @@ export function geoIntelCopy() {
     brand: "מותג",
     importCsv: "ייבוא CSV מ־GSC",
     freeOnly: "מערכת פרטית לבעלים · Phase A · מכסה חינמית · ללא OpenAI · ללא Billing",
-    plannedHost: "geo.bizuply.com — מוכן לחיבור (DNS רק לאחר אישור מפורש)",
+    plannedHost: "geo.bizuply.com — דומיין פרטי פעיל · בעלים בלבד · noindex",
     privateOwnerOnly: "גישה לחשבון המנהל המורשה בלבד · לא מוצר ללקוחות",
     sources: "מקורות",
     ourSources: "מקורות שלנו",

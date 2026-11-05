@@ -1192,6 +1192,33 @@ export default function App() {
                       }}
                     >
                       <Routes location={location}>
+                        {isGeoProductionHost ? (
+                          <>
+                            <Route path="/login" element={<Login />} />
+                            <Route
+                              path="/"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGeoIntel />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/geo-intel"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGeoIntel />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                          </>
+                        ) : (
+                          <>
                         <Route
                           path="/"
                           element={
@@ -1592,35 +1619,6 @@ export default function App() {
                           />
                         ) : null}
 
-                        {isGeoProductionHost ? (
-                          <>
-                            <Route
-                              path="/"
-                              element={
-                                <ProtectedRoute roles={["admin"]}>
-                                  <Suspense fallback={null}>
-                                    <AdminGeoIntel />
-                                  </Suspense>
-                                </ProtectedRoute>
-                              }
-                            />
-                            <Route
-                              path="/admin/geo-intel"
-                              element={
-                                <ProtectedRoute roles={["admin"]}>
-                                  <Suspense fallback={null}>
-                                    <AdminGeoIntel />
-                                  </Suspense>
-                                </ProtectedRoute>
-                              }
-                            />
-                            {/* /login stays on the shared AuthShell route below */}
-                            <Route
-                              path="*"
-                              element={<Navigate to="/" replace />}
-                            />
-                          </>
-                        ) : null}
 
                         <Route
                           path="/admin"
@@ -1735,6 +1733,8 @@ export default function App() {
                         </Route>
 
                         <Route path="*" element={<Navigate to="/" replace />} />
+                          </>
+                        )}
                       </Routes>
 
                       <Suspense fallback={null}><AiModal /></Suspense>
