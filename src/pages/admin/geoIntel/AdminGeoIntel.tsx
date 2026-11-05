@@ -105,6 +105,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [seedConfirmOpen, setSeedConfirmOpen] = useState(false);
   const [seedSummary, setSeedSummary] = useState<SeedSummary | null>(null);
   const [seedInitConsumed, setSeedInitConsumed] = useState(false);
+  const [trialConfirmOpen, setTrialConfirmOpen] = useState(false);
+  const [trialResult, setTrialResult] = useState<any>(null);
 
   const [overview, setOverview] = useState<any>(null);
   const [visibility, setVisibility] = useState<any>(null);
@@ -289,6 +291,23 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     }
   };
 
+  const runTrialSmoke = async () => {
+    setBusy(true);
+    setError("");
+    try {
+      const data = await geoPost("/trial-smoke", { confirm: true });
+      setTrialResult(data);
+      setTrialConfirmOpen(false);
+      await loadCore();
+      await loadBrandData();
+      if (data?.check?.detected?.appeared) selectTab("appeared");
+    } catch (e: any) {
+      setError(e?.response?.data?.error || e.message || "trial smoke failed");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const saveManual = async () => {
     setBusy(true);
     try {
@@ -412,6 +431,19 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 {copy.seed}
               </button>
             ) : null}
+            {status?.trialSmoke?.buttonVisible !== false &&
+            status?.canRun &&
+            status?.perplexity?.billingApproved ? (
+              <button
+                type="button"
+                className="geo-btn geo-btn-primary"
+                disabled={busy || status?.trialSmoke?.inProgress}
+                title={copy.trialSmokeHint}
+                onClick={() => setTrialConfirmOpen(true)}
+              >
+                {copy.trialSmoke}
+              </button>
+            ) : null}
             <button
               type="button"
               className="geo-btn geo-btn-ghost"
@@ -425,6 +457,19 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
           {seedSummary ? (
             <div className="geo-intel-banner geo-seed-result" role="status">
               {formatSeedResultHe(seedSummary)}
+            </div>
+          ) : null}
+
+          {trialResult?.check ? (
+            <div className="geo-intel-banner geo-seed-result" role="status">
+              {copy.trialSmokeDone}
+              {" · "}
+              מקורות: {trialResult.check.sourcesCount ?? 0}
+              {" · "}
+              עלות: ${Number(trialResult.check.estimatedCostUsd || 0).toFixed(4)}
+              {" · "}
+              תקציב: ${Number(trialResult.budget?.spentUsd || 0).toFixed(4)} / $
+              {Number(trialResult.budget?.hardCapUsd || 2).toFixed(0)}
             </div>
           ) : null}
 
@@ -448,6 +493,32 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     onClick={runSeed}
                   >
                     {copy.seedConfirmAction}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {trialConfirmOpen ? (
+            <div className="geo-confirm-backdrop">
+              <div className="geo-confirm-dialog" role="dialog">
+                <h3>{copy.trialSmokeConfirmTitle}</h3>
+                <p>{copy.trialSmokeConfirmBody}</p>
+                <div className="geo-confirm-actions">
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-ghost"
+                    onClick={() => setTrialConfirmOpen(false)}
+                  >
+                    {copy.trialSmokeCancel}
+                  </button>
+                  <button
+                    type="button"
+                    className="geo-btn geo-btn-primary"
+                    disabled={busy}
+                    onClick={runTrialSmoke}
+                  >
+                    {copy.trialSmokeConfirmAction}
                   </button>
                 </div>
               </div>
