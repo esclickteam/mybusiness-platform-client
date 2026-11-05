@@ -902,9 +902,6 @@ export default function App() {
     if (root) observer.observe(root, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, [location.pathname, i18n.language]);
-  const appDir = getTextDirection(i18n.language);
-  const appLang = getHtmlLang(i18n.language);
-
   const isMiniSiteHost = isPublicMiniSiteHost();
   const hostname = getCurrentHostname();
   const travelHost = isBizuplyTravelHost(hostname);
@@ -914,6 +911,18 @@ export default function App() {
   const isHomePreview = location.pathname === "/home-preview";
   // Production GEO host (geo.bizuply.com) — admin-only internal shell, Hebrew RTL.
   const isGeoProductionHost = isGeoIntelHost(hostname);
+
+  useEffect(() => {
+    if (!isGeoProductionHost) return;
+    if (i18n.language !== "he") {
+      void i18n.changeLanguage("he");
+    }
+    document.documentElement.lang = "he";
+    document.documentElement.dir = "rtl";
+  }, [isGeoProductionHost, i18n]);
+
+  const appDir = isGeoProductionHost ? "rtl" : getTextDirection(i18n.language);
+  const appLang = isGeoProductionHost ? "he" : getHtmlLang(i18n.language);
   const isCinematicHome =
     !isGeoProductionHost &&
     (location.pathname === "/" || isHomePreview);
