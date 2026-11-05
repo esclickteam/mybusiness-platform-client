@@ -8,7 +8,36 @@ import {
 } from "./seedBootstrap";
 import "./geoIntel.css";
 
-type Brand = { _id: string; slug: string; name: string; domains: string[] };
+type Brand = {
+  _id: string;
+  slug: string;
+  name: string;
+  domains: string[];
+  languages?: string[];
+  market?: string;
+  primaryCountry?: string;
+};
+
+function intentLabel(copy: GeoCopy, intent?: string) {
+  switch (intent) {
+    case "purchase_intent":
+      return copy.intentPurchase;
+    case "comparison":
+      return copy.intentComparison;
+    case "price":
+      return copy.intentPrice;
+    case "recommendation":
+      return copy.intentRecommendation;
+    case "info":
+      return copy.intentInfo;
+    default:
+      return "";
+  }
+}
+
+function questionTextDir(language?: string) {
+  return language === "he" ? "rtl" : "ltr";
+}
 type Engine = {
   id: string;
   label: string;
@@ -46,7 +75,15 @@ type Metrics = {
   }>;
 };
 type QuestionRow = {
-  prompt: { _id: string; text: string; language: string; topic?: string };
+  prompt: {
+    _id: string;
+    text: string;
+    language: string;
+    topic?: string;
+    intent?: string;
+    country?: string;
+    seedKey?: string;
+  };
   engine: string;
   engineCheckStatus: string;
   latestCheck: null | {
@@ -186,6 +223,18 @@ export default function AdminGeoIntel({
     setBrands(list);
     setBrandId((prev) => prev || list[0]?._id || "");
   }, []);
+
+  const activeBrand = useMemo(
+    () => brands.find((b) => b._id === brandId) || null,
+    [brands, brandId]
+  );
+
+  useEffect(() => {
+    if (!activeBrand) return;
+    // Keep language filter aligned with each brand's market language.
+    if (activeBrand.slug === "invistimo") setLangFilter("he");
+    else if (activeBrand.slug === "bizuply") setLangFilter("en");
+  }, [activeBrand?.slug]);
 
   const loadDashboard = useCallback(async () => {
     if (!brandId) return;
@@ -632,7 +681,17 @@ export default function AdminGeoIntel({
                   key={b._id}
                   type="button"
                   className={brandId === b._id ? "active" : ""}
-                  onClick={() => setBrandId(b._id)}
+                  onClick={() => {
+                    setBrandId(b._id);
+                    setLangFilter(
+                      b.slug === "invistimo"
+                        ? "he"
+                        : b.slug === "bizuply"
+                          ? "en"
+                          : b.languages?.[0] || ""
+                    );
+                    setPage(1);
+                  }}
                 >
                   {b.name}
                 </button>
@@ -1130,6 +1189,7 @@ export default function AdminGeoIntel({
                   <thead>
                     <tr>
                       <th>{copy.question}</th>
+                      <th>{copy.intent}</th>
                       <th>{copy.engine}</th>
                       <th>{copy.language}</th>
                       <th>{copy.appeared}</th>
@@ -1143,12 +1203,16 @@ export default function AdminGeoIntel({
                   <tbody>
                     {pageRows.map((r) => {
                       const unchecked = r.engineCheckStatus === "not_checked";
+                      const qDir = questionTextDir(r.prompt.language);
+                      const intentHe = intentLabel(copy, r.prompt.intent);
                       return (
                         <tr key={r.prompt._id}>
                           <td>
                             <button
                               type="button"
-                              className="geo-q-text"
+                              className={`geo-q-text geo-q-text--${qDir}`}
+                              dir={qDir}
+                              lang={r.prompt.language || undefined}
                               disabled={!r.latestCheck?.id}
                               onClick={() =>
                                 r.latestCheck?.id &&
@@ -1161,6 +1225,11 @@ export default function AdminGeoIntel({
                               {r.prompt.topic === "starter" || !r.prompt.topic
                                 ? copy.topicStarter
                                 : r.prompt.topic}
+                              {activeBrand?.slug === "invistimo"
+                                ? ` · ${copy.marketIL}`
+                                : activeBrand?.slug === "bizuply"
+                                  ? ` · ${copy.marketInternational}`
+                                  : ""}
                             </div>
                             {r.latestCheck?.dataClass === "test_fixture" ? (
                               <div className="geo-pill wait" style={{ marginTop: 6 }}>
@@ -1177,6 +1246,13 @@ export default function AdminGeoIntel({
                                 {copy.apiBadge}
                               </div>
                             ) : null}
+                          </td>
+                          <td>
+                            {intentHe ? (
+                              <span className="geo-pill muted">{intentHe}</span>
+                            ) : (
+                              "—"
+                            )}
                           </td>
                           <td>
                             <span className="geo-pill">
