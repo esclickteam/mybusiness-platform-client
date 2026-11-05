@@ -112,7 +112,7 @@ export function geoIntelCopy() {
     menu: "תפריט",
     openMenu: "פתח תפריט",
     closeMenu: "סגור תפריט",
-    hebrewUiOnly: "ממשק בעברית בלבד · Invistimo בעברית (IL) · Bizuply באנגלית (בינלאומי)",
+    hebrewUiOnly: "ממשק בעברית בלבד · פלטפורמת AI Search Intelligence · Invistimo עברית/IL · Bizuply אנגלית/בינלאומי",
     intent: "כוונה",
     intentPurchase: "כוונת רכישה",
     intentComparison: "השוואת פתרונות",
