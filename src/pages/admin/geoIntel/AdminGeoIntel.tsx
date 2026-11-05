@@ -350,8 +350,6 @@ export default function AdminGeoIntel({
       ?.scrollIntoView({ behavior: "smooth", block: "center" });
   }, [error]);
 
-  const activeBrand = brands.find((b) => b._id === brandId);
-
   const filteredRows = useMemo(() => {
     let list = [...rows];
     const q = search.trim().toLowerCase();
