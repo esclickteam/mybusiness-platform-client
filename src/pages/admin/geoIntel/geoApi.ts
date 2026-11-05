@@ -13,3 +13,12 @@ export async function geoPost(
   const { data } = await API.post(`/geo-intel${path}`, body || {}, { params });
   return data;
 }
+
+export async function geoPatch(
+  path: string,
+  body?: Record<string, unknown>,
+  params?: Record<string, unknown>
+) {
+  const { data } = await API.patch(`/geo-intel${path}`, body || {}, { params });
+  return data;
+}
