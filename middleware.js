@@ -1038,7 +1038,7 @@ export default async function middleware(request) {
   if (isSaasProductHost(host)) return proxySaasProduct(request, host);
   const pathname = getPathname(request);
 
-  // Prepare geo.bizuply.com SPA shell (DNS still require explicit approval).
+  // Private GEO Intelligence host (geo.bizuply.com).
   if (isGeoIntelHost(host)) {
     return handleGeoIntelHost(request, pathname);
   }
