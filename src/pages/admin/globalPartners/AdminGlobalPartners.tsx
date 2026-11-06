@@ -1,8 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gpGet, gpPatch, gpPost } from "./globalPartnersApi";
-import { statusLabel, TRACK_LABELS } from "./copy";
+import { statusLabel } from "./copy";
 import { useGlobalPartnersRealtime } from "./useGlobalPartnersRealtime";
 import OutreachCenter from "./OutreachCenter";
+import CandidateProfileModal from "./CandidateProfileModal";
 import "./globalPartners.css";
 
 type Tab = "dashboard" | "candidates" | "outreach" | "add" | "import" | "scans";
@@ -59,7 +60,8 @@ export default function AdminGlobalPartners() {
   });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
-  const [selected, setSelected] = useState<any>(null);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [outreachId, setOutreachId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
 
   const pushLive = useCallback((text: string) => {
@@ -95,7 +97,7 @@ export default function AdminGlobalPartners() {
     const data = await gpGet("/candidates", {
       q: q || undefined,
       status: statusFilter || undefined,
-      limit: 50,
+      limit: 100,
       ...contactParams,
     });
     setCandidates(data.items || []);
@@ -213,85 +215,16 @@ export default function AdminGlobalPartners() {
     }
   }
 
-  async function openCandidate(id: string) {
-    setBusy(true);
+  function openCandidate(id: string) {
     setError("");
-    try {
-      const data = await gpGet(`/candidates/${id}`);
-      setSelected(data.candidate);
-    } catch (err: any) {
-      setError(err?.message || "טעינת מועמד נכשלה");
-    } finally {
-      setBusy(false);
-    }
+    setProfileId(id);
   }
 
-  async function updateStatus(id: string, recruitmentStatus: string) {
-    setBusy(true);
-    try {
-      const data = await gpPatch(`/candidates/${id}`, { recruitmentStatus });
-      setSelected(data.candidate);
-      await loadCandidates();
-    } catch (err: any) {
-      setError(err?.message || "עדכון סטטוס נכשל");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function rescore(id: string) {
-    setBusy(true);
-    try {
-      const data = await gpPost(`/candidates/${id}/rescore`);
-      setSelected(data.candidate);
-      await loadCandidates();
-      setMessage("הציון חושב מחדש לפי מנוע הכללים (ללא AI).");
-    } catch (err: any) {
-      setError(err?.message || "חישוב מחדש נכשל");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function enrichContacts(id: string) {
-    setBusy(true);
+  function openOutreach(id: string) {
     setError("");
-    try {
-      const data = await gpPost(`/candidates/${id}/enrich`, { force: true, inline: true });
-      if (data.enrich?.ok === false) {
-        setMessage(`העשרה לא הצליחה: ${data.enrich.reason || "unknown"}`);
-      } else if (data.mode === "queued") {
-        setMessage("העשרת פרטי קשר נשלחה לתור העובד.");
-      } else {
-        setMessage(
-          `העשרה הסתיימה · אימיילים ${data.enrich?.channels?.emails ?? 0} · טלפונים ${data.enrich?.channels?.phones ?? 0} · טפסים ${data.enrich?.channels?.forms ?? 0}`
-        );
-        if (data.enrich?.candidateId) {
-          const refreshed = await gpGet(`/candidates/${id}`);
-          setSelected(refreshed.candidate);
-        }
-      }
-      await loadCandidates();
-      await loadDashboard();
-    } catch (err: any) {
-      setError(err?.message || "העשרת פרטי קשר נכשלה");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function verifyContact(id: string, type: string, value: string) {
-    setBusy(true);
-    try {
-      const data = await gpPost(`/candidates/${id}/contacts/verify`, { type, value });
-      setSelected(data.candidate);
-      setMessage("סומן כמאומת ידנית על ידי Owner.");
-      await loadCandidates();
-    } catch (err: any) {
-      setError(err?.message || "אימות ידני נכשל");
-    } finally {
-      setBusy(false);
-    }
+    setProfileId(null);
+    setTab("outreach");
+    setOutreachId(id);
   }
 
   return (
@@ -305,23 +238,23 @@ export default function AdminGlobalPartners() {
           </p>
         </div>
         <div className="gp-pills">
-          <span className="gp-pill gp-pill--ok">ללא AI</span>
-          <span className="gp-pill">Owner only</span>
+          <span className="gp-pill gp-pill--ok">דירוג מבוסס כללים</span>
+          <span className="gp-pill">גישה לבעלים בלבד</span>
           {access?.places?.enabled ? (
-            <span className="gp-pill gp-pill--ok">Places פעיל</span>
+            <span className="gp-pill gp-pill--ok">מקור Places פעיל</span>
           ) : (
-            <span className="gp-pill gp-pill--warn">Places כבוי עד אישור</span>
+            <span className="gp-pill gp-pill--warn">מקור Places כבוי</span>
           )}
           {busy ? <span className="gp-pill">טוען…</span> : null}
         </div>
       </header>
 
       {error ? <div className="gp-error">{error}</div> : null}
-      {message ? <div className="gp-banner">{message}</div> : null}
+      {message ? <div className="gp-success">{message}</div> : null}
       {denied ? (
         <div className="gp-banner">
-          הגישה מוגבלת לבעלי Bizuply ברשימת ההרשאות. הגדירו
-          GLOBAL_PARTNERS_OWNER_EMAIL_ALLOWLIST בסביבת השרת.
+          הגישה למערכת Global Partners מוגבלת לבעלים מורשים בלבד. אם אתם אמורים לקבל גישה —
+          פנו למנהל המערכת להוספת החשבון לרשימת ההרשאות.
         </div>
       ) : null}
 
@@ -341,7 +274,8 @@ export default function AdminGlobalPartners() {
             type="button"
             className={`gp-tab${tab === id ? " is-active" : ""}`}
             onClick={() => {
-              setSelected(null);
+              setProfileId(null);
+              if (id !== "outreach") setOutreachId(null);
               setTab(id);
             }}
           >
@@ -359,6 +293,8 @@ export default function AdminGlobalPartners() {
           onMessage={setMessage}
           busy={busy}
           setBusy={setBusy}
+          openCandidateId={outreachId}
+          onOpenCandidateHandled={() => setOutreachId(null)}
         />
       ) : null}
 
@@ -490,13 +426,22 @@ export default function AdminGlobalPartners() {
                       <td className="gp-score">{c.matchScore ?? 0}</td>
                       <td>{statusLabel(c.recruitmentStatus)}</td>
                       <td>
-                        <button
-                          type="button"
-                          className="gp-btn gp-btn--ghost"
-                          onClick={() => void openCandidate(c._id)}
-                        >
-                          פרופיל
-                        </button>
+                        <div className="gp-row-actions">
+                          <button
+                            type="button"
+                            className="gp-btn gp-btn--ghost"
+                            onClick={() => openCandidate(c._id)}
+                          >
+                            פרופיל
+                          </button>
+                          <button
+                            type="button"
+                            className="gp-btn gp-btn--ghost"
+                            onClick={() => openOutreach(c._id)}
+                          >
+                            פנייה
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -507,192 +452,21 @@ export default function AdminGlobalPartners() {
         </div>
       ) : null}
 
-      {selected ? (
-        <div className="gp-panel">
-          <h2>{selected.companyName}</h2>
-          <p className="gp-muted">
-            מקורות: {(selected.sources || []).map((s: any) => s.source).join(", ") || "—"} ·
-            עדכון אחרון:{" "}
-            {selected.lastVerifiedAt
-              ? new Date(selected.lastVerifiedAt).toLocaleString("he-IL")
-              : "—"}
-            {selected.website ? (
-              <>
-                {" "}
-                · אתר:{" "}
-                <a href={selected.website} target="_blank" rel="noreferrer">
-                  {selected.website}
-                </a>
-              </>
-            ) : null}
-          </p>
-          <div className="gp-grid" style={{ marginTop: 12 }}>
-            <Kpi label="אימייל עסקי" value={selected.businessEmail || "—"} />
-            <Kpi label="טלפון עסקי" value={selected.businessPhone || "—"} />
-            <Kpi
-              label="טופס קשר"
-              value={selected.contactFormUrl ? "יש" : "—"}
-            />
-            <Kpi
-              label="מוכן לפנייה"
-              value={selected.outreachReady ? "כן" : "לא"}
-            />
-          </div>
-          <div className="gp-table-wrap" style={{ marginTop: 14 }}>
-            <table className="gp-table">
-              <thead>
-                <tr>
-                  <th>סוג</th>
-                  <th>ערך</th>
-                  <th>מקור</th>
-                  <th>סטטוס</th>
-                  <th>אומת</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                {(selected.contactChannels || []).length === 0 ? (
-                  <tr>
-                    <td colSpan={6}>אין ערוצי קשר מחולצים עדיין — הפעילו העשרה מהאתר.</td>
-                  </tr>
-                ) : (
-                  (selected.contactChannels || []).map((ch: any, idx: number) => (
-                    <tr key={`${ch.type}-${idx}`}>
-                      <td>{ch.type}</td>
-                      <td>
-                        {ch.type === "form" || ch.type === "linkedin" ? (
-                          <a href={ch.value} target="_blank" rel="noreferrer">
-                            {ch.value}
-                          </a>
-                        ) : (
-                          ch.value
-                        )}
-                      </td>
-                      <td className="gp-muted">
-                        {ch.sourceUrl ? (
-                          <a href={ch.sourceUrl} target="_blank" rel="noreferrer">
-                            מקור
-                          </a>
-                        ) : (
-                          "—"
-                        )}
-                      </td>
-                      <td>{ch.status}</td>
-                      <td>
-                        {ch.verifiedAt
-                          ? new Date(ch.verifiedAt).toLocaleString("he-IL")
-                          : "—"}
-                      </td>
-                      <td>
-                        {ch.status !== "manual_verified" ? (
-                          <button
-                            type="button"
-                            className="gp-btn gp-btn--ghost"
-                            onClick={() =>
-                              void verifyContact(selected._id, ch.type, ch.value)
-                            }
-                          >
-                            אימות ידני
-                          </button>
-                        ) : (
-                          "✓"
-                        )}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-          {selected.publicProfiles?.linkedin ? (
-            <p className="gp-muted" style={{ marginTop: 8 }}>
-              LinkedIn:{" "}
-              <a href={selected.publicProfiles.linkedin} target="_blank" rel="noreferrer">
-                {selected.publicProfiles.linkedin}
-              </a>
-            </p>
-          ) : null}
-          {selected.contactFormUrl ? (
-            <p className="gp-muted">
-              טופס:{" "}
-              <a href={selected.contactFormUrl} target="_blank" rel="noreferrer">
-                {selected.contactFormUrl}
-              </a>
-            </p>
-          ) : null}
-          <p className="gp-muted">
-            מצב העשרה: {selected.contactEnrichment?.status || "טרם רץ"}
-            {selected.contactEnrichment?.pagesFetched != null
-              ? ` · עמודים ${selected.contactEnrichment.pagesFetched}`
-              : ""}
-            {selected.contactEnrichment?.lastError
-              ? ` · ${selected.contactEnrichment.lastError}`
-              : ""}
-          </p>
-          <div className="gp-grid" style={{ marginTop: 12 }}>
-            <Kpi
-              label="Affiliate"
-              value={selected.scores?.affiliate?.score ?? "—"}
-            />
-            <Kpi
-              label="Business Partner"
-              value={selected.scores?.business_partner?.score ?? "—"}
-            />
-            <Kpi
-              label="Reseller"
-              value={selected.scores?.reseller?.score ?? "—"}
-            />
-            <Kpi
-              label="בלעדיות"
-              value={selected.scores?.exclusive_territory?.score ?? "—"}
-            />
-          </div>
-          <div className="gp-actions">
-            <select
-              value={selected.recruitmentStatus}
-              onChange={(e) => void updateStatus(selected._id, e.target.value)}
-            >
-              {(access?.statuses || []).map((s: string) => (
-                <option key={s} value={s}>
-                  {statusLabel(s)}
-                </option>
-              ))}
-            </select>
-            <button type="button" className="gp-btn" onClick={() => void enrichContacts(selected._id)}>
-              חלץ פרטי קשר מהאתר
-            </button>
-            <button type="button" className="gp-btn" onClick={() => void rescore(selected._id)}>
-              חשב ציון מחדש
-            </button>
-            <button type="button" className="gp-btn gp-btn--ghost" onClick={() => setSelected(null)}>
-              סגור
-            </button>
-          </div>
-          <div className="gp-table-wrap" style={{ marginTop: 14 }}>
-            <table className="gp-table">
-              <thead>
-                <tr>
-                  <th>מסלול</th>
-                  <th>כלל</th>
-                  <th>נקודות</th>
-                  <th>פירוט</th>
-                </tr>
-              </thead>
-              <tbody>
-                {["affiliate", "business_partner", "reseller", "exclusive_territory"].flatMap((track) =>
-                  (selected.scores?.[track]?.appliedRules || []).map((rule: any, idx: number) => (
-                    <tr key={`${track}-${idx}`}>
-                      <td>{TRACK_LABELS[track] || track}</td>
-                      <td>{rule.rule}</td>
-                      <td>{rule.points}</td>
-                      <td>{typeof rule.detail === "string" ? rule.detail : JSON.stringify(rule.detail)}</td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {profileId ? (
+        <CandidateProfileModal
+          candidateId={profileId}
+          statuses={access?.statuses || []}
+          busy={busy}
+          setBusy={setBusy}
+          onClose={() => setProfileId(null)}
+          onError={setError}
+          onMessage={setMessage}
+          onOpenOutreach={openOutreach}
+          onChanged={() => {
+            void loadCandidates();
+            void loadDashboard();
+          }}
+        />
       ) : null}
 
       {tab === "add" ? (
