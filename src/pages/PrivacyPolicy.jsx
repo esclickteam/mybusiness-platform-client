@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 import { clearTrackingChoice } from "../lib/trackingConsent";
 
 function PrivacyPolicy() {
@@ -54,6 +55,7 @@ function PrivacyPolicy() {
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("privacyPage.intro")}
         </p>
+        <LegalDocumentLinks current="/privacy" />
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("privacyPage.lastUpdatedLabel")} {t("privacyPage.lastUpdatedDate")}
@@ -234,30 +236,10 @@ function PrivacyPolicy() {
           </section>
 
           <section id="section-7" className={sectionBase}>
-            <h2 className={h2Base} dir="ltr" style={{ textAlign: "left" }}>
-              7. Google Workspace API Data
-            </h2>
-
-            <div dir="ltr" style={{ textAlign: "left" }}>
-              <p className={pBase}>
-                Bizuply&apos;s use and transfer of information received from
-                Google APIs to any other app will adhere to the Google API
-                Services User Data Policy, including the Limited Use
-                requirements.
-              </p>
-
-              <p className={pBase}>
-                Bizuply does not use Google Workspace API user data to develop,
-                improve, or train generalized artificial intelligence or
-                machine learning models.
-              </p>
-
-              <p className={pBase}>
-                Google Workspace API user data is not transferred to
-                third-party AI or machine learning providers for the purpose of
-                training or improving generalized AI/ML models.
-              </p>
-            </div>
+            <h2 className={h2Base}>{t("privacyPage.google.h")}</h2>
+            <p className={pBase}>{t("privacyPage.google.p1")}</p>
+            <p className={pBase}>{t("privacyPage.google.p2")}</p>
+            <p className={pBase}>{t("privacyPage.google.p3")}</p>
           </section>
 
           <section id="section-8" className={sectionBase}>

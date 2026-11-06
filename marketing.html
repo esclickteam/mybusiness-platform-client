@@ -228,16 +228,27 @@
           expireCookie("_fbp");
           expireCookie("_fbc");
         }
+        function stopPixel() {
+          window.__bizuplyPixelStopped = true;
+          var current = window.fbq;
+          try {
+            if (typeof current === "function") current("consent", "revoke");
+          } catch (e) {}
+          if (typeof current === "function") window.fbq = function () {};
+          clearMeasurementCookies();
+        }
         function armPixel() {
-          if (!marketingAllowed()) return;
+          if (!marketingAllowed() || window.__bizuplyPixelStopped) return;
           if (window.requestIdleCallback) requestIdleCallback(startPixel, { timeout: 2500 });
           else window.addEventListener("load", startPixel, { once: true });
         }
         if (marketingAllowed()) armPixel();
         else clearMeasurementCookies();
         window.addEventListener("bizuply-tracking-consent", function (event) {
-          if (event && event.detail === "all") armPixel();
-          else clearMeasurementCookies();
+          if (event && event.detail === "all") {
+            window.__bizuplyPixelStopped = false;
+            armPixel();
+          } else stopPixel();
         });
       })();
     </script>

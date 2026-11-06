@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 
 export default function Accessibility() {
   const { t, i18n } = useTranslation();
@@ -53,6 +54,7 @@ export default function Accessibility() {
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("accessibilityPage.intro")}
         </p>
+        <LegalDocumentLinks current="/accessibility" />
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("accessibilityPage.lastUpdatedChip")}

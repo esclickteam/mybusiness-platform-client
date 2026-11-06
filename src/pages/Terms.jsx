@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 
 function Terms() {
   const { t, i18n } = useTranslation();
@@ -71,6 +72,7 @@ function Terms() {
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("termsPage.intro")}
         </p>
+        <LegalDocumentLinks current="/terms" />
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("termsPage.lastUpdatedChip")}
@@ -307,6 +309,7 @@ function Terms() {
             </p>
 
             <p className={pBase}>{t("termsPage.s7.p11")}</p>
+            <p className={pBase}>{t("termsPage.s7.mandatoryLaw")}</p>
           </section>
 
           <section id="section-8" className={sectionBase}>
@@ -404,6 +407,7 @@ function Terms() {
             <p className={pBase}>
               <Trans i18nKey="termsPage.s13.p5" components={strongComponents} />
             </p>
+            <p className={pBase}>{t("termsPage.s13.mandatoryScope")}</p>
           </section>
 
           <section id="section-14" className={sectionBase}>

@@ -38,17 +38,35 @@ export function clearMeasurementCookies(): void {
   expireCookie("_fbc");
 }
 
+export function stopMeasurement(): void {
+  const browser = window as Window & { __bizuplyPixelStopped?: boolean; fbq?: (...args: unknown[]) => void };
+  browser.__bizuplyPixelStopped = true;
+  const current = browser.fbq;
+  if (typeof current === "function") {
+    try {
+      current("consent", "revoke");
+    } catch {
+      /* The loaded pixel rejected the revocation call. The no-op below still blocks later events. */
+    }
+    browser.fbq = () => {};
+  }
+  clearMeasurementCookies();
+}
+
 export function writeTrackingChoice(choice: "essential" | "all"): void {
   if (typeof document === "undefined") return;
   const maxAge = 180 * 24 * 60 * 60;
   document.cookie = `${TRACKING_COOKIE}=${choice}; Path=/; Max-Age=${maxAge}; SameSite=Lax${cookieDomain()}`;
-  if (choice !== "all") clearMeasurementCookies();
+  const browser = window as Window & { __bizuplyPixelStopped?: boolean; fbq?: unknown };
+  const hadPixel = typeof browser.fbq === "function";
+  if (choice === "all") browser.__bizuplyPixelStopped = false;
+  else stopMeasurement();
   window.dispatchEvent(new CustomEvent("bizuply-tracking-consent", { detail: choice }));
-  if (choice !== "all" && typeof window.fbq === "function") window.location.reload();
+  if (choice !== "all" && hadPixel) window.location.reload();
 }
 
 export function clearTrackingChoice(): void {
   if (typeof document === "undefined") return;
   document.cookie = `${TRACKING_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax${cookieDomain()}`;
-  clearMeasurementCookies();
+  stopMeasurement();
 }

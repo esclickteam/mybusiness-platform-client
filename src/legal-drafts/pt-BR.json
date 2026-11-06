@@ -42,7 +42,7 @@
     "s2": {
       "h": "2. Definições",
       "intro": "Para efeitos do presente Acordo, aplicam-se as seguintes definições:",
-      "defs": "<strong>\"A Companhia\"</strong> - BizUply LLC, a operadora e proprietária da plataforma, incluindo suas afiliadas, funcionários, parceiros e contratados.<br /><strong>\"O Site\" / \"O App\"</strong> - O sistema digital da BizUply, incluindo todos os sites, domínios, bancos de dados, APIs, código, infraestrutura, interfaces e ativos digitais relacionados de propriedade ou gerenciados pela BizUply.<br /><strong>\"O usuário\"</strong> - qualquer pessoa, profissional, empresa, organização ou outra entidade legal que acesse ou use os serviços para fins de gestão de negócios, comunicação ou colaboração.<br /><strong>\"Prestador de serviços\" / \"Negócios\"</strong> - qualquer empresa registrada ou profissional independente que use a plataforma para criar um perfil de negócios, gerenciar compromissos, clientes, tarefas ou comunicação através do BizUply.<br /><strong>\"Cliente\"</strong> - qualquer pessoa ou entidade que interaja com uma empresa ou prestador de serviços através da plataforma BizUply.<br /><strong>\"Os Serviços\"</strong> Todos os recursos e funções fornecidos pelo BizUply, incluindo, mas não limitado a, ferramentas de CRM, mensagens, agendamento de compromissos, automação, insights orientados por IA, análise, gerenciamento de reputação, ferramentas de colaboração, avaliações, classificações e criação de páginas de negócios.<br /><strong>\"Conteúdo\"</strong> - quaisquer dados, mídia ou material enviado, carregado, transmitido ou exibido na plataforma, incluindo texto, imagens, vídeos, logotipos, revisões, relatórios, análises ou outro material gerado pelo usuário.<br /><strong>\"Acordo\"</strong> - este documento de Termos de Uso, que constitui um acordo juridicamente vinculativo entre o Usuário e a BizUply."
+      "defs": "<strong>\"A Companhia\"</strong> - BizUply LLC, a operadora e proprietária da plataforma, incluindo suas afiliadas, funcionários, parceiros e contratados.<br /><strong>\"O Site\" / \"O App\"</strong> - O sistema digital da BizUply, incluindo todos os sites, domínios, bancos de dados, APIs, código, infraestrutura, interfaces e ativos digitais relacionados de propriedade ou gerenciados pela BizUply.<br /><strong>\"O usuário\"</strong> - qualquer pessoa, profissional, empresa, organização ou outra entidade legal que acesse ou use os serviços para fins de gestão de negócios, comunicação ou colaboração.<br /><strong>\"Prestador de serviços\" / \"Negócios\"</strong> - qualquer empresa registrada ou profissional independente que use a plataforma para criar um perfil de negócios, gerenciar compromissos, clientes, tarefas ou comunicação através do BizUply.<br /><strong>\"Cliente\"</strong> - qualquer pessoa ou entidade que interaja com uma empresa ou prestador de serviços através da plataforma BizUply.<br /><strong>\"Os Serviços\"</strong> Todos os recursos e funções fornecidos pelo BizUply, incluindo, mas não limitado a, ferramentas de CRM, mensagens, agendamento de compromissos, automação, insights orientados por IA, análise, gerenciamento de reputação, ferramentas de colaboração, avaliações, classificações e criação de páginas de negócios.<br /><strong>\"Conteúdo\"</strong> - quaisquer dados, mídia ou material enviado, carregado, transmitido ou exibido na plataforma, incluindo texto, imagens, vídeos, logotipos, revisões, relatórios, análises ou outro material gerado pelo usuário.<br /><strong>\"Acordo\"</strong> - este documento de Termos de Uso, que constitui um acordo juridicamente vinculativo entre o Usuário e a BizUply. Um cliente empresarial é um negócio registrado que compra o serviço para esse negócio. Um usuário empresarial individual é uma pessoa que compra o serviço para operar ou criar um negócio. Um consumidor é uma pessoa que compra fora de um negócio. Uma pessoa que compra o serviço para criar um negócio pode continuar sendo consumidora segundo a lei do seu país, e esses rótulos não decidem essa questão. Um parceiro ou afiliado é um participante do programa de parceiros. Um assinante de SaaS é um cliente em um plano pago ou em um teste. O preço, a comissão, a renovação e a atribuição do programa de parceiros são os exibidos na compra. Esta frase não altera essas taxas. Estes termos não prometem renda nem lucro."
     },
     "s3": {
       "h": "3. Serviços oferecidos",
@@ -109,7 +109,7 @@
       "cookiesTitle": "Cookies e Tecnologias de Rastreamento",
       "p7": "5.7. O site e o aplicativo usam cookies e tecnologias semelhantes para a funcionalidade básica, a segurança e a medição descrita na seção 5.9. A seção 5.9 indica qual ferramenta de medição é carregada e em qual página.",
       "p8": "5.8. Os usuários podem desativar ou restringir os cookies através das configurações do navegador; no entanto, como resultado, certos recursos da plataforma podem não funcionar corretamente.",
-      "p9": "5.9. Nesta versão do cliente, Google Analytics, Google Tag Manager e reCAPTCHA não são carregados. O Meta Pixel, identificador 1427327632368128, não é carregado em um site de cliente publicado. Na página inicial de marketing e nas demais páginas da plataforma, o pixel é carregado somente quando o cookie bizuply_tracking é all. Se o cookie estiver ausente ou for essential, o pixel não é carregado. Escolher essential depois que o pixel foi carregado recarrega a página e apaga os cookies de medição. Limpar a escolha na página de privacidade remove o cookie e recarrega a página, de modo que a escolha é pedida de novo. A escolha fica em um cookie neste navegador por 180 dias, então ela permanece ao mudar de página da plataforma e ao voltar. Um evento de ida ao pagamento é enviado a partir do cadastro somente quando o cookie é all e a função do pixel já está presente. O Cloudflare Turnstile é carregado somente em uma tela que tenha uma chave de site configurada. Este é o comportamento desta versão. O site público não se comporta assim até que esta versão seja implantada.",
+      "p9": "5.9. Este site não carrega Google Analytics, Google Tag Manager nem reCAPTCHA. O Meta Pixel, identificador 1427327632368128, não é carregado em um site de cliente publicado. Na página inicial de marketing e nas demais páginas da plataforma, o pixel é carregado somente quando o cookie bizuply_tracking é all. Se o cookie estiver ausente ou for essential, o pixel não é carregado. Escolher essential revoga a medição na hora: novos eventos do pixel não são enviados, os cookies de medição são apagados e, se o pixel já tinha sido carregado, a página é recarregada para que o script do pixel não inicie de novo. Limpar a escolha na página de privacidade remove o cookie e recarrega a página, de modo que a escolha é pedida outra vez. A escolha permanece em um cookie neste navegador por 180 dias, inclusive ao mudar de página da plataforma e ao voltar. Um evento de ida ao pagamento é enviado a partir do cadastro somente quando o cookie é all e a medição não foi revogada. O Cloudflare Turnstile é carregado somente em uma tela que tenha uma chave de site configurada.",
       "p10": "Para mais informações sobre como o BizUply coleta, usa e protege dados, por favor, revise nosso detalhado <strong>Política de privacidade</strong>, que faz parte integrante destes Termos de Uso."
     },
     "s6": {
@@ -207,11 +207,11 @@
     },
     "s14": {
       "h": "14. Lei Governante e Resolução de Disputas",
-      "p1": "14.1. A mesma lei de Delaware rege estes termos e a política de privacidade. Nenhuma frase da seção 14 escolhe a lei de Nova York.",
+      "p1": "14.1. A mesma lei de Delaware rege estes termos e a política de privacidade.",
       "p2": "14.2. As partes tentarão primeiro resolver uma disputa por negociação de boa-fé durante trinta (30) dias. Esse prazo não adia um pedido de tutela de urgência ou de medida de equidade, e não adia nem renuncia a um direito que a lei imperativa do país do cliente não permite que este contrato limite.",
       "p3": "14.3. Após esse prazo, os tribunais estaduais e federais localizados em Delaware são o foro exclusivo, salvo quando uma lei imperativa do país do cliente der a esse cliente um tribunal que este contrato não possa retirar. Para uma disputa que essa lei não reserve a outro tribunal, o cliente consente na jurisdição pessoal desses tribunais de Delaware.",
       "p4": "14.4. A empresa pode pedir tutela de urgência ou medida de equidade nesses tribunais de Delaware para proteger sua propriedade intelectual ou suas informações confidenciais. A seção 14.2 significa que esse pedido não precisa esperar o fim do prazo de negociação.",
-      "p5": "14.5. A seleção anterior da lei de Nova York, da arbitragem da American Arbitration Association na cidade de Nova York e dos tribunais do condado de Nova York não faz parte desta cláusula."
+      "p5": "14.5. Uma disputa é proposta nos tribunais de Delaware descritos acima, salvo quando uma lei imperativa reservar outro tribunal. Não se escolhe a lei de outro estado nem uma sede de arbitragem."
     },
     "s15": {
       "h": "15. Detalhes de contato",
@@ -262,19 +262,19 @@
     "s1": {
       "h": "1. Introdução",
       "p1": "Esta Política de Privacidade explica como <strong>BizUply</strong>, de propriedade privada e operado sob as leis dos Estados Unidos, coleta, armazena, usa e protege as informações pessoais de seus usuários e clientes comerciais (\"Usuários\", \"Negócios\" ou \"você\"). Ao usar a plataforma BizUply, você concorda com os termos descritos neste documento.",
-      "p2": "A Bizuply LLC é uma sociedade de responsabilidade limitada constituída em Delaware, Estados Unidos. Ela fornece software de gestão empresarial, comunicação com clientes e funções de IA quando essas funções são usadas. O texto público anterior dizia que a plataforma tem sede em Nova York. Essa sede não foi verificada e nenhum endereço é indicado.",
+      "p2": "A Bizuply LLC é uma sociedade de responsabilidade limitada constituída em Delaware, Estados Unidos. Ela fornece software de gestão empresarial, comunicação com clientes e funções de IA quando essas funções são usadas. Nenhum endereço foi verificado, por isso nenhum é indicado.",
       "p3": "Esta Política de Privacidade aplica-se a todos os nossos produtos, serviços, sites e aplicativos (a “Plataforma”) e descreve em detalhes como processamos dados, quais informações coletamos e quais direitos você tem em relação às suas informações.",
       "p4": "Ao acessar ou usar nossa Plataforma, você reconhece que leu e entendeu esta Política de Privacidade. Se não concordar, por favor não use BizUply ou qualquer um dos seus serviços."
     },
     "s2": {
       "h": "2. mbito e aplicabilidade",
       "p1": "Esta Política de Privacidade aplica-se a todos os usuários, incluindo empresas, funcionários, administradores, afiliados e visitantes do site que interagem com o BizUply de qualquer maneira, seja por meio de desktop, aplicativos móveis, integrações de API ou complementos de terceiros.",
-      "p2": "Esta política descreve como informações pessoais e não pessoais são tratadas. Ela não afirma que a empresa cumpra a lei federal de privacidade dos Estados Unidos, a lei de privacidade de Nova York, o GDPR ou a CCPA. Uma lei nomeada aplica-se apenas quando suas próprias condições são cumpridas. Nenhuma auditoria de conformidade foi concluída.",
+      "p2": "Esta política descreve como informações pessoais e não pessoais são tratadas. Ela não afirma que a empresa cumpra uma lei de privacidade específica. Uma lei de privacidade aplica-se apenas quando suas próprias condições são cumpridas. Nenhuma auditoria de conformidade foi concluída.",
       "p3": "Esta política não se aplica a serviços, links ou integrações de terceiros que não são de propriedade ou operados pela BizUply. Nós encorajamos você a rever as políticas de privacidade antes de se envolver com eles."
     },
     "s3": {
       "h": "3. Definições",
-      "p1": "<strong>“BizUply”</strong> – Bizuply LLC, sociedade de responsabilidade limitada constituída em Delaware, Estados Unidos. Seu número de registro em Delaware, sua sede e qualquer endereço não foram fornecidos e não são indicados. O texto público anterior situava sua sede em Nova York. Essa sede não foi verificada.",
+      "p1": "<strong>“BizUply”</strong> – Bizuply LLC, sociedade de responsabilidade limitada constituída em Delaware, Estados Unidos. Seu número de registro em Delaware, sua sede e qualquer endereço não foram fornecidos e não são indicados.",
       "p2": "<strong>“A Plataforma”</strong> – inclui todos os produtos, sites, sistemas, servidores, aplicativos, APIs, módulos de IA, painéis de CRM, ferramentas de automação e infraestrutura de software relacionada da BizUply.",
       "p3": "<strong>\"Usuário\"</strong> - qualquer pessoa física ou jurídica que utilize os serviços da BizUply, incluindo proprietários de empresas, funcionários, clientes ou visitantes do site.",
       "p4": "<strong>\"Informações pessoais\"</strong> Dados que identificam ou podem identificar razoavelmente um indivíduo, incluindo, mas não limitado a, nome, e-mail, número de telefone, endereço, detalhes de pagamento, dados de perfil comercial e identificadores digitais, como endereços IP ou cookies.",
@@ -319,7 +319,7 @@
         "Para dar suporte ao atendimento ao cliente e resolver problemas técnicos",
         "Analisar o comportamento do usuário para fins estatísticos e de segurança"
       ],
-      "p2": "A revisão do produto não estabeleceu um protocolo de segurança escrito, conformidade com a lei de privacidade de Nova York nem conformidade com um padrão internacional de privacidade. Essa conformidade não é afirmada."
+      "p2": "A revisão do produto não estabeleceu um protocolo de segurança escrito nem conformidade com uma lei de privacidade. Essa conformidade não é afirmada."
     },
     "s6": {
       "h": "6. Compartilhamento de dados e terceiros",
@@ -341,7 +341,7 @@
     },
     "s8": {
       "h": "8. Cookies e Tecnologias de Rastreamento",
-      "p1": "Nesta versão, a página inicial de marketing e as demais páginas da plataforma carregam o Meta Pixel somente quando o cookie bizuply_tracking é all. Um cookie ausente ou o valor essential não o carrega. A escolha permanece nesse cookie por 180 dias entre páginas da plataforma e em visitas posteriores. Apagá-la na página de privacidade pede a escolha outra vez depois de recarregar. Sites de cliente publicados não carregam este pixel. Isto descreve esta versão, não o site público antes da implantação.",
+      "p1": "A página inicial de marketing e as demais páginas da plataforma carregam o Meta Pixel somente quando o cookie bizuply_tracking é all. Um cookie ausente ou o valor essential não o carrega. Escolher essential revoga a medição na hora, de modo que novos eventos do pixel não são enviados, e apaga os cookies de medição. Se o pixel já tinha sido carregado, a página é recarregada e o script não inicia de novo. A escolha permanece 180 dias entre páginas da plataforma e em visitas posteriores. Apagá-la na página de privacidade pede a escolha outra vez depois de recarregar. Sites de cliente publicados não carregam este pixel.",
       "h1": "8.1. Tipos de cookies usados",
       "list": [
         "Cookies essenciais – necessários para a operação do sistema e login",
@@ -362,7 +362,7 @@
     },
     "s10": {
       "h": "10. Direitos do Usuário",
-      "p1": "Quando uma lei de privacidade que abrange a pessoa concede um dos direitos a seguir, a pessoa pode enviar um pedido para privacy@bizuply.com. Esta lista não afirma que o GDPR, a CCPA, a CPRA ou a lei de Nova York se apliquem a todos os usuários.",
+      "p1": "Quando uma lei de privacidade que abrange a pessoa concede um dos direitos a seguir, a pessoa pode enviar um pedido para privacy@bizuply.com. Esta lista não afirma que uma lei de privacidade específica se aplique a todos os usuários.",
       "list": [
         "O direito de acessar dados pessoais armazenados pela BizUply",
         "O direito de corrigir ou atualizar informações imprecisas",
@@ -382,7 +382,7 @@
         "A BizUply não será responsável por quaisquer perdas indiretas, conseqentes ou incidentais, incluindo perda de lucros, perda de dados ou danos à reputação."
       ],
       "p3": "O usuário reconhece que o uso da plataforma BizUply é inteiramente a seu próprio critério e risco.",
-      "p4": "Nenhuma comunicação oral ou escrita prevalece sobre as condições de pagamento acima, salvo um direito imperativo do consumidor que este contrato não possa renunciar. A lei e os tribunais são a cláusula de Delaware dos termos, seções 1.6 e 14. Esta frase não escolhe a lei de Nova York."
+      "p4": "Nenhuma comunicação oral ou escrita prevalece sobre as condições de pagamento acima, salvo um direito imperativo do consumidor que este contrato não possa renunciar. A lei e os tribunais são a cláusula de Delaware dos termos, seções 1.6 e 14."
     },
     "s12": {
       "h": "12. Limitação de Responsabilidade",
@@ -392,9 +392,9 @@
     },
     "s13": {
       "h": "13. Localização de dados e transferências internacionais",
-      "p1": "O repositório do produto não registra uma região de armazenamento. Este rascunho não afirma que dados pessoais ou empresariais sejam armazenados apenas nos Estados Unidos ou em Nova York. MongoDB, Railway e os demais fornecedores nomeados no serviço podem tratar informações onde operam.",
+      "p1": "O repositório do produto não registra uma região de armazenamento. Esta política não afirma que dados pessoais ou empresariais sejam armazenados em um lugar nomeado. MongoDB, Railway e os demais fornecedores nomeados no serviço podem tratar informações onde operam.",
       "p2": "O repositório não mostra que o armazenamento ou a transferência se limite aos Estados Unidos. Um fornecedor usado pelo serviço pode tratar informações onde opera. Não se afirma uma cláusula contratual padrão nem um acordo de segurança equivalente.",
-      "p3": "Usar a BizUply não significa que as informações do usuário estejam sujeitas apenas às leis dos Estados Unidos ou de Nova York. Continua a aplicar-se uma lei de privacidade imperativa que cubra esse usuário."
+      "p3": "Usar a BizUply não significa que as informações do usuário estejam sujeitas apenas à lei dos Estados Unidos. Continua a aplicar-se uma lei de privacidade imperativa que cubra esse usuário."
     },
     "s14": {
       "h": "14. Atualizações e avisos de políticas",
@@ -404,7 +404,7 @@
     },
     "s15": {
       "h": "15. Conformidade e cooperação legal",
-      "p1": "A Bizuply LLC é constituída em Delaware, Estados Unidos. A empresa fornece registros quando uma lei que se aplica ao pedido exige isso. Esta frase não escolhe a lei de Nova York e não afirma que um programa de conformidade tenha sido auditado.",
+      "p1": "A Bizuply LLC é constituída em Delaware, Estados Unidos. A empresa fornece registros quando uma lei que se aplica ao pedido exige isso. Esta frase não afirma que um programa de conformidade tenha sido auditado.",
       "p2": "Podemos reter ou divulgar certos registros se exigido por intimação, ordem judicial ou solicitação governamental, desde que tal divulgação esteja em conformidade com a lei dos Estados Unidos e os requisitos do devido processo.",
       "p3": "A BizUply está comprometida em evitar atividades ilegais, fraudes, lavagem de dinheiro ou uso indevido de seus sistemas. Qualquer suspeita de violação será relatada às autoridades relevantes."
     },
@@ -414,12 +414,12 @@
       "p2": "A BizUply, seus proprietários, afiliados, funcionários, contratados e parceiros não serão responsáveis por quaisquer danos diretos, indiretos, especiais, conseqentes, punitivos ou incidentais decorrentes do uso ou incapacidade de usar a Plataforma.",
       "p3": "Isso inclui, sem limitação, perda de lucros, dados, boa vontade, interrupção de negócios ou reivindicações de terceiros.",
       "p4": "O usuário libera e renuncia a qualquer direito de iniciar um processo judicial, arbitragem ou ação coletiva contra a BizUply por qualquer causa relacionada ao uso do serviço, taxas ou processamento de dados.",
-      "p5": "A renúncia acima é a posição da empresa apenas na medida em que a lei imperativa que abrange o usuário a permita. Ela não é exigível em todos os países e não elimina um direito que essa lei não permite que este contrato elimine. Ela não escolhe a lei de Nova York. Os termos, seções 1.6 e 14, estabelecem a lei e os tribunais."
+      "p5": "A renúncia acima é a posição da empresa apenas na medida em que a lei imperativa que abrange o usuário a permita. Ela não é exigível em todos os países e não elimina um direito que essa lei não permite que este contrato elimine. Os termos, seções 1.6 e 14, estabelecem a lei e os tribunais."
     },
     "s17": {
       "h": "17. Lei e jurisdição",
       "p1": "Esta política de privacidade e uma disputa dela decorrente regem-se pelas leis do Estado de Delaware e pela lei federal aplicável dos Estados Unidos, sem as regras de conflito que escolheriam a lei de outro estado. Isto não afasta um direito de privacidade que a lei imperativa do país da pessoa não permite que esta política renuncie.",
-      "p2": "Os tribunais estaduais e federais de Delaware são o foro, salvo quando uma lei imperativa der à pessoa um tribunal que esta política não possa retirar. Esta política não escolhe a lei de Nova York nem um tribunal de Nova York.",
+      "p2": "Os tribunais estaduais e federais de Delaware são o foro, salvo quando uma lei imperativa der à pessoa um tribunal que esta política não possa retirar.",
       "p3": "As seções 1.6 e 14 dos termos e esta seção estabelecem a mesma lei de Delaware e os mesmos tribunais de Delaware. A negociação de trinta dias dos termos não adia uma medida urgente nem um direito que a lei imperativa não permite que o contrato limite."
     },
     "s18": {

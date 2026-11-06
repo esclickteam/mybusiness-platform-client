@@ -42,6 +42,39 @@ describe("tracking consent", () => {
     expect(readTrackingChoice()).toBe("unknown");
     expect(marketingAllowed()).toBe(false);
   });
+
+  it("revokes measurement immediately so a later pixel event is not sent", () => {
+    let jar = "";
+    const calls: unknown[][] = [];
+    const reloads: string[] = [];
+    function fbq(...args: unknown[]) {
+      calls.push(args);
+    }
+    vi.stubGlobal("document", {
+      get cookie() {
+        return jar;
+      },
+      set cookie(value: string) {
+        const pair = value.split(";")[0];
+        const name = pair.split("=")[0].trim();
+        const parts = jar.split("; ").filter((part) => part && !part.startsWith(`${name}=`));
+        if (!/Max-Age=0/i.test(value)) parts.push(pair.trim());
+        jar = parts.join("; ");
+      },
+    });
+    vi.stubGlobal("window", {
+      location: { hostname: "bizuply.com", reload: () => reloads.push("reload") },
+      dispatchEvent: () => true,
+      fbq,
+    });
+
+    writeTrackingChoice("essential");
+    expect(calls).toEqual([["consent", "revoke"]]);
+    window.fbq("track", "PageView");
+    expect(calls).toEqual([["consent", "revoke"]]);
+    expect(reloads).toEqual(["reload"]);
+    expect(marketingAllowed()).toBe(false);
+  });
 });
 
 afterEach(() => {

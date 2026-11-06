@@ -64,6 +64,7 @@ function runPixel(script: string, initialCookie: string, publicSite = false) {
       document.cookie = `bizuply_tracking=${detail}; Path=/; Max-Age=15552000; SameSite=Lax`;
       for (const listener of listeners) listener({ detail });
     },
+    win: sandbox,
   };
 }
 
@@ -97,9 +98,19 @@ describe("pixel shells", () => {
       const page = runPixel(shell.script, "bizuply_tracking=all; _fbp=1");
       expect(page.inserted).toHaveLength(1);
       const before = page.inserted.length;
+      const queued = () => (page.inserted.length);
+      const calls: unknown[][] = [];
+      const loaded = page.win.fbq;
+      page.win.fbq = (...args: unknown[]) => {
+        calls.push(args);
+        return loaded(...args);
+      };
       page.choose("essential");
+      page.win.fbq("track", "PageView");
+      expect(calls).toEqual([["consent", "revoke"]]);
       expect(page.inserted).toHaveLength(before);
       expect(page.cookie.includes("_fbp=")).toBe(false);
+      expect(queued()).toBe(before);
     });
 
     it(`${shell.name} does not load the pixel on a published customer site`, () => {
