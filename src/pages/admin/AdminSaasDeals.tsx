@@ -104,7 +104,7 @@ export default function AdminSaasDeals() {
             <input className="rounded border px-2 py-1" placeholder="שם עסק" value={draft.businessName} onChange={(event) => setDraft({ ...draft, businessName: event.target.value })} />
             <input className="rounded border px-2 py-1" placeholder="טלפון" value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} />
             <select className="rounded border px-2 py-1" value={draft.templateSlug} onChange={(event) => setDraft({ ...draft, templateSlug: event.target.value })}>
-              {["beautyflow", "global-properties", "dinevo", "cliny", "tableflow"].map((slug) => (
+              {["tableflow", "dinevo", "beautyflow", "global-properties", "cliny", "fitora", "bakeora", "shiftly", "meetora", "delivera", "agentflow"].map((slug) => (
                 <option key={slug} value={slug}>{slug}</option>
               ))}
             </select>
