@@ -133,6 +133,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
 const Terms = lazy(() => import("./pages/Terms"));
+const LegalAnnex = lazy(() => import("./pages/LegalAnnex"));
 const Contact = lazy(() => import("./pages/Contact"));
 const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
@@ -1299,6 +1300,7 @@ export default function App() {
                         <Route path="/faq" element={<FAQ />} />
                         <Route path="/accessibility" element={<Accessibility />} />
                         <Route path="/terms" element={<Terms />} />
+                        <Route path="/legal/:doc" element={<LegalAnnex />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/partners" element={<PartnersRecruitment />} />
 

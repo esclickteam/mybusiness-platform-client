@@ -11,6 +11,11 @@ import {
   type InternationalBillingOption,
 } from "../../lib/partnerInternationalPlan";
 import { partnerFaqPairs } from "./partners/partnerFaq.mjs";
+import annexEn from "../../legal-annex/en.json";
+import annexHe from "../../legal-annex/he.json";
+import annexEs from "../../legal-annex/es.json";
+import annexPt from "../../legal-annex/pt-BR.json";
+import annexAr from "../../legal-annex/ar.json";
 import "./partners/partnersPage.css";
 
 const COPY = {
@@ -342,6 +347,15 @@ function tierCount(rate: number) {
   return 1;
 }
 
+function partnerTermsTitle(language: string) {
+  const value = String(language || "en").toLowerCase();
+  if (value.startsWith("he") || value.startsWith("iw")) return annexHe.docs.partner.title;
+  if (value.startsWith("es")) return annexEs.docs.partner.title;
+  if (value.startsWith("pt")) return annexPt.docs.partner.title;
+  if (value.startsWith("ar")) return annexAr.docs.partner.title;
+  return annexEn.docs.partner.title;
+}
+
 export default function PartnersRecruitment() {
   const { i18n } = useTranslation();
   const hebrew = Boolean(i18n.language?.startsWith("he"));
@@ -584,6 +598,9 @@ export default function PartnersRecruitment() {
               </div>
             </div>
             <p className="ip-note" style={{ gridColumn: "1 / -1" }}>{copy.disclaimer}</p>
+            <p className="ip-note" style={{ gridColumn: "1 / -1" }}>
+              <Link to="/legal/partner">{partnerTermsTitle(i18n.language)}</Link>
+            </p>
           </form>
         </div>
       </section>

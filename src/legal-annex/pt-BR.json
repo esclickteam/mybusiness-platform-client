@@ -1,0 +1,68 @@
+{
+  "docs": {
+    "partner": {
+      "title": "Termos do parceiro internacional",
+      "paragraphs": [
+        "Estes são os termos públicos do parceiro internacional da Bizuply LLC, constituída em Delaware, Estados Unidos. Eles não substituem um contrato assinado entre a Bizuply e esse parceiro. Se o contrato assinado fixar outro preço, comissão, território ou prazo, o contrato assinado prevalece. Aplicam-se a lei de Delaware, a lei federal aplicável dos Estados Unidos e os tribunais de Delaware dos termos de serviço, e eles não eliminam um direito imperativo.",
+        "Quando essa é a relação real, o parceiro é um negócio independente, não um empregado e não um agente que possa obrigar a Bizuply. O parceiro responde pelos próprios impostos. Estes termos não prometem renda, lucro nem um número de clientes.",
+        "O plano internacional no catálogo do produto é 499 dólares dos Estados Unidos por mês ou 5,000 dólares dos Estados Unidos por ano. A cobrança com cartão ao vivo dessa linha do catálogo está desligada. Um registro manual de pagamento exige um valor, uma data de pagamento, uma referência e um período de cobrança. Uma referência não prova por si só que o dinheiro foi recebido. Abrir uma página de pagamento não é descrito como o início de uma licença.",
+        "Nesse plano internacional, uma venda única elegível é comissionada em 10 por cento. A comissão recorrente sobre totais de assinatura elegíveis é 30 por cento para 1 a 19 clientes elegíveis, 35 por cento para 20 a 39 e 40 por cento para 40 ou mais. O código marca esses cálculos como não cobrados ao vivo. Planos de parceiro antigos não são reprecificados aqui. No plano revisado, a comissão é sobre vendas a clientes elegíveis, não sobre recrutar outros parceiros.",
+        "Um reembolso, um pagamento falho ou um chargeback reduz o valor sobre o qual a comissão é calculada. Fraude e autotransação autorizam reter a comissão relacionada e suspender a licença. Uma única data de pagamento, um limite de saque, uma taxa de transferência e uma taxa de câmbio não são indicados porque o catálogo não contém um número único para eles.",
+        "O parceiro pode usar o nome e o logotipo da Bizuply apenas como a Bizuply permitir, e não pode se apresentar como a Bizuply. O parceiro não pode prometer renda, enviar marketing não solicitado nem usar leads sem uma base legal. A Bizuply pode retirar a permissão de uso da marca.",
+        "Pagar por vendas a clientes, e não por recrutar parceiros, não decide por si só se uma lei de oportunidade de negócio, franquia ou marketing multinível se aplica onde o programa é oferecido. Estes termos não fazem essa classificação."
+      ]
+    },
+    "dpa": {
+      "title": "Termos de tratamento de dados",
+      "paragraphs": [
+        "Quando a Bizuply guarda registros de conta, cobrança e suporte para o próprio serviço, a Bizuply decide as finalidades dessa informação. Quando um cliente empresarial guarda no CRM ou em outra ferramenta SaaS informações dos próprios clientes, a Bizuply trata essa informação para o cliente.",
+        "As finalidades são os recursos contratados que o cliente usa, inclusive CRM, mensagens, agenda e recursos de IA quando usados. A informação é a que o cliente envia e os registros técnicos necessários para o serviço. Esta página não lista cada campo.",
+        "O acesso segue as contas que o produto oferece. O site público usa HTTPS. Criptografia em repouso, um prazo fixo de exclusão e um prazo fixo de aviso de incidente não são afirmados porque não foram verificados.",
+        "Os fornecedores estão na página de subprocessadores. Regiões de armazenamento não foram encontradas no repositório. Cláusulas contratuais padrão, um adendo de transferência do Reino Unido, um representante na UE ou no Reino Unido e um encarregado de dados não são afirmados.",
+        "Um pedido de privacidade sobre informação que a Bizuply guarda pode ser enviado para privacy@bizuply.com. Exportação e exclusão de autoatendimento de cada registro não foram verificadas.",
+        "Quando a assinatura termina, o acesso termina segundo os termos de serviço. Esta página não promete que cada registro seja excluído ou devolvido em um número fixo de dias."
+      ]
+    },
+    "subprocessors": {
+      "title": "Subprocessadores",
+      "paragraphs": [
+        "Esta lista nomeia fornecedores encontrados no produto. Ela não diz que um contrato de tratamento foi assinado com cada um, nem indica um país de armazenamento.",
+        "A Lemon Squeezy trata o pagamento das assinaturas da plataforma. O MongoDB guarda o banco de dados do aplicativo. O Redis é usado para cache e filas. A Railway hospeda o aplicativo. A Vercel hospeda o site. A Cloudinary guarda mídia. A Resend envia e-mail.",
+        "A OpenAI é usada para recursos de IA quando uma chave está configurada. Esta lista não diz se esse fornecedor treina com o conteúdo. A Meta fornece a API do WhatsApp Business e o pixel de anúncio depois do consentimento de medição. A Twilio é usada para telefone quando está ativada.",
+        "O Stripe é usado para alguns pagamentos de loja do comerciante e não é o processador da assinatura da plataforma. O PayPal é usado para algumas confirmações de pedidos de loja. O Google Fonts serve fontes nas páginas da plataforma. O Cloudflare Turnstile carrega somente quando uma chave de site está configurada."
+      ]
+    },
+    "transfers": {
+      "title": "Transferências internacionais",
+      "paragraphs": [
+        "O repositório do produto não registra o país em que MongoDB, Redis ou Railway guardam informação. Esta página não diz que a informação permanece apenas nos Estados Unidos.",
+        "Um fornecedor da lista pode tratar informação onde opera. Cláusulas contratuais padrão, um adendo de transferência do Reino Unido, uma avaliação de transferência, um representante na UE ou no Reino Unido e um encarregado de dados não foram encontrados no repositório e não são afirmados.",
+        "Continua a aplicar-se uma lei de privacidade imperativa que cubra uma pessoa. A lei de Delaware dos termos de serviço não elimina essa lei."
+      ]
+    },
+    "use": {
+      "title": "Uso aceitável",
+      "paragraphs": [
+        "As regras de contas, credenciais, conteúdo proibido, suspensão e encerramento são as seções 4, 6 e 12 dos termos de serviço. Esta página não remove essas proteções nem acrescenta uma regra conflitante.",
+        "Um cliente ou parceiro não pode usar o serviço para enviar marketing não solicitado, violar a lei ou enviar conteúdo sobre o qual não tenha direito. O cliente responde pelas listas de contatos e pelas mensagens que envia.",
+        "Mensagens de serviço sobre uma conta ou uma assinatura são distintas de mensagens de marketing. A medição de marketing carrega somente depois que o visitante a escolhe, como a política de privacidade descreve."
+      ]
+    },
+    "ai": {
+      "title": "Recursos de IA",
+      "paragraphs": [
+        "Os recursos de IA funcionam quando estão configurados. Quando a OpenAI é o fornecedor configurado, o conteúdo necessário para o recurso é enviado a esse fornecedor. Esta página não diz que o fornecedor treina com esse conteúdo, nem diz que não treina.",
+        "O cliente responde por ter direito de enviar o conteúdo. O resultado da IA não é aconselhamento jurídico, financeiro ou fiscal. A limitação de responsabilidade dos termos de serviço permanece em vigor."
+      ]
+    },
+    "subscriptions": {
+      "title": "Assinaturas, cancelamento e reembolsos",
+      "paragraphs": [
+        "O catálogo de cobrança da plataforma precifica estes planos em dólares dos Estados Unidos: Business Monthly 99 por mês, Business Yearly 990 por ano, CRM Only 49 por mês e Website Only 129 por ano. Alguns nomes internos de SKU ainda contêm as letras ILS. Esses nomes não são um segundo preço.",
+        "A Lemon Squeezy é o pagamento destas assinaturas da plataforma. O aviso antes do pagamento diz que a assinatura renova até ser cancelada na cobrança, que o cancelamento interrompe a próxima cobrança e que o acesso dura até o fim do período pago. Os reembolsos seguem os termos de serviço, inclusive o limite de que uma lei imperativa do consumidor prevalece quando se aplica.",
+        "Não se verificou em um contrato assinado se a Lemon Squeezy é a comerciante registrada e a cobradora de imposto desta loja. Números de conta bancária para uma transferência não estão no catálogo. Os planos anuais acima usam um intervalo de cobrança anual. Esta página não diz que cada licença distinta renova sem uma nova cobrança.",
+        "O plano de parceiro internacional está na página de termos do parceiro. A linha do catálogo dele não liga a cobrança com cartão ao vivo."
+      ]
+    }
+  }
+}
