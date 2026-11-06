@@ -194,12 +194,20 @@ describe("marketing crawl files", () => {
       expect(body).not.toContain("home-hero__title");
       if (locale === "he") {
         expect(body).toContain(">כל</span>");
-        expect(body).toContain(">צריך</span>");
-        expect(body).toContain(">אחת</span>");
+        expect(body).toContain(">צריך.</span>");
+        expect(body).toContain(">אחת.</span>");
         expect(body).toContain("BizUply");
+      } else if (locale === "es") {
+        expect(body).toContain(">Todo</span>");
+        expect(body).toContain(">plataforma.</span>");
+      } else if (locale === "pt-BR") {
+        expect(body).toContain(">Tudo</span>");
+        expect(body).toContain(">plataforma.</span>");
+      } else if (locale === "ar") {
+        expect(body).toContain(">واحدة.</span>");
       } else {
         expect(body).toContain(">Everything</span>");
-        expect(body).toContain(">needs</span>");
+        expect(body).toContain(">needs.</span>");
         expect(body).toContain(">platform.</span>");
       }
       expect(body).toContain(home.faqTitle);

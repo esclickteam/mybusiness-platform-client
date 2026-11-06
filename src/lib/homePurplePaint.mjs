@@ -4,42 +4,14 @@
  * flashes the legacy dark home-hero design.
  */
 
+import { HX_HERO_LOCALES } from "./homeCinematic.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { STORY } from "./homepageStory.mjs";
 import { marketingLocaleMeta } from "./localePathCore.mjs";
 import { marketingNav } from "./marketingNav.mjs";
 
 /** Cinematic hero copy — same strings as HomeExperienceSections Hero. */
-export const HX_HERO_COPY = {
-  en: {
-    lineOne: "Everything your business needs",
-    lineTwo: "in one powerful platform.",
-    lead1:
-      "Leads, WhatsApp, campaigns, websites, and automations — in one workspace for the business.",
-    lead2: "",
-    start: "Get started",
-    see: "See the system",
-    note: "",
-    stageAlt: "Northwind Studio lead list inside BizUply",
-    login: "Login",
-    cta: "Get Started",
-    navAria: "Main navigation",
-  },
-  he: {
-    lineOne: "כל מה שהעסק שלך צריך",
-    lineTwo: "בפלטפורמה אחת חזקה.",
-    lead1:
-      "לידים, WhatsApp, קמפיינים, אתרים ואוטומציות — בסביבת עבודה אחת לעסק.",
-    lead2: "",
-    start: "להתחיל",
-    see: "לראות את המערכת",
-    note: "",
-    stageAlt: "רשימת הלידים של Northwind Studio בתוך BizUply",
-    login: "התחברות",
-    cta: "הירשמו עכשיו",
-    navAria: "ניווט ראשי",
-  },
-};
+export const HX_HERO_COPY = HX_HERO_LOCALES;
 
 function escapeText(value) {
   return String(value || "")
@@ -117,7 +89,8 @@ function faqBodyHtml(items) {
  */
 export function renderPurpleHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
-  const hx = locale === "he" ? HX_HERO_COPY.he : HX_HERO_COPY.en;
+  const hx = HX_HERO_COPY[locale] || HX_HERO_COPY.en;
+  const lineTwoHot = Math.max(0, String(hx.lineTwo).trim().split(/\s+/).length - 1);
   const logoAlt = locale === "he" ? "ביזאפלי (BizUply)" : "BizUply";
   const navLocale =
     locale === "he" || locale === "es" || locale === "pt-BR" || locale === "ar" ? locale : "en";
@@ -158,7 +131,7 @@ export function renderPurpleHomePrerender(locale) {
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(
     hx.lineTwo,
-    2,
+    lineTwoHot,
   )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p>${heroLead2}<div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,
   )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="#products"><span>${escapeText(

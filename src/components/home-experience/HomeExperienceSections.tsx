@@ -2,14 +2,24 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { STORY } from "../../lib/homepageStory.mjs";
 import { useOpenFilm, type Film } from "./film";
+import {
+  AppointmentsBand,
+  ConnectedFlow,
+  CrmStory,
+  GrowthBand,
+  HeroDecor,
+  OrbitBand,
+  PhoneStory,
+  useCinematic,
+} from "./HomeCinematic";
 
 function useCopy() {
   const { i18n, t } = useTranslation();
   const he = i18n.language.startsWith("he");
   const text = (hebrew: string, english: string) => (he ? hebrew : english);
-  return { text, he, t, language: i18n.language, dir: getTextDirection(i18n.language) };
+  const cine = useCinematic(i18n.language);
+  return { text, he, t, cine, language: i18n.language, dir: getTextDirection(i18n.language) };
 }
 
 function useNarrow() {
@@ -262,6 +272,36 @@ function DemoButton({ label, onClick }: { label: string; onClick: () => void }) 
   );
 }
 
+function AppointmentsSection() {
+  const { language, cine } = useCopy();
+  return (
+    <AppointmentsBand
+      copy={cine}
+      shot={(
+        <LocaleShot
+          language={language}
+          src="/demo-media/home/appointments.jpg"
+          alt={cine.apptTitle}
+          width={1600}
+          height={1000}
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+    />
+  );
+}
+
+function OrbitSection() {
+  const { cine } = useCopy();
+  return <OrbitBand copy={cine} />;
+}
+
+function GrowthSection() {
+  const { cine } = useCopy();
+  return <GrowthBand copy={cine} />;
+}
+
 export default function HomeExperienceSections() {
   const { text } = useCopy();
   return (
@@ -275,12 +315,15 @@ export default function HomeExperienceSections() {
       <CrmDepth />
       <WhatsApp />
       <Campaigns />
+      <AppointmentsSection />
       <Websites />
       <Automations />
       <ReadySystems />
       <Connect />
       <Films />
       <Audiences />
+      <OrbitSection />
+      <GrowthSection />
       <Faq />
       <Close />
       </main>
@@ -289,7 +332,9 @@ export default function HomeExperienceSections() {
 }
 
 function Hero() {
-  const { text, language } = useCopy();
+  const { text, language, cine } = useCopy();
+  const reduced = useReduced();
+  const hero = cine.hero;
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
     const node = ref.current;
@@ -304,8 +349,9 @@ function Hero() {
     node.style.setProperty("--s2", s2.toFixed(3));
     node.style.setProperty("--s3", s3.toFixed(3));
   });
-  const lineOne = text("כל מה שהעסק שלך צריך", "Everything your business needs");
-  const lineTwo = text("בפלטפורמה אחת חזקה.", "in one powerful platform.");
+  const lineOne = hero.lineOne;
+  const lineTwo = hero.lineTwo;
+  const hot = Math.max(0, lineTwo.trim().split(/\s+/).length - 1);
 
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
@@ -324,17 +370,12 @@ function Hero() {
           <p className="hx-hero-brand">BizUply</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={lineOne} />
-            <Words text={lineTwo} hot={2} delay={280} />
+            <Words text={lineTwo} hot={hot} delay={280} />
           </h1>
-          <p className="hx-lead">
-            {text(
-              "לידים, WhatsApp, קמפיינים, אתרים ואוטומציות — בסביבת עבודה אחת לעסק.",
-              "Leads, WhatsApp, campaigns, websites, and automations — in one workspace for the business.",
-            )}
-          </p>
+          <p className="hx-lead">{hero.lead1}</p>
           <div className="hx-actions">
-            <Cta to="/register">{text("להתחיל", "Get started")}</Cta>
-            <Cta to="#products" tone="line">{text("לראות את המערכת", "See the system")}</Cta>
+            <Cta to="/register">{hero.start}</Cta>
+            <Cta to="#products" tone="line">{hero.see}</Cta>
           </div>
         </div>
         <div className="hx-hero-stage">
@@ -346,7 +387,7 @@ function Hero() {
               className="hx-hero-shot hx-hero-shot-1 hx-crop-leads"
               language={language}
               src="/demo-media/home/crm.jpg"
-              alt={text("רשימת הלידים של Northwind Studio בתוך BizUply", "Northwind Studio lead list inside BizUply")}
+              alt={hero.stageAlt}
               width={1600}
               height={1000}
               fetchPriority="high"
@@ -402,68 +443,31 @@ function Hero() {
             />
           </div>
         </div>
+        <HeroDecor copy={cine} reduced={reduced} />
       </div>
+      <div className="hx-wave" aria-hidden="true" />
     </section>
   );
 }
 
 function Why() {
-  const { text } = useCopy();
-  const points = [
-    {
-      title: text("רואים את התמונה המלאה", "See the whole picture"),
-      body: text(
-        "לידים, לקוחות, שיחות ומשימות — במקום שבו הצוות עובד.",
-        "Leads, customers, conversations, and tasks — where the team already works.",
-      ),
-    },
-    {
-      title: text("מתקדמים בלי לאבד פניות", "Move forward without losing enquiries"),
-      body: text(
-        "כל שלב ברור: מה דורש תשומת לב ומה הצעד הבא.",
-        "Each stage is clear: what needs attention and what comes next.",
-      ),
-    },
-    {
-      title: text("מחברים בין שיווק למכירות", "Connect marketing with sales"),
-      body: text(
-        "פנייה מהקמפיין הופכת לחלק מתהליך העבודה.",
-        "An enquiry from a campaign becomes part of the working process.",
-      ),
-    },
-  ];
+  const { cine } = useCopy();
   return (
-    <section className="hx-why" aria-labelledby="hx-why-title">
+    <section className="hx-why" id="hx-connect" aria-labelledby="hx-why-title">
       <div className="hx-why-wrap">
-        <h2 id="hx-why-title">
-          {text(
-            "העסק שלך לא צריך עוד מערכת. הוא צריך שהכול יעבוד יחד.",
-            "Your business does not need another system. It needs the work to stay together.",
-          )}
-        </h2>
+        <p className="hx-eyebrow">{cine.connectEyebrow}</p>
+        <h2 id="hx-why-title">{cine.connectTitle}</h2>
         <div className="hx-why-copy">
-          <p>
-            {text(
-              "פנייה מפייסבוק, שיחה ב־WhatsApp, פרטים בגיליון ומשימה במקום אחר — BizUply מרכזת את זה במקום אחד.",
-              "An enquiry from Facebook, a WhatsApp chat, details in a spreadsheet, and a task somewhere else — BizUply keeps that work in one place.",
-            )}
-          </p>
+          <p>{cine.connectBody}</p>
         </div>
-        <ul className="hx-points">
-          {points.map((point) => (
-            <li key={point.title}>
-              <h3>{point.title}</h3>
-              <p>{point.body}</p>
-            </li>
-          ))}
-        </ul>
+        <ConnectedFlow copy={cine} />
       </div>
     </section>
   );
 }
 
 function ProductShowcase() {
-  const { text, dir, language } = useCopy();
+  const { text, dir, language, cine } = useCopy();
   const stageRef = useRef<HTMLElement | null>(null);
   const railRef = useRef<HTMLDivElement | null>(null);
   const [active, setActive] = useState(0);
@@ -604,15 +608,15 @@ function ProductShowcase() {
     <section className="hx-showcase" id="products" ref={stageRef} aria-labelledby="hx-show-title">
       <div className="hx-show-pin">
         <div className="hx-show-head">
-          <h2 id="hx-show-title">{text("המוצרים על הבמה.", "Products on stage.")}</h2>
+          <h2 id="hx-show-title">{cine.toolsTitle}</h2>
           <p className="hx-show-live" aria-live="polite">
             <strong>{current.title}</strong>
-            <span>{current.body}</span>
+            <span>{cine.toolsLead}</span>
           </p>
           <div className="hx-actions hx-show-actions">
             <Cta to={current.href} tone="ink">{current.title}</Cta>
             <DemoButton
-              label={text("לצפות בהדגמה", "Watch the demo")}
+              label={cine.hero.watch}
               onClick={() => open(filmOf(current.film, current.film, "", current.title, current.caption, language, text))}
             />
           </div>
@@ -856,7 +860,7 @@ function SplitStack() {
 }
 
 function CrmDepth() {
-  const { text, language } = useCopy();
+  const { text, language, cine } = useCopy();
   const open = useOpenFilm();
   const points = [
     [text("ניהול לידים", "Lead management"), text("ריכוז פניות נכנסות ומעקב אחר הסטטוס של כל ליד.", "Incoming enquiries in one list, with a status for each lead.")],
@@ -874,13 +878,8 @@ function CrmDepth() {
     <section className="hx-depth" aria-labelledby="hx-crm-title">
       <div className="hx-depth-wrap">
         <div>
-          <h2 id="hx-crm-title">{text("כל ליד במקום הנכון. כל הזדמנות מקבלת תשומת לב.", "Every lead in the right place. Every opportunity gets attention.")}</h2>
-          <p className="hx-prose">
-            {text(
-              "לקוח השאיר פרטים באתר? הגיעה פנייה מקמפיין? מישהו ביקש שיחזרו אליו? מערכת CRM טובה עוזרת להפוך את הפניות האלה לתהליך עבודה ברור.",
-              "A customer left details on the website, a campaign enquiry arrived, or someone asked for a call back. A useful CRM turns those enquiries into a clear working process.",
-            )}
-          </p>
+          <h2 id="hx-crm-title">{cine.crmTitle}</h2>
+          <p className="hx-prose">{cine.crmLead}</p>
           <p className="hx-prose">
             {text(
               "עם ה־CRM של BizUply אפשר לרכז מידע על לידים ולקוחות, לעקוב אחר סטטוסים, לתעד את המשך הטיפול ולנהל משימות מתוך סביבת עבודה מרכזית. כך קל יותר להבין מי פנה, מה הוא ביקש, מי מטפל בו ומה צריך לקרות בהמשך.",
@@ -904,6 +903,7 @@ function CrmDepth() {
             <LocaleShot language={language} src={shots[2][0]} alt={shots[2][1]} width={1200} height={750} loading="lazy" decoding="async" />
           </div>
           <p className="hx-crm-toast">{text("ליד חדש התקבל", "A new lead arrived")}</p>
+          <CrmStory copy={cine} />
         </div>
         <ul className="hx-points">
           {points.map(([title, body]) => (
@@ -937,7 +937,7 @@ function filmOf(
 }
 
 function WhatsApp() {
-  const { text, language } = useCopy();
+  const { text, language, cine } = useCopy();
   const open = useOpenFilm();
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
@@ -958,13 +958,8 @@ function WhatsApp() {
       <div className="hx-chapter-pin">
         <div className="hx-wa-grid">
           <div>
-            <h2 id="hx-wa-title">{text("הלקוחות שלך כבר ב־WhatsApp. עכשיו גם העסק יכול לעבוד שם בצורה מסודרת.", "Your customers are already on WhatsApp. The business can work there in a more orderly way.")}</h2>
-            <p className="hx-prose">
-              {text(
-                "WhatsApp הפך לאחד מערוצי התקשורת המרכזיים בין עסקים ללקוחות. כשמספר הפניות גדל, קשה לנהל הכול מתוך שיחות פרטיות ולזכור מה צריך לעשות עם כל לקוח.",
-                "WhatsApp has become one of the main channels between businesses and customers. As the number of conversations grows, it is harder to manage everything from private chats and remember what each customer needs.",
-              )}
-            </p>
+            <h2 id="hx-wa-title">{cine.waTitle}</h2>
+            <p className="hx-prose">{cine.waLead}</p>
             <p className="hx-prose">
               {text(
                 "BizUply מאפשרת לעסקים לעבוד עם WhatsApp Business API ולשלב תקשורת לקוחות בתהליכים העסקיים שלהם. אפשר לנהל שיחות, לעבוד עם תבניות הודעה מאושרות ולחבר פעולות לתהליכים נוספים במערכת, בהתאם לתנאי השימוש ולהרשאות של Meta.",
@@ -1002,6 +997,7 @@ function WhatsApp() {
             </div>
           </div>
           <div className="hx-wa-frame">
+            <PhoneStory copy={cine} />
             <LocaleShot
               language={language}
               src="/demo-media/whatsapp/still-3.jpg"
@@ -1084,7 +1080,7 @@ function Campaigns() {
 }
 
 function Websites() {
-  const { text, language } = useCopy();
+  const { text, language, cine } = useCopy();
   const open = useOpenFilm();
   const ref = useRef<HTMLElement | null>(null);
   const bucket = useRef(0);
@@ -1107,14 +1103,9 @@ function Websites() {
       <div className="hx-chapter-pin hx-sites-pin">
         <div className="hx-sites-head">
           <div>
-            <h2 id="hx-sites-title">{text("הנוכחות הדיגיטלית שלך צריכה לעשות יותר מלהיראות טוב.", "Your digital presence should do more than look good.")}</h2>
+            <h2 id="hx-sites-title">{cine.sitesTitle}</h2>
           </div>
-          <p>
-            {text(
-              "אתר מקצועי הוא המקום שבו לקוחות פוטנציאליים לומדים להכיר את העסק, מבינים מה הוא מציע ומחליטים אם ליצור קשר. עם כלי בניית האתרים של BizUply אפשר ליצור נוכחות שמתאימה לסוג העסק ולמטרות שלו: אתר תדמית, דף נחיתה, או עמוד שמאפשר להשאיר פרטים ולתאם מועד.",
-              "A professional site is where potential customers learn what the business offers and decide whether to get in touch. BizUply’s website tools can shape that presence around the business: a brochure site, a landing page, or a page where people leave details and book a time.",
-            )}
-          </p>
+          <p>{cine.sitesLead}</p>
         </div>
         <div className="hx-sites-layout">
           <ol className="hx-site-steps">
@@ -1540,25 +1531,14 @@ function Audiences() {
   );
 }
 
-function storyLocale(language: string) {
-  const value = language.toLowerCase();
-  if (value.startsWith("pt")) return "pt-BR";
-  if (value.startsWith("he")) return "he";
-  if (value.startsWith("es")) return "es";
-  if (value.startsWith("ar")) return "ar";
-  return "en";
-}
-
 function Faq() {
-  const { text, language } = useCopy();
-  const story = STORY[storyLocale(language)] || STORY.en;
-  const items = story.faq as [string, string][];
+  const { text, cine } = useCopy();
+  const items = cine.faq;
   return (
     <section className="hx-faq" aria-labelledby="hx-faq-title">
       <div className="hx-faq-split">
         <div className="hx-faq-intro">
-          <h2 id="hx-faq-title">{story.faqTitle}</h2>
-          <p>{story.faqLead}</p>
+          <h2 id="hx-faq-title">{cine.faqTitle}</h2>
           <div className="hx-actions">
             <Cta to="/faq">{text("לכל השאלות", "All questions")}</Cta>
             <Cta to="/pricing" tone="line">{text("למחירים", "Pricing")}</Cta>
@@ -1591,7 +1571,7 @@ function Faq() {
 }
 
 function Close() {
-  const { text, language } = useCopy();
+  const { text, language, cine } = useCopy();
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
     ref.current?.style.setProperty("--join", progress.toFixed(3));
@@ -1600,13 +1580,8 @@ function Close() {
   return (
     <section className="hx-close" ref={ref} aria-labelledby="hx-close-title">
       <div className="hx-close-a">
-        <h2 id="hx-close-title">{text("העסק שלך יכול לעבוד אחרת.", "Your business can work differently.")}</h2>
-        <p className="hx-prose">
-          {text(
-            "כשהלידים, הלקוחות, התקשורת והפעילות השיווקית מתחברים — קל יותר לראות מה קורה, להבין מה צריך לעשות ולהתקדם.",
-            "When leads, customers, communication, and marketing activity stay connected, it is easier to see what is happening, decide what to do, and move forward.",
-          )}
-        </p>
+        <h2 id="hx-close-title">{cine.endTitle}</h2>
+        <p className="hx-prose">{cine.endLead}</p>
         <ul className="hx-orbit" aria-hidden="true">
           {products.map((name) => <li key={name}>{name}</li>)}
         </ul>
@@ -1628,8 +1603,8 @@ function Close() {
           decoding="async"
         />
         <div className="hx-actions">
-          <Cta to="/register" tone="ink">{text("להתחיל", "Get started")}</Cta>
-          <Cta to="/pricing">{text("הכירו את המסלולים", "See the plans")}</Cta>
+          <Cta to="/register" tone="ink">{cine.endPrimary}</Cta>
+          <Cta to="#products">{cine.endSecondary}</Cta>
           <Cta to="/contact">{text("דברו איתנו", "Talk with us")}</Cta>
         </div>
       </div>

@@ -24,7 +24,7 @@ describe("purple home first paint", () => {
     const he = renderPurpleHomePrerender("he");
     expect(he.dir).toBe("rtl");
     expect(he.inner).toContain(">כל</span>");
-    expect(he.inner).toContain(">אחת</span>");
+    expect(he.inner).toContain(">אחת.</span>");
     expect(he.inner).toContain("BizUply");
     expect(he.inner).toContain(HX_HERO_COPY.he.start);
     expect(he.headline).toBe(`${HX_HERO_COPY.he.lineOne} ${HX_HERO_COPY.he.lineTwo}`);
