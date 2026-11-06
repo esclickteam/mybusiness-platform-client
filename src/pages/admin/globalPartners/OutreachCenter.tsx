@@ -1,15 +1,31 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { gpGet, gpPatch, gpPost } from "./globalPartnersApi";
-import { statusLabel, TRACK_LABELS } from "./copy";
+import {
+  directionLabel,
+  messageStatusLabel,
+  statusLabel,
+  trackLabel,
+  TRACK_LABELS,
+  STATUS_LABELS,
+} from "./copy";
 
 type Props = {
   onError: (msg: string) => void;
   onMessage: (msg: string) => void;
   busy: boolean;
   setBusy: (v: boolean) => void;
+  openCandidateId?: string | null;
+  onOpenCandidateHandled?: () => void;
 };
 
-export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Props) {
+export default function OutreachCenter({
+  onError,
+  onMessage,
+  busy,
+  setBusy,
+  openCandidateId = null,
+  onOpenCandidateHandled,
+}: Props) {
   const [items, setItems] = useState<any[]>([]);
   const [total, setTotal] = useState(0);
   const [templates, setTemplates] = useState<any[]>([]);
@@ -17,34 +33,32 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
   const [country, setCountry] = useState("");
   const [track, setTrack] = useState("");
   const [status, setStatus] = useState("");
-  const [channel, setChannel] = useState("");
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [scope, setScope] = useState<"ready" | "contact" | "all">("contact");
   const [active, setActive] = useState<any>(null);
   const [thread, setThread] = useState<any>(null);
   const [preview, setPreview] = useState<any>(null);
-  const [locale, setLocale] = useState("en");
+  const [draftSubject, setDraftSubject] = useState("");
+  const [draftHtml, setDraftHtml] = useState("");
+  const [locale, setLocale] = useState("he");
   const [chosenTrack, setChosenTrack] = useState("business_partner");
   const [attest, setAttest] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [interest, setInterest] = useState("");
 
   const load = useCallback(async () => {
-    const params: Record<string, string> = { limit: "50" };
+    const params: Record<string, string> = { limit: "100", scope };
     if (country) params.countryCode = country;
     if (track) params.track = track;
     if (status) params.status = status;
-    if (channel === "email") params.hasEmail = "1";
-    if (channel === "phone") params.hasPhone = "1";
-    if (channel === "form") params.hasForm = "1";
     const data = await gpGet("/outreach/center", params);
     setItems(data.items || []);
     setTotal(data.total || 0);
     setTemplates(data.templates || []);
     setInbox(data.inbox || null);
-  }, [country, track, status, channel]);
+  }, [country, track, status, scope]);
 
   useEffect(() => {
-    void load().catch((e) => onError(e?.message || "טעינת מרכז פניות נכשלה"));
+    void load().catch((e) => onError(e?.message || "טעינת מרכז הפניות נכשלה"));
   }, [load, onError]);
 
   async function openThread(id: string) {
@@ -54,14 +68,49 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
       setActive(data.candidate);
       setThread(data);
       setChosenTrack(data.candidate?.recommendedTrack || "business_partner");
-      setPreview(null);
       setAttest(false);
+      const editable = [...(data.messages || [])]
+        .reverse()
+        .find(
+          (m: any) =>
+            m.direction === "outbound" &&
+            ["draft", "previewed", "approved", "failed"].includes(m.status)
+        );
+      if (editable) {
+        setPreview({ message: editable });
+        setDraftSubject(editable.subject || "");
+        setDraftHtml(editable.bodyHtml || "");
+      } else {
+        setPreview(null);
+        setDraftSubject("");
+        setDraftHtml("");
+      }
     } catch (e: any) {
-      onError(e?.message || "טעינת שרשור נכשלה");
+      onError(e?.message || "טעינת פרטי הפנייה נכשלה");
     } finally {
       setBusy(false);
     }
   }
+
+  useEffect(() => {
+    if (!openCandidateId) return;
+    void openThread(openCandidateId).finally(() => onOpenCandidateHandled?.());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openCandidateId]);
+
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActive(null);
+    };
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [active]);
 
   async function doPreview() {
     if (!active?._id) return;
@@ -71,12 +120,32 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
         candidateId: active._id,
         track: chosenTrack,
         locale,
-        toEmail: active.businessEmail,
+        toEmail: active.businessEmail || undefined,
       });
       setPreview(data);
-      onMessage("תצוגה מקדימה מוכנה — נדרש אישור Owner לפני שליחה.");
+      setDraftSubject(data.message?.subject || "");
+      setDraftHtml(data.message?.bodyHtml || "");
+      onMessage("טיוטת פנייה מוכנה לעריכה. שליחה חיה חסומה — ניתן לאשר ולשמור בדיקה פנימית בלבד.");
     } catch (e: any) {
-      onError(e?.message || "יצירת תצוגה מקדימה נכשלה");
+      onError(e?.message || "יצירת טיוטת הפנייה נכשלה");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function saveDraft() {
+    if (!preview?.message?._id) return;
+    setBusy(true);
+    try {
+      const data = await gpPatch(`/outreach/${preview.message._id}/draft`, {
+        subject: draftSubject,
+        bodyHtml: draftHtml,
+      });
+      setPreview((p: any) => ({ ...p, message: data.message }));
+      onMessage("הטיוטה נשמרה.");
+      if (active?._id) await openThread(active._id);
+    } catch (e: any) {
+      onError(e?.message || "שמירת הטיוטה נכשלה");
     } finally {
       setBusy(false);
     }
@@ -85,18 +154,23 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
   async function doApprove() {
     if (!preview?.message?._id) return;
     if (!attest) {
-      onError("יש לאשר בסיס חוקי לפני אישור שליחה.");
+      onError("יש לאשר שיש בסיס חוקי לפני אישור הפנייה.");
       return;
     }
     setBusy(true);
     try {
+      await gpPatch(`/outreach/${preview.message._id}/draft`, {
+        subject: draftSubject,
+        bodyHtml: draftHtml,
+      });
       const data = await gpPost(`/outreach/${preview.message._id}/approve`, {
         complianceAttestation: true,
       });
       setPreview((p: any) => ({ ...p, message: data.message }));
-      onMessage("הפנייה אושרה על ידי Owner.");
+      onMessage("הפנייה אושרה. שליחה למועמדים עדיין חסומה עד אישור נפרד.");
+      if (active?._id) await openThread(active._id);
     } catch (e: any) {
-      onError(e?.message || "אישור נכשל");
+      onError(e?.message || "אישור הפנייה נכשל");
     } finally {
       setBusy(false);
     }
@@ -111,14 +185,12 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
         liveSend: false,
       });
       onMessage(
-        data.dryRun
-          ? `שליחת בדיקה (dry-run) נשמרה · נוצרו ${data.followUps?.length || 0} תזכורות`
-          : "נשלח"
+        `נשמרה בדיקה פנימית בלבד (ללא מייל למועמד). משימות מעקב: ${data.followUps?.length || 0}`
       );
       await openThread(active._id);
       await load();
     } catch (e: any) {
-      onError(e?.message || "שליחה נכשלה");
+      onError(e?.message || "שמירת הבדיקה נכשלה");
     } finally {
       setBusy(false);
     }
@@ -129,29 +201,11 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
     setBusy(true);
     try {
       await gpPatch(`/outreach/candidates/${active._id}/status`, { status: next });
-      onMessage(`סטטוס עודכן ל־${statusLabel(next)}`);
+      onMessage(`הסטטוס עודכן ל־${statusLabel(next)}`);
       await openThread(active._id);
       await load();
     } catch (e: any) {
-      onError(e?.message || "עדכון סטטוס נכשל");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function suppressEmail() {
-    if (!active?.businessEmail) return;
-    setBusy(true);
-    try {
-      await gpPost("/outreach/suppress", {
-        email: active.businessEmail,
-        reason: "unsubscribe",
-        candidateId: active._id,
-      });
-      onMessage("הנמען נוסף לרשימת הסרה.");
-      await load();
-    } catch (e: any) {
-      onError(e?.message || "חסימה נכשלה");
+      onError(e?.message || "עדכון הסטטוס נכשל");
     } finally {
       setBusy(false);
     }
@@ -168,20 +222,14 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
         fromEmail: active.businessEmail,
       });
       setReplyText("");
-      onMessage("תגובה נרשמה ידנית (אין Inbox אוטומטי מחובר).");
+      onMessage("התגובה נרשמה ידנית.");
       await openThread(active._id);
       await load();
     } catch (e: any) {
-      onError(e?.message || "שמירת תגובה נכשלה");
+      onError(e?.message || "שמירת התגובה נכשלה");
     } finally {
       setBusy(false);
     }
-  }
-
-  function toggleSelect(id: string) {
-    setSelectedIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
   }
 
   return (
@@ -189,137 +237,83 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
       <div className="gp-panel">
         <h2>מרכז פניות</h2>
         <p className="gp-muted">
-          ניהול גיוס ל־{total} מועמדים עם ערוץ קשר. שליחה רק לאחר תצוגה מקדימה + אישור Owner.
-          שליחה חיה למועמדים דורשת אישור מפורש נוסף — ברירת המחדל היא dry-run.
+          ניהול פניות ל־{total} מועמדים. ניתן להכין טיוטות ולאשר אותן, אך שליחה חיה למועמדים
+          חסומה כברירת מחדל.
         </p>
         {inbox ? (
           <p className="gp-muted">
             תיבת תגובות:{" "}
-            {inbox.connected
-              ? `מחוברת (${inbox.mode})`
-              : "לא מחוברת — לא מדומה כמחוברת"}{" "}
-            — {inbox.note}
-            {Array.isArray(inbox.blockers) && inbox.blockers.length ? (
-              <>
-                <br />
-                חסמים: {inbox.blockers.join(", ")}
-              </>
-            ) : null}
+            {inbox.connected ? "מחוברת לקליטת תשובות" : "לא מחוברת כרגע — ניתן לרשום תגובות ידנית"}
           </p>
         ) : null}
 
-        <div className="gp-form" style={{ marginTop: 12 }}>
-          <label>
-            מדינה
-            <input value={country} onChange={(e) => setCountry(e.target.value)} placeholder="IL" />
-          </label>
-          <label>
-            מסלול
-            <select value={track} onChange={(e) => setTrack(e.target.value)}>
-              <option value="">הכל</option>
-              {Object.entries(TRACK_LABELS).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            סטטוס גיוס
-            <select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="">הכל</option>
-              {Object.keys(TRACK_LABELS).length
-                ? [
-                    "discovered",
-                    "pending_review",
-                    "approved_for_outreach",
-                    "outreach_sent",
-                    "response_received",
-                    "interested",
-                    "negotiation",
-                    "proposal_sent",
-                    "agreement_signed",
-                    "active_partner",
-                    "rejected",
-                  ].map((s) => (
-                    <option key={s} value={s}>
-                      {statusLabel(s)}
-                    </option>
-                  ))
-                : null}
-            </select>
-          </label>
-          <label>
-            ערוץ קשר
-            <select value={channel} onChange={(e) => setChannel(e.target.value)}>
-              <option value="">הכל</option>
-              <option value="email">אימייל</option>
-              <option value="phone">טלפון</option>
-              <option value="form">טופס</option>
-            </select>
-          </label>
-        </div>
-        <div className="gp-actions">
+        <div className="gp-filters">
+          <select value={scope} onChange={(e) => setScope(e.target.value as any)}>
+            <option value="contact">עם פרטי קשר</option>
+            <option value="ready">מוכנים לפנייה</option>
+            <option value="all">כל המועמדים</option>
+          </select>
+          <input
+            placeholder="קוד מדינה (למשל IL)"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+          />
+          <select value={track} onChange={(e) => setTrack(e.target.value)}>
+            <option value="">כל המסלולים</option>
+            {Object.keys(TRACK_LABELS).map((t) => (
+              <option key={t} value={t}>
+                {trackLabel(t)}
+              </option>
+            ))}
+          </select>
+          <select value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="">כל הסטטוסים</option>
+            {Object.keys(STATUS_LABELS).map((s) => (
+              <option key={s} value={s}>
+                {statusLabel(s)}
+              </option>
+            ))}
+          </select>
           <button type="button" className="gp-btn" disabled={busy} onClick={() => void load()}>
-            סנן
+            רענון
           </button>
-          <span className="gp-muted">נבחרו {selectedIds.length}</span>
         </div>
 
-        <div className="gp-table-wrap" style={{ marginTop: 14 }}>
+        <div className="gp-table-wrap">
           <table className="gp-table">
             <thead>
               <tr>
-                <th></th>
-                <th>חברה / מדינה</th>
+                <th>חברה</th>
                 <th>מסלול מומלץ</th>
-                <th>קשר</th>
-                <th>מקור</th>
+                <th>פרטי קשר</th>
                 <th>סטטוס</th>
                 <th>פנייה אחרונה</th>
-                <th>פולואו־אפ</th>
-                <th>אחראי</th>
+                <th>מעקב</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={10}>אין מועמדים מוכנים לפנייה לפי הסינון.</td>
+                  <td colSpan={7}>אין מועמדים לפי הסינון הנוכחי.</td>
                 </tr>
               ) : (
                 items.map((c) => (
                   <tr key={c._id}>
                     <td>
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.includes(c._id)}
-                        onChange={() => toggleSelect(c._id)}
-                      />
-                    </td>
-                    <td>
                       {c.companyName}
                       <div className="gp-muted">{c.countryCode || "—"}</div>
                     </td>
-                    <td>{TRACK_LABELS[c.recommendedTrack] || c.recommendedTrack}</td>
+                    <td>{trackLabel(c.recommendedTrack)}</td>
                     <td>
                       {[
-                        c.businessEmail ? "מייל" : null,
-                        c.businessPhone ? "טל׳" : null,
+                        c.businessEmail ? "אימייל" : null,
+                        c.businessPhone ? "טלפון" : null,
                         c.contactFormUrl ? "טופס" : null,
                       ]
                         .filter(Boolean)
-                        .join(" · ") || "—"}
+                        .join(" · ") || "אין"}
                       <div className="gp-muted">{c.businessEmail || ""}</div>
-                    </td>
-                    <td className="gp-muted">
-                      {c.contactSource ? (
-                        <a href={c.contactSource} target="_blank" rel="noreferrer">
-                          מקור
-                        </a>
-                      ) : (
-                        "—"
-                      )}
                     </td>
                     <td>{statusLabel(c.recruitmentStatus)}</td>
                     <td>
@@ -332,7 +326,6 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
                         ? new Date(c.nextFollowUpAt).toLocaleDateString("he-IL")
                         : "—"}
                     </td>
-                    <td className="gp-muted">{c.assigneeUserId || "—"}</td>
                     <td>
                       <button
                         type="button"
@@ -351,195 +344,254 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
       </div>
 
       {active ? (
-        <div className="gp-panel">
-          <h2>
-            {active.companyName}{" "}
-            <span className="gp-muted">· {active.countryCode || ""}</span>
-          </h2>
-          <p className="gp-muted">
-            מסלול מומלץ: {TRACK_LABELS[chosenTrack] || chosenTrack} · סטטוס:{" "}
-            {statusLabel(active.recruitmentStatus)}
-          </p>
+        <div
+          className="gp-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`פנייה ל־${active.companyName}`}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setActive(null);
+          }}
+        >
+          <div className="gp-drawer">
+            <div className="gp-drawer-head">
+              <div>
+                <h2>ניהול פנייה · {active.companyName}</h2>
+                <p className="gp-muted" style={{ margin: "6px 0 0" }}>
+                  {active.countryCode || "—"} · {statusLabel(active.recruitmentStatus)} ·{" "}
+                  {active.businessEmail || "ללא אימייל"}
+                </p>
+              </div>
+              <button type="button" className="gp-btn gp-btn--ghost" onClick={() => setActive(null)}>
+                סגור
+              </button>
+            </div>
 
-          <div className="gp-form">
-            <label>
-              מסלול לתבנית
-              <select value={chosenTrack} onChange={(e) => setChosenTrack(e.target.value)}>
-                {(templates.length
-                  ? templates.map((t) => t.track)
-                  : Object.keys(TRACK_LABELS)
-                ).map((t) => (
-                  <option key={t} value={t}>
-                    {TRACK_LABELS[t] || t}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
-              שפה
-              <select value={locale} onChange={(e) => setLocale(e.target.value)}>
-                <option value="en">English</option>
-                <option value="he">עברית</option>
-              </select>
-            </label>
-            <label>
-              סטטוס גיוס
-              <select
-                value={active.recruitmentStatus}
-                onChange={(e) => void updateStatus(e.target.value)}
-              >
-                {[
-                  "discovered",
-                  "pending_review",
-                  "approved_for_outreach",
-                  "outreach_sent",
-                  "response_received",
-                  "interested",
-                  "negotiation",
-                  "proposal_sent",
-                  "agreement_signed",
-                  "active_partner",
-                  "rejected",
-                ].map((s) => (
-                  <option key={s} value={s}>
-                    {statusLabel(s)}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+            <div className="gp-section">
+              <h3>פרטי חברה ואיש קשר</h3>
+              <dl className="gp-dl">
+                <dt>חברה</dt>
+                <dd>{active.companyName}</dd>
+                <dt>אתר</dt>
+                <dd>
+                  {active.website ? (
+                    <a href={active.website} target="_blank" rel="noreferrer">
+                      {active.website}
+                    </a>
+                  ) : (
+                    "—"
+                  )}
+                </dd>
+                <dt>אימייל</dt>
+                <dd>{active.businessEmail || "—"}</dd>
+                <dt>טלפון</dt>
+                <dd>{active.businessPhone || "—"}</dd>
+                <dt>מסלול מומלץ</dt>
+                <dd>{trackLabel(chosenTrack)}</dd>
+              </dl>
+            </div>
 
-          <div className="gp-actions">
-            <button type="button" className="gp-btn" disabled={busy || !active.businessEmail} onClick={() => void doPreview()}>
-              תצוגה מקדימה מתבנית
-            </button>
-            <button type="button" className="gp-btn gp-btn--ghost" disabled={busy} onClick={() => void suppressEmail()}>
-              הסרה / חסימה
-            </button>
-            <button type="button" className="gp-btn gp-btn--ghost" onClick={() => setActive(null)}>
-              סגור
-            </button>
-          </div>
+            <div className="gp-section">
+              <h3>הכנת פנייה</h3>
+              {!active.businessEmail ? (
+                <p className="gp-muted">
+                  אין אימייל למועמד זה. ניתן לעדכן פרטי קשר בפרופיל, לרשום תגובה ידנית, או לעדכן
+                  סטטוס — אך לא ניתן להכין טיוטת מייל לפני שיש כתובת.
+                </p>
+              ) : null}
+              <div className="gp-form">
+                <label>
+                  מסלול לתבנית
+                  <select value={chosenTrack} onChange={(e) => setChosenTrack(e.target.value)}>
+                    {(templates.length
+                      ? templates.map((t) => t.track)
+                      : Object.keys(TRACK_LABELS)
+                    ).map((t) => (
+                      <option key={t} value={t}>
+                        {trackLabel(t)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  שפת הטיוטה
+                  <select value={locale} onChange={(e) => setLocale(e.target.value)}>
+                    <option value="he">עברית</option>
+                    <option value="en">אנגלית</option>
+                  </select>
+                </label>
+                <label>
+                  סטטוס גיוס
+                  <select
+                    value={active.recruitmentStatus}
+                    onChange={(e) => void updateStatus(e.target.value)}
+                  >
+                    {Object.keys(STATUS_LABELS).map((s) => (
+                      <option key={s} value={s}>
+                        {statusLabel(s)}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+              <div className="gp-actions">
+                <button
+                  type="button"
+                  className="gp-btn"
+                  disabled={busy || !active.businessEmail}
+                  onClick={() => void doPreview()}
+                >
+                  {preview ? "רענון טיוטה מתבנית" : "הכנת פנייה חדשה"}
+                </button>
+              </div>
 
-          {preview?.message ? (
-            <div style={{ marginTop: 16 }}>
-              <h3>תצוגה מקדימה</h3>
-              <p>
-                <strong>אל:</strong> {preview.message.toEmail}
-              </p>
-              <p>
-                <strong>נושא:</strong> {preview.message.subject}
-              </p>
-              <div
-                className="gp-panel"
-                style={{ background: "#fafafa" }}
-                dangerouslySetInnerHTML={{ __html: preview.message.bodyHtml }}
+              {preview?.message ? (
+                <div className="gp-preview-box">
+                  <label>
+                    נושא
+                    <input
+                      value={draftSubject}
+                      onChange={(e) => setDraftSubject(e.target.value)}
+                      style={{ width: "100%", marginTop: 6 }}
+                    />
+                  </label>
+                  <label style={{ display: "block", marginTop: 10 }}>
+                    גוף ההודעה (לעריכה)
+                    <textarea
+                      rows={10}
+                      value={draftHtml}
+                      onChange={(e) => setDraftHtml(e.target.value)}
+                      style={{ width: "100%", marginTop: 6 }}
+                    />
+                  </label>
+                  <p className="gp-muted" style={{ marginTop: 8 }}>
+                    תצוגה מקדימה:
+                  </p>
+                  <div dangerouslySetInnerHTML={{ __html: draftHtml }} />
+                  <label style={{ display: "flex", gap: 8, alignItems: "center", marginTop: 12 }}>
+                    <input
+                      type="checkbox"
+                      checked={attest}
+                      onChange={(e) => setAttest(e.target.checked)}
+                    />
+                    אני מאשר/ת שיש בסיס חוקי לפנייה. פרסום אימייל באתר אינו הסכמה כשלעצמו.
+                  </label>
+                  <div className="gp-actions">
+                    <button
+                      type="button"
+                      className="gp-btn"
+                      disabled={busy || preview.message.status === "sent"}
+                      onClick={() => void saveDraft()}
+                    >
+                      שמור טיוטה
+                    </button>
+                    <button
+                      type="button"
+                      className="gp-btn"
+                      disabled={busy || preview.message.status === "sent"}
+                      onClick={() => void doApprove()}
+                    >
+                      אישור פנייה
+                    </button>
+                    <button
+                      type="button"
+                      className="gp-btn gp-btn--ghost"
+                      disabled={busy || preview.message.status !== "approved"}
+                      onClick={() => void doSendDryRun()}
+                    >
+                      שמירת בדיקה פנימית (ללא שליחה למועמד)
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <p className="gp-muted" style={{ marginTop: 10 }}>
+                  אם אין פנייה קיימת — לחצו על «הכנת פנייה חדשה» כדי ליצור טיוטה.
+                </p>
+              )}
+            </div>
+
+            <div className="gp-section">
+              <h3>היסטוריית הודעות ותשובות</h3>
+              <div className="gp-table-wrap">
+                <table className="gp-table">
+                  <thead>
+                    <tr>
+                      <th>כיוון</th>
+                      <th>סטטוס</th>
+                      <th>נושא</th>
+                      <th>תאריך</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(thread?.messages || []).length === 0 ? (
+                      <tr>
+                        <td colSpan={4}>אין הודעות עדיין.</td>
+                      </tr>
+                    ) : (
+                      (thread?.messages || []).map((m: any) => (
+                        <tr key={m._id}>
+                          <td>{directionLabel(m.direction)}</td>
+                          <td>
+                            {messageStatusLabel(m.status)}
+                            {m.dryRun ? " · בדיקה פנימית" : ""}
+                          </td>
+                          <td>{m.subject}</td>
+                          <td>
+                            {new Date(m.sentAt || m.createdAt).toLocaleString("he-IL")}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div className="gp-section">
+              <h3>משימות מעקב</h3>
+              {(thread?.followUps || []).length === 0 ? (
+                <p className="gp-muted">אין משימות מעקב.</p>
+              ) : (
+                <ul>
+                  {(thread?.followUps || []).map((t: any) => (
+                    <li key={t._id}>
+                      {t.title} · {t.status} ·{" "}
+                      {t.dueAt ? new Date(t.dueAt).toLocaleDateString("he-IL") : "—"}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="gp-section">
+              <h3>רישום תגובה ידנית</h3>
+              <textarea
+                rows={4}
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                placeholder="הדביקו כאן תגובה שהתקבלה מחוץ למערכת"
+                style={{ width: "100%" }}
               />
-              <p className="gp-muted">{preview.compliance?.notes}</p>
-              <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                <input
-                  type="checkbox"
-                  checked={attest}
-                  onChange={(e) => setAttest(e.target.checked)}
-                />
-                אני (Owner) מאשר/ת שיש בסיס חוקי לפנייה — פרסום אימייל באתר אינו הסכמה כשלעצמו
+              <label style={{ display: "block", marginTop: 8 }}>
+                סיווג
+                <select value={interest} onChange={(e) => setInterest(e.target.value)}>
+                  <option value="">ללא</option>
+                  <option value="interested">מתעניין</option>
+                  <option value="not_interested">לא מעוניין</option>
+                  <option value="unsubscribe">הסרה</option>
+                  <option value="other">אחר</option>
+                </select>
               </label>
               <div className="gp-actions">
                 <button
                   type="button"
                   className="gp-btn"
-                  disabled={busy || preview.message.status === "sent"}
-                  onClick={() => void doApprove()}
+                  disabled={busy || !replyText.trim()}
+                  onClick={() => void saveManualReply()}
                 >
-                  אישור Owner
-                </button>
-                <button
-                  type="button"
-                  className="gp-btn"
-                  disabled={busy || preview.message.status !== "approved"}
-                  onClick={() => void doSendDryRun()}
-                >
-                  שליחת dry-run (ללא מייל חי למועמד)
+                  שמור תגובה
                 </button>
               </div>
-              {preview.alreadySentToday ? (
-                <p className="gp-muted">כבר קיימת שליחה עם אותו מפתח יומי — מניעת כפילות פעילה.</p>
-              ) : null}
-            </div>
-          ) : null}
-
-          <div style={{ marginTop: 20 }}>
-            <h3>היסטוריית פניות / שרשור</h3>
-            <div className="gp-table-wrap">
-              <table className="gp-table">
-                <thead>
-                  <tr>
-                    <th>כיוון</th>
-                    <th>סטטוס</th>
-                    <th>נושא</th>
-                    <th>תאריך</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(thread?.messages || []).length === 0 ? (
-                    <tr>
-                      <td colSpan={4}>אין הודעות עדיין.</td>
-                    </tr>
-                  ) : (
-                    (thread?.messages || []).map((m: any) => (
-                      <tr key={m._id}>
-                        <td>{m.direction}</td>
-                        <td>
-                          {m.status}
-                          {m.dryRun ? " · dry-run" : ""}
-                        </td>
-                        <td>{m.subject}</td>
-                        <td>
-                          {new Date(m.sentAt || m.createdAt).toLocaleString("he-IL")}
-                        </td>
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div style={{ marginTop: 16 }}>
-            <h3>תזכורות פולואו־אפ</h3>
-            <ul>
-              {(thread?.followUps || []).map((t: any) => (
-                <li key={t._id}>
-                  {t.title} · {t.status} · {new Date(t.dueAt).toLocaleDateString("he-IL")}
-                  {t.cancelReason ? ` · ${t.cancelReason}` : ""}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div style={{ marginTop: 16 }}>
-            <h3>רישום תגובה ידנית</h3>
-            <textarea
-              rows={4}
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              placeholder="הדביקו תוכן תגובה שהתקבלה מחוץ למערכת"
-              style={{ width: "100%" }}
-            />
-            <label>
-              סיווג
-              <select value={interest} onChange={(e) => setInterest(e.target.value)}>
-                <option value="">ללא</option>
-                <option value="interested">מתעניין</option>
-                <option value="not_interested">לא מעוניין</option>
-                <option value="unsubscribe">הסרה</option>
-                <option value="other">אחר</option>
-              </select>
-            </label>
-            <div className="gp-actions">
-              <button type="button" className="gp-btn" disabled={busy} onClick={() => void saveManualReply()}>
-                שמור תגובה
-              </button>
             </div>
           </div>
         </div>
