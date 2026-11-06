@@ -26,6 +26,15 @@ const USER_TYPES = [
   { id: "admin", label: "מנהל מערכת", needsPackage: false },
 ];
 
+/** Owner-only internal test admin — permissions forced server-side. */
+const GEO_SMOKE_USER_TYPE = {
+  id: "geo_smoke",
+  label: "מנהל GEO לבדיקות",
+  needsPackage: false,
+  ownerOnly: true,
+  hint: "חשבון זמני: geo.intel.view + geo.intel.tasks בלבד · בלי CRM/Billing/מדידות AI",
+};
+
 const PARTNER_PLAN_OPTIONS = [
   {
     planKey: "partner_basic",
@@ -144,12 +153,38 @@ export default function AdminCreateUser() {
   const [setupStatus, setSetupStatus] = useState("");
   const [result, setResult] = useState(null);
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [canCreateGeoSmoke, setCanCreateGeoSmoke] = useState(false);
 
   useEffect(() => {
     if (user && user.role !== "admin") {
       navigate("/", { replace: true });
     }
   }, [user, navigate]);
+
+  // GEO smoke option is Owner-only (same allowlist as GEO Intelligence).
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (!user || user.role !== "admin") {
+        setCanCreateGeoSmoke(false);
+        return;
+      }
+      try {
+        await API.get("/geo-intel/status");
+        if (!cancelled) setCanCreateGeoSmoke(true);
+      } catch {
+        if (!cancelled) setCanCreateGeoSmoke(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const visibleUserTypes = useMemo(() => {
+    if (canCreateGeoSmoke) return [...USER_TYPES, GEO_SMOKE_USER_TYPE];
+    return USER_TYPES;
+  }, [canCreateGeoSmoke]);
 
   useEffect(() => {
     const checkout = searchParams.get("checkout");
@@ -229,9 +264,17 @@ export default function AdminCreateUser() {
     [packages, form.packageSku]
   );
 
-  const selectedType = USER_TYPES.find((t) => t.id === form.userType);
+  const selectedType = visibleUserTypes.find((t) => t.id === form.userType);
   const accountKind = form.userType === "business" ? form.accountKind : "bizuply";
   const needsPackage = Boolean(selectedType?.needsPackage) && accountKind !== "saas_only";
+  const isGeoSmoke = form.userType === "geo_smoke";
+
+  useEffect(() => {
+    // If Owner loses GEO access mid-session, drop smoke selection.
+    if (form.userType === "geo_smoke" && !canCreateGeoSmoke) {
+      setForm((prev) => ({ ...prev, userType: "admin" }));
+    }
+  }, [canCreateGeoSmoke, form.userType]);
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -349,6 +392,27 @@ export default function AdminCreateUser() {
         phone: form.phone.trim() || undefined,
         username: form.username.trim() || undefined,
       };
+
+      // Never send adminPermissions from the browser — server forces smoke perms.
+      if (form.userType === "geo_smoke") {
+        if (!canCreateGeoSmoke) {
+          setError("יצירת מנהל GEO לבדיקות מותרת ל־Owner בלבד");
+          setSubmitting(false);
+          return;
+        }
+        delete payload.phone;
+        delete payload.username;
+        const { data } = await API.post("/admin/users/create", payload);
+        setResult(data);
+        setSetupStatus("");
+        setCanRetry(false);
+        setForm((prev) => ({
+          ...EMPTY,
+          userType: "geo_smoke",
+        }));
+        setSubmitting(false);
+        return;
+      }
 
       if (form.userType === "business") {
         payload.accountKind = form.accountKind || "bizuply";
@@ -639,6 +703,12 @@ export default function AdminCreateUser() {
             {result.warning ? (
               <p className="mt-2 font-bold text-amber-700">{result.warning}</p>
             ) : null}
+            {result.userType === "geo_smoke" && result.user?.adminPermissions ? (
+              <p className="mt-2 font-bold" dir="ltr">
+                adminPermissions: [{(result.user.adminPermissions || []).join(", ")}]
+                {result.user.isGeoSmokeScoped ? " · smoke-scope" : ""}
+              </p>
+            ) : null}
           </div>
         ) : null}
 
@@ -652,7 +722,7 @@ export default function AdminCreateUser() {
               סוג משתמש
             </h2>
             <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-              {USER_TYPES.map((type) => (
+              {visibleUserTypes.map((type) => (
                 <label
                   key={type.id}
                   className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold transition ${
@@ -670,9 +740,21 @@ export default function AdminCreateUser() {
                     className="me-2"
                   />
                   {type.label}
+                  {type.hint ? (
+                    <span className="mt-1 block text-xs font-bold text-slate-500">
+                      {type.hint}
+                    </span>
+                  ) : null}
                 </label>
               ))}
             </div>
+            {isGeoSmoke ? (
+              <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-900">
+                חשבון פנימי לבדיקות GEO בלבד. ההרשאות נקבעות בשרת
+                (geo.intel.view + geo.intel.tasks) — אין עסק, חבילה או תשלום.
+                לאחר הבדיקות יש לבטל את החשבון ולהסיר מה־allowlist.
+              </p>
+            ) : null}
             {form.userType === "business" ? (
               <div className="mt-3 grid gap-2 md:grid-cols-3">
                 {[
@@ -723,9 +805,10 @@ export default function AdminCreateUser() {
               />
             </label>
             ) : null}
-            {(form.userType === "business" ||
-              form.userType === "worker" ||
-              form.userType === "manager") && (
+            {!isGeoSmoke &&
+              (form.userType === "business" ||
+                form.userType === "worker" ||
+                form.userType === "manager") && (
               <label className="block text-sm font-bold">
                 טלפון {form.userType === "business" ? "*" : ""}
                 <input
@@ -737,7 +820,7 @@ export default function AdminCreateUser() {
                 />
               </label>
             )}
-            {["worker", "manager"].includes(form.userType) ? (
+            {!isGeoSmoke && ["worker", "manager"].includes(form.userType) ? (
               <label className="block text-sm font-bold">
                 שם משתמש
                 <input
@@ -749,6 +832,14 @@ export default function AdminCreateUser() {
               </label>
             ) : null}
           </section>
+
+          {isGeoSmoke && result?.user?.adminPermissions ? (
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-900">
+              הרשאות שנשמרו בשרת:{" "}
+              <code dir="ltr">{(result.user.adminPermissions || []).join(", ")}</code>
+              {result.user.isGeoSmokeScoped ? " · smoke-scope פעיל" : null}
+            </div>
+          ) : null}
 
           {form.userType === "partner" ? (
             <section className="space-y-4">

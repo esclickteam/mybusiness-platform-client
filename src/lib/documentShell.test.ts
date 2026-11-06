@@ -177,8 +177,8 @@ describe("first paint document shell", () => {
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
     const hebrew = await documentFor("https://bizuply.com/he/", "bizuply.com");
     expect(hebrew.body).toContain('lang="he" dir="rtl"');
-    expect(hebrew.body).toContain(">צריך.</span>");
-    expect(hebrew.body).toContain(">אחת.</span>");
+    expect(hebrew.body).toContain(">צריך</span>");
+    expect(hebrew.body).toContain(">אחת</span>");
     expect(hebrew.body).toContain("ביזאפלי");
     expect(visibleH1Count(hebrew.body)).toBe(1);
     expect(noscriptCrawl(hebrew.body)).toBe("");

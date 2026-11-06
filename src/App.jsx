@@ -22,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
 import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
+import { isGeoIntelHost } from "./lib/geoHost.mjs";
 import { shouldRenderWhatsAppLanding } from "./lib/whatsappHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
@@ -192,6 +193,10 @@ const AdminManagedWhatsApp = lazy(
 );
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
+const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
+const GeoStagingPreview = lazy(() =>
+  import("./pages/admin/geoIntel/GeoStagingPreview")
+);
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
@@ -897,9 +902,6 @@ export default function App() {
     if (root) observer.observe(root, { childList: true, subtree: true });
     return () => observer.disconnect();
   }, [location.pathname, i18n.language]);
-  const appDir = getTextDirection(i18n.language);
-  const appLang = getHtmlLang(i18n.language);
-
   const isMiniSiteHost = isPublicMiniSiteHost();
   const hostname = getCurrentHostname();
   const travelHost = isBizuplyTravelHost(hostname);
@@ -907,7 +909,23 @@ export default function App() {
   const publicMarketingHost = travelHost || whatsappLanding;
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isHomePreview = location.pathname === "/home-preview";
-  const isCinematicHome = location.pathname === "/" || isHomePreview;
+  // Production GEO host (geo.bizuply.com) — admin-only internal shell, Hebrew RTL.
+  const isGeoProductionHost = isGeoIntelHost(hostname);
+
+  useEffect(() => {
+    if (!isGeoProductionHost) return;
+    if (i18n.language !== "he") {
+      void i18n.changeLanguage("he");
+    }
+    document.documentElement.lang = "he";
+    document.documentElement.dir = "rtl";
+  }, [isGeoProductionHost, i18n]);
+
+  const appDir = isGeoProductionHost ? "rtl" : getTextDirection(i18n.language);
+  const appLang = isGeoProductionHost ? "he" : getHtmlLang(i18n.language);
+  const isCinematicHome =
+    !isGeoProductionHost &&
+    (location.pathname === "/" || isHomePreview);
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -917,6 +935,9 @@ export default function App() {
   // Header, no Footer, no public chrome — reachable only via a direct link.
   const isHiddenOffer = location.pathname.startsWith("/offer/");
   const isAdminRoute = location.pathname.startsWith("/admin");
+  // Isolated GEO staging surface — no public Header / language switcher / Get Started.
+  const isGeoStagingRoute = location.pathname.startsWith("/geo-staging");
+  const isGeoSurface = isGeoStagingRoute || isGeoProductionHost;
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   // The WhatsApp API product login is a standalone page with its own branding.
@@ -1088,6 +1109,7 @@ export default function App() {
     !isSaasMarketplaceRoute &&
     !isSaasPublicSite &&
     !isDevVisualRoute &&
+    !isGeoSurface &&
     !isMiniSiteHost &&
     !isPublicProposalRoute &&
     !isPartnerSignRoute &&
@@ -1104,6 +1126,7 @@ export default function App() {
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
+          !isGeoSurface &&
           !isStaffRoute &&
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
@@ -1178,6 +1201,33 @@ export default function App() {
                       }}
                     >
                       <Routes location={location}>
+                        {isGeoProductionHost ? (
+                          <>
+                            <Route path="/login" element={<Login />} />
+                            <Route
+                              path="/"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGeoIntel />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/geo-intel"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGeoIntel />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                          </>
+                        ) : (
+                          <>
                         <Route
                           path="/"
                           element={
@@ -1567,6 +1617,16 @@ export default function App() {
                           element={<PartnerAgreementSign />}
                         />
 
+                        {import.meta.env.VITE_GEO_STAGING === "1" ? (
+                          <Route
+                            path="/geo-staging"
+                            element={
+                              <Suspense fallback={null}>
+                                <GeoStagingPreview />
+                              </Suspense>
+                            }
+                          />
+                        ) : null}
                         <Route
                           path="/admin"
                           element={
@@ -1588,6 +1648,7 @@ export default function App() {
                         <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
                         <Route path="logs" element={<AdminLogs />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
+                        <Route path="geo-intel" element={<AdminGeoIntel />} />
                         <Route path="plans" element={<AdminPlans />} />
                         <Route path="settings/legal" element={<AdminLegalProfile />} />
                         <Route path="settings/partner-program" element={<AdminSubPartnerPricing />} />
@@ -1679,6 +1740,8 @@ export default function App() {
                         </Route>
 
                         <Route path="*" element={<Navigate to="/" replace />} />
+                          </>
+                        )}
                       </Routes>
 
                       <Suspense fallback={null}><AiModal /></Suspense>
@@ -1705,12 +1768,13 @@ export default function App() {
           !isPublicPartnerSales &&
           !isWhatsAppApiLogin &&
           !isAuthShellRoute &&
+          !isGeoSurface &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && (
+      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isGeoSurface && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
@@ -1738,6 +1802,7 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute &&
+        !isGeoSurface &&
         !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
@@ -1750,6 +1815,7 @@ export default function App() {
         !isEarlyAccessLanding &&
         !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
+        !isGeoSurface &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
         !isPartnerSignRoute &&

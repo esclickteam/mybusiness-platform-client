@@ -17,6 +17,7 @@ import {
   TRAVEL_SEO_TITLE,
   isBizuplyTravelHost,
 } from "./src/lib/travelHost.mjs";
+import { isGeoIntelHost } from "./src/lib/geoHost.mjs";
 import {
   WHATSAPP_LOGIN_APP_URL,
   WHATSAPP_NOT_FOUND_META,
@@ -135,6 +136,8 @@ function getHost(request) {
 
 function isCustomerSiteHost(host) {
   if (!host) return false;
+  // Private GEO Intelligence host — never treat as a customer mini-site.
+  if (isGeoIntelHost(host)) return false;
   if (isBizuplyTravelHost(host) || isBizuplyWhatsAppHost(host)) return false;
   if (host === PUBLIC_SITE_DOMAIN || host === STAGING_PUBLIC_SITE_DOMAIN) return false;
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
@@ -1014,10 +1017,48 @@ async function handleMarketingDocument(request) {
   }
 }
 
+function handleGeoIntelHost(request, pathname) {
+  // Private owner-only shell — never index; never customer SEO edge.
+  if (pathname === "/robots.txt") {
+    return new Response("User-agent: *\nDisallow: /\n", {
+      status: 200,
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "public, max-age=300",
+        "x-robots-tag": "noindex, nofollow, noarchive",
+        "x-bizuply-seo-edge": "geo-intel-private",
+      },
+    });
+  }
+  if (pathname === "/sitemap.xml") {
+    return new Response(EMPTY_SITEMAP, {
+      status: 200,
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=300",
+        "x-robots-tag": "noindex, nofollow, noarchive",
+        "x-bizuply-seo-edge": "geo-intel-private",
+      },
+    });
+  }
+  const res = passThrough();
+  const headers = new Headers(res.headers);
+  headers.set("x-robots-tag", "noindex, nofollow, noarchive");
+  headers.set("x-bizuply-seo-edge", "geo-intel-private");
+  headers.set("cache-control", "no-store");
+  return new Response(res.body, { status: res.status, headers });
+}
+
 export default async function middleware(request) {
   const host = getHost(request);
   if (isSaasProductHost(host)) return proxySaasProduct(request, host);
   const pathname = getPathname(request);
+
+  // Private GEO Intelligence host (geo.bizuply.com).
+  if (isGeoIntelHost(host)) {
+    return handleGeoIntelHost(request, pathname);
+  }
+
   if (
     isStaticAsset(pathname) &&
     !getGoogleHtmlVerificationFile(pathname) &&

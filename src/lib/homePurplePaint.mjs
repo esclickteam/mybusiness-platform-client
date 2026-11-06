@@ -12,28 +12,28 @@ import { marketingNav } from "./marketingNav.mjs";
 /** Cinematic hero copy — same strings as HomeExperienceSections Hero. */
 export const HX_HERO_COPY = {
   en: {
-    lineOne: "BizUply — Everything your business needs.",
-    lineTwo: "One platform.",
+    lineOne: "Everything your business needs",
+    lineTwo: "in one powerful platform.",
     lead1:
-      "Manage leads, customers, appointments, campaigns, WhatsApp communication and business processes in one place. BizUply connects the tools and the information the business needs in order to work in an orderly way.",
+      "Leads, WhatsApp, campaigns, websites, and automations — in one workspace for the business.",
     lead2: "",
-    start: "Start with BizUply",
-    see: "Explore the platform",
-    note: "Fewer separate systems. More order, more control, and more time for customers.",
+    start: "Get started",
+    see: "See the system",
+    note: "",
     stageAlt: "Northwind Studio lead list inside BizUply",
     login: "Login",
     cta: "Get Started",
     navAria: "Main navigation",
   },
   he: {
-    lineOne: "BizUply — כל מה שהעסק שלך צריך.",
-    lineTwo: "בפלטפורמה אחת.",
+    lineOne: "כל מה שהעסק שלך צריך",
+    lineTwo: "בפלטפורמה אחת חזקה.",
     lead1:
-      "נהלו לידים, לקוחות, פגישות, קמפיינים, תקשורת WhatsApp ותהליכים עסקיים במקום אחד. BizUply מחברת בין הכלים והמידע שהעסק צריך כדי לעבוד בצורה מסודרת.",
+      "לידים, WhatsApp, קמפיינים, אתרים ואוטומציות — בסביבת עבודה אחת לעסק.",
     lead2: "",
-    start: "התחילו עם BizUply",
-    see: "גלו את הפלטפורמה",
-    note: "פחות מערכות נפרדות. יותר סדר, שליטה וזמן להתמקד בלקוחות.",
+    start: "להתחיל",
+    see: "לראות את המערכת",
+    note: "",
     stageAlt: "רשימת הלידים של Northwind Studio בתוך BizUply",
     login: "התחברות",
     cta: "הירשמו עכשיו",
@@ -150,20 +150,20 @@ export function renderPurpleHomePrerender(locale) {
     hx.login,
   )}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header>`;
 
-  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy"><p class="hx-kicker">BizUply</p><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const heroLead2 = hx.lead2
+    ? `<p class="hx-lead">${escapeText(hx.lead2)}</p>`
+    : "";
+  const heroNote = hx.note ? `<p class="hx-note">${escapeText(hx.note)}</p>` : "";
+  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy"><p class="hx-hero-brand">BizUply</p><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(
     hx.lineTwo,
-    1,
-  )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p>${
-    hx.lead2 ? `<p class="hx-lead">${escapeText(hx.lead2)}</p>` : ""
-  }<div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
+    2,
+  )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p>${heroLead2}<div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,
-  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/platform"))}"><span>${escapeText(
+  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="#products"><span>${escapeText(
     hx.see,
-  )}</span><i aria-hidden="true"></i></a></div><p class="hx-note">${escapeText(
-    hx.note,
-  )}</p></div><div class="hx-hero-frame"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/crm.jpg" alt="${escapeHtml(
+  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-frame"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/crm.jpg" alt="${escapeHtml(
     hx.stageAlt,
   )}" width="1600" height="1000" fetchpriority="high" decoding="async"></div></div></section>`;
 

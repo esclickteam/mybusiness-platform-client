@@ -125,64 +125,66 @@ export default function HeaderView({
             })}
           </div>
 
-          <div className="site-header__actions">
+          {/* One language control for mobile + desktop so the fixed portal menu
+              always anchors to a visible trigger (duplicate instances broke placement). */}
+          <div className="site-header__end">
             <LanguageSwitcher />
 
-            {!user ? (
-              <>
-                <Link to="/login" className="site-header__signin">
-                  {t("common.login")}
-                </Link>
-                <Link to="/pricing" className="site-header__cta">
-                  {t("nav.cta")}
-                </Link>
-              </>
-            ) : (
-              <>
+            <div className="site-header__actions">
+              {!user ? (
+                <>
+                  <Link to="/login" className="site-header__signin">
+                    {t("common.login")}
+                  </Link>
+                  <Link to="/pricing" className="site-header__cta">
+                    {t("nav.cta")}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to={accountPath}
+                    className="site-header__icon-btn"
+                    aria-label={t("common.myAccount")}
+                    title={t("common.myAccount")}
+                  >
+                    <FaUser size={15} />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="site-header__logout"
+                  >
+                    {t("common.logout")}
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="site-header__mobile">
+              {!user ? (
                 <Link
-                  to={accountPath}
+                  to="/login"
                   className="site-header__icon-btn"
-                  aria-label={t("common.myAccount")}
-                  title={t("common.myAccount")}
+                  aria-label={t("common.login")}
+                  title={t("common.login")}
                 >
-                  <FaUser size={15} />
+                  <FaUser size={14} />
                 </Link>
-                <button
-                  type="button"
-                  onClick={handleLogout}
-                  className="site-header__logout"
-                >
-                  {t("common.logout")}
-                </button>
-              </>
-            )}
-          </div>
+              ) : null}
 
-          <div className="site-header__mobile">
-            <LanguageSwitcher />
-
-            {!user ? (
-              <Link
-                to="/login"
-                className="site-header__icon-btn"
-                aria-label={t("common.login")}
-                title={t("common.login")}
+              <button
+                type="button"
+                onClick={() => setMenuOpen(true)}
+                className="site-header__burger"
+                aria-label={t("common.openMenu")}
+                aria-expanded={menuOpen}
               >
-                <FaUser size={14} />
-              </Link>
-            ) : null}
-
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              className="site-header__burger"
-              aria-label={t("common.openMenu")}
-              aria-expanded={menuOpen}
-            >
-              <span />
-              <span />
-              <span />
-            </button>
+                <span />
+                <span />
+                <span />
+              </button>
+            </div>
           </div>
         </nav>
       </header>

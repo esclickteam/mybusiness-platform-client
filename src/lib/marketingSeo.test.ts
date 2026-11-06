@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { HOME_FAQ } from "./homeFaq.mjs";
 import {
   MARKETING_PAGES,
   buildMarketingDocumentHead,
@@ -183,7 +184,7 @@ describe("marketing crawl files", () => {
       const head = buildMarketingDocumentHead(route) || "";
       const body = buildMarketingPrerender(route)?.inner || "";
       expect(head.match(/"@type":"FAQPage"/g)?.length).toBe(1);
-      expect(head.match(/"@type":"Question"/g)?.length).toBe(10);
+      expect(head.match(/"@type":"Question"/g)?.length).toBe(HOME_FAQ[locale].length);
       expect(head).toContain(home.faq1q);
       expect(head).toContain(home.faq10a);
       expect(body).toContain('class="hx-hero"');
@@ -193,17 +194,16 @@ describe("marketing crawl files", () => {
       expect(body).not.toContain("home-hero__title");
       if (locale === "he") {
         expect(body).toContain(">כל</span>");
-        expect(body).toContain(">צריך.</span>");
-        expect(body).toContain(">אחת.</span>");
+        expect(body).toContain(">צריך</span>");
+        expect(body).toContain(">אחת</span>");
         expect(body).toContain("BizUply");
       } else {
         expect(body).toContain(">Everything</span>");
-        expect(body).toContain(">needs.</span>");
-        expect(body).toContain(">One</span>");
+        expect(body).toContain(">needs</span>");
         expect(body).toContain(">platform.</span>");
       }
       expect(body).toContain(home.faqTitle);
-      expect(body).toContain(home.faq8a);
+      expect(body).toContain(HOME_FAQ[locale][7][1]);
     }
   });
 });

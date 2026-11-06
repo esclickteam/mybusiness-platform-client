@@ -1,21 +1,25 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FaMapMarkerAlt, FaPhoneAlt, FaTags, FaInfoCircle } from "react-icons/fa";
+import { translateBusinessCategory } from "../i18n/businessCategoryLabels";
 import "./BusinessCard.css";
 
- export default function BusinessCard({ business = {}, onClick }) {
+export default function BusinessCard({ business = {}, onClick }) {
+  const { t } = useTranslation();
   const {
     _id,
-    businessName = "Business Name",
     logo = "/images/placeholder.jpg",
     description = "",
     category = "",
     phone = "",
-    address = {}
+    address = {},
   } = business;
+  const businessName = business.businessName || t("common.businessCard.defaultName");
   const { city = "" } = address;
   const navigate = useNavigate();
+  const categoryLabel = translateBusinessCategory(category, t);
 
   const handleCardClick = () => {
     if (onClick) {
@@ -30,7 +34,7 @@ import "./BusinessCard.css";
       <div className="business-card__media">
         <img
           src={logo || "/images/placeholder.jpg"}
-          alt={`${businessName} logo`}
+          alt={t("common.businessCard.logoAlt", { name: businessName })}
           loading="lazy"
           className="business-card__img"
         />
@@ -40,25 +44,25 @@ import "./BusinessCard.css";
 
       {category && (
         <p className="business-card__info">
-          <FaTags /> <strong>Category:</strong> {category}
+          <FaTags /> <strong>{t("common.businessCard.category")}:</strong> {categoryLabel}
         </p>
       )}
 
       {description && (
         <p className="business-card__info">
-          <FaInfoCircle /> <strong>Description:</strong> {description}
+          <FaInfoCircle /> <strong>{t("common.businessCard.description")}:</strong> {description}
         </p>
       )}
 
       {phone && (
         <p className="business-card__info">
-          <FaPhoneAlt /> <strong>Phone:</strong> {phone}
+          <FaPhoneAlt /> <strong>{t("common.businessCard.phone")}:</strong> {phone}
         </p>
       )}
 
       {city && (
         <p className="business-card__info">
-          <FaMapMarkerAlt /> <strong>City:</strong> {city}
+          <FaMapMarkerAlt /> <strong>{t("common.businessCard.city")}:</strong> {city}
         </p>
       )}
 
@@ -69,7 +73,7 @@ import "./BusinessCard.css";
           handleCardClick();
         }}
       >
-        View Profile
+        {t("common.businessCard.viewProfile")}
       </button>
     </div>
   );
@@ -83,7 +87,7 @@ BusinessCard.propTypes = {
     description: PropTypes.string,
     category: PropTypes.string,
     phone: PropTypes.string,
-    address: PropTypes.shape({ city: PropTypes.string })
+    address: PropTypes.shape({ city: PropTypes.string }),
   }),
-  onClick: PropTypes.func
+  onClick: PropTypes.func,
 };

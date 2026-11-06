@@ -50,16 +50,7 @@ export default defineConfig({
 
   server: {
     port: 3000,
-    allowedHosts: [
-      "localhost",
-      "127.0.0.1",
-      "travel.bizuply.com",
-      "www.travel.bizuply.com",
-      "whatsapp.bizuply.com",
-      "www.whatsapp.bizuply.com",
-      "admin.qa.local",
-      ".qa.local",
-    ],
+    allowedHosts: true,
 
     proxy: {
       "/api": {

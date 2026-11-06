@@ -10,6 +10,15 @@
     "closeMenu": "Cerrar menú",
     "logOut": "Cerrar sesión",
     "learnMore": "Más información",
+    "businessCard": {
+      "viewProfile": "Ver perfil",
+      "category": "Área de actividad",
+      "phone": "Teléfono",
+      "city": "Ciudad",
+      "description": "Descripción",
+      "logoAlt": "Logotipo de {{name}}",
+      "defaultName": "Nombre del negocio"
+    },
     "loading": "Cargando...",
     "retry": "Reintentar",
     "close": "Cerrar",

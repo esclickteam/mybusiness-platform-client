@@ -10,6 +10,15 @@
     "closeMenu": "إغلاق القائمة",
     "logOut": "تسجيل الخروج",
     "learnMore": "اعرف المزيد",
+    "businessCard": {
+      "viewProfile": "عرض الملف",
+      "category": "مجال العمل",
+      "phone": "الهاتف",
+      "city": "المدينة",
+      "description": "الوصف",
+      "logoAlt": "شعار {{name}}",
+      "defaultName": "اسم العمل"
+    },
     "loading": "جارٍ التحميل...",
     "retry": "إعادة المحاولة",
     "close": "إغلاق",
