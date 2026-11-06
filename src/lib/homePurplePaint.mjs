@@ -136,9 +136,9 @@ export function renderPurpleHomePrerender(locale) {
     hx.start,
   )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="#products"><span>${escapeText(
     hx.see,
-  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-frame"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/crm.jpg" alt="${escapeHtml(
+  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-stage"><div class="hx-hero-frame"><div class="hx-hero-chrome" aria-hidden="true"><span></span><span></span><span></span></div><img class="hx-hero-shot hx-hero-shot-1 hx-crop-leads" src="/demo-media/home/crm.jpg" alt="${escapeHtml(
     hx.stageAlt,
-  )}" width="1600" height="1000" fetchpriority="high" decoding="async"></div></div></section>`;
+  )}" width="1600" height="1000" fetchpriority="high" decoding="async"></div></div></div></section>`;
 
   const crawl = `<div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,

@@ -26,7 +26,7 @@
 html.hx-preview {
   overflow-x: clip;
   overflow-y: auto;
-  scroll-padding-top: var(--hx-header, 4.75rem);
+  scroll-padding-top: var(--hx-header, 5rem);
   background: #5b21b6;
 }
 
