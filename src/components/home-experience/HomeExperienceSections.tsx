@@ -309,8 +309,8 @@ function Hero() {
           </h1>
           <p className="hx-lead">
             {text(
-              "ניהול לקוחות ולידים, CRM, קמפיינים, WhatsApp, אוטומציות, פגישות, אתרים וכלים עסקיים מתקדמים — בסביבת עבודה אחת שמחברת בין האנשים, הנתונים והתהליכים בעסק.",
-              "Customer and lead management, CRM, campaigns, WhatsApp, automations, appointments, websites, and business tools — one workspace that connects the people, the data, and the work.",
+              "נהלו לידים, לקוחות, פגישות, קמפיינים, תקשורת WhatsApp ותהליכים עסקיים במקום אחד. BizUply מחברת בין הכלים והמידע שהעסק צריך כדי לעבוד בצורה מסודרת.",
+              "Manage leads, customers, appointments, campaigns, WhatsApp communication and business processes in one place. BizUply connects the tools and the information the business needs in order to work in an orderly way.",
             )}
           </p>
           <div className="hx-actions">

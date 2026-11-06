@@ -19,6 +19,7 @@ import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
+import { getCoreProductStory } from "./coreProductStories.mjs";
 import {
   MARKETING_LOCALE_PREFIXES,
   hasLocalizedMarketingPage,
@@ -176,9 +177,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/crm",
-    title: "CRM Software for Small Businesses & Lead Management | Bizuply",
+    title: "CRM for leads and customers | BizUply",
     description:
-      "Organize leads, manage customers, track follow-ups, and connect supported Meta, Google Ads, and website inquiries with Bizuply CRM. Plans start at $49/month.",
+      "BizUply CRM keeps leads, customers, statuses, notes and follow-up tasks in one place. The published CRM plan is $49 per month.",
     crumb: "CRM",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -186,9 +187,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/collaborations",
-    title: "Business Collaboration Platform & Partnership Opportunities | Bizuply",
+    title: "Business collaborations and opportunities | BizUply",
     description:
-      "Find complementary businesses, explore partnership opportunities, manage collaboration proposals, and connect through business chat with Bizuply.",
+      "BizUply gives businesses a place to find other businesses, post an opportunity and exchange a proposal. Statuses are pending, approved or declined. BizUply does not guarantee a partner, a customer or revenue, and it does not set the commercial terms between the two businesses.",
     crumb: "Collaborations",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -196,9 +197,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/website-builder",
-    title: "Professional Website Builder | Bizuply",
+    title: "Business websites and stores | BizUply",
     description:
-      "Build a website, store, or booking site in a visual editor and publish it to your own domain — with every inquiry from the site flowing straight into your CRM.",
+      "Build a site in the BizUply visual editor and publish it to your address. A supported form on that site can create a lead in the CRM. The site has its own price on the pricing page.",
     crumb: "Website builder",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -206,9 +207,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/automations",
-    title: "Automations for Your Business | Bizuply",
+    title: "Business automations for customers and processes | BizUply",
     description:
-      "Reminders, follow-ups, tasks, and alerts that run in the background and stay connected to your CRM — so fewer leads slip through the cracks.",
+      "BizUply automations run on the business plan. A supported event, such as a new lead, can create a follow-up task. The business plan is $99 per month or $990 per year.",
     crumb: "Automations",
     lastmod: "2026-10-23",
     changefreq: "monthly",
@@ -216,9 +217,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/meta-campaigns",
-    title: "Meta Campaign Management | Bizuply",
+    title: "Meta Campaign Management for the work after the click | BizUply",
     description:
-      "Create and edit Meta campaigns, ad sets, and ads from the Bizuply dashboard, and send Lead Ads into the CRM. Meta bills the ad spend.",
+      "Edit Meta campaigns, ad sets and ads from the BizUply dashboard after the business connects its own ad account. Lead Ads can enter the CRM. Meta bills the spend. BizUply does not replace Ads Manager.",
     crumb: "Meta campaigns",
     lastmod: "2026-10-23",
     changefreq: "monthly",
@@ -236,9 +237,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/agents",
-    title: "Human Agents for Your Business | Bizuply",
+    title: "Human agents for leads and follow-up | BizUply",
     description:
-      "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your Bizuply CRM.",
+      "BizUply agents on this page are people, not a chatbot. They handle defined follow-up on leads according to the service that was purchased. No reply rate or sales rate is promised.",
     crumb: "Agents",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -246,9 +247,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/appointments",
-    title: "Appointment Scheduling | Bizuply",
+    title: "Appointments and bookings for businesses | BizUply",
     description:
-      "Manage your appointment calendar, reminders, and client follow-up with Bizuply Appointments.",
+      "BizUply appointments set business hours, a service catalog with duration and price, and 15-minute openings. Appointments belong to the business plan, not to CRM only.",
     crumb: "Appointments",
     lastmod: "2026-10-22",
     changefreq: "monthly",
@@ -759,7 +760,7 @@ function crmDocumentHead(locale) {
   const application = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Bizuply CRM",
+    name: "BizUply CRM",
     alternateName: ["ביזאפלי CRM", "ביזאפלי"],
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
@@ -789,15 +790,21 @@ function crmDocumentHead(locale) {
 function collaborationsDocumentHead(locale) {
   const copy = getCollaborationsCopy(locale);
   const lang = ["he", "es", "pt-BR", "ar"].includes(locale) ? locale : "en";
+  const story = getCoreProductStory("/collaborations", lang);
   const canonical = marketingPublicUrl("/collaborations", lang);
-  const page = { path: "/collaborations", title: copy.seo.title, description: copy.seo.description, crumb: copy.crumb };
+  const page = {
+    path: "/collaborations",
+    title: story?.title || copy.seo.title,
+    description: story?.description || copy.seo.description,
+    crumb: story?.crumb || copy.crumb,
+  };
   return [
-    `<title>${escapeHtml(copy.seo.title)}</title>`,
-    `<meta name="description" content="${escapeHtml(copy.seo.description)}" />`,
+    `<title>${escapeHtml(page.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(page.description)}" />`,
     `<meta name="robots" content="index, follow" />`,
     `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
     hreflangTags("/collaborations"),
-    ...sharedSocialTags(copy.seo.title, copy.seo.description, canonical, lang),
+    ...sharedSocialTags(page.title, page.description, canonical, lang),
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, lang))}</script>`,
     `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, lang))}</script>`,
@@ -1125,7 +1132,11 @@ export function buildMarketingPrerender(pathname) {
     const copy = getCrmCopy(locale);
     return { lang: copy.lang, dir: copy.dir, inner: renderCrmPrerender(locale) };
   }
-  if (path === "/collaborations") return collaborationsPrerender(locale);
+  if (path === "/collaborations") {
+    const collaborationStory = getCoreProductStory(path, locale);
+    if (collaborationStory?.h1) return renderLocalized(collaborationStory, locale, path);
+    return collaborationsPrerender(locale);
+  }
   if (path === "/") return renderHomePrerender(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);
@@ -1139,6 +1150,8 @@ export function buildMarketingPrerender(pathname) {
     if (!localized?.h1) return null;
     return renderLocalized(localized, locale, path);
   }
+  const englishStory = getCoreProductStory(path, "en");
+  if (englishStory?.h1) return renderLocalized(englishStory, "en", path);
   const found = findMarketingPage(path);
   if (!found?.page) return null;
   const heading = path === "/partners"

@@ -88,7 +88,7 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/") || "").toContain('"name":"BizUply"');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
-      "<title>BizUply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים</title>",
+      "<title>BizUply | מערכת CRM, ניהול עסק, WhatsApp ואוטומציות</title>",
     );
     expect(buildMarketingDocumentHead("/he/") || "").toContain('rel="canonical" href="https://bizuply.com/he"');
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he</loc>");
@@ -114,7 +114,7 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/home-preview") || "").toContain("noindex, nofollow");
     expect(buildMarketingSitemapXml()).not.toContain("/home-preview");
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
-    expect(hebrew).toContain("<title>תוכנת CRM לעסקים קטנים וניהול לידים | ביזאפלי</title>");
+    expect(hebrew).toContain("<title>מערכת CRM לניהול לידים ולקוחות | BizUply</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
     expect(hebrew).toContain('hreflang="en" href="https://bizuply.com/crm"');
     expect(hebrew).toContain('hreflang="x-default" href="https://bizuply.com/crm"');
@@ -127,7 +127,7 @@ describe("marketing crawl files", () => {
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/about</loc>");
     expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/he/terms</loc>");
     expect(buildMarketingPrerender("/crm")?.inner).toContain("CRM only is $49 per month");
-    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>A CRM for leads, customers, and the sales process</h1>");
+    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>A CRM that connects leads, customers and everyday work</h1>");
     expect(buildMarketingPrerender("/he/crm")?.inner).toContain("49 דולר");
     expect(buildMarketingDocumentHead("/he/whatsapp-api") || "").toContain("מה כוללים 29 הדולר?");
     expect(buildMarketingDocumentHead("/crm") || "").toContain("How much does Bizuply CRM cost?");
@@ -154,9 +154,9 @@ describe("marketing crawl files", () => {
 
   it("keeps Spanish and Portuguese titles distinct where the wording used to match", () => {
     const pairs = [
-      ["/es/agents", "/pt-br/agents", "Agentes del negocio | Bizuply", "Agentes do negócio | Bizuply"],
+      ["/es/agents", "/pt-br/agents", "Agentes humanos para leads y seguimiento | BizUply", "Agentes humanos para leads e acompanhamento | BizUply"],
       ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | BizUply", "Restaurantes: contatos no CRM | BizUply"],
-      ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp API para empresas | Bizuply", "API do WhatsApp para empresas | Bizuply"],
+      ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp Business API para empresas | BizUply", "API do WhatsApp Business para empresas | BizUply"],
     ];
     for (const [esPath, ptPath, esTitle, ptTitle] of pairs) {
       const esHead = buildMarketingDocumentHead(esPath) || "";

@@ -171,7 +171,7 @@ describe("first paint document shell", () => {
     expect(body).not.toContain('class="bizuply-home');
     expect(body).not.toContain("/home-critical.css");
     expect(body).not.toContain('id="home-critical"');
-    expect(body).toContain("CRM Software for Small Businesses");
+    expect(body).toContain("CRM for leads and customers | BizUply");
   });
 
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
@@ -188,8 +188,8 @@ describe("first paint document shell", () => {
     expect(rootInner(hebrew.body)).not.toContain("<h1>Bizuply</h1>");
 
     const crm = await documentFor("https://bizuply.com/crm", "bizuply.com");
-    expect(crm.body).toContain("<title>CRM Software for Small Businesses &amp; Lead Management | Bizuply</title>");
-    expect(crm.body).toContain("<h1>A CRM for leads, customers, and the sales process</h1>");
+    expect(crm.body).toContain("<title>CRM for leads and customers | BizUply</title>");
+    expect(crm.body).toContain("<h1>A CRM that connects leads, customers and everyday work</h1>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
     expect(visibleH1Count(crm.body)).toBe(0);
@@ -198,7 +198,7 @@ describe("first paint document shell", () => {
     expect(noscriptCrawl(crm.body)).toContain("CRM only is $49 per month");
 
     const hebrewCrm = await documentFor("https://bizuply.com/he/crm", "bizuply.com");
-    expect(hebrewCrm.body).toContain("<h1>מערכת CRM לניהול לידים, לקוחות ותהליכי מכירה</h1>");
+    expect(hebrewCrm.body).toContain("<h1>מערכת CRM שמחברת בין הלידים, הלקוחות והעבודה היומיומית</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
     expect(visibleH1Count(hebrewCrm.body)).toBe(0);
     expect(rootInner(hebrewCrm.body)).not.toContain("כל ליד");

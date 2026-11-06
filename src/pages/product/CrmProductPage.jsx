@@ -101,13 +101,13 @@ export default function CrmProductPage() {
         {
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: htmlLang === "he" ? "ביזאפלי" : "Bizuply", item: "https://bizuply.com/" },
+            { "@type": "ListItem", position: 1, name: htmlLang === "he" ? "ביזאפלי" : "BizUply", item: "https://bizuply.com/" },
             { "@type": "ListItem", position: 2, name: copy.crumb, item: canonical },
           ],
         },
         {
           "@type": "SoftwareApplication",
-          name: "Bizuply CRM",
+          name: "BizUply CRM",
           alternateName: ["ביזאפלי CRM", "ביזאפלי"],
           applicationCategory: "BusinessApplication",
           operatingSystem: "Web",

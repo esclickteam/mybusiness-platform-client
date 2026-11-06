@@ -2,12 +2,13 @@
  * Hebrew marketing copy already used in the product UI, plus the public
  * WhatsApp API facts from the English product page ($29 per number, Meta fees separate).
  */
+import { getCoreProductStory } from "./coreProductStories.mjs";
 
 export const HEBREW_MARKETING_PAGES = {
   "/": {
-    title: "BizUply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים",
+    title: "BizUply | מערכת CRM, ניהול עסק, WhatsApp ואוטומציות",
     description:
-      "הכירו את Bizuply: פלטפורמה לניהול לקוחות ולידים, WhatsApp Business API, קמפיינים ממומנים, בניית אתרים ואוטומציות עסקיות במקום אחד.",
+      "הכירו את BizUply: פלטפורמה לניהול לידים, לקוחות, CRM, פגישות, WhatsApp, אוטומציות ואתרים עסקיים. כל הפעילות העסקית בסביבת עבודה אחת.",
     crumb: "Bizuply",
     h1: "BizUply — כל מה שהעסק שלך צריך. בפלטפורמה אחת.",
     paragraphs: [
@@ -180,5 +181,5 @@ export const HEBREW_MARKETING_PAGES = {
 };
 
 export function getHebrewMarketingPage(path) {
-  return HEBREW_MARKETING_PAGES[path] || null;
+  return getCoreProductStory(path, "he") || HEBREW_MARKETING_PAGES[path] || null;
 }

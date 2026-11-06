@@ -107,13 +107,13 @@ describe("marketing edge integration", () => {
     const booking = await middleware(request("https://bizuply.com/book/example-business", "bizuply.com"));
     const login = await read(await middleware(request("https://bizuply.com/login", "bizuply.com")));
     expect(crm.status).toBe(200);
-    expect(crm.body).toContain("<title>CRM Software for Small Businesses &amp; Lead Management | Bizuply</title>");
+    expect(crm.body).toContain("<title>CRM for leads and customers | BizUply</title>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
     const hebrewCrm = await read(await middleware(request("https://bizuply.com/he/crm", "bizuply.com")));
     expect(hebrewCrm.status).toBe(200);
     expect(hebrewCrm.body).toContain('lang="he" dir="rtl"');
-    expect(hebrewCrm.body).toContain("<h1>מערכת CRM לניהול לידים, לקוחות ותהליכי מכירה</h1>");
+    expect(hebrewCrm.body).toContain("<h1>מערכת CRM שמחברת בין הלידים, הלקוחות והעבודה היומיומית</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
     expect(hebrewCrm.body).toContain('alt="ביזאפלי (Bizuply)"');
     const hebrewHome = await read(await middleware(request("https://bizuply.com/he", "bizuply.com")));
