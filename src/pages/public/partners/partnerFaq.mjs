@@ -1,4 +1,6 @@
-/** Visible FAQ for /partners. English is the crawlable version. Hebrew is the same answers in the UI. */
+/** Visible FAQ for /partners. Answers follow the signed program. */
+
+import { ar, es, pt } from "./partnerFaqLocales.mjs";
 
 const en = [
   [
@@ -167,5 +169,10 @@ const he = [
 ];
 
 export function partnerFaqPairs(language) {
-  return String(language || "").startsWith("he") ? he : en;
+  const value = String(language || "");
+  if (value.startsWith("he")) return he;
+  if (value.startsWith("es")) return es;
+  if (value.startsWith("pt")) return pt;
+  if (value.startsWith("ar")) return ar;
+  return en;
 }

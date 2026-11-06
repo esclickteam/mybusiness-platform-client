@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import "../styles/publicStage.css";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -121,7 +122,7 @@ function Contact() {
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
+      className="co-page contact-stage relative min-h-screen overflow-hidden text-slate-800"
       dir={getTextDirection(i18n.language)}
     >
       <Helmet>
@@ -137,12 +138,7 @@ function Contact() {
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* Background */}
-      <div className="pointer-events-none absolute left-[-12%] top-[-12%] h-[460px] w-[460px] rounded-full bg-amber-200/55 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-10%] top-[18%] h-[540px] w-[540px] rounded-full bg-emerald-100/75 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-18%] left-[28%] h-[520px] w-[520px] rounded-full bg-white/85 blur-3xl" />
-
-      <section className="relative mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24">
+      <section className="stage-hero relative mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24">
         {/* Left side */}
         <div className="flex flex-col justify-center">
           <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
@@ -187,7 +183,7 @@ function Contact() {
         <div className="relative">
           <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-amber-200/70 via-white to-emerald-100/80 blur-2xl" />
 
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-xl sm:p-7">
+          <div className="stage-panel relative overflow-hidden p-5 sm:p-7">
             <div className="mb-7">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-amber-700">
                 {t("contact.formLabel")}

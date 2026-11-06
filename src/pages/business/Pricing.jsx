@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { marketingPublicUrl } from "../../lib/localePath.mjs";
+import "../../styles/publicStage.css";
 import API from "../../api";
 import {
   PRICING_ADDONS,
@@ -600,7 +601,7 @@ export default function Plans() {
 
   return (
     <div
-      className="pricing-wow pm relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f4f7ff_38%,#eefaf8_72%,#ffffff_100%)] text-slate-800"
+      className="co-page pricing-stage pricing-wow pm relative min-h-screen overflow-hidden text-slate-800"
       dir={getTextDirection(i18n.language)}
     >
       <Helmet>
@@ -621,7 +622,7 @@ export default function Plans() {
       <main className="relative mx-auto max-w-7xl px-5 pb-36 pt-16 sm:px-6 lg:px-8 lg:pt-20">
         {/* Compact title — no fluff hero */}
         <motion.header
-          className="mx-auto max-w-4xl text-center"
+          className="stage-hero mx-auto max-w-4xl text-center"
           initial={reduceMotion ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}

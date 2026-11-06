@@ -20,13 +20,31 @@
   margin-inline: auto;
 }
 
-.ip-hero { padding: 48px 0 28px; }
+.ip-hero {
+  width: 100vw;
+  max-width: 100vw;
+  margin-inline: calc(50% - 50vw);
+  margin-top: -2.5rem;
+  padding: clamp(4.5rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3rem) 3.5rem;
+  color: #fff;
+  background:
+    radial-gradient(720px 360px at 90% 0%, rgba(61, 99, 255, 0.45), transparent 62%),
+    linear-gradient(145deg, #321064 0%, #5b21b6 68%);
+}
 
 .ip-hero-grid {
   display: grid;
   gap: 36px;
   align-items: center;
 }
+
+.ip-hero .ip-kicker,
+.ip-hero h1,
+.ip-hero .ip-sub,
+.ip-hero .ip-lead,
+.ip-hero .ip-copy { color: #fff; }
+
+.ip-hero .ip-btn-ghost { background: transparent; color: #fff; border-color: rgba(255,255,255,0.45); }
 
 .ip-kicker {
   margin: 0;
@@ -73,7 +91,7 @@
   justify-content: center;
   min-height: 48px;
   padding: 0 20px;
-  border-radius: 999px;
+  border-radius: 0;
   font-weight: 800;
   text-decoration: none;
   border: 1px solid transparent;
@@ -189,7 +207,7 @@
 .ip-tiers { display: flex; flex-wrap: wrap; gap: 8px; }
 .ip-tiers button {
   min-height: 44px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid rgba(15, 23, 42, 0.14);
   background: #fff;
   padding: 0 14px;
@@ -207,7 +225,7 @@
 .ip-plan-best { border: 2px solid var(--violet); box-shadow: 0 16px 40px rgba(109, 40, 217, 0.12); }
 .ip-badge {
   align-self: flex-start;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--violet);
   color: #fff;
   font-size: 0.75rem;

@@ -12,6 +12,7 @@ import {
   type InternationalBillingOption,
 } from "../../lib/partnerInternationalPlan";
 import { partnerFaqPairs } from "./partners/partnerFaq.mjs";
+import { partnerCopyFor } from "./partners/partnerCopyLocales.mjs";
 import "./partners/partnersPage.css";
 
 const COPY = {
@@ -346,7 +347,7 @@ function tierCount(rate: number) {
 export default function PartnersRecruitment() {
   const { i18n } = useTranslation();
   const hebrew = Boolean(i18n.language?.startsWith("he"));
-  const copy = (hebrew ? COPY.he : COPY.en) as Copy;
+  const copy = (partnerCopyFor(i18n.language) || (hebrew ? COPY.he : COPY.en)) as Copy;
   const dir = getTextDirection(i18n.language);
   const faq = partnerFaqPairs(i18n.language);
   const [options, setOptions] = useState<InternationalBillingOption[]>(INTERNATIONAL_BILLING_OPTIONS);

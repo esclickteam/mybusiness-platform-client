@@ -9,6 +9,7 @@ import BusinessCardSkeleton from "../components/BusinessCardSkeleton";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { useTranslation } from "react-i18next";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import "../styles/publicStage.css";
 import ALL_CATEGORIES from "../data/categories";
 import { translateBusinessCategory } from "../i18n/businessCategoryLabels";
 import { fetchCities } from "../data/cities";
@@ -252,36 +253,78 @@ export default function SearchBusinesses({
       description: "Search businesses that published a profile. A result is not a recommendation or a partnership.",
       h1: "Find a business",
       found: "businesses found",
+      clear: "Clear filters",
+      profession: "Profession",
+      namePlaceholder: "Business name",
+      loading: "Loading businesses",
+      empty: "No businesses found.",
+      previous: "Previous",
+      next: "Next",
     },
     he: {
       title: "מציאת עסק | BizUply",
       description: "חיפוש עסקים שפרסמו פרופיל. תוצאה אינה המלצה ואינה שותפות.",
       h1: "מציאת עסק",
       found: "עסקים נמצאו",
+      clear: "ניקוי סינון",
+      profession: "מקצוע",
+      namePlaceholder: "שם העסק",
+      loading: "טוען עסקים",
+      empty: "לא נמצאו עסקים.",
+      previous: "הקודם",
+      next: "הבא",
     },
     es: {
       title: "Encontrar un negocio | BizUply",
       description: "Busque negocios que publicaron un perfil. Un resultado no es una recomendación ni una alianza.",
       h1: "Encontrar un negocio",
       found: "negocios encontrados",
+      clear: "Quitar filtros",
+      profession: "Profesión",
+      namePlaceholder: "Nombre del negocio",
+      loading: "Cargando negocios",
+      empty: "No se encontraron negocios.",
+      previous: "Anterior",
+      next: "Siguiente",
     },
     "pt-BR": {
       title: "Encontrar um negócio | BizUply",
       description: "Pesquise negócios que publicaram um perfil. Um resultado não é uma recomendação nem uma parceria.",
       h1: "Encontrar um negócio",
       found: "negócios encontrados",
+      clear: "Limpar filtros",
+      profession: "Profissão",
+      namePlaceholder: "Nome do negócio",
+      loading: "Carregando negócios",
+      empty: "Nenhum negócio encontrado.",
+      previous: "Anterior",
+      next: "Seguinte",
     },
     ar: {
       title: "العثور على عمل | BizUply",
       description: "ابحثوا عن أعمال نشرت ملفاً. النتيجة ليست توصية وليست شراكة.",
       h1: "العثور على عمل",
       found: "أعمال وُجدت",
+      clear: "مسح التصفية",
+      profession: "المهنة",
+      namePlaceholder: "اسم العمل",
+      loading: "جارٍ تحميل الأعمال",
+      empty: "لم يُعثر على أعمال.",
+      previous: "السابق",
+      next: "التالي",
     },
   }[locale] || {
     title: "Find a business | BizUply",
     description: "Search businesses that published a profile. A result is not a recommendation or a partnership.",
     h1: "Find a business",
     found: "businesses found",
+    clear: "Clear filters",
+    profession: "Profession",
+    namePlaceholder: "Business name",
+    loading: "Loading businesses",
+    empty: "No businesses found.",
+    previous: "Previous",
+    next: "Next",
   };
   const hasQuery = Boolean(name || cat || city || page > 1);
   const seoTitle = hasQuery
@@ -289,7 +332,7 @@ export default function SearchBusinesses({
     : searchCopy.title;
 
   return (
-    <div className="list-page">
+    <div className="co-search list-page" dir={i18n.language?.startsWith("he") || i18n.language?.startsWith("ar") ? "rtl" : "ltr"}>
       <Helmet>
         <title>{seoTitle}</title>
         <meta name="description" content={searchCopy.description} />
@@ -297,11 +340,14 @@ export default function SearchBusinesses({
         <meta name="robots" content={hasQuery ? "noindex, follow" : "index, follow"} />
       </Helmet>
 
+      <header className="co-search-hero">
+        <h1>{searchCopy.h1}</h1>
+        <p>{searchCopy.description}</p>
+      </header>
+
       <div className="business-list-container">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1>{searchCopy.h1}</h1>
-
             {searched && !loading && !searching && (
               <p className="mt-2 text-sm font-semibold text-slate-500">
                 {filtered.length} {searchCopy.found}
@@ -315,7 +361,7 @@ export default function SearchBusinesses({
               onClick={clearFilters}
               className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
             >
-              Clear filters
+              {searchCopy.clear}
             </button>
           )}
         </div>
@@ -328,7 +374,7 @@ export default function SearchBusinesses({
                 categoryOptions.find((option) => option.value === cat) || null
               }
               onChange={(option) => setCat(option ? option.value : "")}
-              placeholder="Profession (e.g., Electrician)"
+              placeholder={searchCopy.profession}
               isClearable
             />
           </div>
@@ -345,7 +391,7 @@ export default function SearchBusinesses({
             <input
               type="text"
               className="text-search"
-              placeholder="Business name"
+              placeholder={searchCopy.namePlaceholder}
               value={name}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setName(e.target.value)
@@ -357,7 +403,7 @@ export default function SearchBusinesses({
         <div className="business-list">
           {loading || searching ? (
             <div className="col-span-full flex min-h-[50vh] items-center justify-center py-16">
-              <BizuplyLoader size="xl" label="Loading businesses..." />
+              <BizuplyLoader size="xl" label={searchCopy.loading} />
             </div>
           ) : pageItems.length ? (
             pageItems.map((business) => (
@@ -369,10 +415,7 @@ export default function SearchBusinesses({
             ))
           ) : (
             <p className="no-results">
-              No businesses found
-              {name && ` matching "${name}"`}
-              {city && ` in ${city}`}
-              {cat && ` for ${cat.toLowerCase()}`}.
+              {searchCopy.empty}
             </p>
           )}
         </div>
@@ -384,11 +427,11 @@ export default function SearchBusinesses({
               onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
               disabled={page === 1}
             >
-              Previous
+              {searchCopy.previous}
             </button>
 
             <span>
-              {page} of {totalPages}
+              {page} / {totalPages}
             </span>
 
             <button
@@ -398,7 +441,7 @@ export default function SearchBusinesses({
               }
               disabled={page === totalPages}
             >
-              Next
+              {searchCopy.next}
             </button>
           </div>
         )}
