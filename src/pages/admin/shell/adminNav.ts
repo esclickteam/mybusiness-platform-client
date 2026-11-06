@@ -93,6 +93,7 @@ export const NAV_GROUPS: NavGroup[] = [
     id: "partners",
     label: "שותפים",
     items: [
+      { path: "/admin/global-partners", label: "Global Partners" },
       { path: "/admin/partner-center", label: "מרכז שותפים" },
       { path: "/admin/partners", label: "פרטנרים" },
       { path: "/admin/affiliates", label: "אפיליאייטים" },
