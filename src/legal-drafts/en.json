@@ -74,7 +74,7 @@
     },
     "s5": {
       "h": "5. Privacy & Data Protection",
-      "p1": "5.1. The Company respects the privacy of all users and is committed to protecting their personal information in accordance with applicable data protection laws, including the <strong>General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA)</strong>, and the <strong>California Privacy Rights Act (CPRA)</strong>, where applicable. BizUply implements reasonable administrative, technical, and organizational measures to protect user data.",
+      "p1": "5.1. The Company protects personal information with the administrative, technical, and organizational measures the product actually uses. The GDPR, the CCPA, and the CPRA are named only as laws that may apply when their own conditions are met, including who the customer is and where that customer is. This section does not state that those laws apply to every user, and it does not state that the Company has been found to comply with them.",
       "p2": "5.2. In the course of using the platform, the Company may collect, process, and store the following categories of data:",
       "list1": [
         "<strong>Personally Identifiable Information (PII):</strong> such as full name, email address, phone number, business name, billing address, and payment information, as provided during registration or the use of premium features.",
@@ -95,7 +95,7 @@
         "As required by law, subpoena, or a lawful government request.",
         "In the event of a merger, acquisition, or asset transfer, provided that the receiving entity maintains equivalent privacy protections."
       ],
-      "rightsTitle": "User Rights (GDPR / CCPA / CPRA)",
+      "rightsTitle": "User rights where a law that covers that user grants them",
       "rightsList": [
         "The right to access the personal data collected about them.",
         "The right to correct inaccurate or incomplete personal information.",
@@ -107,9 +107,9 @@
       ],
       "p6": "5.6. Privacy requests may be sent to privacy@bizuply.com. The product does not contain a fixed response deadline, and a response within 30 business days is not an implemented process. Any deadline that applies is the one required by a law that actually covers that request.",
       "cookiesTitle": "Cookies & Tracking Technologies",
-      "p7": "5.7. The Site and the App use cookies, web beacons, and similar technologies to ensure basic functionality, analyze usage trends, strengthen security, and improve the user experience.",
+      "p7": "5.7. The Site and the App use cookies and similar technologies for basic functionality, security, and the measurement described in section 5.9. Section 5.9 states which measurement tool loads and on which page.",
       "p8": "5.8. Users may disable or restrict cookies through their browser settings; however, as a result, certain features of the platform may not function properly.",
-      "p9": "5.9. On the public pages checked on 6 November 2026, Google Analytics, Google Tag Manager, and reCAPTCHA were not loaded. The non-essential measurement tool in the unreleased client is the Meta Pixel, and it loads only after the visitor allows measurement. Cloudflare Turnstile loads only when a site key is configured. A third-party tool that does load may set its own cookies under its own policy.",
+      "p9": "5.9. This paragraph describes the client code proposed for deployment, not the public site before that deployment. That code does not load Google Analytics, Google Tag Manager, or reCAPTCHA. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On platform pages served from index.html, the pixel is loaded only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, that page does not load the pixel, and choosing essential after the pixel has loaded reloads the page and clears the measurement cookies. The marketing homepage is still served from marketing.html, and that file in the same client code loads the pixel after the browser is idle without reading the cookie. A checkout event is sent from registration only when the cookie equals all and the pixel function is already present. Cloudflare Turnstile is loaded only on a screen that has a site key configured. A third-party tool that does load may set its own cookies under its own policy.",
       "p10": "For more information about how BizUply collects, uses, and protects data, please review our detailed <strong>Privacy Policy</strong>, which forms an integral part of these Terms of Use."
     },
     "s6": {
@@ -212,7 +212,7 @@
       "p3": "14.3. The arbitration decision shall be final and binding, and judgment on the award rendered by the arbitrator may be entered in any court of competent jurisdiction.",
       "p4": "14.4. Notwithstanding the foregoing, the Company reserves the right to seek injunctive or equitable relief in a court of competent jurisdiction to protect its intellectual property or confidential information.",
       "p5": "14.5. The User expressly waives any objection to venue or jurisdiction and consents to the exclusive jurisdiction of the state and federal courts located in <strong>New York County, New York, USA</strong>.",
-      "options": "14.6. Section 1.6 selects Delaware law. Section 14.1 selects New York law, section 14.2 places arbitration in New York City, and section 14.5 selects the courts in New York County. Those clauses conflict. This draft does not adopt any of the following options: (A) Delaware law and Delaware courts, which matches the company's formation as Bizuply LLC in Delaware and would give up the New York court and the New York arbitration seat; (B) New York law, New York arbitration, and New York courts, which keeps section 14 and contradicts section 1.6 and the Delaware formation; (C) leave both original clauses unchanged until counsel replaces them, which is the current public text and the choice made in this draft. Formation in Delaware was stated by the company. It does not by itself decide the law of the contract. Under every option, a mandatory consumer, privacy, or accessibility right in the customer's country remains. The Delaware file number, registered office, and any New York street address were not supplied and are not stated."
+      "options": "14.6. Sections 1.6 and 14.1 through 14.5 above are the prior public text. They conflict, and they are not the clause proposed for adoption. The proposed clause selects Delaware law and the state and federal courts in Delaware, keeps the thirty-day negotiation and the company right to seek an injunction, and does not include New York law, New York arbitration, or the New York courts. It is stored for approval and has not replaced sections 1.6 and 14."
     },
     "s15": {
       "h": "15. Contact Details",
@@ -270,7 +270,7 @@
     "s2": {
       "h": "2. Scope and Applicability",
       "p1": "This Privacy Policy applies to all users, including businesses, employees, administrators, affiliates, and website visitors who interact with BizUply in any manner, whether through desktop, mobile applications, API integrations, or third-party add-ons.",
-      "p2": "It governs BizUply's processing of personal and non-personal information and explains our data-handling practices in accordance with United States federal law, New York State privacy regulations, and international standards such as the GDPR and CCPA for reference purposes only. No audit established that every law named in this sentence applies or that the company complies with it. A named law applies only when its own conditions are met.",
+      "p2": "This policy describes how personal and non-personal information is handled. It does not state that the company complies with United States federal privacy law, New York privacy law, the GDPR, or the CCPA. A named law applies only when its own conditions are met. No compliance audit was completed.",
       "p3": "This policy does not apply to third-party services, links, or integrations that are not owned or operated by BizUply. We encourage you to review their privacy policies before engaging with them."
     },
     "s3": {
@@ -320,7 +320,7 @@
         "To support customer service and resolve technical issues",
         "To analyze user behavior for statistical and security purposes"
       ],
-      "p2": "All processing is carried out under secure data-management protocols and complies with New York privacy standards and international best practices. No audit established that every law named in this sentence applies or that the company complies with it. A named law applies only when its own conditions are met."
+      "p2": "The product review did not establish a written security protocol, New York privacy compliance, or compliance with an international privacy standard. No such compliance is claimed."
     },
     "s6": {
       "h": "6. Data Sharing and Third Parties",
@@ -342,14 +342,14 @@
     },
     "s8": {
       "h": "8. Cookies and Tracking Technologies",
-      "p1": "BizUply uses cookies, pixels, and tracking technologies to enhance the user experience, improve system functionality, and analyze usage data. These tools help us understand performance, measure traffic, and ensure the security of the Platform.",
+      "p1": "After the proposed client code is deployed, platform pages served from index.html load the Meta Pixel only when the cookie bizuply_tracking equals all. The marketing homepage is served from marketing.html, and that file in the same code loads the pixel without reading the cookie. Essential cookies can store language and sign-in. This paragraph describes that code, not the site before deployment. The detail is in section 5.9 of the terms.",
       "h1": "8.1. Types of Cookies Used",
       "list": [
         "Essential cookies – required for system operation and login",
         "Functional cookies – store user preferences and settings",
         "Analytical cookies – help monitor usage patterns and performance",
         "Security cookies – protect accounts and prevent unauthorized access",
-        "Marketing cookies – used only with consent, for internal campaign analysis"
+        "Marketing measurement: on index.html pages the Meta Pixel loads only when bizuply_tracking equals all. The marketing homepage file in the same deployment loads it without that choice."
       ],
       "h2": "8.2. Managing Cookies",
       "p2": "Users may disable cookies through their browser settings. However, disabling essential cookies may affect functionality or access to certain system features.",
@@ -363,7 +363,7 @@
     },
     "s10": {
       "h": "10. User Rights",
-      "p1": "Under applicable privacy regulations, including United States federal law and New York law, users have the following rights:",
+      "p1": "Where a privacy law that covers the person grants one of the following rights, the person may send a request to privacy@bizuply.com. This list is not a statement that the GDPR, the CCPA, the CPRA, or New York law applies to every user.",
       "list": [
         "The right to access personal data stored by BizUply",
         "The right to correct or update inaccurate information",
@@ -421,7 +421,7 @@
       "h": "17. Governing Law and Jurisdiction",
       "p1": "This Privacy Policy, together with any dispute arising from it, shall be governed exclusively by the laws of the State of New York, United States, without regard to conflict-of-laws principles.",
       "p2": "Any dispute, claim, or proceeding shall be brought exclusively before the competent courts of the City of New York, New York, USA.",
-      "p3": "Users agree to submit to the personal jurisdiction of these courts and waive any objection to venue or forum. References in this policy to New York law or to a New York forum describe the prior public text. They conflict with the Delaware governing-law sentence in the terms, section 1.6. This draft does not choose between them. See terms section 14.6 for the options. A mandatory privacy law that covers the person still applies."
+      "p3": "The New York governing-law and New York court sentences above are the prior public text. They are not the proposed clause. The proposed clause, which is awaiting approval and has not been substituted, selects Delaware law and the Delaware courts, subject to a mandatory right that the customer country does not allow this contract to waive."
     },
     "s18": {
       "h": "18. Contact Details and Data Protection Officer",
@@ -441,7 +441,7 @@
   },
   "accessibilityPage": {
     "seoTitle": "Accessibility Statement - Bizuply",
-    "seoDesc": "Bizuply's accessibility statement — commitment to digital accessibility, WCAG standards, and support options.",
+    "seoDesc": "Bizuply accessibility statement: what was checked, what was not checked, and how to ask for help.",
     "badge": "Accessibility Center",
     "title": "Accessibility Statement",
     "intro": "Bizuply is committed to creating an inclusive, accessible, and easy-to-use digital experience for everyone.",
@@ -455,7 +455,7 @@
       },
       {
         "title": "Standard",
-        "text": "In line with accessibility requirements"
+        "text": "No conformance finding"
       },
       {
         "title": "Support",
@@ -464,10 +464,10 @@
     ],
     "needHelp": "Need help?",
     "commitmentTitle": "Our commitment",
-    "commitmentP1": "Bizuply is committed to ensuring digital accessibility for people with disabilities. We work continuously to improve the user experience for everyone and to implement relevant accessibility standards, in accordance with the principles of the Equal Rights for Persons with Disabilities Law and the accessibility regulations in Israel, and in line with the ADA principles as well.",
+    "commitmentP1": "Bizuply wants the service to be usable by people with disabilities. Israeli accessibility law and regulations, the ADA, the European Accessibility Act, and the UK Equality Act 2010 apply only when their own conditions are met. This statement does not find that those conditions are met and does not claim compliance with them.",
     "commitmentP2": "On 6 November 2026, Hebrew and English public pages were checked at desktop width and at 390 pixels. Language and direction matched the selection, and those pages did not show horizontal overflow. One contrast correction was made. A WCAG 2.1 Level AA conformance audit, a full screen-reader pass, and a review of every template and language were not done. This statement does not claim that conformance.",
     "featuresTitle": "Accessibility features",
-    "featuresP": "Bizuply is designed according to accessibility principles, including a clear structure, readable content, and support for common assistive technologies.",
+    "featuresP": "The items below are design aims. They were not confirmed on every screen, template, or language.",
     "featuresList": [
       "Support for keyboard navigation.",
       "Readable text with adjustable contrast and size.",
@@ -505,10 +505,10 @@
     {
       "id": "termsPage.s5.p9",
       "original": "5.9. The Company may use third-party analytics and tracking tools such as <strong>Google Analytics</strong> to collect anonymous usage data, and security tools such as reCAPTCHA to detect and prevent fraudulent activity. These services may set their own cookies in accordance with their privacy policies.",
-      "proposed": "5.9. On the public pages checked on 6 November 2026, Google Analytics, Google Tag Manager, and reCAPTCHA were not loaded. The non-essential measurement tool in the unreleased client is the Meta Pixel, and it loads only after the visitor allows measurement. Cloudflare Turnstile loads only when a site key is configured. A third-party tool that does load may set its own cookies under its own policy.",
-      "why": "Google Analytics and reCAPTCHA were not loaded on the pages checked.",
-      "source": "The checked public pages load the Meta Pixel only after consent in the unreleased client.",
-      "protection": "factual-correction"
+      "proposed": "5.9. This paragraph describes the client code proposed for deployment, not the public site before that deployment. That code does not load Google Analytics, Google Tag Manager, or reCAPTCHA. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On platform pages served from index.html, the pixel is loaded only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, that page does not load the pixel, and choosing essential after the pixel has loaded reloads the page and clears the measurement cookies. The marketing homepage is still served from marketing.html, and that file in the same client code loads the pixel after the browser is idle without reading the cookie. A checkout event is sent from registration only when the cookie equals all and the pixel function is already present. Cloudflare Turnstile is loaded only on a screen that has a site key configured. A third-party tool that does load may set its own cookies under its own policy.",
+      "why": "The prior sentence said the pixel loads only after consent.",
+      "source": "After the client PR, index.html checks the cookie. marketing.html, used for the marketing homepage, still loads the pixel without it. The server PR does not change the pixel.",
+      "protection": "qualified"
     },
     {
       "id": "termsPage.s7.mandatoryLaw",
@@ -537,10 +537,10 @@
     {
       "id": "termsPage.s14.options",
       "original": "",
-      "proposed": "14.6. Section 1.6 selects Delaware law. Section 14.1 selects New York law, section 14.2 places arbitration in New York City, and section 14.5 selects the courts in New York County. Those clauses conflict. This draft does not adopt any of the following options: (A) Delaware law and Delaware courts, which matches the company's formation as Bizuply LLC in Delaware and would give up the New York court and the New York arbitration seat; (B) New York law, New York arbitration, and New York courts, which keeps section 14 and contradicts section 1.6 and the Delaware formation; (C) leave both original clauses unchanged until counsel replaces them, which is the current public text and the choice made in this draft. Formation in Delaware was stated by the company. It does not by itself decide the law of the contract. Under every option, a mandatory consumer, privacy, or accessibility right in the customer's country remains. The Delaware file number, registered office, and any New York street address were not supplied and are not stated.",
-      "why": "Delaware and New York clauses are both kept. No option is adopted.",
+      "proposed": "14.6. Sections 1.6 and 14.1 through 14.5 above are the prior public text. They conflict, and they are not the clause proposed for adoption. The proposed clause selects Delaware law and the state and federal courts in Delaware, keeps the thirty-day negotiation and the company right to seek an injunction, and does not include New York law, New York arbitration, or the New York courts. It is stored for approval and has not replaced sections 1.6 and 14.",
+      "why": "The prior New York and Delaware sentences stay in place until the Delaware clause is approved. They are not the proposed clause.",
       "source": "Section 1.6 and section 14 contradict each other. Formation in Delaware does not itself choose the contract law.",
-      "protection": "conflict-retained"
+      "protection": "awaiting-approval"
     },
     {
       "id": "termsPage.s15.list.1",
@@ -553,17 +553,17 @@
     {
       "id": "privacyPage.s2.p2",
       "original": "It governs BizUply's processing of personal and non-personal information and explains our data-handling practices in accordance with United States federal law, New York State privacy regulations, and international standards such as the GDPR and CCPA for reference purposes only.",
-      "proposed": "It governs BizUply's processing of personal and non-personal information and explains our data-handling practices in accordance with United States federal law, New York State privacy regulations, and international standards such as the GDPR and CCPA for reference purposes only. No audit established that every law named in this sentence applies or that the company complies with it. A named law applies only when its own conditions are met.",
-      "why": "The sentence names several laws as if compliance were established.",
-      "source": "GDPR, CCPA, and New York privacy duties apply only when their own conditions are met. No compliance audit was done.",
+      "proposed": "This policy describes how personal and non-personal information is handled. It does not state that the company complies with United States federal privacy law, New York privacy law, the GDPR, or the CCPA. A named law applies only when its own conditions are met. No compliance audit was completed.",
+      "why": "The sentence still said practices are in accordance with named privacy laws.",
+      "source": "No compliance audit was completed.",
       "protection": "qualified"
     },
     {
       "id": "privacyPage.s5.p2",
       "original": "All processing is carried out under secure data-management protocols and complies with New York privacy standards and international best practices.",
-      "proposed": "All processing is carried out under secure data-management protocols and complies with New York privacy standards and international best practices. No audit established that every law named in this sentence applies or that the company complies with it. A named law applies only when its own conditions are met.",
-      "why": "The sentence says processing complies with New York privacy standards.",
-      "source": "No audit established that compliance. The original sentence is kept and limited.",
+      "proposed": "The product review did not establish a written security protocol, New York privacy compliance, or compliance with an international privacy standard. No such compliance is claimed.",
+      "why": "The sentence still said processing complies with New York privacy standards.",
+      "source": "That compliance was not established.",
       "protection": "qualified"
     },
     {
@@ -649,10 +649,98 @@
     {
       "id": "privacyPage.s17.p3",
       "original": "Users agree to submit to the personal jurisdiction of these courts and waive any objection to venue or forum.",
-      "proposed": "Users agree to submit to the personal jurisdiction of these courts and waive any objection to venue or forum. References in this policy to New York law or to a New York forum describe the prior public text. They conflict with the Delaware governing-law sentence in the terms, section 1.6. This draft does not choose between them. See terms section 14.6 for the options. A mandatory privacy law that covers the person still applies.",
-      "why": "The privacy policy's New York clauses conflict with terms section 1.6. No option is selected.",
+      "proposed": "The New York governing-law and New York court sentences above are the prior public text. They are not the proposed clause. The proposed clause, which is awaiting approval and has not been substituted, selects Delaware law and the Delaware courts, subject to a mandatory right that the customer country does not allow this contract to waive.",
+      "why": "The prior New York and Delaware sentences stay in place until the Delaware clause is approved. They are not the proposed clause.",
       "source": "Terms sections 1.6 and 14 are both retained. See terms section 14.6.",
-      "protection": "conflict-retained"
+      "protection": "awaiting-approval"
+    },
+    {
+      "id": "termsPage.s5.p1",
+      "original": "5.1. The Company respects the privacy of all users and is committed to protecting their personal information in accordance with applicable data protection laws, including the <strong>General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA)</strong>, and the <strong>California Privacy Rights Act (CPRA)</strong>, where applicable. BizUply implements reasonable administrative, technical, and organizational measures to protect user data.",
+      "proposed": "5.1. The Company protects personal information with the administrative, technical, and organizational measures the product actually uses. The GDPR, the CCPA, and the CPRA are named only as laws that may apply when their own conditions are met, including who the customer is and where that customer is. This section does not state that those laws apply to every user, and it does not state that the Company has been found to comply with them.",
+      "why": "GDPR, CCPA, and CPRA were named as the standard the company follows.",
+      "source": "Those laws apply only when their own conditions are met. No compliance finding was made.",
+      "protection": "qualified"
+    },
+    {
+      "id": "termsPage.s5.rightsTitle",
+      "original": "User Rights (GDPR / CCPA / CPRA)",
+      "proposed": "User rights where a law that covers that user grants them",
+      "why": "The heading presented GDPR, CCPA, and CPRA rights as the rights of every user.",
+      "source": "A listed right exists only when a law that covers that user grants it.",
+      "protection": "qualified"
+    },
+    {
+      "id": "termsPage.s5.p7",
+      "original": "5.7. The Site and the App use cookies, web beacons, and similar technologies to ensure basic functionality, analyze usage trends, strengthen security, and improve the user experience.",
+      "proposed": "5.7. The Site and the App use cookies and similar technologies for basic functionality, security, and the measurement described in section 5.9. Section 5.9 states which measurement tool loads and on which page.",
+      "why": "The sentence said the site analyzes usage without saying which tool loads.",
+      "source": "Section 5.9 is the measurement statement.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s8.p1",
+      "original": "BizUply uses cookies, pixels, and tracking technologies to enhance the user experience, improve system functionality, and analyze usage data. These tools help us understand performance, measure traffic, and ensure the security of the Platform.",
+      "proposed": "After the proposed client code is deployed, platform pages served from index.html load the Meta Pixel only when the cookie bizuply_tracking equals all. The marketing homepage is served from marketing.html, and that file in the same code loads the pixel without reading the cookie. Essential cookies can store language and sign-in. This paragraph describes that code, not the site before deployment. The detail is in section 5.9 of the terms.",
+      "why": "The sentence described pixels as current usage analysis.",
+      "source": "The homepage shell and the other platform pages do not behave the same way in the client PR.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s8.list.4",
+      "original": "Marketing cookies – used only with consent, for internal campaign analysis",
+      "proposed": "Marketing measurement: on index.html pages the Meta Pixel loads only when bizuply_tracking equals all. The marketing homepage file in the same deployment loads it without that choice.",
+      "why": "The item said marketing cookies are used only with consent.",
+      "source": "marketing.html does not read the consent cookie.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s10.p1",
+      "original": "Under applicable privacy regulations, including United States federal law and New York law, users have the following rights:",
+      "proposed": "Where a privacy law that covers the person grants one of the following rights, the person may send a request to privacy@bizuply.com. This list is not a statement that the GDPR, the CCPA, the CPRA, or New York law applies to every user.",
+      "why": "The sentence granted the rights list under New York law.",
+      "source": "The list is not a finding that any one privacy law covers every user.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.seoDesc",
+      "original": "Bizuply's accessibility statement — commitment to digital accessibility, WCAG standards, and support options.",
+      "proposed": "Bizuply accessibility statement: what was checked, what was not checked, and how to ask for help.",
+      "why": "The description tied the statement to WCAG standards.",
+      "source": "No WCAG conformance audit was completed.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.chips.1.text",
+      "original": "In line with accessibility requirements",
+      "proposed": "No conformance finding",
+      "why": "The chip said the service is in line with accessibility requirements.",
+      "source": "No conformance finding was made.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.commitmentP1",
+      "original": "Bizuply is committed to ensuring digital accessibility for people with disabilities. We work continuously to improve the user experience for everyone and to implement relevant accessibility standards, in accordance with the principles of the Equal Rights for Persons with Disabilities Law and the accessibility regulations in Israel, and in line with the ADA principles as well.",
+      "proposed": "Bizuply wants the service to be usable by people with disabilities. Israeli accessibility law and regulations, the ADA, the European Accessibility Act, and the UK Equality Act 2010 apply only when their own conditions are met. This statement does not find that those conditions are met and does not claim compliance with them.",
+      "why": "The paragraph said the work is in accordance with Israeli accessibility law and the ADA.",
+      "source": "Those laws apply only when their own conditions are met.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.featuresP",
+      "original": "Bizuply is designed according to accessibility principles, including a clear structure, readable content, and support for common assistive technologies.",
+      "proposed": "The items below are design aims. They were not confirmed on every screen, template, or language.",
+      "why": "The sentence said the service is designed according to accessibility principles as a completed fact.",
+      "source": "The listed items were not confirmed on every screen.",
+      "protection": "qualified"
+    },
+    {
+      "id": "pendingGoverningLaw.text",
+      "original": "",
+      "proposed": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied. 14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law. 14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. 14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts. 14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. 14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause.",
+      "why": "One Delaware law and Delaware courts clause is prepared. Sections 1.6 and 14 are not replaced until this text is approved.",
+      "source": "The company stated formation in Delaware. The current sections 1.6 and 14 select different laws.",
+      "protection": "awaiting-approval"
     }
   ],
   "termsLedger": [
@@ -746,5 +834,30 @@
       "present": true,
       "treatment": "original text retained, with the recorded change in this section"
     }
-  ]
+  ],
+  "pendingGoverningLaw": {
+    "status": "awaiting-approval-not-substituted",
+    "replacesWhenApproved": [
+      "termsPage.s1.p6",
+      "termsPage.s14.p1",
+      "termsPage.s14.p2",
+      "termsPage.s14.p3",
+      "termsPage.s14.p5",
+      "termsPage.s14.options",
+      "privacyPage.s11.p4",
+      "privacyPage.s15.p1",
+      "privacyPage.s17.p1",
+      "privacyPage.s17.p2",
+      "privacyPage.s17.p3"
+    ],
+    "kept": [
+      "termsPage.s14.p4 is rewritten as Delaware injunctive relief",
+      "termsPage.s8",
+      "termsPage.s10",
+      "termsPage.s7",
+      "termsPage.s12",
+      "termsPage.s13"
+    ],
+    "text": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied. 14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law. 14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. 14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts. 14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. 14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause."
+  }
 }
