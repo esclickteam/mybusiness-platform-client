@@ -15,6 +15,8 @@ type Handlers = {
   onFinished?: (data: any) => void;
   onError?: (data: any) => void;
   onWorkerStatus?: (data: any) => void;
+  onEnrichStarted?: (data: any) => void;
+  onEnrichFinished?: (data: any) => void;
 };
 
 export function useGlobalPartnersRealtime(handlers: Handlers) {
@@ -35,6 +37,8 @@ export function useGlobalPartnersRealtime(handlers: Handlers) {
     const onFinished = (payload: any) => handlersRef.current.onFinished?.(payload);
     const onError = (payload: any) => handlersRef.current.onError?.(payload);
     const onWorker = (payload: any) => handlersRef.current.onWorkerStatus?.(payload);
+    const onEnrichStarted = (payload: any) => handlersRef.current.onEnrichStarted?.(payload);
+    const onEnrichFinished = (payload: any) => handlersRef.current.onEnrichFinished?.(payload);
     const onConnect = () => join();
 
     // Re-join after disconnect/reconnect so Owner dashboard stays live without refresh.
@@ -47,6 +51,8 @@ export function useGlobalPartnersRealtime(handlers: Handlers) {
     socket.on("gp:scan_finished", onFinished);
     socket.on("gp:scan_error", onError);
     socket.on("gp:worker_status", onWorker);
+    socket.on("gp:enrich_started", onEnrichStarted);
+    socket.on("gp:enrich_finished", onEnrichFinished);
 
     return () => {
       socket.off("connect", onConnect);
@@ -57,6 +63,8 @@ export function useGlobalPartnersRealtime(handlers: Handlers) {
       socket.off("gp:scan_finished", onFinished);
       socket.off("gp:scan_error", onError);
       socket.off("gp:worker_status", onWorker);
+      socket.off("gp:enrich_started", onEnrichStarted);
+      socket.off("gp:enrich_finished", onEnrichFinished);
     };
   }, [socket]);
 }

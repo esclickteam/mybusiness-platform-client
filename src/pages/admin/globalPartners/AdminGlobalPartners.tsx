@@ -35,6 +35,7 @@ export default function AdminGlobalPartners() {
   const [total, setTotal] = useState(0);
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [contactFilter, setContactFilter] = useState("");
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [csvText, setCsvText] = useState(
     "company_name,country_code,city,website,vertical,email,phone\n"
@@ -83,14 +84,22 @@ export default function AdminGlobalPartners() {
   }, []);
 
   const loadCandidates = useCallback(async () => {
+    const contactParams: Record<string, string> = {};
+    if (contactFilter === "email") contactParams.hasEmail = "1";
+    if (contactFilter === "phone") contactParams.hasPhone = "1";
+    if (contactFilter === "form") contactParams.hasForm = "1";
+    if (contactFilter === "verified") contactParams.verifiedContact = "1";
+    if (contactFilter === "ready") contactParams.outreachReady = "1";
+    if (contactFilter === "none") contactParams.noContact = "1";
     const data = await gpGet("/candidates", {
       q: q || undefined,
       status: statusFilter || undefined,
       limit: 50,
+      ...contactParams,
     });
     setCandidates(data.items || []);
     setTotal(data.total || 0);
-  }, [q, statusFilter]);
+  }, [q, statusFilter, contactFilter]);
 
   const loadScans = useCallback(async () => {
     const [configs, runData, workerData] = await Promise.all([
@@ -129,6 +138,16 @@ export default function AdminGlobalPartners() {
     },
     onError: (d) => pushLive(`שגיאת מקור · ${d?.message || ""}`),
     onWorkerStatus: (d) => setWorker(d),
+    onEnrichStarted: (d) => {
+      pushLive(`העשרת קשר התחילה · ${d?.companyName || d?.candidateId || ""}`);
+    },
+    onEnrichFinished: (d) => {
+      pushLive(
+        `העשרת קשר · ${d?.companyName || ""} · ${d?.outreachReady ? "מוכן לפנייה" : "ללא ערוץ"}`
+      );
+      void reloadRef.current.loadCandidates();
+      void reloadRef.current.loadDashboard();
+    },
   });
 
   const refresh = useCallback(async () => {
@@ -232,6 +251,47 @@ export default function AdminGlobalPartners() {
     }
   }
 
+  async function enrichContacts(id: string) {
+    setBusy(true);
+    setError("");
+    try {
+      const data = await gpPost(`/candidates/${id}/enrich`, { force: true, inline: true });
+      if (data.enrich?.ok === false) {
+        setMessage(`העשרה לא הצליחה: ${data.enrich.reason || "unknown"}`);
+      } else if (data.mode === "queued") {
+        setMessage("העשרת פרטי קשר נשלחה לתור העובד.");
+      } else {
+        setMessage(
+          `העשרה הסתיימה · אימיילים ${data.enrich?.channels?.emails ?? 0} · טלפונים ${data.enrich?.channels?.phones ?? 0} · טפסים ${data.enrich?.channels?.forms ?? 0}`
+        );
+        if (data.enrich?.candidateId) {
+          const refreshed = await gpGet(`/candidates/${id}`);
+          setSelected(refreshed.candidate);
+        }
+      }
+      await loadCandidates();
+      await loadDashboard();
+    } catch (err: any) {
+      setError(err?.message || "העשרת פרטי קשר נכשלה");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function verifyContact(id: string, type: string, value: string) {
+    setBusy(true);
+    try {
+      const data = await gpPost(`/candidates/${id}/contacts/verify`, { type, value });
+      setSelected(data.candidate);
+      setMessage("סומן כמאומת ידנית על ידי Owner.");
+      await loadCandidates();
+    } catch (err: any) {
+      setError(err?.message || "אימות ידני נכשל");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return (
     <div className="gp-shell" dir="rtl" lang="he">
       <header className="gp-header">
@@ -294,6 +354,9 @@ export default function AdminGlobalPartners() {
         <>
           <div className="gp-grid">
             <Kpi label="מועמדים במאגר" value={dashboard.candidatesTotal ?? 0} />
+            <Kpi label="עם ערוץ קשר" value={dashboard.contacts?.withContactChannel ?? 0} />
+            <Kpi label="מוכנים לפנייה" value={dashboard.contacts?.outreachReady ?? 0} />
+            <Kpi label="אימייל / טלפון / טופס" value={`${dashboard.contacts?.withEmail ?? 0}/${dashboard.contacts?.withPhone ?? 0}/${dashboard.contacts?.withForm ?? 0}`} />
             <Kpi label="חדשים היום" value={dashboard.candidatesToday ?? 0} />
             <Kpi label="סריקות פעילות" value={dashboard.activeScans ?? 0} />
             <Kpi label="שותפים פעילים" value={dashboard.activePartners ?? 0} />
@@ -357,6 +420,18 @@ export default function AdminGlobalPartners() {
                 ))}
               </select>
             </label>
+            <label>
+              פרטי קשר
+              <select value={contactFilter} onChange={(e) => setContactFilter(e.target.value)}>
+                <option value="">הכל</option>
+                <option value="email">יש אימייל</option>
+                <option value="phone">יש טלפון</option>
+                <option value="form">יש טופס קשר</option>
+                <option value="verified">מאומת / תקין</option>
+                <option value="ready">מוכן לפנייה</option>
+                <option value="none">אין פרטי קשר</option>
+              </select>
+            </label>
           </div>
           <div className="gp-actions">
             <button type="button" className="gp-btn" onClick={() => void loadCandidates()}>
@@ -371,6 +446,7 @@ export default function AdminGlobalPartners() {
                   <th>מדינה / עיר</th>
                   <th>תחום</th>
                   <th>התאמה</th>
+                  <th>קשר</th>
                   <th>ציון</th>
                   <th>סטטוס</th>
                   <th></th>
@@ -379,7 +455,7 @@ export default function AdminGlobalPartners() {
               <tbody>
                 {candidates.length === 0 ? (
                   <tr>
-                    <td colSpan={7}>אין מועמדים להצגה — הוסיפו ידנית או ייבאו CSV.</td>
+                    <td colSpan={8}>אין מועמדים להצגה — הוסיפו ידנית או ייבאו CSV.</td>
                   </tr>
                 ) : (
                   candidates.map((c) => (
@@ -390,6 +466,15 @@ export default function AdminGlobalPartners() {
                       </td>
                       <td>{c.vertical || "—"}</td>
                       <td className="gp-score">{c.partnerFitScore ?? "—"}</td>
+                      <td>
+                        {[
+                          c.businessEmail ? "מייל" : null,
+                          c.businessPhone ? "טל׳" : null,
+                          c.contactFormUrl ? "טופס" : null,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ") || "—"}
+                      </td>
                       <td className="gp-score">{c.matchScore ?? 0}</td>
                       <td>{statusLabel(c.recruitmentStatus)}</td>
                       <td>
@@ -419,6 +504,118 @@ export default function AdminGlobalPartners() {
             {selected.lastVerifiedAt
               ? new Date(selected.lastVerifiedAt).toLocaleString("he-IL")
               : "—"}
+            {selected.website ? (
+              <>
+                {" "}
+                · אתר:{" "}
+                <a href={selected.website} target="_blank" rel="noreferrer">
+                  {selected.website}
+                </a>
+              </>
+            ) : null}
+          </p>
+          <div className="gp-grid" style={{ marginTop: 12 }}>
+            <Kpi label="אימייל עסקי" value={selected.businessEmail || "—"} />
+            <Kpi label="טלפון עסקי" value={selected.businessPhone || "—"} />
+            <Kpi
+              label="טופס קשר"
+              value={selected.contactFormUrl ? "יש" : "—"}
+            />
+            <Kpi
+              label="מוכן לפנייה"
+              value={selected.outreachReady ? "כן" : "לא"}
+            />
+          </div>
+          <div className="gp-table-wrap" style={{ marginTop: 14 }}>
+            <table className="gp-table">
+              <thead>
+                <tr>
+                  <th>סוג</th>
+                  <th>ערך</th>
+                  <th>מקור</th>
+                  <th>סטטוס</th>
+                  <th>אומת</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {(selected.contactChannels || []).length === 0 ? (
+                  <tr>
+                    <td colSpan={6}>אין ערוצי קשר מחולצים עדיין — הפעילו העשרה מהאתר.</td>
+                  </tr>
+                ) : (
+                  (selected.contactChannels || []).map((ch: any, idx: number) => (
+                    <tr key={`${ch.type}-${idx}`}>
+                      <td>{ch.type}</td>
+                      <td>
+                        {ch.type === "form" || ch.type === "linkedin" ? (
+                          <a href={ch.value} target="_blank" rel="noreferrer">
+                            {ch.value}
+                          </a>
+                        ) : (
+                          ch.value
+                        )}
+                      </td>
+                      <td className="gp-muted">
+                        {ch.sourceUrl ? (
+                          <a href={ch.sourceUrl} target="_blank" rel="noreferrer">
+                            מקור
+                          </a>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td>{ch.status}</td>
+                      <td>
+                        {ch.verifiedAt
+                          ? new Date(ch.verifiedAt).toLocaleString("he-IL")
+                          : "—"}
+                      </td>
+                      <td>
+                        {ch.status !== "manual_verified" ? (
+                          <button
+                            type="button"
+                            className="gp-btn gp-btn--ghost"
+                            onClick={() =>
+                              void verifyContact(selected._id, ch.type, ch.value)
+                            }
+                          >
+                            אימות ידני
+                          </button>
+                        ) : (
+                          "✓"
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          {selected.publicProfiles?.linkedin ? (
+            <p className="gp-muted" style={{ marginTop: 8 }}>
+              LinkedIn:{" "}
+              <a href={selected.publicProfiles.linkedin} target="_blank" rel="noreferrer">
+                {selected.publicProfiles.linkedin}
+              </a>
+            </p>
+          ) : null}
+          {selected.contactFormUrl ? (
+            <p className="gp-muted">
+              טופס:{" "}
+              <a href={selected.contactFormUrl} target="_blank" rel="noreferrer">
+                {selected.contactFormUrl}
+              </a>
+            </p>
+          ) : null}
+          <p className="gp-muted">
+            מצב העשרה: {selected.contactEnrichment?.status || "טרם רץ"}
+            {selected.contactEnrichment?.pagesFetched != null
+              ? ` · עמודים ${selected.contactEnrichment.pagesFetched}`
+              : ""}
+            {selected.contactEnrichment?.lastError
+              ? ` · ${selected.contactEnrichment.lastError}`
+              : ""}
           </p>
           <div className="gp-grid" style={{ marginTop: 12 }}>
             <Kpi
@@ -449,6 +646,9 @@ export default function AdminGlobalPartners() {
                 </option>
               ))}
             </select>
+            <button type="button" className="gp-btn" onClick={() => void enrichContacts(selected._id)}>
+              חלץ פרטי קשר מהאתר
+            </button>
             <button type="button" className="gp-btn" onClick={() => void rescore(selected._id)}>
               חשב ציון מחדש
             </button>
