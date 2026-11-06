@@ -298,6 +298,24 @@
   background: rgba(255, 255, 255, 0.06);
 }
 
+.stage-industries a span,
+.stage-industries a strong {
+  display: block;
+}
+
+.stage-industries a span {
+  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.stage-industries a strong {
+  font-size: 1.05rem;
+  font-weight: 750;
+}
+
 .stage-panel {
   position: relative;
   z-index: 1;

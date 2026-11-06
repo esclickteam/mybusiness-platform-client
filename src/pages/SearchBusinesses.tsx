@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Select from "react-select";
 import { Helmet } from "react-helmet-async";
@@ -327,6 +327,22 @@ export default function SearchBusinesses({
     next: "Next",
   };
   const hasQuery = Boolean(name || cat || city || page > 1);
+  useLayoutEffect(() => {
+    const content = hasQuery ? "noindex, follow" : "index, follow";
+    let tag = document.head.querySelector<HTMLMetaElement>('meta[name="robots"]');
+    const created = !tag;
+    if (!tag) {
+      tag = document.createElement("meta");
+      tag.setAttribute("name", "robots");
+      document.head.appendChild(tag);
+    }
+    const previous = tag.getAttribute("content");
+    tag.setAttribute("content", content);
+    return () => {
+      if (created) tag?.remove();
+      else if (previous != null) tag?.setAttribute("content", previous);
+    };
+  }, [hasQuery]);
   const seoTitle = hasQuery
     ? `${[name, cat, city].filter(Boolean).join(" – ")} | ${searchCopy.title}`
     : searchCopy.title;

@@ -144,6 +144,19 @@ describe("marketing edge integration", () => {
     expect(pricing.headers.get("location")).toBe("https://bizuply.com/pricing");
   });
 
+  it("marks a search URL with a query as noindex and leaves the bare search page indexed", async () => {
+    stubShellFetch();
+    const bare = await read(await middleware(request("https://bizuply.com/search", "bizuply.com")));
+    const queried = await read(await middleware(request("https://bizuply.com/he/search?name=zzzz", "bizuply.com")));
+    const bareHead = bare.body.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+    const queriedHead = queried.body.replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, "");
+    expect(bareHead).toContain('<meta name="robots" content="index, follow" />');
+    expect(bare.headers.get("x-robots-tag")).toBeNull();
+    expect(queriedHead).toContain('<meta name="robots" content="noindex, follow" />');
+    expect(queriedHead).not.toContain('<meta name="robots" content="index, follow" />');
+    expect(queried.headers.get("x-robots-tag")).toBe("noindex, follow");
+  });
+
   it("does not apply marketing metadata to a customer site", async () => {
     const customer = await read(
       await middleware(request("https://idoeshet.sites.bizuply.com/", "idoeshet.sites.bizuply.com")),

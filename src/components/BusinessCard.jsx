@@ -29,7 +29,7 @@ import "./BusinessCard.css";
     <div className="business-card" onClick={handleCardClick} style={{ cursor: "pointer" }}>
       <div className="business-card__media">
         <img
-          src={logo}
+          src={logo || "/images/placeholder.jpg"}
           alt={`${businessName} logo`}
           loading="lazy"
           className="business-card__img"
