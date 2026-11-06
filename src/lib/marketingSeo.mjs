@@ -86,13 +86,13 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/partners",
-    title: "Build Your Business with Bizuply | International Partner Program",
+    title: "Bizuply Partner Program | Build recurring revenue with CRM and SaaS",
     description:
-      "Apply free to the Bizuply International Partner Program. After approval, choose $499 per month or $5,000 per year. Eligible recurring commission is 30% to 40%, and eligible one-time deals earn 10%.",
+      "Apply to the Bizuply Partner Program. Offer CRM, WhatsApp, automation and SaaS. Eligible recurring commission is 30% to 40%. Business Partner membership is $5,000 per year or $499 per month after approval.",
     crumb: "Partners",
-    lastmod: "2026-10-30",
+    lastmod: "2026-11-06",
     changefreq: "monthly",
-    priority: "0.7",
+    priority: "0.8",
   },
   {
     path: "/terms",
@@ -1142,7 +1142,7 @@ export function buildMarketingPrerender(pathname) {
   const found = findMarketingPage(path);
   if (!found?.page) return null;
   const heading = path === "/partners"
-    ? "Build Your Business with Bizuply"
+    ? "Build businesses. Expand opportunities. Earn together."
     : path === "/crm"
     ? "Every lead, every client, every appointment in one place"
     : path === "/about"
@@ -1152,7 +1152,7 @@ export function buildMarketingPrerender(pathname) {
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
   const partnerFaqs = path === "/partners" ? faqItems("/partners", "en") : null;
   const extra = path === "/partners"
-    ? `<p>Submitting an application is free and waits for admin approval. This page does not start a live charge. Payment happens only after approval.</p><p>Monthly Partner is $499 per month and Annual Partner is $5,000 per year, a saving of $988 a year. Both intervals include the same rights. Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%.</p><h2>Questions partners ask</h2>${faqBodyHtml(partnerFaqs)}<p><a href="/partner/register?planKey=partner_international&billing=annual">Apply to Become a Partner</a> <a href="/crm">CRM</a> <a href="/whatsapp-api">WhatsApp Business API</a> <a href="/meta-campaigns">Meta campaigns</a> <a href="/website-builder">Websites</a> <a href="/automations">Automations</a></p>`
+    ? `<p>Submitting an application is free and waits for admin approval. This page does not start a live charge. Payment happens only after approval.</p><p>Business Partner is $499 per month or $5,000 per year. Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%. Industry SaaS products such as BeautyFlow are marked coming soon for partner resale.</p><h2>Questions partners ask</h2>${faqBodyHtml(partnerFaqs)}<p><a href="/partners#apply">Apply for partnership</a> <a href="/partner/register?planKey=partner_international&billing=annual">Open full registration</a> <a href="/crm">CRM</a> <a href="/whatsapp-api">WhatsApp Business API</a> <a href="/meta-campaigns">Meta campaigns</a> <a href="/website-builder">Websites</a> <a href="/automations">Automations</a></p>`
     : path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
     : path === "/about" && aboutFaqs
