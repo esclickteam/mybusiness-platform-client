@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -12,6 +13,7 @@ import {
 
 function Contact() {
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
   const location = useLocation();
   const prefillMessage =
     typeof location.state?.prefillMessage === "string"
@@ -126,11 +128,11 @@ function Contact() {
         <title>{t("contact.seoTitle")}</title>
         <meta name="description" content={t("contact.seoDescription")} />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://bizuply.com/contact" />
+        <link rel="canonical" href={marketingPublicUrl("/contact", locale)} />
 
         <meta property="og:title" content={t("contact.ogTitle")} />
         <meta property="og:description" content={t("contact.ogDescription")} />
-        <meta property="og:url" content="https://bizuply.com/contact" />
+        <meta property="og:url" content={marketingPublicUrl("/contact", locale)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>

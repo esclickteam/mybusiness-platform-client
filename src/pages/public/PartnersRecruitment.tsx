@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
 import { fetchPartnerPlans } from "../../lib/partnerApi";
 import {
   INTERNATIONAL_BILLING_OPTIONS,
@@ -15,14 +16,14 @@ import "./partners/partnersPage.css";
 
 const COPY = {
   en: {
-    seoTitle: "Build Your Business with Bizuply | International Partner Program",
+    seoTitle: "Build Your Business with BizUply | International Partner Program",
     seoDescription:
-      "Apply free to the Bizuply International Partner Program. After approval, choose $499 per month or $5,000 per year. Eligible recurring commission is 30% to 40%, and eligible one-time deals earn 10%.",
+      "Apply free to the BizUply International Partner Program. After approval, choose $499 per month or $5,000 per year. Eligible recurring commission is 30% to 40%, and eligible one-time deals earn 10%.",
     kicker: "Application is free",
-    h1: "Build Your Business with Bizuply",
+    h1: "Build Your Business with BizUply",
     program: "International Partner Program",
     sub: "Become an International Partner. Grow Recurring Revenue. Expand Your Opportunities.",
-    lead: "Join the Bizuply International Partner Program and build a business around powerful software solutions, customer management, business communication, marketing automation, and digital services.",
+    lead: "Join the BizUply International Partner Program and build a business around powerful software solutions, customer management, business communication, marketing automation, and digital services.",
     lead2: "Offer businesses the technology they need while developing your own customer portfolio and recurring commission opportunities.",
     become: "Become a Partner",
     explore: "Explore Partner Benefits",
@@ -37,26 +38,26 @@ const COPY = {
     why: [
       ["Recurring Revenue Opportunities", "Build a portfolio of eligible subscription customers and earn recurring commissions under your partnership agreement."],
       ["Multiple Products. One Partnership.", "Introduce businesses to CRM, lead management, WhatsApp Business API, Meta advertising tools, websites, automation, and authorized SaaS products."],
-      ["Grow in Your Market", "Develop commercial relationships in approved countries and regions using Bizuply's existing technology infrastructure."],
+      ["Grow in Your Market", "Develop commercial relationships in approved countries and regions using BizUply's existing technology infrastructure."],
       ["Partner Resources", "Access the available partner center, onboarding information, training materials, and approved business resources."],
       ["One-Time Project Opportunities", "Earn commissions on eligible one-time transactions while developing additional business opportunities."],
       ["Long-Term Business Development", "Grow your customer base, expand your product knowledge, and progress through the applicable commission tiers."],
     ],
     productsTitle: "One Technology Ecosystem. Multiple Revenue Opportunities.",
-    productsLead: "These are products already in Bizuply. Screens come from the published demo workspace, not from a customer account.",
+    productsLead: "These are products already in BizUply. Screens come from the published demo workspace, not from a customer account.",
     products: [
       {
         title: "CRM & Lead Management",
         href: "/crm",
         image: "/demo-media/crm/leads-list.png",
-        alt: "Bizuply demo CRM lead list",
+        alt: "BizUply demo CRM lead list",
         points: ["Customer relationship management", "Lead tracking", "Sales pipelines", "Customer records", "Follow-up workflows", "Team collaboration", "Sales activity management"],
       },
       {
         title: "Official WhatsApp Business API",
         href: "/whatsapp-api",
         image: "/demo-media/whatsapp/poster.jpg",
-        alt: "Bizuply demo WhatsApp inbox",
+        alt: "BizUply demo WhatsApp inbox",
         note: "Use is subject to Meta policy, approvals, and the relevant messaging costs.",
         points: ["Official WhatsApp Business API integrations", "Business messaging", "Approved message templates", "Customer conversations", "Automated communication workflows", "Integration with business processes"],
       },
@@ -64,26 +65,26 @@ const COPY = {
         title: "Meta Campaign Management",
         href: "/meta-campaigns",
         image: "/demo-media/home/campaigns.jpg",
-        alt: "Bizuply campaign workspace",
+        alt: "BizUply campaign workspace",
         points: ["Supported campaign management tools", "Lead collection", "Campaign-related workflows", "Customer follow-up automation", "Connections between campaigns and CRM"],
       },
       {
         title: "Websites & Digital Presence",
         href: "/website-builder",
         image: "/demo-media/websites/my-sites.jpg",
-        alt: "Bizuply website workspace",
+        alt: "BizUply website workspace",
         points: ["Business websites", "Landing pages", "Lead capture forms", "Appointment booking solutions", "Connected customer management"],
       },
       {
         title: "Business Automation",
         href: "/automations",
         image: "/demo-media/automations/poster.jpg",
-        alt: "Bizuply automation workspace",
+        alt: "BizUply automation workspace",
         points: ["Automated customer follow-ups", "Lead routing", "Business communication processes", "Workflow automation", "Supported integrations"],
       },
     ],
     saasTitle: "Ready-to-Launch SaaS Solutions",
-    saasLead: "These products exist in Bizuply. Partner resale is coming soon. Membership does not include source code, white-label rights, or a distribution right.",
+    saasLead: "These products exist in BizUply. Partner resale is coming soon. Membership does not include source code, white-label rights, or a distribution right.",
     soon: "Coming Soon",
     saas: ["BeautyFlow", "Global Properties", "Dinevo", "TableFlow", "Cliny"],
     getsTitle: "Everything You Need to Start Building Your Partner Business",
@@ -127,11 +128,11 @@ const COPY = {
     territoryTitle: "Territory is agreed separately",
     territoryLead: "Monthly and annual billing do not choose a territory and do not include exclusivity. There is no separate Premium Territory fee.",
     territories: [
-      ["Non-exclusive appointment", "Bizuply may appoint other partners in the same territory. The appointment does not lock the territory."],
+      ["Non-exclusive appointment", "BizUply may appoint other partners in the same territory. The appointment does not lock the territory."],
       ["Exclusive territory", "Granted only when the signed agreement says exclusive, the territory is available, both parties have signed, and the required payment is complete."],
     ],
-    otherPlans: "Other Bizuply partner tracks keep their current terms and are not selected on this page.",
-    journeyTitle: "Your Journey to Becoming a Bizuply Partner",
+    otherPlans: "Other BizUply partner tracks keep their current terms and are not selected on this page.",
+    journeyTitle: "Your Journey to Becoming a BizUply Partner",
     steps: [
       ["Submit Your Application", "Tell us about your business, experience, country, and target market."],
       ["Application Review", "Our team reviews eligibility and partnership suitability."],
@@ -154,21 +155,21 @@ const COPY = {
     hubLead: "Partner Center. The existing Partner Center opens only when the partner is active, the agreement is active, and the payment has been verified.",
     hub: ["Onboarding", "Available Training Resources", "Product Knowledge", "Approved Sales Materials", "Partner Account Management", "Commission Information"],
     faqTitle: "Questions partners ask",
-    closeTitle: "Ready to Build Your Business with Bizuply?",
-    closeBody: "Apply to join the Bizuply International Partner Program and explore opportunities to develop your business with our technology ecosystem.",
+    closeTitle: "Ready to Build Your Business with BizUply?",
+    closeBody: "Apply to join the BizUply International Partner Program and explore opportunities to develop your business with our technology ecosystem.",
     closeCta: "Apply to Become a Partner",
     login: "Partner sign in",
     shotCaption: "Demo workspace",
   },
   he: {
-    seoTitle: "בנו את העסק עם Bizuply | תוכנית שותפים בינלאומית",
+    seoTitle: "בנו את העסק עם BizUply | תוכנית שותפים בינלאומית",
     seoDescription:
-      "ההגשה לתוכנית השותפים הבינלאומית של Bizuply היא ללא תשלום. אחרי אישור בוחרים 499 דולר לחודש או 5,000 דולר לשנה. עמלה חוזרת זכאית היא 30% עד 40%, ועסקאות חד-פעמיות זכאיות מזכות ב-10%.",
+      "ההגשה לתוכנית השותפים הבינלאומית של BizUply היא ללא תשלום. אחרי אישור בוחרים 499 דולר לחודש או 5,000 דולר לשנה. עמלה חוזרת זכאית היא 30% עד 40%, ועסקאות חד-פעמיות זכאיות מזכות ב-10%.",
     kicker: "הגשת הבקשה ללא תשלום",
-    h1: "בנו את העסק שלכם עם Bizuply",
+    h1: "בנו את העסק שלכם עם BizUply",
     program: "תוכנית שותפים בינלאומית",
     sub: "הצטרפו כשותפים בינלאומיים. צמחו הכנסה חוזרת. הרחיבו את ההזדמנויות.",
-    lead: "הצטרפו לתוכנית השותפים הבינלאומית של Bizuply ובנו עסק סביב פתרונות תוכנה, ניהול לקוחות, תקשורת עסקית, אוטומציית שיווק ושירותים דיגיטליים.",
+    lead: "הצטרפו לתוכנית השותפים הבינלאומית של BizUply ובנו עסק סביב פתרונות תוכנה, ניהול לקוחות, תקשורת עסקית, אוטומציית שיווק ושירותים דיגיטליים.",
     lead2: "הציעו לעסקים את הטכנולוגיה שהם צריכים, ובמקביל פתחו תיק לקוחות והזדמנויות לעמלה חוזרת.",
     become: "להצטרף כשותף",
     explore: "לראות את ההטבות",
@@ -183,19 +184,19 @@ const COPY = {
     why: [
       ["הזדמנויות להכנסה חוזרת", "בנו תיק של לקוחות מנוי זכאים והרוויחו עמלה חוזרת לפי הסכם השותפות."],
       ["כמה מוצרים. שותפות אחת.", "הציגו לעסקים CRM, ניהול לידים, WhatsApp Business API, כלי פרסום של Meta, אתרים, אוטומציה ומוצרי SaaS מאושרים."],
-      ["צמיחה בשוק שלכם", "פתחו קשרים מסחריים במדינות ובאזורים מאושרים, על התשתית הקיימת של Bizuply."],
+      ["צמיחה בשוק שלכם", "פתחו קשרים מסחריים במדינות ובאזורים מאושרים, על התשתית הקיימת של BizUply."],
       ["משאבי שותפים", "גישה למרכז השותפים הזמין, למידע קליטה, לחומרי הכשרה ולמשאבים עסקיים מאושרים."],
       ["הזדמנויות לפרויקטים חד-פעמיים", "הרוויחו עמלה על עסקאות חד-פעמיות זכאיות תוך פיתוח הזדמנויות נוספות."],
       ["פיתוח עסקי לטווח ארוך", "הגדילו את בסיס הלקוחות, העמיקו את הידע במוצרים, והתקדמו במדרגות העמלה החלות."],
     ],
     productsTitle: "מערכת טכנולוגיה אחת. כמה הזדמנויות להכנסה.",
-    productsLead: "אלה מוצרים שקיימים ב-Bizuply. הצילומים לקוחים מסביבת הדמו המפורסמת, לא מחשבון לקוח.",
+    productsLead: "אלה מוצרים שקיימים ב-BizUply. הצילומים לקוחים מסביבת הדמו המפורסמת, לא מחשבון לקוח.",
     products: [
       {
         title: "CRM וניהול לידים",
         href: "/crm",
         image: "/demo-media/crm/leads-list.png",
-        alt: "רשימת לידים בסביבת הדמו של Bizuply",
+        alt: "רשימת לידים בסביבת הדמו של BizUply",
         points: ["ניהול קשרי לקוחות", "מעקב לידים", "צינורות מכירה", "כרטיסי לקוח", "תהליכי המשך טיפול", "עבודה בצוות", "ניהול פעילות מכירה"],
       },
       {
@@ -210,26 +211,26 @@ const COPY = {
         title: "ניהול קמפיינים ב-Meta",
         href: "/meta-campaigns",
         image: "/demo-media/home/campaigns.jpg",
-        alt: "סביבת הקמפיינים של Bizuply",
+        alt: "סביבת הקמפיינים של BizUply",
         points: ["כלי ניהול קמפיינים נתמכים", "איסוף לידים", "תהליכים הקשורים לקמפיין", "אוטומציית המשך טיפול", "חיבור בין קמפיינים ל-CRM"],
       },
       {
         title: "אתרים ונוכחות דיגיטלית",
         href: "/website-builder",
         image: "/demo-media/websites/my-sites.jpg",
-        alt: "סביבת האתרים של Bizuply",
+        alt: "סביבת האתרים של BizUply",
         points: ["אתרים עסקיים", "דפי נחיתה", "טפסי לידים", "פתרונות לזימון תורים", "ניהול לקוחות מחובר"],
       },
       {
         title: "אוטומציה עסקית",
         href: "/automations",
         image: "/demo-media/automations/poster.jpg",
-        alt: "סביבת האוטומציות של Bizuply",
+        alt: "סביבת האוטומציות של BizUply",
         points: ["המשך טיפול אוטומטי בלקוחות", "ניתוב לידים", "תהליכי תקשורת עסקית", "אוטומציית תהליכים", "חיבורים נתמכים"],
       },
     ],
     saasTitle: "מערכות SaaS מוכנות להשקה",
-    saasLead: "המוצרים האלה קיימים ב-Bizuply. מכירת שותפים עדיין בקרוב. החברות אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
+    saasLead: "המוצרים האלה קיימים ב-BizUply. מכירת שותפים עדיין בקרוב. החברות אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
     soon: "בקרוב",
     saas: ["BeautyFlow", "Global Properties", "Dinevo", "TableFlow", "Cliny"],
     getsTitle: "מה שצריך כדי להתחיל לבנות את עסק השותפים",
@@ -273,11 +274,11 @@ const COPY = {
     territoryTitle: "הטריטוריה נקבעת בנפרד",
     territoryLead: "החיוב החודשי והשנתי אינו בוחר טריטוריה ואינו כולל בלעדיות. אין דמי טריטוריה פרימיום נפרדים.",
     territories: [
-      ["מינוי לא בלעדי", "Bizuply רשאית למנות שותפים נוספים באותה טריטוריה. המינוי אינו נועל את הטריטוריה."],
+      ["מינוי לא בלעדי", "BizUply רשאית למנות שותפים נוספים באותה טריטוריה. המינוי אינו נועל את הטריטוריה."],
       ["טריטוריה בלעדית", "ניתנת רק כשההסכם החתום קובע בלעדיות, הטריטוריה פנויה, שני הצדדים חתמו, והתשלום הנדרש הושלם."],
     ],
-    otherPlans: "מסלולי השותפים האחרים של Bizuply נשארים בתנאים הנוכחיים שלהם ואינם נבחרים בעמוד הזה.",
-    journeyTitle: "הדרך להצטרפות כשותף של Bizuply",
+    otherPlans: "מסלולי השותפים האחרים של BizUply נשארים בתנאים הנוכחיים שלהם ואינם נבחרים בעמוד הזה.",
+    journeyTitle: "הדרך להצטרפות כשותף של BizUply",
     steps: [
       ["הגשת הבקשה", "ספרו על העסק, הניסיון, המדינה ושוק היעד."],
       ["בדיקת הבקשה", "הצוות בודק התאמה ואת התאמת השותפות."],
@@ -300,8 +301,8 @@ const COPY = {
     hubLead: "מרכז השותפים הקיים נפתח רק כשהשותף פעיל, ההסכם פעיל, והתשלום אומת.",
     hub: ["קליטה", "משאבי הכשרה זמינים", "ידע על המוצרים", "חומרי מכירה מאושרים", "ניהול חשבון השותף", "מידע על עמלות"],
     faqTitle: "שאלות ששותפים שואלים",
-    closeTitle: "מוכנים לבנות את העסק עם Bizuply?",
-    closeBody: "הגישו בקשה להצטרף לתוכנית השותפים הבינלאומית של Bizuply ובדקו איך לפתח את העסק עם מערכת הטכנולוגיה שלנו.",
+    closeTitle: "מוכנים לבנות את העסק עם BizUply?",
+    closeBody: "הגישו בקשה להצטרף לתוכנית השותפים הבינלאומית של BizUply ובדקו איך לפתח את העסק עם מערכת הטכנולוגיה שלנו.",
     closeCta: "הגשת בקשה להצטרפות",
     login: "כניסת שותפים",
     shotCaption: "סביבת דמו",
@@ -415,7 +416,7 @@ export default function PartnersRecruitment() {
       <Helmet>
         <title>{copy.seoTitle}</title>
         <meta name="description" content={copy.seoDescription} />
-        <link rel="canonical" href="https://bizuply.com/partners" />
+        <link rel="canonical" href={marketingPublicUrl("/partners", normalizeMarketingLocale(i18n.language))} />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 

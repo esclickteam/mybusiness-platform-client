@@ -69,7 +69,7 @@ export default function About() {
         {
           "@type": "Organization",
           "@id": orgId,
-          name: "Bizuply",
+          name: "BizUply",
           legalName: "Bizuply LLC",
           url: ORIGIN,
           logo: LOGO,
@@ -92,7 +92,7 @@ export default function About() {
           "@type": "WebSite",
           "@id": `${ORIGIN}/#website`,
           url: ORIGIN,
-          name: "Bizuply",
+          name: "BizUply",
           publisher: { "@id": orgId },
           inLanguage: ["en", "he", "es", "pt-BR", "ar"],
         },

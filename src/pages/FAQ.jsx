@@ -3,10 +3,12 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const FAQS = t("faqPage.items", { returnObjects: true });
   const TOPICS = t("faqPage.topics", { returnObjects: true });
@@ -21,7 +23,7 @@ function FAQ() {
       <Helmet>
         <title>{t("faqPage.seoTitle")}</title>
         <meta name="description" content={t("faqPage.seoDesc")} />
-        <link rel="canonical" href="https://bizuply.com/faq" />
+        <link rel="canonical" href={marketingPublicUrl("/faq", locale)} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
@@ -30,7 +32,7 @@ function FAQ() {
       <div className="pointer-events-none absolute bottom-[-18%] left-[28%] h-[520px] w-[520px] rounded-full bg-white/85 blur-3xl" />
 
       <section className="relative mx-auto max-w-7xl px-5 pb-12 pt-20 text-center sm:px-8 lg:px-10 lg:pt-24">
-        <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
+        <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-sm border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-900">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
           {t("faqPage.badge")}
         </div>

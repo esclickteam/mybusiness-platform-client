@@ -8,6 +8,7 @@ import BusinessCard from "../components/BusinessCard";
 import BusinessCardSkeleton from "../components/BusinessCardSkeleton";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { useTranslation } from "react-i18next";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 import ALL_CATEGORIES from "../data/categories";
 import { translateBusinessCategory } from "../i18n/businessCategoryLabels";
 import { fetchCities } from "../data/cities";
@@ -66,7 +67,8 @@ function getBusinessName(business: Business) {
 export default function SearchBusinesses({
   resetSearchFilters,
 }: SearchBusinessesProps = {}) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -244,27 +246,65 @@ export default function SearchBusinesses({
   const pageItems = filtered.slice(start, start + ITEMS_PER_PAGE);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
 
-  const seoTitle =
-    name || cat || city
-      ? `${name || ""}${name && (cat || city) ? " – " : ""}${cat || ""}${
-          cat && city ? " – " : ""
-        }${city || ""} | Search | Bizuply`
-      : "Business Search | Bizuply";
+  const searchCopy = {
+    en: {
+      title: "Find a business | BizUply",
+      description: "Search businesses that published a profile. A result is not a recommendation or a partnership.",
+      h1: "Find a business",
+      found: "businesses found",
+    },
+    he: {
+      title: "מציאת עסק | BizUply",
+      description: "חיפוש עסקים שפרסמו פרופיל. תוצאה אינה המלצה ואינה שותפות.",
+      h1: "מציאת עסק",
+      found: "עסקים נמצאו",
+    },
+    es: {
+      title: "Encontrar un negocio | BizUply",
+      description: "Busque negocios que publicaron un perfil. Un resultado no es una recomendación ni una alianza.",
+      h1: "Encontrar un negocio",
+      found: "negocios encontrados",
+    },
+    "pt-BR": {
+      title: "Encontrar um negócio | BizUply",
+      description: "Pesquise negócios que publicaram um perfil. Um resultado não é uma recomendação nem uma parceria.",
+      h1: "Encontrar um negócio",
+      found: "negócios encontrados",
+    },
+    ar: {
+      title: "العثور على عمل | BizUply",
+      description: "ابحثوا عن أعمال نشرت ملفاً. النتيجة ليست توصية وليست شراكة.",
+      h1: "العثور على عمل",
+      found: "أعمال وُجدت",
+    },
+  }[locale] || {
+    title: "Find a business | BizUply",
+    description: "Search businesses that published a profile. A result is not a recommendation or a partnership.",
+    h1: "Find a business",
+    found: "businesses found",
+  };
+  const hasQuery = Boolean(name || cat || city || page > 1);
+  const seoTitle = hasQuery
+    ? `${[name, cat, city].filter(Boolean).join(" – ")} | ${searchCopy.title}`
+    : searchCopy.title;
 
   return (
     <div className="list-page">
       <Helmet>
         <title>{seoTitle}</title>
+        <meta name="description" content={searchCopy.description} />
+        <link rel="canonical" href={marketingPublicUrl("/search", locale)} />
+        <meta name="robots" content={hasQuery ? "noindex, follow" : "index, follow"} />
       </Helmet>
 
       <div className="business-list-container">
         <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1>Find Businesses</h1>
+            <h1>{searchCopy.h1}</h1>
 
             {searched && !loading && !searching && (
               <p className="mt-2 text-sm font-semibold text-slate-500">
-                {filtered.length} businesses found
+                {filtered.length} {searchCopy.found}
               </p>
             )}
           </div>

@@ -1087,11 +1087,15 @@ PAGES["/solutions/ready-systems"] = industry({
   ),
 });
 
+import { getActivityDepth } from "./activityDepth.mjs";
+
 export function getActivityPage(path, locale) {
   const found = PAGES[path];
   if (!found) return null;
   const language = locale === "pt-BR" || locale === "pt" ? "pt-BR" : locale;
-  const copyForLocale = found.locales[language] || found.locales.en;
+  const base = found.locales[language] || found.locales.en;
+  const depth = getActivityDepth(path, language);
+  const copyForLocale = depth ? { ...base, ...depth } : base;
   return {
     ...copyForLocale,
     layout: found.layout,
@@ -1102,15 +1106,18 @@ export function getActivityPage(path, locale) {
 }
 
 export function activityMarketingEntries() {
-  return Object.entries(PAGES).map(([path, page]) => ({
-    path,
-    title: page.locales.en.title,
-    description: page.locales.en.description,
-    crumb: page.locales.en.crumb,
-    lastmod: "2026-10-24",
-    changefreq: "monthly",
-    priority: path === "/platform" || path === "/services" ? "0.8" : "0.64",
-  }));
+  return Object.keys(PAGES).map((path) => {
+    const page = getActivityPage(path, "en");
+    return {
+      path,
+      title: page.title,
+      description: page.description,
+      crumb: page.crumb,
+      lastmod: "2026-11-06",
+      changefreq: "monthly",
+      priority: path === "/platform" || path === "/services" ? "0.8" : "0.64",
+    };
+  });
 }
 
 export function activityChildLinks(path, locale) {

@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 const stepMeta = [
   {
@@ -43,7 +44,8 @@ const stepMeta = [
 ];
 
 function HowItWorks() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const overviewStats = [
     ["01", t("howItWorks.overviewStat1Label")],
@@ -99,7 +101,7 @@ function HowItWorks() {
         <title>{t("howItWorks.seoTitle")}</title>
         <meta name="description" content={t("howItWorks.seoDescription")} />
         <meta name="keywords" content={t("howItWorks.seoKeywords")} />
-        <link rel="canonical" href="https://bizuply.com/how-it-works" />
+        <link rel="canonical" href={marketingPublicUrl("/how-it-works", locale)} />
         <meta name="robots" content="index, follow" />
 
         <meta property="og:title" content={t("howItWorks.ogTitle")} />

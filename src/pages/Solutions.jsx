@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ACTIVITY_PATHS, getActivityPage } from "../lib/activityPages.mjs";
-import { normalizeMarketingLocale } from "../lib/localePath.mjs";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 const solutionMeta = [
   {
@@ -70,16 +70,16 @@ function Solutions() {
         <title>{t("solutions.seoTitle")}</title>
         <meta name="description" content={t("solutions.seoDescription")} />
         <meta name="keywords" content={t("solutions.seoKeywords")} />
-        <meta name="author" content="Bizuply" />
+        <meta name="author" content="BizUply" />
         <meta property="og:title" content={t("solutions.ogTitle")} />
         <meta property="og:description" content={t("solutions.ogDescription")} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://bizuply.com/solutions" />
+        <meta property="og:url" content={marketingPublicUrl("/solutions", locale)} />
         <meta
           property="og:image"
           content="https://bizuply.com/og-image.jpg"
         />
-        <link rel="canonical" href="https://bizuply.com/solutions" />
+        <link rel="canonical" href={marketingPublicUrl("/solutions", locale)} />
       </Helmet>
 
       {/* Background effects */}

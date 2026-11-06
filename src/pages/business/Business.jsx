@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
 
 function BusinessJoin() {
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
   const pageDir = getTextDirection(i18n.language);
 
   return (
@@ -19,7 +21,7 @@ function BusinessJoin() {
           name="description"
           content={t("business.profileBuild.seoDesc")}
         />
-        <link rel="canonical" href="https://bizuply.com/business" />
+        <link rel="canonical" href={marketingPublicUrl("/business", locale)} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 

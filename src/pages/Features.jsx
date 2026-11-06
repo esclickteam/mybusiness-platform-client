@@ -1,6 +1,7 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 const featureMeta = [
   {
@@ -94,7 +95,8 @@ const featureMeta = [
 ];
 
 function Features() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const overviewStats = [
     [t("features.statCrm"), t("features.statCrmLabel")],
@@ -126,6 +128,7 @@ function Features() {
         <meta name="description" content={t("features.seoDescription")} />
         <meta name="keywords" content={t("features.seoKeywords")} />
         <meta name="author" content="BizUply" />
+        <link rel="canonical" href={marketingPublicUrl("/features", locale)} />
       </Helmet>
 
       {/* Background effects */}
