@@ -112,6 +112,8 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/crm")).toBe(false);
     expect(isUnknownMarketingPath("/login")).toBe(false);
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
+    expect(isUnknownMarketingPath("/compliance")).toBe(false);
+    expect(isUnknownMarketingPath("/compliance/report/1")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
     expect(isMarketingNoindexPath("/home-preview")).toBe(true);
     expect(isUnknownMarketingPath("/home-preview")).toBe(false);
