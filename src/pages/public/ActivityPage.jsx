@@ -54,8 +54,28 @@ export default function ActivityPage() {
         <h1>{page.h1}</h1>
         <p className="act-lede">{page.lede}</p>
         <div className="act-actions">
-          <Link to="/pricing">{locale === "he" ? "למחירון" : locale === "ar" ? "الأسعار" : locale === "es" ? "Precios" : locale === "pt-BR" ? "Preços" : "Pricing"}</Link>
-          <Link to="/contact">{locale === "he" ? "יצירת קשר" : locale === "ar" ? "اتصال" : locale === "es" ? "Contacto" : locale === "pt-BR" ? "Contato" : "Contact"}</Link>
+          {bare === "/platform" ? (
+            <Link className="act-btn act-btn--primary" to="/contact">
+              {locale === "he"
+                ? "גלו איך BizUply יכולה להתאים לעסק שלכם"
+                : locale === "ar"
+                  ? "اكتشفوا كيف تناسب BizUply عملكم"
+                  : locale === "es"
+                    ? "Ved cómo BizUply puede encajar en el negocio"
+                    : locale === "pt-BR"
+                      ? "Veja como a BizUply pode servir ao negócio"
+                      : "See how BizUply can fit your business"}
+            </Link>
+          ) : (
+            <Link className="act-btn act-btn--primary" to="/pricing">
+              {locale === "he" ? "למחירון" : locale === "ar" ? "الأسعار" : locale === "es" ? "Precios" : locale === "pt-BR" ? "Preços" : "Pricing"}
+            </Link>
+          )}
+          <Link className="act-btn act-btn--ghost" to={bare === "/platform" ? "/pricing" : "/contact"}>
+            {bare === "/platform"
+              ? (locale === "he" ? "למחירון" : locale === "ar" ? "الأسعار" : locale === "es" ? "Precios" : locale === "pt-BR" ? "Preços" : "Pricing")
+              : (locale === "he" ? "יצירת קשר" : locale === "ar" ? "اتصال" : locale === "es" ? "Contacto" : locale === "pt-BR" ? "Contato" : "Contact")}
+          </Link>
         </div>
       </header>
       <Visual media={page.media} />

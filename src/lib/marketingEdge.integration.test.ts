@@ -82,10 +82,11 @@ describe("marketing edge integration", () => {
     const page = await read(await middleware(request("https://bizuply.com/", "bizuply.com")));
     expect(page.status).toBe(200);
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("marketing");
-    expect(page.body).toContain("<title>Bizuply | CRM, lead management, WhatsApp Business API and business tools</title>");
+    expect(page.body).toContain("<title>BizUply | CRM, lead management, WhatsApp Business API and business tools</title>");
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
-    expect(page.body).toContain('"name":"Bizuply"');
-    expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
+    expect(page.body).toContain('"name":"Bizuply LLC"');
+    expect(page.body).toContain('"name":"BizUply"');
+    expect(page.body).toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
     expect(page.body).toContain('class="hx-hero"');
     expect(page.body).toContain('data-home-design="purple"');
     expect(page.body).toContain(">Everything</span>");
@@ -112,7 +113,7 @@ describe("marketing edge integration", () => {
     const hebrewCrm = await read(await middleware(request("https://bizuply.com/he/crm", "bizuply.com")));
     expect(hebrewCrm.status).toBe(200);
     expect(hebrewCrm.body).toContain('lang="he" dir="rtl"');
-    expect(hebrewCrm.body).toContain("<h1>נהלו כל ליד וכל קשר עם הלקוח במקום אחד</h1>");
+    expect(hebrewCrm.body).toContain("<h1>מערכת CRM לניהול לידים, לקוחות ותהליכי מכירה</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
     expect(hebrewCrm.body).toContain('alt="ביזאפלי (Bizuply)"');
     const hebrewHome = await read(await middleware(request("https://bizuply.com/he", "bizuply.com")));

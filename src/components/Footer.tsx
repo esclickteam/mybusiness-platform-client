@@ -30,12 +30,16 @@ export default function Footer() {
     { label: t("footer.agents"), to: "/agents" },
     { label: t("footer.collaborations"), to: "/collaborations" },
     { label: t("footer.appointments"), to: "/appointments" },
+    { label: t("footer.whatsapp"), to: "/whatsapp-api" },
+    { label: t("footer.meta"), to: "/meta-campaigns" },
+    { label: t("footer.guides"), to: "/guides" },
   ];
 
   const companyLinks: FooterLink[] = [
     { label: t("footer.aboutUs"), to: "/about" },
     { label: t("footer.pricing"), to: "/pricing" },
     { label: t("footer.contact"), to: "/contact" },
+    { label: t("footer.partners"), to: "/partners" },
   ];
 
   const supportLinks: FooterLink[] = [
@@ -58,7 +62,7 @@ export default function Footer() {
         >
           <img
             src={logo}
-            alt="Bizuply"
+            alt="BizUply"
             width={180}
             height={56}
             className="h-11 w-auto max-w-[11rem] object-contain sm:h-12 sm:max-w-[12.5rem]"
@@ -66,6 +70,7 @@ export default function Footer() {
             decoding="async"
           />
         </Link>
+        <p className="mt-3 max-w-xl text-sm leading-6 text-slate-600">{t("footer.tagline")}</p>
 
         <div className="mt-5 grid w-full max-w-3xl gap-5 sm:grid-cols-3 sm:gap-4">
           <FooterColumn title={t("footer.solutions")} links={solutionsLinks} />
@@ -75,6 +80,10 @@ export default function Footer() {
 
         <div className="mx-auto mt-5 h-px w-full max-w-xl bg-slate-200/80" />
 
+        <p className="mt-3 flex flex-wrap items-center justify-center gap-4 text-sm font-semibold">
+          <a className="text-slate-600 hover:text-indigo-700" href="https://www.facebook.com/bizuply" rel="noopener noreferrer">Facebook</a>
+          <a className="text-slate-600 hover:text-indigo-700" href="https://www.instagram.com/bizuply" rel="noopener noreferrer">Instagram</a>
+        </p>
         <p className="mt-3 text-[11px] font-semibold text-slate-600 sm:text-xs">
           {t("footer.rights", { year })}
         </p>

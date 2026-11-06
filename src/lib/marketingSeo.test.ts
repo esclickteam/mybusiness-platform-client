@@ -63,7 +63,8 @@ describe("marketing crawl files", () => {
       expect(head).toContain(`content="${escapeHtml(page.description)}"`);
       expect(head).toContain('content="index, follow"');
       expect(head).toContain('"@type":"Organization"');
-      expect(head).toContain('"name":"Bizuply"');
+      expect(head).toContain('"name":"Bizuply LLC"');
+      expect(head).toContain('"name":"BizUply"');
       expect(head).not.toContain("aggregateRating");
     }
   });
@@ -83,10 +84,11 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/business/123/dashboard")).toContain("noindex, nofollow");
     expect(isMarketingNoindexPath("/business")).toBe(false);
     expect(buildMarketingDocumentHead("/book/abc")).toBeNull();
-    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"name":"BizUply"');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
-      "<title>Bizuply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים</title>",
+      "<title>BizUply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים</title>",
     );
     expect(buildMarketingDocumentHead("/he/") || "").toContain('rel="canonical" href="https://bizuply.com/he"');
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he</loc>");
@@ -97,8 +99,10 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/") || "").toContain('"@id":"https://bizuply.com/#website"');
     expect(buildMarketingDocumentHead("/") || "").toContain('"publisher":{"@id":"https://bizuply.com/#organization"}');
     for (const page of MARKETING_PAGES) {
-      expect(page.title).not.toContain("BizUply");
-      expect(page.description).not.toContain("BizUply");
+      expect(page.title).not.toContain("Bizamply");
+      expect(page.title).not.toContain("Bizimply");
+      expect(page.description).not.toContain("Bizamply");
+      expect(page.description).not.toContain("Bizimply");
     }
     expect(isUnknownMarketingPath("/this-page-does-not-exist-xyz")).toBe(true);
     expect(isUnknownMarketingPath("/crm")).toBe(false);
@@ -123,15 +127,15 @@ describe("marketing crawl files", () => {
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/about</loc>");
     expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/he/terms</loc>");
     expect(buildMarketingPrerender("/crm")?.inner).toContain("CRM only is $49 per month");
-    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>Manage every lead and customer relationship in one place</h1>");
+    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>A CRM for leads, customers, and the sales process</h1>");
     expect(buildMarketingPrerender("/he/crm")?.inner).toContain("49 דולר");
     expect(buildMarketingDocumentHead("/he/whatsapp-api") || "").toContain("מה כוללים 29 הדולר?");
     expect(buildMarketingDocumentHead("/crm") || "").toContain("How much does Bizuply CRM cost?");
     expect(buildMarketingDocumentHead("/about") || "").toContain("Our Mission, Approach");
     expect(buildMarketingDocumentHead("/about") || "").toContain("images/about/og.png");
-    expect(buildMarketingPrerender("/about")?.inner).toContain("Built for businesses that want their work connected");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Meet BizUply");
     expect(buildMarketingPrerender("/about")?.inner).toContain("Ready-Made SaaS Solutions");
-    expect(buildMarketingPrerender("/he/about")?.inner).toContain("נבנתה לעסקים שרוצים שהעבודה שלהם תהיה מחוברת");
+    expect(buildMarketingPrerender("/he/about")?.inner).toContain("הכירו את BizUply");
     expect(buildMarketingPrerender("/he/terms")).toBeNull();
     const spanish = buildMarketingDocumentHead("/es/crm") || "";
     expect(spanish).toContain('hreflang="es" href="https://bizuply.com/es/crm"');
@@ -190,8 +194,8 @@ describe("marketing crawl files", () => {
       if (locale === "he") {
         expect(body).toContain(">כל</span>");
         expect(body).toContain(">צריך.</span>");
-        expect(body).toContain(">פלטפורמה</span>");
-        expect(body).toContain(">חזקה.</span>");
+        expect(body).toContain(">אחת.</span>");
+        expect(body).toContain("BizUply");
       } else {
         expect(body).toContain(">Everything</span>");
         expect(body).toContain(">needs.</span>");

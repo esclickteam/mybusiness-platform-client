@@ -57,7 +57,7 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply | CRM, lead management, WhatsApp Business API and business tools",
+    title: "BizUply | CRM, lead management, WhatsApp Business API and business tools",
     description:
       "Meet Bizuply: a platform for customer and lead management, WhatsApp Business API, paid campaigns, website building and business automations in one place.",
     crumb: "Bizuply",
@@ -146,9 +146,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/pricing",
-    title: "Service Packages | Bizuply",
+    title: "Plans and prices for the business | BizUply",
     description:
-      "Bizuply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
+      "Choose the BizUply tools and plan that fit how the business works. Published prices stay on this page, including monthly and yearly billing where a plan offers both.",
     crumb: "Pricing",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -366,21 +366,21 @@ function organizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${MARKETING_ORIGIN}/#organization`,
-    name: "Bizuply",
+    name: "Bizuply LLC",
     legalName: "Bizuply LLC",
-    alternateName: ["ביזאפלי", "BizUply"],
+    alternateName: ["BizUply", "Bizuply", "ביזאפלי"],
     url: `${MARKETING_ORIGIN}/`,
     logo: ORGANIZATION_LOGO,
     brand: {
       "@type": "Brand",
-      name: "Bizuply",
-      alternateName: "ביזאפלי",
+      name: "BizUply",
+      alternateName: ["Bizuply", "ביזאפלי"],
       url: `${MARKETING_ORIGIN}/`,
       logo: ORGANIZATION_LOGO,
     },
     image: OG_IMAGE,
     description:
-      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
+      "BizUply is the business platform of Bizuply LLC, for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
@@ -671,7 +671,7 @@ function breadcrumbSchema(page, canonical, language = "en") {
     {
       "@type": "ListItem",
       position: 1,
-      name: language === "he" ? "ביזאפלי" : "Bizuply",
+      name: language === "he" ? "ביזאפלי" : "BizUply",
       item: `${MARKETING_ORIGIN}/`,
     },
   ];
@@ -700,7 +700,7 @@ function sharedSocialTags(title, description, canonical, language = "en", image 
     `<meta property="og:title" content="${safeTitle}" />`,
     `<meta property="og:description" content="${safeDescription}" />`,
     `<meta property="og:type" content="website" />`,
-    `<meta property="og:site_name" content="Bizuply" />`,
+    `<meta property="og:site_name" content="BizUply" />`,
     `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
     `<meta property="og:image" content="${safeImage}" />`,
     `<meta property="og:locale" content="${ogLocale}" />`,
@@ -1085,11 +1085,11 @@ function websiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": `${MARKETING_ORIGIN}/#website`,
-    name: "Bizuply",
-    alternateName: ["ביזאפלי", "BizUply"],
+    name: "BizUply",
+    alternateName: ["Bizuply", "bizuply.com", "ביזאפלי"],
     url: `${MARKETING_ORIGIN}/`,
     description:
-      "Bizuply (ביזאפלי) is the business platform at https://bizuply.com, published by Bizuply LLC.",
+      "BizUply (ביזאפלי) is the business platform at https://bizuply.com, published by Bizuply LLC.",
     inLanguage: ["en", "he", "es", "pt-BR", "ar"],
     publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
   };
@@ -1099,8 +1099,8 @@ function softwareSchema(description, canonical) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Bizuply",
-    alternateName: ["ביזאפלי", "BizUply"],
+    name: "BizUply",
+    alternateName: ["Bizuply", "bizuply.com", "ביזאפלי"],
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description,
@@ -1144,9 +1144,9 @@ export function buildMarketingPrerender(pathname) {
   const heading = path === "/partners"
     ? "Build Your Business with Bizuply"
     : path === "/crm"
-    ? "Every lead, every client, every appointment in one place"
+    ? "A CRM for leads, customers, and the sales process"
     : path === "/about"
-      ? "Built for businesses that want their work connected"
+      ? "Meet BizUply"
       : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;

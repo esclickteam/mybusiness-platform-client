@@ -24,6 +24,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import { marketingPublicUrl } from "../../lib/localePath.mjs";
 import API from "../../api";
 import {
   PRICING_ADDONS,
@@ -571,7 +572,7 @@ export default function Plans() {
             <button
               type="button"
               onClick={() => setDetailKey(addon.key)}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-1 rounded-full border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              className="inline-flex h-12 flex-1 items-center justify-center gap-1 rounded-[2px] border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
             >
               {t("pricing.viewDetails")}
               <ChevronLeft
@@ -583,7 +584,7 @@ export default function Plans() {
             <button
               type="button"
               onClick={() => openPurchase(addon)}
-              className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
+              className="inline-flex h-12 flex-1 items-center justify-center gap-1.5 rounded-[2px] px-4 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
               style={{
                 background: `linear-gradient(135deg, ${addon.accent}, ${addon.accent}cc)`,
               }}
@@ -605,7 +606,7 @@ export default function Plans() {
       <Helmet>
         <title>{t("pricing.seoTitle")}</title>
         <meta name="description" content={t("pricing.seoDescription")} />
-        <link rel="canonical" href="https://bizuply.com/pricing" />
+        <link rel="canonical" href={marketingPublicUrl("/pricing", i18n.language)} />
       </Helmet>
 
       <ScrollProgress />
@@ -626,7 +627,7 @@ export default function Plans() {
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
           <p className="pricing-wow__brand text-3xl font-black tracking-[-0.05em] sm:text-4xl">
-            Bizuply
+            BizUply
           </p>
           <h1 className="pricing-wow__title mt-4 text-4xl font-black leading-[1.08] tracking-[-0.045em] sm:text-5xl lg:text-6xl">
             {t("pricing.addonsTitle")}
@@ -769,7 +770,7 @@ export default function Plans() {
                         type="button"
                         onClick={() => handleCheckout(plan)}
                         disabled={isLoading}
-                        className={`group mt-auto inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base ${
+                        className={`group mt-auto inline-flex min-h-12 w-full items-center justify-center rounded-[2px] px-6 py-3.5 text-sm font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base ${
                           plan.allowsWebsiteAddon ? "mt-6" : "mt-8"
                         } ${
                           plan.highlighted

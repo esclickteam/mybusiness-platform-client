@@ -627,6 +627,10 @@
     "appointments": "Citas",
     "automations": "Automatizaciones",
     "agents": "Agentes de negocio",
+    "whatsapp": "WhatsApp",
+    "meta": "Campañas de Meta",
+    "guides": "Guías",
+    "partners": "Programa de socios",
     "logoAria": "BizUply Inicio"
   },
   "businessNav": {

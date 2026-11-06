@@ -292,8 +292,8 @@ function Hero() {
     node.style.setProperty("--s2", band(progress, 0.28, 0.42, 0.58, 0.72).toFixed(3));
     node.style.setProperty("--s3", (progress < 0.58 ? 0 : Math.min(1, (progress - 0.58) / 0.14)).toFixed(3));
   });
-  const lineOne = text("כל מה שהעסק שלך צריך.", "Everything your business needs.");
-  const lineTwo = text("פלטפורמה אחת חזקה.", "One powerful platform.");
+  const lineOne = text("BizUply — כל מה שהעסק שלך צריך.", "BizUply — Everything your business needs.");
+  const lineTwo = text("בפלטפורמה אחת.", "One platform.");
 
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
@@ -302,26 +302,20 @@ function Hero() {
         <div className="hx-geo hx-geo-b" aria-hidden="true" />
         <div className="hx-geo hx-geo-c" aria-hidden="true" />
         <div className="hx-hero-copy">
-          <p className="hx-kicker">Bizuply</p>
+          <p className="hx-kicker">BizUply</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={lineOne} />
             <Words text={lineTwo} hot={1} delay={280} />
           </h1>
           <p className="hx-lead">
             {text(
-              "מנהלים לידים, מדברים עם לקוחות, יוצרים קמפיינים, בונים אתרים ומחברים תהליכים אוטומטיים — הכול מתוך סביבת עבודה אחת.",
-              "Manage leads, talk with customers, run campaigns, build websites, and connect automated processes — from one workspace.",
-            )}
-          </p>
-          <p className="hx-lead">
-            {text(
-              "Bizuply מרכזת את הכלים שעוזרים לעסקים לנהל את הפעילות השוטפת, לפתח קשרים עם לקוחות וליצור תהליכי עבודה מסודרים, בלי לעבור כל הזמן בין מערכות שונות.",
-              "Bizuply brings together the tools that help a business run day-to-day work, stay in touch with customers, and keep processes in order, without jumping between separate systems.",
+              "ניהול לקוחות ולידים, CRM, קמפיינים, WhatsApp, אוטומציות, פגישות, אתרים וכלים עסקיים מתקדמים — בסביבת עבודה אחת שמחברת בין האנשים, הנתונים והתהליכים בעסק.",
+              "Customer and lead management, CRM, campaigns, WhatsApp, automations, appointments, websites, and business tools — one workspace that connects the people, the data, and the work.",
             )}
           </p>
           <div className="hx-actions">
-            <Cta to="/register">{text("התחילו בחינם", "Start free")}</Cta>
-            <Cta to="#story" tone="line">{text("לראות את המערכת", "See the system")}</Cta>
+            <Cta to="/register">{text("התחילו עם BizUply", "Start with BizUply")}</Cta>
+            <Cta to="/platform" tone="line">{text("גלו את הפלטפורמה", "Explore the platform")}</Cta>
           </div>
           <p className="hx-note">
             {text(
@@ -370,24 +364,45 @@ function Why() {
   const { text } = useCopy();
   const points = [
     {
-      title: text("רואים את התמונה המלאה", "See the whole picture"),
+      title: text("מידע עסקי במקום אחד", "Business information in one place"),
       body: text(
-        "לידים, לקוחות, שיחות ומשימות — מידע חשוב שנמצא במקום שבו הצוות עובד.",
-        "Leads, customers, conversations, and tasks stay in the place where the team already works.",
+        "לידים, לקוחות, שיחות ומשימות נשארים בסביבת העבודה שבה הצוות כבר עובד.",
+        "Leads, customers, conversations, and tasks stay in the workspace the team already uses.",
       ),
     },
     {
-      title: text("מתקדמים בלי לאבד פניות", "Move forward without losing enquiries"),
+      title: text("תהליכים ברורים", "Clear processes"),
       body: text(
-        "מעקב אחר שלבי הטיפול עוזר להבין מה דורש תשומת לב ומה הצעד הבא.",
-        "Following each stage makes it clearer what needs attention and what should happen next.",
+        "סטטוס, תיעוד ומשימה עם תאריך מראים מה קרה ומה השלב הבא.",
+        "A status, a written record, and a dated task show what happened and what comes next.",
       ),
     },
     {
-      title: text("מחברים בין שיווק למכירות", "Connect marketing with sales"),
+      title: text("פחות עבודה ידנית, איפה שיש אוטומציה", "Less manual work where automation exists"),
       body: text(
-        "פניות שמגיעות מהפעילות השיווקית יכולות להפוך לחלק מתהליך העבודה של העסק.",
-        "Enquiries that start in marketing can become part of the business’s working process.",
+        "בחבילה העסקית אפשר להגדיר תהליך שרץ אחרי אירוע, למשל ליד חדש. אין כאן הבטחה שכל פעולה הופכת אוטומטית.",
+        "On the business plan, a process can run after an event such as a new lead. Not every action is automated.",
+      ),
+    },
+    {
+      title: text("גמישות לפי העסק", "Room to fit the business"),
+      body: text(
+        "מתחילים בכלים שבתוכנית, ומוסיפים חיבורים כמו אתר, קמפיינים או WhatsApp כשהם נדרשים.",
+        "Start with the tools in the plan, and add connections such as a website, campaigns, or WhatsApp when they are needed.",
+      ),
+    },
+    {
+      title: text("סביבת עבודה מקצועית", "A professional workspace"),
+      body: text(
+        "הצוות רואה את אותה רשומה, במקום לפזר את הסיפור בין גיליון, תיבת דואר וכלי נוסף.",
+        "The team sees the same record, instead of splitting the story across a spreadsheet, an inbox, and another tool.",
+      ),
+    },
+    {
+      title: text("אפשר להרחיב עם העסק", "Room to add tools as the business grows"),
+      body: text(
+        "החבילות והתוספות הקיימות מאפשרות להוסיף יכולות בלי להחליף את סביבת העבודה.",
+        "The current plans and add-ons let a business add capabilities without replacing the workspace.",
       ),
     },
   ];
@@ -396,27 +411,21 @@ function Why() {
       <div className="hx-why-wrap">
         <h2 id="hx-why-title">
           {text(
-            "העסק שלך לא צריך עוד מערכת. הוא צריך שהכול יעבוד יחד.",
-            "Your business does not need another system. It needs the work to stay together.",
+            "כל הפעילות העסקית. תמונה אחת ברורה.",
+            "The whole business. One clear picture.",
           )}
         </h2>
         <div className="hx-why-copy">
           <p>
             {text(
-              "מכירים את המצב שבו פנייה נכנסת מפייסבוק, שיחה מתנהלת ב־WhatsApp, הפרטים נשמרים בגיליון ומשימה נרשמת במקום אחר?",
-              "An enquiry arrives from Facebook, the conversation continues on WhatsApp, the details sit in a spreadsheet, and the task is written down somewhere else.",
+              "BizUply מרכזת את הפעילות העסקית במקום אחד, כדי שתוכלו לעקוב אחר פניות חדשות, לנהל קשרי לקוחות, לקבוע פגישות ולהפעיל תהליכים עסקיים בלי לעבור בין מערכות מנותקות.",
+              "BizUply keeps business activity in one place, so you can follow new enquiries, manage customer relationships, schedule appointments, and run business processes without moving between disconnected systems.",
             )}
           </p>
           <p>
             {text(
-              "ככל שהעסק גדל, כך קשה יותר לעקוב אחר כל מה שקורה. Bizuply נועדה לעזור לעסקים לרכז את הפעילות במקום אחד: מהפנייה הראשונה של הלקוח, דרך השיחה והמעקב, ועד המשך הטיפול והפעילות השיווקית.",
-              "As the business grows, it gets harder to follow everything that is happening. Bizuply is meant to keep that work in one place: from the first enquiry, through the conversation and the follow-up, to the next step and the marketing around it.",
-            )}
-          </p>
-          <p>
-            {text(
-              "במקום לנסות לזכור מה קרה עם כל לקוח, אפשר לראות את המידע הרלוונטי ולעבוד בצורה מסודרת יותר.",
-              "Instead of trying to remember what happened with each customer, the team can see the relevant information and work in a more orderly way.",
+              "המידע נשאר מחובר לאורך תהליך העבודה, מהפנייה הראשונה ועד לניהול הקשר עם הלקוח.",
+              "The information stays connected through the work, from the first enquiry to the ongoing relationship with the customer.",
             )}
           </p>
         </div>
@@ -1127,14 +1136,15 @@ function Films() {
 function Connect() {
   const { text } = useCopy();
   const points = [
-    [text("מהפנייה הראשונה", "From the first enquiry"), text("קמפיינים, אתרים וטפסים שמסייעים ליצור נקודת קשר עם לקוחות פוטנציאליים.", "Campaigns, websites, and forms that give potential customers a way to get in touch.")],
-    [text("דרך תהליך המכירה", "Through the sales process"), text("ניהול לידים, מעקב, משימות ותקשורת עם לקוחות.", "Lead management, follow-up, tasks, and customer communication.")],
-    [text("ועד להמשך הקשר", "And into the ongoing relationship"), text("כלים שמסייעים לעסק לשמור על סדר בתקשורת ובתהליכי העבודה.", "Tools that help the business keep communication and daily work in order.")],
+    [text("מרכזים את הפניות", "Bring the enquiries together"), text("טופס באתר, וחיבורי שיווק פעילים כמו Meta, יכולים ליצור ליד עם מקור שמור.", "A form on a BizUply site, and active marketing connections such as Meta, can create a lead that keeps its source.")],
+    [text("מנהלים לקוחות ותהליכים", "Manage customers and processes"), text("לכל ליד יש סטטוס, תיעוד ומשימות, ואפשר להמשיך ממנו לתיק לקוח.", "Each lead has a status, a record of what happened, and tasks, and it can continue into a customer file.")],
+    [text("מפעילים את הכלים שמתאימים לעסק", "Turn on the tools the business needs"), text("CRM, פגישות, אתר, קמפיינים, WhatsApp ואוטומציות זמינים לפי החבילה והחיבורים שבחשבון.", "CRM, appointments, a website, campaigns, WhatsApp, and automations are available according to the plan and the connections on the account.")],
+    [text("עוקבים אחר הפעילות", "Follow the work"), text("רשימת הלידים, המשימות וההתראות מראות מה מחכה לטיפול.", "The lead list, the tasks, and the notifications show what is waiting for attention.")],
   ] as const;
   return (
     <section className="hx-connect" aria-labelledby="hx-connect-title">
       <div className="hx-depth-wrap">
-        <h2 id="hx-connect-title">{text("מערכת אחת. פחות מעברים. יותר שליטה.", "One system. Fewer handoffs. More control.")}</h2>
+        <h2 id="hx-connect-title">{text("מהפנייה הראשונה ועד לניהול העסק השוטף", "From the first enquiry to day-to-day management")}</h2>
         <p className="hx-prose">
           {text(
             "לקוח רואה קמפיין, נכנס לאתר ומשאיר פרטים. הפנייה מגיעה ל־CRM, הצוות יכול לראות אותה ולהתחיל לטפל בה, והתקשורת עם הלקוח יכולה להמשיך בערוצים המחוברים לעסק. במקום לעבוד עם מידע מפוזר, אפשר לנהל את הפעילות מתוך סביבה מרכזית.",
@@ -1248,8 +1258,8 @@ function Close() {
   return (
     <section className="hx-close" ref={ref} aria-labelledby="hx-close-title">
       <div className="hx-close-a">
-        <p className="hx-kicker">Bizuply</p>
-        <h2 id="hx-close-title">{text("העסק שלך יכול לעבוד אחרת.", "Your business can work differently.")}</h2>
+        <p className="hx-kicker">BizUply</p>
+        <h2 id="hx-close-title">{text("פחות מערכות נפרדות. יותר עבודה מחוברת.", "Fewer separate systems. More connected work.")}</h2>
         <p className="hx-prose">
           {text(
             "כשהלידים, הלקוחות, התקשורת והפעילות השיווקית מתחברים — קל יותר לראות מה קורה, להבין מה צריך לעשות ולהתקדם.",
@@ -1277,7 +1287,7 @@ function Close() {
           decoding="async"
         />
         <div className="hx-actions">
-          <Cta to="/register" tone="ink">{text("התחילו בחינם", "Start free")}</Cta>
+          <Cta to="/register" tone="ink">{text("התחילו עם BizUply", "Start with BizUply")}</Cta>
           <Cta to="/pricing">{text("הכירו את המסלולים", "See the plans")}</Cta>
           <Cta to="/contact">{text("דברו איתנו", "Talk with us")}</Cta>
         </div>

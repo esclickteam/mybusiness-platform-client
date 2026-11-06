@@ -18,8 +18,8 @@ const COPY = {
     title: "WhatsApp API לעסקים | ביזאפלי (Bizuply)",
     description:
       "WhatsApp Business API — 29 דולר לחודש לכל מספר מחובר. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
-    h1: "WhatsApp API לעסקים",
-    lead: "ביזאפלי מחברת את WhatsApp Cloud API של Meta לעסק: תבניות שמאושרות אצל Meta, מעקב מסירה, ו־webhooks חתומים. המערכת שלכם מתחברת עם מפתח API של ביזאפלי, בלי לגעת בטוקן של Meta.",
+    h1: "WhatsApp Business API לניהול תקשורת עסקית",
+    lead: "הפכו את WhatsApp לערוץ תקשורת עסקי שמתחבר לתהליכי העבודה שלכם. BizUply מחברת את WhatsApp Cloud API של Meta: תבניות שמאושרות אצל Meta, מעקב מסירה ו־webhooks חתומים. השירות כפוף למדיניות Meta, ייתכן שנדרש אימות עסקי, ושליחת הודעות יזומות דורשת תבנית מאושרת. המנוי הוא 29 דולר לחודש למספר מחובר, וחיובי ההודעות של Meta נפרדים.",
     price: "29 דולר לחודש למספר וואטסאפ מחובר אחד.",
     metaFees: "חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
     audiencesTitle: "למי זה מתאים",
@@ -67,8 +67,8 @@ const COPY = {
     title: "WhatsApp API for businesses | Bizuply",
     description:
       "WhatsApp Business API — $29/month per connected number. Meta messaging charges apply separately, based on usage and message category.",
-    h1: "WhatsApp API for businesses",
-    lead: "Bizuply connects Meta's WhatsApp Cloud API to a business: templates Meta has approved, delivery status, and signed webhooks. Your system uses a Bizuply API key and does not handle Meta's access token.",
+    h1: "WhatsApp Business API for business communication",
+    lead: "Use WhatsApp as a business channel that connects to the work you already do. BizUply connects Meta's WhatsApp Cloud API: templates Meta has approved, delivery status, and signed webhooks. The service follows Meta's policies, business verification may be required, and an outbound message needs an approved template. The subscription is $29 per month per connected number, and Meta messaging fees are separate.",
     price: "$29 per month for one connected WhatsApp number.",
     metaFees: "Meta messaging charges apply separately, based on usage and message category.",
     audiencesTitle: "Who it is for",

@@ -42,7 +42,7 @@ const en = {
   crumb: "CRM",
   hero: {
     eyebrow: "Bizuply CRM",
-    h1: "Manage every lead and customer relationship in one place",
+    h1: "A CRM for leads, customers, and the sales process",
     description:
       "Organize leads, manage customer information, track follow-ups, and keep your sales opportunities moving with Bizuply CRM. Connect inquiries from your marketing channels and website to one practical customer management workspace.",
     primary: "Get Started with CRM",
@@ -256,7 +256,7 @@ const he = pack(
   "ארגנו לידים, נהלו לקוחות, עקבו אחרי משימות המשך, וחברו פניות נתמכות מ־Meta, מ־Google Ads ומהאתר עם ביזאפלי (Bizuply) CRM. המסלולים מתחילים ב־49 דולר לחודש.",
   {
     eyebrow: "ביזאפלי CRM",
-    h1: "נהלו כל ליד וכל קשר עם הלקוח במקום אחד",
+    h1: "מערכת CRM לניהול לידים, לקוחות ותהליכי מכירה",
     description: "ארגנו לידים, נהלו את פרטי הלקוחות, עקבו אחרי המשך הטיפול, ושמרו על ההזדמנויות בתנועה עם ביזאפלי (Bizuply) CRM. חברו פניות מערוצי השיווק ומהאתר לסביבת עבודה אחת לניהול לקוחות.",
     primary: "מתחילים עם CRM",
     secondary: "כך זה עובד",

@@ -618,7 +618,7 @@
     "ctaTitle": "Build your business OS.",
     "ctaText": "Start managing your business page, CRM, collaborations and AI tools in one place.",
     "ctaButton": "Register now",
-    "rights": "© {{year}} Bizuply. All rights reserved.",
+    "rights": "© {{year}} Bizuply LLC. All rights reserved.",
     "platform": "Platform",
     "services": "Services",
     "crm": "CRM",
@@ -627,7 +627,11 @@
     "appointments": "Appointments",
     "automations": "Automations",
     "agents": "Business Agents",
-    "logoAria": "Bizuply — home"
+    "whatsapp": "WhatsApp",
+    "meta": "Meta campaigns",
+    "guides": "Guides",
+    "partners": "Partner program",
+    "logoAria": "BizUply — home"
   },
   "businessNav": {
     "dashboard": "Dashboard",
@@ -2864,7 +2868,7 @@
     "useCodeInstead": "Use email code instead"
   },
   "pricing": {
-    "seoTitle": "Service Packages | Bizuply",
+    "seoTitle": "Plans and prices for the business | BizUply",
     "seoDescription": "Bizuply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
     "badge": "Service packages",
     "heroTitleTop": "Services that move",
@@ -2885,7 +2889,7 @@
     "upsellsBadge": "Upsells",
     "upsellsTitle": "Upsells & extra services",
     "upsellsToggle": "Upgrades or additional services",
-    "addonsTitle": "Choose your service packages",
+    "addonsTitle": "Plans and prices that fit the business",
     "addonsSubtitle": "Setup & implementation, and agents & human service — select what fits, open full details, and get a tailored quote.",
     "addonsSearch": "Search a service...",
     "addonsCount": "{{count}} services",
@@ -3361,8 +3365,8 @@
     "crumbAria": "Breadcrumb",
     "crumbAbout": "About",
     "linkHome": "Home",
-    "heroTitle": "Built for businesses that want their work connected",
-    "heroLead": "Bizuply develops software for customers, communication, marketing, websites and day-to-day operations, together with professional services that help a business put that software to work.",
+    "heroTitle": "Meet BizUply",
+    "heroLead": "BizUply is the business software platform of Bizuply LLC. It brings customer management, business communication, digital activity and related tools into one workspace, so a business can run its work in a more orderly and connected way.",
     "heroNote": "Bizuply LLC is a United States company. The public work is a connected platform, ready-made systems, and selected setup services.",
     "ctaExplore": "Explore Bizuply",
     "ctaStory": "Read the company story",
@@ -13515,9 +13519,9 @@
       "badgeReview": "App Review approved",
       "badgeRealtime": "Real-time leads",
       "badgeCalendar": "Synced appointment calendar",
-      "titleLine1": "Every lead, every client, every appointment",
-      "titleLine2": "in one place",
-      "lead": "Inquiries from Facebook, Instagram, Google Ads and your own website flow automatically into a single pipeline with status, notes and tasks. From there you continue to the client file, the appointment calendar and the service catalog — all in the same system.",
+      "titleLine1": "A CRM for leads, customers,",
+      "titleLine2": "and the sales process",
+      "lead": "Manage enquiries and customers in one place. BizUply lets you follow leads, record conversations and actions, manage statuses and tasks, and keep an orderly thread through the relationship. Enquiries from Facebook, Instagram, Google Ads and your website enter the pipeline when that connection is active.",
       "trust": "A business connects its own Facebook page, and new Lead Ads enter this CRM with their source and status.",
       "ctaAutomations": "Automations",
       "ctaStartFree": "See plans"

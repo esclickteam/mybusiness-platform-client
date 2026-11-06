@@ -191,7 +191,7 @@ test.describe("homepage first paint stays purple only", () => {
       await page.goto(server.origin + "/he", { waitUntil: "domcontentloaded" });
       await assertPurpleOnly(page);
       await expect(page.locator(".hx-display")).toContainText("צריך");
-      await expect(page.locator(".hx-display")).toContainText("חזקה");
+      await expect(page.locator(".hx-display")).toContainText("אחת");
 
       await page.reload({ waitUntil: "domcontentloaded" });
       const frames = await sampleDuringLoad(page);

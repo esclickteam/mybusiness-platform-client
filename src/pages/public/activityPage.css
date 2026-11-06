@@ -1,41 +1,43 @@
 .act {
   max-width: 1120px;
   margin: 0 auto;
-  padding: 3.5rem 1.25rem 5rem;
-  color: #0f172a;
+  padding: 0 1.25rem 5rem;
+  color: #17152b;
+  background: #f7f6fc;
+}
+
+.act-hero {
+  margin-inline: -1.25rem;
+  padding: clamp(2.5rem, 6vw, 4.5rem) 1.25rem 2.5rem;
+  background:
+    radial-gradient(ellipse 70% 80% at 100% 0%, rgba(61, 99, 255, 0.38), transparent 58%),
+    linear-gradient(165deg, #321064 0%, #5b21b6 55%, #3a1d86 100%);
+  color: #fff;
 }
 
 .act-hero h1 {
-  max-width: 16ch;
+  max-width: 18ch;
   margin: 0.35rem 0 0.8rem;
-  font-size: clamp(2.3rem, 6vw, 4.6rem);
-  line-height: 0.95;
-  letter-spacing: -0.045em;
+  font-size: clamp(2.3rem, 6vw, 4.4rem);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: #fff;
 }
-
-.act--industry .act-hero {
-  margin-inline: -1.25rem;
-  padding: 2rem 1.25rem 2.2rem;
-  background: #0f172a;
-  color: #f8fafc;
-  border-radius: 0 0 2rem 2rem;
-}
-
-.act--industry .act-kicker { color: #c4b5fd; }
 
 .act-kicker {
   margin: 0;
-  color: #6d28d9;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  color: #ede5ff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .act-lede {
   max-width: 42rem;
   font-size: 1.12rem;
   line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .act-actions, .act-links {
@@ -44,9 +46,49 @@
   gap: 0.8rem;
 }
 
-.act-actions a, .act-links a {
+.act-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0.7rem 1.15rem;
+  border-radius: 2px;
+  font-weight: 800;
+  line-height: 1.2;
+  text-decoration: none;
+  text-align: center;
+}
+
+.act-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+
+.act-btn--primary {
+  background: #fff;
+  color: #321064;
+}
+
+.act-btn--ghost {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.act-links {
+  margin-top: 1.5rem;
+}
+
+.act-links a {
   font-weight: 800;
   color: #5b21b6;
+}
+
+.act-body,
+.act-steps,
+.act-faq,
+.act-links {
+  padding-top: 0.5rem;
 }
 
 .act--split {
