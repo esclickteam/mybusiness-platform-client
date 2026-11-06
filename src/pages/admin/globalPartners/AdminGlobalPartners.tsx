@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { gpGet, gpPatch, gpPost } from "./globalPartnersApi";
 import { statusLabel, TRACK_LABELS } from "./copy";
+import { useGlobalPartnersRealtime } from "./useGlobalPartnersRealtime";
 import "./globalPartners.css";
 
 type Tab = "dashboard" | "candidates" | "add" | "import" | "scans";
@@ -40,10 +41,28 @@ export default function AdminGlobalPartners() {
   );
   const [scanConfigs, setScanConfigs] = useState<any[]>([]);
   const [runs, setRuns] = useState<any[]>([]);
+  const [sources, setSources] = useState<any[]>([]);
+  const [worker, setWorker] = useState<any>(null);
+  const [liveEvents, setLiveEvents] = useState<string[]>([]);
+  const [scanForm, setScanForm] = useState({
+    name: "סריקת Wikidata",
+    source: "wikidata",
+    countries: "IL",
+    cities: "",
+    verticals: "software,marketing,consulting",
+    intervalMinutes: "1440",
+    maxResultsPerRun: "15",
+    dailyRequestBudget: "20",
+    enabled: true,
+  });
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [selected, setSelected] = useState<any>(null);
   const [message, setMessage] = useState("");
+
+  const pushLive = useCallback((text: string) => {
+    setLiveEvents((prev) => [`${new Date().toLocaleTimeString("he-IL")} · ${text}`, ...prev].slice(0, 12));
+  }, []);
 
   const denied = useMemo(() => {
     if (!error) return false;
@@ -53,11 +72,14 @@ export default function AdminGlobalPartners() {
   const loadAccess = useCallback(async () => {
     const data = await gpGet("/access");
     setAccess(data);
+    if (data.sources) setSources(data.sources);
+    if (data.worker) setWorker(data.worker);
   }, []);
 
   const loadDashboard = useCallback(async () => {
     const data = await gpGet("/dashboard");
     setDashboard(data.dashboard);
+    if (data.dashboard?.worker) setWorker(data.dashboard.worker);
   }, []);
 
   const loadCandidates = useCallback(async () => {
@@ -71,13 +93,43 @@ export default function AdminGlobalPartners() {
   }, [q, statusFilter]);
 
   const loadScans = useCallback(async () => {
-    const [configs, runData] = await Promise.all([
+    const [configs, runData, workerData] = await Promise.all([
       gpGet("/scan-configs"),
       gpGet("/scans/runs", { limit: 20 }),
+      gpGet("/worker-status"),
     ]);
     setScanConfigs(configs.items || []);
     setRuns(runData.items || []);
+    setSources(configs.sources || []);
+    setWorker(workerData.worker || configs.worker || null);
   }, []);
+
+  const reloadRef = useRef({ loadScans, loadDashboard, loadCandidates });
+  reloadRef.current = { loadScans, loadDashboard, loadCandidates };
+
+  useGlobalPartnersRealtime({
+    onQueued: (d) => {
+      pushLive(`סריקה בתור (${d?.configId || "?"})`);
+      void reloadRef.current.loadScans();
+    },
+    onStarted: (d) => {
+      pushLive(`סריקה התחילה · ${d?.name || d?.source || ""}`);
+      void reloadRef.current.loadScans();
+    },
+    onProgress: (d) => {
+      pushLive(
+        `התקדמות · נמצאו ${d?.foundCount ?? 0} · נוצרו ${d?.createdCount ?? 0} · עודכנו ${d?.updatedCount ?? 0}`
+      );
+    },
+    onFinished: (d) => {
+      pushLive(`סריקה הסתיימה · ${d?.status || ""} · עלות ¢${d?.estimatedCostCents ?? 0}`);
+      void reloadRef.current.loadScans();
+      void reloadRef.current.loadDashboard();
+      void reloadRef.current.loadCandidates();
+    },
+    onError: (d) => pushLive(`שגיאת מקור · ${d?.message || ""}`),
+    onWorkerStatus: (d) => setWorker(d),
+  });
 
   const refresh = useCallback(async () => {
     setError("");
@@ -376,10 +428,13 @@ export default function AdminGlobalPartners() {
               value={selected.scores?.business_partner?.score ?? "—"}
             />
             <Kpi
+              label="Reseller"
+              value={selected.scores?.reseller?.score ?? "—"}
+            />
+            <Kpi
               label="בלעדיות"
               value={selected.scores?.exclusive_territory?.score ?? "—"}
             />
-            <Kpi label="אתר" value={selected.website || "—"} />
           </div>
           <div className="gp-actions">
             <select
@@ -410,7 +465,7 @@ export default function AdminGlobalPartners() {
                 </tr>
               </thead>
               <tbody>
-                {["affiliate", "business_partner", "exclusive_territory"].flatMap((track) =>
+                {["affiliate", "business_partner", "reseller", "exclusive_territory"].flatMap((track) =>
                   (selected.scores?.[track]?.appliedRules || []).map((rule: any, idx: number) => (
                     <tr key={`${track}-${idx}`}>
                       <td>{TRACK_LABELS[track] || track}</td>
@@ -525,41 +580,294 @@ export default function AdminGlobalPartners() {
 
       {tab === "scans" ? (
         <>
+          <div className="gp-grid">
+            <Kpi
+              label="סריקות פעילות"
+              value={scanConfigs.filter((c) => c.enabled).length}
+            />
+            <Kpi
+              label="מדינות במעקב"
+              value={
+                new Set(scanConfigs.flatMap((c) => c.countries || [])).size
+              }
+            />
+            <Kpi
+              label="Worker"
+              value={
+                worker?.workerProcess
+                  ? "פעיל"
+                  : worker?.redisConfigured
+                    ? "תור זמין"
+                    : "לא מחובר"
+              }
+            />
+            <Kpi
+              label="מקור חינמי"
+              value={
+                sources.find((s) => s.id === "wikidata")?.enabled
+                  ? "Wikidata"
+                  : "—"
+              }
+            />
+          </div>
+
           <div className="gp-panel">
-            <h2>הגדרות סריקה</h2>
-            <p className="gp-muted">
-              סריקות אוטומטיות חיצוניות (Places) יישארו כבויות עד אישור מפורש להפעלת
-              שירות בתשלום. ניתן להגדיר יעדים כבר עכשיו.
-            </p>
-            {scanConfigs.length === 0 ? (
-              <p className="gp-muted">אין קונפיגורציות עדיין.</p>
-            ) : (
-              <div className="gp-table-wrap">
-                <table className="gp-table">
-                  <thead>
-                    <tr>
-                      <th>שם</th>
-                      <th>מקור</th>
-                      <th>פעיל</th>
-                      <th>מדינות</th>
-                      <th>תדירות (דק׳)</th>
+            <h2>מקורות מידע</h2>
+            <div className="gp-table-wrap">
+              <table className="gp-table">
+                <thead>
+                  <tr>
+                    <th>מקור</th>
+                    <th>מצב</th>
+                    <th>תשלום</th>
+                    <th>הערות</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(sources.length ? sources : [
+                    { id: "wikidata", enabled: true, paid: false, licensing: "CC0" },
+                    { id: "google_places", enabled: false, paid: true, note: "כבוי עד אישור" },
+                  ]).map((s) => (
+                    <tr key={s.id}>
+                      <td>{s.label || s.id}</td>
+                      <td>{s.enabled ? "מחובר" : "כבוי"}</td>
+                      <td>{s.paid ? "בתשלום" : "חינם"}</td>
+                      <td className="gp-muted">{s.note || s.licensing || "—"}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {scanConfigs.map((c) => (
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="gp-panel">
+            <h2>יצירת סריקה</h2>
+            <form
+              className="gp-form"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                setBusy(true);
+                setError("");
+                try {
+                  await gpPost("/scan-configs", {
+                    name: scanForm.name,
+                    source: scanForm.source,
+                    enabled: scanForm.enabled,
+                    countries: scanForm.countries.split(",").map((s) => s.trim()).filter(Boolean),
+                    cities: scanForm.cities.split(",").map((s) => s.trim()).filter(Boolean),
+                    verticals: scanForm.verticals.split(",").map((s) => s.trim()).filter(Boolean),
+                    intervalMinutes: Number(scanForm.intervalMinutes) || 1440,
+                    maxResultsPerRun: Number(scanForm.maxResultsPerRun) || 15,
+                    dailyRequestBudget: Number(scanForm.dailyRequestBudget) || 20,
+                  });
+                  setMessage("הגדרת סריקה נשמרה.");
+                  await loadScans();
+                } catch (err: any) {
+                  setError(err?.message || "שמירת סריקה נכשלה");
+                } finally {
+                  setBusy(false);
+                }
+              }}
+            >
+              <label>
+                שם
+                <input
+                  value={scanForm.name}
+                  onChange={(e) => setScanForm({ ...scanForm, name: e.target.value })}
+                />
+              </label>
+              <label>
+                מקור
+                <select
+                  value={scanForm.source}
+                  onChange={(e) => setScanForm({ ...scanForm, source: e.target.value })}
+                >
+                  <option value="wikidata">Wikidata (חינם)</option>
+                  <option value="google_places">Google Places (כבוי)</option>
+                </select>
+              </label>
+              <label>
+                מדינות (ISO, מופרד בפסיק)
+                <input
+                  value={scanForm.countries}
+                  onChange={(e) => setScanForm({ ...scanForm, countries: e.target.value })}
+                />
+              </label>
+              <label>
+                ערים (אופציונלי)
+                <input
+                  value={scanForm.cities}
+                  onChange={(e) => setScanForm({ ...scanForm, cities: e.target.value })}
+                />
+              </label>
+              <label>
+                תחומים
+                <input
+                  value={scanForm.verticals}
+                  onChange={(e) => setScanForm({ ...scanForm, verticals: e.target.value })}
+                />
+              </label>
+              <label>
+                תדירות (דקות)
+                <input
+                  value={scanForm.intervalMinutes}
+                  onChange={(e) => setScanForm({ ...scanForm, intervalMinutes: e.target.value })}
+                />
+              </label>
+              <label>
+                מקסימום תוצאות לריצה
+                <input
+                  value={scanForm.maxResultsPerRun}
+                  onChange={(e) => setScanForm({ ...scanForm, maxResultsPerRun: e.target.value })}
+                />
+              </label>
+              <label>
+                מכסת בקשות ליום
+                <input
+                  value={scanForm.dailyRequestBudget}
+                  onChange={(e) => setScanForm({ ...scanForm, dailyRequestBudget: e.target.value })}
+                />
+              </label>
+              <div className="gp-actions" style={{ gridColumn: "1 / -1" }}>
+                <button type="submit" className="gp-btn" disabled={busy}>
+                  שמור סריקה
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="gp-panel">
+            <h2>סריקות במעקב</h2>
+            <div className="gp-table-wrap">
+              <table className="gp-table">
+                <thead>
+                  <tr>
+                    <th>שם</th>
+                    <th>מקור</th>
+                    <th>פעיל</th>
+                    <th>מדינות / תחומים</th>
+                    <th>אחרון / הבא</th>
+                    <th>סיכום אחרון</th>
+                    <th>פעולות</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {scanConfigs.length === 0 ? (
+                    <tr>
+                      <td colSpan={7}>אין סריקות עדיין.</td>
+                    </tr>
+                  ) : (
+                    scanConfigs.map((c) => (
                       <tr key={c._id}>
-                        <td>{c.name}</td>
+                        <td>
+                          {c.name}
+                          {c.lockedAt ? (
+                            <div className="gp-muted">בביצוע…</div>
+                          ) : null}
+                        </td>
                         <td>{c.source}</td>
                         <td>{c.enabled ? "כן" : "לא"}</td>
-                        <td>{(c.countries || []).join(", ") || "—"}</td>
-                        <td>{c.intervalMinutes}</td>
+                        <td>
+                          {(c.countries || []).join(", ") || "—"}
+                          <div className="gp-muted">
+                            {(c.verticals || []).join(", ") || "—"}
+                          </div>
+                        </td>
+                        <td>
+                          {c.lastRunAt
+                            ? new Date(c.lastRunAt).toLocaleString("he-IL")
+                            : "—"}
+                          <div className="gp-muted">
+                            {c.nextRunAt
+                              ? new Date(c.nextRunAt).toLocaleString("he-IL")
+                              : "—"}
+                          </div>
+                        </td>
+                        <td>
+                          נוצרו {c.lastRunSummary?.createdCount ?? 0} · עודכנו{" "}
+                          {c.lastRunSummary?.updatedCount ?? 0}
+                          <div className="gp-muted">
+                            כפילויות {c.lastRunSummary?.duplicateCount ?? 0} · שגיאות{" "}
+                            {c.lastRunSummary?.errorCount ?? 0} · ¢
+                            {c.lastRunSummary?.estimatedCostCents ?? 0}
+                          </div>
+                        </td>
+                        <td>
+                          <div className="gp-actions">
+                            <button
+                              type="button"
+                              className="gp-btn gp-btn--ghost"
+                              onClick={() =>
+                                void gpPost(`/scan-configs/${c._id}/run`).then(() => {
+                                  pushLive("הופעלה סריקה ידנית");
+                                  return loadScans();
+                                })
+                              }
+                            >
+                              הרץ
+                            </button>
+                            <button
+                              type="button"
+                              className="gp-btn gp-btn--ghost"
+                              onClick={() =>
+                                void gpPost(
+                                  c.enabled
+                                    ? `/scan-configs/${c._id}/stop`
+                                    : `/scan-configs/${c._id}/start`
+                                ).then(loadScans)
+                              }
+                            >
+                              {c.enabled ? "עצור" : "הפעל"}
+                            </button>
+                            <button
+                              type="button"
+                              className="gp-btn gp-btn--ghost"
+                              onClick={() =>
+                                void gpPost(`/scan-configs/${c._id}/retry`).then(loadScans)
+                              }
+                            >
+                              נסה שוב
+                            </button>
+                            <button
+                              type="button"
+                              className="gp-btn gp-btn--ghost"
+                              onClick={() =>
+                                void gpPatch(`/scan-configs/${c._id}`, {
+                                  intervalMinutes: Math.max(
+                                    60,
+                                    Number(c.intervalMinutes || 1440) === 1440 ? 360 : 1440
+                                  ),
+                                }).then(loadScans)
+                              }
+                            >
+                              תדירות
+                            </button>
+                          </div>
+                        </td>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="gp-panel">
+            <h2>אירועים בזמן אמת</h2>
+            {liveEvents.length === 0 ? (
+              <p className="gp-muted">
+                ממתין לאירועי Socket מה־Worker. סריקה לא תוצג כפעילה אם ה־Worker אינו
+                מחובר.
+              </p>
+            ) : (
+              <ul className="gp-muted">
+                {liveEvents.map((ev) => (
+                  <li key={ev}>{ev}</li>
+                ))}
+              </ul>
             )}
           </div>
+
           <div className="gp-panel">
             <h2>היסטוריית ריצות</h2>
             <div className="gp-table-wrap">
@@ -569,7 +877,9 @@ export default function AdminGlobalPartners() {
                     <th>תאריך</th>
                     <th>מקור</th>
                     <th>סטטוס</th>
+                    <th>נמצאו</th>
                     <th>נוצרו</th>
+                    <th>עודכנו</th>
                     <th>כפילויות</th>
                     <th>שגיאות</th>
                     <th>עלות ¢</th>
@@ -578,7 +888,7 @@ export default function AdminGlobalPartners() {
                 <tbody>
                   {runs.length === 0 ? (
                     <tr>
-                      <td colSpan={7}>אין ריצות עדיין.</td>
+                      <td colSpan={9}>אין ריצות עדיין.</td>
                     </tr>
                   ) : (
                     runs.map((r) => (
@@ -586,7 +896,9 @@ export default function AdminGlobalPartners() {
                         <td>{new Date(r.createdAt).toLocaleString("he-IL")}</td>
                         <td>{r.source}</td>
                         <td>{r.status}</td>
+                        <td>{r.foundCount}</td>
                         <td>{r.createdCount}</td>
+                        <td>{r.updatedCount}</td>
                         <td>{r.duplicateCount}</td>
                         <td>{r.errorCount}</td>
                         <td>{r.estimatedCostCents || 0}</td>
