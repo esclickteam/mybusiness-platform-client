@@ -207,8 +207,22 @@
           fbq("init", "1427327632368128");
           fbq("track", "PageView");
         }
-        if (window.requestIdleCallback) requestIdleCallback(startPixel, { timeout: 2500 });
-        else window.addEventListener("load", startPixel, { once: true });
+        function marketingAllowed() {
+          try {
+            var match = document.cookie.match(/(?:^|; )bizuply_tracking=([^;]*)/);
+            return match && decodeURIComponent(match[1]) === "all";
+          } catch (e) {
+            return false;
+          }
+        }
+        function armPixel() {
+          if (window.requestIdleCallback) requestIdleCallback(startPixel, { timeout: 2500 });
+          else window.addEventListener("load", startPixel, { once: true });
+        }
+        if (marketingAllowed()) armPixel();
+        window.addEventListener("bizuply-tracking-consent", function (event) {
+          if (event && event.detail === "all") armPixel();
+        });
       })();
     </script>
 

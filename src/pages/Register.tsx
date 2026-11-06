@@ -7,6 +7,8 @@ import { useTranslation } from "react-i18next";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { persistBillingCountry } from "../billing/billingMarkets";
 import { useBillingMarket } from "../billing/useBillingMarket";
+import SubscriptionTermsNotice from "../components/billing/SubscriptionTermsNotice";
+import { marketingAllowed, NOTICE_VERSION } from "../lib/trackingConsent";
 import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
 import SocialAuthButtons from "../components/auth/SocialAuthButtons";
@@ -73,6 +75,8 @@ export default function Register() {
   const [emailMasked, setEmailMasked] = useState("");
   const [otp, setOtp] = useState("");
   const [otpCooldown, setOtpCooldown] = useState(0);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
 
   const oauthQueryError = oauthErrorMessage(
     searchParams.get("oauth_error"),
@@ -122,8 +126,28 @@ export default function Register() {
 
   const language = getManualLanguageChoice() || i18n.language;
 
+  const consentPayload = {
+    termsAccepted,
+    marketingOptIn,
+    noticeVersion: NOTICE_VERSION,
+    locale: language,
+    plan: selectedPlan,
+  };
+
+  const requireTerms = () => {
+    if (termsAccepted) return true;
+    setError(t("register.termsRequired"));
+    return false;
+  };
+
   const handleSocialStart = (provider: SocialProvider) => {
     setError("");
+    if (!requireTerms()) return;
+    void fetch("/api/privacy/consent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "register", email: email.trim().toLowerCase(), ...consentPayload }),
+    }).catch(() => undefined);
     setSocialBusy(provider);
     startBizuplySocialAuth(provider, {
       intent: "signup",
@@ -147,6 +171,12 @@ export default function Register() {
       setError(t("register.genericError"));
       return;
     }
+    if (!requireTerms()) return;
+    void fetch("/api/privacy/consent", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ source: "register", email: clean, ...consentPayload }),
+    }).catch(() => undefined);
     setSocialBusy("email");
     setLoading(true);
     try {
@@ -159,6 +189,7 @@ export default function Register() {
         language,
         billingCountry: persistBillingCountry(billingMarket.billingCountry),
         clientOrigin: typeof window !== "undefined" ? window.location.origin : undefined,
+        ...consentPayload,
       });
       setEmailMasked(String(data?.emailMasked || clean));
       setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);
@@ -212,7 +243,7 @@ export default function Register() {
         setError(t("register.checkoutFailed"));
         return;
       }
-      if (window.fbq) window.fbq("track", "InitiateCheckout");
+      if (marketingAllowed() && window.fbq) window.fbq("track", "InitiateCheckout");
       window.location.href = data.url;
     } catch (err) {
       const apiErr = err as { response?: { data?: { code?: string } } };
@@ -256,6 +287,7 @@ export default function Register() {
               <p className="mt-1 text-xs font-semibold text-emerald-800/70">
                 {t("register.identity.checkoutNote")}
               </p>
+              <SubscriptionTermsNotice plan={selectedPlan} billingCountry={billingMarket.billingCountry} />
             </div>
           ) : null}
 
@@ -267,6 +299,27 @@ export default function Register() {
               {t("register.checkoutCancelled")}
             </p>
           ) : null}
+
+          <div className="space-y-3 text-start">
+            <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={termsAccepted}
+                onChange={(event) => setTermsAccepted(event.target.checked)}
+              />
+              <span>{t("register.termsConsent")}</span>
+            </label>
+            <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={marketingOptIn}
+                onChange={(event) => setMarketingOptIn(event.target.checked)}
+              />
+              <span>{t("register.marketingConsent")}</span>
+            </label>
+          </div>
 
           {step === "identity" ? (
             <>
@@ -287,12 +340,13 @@ export default function Register() {
                 className="space-y-3"
               >
                 <div className="text-start">
-                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                  <label htmlFor="register-email" className="mb-2 block text-sm font-bold text-slate-700">
                     {t("register.identity.continueEmail")}
                   </label>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
+                      id="register-email"
                       type="email"
                       name="email"
                       autoComplete="email"
@@ -330,10 +384,11 @@ export default function Register() {
                 {t("register.identity.otpHint", { email: emailMasked || email })}
               </p>
               <div className="text-start">
-                <label className="mb-2 block text-sm font-bold text-slate-700">
+                <label htmlFor="register-otp" className="mb-2 block text-sm font-bold text-slate-700">
                   {t("login.oauth.otpLabel")}
                 </label>
                 <input
+                  id="register-otp"
                   type="text"
                   inputMode="numeric"
                   autoComplete="one-time-code"

@@ -1103,7 +1103,7 @@ function Films() {
           className="hx-film-lead text-inherit"
           onClick={() => open(filmOf(films[0][0], films[0][1], films[0][2], films[0][3], films[0][5], language, text))}
         >
-          <LocaleShot language={language} src={films[0][2]} alt="" width={1600} height={1000} loading="lazy" decoding="async" />
+          <LocaleShot language={language} src={films[0][2]} alt={films[0][5]} width={1600} height={1000} loading="lazy" decoding="async" />
           <span>{text(`הפעלה: ${films[0][4]}`, `Play: ${films[0][4]}`)}</span>
         </button>
         <div className="hx-film-side">
@@ -1114,7 +1114,7 @@ function Films() {
               key={film[0]}
               onClick={() => open(filmOf(film[0], film[1], film[2], film[3], film[5], language, text))}
             >
-              <LocaleShot language={language} src={film[2]} alt="" width={800} height={500} loading="lazy" decoding="async" />
+              <LocaleShot language={language} src={film[2]} alt={film[5]} width={800} height={500} loading="lazy" decoding="async" />
               <span>{text(`הפעלה: ${film[4]}`, `Play: ${film[4]}`)}</span>
             </button>
           ))}

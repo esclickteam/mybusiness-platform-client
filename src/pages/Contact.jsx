@@ -25,7 +25,7 @@ function Contact() {
     message: prefillMessage,
   });
 
-  const [status, setStatus] = useState(null);
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [loading, setLoading] = useState(false);
   const [phoneCountry, setPhoneCountry] = useState(detectPhoneCountrySync);
 
@@ -87,6 +87,9 @@ function Contact() {
           phone,
           email,
           issueDescription: message,
+          marketingOptIn,
+          noticeVersion: "2026-11-06",
+          locale: i18n.language,
         }),
       });
 
@@ -200,10 +203,11 @@ function Contact() {
 
             <form className="space-y-5" onSubmit={onSubmit}>
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label htmlFor="contact-name" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.nameLabel")}
                 </label>
                 <input
+                  id="contact-name"
                   type="text"
                   name="name"
                   value={formData.name}
@@ -216,7 +220,7 @@ function Contact() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label id="contact-phone-label" htmlFor="contact-phone" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.phoneLabel")}
                 </label>
 
@@ -232,10 +236,12 @@ function Contact() {
                       setFormData((prev) => ({ ...prev, phone }))
                     }
                     inputProps={{
+                      id: "contact-phone",
                       name: "phone",
                       required: true,
                       disabled: loading,
                       autoComplete: "tel",
+                      "aria-labelledby": "contact-phone-label",
                     }}
                     containerClass="!w-full"
                     inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-800 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"
@@ -247,10 +253,11 @@ function Contact() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label htmlFor="contact-email" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.emailLabel")}
                 </label>
                 <input
+                  id="contact-email"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -263,10 +270,11 @@ function Contact() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label htmlFor="contact-message" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.messageLabel")}
                 </label>
                 <textarea
+                  id="contact-message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
@@ -277,6 +285,19 @@ function Contact() {
                   className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100/80 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
+
+              <p className="text-sm font-medium leading-6 text-slate-600">
+                {t("contact.privacyNotice")}
+              </p>
+              <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={marketingOptIn}
+                  onChange={(event) => setMarketingOptIn(event.target.checked)}
+                />
+                <span>{t("contact.marketingConsent")}</span>
+              </label>
 
               <button
                 type="submit"

@@ -13,6 +13,7 @@ import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
 const PreLoginBot = lazy(() => import("./components/PreLoginBot"));
 const SupportChatWidget = lazy(() => import("./components/SupportChatWidget"));
 const AccessibilityWidget = lazy(() => import("./components/site-plugins/accessibility/AccessibilityWidget"));
+const PlatformConsentBanner = lazy(() => import("./components/tracking/PlatformConsentBanner"));
 const AdminSoftphoneHost = lazy(() => import("./components/AdminSoftphoneHost"));
 const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
 const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
@@ -1759,6 +1760,10 @@ export default function App() {
         !isBizuplyPublicBookingRoute && (
           <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
         )}
+
+      {!isSaasPublicSite && !isMiniSiteHost && !location.pathname.startsWith("/embed/") && (
+        <Suspense fallback={null}><PlatformConsentBanner /></Suspense>
+      )}
 
       {showPublicWidgets && (
         <div

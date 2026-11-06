@@ -72,6 +72,7 @@ describe("BizUply identity-first register", () => {
     expect(screen.queryByLabelText("register.name")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("register.password")).not.toBeInTheDocument();
     expect(screen.getByText("register.identity.continueEmail")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox", { name: "register.termsConsent" }));
     fireEvent.click(google);
     expect(assign).toHaveBeenCalledWith(
       expect.stringMatching(
@@ -92,11 +93,12 @@ describe("BizUply identity-first register", () => {
     fireEvent.change(screen.getByPlaceholderText("name@company.com"), {
       target: { value: "new@bizuply.test" },
     });
+    fireEvent.click(screen.getByRole("checkbox", { name: "register.termsConsent" }));
     fireEvent.click(screen.getByRole("button", { name: "register.identity.sendCode" }));
     await waitFor(() =>
       expect(apiPost).toHaveBeenCalledWith(
         "/auth/signup/email/start",
-        expect.objectContaining({ email: "new@bizuply.test", plan: "yearly" })
+        expect.objectContaining({ email: "new@bizuply.test", plan: "yearly", termsAccepted: true, marketingOptIn: false })
       )
     );
     expect(await screen.findByText(/register.identity.otpHint/)).toBeInTheDocument();

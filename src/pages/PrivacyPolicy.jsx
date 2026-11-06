@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { clearTrackingChoice } from "../lib/trackingConsent";
 
 function PrivacyPolicy() {
   const { t, i18n } = useTranslation();
@@ -57,6 +58,19 @@ function PrivacyPolicy() {
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("privacyPage.lastUpdatedLabel")} {t("privacyPage.lastUpdatedDate")}
         </div>
+        <p className="mx-auto mt-4 max-w-3xl text-sm font-semibold leading-6 text-slate-700">
+          {t("privacyPage.counselNote")}
+        </p>
+        <button
+          type="button"
+          className="mt-4 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-900"
+          onClick={() => {
+            clearTrackingChoice();
+            window.location.reload();
+          }}
+        >
+          {t("trackingConsent.reset")}
+        </button>
       </section>
 
       <section className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.34fr_0.66fr] lg:px-10">
@@ -90,7 +104,7 @@ function PrivacyPolicy() {
           </nav>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-            <p className="text-sm font-black text-amber-300">
+              <p className="text-sm font-black text-slate-900">
               {t("privacyPage.contactPrivacy")}
             </p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
