@@ -37,8 +37,10 @@ export function useGlobalPartnersRealtime(handlers: Handlers) {
     const onWorker = (payload: any) => handlersRef.current.onWorkerStatus?.(payload);
     const onConnect = () => join();
 
+    // Re-join after disconnect/reconnect so Owner dashboard stays live without refresh.
     if (socket.connected) join();
     socket.on("connect", onConnect);
+    socket.on("reconnect", onConnect);
     socket.on("gp:scan_queued", onQueued);
     socket.on("gp:scan_started", onStarted);
     socket.on("gp:scan_progress", onProgress);
@@ -48,6 +50,7 @@ export function useGlobalPartnersRealtime(handlers: Handlers) {
 
     return () => {
       socket.off("connect", onConnect);
+      socket.off("reconnect", onConnect);
       socket.off("gp:scan_queued", onQueued);
       socket.off("gp:scan_started", onStarted);
       socket.off("gp:scan_progress", onProgress);

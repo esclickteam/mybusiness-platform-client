@@ -45,11 +45,11 @@ export default function AdminGlobalPartners() {
   const [worker, setWorker] = useState<any>(null);
   const [liveEvents, setLiveEvents] = useState<string[]>([]);
   const [scanForm, setScanForm] = useState({
-    name: "סריקת Wikidata",
+    name: "סריקת שותפים פוטנציאליים",
     source: "wikidata",
     countries: "IL",
     cities: "",
-    verticals: "software,marketing,consulting",
+    verticals: "marketing,digital_agency,it_consulting,consulting,saas",
     intervalMinutes: "1440",
     maxResultsPerRun: "15",
     dailyRequestBudget: "20",
@@ -370,6 +370,7 @@ export default function AdminGlobalPartners() {
                   <th>חברה</th>
                   <th>מדינה / עיר</th>
                   <th>תחום</th>
+                  <th>התאמה</th>
                   <th>ציון</th>
                   <th>סטטוס</th>
                   <th></th>
@@ -378,7 +379,7 @@ export default function AdminGlobalPartners() {
               <tbody>
                 {candidates.length === 0 ? (
                   <tr>
-                    <td colSpan={6}>אין מועמדים להצגה — הוסיפו ידנית או ייבאו CSV.</td>
+                    <td colSpan={7}>אין מועמדים להצגה — הוסיפו ידנית או ייבאו CSV.</td>
                   </tr>
                 ) : (
                   candidates.map((c) => (
@@ -388,6 +389,7 @@ export default function AdminGlobalPartners() {
                         {[c.countryCode, c.city].filter(Boolean).join(" · ") || "—"}
                       </td>
                       <td>{c.vertical || "—"}</td>
+                      <td className="gp-score">{c.partnerFitScore ?? "—"}</td>
                       <td className="gp-score">{c.matchScore ?? 0}</td>
                       <td>{statusLabel(c.recruitmentStatus)}</td>
                       <td>
@@ -604,9 +606,12 @@ export default function AdminGlobalPartners() {
             <Kpi
               label="מקור חינמי"
               value={
-                sources.find((s) => s.id === "wikidata")?.enabled
-                  ? "Wikidata"
-                  : "—"
+                [
+                  sources.find((s) => s.id === "wikidata")?.enabled ? "Wikidata" : null,
+                  sources.find((s) => s.id === "openstreetmap")?.enabled ? "OSM" : null,
+                ]
+                  .filter(Boolean)
+                  .join(" + ") || "—"
               }
             />
           </div>
@@ -626,6 +631,7 @@ export default function AdminGlobalPartners() {
                 <tbody>
                   {(sources.length ? sources : [
                     { id: "wikidata", enabled: true, paid: false, licensing: "CC0" },
+                    { id: "openstreetmap", enabled: true, paid: false, licensing: "ODbL" },
                     { id: "google_places", enabled: false, paid: true, note: "כבוי עד אישור" },
                   ]).map((s) => (
                     <tr key={s.id}>
@@ -683,6 +689,7 @@ export default function AdminGlobalPartners() {
                   onChange={(e) => setScanForm({ ...scanForm, source: e.target.value })}
                 >
                   <option value="wikidata">Wikidata (חינם)</option>
+                  <option value="openstreetmap">OpenStreetMap (חינם)</option>
                   <option value="google_places">Google Places (כבוי)</option>
                 </select>
               </label>
