@@ -19,7 +19,7 @@ import {
   type SeedSummary,
 } from "./seedBootstrap";
 import { canShowMeasurementActions } from "./runActionVisibility";
-import { findingKindHe } from "./improvementWork";
+import { findingKindHe, measuredMetricText } from "./improvementWork";
 import ImprovementWorkList from "./ImprovementWorkList";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
@@ -33,6 +33,10 @@ function AwaitBox({ message }: { message?: string }) {
         "ממתין לחיבור מקור / מדידות אמת — אין נתונים מומצאים."}
     </div>
   );
+}
+
+function ratioPercent(value: number) {
+  return `${Math.round(value * 1000) / 10}%`;
 }
 
 function Kpi({
@@ -253,7 +257,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   }, [loadBrandData]);
 
   useEffect(() => {
-    if (tab !== "searchVisibility" || !brandId) return undefined;
+    if ((tab !== "searchVisibility" && tab !== "improvementPlan") || !brandId) return undefined;
     let cancelled = false;
     geoGet("/seo-summary", { brandId })
       .then((data) => {
@@ -1048,7 +1052,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   <h3>{copy.improvementTasks}</h3>
                   <ImprovementWorkList
                     brandName={improvementPlan?.brand?.name || activeBrand?.name || ""}
-                    tasks={improvementPlan?.tasks || []}
+                    tasks={[...(improvementPlan?.tasks || []), ...(seoSummary?.tasks || [])]}
                     busy={busy}
                     onUpdate={async (taskKey, status, noteHe) => {
                       setBusy(true);
@@ -1059,6 +1063,9 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                           { brandId }
                         );
                         await loadBrandData();
+                        if (String(taskKey).startsWith("seo:")) {
+                          setSeoSummary(await geoGet("/seo-summary", { brandId }));
+                        }
                       } catch (err: any) {
                         setError(
                           err?.response?.data?.error ||
@@ -1139,20 +1146,45 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
             <section dir="rtl" lang="he">
               <h2>{copy.navSearchVisibility}</h2>
               <p>{seoSummary?.disclaimerHe}</p>
-              <h3>Search Console</h3>
+              <div className="geo-kpi-grid">
+                <Kpi label="חשיפות" value={measuredMetricText(seoSummary?.gsc?.metrics?.impressions)} />
+                <Kpi label="קליקים" value={measuredMetricText(seoSummary?.gsc?.metrics?.clicks)} />
+                <Kpi label="שיעור הקלקה" value={measuredMetricText(seoSummary?.gsc?.metrics?.ctr, ratioPercent)} />
+                <Kpi label="מיקום ממוצע" value={measuredMetricText(seoSummary?.gsc?.metrics?.position)} />
+              </div>
               <p>עובדה: {seoSummary?.gsc?.factHe || "—"}</p>
               <p>השערה: {seoSummary?.gsc?.hypothesisHe || "אין השערה נוספת."}</p>
               <p>המלצה: {seoSummary?.gsc?.recommendationHe || "—"}</p>
-              {(seoSummary?.gsc?.pages || []).length ? (
+              {seoSummary?.gsc?.metrics?.ctr?.noteHe ? <p>{seoSummary.gsc.metrics.ctr.noteHe}</p> : null}
+              {seoSummary?.gsc?.metrics?.position?.noteHe ? <p>{seoSummary.gsc.metrics.position.noteHe}</p> : null}
+              <h3>שאילתות חיפוש</h3>
+              <p>{seoSummary?.gsc?.queriesFactHe || "שאילתות חיפוש לא נמדדו."}</p>
+              {(seoSummary?.gsc?.queries || []).length ? (
                 <Table
-                  columns={["עמוד", "הופעות שנשמרו"]}
-                  rows={(seoSummary.gsc.pages || []).map((page: any) => [
-                    page.page,
-                    page.impressions,
+                  columns={["שאילתה", "חשיפות", "קליקים", "שיעור הקלקה", "מיקום"]}
+                  rows={(seoSummary.gsc.queries || []).map((row: any) => [
+                    row.query,
+                    measuredMetricText(row.impressions),
+                    measuredMetricText(row.clicks),
+                    measuredMetricText(row.ctr, ratioPercent),
+                    measuredMetricText(row.position),
                   ])}
                 />
               ) : null}
-              <h3>בדיקות טכניות</h3>
+              <h3>עמודים מובילים</h3>
+              {(seoSummary?.gsc?.pages || []).length ? (
+                <Table
+                  columns={["עמוד", "חשיפות", "קליקים", "שיעור הקלקה", "מיקום"]}
+                  rows={(seoSummary.gsc.pages || []).map((page: any) => [
+                    page.page,
+                    measuredMetricText(page.impressions),
+                    measuredMetricText(page.clicks),
+                    measuredMetricText(page.ctr, ratioPercent),
+                    measuredMetricText(page.position),
+                  ])}
+                />
+              ) : <p>אין עמודים שנשמרו.</p>}
+              <h3>בדיקות</h3>
               <Table
                 columns={["בדיקה", "עובדה", "השערה", "המלצה"]}
                 rows={(seoSummary?.technical || []).map((item: any) => [
@@ -1162,6 +1194,18 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   item.recommendationHe,
                 ])}
               />
+              <h3>השוואה למותג {seoSummary?.comparison?.brandName || activeBrand?.name || ""}</h3>
+              <p>{seoSummary?.comparison?.geo?.factHe || "—"}</p>
+              <p>{seoSummary?.comparison?.search?.factHe || "—"}</p>
+              <p>{seoSummary?.comparison?.opportunityHe || "—"}</p>
+              <h3>חיבור ל-Google</h3>
+              <p>{seoSummary?.oauth?.factHe || "—"}</p>
+              <ol>
+                {(seoSummary?.oauth?.manualStepsHe || []).map((step: string) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+              <p>המשימות שנפתחו מהבדיקות מופיעות בתוכנית השיפור של המותג הזה, עם הסימון נראות בחיפוש.</p>
             </section>
           ) : null}
 

@@ -73,6 +73,7 @@ export default function ImprovementWorkList({
                 <div>
                   <strong>{task.titleHe}</strong>
                   <div className="geo-plan-task-meta">
+                    <span>{card.sourceLabelHe}</span>
                     <span data-prov={task.provenance}>{card.provenanceHe}</span>
                     <span>
                       {WORK_LABELS.impact}: {card.impactHe || "—"}
@@ -102,6 +103,10 @@ export default function ImprovementWorkList({
                 </label>
               </header>
               <dl className="geo-work-fields">
+                <div>
+                  <dt>{WORK_LABELS.taskSource}</dt>
+                  <dd>{card.sourceLabelHe}</dd>
+                </div>
                 <div>
                   <dt>{WORK_LABELS.brand}</dt>
                   <dd>{card.brandName || "—"}</dd>

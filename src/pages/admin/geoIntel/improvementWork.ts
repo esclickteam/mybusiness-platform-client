@@ -23,6 +23,8 @@ export const WORK_LABELS = {
   recommendation: "המלצה",
   noHypothesis: "אין השערה נוספת מעבר לעובדה שנמדדה.",
   save: "שמור מעקב",
+  taskSource: "מקור המשימה",
+  notMeasured: "לא נמדד",
 } as const;
 
 const FINDING_KIND_HE: Record<string, string> = {
@@ -79,7 +81,16 @@ export type WorkCard = {
   recommendationHe: string;
   targetState: string;
   targetVerified: boolean;
+  sourceLabelHe: string;
 };
+
+export function measuredMetricText(
+  metric?: { measured?: boolean; value?: number | null } | null,
+  format?: (value: number) => string
+) {
+  if (!metric?.measured || metric.value == null) return WORK_LABELS.notMeasured;
+  return format ? format(metric.value) : String(metric.value);
+}
 
 export function workCardFromTask(task: any, brandName = ""): WorkCard {
   const work = task?.work || {};
@@ -107,6 +118,7 @@ export function workCardFromTask(task: any, brandName = ""): WorkCard {
     recommendationHe: work.recommendationHe || work.actionHe || task?.actionHe || "",
     targetState: work.targetState || (work.targetPath || task?.suggestedPath ? "unchecked" : "none"),
     targetVerified: work.targetVerified === true,
+    sourceLabelHe: work.sourceLabelHe || "מדידת שאלות",
   };
 }
 
