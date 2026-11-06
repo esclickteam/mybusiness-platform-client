@@ -1,9 +1,9 @@
 /** GEO Intelligence UI — עברית בלבד (Phase A). אין בורר שפה. */
 export function geoIntelCopy() {
   return {
-    title: "GEO Intelligence",
-    subtitle: "ניטור נראות מותגים במנועי AI — שימוש פנימי בלבד",
-    questionsTitle: "שאלות GEO Intelligence",
+    title: "נראות במנועי מענה",
+    subtitle: "מעקב אחרי הופעת מותגים בתשובות — שימוש פנימי בלבד",
+    questionsTitle: "שאלות",
     questionsSubtitle: "מעקב אחר שאלות שוק, מענה AI, מקורות ותחרות",
     seed: "אתחול נתונים",
     seedConfirmTitle: "לאשר אתחול נתונים?",
@@ -32,7 +32,7 @@ export function geoIntelCopy() {
     navQuestions: "שאלות",
     navCompetitors: "מתחרים",
     navRecommendations: "המלצות",
-    navImprovementPlan: "תוכנית שיפור GEO",
+    navImprovementPlan: "תוכנית שיפור",
     improvementPlanHint:
       "המלצות מבוססות מדידות אמת בלבד · ללא קריאות ספק חדשות · שינוי באתרים רק באישור",
     improvementProven: "ממצאים מוכחים",
@@ -58,7 +58,7 @@ export function geoIntelCopy() {
     checkNow: "בדוק עכשיו",
     noData: "התחל את המעקב כדי לראות נראות לאורך זמן. אין ציון מפוברק.",
     brand: "מותג",
-    importCsv: "ייבוא CSV מ־GSC",
+    importCsv: "ייבוא מ־Search Console",
     freeOnly: "מערכת פרטית לבעלים · Phase A · מכסה חינמית · ללא OpenAI · ללא Billing",
     plannedHost: "geo.bizuply.com — דומיין פרטי פעיל · בעלים בלבד · noindex",
     privateOwnerOnly: "גישה לחשבון המנהל המורשה בלבד · לא מוצר ללקוחות",
@@ -110,11 +110,11 @@ export function geoIntelCopy() {
     competitorsSubtitle: "השוואת אזכורים, פערים ומקורות — מנתונים אמיתיים בלבד",
     gapsTitle: "שאלות שבהן מתחרים מופיעים ואנחנו לא",
     topSourcesTitle: "מקורות שהמנועים מסתמכים עליהם",
-    recommendationsTitle: "המלצות לשיפור GEO",
+    recommendationsTitle: "המלצות לשיפור",
     recommendationsSubtitle: "ייעוץ מבוסס בדיקות — ללא שינוי אוטומטי באתרים",
     alertsEmpty: "אין התראות פעילות. התראות יופיעו אחרי בדיקות אמת וירידות נראות.",
     gscHelp:
-      "ייבוא CSV מ־Search Console (GenAI/Performance) ללא עלות וללא קריאת Google API. מופרד מציוני GEO.",
+      "ייבוא CSV מ־Search Console ללא עלות וללא קריאת Google API. מופרד מציוני הנראות.",
     model: "מודל",
     checkedAt: "נבדק ב־",
     mentionHighlight: "הדגשת אזכור מותג",
@@ -127,7 +127,7 @@ export function geoIntelCopy() {
     menu: "תפריט",
     openMenu: "פתח תפריט",
     closeMenu: "סגור תפריט",
-    hebrewUiOnly: "ממשק בעברית בלבד · פלטפורמת AI Search Intelligence · Invistimo עברית/IL · Bizuply אנגלית/בינלאומי",
+    hebrewUiOnly: "ממשק בעברית בלבד · Invistimo בעברית · Bizuply באנגלית",
     intent: "כוונה",
     intentPurchase: "כוונת רכישה",
     intentComparison: "השוואת פתרונות",

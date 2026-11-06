@@ -606,7 +606,7 @@ function BusinessLogin() {
   return (
     <AuthShell withSiteHeader={!geoHost}>
       <AuthCard
-        title={geoHost ? "GEO Intelligence" : t("login.cardTitle")}
+        title={geoHost ? "נראות במנועי מענה" : t("login.cardTitle")}
         subtitle={
           geoHost
             ? "התחברות למערכת ניטור GEO — בעלים בלבד"

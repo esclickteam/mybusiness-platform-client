@@ -1627,8 +1627,6 @@ export default function App() {
                             }
                           />
                         ) : null}
-
-
                         <Route
                           path="/admin"
                           element={

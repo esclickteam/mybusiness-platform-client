@@ -18,6 +18,9 @@ import {
   shouldShowSeedInitButton,
   type SeedSummary,
 } from "./seedBootstrap";
+import { canShowMeasurementActions } from "./runActionVisibility";
+import { findingKindHe } from "./improvementWork";
+import ImprovementWorkList from "./ImprovementWorkList";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
 
@@ -259,7 +262,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "opportunities", label: "הזדמנויות" },
     { id: "improvementPlan", label: copy.navImprovementPlan },
     { id: "content", label: "ניתוח תוכן" },
-    { id: "tech", label: "ביקורת GEO טכנית" },
+    { id: "tech", label: "ביקורת טכנית" },
     { id: "trends", label: "מגמות" },
     { id: "reports", label: "דוחות" },
     { id: "measurements", label: "ניהול מדידות" },
@@ -351,12 +354,12 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   return (
     <div className="geo-intel-root geo-intel-standalone" dir="rtl" lang="he">
       <div className={`geo-intel-shell${menuOpen ? " menu-open" : ""}`}>
-        <aside className="geo-intel-side" aria-label="ניווט GEO">
+        <aside className="geo-intel-side" aria-label="ניווט">
           <div className="geo-intel-brand">
             <div className="geo-intel-brand-mark" aria-hidden />
             <div>
-              <strong>GEO Intelligence</strong>
-              <div className="geo-side-sub">AI Search · בעלים בלבד</div>
+              <strong>{copy.title}</strong>
+              <div className="geo-side-sub">שימוש פנימי בלבד</div>
             </div>
           </div>
           {nav.map((item) => (
@@ -436,8 +439,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 {copy.seed}
               </button>
             ) : null}
-            {status?.trialSmoke?.buttonVisible !== false &&
-            status?.canRun &&
+            {canShowMeasurementActions(status) &&
+            status?.trialSmoke?.buttonVisible !== false &&
             status?.perplexity?.billingApproved ? (
               <button
                 type="button"
@@ -954,6 +957,9 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               <div className="geo-plan-hero">
                 <h2>{copy.navImprovementPlan}</h2>
                 <p>{copy.improvementPlanHint}</p>
+                {improvementPlan?.bannerHe ? (
+                  <p className="geo-plan-disclaimer">{improvementPlan.bannerHe}</p>
+                ) : null}
                 {improvementPlan?.disclaimerHe ? (
                   <p className="geo-plan-disclaimer">
                     {improvementPlan.disclaimerHe}
@@ -999,7 +1005,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     columns={["סוג", "כותרת", "פירוט", "ראיות"]}
                     rows={(improvementPlan?.findingsProven || []).map(
                       (f: any) => [
-                        f.kind,
+                        findingKindHe(f.kind),
                         f.titleHe,
                         f.bodyHe,
                         (f.evidenceCheckIds || []).length
@@ -1014,7 +1020,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     columns={["סוג", "כותרת", "פירוט", "סטטוס אימות"]}
                     rows={(improvementPlan?.findingsHypothesis || []).map(
                       (f: any) => [
-                        f.kind,
+                        findingKindHe(f.kind),
                         f.titleHe,
                         f.bodyHe,
                         "דורש בדיקה ידנית",
@@ -1023,101 +1029,30 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   />
 
                   <h3>{copy.improvementTasks}</h3>
-                  <div className="geo-plan-tasks">
-                    {(improvementPlan?.tasks || []).map((t: any) => (
-                      <article key={t.taskKey} className="geo-plan-task">
-                        <header className="geo-plan-task-head">
-                          <div>
-                            <strong>{t.titleHe}</strong>
-                            <div className="geo-plan-task-meta">
-                              <span data-prov={t.provenance}>
-                                {t.provenance === "proven"
-                                  ? "מוכח"
-                                  : "השערה"}
-                              </span>
-                              <span>השפעה: {t.impact}</span>
-                              <span>מאמץ: {t.effort}</span>
-                              <span>ביטחון: {t.confidence}</span>
-                              {t.suggestedPath ? (
-                                <span>יעד: {t.suggestedPath}</span>
-                              ) : null}
-                            </div>
-                          </div>
-                          <select
-                            className="geo-plan-status"
-                            value={t.status || "todo"}
-                            disabled={busy}
-                            onChange={async (e) => {
-                              const status = e.target.value;
-                              setBusy(true);
-                              try {
-                                await geoPatch(
-                                  `/improvement-plan/tasks/${encodeURIComponent(
-                                    t.taskKey
-                                  )}`,
-                                  { status },
-                                  { brandId }
-                                );
-                                await loadBrandData();
-                              } catch (err: any) {
-                                setError(
-                                  err?.response?.data?.error ||
-                                    err.message ||
-                                    "עדכון סטטוס נכשל"
-                                );
-                              } finally {
-                                setBusy(false);
-                              }
-                            }}
-                          >
-                            <option value="todo">לביצוע</option>
-                            <option value="in_progress">בתהליך</option>
-                            <option value="done">הושלם</option>
-                            <option value="dismissed">נדחה</option>
-                          </select>
-                        </header>
-                        <p>{t.bodyHe}</p>
-                        <p className="geo-plan-action">{t.actionHe}</p>
-                        {t.competitors?.length ? (
-                          <p className="geo-muted">
-                            מתחרים במדידה: {t.competitors.join(", ")}
-                          </p>
-                        ) : null}
-                        {t.promptText ? (
-                          <p className="geo-muted">שאלה: {t.promptText}</p>
-                        ) : null}
-                        <div className="geo-plan-evidence">
-                          {(t.evidenceCheckIds || []).slice(0, 3).map(
-                            (id: string) => (
-                              <button
-                                key={id}
-                                type="button"
-                                className="geo-btn geo-btn-ghost"
-                                onClick={() => openCheck(id)}
-                              >
-                                מדידה {String(id).slice(-6)}
-                              </button>
-                            )
-                          )}
-                          {(t.evidenceSources || [])
-                            .slice(0, 4)
-                            .map((s: any, i: number) => (
-                              <span key={`${t.taskKey}-src-${i}`} className="geo-chip">
-                                {s.domain || s.title || "מקור"}
-                              </span>
-                            ))}
-                        </div>
-                        {t.siteChangeRequiresApproval ? (
-                          <p className="geo-plan-approval">
-                            שינוי באתר המותג דורש אישור Owner — לא מבוצע אוטומטית.
-                          </p>
-                        ) : null}
-                      </article>
-                    ))}
-                    {!improvementPlan?.tasks?.length ? (
-                      <AwaitBox message="אין משימות — אין פערים שנגזרו ממדידות." />
-                    ) : null}
-                  </div>
+                  <ImprovementWorkList
+                    brandName={improvementPlan?.brand?.name || activeBrand?.name || ""}
+                    tasks={improvementPlan?.tasks || []}
+                    busy={busy}
+                    onUpdate={async (taskKey, status, noteHe) => {
+                      setBusy(true);
+                      try {
+                        await geoPatch(
+                          `/improvement-plan/tasks/${encodeURIComponent(taskKey)}`,
+                          { status, noteHe },
+                          { brandId }
+                        );
+                        await loadBrandData();
+                      } catch (err: any) {
+                        setError(
+                          err?.response?.data?.error ||
+                            err.message ||
+                            "עדכון סטטוס נכשל"
+                        );
+                      } finally {
+                        setBusy(false);
+                      }
+                    }}
+                  />
                 </>
               )}
             </section>
@@ -1294,6 +1229,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
 
           {tab === "measurements" ? (
             <section>
+              {canShowMeasurementActions(status) ? (
+              <>
               <h3>הזנה ידנית מאומתת (ממשק צרכני)</h3>
               <div className="geo-card geo-form">
                 <select
@@ -1349,7 +1286,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 </button>
               </div>
 
-              <h3>ייבוא GSC</h3>
+              <h3>ייבוא מ־Search Console</h3>
               <textarea
                 rows={5}
                 value={csvText}
@@ -1379,6 +1316,12 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               >
                 {copy.importCsv}
               </button>
+              </>
+              ) : (
+                <p className="geo-plan-approval">
+                  הזנה ידנית, מדידת ניסיון וייבוא מ־Search Console מוצגים רק לחשבון עם הרשאת הרצה.
+                </p>
+              )}
               <Table
                 columns={["קובץ", "שורות", "תאריך"]}
                 rows={(gscImports || []).map((g: any) => [
