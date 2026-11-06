@@ -195,7 +195,16 @@ export default function OutreachCenter({ onError, onMessage, busy, setBusy }: Pr
         {inbox ? (
           <p className="gp-muted">
             תיבת תגובות:{" "}
-            {inbox.connected ? "מחוברת" : "לא מחוברת (רישום ידני בלבד)"} — {inbox.note}
+            {inbox.connected
+              ? `מחוברת (${inbox.mode})`
+              : "לא מחוברת — לא מדומה כמחוברת"}{" "}
+            — {inbox.note}
+            {Array.isArray(inbox.blockers) && inbox.blockers.length ? (
+              <>
+                <br />
+                חסמים: {inbox.blockers.join(", ")}
+              </>
+            ) : null}
           </p>
         ) : null}
 
