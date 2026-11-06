@@ -19,7 +19,7 @@ import {
   type SeedSummary,
 } from "./seedBootstrap";
 import { canShowMeasurementActions } from "./runActionVisibility";
-import { findingKindHe } from "./improvementWork";
+import { findingKindHe, measuredMetricText } from "./improvementWork";
 import ImprovementWorkList from "./ImprovementWorkList";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
@@ -33,6 +33,10 @@ function AwaitBox({ message }: { message?: string }) {
         "ממתין לחיבור מקור / מדידות אמת — אין נתונים מומצאים."}
     </div>
   );
+}
+
+function ratioPercent(value: number) {
+  return `${Math.round(value * 1000) / 10}%`;
 }
 
 function Kpi({
@@ -118,6 +122,9 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [citations, setCitations] = useState<any>(null);
   const [opportunities, setOpportunities] = useState<any>(null);
   const [improvementPlan, setImprovementPlan] = useState<any>(null);
+  const [seoSummary, setSeoSummary] = useState<any>(null);
+  const [gscFrom, setGscFrom] = useState("");
+  const [gscTo, setGscTo] = useState("");
   const [trends, setTrends] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
   const [tech, setTech] = useState<any>(null);
@@ -251,6 +258,21 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     loadBrandData();
   }, [loadBrandData]);
 
+  useEffect(() => {
+    if ((tab !== "searchVisibility" && tab !== "improvementPlan") || !brandId) return undefined;
+    let cancelled = false;
+    geoGet("/seo-summary", { brandId })
+      .then((data) => {
+        if (!cancelled) setSeoSummary(data);
+      })
+      .catch((e: any) => {
+        if (!cancelled) setError(e?.response?.data?.error || e.message || "טעינת הנראות נכשלה");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [tab, brandId]);
+
   const nav: Array<{ id: Tab; label: string }> = [
     { id: "overview", label: copy.navOverview },
     { id: "visibility", label: "נראות AI" },
@@ -263,6 +285,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "improvementPlan", label: copy.navImprovementPlan },
     { id: "content", label: "ניתוח תוכן" },
     { id: "tech", label: "ביקורת טכנית" },
+    { id: "searchVisibility", label: copy.navSearchVisibility },
     { id: "trends", label: "מגמות" },
     { id: "reports", label: "דוחות" },
     { id: "measurements", label: "ניהול מדידות" },
@@ -1031,7 +1054,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   <h3>{copy.improvementTasks}</h3>
                   <ImprovementWorkList
                     brandName={improvementPlan?.brand?.name || activeBrand?.name || ""}
-                    tasks={improvementPlan?.tasks || []}
+                    tasks={[...(improvementPlan?.tasks || []), ...(seoSummary?.tasks || [])]}
                     busy={busy}
                     onUpdate={async (taskKey, status, noteHe) => {
                       setBusy(true);
@@ -1042,6 +1065,9 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                           { brandId }
                         );
                         await loadBrandData();
+                        if (String(taskKey).startsWith("seo:")) {
+                          setSeoSummary(await geoGet("/seo-summary", { brandId }));
+                        }
                       } catch (err: any) {
                         setError(
                           err?.response?.data?.error ||
@@ -1115,6 +1141,185 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   />
                 </>
               )}
+            </section>
+          ) : null}
+
+          {tab === "searchVisibility" ? (
+            <section dir="rtl" lang="he">
+              <h2>{copy.navSearchVisibility}</h2>
+              <p>{seoSummary?.disclaimerHe}</p>
+              <div className="geo-kpi-grid">
+                <Kpi label="חשיפות" value={measuredMetricText(seoSummary?.gsc?.metrics?.impressions)} />
+                <Kpi label="קליקים" value={measuredMetricText(seoSummary?.gsc?.metrics?.clicks)} />
+                <Kpi label="שיעור הקלקה" value={measuredMetricText(seoSummary?.gsc?.metrics?.ctr, ratioPercent)} />
+                <Kpi label="מיקום ממוצע" value={measuredMetricText(seoSummary?.gsc?.metrics?.position)} />
+              </div>
+              <p>
+                מקור:{" "}
+                {seoSummary?.gsc?.dataSource === "google"
+                  ? "נתוני Google"
+                  : seoSummary?.gsc?.dataSource === "csv"
+                    ? "קובץ שהועלה"
+                    : "לא נמדד"}
+              </p>
+              <p>
+                טווח:{" "}
+                {seoSummary?.gsc?.range
+                  ? `${seoSummary.gsc.range.startDate} עד ${seoSummary.gsc.range.endDate}`
+                  : "לא נמשך"}
+              </p>
+              <p>
+                סנכרון אחרון:{" "}
+                {seoSummary?.gsc?.syncedAt
+                  ? new Date(seoSummary.gsc.syncedAt).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+                  : "אין"}
+              </p>
+              <p>עובדה: {seoSummary?.gsc?.factHe || "—"}</p>
+              <p>השערה: {seoSummary?.gsc?.hypothesisHe || "אין השערה נוספת."}</p>
+              <p>המלצה: {seoSummary?.gsc?.recommendationHe || "—"}</p>
+              {seoSummary?.gsc?.metrics?.ctr?.noteHe ? <p>{seoSummary.gsc.metrics.ctr.noteHe}</p> : null}
+              {seoSummary?.gsc?.metrics?.position?.noteHe ? <p>{seoSummary.gsc.metrics.position.noteHe}</p> : null}
+              <h3>שאילתות חיפוש</h3>
+              <p>{seoSummary?.gsc?.queriesFactHe || "שאילתות חיפוש לא נמדדו."}</p>
+              {(seoSummary?.gsc?.queries || []).length ? (
+                <Table
+                  columns={["שאילתה", "חשיפות", "קליקים", "שיעור הקלקה", "מיקום"]}
+                  rows={(seoSummary.gsc.queries || []).map((row: any) => [
+                    row.query,
+                    measuredMetricText(row.impressions),
+                    measuredMetricText(row.clicks),
+                    measuredMetricText(row.ctr, ratioPercent),
+                    measuredMetricText(row.position),
+                  ])}
+                />
+              ) : null}
+              <h3>עמודים מובילים</h3>
+              {(seoSummary?.gsc?.pages || []).length ? (
+                <Table
+                  columns={["עמוד", "חשיפות", "קליקים", "שיעור הקלקה", "מיקום"]}
+                  rows={(seoSummary.gsc.pages || []).map((page: any) => [
+                    page.page,
+                    measuredMetricText(page.impressions),
+                    measuredMetricText(page.clicks),
+                    measuredMetricText(page.ctr, ratioPercent),
+                    measuredMetricText(page.position),
+                  ])}
+                />
+              ) : <p>אין עמודים שנשמרו.</p>}
+              <h3>בדיקות</h3>
+              <Table
+                columns={["בדיקה", "עובדה", "השערה", "המלצה"]}
+                rows={(seoSummary?.technical || []).map((item: any) => [
+                  item.labelHe,
+                  item.factHe,
+                  item.hypothesisHe || "אין השערה נוספת.",
+                  item.recommendationHe,
+                ])}
+              />
+              {(seoSummary?.trackedQueries || []).length ? (
+                <>
+                  <h3>מעקב שאילתות</h3>
+                  <Table
+                    columns={["שאילתה", "חשיפות", "קליקים", "שיעור הקלקה", "מיקום", "מצב"]}
+                    rows={(seoSummary.trackedQueries || []).map((item: any) => [
+                      item.query,
+                      item.measured ? item.impressions : "לא נמדד",
+                      item.measured ? item.clicks : "לא נמדד",
+                      item.measured && item.ctr != null ? ratioPercent(item.ctr) : "לא נמדד",
+                      item.measured && item.position != null ? item.position : "לא נמדד",
+                      item.noteHe,
+                    ])}
+                  />
+                </>
+              ) : null}
+              <h3>השוואה למותג {seoSummary?.comparison?.brandName || activeBrand?.name || ""}</h3>
+              <p>מדידת שאלות: {seoSummary?.comparison?.geo?.factHe || "—"}</p>
+              <p>נתוני חיפוש: {seoSummary?.comparison?.search?.factHe || "—"}</p>
+              <p>{seoSummary?.comparison?.opportunityHe || "—"}</p>
+              <h3>חיבור ל-Google</h3>
+              <p>{seoSummary?.connection?.connected ? "המותג מחובר." : seoSummary?.connection?.needsReconnect ? "נדרש חיבור מחדש." : "המותג אינו מחובר."}</p>
+              <p>{seoSummary?.oauth?.factHe || "—"}</p>
+              {canShowMeasurementActions(status) && seoSummary?.oauth?.configured ? (
+                <div className="geo-intel-actions">
+                  <label>
+                    מתאריך
+                    <input type="date" value={gscFrom} onChange={(e) => setGscFrom(e.target.value)} />
+                  </label>
+                  <label>
+                    עד תאריך
+                    <input type="date" value={gscTo} onChange={(e) => setGscTo(e.target.value)} />
+                  </label>
+                  {!seoSummary?.connection?.connected || seoSummary?.connection?.needsReconnect ? (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={async () => {
+                        setBusy(true);
+                        try {
+                          const data = await geoPost("/gsc/oauth/start", {
+                            brandId,
+                            returnUrl: window.location.href,
+                          });
+                          if (data?.url) window.location.assign(data.url);
+                        } catch (err: any) {
+                          setError(err?.response?.data?.error || err.message || "פתיחת החיבור נכשלה");
+                        } finally {
+                          setBusy(false);
+                        }
+                      }}
+                    >
+                      חבר את Search Console
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={async () => {
+                          setBusy(true);
+                          try {
+                            await geoPost("/gsc/sync", {
+                              brandId,
+                              startDate: gscFrom,
+                              endDate: gscTo,
+                            });
+                            setSeoSummary(await geoGet("/seo-summary", { brandId }));
+                          } catch (err: any) {
+                            setError(err?.response?.data?.error || err.message || "הסנכרון נכשל");
+                          } finally {
+                            setBusy(false);
+                          }
+                        }}
+                      >
+                        משוך נתונים
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={async () => {
+                          setBusy(true);
+                          try {
+                            await geoPost("/gsc/oauth/disconnect", { brandId });
+                            setSeoSummary(await geoGet("/seo-summary", { brandId }));
+                          } catch (err: any) {
+                            setError(err?.response?.data?.error || err.message || "הניתוק נכשל");
+                          } finally {
+                            setBusy(false);
+                          }
+                        }}
+                      >
+                        נתק את Search Console
+                      </button>
+                    </>
+                  )}
+                </div>
+              ) : null}
+              <ol>
+                {(seoSummary?.oauth?.manualStepsHe || []).map((step: string) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+              <p>המשימות מופיעות בתוכנית השיפור ומסומנות לפי המקור: נתוני Google, בדיקת אתר, המלצה או מדידת שאלות.</p>
             </section>
           ) : null}
 

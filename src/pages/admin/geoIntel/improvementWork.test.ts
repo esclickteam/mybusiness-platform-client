@@ -4,6 +4,7 @@ import { canShowMeasurementActions } from "./runActionVisibility";
 import {
   WORK_LABELS,
   findingKindHe,
+  measuredMetricText,
   targetPageLabel,
   workCardFromTask,
   workHasPublicJargon,
@@ -24,6 +25,7 @@ describe("improvement work cards", () => {
       expect(workHasPublicJargon(label)).toBe(false);
     }
     expect(workHasPublicJargon(geoIntelCopy().navImprovementPlan)).toBe(false);
+    expect(workHasPublicJargon(geoIntelCopy().navSearchVisibility)).toBe(false);
     expect(workHasPublicJargon(geoIntelCopy().recommendationsTitle)).toBe(false);
   });
 
@@ -73,6 +75,17 @@ describe("improvement work cards", () => {
     expect(targetPageLabel(missing)).toContain("לא מוצגת כעמוד מאומת");
     expect(missing.factHe).toContain("לא הופיע");
     expect(missing.recommendationHe).toBe("פעולה מוצעת.");
+  });
+
+  it("does not present an absent search metric as zero", () => {
+    expect(measuredMetricText({ measured: false, value: null })).toBe("לא נמדד");
+    expect(measuredMetricText({ measured: true, value: 0 })).toBe("0");
+    const card = workCardFromTask({
+      work: { sourceLabelHe: "נראות בחיפוש", factHe: "אין ייבוא שמור" },
+    });
+    expect(card.sourceLabelHe).toBe("נראות בחיפוש");
+    expect(workHasPublicJargon(card.sourceLabelHe)).toBe(false);
+    expect(workHasPublicJargon(WORK_LABELS.notMeasured)).toBe(false);
   });
 
   it("translates finding kinds to Hebrew", () => {
