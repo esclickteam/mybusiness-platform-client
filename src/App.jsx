@@ -18,6 +18,7 @@ const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
 const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+const ComplianceScannerPage = lazy(() => import("./pages/public/ComplianceScannerPage"));
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
@@ -1304,6 +1305,8 @@ export default function App() {
 
                         <Route path="/about" element={<About />} />
                         <Route path="/crm" element={<CrmProductPage />} />
+                        <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
+                        <Route path="/compliance" element={<ComplianceScannerPage />} />
                         <Route
                           path="/collaborations"
                           element={<CollaborationsProductPage />}

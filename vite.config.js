@@ -49,6 +49,13 @@ export default defineConfig({
     allowedHosts: true,
 
     proxy: {
+      "/compliance/api": {
+        target: "https://api.bizuply.com",
+        changeOrigin: true,
+        secure: false,
+        timeout: 180000,
+        proxyTimeout: 180000,
+      },
       "/api": {
         // Prefer local API when VITE_API_PROXY_TARGET is set (e.g. http://localhost:5000)
         target:

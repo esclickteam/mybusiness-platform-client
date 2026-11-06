@@ -13,12 +13,8 @@
       "destination": "https://api.bizuply.com/api/$1"
     },
     {
-      "source": "/compliance",
-      "destination": "https://api.bizuply.com/compliance/"
-    },
-    {
-      "source": "/compliance/:path*",
-      "destination": "https://api.bizuply.com/compliance/:path*"
+      "source": "/compliance/api/:path*",
+      "destination": "https://api.bizuply.com/compliance/api/:path*"
     },
     {
       "source": "/((?!api/|assets/|email/|saas-media/|service-worker\\.js$|site\\.webmanifest$|manifest\\.json$|manifest\\.webmanifest$|build-info\\.json$|favicon[^/]*|android-chrome[^/]*|apple-touch-icon[^/]*|robots\\.txt$|sitemap\\.xml$|[0-9a-f]{32}\\.txt$|softphone-hold\\.mp3$|.*\\.mp3$|.*\\.wav$|.*\\.png$|.*\\.jpe?g$|.*\\.mp4$|.*\\.webm$).*)",
