@@ -81,8 +81,8 @@ export default function HomeExperienceFooter() {
     <footer className="hx-footer">
       <div className="hx-wrap hx-footer-grid">
         <div className="hx-footer-brand">
-          <Link to="/" aria-label={he ? "ביזאפלי (Bizuply)" : "Bizuply"}>
-            <img src="/logo-mark.svg" alt={he ? "ביזאפלי (Bizuply)" : "Bizuply"} width="160" height="48" loading="lazy" decoding="async" />
+          <Link to="/" aria-label={he ? "ביזאפלי (BizUply)" : "BizUply"}>
+            <img src="/logo-mark.svg" alt={he ? "ביזאפלי (BizUply)" : "BizUply"} width="160" height="48" loading="lazy" decoding="async" />
           </Link>
           <p>
             {text(

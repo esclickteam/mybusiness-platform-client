@@ -329,7 +329,7 @@ function Hero() {
             className="hx-hero-shot hx-hero-shot-1"
             language={language}
             src="/demo-media/home/crm.jpg"
-            alt={text("רשימת הלידים של Northwind Studio בתוך Bizuply", "Northwind Studio lead list inside Bizuply")}
+            alt={text("רשימת הלידים של Northwind Studio בתוך BizUply", "Northwind Studio lead list inside BizUply")}
             width={1600}
             height={1000}
             fetchPriority="high"
@@ -340,7 +340,7 @@ function Hero() {
             className="hx-hero-shot hx-hero-shot-2"
             language={language}
             src="/demo-media/whatsapp/still-3.jpg"
-            alt={text("שיחת WhatsApp של Northwind Studio בתוך Bizuply", "A Northwind Studio WhatsApp conversation inside Bizuply")}
+            alt={text("שיחת WhatsApp של Northwind Studio בתוך BizUply", "A Northwind Studio WhatsApp conversation inside BizUply")}
             width={1600}
             height={1000}
             decoding="async"
@@ -349,7 +349,7 @@ function Hero() {
             className="hx-hero-shot hx-hero-shot-3"
             language={language}
             src="/demo-media/home/campaigns.jpg"
-            alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
+            alt={text("מסך ניהול קמפיינים של Meta ב-BizUply", "Meta campaign management inside BizUply")}
             width={1600}
             height={1000}
             decoding="async"
@@ -463,7 +463,7 @@ function useStory(): Beat[] {
         "The customer file opens from that list: status, source, and the next step.",
       ),
       img: "/demo-media/crm/lead-file.png",
-      alt: text("תיק ליד פתוח ב-CRM של Bizuply", "An open lead file in the Bizuply CRM"),
+      alt: text("תיק ליד פתוח ב-CRM של BizUply", "An open lead file in the BizUply CRM"),
     },
     {
       title: text("ממשיכים ב-WhatsApp.", "Continue on WhatsApp."),
@@ -472,7 +472,7 @@ function useStory(): Beat[] {
         "The conversation with that customer stays inside the workspace.",
       ),
       img: "/demo-media/whatsapp/still-3.jpg",
-      alt: text("תיבת WhatsApp של Northwind Studio בתוך Bizuply", "Northwind Studio WhatsApp inbox inside Bizuply"),
+      alt: text("תיבת WhatsApp של Northwind Studio בתוך BizUply", "Northwind Studio WhatsApp inbox inside BizUply"),
     },
   ];
 }
@@ -634,12 +634,12 @@ function CrmDepth() {
           </p>
           <p className="hx-prose">
             {text(
-              "עם ה־CRM של Bizuply אפשר לרכז מידע על לידים ולקוחות, לעקוב אחר סטטוסים, לתעד את המשך הטיפול ולנהל משימות מתוך סביבת עבודה מרכזית. כך קל יותר להבין מי פנה, מה הוא ביקש, מי מטפל בו ומה צריך לקרות בהמשך.",
-              "With Bizuply CRM, a business can keep lead and customer information together, follow statuses, record what happens next, and manage tasks from one workspace. It is easier to see who got in touch, what they asked for, who is handling it, and what should happen next.",
+              "עם ה־CRM של BizUply אפשר לרכז מידע על לידים ולקוחות, לעקוב אחר סטטוסים, לתעד את המשך הטיפול ולנהל משימות מתוך סביבת עבודה מרכזית. כך קל יותר להבין מי פנה, מה הוא ביקש, מי מטפל בו ומה צריך לקרות בהמשך.",
+              "With BizUply CRM, a business can keep lead and customer information together, follow statuses, record what happens next, and manage tasks from one workspace. It is easier to see who got in touch, what they asked for, who is handling it, and what should happen next.",
             )}
           </p>
           <div className="hx-actions">
-            <Cta to="/crm" tone="ink">{text("לגלות את מערכת ה־CRM", "Explore Bizuply CRM")}</Cta>
+            <Cta to="/crm" tone="ink">{text("לגלות את מערכת ה־CRM", "Explore BizUply CRM")}</Cta>
             <DemoButton
               label={text("לצפות בהדגמה", "Watch the demo")}
               onClick={() => open(filmOf("crm", "crm", "/demo-media/crm/poster.jpg", "CRM", text("הקלטת מסך של עבודת הלידים: רשימה, כרטיס, סטטוס ומשימה.", "A screen recording of the lead workspace: list, record, status, and task."), language, text))}
@@ -717,8 +717,8 @@ function WhatsApp() {
             </p>
             <p className="hx-prose">
               {text(
-                "Bizuply מאפשרת לעסקים לעבוד עם WhatsApp Business API ולשלב תקשורת לקוחות בתהליכים העסקיים שלהם. אפשר לנהל שיחות, לעבוד עם תבניות הודעה מאושרות ולחבר פעולות לתהליכים נוספים במערכת, בהתאם לתנאי השימוש ולהרשאות של Meta.",
-                "Bizuply lets a business work with the WhatsApp Business API and bring customer communication into its processes. Teams can manage conversations, use approved message templates, and connect actions to other workflows, within Meta’s terms and the permissions on the account.",
+                "BizUply מאפשרת לעסקים לעבוד עם WhatsApp Business API ולשלב תקשורת לקוחות בתהליכים העסקיים שלהם. אפשר לנהל שיחות, לעבוד עם תבניות הודעה מאושרות ולחבר פעולות לתהליכים נוספים במערכת, בהתאם לתנאי השימוש ולהרשאות של Meta.",
+                "BizUply lets a business work with the WhatsApp Business API and bring customer communication into its processes. Teams can manage conversations, use approved message templates, and connect actions to other workflows, within Meta’s terms and the permissions on the account.",
               )}
             </p>
             <ul className="hx-quotes">
@@ -755,7 +755,7 @@ function WhatsApp() {
             <LocaleShot
               language={language}
               src="/demo-media/whatsapp/still-3.jpg"
-              alt={text("שיחת WhatsApp של Northwind Studio בתוך Bizuply", "A Northwind Studio WhatsApp conversation inside Bizuply")}
+              alt={text("שיחת WhatsApp של Northwind Studio בתוך BizUply", "A Northwind Studio WhatsApp conversation inside BizUply")}
               width={1600}
               height={1000}
               loading="lazy"
@@ -789,8 +789,8 @@ function Campaigns() {
             <h2 id="hx-camp-title">{text("הקמפיין מביא את הליד. עכשיו מתחילה העבודה החשובה.", "The campaign brings the lead. Then the important work begins.")}</h2>
             <p className="hx-prose">
               {text(
-                "קמפיין ממומן לא מסתיים ברגע שמישהו לוחץ על מודעה או משאיר פרטים. הערך האמיתי מתחיל כאשר העסק יודע מה לעשות עם הפנייה. Bizuply משלבת יכולות לניהול קמפיינים של Meta עם סביבת עבודה לניהול לידים, כדי לעזור לעסקים לחבר בין הפעילות השיווקית לבין הטיפול בלקוחות.",
-                "A paid campaign does not end when someone clicks an ad or leaves their details. The useful part starts when the business knows what to do with that enquiry. Bizuply connects Meta campaign tools with a lead workspace, so marketing activity and customer follow-up can stay related.",
+                "קמפיין ממומן לא מסתיים ברגע שמישהו לוחץ על מודעה או משאיר פרטים. הערך האמיתי מתחיל כאשר העסק יודע מה לעשות עם הפנייה. BizUply משלבת יכולות לניהול קמפיינים של Meta עם סביבת עבודה לניהול לידים, כדי לעזור לעסקים לחבר בין הפעילות השיווקית לבין הטיפול בלקוחות.",
+                "A paid campaign does not end when someone clicks an ad or leaves their details. The useful part starts when the business knows what to do with that enquiry. BizUply connects Meta campaign tools with a lead workspace, so marketing activity and customer follow-up can stay related.",
               )}
             </p>
             <ul className="hx-points">
@@ -820,7 +820,7 @@ function Campaigns() {
               <LocaleShot
                 language={language}
                 src="/demo-media/home/campaigns.jpg"
-                alt={text("מסך ניהול קמפיינים של Meta ב-Bizuply", "Meta campaign management inside Bizuply")}
+                alt={text("מסך ניהול קמפיינים של Meta ב-BizUply", "Meta campaign management inside BizUply")}
                 width={1600}
                 height={1000}
                 loading="lazy"
@@ -863,8 +863,8 @@ function Websites() {
           </div>
           <p>
             {text(
-              "אתר מקצועי הוא המקום שבו לקוחות פוטנציאליים לומדים להכיר את העסק, מבינים מה הוא מציע ומחליטים אם ליצור קשר. עם כלי בניית האתרים של Bizuply אפשר ליצור נוכחות שמתאימה לסוג העסק ולמטרות שלו: אתר תדמית, דף נחיתה, או עמוד שמאפשר להשאיר פרטים ולתאם מועד.",
-              "A professional site is where potential customers learn what the business offers and decide whether to get in touch. Bizuply’s website tools can shape that presence around the business: a brochure site, a landing page, or a page where people leave details and book a time.",
+              "אתר מקצועי הוא המקום שבו לקוחות פוטנציאליים לומדים להכיר את העסק, מבינים מה הוא מציע ומחליטים אם ליצור קשר. עם כלי בניית האתרים של BizUply אפשר ליצור נוכחות שמתאימה לסוג העסק ולמטרות שלו: אתר תדמית, דף נחיתה, או עמוד שמאפשר להשאיר פרטים ולתאם מועד.",
+              "A professional site is where potential customers learn what the business offers and decide whether to get in touch. BizUply’s website tools can shape that presence around the business: a brochure site, a landing page, or a page where people leave details and book a time.",
             )}
           </p>
         </div>
@@ -976,8 +976,8 @@ function Automations() {
           <h2 id="hx-auto-title">{text("פחות פעולות שחוזרות על עצמן. יותר זמן לנהל את העסק.", "Fewer repeated actions. More time to run the business.")}</h2>
           <p className="hx-prose">
             {text(
-              "לא כל פעולה בעסק צריכה להתבצע ידנית. כאשר לקוח משאיר פרטים, כאשר נוצר ליד חדש או כאשר מגיע הזמן להמשיך טיפול — אפשר להגדיר תהליכים שעוזרים לצוות לעבוד בצורה מסודרת יותר. האוטומציות של Bizuply מחברות בין אירועים לפעולות מוגדרות, בהתאם ליכולות ולחיבורים הפעילים בחשבון.",
-              "Not every action in a business has to be done by hand. When a customer leaves details, a new lead arrives, or it is time to follow up, a defined process can help the team work in a more orderly way. Bizuply automations connect events to defined actions, within the features and connections that are active on the account.",
+              "לא כל פעולה בעסק צריכה להתבצע ידנית. כאשר לקוח משאיר פרטים, כאשר נוצר ליד חדש או כאשר מגיע הזמן להמשיך טיפול — אפשר להגדיר תהליכים שעוזרים לצוות לעבוד בצורה מסודרת יותר. האוטומציות של BizUply מחברות בין אירועים לפעולות מוגדרות, בהתאם ליכולות ולחיבורים הפעילים בחשבון.",
+              "Not every action in a business has to be done by hand. When a customer leaves details, a new lead arrives, or it is time to follow up, a defined process can help the team work in a more orderly way. BizUply automations connect events to defined actions, within the features and connections that are active on the account.",
             )}
           </p>
           <ol className="hx-chain">
@@ -1045,8 +1045,8 @@ function ReadySystems() {
           <h2 id="hx-saas-title">{text("רוצים להקים עסק דיגיטלי? לא תמיד חייבים להתחיל מאפס.", "Want to launch a digital business? You do not always have to start from a blank page.")}</h2>
           <p className="hx-prose">
             {text(
-              "פיתוח מערכת תוכנה חדשה דורש תכנון, עיצוב, פיתוח, בדיקות ותשתית. Bizuply מפתחת פתרונות SaaS לעסקים וליזמים שרוצים לבחון אפשרות להפעיל מוצר תוכנה משלהם. בקטלוג אפשר לבדוק אילו מערכות זמינות, אילו בהכנה, ומהן אפשרויות ההתאמה.",
-              "Building new software takes planning, design, development, testing, and infrastructure. Bizuply develops SaaS products for businesses and founders who want to explore running a software product of their own. The catalog shows which systems are available, which are still in preparation, and what can be adapted.",
+              "פיתוח מערכת תוכנה חדשה דורש תכנון, עיצוב, פיתוח, בדיקות ותשתית. BizUply מפתחת פתרונות SaaS לעסקים וליזמים שרוצים לבחון אפשרות להפעיל מוצר תוכנה משלהם. בקטלוג אפשר לבדוק אילו מערכות זמינות, אילו בהכנה, ומהן אפשרויות ההתאמה.",
+              "Building new software takes planning, design, development, testing, and infrastructure. BizUply develops SaaS products for businesses and founders who want to explore running a software product of their own. The catalog shows which systems are available, which are still in preparation, and what can be adapted.",
             )}
           </p>
           <ul className="hx-saas-links">
@@ -1159,7 +1159,7 @@ function Connect() {
             </li>
           ))}
         </ul>
-        <p className="hx-prose">{text("Bizuply מחברת בין הכלים שהעסק צריך כדי לעבוד בצורה מסודרת יותר.", "Bizuply connects the tools a business needs in order to work in a more orderly way.")}</p>
+        <p className="hx-prose">{text("BizUply מחברת בין הכלים שהעסק צריך כדי לעבוד בצורה מסודרת יותר.", "BizUply connects the tools a business needs in order to work in a more orderly way.")}</p>
       </div>
     </section>
   );
@@ -1212,17 +1212,17 @@ function Audiences() {
 function Faq() {
   const { text, t } = useCopy();
   const items = [
-    [text("מה זה Bizuply?", "What is Bizuply?"), text("Bizuply היא פלטפורמה עסקית המרכזת כלים לניהול לקוחות ולידים, תקשורת WhatsApp עסקית, קמפיינים, בניית אתרים ואוטומציות. המטרה היא לעזור לעסקים לנהל תהליכים מרכזיים מתוך סביבת עבודה אחת.", "Bizuply is a business platform that brings together customer and lead management, business WhatsApp, campaigns, website building, and automations. The aim is to help a business run its main processes from one workspace.")],
-    [text("מה ההבדל בין CRM לבין מערכת לניהול לידים?", "What is the difference between a CRM and a lead system?"), text("ניהול לידים מתמקד בפניות ובהזדמנויות מכירה. מערכת CRM רחבה יותר ומאפשרת לנהל מידע על לקוחות, את היסטוריית הטיפול ותהליכים הקשורים לקשר עם הלקוח. ב־Bizuply ניהול הלידים הוא חלק מסביבת ה־CRM.", "Lead management focuses on enquiries and sales opportunities. A CRM is broader: customer information, the history of the work, and the processes around the relationship. In Bizuply, lead management is part of the CRM.")],
-    [text("האם אפשר להשתמש רק במערכת CRM?", "Can I use only the CRM?"), text("כן, Bizuply מציעה גם מסלול CRM נפרד. את פרטי המסלול המעודכנים אפשר לבדוק בעמוד המחירים.", "Yes. Bizuply also offers a separate CRM plan. The current plan details are on the pricing page.")],
-    [text("האם אפשר לחבר WhatsApp Business API?", "Can I connect the WhatsApp Business API?"), text("Bizuply מציעה פתרון WhatsApp Business API. החיבור והשימוש תלויים בתנאי הזכאות, בהגדרות החשבון ובמדיניות של Meta.", "Bizuply offers a WhatsApp Business API solution. Connection and use depend on eligibility, the account setup, and Meta’s policies.")],
-    [text("האם Bizuply מתאימה לעסק קטן?", "Is Bizuply a fit for a small business?"), text("כן. עסקים קטנים יכולים להיעזר בכלים לניהול פניות, לקוחות ומשימות. בחירת המסלול המתאים תלויה בצרכים ובכלים שהעסק מעוניין להפעיל.", "Yes. Small businesses can use the tools for enquiries, customers, and tasks. The right plan depends on the needs and on the tools the business wants to run.")],
-    [text("האם אפשר לנהל קמפיינים ממומנים דרך Bizuply?", "Can I manage paid campaigns in Bizuply?"), text("Bizuply כוללת יכולות לניהול קמפיינים של Meta. השימוש תלוי בחיבור חשבון מודעות מתאים ובהרשאות הרלוונטיות.", "Bizuply includes tools for managing Meta campaigns. Use depends on connecting a suitable ads account and on the relevant permissions.")],
-    [text("האם אפשר לבנות אתר בלי לדעת לתכנת?", "Can I build a website without knowing how to code?"), text("כלי בניית האתרים של Bizuply מיועדים לפשט את תהליך יצירת האתר ועריכתו. האפשרויות הזמינות תלויות בסוג האתר וביכולות הפעילות במוצר.", "Bizuply’s website tools are meant to simplify creating and editing a site. What is available depends on the kind of site and on the features active in the product.")],
+    [text("מה זה BizUply?", "What is BizUply?"), text("BizUply היא פלטפורמה עסקית המרכזת כלים לניהול לקוחות ולידים, תקשורת WhatsApp עסקית, קמפיינים, בניית אתרים ואוטומציות. המטרה היא לעזור לעסקים לנהל תהליכים מרכזיים מתוך סביבת עבודה אחת.", "BizUply is a business platform that brings together customer and lead management, business WhatsApp, campaigns, website building, and automations. The aim is to help a business run its main processes from one workspace.")],
+    [text("מה ההבדל בין CRM לבין מערכת לניהול לידים?", "What is the difference between a CRM and a lead system?"), text("ניהול לידים מתמקד בפניות ובהזדמנויות מכירה. מערכת CRM רחבה יותר ומאפשרת לנהל מידע על לקוחות, את היסטוריית הטיפול ותהליכים הקשורים לקשר עם הלקוח. ב־BizUply ניהול הלידים הוא חלק מסביבת ה־CRM.", "Lead management focuses on enquiries and sales opportunities. A CRM is broader: customer information, the history of the work, and the processes around the relationship. In BizUply, lead management is part of the CRM.")],
+    [text("האם אפשר להשתמש רק במערכת CRM?", "Can I use only the CRM?"), text("כן, BizUply מציעה גם מסלול CRM נפרד. את פרטי המסלול המעודכנים אפשר לבדוק בעמוד המחירים.", "Yes. BizUply also offers a separate CRM plan. The current plan details are on the pricing page.")],
+    [text("האם אפשר לחבר WhatsApp Business API?", "Can I connect the WhatsApp Business API?"), text("BizUply מציעה פתרון WhatsApp Business API. החיבור והשימוש תלויים בתנאי הזכאות, בהגדרות החשבון ובמדיניות של Meta.", "BizUply offers a WhatsApp Business API solution. Connection and use depend on eligibility, the account setup, and Meta’s policies.")],
+    [text("האם BizUply מתאימה לעסק קטן?", "Is BizUply a fit for a small business?"), text("כן. עסקים קטנים יכולים להיעזר בכלים לניהול פניות, לקוחות ומשימות. בחירת המסלול המתאים תלויה בצרכים ובכלים שהעסק מעוניין להפעיל.", "Yes. Small businesses can use the tools for enquiries, customers, and tasks. The right plan depends on the needs and on the tools the business wants to run.")],
+    [text("האם אפשר לנהל קמפיינים ממומנים דרך BizUply?", "Can I manage paid campaigns in BizUply?"), text("BizUply כוללת יכולות לניהול קמפיינים של Meta. השימוש תלוי בחיבור חשבון מודעות מתאים ובהרשאות הרלוונטיות.", "BizUply includes tools for managing Meta campaigns. Use depends on connecting a suitable ads account and on the relevant permissions.")],
+    [text("האם אפשר לבנות אתר בלי לדעת לתכנת?", "Can I build a website without knowing how to code?"), text("כלי בניית האתרים של BizUply מיועדים לפשט את תהליך יצירת האתר ועריכתו. האפשרויות הזמינות תלויות בסוג האתר וביכולות הפעילות במוצר.", "BizUply’s website tools are meant to simplify creating and editing a site. What is available depends on the kind of site and on the features active in the product.")],
     [text("האם אפשר ליצור אוטומציות עסקיות?", "Can I create business automations?"), text("כן, בהתאם למסלול וליכולות הפעילות. ניתן להגדיר תהליכים המחברים בין אירועים לבין פעולות עסקיות.", "Yes, depending on the plan and the features that are active. You can define processes that connect events to business actions.")],
-    [text("האם אפשר לרכוש מערכת SaaS מוכנה?", "Can I buy a ready-made SaaS system?"), text("Bizuply מפתחת ומציעה פתרונות SaaS. בקטלוג אפשר לבדוק אילו מערכות זמינות לרכישה, אילו נמצאות בהכנה ומהן אפשרויות ההתאמה.", "Bizuply develops and offers SaaS products. The catalog shows which systems are available to buy, which are still in preparation, and what can be adapted.")],
+    [text("האם אפשר לרכוש מערכת SaaS מוכנה?", "Can I buy a ready-made SaaS system?"), text("BizUply מפתחת ומציעה פתרונות SaaS. בקטלוג אפשר לבדוק אילו מערכות זמינות לרכישה, אילו נמצאות בהכנה ומהן אפשרויות ההתאמה.", "BizUply develops and offers SaaS products. The catalog shows which systems are available to buy, which are still in preparation, and what can be adapted.")],
     [text("האם חייבים לרכוש את כל הכלים?", "Do I have to buy every tool?"), text("לא בהכרח. קיימים מסלולים ופתרונות שונים. מומלץ לעיין בעמוד המחירים כדי להבין אילו יכולות נכללות בכל הצעה.", "Not necessarily. There are different plans and products. The pricing page shows which capabilities are included in each offer.")],
-    [text("האם Bizuply מתאימה לעסקים מחוץ לישראל?", "Does Bizuply work for businesses outside Israel?"), text("Bizuply פונה גם לשוק הבינלאומי. זמינות השירותים, השפות, אפשרויות התשלום והאינטגרציות עשויה להשתנות לפי המדינה והמוצר.", "Bizuply also serves an international market. Service availability, languages, payment options, and integrations can vary by country and product.")],
+    [text("האם BizUply מתאימה לעסקים מחוץ לישראל?", "Does BizUply work for businesses outside Israel?"), text("BizUply פונה גם לשוק הבינלאומי. זמינות השירותים, השפות, אפשרויות התשלום והאינטגרציות עשויה להשתנות לפי המדינה והמוצר.", "BizUply also serves an international market. Service availability, languages, payment options, and integrations can vary by country and product.")],
   ] as const;
   return (
     <section className="hx-faq" aria-labelledby="hx-faq-title">
@@ -1280,7 +1280,7 @@ function Close() {
         <LocaleShot
           language={language}
           src="/demo-media/home/crm.jpg"
-          alt={text("רשימת לידים בתוך Bizuply", "A lead list inside Bizuply")}
+          alt={text("רשימת לידים בתוך BizUply", "A lead list inside BizUply")}
           width={960}
           height={600}
           loading="lazy"

@@ -20,7 +20,7 @@ export const HX_HERO_COPY = {
     start: "Start with BizUply",
     see: "Explore the platform",
     note: "Fewer separate systems. More order, more control, and more time for customers.",
-    stageAlt: "Northwind Studio lead list inside Bizuply",
+    stageAlt: "Northwind Studio lead list inside BizUply",
     login: "Login",
     cta: "Get Started",
     navAria: "Main navigation",
@@ -34,7 +34,7 @@ export const HX_HERO_COPY = {
     start: "התחילו עם BizUply",
     see: "גלו את הפלטפורמה",
     note: "פחות מערכות נפרדות. יותר סדר, שליטה וזמן להתמקד בלקוחות.",
-    stageAlt: "רשימת הלידים של Northwind Studio בתוך Bizuply",
+    stageAlt: "רשימת הלידים של Northwind Studio בתוך BizUply",
     login: "התחברות",
     cta: "הירשמו עכשיו",
     navAria: "ניווט ראשי",
@@ -118,7 +118,7 @@ function faqBodyHtml(items) {
 export function renderPurpleHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
   const hx = locale === "he" ? HX_HERO_COPY.he : HX_HERO_COPY.en;
-  const logoAlt = locale === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
+  const logoAlt = locale === "he" ? "ביזאפלי (BizUply)" : "BizUply";
   const navLocale =
     locale === "he" || locale === "es" || locale === "pt-BR" || locale === "ar" ? locale : "en";
   const href = (path) => localeHref(navLocale, path);
