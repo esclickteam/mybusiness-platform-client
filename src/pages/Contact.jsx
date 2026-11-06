@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +9,9 @@ import {
   detectPhoneCountry,
   detectPhoneCountrySync,
 } from "../utils/detectPhoneCountry";
+import API from "../api";
+import { NOTICE_VERSION } from "../lib/trackingConsent";
+import { createConsentKey, storePrivacyConsent } from "../lib/privacyConsentClient";
 
 function Contact() {
   const { t, i18n } = useTranslation();
@@ -26,6 +29,7 @@ function Contact() {
   });
 
   const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const consentKeyRef = useRef(createConsentKey());
   const [loading, setLoading] = useState(false);
   const [phoneCountry, setPhoneCountry] = useState(detectPhoneCountrySync);
 
@@ -77,26 +81,26 @@ function Contact() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/support", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          phone,
-          email,
-          issueDescription: message,
-          marketingOptIn,
-          noticeVersion: "2026-11-06",
-          locale: i18n.language,
-        }),
+      await storePrivacyConsent({
+        consentKey: consentKeyRef.current,
+        source: "contact",
+        email,
+        termsAccepted: false,
+        marketingOptIn,
+        locale: i18n.language,
       });
-
-      await res.json();
-
-      if (!res.ok) {
-        throw new Error("Failed to send");
+      const { data } = await API.post("/support", {
+        name,
+        phone,
+        email,
+        issueDescription: message,
+        marketingOptIn,
+        noticeVersion: NOTICE_VERSION,
+        locale: i18n.language,
+        consentKey: consentKeyRef.current,
+      });
+      if (data?.success !== true || data?.consentStored !== true) {
+        throw new Error("consent_not_stored");
       }
 
       setStatus({
@@ -111,9 +115,12 @@ function Contact() {
         message: "",
       });
     } catch (error) {
+      const failedBeforeSave = ["consent_not_stored", "consent_key_required", "email_invalid"].includes(
+        error?.message
+      );
       setStatus({
         type: "error",
-        messageKey: "error",
+        messageKey: failedBeforeSave ? "consentSaveFailed" : "error",
       });
     } finally {
       setLoading(false);

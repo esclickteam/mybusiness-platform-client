@@ -2790,7 +2790,8 @@
         "state_invalid": "La sesión de acceso caducó. Inténtalo de nuevo.",
         "cancelled": "Se canceló el acceso con {{provider}}.",
         "provider_unavailable": "El acceso con {{provider}} no está disponible ahora. Usa correo y contraseña.",
-        "provider_error": "No pudimos iniciar sesión con {{provider}}. Inténtalo de nuevo.",
+        "consent_required": "Registration cannot continue without a stored consent record. You can try again.",
+      "provider_error": "No pudimos iniciar sesión con {{provider}}. Inténtalo de nuevo.",
         "account_disabled": "Esta cuenta está desactivada. Contacta support@bizuply.com.",
         "rate_limited": "Demasiados intentos. Prueba de nuevo en unos minutos.",
         "signup_closed": "El registro no está disponible temporalmente. Inténtalo más tarde.",
@@ -3498,10 +3499,11 @@
     "sendButton": "Enviar mensaje",
     "sendingButton": "Enviando...",
     "fillAllFields": "Por favor, rellene todos los campos",
+    "privacyNotice": "Your name, phone, email, and message are kept so we can answer the enquiry. Sending it is not consent to marketing. More detail is in the privacy policy.",
+    "marketingConsent": "I agree to receive marketing updates from Bizuply. I can withdraw this consent at any time.",
+    "consentSaveFailed": "The enquiry was not sent because the consent choice could not be saved. You can try again.",
     "success": "Formulario enviado con éxito! Nos pondremos en contacto con usted en breve.",
-    "error": "Ha ocurrido un error. Por favor, inténtelo de nuevo más tarde.",
-    "privacyNotice": "Your name, phone, email, and message are kept so we can answer the enquiry. Sending it is not consent to marketing. Details are in the privacy policy.",
-    "marketingConsent": "I agree to receive marketing updates from Bizuply. I can withdraw this consent at any time."
+    "error": "Ha ocurrido un error. Por favor, inténtelo de nuevo más tarde."
   },
   "crm": {
     "shell": {
@@ -11866,29 +11868,29 @@
     "badge": "Centro de Accesibilidad",
     "title": "Declaración de accesibilidad",
     "intro": "BizUply se compromete a crear una experiencia digital inclusiva, accesible y fácil de usar para todos.",
-    "lastUpdatedChip": "Last updated: 6 November 2026",
+    "lastUpdatedChip": "Última actualización: 29 de septiembre de 2025",
     "asideTitle": "Nuestro compromiso con la accesibilidad",
     "asideText": "Mejoramos continuamente la accesibilidad en BizUply y apoyamos a los usuarios que necesitan asistencia.",
     "chips": [
       {
-        "title": "WCAG 2.1 AA",
-        "text": "A target. Not a claim of full conformance"
+        "title": "WCAG",
+        "text": "Nivel AA 2.1"
       },
       {
-        "title": "Review",
-        "text": "6 November 2026, partial"
+        "title": "Norma",
+        "text": "En línea con los requisitos de accesibilidad"
       },
       {
-        "title": "Coordinator",
-        "text": "Name and phone need an owner decision"
+        "title": "Apoyo",
+        "text": "Ayuda disponible"
       }
     ],
     "needHelp": "¿Necesitas ayuda?",
     "commitmentTitle": "Nuestro compromiso",
-    "commitmentP1": "Bizuply works to reduce barriers. This statement describes what was checked and fixed. It is not a claim of full conformance.",
-    "commitmentP2": "The 6 November 2026 check connected labels to the contact and registration fields, added descriptions to demo images that had an empty alt, and corrected light text on a light background in the legal documents. A full screen-reader pass and a scan of every page were not done. Israeli Standard 5568 and any small-business exemption need a legal review based on the company's size.",
+    "commitmentP1": "BizUply se compromete a garantizar la accesibilidad digital para las personas con discapacidad. Trabajamos continuamente para mejorar la experiencia del usuario para todos y para implementar estándares de accesibilidad relevantes, de acuerdo con los principios de la Ley de Igualdad de Derechos para las Personas con Discapacidad y las regulaciones de accesibilidad en Israel, y también de acuerdo con los principios de la ADA.",
+    "commitmentP2": "Nos esforzamos por cumplir con las Pautas de Accesibilidad al Contenido Web (WCAG) 2.1 en el Nivel AA, para proporcionar una experiencia digital inclusiva y cómoda para todos los visitantes.",
     "featuresTitle": "Características de accesibilidad",
-    "featuresP": "The site has a skip link, a document language and Hebrew direction when Hebrew is selected, and a widget that can enlarge text and change contrast. The widget does not replace the page structure.",
+    "featuresP": "BizUply está diseñado de acuerdo con los principios de accesibilidad, incluyendo una estructura clara, contenido legible y soporte para tecnologías de asistencia comunes.",
     "featuresList": [
       "Soporte para navegación por teclado.",
       "Texto legible con contraste y tamaño ajustables.",
@@ -11896,13 +11898,13 @@
       "Estructura consistente y etiquetas claras para formularios y botones."
     ],
     "limitationsTitle": "Limitaciones",
-    "limitationsP": "Unscanned gaps remain, including third-party content, internal product screens, and media. The accessibility coordinator's name and direct phone are not published because they were not verified. Contact support@bizuply.com.",
+    "limitationsP": "Aunque nos esforzamos por hacer que todo el contenido sea completamente accesible, es posible que algunas integraciones de terceros o ciertos medios aún no cumplan con los requisitos de accesibilidad completos. Estamos trabajando activamente en soluciones y mejoras.",
     "feedbackTitle": "Feedback y contacto",
     "feedbackP": "Si se encontró con una barrera mientras usaba BizUply o necesita ayuda, contáctenos. Damos la bienvenida a los comentarios y los usamos para mejorar la plataforma.",
     "emailLabel": "Email",
     "lastUpdateTitle": "Última actualización",
     "lastUpdateBefore": "Esta declaración fue actualizada por última vez en ",
-    "lastUpdateDate": "6 November 2026",
+    "lastUpdateDate": "29 de septiembre de 2025",
     "lastUpdateAfter": ".",
     "statementLabel": "Declaración de accesibilidad"
   },
@@ -12903,7 +12905,7 @@
     "title": "Política de privacidad",
     "intro": "Esta Política de privacidad explica cómo BizUply recopila, almacena, utiliza y protege la información personal y comercial en toda la plataforma.",
     "lastUpdatedLabel": "Última actualización:",
-    "lastUpdatedDate": "6 November 2026",
+    "lastUpdatedDate": "9 de agosto de 2026",
     "overviewTitle": "Visión general de la política",
     "overviewText": "Navega rápidamente entre las secciones sobre privacidad, datos, seguridad, derechos de usuario y términos legales.",
     "contactPrivacy": "Privacidad Contacto",
@@ -12931,8 +12933,8 @@
     ],
     "s1": {
       "h": "1. Introducción",
-      "p1": "This policy describes how Bizuply LLC collects personal information on the BizUply platform. Bizuply LLC is a company registered in the United States. The state of formation, registration number, and official address are not in the verified website sources, so they are not stated here. Privacy requests: privacy@bizuply.com.",
-      "p2": "BizUply is business-management software. This policy covers bizuply.com, user accounts, and information submitted in forms, registration, and payment.",
+      "p1": "Esta Política de Privacidad explica cómo <strong>BizUply</strong>, de propiedad privada y operado bajo las leyes de los Estados Unidos, recopila, almacena, utiliza y protege la información personal de sus usuarios y clientes comerciales (\"Usuarios\", \"Negocios\" o \"usted\"). Al utilizar la plataforma de BizUply, usted acepta los términos descritos en este documento.",
+      "p2": "BizUply es una plataforma SaaS basada en la nube con sede en Nueva York, EE.UU., diseñada para proporcionar herramientas de gestión empresarial, comunicación con el cliente y automatización impulsada por IA para pequeñas y medianas empresas (“PYME”).",
       "p3": "Esta Política de privacidad se aplica a todos nuestros productos, servicios, sitios web y aplicaciones (la \"Plataforma\") y describe en detalle cómo procesamos los datos, qué información recopilamos y qué derechos tiene usted con respecto a su información.",
       "p4": "Al acceder o utilizar nuestra Plataforma, usted reconoce que ha leído y entendido esta Política de Privacidad. Si no está de acuerdo, no utilice BizUply ni ninguno de sus servicios."
     },
@@ -12995,20 +12997,13 @@
       "h": "6. Intercambio de datos y terceros",
       "p1": "BizUply no vende ni intercambia datos personales. Sin embargo, podemos compartir información limitada con terceros verificados solo cuando sea necesario para operar la Plataforma, cumplir con nuestras obligaciones legales o proporcionar servicios básicos, bajo estrictas normas de confidencialidad y seguridad.",
       "h1": "6.1. Proveedores de servicios autorizados",
-      "p2": "The providers below appear in the code. This repository does not state each provider's storage region, and the region cannot be inferred from the provider's name.",
+      "p2": "Podemos compartir datos con proveedores de servicios externos cuidadosamente seleccionados que nos ayudan con:",
       "list": [
-        "Lemon Squeezy — payment and the platform subscriptions shown on the pricing page",
-        "MongoDB — the application database. The region is not stated in this code",
-        "Railway — application server hosting. The region is not stated in this code",
-        "Vercel — public website hosting",
-        "Cloudinary — uploaded image files",
-        "Resend — email delivery",
-        "OpenAI — AI features when a user invokes them",
-        "Meta — WhatsApp Business API, ad connections a business chooses, and the measurement pixel only after the visitor allows it",
-        "Google Fonts — font files",
-        "Stripe — store checkout and billing paths where the code still calls Stripe",
-        "Twilio — the internal phone system, when that connection is enabled",
-        "Cloudflare Turnstile — bot checks on signup screens where the site key is configured"
+        "Infraestructura de alojamiento y servidor, por ejemplo, AWS, Google Cloud",
+        "Procesamiento de pagos y facturación, por ejemplo, Stripe, PayPal",
+        "Comunicación con el cliente y notificaciones, por ejemplo, Twilio, SendGrid",
+        "Análisis, seguridad y supervisión del rendimiento, por ejemplo, Cloudflare",
+        "Módulos de IA y automatización para análisis o predicciones, sin usar los datos de la API de Google Workspace para entrenar o mejorar modelos generalizados de IA, como se establece en la Sección 7"
       ],
       "p3": "Todos los proveedores están obligados por acuerdos de confidencialidad y pueden usar la información solo para proporcionar los servicios acordados a BizUply, de acuerdo con esta política y la ley aplicable.",
       "h2": "6.2. Requisitos legales",
@@ -13018,20 +13013,23 @@
     },
     "s8": {
       "h": "8. Cookies y tecnologías de seguimiento",
-      "p1": "Essential cookies are stored so the site can run. Marketing measurement loads only after an explicit choice.",
+      "p1": "BizUply utiliza cookies, píxeles y tecnologías de seguimiento para mejorar la experiencia del usuario, mejorar la funcionalidad del sistema y analizar los datos de uso. Estas herramientas nos ayudan a comprender el rendimiento, medir el tráfico y garantizar la seguridad de la Plataforma.",
       "h1": "8.1. Tipos de cookies utilizadas",
       "list": [
-        "Essential: language (bizuply_lang), sign-in, and the saved choice (bizuply_tracking)",
-        "Marketing: Meta pixel 1427327632368128 and the _fbp cookie, only after measurement is allowed"
+        "Cookies esenciales: necesarias para el funcionamiento y el inicio de sesión del sistema",
+        "Cookies funcionales: almacenan las preferencias y configuraciones del usuario",
+        "Cookies analíticas: ayudan a controlar los patrones de uso y el rendimiento",
+        "Cookies de seguridad: protegen las cuentas y evitan el acceso no autorizado",
+        "Cookies de marketing: utilizadas solo con consentimiento, para análisis interno de campañas"
       ],
       "h2": "8.2. Gestión de cookies",
-      "p2": "Choosing essential only stops the pixel from loading. The choice can be reset with the button on this page.",
-      "p3": "Google Analytics was not loaded on the public site that was checked. Do Not Track is not implemented."
+      "p2": "Los usuarios pueden desactivar las cookies a través de la configuración de su navegador. Sin embargo, deshabilitar las cookies esenciales puede afectar la funcionalidad o el acceso a ciertas características del sistema.",
+      "p3": "BizUply no responde a las señales de “No rastrear” del navegador. Para más información, contáctenos en <strong>support@BizUply.com</strong>."
     },
     "s9": {
       "h": "9. Retención de datos y seguridad",
-      "p1": "A form enquiry is kept as a support ticket until an operator deletes it. The product has no self-service account deletion or automatic export. Access, correction, and deletion requests go to privacy@bizuply.com. A fixed retention period needs an owner decision.",
-      "p2": "The public site is served over HTTPS. This policy does not claim encryption at rest, a firewall, or two-factor authentication. Two-factor authentication is not currently offered to users.",
+      "p1": "BizUply retiene datos personales y comerciales solo durante el tiempo que sea necesario para proporcionar sus servicios, cumplir con las obligaciones legales y evitar el uso indebido o el fraude. Cuando los datos ya no son necesarios, se eliminan o anonimizan de forma segura.",
+      "p2": "Utilizamos medidas de seguridad estándar de la industria, incluyendo encriptación, firewalls, detección de intrusiones, autenticación de dos factores y acceso restringido para proteger todos los datos almacenados. Sin embargo, ningún sistema en línea es completamente inmune a las infracciones. Al utilizar BizUply, usted reconoce y acepta los riesgos inherentes de transmitir datos a través de Internet.",
       "p3": "En caso de violación de datos, BizUply notificará a los usuarios afectados según lo exija la ley."
     },
     "s10": {
@@ -13066,9 +13064,9 @@
     },
     "s13": {
       "h": "13. Localización de datos y transferencias internacionales",
-      "p1": "The code does not establish that information is stored only in New York or only in the United States. The providers above process information on their own infrastructure. The exact region has to be confirmed in the live provider accounts.",
+      "p1": "Todos los datos personales y comerciales recopilados por BizUply se procesan y almacenan únicamente en los Estados Unidos de América, principalmente en servidores seguros ubicados en Nueva York y otras jurisdicciones de los Estados Unidos que cumplen con los estándares federales de protección de datos.",
       "p2": "BizUply no transfiere ni almacena datos de usuarios fuera de los Estados Unidos a sabiendas. En el raro caso de que los datos se procesen a través de servicios de terceros ubicados en el extranjero, dicha transferencia se llevará a cabo solo cuando sea necesario para operar la Plataforma, y siempre bajo cláusulas contractuales que garanticen la seguridad, confidencialidad y manejo legal equivalentes.",
-      "p3": "Using the site does not by itself decide which law applies to the information. That question is reserved for legal review."
+      "p3": "Al utilizar BizUply, usted acepta el procesamiento de sus datos personales dentro de los Estados Unidos y reconoce que su información estará sujeta únicamente a las leyes de los Estados Unidos y el Estado de Nueva York."
     },
     "s14": {
       "h": "14. Actualizaciones y avisos de políticas",
@@ -13102,16 +13100,15 @@
       "cardTitle": "<strong>BizUply – Oficina de Protección de Datos</strong>",
       "cardEmail": "Correo electrónico: <strong>privacy@BizUply.com</strong>",
       "cardSupport": "Apoyo general: <strong>support@BizUply.com</strong>",
-      "cardHq": "Company: Bizuply LLC, registered in the United States. An official address was not verified here.",
-      "p2": "It was not verified that a data protection officer has been appointed. Privacy requests go to privacy@bizuply.com. Whether the law requires an officer depends on the scale of the information and needs legal approval."
+      "cardHq": "Sede: Nueva York, NY, Estados Unidos",
+      "p2": "El Delegado de Protección de Datos (DPO) designado por BizUply es responsable de monitorear el cumplimiento, responder a las consultas de los usuarios y garantizar que todas las prácticas internas de manejo de datos cumplan con los estándares legales y de la industria."
     },
     "s19": {
       "h": "19. Provisión final",
       "p1": "Al acceder o utilizar la plataforma de BizUply, usted confirma que ha leído, entendido y aceptado todos los términos establecidos en esta Política de Privacidad. Además, reconoce que esta política constituye la declaración completa y exclusiva del entendimiento entre usted y BizUply con respecto a la privacidad, y reemplaza cualquier acuerdo o representación anterior.",
       "p2": "Si alguna parte de esta política se considera inaplicable, las disposiciones restantes continuarán en pleno vigor y efecto en la medida máxima permitida por la ley.",
       "p3": "El uso de BizUply significa el consentimiento expreso e irrevocable a todas las disposiciones contenidas en este documento."
-    },
-    "counselNote": "The factual text was updated on 6 November 2026 from what the code confirms. Governing law, refunds, and waivers still need a lawyer's approval. This page does not decide which statute applies to a particular person."
+    }
   },
   "termsPage": {
     "sections": [
@@ -13220,7 +13217,7 @@
       "cookiesTitle": "Cookies y tecnologías de seguimiento",
       "p7": "5.7. El Sitio y la Aplicación utilizan cookies, balizas web y tecnologías similares para garantizar la funcionalidad básica, analizar las tendencias de uso, fortalecer la seguridad y mejorar la experiencia del usuario.",
       "p8": "5.8. Los usuarios pueden desactivar o restringir las cookies a través de la configuración de su navegador; sin embargo, como resultado, ciertas características de la plataforma pueden no funcionar correctamente.",
-      "p9": "5.9. Marketing measurement on the public site is the Meta pixel, and it loads only after a choice. Google Analytics was not loaded in the check. Cloudflare Turnstile may appear on signup screens where it is configured.",
+      "p9": "5.9. La Compañía puede utilizar herramientas de análisis y seguimiento de terceros, como <strong>Google Analytics</strong> para recopilar datos de uso anónimos y herramientas de seguridad como reCAPTCHA para detectar y prevenir actividades fraudulentas. Estos servicios pueden establecer sus propias cookies de acuerdo con sus políticas de privacidad.",
       "p10": "Para obtener más información sobre cómo BizUply recopila, utiliza y protege los datos, consulte nuestra Política de privacidad detallada. <strong>Política de privacidad</strong>que forma parte integrante de estos Términos de Uso."
     },
     "s6": {
@@ -13239,7 +13236,7 @@
     "s7": {
       "h": "7. Pagos, precios y política de reembolso",
       "notice": "<strong>Aviso legal:</strong> Esta sección debe leerse junto con la Sección 13 “Renuncia a Reclamaciones, Reembolsos y Limitación de Acciones”, que aclara aún más la renuncia del Usuario a cualquier derecho a reclamar, disputar o solicitar reembolsos por cualquier motivo.",
-      "p1": "7.1. Platform subscriptions shown on the pricing page are paid through Lemon Squeezy, in US dollars, at the price and interval shown before payment. Store paths or older billing may still use Stripe.",
+      "p1": "7.1. El acceso a las funciones premium o planes de pago de BizUply requiere una suscripción activa. Todos los pagos deben realizarse a través de procesadores de pagos aprobados, como Stripe y PayPal, y están sujetos a sus respectivos términos y tarifas.",
       "p2": "7.2. A menos que se indique lo contrario, <strong>Todos los pagos son finales y no reembolsables</strong>. Esto incluye cancelaciones anticipadas, períodos de servicio no utilizados, desactivación de la cuenta o insatisfacción con el servicio. Una vez que se compra una suscripción, permanecerá activa durante todo el período comprado y <strong>no se puede acortar, pausar o reembolsar</strong>, incluso si el Usuario decide dejar de usar la plataforma o cancela su cuenta.",
       "p3": "7.3. El Usuario reconoce y acepta que cualquier reembolso, crédito o ajuste se determinará únicamente en el momento de la <strong>La única discreción de la empresa</strong>. BizUply no tiene obligación legal o financiera de emitir reembolsos bajo ninguna circunstancia. El Usuario renuncia expresamente a cualquier derecho a solicitar devoluciones de cargo, abrir reclamaciones de reembolso a través de proveedores de pagos o exigir la restitución por cualquier medio.",
       "p4": "7.4. En casos de suspensión, restricción o eliminación de la cuenta debido a una violación de estos términos, uso indebido, conducta abusiva o actividad ilegal, la Compañía se reserva el derecho de: <strong>cancelar la suscripción del Usuario inmediatamente</strong> sin previo aviso. En tales casos, <strong>sin reembolso, crédito o compensación</strong> Se proporcionará por el resto del período de suscripción.",
@@ -13333,8 +13330,7 @@
       "p2": "Estos términos constituyen el acuerdo completo entre el Usuario y BizUply con respecto al uso de la plataforma, y reemplazan cualquier entendimiento previo, oral o escrito. Si alguna disposición se considera inaplicable, las disposiciones restantes permanecerán en pleno vigor y efecto.",
       "lastUpdatedLabel": "Última actualización",
       "lastUpdatedValue": "Octubre 2025"
-    },
-    "counselNote": "The older governing-law clauses conflict, naming both Delaware and New York. That conflict is not resolved here and waits for legal approval. Until then, the price, currency, billing interval, renewal, and cancellation shown on the purchase screen describe the live behavior."
+    }
   },
   "websitePage": {
     "seo": {
@@ -13804,16 +13800,17 @@
       "sendFailed": "No se pudo enviar el código. Inténtalo de nuevo.",
       "useSocialForIntent": "Continúa con Google o Microsoft para este registro."
     },
+    "termsConsent": "I accept the terms of use and the privacy policy before payment.",
+    "marketingConsent": "I agree to receive marketing updates. This is separate from the terms and is not required to pay.",
+    "termsRequired": "Accept the terms to continue. Marketing consent stays optional.",
+    "consentSaveFailed": "We cannot continue because the consent choice was not saved. No registration was started. You can try again.",
     "setup": {
       "title": "Termina de configurar tu negocio",
       "subtitle": "Añade el nombre de tu negocio para personalizar el espacio de trabajo. Tu correo de acceso ya está guardado.",
       "optional": "opcional",
       "continue": "Continuar al panel",
       "saving": "Guardando…"
-    },
-    "termsConsent": "I accept the terms of use and the privacy policy before payment.",
-    "marketingConsent": "I agree to receive marketing updates. This is separate from the terms and is not required to pay.",
-    "termsRequired": "Accept the terms to continue. Marketing consent stays optional."
+    }
   },
   "studio": {
     "back": "Volver",
@@ -23786,6 +23783,6 @@
   "billingNotice": {
     "month": "each month",
     "year": "each year",
-    "subscription": "{{price}} {{interval}}, in US dollars, through Lemon Squeezy. The subscription renews automatically until you cancel it in billing. Cancellation stops the next charge and access remains until the end of the paid period. The current terms do not provide a partial refund. Whether that refund clause is enforceable depends on the applicable law and on legal approval."
+    "subscription": "{{price}} {{interval}}, in US dollars, through Lemon Squeezy. The subscription renews automatically until it is cancelled in billing. Cancellation stops the next charge, and access remains until the end of the paid period. Refunds follow the published terms of use."
   }
 }

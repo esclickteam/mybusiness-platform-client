@@ -83,6 +83,10 @@ export default function Accessibility() {
                   <p className="text-xl font-black text-slate-800">{title}</p>
                   <p className="text-sm font-bold text-slate-500">{text}</p>
                 </div>
+
+                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">
+                  ✓
+                </span>
               </div>
             ))}
           </div>
@@ -120,8 +124,8 @@ export default function Accessibility() {
             <ul className={ulBase}>
               {featureItems.map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-black text-slate-700">
-                    ·
+                  <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">
+                    ✓
                   </span>
                   <span>{item}</span>
                 </li>

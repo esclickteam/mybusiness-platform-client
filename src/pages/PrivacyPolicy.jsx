@@ -58,9 +58,6 @@ function PrivacyPolicy() {
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("privacyPage.lastUpdatedLabel")} {t("privacyPage.lastUpdatedDate")}
         </div>
-        <p className="mx-auto mt-4 max-w-3xl text-sm font-semibold leading-6 text-slate-700">
-          {t("privacyPage.counselNote")}
-        </p>
         <button
           type="button"
           className="mt-4 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-900"
@@ -104,7 +101,7 @@ function PrivacyPolicy() {
           </nav>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-              <p className="text-sm font-black text-slate-900">
+            <p className="text-sm font-black text-slate-900">
               {t("privacyPage.contactPrivacy")}
             </p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
@@ -435,7 +432,7 @@ function PrivacyPolicy() {
             <p className={pBase}>{t("privacyPage.s19.p3")}</p>
 
             <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-900">
                 {t("privacyPage.lastUpdatedBoxLabel")}
               </p>
               <p className="mt-2 text-xl font-black">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail } from "lucide-react";
 
@@ -8,6 +8,7 @@ import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { persistBillingCountry } from "../billing/billingMarkets";
 import { useBillingMarket } from "../billing/useBillingMarket";
 import SubscriptionTermsNotice from "../components/billing/SubscriptionTermsNotice";
+import { createConsentKey, storePrivacyConsent } from "../lib/privacyConsentClient";
 import { marketingAllowed, NOTICE_VERSION } from "../lib/trackingConsent";
 import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
@@ -77,6 +78,7 @@ export default function Register() {
   const [otpCooldown, setOtpCooldown] = useState(0);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const consentKeyRef = useRef(createConsentKey());
 
   const oauthQueryError = oauthErrorMessage(
     searchParams.get("oauth_error"),
@@ -127,6 +129,7 @@ export default function Register() {
   const language = getManualLanguageChoice() || i18n.language;
 
   const consentPayload = {
+    consentKey: consentKeyRef.current,
     termsAccepted,
     marketingOptIn,
     noticeVersion: NOTICE_VERSION,
@@ -140,15 +143,29 @@ export default function Register() {
     return false;
   };
 
-  const handleSocialStart = (provider: SocialProvider) => {
+  const saveRegisterConsent = async (emailAddress: string) => {
+    await storePrivacyConsent({
+      consentKey: consentKeyRef.current,
+      source: "register",
+      email: emailAddress,
+      termsAccepted: true,
+      marketingOptIn,
+      locale: language,
+      plan: selectedPlan || "",
+    });
+  };
+
+  const handleSocialStart = async (provider: SocialProvider) => {
     setError("");
     if (!requireTerms()) return;
-    void fetch("/api/privacy/consent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source: "register", email: email.trim().toLowerCase(), ...consentPayload }),
-    }).catch(() => undefined);
     setSocialBusy(provider);
+    try {
+      await saveRegisterConsent(email.trim().toLowerCase());
+    } catch {
+      setError(t("register.consentSaveFailed"));
+      setSocialBusy(null);
+      return;
+    }
     startBizuplySocialAuth(provider, {
       intent: "signup",
       language,
@@ -156,6 +173,7 @@ export default function Register() {
       websiteAddon: includeWebsiteAddon,
       referralCode: referralCode || undefined,
       purchaseIntent: pendingPurchaseSignup,
+      consentKey: consentKeyRef.current,
     });
   };
 
@@ -172,14 +190,15 @@ export default function Register() {
       return;
     }
     if (!requireTerms()) return;
-    void fetch("/api/privacy/consent", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source: "register", email: clean, ...consentPayload }),
-    }).catch(() => undefined);
     setSocialBusy("email");
     setLoading(true);
     try {
+      try {
+        await saveRegisterConsent(clean);
+      } catch {
+        setError(t("register.consentSaveFailed"));
+        return;
+      }
       const { data } = await API.post("/auth/signup/email/start", {
         email: clean,
         plan: selectedPlan,
@@ -197,7 +216,8 @@ export default function Register() {
     } catch (err) {
       const apiErr = err as { response?: { data?: { code?: string } } };
       const code = apiErr.response?.data?.code;
-      if (code === "email_registered") setError(t("register.emailExists"));
+      if (code === "consent_required") setError(t("register.consentSaveFailed"));
+      else if (code === "email_registered") setError(t("register.emailExists"));
       else if (code === "whatsapp_account") setError(t("login.oauth.errors.whatsapp_account"));
       else if (code === "otp_cooldown") setError(t("login.oauth.errors.otp_cooldown"));
       else setError(t("register.identity.sendFailed"));
