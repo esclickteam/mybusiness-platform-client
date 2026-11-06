@@ -738,6 +738,7 @@ html.hx-preview body {
 }
 
 .hx-hero-float {
+  display: none;
   position: absolute;
   z-index: 3;
   overflow: hidden;
@@ -758,15 +759,17 @@ html.hx-preview body {
 }
 
 .hx-hero-float-a {
-  inset-inline-start: -2%;
-  top: 8%;
+  inset-inline-start: 1%;
+  bottom: 16%;
+  top: auto;
+  width: min(30%, 210px);
   animation: hx-float-a 7s ease-in-out infinite alternate;
 }
 
 .hx-hero-float-b {
-  inset-inline-end: 4%;
-  bottom: -4%;
-  width: min(34%, 240px);
+  inset-inline-end: 20%;
+  bottom: 34%;
+  width: min(26%, 190px);
   animation: hx-float-b 8.5s ease-in-out infinite alternate;
 }
 
@@ -816,7 +819,7 @@ html.hx-preview body {
 .hx-hero-shot-3 { opacity: var(--s3); }
 
 .hx-crop-leads { object-position: left 18% center; }
-.hx-crop-record { object-position: center 22%; }
+.hx-crop-record { object-position: center top; }
 .hx-crop-task { object-position: center 30%; }
 .hx-crop-chat { object-position: right 22% center; }
 .hx-crop-campaigns { object-position: center 15%; }
@@ -3444,18 +3447,19 @@ html.hx-preview body {
 
 .hx-links {
   position: absolute;
-  z-index: 3;
-  inset-inline-end: 6%;
-  bottom: 8%;
-  width: min(42vw, 640px);
+  z-index: 4;
+  inset-inline-end: 4%;
+  top: 22%;
+  width: min(58vw, 820px);
   height: auto;
   pointer-events: none;
 }
 
 .hx-link-path {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.55);
-  stroke-width: 1.25;
+  stroke: #fff;
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 5px rgba(124, 58, 237, 0.9));
 }
 
 .hx-spark {
@@ -3490,13 +3494,15 @@ html.hx-preview body {
 }
 
 .hx-lead-note {
-  inset-inline-end: 7%;
-  top: 12%;
+  inset-inline-end: 36%;
+  top: 14%;
+  width: min(15.5rem, 24vw);
 }
 
 .hx-pulse {
   inset-inline-end: 3%;
-  bottom: 7%;
+  bottom: 11%;
+  width: min(16rem, 26vw);
   animation-delay: 0.7s, 0s;
 }
 
