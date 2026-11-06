@@ -201,7 +201,7 @@ export default function AiStudioCodePage() {
       let latest = data;
       const started = Date.now();
       while (Date.now() - started < 90000) {
-        await new Promise((resolve) => window.setTimeout(resolve, 2000));
+        await new Promise((resolve) => window.setTimeout(resolve, Date.now() - started < 15000 ? 1000 : 2000));
         const saved = await API.get(`/ai-studio/code-projects/${data.projectId}`, { timeout: 30000 });
         latest = saved.data;
         remember(latest);
