@@ -974,6 +974,7 @@ const APP_PREFIXES = [
   "/proposal",
   "/website-invite",
   "/quick-jobs",
+  "/compliance",
   "/invistimo",
   "/whatsapp-api",
   "/checkout",
