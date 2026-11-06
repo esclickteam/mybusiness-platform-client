@@ -113,6 +113,24 @@ describe("pixel shells", () => {
       expect(queued()).toBe(before);
     });
 
+    it(`${shell.name} does not load or track again after withdrawal, refresh, or another page`, () => {
+      const page = runPixel(shell.script, "bizuply_tracking=all");
+      expect(page.inserted).toHaveLength(1);
+      const calls: unknown[][] = [];
+      const loaded = page.win.fbq;
+      page.win.fbq = (...args: unknown[]) => {
+        calls.push(args);
+        return typeof loaded === "function" ? loaded(...args) : undefined;
+      };
+      page.choose("essential");
+      page.win.fbq("track", "Purchase");
+      expect(calls).toEqual([["consent", "revoke"]]);
+      const refreshed = runPixel(shell.script, page.cookie);
+      expect(refreshed.inserted).toEqual([]);
+      const navigated = runPixel(shell.script, "bizuply_tracking=essential");
+      expect(navigated.inserted).toEqual([]);
+    });
+
     it(`${shell.name} does not load the pixel on a published customer site`, () => {
       expect(runPixel(shell.script, "bizuply_tracking=all", true).inserted).toEqual([]);
     });

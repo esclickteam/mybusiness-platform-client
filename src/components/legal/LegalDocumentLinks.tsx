@@ -23,7 +23,7 @@ function annexFor(language: string) {
   return annexes.en;
 }
 
-export default function LegalDocumentLinks({ current }: { current: "/terms" | "/privacy" | "/accessibility" }) {
+export default function LegalDocumentLinks({ current }: { current: string }) {
   const { t, i18n } = useTranslation();
   const annex = annexFor(i18n.language || "en");
   return (

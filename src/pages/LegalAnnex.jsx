@@ -1,6 +1,8 @@
-import { Link, useParams } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/i18n";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 import en from "../legal-annex/en.json";
 import he from "../legal-annex/he.json";
 import es from "../legal-annex/es.json";
@@ -20,29 +22,37 @@ function packFor(language) {
 
 export default function LegalAnnex() {
   const { doc } = useParams();
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const pack = packFor(i18n.language);
-  const entry = pack.docs[doc];
+  const entry = pack.docs[doc] || null;
   const dir = getTextDirection(i18n.language);
 
   return (
-    <main dir={dir} className="mx-auto max-w-3xl px-4 py-10 text-slate-900">
-      <nav className="mb-6 flex flex-wrap gap-x-4 gap-y-2 text-sm font-bold">
-        <Link className="underline" to="/terms">{t("termsPage.title")}</Link>
-        <Link className="underline" to="/privacy">{t("privacyPage.title")}</Link>
-        <Link className="underline" to="/accessibility">{t("accessibilityPage.title")}</Link>
-        {Object.entries(pack.docs).map(([id, item]) => (
-          <Link key={id} className="underline" to={`/legal/${id}`}>{item.title}</Link>
-        ))}
-      </nav>
-      {entry ? (
-        <>
-          <h1 className="text-3xl font-black">{entry.title}</h1>
-          {entry.paragraphs.map((paragraph, index) => (
-            <p key={index} className="mt-4 leading-7">{paragraph}</p>
-          ))}
-        </>
-      ) : null}
+    <main
+      dir={dir}
+      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-start text-slate-800"
+    >
+      <Helmet>
+        <title>{entry ? entry.title : "Bizuply"}</title>
+        {entry ? <link rel="canonical" href={`https://bizuply.com/legal/${doc}`} /> : null}
+      </Helmet>
+      <div className="pointer-events-none absolute left-[-12%] top-[-10%] h-[520px] w-[520px] rounded-full bg-amber-200/55 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-12%] top-[16%] h-[560px] w-[560px] rounded-full bg-emerald-100/75 blur-3xl" />
+      <section className="relative mx-auto max-w-7xl px-5 pb-16 pt-20 sm:px-8 lg:px-10 lg:pt-24">
+        <h1 className="mx-auto max-w-5xl text-center text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl">
+          {entry ? entry.title : ""}
+        </h1>
+        <LegalDocumentLinks current={`/legal/${doc || ""}`} />
+        {entry ? (
+          <div className="mx-auto mt-10 max-w-3xl rounded-[2rem] border border-white/80 bg-white/75 p-6 shadow-xl shadow-slate-900/5 backdrop-blur sm:p-8">
+            {entry.paragraphs.map((paragraph, index) => (
+              <p key={index} className="mb-4 text-base font-medium leading-8 text-slate-600">
+                {paragraph}
+              </p>
+            ))}
+          </div>
+        ) : null}
+      </section>
     </main>
   );
 }
