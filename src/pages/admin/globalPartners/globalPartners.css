@@ -105,6 +105,91 @@
   background: var(--gp-panel);
   border-radius: var(--gp-radius);
   padding: 14px 16px;
+  text-align: right;
+}
+
+.gp-kpi--click {
+  cursor: pointer;
+  font: inherit;
+  width: 100%;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.gp-kpi--click:hover {
+  border-color: var(--gp-violet);
+  transform: translateY(-1px);
+}
+
+.gp-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.gp-panel-head h2 {
+  margin: 0;
+}
+
+.gp-kanban {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(200px, 1fr));
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.gp-kanban-col {
+  border: 1px solid var(--gp-line);
+  background: #f8faff;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+}
+
+.gp-kanban-col-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--gp-line);
+  background: #fff;
+  color: #1e3a8a;
+  font-size: 0.9rem;
+}
+
+.gp-kanban-cards {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.gp-kanban-card {
+  border: 1px solid var(--gp-line);
+  background: #fff;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gp-linkish {
+  background: none;
+  border: none;
+  color: var(--gp-violet);
+  font: inherit;
+  font-weight: 700;
+  text-align: right;
+  cursor: pointer;
+  padding: 0;
+}
+
+.gp-empty {
+  margin: 8px 0;
+  font-size: 0.85rem;
 }
 
 .gp-kpi-label {
@@ -383,6 +468,12 @@
   font-size: 0.78rem;
   background: #fff;
   margin-left: 6px;
+}
+
+@media (max-width: 1100px) {
+  .gp-kanban {
+    grid-template-columns: repeat(2, minmax(220px, 1fr));
+  }
 }
 
 @media (max-width: 960px) {

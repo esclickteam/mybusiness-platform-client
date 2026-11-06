@@ -9,7 +9,39 @@ export const STATUS_LABELS: Record<string, string> = {
   proposal_sent: "נשלחה הצעה",
   agreement_signed: "נחתם הסכם",
   active_partner: "שותף פעיל",
-  rejected: "לא רלוונטי / נדחה",
+  rejected: "נפסל",
+  archived: "בארכיון",
+};
+
+export const WORK_AREA_LABELS: Record<string, string> = {
+  discovery: "מאגר מועמדים",
+  outreach: "מרכז פניות",
+  pipeline: "שותפים בתהליך",
+  active: "שותפים פעילים",
+};
+
+export const OUTREACH_WORKFLOW_LABELS: Record<string, string> = {
+  awaiting_prep: "ממתין להכנת פנייה",
+  draft_in_progress: "טיוטה בהכנה",
+  awaiting_approval: "ממתין לאישור",
+  approved_to_send: "מאושר לשליחה",
+  sent: "נשלח",
+  reply_received: "התקבלה תשובה",
+  interested: "מעוניין",
+  not_interested: "לא מעוניין",
+  needs_followup: "נדרש מעקב",
+  closed: "סגור",
+};
+
+export const PIPELINE_STAGE_LABELS: Record<string, string> = {
+  expressed_interest: "הביע עניין",
+  contact_established: "נוצר קשר",
+  intro_call: "שיחת היכרות",
+  proposal_sent: "הצעה נשלחה",
+  negotiation: "משא ומתן",
+  awaiting_agreement: "ממתין להסכם",
+  agreement_signed: "הסכם נחתם",
+  onboarding_complete: "הצטרפות הושלמה",
 };
 
 export const TRACK_LABELS: Record<string, string> = {
@@ -42,6 +74,8 @@ export const MESSAGE_STATUS_LABELS: Record<string, string> = {
   failed: "נכשלה",
   suppressed: "חסומה",
   dry_run: "בדיקה פנימית",
+  blocked: "חסומה",
+  cancelled: "בוטלה",
 };
 
 export const CHANNEL_STATUS_LABELS: Record<string, string> = {
@@ -61,6 +95,7 @@ export const AUDIT_LABELS: Record<string, string> = {
   "candidate.update": "עדכון מועמד",
   "candidate.rescore": "חישוב ציון מחדש",
   "candidate.enrich": "העשרת פרטי קשר",
+  "candidate.status_change": "שינוי סטטוס",
   "outreach.preview": "הכנת טיוטת פנייה",
   "outreach.draft_save": "שמירת טיוטת פנייה",
   "outreach.approve": "אישור פנייה",
@@ -68,10 +103,30 @@ export const AUDIT_LABELS: Record<string, string> = {
   "outreach.status": "עדכון סטטוס פנייה",
   "outreach.inbound_unmatched": "תשובה שלא שויכה",
   "outreach.inbound_forwarded": "העברת אירוע נכנס",
+  "workflow.approve_for_outreach": "אישור להעברה למרכז פניות",
+  "workflow.reject": "פסילת מועמד",
+  "workflow.archive": "העברה לארכיון",
+  "workflow.outreach_status": "עדכון סטטוס פנייה",
+  "workflow.move_to_pipeline": "העברה לשותפים בתהליך",
+  "workflow.pipeline_stage": "מעבר שלב בתהליך",
+  "workflow.promote_to_active": "הפיכה לשותף פעיל",
+  "workflow.revert_area": "החזרה לאזור קודם",
 };
 
 export function statusLabel(status: string) {
   return STATUS_LABELS[status] || status || "—";
+}
+
+export function workAreaLabel(area: string) {
+  return WORK_AREA_LABELS[area] || area || "—";
+}
+
+export function outreachWorkflowLabel(status: string) {
+  return OUTREACH_WORKFLOW_LABELS[status] || status || "—";
+}
+
+export function pipelineStageLabel(stage: string) {
+  return PIPELINE_STAGE_LABELS[stage] || stage || "—";
 }
 
 export function trackLabel(track: string) {
@@ -97,3 +152,6 @@ export function channelStatusLabel(status: string) {
 export function auditLabel(action: string) {
   return AUDIT_LABELS[action] || action || "פעילות";
 }
+
+export const PIPELINE_STAGE_ORDER = Object.keys(PIPELINE_STAGE_LABELS);
+export const OUTREACH_WORKFLOW_ORDER = Object.keys(OUTREACH_WORKFLOW_LABELS);

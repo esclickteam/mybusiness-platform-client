@@ -4,17 +4,46 @@ import { statusLabel } from "./copy";
 import { useGlobalPartnersRealtime } from "./useGlobalPartnersRealtime";
 import OutreachCenter from "./OutreachCenter";
 import CandidateProfileModal from "./CandidateProfileModal";
+import PipelineBoard from "./PipelineBoard";
+import ActivePartnersPanel from "./ActivePartnersPanel";
 import "./globalPartners.css";
 
-type Tab = "dashboard" | "candidates" | "outreach" | "add" | "import" | "scans";
+type Tab =
+  | "dashboard"
+  | "discovery"
+  | "outreach"
+  | "pipeline"
+  | "active"
+  | "add"
+  | "import"
+  | "scans";
 
-function Kpi({ label, value }: { label: string; value: string | number }) {
-  return (
-    <div className="gp-kpi">
+function Kpi({
+  label,
+  value,
+  onClick,
+  hint,
+}: {
+  label: string;
+  value: string | number;
+  onClick?: () => void;
+  hint?: string;
+}) {
+  const body = (
+    <>
       <div className="gp-kpi-label">{label}</div>
       <div className="gp-kpi-value">{value}</div>
-    </div>
+      {hint ? <div className="gp-muted" style={{ fontSize: "0.75rem", marginTop: 4 }}>{hint}</div> : null}
+    </>
   );
+  if (onClick) {
+    return (
+      <button type="button" className="gp-kpi gp-kpi--click" onClick={onClick}>
+        {body}
+      </button>
+    );
+  }
+  return <div className="gp-kpi">{body}</div>;
 }
 
 const EMPTY_FORM = {
@@ -38,6 +67,12 @@ export default function AdminGlobalPartners() {
   const [q, setQ] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [contactFilter, setContactFilter] = useState("");
+  const [discoveryView, setDiscoveryView] = useState<"queue" | "all" | "rejected" | "archived">(
+    "queue"
+  );
+  const [pipelineView, setPipelineView] = useState<"kanban" | "table">("kanban");
+  const [minScore, setMinScore] = useState("");
+  const [sourceFilter, setSourceFilter] = useState("");
   const [form, setForm] = useState({ ...EMPTY_FORM });
   const [csvText, setCsvText] = useState(
     "company_name,country_code,city,website,vertical,email,phone\n"
@@ -97,12 +132,16 @@ export default function AdminGlobalPartners() {
     const data = await gpGet("/candidates", {
       q: q || undefined,
       status: statusFilter || undefined,
+      discoveryView: discoveryView === "all" ? "all" : discoveryView,
+      workArea: discoveryView === "queue" ? "discovery" : undefined,
+      source: sourceFilter || undefined,
+      minScore: minScore || undefined,
       limit: 100,
       ...contactParams,
     });
     setCandidates(data.items || []);
     setTotal(data.total || 0);
-  }, [q, statusFilter, contactFilter]);
+  }, [q, statusFilter, contactFilter, discoveryView, sourceFilter, minScore]);
 
   const loadScans = useCallback(async () => {
     const [configs, runData, workerData] = await Promise.all([
@@ -159,7 +198,7 @@ export default function AdminGlobalPartners() {
     try {
       await loadAccess();
       if (tab === "dashboard") await loadDashboard();
-      if (tab === "candidates" || tab === "add") await loadCandidates();
+      if (tab === "discovery" || tab === "add") await loadCandidates();
       if (tab === "scans") await loadScans();
       // outreach tab loads itself
     } catch (err: any) {
@@ -168,6 +207,13 @@ export default function AdminGlobalPartners() {
       setBusy(false);
     }
   }, [tab, loadAccess, loadDashboard, loadCandidates, loadScans]);
+
+  useEffect(() => {
+    if (tab !== "discovery") return;
+    void loadCandidates().catch((err: any) =>
+      setError(err?.message || "טעינת מועמדים נכשלה")
+    );
+  }, [discoveryView, tab, loadCandidates]);
 
   useEffect(() => {
     void refresh();
@@ -262,8 +308,10 @@ export default function AdminGlobalPartners() {
         {(
           [
             ["dashboard", "דשבורד"],
-            ["candidates", "מועמדים"],
+            ["discovery", "מאגר מועמדים"],
             ["outreach", "מרכז פניות"],
+            ["pipeline", "שותפים בתהליך"],
+            ["active", "שותפים פעילים"],
             ["add", "הוספה ידנית"],
             ["import", "ייבוא CSV"],
             ["scans", "סריקות"],
@@ -298,22 +346,108 @@ export default function AdminGlobalPartners() {
         />
       ) : null}
 
+      {tab === "pipeline" ? (
+        <>
+          <div className="gp-actions" style={{ marginBottom: 12 }}>
+            <button
+              type="button"
+              className={`gp-btn${pipelineView === "kanban" ? "" : " gp-btn--ghost"}`}
+              onClick={() => setPipelineView("kanban")}
+            >
+              תצוגת לוח
+            </button>
+            <button
+              type="button"
+              className={`gp-btn${pipelineView === "table" ? "" : " gp-btn--ghost"}`}
+              onClick={() => setPipelineView("table")}
+            >
+              תצוגת טבלה
+            </button>
+          </div>
+          <PipelineBoard
+            busy={busy}
+            setBusy={setBusy}
+            onError={setError}
+            onMessage={setMessage}
+            onOpenProfile={openCandidate}
+            view={pipelineView}
+          />
+        </>
+      ) : null}
+
+      {tab === "active" ? (
+        <ActivePartnersPanel
+          busy={busy}
+          setBusy={setBusy}
+          onError={setError}
+          onOpenProfile={openCandidate}
+        />
+      ) : null}
+
       {tab === "dashboard" && dashboard ? (
         <>
           <div className="gp-grid">
-            <Kpi label="מועמדים במאגר" value={dashboard.candidatesTotal ?? 0} />
-            <Kpi label="עם ערוץ קשר" value={dashboard.contacts?.withContactChannel ?? 0} />
-            <Kpi label="מוכנים לפנייה" value={dashboard.contacts?.outreachReady ?? 0} />
-            <Kpi label="אימייל / טלפון / טופס" value={`${dashboard.contacts?.withEmail ?? 0}/${dashboard.contacts?.withPhone ?? 0}/${dashboard.contacts?.withForm ?? 0}`} />
-            <Kpi label="חדשים היום" value={dashboard.candidatesToday ?? 0} />
-            <Kpi label="סריקות פעילות" value={dashboard.activeScans ?? 0} />
-            <Kpi label="שותפים פעילים" value={dashboard.activePartners ?? 0} />
-            <Kpi label="מדינות במעקב" value={dashboard.countriesTracked ?? 0} />
-            <Kpi label="פניות בתהליך" value={dashboard.outreachInPipeline ?? 0} />
-            <Kpi label="שגיאות סריקה היום" value={dashboard.scanErrorsToday ?? 0} />
             <Kpi
-              label="עלות API היום (¢)"
-              value={dashboard.apiCostCentsToday ?? 0}
+              label="סך מועמדים"
+              value={dashboard.candidatesTotal ?? 0}
+              hint="לחיצה → כל המועמדים"
+              onClick={() => {
+                setDiscoveryView("all");
+                setTab("discovery");
+              }}
+            />
+            <Kpi
+              label="ממתינים לבדיקה"
+              value={dashboard.pendingReview ?? 0}
+              onClick={() => {
+                setDiscoveryView("queue");
+                setTab("discovery");
+              }}
+            />
+            <Kpi
+              label="מאושרים לפנייה"
+              value={dashboard.approvedForOutreach ?? 0}
+              onClick={() => setTab("outreach")}
+            />
+            <Kpi
+              label="טיוטות ממתינות"
+              value={dashboard.draftsAwaitingApproval ?? 0}
+              onClick={() => setTab("outreach")}
+            />
+            <Kpi
+              label="פניות שנשלחו (חי)"
+              value={dashboard.outreachSentLive ?? 0}
+              hint={`בדיקות פנימיות: ${dashboard.outreachSentDryRun ?? 0}`}
+              onClick={() => setTab("outreach")}
+            />
+            <Kpi
+              label="תשובות שהתקבלו"
+              value={dashboard.repliesReceived ?? 0}
+              onClick={() => setTab("outreach")}
+            />
+            <Kpi
+              label="שיעור תגובה %"
+              value={dashboard.responseRatePercent ?? 0}
+            />
+            <Kpi
+              label="שותפים בתהליך"
+              value={dashboard.partnersInPipeline ?? dashboard.outreachInPipeline ?? 0}
+              onClick={() => setTab("pipeline")}
+            />
+            <Kpi
+              label="שותפים פעילים"
+              value={dashboard.activePartners ?? 0}
+              onClick={() => setTab("active")}
+            />
+            <Kpi
+              label="משימות מעקב פתוחות"
+              value={dashboard.openFollowUps ?? 0}
+              onClick={() => setTab("outreach")}
+            />
+            <Kpi label="חדשים היום" value={dashboard.candidatesToday ?? 0} />
+            <Kpi
+              label="עם ערוץ קשר"
+              value={dashboard.contacts?.withContactChannel ?? 0}
             />
           </div>
 
@@ -344,13 +478,52 @@ export default function AdminGlobalPartners() {
         </>
       ) : null}
 
-      {tab === "candidates" ? (
+      {tab === "discovery" ? (
         <div className="gp-panel">
-          <h2>מאגר מועמדים ({total})</h2>
+          <h2>
+            מאגר מועמדים ({total})
+            <span className="gp-muted" style={{ fontWeight: 400, marginRight: 8 }}>
+              ·{" "}
+              {discoveryView === "queue"
+                ? "ממתינים לבדיקה"
+                : discoveryView === "all"
+                  ? "כל המועמדים"
+                  : discoveryView === "rejected"
+                    ? "נפסלו"
+                    : "ארכיון"}
+            </span>
+          </h2>
+          <p className="gp-muted">
+            מאגר איתור בלבד. מועמד שאושר למרכז פניות לא יופיע בתור הממתין — ניתן למצוא אותו ב«כל
+            המועמדים» או בחיפוש, בלי כפילות רשומה.
+          </p>
+          <div className="gp-actions" style={{ marginBottom: 10 }}>
+            {(
+              [
+                ["queue", "ממתינים לבדיקה"],
+                ["all", "כל המועמדים"],
+                ["rejected", "נפסלו"],
+                ["archived", "ארכיון"],
+              ] as const
+            ).map(([id, label]) => (
+              <button
+                key={id}
+                type="button"
+                className={`gp-btn${discoveryView === id ? "" : " gp-btn--ghost"}`}
+                onClick={() => setDiscoveryView(id)}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
           <div className="gp-form" style={{ marginBottom: 12 }}>
             <label>
-              חיפוש מהיר
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="שם / עיר / תחום" />
+              חיפוש גלובלי
+              <input
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="חברה / עיר / תחום / מייל"
+              />
             </label>
             <label>
               סטטוס
@@ -378,6 +551,25 @@ export default function AdminGlobalPartners() {
                 <option value="verified">מאומת / תקין</option>
                 <option value="ready">מוכן לפנייה</option>
                 <option value="none">אין פרטי קשר</option>
+              </select>
+            </label>
+            <label>
+              ציון מינימלי
+              <input
+                value={minScore}
+                onChange={(e) => setMinScore(e.target.value)}
+                placeholder="למשל 50"
+              />
+            </label>
+            <label>
+              מקור
+              <select value={sourceFilter} onChange={(e) => setSourceFilter(e.target.value)}>
+                <option value="">הכל</option>
+                <option value="wikidata">Wikidata</option>
+                <option value="manual">ידני</option>
+                <option value="csv_import">ייבוא CSV</option>
+                <option value="google_places">Google Places</option>
+                <option value="openstreetmap">OpenStreetMap</option>
               </select>
             </label>
           </div>

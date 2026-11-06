@@ -6,8 +6,11 @@ import {
   channelStatusLabel,
   directionLabel,
   messageStatusLabel,
+  outreachWorkflowLabel,
+  pipelineStageLabel,
   statusLabel,
   trackLabel,
+  workAreaLabel,
   STATUS_LABELS,
   TRACK_LABELS,
 } from "./copy";
@@ -162,6 +165,70 @@ export default function CandidateProfileModal({
     }
   }
 
+  async function approveOutreach() {
+    setBusy(true);
+    try {
+      await gpPost(`/workflow/${candidateId}/approve-outreach`, {});
+      onMessage("המועמד אושר והועבר למרכז הפניות.");
+      await load();
+      onChanged();
+    } catch (e: any) {
+      onError(e?.message || "אישור להעברה למרכז פניות נכשל");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function reject(reason: string) {
+    const why = reason || window.prompt("סיבת הפסילה") || "";
+    if (!why.trim()) {
+      onError("יש לציין סיבת פסילה.");
+      return;
+    }
+    setBusy(true);
+    try {
+      await gpPost(`/workflow/${candidateId}/reject`, { reason: why });
+      onMessage("המועמד נפסל.");
+      await load();
+      onChanged();
+    } catch (e: any) {
+      onError(e?.message || "פסילה נכשלה");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function archive(reason: string) {
+    const why = reason || window.prompt("סיבת העברה לארכיון") || "";
+    setBusy(true);
+    try {
+      await gpPost(`/workflow/${candidateId}/archive`, { reason: why });
+      onMessage("המועמד הועבר לארכיון.");
+      await load();
+      onChanged();
+    } catch (e: any) {
+      onError(e?.message || "העברה לארכיון נכשלה");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function toPipeline() {
+    setBusy(true);
+    try {
+      await gpPost(`/workflow/${candidateId}/move-to-pipeline`, {
+        stage: "expressed_interest",
+      });
+      onMessage("המועמד הועבר לשותפים בתהליך.");
+      await load();
+      onChanged();
+    } catch (e: any) {
+      onError(e?.message || "העברה לתהליך נכשלה");
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (!candidate) {
     return (
       <div className="gp-overlay" role="dialog" aria-modal="true" aria-label="פרופיל מועמד">
@@ -191,7 +258,15 @@ export default function CandidateProfileModal({
                 .filter(Boolean)
                 .join(" · ") || "ללא מיקום/תחום"}
               {" · "}
+              אזור: {workAreaLabel(candidate.workArea || "discovery")}
+              {" · "}
               סטטוס: {statusLabel(candidate.recruitmentStatus)}
+              {candidate.pipelineStage
+                ? ` · שלב: ${pipelineStageLabel(candidate.pipelineStage)}`
+                : ""}
+              {candidate.outreachWorkflowStatus
+                ? ` · פנייה: ${outreachWorkflowLabel(candidate.outreachWorkflowStatus)}`
+                : ""}
             </p>
           </div>
           <button type="button" className="gp-btn gp-btn--ghost" onClick={onClose}>
@@ -332,11 +407,33 @@ export default function CandidateProfileModal({
               שמור שינויים
             </button>
             <button type="button" className="gp-btn" disabled={busy} onClick={() => void rescore()}>
-              חשב ציון מחדש
+              בדיקת התאמה מחדש
             </button>
             <button type="button" className="gp-btn" disabled={busy} onClick={() => void enrich()}>
-              חלץ פרטי קשר מהאתר
+              השלמת פרטי קשר מהאתר
             </button>
+          </div>
+        </div>
+
+        <div className="gp-section">
+          <h3>פעולות תהליך גיוס</h3>
+          <p className="gp-muted">
+            מעברים מבוקרים בין מאגר מועמדים, מרכז פניות, שותפים בתהליך ושותפים פעילים — ללא כפילות
+            רשומה.
+          </p>
+          <div className="gp-actions">
+            {(candidate.workArea === "discovery" ||
+              ["discovered", "pending_review"].includes(candidate.recruitmentStatus)) &&
+            !candidate.archivedAt ? (
+              <button
+                type="button"
+                className="gp-btn"
+                disabled={busy}
+                onClick={() => void approveOutreach()}
+              >
+                אישור להעברה למרכז פניות
+              </button>
+            ) : null}
             <button
               type="button"
               className="gp-btn gp-btn--ghost"
@@ -344,7 +441,62 @@ export default function CandidateProfileModal({
             >
               פתח ניהול פנייה
             </button>
+            <button
+              type="button"
+              className="gp-btn gp-btn--ghost"
+              disabled={busy}
+              onClick={() => void toPipeline()}
+            >
+              העברה לשותפים בתהליך
+            </button>
+            <button
+              type="button"
+              className="gp-btn gp-btn--danger"
+              disabled={busy}
+              onClick={() => void reject("")}
+            >
+              פסילה עם סיבה
+            </button>
+            <button
+              type="button"
+              className="gp-btn gp-btn--ghost"
+              disabled={busy}
+              onClick={() => void archive("")}
+            >
+              העברה לארכיון
+            </button>
           </div>
+          {(candidate.statusHistory || []).length > 0 ? (
+            <div className="gp-table-wrap" style={{ marginTop: 12 }}>
+              <table className="gp-table">
+                <thead>
+                  <tr>
+                    <th>פעולה</th>
+                    <th>מ־</th>
+                    <th>אל</th>
+                    <th>הערה</th>
+                    <th>תאריך</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[...(candidate.statusHistory || [])]
+                    .reverse()
+                    .slice(0, 12)
+                    .map((h: any, idx: number) => (
+                      <tr key={`${h.at}-${idx}`}>
+                        <td>{auditLabel(`workflow.${h.action}`) !== `workflow.${h.action}` ? auditLabel(`workflow.${h.action}`) : h.action || "—"}</td>
+                        <td>
+                          {h.fromArea ? workAreaLabel(h.fromArea) : statusLabel(h.fromStatus)}
+                        </td>
+                        <td>{h.toArea ? workAreaLabel(h.toArea) : statusLabel(h.toStatus)}</td>
+                        <td>{h.note || "—"}</td>
+                        <td>{h.at ? new Date(h.at).toLocaleString("he-IL") : "—"}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
         </div>
 
         <div className="gp-section">

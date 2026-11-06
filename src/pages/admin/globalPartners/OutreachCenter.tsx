@@ -3,6 +3,7 @@ import { gpGet, gpPatch, gpPost } from "./globalPartnersApi";
 import {
   directionLabel,
   messageStatusLabel,
+  outreachWorkflowLabel,
   statusLabel,
   trackLabel,
   TRACK_LABELS,
@@ -33,7 +34,7 @@ export default function OutreachCenter({
   const [country, setCountry] = useState("");
   const [track, setTrack] = useState("");
   const [status, setStatus] = useState("");
-  const [scope, setScope] = useState<"ready" | "contact" | "all">("contact");
+  const [scope, setScope] = useState<"area" | "ready" | "contact" | "all">("area");
   const [active, setActive] = useState<any>(null);
   const [thread, setThread] = useState<any>(null);
   const [preview, setPreview] = useState<any>(null);
@@ -237,8 +238,8 @@ export default function OutreachCenter({
       <div className="gp-panel">
         <h2>מרכז פניות</h2>
         <p className="gp-muted">
-          ניהול פניות ל־{total} מועמדים. ניתן להכין טיוטות ולאשר אותן, אך שליחה חיה למועמדים
-          חסומה כברירת מחדל.
+          מרכז הפניות מציג רק מועמדים שאושרו במפורש לתהליך גיוס ({total}). הכנת טיוטה ואישורה
+          אינם הרשאה לשליחה חיה — השליחה נשארת חסומה עד אישור נפרד.
         </p>
         {inbox ? (
           <p className="gp-muted">
@@ -249,9 +250,9 @@ export default function OutreachCenter({
 
         <div className="gp-filters">
           <select value={scope} onChange={(e) => setScope(e.target.value as any)}>
-            <option value="contact">עם פרטי קשר</option>
-            <option value="ready">מוכנים לפנייה</option>
-            <option value="all">כל המועמדים</option>
+            <option value="area">מאושרים למרכז פניות</option>
+            <option value="contact">מאושרים עם פרטי קשר</option>
+            <option value="ready">מאושרים ומוכנים לשליחה</option>
           </select>
           <input
             placeholder="קוד מדינה (למשל IL)"
@@ -286,7 +287,8 @@ export default function OutreachCenter({
                 <th>חברה</th>
                 <th>מסלול מומלץ</th>
                 <th>פרטי קשר</th>
-                <th>סטטוס</th>
+                <th>סטטוס גיוס</th>
+                <th>סטטוס פנייה</th>
                 <th>פנייה אחרונה</th>
                 <th>מעקב</th>
                 <th></th>
@@ -295,7 +297,9 @@ export default function OutreachCenter({
             <tbody>
               {items.length === 0 ? (
                 <tr>
-                  <td colSpan={7}>אין מועמדים לפי הסינון הנוכחי.</td>
+                  <td colSpan={8}>
+                    אין מועמדים במרכז הפניות. יש לאשר מועמדים ממאגר המועמדים לפני שיופיעו כאן.
+                  </td>
                 </tr>
               ) : (
                 items.map((c) => (
@@ -316,6 +320,11 @@ export default function OutreachCenter({
                       <div className="gp-muted">{c.businessEmail || ""}</div>
                     </td>
                     <td>{statusLabel(c.recruitmentStatus)}</td>
+                    <td>
+                      {outreachWorkflowLabel(
+                        c.outreachWorkflowStatus || "awaiting_prep"
+                      )}
+                    </td>
                     <td>
                       {c.lastOutreach?.at
                         ? new Date(c.lastOutreach.at).toLocaleString("he-IL")
