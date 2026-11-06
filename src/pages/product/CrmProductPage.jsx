@@ -137,7 +137,7 @@ export default function CrmProductPage() {
         <meta property="og:description" content={copy.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonical} />
-        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:site_name" content="BizUply" />
         <meta property="og:locale" content={og} />
         {LOCALES.filter((item) => item.og !== og).map((item) => (
           <meta key={item.og} property="og:locale:alternate" content={item.og} />

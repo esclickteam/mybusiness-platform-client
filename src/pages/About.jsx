@@ -231,7 +231,7 @@ export default function About() {
         <meta property="og:description" content={t("about.ogDescription")} />
         <meta property="og:url" content={canonical} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:site_name" content="BizUply" />
         <meta property="og:locale" content={activeOg} />
         {LOCALES.filter((item) => item.og !== activeOg).map((item) => (
           <meta key={item.og} property="og:locale:alternate" content={item.og} />

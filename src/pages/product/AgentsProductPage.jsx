@@ -71,7 +71,7 @@ export default function AgentsProductPage() {
         <meta property="og:title" content={seoTitle} />
         <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:site_name" content="BizUply" />
       </Helmet>
 
       <ScrollProgress />

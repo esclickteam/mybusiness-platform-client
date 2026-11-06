@@ -165,13 +165,24 @@
 }
 
 .act-body section {
-  margin-top: 1.6rem;
+  margin-top: 1.25rem;
+  padding: 1.35rem 1.2rem 1.2rem;
+  background: #fff;
+  border: 1px solid #e6e1f2;
+  border-radius: 2px;
 }
 
 .act-body h2 {
-  margin-bottom: 0.4rem;
-  font-size: 1.45rem;
+  margin: 0 0 0.55rem;
+  font-size: clamp(1.35rem, 2vw, 1.7rem);
   letter-spacing: -0.03em;
+  color: #17152b;
+}
+
+.act-body p {
+  margin: 0.45rem 0 0;
+  line-height: 1.75;
+  color: #3c3754;
 }
 
 .act-faq details {

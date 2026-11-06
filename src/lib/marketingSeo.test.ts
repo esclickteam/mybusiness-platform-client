@@ -155,7 +155,7 @@ describe("marketing crawl files", () => {
   it("keeps Spanish and Portuguese titles distinct where the wording used to match", () => {
     const pairs = [
       ["/es/agents", "/pt-br/agents", "Agentes del negocio | Bizuply", "Agentes do negócio | Bizuply"],
-      ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | Bizuply", "Restaurantes: contatos no CRM | Bizuply"],
+      ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | BizUply", "Restaurantes: contatos no CRM | BizUply"],
       ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp API para empresas | Bizuply", "API do WhatsApp para empresas | Bizuply"],
     ];
     for (const [esPath, ptPath, esTitle, ptTitle] of pairs) {

@@ -109,7 +109,7 @@ function HowItWorks() {
         />
         <meta property="og:url" content="https://bizuply.com/how-it-works" />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:site_name" content="BizUply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
 
         <meta name="twitter:card" content="summary_large_image" />

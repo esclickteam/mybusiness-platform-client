@@ -66,7 +66,7 @@ export function GuidesIndexPage() {
         <link rel="canonical" href={marketingPublicUrl("/guides", locale)} />
       </Helmet>
       <header className="guide-mast">
-        <p className="guide-kicker">Bizuply</p>
+        <p className="guide-kicker">BizUply</p>
         <h1>{page.h1}</h1>
         <p>{page.description}</p>
       </header>
@@ -171,7 +171,7 @@ export function GuideArticlePage() {
   if (!article) {
     return (
       <main className="guide-page" dir={dir}>
-        <h1>Bizuply</h1>
+        <h1>BizUply</h1>
         <Link to="/guides">{copy.all}</Link>
       </main>
     );

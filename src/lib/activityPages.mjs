@@ -76,16 +76,20 @@ const PAGES = {
       ],
     ),
     es: copy(
-      "El trabajo digital en un solo lugar | Bizuply",
-      "CRM, citas, sitios, automatizaciones, campañas de Meta y WhatsApp desde Bizuply, sin saltar de una herramienta a otra.",
+      "Una plataforma para la actividad del negocio | BizUply",
+      "BizUply conecta clientes, consultas, citas, comunicación y herramientas digitales en un mismo espacio de trabajo.",
       "Plataforma",
-      "El trabajo digital del negocio, en un solo lugar",
-      "Bizuply es el sistema al que entra. Un lead, una página, una campaña, una cita y un seguimiento pueden vivir en la misma cuenta. La puesta en marcha hecha por nosotros es una compra aparte en precios.",
+      "Una plataforma para gestionar la actividad de su negocio",
+      "BizUply une la gestión de clientes, las consultas, las citas, la comunicación comercial y las herramientas digitales. En lugar de repartir la información entre sistemas separados, el negocio puede seguir el proceso de forma más clara.",
       [
-        ["Lo que usted opera", ["El CRM guarda el lead, seis estados, el expediente, las tareas y la agenda. El constructor publica un sitio cuyo formulario puede crear un lead. Las automatizaciones, en el plan de negocio, corren tras un disparador. Las campañas de Meta se editan en el panel después de conectar la cuenta de anuncios. WhatsApp es una suscripción aparte por número."]],
-        ["Lo que queda fuera", ["Meta cobra la inversión publicitaria. Los mensajes de WhatsApp los cobra Meta, además de 29 dólares al mes por número. Un sitio de experto, la puesta en marcha de automatizaciones, la migración del CRM y el seguimiento humano tienen su propio precio."]],
+        ["Toda la información en un lugar", ["Una consulta puede llegar de un formulario en un sitio hecho en BizUply, o de un canal conectado como Meta, cuando el permiso está activo. El CRM guarda el lead, seis estados, el expediente, las tareas y la agenda."]],
+        ["Un espacio para el equipo", ["Quienes comparten la cuenta trabajan sobre los mismos registros. El acceso sigue los roles que ya existen. Esta página no añade un modelo nuevo de permisos."]],
+        ["Herramientas según el plan", ["La misma cuenta puede incluir CRM, citas, el constructor de sitios, automatizaciones en el plan de negocio, edición de campañas de Meta tras conectar la cuenta publicitaria, y WhatsApp como suscripción aparte por número."]],
+        ["Un proceso que sigue unido", ["Un formulario del sitio o de Meta crea un lead con origen. Un estado y una nota registran lo ocurrido. Una tarea con fecha guarda el paso siguiente. En el plan de negocio, una automatización puede crear esa tarea."]],
+        ["Datos para decidir", ["El panel muestra vistas que ya existen: leads nuevos, leads sin tratar y próximas citas. BizUply no publica porcentajes de crecimiento ni ahorros."]],
+        ["Empezar con lo necesario", ["El CRM solo cuesta 49 dólares al mes. El plan de negocio, con CRM, citas, colaboraciones y automatizaciones, cuesta 99 al mes o 990 al año. WhatsApp cuesta 29 al mes por número conectado, y Meta cobra los mensajes aparte. La inversión publicitaria la factura Meta."]],
       ],
-      [["¿Un acceso sustituye todas las herramientas?", "Sustituye las que Bizuply publica: CRM, citas, constructor, automatizaciones, edición de campañas de Meta y WhatsApp. No sustituye el cobro de Meta ni incluye una agencia de marketing oculta."]],
+      [["¿Un acceso sustituye todas las herramientas?", "Cubre lo que BizUply publica: CRM, citas, constructor, automatizaciones, edición de campañas de Meta y WhatsApp. No sustituye el cobro de Meta ni incluye una agencia oculta."], ["¿Dónde está el precio?", "Los precios publicados están en la página de precios. La puesta en marcha, cuando se ofrece, se cobra aparte."]],
       [
         ["/crm", "CRM"],
         ["/website-builder", "Constructor"],
@@ -102,16 +106,20 @@ const PAGES = {
       ],
     ),
     "pt-BR": copy(
-      "O trabalho digital em um só lugar | Bizuply",
-      "CRM, agenda, sites, automações, campanhas da Meta e WhatsApp na Bizuply, sem pular entre ferramentas separadas.",
+      "Uma plataforma para a atividade do negócio | BizUply",
+      "A BizUply liga clientes, contatos, agenda, comunicação e ferramentas digitais no mesmo espaço de trabalho.",
       "Plataforma",
-      "O trabalho digital do negócio, em um só lugar",
-      "A Bizuply é o sistema em que você entra. Um lead, uma página, uma campanha, um compromisso e um acompanhamento podem ficar na mesma conta. A implantação feita por nós é uma compra à parte na página de preços.",
+      "Uma plataforma para conduzir a atividade do negócio",
+      "A BizUply reúne a gestão de clientes, os contatos, a agenda, a comunicação comercial e as ferramentas digitais. Em vez de espalhar a informação entre sistemas separados, o negócio acompanha o processo de forma mais clara.",
       [
-        ["O que você opera", ["O CRM guarda o lead, seis status, o arquivo, as tarefas e a agenda. O construtor publica um site cujo formulário pode criar um lead. As automações, no plano de negócios, rodam depois de um gatilho. As campanhas da Meta são editadas no painel depois de conectar a conta de anúncios. O WhatsApp é uma assinatura separada por número."]],
-        ["O que fica de fora", ["A Meta cobra o investimento em mídia. As mensagens de WhatsApp são cobradas pela Meta, além de 29 dólares por mês por número. Site de especialista, implantação de automações, migração de CRM e acompanhamento humano têm preço próprio."]],
+        ["A informação no mesmo lugar", ["Um contato pode chegar de um formulário em um site feito na BizUply, ou de um canal conectado como a Meta, quando a permissão está ativa. O CRM guarda o lead, seis status, o arquivo, as tarefas e a agenda."]],
+        ["Um espaço para a equipe", ["Quem compartilha a conta trabalha nos mesmos registros. O acesso segue os papéis que já existem. Esta página não cria um modelo novo de permissões."]],
+        ["Ferramentas conforme o plano", ["A mesma conta pode incluir CRM, agenda, o construtor de sites, automações no plano de negócios, edição de campanhas da Meta depois de conectar a conta de anúncios, e WhatsApp como assinatura separada por número."]],
+        ["Um processo que permanece ligado", ["Um formulário do site ou da Meta cria um lead com origem. Um status e uma nota registram o que aconteceu. Uma tarefa com data guarda o próximo passo. No plano de negócios, uma automação pode criar essa tarefa."]],
+        ["Dados para decidir", ["O painel mostra visões que já existem: leads novos, leads sem tratamento e próximos compromissos. A BizUply não publica percentuais de crescimento nem economia."]],
+        ["Começar com o que é necessário", ["O CRM sozinho custa 49 dólares por mês. O plano de negócios, com CRM, agenda, colaborações e automações, custa 99 por mês ou 990 por ano. O WhatsApp custa 29 por mês por número conectado, e a Meta cobra as mensagens à parte. O investimento em mídia é faturado pela Meta."]],
       ],
-      [["Um login substitui todas as ferramentas?", "Substitui as que a Bizuply publica: CRM, agenda, construtor, automações, edição de campanhas da Meta e WhatsApp. Não substitui a cobrança da Meta nem inclui uma agência escondida."]],
+      [["Um login substitui todas as ferramentas?", "Cobre o que a BizUply publica: CRM, agenda, construtor, automações, edição de campanhas da Meta e WhatsApp. Não substitui a cobrança da Meta nem inclui uma agência escondida."], ["Onde está o preço?", "Os preços publicados estão na página de preços. A implantação, quando é oferecida, é cobrada à parte."]],
       [
         ["/crm", "CRM"],
         ["/website-builder", "Construtor"],
@@ -128,16 +136,20 @@ const PAGES = {
       ],
     ),
     ar: copy(
-      "العمل الرقمي في مكان واحد | Bizuply",
-      "CRM والمواعيد والمواقع والأتمتة وحملات Meta وواتساب من Bizuply، دون التنقل بين أدوات منفصلة.",
+      "منصة واحدة لإدارة نشاط الأعمال | BizUply",
+      "تربط BizUply العملاء والاستفسارات والمواعيد والتواصل التجاري والأدوات الرقمية في مساحة عمل واحدة.",
       "المنصة",
-      "العمل الرقمي للنشاط، في مكان واحد",
-      "Bizuply هي النظام الذي تدخلون إليه. يمكن أن يعيش العميل المحتمل والصفحة والحملة والموعد والمتابعة في الحساب نفسه. التهيئة التي ننفذها لكم شراء منفصل في صفحة الأسعار.",
+      "منصة واحدة لإدارة نشاط أعمالكم",
+      "تجمع BizUply إدارة العملاء والاستفسارات والمواعيد والتواصل التجاري والأدوات الرقمية. بدل توزيع المعلومات بين أنظمة منفصلة، يمكن متابعة العملية بصورة أوضح.",
       [
-        ["ما تشغّلونه بأنفسكم", ["يحفظ CRM العميل المحتمل وست حالات والملف والمهام والتقويم. ينشر منشئ المواقع موقعاً يمكن لنموذجه أن ينشئ عميلاً محتملاً. تعمل الأتمتة في الخطة التجارية بعد محفّز. تُحرَّر حملات Meta في اللوحة بعد ربط حساب الإعلانات. واتساب اشتراك منفصل لكل رقم."]],
-        ["ما يبقى خارج البرنامج", ["تحصّل Meta إنفاق الإعلان. رسوم رسائل واتساب تحصّلها Meta إضافة إلى 29 دولاراً شهرياً للرقم. بناء موقع على يد مختص، وتهيئة الأتمتة، ونقل CRM، والمتابعة البشرية لها أسعارها."]],
+        ["المعلومات في مكان واحد", ["قد يصل استفسار من نموذج في موقع بُني في BizUply، أو من قناة متصلة مثل Meta عندما يكون الإذن فعالاً. يحفظ CRM العميل المحتمل وست حالات والملف والمهام والتقويم."]],
+        ["مساحة للفريق", ["من يشاركون الحساب يعملون على السجلات نفسها. الوصول يتبع الأدوار الموجودة أصلاً. هذه الصفحة لا تضيف نموذج صلاحيات جديداً."]],
+        ["أدوات حسب الخطة", ["يمكن أن يشمل الحساب نفسه CRM والمواعيد ومنشئ المواقع وأتمتة في الخطة التجارية وتحرير حملات Meta بعد ربط حساب الإعلانات، وواتساب كاشتراك منفصل لكل رقم."]],
+        ["عملية تبقى متصلة", ["ينشئ نموذج الموقع أو Meta عميلاً محتملاً مع مصدر. تسجّل الحالة والملاحظة ما حدث. مهمة بتاريخ تحفظ الخطوة التالية. في الخطة التجارية يمكن لأتمتة أن تنشئ هذه المهمة."]],
+        ["بيانات تساعد على القرار", ["تعرض اللوحة مشاهد موجودة بالفعل: عملاء محتملون جدد، وعملاء لم يُعالجوا، ومواعيد قريبة. لا تنشر BizUply نسب نمو أو وفراً مالياً."]],
+        ["البدء بما يلزم", ["CRM وحده 49 دولاراً شهرياً. الخطة التجارية، مع CRM والمواعيد والتعاون والأتمتة، 99 شهرياً أو 990 سنوياً. واتساب 29 شهرياً لكل رقم متصل، ورسوم رسائل Meta منفصلة. إنفاق الإعلان تحصّله Meta."]],
       ],
-      [["هل يحل دخول واحد محل كل الأدوات؟", "يحل محل الأدوات التي تنشرها Bizuply: CRM والمواعيد والمنشئ والأتمتة وتحرير حملات Meta وواتساب. لا يحل محل فوترة Meta ولا يتضمن وكالة تسويق مخفية."]],
+      [["هل يحل دخول واحد محل كل الأدوات؟", "يغطي ما تنشره BizUply: CRM والمواعيد والمنشئ والأتمتة وتحرير حملات Meta وواتساب. لا يحل محل فوترة Meta ولا يتضمن وكالة مخفية."], ["أين السعر؟", "الأسعار المنشورة في صفحة الأسعار. التهيئة، حين تُعرض، تُسعَّر على حدة."]],
       [
         ["/crm", "CRM"],
         ["/website-builder", "منشئ المواقع"],
@@ -156,7 +168,7 @@ const PAGES = {
   }),
   "/services": pack("split", null, {
     en: copy(
-      "Setup we do for you | Bizuply",
+      "Setup we do for you | BizUply",
       "Expert website build, automation setup, CRM migration and human follow-up. Software subscriptions stay separate. Hidden services are not offered here.",
       "Services",
       "Work we do for the business",
@@ -194,7 +206,7 @@ const PAGES = {
       ],
     ),
     es: copy(
-      "Puesta en marcha hecha por nosotros | Bizuply",
+      "Puesta en marcha hecha por nosotros | BizUply",
       "Sitio de experto, automatizaciones, migración de CRM y seguimiento humano. Las suscripciones de software siguen aparte. Los servicios ocultos no se venden aquí.",
       "Servicios",
       "Trabajo que hacemos por el negocio",
@@ -213,7 +225,7 @@ const PAGES = {
       ],
     ),
     "pt-BR": copy(
-      "Implantação feita por nós | Bizuply",
+      "Implantação feita por nós | BizUply",
       "Site de especialista, automações, migração de CRM e acompanhamento humano. As assinaturas do software continuam à parte. Serviços ocultos não são vendidos aqui.",
       "Serviços",
       "Trabalho que fazemos pelo negócio",
@@ -232,7 +244,7 @@ const PAGES = {
       ],
     ),
     ar: copy(
-      "تهيئة ننفذها لكم | Bizuply",
+      "تهيئة ننفذها لكم | BizUply",
       "بناء موقع على يد مختص، وتهيئة الأتمتة، ونقل CRM، ومتابعة بشرية. اشتراكات البرنامج تبقى منفصلة. الخدمات المخفية لا تُباع هنا.",
       "الخدمات",
       "عمل نقوم به لصالح النشاط",
@@ -255,8 +267,8 @@ const PAGES = {
 
 const WEBSITE = pack("split", "site", {
   en: copy(
-    "Expert website build | Bizuply",
-    "A Bizuply expert builds a site of up to five pages from an existing template for $399. The self-serve editor remains available on its own.",
+    "Expert website build | BizUply",
+    "A BizUply expert builds a site of up to five pages from an existing template for $399. The self-serve editor remains available on its own.",
     "Expert website",
     "A site built for you, from the tools you already have",
     "This is not the self-serve website builder. You supply the words and pictures. The build uses an existing template, adapts it for mobile, adds a lead form, connects the CRM and the domain, and includes up to two revision rounds.",
@@ -281,8 +293,8 @@ const WEBSITE = pack("split", "site", {
     [["/website-builder", "בנייה לבד"], ["/pricing", "מחירון"], ["/crm", "CRM"]],
   ),
   es: copy(
-    "Sitio web de experto | Bizuply",
-    "Un experto de Bizuply construye un sitio de hasta cinco páginas sobre una plantilla existente por 399 dólares. El editor de autoservicio sigue disponible.",
+    "Sitio web de experto | BizUply",
+    "Un experto de BizUply construye un sitio de hasta cinco páginas sobre una plantilla existente por 399 dólares. El editor de autoservicio sigue disponible.",
     "Sitio de experto",
     "Un sitio construido para usted, con las herramientas que ya existen",
     "No es el constructor de autoservicio. Usted aporta textos e imágenes. El trabajo usa una plantilla existente, se adapta al móvil, añade un formulario, conecta el CRM y el dominio, e incluye hasta dos rondas de cambios.",
@@ -294,8 +306,8 @@ const WEBSITE = pack("split", "site", {
     [["/website-builder", "Constructor"], ["/pricing", "Precios"], ["/crm", "CRM"]],
   ),
   "pt-BR": copy(
-    "Site feito por especialista | Bizuply",
-    "Um especialista da Bizuply monta um site de até cinco páginas em um modelo existente por 399 dólares. O editor de autoatendimento continua disponível.",
+    "Site feito por especialista | BizUply",
+    "Um especialista da BizUply monta um site de até cinco páginas em um modelo existente por 399 dólares. O editor de autoatendimento continua disponível.",
     "Site de especialista",
     "Um site feito para você, com as ferramentas que já existem",
     "Não é o construtor de autoatendimento. Você entrega textos e imagens. O trabalho usa um modelo existente, adapta ao celular, acrescenta um formulário, liga o CRM e o domínio, e inclui até duas rodadas de ajustes.",
@@ -307,8 +319,8 @@ const WEBSITE = pack("split", "site", {
     [["/website-builder", "Construtor"], ["/pricing", "Preços"], ["/crm", "CRM"]],
   ),
   ar: copy(
-    "بناء موقع على يد مختص | Bizuply",
-    "يبني مختص من Bizuply موقعاً حتى خمس صفحات على قالب موجود مقابل 399 دولاراً. يبقى المحرر ذاتي الخدمة متاحاً.",
+    "بناء موقع على يد مختص | BizUply",
+    "يبني مختص من BizUply موقعاً حتى خمس صفحات على قالب موجود مقابل 399 دولاراً. يبقى المحرر ذاتي الخدمة متاحاً.",
     "موقع مختص",
     "موقع يُبنى لكم بالأدوات الموجودة فعلاً",
     "هذا ليس منشئ المواقع ذاتي الخدمة. تقدّمون النصوص والصور. يستخدم العمل قالباً موجوداً، ويتكيّف مع الجوال، ويضيف نموذجاً، ويربط CRM والنطاق، ويشمل حتى جولتي تعديل.",
@@ -325,11 +337,11 @@ PAGES["/services/website-build"] = WEBSITE;
 
 PAGES["/services/automations-setup"] = pack("split", "automation", {
   en: copy(
-    "Automation setup | Bizuply",
+    "Automation setup | BizUply",
     "We build the automation for you. One simple automation is $99. A pack of three is $249. A pack of six is $399. A complex process is quoted.",
     "Automation setup",
     "An automation built for the way the business already works",
-    "You can build automations yourself on the business plan. This service is for when Bizuply sets them up. The demo never sends real messages, and a live automation still respects WhatsApp template approval.",
+    "You can build automations yourself on the business plan. This service is for when BizUply sets them up. The demo never sends real messages, and a live automation still respects WhatsApp template approval.",
     [
       ["The published prices", ["One simple automation is $99. Three are $249. Six are $399. A complex process is a custom quote. The software subscription is separate: automations run on the business plan at $99 a month or $990 a year."]],
       ["A typical path", ["A new lead is the trigger. The action can create a task or send a reminder. A WhatsApp message still needs an approved template and a paid number at $29 a month, plus Meta's message fees."]],
@@ -351,11 +363,11 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
     [["/automations", "מוצר האוטומציות"], ["/pricing", "מחירון"], ["/whatsapp-api", "WhatsApp"]],
   ),
   es: copy(
-    "Puesta en marcha de automatizaciones | Bizuply",
+    "Puesta en marcha de automatizaciones | BizUply",
     "Nosotros montamos la automatización. Una simple cuesta 99 dólares. Tres cuestan 249. Seis cuestan 399. Un proceso complejo se cotiza.",
     "Automatizaciones",
     "Una automatización montada según cómo ya trabaja el negocio",
-    "Puede construir automatizaciones en el plan de negocio. Este servicio es cuando Bizuply las configura. La demo no envía mensajes reales, y un envío de WhatsApp sigue exigiendo una plantilla aprobada.",
+    "Puede construir automatizaciones en el plan de negocio. Este servicio es cuando BizUply las configura. La demo no envía mensajes reales, y un envío de WhatsApp sigue exigiendo una plantilla aprobada.",
     [
       ["Precios publicados", ["Una automatización simple: 99 dólares. Tres: 249. Seis: 399. Un proceso complejo: presupuesto. La suscripción es aparte: las automatizaciones corren en el plan de negocio a 99 dólares al mes o 990 al año."]],
       ["Un recorrido habitual", ["Un lead nuevo es el disparador. La acción puede crear una tarea o un recordatorio. WhatsApp sigue pidiendo plantilla aprobada y un número de 29 dólares al mes, más las tarifas de Meta."]],
@@ -364,11 +376,11 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
     [["/automations", "Producto"], ["/pricing", "Precios"], ["/whatsapp-api", "WhatsApp"]],
   ),
   "pt-BR": copy(
-    "Implantação de automações | Bizuply",
+    "Implantação de automações | BizUply",
     "Nós montamos a automação. Uma simples custa 99 dólares. Três custam 249. Seis custam 399. Um processo complexo é orçado.",
     "Automações",
     "Uma automação montada do jeito que o negócio já trabalha",
-    "Dá para montar automações no plano de negócios. Este serviço é quando a Bizuply configura. A demo não envia mensagens reais, e um WhatsApp continua exigindo modelo aprovado.",
+    "Dá para montar automações no plano de negócios. Este serviço é quando a BizUply configura. A demo não envia mensagens reais, e um WhatsApp continua exigindo modelo aprovado.",
     [
       ["Preços publicados", ["Uma automação simples: 99 dólares. Três: 249. Seis: 399. Processo complexo: orçamento. A assinatura é à parte: as automações rodam no plano de negócios a 99 dólares por mês ou 990 por ano."]],
       ["Um caminho comum", ["Um lead novo é o gatilho. A ação pode criar uma tarefa ou um lembrete. O WhatsApp continua pedindo modelo aprovado e um número de 29 dólares por mês, mais as tarifas da Meta."]],
@@ -377,11 +389,11 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
     [["/automations", "Produto"], ["/pricing", "Preços"], ["/whatsapp-api", "WhatsApp"]],
   ),
   ar: copy(
-    "تهيئة الأتمتة | Bizuply",
+    "تهيئة الأتمتة | BizUply",
     "نجهّز الأتمتة لكم. أتمتة بسيطة واحدة 99 دولاراً. ثلاث بـ 249. ست بـ 399. العملية المعقدة تُسعَّر بعرض.",
     "تهيئة الأتمتة",
     "أتمتة تُبنى حسب طريقة عمل النشاط",
-    "يمكن بناء الأتمتة في الخطة التجارية. هذه الخدمة حين تجهّزها Bizuply. العرض التجريبي لا يرسل رسائل حقيقية، ورسالة واتساب ما زالت تحتاج قالباً معتمداً.",
+    "يمكن بناء الأتمتة في الخطة التجارية. هذه الخدمة حين تجهّزها BizUply. العرض التجريبي لا يرسل رسائل حقيقية، ورسالة واتساب ما زالت تحتاج قالباً معتمداً.",
     [
       ["الأسعار المنشورة", ["أتمتة بسيطة: 99 دولاراً. ثلاث: 249. ست: 399. عملية معقدة: عرض سعر. الاشتراك منفصل: تعمل الأتمتة في الخطة التجارية بـ 99 دولاراً شهرياً أو 990 سنوياً."]],
       ["مسار معتاد", ["عميل محتمل جديد هو المحفّز. يمكن للإجراء أن ينشئ مهمة أو تذكيراً. واتساب ما زال يطلب قالباً معتمداً ورقماً بـ 29 دولاراً شهرياً، إضافة إلى رسوم Meta."]],
@@ -393,14 +405,14 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
 
 PAGES["/services/crm-migration"] = pack("split", "crm", {
   en: copy(
-    "CRM migration | Bizuply",
-    "Move clients, leads and statuses into Bizuply. Basic migration is $249 once. A large or complex move is quoted separately.",
+    "CRM migration | BizUply",
+    "Move clients, leads and statuses into BizUply. Basic migration is $249 once. A large or complex move is quoted separately.",
     "CRM migration",
-    "Bring the existing pipeline into Bizuply",
+    "Bring the existing pipeline into BizUply",
     "The service transfers clients and leads, carries statuses across, maps fields, checks the result and includes training after the move. It does not change the $49 CRM subscription.",
     [
-      ["What you prepare", ["An export from the current system and a decision about which statuses match Bizuply's six: New, Contacted, Interested, Converted, Lost and Old lead."]],
-      ["What happens after", ["The team works in the Bizuply CRM. Appointments, automations and collaborations still depend on the business plan if you need them."]],
+      ["What you prepare", ["An export from the current system and a decision about which statuses match BizUply's six: New, Contacted, Interested, Converted, Lost and Old lead."]],
+      ["What happens after", ["The team works in the BizUply CRM. Appointments, automations and collaborations still depend on the business plan if you need them."]],
     ],
     [["Is every old system the same price?", "No. The published basic migration is $249. A large volume or a complex system is quoted separately."]],
     [["/crm", "CRM"], ["/pricing", "Pricing"]],
@@ -419,40 +431,40 @@ PAGES["/services/crm-migration"] = pack("split", "crm", {
     [["/crm", "CRM"], ["/pricing", "מחירון"]],
   ),
   es: copy(
-    "Migración de CRM | Bizuply",
-    "Pase clientes, leads y estados a Bizuply. La migración básica cuesta 249 dólares una vez. Un volumen grande se cotiza aparte.",
+    "Migración de CRM | BizUply",
+    "Pase clientes, leads y estados a BizUply. La migración básica cuesta 249 dólares una vez. Un volumen grande se cotiza aparte.",
     "Migración",
-    "Traer el pipeline actual a Bizuply",
+    "Traer el pipeline actual a BizUply",
     "El servicio transfiere clientes y leads, traslada estados, mapea campos, revisa el resultado e incluye formación. No cambia la suscripción de CRM de 49 dólares.",
     [
-      ["Qué preparar", ["Una exportación del sistema actual y una decisión sobre qué estados coinciden con los seis de Bizuply: Nuevo, Contactado, Interesado, Convertido, Perdido y Lead antiguo."]],
-      ["Después", ["El equipo trabaja en el CRM de Bizuply. Citas, automatizaciones y colaboraciones siguen dependiendo del plan de negocio."]],
+      ["Qué preparar", ["Una exportación del sistema actual y una decisión sobre qué estados coinciden con los seis de BizUply: Nuevo, Contactado, Interesado, Convertido, Perdido y Lead antiguo."]],
+      ["Después", ["El equipo trabaja en el CRM de BizUply. Citas, automatizaciones y colaboraciones siguen dependiendo del plan de negocio."]],
     ],
     [["¿Todo sistema antiguo cuesta igual?", "No. La migración básica publicada es de 249 dólares. Un volumen grande o un sistema complejo se cotiza aparte."]],
     [["/crm", "CRM"], ["/pricing", "Precios"]],
   ),
   "pt-BR": copy(
-    "Migração de CRM | Bizuply",
-    "Traga clientes, leads e status para a Bizuply. A migração básica custa 249 dólares uma vez. Um volume grande é orçado à parte.",
+    "Migração de CRM | BizUply",
+    "Traga clientes, leads e status para a BizUply. A migração básica custa 249 dólares uma vez. Um volume grande é orçado à parte.",
     "Migração",
-    "Trazer o pipeline atual para a Bizuply",
+    "Trazer o pipeline atual para a BizUply",
     "O serviço transfere clientes e leads, leva os status, mapeia campos, confere o resultado e inclui treinamento. Não muda a assinatura de CRM de 49 dólares.",
     [
-      ["O que preparar", ["Uma exportação do sistema atual e uma decisão sobre quais status combinam com os seis da Bizuply: Novo, Contatado, Interessado, Convertido, Perdido e Lead antigo."]],
-      ["Depois", ["A equipe trabalha no CRM da Bizuply. Agenda, automações e colaborações continuam dependendo do plano de negócios."]],
+      ["O que preparar", ["Uma exportação do sistema atual e uma decisão sobre quais status combinam com os seis da BizUply: Novo, Contatado, Interessado, Convertido, Perdido e Lead antigo."]],
+      ["Depois", ["A equipe trabalha no CRM da BizUply. Agenda, automações e colaborações continuam dependendo do plano de negócios."]],
     ],
     [["Todo sistema antigo custa igual?", "Não. A migração básica publicada é 249 dólares. Volume grande ou sistema complexo é orçado à parte."]],
     [["/crm", "CRM"], ["/pricing", "Preços"]],
   ),
   ar: copy(
-    "الانتقال من CRM آخر | Bizuply",
-    "ننقل العملاء والعملاء المحتملين والحالات إلى Bizuply. النقل الأساسي 249 دولاراً مرة واحدة. الحجم الكبير يُسعَّر على حدة.",
+    "الانتقال من CRM آخر | BizUply",
+    "ننقل العملاء والعملاء المحتملين والحالات إلى BizUply. النقل الأساسي 249 دولاراً مرة واحدة. الحجم الكبير يُسعَّر على حدة.",
     "نقل CRM",
-    "إحضار المسار الحالي إلى Bizuply",
+    "إحضار المسار الحالي إلى BizUply",
     "تنقل الخدمة العملاء والعملاء المحتملين والحالات، وتطابق الحقول، وتفحص النتيجة، وتشمل تدريباً. لا تغيّر اشتراك CRM البالغ 49 دولاراً.",
     [
-      ["ماذا تُجهّزون", ["تصدير من النظام الحالي وقرار أي الحالات تطابق الحالات الست في Bizuply: جديد، تم التواصل، مهتم، تم التحويل، مفقود، وعميل محتمل قديم."]],
-      ["بعد ذلك", ["يعمل الفريق في CRM لدى Bizuply. المواعيد والأتمتة والتعاون تبقى مرتبطة بالخطة التجارية."]],
+      ["ماذا تُجهّزون", ["تصدير من النظام الحالي وقرار أي الحالات تطابق الحالات الست في BizUply: جديد، تم التواصل، مهتم، تم التحويل، مفقود، وعميل محتمل قديم."]],
+      ["بعد ذلك", ["يعمل الفريق في CRM لدى BizUply. المواعيد والأتمتة والتعاون تبقى مرتبطة بالخطة التجارية."]],
     ],
     [["هل كل نظام قديم بالسعر نفسه؟", "لا. النقل الأساسي المنشور 249 دولاراً. الحجم الكبير أو النظام المعقد يُسعَّر على حدة."]],
     [["/crm", "CRM"], ["/pricing", "الأسعار"]],
@@ -461,7 +473,7 @@ PAGES["/services/crm-migration"] = pack("split", "crm", {
 
 PAGES["/services/human-follow-up"] = pack("split", null, {
   en: copy(
-    "Human follow-up | Bizuply",
+    "Human follow-up | BizUply",
     "People, not a chatbot. Initial lead response is $199 a month. A personal sales rep is $499 a month. Old-lead follow-up starts at $149 once.",
     "Human follow-up",
     "A person follows the lead inside the CRM",
@@ -487,7 +499,7 @@ PAGES["/services/human-follow-up"] = pack("split", null, {
     [["/agents", "נציגים"], ["/pricing", "מחירון"], ["/crm", "CRM"]],
   ),
   es: copy(
-    "Seguimiento humano | Bizuply",
+    "Seguimiento humano | BizUply",
     "Personas, no un chatbot. La respuesta inicial cuesta 199 dólares al mes. Un comercial cuesta 499. El seguimiento de leads antiguos empieza en 149.",
     "Seguimiento humano",
     "Una persona atiende el lead dentro del CRM",
@@ -500,7 +512,7 @@ PAGES["/services/human-follow-up"] = pack("split", null, {
     [["/agents", "Agentes"], ["/pricing", "Precios"], ["/crm", "CRM"]],
   ),
   "pt-BR": copy(
-    "Acompanhamento humano | Bizuply",
+    "Acompanhamento humano | BizUply",
     "Pessoas, não um chatbot. A resposta inicial custa 199 dólares por mês. Um vendedor custa 499. O follow-up de leads antigos começa em 149.",
     "Acompanhamento humano",
     "Uma pessoa trata o lead dentro do CRM",
@@ -513,7 +525,7 @@ PAGES["/services/human-follow-up"] = pack("split", null, {
     [["/agents", "Agentes"], ["/pricing", "Preços"], ["/crm", "CRM"]],
   ),
   ar: copy(
-    "متابعة بشرية | Bizuply",
+    "متابعة بشرية | BizUply",
     "أشخاص، لا روبوت دردشة. الرد الأولي 199 دولاراً شهرياً. مندوب المبيعات 499. متابعة العملاء المحتملين القدامى تبدأ من 149.",
     "متابعة بشرية",
     "شخص يتابع العميل المحتمل داخل CRM",
@@ -533,11 +545,11 @@ function industry(locales) {
 
 PAGES["/solutions/clinics"] = industry({
   en: copy(
-    "Clinics and appointment businesses | Bizuply",
-    "A clinic can keep inquiries, a client file and a 15-minute appointment calendar in Bizuply. This is not a medical-records system.",
+    "Clinics and appointment businesses | BizUply",
+    "A clinic can keep inquiries, a client file and a 15-minute appointment calendar in BizUply. This is not a medical-records system.",
     "Clinics",
     "Inquiries and appointments for a clinic",
-    "The fit is operational: a person asks for a visit, the lead keeps a status, the service has a duration and a price, and the calendar offers open slots in 15-minute steps. Bizuply does not claim to store clinical charts or to meet HIPAA.",
+    "The fit is operational: a person asks for a visit, the lead keeps a status, the service has a duration and a price, and the calendar offers open slots in 15-minute steps. BizUply does not claim to store clinical charts or to meet HIPAA.",
     [
       ["A working day", ["The inquiry arrives from the website form, from Meta Lead Ads or by being added in the CRM. Staff log a call or a note. Booking uses the service catalog and the business hours. The client can book from the public booking page when that page is turned on."]],
       ["What to add only if you need it", ["Automations and collaborations are on the business plan. WhatsApp replies need the separate $29 number and an approved template. An expert website is the $399 build if you do not want to use the editor yourself."]],
@@ -559,11 +571,11 @@ PAGES["/solutions/clinics"] = industry({
     [["/appointments", "תורים"], ["/crm", "CRM"], ["/website-builder", "בונה אתרים"]],
   ),
   es: copy(
-    "Clínicas y negocios con citas | Bizuply",
-    "Una clínica puede guardar consultas, un expediente y un calendario de 15 minutos en Bizuply. No es un sistema de historia clínica.",
+    "Clínicas y negocios con citas | BizUply",
+    "Una clínica puede guardar consultas, un expediente y un calendario de 15 minutos en BizUply. No es un sistema de historia clínica.",
     "Clínicas",
     "Consultas y citas para una clínica",
-    "El encaje es operativo: una persona pide una visita, el lead guarda un estado, el servicio tiene duración y precio, y la agenda ofrece huecos de 15 minutos. Bizuply no afirma guardar historias clínicas ni cumplir HIPAA.",
+    "El encaje es operativo: una persona pide una visita, el lead guarda un estado, el servicio tiene duración y precio, y la agenda ofrece huecos de 15 minutos. BizUply no afirma guardar historias clínicas ni cumplir HIPAA.",
     [
       ["Un día de trabajo", ["La consulta llega del formulario del sitio, de Lead Ads de Meta o se añade en el CRM. El equipo anota una llamada. La reserva usa el catálogo y el horario. El cliente puede reservar en la página pública cuando está activa."]],
       ["Qué añadir solo si hace falta", ["Las automatizaciones están en el plan de negocio. WhatsApp pide el número de 29 dólares y una plantilla aprobada. El sitio de experto cuesta 399 dólares si no quiere usar el editor."]],
@@ -572,11 +584,11 @@ PAGES["/solutions/clinics"] = industry({
     [["/appointments", "Citas"], ["/crm", "CRM"], ["/website-builder", "Constructor"]],
   ),
   "pt-BR": copy(
-    "Clínicas e negócios com agenda | Bizuply",
-    "Uma clínica pode guardar pedidos, um arquivo e uma agenda de 15 minutos na Bizuply. Não é um sistema de prontuário.",
+    "Clínicas e negócios com agenda | BizUply",
+    "Uma clínica pode guardar pedidos, um arquivo e uma agenda de 15 minutos na BizUply. Não é um sistema de prontuário.",
     "Clínicas",
     "Pedidos e horários para uma clínica",
-    "O encaixe é operacional: uma pessoa pede uma visita, o lead guarda um status, o serviço tem duração e preço, e a agenda oferece horários de 15 minutos. A Bizuply não afirma guardar prontuário nem cumprir HIPAA.",
+    "O encaixe é operacional: uma pessoa pede uma visita, o lead guarda um status, o serviço tem duração e preço, e a agenda oferece horários de 15 minutos. A BizUply não afirma guardar prontuário nem cumprir HIPAA.",
     [
       ["Um dia de trabalho", ["O pedido chega do formulário do site, de Lead Ads da Meta ou é lançado no CRM. A equipe anota uma ligação. A reserva usa o catálogo e o horário. O cliente pode marcar na página pública quando ela está ativa."]],
       ["O que acrescentar só se precisar", ["As automações ficam no plano de negócios. O WhatsApp pede o número de 29 dólares e um modelo aprovado. O site de especialista custa 399 dólares se você não quiser usar o editor."]],
@@ -585,11 +597,11 @@ PAGES["/solutions/clinics"] = industry({
     [["/appointments", "Agenda"], ["/crm", "CRM"], ["/website-builder", "Construtor"]],
   ),
   ar: copy(
-    "العيادات والأعمال ذات المواعيد | Bizuply",
-    "يمكن للعيادة حفظ الطلبات وملف العميل وتقويم بخطوات 15 دقيقة في Bizuply. هذا ليس نظام ملفات طبية.",
+    "العيادات والأعمال ذات المواعيد | BizUply",
+    "يمكن للعيادة حفظ الطلبات وملف العميل وتقويم بخطوات 15 دقيقة في BizUply. هذا ليس نظام ملفات طبية.",
     "عيادات",
     "طلبات ومواعيد لعيادة",
-    "الملاءمة تشغيلية: يطلب شخص زيارة، ويحفظ العميل المحتمل حالة، وللخدمة مدة وسعر، ويعرض التقويم فترات من 15 دقيقة. لا تدّعي Bizuply حفظ ملف طبي أو الامتثال لـ HIPAA.",
+    "الملاءمة تشغيلية: يطلب شخص زيارة، ويحفظ العميل المحتمل حالة، وللخدمة مدة وسعر، ويعرض التقويم فترات من 15 دقيقة. لا تدّعي BizUply حفظ ملف طبي أو الامتثال لـ HIPAA.",
     [
       ["يوم عمل", ["يصل الطلب من نموذج الموقع أو من إعلانات Meta أو يُضاف في CRM. يسجّل الفريق مكالمة. يستخدم الحجز كتالوج الخدمات وساعات العمل. يمكن للعميل الحجز من الصفحة العامة حين تكون مفعّلة."]],
       ["ما يُضاف فقط عند الحاجة", ["الأتمتة في الخطة التجارية. واتساب يطلب الرقم ذا 29 دولاراً وقالباً معتمداً. موقع المختص يكلف 399 دولاراً إذا لم ترغبوا في استخدام المحرر."]],
@@ -601,8 +613,8 @@ PAGES["/solutions/clinics"] = industry({
 
 PAGES["/solutions/beauty"] = industry({
   en: copy(
-    "Beauty studios | Bizuply",
-    "A salon can publish a site, take a booking and keep the client file in Bizuply. A separate beauty SaaS, if one is public, is listed on the marketplace rather than invented here.",
+    "Beauty studios | BizUply",
+    "A salon can publish a site, take a booking and keep the client file in BizUply. A separate beauty SaaS, if one is public, is listed on the marketplace rather than invented here.",
     "Beauty",
     "Bookings and a client file for a beauty studio",
     "Services, duration and price feed the same 15-minute calendar used by other appointment businesses. The website form can create a lead before the visit is booked. This page does not claim a branded beauty product unless it is currently published on the marketplace.",
@@ -610,7 +622,7 @@ PAGES["/solutions/beauty"] = industry({
       ["Before the visit", ["The studio describes the treatment on the site or in the service catalog. A lead from Meta or from the form is followed in the CRM until a time is chosen."]],
       ["Where a ready system would appear", ["Open the SaaS marketplace to see products the API currently marks as public. If a beauty system is not listed there, it is not offered for sale on this page."]],
     ],
-    [["Is there a checkout for a beauty app on this page?", "No. This page sells the Bizuply CRM, appointments and website path. Marketplace products are reviewed on /saas and are not checked out from here."]],
+    [["Is there a checkout for a beauty app on this page?", "No. This page sells the BizUply CRM, appointments and website path. Marketplace products are reviewed on /saas and are not checked out from here."]],
     [["/appointments", "Appointments"], ["/website-builder", "Website builder"], ["/saas", "Marketplace"]],
   ),
   he: copy(
@@ -627,8 +639,8 @@ PAGES["/solutions/beauty"] = industry({
     [["/appointments", "תורים"], ["/website-builder", "בונה אתרים"], ["/saas", "מרקטפלייס"]],
   ),
   es: copy(
-    "Estudios de belleza | Bizuply",
-    "Un salón puede publicar un sitio, tomar reservas y guardar el expediente en Bizuply. Un SaaS de belleza, si es público, aparece en el marketplace.",
+    "Estudios de belleza | BizUply",
+    "Un salón puede publicar un sitio, tomar reservas y guardar el expediente en BizUply. Un SaaS de belleza, si es público, aparece en el marketplace.",
     "Belleza",
     "Reservas y expediente para un estudio de belleza",
     "Servicio, duración y precio alimentan el mismo calendario de 15 minutos. El formulario puede crear un lead antes de reservar. Esta página no anuncia un producto de belleza de marca si no está publicado en el marketplace.",
@@ -640,8 +652,8 @@ PAGES["/solutions/beauty"] = industry({
     [["/appointments", "Citas"], ["/website-builder", "Constructor"], ["/saas", "Marketplace"]],
   ),
   "pt-BR": copy(
-    "Estúdios de beleza | Bizuply",
-    "Um salão pode publicar um site, receber reservas e guardar o arquivo na Bizuply. Um SaaS de beleza, se for público, aparece no marketplace.",
+    "Estúdios de beleza | BizUply",
+    "Um salão pode publicar um site, receber reservas e guardar o arquivo na BizUply. Um SaaS de beleza, se for público, aparece no marketplace.",
     "Beleza",
     "Reservas e arquivo para um estúdio de beleza",
     "Serviço, duração e preço alimentam a mesma agenda de 15 minutos. O formulário pode criar um lead antes da reserva. Esta página não anuncia um produto de beleza de marca se ele não estiver publicado no marketplace.",
@@ -653,8 +665,8 @@ PAGES["/solutions/beauty"] = industry({
     [["/appointments", "Agenda"], ["/website-builder", "Construtor"], ["/saas", "Marketplace"]],
   ),
   ar: copy(
-    "معاهد التجميل | Bizuply",
-    "يمكن للمعهد نشر موقع واستقبال حجز وحفظ ملف العميل في Bizuply. نظام تجميل منفصل، إن كان عاماً، يظهر في السوق وليس هنا.",
+    "معاهد التجميل | BizUply",
+    "يمكن للمعهد نشر موقع واستقبال حجز وحفظ ملف العميل في BizUply. نظام تجميل منفصل، إن كان عاماً، يظهر في السوق وليس هنا.",
     "تجميل",
     "حجوزات وملف عميل لمعهد تجميل",
     "الخدمة والمدة والسعر تغذّي تقويم الخمس عشرة دقيقة نفسه. يمكن للنموذج أن ينشئ عميلاً محتملاً قبل الحجز. لا تعلن هذه الصفحة عن منتج تجميل باسم تجاري إن لم يكن منشوراً في السوق.",
@@ -669,16 +681,16 @@ PAGES["/solutions/beauty"] = industry({
 
 PAGES["/solutions/real-estate"] = industry({
   en: copy(
-    "Real estate inquiries | Bizuply",
+    "Real estate inquiries | BizUply",
     "An agency can capture a property inquiry in the CRM and follow it with tasks. A property marketplace product is only offered if the SaaS list currently publishes it.",
     "Real estate",
     "Follow a property inquiry without a separate spreadsheet",
-    "Someone asks about a listing from the website or from a Meta lead form. The lead stores the source. Staff change the status, log the call and set a task. Bizuply does not claim an MLS connection on this page.",
+    "Someone asks about a listing from the website or from a Meta lead form. The lead stores the source. Staff change the status, log the call and set a task. BizUply does not claim an MLS connection on this page.",
     [
       ["The platform path", ["Website form or Lead Ads into the CRM, then the six statuses and a dated task. Appointments can hold a viewing if you use the calendar."]],
       ["A ready property system", ["If a property product is public, it appears on /saas with the description and demo the API returns. This page does not open a purchase for it."]],
     ],
-    [["Do leads from Facebook land in the CRM?", "Yes, after the business connects its own Facebook page and approves the permissions. Bizuply is a Meta Tech Provider. It is not described as a Meta Business Partner."]],
+    [["Do leads from Facebook land in the CRM?", "Yes, after the business connects its own Facebook page and approves the permissions. BizUply is a Meta Tech Provider. It is not described as a Meta Business Partner."]],
     [["/crm", "CRM"], ["/meta-campaigns", "Meta campaigns"], ["/saas", "Marketplace"]],
   ),
   he: copy(
@@ -695,7 +707,7 @@ PAGES["/solutions/real-estate"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "קמפיינים"], ["/saas", "מרקטפלייס"]],
   ),
   es: copy(
-    "Consultas inmobiliarias | Bizuply",
+    "Consultas inmobiliarias | BizUply",
     "Una agencia puede guardar una consulta de inmueble en el CRM y seguirla con tareas. Un producto inmobiliario solo se ofrece si el marketplace lo publica.",
     "Inmobiliario",
     "Seguir una consulta de inmueble sin una hoja aparte",
@@ -704,11 +716,11 @@ PAGES["/solutions/real-estate"] = industry({
       ["Ruta de la plataforma", ["Formulario o Lead Ads entran al CRM, luego los seis estados y una tarea con fecha. Una cita puede ser una visita si usa el calendario."]],
       ["Un sistema listo", ["Si un producto inmobiliario es público, aparece en /saas. Esta página no abre una compra."]],
     ],
-    [["¿Los leads de Facebook entran al CRM?", "Sí, después de conectar la página de Facebook y aprobar permisos. Bizuply es Meta Tech Provider, no un Meta Business Partner."]],
+    [["¿Los leads de Facebook entran al CRM?", "Sí, después de conectar la página de Facebook y aprobar permisos. BizUply es Meta Tech Provider, no un Meta Business Partner."]],
     [["/crm", "CRM"], ["/meta-campaigns", "Campañas"], ["/saas", "Marketplace"]],
   ),
   "pt-BR": copy(
-    "Pedidos imobiliários | Bizuply",
+    "Pedidos imobiliários | BizUply",
     "Uma imobiliária pode guardar um pedido de imóvel no CRM e acompanhá-lo com tarefas. Um produto imobiliário só é oferecido se o marketplace o publicar.",
     "Imóveis",
     "Acompanhar um pedido de imóvel sem uma planilha à parte",
@@ -717,11 +729,11 @@ PAGES["/solutions/real-estate"] = industry({
       ["Caminho da plataforma", ["Formulário ou Lead Ads entram no CRM, depois os seis status e uma tarefa com data. Um compromisso pode ser uma visita se você usar a agenda."]],
       ["Um sistema pronto", ["Se um produto imobiliário for público, ele aparece em /saas. Esta página não abre uma compra."]],
     ],
-    [["Leads do Facebook entram no CRM?", "Sim, depois de conectar a página do Facebook e aprovar as permissões. A Bizuply é Meta Tech Provider, não Meta Business Partner."]],
+    [["Leads do Facebook entram no CRM?", "Sim, depois de conectar a página do Facebook e aprovar as permissões. A BizUply é Meta Tech Provider, não Meta Business Partner."]],
     [["/crm", "CRM"], ["/meta-campaigns", "Campanhas"], ["/saas", "Marketplace"]],
   ),
   ar: copy(
-    "استفسارات العقارات | Bizuply",
+    "استفسارات العقارات | BizUply",
     "يمكن لوكالة حفظ استفسار عن عقار في CRM ومتابعته بمهام. منتج عقاري يُعرض فقط إذا نشره السوق الآن.",
     "عقارات",
     "متابعة استفسار عن عقار دون جدول منفصل",
@@ -730,15 +742,15 @@ PAGES["/solutions/real-estate"] = industry({
       ["مسار المنصة", ["يدخل النموذج أو Lead Ads إلى CRM، ثم الحالات الست ومهمة بتاريخ. يمكن أن يكون الموعد زيارة إذا استُخدم التقويم."]],
       ["نظام جاهز", ["إذا كان منتج عقاري عاماً فهو يظهر في /saas. هذه الصفحة لا تفتح شراءً له."]],
     ],
-    [["هل تصل عملاء فيسبوك إلى CRM؟", "نعم، بعد ربط صفحة فيسبوك والموافقة على الأذونات. Bizuply هي Meta Tech Provider وليست Meta Business Partner."]],
+    [["هل تصل عملاء فيسبوك إلى CRM؟", "نعم، بعد ربط صفحة فيسبوك والموافقة على الأذونات. BizUply هي Meta Tech Provider وليست Meta Business Partner."]],
     [["/crm", "CRM"], ["/meta-campaigns", "الحملات"], ["/saas", "السوق"]],
   ),
 });
 
 PAGES["/solutions/restaurants"] = industry({
   en: copy(
-    "Restaurants | Bizuply",
-    "A restaurant that wants a ready ordering system should look at the SaaS marketplace. Bizuply CRM is for inquiries and follow-up, not a kitchen display.",
+    "Restaurants | BizUply",
+    "A restaurant that wants a ready ordering system should look at the SaaS marketplace. BizUply CRM is for inquiries and follow-up, not a kitchen display.",
     "Restaurants",
     "Inquiries in the CRM, ordering systems on the marketplace",
     "Table service, a QR menu and a kitchen ticket are not features of the CRM calendar. If a restaurant system is public, the marketplace page shows its name, description, demo and whether a purchase is open. This page does not start that purchase.",
@@ -763,8 +775,8 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "מרקטפלייס"], ["/crm", "CRM"], ["/website-builder", "בונה אתרים"]],
   ),
   es: copy(
-    "Restaurantes: consultas en el CRM | Bizuply",
-    "Un restaurante que quiere un sistema de pedidos listo debe mirar el marketplace. El CRM de Bizuply es para consultas, no para la cocina.",
+    "Restaurantes: consultas en el CRM | BizUply",
+    "Un restaurante que quiere un sistema de pedidos listo debe mirar el marketplace. El CRM de BizUply es para consultas, no para la cocina.",
     "Restaurantes",
     "Consultas en el CRM, pedidos en el marketplace",
     "El servicio de mesa, un menú QR y un ticket de cocina no son funciones del calendario del CRM. Si un sistema de restaurante es público, /saas muestra su nombre y su demo. Esta página no inicia la compra.",
@@ -776,8 +788,8 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "Marketplace"], ["/crm", "CRM"], ["/website-builder", "Constructor"]],
   ),
   "pt-BR": copy(
-    "Restaurantes: contatos no CRM | Bizuply",
-    "Um restaurante que quer um sistema de pedidos pronto deve olhar o marketplace. O CRM da Bizuply é para pedidos de contato, não para a cozinha.",
+    "Restaurantes: contatos no CRM | BizUply",
+    "Um restaurante que quer um sistema de pedidos pronto deve olhar o marketplace. O CRM da BizUply é para pedidos de contato, não para a cozinha.",
     "Restaurantes",
     "Contatos no CRM, pedidos no marketplace",
     "Serviço de mesa, cardápio QR e comanda de cozinha não são funções da agenda do CRM. Se um sistema de restaurante for público, /saas mostra o nome e a demo. Esta página não inicia a compra.",
@@ -789,8 +801,8 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "Marketplace"], ["/crm", "CRM"], ["/website-builder", "Construtor"]],
   ),
   ar: copy(
-    "المطاعم | Bizuply",
-    "مطعم يريد نظام طلبات جاهزاً ينظر إلى السوق. CRM في Bizuply للاستفسارات والمتابعة، لا لشاشة المطبخ.",
+    "المطاعم | BizUply",
+    "مطعم يريد نظام طلبات جاهزاً ينظر إلى السوق. CRM في BizUply للاستفسارات والمتابعة، لا لشاشة المطبخ.",
     "مطاعم",
     "استفسارات في CRM، وأنظمة طلب في السوق",
     "خدمة الطاولة وقائمة QR وتذكرة المطبخ ليست وظائف تقويم CRM. إذا كان نظام مطعم عاماً، تعرض /saas اسمه والعرض. هذه الصفحة لا تبدأ الشراء.",
@@ -805,7 +817,7 @@ PAGES["/solutions/restaurants"] = industry({
 
 PAGES["/solutions/service-businesses"] = industry({
   en: copy(
-    "Service businesses | Bizuply",
+    "Service businesses | BizUply",
     "Trades, studios and local services can keep the lead, the visit and the follow-up in one account.",
     "Service businesses",
     "From the first inquiry to the visit",
@@ -831,7 +843,7 @@ PAGES["/solutions/service-businesses"] = industry({
     [["/crm", "CRM"], ["/appointments", "תורים"], ["/pricing", "מחירון"]],
   ),
   es: copy(
-    "Negocios de servicios | Bizuply",
+    "Negocios de servicios | BizUply",
     "Oficios, estudios y servicios locales pueden guardar el lead, la visita y el seguimiento en una cuenta.",
     "Servicios",
     "De la primera consulta a la visita",
@@ -844,7 +856,7 @@ PAGES["/solutions/service-businesses"] = industry({
     [["/crm", "CRM"], ["/appointments", "Citas"], ["/pricing", "Precios"]],
   ),
   "pt-BR": copy(
-    "Negócios de serviço | Bizuply",
+    "Negócios de serviço | BizUply",
     "Ofícios, estúdios e serviços locais podem guardar o lead, a visita e o acompanhamento numa conta.",
     "Serviços",
     "Do primeiro contato à visita",
@@ -857,7 +869,7 @@ PAGES["/solutions/service-businesses"] = industry({
     [["/crm", "CRM"], ["/appointments", "Agenda"], ["/pricing", "Preços"]],
   ),
   ar: copy(
-    "أعمال الخدمات | Bizuply",
+    "أعمال الخدمات | BizUply",
     "يمكن للحِرف والاستوديوهات والخدمات المحلية حفظ العميل المحتمل والزيارة والمتابعة في حساب واحد.",
     "خدمات",
     "من أول طلب حتى الزيارة",
@@ -873,8 +885,8 @@ PAGES["/solutions/service-businesses"] = industry({
 
 PAGES["/solutions/agencies"] = industry({
   en: copy(
-    "Marketing agencies | Bizuply",
-    "An agency can run its own leads, collaborations and human follow-up in Bizuply. One screen does not yet manage several clients' WhatsApp numbers.",
+    "Marketing agencies | BizUply",
+    "An agency can run its own leads, collaborations and human follow-up in BizUply. One screen does not yet manage several clients' WhatsApp numbers.",
     "Agencies",
     "The agency's own pipeline, not every client's inbox",
     "Collaborations, proposals and a CRM for the agency's sales are in the product. Human agents can follow the agency's leads. Connecting a client's WhatsApp still means that number has its own subscription, key and webhook.",
@@ -882,7 +894,7 @@ PAGES["/solutions/agencies"] = industry({
       ["What an agency can do now", ["Track its own inbound leads, assign tasks, and use the collaborations area. Meta Lead Ads can enter the CRM of the business that connected the page."]],
       ["The limit", ["Multi-client WhatsApp from one screen is not available. Do not plan a client portal on top of a feature that is not shipped."]],
     ],
-    [["Can the agency run ads inside Bizuply?", "The connected business can create and edit campaigns, ad sets and ads in the dashboard, and set a budget on the campaign or the ad set. Meta bills the spend. There is no separate campaign price on the Bizuply pricing page."]],
+    [["Can the agency run ads inside BizUply?", "The connected business can create and edit campaigns, ad sets and ads in the dashboard, and set a budget on the campaign or the ad set. Meta bills the spend. There is no separate campaign price on the BizUply pricing page."]],
     [["/collaborations", "Collaborations"], ["/meta-campaigns", "Meta campaigns"], ["/crm", "CRM"]],
   ),
   he: copy(
@@ -899,8 +911,8 @@ PAGES["/solutions/agencies"] = industry({
     [["/collaborations", "שיתופים"], ["/meta-campaigns", "קמפיינים"], ["/crm", "CRM"]],
   ),
   es: copy(
-    "Agencias de marketing | Bizuply",
-    "Una agencia puede llevar sus propios leads, colaboraciones y seguimiento humano en Bizuply. Una pantalla aún no gestiona el WhatsApp de varios clientes.",
+    "Agencias de marketing | BizUply",
+    "Una agencia puede llevar sus propios leads, colaboraciones y seguimiento humano en BizUply. Una pantalla aún no gestiona el WhatsApp de varios clientes.",
     "Agencias",
     "El pipeline de la agencia, no la bandeja de cada cliente",
     "Colaboraciones, propuestas y un CRM para las ventas de la agencia están en el producto. Conectar el WhatsApp de un cliente sigue significando una suscripción, una clave y un webhook propios.",
@@ -908,12 +920,12 @@ PAGES["/solutions/agencies"] = industry({
       ["Qué puede hacer ahora", ["Seguir sus consultas, asignar tareas y usar colaboraciones. Los Lead Ads entran al CRM del negocio que conectó la página."]],
       ["El límite", ["Gestionar el WhatsApp de varios clientes desde una pantalla no está disponible."]],
     ],
-    [["¿La agencia puede gestionar anuncios en Bizuply?", "El negocio conectado puede crear y editar campañas, conjuntos y anuncios, con presupuesto en la campaña o en el conjunto. Meta cobra el gasto."]],
+    [["¿La agencia puede gestionar anuncios en BizUply?", "El negocio conectado puede crear y editar campañas, conjuntos y anuncios, con presupuesto en la campaña o en el conjunto. Meta cobra el gasto."]],
     [["/collaborations", "Colaboraciones"], ["/meta-campaigns", "Campañas"], ["/crm", "CRM"]],
   ),
   "pt-BR": copy(
-    "Agências de marketing | Bizuply",
-    "Uma agência pode cuidar dos próprios leads, colaborações e acompanhamento humano na Bizuply. Uma tela ainda não gere o WhatsApp de vários clientes.",
+    "Agências de marketing | BizUply",
+    "Uma agência pode cuidar dos próprios leads, colaborações e acompanhamento humano na BizUply. Uma tela ainda não gere o WhatsApp de vários clientes.",
     "Agências",
     "O pipeline da agência, não a caixa de cada cliente",
     "Colaborações, propostas e um CRM para as vendas da agência estão no produto. Ligar o WhatsApp de um cliente continua a significar assinatura, chave e webhook próprios.",
@@ -921,12 +933,12 @@ PAGES["/solutions/agencies"] = industry({
       ["O que dá para fazer agora", ["Acompanhar os próprios contatos, atribuir tarefas e usar colaborações. Lead Ads entram no CRM do negócio que conectou a página."]],
       ["O limite", ["Gerir o WhatsApp de vários clientes numa tela não está disponível."]],
     ],
-    [["A agência gere anúncios na Bizuply?", "O negócio conectado pode criar e editar campanhas, conjuntos e anúncios, com orçamento na campanha ou no conjunto. A Meta cobra o gasto."]],
+    [["A agência gere anúncios na BizUply?", "O negócio conectado pode criar e editar campanhas, conjuntos e anúncios, com orçamento na campanha ou no conjunto. A Meta cobra o gasto."]],
     [["/collaborations", "Colaborações"], ["/meta-campaigns", "Campanhas"], ["/crm", "CRM"]],
   ),
   ar: copy(
-    "وكالات التسويق | Bizuply",
-    "يمكن للوكالة إدارة عملائها المحتملين وتعاونها والمتابعة البشرية في Bizuply. شاشة واحدة لا تدير بعد أرقام واتساب لعدة عملاء.",
+    "وكالات التسويق | BizUply",
+    "يمكن للوكالة إدارة عملائها المحتملين وتعاونها والمتابعة البشرية في BizUply. شاشة واحدة لا تدير بعد أرقام واتساب لعدة عملاء.",
     "وكالات",
     "مسار الوكالة نفسها، لا صندوق كل عميل",
     "التعاون والعروض وCRM لمبيعات الوكالة موجودة في المنتج. ربط واتساب عميل ما زال يعني اشتراكاً ومفتاحاً وwebhook خاصين به.",
@@ -934,23 +946,23 @@ PAGES["/solutions/agencies"] = industry({
       ["ما يمكن فعله الآن", ["متابعة الطلبات الواردة الخاصة بها، وتعيين مهام، واستخدام التعاون. تصل إعلانات العملاء المحتملين إلى CRM الخاص بالنشاط الذي ربط الصفحة."]],
       ["الحد", ["إدارة واتساب لعدة عملاء من شاشة واحدة غير متاحة."]],
     ],
-    [["هل تدير الوكالة الإعلانات من Bizuply؟", "يمكن للنشاط المتصل إنشاء وتحرير الحملات والمجموعات والإعلانات، بميزانية على الحملة أو المجموعة. تحصّل Meta الإنفاق."]],
+    [["هل تدير الوكالة الإعلانات من BizUply؟", "يمكن للنشاط المتصل إنشاء وتحرير الحملات والمجموعات والإعلانات، بميزانية على الحملة أو المجموعة. تحصّل Meta الإنفاق."]],
     [["/collaborations", "التعاون"], ["/meta-campaigns", "الحملات"], ["/crm", "CRM"]],
   ),
 });
 
 PAGES["/solutions/lead-based"] = industry({
   en: copy(
-    "Businesses that live on leads | Bizuply",
+    "Businesses that live on leads | BizUply",
     "Meta Lead Ads, a website form and Google Ads lead forms can enter the same pipeline, with a source on each lead.",
     "Lead-based",
     "One pipeline for every place a lead starts",
-    "The business connects its own Facebook page. After the permissions, new Lead Ads arrive with a source and the new-lead status. A form on a Bizuply site does the same with source Website. Google Ads lead forms are the third automated source.",
+    "The business connects its own Facebook page. After the permissions, new Lead Ads arrive with a source and the new-lead status. A form on a BizUply site does the same with source Website. Google Ads lead forms are the third automated source.",
     [
       ["After the lead exists", ["Six statuses: New, Contacted, Interested, Converted, Lost, Old lead. A note, a call or a WhatsApp log sits on the timeline. A task with a date shows up in notifications when it is late."]],
       ["Money", ["CRM only is $49 a month. Follow-up automations need the business plan at $99 a month or $990 a year. Ad spend is billed by Meta, not by this page."]],
     ],
-    [["Is Bizuply a Meta Business Partner?", "No. Bizuply is a Meta Tech Provider and the app passed App Review for Lead Ads."]],
+    [["Is BizUply a Meta Business Partner?", "No. BizUply is a Meta Tech Provider and the app passed App Review for Lead Ads."]],
     [["/crm", "CRM"], ["/meta-campaigns", "Meta campaigns"], ["/guides/meta-lead-ads-to-crm", "Guide"]],
   ),
   he: copy(
@@ -967,58 +979,58 @@ PAGES["/solutions/lead-based"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "קמפיינים"], ["/guides/meta-lead-ads-to-crm", "מדריך"]],
   ),
   es: copy(
-    "Negocios que viven de leads | Bizuply",
+    "Negocios que viven de leads | BizUply",
     "Lead Ads de Meta, un formulario del sitio y formularios de Google Ads pueden entrar al mismo pipeline, con un origen en cada lead.",
     "Basados en leads",
     "Un pipeline para cada lugar donde nace un lead",
-    "El negocio conecta su página de Facebook. Tras los permisos, los Lead Ads llegan con origen y estado nuevo. Un formulario en un sitio de Bizuply hace lo mismo con origen Sitio. Los formularios de Google Ads son la tercera fuente automática.",
+    "El negocio conecta su página de Facebook. Tras los permisos, los Lead Ads llegan con origen y estado nuevo. Un formulario en un sitio de BizUply hace lo mismo con origen Sitio. Los formularios de Google Ads son la tercera fuente automática.",
     [
       ["Cuando el lead ya existe", ["Seis estados: Nuevo, Contactado, Interesado, Convertido, Perdido y Lead antiguo. Una nota, una llamada o un WhatsApp quedan en la línea de tiempo."]],
       ["Dinero", ["CRM solo: 49 dólares al mes. Las automatizaciones piden el plan de negocio a 99 al mes o 990 al año. La inversión la cobra Meta."]],
     ],
-    [["¿Bizuply es Meta Business Partner?", "No. Es Meta Tech Provider y la app pasó App Review para Lead Ads."]],
+    [["¿BizUply es Meta Business Partner?", "No. Es Meta Tech Provider y la app pasó App Review para Lead Ads."]],
     [["/crm", "CRM"], ["/meta-campaigns", "Campañas"], ["/guides/meta-lead-ads-to-crm", "Guía"]],
   ),
   "pt-BR": copy(
-    "Negócios que vivem de leads | Bizuply",
+    "Negócios que vivem de leads | BizUply",
     "Lead Ads da Meta, um formulário do site e formulários do Google Ads podem entrar no mesmo pipeline, com uma origem em cada lead.",
     "Baseados em leads",
     "Um pipeline para cada lugar onde um lead nasce",
-    "O negócio conecta a própria página do Facebook. Depois das permissões, os Lead Ads chegam com origem e status novo. Um formulário num site da Bizuply faz o mesmo com origem Site. Os formulários do Google Ads são a terceira fonte automática.",
+    "O negócio conecta a própria página do Facebook. Depois das permissões, os Lead Ads chegam com origem e status novo. Um formulário num site da BizUply faz o mesmo com origem Site. Os formulários do Google Ads são a terceira fonte automática.",
     [
       ["Quando o lead já existe", ["Seis status: Novo, Contatado, Interessado, Convertido, Perdido e Lead antigo. Uma nota, uma ligação ou um WhatsApp ficam na linha do tempo."]],
       ["Dinheiro", ["CRM sozinho: 49 dólares por mês. As automações pedem o plano de negócios a 99 por mês ou 990 por ano. O investimento é cobrado pela Meta."]],
     ],
-    [["A Bizuply é Meta Business Partner?", "Não. É Meta Tech Provider e o app passou App Review para Lead Ads."]],
+    [["A BizUply é Meta Business Partner?", "Não. É Meta Tech Provider e o app passou App Review para Lead Ads."]],
     [["/crm", "CRM"], ["/meta-campaigns", "Campanhas"], ["/guides/meta-lead-ads-to-crm", "Guia"]],
   ),
   ar: copy(
-    "أعمال تعيش على العملاء المحتملين | Bizuply",
+    "أعمال تعيش على العملاء المحتملين | BizUply",
     "يمكن لإعلانات Meta ونموذج الموقع ونماذج Google Ads أن تدخل المسار نفسه، مع مصدر على كل عميل محتمل.",
     "قائم على العملاء",
     "مسار واحد لكل مكان يبدأ فيه عميل محتمل",
-    "يربط النشاط صفحة فيسبوك الخاصة به. بعد الأذونات تصل إعلانات العملاء المحتملين بمصدر وحالة جديد. نموذج موقع Bizuply يفعل الشيء نفسه بمصدر الموقع. نماذج Google Ads هي المصدر الآلي الثالث.",
+    "يربط النشاط صفحة فيسبوك الخاصة به. بعد الأذونات تصل إعلانات العملاء المحتملين بمصدر وحالة جديد. نموذج موقع BizUply يفعل الشيء نفسه بمصدر الموقع. نماذج Google Ads هي المصدر الآلي الثالث.",
     [
       ["بعد وجود العميل المحتمل", ["ست حالات: جديد، تم التواصل، مهتم، تم التحويل، مفقود، وعميل محتمل قديم. ملاحظة أو مكالمة أو واتساب تبقى على الخط الزمني."]],
       ["المال", ["CRM وحده: 49 دولاراً شهرياً. الأتمتة تطلب الخطة التجارية بـ 99 شهرياً أو 990 سنوياً. تحصّل Meta الإنفاق الإعلاني."]],
     ],
-    [["هل Bizuply شريك Meta Business؟", "لا. هي Meta Tech Provider واجتاز التطبيق App Review لإعلانات العملاء المحتملين."]],
+    [["هل BizUply شريك Meta Business؟", "لا. هي Meta Tech Provider واجتاز التطبيق App Review لإعلانات العملاء المحتملين."]],
     [["/crm", "CRM"], ["/meta-campaigns", "الحملات"], ["/guides/meta-lead-ads-to-crm", "دليل"]],
   ),
 });
 
 PAGES["/solutions/ready-systems"] = industry({
   en: copy(
-    "A ready SaaS, or software of your own | Bizuply",
+    "A ready SaaS, or software of your own | BizUply",
     "The marketplace lists systems the API marks as public. Custom development is a conversation, not a checkout on this page. White label is described only on a product that publishes it.",
     "SaaS",
     "See what is actually public before you plan a launch",
-    "Bizuply can introduce a ready system or talk about software built around a business. This page does not invent a catalog. Open /saas. The cards there are the public list. A product without a public price does not get a price here.",
+    "BizUply can introduce a ready system or talk about software built around a business. This page does not invent a catalog. Open /saas. The cards there are the public list. A product without a public price does not get a price here.",
     [
       ["How to read the marketplace", ["Each public product can show a name, a description, an audience and a demo when the API provides them. Checkout stays off unless that product's own page enables a real purchase. Do not treat a demo as a sold subscription."]],
       ["Custom work", ["A CRM shaped around one company, a portal, or a subscription product that is not already listed is a scoped conversation from the contact page. There is no published custom-development rate on this page."]],
     ],
-    [["Can I buy a named system from this article?", "No. Use /saas for the live list. This article explains the difference between the Bizuply platform, a marketplace product, and work that still needs a quote."]],
+    [["Can I buy a named system from this article?", "No. Use /saas for the live list. This article explains the difference between the BizUply platform, a marketplace product, and work that still needs a quote."]],
     [["/saas", "Open the marketplace"], ["/contact", "Contact"], ["/platform", "The platform"]],
   ),
   he: copy(
@@ -1035,11 +1047,11 @@ PAGES["/solutions/ready-systems"] = industry({
     [["/saas", "למרקטפלייס"], ["/contact", "יצירת קשר"], ["/platform", "הפלטפורמה"]],
   ),
   es: copy(
-    "Un SaaS listo, o software propio | Bizuply",
+    "Un SaaS listo, o software propio | BizUply",
     "El marketplace muestra los sistemas que la API marca como públicos. El desarrollo a medida es una conversación, no una compra en esta página.",
     "SaaS",
     "Ver qué es público antes de planear un lanzamiento",
-    "Bizuply puede presentar un sistema listo o hablar de software construido alrededor de un negocio. Esta página no inventa un catálogo. Abra /saas. Un producto sin precio público no recibe un precio aquí.",
+    "BizUply puede presentar un sistema listo o hablar de software construido alrededor de un negocio. Esta página no inventa un catálogo. Abra /saas. Un producto sin precio público no recibe un precio aquí.",
     [
       ["Cómo leer el marketplace", ["Un producto público puede mostrar nombre, descripción, audiencia y demo cuando la API los da. La compra sigue cerrada salvo que la página del producto abra una compra real."]],
       ["Trabajo a medida", ["Un CRM para una sola empresa, un portal o un producto de suscripción que no está en la lista es una conversación desde contacto. No hay una tarifa de desarrollo publicada aquí."]],
@@ -1048,11 +1060,11 @@ PAGES["/solutions/ready-systems"] = industry({
     [["/saas", "Abrir el marketplace"], ["/contact", "Contacto"], ["/platform", "La plataforma"]],
   ),
   "pt-BR": copy(
-    "Um SaaS pronto, ou um software seu | Bizuply",
+    "Um SaaS pronto, ou um software seu | BizUply",
     "O marketplace mostra os sistemas que a API marca como públicos. Desenvolvimento sob medida é uma conversa, não uma compra nesta página.",
     "SaaS",
     "Ver o que é público antes de planejar um lançamento",
-    "A Bizuply pode apresentar um sistema pronto ou falar de software construído em volta de um negócio. Esta página não inventa um catálogo. Abra /saas. Um produto sem preço público não ganha um preço aqui.",
+    "A BizUply pode apresentar um sistema pronto ou falar de software construído em volta de um negócio. Esta página não inventa um catálogo. Abra /saas. Um produto sem preço público não ganha um preço aqui.",
     [
       ["Como ler o marketplace", ["Um produto público pode mostrar nome, descrição, público e demo quando a API os entrega. A compra continua fechada, salvo se a página do produto abrir uma compra real."]],
       ["Trabalho sob medida", ["Um CRM para uma empresa, um portal ou um produto de assinatura que não está na lista é uma conversa a partir do contato. Não há uma tarifa de desenvolvimento publicada aqui."]],
@@ -1061,11 +1073,11 @@ PAGES["/solutions/ready-systems"] = industry({
     [["/saas", "Abrir o marketplace"], ["/contact", "Contato"], ["/platform", "A plataforma"]],
   ),
   ar: copy(
-    "نظام SaaS جاهز، أو برنامج خاص بكم | Bizuply",
+    "نظام SaaS جاهز، أو برنامج خاص بكم | BizUply",
     "يعرض السوق الأنظمة التي تعلّمها الواجهة كعامة. التطوير المخصص محادثة، لا شراء من هذه الصفحة. العلامة البيضاء تُذكر فقط في منتج ينشرها.",
     "SaaS",
     "رؤية ما هو عام فعلاً قبل التخطيط للإطلاق",
-    "يمكن لـ Bizuply أن تعرض نظاماً جاهزاً أو أن تتحدث عن برنامج يُبنى حول نشاط. هذه الصفحة لا تخترع كتالوجاً. افتحوا /saas. البطاقات هناك هي القائمة العامة. منتج بلا سعر عام لا يحصل على سعر هنا.",
+    "يمكن لـ BizUply أن تعرض نظاماً جاهزاً أو أن تتحدث عن برنامج يُبنى حول نشاط. هذه الصفحة لا تخترع كتالوجاً. افتحوا /saas. البطاقات هناك هي القائمة العامة. منتج بلا سعر عام لا يحصل على سعر هنا.",
     [
       ["كيف تُقرأ السوق", ["يمكن لمنتج عام أن يعرض اسماً ووصفاً وجمهوراً وعرضاً حين توفرها الواجهة. يبقى الشراء مغلقاً إلا إذا فتحت صفحة المنتج شراءً حقيقياً."]],
       ["عمل مخصص", ["CRM لشركة واحدة، أو بوابة، أو منتج اشتراك غير موجود في القائمة هو محادثة من صفحة الاتصال. لا يوجد هنا سعر تطوير منشور."]],
