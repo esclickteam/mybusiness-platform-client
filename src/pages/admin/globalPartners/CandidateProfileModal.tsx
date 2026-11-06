@@ -55,7 +55,20 @@ export default function CandidateProfileModal({
   async function load() {
     setBusy(true);
     try {
-      const data = await gpGet(`/candidates/${candidateId}/activity`);
+      let data: any;
+      try {
+        data = await gpGet(`/candidates/${candidateId}/activity`);
+      } catch (activityErr: any) {
+        // Backward-compatible fallback while activity route rolls out.
+        const basic = await gpGet(`/candidates/${candidateId}`);
+        data = {
+          candidate: basic.candidate,
+          audits: [],
+          messages: [],
+          followUps: [],
+        };
+        if (!basic?.candidate) throw activityErr;
+      }
       setCandidate(data.candidate);
       setAudits(data.audits || []);
       setMessages(data.messages || []);

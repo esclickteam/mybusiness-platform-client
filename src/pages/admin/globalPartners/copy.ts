@@ -50,6 +50,10 @@ export const CHANNEL_STATUS_LABELS: Record<string, string> = {
   manual_verified: "אומת ידנית",
   invalid: "לא תקין",
   bounced: "חזר",
+  mx_ok: "MX תקין",
+  format_ok: "פורמט תקין",
+  published: "פורסם",
+  pending: "ממתין",
 };
 
 export const AUDIT_LABELS: Record<string, string> = {
