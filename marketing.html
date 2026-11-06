@@ -312,6 +312,14 @@
         if (home) {
           document.documentElement.style.background = "#5b21b6";
           if (document.body) document.body.style.backgroundColor = "#5b21b6";
+        } else if (
+          path === "/partners" ||
+          path === "/partners/" ||
+          /\/(he|es|ar|pt-BR)\/partners\/?$/.test(path)
+        ) {
+          document.documentElement.classList.add("bizuply-partners");
+          document.documentElement.style.background = "#f7f5fd";
+          if (document.body) document.body.style.backgroundColor = "#f7f5fd";
         } else {
           document.documentElement.style.background =
             "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";

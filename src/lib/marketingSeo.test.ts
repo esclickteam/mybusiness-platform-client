@@ -43,10 +43,17 @@ describe("marketing crawl files", () => {
       expect(sitemap).toContain(`<loc>https://bizuply.com${page}</loc>`);
     }
     expect(sitemap).toContain("<loc>https://bizuply.com/partners</loc>");
+    expect(sitemap).toContain("<loc>https://bizuply.com/he/partners</loc>");
     expect(isUnknownMarketingPath("/partners")).toBe(false);
+    expect(isUnknownMarketingPath("/he/partners")).toBe(false);
     expect(buildMarketingDocumentHead("/partners") || "").toContain('href="https://bizuply.com/partners"');
+    expect(buildMarketingDocumentHead("/partners") || "").toContain('hreflang="he" href="https://bizuply.com/he/partners"');
+    expect(buildMarketingDocumentHead("/he/partners") || "").toContain('rel="canonical" href="https://bizuply.com/he/partners"');
     expect(buildMarketingPrerender("/partners")?.inner || "").toContain(
       "/partner/register?planKey=partner_international"
+    );
+    expect(buildMarketingPrerender("/he/partners")?.inner || "").toContain(
+      "בונים עסק. מרחיבים הזדמנויות. מרוויחים יחד."
     );
     expect(sitemap).not.toContain("bizuply.com/saas");
     expect(sitemap).not.toContain("bizuply.com/join");
