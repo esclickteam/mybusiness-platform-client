@@ -154,7 +154,7 @@ export default function LanguageSwitcher({
           aria-label={t("common.changeLanguage")}
           dir={dir}
           data-align={align}
-          className="fixed z-[99999] overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]"
+          className="site-lang-menu fixed z-[99999] overflow-y-auto overscroll-contain border border-slate-200 bg-white p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]"
           style={{ width: MENU_WIDTH, maxWidth: `calc(100vw - ${VIEWPORT_MARGIN * 2}px)` }}
         >
           {LANGUAGE_META.map((lang) => {
@@ -167,7 +167,7 @@ export default function LanguageSwitcher({
                 role="option"
                 aria-selected={isActive}
                 onClick={() => changeLanguage(lang.code)}
-                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start text-sm font-bold transition ${
+                className={`flex w-full items-center gap-3 px-3 py-2.5 text-start text-sm font-bold transition ${
                   isActive
                     ? "bg-violet-50 text-violet-800"
                     : "text-slate-700 hover:bg-slate-50"

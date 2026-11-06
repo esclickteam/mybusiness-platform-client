@@ -11,7 +11,7 @@
   --hx-paper: #f3efe6;
   --hx-ice: #d9e6ff;
   --hx-blue: #7c3aed;
-  --hx-header: 4.75rem;
+  --hx-header: 5rem;
   --hx-muted: #4c3d66;
   --hx-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --hp: 0;
@@ -67,8 +67,8 @@ html.hx-preview {
 
 .hx-has-site-header .site-header__cta:hover {
   background: #4c1d95;
-  transform: none;
-  box-shadow: none;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(91, 33, 182, 0.28);
 }
 
 .hx-has-site-header .site-header__signin {
