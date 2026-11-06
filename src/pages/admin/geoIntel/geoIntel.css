@@ -1040,6 +1040,19 @@
   gap: 0.3rem;
   font-size: 0.85rem;
 }
+.geo-work-layer {
+  margin-top: 0.7rem;
+}
+.geo-work-layer h4 {
+  margin: 0 0 0.2rem;
+  font-size: 0.85rem;
+}
+.geo-work-layer p {
+  margin: 0;
+}
+.geo-work-note button {
+  justify-self: start;
+}
 .geo-work-note textarea {
   width: 100%;
   border: 1px solid var(--geo-line);

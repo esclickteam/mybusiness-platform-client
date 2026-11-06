@@ -18,6 +18,11 @@ export const WORK_LABELS = {
   noQuestion: "אין שאלה אחת. המשימה מצרפת כמה מדידות.",
   noSource: "לא נשמר מקור תומך במדידה זו.",
   hypothesis: "השערה שממתינה לאימות, לא עובדה.",
+  fact: "עובדה שנמדדה",
+  hypothesisTitle: "השערה",
+  recommendation: "המלצה",
+  noHypothesis: "אין השערה נוספת מעבר לעובדה שנמדדה.",
+  save: "שמור מעקב",
 } as const;
 
 const FINDING_KIND_HE: Record<string, string> = {
@@ -69,6 +74,11 @@ export type WorkCard = {
   priorityScore: number;
   priorityNoteHe: string;
   provenanceHe: string;
+  factHe: string;
+  hypothesisHe: string | null;
+  recommendationHe: string;
+  targetState: string;
+  targetVerified: boolean;
 };
 
 export function workCardFromTask(task: any, brandName = ""): WorkCard {
@@ -92,5 +102,23 @@ export function workCardFromTask(task: any, brandName = ""): WorkCard {
     provenanceHe:
       work.provenanceHe ||
       (task?.provenance === "proven" ? "נגזר ממדידה" : WORK_LABELS.hypothesis),
+    factHe: work.factHe || work.outcomeHe || task?.outcomeHe || "",
+    hypothesisHe: work.hypothesisHe ?? null,
+    recommendationHe: work.recommendationHe || work.actionHe || task?.actionHe || "",
+    targetState: work.targetState || (work.targetPath || task?.suggestedPath ? "unchecked" : "none"),
+    targetVerified: work.targetVerified === true,
   };
+}
+
+export function targetPageLabel(card: Pick<WorkCard, "targetPath" | "targetNoteHe" | "targetState" | "targetVerified">) {
+  if (card.targetVerified === true && card.targetState === "exists" && card.targetPath) {
+    return card.targetNoteHe || `העמוד ${card.targetPath} נמצא באתר הציבורי. לא בוצע בו שינוי.`;
+  }
+  if (card.targetState === "missing") {
+    return card.targetNoteHe || "העמוד המוצע לא נמצא באתר הציבורי, ולכן הוא לא מוצג כעמוד מאומת.";
+  }
+  if (card.targetPath) {
+    return card.targetNoteHe || `כיוון ${card.targetPath} לא אומת מול האתר.`;
+  }
+  return card.targetNoteHe || "לא זוהה עמוד יעד מתוך המדידה.";
 }

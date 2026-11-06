@@ -957,6 +957,9 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               <div className="geo-plan-hero">
                 <h2>{copy.navImprovementPlan}</h2>
                 <p>{copy.improvementPlanHint}</p>
+                {improvementPlan?.bannerHe ? (
+                  <p className="geo-plan-disclaimer">{improvementPlan.bannerHe}</p>
+                ) : null}
                 {improvementPlan?.disclaimerHe ? (
                   <p className="geo-plan-disclaimer">
                     {improvementPlan.disclaimerHe}

@@ -197,9 +197,6 @@ const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"))
 const GeoStagingPreview = lazy(() =>
   import("./pages/admin/geoIntel/GeoStagingPreview")
 );
-const GeoWorkPreviewPage = lazy(() =>
-  import("./pages/admin/geoIntel/GeoWorkPreviewPage")
-);
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
@@ -939,9 +936,7 @@ export default function App() {
   const isHiddenOffer = location.pathname.startsWith("/offer/");
   const isAdminRoute = location.pathname.startsWith("/admin");
   // Isolated GEO staging surface — no public Header / language switcher / Get Started.
-  const isGeoStagingRoute =
-    location.pathname.startsWith("/geo-staging") ||
-    location.pathname.startsWith("/geo-work-preview");
+  const isGeoStagingRoute = location.pathname.startsWith("/geo-staging");
   const isGeoSurface = isGeoStagingRoute || isGeoProductionHost;
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
@@ -1632,18 +1627,6 @@ export default function App() {
                             }
                           />
                         ) : null}
-                        {import.meta.env.VITE_GEO_WORK_PREVIEW === "1" ? (
-                          <Route
-                            path="/geo-work-preview"
-                            element={
-                              <Suspense fallback={null}>
-                                <GeoWorkPreviewPage />
-                              </Suspense>
-                            }
-                          />
-                        ) : null}
-
-
                         <Route
                           path="/admin"
                           element={

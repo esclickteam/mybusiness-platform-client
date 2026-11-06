@@ -3,6 +3,7 @@ import {
   WORK_LABELS,
   workCardFromTask,
   taskStatusHe,
+  targetPageLabel,
   type WorkSource,
 } from "./improvementWork";
 
@@ -162,15 +163,25 @@ export default function ImprovementWorkList({
                 <div>
                   <dt>{WORK_LABELS.target}</dt>
                   <dd>
-                    {card.targetPath ? <code dir="ltr">{card.targetPath}</code> : null}{" "}
-                    {card.targetNoteHe}
+                    {card.targetVerified && card.targetPath ? (
+                      <code dir="ltr">{card.targetPath}</code>
+                    ) : null}{" "}
+                    {targetPageLabel(card)}
                   </dd>
                 </div>
-                <div>
-                  <dt>{WORK_LABELS.action}</dt>
-                  <dd>{card.actionHe}</dd>
-                </div>
               </dl>
+              <section className="geo-work-layer">
+                <h4>{WORK_LABELS.fact}</h4>
+                <p>{card.factHe || "—"}</p>
+              </section>
+              <section className="geo-work-layer">
+                <h4>{WORK_LABELS.hypothesisTitle}</h4>
+                <p>{card.hypothesisHe || WORK_LABELS.noHypothesis}</p>
+              </section>
+              <section className="geo-work-layer">
+                <h4>{WORK_LABELS.recommendation}</h4>
+                <p>{card.recommendationHe || card.actionHe}</p>
+              </section>
               {card.priorityNoteHe ? (
                 <p className="geo-muted">{card.priorityNoteHe}</p>
               ) : null}
@@ -188,6 +199,13 @@ export default function ImprovementWorkList({
                     onUpdate(task.taskKey, task.status || "todo", note);
                   }}
                 />
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => onUpdate(task.taskKey, task.status || "todo", note)}
+                >
+                  {WORK_LABELS.save}
+                </button>
                 {task.statusUpdatedAt ? (
                   <small>
                     עודכן {formatWhen(task.statusUpdatedAt)}

@@ -4,6 +4,7 @@ import { canShowMeasurementActions } from "./runActionVisibility";
 import {
   WORK_LABELS,
   findingKindHe,
+  targetPageLabel,
   workCardFromTask,
   workHasPublicJargon,
 } from "./improvementWork";
@@ -54,6 +55,24 @@ describe("improvement work cards", () => {
     expect(card.targetPath).toBeNull();
     expect(card.sources[0].domain).toBe("example.com");
     expect(workHasPublicJargon(card.actionHe)).toBe(false);
+  });
+
+  it("does not present a missing page as verified", () => {
+    const missing = workCardFromTask({
+      work: {
+        targetPath: "/crm",
+        targetState: "missing",
+        targetVerified: false,
+        targetNoteHe: "ההצעה /crm לא נמצאה כעמוד באתר הציבורי, ולכן היא לא מוצגת כעמוד מאומת.",
+        factHe: "המותג לא הופיע.",
+        hypothesisHe: null,
+        recommendationHe: "פעולה מוצעת.",
+      },
+    });
+    expect(missing.targetVerified).toBe(false);
+    expect(targetPageLabel(missing)).toContain("לא מוצגת כעמוד מאומת");
+    expect(missing.factHe).toContain("לא הופיע");
+    expect(missing.recommendationHe).toBe("פעולה מוצעת.");
   });
 
   it("translates finding kinds to Hebrew", () => {
