@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { gpGet, gpPatch, gpPost } from "./globalPartnersApi";
 import { statusLabel, TRACK_LABELS } from "./copy";
 import { useGlobalPartnersRealtime } from "./useGlobalPartnersRealtime";
+import OutreachCenter from "./OutreachCenter";
 import "./globalPartners.css";
 
-type Tab = "dashboard" | "candidates" | "add" | "import" | "scans";
+type Tab = "dashboard" | "candidates" | "outreach" | "add" | "import" | "scans";
 
 function Kpi({ label, value }: { label: string; value: string | number }) {
   return (
@@ -158,6 +159,7 @@ export default function AdminGlobalPartners() {
       if (tab === "dashboard") await loadDashboard();
       if (tab === "candidates" || tab === "add") await loadCandidates();
       if (tab === "scans") await loadScans();
+      // outreach tab loads itself
     } catch (err: any) {
       setError(err?.message || "שגיאה בטעינת Global Partners");
     } finally {
@@ -328,6 +330,7 @@ export default function AdminGlobalPartners() {
           [
             ["dashboard", "דשבורד"],
             ["candidates", "מועמדים"],
+            ["outreach", "מרכז פניות"],
             ["add", "הוספה ידנית"],
             ["import", "ייבוא CSV"],
             ["scans", "סריקות"],
@@ -349,6 +352,15 @@ export default function AdminGlobalPartners() {
           רענון
         </button>
       </nav>
+
+      {tab === "outreach" ? (
+        <OutreachCenter
+          onError={setError}
+          onMessage={setMessage}
+          busy={busy}
+          setBusy={setBusy}
+        />
+      ) : null}
 
       {tab === "dashboard" && dashboard ? (
         <>
