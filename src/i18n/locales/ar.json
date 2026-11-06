@@ -2790,7 +2790,7 @@
         "state_invalid": "انتهت صلاحية جلسة الدخول. حاول مرة أخرى.",
         "cancelled": "تم إلغاء الدخول عبر {{provider}}.",
         "provider_unavailable": "الدخول عبر {{provider}} غير متاح الآن. استخدم البريد وكلمة المرور.",
-        "consent_required": "Registration cannot continue without a stored consent record. You can try again.",
+        "consent_required": "لا يمكن متابعة التسجيل من دون سجل موافقة محفوظ. يمكنك المحاولة مرة أخرى.",
       "provider_error": "تعذر تسجيل الدخول عبر {{provider}}. حاول مرة أخرى.",
         "account_disabled": "هذا الحساب معطّل. تواصل مع support@bizuply.com.",
         "rate_limited": "محاولات كثيرة. حاول بعد دقائق.",
@@ -3499,9 +3499,9 @@
     "sendButton": "ارسل رسالة",
     "sendingButton": "جاري الإرسال...",
     "fillAllFields": "يرجى ملء جميع الحقول",
-    "privacyNotice": "Your name, phone, email, and message are kept so we can answer the enquiry. Sending it is not consent to marketing. More detail is in the privacy policy.",
-    "marketingConsent": "I agree to receive marketing updates from Bizuply. I can withdraw this consent at any time.",
-    "consentSaveFailed": "The enquiry was not sent because the consent choice could not be saved. You can try again.",
+    "privacyNotice": "يُحفظ الاسم والهاتف والبريد والرسالة للرد على الطلب. إرسال الطلب ليس موافقة على الرسائل التسويقية. مزيد من التفاصيل في سياسة الخصوصية.",
+    "marketingConsent": "أوافق على تلقي رسائل تسويقية من Bizuply. يمكنني سحب هذه الموافقة في أي وقت.",
+    "consentSaveFailed": "لم يُرسل الطلب لأن اختيار الموافقة لم يُحفظ. يمكنك المحاولة مرة أخرى.",
     "success": "تم تقديم النموذج بنجاح! سنعود إليك قريباً.",
     "error": "حدث خطأ. يرجى المحاولة مرة أخرى في وقت لاحق."
   },
@@ -13800,10 +13800,10 @@
       "sendFailed": "تعذّر إرسال الرمز. حاول مرة أخرى.",
       "useSocialForIntent": "تابع عبر Google أو Microsoft لهذا التسجيل."
     },
-    "termsConsent": "I accept the terms of use and the privacy policy before payment.",
-    "marketingConsent": "I agree to receive marketing updates. This is separate from the terms and is not required to pay.",
-    "termsRequired": "Accept the terms to continue. Marketing consent stays optional.",
-    "consentSaveFailed": "We cannot continue because the consent choice was not saved. No registration was started. You can try again.",
+    "termsConsent": "أوافق على شروط الاستخدام وسياسة الخصوصية قبل الدفع.",
+    "marketingConsent": "أوافق على تلقي رسائل تسويقية. هذه موافقة مستقلة عن الشروط وليست مطلوبة للدفع.",
+    "termsRequired": "وافق على الشروط للمتابعة. تبقى الموافقة التسويقية اختيارية.",
+    "consentSaveFailed": "لا يمكن المتابعة لأن اختيار الموافقة لم يُحفظ. لم يبدأ أي تسجيل. يمكنك المحاولة مرة أخرى.",
     "setup": {
       "title": "أكمل إعداد نشاطك التجاري",
       "subtitle": "أضف اسم النشاط لتخصيص مساحة العمل. تم حفظ بريد تسجيل الدخول بالفعل.",
@@ -23773,16 +23773,16 @@
     }
   },
   "trackingConsent": {
-    "title": "Measurement on this site",
-    "body": "Essential cookies keep language and sign-in. Meta lead and conversion measurement loads only if you allow it.",
-    "policy": "Privacy policy",
-    "essential": "Essential only",
-    "all": "Allow measurement",
-    "reset": "Reset measurement choice"
+    "title": "القياس في هذا الموقع",
+    "body": "تحفظ ملفات تعريف الارتباط الضرورية اللغة وتسجيل الدخول. لا يُحمّل قياس العملاء المحتملين والتحويلات من Meta إلا إذا سمحت بذلك. يُحفظ الاختيار في ملف تعريف ارتباط على هذا المتصفح.",
+    "policy": "سياسة الخصوصية",
+    "essential": "الضروري فقط",
+    "all": "السماح بالقياس",
+    "reset": "إعادة تعيين اختيار القياس"
   },
   "billingNotice": {
-    "month": "each month",
-    "year": "each year",
-    "subscription": "{{price}} {{interval}}, in US dollars, through Lemon Squeezy. The subscription renews automatically until it is cancelled in billing. Cancellation stops the next charge, and access remains until the end of the paid period. Refunds follow the published terms of use."
+    "month": "كل شهر",
+    "year": "كل سنة",
+    "subscription": "{{price}} {{interval}}، بالدولار الأمريكي، عبر Lemon Squeezy. يتجدد الاشتراك تلقائيًا إلى أن يُلغى في منطقة الفوترة. يوقف الإلغاء عملية التحصيل التالية، ويستمر الوصول حتى نهاية الفترة المدفوعة. تتبع المبالغ المستردة شروط الاستخدام المنشورة."
   }
 }

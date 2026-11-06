@@ -1,0 +1,120 @@
+{
+  "status": "draft-not-for-publication",
+  "draftDate": "6 de noviembre de 2026",
+  "notice": "Borrador interno para la empresa y su asesoría jurídica. No es un documento jurídico aprobado, no está publicado y no sustituye las páginas que están ahora en bizuply.com.",
+  "company": {
+    "legalName": "Bizuply LLC",
+    "formation": "Delaware, Estados Unidos",
+    "formationBasis": "La empresa indicó esta constitución para el borrador. No se facilitaron el número de expediente de Delaware, el domicilio social ni una dirección operativa, y no se indican.",
+    "privacyContact": "privacy@bizuply.com",
+    "supportContact": "support@bizuply.com"
+  },
+  "privacy": {
+    "title": "Borrador de privacidad",
+    "paragraphs": [
+      "Este borrador describe la información personal que trata Bizuply LLC en la plataforma Bizuply y en bizuply.com. Bizuply LLC es una sociedad de responsabilidad limitada constituida en Delaware, Estados Unidos. La empresa atiende a clientes dentro y fuera de Estados Unidos. Este borrador no trata a Bizuply como una empresa únicamente israelí y no aplica la ley israelí a todos los clientes.",
+      "Describe el producto tal como está construido, incluidos los cambios de consentimiento aún no publicados de la PR 1027 del cliente y de la PR 806 del servidor. Esos cambios no están en el sitio público hasta que se desplieguen. La página pública de privacidad sigue siendo la que está activa en bizuply.com.",
+      "Una ley se aplica solo cuando se cumplen sus propias condiciones. Las secciones generales describen el servicio tal como funciona. Los suplementos finales se aplican solo a una persona que esté realmente cubierta por esa ley."
+    ],
+    "information": [
+      "Formulario de contacto: nombre, teléfono, correo y mensaje, para responder a la consulta.",
+      "Registro: correo y plan elegido. La creación de la cuenta guarda un nombre, un correo y un hash de la contraseña. El número de tarjeta de una suscripción de la plataforma lo recoge Lemon Squeezy y no se guarda como número de tarjeta en los registros de la aplicación descritos aquí.",
+      "CRM y herramientas relacionadas: registros de clientes potenciales, clientes, citas, notas y mensajes que introduce el cliente.",
+      "WhatsApp Business API: números de teléfono y contenido de los mensajes cuando una empresa conecta ese servicio de Meta.",
+      "IA: cuando se usa una función de IA y hay una clave de OpenAI configurada, el contenido necesario para esa función se envía a OpenAI. Este borrador no afirma si OpenAI entrena un modelo con ese contenido. Eso depende de condiciones que no están en el repositorio del producto.",
+      "Navegador: una cookie de idioma, una cookie de acceso cuando existe una sesión y una cookie de elección de medición. Las cookies de Meta Pixel se escriben solo después de permitir la medición. Las páginas públicas comprobadas no cargan Google Analytics ni Google Tag Manager.",
+      "No se encontró autenticación de dos factores en el producto y no se afirma."
+    ],
+    "purposes": [
+      "Prestar la cuenta y las herramientas de CRM, sitio web, automatización y WhatsApp que el cliente activa.",
+      "Responder a una consulta de contacto.",
+      "Cobrar una suscripción de la plataforma a través de Lemon Squeezy.",
+      "Recordar el idioma y la sesión de acceso.",
+      "Medir clientes potenciales y conversiones de Meta solo después de que la persona permita la medición.",
+      "Enviar correo de marketing de Bizuply solo cuando una elección de marketing separada se guardó como aceptada."
+    ],
+    "bases": "Cuando el RGPD o el RGPD del Reino Unido se aplican a una persona, la cuenta y el servicio solicitado se prestan en ejecución del contrato, y la medición no esencial y el correo de marketing de Bizuply se apoyan en el consentimiento separado que se describe abajo. En el repositorio no hay una evaluación documentada de interés legítimo, así que este borrador no usa el interés legítimo como base general. Cuando otra ley exige un aviso o un consentimiento, las pantallas actuales son el mecanismo que existe hoy. Este borrador no afirma que ese mecanismo cumpla todas las leyes.",
+    "records": [
+      "Elección de medición: una cookie propia llamada bizuply_tracking, con el valor essential o all, durante 180 días. La misma pregunta se hace en todos los países. Es un único control del producto. No es una afirmación de que todos los países exijan un consentimiento previo. La elección puede cambiarse desde el control de restablecimiento de la página de privacidad en el cliente no publicado. La elección se guarda en la cookie del navegador, no en la base de datos de la aplicación.",
+      "Condiciones y marketing, después de desplegar ambas PR: el cliente actualizado envía una clave de consentimiento solo después de que el servidor confirma que el registro se guardó. El registro conserva la clave, si el origen es el registro o el formulario de contacto, el correo, el idioma, el plan, la aceptación de las condiciones, la aceptación del marketing, la versión del aviso 2026-11-06, la dirección de la página y la hora de la base de datos. El marketing empieza sin aceptación. Rechazar el marketing no impide el registro. Si el guardado falla, se detiene el nuevo registro o contacto y la pantalla no dice que la elección se guardó. La misma clave actualiza un solo registro. Un cliente antiguo que no envía clave continúa por la vía anterior, que no crea un registro de consentimiento y no se describe como consentimiento.",
+      "El sitio público actual todavía no guarda estos registros de condiciones y marketing."
+    ],
+    "recipients": [
+      "Lemon Squeezy, para el pago de la suscripción de la plataforma.",
+      "Stripe, para los cobros de la tienda de un comerciante cuando ese comerciante conecta Stripe. Es independiente de la suscripción de la plataforma.",
+      "PayPal, para la confirmación de algunos pedidos de tienda. PayPal no es el procesador de la suscripción de la plataforma.",
+      "MongoDB, para la base de datos de la aplicación. La región de almacenamiento no está en el repositorio.",
+      "Railway, para el alojamiento de la aplicación. La región no está en el repositorio.",
+      "Vercel, para el sitio público.",
+      "Cloudinary, para los archivos multimedia cargados.",
+      "Resend, para el envío de correo.",
+      "OpenAI, para las funciones de IA cuando se usan.",
+      "Meta, para WhatsApp Business API, para los anuncios que conecta una empresa y para el píxel de marketing después de permitir la medición.",
+      "Google, para las fuentes del sitio de marketing.",
+      "Twilio, para llamadas telefónicas cuando esa función está activada.",
+      "Cloudflare Turnstile, para una comprobación de bots cuando hay una clave de sitio configurada."
+    ],
+    "agreements": "No había contratos de tratamiento firmados en el repositorio y no se afirman.",
+    "transfers": "Los proveedores anteriores pueden tratar información fuera del país de la persona. Este borrador no afirma que la información permanezca en Estados Unidos ni en ningún otro país concreto, porque la región de almacenamiento no está en el repositorio. Cuando el RGPD o el RGPD del Reino Unido exigen un instrumento de transferencia, ese instrumento no se verificó aquí.",
+    "retention": "Una consulta de contacto permanece como un ticket de soporte hasta que un operador la elimina. El producto no tiene eliminación ni exportación de cuenta en autoservicio. Un ajuste de conservación de 30 días existe solo en ciertos ajustes de inquilino y de complemento del sitio, no como un calendario general. No se indica un plazo general de conservación.",
+    "security": "El sitio público se sirve por HTTPS. Este borrador no afirma cifrado en reposo, un cortafuegos, un sistema de detección de intrusiones ni autenticación de dos factores.",
+    "requests": "Las solicitudes de acceso, rectificación y supresión se envían a privacy@bizuply.com. El producto no las completa de forma automática. No se indica un plazo vinculante de respuesta, porque no se verificó ninguno.",
+    "supplements": {
+      "unitedStates": "Aquí no se trata ninguna ley federal única de privacidad como aplicable a todos los usuarios. La Ley de la Comisión Federal de Comercio prohíbe las declaraciones engañosas sobre privacidad. Las leyes estatales, incluida la California Consumer Privacy Act modificada por la CPRA, se aplican a un residente solo cuando se cumplen los umbrales de esa ley. Esos umbrales no se verificaron, así que este borrador no afirma que la ley de California se aplique ni que la empresa esté exenta. Si se aplica, un residente de California puede solicitar conocer, corregir y suprimir información personal, y oponerse a una venta o a un uso compartido. Este borrador no afirma que Bizuply venda información personal. Si el píxel de Meta es una venta o un uso compartido según la ley de California es una cuestión para la asesoría jurídica.",
+      "eea": "El RGPD se aplica solo en las situaciones que él define, incluida una oferta de servicios a personas del Espacio Económico Europeo o el seguimiento de su comportamiento. Un sitio en varios idiomas no decide por sí solo esa cuestión. Si el RGPD se aplica, la persona puede solicitar acceso, rectificación, supresión, limitación, portabilidad y oposición, puede retirar el consentimiento y puede reclamar ante una autoridad de control. No se nombra una autoridad principal ni un representante en la UE, porque no se verificaron.",
+      "uk": "El RGPD del Reino Unido se aplica solo en las situaciones que él define. Si se aplica, los derechos corresponden a los derechos del EEE y puede presentarse una reclamación ante la Information Commissioner's Office. No se nombra un representante en el Reino Unido, porque no se verificó.",
+      "israel": "La Ley de Protección de la Privacidad de Israel, 5741-1981, incluida la Enmienda 13, puede aplicarse al tratamiento que la ley cubre. No se aplica a todos los clientes solo porque el sitio esté disponible en hebreo o porque algunos clientes estén en Israel. Si se aplica, son relevantes los derechos de acceso y rectificación de esa ley y las normas de comunicación directa para un mensaje de marketing. El correo de marketing de Bizuply se envía solo cuando la elección de marketing separada se guardó como aceptada.",
+      "other": "La empresa no facilitó una lista de otros países a los que el servicio se dirija de forma específica. Una persona de otro país puede escribir a privacy@bizuply.com. Este borrador no enumera todas las leyes nacionales."
+    }
+  },
+  "terms": {
+    "title": "Borrador de condiciones",
+    "paragraphs": [
+      "Este es un borrador de contrato entre el cliente y Bizuply LLC, una sociedad de responsabilidad limitada constituida en Delaware, Estados Unidos. No se facilitaron el número de expediente de Delaware ni el domicilio social, y no se indican. Este borrador no está publicado y no sustituye las condiciones que están ahora en bizuply.com.",
+      "El servicio es software para empresas: CRM, sitios web, automatizaciones y herramientas de WhatsApp, según describe el plan elegido. Un cliente que envía mensajes a sus propios clientes es responsable de esos mensajes y de la base jurídica que exigen. La casilla de marketing del formulario de registro o de contacto de Bizuply no autoriza las campañas del cliente."
+    ],
+    "acceptance": "El flujo de registro no publicado pide la aceptación de las condiciones antes de continuar. Esa aceptación se guarda solo después de que el servidor confirma el registro. Si el guardado falla, el flujo se detiene y la pantalla no dice que la aceptación se guardó. Un cliente antiguo que no envía una clave de consentimiento continúa por la vía anterior, que no crea este registro.",
+    "plans": [
+      "Plan empresarial mensual: 99 dólares estadounidenses cada mes.",
+      "Plan empresarial anual: 990 dólares estadounidenses cada año.",
+      "Plan solo CRM: 49 dólares estadounidenses cada mes.",
+      "Plan de sitio web: 129 dólares estadounidenses cada año."
+    ],
+    "billing": "Las suscripciones de la plataforma se cobran en dólares estadounidenses mediante Lemon Squeezy. La suscripción se renueva automáticamente hasta que el cliente la cancela en facturación. La cancelación detiene el siguiente cargo. El acceso continúa hasta el final del período ya pagado. Los reembolsos siguen las condiciones realmente publicadas en el momento de la compra. Este borrador no añade una regla de ausencia de reembolso y no afirma que una frase publicada sobre reembolsos sea exigible frente a un consumidor. No se hizo ningún cargo real para probar el pago.",
+    "renewalLaws": "Las normas de renovación automática difieren según el mercado. Las normas de los estados de Estados Unidos, incluida la ley de renovación automática de California, y las normas de consumo del EEE, el Reino Unido e Israel pueden exigir una información concreta y una forma efectiva de cancelar. La pantalla de registro no publicada muestra el precio, la moneda en dólares, el intervalo de facturación, la renovación automática, el efecto de la cancelación y que los reembolsos siguen las condiciones publicadas. Si esa información cumple cada ley queda sin decidir.",
+    "governingLaw": "La constitución en Delaware identifica a la empresa. Por sí sola no elige la ley de este contrato ni la ley de privacidad de cada cliente. Las condiciones públicas que están ahora en bizuply.com contienen cláusulas contradictorias sobre la ley aplicable. Este borrador no elige la ley de Delaware, la ley de Nueva York ni ninguna otra ley. La asesoría jurídica debe sustituir esas cláusulas. Un cliente fuera de Estados Unidos conserva los derechos imperativos que un contrato no puede eliminar.",
+    "liability": "Las condiciones publicadas contienen límites y renuncias. Este borrador no los repite como si fueran exigibles. La asesoría jurídica debe decidir qué se le puede pedir renunciar a un consumidor en cada mercado de destino."
+  },
+  "accessibility": {
+    "title": "Borrador de accesibilidad",
+    "checked": [
+      "El 6 de noviembre de 2026 se abrieron páginas públicas en hebreo y en inglés con anchura de escritorio y con 390 píxeles. El idioma y la dirección coincidieron con la selección, y las páginas comprobadas no mostraron desplazamiento horizontal de la página.",
+      "En el cliente no publicado, el formulario de contacto asocia etiquetas con el nombre, el teléfono, el correo y el mensaje. En el sitio público actual, esas etiquetas se ven y no están asociadas a los campos.",
+      "En la pantalla de registro no publicada, las condiciones y el marketing son casillas separadas. La casilla de condiciones es obligatoria. La casilla de marketing es opcional y empieza sin marcar.",
+      "Se hizo un cambio de contraste: las etiquetas ámbar de una barra lateral jurídica clara se oscurecieron. No se hizo una auditoría completa de contraste.",
+      "En el cliente no publicado, hay un cuadro de elección de medición antes de que se cargue un píxel de Meta no esencial."
+    ],
+    "notChecked": "Estas comprobaciones no fueron una auditoría WCAG 2.1 o 2.2, un recorrido completo con lector de pantalla ni una revisión de cada plantilla de cliente o de cada idioma. La página pública de accesibilidad muestra ahora una afirmación de WCAG 2.1 nivel AA con marcas de verificación. Esa afirmación no quedó demostrada. Este borrador no la hace.",
+    "help": "Una persona que necesite ayuda puede escribir a support@bizuply.com. No se facilitaron el nombre ni el teléfono de un coordinador.",
+    "laws": "La Americans with Disabilities Act y las leyes estatales de acceso pueden aplicarse a algunos sitios web de Estados Unidos. La Ley Europea de Accesibilidad puede aplicarse a servicios de consumo incluidos en su ámbito en la Unión Europea. La Equality Act británica de 2010 puede aplicarse a servicios ofrecidos al público en el Reino Unido. Las normas israelíes de accesibilidad y la Norma Israelí 5568 pueden aplicarse a un servicio que esas normas cubran, y no se calculó una exención de pequeña empresa. Este borrador no decide que alguna de estas leyes se aplique y no afirma conformidad con ninguna de ellas."
+  },
+  "ownerDecisions": [
+    "Si publicar el número de expediente de Delaware y el domicilio social.",
+    "Cualquier dirección operativa.",
+    "Los países a los que el servicio se dirige de forma específica.",
+    "Un plazo general de conservación y si añadir eliminación y exportación en autoservicio.",
+    "El nombre y el teléfono del coordinador de accesibilidad.",
+    "Si, después de que la asesoría apruebe un texto, ese texto debe sustituir las páginas públicas.",
+    "Las regiones de almacenamiento y los contratos de tratamiento firmados, que solo pueden describirse después de presentar los documentos."
+  ],
+  "counselQuestions": [
+    "Qué ley aplicable y qué fuero deben sustituir las cláusulas contradictorias de las condiciones públicas actuales.",
+    "Qué leyes de privacidad se aplican, según dónde esté establecida la empresa, adónde dirige el servicio y si se cumple algún umbral legal.",
+    "Si se exige un delegado de protección de datos, un representante en la UE o un representante en el Reino Unido.",
+    "Qué deberes de la Enmienda 13 de Israel se aplican, incluido cualquier registro o exención.",
+    "Si el píxel de Meta es una venta o un uso compartido según la ley de California.",
+    "Si la información sobre la renovación cumple las normas de renovación automática de cada mercado de destino.",
+    "Qué límites de responsabilidad son exigibles frente a un consumidor.",
+    "Si se aplican la ADA, la Ley Europea de Accesibilidad, la Equality Act británica o la Norma Israelí 5568, y qué nivel de conformidad exige cada una."
+  ]
+}

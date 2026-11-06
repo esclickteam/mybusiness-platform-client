@@ -2790,7 +2790,7 @@
         "state_invalid": "A sessão de login expirou. Tente novamente.",
         "cancelled": "O login com {{provider}} foi cancelado.",
         "provider_unavailable": "O login com {{provider}} não está disponível agora. Use e-mail e senha.",
-        "consent_required": "Registration cannot continue without a stored consent record. You can try again.",
+        "consent_required": "O cadastro não pode continuar sem um registro de consentimento salvo. Você pode tentar de novo.",
       "provider_error": "Não foi possível entrar com {{provider}}. Tente novamente.",
         "account_disabled": "Esta conta está desativada. Contate support@bizuply.com.",
         "rate_limited": "Muitas tentativas. Tente de novo em alguns minutos.",
@@ -3499,9 +3499,9 @@
     "sendButton": "Enviar Mensagem",
     "sendingButton": "Enviando...",
     "fillAllFields": "Por favor preencha todos os campos",
-    "privacyNotice": "Your name, phone, email, and message are kept so we can answer the enquiry. Sending it is not consent to marketing. More detail is in the privacy policy.",
-    "marketingConsent": "I agree to receive marketing updates from Bizuply. I can withdraw this consent at any time.",
-    "consentSaveFailed": "The enquiry was not sent because the consent choice could not be saved. You can try again.",
+    "privacyNotice": "O nome, o telefone, o e-mail e a mensagem são guardados para responder ao contato. O envio não é consentimento de marketing. Há mais detalhes na política de privacidade.",
+    "marketingConsent": "Aceito receber comunicações de marketing da Bizuply. Posso retirar este consentimento a qualquer momento.",
+    "consentSaveFailed": "O contato não foi enviado porque a escolha de consentimento não pôde ser salva. Você pode tentar de novo.",
     "success": "Formulário enviado com sucesso! Entraremos em contato em breve.",
     "error": "Ocorreu um erro. Por favor, tente novamente mais tarde."
   },
@@ -13800,10 +13800,10 @@
       "sendFailed": "Não foi possível enviar o código. Tente novamente.",
       "useSocialForIntent": "Continue com Google ou Microsoft para este cadastro."
     },
-    "termsConsent": "I accept the terms of use and the privacy policy before payment.",
-    "marketingConsent": "I agree to receive marketing updates. This is separate from the terms and is not required to pay.",
-    "termsRequired": "Accept the terms to continue. Marketing consent stays optional.",
-    "consentSaveFailed": "We cannot continue because the consent choice was not saved. No registration was started. You can try again.",
+    "termsConsent": "Aceito os termos de uso e a política de privacidade antes do pagamento.",
+    "marketingConsent": "Aceito receber comunicações de marketing. Este aceite é separado dos termos e não é necessário para pagar.",
+    "termsRequired": "Aceite os termos para continuar. O consentimento de marketing continua opcional.",
+    "consentSaveFailed": "Não podemos continuar porque a escolha de consentimento não foi salva. Nenhum cadastro foi iniciado. Você pode tentar de novo.",
     "setup": {
       "title": "Conclua a configuração do seu negócio",
       "subtitle": "Adicione o nome do negócio para personalizar o espaço de trabalho. Seu e-mail de acesso já está salvo.",
@@ -23773,16 +23773,16 @@
     }
   },
   "trackingConsent": {
-    "title": "Measurement on this site",
-    "body": "Essential cookies keep language and sign-in. Meta lead and conversion measurement loads only if you allow it.",
-    "policy": "Privacy policy",
-    "essential": "Essential only",
-    "all": "Allow measurement",
-    "reset": "Reset measurement choice"
+    "title": "Medição neste site",
+    "body": "Os cookies essenciais guardam o idioma e o acesso. A medição de leads e conversões da Meta é carregada somente se você permitir. A escolha fica salva em um cookie neste navegador.",
+    "policy": "Política de privacidade",
+    "essential": "Somente essenciais",
+    "all": "Permitir medição",
+    "reset": "Redefinir a escolha de medição"
   },
   "billingNotice": {
-    "month": "each month",
-    "year": "each year",
-    "subscription": "{{price}} {{interval}}, in US dollars, through Lemon Squeezy. The subscription renews automatically until it is cancelled in billing. Cancellation stops the next charge, and access remains until the end of the paid period. Refunds follow the published terms of use."
+    "month": "por mês",
+    "year": "por ano",
+    "subscription": "{{price}} {{interval}}, em dólares americanos, pela Lemon Squeezy. A assinatura é renovada automaticamente até ser cancelada na área de cobrança. O cancelamento interrompe a próxima cobrança, e o acesso continua até o fim do período pago. Os reembolsos seguem os termos de uso publicados."
   }
 }

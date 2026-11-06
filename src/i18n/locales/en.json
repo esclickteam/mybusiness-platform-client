@@ -24751,7 +24751,7 @@
   },
   "trackingConsent": {
     "title": "Measurement on this site",
-    "body": "Essential cookies keep language and sign-in. Meta lead and conversion measurement loads only if you allow it.",
+    "body": "Essential cookies keep language and sign-in. Meta lead and conversion measurement loads only if you allow it. The choice is stored in a cookie on this browser.",
     "policy": "Privacy policy",
     "essential": "Essential only",
     "all": "Allow measurement",
