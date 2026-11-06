@@ -36,7 +36,7 @@
       "p3": "1.3. The Company reserves the right, at its sole discretion, to change, amend, update, or remove parts of these terms at any time, with or without prior notice. Any update takes effect immediately upon posting on the Site. Continued use of the platform after such a change constitutes full acceptance of the updated terms.",
       "p4": "1.4. These terms are written in English and may from time to time be translated for convenience into other languages. In the event of any conflict or inconsistency between translations, <strong>the English version shall prevail</strong>.",
       "p5": "1.5. These terms are drafted in the masculine form for grammatical convenience only and apply equally to all genders, individuals, and entities.",
-      "p6": "1.6. BizUply operates under the laws of the United States. Unless otherwise stated, the law governing all matters relating to the platform, its use, and any dispute arising therefrom shall be the <strong>laws of the State of Delaware</strong>, United States, without regard to its conflict-of-laws principles.",
+      "p6": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied.",
       "p7": "1.7. Users accessing BizUply from outside the United States acknowledge that the platform is operated from within the jurisdiction of the United States and agree that the collection, processing, and storage of their data are subject to the data protection laws and standards of the United States, including any applicable international framework. This acknowledgment does not waive a privacy or consumer right that the mandatory law of the user's country does not allow a contract to waive."
     },
     "s2": {
@@ -109,7 +109,7 @@
       "cookiesTitle": "Cookies & Tracking Technologies",
       "p7": "5.7. The Site and the App use cookies and similar technologies for basic functionality, security, and the measurement described in section 5.9. Section 5.9 states which measurement tool loads and on which page.",
       "p8": "5.8. Users may disable or restrict cookies through their browser settings; however, as a result, certain features of the platform may not function properly.",
-      "p9": "5.9. This paragraph describes the client code proposed for deployment, not the public site before that deployment. That code does not load Google Analytics, Google Tag Manager, or reCAPTCHA. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On platform pages served from index.html, the pixel is loaded only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, that page does not load the pixel, and choosing essential after the pixel has loaded reloads the page and clears the measurement cookies. The marketing homepage is still served from marketing.html, and that file in the same client code loads the pixel after the browser is idle without reading the cookie. A checkout event is sent from registration only when the cookie equals all and the pixel function is already present. Cloudflare Turnstile is loaded only on a screen that has a site key configured. A third-party tool that does load may set its own cookies under its own policy.",
+      "p9": "5.9. In this version of the client, Google Analytics, Google Tag Manager, and reCAPTCHA are not loaded. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On the marketing homepage and on the other platform pages, the pixel is loaded only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, the pixel is not loaded. Choosing essential after the pixel has loaded reloads the page and clears the measurement cookies. Clearing the choice on the privacy page removes the cookie and reloads the page, so the choice is asked again. The choice is stored in a cookie on this browser for 180 days, so it remains when the visitor moves between platform pages and when the visitor returns. A checkout event is sent from registration only when the cookie equals all and the pixel function is already present. Cloudflare Turnstile is loaded only on a screen that has a site key configured. This is the behavior of this version. The public site does not behave this way until this version is deployed.",
       "p10": "For more information about how BizUply collects, uses, and protects data, please review our detailed <strong>Privacy Policy</strong>, which forms an integral part of these Terms of Use."
     },
     "s6": {
@@ -207,12 +207,11 @@
     },
     "s14": {
       "h": "14. Governing Law & Dispute Resolution",
-      "p1": "14.1. These terms and any dispute or claim arising out of or related to them shall be governed exclusively by the laws of the <strong>State of New York, USA</strong>, without regard to conflict-of-laws principles.",
-      "p2": "14.2. Any dispute, controversy, or claim between the User and the Company shall first be attempted to be resolved through <strong>good-faith negotiation</strong>. If no resolution is reached within thirty (30) days, the dispute shall be submitted to <strong>binding arbitration</strong> under the rules of the <strong>American Arbitration Association (AAA)</strong>, conducted in English, in New York City, USA.",
-      "p3": "14.3. The arbitration decision shall be final and binding, and judgment on the award rendered by the arbitrator may be entered in any court of competent jurisdiction.",
-      "p4": "14.4. Notwithstanding the foregoing, the Company reserves the right to seek injunctive or equitable relief in a court of competent jurisdiction to protect its intellectual property or confidential information.",
-      "p5": "14.5. The User expressly waives any objection to venue or jurisdiction and consents to the exclusive jurisdiction of the state and federal courts located in <strong>New York County, New York, USA</strong>.",
-      "options": "14.6. Sections 1.6 and 14.1 through 14.5 above are the prior public text. They conflict, and they are not the clause proposed for adoption. The proposed clause selects Delaware law and the state and federal courts in Delaware, keeps the thirty-day negotiation and the company right to seek an injunction, and does not include New York law, New York arbitration, or the New York courts. It is stored for approval and has not replaced sections 1.6 and 14."
+      "p1": "14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law.",
+      "p2": "14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. That period does not delay a request for urgent injunctive or equitable relief, and it does not delay or waive a right that the mandatory law of the customer's country does not allow this contract to limit.",
+      "p3": "14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts.",
+      "p4": "14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. Section 14.2 means this request need not wait until the negotiation period ends.",
+      "p5": "14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause."
     },
     "s15": {
       "h": "15. Contact Details",
@@ -342,14 +341,14 @@
     },
     "s8": {
       "h": "8. Cookies and Tracking Technologies",
-      "p1": "After the proposed client code is deployed, platform pages served from index.html load the Meta Pixel only when the cookie bizuply_tracking equals all. The marketing homepage is served from marketing.html, and that file in the same code loads the pixel without reading the cookie. Essential cookies can store language and sign-in. This paragraph describes that code, not the site before deployment. The detail is in section 5.9 of the terms.",
+      "p1": "In this version, the marketing homepage and the other platform pages load the Meta Pixel only when the cookie bizuply_tracking equals all. A missing cookie or the value essential does not load it. The choice stays in that cookie for 180 days across platform pages and return visits. Clearing it on the privacy page asks for the choice again after reload. Published customer sites do not load this pixel. This describes this version, not the public site before deployment.",
       "h1": "8.1. Types of Cookies Used",
       "list": [
         "Essential cookies – required for system operation and login",
         "Functional cookies – store user preferences and settings",
         "Analytical cookies – help monitor usage patterns and performance",
         "Security cookies – protect accounts and prevent unauthorized access",
-        "Marketing measurement: on index.html pages the Meta Pixel loads only when bizuply_tracking equals all. The marketing homepage file in the same deployment loads it without that choice."
+        "Marketing measurement: the Meta Pixel loads on the marketing homepage and on the other platform pages only when bizuply_tracking equals all."
       ],
       "h2": "8.2. Managing Cookies",
       "p2": "Users may disable cookies through their browser settings. However, disabling essential cookies may affect functionality or access to certain system features.",
@@ -383,7 +382,7 @@
         "BizUply shall not be liable for any indirect, consequential, or incidental losses, including loss of profits, loss of data, or reputational harm."
       ],
       "p3": "The user acknowledges full understanding that use of the BizUply platform is entirely at their own discretion and risk.",
-      "p4": "No oral or written communication shall override this provision. This provision is final and binding under the laws of the State of New York."
+      "p4": "No oral or written communication overrides the payment terms above, except a mandatory consumer right that this contract cannot waive. The governing law and courts are the Delaware clause in the terms, sections 1.6 and 14. This sentence does not select New York law."
     },
     "s12": {
       "h": "12. Limitation of Liability",
@@ -394,7 +393,7 @@
     "s13": {
       "h": "13. Data Location and International Transfers",
       "p1": "The product repository does not record a storage region. This draft does not state that personal or business data is stored only in the United States or in New York. MongoDB, Railway, and the other providers named in the service may process information where they operate.",
-      "p2": "BizUply does not knowingly transfer or store user data outside the United States. In the rare event that data is processed through third-party services located abroad, such transfer will be carried out only where necessary to operate the Platform, and always under contractual clauses ensuring equivalent security, confidentiality, and lawful handling.",
+      "p2": "The repository does not show that storage or transfer is limited to the United States. A provider used by the service may process information where it operates. No standard contractual clause or equivalent-security agreement is claimed.",
       "p3": "Using BizUply does not mean that a user's information is subject only to the laws of the United States or of New York. A mandatory privacy law that covers that user still applies."
     },
     "s14": {
@@ -405,7 +404,7 @@
     },
     "s15": {
       "h": "15. Legal Compliance and Cooperation",
-      "p1": "BizUply operates under the laws of the United States and the State of New York. The company will cooperate with legal authorities, regulators, and compliance bodies as required by applicable law.",
+      "p1": "Bizuply LLC is formed in Delaware, United States. The company provides records when a law that applies to the request requires it. This sentence does not select New York law and does not state that a compliance program was audited.",
       "p2": "We may retain or disclose certain records if required by subpoena, court order, or governmental request, provided that such disclosure complies with United States law and due process requirements.",
       "p3": "BizUply is committed to preventing illegal activity, fraud, money laundering, or misuse of its systems. Any suspected violation will be reported to the relevant authorities."
     },
@@ -415,13 +414,13 @@
       "p2": "BizUply, its owners, affiliates, employees, contractors, and partners shall not be liable for any direct, indirect, special, consequential, punitive, or incidental damages arising from the use of, or inability to use, the Platform.",
       "p3": "This includes, without limitation, loss of profits, data, goodwill, business disruption, or third-party claims.",
       "p4": "The user hereby releases and waives any right to initiate legal proceedings, arbitration, or class action against BizUply on any cause related to the use of the service, fees, or data handling.",
-      "p5": "This waiver applies worldwide and in perpetuity, and is binding upon the user, their affiliates, successors, and representatives."
+      "p5": "The waiver above is the company's position only to the extent the mandatory law that covers the user allows it. It is not enforceable in every country, and it does not remove a right that law does not allow this contract to remove. It does not select New York law. The terms, sections 1.6 and 14, state the governing law and courts."
     },
     "s17": {
       "h": "17. Governing Law and Jurisdiction",
-      "p1": "This Privacy Policy, together with any dispute arising from it, shall be governed exclusively by the laws of the State of New York, United States, without regard to conflict-of-laws principles.",
-      "p2": "Any dispute, claim, or proceeding shall be brought exclusively before the competent courts of the City of New York, New York, USA.",
-      "p3": "The New York governing-law and New York court sentences above are the prior public text. They are not the proposed clause. The proposed clause, which is awaiting approval and has not been substituted, selects Delaware law and the Delaware courts, subject to a mandatory right that the customer country does not allow this contract to waive."
+      "p1": "This Privacy Policy and a dispute arising from it are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This does not displace a privacy right that the mandatory law of the person's country does not allow this policy to waive.",
+      "p2": "The state courts and federal courts in Delaware are the forum, except where a mandatory law gives the person a court that this policy cannot take away. This policy does not select New York law or a New York court.",
+      "p3": "Sections 1.6 and 14 of the terms and this section state the same Delaware law and the same Delaware courts. The thirty-day negotiation in the terms does not delay urgent relief or a right that mandatory law does not allow the contract to limit."
     },
     "s18": {
       "h": "18. Contact Details and Data Protection Officer",
@@ -430,13 +429,13 @@
       "cardEmail": "Email: <strong>privacy@bizuply.com</strong>",
       "cardSupport": "General support: <strong>support@bizuply.com</strong>",
       "cardHq": "Formation: Delaware, United States. Street address: not verified.",
-      "p2": "The Data Protection Officer (DPO) appointed by BizUply is responsible for monitoring compliance, responding to user inquiries, and ensuring that all internal data-handling practices meet industry and legal standards."
+      "p2": "No data-protection officer was identified in the records supplied for this draft. Privacy requests go to privacy@bizuply.com. Appointment of a DPO, an EU representative, or a UK representative is not claimed."
     },
     "s19": {
       "h": "19. Final Provision",
       "p1": "By accessing or using the BizUply platform, you confirm that you have read, understood, and agreed to all the terms set out in this Privacy Policy. You further acknowledge that this policy constitutes the complete and exclusive statement of the understanding between you and BizUply regarding privacy, and supersedes any prior agreement or representation.",
       "p2": "If any part of this policy is deemed unenforceable, the remaining provisions shall continue in full force and effect to the maximum extent permitted by law.",
-      "p3": "Use of BizUply signifies express and irrevocable consent to all the provisions contained in this document."
+      "p3": "Use of BizUply is agreement to this policy, except a right that mandatory law does not allow the policy to waive."
     }
   },
   "accessibilityPage": {
@@ -505,10 +504,10 @@
     {
       "id": "termsPage.s5.p9",
       "original": "5.9. The Company may use third-party analytics and tracking tools such as <strong>Google Analytics</strong> to collect anonymous usage data, and security tools such as reCAPTCHA to detect and prevent fraudulent activity. These services may set their own cookies in accordance with their privacy policies.",
-      "proposed": "5.9. This paragraph describes the client code proposed for deployment, not the public site before that deployment. That code does not load Google Analytics, Google Tag Manager, or reCAPTCHA. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On platform pages served from index.html, the pixel is loaded only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, that page does not load the pixel, and choosing essential after the pixel has loaded reloads the page and clears the measurement cookies. The marketing homepage is still served from marketing.html, and that file in the same client code loads the pixel after the browser is idle without reading the cookie. A checkout event is sent from registration only when the cookie equals all and the pixel function is already present. Cloudflare Turnstile is loaded only on a screen that has a site key configured. A third-party tool that does load may set its own cookies under its own policy.",
-      "why": "The prior sentence said the pixel loads only after consent.",
-      "source": "After the client PR, index.html checks the cookie. marketing.html, used for the marketing homepage, still loads the pixel without it. The server PR does not change the pixel.",
-      "protection": "qualified"
+      "proposed": "5.9. In this version of the client, Google Analytics, Google Tag Manager, and reCAPTCHA are not loaded. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On the marketing homepage and on the other platform pages, the pixel is loaded only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, the pixel is not loaded. Choosing essential after the pixel has loaded reloads the page and clears the measurement cookies. Clearing the choice on the privacy page removes the cookie and reloads the page, so the choice is asked again. The choice is stored in a cookie on this browser for 180 days, so it remains when the visitor moves between platform pages and when the visitor returns. A checkout event is sent from registration only when the cookie equals all and the pixel function is already present. Cloudflare Turnstile is loaded only on a screen that has a site key configured. This is the behavior of this version. The public site does not behave this way until this version is deployed.",
+      "why": "Both shells now wait for the measurement cookie.",
+      "source": "marketing.html uses the same gate as index.html in this version.",
+      "protection": "aligned"
     },
     {
       "id": "termsPage.s7.mandatoryLaw",
@@ -536,11 +535,11 @@
     },
     {
       "id": "termsPage.s14.options",
-      "original": "",
-      "proposed": "14.6. Sections 1.6 and 14.1 through 14.5 above are the prior public text. They conflict, and they are not the clause proposed for adoption. The proposed clause selects Delaware law and the state and federal courts in Delaware, keeps the thirty-day negotiation and the company right to seek an injunction, and does not include New York law, New York arbitration, or the New York courts. It is stored for approval and has not replaced sections 1.6 and 14.",
-      "why": "The prior New York and Delaware sentences stay in place until the Delaware clause is approved. They are not the proposed clause.",
+      "original": "The prior note kept both the Delaware sentence and the New York sentence.",
+      "proposed": "",
+      "why": "The conflict note is removed because sections 1.6 and 14 now state one Delaware clause.",
       "source": "Section 1.6 and section 14 contradict each other. Formation in Delaware does not itself choose the contract law.",
-      "protection": "awaiting-approval"
+      "protection": "removed-after-choice"
     },
     {
       "id": "termsPage.s15.list.1",
@@ -649,10 +648,10 @@
     {
       "id": "privacyPage.s17.p3",
       "original": "Users agree to submit to the personal jurisdiction of these courts and waive any objection to venue or forum.",
-      "proposed": "The New York governing-law and New York court sentences above are the prior public text. They are not the proposed clause. The proposed clause, which is awaiting approval and has not been substituted, selects Delaware law and the Delaware courts, subject to a mandatory right that the customer country does not allow this contract to waive.",
-      "why": "The prior New York and Delaware sentences stay in place until the Delaware clause is approved. They are not the proposed clause.",
-      "source": "Terms sections 1.6 and 14 are both retained. See terms section 14.6.",
-      "protection": "awaiting-approval"
+      "proposed": "Sections 1.6 and 14 of the terms and this section state the same Delaware law and the same Delaware courts. The thirty-day negotiation in the terms does not delay urgent relief or a right that mandatory law does not allow the contract to limit.",
+      "why": "The old note said no forum had been chosen.",
+      "source": "The Delaware clause is now the clause.",
+      "protection": "aligned"
     },
     {
       "id": "termsPage.s5.p1",
@@ -681,18 +680,18 @@
     {
       "id": "privacyPage.s8.p1",
       "original": "BizUply uses cookies, pixels, and tracking technologies to enhance the user experience, improve system functionality, and analyze usage data. These tools help us understand performance, measure traffic, and ensure the security of the Platform.",
-      "proposed": "After the proposed client code is deployed, platform pages served from index.html load the Meta Pixel only when the cookie bizuply_tracking equals all. The marketing homepage is served from marketing.html, and that file in the same code loads the pixel without reading the cookie. Essential cookies can store language and sign-in. This paragraph describes that code, not the site before deployment. The detail is in section 5.9 of the terms.",
-      "why": "The sentence described pixels as current usage analysis.",
-      "source": "The homepage shell and the other platform pages do not behave the same way in the client PR.",
-      "protection": "qualified"
+      "proposed": "In this version, the marketing homepage and the other platform pages load the Meta Pixel only when the cookie bizuply_tracking equals all. A missing cookie or the value essential does not load it. The choice stays in that cookie for 180 days across platform pages and return visits. Clearing it on the privacy page asks for the choice again after reload. Published customer sites do not load this pixel. This describes this version, not the public site before deployment.",
+      "why": "The privacy text matches the gated pixel.",
+      "source": "The homepage no longer loads the pixel before the choice.",
+      "protection": "aligned"
     },
     {
       "id": "privacyPage.s8.list.4",
       "original": "Marketing cookies – used only with consent, for internal campaign analysis",
-      "proposed": "Marketing measurement: on index.html pages the Meta Pixel loads only when bizuply_tracking equals all. The marketing homepage file in the same deployment loads it without that choice.",
-      "why": "The item said marketing cookies are used only with consent.",
-      "source": "marketing.html does not read the consent cookie.",
-      "protection": "qualified"
+      "proposed": "Marketing measurement: the Meta Pixel loads on the marketing homepage and on the other platform pages only when bizuply_tracking equals all.",
+      "why": "Marketing measurement is described once for every platform page.",
+      "source": "The homepage and the other pages use the same cookie.",
+      "protection": "aligned"
     },
     {
       "id": "privacyPage.s10.p1",
@@ -741,6 +740,118 @@
       "why": "One Delaware law and Delaware courts clause is prepared. Sections 1.6 and 14 are not replaced until this text is approved.",
       "source": "The company stated formation in Delaware. The current sections 1.6 and 14 select different laws.",
       "protection": "awaiting-approval"
+    },
+    {
+      "id": "termsPage.s1.p6",
+      "original": "1.6. BizUply operates under the laws of the United States. Unless otherwise stated, the law governing all matters relating to the platform, its use, and any dispute arising therefrom shall be the <strong>laws of the State of Delaware</strong>, United States, without regard to its conflict-of-laws principles.",
+      "proposed": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied.",
+      "why": "Sections 1.6 and 14 now use one Delaware clause.",
+      "source": "The company is formed in Delaware. Mandatory customer rights remain.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p1",
+      "original": "14.1. These terms and any dispute or claim arising out of or related to them shall be governed exclusively by the laws of the <strong>State of New York, USA</strong>, without regard to conflict-of-laws principles.",
+      "proposed": "14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law.",
+      "why": "New York law is no longer the governing law.",
+      "source": "The approved Delaware direction replaces the conflicting sentence.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p2",
+      "original": "14.2. Any dispute, controversy, or claim between the User and the Company shall first be attempted to be resolved through <strong>good-faith negotiation</strong>. If no resolution is reached within thirty (30) days, the dispute shall be submitted to <strong>binding arbitration</strong> under the rules of the <strong>American Arbitration Association (AAA)</strong>, conducted in English, in New York City, USA.",
+      "proposed": "14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. That period does not delay a request for urgent injunctive or equitable relief, and it does not delay or waive a right that the mandatory law of the customer's country does not allow this contract to limit.",
+      "why": "Thirty days of negotiation does not block urgent relief or a non-waivable right.",
+      "source": "The negotiation step stays. It cannot delay urgent relief.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p3",
+      "original": "14.3. The arbitration decision shall be final and binding, and judgment on the award rendered by the arbitrator may be entered in any court of competent jurisdiction.",
+      "proposed": "14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts.",
+      "why": "The forum is the Delaware courts, with a mandatory-law exception.",
+      "source": "New York City arbitration is not part of the clause.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p4",
+      "original": "14.4. Notwithstanding the foregoing, the Company reserves the right to seek injunctive or equitable relief in a court of competent jurisdiction to protect its intellectual property or confidential information.",
+      "proposed": "14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. Section 14.2 means this request need not wait until the negotiation period ends.",
+      "why": "The company can still seek an injunction, without waiting thirty days.",
+      "source": "The original injunction protection stays, and its court is Delaware.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p5",
+      "original": "14.5. The User expressly waives any objection to venue or jurisdiction and consents to the exclusive jurisdiction of the state and federal courts located in <strong>New York County, New York, USA</strong>.",
+      "proposed": "14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause.",
+      "why": "The New York court selection is removed from the operative clause.",
+      "source": "One forum remains.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "privacyPage.s11.p4",
+      "original": "No oral or written communication shall override this provision. This provision is final and binding under the laws of the State of New York.",
+      "proposed": "No oral or written communication overrides the payment terms above, except a mandatory consumer right that this contract cannot waive. The governing law and courts are the Delaware clause in the terms, sections 1.6 and 14. This sentence does not select New York law.",
+      "why": "The payment waiver no longer says it is binding under New York law.",
+      "source": "The no-refund sentences above it stay, subject to a mandatory consumer right.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s13.p2",
+      "original": "BizUply does not knowingly transfer or store user data outside the United States. In the rare event that data is processed through third-party services located abroad, such transfer will be carried out only where necessary to operate the Platform, and always under contractual clauses ensuring equivalent security, confidentiality, and lawful handling.",
+      "proposed": "The repository does not show that storage or transfer is limited to the United States. A provider used by the service may process information where it operates. No standard contractual clause or equivalent-security agreement is claimed.",
+      "why": "The policy no longer says storage is limited to the United States.",
+      "source": "The repository does not record that limit or a transfer agreement.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s15.p1",
+      "original": "BizUply operates under the laws of the United States and the State of New York. The company will cooperate with legal authorities, regulators, and compliance bodies as required by applicable law.",
+      "proposed": "Bizuply LLC is formed in Delaware, United States. The company provides records when a law that applies to the request requires it. This sentence does not select New York law and does not state that a compliance program was audited.",
+      "why": "The policy no longer says the company operates under New York law.",
+      "source": "Delaware formation is the stated identity.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s16.p5",
+      "original": "This waiver applies worldwide and in perpetuity, and is binding upon the user, their affiliates, successors, and representatives.",
+      "proposed": "The waiver above is the company's position only to the extent the mandatory law that covers the user allows it. It is not enforceable in every country, and it does not remove a right that law does not allow this contract to remove. It does not select New York law. The terms, sections 1.6 and 14, state the governing law and courts.",
+      "why": "A worldwide perpetual waiver contradicted the terms.",
+      "source": "The waiver stays only where mandatory law allows it.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s17.p1",
+      "original": "This Privacy Policy, together with any dispute arising from it, shall be governed exclusively by the laws of the State of New York, United States, without regard to conflict-of-laws principles.",
+      "proposed": "This Privacy Policy and a dispute arising from it are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This does not displace a privacy right that the mandatory law of the person's country does not allow this policy to waive.",
+      "why": "The privacy policy used New York law.",
+      "source": "It now uses the same Delaware law as the terms.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s17.p2",
+      "original": "Any dispute, claim, or proceeding shall be brought exclusively before the competent courts of the City of New York, New York, USA.",
+      "proposed": "The state courts and federal courts in Delaware are the forum, except where a mandatory law gives the person a court that this policy cannot take away. This policy does not select New York law or a New York court.",
+      "why": "The privacy policy used New York courts.",
+      "source": "It now uses the Delaware courts, with the same mandatory exception.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s18.p2",
+      "original": "The Data Protection Officer (DPO) appointed by BizUply is responsible for monitoring compliance, responding to user inquiries, and ensuring that all internal data-handling practices meet industry and legal standards.",
+      "proposed": "No data-protection officer was identified in the records supplied for this draft. Privacy requests go to privacy@bizuply.com. Appointment of a DPO, an EU representative, or a UK representative is not claimed.",
+      "why": "A data-protection officer was not identified.",
+      "source": "Requests go to privacy@bizuply.com.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s19.p3",
+      "original": "Use of BizUply signifies express and irrevocable consent to all the provisions contained in this document.",
+      "proposed": "Use of BizUply is agreement to this policy, except a right that mandatory law does not allow the policy to waive.",
+      "why": "Irrevocable consent to every sentence could waive a mandatory right.",
+      "source": "Agreement stays, and a non-waivable right stays.",
+      "protection": "aligned"
     }
   ],
   "termsLedger": [
@@ -748,7 +859,7 @@
       "section": "s1",
       "heading": "1. General",
       "present": true,
-      "treatment": "original text retained, with the recorded change in this section"
+      "treatment": "Delaware governing law substituted; the rest of the section is unchanged"
     },
     {
       "section": "s2",
@@ -826,7 +937,7 @@
       "section": "s14",
       "heading": "14. Governing Law & Dispute Resolution",
       "present": true,
-      "treatment": "original text retained, with the recorded change in this section"
+      "treatment": "Delaware courts substituted; negotiation and injunctions kept; New York forum removed"
     },
     {
       "section": "s15",
@@ -836,28 +947,7 @@
     }
   ],
   "pendingGoverningLaw": {
-    "status": "awaiting-approval-not-substituted",
-    "replacesWhenApproved": [
-      "termsPage.s1.p6",
-      "termsPage.s14.p1",
-      "termsPage.s14.p2",
-      "termsPage.s14.p3",
-      "termsPage.s14.p5",
-      "termsPage.s14.options",
-      "privacyPage.s11.p4",
-      "privacyPage.s15.p1",
-      "privacyPage.s17.p1",
-      "privacyPage.s17.p2",
-      "privacyPage.s17.p3"
-    ],
-    "kept": [
-      "termsPage.s14.p4 is rewritten as Delaware injunctive relief",
-      "termsPage.s8",
-      "termsPage.s10",
-      "termsPage.s7",
-      "termsPage.s12",
-      "termsPage.s13"
-    ],
-    "text": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied. 14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law. 14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. 14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts. 14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. 14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause."
+    "status": "substituted-into-sections-1.6-and-14",
+    "text": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied. 14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law. 14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. That period does not delay a request for urgent injunctive or equitable relief, and it does not delay or waive a right that the mandatory law of the customer's country does not allow this contract to limit. 14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts. 14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. Section 14.2 means this request need not wait until the negotiation period ends. 14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause."
   }
 }
