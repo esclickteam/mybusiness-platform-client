@@ -18,6 +18,8 @@ type CodeResult = {
   ready?: boolean;
   quality?: QualityReport | null;
   reverted?: boolean;
+  phase?: string;
+  buildError?: string;
 };
 type ProjectRow = { projectId: string; title: string; status?: string; updatedAt?: string };
 type ProbeReport = { width?: number; status?: string; ready?: boolean; issues?: QualityIssue[] };
@@ -86,7 +88,7 @@ export default function AiStudioCodePage() {
   const expectVersion = useRef("");
 
   const previewUrl = useMemo(
-    () => (project ? isolatedPreviewUrl(project.projectId, project.previewToken) : ""),
+    () => (project?.files?.["src/App.jsx"] ? isolatedPreviewUrl(project.projectId, project.previewToken) : ""),
     [project]
   );
 
@@ -193,11 +195,22 @@ export default function AiStudioCodePage() {
     setBusy(true);
     setError("");
     try {
-      const { data } = await API.post("/ai-studio/code-projects", { brief }, { timeout: 600000 });
+      const { data } = await API.post("/ai-studio/code-projects", { brief }, { timeout: 30000 });
       remember(data);
       setMessage("");
+      let latest = data;
+      const started = Date.now();
+      while (Date.now() - started < 90000) {
+        await new Promise((resolve) => window.setTimeout(resolve, 2000));
+        const saved = await API.get(`/ai-studio/code-projects/${data.projectId}`, { timeout: 30000 });
+        latest = saved.data;
+        remember(latest);
+        setFrameNonce((value) => value + 1);
+        if (latest.phase === "ready" || latest.phase === "stopped") break;
+      }
       setBusy(false);
-      await review(data);
+      if (latest.phase === "ready") await review(latest);
+      else setError(latest.buildError || "הבנייה עדיין לא הושלמה");
     } catch (err: any) {
       setError(err?.response?.data?.error || "יצירת האתר נכשלה");
       setBusy(false);
@@ -319,8 +332,20 @@ export default function AiStudioCodePage() {
           {project && (
             <>
               <div className="rounded-md border border-white/10 p-3 text-xs">
-                <div className={ready ? "text-emerald-300" : "text-amber-200"}>
-                  {checking ? "בודק את האתר ב־1440 וב־390…" : ready ? "האתר עבר את בדיקת האיכות" : "האתר לא מסומן כמוכן"}
+                <div className={project.phase === "ready" || ready ? "text-emerald-300" : "text-amber-200"}>
+                  {project.phase === "planning"
+                    ? "מתכנן את האתר"
+                    : project.phase === "pages"
+                      ? "בונה את העמודים. מה שמוצג הוא התקדמות, לא אתר מוכן"
+                      : project.phase === "stopped"
+                        ? "הבנייה נעצרה לפני השלמה"
+                        : checking
+                          ? "בודק את האתר ב־1440 וב־390…"
+                          : ready
+                            ? "האתר עבר את בדיקת האיכות"
+                            : project.phase === "ready"
+                              ? "הבנייה הושלמה"
+                              : "האתר לא מסומן כמוכן"}
                 </div>
                 {project.durationMs ? <div className="mt-1 text-slate-400">הפעולה האחרונה נמשכה {Math.round(project.durationMs / 1000)} שניות</div> : null}
                 <ul className="mt-2 space-y-1 text-slate-300">
