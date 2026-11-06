@@ -70,6 +70,7 @@ describe("whatsapp host", () => {
       "/docs",
       "/help",
       "/get-started",
+      "/guides",
       "/security",
     ]);
     expect(normalizeWhatsAppPath("/docs/?x=1#ref")).toBe("/docs");

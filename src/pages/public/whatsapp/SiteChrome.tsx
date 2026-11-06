@@ -50,6 +50,7 @@ const EN: ChromeCopy = {
     agencies: "Agencies",
     pricing: "Pricing",
     docs: "Documentation",
+    guides: "Guides",
     help: "Help Center",
   },
   login: "Log in",
@@ -83,6 +84,7 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
       agencies: "סוכנויות",
       pricing: "מחירים",
       docs: "תיעוד",
+      guides: "מדריכים",
       help: "מרכז עזרה",
     },
     login: "התחברות",
@@ -113,6 +115,7 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
       agencies: "Agencias",
       pricing: "Precios",
       docs: "Documentación",
+      guides: "Guías",
       help: "Centro de ayuda",
     },
     login: "Iniciar sesión",
@@ -143,6 +146,7 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
       agencies: "Agências",
       pricing: "Preços",
       docs: "Documentação",
+      guides: "Guias",
       help: "Central de ajuda",
     },
     login: "Entrar",
@@ -173,6 +177,7 @@ const CHROME_I18N: Record<string, ChromeCopy> = {
       agencies: "الوكالات",
       pricing: "الأسعار",
       docs: "التوثيق",
+      guides: "الأدلة",
       help: "مركز المساعدة",
     },
     login: "تسجيل الدخول",
@@ -358,6 +363,7 @@ export function SiteFooter({ lang }: { lang: string }) {
             <h2>{f.company}</h2>
             <ul>
               <li><SiteLink to="/agencies">{copy.nav.agencies}</SiteLink></li>
+              <li><SiteLink to="/guides">{copy.nav.guides}</SiteLink></li>
               <li><SiteLink to="/security">{f.security}</SiteLink></li>
               <li><SiteLink to="/help">{copy.nav.help}</SiteLink></li>
               <li><a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>

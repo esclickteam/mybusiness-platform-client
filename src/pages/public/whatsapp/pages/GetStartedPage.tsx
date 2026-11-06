@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ArrowRight, Check, LogIn } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { coerceSupportedLanguage } from "../../../../i18n/localeUtils";
-import { useWhatsAppApiAuthConfig } from "../../../../components/whatsappApiAuth/authConfig";
+import { isWhatsAppApiSelfServe, useWhatsAppApiAuthConfig } from "../../../../components/whatsappApiAuth/authConfig";
 import ContactRequestForm from "../ContactRequestForm";
 import SignupCheckoutForm from "../SignupCheckoutForm";
 import { getStartedCopy, type Actor } from "../getStartedCopy";
@@ -18,7 +18,7 @@ export default function GetStartedPage() {
   const { i18n } = useTranslation();
   const c = getStartedCopy(coerceSupportedLanguage(i18n.language));
   const authConfig = useWhatsAppApiAuthConfig();
-  const { selfServe } = authConfig;
+  const selfServe = isWhatsAppApiSelfServe(authConfig);
   const STAGES = [c.accountStage[selfServe ? "selfServe" : "request"], ...c.nextStages];
   const providerNames = authConfig.providers
     .filter((p): p is keyof typeof PROVIDER_NAMES => p in PROVIDER_NAMES)

@@ -67,7 +67,7 @@ export default function WhatsAppApiPortalOverview({ businessId, connected, messa
     { key: "connect", status: connected ? "done" : "todo", to: `${base}/connection` },
     { key: "apiKey", status: hasKey ? "done" : "todo", to: `${base}/developers` },
     { key: "webhook", status: hasWebhook ? "done" : "todo", to: `${base}/developers` },
-    { key: "firstMessage", status: messageSent ? "done" : "todo", to: `${base}/developers` },
+    { key: "firstMessage", status: messageSent ? "done" : "todo", to: `${base}/connection` },
   ];
 
   return (

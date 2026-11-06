@@ -32,6 +32,7 @@ export type SitePath =
   | "/pricing"
   | "/docs"
   | "/help"
+  | "/guides"
   | "/get-started"
   | "/security";
 
@@ -41,6 +42,7 @@ export const NAV_ITEMS: Array<{ key: string; path: SitePath }> = [
   { key: "agencies", path: "/agencies" },
   { key: "pricing", path: "/pricing" },
   { key: "docs", path: "/docs" },
+  { key: "guides", path: "/guides" },
   { key: "help", path: "/help" },
 ];
 

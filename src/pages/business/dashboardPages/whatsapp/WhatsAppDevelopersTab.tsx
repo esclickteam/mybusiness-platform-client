@@ -135,6 +135,19 @@ export default function WhatsAppDevelopersTab() {
                 </Link>
               </div>
             ) : null}
+            {apiPortal && connection?.connected ? (
+              <div
+                className={`${cardBase} flex flex-wrap items-center justify-between gap-3 px-4 py-3`}
+                data-testid="wa-api-test-connection"
+              >
+                <p className="text-[13px] font-semibold text-slate-600">
+                  {t("whatsappApiPortal.setup.steps.firstMessage.text")}
+                </p>
+                <Link to="../connection" className={`${btnSecondary} !px-3 !py-1.5 text-xs`}>
+                  {t("whatsappApiPortal.setup.steps.firstMessage.cta")}
+                </Link>
+              </div>
+            ) : null}
           </section>
         </div>
       ) : null}

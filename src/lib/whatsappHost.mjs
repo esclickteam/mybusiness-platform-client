@@ -91,7 +91,12 @@ export const WHATSAPP_PAGES = {
   "/get-started": {
     title: "Get Started | Bizuply WhatsApp API",
     description:
-      "What to expect when you connect a WhatsApp number through Meta Embedded Signup, which Meta checks apply, and how to request onboarding.",
+      "Create a WhatsApp API account, pay $29/month per number, then connect through Meta Embedded Signup. Meta's own checks still apply.",
+  },
+  "/guides": {
+    title: "WhatsApp API guides | Bizuply",
+    description:
+      "How to connect WhatsApp Business Platform, manage conversations, use CRM and leads, run automations, send approved templates, and understand extra Meta costs.",
   },
   "/security": {
     title: "Security | Bizuply WhatsApp API",
