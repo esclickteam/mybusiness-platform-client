@@ -24,6 +24,7 @@ describe("improvement work cards", () => {
       expect(workHasPublicJargon(label)).toBe(false);
     }
     expect(workHasPublicJargon(geoIntelCopy().navImprovementPlan)).toBe(false);
+    expect(workHasPublicJargon(geoIntelCopy().navSearchVisibility)).toBe(false);
     expect(workHasPublicJargon(geoIntelCopy().recommendationsTitle)).toBe(false);
   });
 

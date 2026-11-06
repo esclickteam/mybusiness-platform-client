@@ -20,6 +20,7 @@ export type Tab =
   | "improvementPlan"
   | "content"
   | "tech"
+  | "searchVisibility"
   | "trends"
   | "reports"
   | "measurements"

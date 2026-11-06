@@ -33,6 +33,7 @@ export function geoIntelCopy() {
     navCompetitors: "מתחרים",
     navRecommendations: "המלצות",
     navImprovementPlan: "תוכנית שיפור",
+    navSearchVisibility: "נראות בחיפוש",
     improvementPlanHint:
       "המלצות מבוססות מדידות אמת בלבד · ללא קריאות ספק חדשות · שינוי באתרים רק באישור",
     improvementProven: "ממצאים מוכחים",

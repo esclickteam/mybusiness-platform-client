@@ -118,6 +118,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [citations, setCitations] = useState<any>(null);
   const [opportunities, setOpportunities] = useState<any>(null);
   const [improvementPlan, setImprovementPlan] = useState<any>(null);
+  const [seoSummary, setSeoSummary] = useState<any>(null);
   const [trends, setTrends] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
   const [tech, setTech] = useState<any>(null);
@@ -251,6 +252,21 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     loadBrandData();
   }, [loadBrandData]);
 
+  useEffect(() => {
+    if (tab !== "searchVisibility" || !brandId) return undefined;
+    let cancelled = false;
+    geoGet("/seo-summary", { brandId })
+      .then((data) => {
+        if (!cancelled) setSeoSummary(data);
+      })
+      .catch((e: any) => {
+        if (!cancelled) setError(e?.response?.data?.error || e.message || "טעינת הנראות נכשלה");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [tab, brandId]);
+
   const nav: Array<{ id: Tab; label: string }> = [
     { id: "overview", label: copy.navOverview },
     { id: "visibility", label: "נראות AI" },
@@ -263,6 +279,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "improvementPlan", label: copy.navImprovementPlan },
     { id: "content", label: "ניתוח תוכן" },
     { id: "tech", label: "ביקורת טכנית" },
+    { id: "searchVisibility", label: copy.navSearchVisibility },
     { id: "trends", label: "מגמות" },
     { id: "reports", label: "דוחות" },
     { id: "measurements", label: "ניהול מדידות" },
@@ -1115,6 +1132,36 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   />
                 </>
               )}
+            </section>
+          ) : null}
+
+          {tab === "searchVisibility" ? (
+            <section dir="rtl" lang="he">
+              <h2>{copy.navSearchVisibility}</h2>
+              <p>{seoSummary?.disclaimerHe}</p>
+              <h3>Search Console</h3>
+              <p>עובדה: {seoSummary?.gsc?.factHe || "—"}</p>
+              <p>השערה: {seoSummary?.gsc?.hypothesisHe || "אין השערה נוספת."}</p>
+              <p>המלצה: {seoSummary?.gsc?.recommendationHe || "—"}</p>
+              {(seoSummary?.gsc?.pages || []).length ? (
+                <Table
+                  columns={["עמוד", "הופעות שנשמרו"]}
+                  rows={(seoSummary.gsc.pages || []).map((page: any) => [
+                    page.page,
+                    page.impressions,
+                  ])}
+                />
+              ) : null}
+              <h3>בדיקות טכניות</h3>
+              <Table
+                columns={["בדיקה", "עובדה", "השערה", "המלצה"]}
+                rows={(seoSummary?.technical || []).map((item: any) => [
+                  item.labelHe,
+                  item.factHe,
+                  item.hypothesisHe || "אין השערה נוספת.",
+                  item.recommendationHe,
+                ])}
+              />
             </section>
           ) : null}
 
