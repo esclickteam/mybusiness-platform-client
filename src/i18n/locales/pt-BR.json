@@ -12995,17 +12995,17 @@
   },
   "s6": {
     "h": "6. Compartilhamento de dados e terceiros",
-    "p1": "A BizUply não vende ou troca dados pessoais. No entanto, podemos compartilhar informações limitadas com terceiros verificados somente quando necessário para operar a Plataforma, cumprir nossas obrigações legais ou fornecer serviços essenciais, sob rigorosos padrões de confidencialidade e segurança.",
+    "p1": "A BizUply não vende nem troca dados pessoais. Ela pode compartilhar informação limitada com um fornecedor somente quando isso é necessário para operar a plataforma, cumprir um dever legal ou prestar o serviço. Nenhuma certificação de segurança é afirmada.",
     "h1": "6.1. Prestadores de serviços autorizados",
     "p2": "Podemos compartilhar dados com provedores de serviços terceirizados cuidadosamente selecionados que nos ajudam com:",
     "list": [
-      "Infraestrutura de hospedagem e servidor, por exemplo, AWS, Google Cloud",
-      "Processamento e faturamento de pagamentos, por exemplo, Stripe, PayPal",
-      "Comunicação e notificações do cliente, por exemplo, Twilio, SendGrid",
-      "Monitoramento de análise, segurança e desempenho, por exemplo, Cloudflare",
-      "Módulos de IA e automação para análises ou previsões – sem usar dados da API do Google Workspace para treinar ou melhorar modelos de IA generalizados, conforme estabelecido na Seção 7"
+      "Hospedagem do aplicativo na Railway, o site público na Vercel, o banco de dados do aplicativo no MongoDB e Redis para cache e filas. A região de armazenamento não está registrada no repositório do produto.",
+      "O pagamento das assinaturas da plataforma é feito pela Lemon Squeezy. O Stripe é usado para alguns pagamentos de loja do comerciante. O PayPal é usado para algumas confirmações de pedidos de loja.",
+      "E-mail pela Resend. Telefone pela Twilio quando esse serviço está ativado.",
+      "O Cloudflare Turnstile carrega somente em uma tela que tem uma chave de site. Este item não afirma um produto de analítica separado.",
+      "Recursos de IA pela OpenAI quando uma chave está configurada. Este item não diz se esse fornecedor treina com o conteúdo."
     ],
-    "p3": "Todos os provedores estão vinculados por acordos de confidencialidade e podem usar as informações apenas para fornecer os serviços acordados à BizUply, de acordo com esta política e a lei aplicável.",
+    "p3": "Acordos de confidencialidade assinados com esses fornecedores não foram encontrados no repositório do produto. Um fornecedor pode usar a informação para o serviço que realmente presta.",
     "h2": "6.2. Requisitos legais",
     "p4": "Podemos divulgar informações para autoridades policiais, agências governamentais ou consultores jurídicos, se necessário, para cumprir as leis aplicáveis, ordens judiciais ou para proteger nossos direitos, segurança ou propriedade, incluindo prevenção de fraudes e resolução de disputas.",
     "h3": "6.3. Transferências de negócios",
@@ -13018,7 +13018,7 @@
     "list": [
       "Cookies essenciais – necessários para a operação do sistema e login",
       "Cookies funcionais – armazenam preferências e configurações do usuário",
-      "Cookies analíticos – ajuda a monitorar padrões de uso e desempenho",
+      "A medição é o pixel da Meta, e ele carrega somente quando bizuply_tracking é all. Nenhum produto separado de cookies analíticos é afirmado.",
       "Cookies de segurança - proteja contas e evite acesso não autorizado",
       "Medição de marketing: o Meta Pixel é carregado na página inicial de marketing e nas demais páginas da plataforma somente quando bizuply_tracking é all."
     ],
@@ -13028,9 +13028,9 @@
   },
   "s9": {
     "h": "9. Retenção e segurança de dados",
-    "p1": "A BizUply retém dados pessoais e comerciais apenas pelo tempo necessário para fornecer seus serviços, cumprir obrigações legais e evitar uso indevido ou fraude. Quando os dados não são mais necessários, eles são excluídos ou anonimizados com segurança.",
+    "p1": "A BizUply guarda dados pessoais e comerciais para operar o serviço, cumprir um dever legal e evitar uso indevido ou fraude. Não foi encontrado no produto um processo geral que exclua ou anonimize cada registro quando ele deixa de ser necessário. Esta política não fixa um prazo de retenção.",
     "p2": "O site público é servido por HTTPS. Criptografia em repouso, firewalls, detecção de intrusão e autenticação de dois fatores não foram encontrados na revisão do produto e não são afirmados. Nenhum sistema online está livre de risco. Ao usar a BizUply, você reconhece o risco inerente de transmitir dados pela internet.",
-    "p3": "Em caso de violação de dados, a BizUply notificará os usuários afetados conforme exigido por lei."
+    "p3": "Não foi encontrado um procedimento escrito de incidente de segurança com prazo fixo de aviso. Quando uma lei aplicável exige aviso, essa lei fixa o dever."
   },
   "s10": {
     "h": "10. Direitos do Usuário",
@@ -13236,7 +13236,7 @@
   "s7": {
     "h": "7. Política de Pagamentos, Preços e Reembolso",
     "notice": "<strong>Aviso legal:</strong> Esta seção deve ser lida em conjunto com a Seção 13 \"Ação de Reclamações, Reembolsos e Limitação de Ações\", que esclarece ainda mais a renúncia do Usuário de qualquer direito de reivindicar, disputar ou solicitar reembolsos por qualquer motivo.",
-    "p1": "7.1. O acesso aos recursos premium ou planos pagos do BizUply requer uma assinatura ativa. Todos os pagamentos devem ser feitos através de processadores de pagamento aprovados, como Stripe e PayPal, e estão sujeitos aos respectivos termos e taxas.",
+    "p1": "7.1. O acesso a um plano pago da BizUply requer uma assinatura ativa. As assinaturas da plataforma são pagas pela Lemon Squeezy. O Stripe é usado para alguns pagamentos de loja do comerciante, e o PayPal é usado para algumas confirmações de pedidos de loja. Um pagamento fica sujeito às condições do processador que o executa.",
     "p2": "7.2. Salvo indicação em contrário, <strong>Todos os pagamentos são finais e não reembolsáveis</strong>. Isso inclui cancelamentos antecipados, períodos de serviço não utilizados, desativação da conta ou insatisfação com o serviço. Uma vez que uma assinatura é comprada, ela permanecerá ativa durante todo o período de compra e <strong>não pode ser encurtado, pausado ou reembolsado</strong>, mesmo que o Usuário decida parar de usar a plataforma ou encerrar sua conta.",
     "p3": "7.3. O Usuário reconhece e concorda que qualquer reembolso, crédito ou ajuste será determinado exclusivamente no <strong>O único critério da empresa</strong>. A BizUply não tem obrigação legal ou financeira de emitir reembolsos sob quaisquer circunstâncias. O Usuário renuncia expressamente a qualquer direito de solicitar estornos, abrir reivindicações de reembolso através de provedores de pagamento ou exigir a restituição por qualquer meio.",
     "p4": "7.4. Em casos de suspensão, restrição ou remoção de conta devido a uma violação destes termos, uso indevido, conduta abusiva ou atividade ilegal, a Empresa reserva-se o direito de <strong>encerrar a assinatura do Usuário imediatamente</strong> Sem aviso prévio. Nesses casos, <strong>sem reembolso, crédito ou compensação</strong> serão fornecidos para o restante do período de assinatura.",

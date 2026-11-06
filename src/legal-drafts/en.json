@@ -128,7 +128,7 @@
     "s7": {
       "h": "7. Payments, Pricing & Refund Policy",
       "notice": "<strong>⚖️ Legal notice:</strong> This section must be read together with Section 13 “Waiver of Claims, Refunds, and Limitation of Actions,” which further clarifies the User's waiver of any right to claim, dispute, or request refunds for any reason.",
-      "p1": "7.1. Access to BizUply's premium features or paid plans requires an active subscription. All payments must be made through approved payment processors, such as Stripe and PayPal, and are subject to their respective terms and fees.",
+      "p1": "7.1. Access to a paid BizUply plan requires an active subscription. Platform subscriptions are paid through Lemon Squeezy. Stripe is used for some merchant-store payments, and PayPal is used for some store-order confirmations. A payment is subject to the terms of the processor that handles it.",
       "p2": "7.2. Unless otherwise stated, <strong>all payments are final and non-refundable</strong>. This includes early cancellations, unused service periods, account deactivation, or dissatisfaction with the service. Once a subscription is purchased, it will remain active for the entire purchased period and <strong>cannot be shortened, paused, or refunded</strong>, even if the User decides to stop using the platform or terminates their account.",
       "p3": "7.3. The User acknowledges and agrees that any refund, credit, or adjustment shall be determined solely at the <strong>Company's sole discretion</strong>. BizUply has no legal or financial obligation to issue refunds under any circumstances. The User expressly waives any right to request chargebacks, open refund claims through payment providers, or demand restitution by any means.",
       "p4": "7.4. In cases of account suspension, restriction, or removal due to a violation of these terms, improper use, abusive conduct, or unlawful activity, the Company reserves the right to <strong>terminate the User's subscription immediately</strong> without prior notice. In such cases, <strong>no refund, credit, or compensation</strong> will be provided for the remainder of the subscription period.",
@@ -323,17 +323,17 @@
     },
     "s6": {
       "h": "6. Data Sharing and Third Parties",
-      "p1": "BizUply does not sell or trade personal data. However, we may share limited information with verified third parties only where necessary to operate the Platform, fulfill our legal obligations, or provide core services, under strict confidentiality and security standards.",
+      "p1": "BizUply does not sell or trade personal data. It may share limited information with a provider only where that is needed to operate the platform, to meet a legal duty, or to provide the service. No security certification is claimed.",
       "h1": "6.1. Authorized Service Providers",
       "p2": "We may share data with carefully selected third-party service providers who assist us with:",
       "list": [
-        "Hosting and server infrastructure, e.g., AWS, Google Cloud",
-        "Payment processing and billing, e.g., Stripe, PayPal",
-        "Customer communication and notifications, e.g., Twilio, SendGrid",
-        "Analytics, security, and performance monitoring, e.g., Cloudflare",
-        "AI and automation modules for analytics or predictions — without using Google Workspace API data to train or improve generalized AI models, as set out in Section 7"
+        "Application hosting on Railway, the public site on Vercel, the application database on MongoDB, and Redis for cache and queues. The storage region is not recorded in the product repository.",
+        "Platform subscription checkout through Lemon Squeezy. Stripe is used for some merchant-store payments. PayPal is used for some store-order confirmations.",
+        "Email through Resend. Phone through Twilio when that service is enabled.",
+        "Cloudflare Turnstile loads only on a screen that has a site key. This entry does not claim a separate analytics product.",
+        "AI features through OpenAI when a key is configured. This entry does not state whether that provider trains on the content."
       ],
-      "p3": "All providers are bound by confidentiality agreements and may use the information only to provide the agreed services to BizUply, in accordance with this policy and applicable law.",
+      "p3": "Signed confidentiality agreements with these providers were not found in the product repository. A provider may use the information for the service it actually provides.",
       "h2": "6.2. Legal Requirements",
       "p4": "We may disclose information to law enforcement, government agencies, or legal advisors if required to comply with applicable laws, court orders, or to protect our rights, security, or property, including fraud prevention and dispute resolution.",
       "h3": "6.3. Business Transfers",
@@ -346,7 +346,7 @@
       "list": [
         "Essential cookies – required for system operation and login",
         "Functional cookies – store user preferences and settings",
-        "Analytical cookies – help monitor usage patterns and performance",
+        "Measurement is the Meta Pixel, and it loads only when bizuply_tracking equals all. No separate analytics cookie product is claimed.",
         "Security cookies – protect accounts and prevent unauthorized access",
         "Marketing measurement: the Meta Pixel loads on the marketing homepage and on the other platform pages only when bizuply_tracking equals all."
       ],
@@ -356,9 +356,9 @@
     },
     "s9": {
       "h": "9. Data Retention and Security",
-      "p1": "BizUply retains personal and business data only for as long as necessary to provide its services, comply with legal obligations, and prevent misuse or fraud. When data is no longer needed, it is securely deleted or anonymized.",
+      "p1": "BizUply keeps personal and business data to operate the service, to meet a legal duty, and to prevent misuse or fraud. A general process that deletes or anonymizes every record when it is no longer needed was not found in the product. This policy does not state a fixed retention period.",
       "p2": "The public site is served over HTTPS. Encryption at rest, firewalls, intrusion detection, and two-factor authentication were not found in the product review and are not claimed. No online system is free of risk. By using BizUply, you acknowledge the inherent risk of transmitting data over the internet.",
-      "p3": "In the event of a data breach, BizUply will notify affected users as required by law."
+      "p3": "A written security-incident procedure with a fixed notice time was not found. Where a law that applies requires notice, that law sets the duty."
     },
     "s10": {
       "h": "10. User Rights",
