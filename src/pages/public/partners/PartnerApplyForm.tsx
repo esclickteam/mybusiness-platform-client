@@ -1,4 +1,5 @@
 import { useId, useState, type FormEvent } from "react";
+import { browserHostname, resolveApiBaseUrl } from "../../../apiBaseUrl";
 
 export const PARTNER_TRACK_OPTIONS = [
   "Affiliate",
@@ -104,7 +105,14 @@ export default function PartnerApplyForm({
 
     setSubmitting(true);
     try {
-      const response = await fetch("/api/support/partner-application", {
+      // Preview/staging Vercel hosts must hit Railway staging — not the
+      // production /api rewrite baked into vercel.json.
+      const apiBase = resolveApiBaseUrl({
+        envApiUrl: import.meta.env.VITE_API_URL,
+        mode: import.meta.env.MODE,
+        hostname: browserHostname(),
+      }).replace(/\/+$/, "");
+      const response = await fetch(`${apiBase}/support/partner-application`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "omit",

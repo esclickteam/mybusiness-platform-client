@@ -491,12 +491,25 @@
 .ip-close p { color: #fff; max-width: 40rem; }
 .ip-close .ip-btn-primary { background: #fff; color: var(--violet); box-shadow: none; }
 
+/* Hero stays visible on first paint — never opacity:0 above the fold. */
+.ip-hero,
+.ip-hero.ip-reveal {
+  opacity: 1;
+  transform: none;
+}
+
 .ip-reveal {
   opacity: 0;
   transform: translateY(16px);
   transition: opacity 0.55s ease, transform 0.55s ease;
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 720px;
 }
-.ip-reveal.is-in { opacity: 1; transform: none; }
+.ip-reveal.is-in {
+  opacity: 1;
+  transform: none;
+  content-visibility: visible;
+}
 
 .ipartner a:focus-visible,
 .ipartner button:focus-visible,

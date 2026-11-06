@@ -119,7 +119,7 @@ describe("bizuply.com/partners recruitment", () => {
       expect(screen.getByTestId("partner-apply-success")).toBeInTheDocument();
     });
     expect(fetch).toHaveBeenCalledWith(
-      "/api/support/partner-application",
+      expect.stringMatching(/\/support\/partner-application$/),
       expect.objectContaining({
         method: "POST",
       })
