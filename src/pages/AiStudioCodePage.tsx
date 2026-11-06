@@ -193,7 +193,7 @@ export default function AiStudioCodePage() {
     setBusy(true);
     setError("");
     try {
-      const { data } = await API.post("/ai-studio/code-projects", { brief }, { timeout: 180000 });
+      const { data } = await API.post("/ai-studio/code-projects", { brief }, { timeout: 600000 });
       remember(data);
       setMessage("");
       setBusy(false);
@@ -212,7 +212,7 @@ export default function AiStudioCodePage() {
       const { data } = await API.post(
         `/ai-studio/code-projects/${project.projectId}/chat`,
         { message: text },
-        { timeout: 180000 }
+        { timeout: 600000 }
       );
       remember(data);
       setMessage("");
