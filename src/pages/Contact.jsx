@@ -81,25 +81,35 @@ function Contact() {
     setLoading(true);
 
     try {
-      await storePrivacyConsent({
-        consentKey: consentKeyRef.current,
-        source: "contact",
-        email,
-        termsAccepted: false,
-        marketingOptIn,
-        locale: i18n.language,
-      });
-      const { data } = await API.post("/support", {
+      let saved;
+      try {
+        saved = await storePrivacyConsent({
+          consentKey: consentKeyRef.current,
+          source: "contact",
+          email,
+          termsAccepted: false,
+          marketingOptIn,
+          locale: i18n.language,
+        });
+      } catch (error) {
+        error.message = error?.message || "consent_not_stored";
+        throw error;
+      }
+      const payload = {
         name,
         phone,
         email,
         issueDescription: message,
-        marketingOptIn,
-        noticeVersion: NOTICE_VERSION,
         locale: i18n.language,
-        consentKey: consentKeyRef.current,
-      });
-      if (data?.success !== true || data?.consentStored !== true) {
+      };
+      if (saved.status === "stored") {
+        payload.marketingOptIn = marketingOptIn;
+        payload.noticeVersion = NOTICE_VERSION;
+        payload.consentKey = consentKeyRef.current;
+      }
+      const { data } = await API.post("/support", payload);
+      if (data?.success !== true) throw new Error("support_failed");
+      if (saved.status === "stored" && data?.consentStored !== true) {
         throw new Error("consent_not_stored");
       }
 

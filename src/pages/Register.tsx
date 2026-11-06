@@ -143,8 +143,8 @@ export default function Register() {
     return false;
   };
 
-  const saveRegisterConsent = async (emailAddress: string) => {
-    await storePrivacyConsent({
+  const saveRegisterConsent = (emailAddress: string) =>
+    storePrivacyConsent({
       consentKey: consentKeyRef.current,
       source: "register",
       email: emailAddress,
@@ -153,14 +153,14 @@ export default function Register() {
       locale: language,
       plan: selectedPlan || "",
     });
-  };
 
   const handleSocialStart = async (provider: SocialProvider) => {
     setError("");
     if (!requireTerms()) return;
     setSocialBusy(provider);
+    let saved: Awaited<ReturnType<typeof saveRegisterConsent>>;
     try {
-      await saveRegisterConsent(email.trim().toLowerCase());
+      saved = await saveRegisterConsent(email.trim().toLowerCase());
     } catch {
       setError(t("register.consentSaveFailed"));
       setSocialBusy(null);
@@ -173,7 +173,7 @@ export default function Register() {
       websiteAddon: includeWebsiteAddon,
       referralCode: referralCode || undefined,
       purchaseIntent: pendingPurchaseSignup,
-      consentKey: consentKeyRef.current,
+      consentKey: saved.status === "stored" ? consentKeyRef.current : undefined,
     });
   };
 
@@ -193,8 +193,9 @@ export default function Register() {
     setSocialBusy("email");
     setLoading(true);
     try {
+      let saved: Awaited<ReturnType<typeof saveRegisterConsent>>;
       try {
-        await saveRegisterConsent(clean);
+        saved = await saveRegisterConsent(clean);
       } catch {
         setError(t("register.consentSaveFailed"));
         return;
@@ -208,7 +209,7 @@ export default function Register() {
         language,
         billingCountry: persistBillingCountry(billingMarket.billingCountry),
         clientOrigin: typeof window !== "undefined" ? window.location.origin : undefined,
-        ...consentPayload,
+        ...(saved.status === "stored" ? consentPayload : {}),
       });
       setEmailMasked(String(data?.emailMasked || clean));
       setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);

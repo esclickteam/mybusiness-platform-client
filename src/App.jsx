@@ -133,7 +133,6 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
 const Terms = lazy(() => import("./pages/Terms"));
-const LegalDraft = lazy(() => import("./pages/LegalDraft"));
 const Contact = lazy(() => import("./pages/Contact"));
 const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
@@ -1246,9 +1245,6 @@ export default function App() {
                         <Route path="/whatsapp-api" element={<WhatsAppApiProductPage />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                        <Route path="/draft/privacy" element={<LegalDraft doc="privacyPage" />} />
-                        <Route path="/draft/terms" element={<LegalDraft doc="termsPage" />} />
-                        <Route path="/draft/accessibility" element={<LegalDraft doc="accessibilityPage" />} />
 
                         <Route
                           path="/search"
