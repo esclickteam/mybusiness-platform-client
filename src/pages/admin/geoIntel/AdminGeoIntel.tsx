@@ -123,6 +123,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [opportunities, setOpportunities] = useState<any>(null);
   const [improvementPlan, setImprovementPlan] = useState<any>(null);
   const [seoSummary, setSeoSummary] = useState<any>(null);
+  const [gscFrom, setGscFrom] = useState("");
+  const [gscTo, setGscTo] = useState("");
   const [trends, setTrends] = useState<any>(null);
   const [content, setContent] = useState<any>(null);
   const [tech, setTech] = useState<any>(null);
@@ -1152,6 +1154,26 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 <Kpi label="שיעור הקלקה" value={measuredMetricText(seoSummary?.gsc?.metrics?.ctr, ratioPercent)} />
                 <Kpi label="מיקום ממוצע" value={measuredMetricText(seoSummary?.gsc?.metrics?.position)} />
               </div>
+              <p>
+                מקור:{" "}
+                {seoSummary?.gsc?.dataSource === "google"
+                  ? "נתוני Google"
+                  : seoSummary?.gsc?.dataSource === "csv"
+                    ? "קובץ שהועלה"
+                    : "לא נמדד"}
+              </p>
+              <p>
+                טווח:{" "}
+                {seoSummary?.gsc?.range
+                  ? `${seoSummary.gsc.range.startDate} עד ${seoSummary.gsc.range.endDate}`
+                  : "לא נמשך"}
+              </p>
+              <p>
+                סנכרון אחרון:{" "}
+                {seoSummary?.gsc?.syncedAt
+                  ? new Date(seoSummary.gsc.syncedAt).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })
+                  : "אין"}
+              </p>
               <p>עובדה: {seoSummary?.gsc?.factHe || "—"}</p>
               <p>השערה: {seoSummary?.gsc?.hypothesisHe || "אין השערה נוספת."}</p>
               <p>המלצה: {seoSummary?.gsc?.recommendationHe || "—"}</p>
@@ -1194,18 +1216,110 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   item.recommendationHe,
                 ])}
               />
+              {(seoSummary?.trackedQueries || []).length ? (
+                <>
+                  <h3>מעקב שאילתות</h3>
+                  <Table
+                    columns={["שאילתה", "חשיפות", "קליקים", "שיעור הקלקה", "מיקום", "מצב"]}
+                    rows={(seoSummary.trackedQueries || []).map((item: any) => [
+                      item.query,
+                      item.measured ? item.impressions : "לא נמדד",
+                      item.measured ? item.clicks : "לא נמדד",
+                      item.measured && item.ctr != null ? ratioPercent(item.ctr) : "לא נמדד",
+                      item.measured && item.position != null ? item.position : "לא נמדד",
+                      item.noteHe,
+                    ])}
+                  />
+                </>
+              ) : null}
               <h3>השוואה למותג {seoSummary?.comparison?.brandName || activeBrand?.name || ""}</h3>
-              <p>{seoSummary?.comparison?.geo?.factHe || "—"}</p>
-              <p>{seoSummary?.comparison?.search?.factHe || "—"}</p>
+              <p>מדידת שאלות: {seoSummary?.comparison?.geo?.factHe || "—"}</p>
+              <p>נתוני חיפוש: {seoSummary?.comparison?.search?.factHe || "—"}</p>
               <p>{seoSummary?.comparison?.opportunityHe || "—"}</p>
               <h3>חיבור ל-Google</h3>
+              <p>{seoSummary?.connection?.connected ? "המותג מחובר." : seoSummary?.connection?.needsReconnect ? "נדרש חיבור מחדש." : "המותג אינו מחובר."}</p>
               <p>{seoSummary?.oauth?.factHe || "—"}</p>
+              {canShowMeasurementActions(status) && seoSummary?.oauth?.configured ? (
+                <div className="geo-intel-actions">
+                  <label>
+                    מתאריך
+                    <input type="date" value={gscFrom} onChange={(e) => setGscFrom(e.target.value)} />
+                  </label>
+                  <label>
+                    עד תאריך
+                    <input type="date" value={gscTo} onChange={(e) => setGscTo(e.target.value)} />
+                  </label>
+                  {!seoSummary?.connection?.connected || seoSummary?.connection?.needsReconnect ? (
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={async () => {
+                        setBusy(true);
+                        try {
+                          const data = await geoPost("/gsc/oauth/start", {
+                            brandId,
+                            returnUrl: window.location.href,
+                          });
+                          if (data?.url) window.location.assign(data.url);
+                        } catch (err: any) {
+                          setError(err?.response?.data?.error || err.message || "פתיחת החיבור נכשלה");
+                        } finally {
+                          setBusy(false);
+                        }
+                      }}
+                    >
+                      חבר את Search Console
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={async () => {
+                          setBusy(true);
+                          try {
+                            await geoPost("/gsc/sync", {
+                              brandId,
+                              startDate: gscFrom,
+                              endDate: gscTo,
+                            });
+                            setSeoSummary(await geoGet("/seo-summary", { brandId }));
+                          } catch (err: any) {
+                            setError(err?.response?.data?.error || err.message || "הסנכרון נכשל");
+                          } finally {
+                            setBusy(false);
+                          }
+                        }}
+                      >
+                        משוך נתונים
+                      </button>
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={async () => {
+                          setBusy(true);
+                          try {
+                            await geoPost("/gsc/oauth/disconnect", { brandId });
+                            setSeoSummary(await geoGet("/seo-summary", { brandId }));
+                          } catch (err: any) {
+                            setError(err?.response?.data?.error || err.message || "הניתוק נכשל");
+                          } finally {
+                            setBusy(false);
+                          }
+                        }}
+                      >
+                        נתק את Search Console
+                      </button>
+                    </>
+                  )}
+                </div>
+              ) : null}
               <ol>
                 {(seoSummary?.oauth?.manualStepsHe || []).map((step: string) => (
                   <li key={step}>{step}</li>
                 ))}
               </ol>
-              <p>המשימות שנפתחו מהבדיקות מופיעות בתוכנית השיפור של המותג הזה, עם הסימון נראות בחיפוש.</p>
+              <p>המשימות מופיעות בתוכנית השיפור ומסומנות לפי המקור: נתוני Google, בדיקת אתר, המלצה או מדידת שאלות.</p>
             </section>
           ) : null}
 
