@@ -497,6 +497,7 @@ html.hx-preview body {
 .hx-hero-pin {
   position: sticky;
   top: var(--hx-header);
+  z-index: 2;
   height: calc(100svh - var(--hx-header));
   overflow: hidden;
 }
@@ -3425,7 +3426,7 @@ html.hx-preview body {
 
 .hx-wave {
   position: absolute;
-  z-index: 4;
+  z-index: 1;
   left: 0;
   right: 0;
   bottom: -1px;
@@ -3447,7 +3448,7 @@ html.hx-preview body {
 
 .hx-links {
   position: absolute;
-  z-index: 4;
+  z-index: 1;
   inset-inline-end: 4%;
   top: 22%;
   width: min(58vw, 820px);
