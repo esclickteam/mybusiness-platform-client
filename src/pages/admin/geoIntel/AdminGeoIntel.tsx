@@ -171,6 +171,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [csvText, setCsvText] = useState("");
   const [gscImports, setGscImports] = useState<any[]>([]);
   const [catalogDraft, setCatalogDraft] = useState<any>(null);
+  const [costMatrix, setCostMatrix] = useState<any>(null);
+  const [monitoringStatus, setMonitoringStatus] = useState<any>(null);
 
   const activeBrand = useMemo(
     () => brands.find((b) => b._id === brandId) || null,
@@ -307,6 +309,30 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     };
   }, [tab, activeBrand?.slug]);
 
+  useEffect(() => {
+    if (tab !== "costs") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [costs, mon] = await Promise.all([
+          geoGet("/cost-matrix"),
+          geoGet("/monitoring-status"),
+        ]);
+        if (!cancelled) {
+          setCostMatrix(costs);
+          setMonitoringStatus(mon);
+        }
+      } catch (e: any) {
+        if (!cancelled) {
+          setError(e?.response?.data?.error || e.message || "cost matrix failed");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tab]);
+
   const nav: Array<{ id: Tab; label: string }> = [
     { id: "overview", label: copy.navOverview },
     { id: "visibility", label: "נראות AI" },
@@ -324,6 +350,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "measurements", label: "ניהול מדידות" },
     { id: "alerts", label: copy.navAlerts },
     { id: "catalogDraft", label: copy.navCatalogDraft },
+    { id: "costs", label: copy.navCosts },
     { id: "settings", label: copy.navSettings },
   ];
 
@@ -1477,6 +1504,65 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     </button>,
                   ])}
               />
+            </section>
+          ) : null}
+
+          {tab === "costs" ? (
+            <section>
+              <div className="geo-card">
+                <h3>{copy.costsTitle}</h3>
+                <p className="geo-note">{copy.costsHint}</p>
+                <div className="geo-intel-banner muted">{copy.aioDisclaimer}</div>
+                <div className="geo-intel-banner">{copy.perplexityReadyHint}</div>
+                <div className="geo-intel-banner muted">
+                  {monitoringStatus?.noteHe || copy.monitoringOff}
+                </div>
+              </div>
+              <Table
+                columns={[
+                  "מנוע",
+                  "סטטוס",
+                  "עלות לבדיקה",
+                  "150 שאלות",
+                  "מפתח",
+                  "אישור חיוב",
+                  "הערות",
+                ]}
+                rows={(costMatrix?.rows || []).map((r: any) => [
+                  r.labelHe || r.engineId,
+                  r.status,
+                  r.estimatedUsdPerCheck == null
+                    ? "—"
+                    : `$${Number(r.estimatedUsdPerCheck).toFixed(3)}`,
+                  r.estimate150Usd == null
+                    ? "—"
+                    : `$${Number(r.estimate150Usd).toFixed(2)}`,
+                  r.keyConfigured ? "כן" : "לא",
+                  r.billingApproved ? "כן" : "לא",
+                  r.notesHe || "—",
+                ])}
+              />
+              {costMatrix?.perplexityCreditPlan ? (
+                <div className="geo-card">
+                  <h3>תוכנית קרדיטים Perplexity</h3>
+                  <p className="geo-note">
+                    {costMatrix.perplexityCreditPlan.noteHe}
+                  </p>
+                  <p>
+                    יתרה מדווחת: $
+                    {costMatrix.perplexityCreditPlan.reportedCreditsUsd} · גל
+                    ראשון מומלץ:{" "}
+                    {costMatrix.perplexityCreditPlan.recommendedFirstWaveChecks}{" "}
+                    בדיקות (~$
+                    {costMatrix.perplexityCreditPlan.recommendedFirstWaveUsd}) ·
+                    תקרת Staging מומלצת: $
+                    {costMatrix.perplexityCreditPlan.recommendedStagingHardCapUsd}
+                  </p>
+                </div>
+              ) : null}
+              {!costMatrix?.rows?.length ? (
+                <AwaitBox message="טוען מטריצת עלויות…" />
+              ) : null}
             </section>
           ) : null}
 
