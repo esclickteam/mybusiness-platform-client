@@ -24,6 +24,7 @@ export type Tab =
   | "reports"
   | "measurements"
   | "alerts"
+  | "catalogDraft"
   | "settings";
 
 export type Engine = {
