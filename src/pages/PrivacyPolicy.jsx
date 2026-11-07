@@ -5,7 +5,7 @@ import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 import PrivacyRequestForm from "../components/privacy/PrivacyRequestForm";
 import PrivacyFacts from "../components/privacy/PrivacyFacts";
-import { clearTrackingChoice } from "../lib/trackingConsent";
+import { openCookieSettings } from "../lib/trackingConsent";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 function PrivacyPolicy() {
@@ -67,12 +67,9 @@ function PrivacyPolicy() {
         <button
           type="button"
           className="mt-4 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-900"
-          onClick={() => {
-            clearTrackingChoice();
-            window.location.reload();
-          }}
+          onClick={openCookieSettings}
         >
-          {t("trackingConsent.reset")}
+          {t("footer.cookieSettings")}
         </button>
       </section>
 

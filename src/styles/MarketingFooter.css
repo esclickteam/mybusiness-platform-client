@@ -65,8 +65,26 @@
 
 .site-footer__col a:hover,
 .site-footer__legal a:hover,
-.site-footer__social a:hover {
+.site-footer__social a:hover,
+.site-footer__cookie:hover {
   color: #fff;
+}
+
+.site-footer__cookie {
+  border: 0;
+  background: none;
+  padding: 0;
+  color: #e4dcf6;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.site-footer__cookie:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
 }
 
 .site-footer__bar {

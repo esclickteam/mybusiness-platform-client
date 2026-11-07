@@ -625,6 +625,7 @@
     "contact": "Fale conosco",
     "terms": "Termos de Uso",
     "privacy": "Política de privacidade",
+    "cookieSettings": "Configurações de cookies",
     "accessibility": "Acessibilidade",
     "ctaTitle": "Construa seu sistema operacional.",
     "ctaText": "Comece a gerenciar sua página de negócios, CRM, colaborações e ferramentas de IA em um só lugar.",
@@ -23852,12 +23853,14 @@
     }
   },
   "trackingConsent": {
-    "title": "Medição neste site",
-    "body": "Os cookies essenciais guardam o idioma e o acesso. A medição de leads e conversões da Meta é carregada somente se você permitir. A escolha fica salva em um cookie neste navegador.",
-    "policy": "Política de privacidade",
-    "essential": "Somente essenciais",
-    "all": "Permitir medição",
-    "reset": "Redefinir a escolha de medição"
+    "title": "Uso de cookies",
+    "essentialBody": "Usamos cookies essenciais para o funcionamento do site, para guardar preferências e para entrar na conta.",
+    "measurementBody": "Com o seu consentimento, também usamos cookies e ferramentas de medição da Meta para analisar o uso do site e melhorar a nossa publicidade.",
+    "change": "Você pode alterar a escolha a qualquer momento nas configurações de cookies.",
+    "more": "Para mais informações, consulte a",
+    "policy": "Política de Privacidade",
+    "essential": "Somente cookies essenciais",
+    "all": "Aceitar todos os cookies"
   },
   "billingNotice": {
     "month": "por mês",

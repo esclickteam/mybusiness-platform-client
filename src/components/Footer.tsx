@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { changeAppLanguage } from "../i18n/persistLanguage";
+import { openCookieSettings } from "../lib/trackingConsent";
 import { coerceSupportedLanguage, getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 import "../styles/MarketingFooter.css";
 
@@ -134,6 +135,9 @@ export default function Footer() {
         <div className="site-footer__legal">
           <Link to="/terms">{t("footer.terms")}</Link>
           <Link to="/privacy">{t("footer.privacy")}</Link>
+          <button type="button" className="site-footer__cookie" onClick={openCookieSettings}>
+            {t("footer.cookieSettings")}
+          </button>
           <Link to="/accessibility">{t("footer.accessibility")}</Link>
         </div>
         <div className="site-footer__tools">

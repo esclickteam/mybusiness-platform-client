@@ -625,6 +625,7 @@
     "contact": "Contact Us",
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
+    "cookieSettings": "Cookie settings",
     "accessibility": "Accessibility",
     "ctaTitle": "Build your business OS.",
     "ctaText": "Start managing your business page, CRM, collaborations and AI tools in one place.",
@@ -24829,12 +24830,14 @@
     }
   },
   "trackingConsent": {
-    "title": "Measurement on this site",
-    "body": "Essential cookies keep language and sign-in. Meta lead and conversion measurement loads only if you allow it. The choice is stored in a cookie on this browser.",
-    "policy": "Privacy policy",
-    "essential": "Essential only",
-    "all": "Allow measurement",
-    "reset": "Reset measurement choice"
+    "title": "Cookie Usage",
+    "essentialBody": "We use essential cookies to operate the site, to remember preferences, and to sign in to an account.",
+    "measurementBody": "With your consent, we also use Meta cookies and measurement tools to understand how the site is used and to improve our advertising.",
+    "change": "You can change this choice at any time through the cookie settings.",
+    "more": "For more information, see the",
+    "policy": "Privacy Policy",
+    "essential": "Essential cookies only",
+    "all": "Accept all cookies"
   },
   "billingNotice": {
     "month": "each month",

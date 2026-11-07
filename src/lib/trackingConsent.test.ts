@@ -72,7 +72,7 @@ describe("tracking consent", () => {
     expect(calls).toEqual([["consent", "revoke"]]);
     window.fbq("track", "PageView");
     expect(calls).toEqual([["consent", "revoke"]]);
-    expect(reloads).toEqual(["reload"]);
+    expect(reloads).toEqual([]);
     expect(marketingAllowed()).toBe(false);
   });
 });
