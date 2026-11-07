@@ -54,6 +54,7 @@ import {
   planAmount,
 } from "../../billing/billingMarkets";
 import { billingCheckoutErrorMessage } from "../../components/billing/billingCopy";
+import SubscriptionTermsNotice from "../../components/billing/SubscriptionTermsNotice";
 import "../../components/product-marketing/marketingKit.css";
 import "../../styles/PricingServices.css";
 
@@ -726,6 +727,7 @@ export default function Plans() {
                       <div className="mt-4 rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-black text-indigo-700">
                         {plan.note}
                       </div>
+                      <SubscriptionTermsNotice plan={plan.type} billingCountry={billingMarket.billingCountry} />
 
                       <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 

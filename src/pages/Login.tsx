@@ -963,7 +963,7 @@ function BusinessLogin() {
           <button
             type="submit"
             disabled={loading || socialBusy !== null}
-            className="auth-primary-btn mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+            className="auth-primary-btn mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-700 via-indigo-600 to-violet-700 text-base font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
           >
             {linkRequired
               ? socialBusy === "link"

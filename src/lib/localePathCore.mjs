@@ -119,8 +119,11 @@ export function localeFromAcceptLanguage(header) {
  */
 export function marketingLanguageRedirectPath(pathname, { cookie = "", acceptLanguage = "" } = {}) {
   const { locale } = splitMarketingLocale(pathname);
+  // An explicit /he, /es, /pt-br, or /ar link is the visitor's choice.
+  // A saved cookie must not send that address to another language.
+  if (locale !== "en") return null;
   const saved = localeFromLanguageTag(cookie);
-  const desired = saved || (locale === "en" ? localeFromAcceptLanguage(acceptLanguage) || "en" : locale);
+  const desired = saved || localeFromAcceptLanguage(acceptLanguage) || "en";
   if (!desired || desired === locale) return null;
   return withMarketingLocale(pathname, desired);
 }

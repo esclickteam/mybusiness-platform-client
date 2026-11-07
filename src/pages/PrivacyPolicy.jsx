@@ -2,6 +2,10 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
+import PrivacyRequestForm from "../components/privacy/PrivacyRequestForm";
+import PrivacyFacts from "../components/privacy/PrivacyFacts";
+import { clearTrackingChoice } from "../lib/trackingConsent";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 function PrivacyPolicy() {
@@ -55,10 +59,21 @@ function PrivacyPolicy() {
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("privacyPage.intro")}
         </p>
+        <LegalDocumentLinks current="/privacy" />
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("privacyPage.lastUpdatedLabel")} {t("privacyPage.lastUpdatedDate")}
         </div>
+        <button
+          type="button"
+          className="mt-4 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-900"
+          onClick={() => {
+            clearTrackingChoice();
+            window.location.reload();
+          }}
+        >
+          {t("trackingConsent.reset")}
+        </button>
       </section>
 
       <section className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.34fr_0.66fr] lg:px-10">
@@ -92,11 +107,11 @@ function PrivacyPolicy() {
           </nav>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-            <p className="text-sm font-black text-amber-300">
+            <p className="text-sm font-black text-slate-900">
               {t("privacyPage.contactPrivacy")}
             </p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
-              privacy@bizuply.com
+              support@bizuply.com
             </p>
           </div>
         </aside>
@@ -225,30 +240,10 @@ function PrivacyPolicy() {
           </section>
 
           <section id="section-7" className={sectionBase}>
-            <h2 className={h2Base} dir="ltr" style={{ textAlign: "left" }}>
-              7. Google Workspace API Data
-            </h2>
-
-            <div dir="ltr" style={{ textAlign: "left" }}>
-              <p className={pBase}>
-                Bizuply&apos;s use and transfer of information received from
-                Google APIs to any other app will adhere to the Google API
-                Services User Data Policy, including the Limited Use
-                requirements.
-              </p>
-
-              <p className={pBase}>
-                Bizuply does not use Google Workspace API user data to develop,
-                improve, or train generalized artificial intelligence or
-                machine learning models.
-              </p>
-
-              <p className={pBase}>
-                Google Workspace API user data is not transferred to
-                third-party AI or machine learning providers for the purpose of
-                training or improving generalized AI/ML models.
-              </p>
-            </div>
+            <h2 className={h2Base}>{t("privacyPage.google.h")}</h2>
+            <p className={pBase}>{t("privacyPage.google.p1")}</p>
+            <p className={pBase}>{t("privacyPage.google.p2")}</p>
+            <p className={pBase}>{t("privacyPage.google.p3")}</p>
           </section>
 
           <section id="section-8" className={sectionBase}>
@@ -383,6 +378,10 @@ function PrivacyPolicy() {
             <p className={pBase}>{t("privacyPage.s17.p3")}</p>
           </section>
 
+          <PrivacyFacts className={sectionBase} />
+
+          <PrivacyRequestForm />
+
           <section id="section-18" className={sectionBase}>
             <h2 className={h2Base}>{t("privacyPage.s18.h")}</h2>
 
@@ -423,7 +422,7 @@ function PrivacyPolicy() {
             <p className={pBase}>{t("privacyPage.s19.p3")}</p>
 
             <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-900">
                 {t("privacyPage.lastUpdatedBoxLabel")}
               </p>
               <p className="mt-2 text-xl font-black">

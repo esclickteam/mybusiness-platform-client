@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Mail } from "lucide-react";
 
@@ -7,6 +7,9 @@ import { useTranslation } from "react-i18next";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { persistBillingCountry } from "../billing/billingMarkets";
 import { useBillingMarket } from "../billing/useBillingMarket";
+import SubscriptionTermsNotice from "../components/billing/SubscriptionTermsNotice";
+import { createConsentKey, storePrivacyConsent } from "../lib/privacyConsentClient";
+import { marketingAllowed, NOTICE_VERSION } from "../lib/trackingConsent";
 import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
 import SocialAuthButtons from "../components/auth/SocialAuthButtons";
@@ -73,6 +76,9 @@ export default function Register() {
   const [emailMasked, setEmailMasked] = useState("");
   const [otp, setOtp] = useState("");
   const [otpCooldown, setOtpCooldown] = useState(0);
+  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const consentKeyRef = useRef(createConsentKey());
 
   const oauthQueryError = oauthErrorMessage(
     searchParams.get("oauth_error"),
@@ -122,9 +128,44 @@ export default function Register() {
 
   const language = getManualLanguageChoice() || i18n.language;
 
-  const handleSocialStart = (provider: SocialProvider) => {
+  const consentPayload = {
+    consentKey: consentKeyRef.current,
+    termsAccepted,
+    marketingOptIn,
+    noticeVersion: NOTICE_VERSION,
+    locale: language,
+    plan: selectedPlan,
+  };
+
+  const requireTerms = () => {
+    if (termsAccepted) return true;
+    setError(t("register.termsRequired"));
+    return false;
+  };
+
+  const saveRegisterConsent = (emailAddress: string) =>
+    storePrivacyConsent({
+      consentKey: consentKeyRef.current,
+      source: "register",
+      email: emailAddress,
+      termsAccepted: true,
+      marketingOptIn,
+      locale: language,
+      plan: selectedPlan || "",
+    });
+
+  const handleSocialStart = async (provider: SocialProvider) => {
     setError("");
+    if (!requireTerms()) return;
     setSocialBusy(provider);
+    let saved: Awaited<ReturnType<typeof saveRegisterConsent>>;
+    try {
+      saved = await saveRegisterConsent(email.trim().toLowerCase());
+    } catch {
+      setError(t("register.consentSaveFailed"));
+      setSocialBusy(null);
+      return;
+    }
     startBizuplySocialAuth(provider, {
       intent: "signup",
       language,
@@ -132,6 +173,7 @@ export default function Register() {
       websiteAddon: includeWebsiteAddon,
       referralCode: referralCode || undefined,
       purchaseIntent: pendingPurchaseSignup,
+      consentKey: saved.status === "stored" ? consentKeyRef.current : undefined,
     });
   };
 
@@ -147,9 +189,17 @@ export default function Register() {
       setError(t("register.genericError"));
       return;
     }
+    if (!requireTerms()) return;
     setSocialBusy("email");
     setLoading(true);
     try {
+      let saved: Awaited<ReturnType<typeof saveRegisterConsent>>;
+      try {
+        saved = await saveRegisterConsent(clean);
+      } catch {
+        setError(t("register.consentSaveFailed"));
+        return;
+      }
       const { data } = await API.post("/auth/signup/email/start", {
         email: clean,
         plan: selectedPlan,
@@ -159,6 +209,7 @@ export default function Register() {
         language,
         billingCountry: persistBillingCountry(billingMarket.billingCountry),
         clientOrigin: typeof window !== "undefined" ? window.location.origin : undefined,
+        ...(saved.status === "stored" ? consentPayload : {}),
       });
       setEmailMasked(String(data?.emailMasked || clean));
       setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);
@@ -166,7 +217,8 @@ export default function Register() {
     } catch (err) {
       const apiErr = err as { response?: { data?: { code?: string } } };
       const code = apiErr.response?.data?.code;
-      if (code === "email_registered") setError(t("register.emailExists"));
+      if (code === "consent_required") setError(t("register.consentSaveFailed"));
+      else if (code === "email_registered") setError(t("register.emailExists"));
       else if (code === "whatsapp_account") setError(t("login.oauth.errors.whatsapp_account"));
       else if (code === "otp_cooldown") setError(t("login.oauth.errors.otp_cooldown"));
       else setError(t("register.identity.sendFailed"));
@@ -212,7 +264,7 @@ export default function Register() {
         setError(t("register.checkoutFailed"));
         return;
       }
-      if (window.fbq) window.fbq("track", "InitiateCheckout");
+      if (marketingAllowed() && window.fbq) window.fbq("track", "InitiateCheckout");
       window.location.href = data.url;
     } catch (err) {
       const apiErr = err as { response?: { data?: { code?: string } } };
@@ -256,6 +308,7 @@ export default function Register() {
               <p className="mt-1 text-xs font-semibold text-emerald-800/70">
                 {t("register.identity.checkoutNote")}
               </p>
+              <SubscriptionTermsNotice plan={selectedPlan} billingCountry={billingMarket.billingCountry} />
             </div>
           ) : null}
 
@@ -267,6 +320,27 @@ export default function Register() {
               {t("register.checkoutCancelled")}
             </p>
           ) : null}
+
+          <div className="space-y-3 text-start">
+            <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={termsAccepted}
+                onChange={(event) => setTermsAccepted(event.target.checked)}
+              />
+              <span>{t("register.termsConsent")}</span>
+            </label>
+            <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+              <input
+                type="checkbox"
+                className="mt-1"
+                checked={marketingOptIn}
+                onChange={(event) => setMarketingOptIn(event.target.checked)}
+              />
+              <span>{t("register.marketingConsent")}</span>
+            </label>
+          </div>
 
           {step === "identity" ? (
             <>
@@ -287,12 +361,13 @@ export default function Register() {
                 className="space-y-3"
               >
                 <div className="text-start">
-                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                  <label htmlFor="register-email" className="mb-2 block text-sm font-bold text-slate-700">
                     {t("register.identity.continueEmail")}
                   </label>
                   <div className="relative">
                     <Mail className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                     <input
+                      id="register-email"
                       type="email"
                       name="email"
                       autoComplete="email"
@@ -330,10 +405,11 @@ export default function Register() {
                 {t("register.identity.otpHint", { email: emailMasked || email })}
               </p>
               <div className="text-start">
-                <label className="mb-2 block text-sm font-bold text-slate-700">
+                <label htmlFor="register-otp" className="mb-2 block text-sm font-bold text-slate-700">
                   {t("login.oauth.otpLabel")}
                 </label>
                 <input
+                  id="register-otp"
                   type="text"
                   inputMode="numeric"
                   autoComplete="one-time-code"

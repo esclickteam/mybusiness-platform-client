@@ -126,7 +126,12 @@
             "partner-materials": 1,
             onboarding: 1,
           };
-          if (!appRoute[bareFirst] && lang !== current) {
+          if (pathLocale && pathLocale !== "en") {
+            lang = pathLocale;
+            try {
+              document.cookie = "bizuply_lang=" + encodeURIComponent(lang) + "; Path=/; Max-Age=31536000; SameSite=Lax";
+            } catch (ePathCookie) {}
+          } else if (!appRoute[bareFirst] && lang !== current) {
             var prefix = lang === "pt-BR" ? "/pt-br" : lang === "en" ? "" : "/" + lang;
             var next = prefix + (bare === "/" ? "" : bare);
             if (!next) next = "/";
@@ -224,8 +229,49 @@
           fbq("init", "1427327632368128");
           fbq("track", "PageView");
         }
-        if (window.requestIdleCallback) requestIdleCallback(startPixel, { timeout: 2500 });
-        else window.addEventListener("load", startPixel, { once: true });
+        function marketingAllowed() {
+          try {
+            var match = document.cookie.match(/(?:^|; )bizuply_tracking=([^;]*)/);
+            return match && decodeURIComponent(match[1]) === "all";
+          } catch (e) {
+            return false;
+          }
+        }
+        function expireCookie(name) {
+          var host = location.hostname;
+          var base = name + "=; Path=/; Max-Age=0; SameSite=Lax";
+          document.cookie = base;
+          document.cookie = base + "; Domain=" + host;
+          if (host === "bizuply.com" || host.slice(-12) === ".bizuply.com") {
+            document.cookie = base + "; Domain=.bizuply.com";
+          }
+        }
+        function clearMeasurementCookies() {
+          expireCookie("_fbp");
+          expireCookie("_fbc");
+        }
+        function stopPixel() {
+          window.__bizuplyPixelStopped = true;
+          var current = window.fbq;
+          try {
+            if (typeof current === "function") current("consent", "revoke");
+          } catch (e) {}
+          if (typeof current === "function") window.fbq = function () {};
+          clearMeasurementCookies();
+        }
+        function armPixel() {
+          if (!marketingAllowed() || window.__bizuplyPixelStopped) return;
+          if (window.requestIdleCallback) requestIdleCallback(startPixel, { timeout: 2500 });
+          else window.addEventListener("load", startPixel, { once: true });
+        }
+        if (marketingAllowed()) armPixel();
+        else clearMeasurementCookies();
+        window.addEventListener("bizuply-tracking-consent", function (event) {
+          if (event && event.detail === "all") {
+            window.__bizuplyPixelStopped = false;
+            armPixel();
+          } else stopPixel();
+        });
       })();
     </script>
 

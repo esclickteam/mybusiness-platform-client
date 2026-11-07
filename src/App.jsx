@@ -13,6 +13,7 @@ import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
 const PreLoginBot = lazy(() => import("./components/PreLoginBot"));
 const SupportChatWidget = lazy(() => import("./components/SupportChatWidget"));
 const AccessibilityWidget = lazy(() => import("./components/site-plugins/accessibility/AccessibilityWidget"));
+const PlatformConsentBanner = lazy(() => import("./components/tracking/PlatformConsentBanner"));
 const AdminSoftphoneHost = lazy(() => import("./components/AdminSoftphoneHost"));
 const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
 const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
@@ -135,6 +136,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
 const Terms = lazy(() => import("./pages/Terms"));
+const LegalAnnex = lazy(() => import("./pages/LegalAnnex"));
 const Contact = lazy(() => import("./pages/Contact"));
 const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
@@ -246,6 +248,7 @@ const PartnerCenterPage = lazy(() => import("./pages/partner/PartnerCenterPage")
 const PublicPartnerMaterial = lazy(() => import("./pages/public/PublicPartnerMaterial"));
 const AdminPartnerDossier = lazy(() => import("./pages/admin/AdminPartnerDossier"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
+const AdminPrivacyRequests = lazy(() => import("./pages/admin/AdminPrivacyRequests"));
 const MarketerDashboardPage = lazy(() =>
   import("./pages/marketer/MarketerDashboardPage")
 );
@@ -1388,6 +1391,7 @@ export default function App() {
                         <Route path="/faq" element={<FAQ />} />
                         <Route path="/accessibility" element={<Accessibility />} />
                         <Route path="/terms" element={<Terms />} />
+                        <Route path="/legal/:doc" element={<LegalAnnex />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/partners" element={<PartnersRecruitment />} />
 
@@ -1739,6 +1743,7 @@ export default function App() {
                         <Route path="partners/:partnerId" element={<AdminPartnerDossier />} />
                         <Route path="partners" element={<AdminPartners />} />
                         <Route path="support-chat" element={<AdminSupportChat />} />
+                        <Route path="privacy-requests" element={<AdminPrivacyRequests />} />
                         <Route path="affiliate-payouts" element={<AdminPayoutPage />} />
                         </Route>
 
@@ -1878,6 +1883,10 @@ export default function App() {
         !isBizuplyPublicBookingRoute && (
           <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
         )}
+
+      {!isSaasPublicSite && !isMiniSiteHost && !location.pathname.startsWith("/embed/") && (
+        <Suspense fallback={null}><PlatformConsentBanner /></Suspense>
+      )}
 
       {showPublicWidgets && (
         <div

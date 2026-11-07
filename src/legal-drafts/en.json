@@ -1,0 +1,953 @@
+{
+  "status": "draft-not-for-publication",
+  "notice": "Draft only. It starts from the full public text and does not replace the pages on bizuply.com.",
+  "checked": "6 November 2026",
+  "termsPage": {
+    "sections": [
+      "General",
+      "Definitions",
+      "Services Offered",
+      "Registration & Use",
+      "Privacy & Data Protection",
+      "User-Generated Content",
+      "Payments & Refunds",
+      "Limitation of Liability",
+      "Force Majeure",
+      "Intellectual Property",
+      "Accessibility",
+      "Changes & Termination",
+      "Waiver of Claims",
+      "Governing Law",
+      "Contact Details"
+    ],
+    "seoTitle": "Terms of Service - Bizuply",
+    "seoDesc": "Read Bizuply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
+    "badge": "Legal Center",
+    "title": "Terms of Service",
+    "intro": "Please read these terms carefully before using BizUply's website, app, platform, tools, and services.",
+    "lastUpdatedChip": "Last updated: October 14, 2025",
+    "asideTitle": "Terms overview",
+    "asideText": "Quick navigation between the main legal sections.",
+    "contactLabel": "Contact",
+    "s1": {
+      "h": "1. General",
+      "p1": "1.1. The BizUply website and/or mobile application, hereinafter: “the Company,” “BizUply,” “the Site,” “the System,” or “the App,” operate as a <strong>Software-as-a-Service (SaaS)</strong> platform intended for professional business management, customer communication, appointment scheduling, collaboration, and automation. The platform connects service providers and customers in order to streamline day-to-day operations and improve digital business efficiency.",
+      "p2": "1.2. Use of the Site, the App, and the System is subject to these Terms of Use, as well as any applicable law and regulation in the United States. Accessing or using BizUply's services constitutes your full and binding consent to comply with all provisions of this Agreement. If you do not agree to these terms, you must not use the Site, the App, or any of the Company's services.",
+      "p3": "1.3. The Company reserves the right, at its sole discretion, to change, amend, update, or remove parts of these terms at any time, with or without prior notice. Any update takes effect immediately upon posting on the Site. Continued use of the platform after such a change constitutes full acceptance of the updated terms.",
+      "p4": "1.4. These terms are written in English and may from time to time be translated for convenience into other languages. In the event of any conflict or inconsistency between translations, <strong>the English version shall prevail</strong>.",
+      "p5": "1.5. These terms are drafted in the masculine form for grammatical convenience only and apply equally to all genders, individuals, and entities.",
+      "p6": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied.",
+      "p7": "1.7. Users accessing BizUply from outside the United States acknowledge that the platform is operated from within the jurisdiction of the United States and agree that the collection, processing, and storage of their data are subject to the data protection laws and standards of the United States, including any applicable international framework. This acknowledgment does not waive a privacy or consumer right that the mandatory law of the user's country does not allow a contract to waive."
+    },
+    "s2": {
+      "h": "2. Definitions",
+      "intro": "For the purposes of this Agreement, the following definitions shall apply:",
+      "defs": "<strong>“The Company”</strong> – BizUply LLC, the operator and owner of the platform, including its affiliates, employees, partners, and contractors.<br /><strong>“The Site” / “The App”</strong> – BizUply's digital system, including all websites, domains, databases, APIs, code, infrastructure, interfaces, and related digital assets owned or managed by BizUply.<br /><strong>“The User”</strong> – any person, professional, business, organization, or other legal entity that accesses or uses the services for business management, communication, or collaboration purposes.<br /><strong>“Service Provider” / “Business”</strong> – any registered business or independent professional using the platform to create a business profile, manage appointments, customers, tasks, or communication through BizUply.<br /><strong>“Customer”</strong> – any person or entity that interacts with a business or service provider through the BizUply platform.<br /><strong>“The Services”</strong> – all features and functions provided by BizUply, including but not limited to CRM tools, messaging, appointment scheduling, automation, AI-driven insights, analytics, reputation management, collaboration tools, reviews, ratings, and business-page creation.<br /><strong>“Content”</strong> – any data, media, or material submitted, uploaded, transmitted, or displayed on the platform, including text, images, videos, logos, reviews, reports, analytics, or other user-generated material.<br /><strong>“Agreement”</strong> – this Terms of Use document, which constitutes a legally binding agreement between the User and BizUply. A Business Customer is a registered business buying the service for that business. An Individual Business User is a person buying the service to run or to start a business. A Consumer is a person buying outside a business. A person who buys the service to start a business may still be a consumer under the law of that person's country, and these labels do not decide that question. A Partner or Affiliate is a participant in the partner program. A SaaS Subscriber is a customer on a paid plan or a trial. The partner program's price, commission, renewal, and attribution are the ones shown at purchase. This sentence does not change those rates. Nothing in these terms promises income or profit."
+    },
+    "s3": {
+      "h": "3. Services Offered",
+      "p1": "3.1. BizUply provides an advanced <strong>Software-as-a-Service (SaaS)</strong> platform for the comprehensive management of small and medium-sized businesses (“SMBs”). The services are designed to help business owners organize, track, and automate their day-to-day operations through a unified, cloud-based system. Available features include, among others:",
+      "list": [
+        "Customer relationship management (CRM) for customers and leads",
+        "Internal messaging and communication between businesses and customers",
+        "Calendar, booking, and appointment-scheduling tools",
+        "A verified reviews system and star ratings for customer feedback",
+        "Customizable business pages with descriptions, service lists, images, and FAQs",
+        "Features for task management, reminders, and follow-ups",
+        "Collaboration tools between businesses for shared growth opportunities",
+        "An AI-powered business advisor for recommendations and smart automation",
+        "Analytics dashboards and performance reports for optimization"
+      ],
+      "p2": "3.2. The Company may, from time to time, expand, modify, limit, or discontinue certain features or services. BizUply reserves the right to make such changes at its sole discretion and without prior notice.",
+      "p3": "3.3. All services, content, and tools provided through the platform are offered <strong>“as is” and “as available”</strong>, without any warranty of any kind, express or implied, including but not limited to merchantability, fitness for a particular purpose, accuracy, or reliability. The Company does not guarantee continuous availability or error-free operation of the platform.",
+      "p4": "3.4. Certain services or features may be subject to additional terms, pricing, or subscription tiers. By activating such services, the User agrees to any relevant supplemental terms or pricing structure provided at the time of use."
+    },
+    "s4": {
+      "h": "4. Registration & Use of the System",
+      "p1": "4.1. To access the full range of BizUply services, users are required to create an account by providing accurate and complete information, including but not limited to their full name, a valid email address, phone number, business name, and payment details where relevant.",
+      "p2": "4.2. The User agrees to keep their login credentials confidential and is solely responsible for all activity that occurs under their account, whether authorized or not. The Company shall not be liable for any damage, loss, or unauthorized access resulting from failure to maintain proper account security.",
+      "p3": "4.3. The User agrees to notify the Company immediately of any suspected unauthorized access or security breach related to their account. Failure to do so may result in suspension or termination of access to the platform.",
+      "p4": "4.4. The Company reserves the right to suspend, restrict, or permanently delete any account that violates these terms, infringes intellectual property rights, distributes harmful or unlawful content, or engages in activity that may harm the integrity of the platform or other users.",
+      "p5": "4.5. The Company further reserves the right to remove any business, profile, content, or uploaded material that, in its sole discretion, is deemed inappropriate, misleading, fraudulent, offensive, or inconsistent with BizUply's brand values or its legal obligations, without any obligation to provide prior notice or justification.",
+      "p6": "4.6. Creating multiple or duplicate accounts to abuse trial periods, referral programs, or promotions is strictly prohibited. The Company may terminate or merge such accounts and cancel any related benefits without a refund.",
+      "p7": "4.7. Upon registration, the User grants BizUply a limited, non-exclusive, worldwide, royalty-free license to store, process, and display the information provided, solely for the purpose of providing and improving the services in accordance with the Company's <strong>Privacy Policy</strong>."
+    },
+    "s5": {
+      "h": "5. Privacy & Data Protection",
+      "p1": "5.1. The Company protects personal information with the administrative, technical, and organizational measures the product actually uses. The GDPR, the CCPA, and the CPRA are named only as laws that may apply when their own conditions are met, including who the customer is and where that customer is. This section does not state that those laws apply to every user, and it does not state that the Company has been found to comply with them.",
+      "p2": "5.2. In the course of using the platform, the Company may collect, process, and store the following categories of data:",
+      "list1": [
+        "<strong>Personally Identifiable Information (PII):</strong> such as full name, email address, phone number, business name, billing address, and payment information, as provided during registration or the use of premium features.",
+        "<strong>Technical data:</strong> including IP address, device identifiers, browser type, operating system, connection logs, session duration, geographic location where permitted, and other diagnostic data.",
+        "<strong>Business data:</strong> such as CRM records, appointments, communications, notes, tasks, and statistical usage information generated by the User within the BizUply system."
+      ],
+      "p3": "5.3. The purposes for which data is collected and processed include:",
+      "list2": [
+        "Providing, maintaining, and improving the Company's services",
+        "Personalizing the user experience and optimizing system performance",
+        "Ensuring legal compliance, preventing fraud, and maintaining security",
+        "Sending service-related updates, notices, and offers relevant to the User",
+        "Performing analytics to improve the platform's functionality and reliability"
+      ],
+      "p4": "5.4. The Company does not sell or rent personal information. Personal data will be shared with third parties only in the following limited circumstances:",
+      "list3": [
+        "With authorized service providers such as secure cloud hosting, analytics, billing, email, or customer support systems, solely for operational purposes and subject to confidentiality obligations.",
+        "As required by law, subpoena, or a lawful government request.",
+        "In the event of a merger, acquisition, or asset transfer, provided that the receiving entity maintains equivalent privacy protections."
+      ],
+      "rightsTitle": "User rights where a law that covers that user grants them",
+      "rightsList": [
+        "The right to access the personal data collected about them.",
+        "The right to correct inaccurate or incomplete personal information.",
+        "The right to request deletion (“the right to be forgotten”).",
+        "The right to receive a copy of their data (“data portability”).",
+        "The right to opt out of the sale or sharing of personal data.",
+        "The right to restrict or object to certain types of data processing.",
+        "The right to lodge a complaint with a relevant data protection authority or privacy regulator."
+      ],
+      "p6": "5.6. Privacy requests may be sent to support@bizuply.com. The product does not contain a fixed response deadline, and a response within 30 business days is not an implemented process. Any deadline that applies is the one required by a law that actually covers that request.",
+      "cookiesTitle": "Cookies & Tracking Technologies",
+      "p7": "5.7. The Site and the App use cookies and similar technologies for basic functionality, security, and the measurement described in section 5.9. Section 5.9 states which measurement tool loads and on which page.",
+      "p8": "5.8. Users may disable or restrict cookies through their browser settings; however, as a result, certain features of the platform may not function properly.",
+      "p9": "5.9. This site does not load Google Analytics, Google Tag Manager, or reCAPTCHA. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On the marketing homepage and the other platform pages, the pixel loads only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, the pixel does not load. Choosing essential revokes measurement at once: further pixel events are not sent, the measurement cookies are deleted, and, if the pixel was already loaded, the page reloads so the pixel script does not start again. Clearing the choice on the privacy page deletes the cookie and reloads the page, so the choice is asked again. The choice stays in a cookie on this browser for 180 days, including when the visitor moves between platform pages and when the visitor returns. A checkout event is sent from registration only when the cookie equals all and measurement has not been revoked. Cloudflare Turnstile loads only on a screen that has a site key configured.",
+      "p10": "For more information about how BizUply collects, uses, and protects data, please review our detailed <strong>Privacy Policy</strong>, which forms an integral part of these Terms of Use."
+    },
+    "s6": {
+      "h": "6. User-Generated Content",
+      "p1": "6.1. Users may upload, post, or share content including text, images, reviews, comments, or business-related data through the platform. All such content remains the sole responsibility of the user who created or uploaded it.",
+      "p2": "6.2. By submitting any content to the platform, users represent that:",
+      "list": [
+        "They own or have obtained all rights and licenses necessary to use and share such content.",
+        "The content does not infringe the intellectual property, privacy, publicity, or other legal rights of any third party.",
+        "The content is not defamatory, fraudulent, obscene, hateful, harassing, discriminatory, or otherwise unlawful."
+      ],
+      "p3": "6.3. The Company reserves the right, but not the obligation, to monitor, edit, or remove any content that violates these terms or applicable law, without prior notice and at its sole discretion.",
+      "p4": "6.4. By uploading or submitting content to the platform, users grant the Company a worldwide, royalty-free, non-exclusive, perpetual, and irrevocable license to store, reproduce, modify, distribute, and publicly display such content for the purpose of operating, promoting, and improving the services, including marketing and analytical use. This license shall survive the termination of the user's account.",
+      "p5": "6.5. The Company is not responsible for, and does not endorse, user-generated content. Users acknowledge that they may be exposed to content they consider inappropriate or inaccurate, and they assume all risks associated with such exposure."
+    },
+    "s7": {
+      "h": "7. Payments, Pricing & Refund Policy",
+      "notice": "<strong>⚖️ Legal notice:</strong> This section must be read together with Section 13 “Waiver of Claims, Refunds, and Limitation of Actions,” which further clarifies the User's waiver of any right to claim, dispute, or request refunds for any reason.",
+      "p1": "7.1. Access to a paid BizUply plan requires an active subscription. Platform subscriptions are paid through Lemon Squeezy. Stripe is used for some merchant-store payments, and PayPal is used for some store-order confirmations. A payment is subject to the terms of the processor that handles it.",
+      "p2": "7.2. Unless otherwise stated, <strong>all payments are final and non-refundable</strong>. This includes early cancellations, unused service periods, account deactivation, or dissatisfaction with the service. Once a subscription is purchased, it will remain active for the entire purchased period and <strong>cannot be shortened, paused, or refunded</strong>, even if the User decides to stop using the platform or terminates their account.",
+      "p3": "7.3. The User acknowledges and agrees that any refund, credit, or adjustment shall be determined solely at the <strong>Company's sole discretion</strong>. BizUply has no legal or financial obligation to issue refunds under any circumstances. The User expressly waives any right to request chargebacks, open refund claims through payment providers, or demand restitution by any means.",
+      "p4": "7.4. In cases of account suspension, restriction, or removal due to a violation of these terms, improper use, abusive conduct, or unlawful activity, the Company reserves the right to <strong>terminate the User's subscription immediately</strong> without prior notice. In such cases, <strong>no refund, credit, or compensation</strong> will be provided for the remainder of the subscription period.",
+      "p5": "7.5. The Company may modify, suspend, or discontinue paid features or services at any time and without liability, provided that such actions do not violate active billing obligations under applicable U.S. consumer protection laws.",
+      "trialsTitle": "Trial Periods, Renewals & Cancellations",
+      "p6": "7.6. New users may be eligible for a free trial period, as indicated on the Site. Upon expiration of the trial period, subscriptions will automatically renew to a paid plan unless cancelled before the renewal date.",
+      "p7": "7.7. Users may cancel their subscriptions at any time from their account dashboard. Cancellations take effect at the end of the current billing period, and no partial refunds or credits will be provided for the remaining days in the period.",
+      "p8": "7.8. Users are solely responsible for keeping their billing and payment information up to date. Failed or declined payments may result in temporary suspension or termination of access without a refund.",
+      "priceTitle": "Price Changes",
+      "p9": "7.9. The Company reserves the right to change subscription fees, package rates, or service prices at any time, in accordance with applicable U.S. consumer protection laws.",
+      "p10": "7.10. Any updated pricing will be posted on the Site and communicated to active subscribers by email at least <strong>14 days</strong> before renewal. Continued use of the platform after a price change constitutes full acceptance of the new rates.",
+      "p11": "7.11. If a user does not agree to a price change, they may cancel their subscription before the next billing date to avoid additional charges.",
+      "mandatoryLaw": "7.12. Sections 7.2, 7.3, 7.4, and 13 do not waive a refund or cancellation right that a mandatory consumer law gives a particular customer. For a consumer in the United States, the Restore Online Shoppers' Confidence Act, 15 U.S.C. § 8403, makes it unlawful to charge for an internet negative-option feature unless the material terms are clearly disclosed before billing information is taken, the consumer gives express informed consent, and a simple mechanism is provided to stop recurring charges. The FTC's 2024 expanded Negative Option Rule, including click-to-cancel, was vacated by the U.S. Court of Appeals for the Eighth Circuit on 8 July 2025, and the FTC restored the pre-2024 rule effective 12 February 2026. That expanded rule is not stated here as a law in force. For a consumer in California, Business and Professions Code § 17602 requires automatic-renewal disclosures, affirmative consent, and cancellation information when that statute applies. For a consumer in the European Union, Directive 2011/83/EU provides a 14-day withdrawal right for a distance contract unless an Article 16 exception applies, including the digital-content exception only when its consent and acknowledgment conditions are met. These laws are not described as applying to every customer. Where one applies, it controls over a contrary no-refund sentence. The no-refund wording above is kept as the company's position for customers to whom no such mandatory right applies."
+    },
+    "s8": {
+      "h": "8. Limitation of Liability",
+      "p1": "8.1. The services provided by BizUply are offered solely <strong>“as is” and “as available”</strong>. The Company makes no representations or warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, reliability, or non-infringement.",
+      "p2": "8.2. The Company does not warrant that the platform or its services will be uninterrupted, secure, error-free, or continuously available. Access may be affected by factors beyond the Company's reasonable control, including but not limited to maintenance, updates, third-party system failures, or network disruptions.",
+      "p3": "8.3. To the maximum extent permitted by law, the Company, its officers, employees, partners, and affiliates shall not be liable for any indirect, incidental, special, consequential, punitive, or exemplary damages arising out of or related to:",
+      "list": [
+        "The use of, or inability to use, the platform or its services;",
+        "Any loss of data, corruption, or unauthorized access;",
+        "Errors, omissions, or inaccuracies in any displayed content;",
+        "Business interruption, loss of profits, or damage to reputation;",
+        "Any act, omission, or negligence of third-party service providers."
+      ],
+      "p4": "8.4. In any event, the Company's total aggregate liability, whether in contract, tort, negligence, or otherwise, shall not exceed the total amount paid by the User to the Company during the <strong>thirty (30) days</strong> preceding the event giving rise to the claim.",
+      "p5": "8.5. The User acknowledges that BizUply does not provide legal, financial, or tax advice. Any business decision made through the platform is the sole responsibility of the User.",
+      "p6": "8.6. The Company shall not be liable for disruptions or damages caused by external factors, including but not limited to cyberattacks, hardware or software failures, internet service provider outages, data-center failures, or third-party integrations.",
+      "p7": "8.7. Certain jurisdictions do not allow the exclusion or limitation of certain damages or liability. In such cases, the Company's liability shall be limited to the minimum extent permitted by applicable law."
+    },
+    "s9": {
+      "h": "9. Force Majeure",
+      "p1": "9.1. The Company shall not be liable or deemed to be in breach of these terms for any delay, failure, or interruption in performance resulting from causes beyond its reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, riots, strikes, labor disputes, governmental actions, cyberattacks, data breaches, power or internet outages, pandemics, or other emergencies.",
+      "p2": "9.2. During any force majeure period, the Company's obligations shall be suspended to the extent that performance is prevented or delayed. The Company will make reasonable efforts to resume normal operations after the event has ceased.",
+      "p3": "9.3. Users acknowledge that such events may cause temporary disruptions to platform access or delays in service delivery, and the Company shall not be liable for this."
+    },
+    "s10": {
+      "h": "10. Intellectual Property",
+      "p1": "10.1. All intellectual property rights in and related to the platform, including but not limited to software code, architecture, algorithms, databases, user interfaces, designs, text, graphics, trademarks, trade names, service marks, videos, and other content, collectively “BizUply Materials,” are and shall remain the sole property of BizUply or its licensors.",
+      "p2": "10.2. Except as expressly permitted in writing by the Company, no part of the Site, the App, or the System may be copied, modified, distributed, republished, displayed, transmitted, reverse-engineered, decompiled, or otherwise exploited for any commercial or non-commercial purpose.",
+      "p3": "10.3. Users are granted a limited, non-exclusive, non-transferable, and revocable license to access and use the platform solely for lawful business purposes, in accordance with these terms.",
+      "p4": "10.4. All third-party logos, brands, and trademarks appearing within the platform are the property of their respective owners. Their inclusion does not imply endorsement or affiliation.",
+      "p5": "10.5. Businesses or users who upload or provide content to the platform represent that they own or have obtained all rights, licenses, and permissions necessary for such content, and that it does not infringe the intellectual property or proprietary rights of any third party.",
+      "p6": "10.6. Any feedback, ideas, or suggestions provided by users to the Company may be used freely by BizUply for product improvement, without obligation or compensation to the User."
+    },
+    "s11": {
+      "h": "11. Accessibility",
+      "p1": "11.1. The Company wants the platform to be usable by people with disabilities. A conformance audit against WCAG 2.1 Level AA has not been completed, and this draft does not claim that conformance. On 6 November 2026, Hebrew and English public pages were checked at desktop width and at 390 pixels for language, direction, and horizontal overflow, and one contrast correction was made. A full screen-reader pass and a review of every template were not done. A person who needs help can write to support@bizuply.com. A coordinator's name and telephone number were not supplied. The ADA, the European Accessibility Act, the UK Equality Act 2010, and Israel's accessibility regulations and Standard 5568 may apply only when their own conditions are met. This section does not decide that any of them applies.",
+      "p2": "11.2. The Company works continuously to improve accessibility features and the user experience across all supported devices and browsers.",
+      "p3": "11.3. If users encounter any accessibility barriers or need assistance, they may contact <strong>support@bizuply.com</strong>. The Company will make reasonable efforts to review and address the request within a commercially reasonable time frame, subject to technological feasibility.",
+      "p4": "11.4. BizUply may offer accessibility accommodations such as text enlargement, color-contrast changes, screen-reader compatibility, and simplified navigation modes where relevant."
+    },
+    "s12": {
+      "h": "12. Changes, Termination & Suspension",
+      "p1": "12.1. The Company reserves the right to modify, update, or amend these Terms of Use, the Privacy Policy, or any other platform policy at any time and at its sole discretion. Updated versions will be posted on the Site with an updated “Last updated” date.",
+      "p2": "12.2. Continued use of the platform after any change is posted shall constitute full and binding acceptance of the updated terms.",
+      "p3": "12.3. The Company may suspend, restrict, or terminate the User's account or access to the platform, in whole or in part, without prior notice and without liability, if:",
+      "list": [
+        "The User violates these terms or any applicable law.",
+        "The User engages in activity that may harm the platform, its users, or the Company's reputation.",
+        "The User fails to make required payments or engages in fraud.",
+        "Technical or security issues require immediate suspension."
+      ],
+      "p4": "12.4. Upon termination, all rights granted to the User under these terms shall immediately cease, and the User must discontinue all access to and use of the platform. Any outstanding payment obligation shall survive termination.",
+      "p5": "12.5. The Company reserves the right to discontinue or modify the platform or any of its features at any time, temporarily or permanently, without prior notice."
+    },
+    "s13": {
+      "h": "13. Waiver of Claims, Refunds & Limitation of Actions",
+      "p1": "13.1. The User hereby irrevocably waives, to the maximum extent permitted by applicable law, any claim, demand, legal proceeding, refund request, chargeback, or cause of action against BizUply, its parent company, subsidiaries, affiliates, officers, directors, employees, agents, and licensors, arising out of or related to the use of the platform, the services, payments, billing, or any other engagement with the Company.",
+      "p2": "13.2. The User acknowledges and agrees that <strong>all payments made to BizUply are final and non-refundable</strong>. No refund, credit, or compensation will be provided for early cancellation, dissatisfaction, downtime, technical issues, or discontinuation of use of the services. Any refund or credit, in whole or in part, as a matter of goodwill, shall be determined solely at the <strong>Company's sole discretion</strong>, and the Company shall have no obligation of any kind to provide such refunds under any circumstances.",
+      "p3": "13.3. The User expressly and irrevocably waives the right to initiate, participate in, or assist in any <strong>class action, collective action, representative proceeding, or group claim</strong> against BizUply, its affiliates, or representatives. Any dispute or claim shall be handled <strong>on an individual basis only</strong>.",
+      "p4": "13.4. This waiver includes, without limitation, any claim for negligence, breach of contract, misrepresentation, loss of profits, business interruption, damage to reputation, or any other alleged direct, indirect, or consequential damage. The User fully understands and agrees that by using the platform they release BizUply from any liability or responsibility for financial or business outcomes arising from the use or misuse of the services.",
+      "p5": "13.5. To the extent permitted by law, any claim or cause of action arising out of or related to these terms must be filed within <strong>one (1) year</strong> after the claim arose; otherwise, it shall be permanently barred. After this period, the User shall have no right to take any legal or financial action against the Company.",
+      "mandatoryScope": "13.6. The waivers in this section 13, including the class or collective action waiver, and the arbitration clause in section 14, are not represented as enforceable against every customer in every country. They operate only to the extent the law that mandatorily protects that customer allows them. A customer keeps any right that law does not permit this contract to remove. The waiver text above is kept as the company's position where that law allows it."
+    },
+    "s14": {
+      "h": "14. Governing Law & Dispute Resolution",
+      "p1": "14.1. The same Delaware law governs these terms and the privacy policy.",
+      "p2": "14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. That period does not delay a request for urgent injunctive or equitable relief, and it does not delay or waive a right that the mandatory law of the customer's country does not allow this contract to limit.",
+      "p3": "14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts.",
+      "p4": "14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. Section 14.2 means this request need not wait until the negotiation period ends.",
+      "p5": "14.5. A dispute is brought in the Delaware courts described above, except where mandatory law reserves another court. No other state law and no arbitral seat is selected."
+    },
+    "s15": {
+      "h": "15. Contact Details",
+      "intro": "For questions, inquiries, legal notices, or privacy-related requests, please contact BizUply at:",
+      "list": [
+        "<strong>Email:</strong> support@bizuply.com",
+        "<strong>Business address:</strong> A street address is not stated. None was verified. The company is Bizuply LLC, formed in Delaware, United States. The Delaware file number and registered office were not supplied."
+      ],
+      "p1": "The Company strives to respond to all inquiries within a reasonable time frame, typically within <strong>5–10 business days</strong>.",
+      "p2": "These terms constitute the entire agreement between the User and BizUply regarding the use of the platform, and supersede any prior oral or written understanding. If any provision is found unenforceable, the remaining provisions shall remain in full force and effect.",
+      "lastUpdatedLabel": "Last updated",
+      "lastUpdatedValue": "October 2025"
+    }
+  },
+  "privacyPage": {
+    "metaTitle": "Privacy Policy - Bizuply",
+    "metaDescription": "Read Bizuply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
+    "badge": "Privacy Center",
+    "title": "Privacy Policy",
+    "intro": "This Privacy Policy explains how BizUply collects, stores, uses, and protects personal and business information across the platform.",
+    "lastUpdatedLabel": "Last updated:",
+    "lastUpdatedDate": "August 9, 2026",
+    "overviewTitle": "Policy Overview",
+    "overviewText": "Quickly navigate between the sections on privacy, data, security, user rights, and legal terms.",
+    "contactPrivacy": "Privacy Contact",
+    "lastUpdatedBoxLabel": "Last Updated",
+    "sections": [
+      "Introduction",
+      "Scope and Applicability",
+      "Definitions",
+      "Data We Collect",
+      "How We Use Your Data",
+      "Data Sharing",
+      "Google Workspace API Data",
+      "Cookies",
+      "Data Retention",
+      "User Rights",
+      "Refunds and Payments",
+      "Limitation of Liability",
+      "Data Location",
+      "Policy Updates",
+      "Legal Compliance",
+      "Legal Disclaimer",
+      "Governing Law",
+      "Contact and Data Protection Officer",
+      "Final Provision"
+    ],
+    "s1": {
+      "h": "1. Introduction",
+      "p1": "This Privacy Policy explains how <strong>BizUply</strong>, privately owned and operated under the laws of the United States, collects, stores, uses, and protects the personal information of its users and business customers (“Users,” “Businesses,” or “you”). By using the BizUply platform, you agree to the terms described in this document.",
+      "p2": "Bizuply LLC is a limited liability company formed in Delaware, United States. It provides business-management software, customer communication, and AI features when those features are used. No street address was verified, so none is stated.",
+      "p3": "This Privacy Policy applies to all of our products, services, websites, and applications (the “Platform”) and describes in detail how we process data, what information we collect, and what rights you have with respect to your information.",
+      "p4": "By accessing or using our Platform, you acknowledge that you have read and understood this Privacy Policy. If you do not agree, please do not use BizUply or any of its services."
+    },
+    "s2": {
+      "h": "2. Scope and Applicability",
+      "p1": "This Privacy Policy applies to all users, including businesses, employees, administrators, affiliates, and website visitors who interact with BizUply in any manner, whether through desktop, mobile applications, API integrations, or third-party add-ons.",
+      "p2": "This policy describes how personal and non-personal information is handled. It does not state that the company complies with any particular privacy statute. A privacy law applies only when its own conditions are met. No compliance audit was completed.",
+      "p3": "This policy does not apply to third-party services, links, or integrations that are not owned or operated by BizUply. We encourage you to review their privacy policies before engaging with them."
+    },
+    "s3": {
+      "h": "3. Definitions",
+      "p1": "<strong>“BizUply”</strong> – Bizuply LLC, a limited liability company formed in Delaware, United States. Its Delaware file number, registered office, and any street address were not supplied and are not stated.",
+      "p2": "<strong>“The Platform”</strong> – includes all BizUply products, websites, systems, servers, applications, APIs, AI modules, CRM dashboards, automation tools, and related software infrastructure.",
+      "p3": "<strong>“User”</strong> – any natural or legal person who uses BizUply's services, including business owners, employees, customers, or website visitors.",
+      "p4": "<strong>“Personal Information”</strong> – data that identifies or can reasonably identify an individual, including but not limited to name, email, phone number, address, payment details, business profile data, and digital identifiers such as IP addresses or cookies.",
+      "p5": "<strong>“Third Parties”</strong> – external entities engaged by BizUply for hosting, payment processing, analytics, or communication purposes, subject to binding confidentiality and data protection agreements."
+    },
+    "s4": {
+      "h": "4. Data We Collect",
+      "p1": "BizUply collects both personal and non-personal data necessary to provide, improve, and secure its services. Data collection may occur directly from you, automatically through your device, or from verified business integrations.",
+      "h1": "4.1. Personal Data You Provide",
+      "list1": [
+        "Full name, email, and phone number",
+        "Business name, registration number, and address",
+        "Payment and billing information",
+        "Encrypted login credentials",
+        "Communications, reviews, and feedback submitted through the Platform"
+      ],
+      "h2": "4.2. Data Collected Automatically",
+      "list2": [
+        "IP address and approximate geographic location",
+        "Device type, browser version, and operating system",
+        "Session activity, interaction history, and timestamps",
+        "Cookies and tracking pixels for analytics and performance"
+      ],
+      "h3": "4.3. Business and Analytical Data",
+      "list3": [
+        "Customer records and appointments",
+        "Business messages and chat logs",
+        "AI analysis of performance metrics and recommendations",
+        "Aggregated insights generated from anonymized usage data"
+      ]
+    },
+    "s5": {
+      "h": "5. How We Use Your Data",
+      "p1": "BizUply uses the information collected solely for legitimate business purposes related to operating and improving its Platform. We do not sell or rent personal data under any circumstances.",
+      "list": [
+        "To provide and maintain our services and customer accounts",
+        "To process payments, invoices, and billing cycles",
+        "To improve product performance, UX, and AI accuracy — excluding user data received through Google Workspace APIs, as set out in Section 7",
+        "To send service updates, notifications, or marketing offers",
+        "To ensure compliance with legal and regulatory requirements",
+        "To prevent fraud, misuse, or unauthorized access",
+        "To support customer service and resolve technical issues",
+        "To analyze user behavior for statistical and security purposes"
+      ],
+      "p2": "The product review did not establish a written security protocol or compliance with a privacy statute. No such compliance is claimed."
+    },
+    "s6": {
+      "h": "6. Data Sharing and Third Parties",
+      "p1": "BizUply does not sell or trade personal data. It may share limited information with a provider only where that is needed to operate the platform, to meet a legal duty, or to provide the service. No security certification is claimed.",
+      "h1": "6.1. Authorized Service Providers",
+      "p2": "We may share data with carefully selected third-party service providers who assist us with:",
+      "list": [
+        "Application hosting on Railway, the public site on Vercel, the application database on MongoDB, and Redis for cache and queues. The storage region is not recorded in the product repository.",
+        "Platform subscription checkout through Lemon Squeezy. Stripe is used for some merchant-store payments. PayPal is used for some store-order confirmations.",
+        "Email through Resend. Phone through Twilio when that service is enabled.",
+        "Cloudflare Turnstile loads only on a screen that has a site key. This entry does not claim a separate analytics product.",
+        "AI features through OpenAI when a key is configured. This entry does not state whether that provider trains on the content."
+      ],
+      "p3": "Signed confidentiality agreements with these providers were not found in the product repository. A provider may use the information for the service it actually provides.",
+      "h2": "6.2. Legal Requirements",
+      "p4": "We may disclose information to law enforcement, government agencies, or legal advisors if required to comply with applicable laws, court orders, or to protect our rights, security, or property, including fraud prevention and dispute resolution.",
+      "h3": "6.3. Business Transfers",
+      "p5": "In the event of a merger, acquisition, reorganization, or asset sale, personal data may be transferred to the acquiring entity, provided that the same data protection obligations continue to apply."
+    },
+    "s8": {
+      "h": "8. Cookies and Tracking Technologies",
+      "p1": "The marketing homepage and the other platform pages load the Meta Pixel only when the cookie bizuply_tracking equals all. A missing cookie or the value essential does not load it. Choosing essential revokes measurement at once, so further pixel events are not sent, and deletes the measurement cookies. If the pixel was already loaded, the page reloads and the script does not start again. The choice stays for 180 days across platform pages and return visits. Clearing it on the privacy page asks for the choice again after reload. Published customer sites do not load this pixel.",
+      "h1": "8.1. Types of Cookies Used",
+      "list": [
+        "Essential cookies – required for system operation and login",
+        "Functional cookies – store user preferences and settings",
+        "Measurement is the Meta Pixel, and it loads only when bizuply_tracking equals all. No separate analytics cookie product is claimed.",
+        "Security cookies – protect accounts and prevent unauthorized access",
+        "Marketing measurement: the Meta Pixel loads on the marketing homepage and on the other platform pages only when bizuply_tracking equals all."
+      ],
+      "h2": "8.2. Managing Cookies",
+      "p2": "Users may disable cookies through their browser settings. However, disabling essential cookies may affect functionality or access to certain system features.",
+      "p3": "BizUply does not respond to browser “Do Not Track” signals. For more information, contact us at <strong>support@bizuply.com</strong>."
+    },
+    "s9": {
+      "h": "9. Data Retention and Security",
+      "p1": "BizUply keeps personal and business data to operate the service, to meet a legal duty, and to prevent misuse or fraud. A general process that deletes or anonymizes every record when it is no longer needed was not found in the product. This policy does not state a fixed retention period.",
+      "p2": "The public site is served over HTTPS. Encryption at rest, firewalls, intrusion detection, and two-factor authentication were not found in the product review and are not claimed. No online system is free of risk. By using BizUply, you acknowledge the inherent risk of transmitting data over the internet.",
+      "p3": "A written security-incident procedure with a fixed notice time was not found. Where a law that applies requires notice, that law sets the duty."
+    },
+    "s10": {
+      "h": "10. User Rights",
+      "p1": "Where a privacy law that covers the person grants one of the following rights, the person may send a request to support@bizuply.com. This list is not a statement that any one privacy statute applies to every user.",
+      "list": [
+        "The right to access personal data stored by BizUply",
+        "The right to correct or update inaccurate information",
+        "The right to request deletion (“the right to be forgotten”)",
+        "The right to receive a copy of personal data (“data portability”)",
+        "The right to object to processing or marketing use"
+      ],
+      "p2": "Requests must be submitted in writing to <strong>support@bizuply.com</strong>. BizUply may verify the requester's identity. A response within 30 business days is not an implemented process. The deadline, if any, is the one required by a law that covers the request."
+    },
+    "s11": {
+      "h": "11. Refunds, Payments, and Legal Waiver",
+      "p1": "All payments, subscriptions, and service fees paid to BizUply are final and non-refundable under any circumstances, including but not limited to account closure, user dissatisfaction, technical issues, downtime, or business suspension.",
+      "p2": "By using BizUply, the user expressly agrees and acknowledges that:",
+      "list": [
+        "No refund, credit, or compensation will be granted for any reason whatsoever.",
+        "The user waives any right to claim damages, initiate legal proceedings, or demand monetary relief against BizUply, its owners, employees, partners, or affiliates.",
+        "BizUply shall not be liable for any indirect, consequential, or incidental losses, including loss of profits, loss of data, or reputational harm."
+      ],
+      "p3": "The user acknowledges full understanding that use of the BizUply platform is entirely at their own discretion and risk.",
+      "p4": "No oral or written communication overrides the payment terms above, except a mandatory consumer right that this contract cannot waive. The governing law and courts are the Delaware clause in the terms, sections 1.6 and 14."
+    },
+    "s12": {
+      "h": "12. Limitation of Liability",
+      "p1": "BizUply provides its services “as is” and “as available.” We make no warranty as to continuous operation, accuracy, completeness, or fitness for any purpose.",
+      "p2": "To the maximum extent permitted by law, BizUply and its affiliates disclaim all liability for any direct, indirect, incidental, consequential, or punitive damages arising from the use of, or inability to use, the Platform.",
+      "p3": "In any event, BizUply's total liability shall not exceed the amount paid by the user in the thirty (30) days preceding the event giving rise to the claim."
+    },
+    "s13": {
+      "h": "13. Data Location and International Transfers",
+      "p1": "The product repository does not record a storage region. This policy does not state that personal or business data is stored in one named place. MongoDB, Railway, and the other providers named in the service may process information where they operate.",
+      "p2": "The repository does not show that storage or transfer is limited to the United States. A provider used by the service may process information where it operates. No standard contractual clause or equivalent-security agreement is claimed.",
+      "p3": "Using BizUply does not mean that a user's information is subject only to United States law. A mandatory privacy law that covers that user still applies."
+    },
+    "s14": {
+      "h": "14. Policy Updates and Notices",
+      "p1": "BizUply reserves the right to change, update, or amend this Privacy Policy at any time, at its sole discretion. The latest version will be published on our official website at <strong>www.bizuply.com/privacy</strong>.",
+      "p2": "Material changes will be communicated by email or through in-platform notifications where relevant. Continued use of the Platform after such updates constitutes full acceptance of the revised policy.",
+      "p3": "Users are responsible for reviewing this policy periodically to stay informed of any changes."
+    },
+    "s15": {
+      "h": "15. Legal Compliance and Cooperation",
+      "p1": "Bizuply LLC is formed in Delaware, United States. The company provides records when a law that applies to the request requires it. This sentence does not state that a compliance program was audited.",
+      "p2": "We may retain or disclose certain records if required by subpoena, court order, or governmental request, provided that such disclosure complies with United States law and due process requirements.",
+      "p3": "BizUply is committed to preventing illegal activity, fraud, money laundering, or misuse of its systems. Any suspected violation will be reported to the relevant authorities."
+    },
+    "s16": {
+      "h": "16. Legal Disclaimer and No Liability",
+      "p1": "The user expressly acknowledges that use of the BizUply platform, its services, and related materials is entirely at their own risk. All content and data are provided “as is” without warranty, express or implied, including but not limited to fitness for a particular purpose, merchantability, accuracy, or reliability.",
+      "p2": "BizUply, its owners, affiliates, employees, contractors, and partners shall not be liable for any direct, indirect, special, consequential, punitive, or incidental damages arising from the use of, or inability to use, the Platform.",
+      "p3": "This includes, without limitation, loss of profits, data, goodwill, business disruption, or third-party claims.",
+      "p4": "The user hereby releases and waives any right to initiate legal proceedings, arbitration, or class action against BizUply on any cause related to the use of the service, fees, or data handling.",
+      "p5": "The waiver above is the company's position only to the extent the mandatory law that covers the user allows it. It is not enforceable in every country, and it does not remove a right that law does not allow this contract to remove. The terms, sections 1.6 and 14, state the governing law and courts."
+    },
+    "s17": {
+      "h": "17. Governing Law and Jurisdiction",
+      "p1": "This Privacy Policy and a dispute arising from it are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This does not displace a privacy right that the mandatory law of the person's country does not allow this policy to waive.",
+      "p2": "The state courts and federal courts in Delaware are the forum, except where a mandatory law gives the person a court that this policy cannot take away.",
+      "p3": "Sections 1.6 and 14 of the terms and this section state the same Delaware law and the same Delaware courts. The thirty-day negotiation in the terms does not delay urgent relief or a right that mandatory law does not allow the contract to limit."
+    },
+    "s18": {
+      "h": "18. Contact Details and Data Protection Officer",
+      "p1": "If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact:",
+      "cardTitle": "<strong>BizUply – Data Protection Office</strong>",
+      "cardEmail": "Email: <strong>support@bizuply.com</strong>",
+      "cardSupport": "General support: <strong>support@bizuply.com</strong>",
+      "cardHq": "Formation: Delaware, United States. Street address: not verified.",
+      "p2": "No data-protection officer was identified in the records supplied for this draft. Privacy requests go to support@bizuply.com. Appointment of a DPO, an EU representative, or a UK representative is not claimed."
+    },
+    "s19": {
+      "h": "19. Final Provision",
+      "p1": "By accessing or using the BizUply platform, you confirm that you have read, understood, and agreed to all the terms set out in this Privacy Policy. You further acknowledge that this policy constitutes the complete and exclusive statement of the understanding between you and BizUply regarding privacy, and supersedes any prior agreement or representation.",
+      "p2": "If any part of this policy is deemed unenforceable, the remaining provisions shall continue in full force and effect to the maximum extent permitted by law.",
+      "p3": "Use of BizUply is agreement to this policy, except a right that mandatory law does not allow the policy to waive."
+    }
+  },
+  "accessibilityPage": {
+    "seoTitle": "Accessibility Statement - Bizuply",
+    "seoDesc": "Bizuply accessibility statement: what was checked, what was not checked, and how to ask for help.",
+    "badge": "Accessibility Center",
+    "title": "Accessibility Statement",
+    "intro": "Bizuply is committed to creating an inclusive, accessible, and easy-to-use digital experience for everyone.",
+    "lastUpdatedChip": "Last updated: September 29, 2025",
+    "asideTitle": "Our commitment to accessibility",
+    "asideText": "We continuously improve accessibility at Bizuply and support users who need assistance.",
+    "chips": [
+      {
+        "title": "Checked",
+        "text": "Not a completed WCAG audit"
+      },
+      {
+        "title": "Standard",
+        "text": "No conformance finding"
+      },
+      {
+        "title": "Support",
+        "text": "Help available"
+      }
+    ],
+    "needHelp": "Need help?",
+    "commitmentTitle": "Our commitment",
+    "commitmentP1": "Bizuply wants the service to be usable by people with disabilities. Israeli accessibility law and regulations, the ADA, the European Accessibility Act, and the UK Equality Act 2010 apply only when their own conditions are met. This statement does not find that those conditions are met and does not claim compliance with them.",
+    "commitmentP2": "On 6 November 2026, Hebrew and English public pages were checked at desktop width and at 390 pixels. Language and direction matched the selection, and those pages did not show horizontal overflow. One contrast correction was made. A WCAG 2.1 Level AA conformance audit, a full screen-reader pass, and a review of every template and language were not done. This statement does not claim that conformance.",
+    "featuresTitle": "Accessibility features",
+    "featuresP": "The items below are design aims. They were not confirmed on every screen, template, or language.",
+    "featuresList": [
+      "Support for keyboard navigation.",
+      "Readable text with adjustable contrast and size.",
+      "Alternative text for images and icons.",
+      "Consistent structure and clear labels for forms and buttons."
+    ],
+    "limitationsTitle": "Limitations",
+    "limitationsP": "Although we strive to make all content fully accessible, some third-party integrations or certain media may not yet meet the full accessibility requirements. We are actively working on solutions and improvements.",
+    "feedbackTitle": "Feedback and contact",
+    "feedbackP": "If you encountered a barrier while using Bizuply or you need assistance, please contact us. We welcome feedback and use it to improve the platform.",
+    "emailLabel": "Email",
+    "lastUpdateTitle": "Last update",
+    "lastUpdateBefore": "This statement was last updated on ",
+    "lastUpdateDate": "September 29, 2025",
+    "lastUpdateAfter": ".",
+    "statementLabel": "Accessibility Statement"
+  },
+  "revisions": [
+    {
+      "id": "termsPage.s1.p7",
+      "original": "1.7. Users accessing BizUply from outside the United States acknowledge that the platform is operated from within the jurisdiction of the United States and agree that the collection, processing, and storage of their data are subject to the data protection laws and standards of the United States, including any applicable international framework.",
+      "proposed": "1.7. Users accessing BizUply from outside the United States acknowledge that the platform is operated from within the jurisdiction of the United States and agree that the collection, processing, and storage of their data are subject to the data protection laws and standards of the United States, including any applicable international framework. This acknowledgment does not waive a privacy or consumer right that the mandatory law of the user's country does not allow a contract to waive.",
+      "why": "Mandatory local rights are not waived.",
+      "source": "The sentence is the company's position. The addition stops it from being read as a waiver of every foreign privacy law.",
+      "protection": "kept-and-qualified"
+    },
+    {
+      "id": "termsPage.s5.p6",
+      "original": "5.6. The Company will respond to verified privacy-related requests within a reasonable time frame, not exceeding <strong>30 business days</strong>, in accordance with applicable law and subject to proper identity verification.",
+      "proposed": "5.6. Privacy requests may be sent to support@bizuply.com. The product does not contain a fixed response deadline, and a response within 30 business days is not an implemented process. Any deadline that applies is the one required by a law that actually covers that request.",
+      "why": "The 30-business-day deadline is not an implemented process.",
+      "source": "A promised deadline that the product does not perform would be misleading.",
+      "protection": "qualified"
+    },
+    {
+      "id": "termsPage.s5.p9",
+      "original": "5.9. The Company may use third-party analytics and tracking tools such as <strong>Google Analytics</strong> to collect anonymous usage data, and security tools such as reCAPTCHA to detect and prevent fraudulent activity. These services may set their own cookies in accordance with their privacy policies.",
+      "proposed": "5.9. In this version of the client, Google Analytics, Google Tag Manager, and reCAPTCHA are not loaded. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On the marketing homepage and on the other platform pages, the pixel is loaded only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, the pixel is not loaded. Choosing essential after the pixel has loaded reloads the page and clears the measurement cookies. Clearing the choice on the privacy page removes the cookie and reloads the page, so the choice is asked again. The choice is stored in a cookie on this browser for 180 days, so it remains when the visitor moves between platform pages and when the visitor returns. A checkout event is sent from registration only when the cookie equals all and the pixel function is already present. Cloudflare Turnstile is loaded only on a screen that has a site key configured. This is the behavior of this version. The public site does not behave this way until this version is deployed.",
+      "why": "Both shells now wait for the measurement cookie.",
+      "source": "marketing.html uses the same gate as index.html in this version.",
+      "protection": "aligned"
+    },
+    {
+      "id": "termsPage.s7.mandatoryLaw",
+      "original": "",
+      "proposed": "7.12. Sections 7.2, 7.3, 7.4, and 13 do not waive a refund or cancellation right that a mandatory consumer law gives a particular customer. For a consumer in the United States, the Restore Online Shoppers' Confidence Act, 15 U.S.C. § 8403, makes it unlawful to charge for an internet negative-option feature unless the material terms are clearly disclosed before billing information is taken, the consumer gives express informed consent, and a simple mechanism is provided to stop recurring charges. The FTC's 2024 expanded Negative Option Rule, including click-to-cancel, was vacated by the U.S. Court of Appeals for the Eighth Circuit on 8 July 2025, and the FTC restored the pre-2024 rule effective 12 February 2026. That expanded rule is not stated here as a law in force. For a consumer in California, Business and Professions Code § 17602 requires automatic-renewal disclosures, affirmative consent, and cancellation information when that statute applies. For a consumer in the European Union, Directive 2011/83/EU provides a 14-day withdrawal right for a distance contract unless an Article 16 exception applies, including the digital-content exception only when its consent and acknowledgment conditions are met. These laws are not described as applying to every customer. Where one applies, it controls over a contrary no-refund sentence. The no-refund wording above is kept as the company's position for customers to whom no such mandatory right applies.",
+      "why": "No-refund text is kept, and it yields where a mandatory consumer statute applies.",
+      "source": "15 U.S.C. § 8403; Eighth Circuit vacatur, 8 July 2025; FTC restoration effective 12 February 2026; Cal. Bus. & Prof. Code § 17602; Directive 2011/83/EU arts. 9 and 16. Checked 6 November 2026.",
+      "protection": "kept-and-qualified"
+    },
+    {
+      "id": "termsPage.s11.p1",
+      "original": "11.1. The Company is committed to ensuring that the BizUply platform is accessible and usable by everyone, including people with disabilities, in accordance with the <strong>Americans with Disabilities Act (ADA)</strong> and other relevant accessibility standards such as <strong>WCAG 2.1 Level AA</strong>.",
+      "proposed": "11.1. The Company wants the platform to be usable by people with disabilities. A conformance audit against WCAG 2.1 Level AA has not been completed, and this draft does not claim that conformance. On 6 November 2026, Hebrew and English public pages were checked at desktop width and at 390 pixels for language, direction, and horizontal overflow, and one contrast correction was made. A full screen-reader pass and a review of every template were not done. A person who needs help can write to support@bizuply.com. A coordinator's name and telephone number were not supplied. The ADA, the European Accessibility Act, the UK Equality Act 2010, and Israel's accessibility regulations and Standard 5568 may apply only when their own conditions are met. This section does not decide that any of them applies.",
+      "why": "WCAG 2.1 AA conformance was not established.",
+      "source": "The 6 November 2026 checks did not include a conformance audit.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "termsPage.s13.mandatoryScope",
+      "original": "",
+      "proposed": "13.6. The waivers in this section 13, including the class or collective action waiver, and the arbitration clause in section 14, are not represented as enforceable against every customer in every country. They operate only to the extent the law that mandatorily protects that customer allows them. A customer keeps any right that law does not permit this contract to remove. The waiver text above is kept as the company's position where that law allows it.",
+      "why": "Class waiver and arbitration stay, but are not claimed worldwide.",
+      "source": "A mandatory consumer law can refuse a class waiver or a foreign arbitration clause. No single statute makes them valid everywhere.",
+      "protection": "kept-and-qualified"
+    },
+    {
+      "id": "termsPage.s14.options",
+      "original": "The prior note kept both the Delaware sentence and the New York sentence.",
+      "proposed": "",
+      "why": "The conflict note is removed because sections 1.6 and 14 now state one Delaware clause.",
+      "source": "Section 1.6 and section 14 contradict each other. Formation in Delaware does not itself choose the contract law.",
+      "protection": "removed-after-choice"
+    },
+    {
+      "id": "termsPage.s15.list.1",
+      "original": "<strong>Business address:</strong> BizUply, New York, NY, USA",
+      "proposed": "<strong>Business address:</strong> A street address is not stated. None was verified. The company is Bizuply LLC, formed in Delaware, United States. The Delaware file number and registered office were not supplied.",
+      "why": "The New York street address was not verified.",
+      "source": "No address was found in the company records supplied for this draft.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "privacyPage.s2.p2",
+      "original": "It governs BizUply's processing of personal and non-personal information and explains our data-handling practices in accordance with United States federal law, New York State privacy regulations, and international standards such as the GDPR and CCPA for reference purposes only.",
+      "proposed": "This policy describes how personal and non-personal information is handled. It does not state that the company complies with United States federal privacy law, New York privacy law, the GDPR, or the CCPA. A named law applies only when its own conditions are met. No compliance audit was completed.",
+      "why": "The sentence still said practices are in accordance with named privacy laws.",
+      "source": "No compliance audit was completed.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s5.p2",
+      "original": "All processing is carried out under secure data-management protocols and complies with New York privacy standards and international best practices.",
+      "proposed": "The product review did not establish a written security protocol, New York privacy compliance, or compliance with an international privacy standard. No such compliance is claimed.",
+      "why": "The sentence still said processing complies with New York privacy standards.",
+      "source": "That compliance was not established.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s1.p2",
+      "original": "BizUply is a cloud-based SaaS platform headquartered in New York, USA, designed to provide business management, customer communication, and AI-powered automation tools for small and medium-sized businesses (“SMBs”).",
+      "proposed": "Bizuply LLC is a limited liability company formed in Delaware, United States. It provides business-management software, customer communication, and AI features when those features are used. The prior public text said the platform is headquartered in New York. That headquarters was not verified, and no street address is stated.",
+      "why": "A New York headquarters was not verified.",
+      "source": "The company stated Delaware formation. No street address was supplied.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "privacyPage.s3.p1",
+      "original": "<strong>“BizUply”</strong> – refers to the privately owned SaaS company registered and operated under the laws of the United States, with its seat in New York, USA.",
+      "proposed": "<strong>“BizUply”</strong> – Bizuply LLC, a limited liability company formed in Delaware, United States. Its Delaware file number, registered office, and any street address were not supplied and are not stated. The prior public text placed its seat in New York. That seat was not verified.",
+      "why": "A New York seat was not verified.",
+      "source": "Same identity facts as the terms.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "privacyPage.s9.p2",
+      "original": "We use industry-standard security measures, including encryption, firewalls, intrusion detection, two-factor authentication, and restricted access to protect all stored data. However, no online system is entirely immune to breaches. By using BizUply, you acknowledge and accept the inherent risks of transmitting data over the internet.",
+      "proposed": "The public site is served over HTTPS. Encryption at rest, firewalls, intrusion detection, and two-factor authentication were not found in the product review and are not claimed. No online system is free of risk. By using BizUply, you acknowledge the inherent risk of transmitting data over the internet.",
+      "why": "Two-factor authentication, firewalls, intrusion detection, and encryption at rest were not found.",
+      "source": "HTTPS is the control verified on the public site.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "privacyPage.s10.p2",
+      "original": "Requests must be submitted in writing to <strong>support@bizuply.com</strong>. BizUply will verify the requester's identity and respond within 30 business days, in accordance with United States law.",
+      "proposed": "Requests must be submitted in writing to <strong>support@bizuply.com</strong>. BizUply may verify the requester's identity. A response within 30 business days is not an implemented process. The deadline, if any, is the one required by a law that covers the request.",
+      "why": "The 30-business-day privacy response is not an implemented process.",
+      "source": "Same reason as terms section 5.6.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s13.p1",
+      "original": "All personal and business data collected by BizUply is processed and stored solely in the United States of America, primarily on secure servers located in New York and other United States jurisdictions that meet federal data protection standards.",
+      "proposed": "The product repository does not record a storage region. This draft does not state that personal or business data is stored only in the United States or in New York. MongoDB, Railway, and the other providers named in the service may process information where they operate.",
+      "why": "Storage only in New York or only in the United States is not in the repository.",
+      "source": "MongoDB and Railway regions are not recorded in the product repository.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "privacyPage.s13.p3",
+      "original": "By using BizUply, you consent to the processing of your personal data within the United States and acknowledge that your information will be subject solely to the laws of the United States and the State of New York.",
+      "proposed": "Using BizUply does not mean that a user's information is subject only to the laws of the United States or of New York. A mandatory privacy law that covers that user still applies.",
+      "why": "Information is not subject only to New York or United States law.",
+      "source": "A mandatory privacy law can still apply.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s18.cardHq",
+      "original": "Headquarters: New York, NY, United States",
+      "proposed": "Formation: Delaware, United States. Street address: not verified.",
+      "why": "The headquarters line named an unverified New York address.",
+      "source": "Delaware formation is the identity that was stated. No street address is published.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "accessibilityPage.chips.0.title",
+      "original": "WCAG",
+      "proposed": "Checked",
+      "why": "The WCAG badge claimed a standard that was not audited.",
+      "source": "6 November 2026 checks were limited.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "accessibilityPage.chips.0.text",
+      "original": "Level AA 2.1",
+      "proposed": "Not a completed WCAG audit",
+      "why": "Level AA 2.1 was displayed as if conformance had been reached.",
+      "source": "No conformance audit was completed.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "accessibilityPage.commitmentP2",
+      "original": "We strive to meet the Web Content Accessibility Guidelines (WCAG) 2.1 at Level AA, to provide an inclusive and comfortable digital experience for all visitors.",
+      "proposed": "On 6 November 2026, Hebrew and English public pages were checked at desktop width and at 390 pixels. Language and direction matched the selection, and those pages did not show horizontal overflow. One contrast correction was made. A WCAG 2.1 Level AA conformance audit, a full screen-reader pass, and a review of every template and language were not done. This statement does not claim that conformance.",
+      "why": "The sentence said the company strives to meet WCAG 2.1 AA.",
+      "source": "The replacement states the checks and their limits.",
+      "protection": "factual-correction"
+    },
+    {
+      "id": "privacyPage.s17.p3",
+      "original": "Users agree to submit to the personal jurisdiction of these courts and waive any objection to venue or forum.",
+      "proposed": "Sections 1.6 and 14 of the terms and this section state the same Delaware law and the same Delaware courts. The thirty-day negotiation in the terms does not delay urgent relief or a right that mandatory law does not allow the contract to limit.",
+      "why": "The old note said no forum had been chosen.",
+      "source": "The Delaware clause is now the clause.",
+      "protection": "aligned"
+    },
+    {
+      "id": "termsPage.s5.p1",
+      "original": "5.1. The Company respects the privacy of all users and is committed to protecting their personal information in accordance with applicable data protection laws, including the <strong>General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA)</strong>, and the <strong>California Privacy Rights Act (CPRA)</strong>, where applicable. BizUply implements reasonable administrative, technical, and organizational measures to protect user data.",
+      "proposed": "5.1. The Company protects personal information with the administrative, technical, and organizational measures the product actually uses. The GDPR, the CCPA, and the CPRA are named only as laws that may apply when their own conditions are met, including who the customer is and where that customer is. This section does not state that those laws apply to every user, and it does not state that the Company has been found to comply with them.",
+      "why": "GDPR, CCPA, and CPRA were named as the standard the company follows.",
+      "source": "Those laws apply only when their own conditions are met. No compliance finding was made.",
+      "protection": "qualified"
+    },
+    {
+      "id": "termsPage.s5.rightsTitle",
+      "original": "User Rights (GDPR / CCPA / CPRA)",
+      "proposed": "User rights where a law that covers that user grants them",
+      "why": "The heading presented GDPR, CCPA, and CPRA rights as the rights of every user.",
+      "source": "A listed right exists only when a law that covers that user grants it.",
+      "protection": "qualified"
+    },
+    {
+      "id": "termsPage.s5.p7",
+      "original": "5.7. The Site and the App use cookies, web beacons, and similar technologies to ensure basic functionality, analyze usage trends, strengthen security, and improve the user experience.",
+      "proposed": "5.7. The Site and the App use cookies and similar technologies for basic functionality, security, and the measurement described in section 5.9. Section 5.9 states which measurement tool loads and on which page.",
+      "why": "The sentence said the site analyzes usage without saying which tool loads.",
+      "source": "Section 5.9 is the measurement statement.",
+      "protection": "qualified"
+    },
+    {
+      "id": "privacyPage.s8.p1",
+      "original": "BizUply uses cookies, pixels, and tracking technologies to enhance the user experience, improve system functionality, and analyze usage data. These tools help us understand performance, measure traffic, and ensure the security of the Platform.",
+      "proposed": "In this version, the marketing homepage and the other platform pages load the Meta Pixel only when the cookie bizuply_tracking equals all. A missing cookie or the value essential does not load it. The choice stays in that cookie for 180 days across platform pages and return visits. Clearing it on the privacy page asks for the choice again after reload. Published customer sites do not load this pixel. This describes this version, not the public site before deployment.",
+      "why": "The privacy text matches the gated pixel.",
+      "source": "The homepage no longer loads the pixel before the choice.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s8.list.4",
+      "original": "Marketing cookies – used only with consent, for internal campaign analysis",
+      "proposed": "Marketing measurement: the Meta Pixel loads on the marketing homepage and on the other platform pages only when bizuply_tracking equals all.",
+      "why": "Marketing measurement is described once for every platform page.",
+      "source": "The homepage and the other pages use the same cookie.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s10.p1",
+      "original": "Under applicable privacy regulations, including United States federal law and New York law, users have the following rights:",
+      "proposed": "Where a privacy law that covers the person grants one of the following rights, the person may send a request to support@bizuply.com. This list is not a statement that the GDPR, the CCPA, the CPRA, or New York law applies to every user.",
+      "why": "The sentence granted the rights list under New York law.",
+      "source": "The list is not a finding that any one privacy law covers every user.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.seoDesc",
+      "original": "Bizuply's accessibility statement — commitment to digital accessibility, WCAG standards, and support options.",
+      "proposed": "Bizuply accessibility statement: what was checked, what was not checked, and how to ask for help.",
+      "why": "The description tied the statement to WCAG standards.",
+      "source": "No WCAG conformance audit was completed.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.chips.1.text",
+      "original": "In line with accessibility requirements",
+      "proposed": "No conformance finding",
+      "why": "The chip said the service is in line with accessibility requirements.",
+      "source": "No conformance finding was made.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.commitmentP1",
+      "original": "Bizuply is committed to ensuring digital accessibility for people with disabilities. We work continuously to improve the user experience for everyone and to implement relevant accessibility standards, in accordance with the principles of the Equal Rights for Persons with Disabilities Law and the accessibility regulations in Israel, and in line with the ADA principles as well.",
+      "proposed": "Bizuply wants the service to be usable by people with disabilities. Israeli accessibility law and regulations, the ADA, the European Accessibility Act, and the UK Equality Act 2010 apply only when their own conditions are met. This statement does not find that those conditions are met and does not claim compliance with them.",
+      "why": "The paragraph said the work is in accordance with Israeli accessibility law and the ADA.",
+      "source": "Those laws apply only when their own conditions are met.",
+      "protection": "qualified"
+    },
+    {
+      "id": "accessibilityPage.featuresP",
+      "original": "Bizuply is designed according to accessibility principles, including a clear structure, readable content, and support for common assistive technologies.",
+      "proposed": "The items below are design aims. They were not confirmed on every screen, template, or language.",
+      "why": "The sentence said the service is designed according to accessibility principles as a completed fact.",
+      "source": "The listed items were not confirmed on every screen.",
+      "protection": "qualified"
+    },
+    {
+      "id": "pendingGoverningLaw.text",
+      "original": "",
+      "proposed": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied. 14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law. 14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. 14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts. 14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. 14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause.",
+      "why": "One Delaware law and Delaware courts clause is prepared. Sections 1.6 and 14 are not replaced until this text is approved.",
+      "source": "The company stated formation in Delaware. The current sections 1.6 and 14 select different laws.",
+      "protection": "awaiting-approval"
+    },
+    {
+      "id": "termsPage.s1.p6",
+      "original": "1.6. BizUply operates under the laws of the United States. Unless otherwise stated, the law governing all matters relating to the platform, its use, and any dispute arising therefrom shall be the <strong>laws of the State of Delaware</strong>, United States, without regard to its conflict-of-laws principles.",
+      "proposed": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied.",
+      "why": "Sections 1.6 and 14 now use one Delaware clause.",
+      "source": "The company is formed in Delaware. Mandatory customer rights remain.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p1",
+      "original": "14.1. These terms and any dispute or claim arising out of or related to them shall be governed exclusively by the laws of the <strong>State of New York, USA</strong>, without regard to conflict-of-laws principles.",
+      "proposed": "14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law.",
+      "why": "New York law is no longer the governing law.",
+      "source": "The approved Delaware direction replaces the conflicting sentence.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p2",
+      "original": "14.2. Any dispute, controversy, or claim between the User and the Company shall first be attempted to be resolved through <strong>good-faith negotiation</strong>. If no resolution is reached within thirty (30) days, the dispute shall be submitted to <strong>binding arbitration</strong> under the rules of the <strong>American Arbitration Association (AAA)</strong>, conducted in English, in New York City, USA.",
+      "proposed": "14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. That period does not delay a request for urgent injunctive or equitable relief, and it does not delay or waive a right that the mandatory law of the customer's country does not allow this contract to limit.",
+      "why": "Thirty days of negotiation does not block urgent relief or a non-waivable right.",
+      "source": "The negotiation step stays. It cannot delay urgent relief.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p3",
+      "original": "14.3. The arbitration decision shall be final and binding, and judgment on the award rendered by the arbitrator may be entered in any court of competent jurisdiction.",
+      "proposed": "14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts.",
+      "why": "The forum is the Delaware courts, with a mandatory-law exception.",
+      "source": "New York City arbitration is not part of the clause.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p4",
+      "original": "14.4. Notwithstanding the foregoing, the Company reserves the right to seek injunctive or equitable relief in a court of competent jurisdiction to protect its intellectual property or confidential information.",
+      "proposed": "14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. Section 14.2 means this request need not wait until the negotiation period ends.",
+      "why": "The company can still seek an injunction, without waiting thirty days.",
+      "source": "The original injunction protection stays, and its court is Delaware.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "termsPage.s14.p5",
+      "original": "14.5. The User expressly waives any objection to venue or jurisdiction and consents to the exclusive jurisdiction of the state and federal courts located in <strong>New York County, New York, USA</strong>.",
+      "proposed": "14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause.",
+      "why": "The New York court selection is removed from the operative clause.",
+      "source": "One forum remains.",
+      "protection": "delaware-clause"
+    },
+    {
+      "id": "privacyPage.s11.p4",
+      "original": "No oral or written communication shall override this provision. This provision is final and binding under the laws of the State of New York.",
+      "proposed": "No oral or written communication overrides the payment terms above, except a mandatory consumer right that this contract cannot waive. The governing law and courts are the Delaware clause in the terms, sections 1.6 and 14. This sentence does not select New York law.",
+      "why": "The payment waiver no longer says it is binding under New York law.",
+      "source": "The no-refund sentences above it stay, subject to a mandatory consumer right.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s13.p2",
+      "original": "BizUply does not knowingly transfer or store user data outside the United States. In the rare event that data is processed through third-party services located abroad, such transfer will be carried out only where necessary to operate the Platform, and always under contractual clauses ensuring equivalent security, confidentiality, and lawful handling.",
+      "proposed": "The repository does not show that storage or transfer is limited to the United States. A provider used by the service may process information where it operates. No standard contractual clause or equivalent-security agreement is claimed.",
+      "why": "The policy no longer says storage is limited to the United States.",
+      "source": "The repository does not record that limit or a transfer agreement.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s15.p1",
+      "original": "BizUply operates under the laws of the United States and the State of New York. The company will cooperate with legal authorities, regulators, and compliance bodies as required by applicable law.",
+      "proposed": "Bizuply LLC is formed in Delaware, United States. The company provides records when a law that applies to the request requires it. This sentence does not select New York law and does not state that a compliance program was audited.",
+      "why": "The policy no longer says the company operates under New York law.",
+      "source": "Delaware formation is the stated identity.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s16.p5",
+      "original": "This waiver applies worldwide and in perpetuity, and is binding upon the user, their affiliates, successors, and representatives.",
+      "proposed": "The waiver above is the company's position only to the extent the mandatory law that covers the user allows it. It is not enforceable in every country, and it does not remove a right that law does not allow this contract to remove. It does not select New York law. The terms, sections 1.6 and 14, state the governing law and courts.",
+      "why": "A worldwide perpetual waiver contradicted the terms.",
+      "source": "The waiver stays only where mandatory law allows it.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s17.p1",
+      "original": "This Privacy Policy, together with any dispute arising from it, shall be governed exclusively by the laws of the State of New York, United States, without regard to conflict-of-laws principles.",
+      "proposed": "This Privacy Policy and a dispute arising from it are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This does not displace a privacy right that the mandatory law of the person's country does not allow this policy to waive.",
+      "why": "The privacy policy used New York law.",
+      "source": "It now uses the same Delaware law as the terms.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s17.p2",
+      "original": "Any dispute, claim, or proceeding shall be brought exclusively before the competent courts of the City of New York, New York, USA.",
+      "proposed": "The state courts and federal courts in Delaware are the forum, except where a mandatory law gives the person a court that this policy cannot take away. This policy does not select New York law or a New York court.",
+      "why": "The privacy policy used New York courts.",
+      "source": "It now uses the Delaware courts, with the same mandatory exception.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s18.p2",
+      "original": "The Data Protection Officer (DPO) appointed by BizUply is responsible for monitoring compliance, responding to user inquiries, and ensuring that all internal data-handling practices meet industry and legal standards.",
+      "proposed": "No data-protection officer was identified in the records supplied for this draft. Privacy requests go to support@bizuply.com. Appointment of a DPO, an EU representative, or a UK representative is not claimed.",
+      "why": "A data-protection officer was not identified.",
+      "source": "Requests go to support@bizuply.com.",
+      "protection": "aligned"
+    },
+    {
+      "id": "privacyPage.s19.p3",
+      "original": "Use of BizUply signifies express and irrevocable consent to all the provisions contained in this document.",
+      "proposed": "Use of BizUply is agreement to this policy, except a right that mandatory law does not allow the policy to waive.",
+      "why": "Irrevocable consent to every sentence could waive a mandatory right.",
+      "source": "Agreement stays, and a non-waivable right stays.",
+      "protection": "aligned"
+    }
+  ],
+  "termsLedger": [
+    {
+      "section": "s1",
+      "heading": "1. General",
+      "present": true,
+      "treatment": "Delaware governing law substituted; the rest of the section is unchanged"
+    },
+    {
+      "section": "s2",
+      "heading": "2. Definitions",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s3",
+      "heading": "3. Services Offered",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s4",
+      "heading": "4. Registration & Use of the System",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s5",
+      "heading": "5. Privacy & Data Protection",
+      "present": true,
+      "treatment": "original text retained, with the recorded change in this section"
+    },
+    {
+      "section": "s6",
+      "heading": "6. User-Generated Content",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s7",
+      "heading": "7. Payments, Pricing & Refund Policy",
+      "present": true,
+      "treatment": "original text retained, with the recorded change in this section"
+    },
+    {
+      "section": "s8",
+      "heading": "8. Limitation of Liability",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s9",
+      "heading": "9. Force Majeure",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s10",
+      "heading": "10. Intellectual Property",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s11",
+      "heading": "11. Accessibility",
+      "present": true,
+      "treatment": "original text retained, with the recorded change in this section"
+    },
+    {
+      "section": "s12",
+      "heading": "12. Changes, Termination & Suspension",
+      "present": true,
+      "treatment": "original text retained in full"
+    },
+    {
+      "section": "s13",
+      "heading": "13. Waiver of Claims, Refunds & Limitation of Actions",
+      "present": true,
+      "treatment": "original text retained, with the recorded change in this section"
+    },
+    {
+      "section": "s14",
+      "heading": "14. Governing Law & Dispute Resolution",
+      "present": true,
+      "treatment": "Delaware courts substituted; negotiation and injunctions kept; New York forum removed"
+    },
+    {
+      "section": "s15",
+      "heading": "15. Contact Details",
+      "present": true,
+      "treatment": "original text retained, with the recorded change in this section"
+    }
+  ],
+  "pendingGoverningLaw": {
+    "status": "substituted-into-sections-1.6-and-14",
+    "text": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied. 14.1. The same Delaware law governs these terms and the privacy policy. No sentence in section 14 selects New York law. 14.2. The parties will first try to resolve a dispute by good-faith negotiation for thirty (30) days. That period does not delay a request for urgent injunctive or equitable relief, and it does not delay or waive a right that the mandatory law of the customer's country does not allow this contract to limit. 14.3. After that period, the state courts and federal courts located in Delaware are the exclusive forum, except where a mandatory law of the customer's country gives that customer a court that this contract cannot take away. For a dispute that such a law does not reserve to another court, the customer consents to personal jurisdiction in those Delaware courts. 14.4. The Company may seek injunctive or equitable relief in those Delaware courts to protect its intellectual property or confidential information. Section 14.2 means this request need not wait until the negotiation period ends. 14.5. The prior selection of New York law, American Arbitration Association arbitration in New York City, and the courts of New York County is not part of this clause."
+  }
+}

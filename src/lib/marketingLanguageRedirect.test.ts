@@ -14,9 +14,14 @@ describe("marketing language redirect", () => {
     expect(marketingLanguageRedirectPath("/he/crm", { acceptLanguage: "en-US" })).toBeNull();
   });
 
-  it("keeps a saved English choice in Israel", () => {
+  it("keeps a saved English choice on the unprefixed homepage", () => {
     expect(marketingLanguageRedirectPath("/", { cookie: "en", acceptLanguage: "he-IL" })).toBeNull();
-    expect(marketingLanguageRedirectPath("/he", { cookie: "en", acceptLanguage: "he-IL" })).toBe("/");
+  });
+
+  it("keeps an explicit Hebrew or Arabic address even when another language was saved", () => {
+    expect(marketingLanguageRedirectPath("/he", { cookie: "en", acceptLanguage: "he-IL" })).toBeNull();
+    expect(marketingLanguageRedirectPath("/he", { cookie: "ar" })).toBeNull();
+    expect(marketingLanguageRedirectPath("/ar/pricing", { cookie: "he" })).toBeNull();
   });
 
   it("returns a saved Hebrew visitor to the Hebrew URL", () => {

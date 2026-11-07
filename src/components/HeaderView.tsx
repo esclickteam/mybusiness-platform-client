@@ -9,6 +9,7 @@ import { getTextDirection } from "../i18n/localeUtils";
 import { normalizeMarketingLocale } from "../lib/localePathCore.mjs";
 import { marketingNav } from "../lib/marketingNav.mjs";
 import { businessNoAccessPath } from "../utils/whatsappApiPortal";
+import { PrivacyRequestLink } from "./privacy/PrivacyFacts";
 import "../styles/SiteHeader.css";
 
 type HeaderUser = {
@@ -178,6 +179,7 @@ export default function HeaderView({
                   >
                     <FaUser size={15} />
                   </Link>
+                  <PrivacyRequestLink className="site-header__signin" />
                   <button
                     type="button"
                     onClick={handleLogout}

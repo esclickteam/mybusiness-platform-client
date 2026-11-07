@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 function Terms() {
@@ -73,6 +74,7 @@ function Terms() {
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("termsPage.intro")}
         </p>
+        <LegalDocumentLinks current="/terms" />
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("termsPage.lastUpdatedChip")}
@@ -110,7 +112,7 @@ function Terms() {
           </nav>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-            <p className="text-sm font-black text-amber-300">
+            <p className="text-sm font-black text-slate-900">
               {t("termsPage.contactLabel")}
             </p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
@@ -309,6 +311,7 @@ function Terms() {
             </p>
 
             <p className={pBase}>{t("termsPage.s7.p11")}</p>
+            <p className={pBase}>{t("termsPage.s7.mandatoryLaw")}</p>
           </section>
 
           <section id="section-8" className={sectionBase}>
@@ -406,6 +409,7 @@ function Terms() {
             <p className={pBase}>
               <Trans i18nKey="termsPage.s13.p5" components={strongComponents} />
             </p>
+            <p className={pBase}>{t("termsPage.s13.mandatoryScope")}</p>
           </section>
 
           <section id="section-14" className={sectionBase}>
@@ -450,7 +454,7 @@ function Terms() {
             <p className={pBase}>{t("termsPage.s15.p2")}</p>
 
             <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-900">
                 {t("termsPage.s15.lastUpdatedLabel")}
               </p>
               <p className="mt-2 text-xl font-black">

@@ -1,0 +1,70 @@
+{
+  "docs": {
+    "partner": {
+      "title": "Condiciones del socio internacional",
+      "paragraphs": [
+        "Estas son las condiciones públicas del socio internacional de Bizuply LLC, constituida en Delaware, Estados Unidos. No sustituyen un acuerdo firmado entre Bizuply y ese socio. Si el acuerdo firmado fija otro precio, comisión, territorio o plazo, manda el acuerdo firmado. Se aplican la ley de Delaware, la ley federal aplicable de Estados Unidos y los tribunales de Delaware de las condiciones del servicio, y no eliminan un derecho imperativo.",
+        "Cuando esa es la relación real, el socio es un negocio independiente, no un empleado y no un agente que pueda obligar a Bizuply. El socio responde de sus propios impuestos. Estas condiciones no prometen ingresos, ganancias ni un número de clientes.",
+        "El plan internacional del catálogo del producto cuesta 499 dólares de Estados Unidos al mes o 5,000 dólares de Estados Unidos al año. El cobro con tarjeta en vivo de esa fila del catálogo está desactivado. Un registro manual de pago exige un importe, una fecha de pago, una referencia y un período de facturación. Una referencia no prueba por sí sola que el dinero se haya recibido. Abrir una página de pago no se describe como el inicio de una licencia.",
+        "En ese plan internacional, una venta única elegible se comisiona al 10 por ciento. La comisión recurrente sobre totales de suscripción elegibles es del 30 por ciento para 1 a 19 clientes elegibles, del 35 por ciento para 20 a 39 y del 40 por ciento para 40 o más. El código marca estos cálculos como no cobrados en vivo. Los planes de socio antiguos no se reprecian aquí. Los porcentajes 10, 30, 35 y 40 se aplican a ventas a clientes elegibles. Un registro de referido distinto puede pagar por presentar a otro socio: el servicio de referidos guarda un importe de recompensa de 500, y el libro de comisiones registra esa fila en dólares de Estados Unidos. En este plan internacional esa fila se recalcula con el método de porcentaje del acuerdo. Los planes antiguos de margen conservan la parte ya puesta en esa fila de referido. Esta página no cambia ninguno de los dos caminos.",
+        "Un reembolso, un pago fallido o un contracargo reducen el importe sobre el que se calcula la comisión. El fraude y la autocompra permiten retener la comisión relacionada y suspender la licencia. No se indica una sola fecha de pago, un umbral de retiro, una comisión de transferencia ni un tipo de cambio porque el catálogo no contiene una cifra única.",
+        "El socio puede usar el nombre y el logotipo de Bizuply solo como Bizuply lo permita, y no puede presentarse como Bizuply. El socio no puede prometer ingresos, enviar marketing no solicitado ni usar contactos sin una base legal. Bizuply puede retirar el permiso de uso de la marca.",
+        "Los porcentajes de venta a clientes no deciden por sí solos si se aplica una ley de oportunidad de negocio, franquicia o marketing multinivel donde se ofrece el programa. La recompensa de referido anterior es un registro distinto. Estas condiciones no hacen esa clasificación."
+      ]
+    },
+    "dpa": {
+      "title": "Condiciones de tratamiento de datos",
+      "paragraphs": [
+        "Cuando Bizuply guarda registros de cuenta, facturación y soporte para su propio servicio, Bizuply decide los fines de esa información. Cuando un cliente empresarial guarda en el CRM u otra herramienta SaaS información de sus propios clientes, Bizuply trata esa información para el cliente.",
+        "Los fines son las funciones contratadas que el cliente usa, incluidos CRM, mensajes, agenda y funciones de IA cuando se usan. La información es la que el cliente introduce y los registros técnicos necesarios para el servicio. Esta página no enumera cada campo.",
+        "El acceso sigue las cuentas que ofrece el producto. El sitio público usa HTTPS. No se afirman el cifrado en reposo, un plazo fijo de supresión ni un plazo fijo de aviso de incidente porque no se verificaron.",
+        "Los proveedores están en la página de subencargados. No se encontraron regiones de almacenamiento en el repositorio. No se afirman cláusulas contractuales tipo, un addendum de transferencia del Reino Unido, un representante en la UE o el Reino Unido, ni un delegado de protección de datos.",
+        "Una solicitud de privacidad puede registrarse en la página de privacidad o enviarse a support@bizuply.com. El formulario puede confirmar un código de correo. No confirma la identidad, no divulga información y no borra registros. Una solicitud sobre la base de un cliente empresarial se envía a ese cliente. No se verificaron la exportación y la supresión de autoservicio de cada registro.",
+        "Al terminar la suscripción, el acceso termina según las condiciones del servicio. Esta página no promete que cada registro se suprima o se devuelva en un número fijo de días.",
+        "Cuando un cliente empresarial conecta Meta, el tratamiento para ese cliente cubre los leads guardados en el registro del cliente, las entradas del CRM, los identificadores de campaña y anuncio que devuelve la conexión, la comunicación empresarial de WhatsApp cuando esa conexión está activa, y las automatizaciones que usan esos registros. El cliente decide las finalidades de esa información. Bizuply la trata para el servicio conectado, puede usar los subencargados de la página de subencargados y atiende una solicitud de privacidad como describe la página de privacidad. La supresión o la devolución siguen el acuerdo y la ley aplicable. No se verificó una supresión automática."
+      ]
+    },
+    "subprocessors": {
+      "title": "Subencargados",
+      "paragraphs": [
+        "Esta lista nombra proveedores encontrados en el producto. No dice que se haya firmado un contrato de tratamiento con cada uno, ni indica un país de almacenamiento.",
+        "Lemon Squeezy gestiona el pago de las suscripciones de la plataforma. MongoDB guarda la base de datos de la aplicación. Redis se usa para caché y colas. Railway aloja la aplicación. Vercel aloja el sitio. Cloudinary guarda medios. Resend envía correo.",
+        "OpenAI se usa para funciones de IA cuando hay una clave configurada. Esta lista no dice si ese proveedor entrena con el contenido. Meta proporciona WhatsApp Business cuando un cliente lo conecta, las conexiones de formularios de leads y de anuncios que el producto guarda, y el píxel publicitario después del consentimiento de medición. Las listas de pertenencia a públicos personalizados y un canal de Conversions API no se identificaron como productos almacenados. Twilio se usa para teléfono cuando está activado.",
+        "Stripe se usa para algunos pagos de tienda del comerciante y no es el procesador de la suscripción de la plataforma. PayPal se usa para algunas confirmaciones de pedidos de tienda. Google Fonts sirve fuentes en las páginas de la plataforma. Cloudflare Turnstile se carga solo cuando hay una clave de sitio.",
+        "Las condiciones públicas de tratamiento se leyeron el 7 de noviembre de 2026. Leer una página no es una aceptación firmada ni una región de almacenamiento. El registro de esta página es esa lectura. El DPA de MongoDB está incorporado a su acuerdo de nube. El DPA de Railway se firma mediante una solicitud aparte, y no se encontró una copia firmada. La adenda de Vercel dice que se aplica a los planes Enterprise y Pro, y el plan de esta cuenta no se leyó. El servidor de Redis no está nombrado, así que la adenda de Redis Cloud no se trata aquí como el contrato. Las condiciones de comprador de Lemon Squeezy describen un comerciante registrado, y no se encontró el acuerdo firmado de esta tienda, así que ese papel no se adopta aquí."
+      ]
+    },
+    "transfers": {
+      "title": "Transferencias internacionales",
+      "paragraphs": [
+        "El repositorio del producto no registra el país donde MongoDB, Redis o Railway guardan la información. Esta página no dice que la información permanezca solo en Estados Unidos.",
+        "Un proveedor de la lista puede tratar la información donde opera. No se encontraron en el repositorio, y no se afirman, cláusulas contractuales tipo, un addendum de transferencia del Reino Unido, una evaluación de transferencia, un representante en la UE o el Reino Unido, ni un delegado de protección de datos.",
+        "Sigue aplicando una ley de privacidad imperativa que cubra a una persona. La ley de Delaware de las condiciones del servicio no elimina esa ley."
+      ]
+    },
+    "use": {
+      "title": "Uso aceptable",
+      "paragraphs": [
+        "Las reglas de cuentas, credenciales, contenido prohibido, suspensión y terminación son las secciones 4, 6 y 12 de las condiciones del servicio. Esta página no retira esas protecciones ni añade una regla contradictoria.",
+        "Un cliente o socio no puede usar el servicio para enviar marketing no solicitado, incumplir la ley o enviar contenido sobre el que no tenga derecho. El cliente responde de sus listas de contactos y de los mensajes que envía.",
+        "Los mensajes de servicio sobre una cuenta o una suscripción son distintos de los mensajes de marketing. La medición de marketing se carga solo después de que el visitante la elige, como describe la política de privacidad."
+      ]
+    },
+    "ai": {
+      "title": "Funciones de IA",
+      "paragraphs": [
+        "Las funciones de IA funcionan cuando están configuradas. Cuando OpenAI es el proveedor configurado, el contenido necesario para la función se envía a ese proveedor. Esta página no dice que el proveedor entrene con ese contenido, ni dice que no entrene.",
+        "El cliente responde de tener derecho a enviar el contenido. El resultado de la IA no es asesoramiento jurídico, financiero ni fiscal. La limitación de responsabilidad de las condiciones del servicio sigue vigente."
+      ]
+    },
+    "subscriptions": {
+      "title": "Suscripciones, cancelación y reembolsos",
+      "paragraphs": [
+        "El catálogo de facturación de la plataforma fija estos planes en dólares de Estados Unidos: Business Monthly 99 al mes, Business Yearly 990 al año, CRM Only 49 al mes y Website Only 129 al año. Algunos nombres internos de SKU todavía contienen las letras ILS. Esos nombres no son un segundo precio.",
+        "Lemon Squeezy es el pago de estas suscripciones de la plataforma. El aviso anterior al pago dice que la suscripción se renueva hasta que se cancele en facturación, que la cancelación detiene el siguiente cargo y que el acceso dura hasta el fin del período pagado. Los reembolsos siguen las condiciones del servicio, incluido el límite de que manda una ley imperativa de consumo cuando se aplica.",
+        "No se verificó en un acuerdo firmado si Lemon Squeezy es el comerciante registrado y el recaudador de impuestos de esta tienda. Los números de cuenta bancaria para una transferencia no están en el catálogo. Los planes anuales anteriores usan un intervalo de facturación anual. Esta página no dice que cada licencia distinta se renueve sin un cargo nuevo.",
+        "El plan de socio internacional está en la página de condiciones del socio. Su fila del catálogo no activa el cobro con tarjeta en vivo."
+      ]
+    }
+  }
+}
