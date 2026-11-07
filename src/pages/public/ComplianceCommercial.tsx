@@ -5,7 +5,7 @@ type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
 const TEXT: Record<Locale, Record<string, string>> = {
   he: {
     plans: "שלוש חבילות",
-    priceNote: "המחירים מוצעים וממתינים לאישור. הסליקה כבויה ולא מתבצע חיוב.",
+    priceNote: "המחיר מוצג בשקלים. Lemon Squeezy מחייב בדולר לפי שער ההמרה, לא בשקלים. הסליקה כבויה ולא מתבצע חיוב.",
     free: "חינם",
     report: "דוח מלא",
     monitor: "ניטור חודשי",
@@ -45,11 +45,11 @@ const TEXT: Record<Locale, Record<string, string>> = {
     last: "היום האחרון בחודש",
     email: "דוא״ל להתראות תפעוליות",
     inactive: "אין מנוי פעיל. ניטור לא ירוץ ולא יישלח דיוור שיווקי.",
-    capacity: "בתקרה הנוכחית אפשר לכל היותר 20 סריקות ביום. מועד חודשי אינו מובטח אם המכסה נגמרה.",
+    capacity: "היום שנבחר הוא העדפה. הביצוע הוא חלון במהלך החודש, בכפוף למכסה, ולא הבטחה לתאריך או לשעה.",
   },
   en: {
     plans: "Three plans",
-    priceNote: "Prices are proposed and wait for approval. Checkout is off and nothing is charged.",
+    priceNote: "The price is shown in shekels. Lemon Squeezy charges the USD equivalent, not shekels. Checkout is off and nothing is charged.",
     free: "Free",
     report: "Full report",
     monitor: "Monthly monitoring",
@@ -93,10 +93,10 @@ const TEXT: Record<Locale, Record<string, string>> = {
     last: "Last day of the month",
     email: "Email for operational alerts",
     inactive: "No active subscription. Monitoring will not run and no marketing mail is sent.",
-    capacity: "The current cap allows at most 20 scans a day. A monthly date is not guaranteed once the cap is spent.",
+    capacity: "The chosen day is a preference. The scan runs in a window during the month, subject to capacity, and is not promised for a date or time.",
   },
   es: {
-    plans: "Tres planes", priceNote: "Los precios están propuestos y esperan aprobación. El cobro está apagado.",
+    plans: "Tres planes", priceNote: "El precio se muestra en séqueles. Lemon Squeezy cobra el equivalente en USD, no en séqueles. El cobro está apagado.",
     free: "Gratis", report: "Informe completo", monitor: "Seguimiento mensual", once: "por análisis", month: "al mes",
     freeLine: "Puntuación de lo comprobado, documentos ausentes y categorías. Sin citas, artículos ni PDF.",
     reportLine: "El informe guardado, con fuente, cita, gravedad y recomendación. Sin aprobación legal.",
@@ -111,10 +111,10 @@ const TEXT: Record<Locale, Record<string, string>> = {
     statement_seen: "Hay una declaración. Una declaración no es conformidad.", needs_human: "La fuente está en el catálogo. La aplicación requiere una persona.",
     not_indicated: "No hubo una señal para esta comprobación.", dashboard: "Seguimiento", day: "Día del mes", last: "Último día del mes",
     email: "Correo para avisos operativos", inactive: "No hay una suscripción activa. No hay seguimiento ni correo comercial.",
-    capacity: "El tope actual permite como máximo 20 análisis al día. Una fecha mensual no está garantizada si el cupo se agota.",
+    capacity: "El día elegido es una preferencia. La ejecución es una ventana durante el mes, sujeta a la capacidad, y no promete una fecha ni una hora.",
   },
   "pt-BR": {
-    plans: "Três planos", priceNote: "Os preços são propostas e aguardam aprovação. A cobrança está desligada.",
+    plans: "Três planos", priceNote: "O preço aparece em shekels. A Lemon Squeezy cobra o equivalente em USD, não em shekels. A cobrança está desligada.",
     free: "Grátis", report: "Relatório completo", monitor: "Monitoramento mensal", once: "por análise", month: "por mês",
     freeLine: "Pontuação do que foi verificado, documentos ausentes e categorias. Sem citações, artigos ou PDF.",
     reportLine: "O relatório salvo, com fonte, citação, gravidade e recomendação. Sem aprovação legal.",
@@ -129,10 +129,10 @@ const TEXT: Record<Locale, Record<string, string>> = {
     statement_seen: "Havia uma declaração. Declaração não é conformidade.", needs_human: "A fonte está no catálogo. A aplicação exige uma pessoa.",
     not_indicated: "Nenhum sinal acionou esta verificação.", dashboard: "Monitoramento", day: "Dia do mês", last: "Último dia do mês",
     email: "E-mail para alertas operacionais", inactive: "Não há assinatura ativa. Não há monitoramento nem e-mail comercial.",
-    capacity: "O teto atual permite no máximo 20 análises por dia. Uma data mensal não é garantida se a cota acabar.",
+    capacity: "O dia escolhido é uma preferência. A execução é uma janela durante o mês, sujeita à capacidade, e não promete data nem hora.",
   },
   ar: {
-    plans: "ثلاث باقات", priceNote: "الأسعار مقترحة وبانتظار الموافقة. التحصيل متوقف ولا يتم أي خصم.",
+    plans: "ثلاث باقات", priceNote: "السعر معروض بالشيكل. Lemon Squeezy تخصم ما يعادله بالدولار، وليس بالشيكل. التحصيل متوقف.",
     free: "مجاني", report: "تقرير كامل", monitor: "مراقبة شهرية", once: "لكل فحص", month: "شهريًا",
     freeLine: "درجة ما تم فحصه، والمستندات الناقصة، والفئات. بلا اقتباسات أو مواد أو PDF.",
     reportLine: "التقرير المحفوظ، مع المصدر والاقتباس والشدة والتوصية. بلا اعتماد امتثال.",
@@ -147,7 +147,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     statement_seen: "ظهرت تصريح. التصريح ليس مطابقة للمعيار.", needs_human: "المصدر موجود في الفهرس. السريان يحتاج إلى شخص.",
     not_indicated: "لم تظهر إشارة تشغّل هذا الفحص.", dashboard: "المراقبة", day: "يوم من الشهر", last: "آخر يوم في الشهر",
     email: "بريد للتنبيهات التشغيلية", inactive: "لا يوجد اشتراك نشط. لن تعمل المراقبة ولن تُرسل رسائل تسويقية.",
-    capacity: "السقف الحالي يسمح بـ20 فحصًا في اليوم كحد أقصى. الموعد الشهري غير مضمون إذا نفدت الحصة.",
+    capacity: "اليوم المختار تفضيل. التنفيذ نافذة خلال الشهر حسب السعة، وليس وعدًا بتاريخ أو ساعة.",
   },
 };
 

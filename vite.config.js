@@ -56,7 +56,7 @@ export default defineConfig({
         timeout: 180000,
         proxyTimeout: 180000,
         rewrite: (proxyPath) => (
-          process.env.VITE_COMPLIANCE_PROXY_TARGET
+          /127\.0\.0\.1|localhost/.test(process.env.VITE_COMPLIANCE_PROXY_TARGET || "")
             ? proxyPath.replace(/^\/compliance/, "")
             : proxyPath
         ),
