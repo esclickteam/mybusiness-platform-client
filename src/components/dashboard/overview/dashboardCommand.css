@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  color: #1a0b33;
+  color: #21172F;
 }
 
 .bx-hero {
@@ -11,8 +11,8 @@
   gap: 0.75rem;
   padding: 1rem 1.15rem;
   background:
-    radial-gradient(ellipse 36% 120% at 100% 0%, rgba(61, 99, 255, 0.45), transparent 62%),
-    linear-gradient(120deg, #321064 0%, #5b21b6 62%, #3d63ff 130%);
+    radial-gradient(ellipse 36% 120% at 100% 0%, rgba(61, 99, 255, 0.28), transparent 62%),
+    #6334C5;
   color: #fff;
   box-shadow: 0 16px 36px rgba(50, 16, 100, 0.16);
 }
@@ -72,7 +72,7 @@
 .bx-hero .bx-chip:hover {
   border-color: #fff;
   background: #fff;
-  color: #321064;
+  color: #21172F;
 }
 
 .bx-row {
@@ -98,7 +98,7 @@
 .bx-chip {
   border: 0;
   background: #f7f6fc;
-  color: #1a0b33;
+  color: #21172F;
   min-height: 2.15rem;
   padding: 0.35rem 0.7rem;
   font-size: 0.78rem;
@@ -115,14 +115,14 @@
 
 .bx-btn:hover,
 .bx-chip:hover {
-  background: #321064;
+  background: #48218B;
   color: #fff;
 }
 
 .bx-field {
   border: 0;
   background: #f7f6fc;
-  color: #1a0b33;
+  color: #21172F;
   min-height: 2.15rem;
   padding: 0.3rem 0.6rem;
   font-weight: 700;
@@ -152,8 +152,8 @@
 .bx-snapshot .bx-kpi:first-child {
   border-top-color: #3d63ff;
   background:
-    radial-gradient(circle at 100% 0%, rgba(61, 99, 255, 0.35), transparent 46%),
-    #321064;
+    radial-gradient(circle at 100% 0%, rgba(61, 99, 255, 0.28), transparent 46%),
+    #6334C5;
   color: #fff;
 }
 
@@ -184,7 +184,7 @@ button.bx-kpi {
 }
 
 .bx-delta {
-  color: #321064;
+  color: #5b21b6;
   font-size: 0.72rem;
   font-weight: 800;
 }
@@ -308,13 +308,13 @@ div.bx-lead {
   display: inline-flex;
   background: #f7f6fc;
   padding: 0.12rem 0.4rem;
-  color: #321064;
+  color: #5b21b6;
   font-size: 0.72rem;
   font-weight: 800;
 }
 
 .bx-status.is-on {
-  background: #321064;
+  background: #5b21b6;
   color: #fff;
 }
 
