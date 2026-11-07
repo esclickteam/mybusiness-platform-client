@@ -35,7 +35,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     open: "פתחו את העמוד", technical: "פרטים טכניים", quote: "ציטוט מהמקור", more: "הציגו את הציטוט המלא", less: "הציגו פחות",
     severity: "חומרה", certainty: "רמת ודאות", kind: "סוג הממצא", gap: "מה חסר או אינו תקין", law: "מקור", noLaw: "לא צורף מקור מוסמך לממצא זה",
     section: "סעיף", noSection: "כותרת הסעיף לא זוהתה", draft: "נוסח מוצע", verify: "איך לוודא שהתיקון בוצע",
-    plan: "תוכנית הפעולה לתיקון האתר", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
+    plan: "תוכנית הפעולה לתיקון האתר", unfinished: "בדיקות שלא ניתן היה להשלים", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
     purpose: "המטרה באתר זה לא אומתה", consent: "לפני הסכמה ואחריה: לא נבדק",
     okStatus: "תקין", missingStatus: "חסר", fixStatus: "דורש תיקון", unverifiedStatus: "לא ניתן לאימות", otherStatus: "לא רלוונטי",
     high: "גבוהה", medium: "בינונית", low: "נמוכה", info: "לידיעה",
@@ -56,7 +56,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     open: "Open the page", technical: "Technical details", quote: "Source quote", more: "Show the full quote", less: "Show less",
     severity: "Severity", certainty: "Certainty", kind: "Type", gap: "What is missing or wrong", law: "Source", noLaw: "No verified source was attached to this finding",
     section: "Section", noSection: "No section heading was identified", draft: "Suggested wording", verify: "How to confirm the fix",
-    plan: "What to fix on the site", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
+    plan: "What to fix on the site", unfinished: "Checks that could not be completed", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
     purpose: "The purpose on this site was not verified", consent: "Before and after consent: not checked",
     okStatus: "Sound", missingStatus: "Missing", fixStatus: "Needs a fix", unverifiedStatus: "Could not verify", otherStatus: "Not applicable",
     high: "High", medium: "Medium", low: "Low", info: "Note",
@@ -175,7 +175,9 @@ export function ComplianceReportView({
   const [filter, setFilter] = useState("all");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const findings: Finding[] = report.findings || [];
+  const unfinished = findings.filter((item) => item.outcome === "incomplete" || item.outcome === "uncertain");
   const visible = useMemo(() => findings.filter((item) => {
+    if (filter === "all") return item.outcome !== "incomplete" && item.outcome !== "uncertain";
     if (filter === "action") return item.outcome === "finding";
     if (filter === "pass") return item.outcome === "pass";
     if (filter === "unverified") return item.outcome === "incomplete" || item.outcome === "uncertain";
@@ -269,6 +271,22 @@ export function ComplianceReportView({
           );
         })}
       </div>
+      {filter === "all" && (
+        <section className="scan-actions">
+          <h2>{copy.unfinished}</h2>
+          {unfinished.length === 0 ? <p>{copy.empty}</p> : (
+            <ul>
+              {unfinished.map((item, index) => (
+                <li key={`${item.checkId}-${index}`}>
+                  <strong>{item.title}</strong>
+                  <p>{item.description}</p>
+                  <p dir="ltr">{item.url || copy.unknownPlace}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
       <section className="scan-actions">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (

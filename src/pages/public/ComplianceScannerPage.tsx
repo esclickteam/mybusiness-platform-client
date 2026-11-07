@@ -486,6 +486,17 @@ export default function ComplianceScannerPage() {
     navigate(`/compliance/report/${data.id}`);
   }
 
+  async function buyReport() {
+    const token = localStorage.getItem(TOKEN_KEY) || "";
+    const response = await fetch("/compliance/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tenantToken: token, plan: "report", scanId: id }),
+    });
+    const data = await response.json().catch(() => ({}));
+    setError(data.error || data.message || copy.notice);
+  }
+
   async function downloadPdf() {
     const token = localStorage.getItem(TOKEN_KEY) || "";
     const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers: { "x-tenant-token": token } });
@@ -602,7 +613,7 @@ export default function ComplianceScannerPage() {
               </ol>
             </div>
           ) : payload.access !== "full" ? (
-            <FreeResult locale={commercialLocale(locale)} summary={payload.summary} />
+            <FreeResult locale={commercialLocale(locale)} summary={payload.summary} status={payload.status} onBuy={buyReport} />
           ) : (
             <>
               <ComplianceReportView locale={locale} payload={payload} onPdf={downloadPdf} />
