@@ -129,6 +129,13 @@ export function isDashboardPathAllowed(
   }
   if (
     segment === "website" &&
+    String(pathname || "").endsWith("/website/ai") &&
+    (isModuleEnabled(enabledModules, "website") || businessPackage)
+  ) {
+    return true;
+  }
+  if (
+    segment === "website" &&
     businessPackage &&
     String(pathname || "").includes("/sites/")
   ) {

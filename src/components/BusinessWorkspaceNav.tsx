@@ -421,7 +421,7 @@ export default function BusinessWorkspaceNav({
     {
       labelKey: "businessNav.aiStudio",
       fallback: "AI Studio",
-      to: `${basePath}/dashboard/ai-studio`,
+      to: `${basePath}/dashboard/website/ai`,
       icon: AppWindow,
       moduleKey: "ai-studio",
     },
