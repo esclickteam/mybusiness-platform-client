@@ -47,6 +47,7 @@ type TabItem = {
 const tabDefs: TabItem[] = [
   { to: "profile", labelKey: "collab.tabs.profile" },
   { to: "find-partner", labelKey: "collab.tabs.findPartner" },
+  { to: "collaborations", labelKey: "collab.tabs.collaborations" },
   { to: "messages", labelKey: "collab.tabs.messages" },
   { to: "market", labelKey: "collab.tabs.market" },
 ];

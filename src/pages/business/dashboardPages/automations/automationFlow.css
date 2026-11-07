@@ -141,10 +141,10 @@
   flex-direction: column;
   min-height: calc(100vh - 120px);
   height: calc(100vh - 120px);
-  border: 1px solid #e5e7eb;
-  border-radius: 14px;
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  border-radius: 0;
   overflow: hidden;
-  background: #fff;
+  background: #f4f1fa;
 }
 
 .af-builder .af-canvas-wrap {
@@ -2045,4 +2045,77 @@
 
 .af-usage-estimate__warn .af-btn {
   margin-top: 8px;
+}
+
+.af-builder-toolbar,
+.af-inspector,
+.af-modal,
+.af-node,
+.af-picker-item,
+.af-empty {
+  border-radius: 0 !important;
+}
+
+.af-builder-toolbar {
+  background: #fff;
+  border-bottom: 1px solid rgba(91, 33, 182, 0.16);
+}
+
+.af-inspector {
+  background: #fff;
+  border-inline-start: 4px solid #5b21b6;
+}
+
+.af-inspector input,
+.af-inspector select,
+.af-inspector textarea,
+.af-modal input,
+.af-modal select,
+.af-modal textarea {
+  border-radius: 0;
+  border-color: rgba(91, 33, 182, 0.2);
+  background: #fff;
+  min-height: 42px;
+}
+
+.af-node {
+  border: 1px solid rgba(91, 33, 182, 0.2);
+  border-top: 3px solid #5b21b6;
+  background: #fff;
+}
+
+.af-picker-item {
+  border: 1px solid rgba(91, 33, 182, 0.14);
+  background: #f7f5fb;
+}
+
+.af-modal {
+  border: 1px solid rgba(91, 33, 182, 0.18);
+  border-top: 4px solid #5b21b6;
+  background: #fff;
+  box-shadow: none;
+}
+
+.ax-template-card,
+.ax-mobile-card,
+.ax-empty--card,
+.ai-results-page,
+.auto-page {
+  border-radius: 0;
+}
+
+.ax-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.ax-template-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  border-top: 3px solid #5b21b6;
+  background: #fff;
+  padding: 16px;
 }

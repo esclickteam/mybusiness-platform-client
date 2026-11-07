@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   CheckCircle2,
@@ -16,7 +17,6 @@ import {
   Trash2,
   TrendingUp,
   UserRoundCheck,
-  UsersRound,
   Wand2,
   XCircle,
 } from "lucide-react";
@@ -43,6 +43,7 @@ type ProposalItem = {
   validUntil?: string | null;
   status?: string;
   createdAt?: string;
+  agreementId?: string;
 };
 
 type CollabActiveTabProps = {
@@ -53,7 +54,9 @@ export default function CollabActiveTab({
   userBusinessId,
 }: CollabActiveTabProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [view, setView] = useState<ProposalView>("active");
+  const [opened, setOpened] = useState<ProposalItem | null>(null);
   const [activeProposals, setActiveProposals] = useState<ProposalItem[]>([]);
   const [sentProposals, setSentProposals] = useState<ProposalItem[]>([]);
   const [receivedProposals, setReceivedProposals] = useState<ProposalItem[]>(
@@ -188,11 +191,8 @@ export default function CollabActiveTab({
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
-
-        <div className="relative grid gap-6 xl:grid-cols-[1fr_360px] xl:items-center">
+      <section className="border border-[rgba(91,33,182,0.16)] border-s-4 border-s-[#5B21B6] bg-white p-5 sm:p-6">
+        <div className="grid gap-4">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4" />
@@ -210,7 +210,8 @@ export default function CollabActiveTab({
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.28)] transition hover:-translate-y-0.5"
+                onClick={() => navigate("../find-partner")}
+                className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-[#5B21B6] px-5 text-sm font-black text-white"
               >
                 <Search className="h-4 w-4" />
                 {t("leftover.collab.activeTab.findPartners")}
@@ -218,36 +219,12 @@ export default function CollabActiveTab({
 
               <button
                 type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                onClick={() => navigate("../find-partner")}
+                className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-white px-5 text-sm font-black text-[#21172F]"
               >
                 <Plus className="h-4 w-4" />
                 {t("leftover.collab.activeTab.createProposal")}
               </button>
-            </div>
-          </div>
-
-          <div className="hidden xl:block">
-            <div className="relative mx-auto h-52 max-w-sm rounded-[2rem] border border-white/80 bg-white/70 p-5 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur">
-              <div className="absolute -left-5 top-10 flex h-16 w-16 items-center justify-center rounded-3xl bg-sky-100 text-sky-700 shadow-lg shadow-sky-100">
-                <UsersRound className="h-7 w-7" />
-              </div>
-
-              <div className="absolute right-8 top-7 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
-                <Handshake className="h-6 w-6" />
-              </div>
-
-              <div className="ml-10 mt-16 rounded-3xl bg-white p-4 shadow-sm">
-                <div className="h-3 w-28 rounded-full bg-sky-200" />
-                <div className="mt-3 h-2 w-44 rounded-full bg-slate-100" />
-                <div className="mt-2 h-2 w-36 rounded-full bg-slate-100" />
-              </div>
-
-              <div className="absolute bottom-6 right-6 rounded-2xl bg-white px-4 py-3 shadow-md">
-                <p className="text-xs font-black text-slate-400">
-                  {t("leftover.collab.activeTab.partnerMatch")}
-                </p>
-                <p className="mt-1 text-lg font-black text-emerald-600">92%</p>
-              </div>
             </div>
           </div>
         </div>
@@ -348,6 +325,7 @@ export default function CollabActiveTab({
                   onAccept={() => handleAccept(getId(proposal))}
                   onReject={() => handleReject(getId(proposal))}
                   onCancel={() => handleCancel(getId(proposal))}
+                  onOpen={() => setOpened(proposal)}
                 />
               ))}
             </div>
@@ -367,6 +345,48 @@ export default function CollabActiveTab({
           />
         </aside>
       </div>
+      {opened && (
+        <div
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#21172F]/40 p-4"
+          onMouseDown={() => setOpened(null)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            className="biz-doc max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-[rgba(91,33,182,0.16)] bg-white p-5"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <h3 className="text-xl font-black text-[#21172F]">
+              {opened.title || t("leftover.collab.activeTab.untitled")}
+            </h3>
+            <p className="mt-3 text-sm font-semibold leading-6 text-[#3d3452]">
+              {opened.description || t("leftover.collab.activeTab.noDescription")}
+            </p>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <InfoTile label={t("leftover.collab.activeTab.amount")} value={formatMoney(opened.amount)} />
+              <InfoTile label={t("leftover.collab.activeTab.validUntil")} value={formatDate(opened.validUntil)} />
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {opened.agreementId && (
+                <button
+                  type="button"
+                  className="inline-flex h-11 items-center bg-[#5B21B6] px-4 text-sm font-black text-white"
+                  onClick={() => navigate(`../messages?agreementId=${opened.agreementId}`)}
+                >
+                  {t("collab.messages.viewAgreement")}
+                </button>
+              )}
+              <button
+                type="button"
+                className="inline-flex h-11 items-center border border-[rgba(91,33,182,0.2)] bg-white px-4 text-sm font-black text-[#21172F]"
+                onClick={() => setOpened(null)}
+              >
+                {t("crm.common.close")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -377,12 +397,14 @@ function ProposalCard({
   onAccept,
   onReject,
   onCancel,
+  onOpen,
 }: {
   proposal: ProposalItem;
   view: ProposalView;
   onAccept: () => void;
   onReject: () => void;
   onCancel: () => void;
+  onOpen: () => void;
 }) {
   const { t } = useTranslation();
   return (
@@ -435,7 +457,8 @@ function ProposalCard({
       <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">
         <button
           type="button"
-          className="inline-flex items-center gap-2 text-sm font-black text-sky-700 transition hover:text-violet-700"
+          onClick={onOpen}
+          className="inline-flex items-center gap-2 text-sm font-black text-[#5B21B6]"
         >
           {t("leftover.collab.activeTab.viewDetails")}
           <ArrowRight className="h-4 w-4" />

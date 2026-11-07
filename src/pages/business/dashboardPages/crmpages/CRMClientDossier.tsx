@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import "./crmDesign.css";
 import {
   ArrowLeft,
   CalendarDays,
@@ -310,9 +311,9 @@ export default function CRMClientDossier({
   return (
     <div
       dir={dir}
-      className="fixed inset-0 z-[90] flex flex-col bg-[#F4F5F8] text-start"
+      className="client-file fixed inset-0 z-[90] flex flex-col bg-[#F4F1FA] text-start"
     >
-      <header className="shrink-0 border-b border-slate-200 bg-white">
+      <header className="client-file-head shrink-0 border-b border-slate-200 bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-5">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <button
@@ -348,8 +349,8 @@ export default function CRMClientDossier({
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-9 items-center rounded-full bg-emerald-50 px-3 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+          <div className="client-file-actions flex min-w-0 flex-wrap items-center gap-2">
+            <span className="inline-flex h-9 items-center bg-emerald-50 px-3 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
               {statusLabel}
             </span>
 
@@ -426,7 +427,10 @@ export default function CRMClientDossier({
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-1 border-t border-slate-100 px-2 sm:px-3">
+        </header>
+
+        <div className="client-file-frame">
+        <div className="client-file-tabs flex flex-wrap items-center justify-center gap-1 border-t border-slate-100 px-2 sm:px-3">
           <TabButton
             active={resolvedTab === "profile"}
             icon={UserRound}
@@ -487,10 +491,9 @@ export default function CRMClientDossier({
             />
           )}
         </div>
-      </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto grid max-w-[1400px] gap-4 p-3 sm:p-5 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_260px]">
+      <div className="client-file-main min-h-0 flex-1 overflow-y-auto">
+        <div className="client-file-stage">
           <aside className="space-y-3 lg:sticky lg:top-0 lg:self-start">
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
               <div className="mb-3 flex flex-col items-center text-center">
@@ -558,7 +561,7 @@ export default function CRMClientDossier({
           <main className="min-w-0 space-y-4">
             {resolvedTab === "profile" && (
               <>
-                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                <section className="client-sheet">
                   <div className="mb-4">
                     <h3 className="text-lg font-black text-slate-800">
                       {t("crm.clients.profile.title")}
@@ -729,6 +732,7 @@ export default function CRMClientDossier({
           </aside>
         </div>
       </div>
+      </div>
     </div>
   );
 }
@@ -870,7 +874,7 @@ function AppointmentsPanel({
   const { t } = useTranslation();
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-4">
         <h3 className="text-lg font-black text-slate-800">
           {t("crm.clients.appointmentsPanel.title")}
@@ -987,7 +991,7 @@ function PaymentsPanel({
   );
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-4">
         <h3 className="text-lg font-black text-slate-800">
           {t("crm.clients.payments.title")}
@@ -1146,7 +1150,7 @@ function TagsPanel({
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex items-center gap-2">
         <Tag className="h-4 w-4 text-violet-700" />
         <h3 className="text-lg font-black text-slate-800">
@@ -1226,7 +1230,7 @@ function JourneyPanel({
   );
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex items-center gap-2">
         <Route className="h-4 w-4 text-sky-700" />
         <h3 className="text-lg font-black text-slate-800">
@@ -1295,7 +1299,7 @@ function CommunicationPanel({
   const { t } = useTranslation();
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-lg font-black text-slate-800">
@@ -1399,7 +1403,7 @@ function TasksPanel({
   const { t } = useTranslation();
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-lg font-black text-slate-800">
@@ -1500,7 +1504,7 @@ function FilesPanel({
   };
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-xl font-black text-slate-800">

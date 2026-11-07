@@ -175,11 +175,11 @@ export default function CRMLeadCard({
   const name = lead.fullName || lead.name || t("crm.common.unnamedClient");
 
   return (
-    <div className="crm-dossier fixed inset-0 z-50 overflow-y-auto p-2 sm:p-4" dir={getTextDirection(i18n.language)}>
-      <div className="crm-dossier-panel mx-auto flex min-h-full max-w-6xl flex-col overflow-hidden">
-        <header className="crm-dossier-head sticky top-0 z-10">
+    <div className="crm-dossier fixed inset-0 z-50" dir={getTextDirection(i18n.language)}>
+      <div className="crm-dossier-panel">
+        <header className="crm-dossier-head">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <p className="crm-dossier-kicker">
                 {t("crm.leads.drawer.dossierBadge")}
               </p>
@@ -191,7 +191,6 @@ export default function CRMLeadCard({
                 <span>{lead.assignedToName || t("crm.leads.unassignedAgent")}</span>
                 <span>{lead.source}</span>
                 <span>{lead.createdAt ? new Date(lead.createdAt).toLocaleString(locale) : ""}</span>
-                <span>{lead.updatedAt ? new Date(lead.updatedAt).toLocaleString(locale) : ""}</span>
               </div>
             </div>
             <button
@@ -202,7 +201,7 @@ export default function CRMLeadCard({
               {t("crm.common.close")}
             </button>
           </div>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="crm-file-actions">
             {lead.phone && (
               <a className="quick-btn" href={`tel:${lead.phone}`}>
                 <Phone className="h-3.5 w-3.5" /> {t("crm.common.call")}
@@ -243,7 +242,8 @@ export default function CRMLeadCard({
           </div>
         </header>
 
-        <nav className="flex gap-1 overflow-x-auto border-b border-slate-100 px-3">
+        <div className="crm-file-body">
+        <nav className="crm-file-tabs" aria-label={t("crm.leads.drawer.dossierBadge")}>
           {TABS.map((key) => (
             <button
               key={key}
@@ -259,12 +259,12 @@ export default function CRMLeadCard({
           ))}
         </nav>
 
-        <div className="flex-1 space-y-4 p-4">
+        <div className="crm-file-main space-y-4">
           {error && <p className="rounded-xl bg-rose-50 p-3 text-sm font-bold text-rose-700">{error}</p>}
           {notice && <p className="rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700">{notice}</p>}
 
           {tab === "overview" && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="crm-sheet">
               <Fact label={t("crm.common.name")} value={name} />
               <Fact label={t("crm.common.phone")} value={lead.phone} ltr />
               <Fact label={t("crm.common.email")} value={lead.email} />
@@ -275,7 +275,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "personal" && (
-            <div className="space-y-3">
+            <div className="crm-sheet">
               {fields.filter((field) => field.active !== false).map((field) => (
                 <label key={field.id} className="block text-xs font-black text-slate-600">
                   {field.label}
@@ -322,7 +322,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "source" && (
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="crm-sheet">
               <Fact label={t("crm.workspace.adPlatform")} value={lead.provider || lead.source} />
               <Fact label={t("crm.leads.drawer.campaign")} value={lead.facebook?.campaignName || lead.google?.campaignName || lead.campaignName} />
               <Fact label={t("crm.leads.drawer.campaignId")} value={lead.facebook?.campaignId || lead.google?.campaignId} />
@@ -348,7 +348,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "form" && (
-            <div className="space-y-2">
+            <div className="crm-sheet">
               {(lead.details || []).length ? (
                 (lead.details || []).map((detail, index) => (
                   <Fact key={`${detail.label}-${index}`} label={detail.label} value={detail.value} />
@@ -360,7 +360,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "activity" && (
-            <div className="space-y-3">
+            <div className="crm-sheet">
               <textarea
                 className="w-full rounded-xl border p-3 text-sm"
                 rows={3}
@@ -402,7 +402,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "tasks" && (
-            <div className="space-y-3">
+            <div className="crm-sheet">
               <input className="h-10 w-full rounded-xl border px-3" value={taskText} onChange={(event) => setTaskText(event.target.value)} placeholder={t("crm.leads.drawer.taskPlaceholder")} />
               <input className="h-10 w-full rounded-xl border px-3" type="datetime-local" value={taskDue} onChange={(event) => setTaskDue(event.target.value)} />
               <button
@@ -430,7 +430,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "meetings" && (
-            <div className="space-y-3">
+            <div className="crm-sheet">
               <input className="h-10 w-full rounded-xl border px-3" value={meetingTitle} onChange={(event) => setMeetingTitle(event.target.value)} placeholder={t("crm.workspace.meetingTitle")} />
               <input className="h-10 w-full rounded-xl border px-3" type="datetime-local" value={meetingAt} onChange={(event) => setMeetingAt(event.target.value)} />
               <button
@@ -446,7 +446,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "documents" && (
-            <div className="space-y-3">
+            <div className="crm-sheet">
               <input className="h-10 w-full rounded-xl border px-3" value={docName} onChange={(event) => setDocName(event.target.value)} placeholder={t("crm.workspace.documentName")} />
               <input className="h-10 w-full rounded-xl border px-3" value={docUrl} onChange={(event) => setDocUrl(event.target.value)} placeholder="https://" />
               <button
@@ -469,7 +469,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "deals" && (
-            <div className="space-y-3">
+            <div className="crm-sheet">
               <div className="grid gap-2 sm:grid-cols-2">
                 <input className="h-10 rounded-xl border px-3" value={dealName} onChange={(event) => setDealName(event.target.value)} placeholder={t("crm.workspace.dealName")} />
                 <input className="h-10 rounded-xl border px-3" value={dealAmount} onChange={(event) => setDealAmount(event.target.value)} placeholder={t("crm.workspace.dealAmount")} />
@@ -499,7 +499,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "payments" && (
-            <ul className="space-y-2">
+            <ul className="crm-sheet">
               {payments.length ? (
                 payments.map((deal) => (
                   <li key={deal._id} className="rounded-xl border p-3 text-sm font-bold">
@@ -533,6 +533,7 @@ export default function CRMLeadCard({
             </select>
           </div>
         </div>
+        </div>
       </div>
     </div>
   );
@@ -540,9 +541,9 @@ export default function CRMLeadCard({
 
 function Fact({ label, value, ltr = false }: { label: string; value?: unknown; ltr?: boolean }) {
   return (
-    <div className="rounded-xl border border-slate-100 bg-slate-50 p-3">
-      <p className="text-[11px] font-black text-slate-400">{label}</p>
-      <p className="mt-1 text-sm font-bold text-slate-800" dir={ltr ? "ltr" : undefined}>{value ? String(value) : "—"}</p>
+    <div className="crm-fact">
+      <p className="crm-fact__label">{label}</p>
+      <p className="crm-fact__value" dir={ltr ? "ltr" : undefined}>{value ? String(value) : "—"}</p>
     </div>
   );
 }
