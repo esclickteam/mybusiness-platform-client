@@ -170,6 +170,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [prompts, setPrompts] = useState<any[]>([]);
   const [csvText, setCsvText] = useState("");
   const [gscImports, setGscImports] = useState<any[]>([]);
+  const [catalogDraft, setCatalogDraft] = useState<any>(null);
 
   const activeBrand = useMemo(
     () => brands.find((b) => b._id === brandId) || null,
@@ -283,6 +284,29 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     loadBrandData();
   }, [loadBrandData]);
 
+  useEffect(() => {
+    if (tab !== "catalogDraft") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const slug = activeBrand?.slug || "";
+        const data = await geoGet("/catalog-draft", {
+          brandSlug: slug || undefined,
+          limit: 150,
+          offset: 0,
+        });
+        if (!cancelled) setCatalogDraft(data);
+      } catch (e: any) {
+        if (!cancelled) {
+          setError(e?.response?.data?.error || e.message || "catalog draft failed");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tab, activeBrand?.slug]);
+
   const nav: Array<{ id: Tab; label: string }> = [
     { id: "overview", label: copy.navOverview },
     { id: "visibility", label: "נראות AI" },
@@ -299,6 +323,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "reports", label: "דוחות" },
     { id: "measurements", label: "ניהול מדידות" },
     { id: "alerts", label: copy.navAlerts },
+    { id: "catalogDraft", label: copy.navCatalogDraft },
     { id: "settings", label: copy.navSettings },
   ];
 
@@ -1452,6 +1477,46 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     </button>,
                   ])}
               />
+            </section>
+          ) : null}
+
+          {tab === "catalogDraft" ? (
+            <section>
+              <div className="geo-card">
+                <h3>{copy.catalogDraftTitle}</h3>
+                <p className="geo-note">{copy.catalogDraftHint}</p>
+                <div className="geo-intel-banner muted">
+                  {copy.catalogDraftNotActive}
+                  {catalogDraft?.totals
+                    ? ` · סה״כ בטיוטה: ${catalogDraft.totals.prompts}`
+                    : ""}
+                </div>
+              </div>
+              <Table
+                columns={[
+                  copy.question,
+                  copy.intent,
+                  copy.category,
+                  copy.businessImportance,
+                  copy.competitors,
+                ]}
+                rows={(catalogDraft?.entries || [])
+                  .filter((e: any) => filterText(e.text))
+                  .map((e: any) => [
+                  <span dir={e.language === "he" ? "rtl" : "ltr"}>{e.text}</span>,
+                  e.intent,
+                  e.category,
+                  e.businessImportance === "high"
+                    ? copy.importanceHigh
+                    : e.businessImportance === "low"
+                      ? copy.importanceLow
+                      : copy.importanceMedium,
+                  (e.competitors || []).join(", "),
+                ])}
+              />
+              {!catalogDraft?.entries?.length ? (
+                <AwaitBox message="טוען טיוטת קטלוג או שאין נתונים בשרת זה." />
+              ) : null}
             </section>
           ) : null}
 
