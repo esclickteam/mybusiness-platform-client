@@ -266,7 +266,7 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(whatsappLink(OTHER_BUSINESS_ID)).not.toBeNull();
     expect(metaCampaignsLink(OTHER_BUSINESS_ID)).not.toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
-    expect(whatsappLink(OTHER_BUSINESS_ID)).toHaveTextContent("WhatsApp Messages");
+    expect(whatsappLink(OTHER_BUSINESS_ID)).toHaveTextContent("WhatsApp API");
     expect(metaCampaignsLink(OTHER_BUSINESS_ID)).toHaveTextContent("Meta Campaigns");
   });
 
@@ -353,7 +353,7 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
       urlBusinessId: ALLOWED_BUSINESS_ID,
     });
 
-    expect(whatsappLink(ALLOWED_BUSINESS_ID)).toHaveTextContent("WhatsApp Messages");
+    expect(whatsappLink(ALLOWED_BUSINESS_ID)).toHaveTextContent("WhatsApp API");
     expect(metaCampaignsLink(ALLOWED_BUSINESS_ID)).toHaveTextContent("Meta Campaigns");
   });
 });

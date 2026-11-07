@@ -22,6 +22,7 @@ import ReviewCard from "../../components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { lockPageScroll } from "@/utils/pageScrollLock";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import "../../pages/interiorDesign.css";
 
 const ReviewForm = lazy(
   () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
@@ -547,7 +548,7 @@ export default function BusinessProfileView() {
     return (
       <main
         dir={dir}
-        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-start"
+        className="pub-profile min-h-screen px-4 py-8 text-start"
       >
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-rose-100 bg-white p-10 text-center shadow-sm">
           <p className="text-lg font-black text-rose-600">
@@ -566,7 +567,7 @@ export default function BusinessProfileView() {
     return (
       <main
         dir={dir}
-        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-start"
+        className="pub-profile min-h-screen px-4 py-8 text-start"
       >
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm">
           <p className="text-lg font-black text-slate-800">
@@ -914,7 +915,7 @@ export default function BusinessProfileView() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
+      className="pub-profile min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
     >
       <section className="mx-auto max-w-7xl">
         <div className="relative overflow-visible rounded-[2.5rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">

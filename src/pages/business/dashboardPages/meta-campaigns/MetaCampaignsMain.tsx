@@ -13,7 +13,6 @@ import CreateCampaignButton from "./CreateCampaignButton";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
-import LanguageSwitcher from "../../../../components/LanguageSwitcher";
 import { applyLanguageFromUrl, normalizeLanguage } from "../../../../i18n/localeUtils";
 import { isMetaCampaignsKnownChildPath } from "./campaignCreationMode";
 import MetaAdsDateRangeBar from "./MetaAdsDateRangeBar";
@@ -104,7 +103,7 @@ export default function MetaCampaignsMain() {
     <MetaAdsTimeZoneProvider>
     <section
       dir={dir}
-      className="biz-module min-h-[calc(100vh-72px)] px-3 py-4 text-start sm:px-5 sm:py-5 lg:px-6"
+      className="biz-module biz-campaigns min-h-[calc(100vh-72px)] px-3 py-3 text-start sm:px-5 sm:py-4 lg:px-6"
     >
       <div className="mx-auto w-full max-w-[1920px]">
         <header className="biz-shell">
@@ -129,7 +128,6 @@ export default function MetaCampaignsMain() {
                     basePath={`/business/${businessId}/dashboard/meta-campaigns`}
                   />
                 ) : null}
-                <LanguageSwitcher />
               </div>
             </div>
 

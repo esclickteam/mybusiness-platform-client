@@ -16,6 +16,7 @@ import ReviewCard from "@/components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { REVIEW_RATING_PARAMETER_DEFINITIONS } from "@/utils/reviewDisplay";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
+import "../../../interiorDesign.css";
 
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
@@ -1857,7 +1858,7 @@ export default function Build() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
+      className="biz-interior min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
     >
       <input
         type="file"
