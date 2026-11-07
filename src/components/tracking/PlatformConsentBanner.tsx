@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { readTrackingChoice, writeTrackingChoice } from "../../lib/trackingConsent";
+import "./PlatformConsentBanner.css";
 
 declare global {
   interface Window {
@@ -13,13 +14,21 @@ declare global {
 export default function PlatformConsentBanner() {
   const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (window.__BIZUPLY_PUBLIC_SITE__) return;
     setOpen(readTrackingChoice() === "unknown");
+    const reopen = () => setOpen(true);
+    window.addEventListener("bizuply-open-cookie-settings", reopen);
+    return () => window.removeEventListener("bizuply-open-cookie-settings", reopen);
   }, []);
 
-  if (!open) return null;
+  useEffect(() => {
+    if (open) panelRef.current?.focus();
+  }, [open]);
+
+  if (!open || window.__BIZUPLY_PUBLIC_SITE__) return null;
 
   function choose(choice: "essential" | "all") {
     writeTrackingChoice(choice);
@@ -28,34 +37,26 @@ export default function PlatformConsentBanner() {
 
   return (
     <div
-      className="fixed inset-x-3 bottom-3 z-[80] mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-4 text-slate-900 shadow-none sm:inset-x-6"
+      ref={panelRef}
+      className="cookie-banner"
       dir={getTextDirection(i18n.language)}
       role="dialog"
       aria-labelledby="tracking-consent-title"
+      tabIndex={-1}
     >
-      <h2 id="tracking-consent-title" className="text-base font-black">
-        {t("trackingConsent.title")}
-      </h2>
-      <p className="mt-2 text-sm font-medium leading-6 text-slate-700">
-        {t("trackingConsent.body")}{" "}
-        <Link className="font-bold underline" to="/privacy">
-          {t("trackingConsent.policy")}
-        </Link>
+      <h2 id="tracking-consent-title">{t("trackingConsent.title")}</h2>
+      <p>{t("trackingConsent.essentialBody")}</p>
+      <p>{t("trackingConsent.measurementBody")}</p>
+      <p>
+        {t("trackingConsent.change")} {t("trackingConsent.more")}{" "}
+        <Link to="/privacy">{t("trackingConsent.policy")}</Link>
       </p>
-      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-        <button
-          type="button"
-          className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-bold"
-          onClick={() => choose("essential")}
-        >
-          {t("trackingConsent.essential")}
-        </button>
-        <button
-          type="button"
-          className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-bold text-white"
-          onClick={() => choose("all")}
-        >
+      <div className="cookie-banner__actions">
+        <button type="button" className="cookie-banner__primary" onClick={() => choose("all")}>
           {t("trackingConsent.all")}
+        </button>
+        <button type="button" className="cookie-banner__secondary" onClick={() => choose("essential")}>
+          {t("trackingConsent.essential")}
         </button>
       </div>
     </div>

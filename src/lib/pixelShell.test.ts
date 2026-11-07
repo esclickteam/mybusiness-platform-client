@@ -131,6 +131,14 @@ describe("pixel shells", () => {
       expect(navigated.inserted).toEqual([]);
     });
 
+    it(`${shell.name} loads measurement again when consent is given after a withdrawal`, () => {
+      const page = runPixel(shell.script, "bizuply_tracking=all");
+      page.choose("essential");
+      const stopped = page.inserted.length;
+      page.choose("all");
+      expect(page.inserted.length).toBeGreaterThan(stopped);
+    });
+
     it(`${shell.name} does not load the pixel on a published customer site`, () => {
       expect(runPixel(shell.script, "bizuply_tracking=all", true).inserted).toEqual([]);
     });

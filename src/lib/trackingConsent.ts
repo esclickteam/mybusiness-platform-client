@@ -57,12 +57,15 @@ export function writeTrackingChoice(choice: "essential" | "all"): void {
   if (typeof document === "undefined") return;
   const maxAge = 180 * 24 * 60 * 60;
   document.cookie = `${TRACKING_COOKIE}=${choice}; Path=/; Max-Age=${maxAge}; SameSite=Lax${cookieDomain()}`;
-  const browser = window as Window & { __bizuplyPixelStopped?: boolean; fbq?: unknown };
-  const hadPixel = typeof browser.fbq === "function";
+  const browser = window as Window & { __bizuplyPixelStopped?: boolean };
   if (choice === "all") browser.__bizuplyPixelStopped = false;
   else stopMeasurement();
   window.dispatchEvent(new CustomEvent("bizuply-tracking-consent", { detail: choice }));
-  if (choice !== "all" && hadPixel) window.location.reload();
+}
+
+export function openCookieSettings(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("bizuply-open-cookie-settings"));
 }
 
 export function clearTrackingChoice(): void {

@@ -203,6 +203,14 @@
       (function () {
         if (window.__BIZUPLY_PUBLIC_SITE__) return;
         function startPixel() {
+          if (window.__bizuplyPixelLive) return;
+          try {
+            delete window.fbq;
+            delete window._fbq;
+          } catch (ignoreReset) {
+            window.fbq = undefined;
+            window._fbq = undefined;
+          }
           !(function (f, b, e, v, n, t, s) {
             if (f.fbq) return;
             n = f.fbq = function () {
@@ -228,6 +236,7 @@
           );
           fbq("init", "1427327632368128");
           fbq("track", "PageView");
+          window.__bizuplyPixelLive = true;
         }
         function marketingAllowed() {
           try {
@@ -252,6 +261,7 @@
         }
         function stopPixel() {
           window.__bizuplyPixelStopped = true;
+          window.__bizuplyPixelLive = false;
           var current = window.fbq;
           try {
             if (typeof current === "function") current("consent", "revoke");

@@ -625,6 +625,7 @@
     "contact": "Contáctenos",
     "terms": "Términos de uso",
     "privacy": "Política de privacidad",
+    "cookieSettings": "Configuración de cookies",
     "accessibility": "Accesibilidad",
     "ctaTitle": "Construye tu sistema operativo de negocio.",
     "ctaText": "Comience a administrar su página de negocios, CRM, colaboraciones y herramientas de IA en un solo lugar.",
@@ -23852,12 +23853,14 @@
     }
   },
   "trackingConsent": {
-    "title": "Medición en este sitio",
-    "body": "Las cookies esenciales conservan el idioma y el acceso. La medición de clientes potenciales y conversiones de Meta se carga solo si la autorizas. La elección se guarda en una cookie de este navegador.",
+    "title": "Uso de cookies",
+    "essentialBody": "Usamos cookies esenciales para el funcionamiento del sitio, para guardar preferencias y para iniciar sesión.",
+    "measurementBody": "Con tu consentimiento, también usamos cookies y herramientas de medición de Meta para analizar el uso del sitio y mejorar nuestra publicidad.",
+    "change": "Puedes cambiar la elección en cualquier momento desde la configuración de cookies.",
+    "more": "Para más información, consulta la",
     "policy": "Política de privacidad",
-    "essential": "Solo esenciales",
-    "all": "Permitir medición",
-    "reset": "Restablecer la elección de medición"
+    "essential": "Solo cookies esenciales",
+    "all": "Aceptar todas las cookies"
   },
   "billingNotice": {
     "month": "cada mes",
