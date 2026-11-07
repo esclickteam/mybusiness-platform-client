@@ -310,7 +310,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   }, [tab, activeBrand?.slug]);
 
   useEffect(() => {
-    if (tab !== "costs") return;
+    if (tab !== "costs" && tab !== "settings") return;
     let cancelled = false;
     (async () => {
       try {
@@ -1517,30 +1517,53 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 <div className="geo-intel-banner muted">
                   {monitoringStatus?.noteHe || copy.monitoringOff}
                 </div>
+                {monitoringStatus?.lastRunSummary ? (
+                  <p className="geo-note">
+                    הרצה אחרונה: הושלמו{" "}
+                    {monitoringStatus.lastRunSummary.completed ?? 0} · כפולים{" "}
+                    {monitoringStatus.lastRunSummary.deduped ?? 0} · נכשלו{" "}
+                    {monitoringStatus.lastRunSummary.failed ?? 0}
+                  </p>
+                ) : null}
               </div>
               <Table
                 columns={[
                   "מנוע",
                   "סטטוס",
+                  "מוכן להרצה",
                   "עלות לבדיקה",
                   "150 שאלות",
                   "מפתח",
                   "אישור חיוב",
                   "הערות",
                 ]}
-                rows={(costMatrix?.rows || []).map((r: any) => [
-                  r.labelHe || r.engineId,
-                  r.status,
-                  r.estimatedUsdPerCheck == null
-                    ? "—"
-                    : `$${Number(r.estimatedUsdPerCheck).toFixed(3)}`,
-                  r.estimate150Usd == null
-                    ? "—"
-                    : `$${Number(r.estimate150Usd).toFixed(2)}`,
-                  r.keyConfigured ? "כן" : "לא",
-                  r.billingApproved ? "כן" : "לא",
-                  r.notesHe || "—",
-                ])}
+                rows={(costMatrix?.rows || []).map((r: any) => {
+                  const ready = monitoringStatus?.engines?.find(
+                    (e: any) => e.id === r.engineId
+                  )?.readiness;
+                  return [
+                    r.labelHe || r.engineId,
+                    r.status === "ready"
+                      ? "מוכן"
+                      : r.status === "unavailable"
+                        ? "לא זמין (API)"
+                        : r.status,
+                    ready?.ok
+                      ? "כן"
+                      : ready?.reason
+                        ? String(ready.reason)
+                        : "—",
+                    r.estimatedUsdPerCheck == null
+                      ? "—"
+                      : `$${Number(r.estimatedUsdPerCheck).toFixed(3)}`,
+                    r.estimate150Usd == null
+                      ? "—"
+                      : `$${Number(r.estimate150Usd).toFixed(2)}`,
+                    r.keyConfigured ? "כן" : "לא",
+                    r.billingApproved ? "כן" : "לא",
+                    r.notesHe || "—",
+                  ];
+                })}
               />
               {costMatrix?.perplexityCreditPlan ? (
                 <div className="geo-card">
@@ -1555,8 +1578,11 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     {costMatrix.perplexityCreditPlan.recommendedFirstWaveChecks}{" "}
                     בדיקות (~$
                     {costMatrix.perplexityCreditPlan.recommendedFirstWaveUsd}) ·
-                    תקרת Staging מומלצת: $
-                    {costMatrix.perplexityCreditPlan.recommendedStagingHardCapUsd}
+                    תקרת פרודקשן מומלצת: $
+                    {costMatrix.perplexityCreditPlan
+                      .recommendedProductionHardCapUsd ||
+                      costMatrix.perplexityCreditPlan
+                        .recommendedStagingHardCapUsd}
                   </p>
                 </div>
               ) : null}
@@ -1659,6 +1685,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               <div className="geo-card">
                 <h3>{copy.settingsEnvTitle}</h3>
                 <p>{copy.settingsEnvHelp}</p>
+                <div className="geo-intel-banner muted">{copy.aioDisclaimer}</div>
                 <pre className="geo-code" dir="ltr">
                   {JSON.stringify(
                     {
@@ -1666,6 +1693,12 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                       privateOwnerOnly: status?.privateOwnerOnly,
                       paidApisAllowed: status?.paidApisAllowed,
                       automation: status?.automation,
+                      monitoring: {
+                        enabled: monitoringStatus?.enabled,
+                        cron: monitoringStatus?.cron,
+                        engines: monitoringStatus?.engineAllowlist,
+                        maxChecksPerRun: monitoringStatus?.maxChecksPerRun,
+                      },
                       gemini: {
                         configured: status?.gemini?.configured,
                         freeOnly: status?.gemini?.freeOnly,
