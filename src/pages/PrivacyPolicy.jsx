@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
+import PrivacyRequestForm from "../components/privacy/PrivacyRequestForm";
 import { clearTrackingChoice } from "../lib/trackingConsent";
 
 function PrivacyPolicy() {
@@ -373,6 +374,8 @@ function PrivacyPolicy() {
 
             <p className={pBase}>{t("privacyPage.s17.p3")}</p>
           </section>
+
+          <PrivacyRequestForm />
 
           <section id="section-18" className={sectionBase}>
             <h2 className={h2Base}>{t("privacyPage.s18.h")}</h2>

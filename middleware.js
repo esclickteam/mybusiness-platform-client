@@ -40,7 +40,7 @@ import {
   isUnknownMarketingPath,
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
-import { marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
+import { localeFromLanguageTag, marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
 import {
   buildHomeSessionRedirectResponse,
@@ -982,16 +982,36 @@ async function handleMarketingDocument(request) {
         documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
       }
     }
+    const headers = {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "x-bizuply-seo-edge": "marketing",
+      ...(noindex || isUnindexedPreviewHost(getHost(request))
+        ? { "x-robots-tag": "noindex, nofollow" }
+        : {}),
+    };
+    if (locale.locale !== "en") {
+      const cookie = request.headers.get("cookie") || "";
+      const saved = cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith("bizuply_lang="));
+      let savedValue = saved ? saved.slice("bizuply_lang=".length) : "";
+      try {
+        savedValue = decodeURIComponent(savedValue);
+      } catch {
+        /* Keep the raw cookie value. */
+      }
+      if (localeFromLanguageTag(savedValue) !== locale.locale) {
+        const host = getHost(request);
+        const domain = host === "bizuply.com" || host.endsWith(".bizuply.com")
+          ? "; Domain=.bizuply.com"
+          : host === "bizuply.co.il" || host.endsWith(".bizuply.co.il")
+            ? "; Domain=.bizuply.co.il"
+            : "";
+        headers["set-cookie"] = `bizuply_lang=${encodeURIComponent(locale.locale)}; Path=/; Max-Age=31536000; SameSite=Lax${domain}`;
+      }
+    }
     return new Response(documentHtml, {
       status: 200,
-      headers: {
-        "content-type": "text/html; charset=utf-8",
-        "cache-control": "public, max-age=0, must-revalidate",
-        "x-bizuply-seo-edge": "marketing",
-        ...(noindex || isUnindexedPreviewHost(getHost(request))
-          ? { "x-robots-tag": "noindex, nofollow" }
-          : {}),
-      },
+      headers,
     });
   } catch {
     return passThrough();
