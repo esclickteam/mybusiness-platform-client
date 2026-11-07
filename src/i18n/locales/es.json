@@ -23862,6 +23862,13 @@
     }
   },
   "trackingConsent": {
+    "noticeTitle": "Su privacidad nos importa",
+    "noticeIntro": "Usamos cookies para que el sitio funcione y para recordar el idioma y esta elección. Las cookies de publicidad se cargan solo si usted las permite, y activan únicamente el Meta Pixel.",
+    "essentialOnly": "Solo cookies esenciales",
+    "manage": "Gestionar cookies",
+    "manageTitle": "Gestionar las preferencias de cookies",
+    "back": "Volver",
+    "close": "Cerrar",
     "title": "Uso de cookies en el sitio de Bizuply",
     "intro": "Las cookies necesarias permanecen activas. Las cookies de publicidad son opcionales y controlan el Meta Pixel. Analítica y funcionalidad no se usan en este sitio.",
     "change": "Puede cambiar o retirar esta elección en cualquier momento.",

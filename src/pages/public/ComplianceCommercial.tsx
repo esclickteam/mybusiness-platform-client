@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
 
 const TEXT: Record<Locale, Record<string, string>> = {
@@ -197,27 +200,236 @@ export function PlanCards({ locale }: { locale: Locale }) {
   );
 }
 
-export function FreeResult({ locale, summary, status, onBuy }: { locale: Locale; summary: any; status?: string; onBuy?: () => void }) {
-  const copy = { ...TEXT.en, ...(TEXT[locale] || {}) };
-  if (!summary) return <p className="scan-not-legal">{copy.locked}</p>;
+const FREE: Record<Locale, Record<string, string>> = {
+  he: {
+    kicker: "דוח סריקה",
+    domain: "דומיין",
+    address: "כתובת האתר",
+    when: "תאריך הסריקה",
+    status: "סטטוס",
+    completed: "הושלמה",
+    running: "בתהליך",
+    queued: "ממתינה",
+    failed: "לא הושלמה",
+    score: "ציון",
+    scoreOf: "מתוך 100",
+    coverage: "כיסוי",
+    scoreHelp: "הציון מסכם רק בדיקות שהושלמו. הוא אינו אישור עמידה בחוק.",
+    coverageHelp: "האחוז מתוך הבדיקות שהסריקה הספיקה להשלים.",
+    lowCoverage: "הכיסוי נמוך. הציון חלקי ואינו מייצג בדיקות שלא הושלמו.",
+    ok: "תקין",
+    okHelp: "בדיקות שהסתיימו בלי ליקוי מאומת.",
+    action: "דורש טיפול",
+    actionHelp: "מספר הממצאים שממתינים לפירוט בדוח המלא.",
+    missing: "חסר",
+    missingHelp: "מסמכים פומביים שהחיפוש לא מצא.",
+    unverified: "לא אומת",
+    unverifiedHelp: "בדיקות שלא הושלמו, ולכן לא נספרות כליקוי.",
+    newScan: "סריקה חדשה",
+    offer: "הדוח המלא",
+    once: "חד־פעמי",
+    offerBody: "הרכישה פותחת את פירוט הממצאים, הראיות, ההמלצות ותוכנית התיקון, וגם קובץ PDF. אף אחד מהפרטים האלה לא מופיע כאן.",
+    unavailable: "הסליקה אינה זמינה כרגע. לא מתבצע חיוב, והדוח המלא נשאר סגור.",
+    check: "בדיקת זמינות הרכישה",
+  },
+  en: {
+    kicker: "Scan report",
+    domain: "Domain",
+    address: "Website address",
+    when: "Scan date",
+    status: "Status",
+    completed: "Completed",
+    running: "Running",
+    queued: "Queued",
+    failed: "Not completed",
+    score: "Score",
+    scoreOf: "out of 100",
+    coverage: "Coverage",
+    scoreHelp: "The score sums finished checks only. It is not legal approval.",
+    coverageHelp: "The share of checks the scan was able to finish.",
+    lowCoverage: "Coverage is low. The score is partial and does not represent unfinished checks.",
+    ok: "Passed",
+    okHelp: "Checks that finished without a verified defect.",
+    action: "Needs action",
+    actionHelp: "How many findings wait for the full report.",
+    missing: "Missing",
+    missingHelp: "Public documents the search did not find.",
+    unverified: "Unverified",
+    unverifiedHelp: "Checks that did not finish, so they are not counted as defects.",
+    newScan: "New scan",
+    offer: "Full report",
+    once: "One time",
+    offerBody: "The purchase opens the findings, evidence, recommendations, action plan, and the PDF. None of that detail is shown here.",
+    unavailable: "Checkout is temporarily unavailable. Nothing is charged, and the full report stays closed.",
+    check: "Check purchase availability",
+  },
+  es: {
+    kicker: "Informe de análisis",
+    domain: "Dominio",
+    address: "Dirección del sitio",
+    when: "Fecha del análisis",
+    status: "Estado",
+    completed: "Completado",
+    running: "En curso",
+    queued: "En espera",
+    failed: "No completado",
+    score: "Puntuación",
+    scoreOf: "de 100",
+    coverage: "Cobertura",
+    scoreHelp: "La puntuación resume solo las pruebas terminadas. No es una aprobación legal.",
+    coverageHelp: "El porcentaje de pruebas que el análisis pudo terminar.",
+    lowCoverage: "La cobertura es baja. La puntuación es parcial y no representa las pruebas sin terminar.",
+    ok: "Correcto",
+    okHelp: "Pruebas que terminaron sin un defecto verificado.",
+    action: "Requiere acción",
+    actionHelp: "Cantidad de hallazgos que esperan el informe completo.",
+    missing: "Ausente",
+    missingHelp: "Documentos públicos que la búsqueda no encontró.",
+    unverified: "Sin verificar",
+    unverifiedHelp: "Pruebas que no terminaron y por eso no cuentan como defecto.",
+    newScan: "Nuevo análisis",
+    offer: "Informe completo",
+    once: "Pago único",
+    offerBody: "La compra abre los hallazgos, las pruebas, las recomendaciones, el plan de acción y el PDF. Ninguno de esos detalles aparece aquí.",
+    unavailable: "El cobro no está disponible por ahora. No se realiza ningún cargo y el informe completo sigue cerrado.",
+    check: "Comprobar disponibilidad de compra",
+  },
+  "pt-BR": {
+    kicker: "Relatório da análise",
+    domain: "Domínio",
+    address: "Endereço do site",
+    when: "Data da análise",
+    status: "Status",
+    completed: "Concluída",
+    running: "Em andamento",
+    queued: "Na fila",
+    failed: "Não concluída",
+    score: "Pontuação",
+    scoreOf: "de 100",
+    coverage: "Cobertura",
+    scoreHelp: "A pontuação resume só as verificações concluídas. Não é aprovação jurídica.",
+    coverageHelp: "A parcela das verificações que a análise conseguiu concluir.",
+    lowCoverage: "A cobertura está baixa. A pontuação é parcial e não representa verificações inacabadas.",
+    ok: "Regular",
+    okHelp: "Verificações concluídas sem um defeito confirmado.",
+    action: "Exige ação",
+    actionHelp: "Quantidade de achados que aguardam o relatório completo.",
+    missing: "Ausente",
+    missingHelp: "Documentos públicos que a busca não encontrou.",
+    unverified: "Não verificado",
+    unverifiedHelp: "Verificações que não terminaram e por isso não contam como defeito.",
+    newScan: "Nova análise",
+    offer: "Relatório completo",
+    once: "Pagamento único",
+    offerBody: "A compra abre os achados, as evidências, as recomendações, o plano de ação e o PDF. Nenhum desses detalhes aparece aqui.",
+    unavailable: "A cobrança está indisponível no momento. Nada é cobrado e o relatório completo continua fechado.",
+    check: "Verificar disponibilidade da compra",
+  },
+  ar: {
+    kicker: "تقرير الفحص",
+    domain: "النطاق",
+    address: "عنوان الموقع",
+    when: "تاريخ الفحص",
+    status: "الحالة",
+    completed: "اكتمل",
+    running: "قيد التنفيذ",
+    queued: "بالانتظار",
+    failed: "لم يكتمل",
+    score: "الدرجة",
+    scoreOf: "من 100",
+    coverage: "التغطية",
+    scoreHelp: "تلخص الدرجة الفحوصات المكتملة فقط. ليست موافقة قانونية.",
+    coverageHelp: "نسبة الفحوصات التي تمكّن الفحص من إكمالها.",
+    lowCoverage: "التغطية منخفضة. الدرجة جزئية ولا تمثل الفحوصات التي لم تكتمل.",
+    ok: "سليم",
+    okHelp: "فحوصات انتهت دون خلل مؤكد.",
+    action: "يحتاج معالجة",
+    actionHelp: "عدد النتائج التي تنتظر التقرير الكامل.",
+    missing: "ناقص",
+    missingHelp: "مستندات علنية لم يعثر عليها البحث.",
+    unverified: "غير مؤكد",
+    unverifiedHelp: "فحوصات لم تكتمل، ولذلك لا تُحسب خللاً.",
+    newScan: "فحص جديد",
+    offer: "التقرير الكامل",
+    once: "مرة واحدة",
+    offerBody: "يفتح الشراء تفاصيل النتائج والأدلة والتوصيات وخطة الإصلاح وملف PDF. لا تظهر أي من هذه التفاصيل هنا.",
+    unavailable: "التحصيل غير متاح حاليًا. لا يتم أي خصم، ويبقى التقرير الكامل مغلقًا.",
+    check: "التحقق من توفر الشراء",
+  },
+};
+
+function meter(value: unknown) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return 0;
+  return Math.max(0, Math.min(100, number));
+}
+
+function formatWhen(value: unknown, locale: Locale) {
+  const date = new Date(String(value || ""));
+  if (Number.isNaN(date.getTime())) return "—";
+  return new Intl.DateTimeFormat(locale === "pt-BR" ? "pt-BR" : locale, { dateStyle: "medium", timeStyle: "short" }).format(date);
+}
+
+export function FreeResult({ locale, summary, status, scanId }: { locale: Locale; summary: any; status?: string; scanId?: string }) {
+  const copy = FREE[locale] || FREE.en;
+  const [purchaseNote, setPurchaseNote] = useState(copy.unavailable);
+  useEffect(() => { setPurchaseNote(copy.unavailable); }, [copy.unavailable]);
+  if (!summary) return null;
+  const score = meter(summary.checkedScore);
+  const coverage = meter(summary.coverage);
+  const statusLabel = copy[status || ""] || status || "—";
+  async function checkPurchase() {
+    const token = localStorage.getItem("bizuplyComplianceTenant") || "";
+    const response = await fetch("/compliance/api/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tenantToken: token, plan: "report", scanId }),
+    });
+    await response.json().catch(() => ({}));
+    setPurchaseNote(copy.unavailable);
+  }
   return (
-    <section className="scan-free">
-      <p>{copy.site}: {summary.host || "—"}</p>
-      <p dir="ltr">{summary.url || ""}</p>
-      <p>{copy.when}: {summary.scannedAt || "—"}</p>
-      <p>{copy.scanStatus}: {status || "—"}</p>
-      <div className="scan-scores">
-        <article><b>{summary.checkedScore ?? "—"}<small>/100</small></b><span>{copy.checked}</span></article>
-        <article><b>{summary.coverage ?? "—"}%</b><span>{copy.coverage}</span></article>
-        <article><b>{summary.ok ?? 0}</b><span>{copy.okCount}</span></article>
-        <article><b>{summary.action ?? 0}</b><span>{copy.actionCount}</span></article>
-        <article><b>{summary.missing ?? 0}</b><span>{copy.missingCount}</span></article>
-        <article><b>{summary.unverified ?? 0}</b><span>{copy.unverifiedCount}</span></article>
+    <section className="free-report">
+      <header className="free-report__mast">
+        <p className="free-report__kicker">{copy.kicker}</p>
+        <h1>{summary.host || "—"}</h1>
+        <dl>
+          <div><dt>{copy.domain}</dt><dd>{summary.host || "—"}</dd></div>
+          <div><dt>{copy.address}</dt><dd dir="ltr">{summary.url || "—"}</dd></div>
+          <div><dt>{copy.when}</dt><dd>{formatWhen(summary.scannedAt, locale)}</dd></div>
+          <div><dt>{copy.status}</dt><dd>{statusLabel}</dd></div>
+        </dl>
+      </header>
+      <div className="free-report__meters">
+        <article>
+          <b>{summary.checkedScore ?? "—"}<small>/100</small></b>
+          <span>{copy.score}</span>
+          <i>{copy.scoreOf}</i>
+          <div className="free-report__track" aria-hidden="true"><span style={{ width: `${score}%` }} /></div>
+          <p>{copy.scoreHelp}</p>
+        </article>
+        <article>
+          <b>{summary.coverage ?? "—"}<small>%</small></b>
+          <span>{copy.coverage}</span>
+          <div className="free-report__track" aria-hidden="true"><span style={{ width: `${coverage}%` }} /></div>
+          <p>{summary.lowCoverage ? copy.lowCoverage : copy.coverageHelp}</p>
+        </article>
       </div>
-      <p className="scan-not-legal">{summary.checkedScoreLabel || copy.locked}</p>
-      {summary.lowCoverage && <p className="scan-error" role="status">{copy.lowCoverage}</p>}
-      <p>{copy.buyNote}</p>
-      <button type="button" className="scan-start" onClick={onBuy}>{copy.buy}</button>
+      <div className="free-report__metrics">
+        <article className="is-ok"><b>{summary.ok ?? 0}</b><span>{copy.ok}</span><p>{copy.okHelp}</p></article>
+        <article className="is-action"><b>{summary.action ?? 0}</b><span>{copy.action}</span><p>{copy.actionHelp}</p></article>
+        <article className="is-missing"><b>{summary.missing ?? 0}</b><span>{copy.missing}</span><p>{copy.missingHelp}</p></article>
+        <article className="is-open"><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span><p>{copy.unverifiedHelp}</p></article>
+      </div>
+      <Link className="free-report__new" to="/compliance">{copy.newScan}</Link>
+      <aside className="free-report__offer">
+        <p>{copy.offer}</p>
+        <strong>₪149</strong>
+        <em>{copy.once}</em>
+        <span>{copy.offerBody}</span>
+        <button type="button" onClick={checkPurchase}>{copy.check}</button>
+        <small role="status">{purchaseNote}</small>
+      </aside>
     </section>
   );
 }

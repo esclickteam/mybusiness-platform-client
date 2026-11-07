@@ -24842,6 +24842,13 @@
     }
   },
   "trackingConsent": {
+    "noticeTitle": "Your privacy matters to us",
+    "noticeIntro": "We use cookies to run the site and to remember your language and this choice. Advertising cookies load only if you allow them, and they turn on the Meta Pixel only.",
+    "essentialOnly": "Essential cookies only",
+    "manage": "Manage cookies",
+    "manageTitle": "Manage cookie preferences",
+    "back": "Back",
+    "close": "Close",
     "title": "Cookie use on the Bizuply site",
     "intro": "Necessary cookies stay on. Advertising cookies are optional and control the Meta Pixel. Analytics and functionality are not used on this site.",
     "change": "You can change or withdraw this choice at any time.",

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { renderCookieBannerPaint, trackingChoiceFromCookie } from "./cookieBannerPaint.mjs";
+import { renderCookieBannerPaint, renderCookieManagerInner, renderCookieNoticeInner, trackingChoiceFromCookie } from "./cookieBannerPaint.mjs";
 
 describe("cookie banner first paint", () => {
   it("keeps a saved choice from showing the banner and lets the newest choice win", () => {
@@ -14,26 +14,41 @@ describe("cookie banner first paint", () => {
     expect(trackingChoiceFromCookie("bizuply_tracking=all; bizuply_tracking=v2:none:2026-11-07")).toBe("essential");
   });
 
-  it("offers only the Meta Pixel and the real legal pages", () => {
+  it("shows a short notice first and keeps the categories in the manager", () => {
     const hebrew = renderCookieBannerPaint("he");
-    expect(hebrew).toContain("השימוש בעוגיות באתר Bizuply");
-    expect(hebrew).toContain("אישור כל העוגיות");
-    expect(hebrew).toContain("דחיית כל העוגיות הלא חיוניות");
-    expect(hebrew).toContain("שמירת העדפות");
-    expect(hebrew).toContain("אינה בשימוש");
-    expect(hebrew).toContain('role="switch" aria-checked="true" disabled');
-    expect(hebrew).toContain('id="bizuply-cookie-advertising"');
-    expect(hebrew).toContain('href="/he/privacy#section-8"');
-    expect(hebrew).toContain('href="/he/privacy"');
-    expect(hebrew).toContain('href="/he/terms"');
-    expect(hebrew).toContain("Meta Pixel");
-    expect(hebrew).not.toContain("Google Analytics");
+    const visible = hebrew.split("<script>")[0];
+    expect(visible).toContain("הפרטיות שלכם חשובה לנו");
+    expect(visible).toContain("אישור כל העוגיות");
+    expect(visible).toContain("עוגיות חיוניות בלבד");
+    expect(visible).toContain("ניהול עוגיות");
+    expect(visible).toContain('href="/he/privacy#section-8"');
+    expect(visible).toContain('href="/he/privacy"');
+    expect(visible).toContain('href="/he/terms"');
+    expect(visible).not.toContain("cookie-banner__cat");
+    expect(visible).not.toContain('role="switch"');
+    expect(visible).not.toContain("שמירת העדפות");
+
+    const manager = renderCookieManagerInner("he");
+    expect(manager).toContain("ניהול העדפות העוגיות");
+    expect(manager).toContain("שמירת העדפות");
+    expect(manager).toContain("חזרה");
+    expect(manager).toContain("אינה בשימוש");
+    expect(manager).toContain('role="switch" aria-checked="true" disabled');
+    expect(manager).toContain('id="bizuply-cookie-advertising"');
+    expect(manager).not.toContain("אישור כל העוגיות");
+    expect(manager).not.toContain("עוגיות חיוניות בלבד");
+    expect(hebrew).toContain("bizuplyOpenCookieManager");
     expect(hebrew).toContain("v2:ad:2026-11-07");
     expect(hebrew).toContain("v2:none:2026-11-07");
+    expect(hebrew).not.toContain("Google Analytics");
 
-    const english = renderCookieBannerPaint("en");
+    const english = renderCookieNoticeInner("en");
+    expect(english).toContain("Your privacy matters to us");
     expect(english).toContain('href="/privacy#section-8"');
     expect(english).toContain('href="/terms"');
+    expect(renderCookieManagerInner("ar")).toContain("إدارة تفضيلات ملفات تعريف الارتباط");
+    expect(renderCookieNoticeInner("es")).toContain("Solo cookies esenciales");
+    expect(renderCookieNoticeInner("pt-BR")).toContain("Somente cookies essenciais");
   });
 
   it("uses the same critical stylesheet on both shells", () => {

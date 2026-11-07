@@ -9,6 +9,7 @@ declare global {
     __BIZUPLY_PUBLIC_SITE__?: boolean;
     __bizuplyCookieManage?: boolean;
     __bizuplyCookieMarketing?: boolean;
+    __bizuplyCookieView?: "notice" | "manage";
   }
 }
 
@@ -88,19 +89,18 @@ export default function PlatformConsentBanner() {
   const [open, setOpen] = useState(
     () => !window.__BIZUPLY_PUBLIC_SITE__ && !readConsent().decided,
   );
-  const [advertisement, setAdvertisement] = useState(() => readConsent().advertisement);
+  const [view, setView] = useState<"notice" | "manage">(() =>
+    window.__bizuplyCookieView === "manage" || window.__bizuplyCookieManage ? "manage" : "notice",
+  );
+  const [advertisement, setAdvertisement] = useState(() =>
+    typeof window.__bizuplyCookieMarketing === "boolean"
+      ? window.__bizuplyCookieMarketing
+      : readConsent().advertisement,
+  );
   const [saveFailed, setSaveFailed] = useState(false);
 
   useLayoutEffect(() => {
-    if (window.__bizuplyCookieManage) {
-      window.__bizuplyCookieManage = false;
-      setAdvertisement(
-        typeof window.__bizuplyCookieMarketing === "boolean"
-          ? window.__bizuplyCookieMarketing
-          : readConsent().advertisement,
-      );
-      setOpen(true);
-    }
+    window.__bizuplyCookieManage = false;
     document.getElementById("bizuply-cookie-paint")?.remove();
   }, []);
 
@@ -108,15 +108,33 @@ export default function PlatformConsentBanner() {
     const reopen = () => {
       setAdvertisement(readConsent().advertisement);
       setSaveFailed(false);
+      setView("manage");
       setOpen(true);
     };
     window.addEventListener("bizuply-open-cookie-settings", reopen);
     return () => window.removeEventListener("bizuply-open-cookie-settings", reopen);
   }, []);
 
+  function leaveManage() {
+    setAdvertisement(readConsent().advertisement);
+    setSaveFailed(false);
+    if (readConsent().decided) setOpen(false);
+    else setView("notice");
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || view !== "manage") return;
+      leaveManage();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, view]);
+
   useEffect(() => {
     if (open) panelRef.current?.focus();
-  }, [open]);
+  }, [open, view]);
 
   if (!open || window.__BIZUPLY_PUBLIC_SITE__) return null;
 
@@ -129,6 +147,7 @@ export default function PlatformConsentBanner() {
     }
     setAdvertisement(next);
     setSaveFailed(false);
+    setView("notice");
     setOpen(false);
   }
 
@@ -151,26 +170,60 @@ export default function PlatformConsentBanner() {
     { name: "_fbc", provider: text("meta"), purpose: text("fbcPurpose"), duration: text("metaDuration") },
   ];
 
+  const legal = (
+    <p>
+      {text("change")} {text("more")}
+      <Link to="/privacy">{text("policy")}</Link>
+      {text("join")}
+      <Link to="/privacy#section-8">{text("cookiePolicy")}</Link>
+      {text("termsJoin")}
+      <Link to="/terms">{text("terms")}</Link>
+    </p>
+  );
+
   return (
     <div
       ref={panelRef}
-      className="cookie-banner"
+      className={`cookie-banner cookie-banner--${view}`}
       dir={getTextDirection(i18n.language)}
       role="dialog"
       aria-labelledby="tracking-consent-title"
       tabIndex={-1}
     >
+      {view === "notice" ? (
+        <>
+          <div className="cookie-banner__scroll">
+            <h2 id="tracking-consent-title">{text("noticeTitle")}</h2>
+            <p>{text("noticeIntro")}</p>
+            {legal}
+            {saveFailed ? <p className="cookie-banner__error" role="alert">{text("saveFailed")}</p> : null}
+          </div>
+          <div className="cookie-banner__actions">
+            <button type="button" className="cookie-banner__primary" onClick={() => persist(true)}>
+              {text("acceptAll")}
+            </button>
+            <button type="button" className="cookie-banner__secondary" onClick={() => persist(false)}>
+              {text("essentialOnly")}
+            </button>
+            <button
+              type="button"
+              className="cookie-banner__secondary"
+              onClick={() => {
+                setAdvertisement(readConsent().advertisement);
+                setSaveFailed(false);
+                setView("manage");
+              }}
+            >
+              {text("manage")}
+            </button>
+          </div>
+        </>
+      ) : (
+        <>
       <div className="cookie-banner__scroll">
-        <h2 id="tracking-consent-title">{text("title")}</h2>
+        <h2 id="tracking-consent-title">{text("manageTitle")}</h2>
         <p>{text("intro")}</p>
-        <p>
-          {text("change")} {text("more")}
-          <Link to="/privacy">{text("policy")}</Link>
-          {text("join")}
-          <Link to="/privacy#section-8">{text("cookiePolicy")}</Link>
-          {text("termsJoin")}
-          <Link to="/terms">{text("terms")}</Link>
-        </p>
+        {legal}
         <Category
           id="cookie-necessary"
           title={text("necessaryTitle")}
@@ -221,16 +274,15 @@ export default function PlatformConsentBanner() {
         {saveFailed ? <p className="cookie-banner__error" role="alert">{text("saveFailed")}</p> : null}
       </div>
       <div className="cookie-banner__actions">
-        <button type="button" className="cookie-banner__primary" onClick={() => persist(true)}>
-          {text("acceptAll")}
-        </button>
-        <button type="button" className="cookie-banner__secondary" onClick={() => persist(false)}>
-          {text("rejectAll")}
-        </button>
-        <button type="button" className="cookie-banner__secondary" onClick={() => persist(advertisement)}>
+        <button type="button" className="cookie-banner__primary" onClick={() => persist(advertisement)}>
           {text("save")}
         </button>
+        <button type="button" className="cookie-banner__secondary" onClick={leaveManage}>
+          {readConsent().decided ? text("close") : text("back")}
+        </button>
       </div>
+        </>
+      )}
     </div>
   );
 }
