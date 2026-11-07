@@ -8,7 +8,7 @@ export function geoIntelCopy() {
     seed: "אתחול נתונים",
     seedConfirmTitle: "לאשר אתחול נתונים?",
     seedConfirmBody:
-      "יסונכרנו המותגים Bizuply (20 שאלות EN) ו־Invistimo (20 שאלות HE). שאלות ישנות עם היסטוריית מדידות יישמרו כלא־פעילות. לא נמחקת היסטוריה ולא נוצרות כפילויות פעילות.",
+      "יסונכרנו המותגים Bizuply (150 שאלות EN) ו־Invistimo (150 שאלות HE). שאלות ישנות עם היסטוריית מדידות יישמרו כלא־פעילות. לא נמחקת היסטוריה ולא נוצרות כפילויות פעילות.",
     seedConfirmAction: "כן, אתחל נתונים",
     seedCancel: "ביטול",
     seedDoneTitle: "אתחול הושלם",
@@ -59,9 +59,42 @@ export function geoIntelCopy() {
     noData: "התחל את המעקב כדי לראות נראות לאורך זמן. אין ציון מפוברק.",
     brand: "מותג",
     importCsv: "ייבוא מ־Search Console",
-    freeOnly: "מערכת פרטית לבעלים · Phase A · מכסה חינמית · ללא OpenAI · ללא Billing",
+    freeOnly:
+      "מערכת פרטית לבעלים · חמישה מנועים בלבד · ללא חיובים חדשים ללא אישור · Staging בלבד",
     plannedHost: "geo.bizuply.com — דומיין פרטי פעיל · בעלים בלבד · noindex",
     privateOwnerOnly: "גישה לחשבון המנהל המורשה בלבד · לא מוצר ללקוחות",
+    metricDefinitionsTitle: "איך מחושבים המדדים",
+    metricDefinitionsBody:
+      "כל אחוז מחושב רק מתוך בדיקות שהושלמו בהצלחה (מדידות אמת). בדיקות שנכשלו או נתוני בדיקה אינן נכנסות למכנה. כשאין מדגם — מוצג «—» ולא 0%. תוצאות API אינן זהות בהכרח לממשק הצרכני.",
+    sampleTooSmall:
+      "מדגם קטן — יש לפרש בזהירות עד שיצטברו מדידות נוספות.",
+    langHebrew: "עברית",
+    langEnglish: "אנגלית",
+    apiCallLabel: "קריאת API",
+    dataClassLabel: "סוג נתון",
+    detailMeta: "פרטי מדידה",
+    competitorsDetected: "מתחרים שזוהו",
+    dismissBanners: "הסתר הערות מערכת",
+    navCatalogDraft: "טיוטת קטלוג",
+    catalogDraftTitle: "קטלוג שאלות v3 (150×2)",
+    catalogDraftHint:
+      "150 שאלות לכל מותג · הקטלוג הפעיל הוא v3 · סנכרון Staging נדרש לפני ניטור מלא",
+    catalogDraftNotActive:
+      "הקטלוג הפעיל בקוד: v3 (150+150). יש לסנכרן את מסד Staging לפני גל מדידות מלא.",
+    category: "קטגוריה",
+    businessImportance: "חשיבות עסקית",
+    importanceHigh: "גבוהה",
+    importanceMedium: "בינונית",
+    importanceLow: "נמוכה",
+    navCosts: "עלויות ומנועים",
+    costsTitle: "חמשת המנועים — עלויות ומדידה",
+    costsHint:
+      "רק ChatGPT, Gemini, AI Overviews/AI Mode, Perplexity ו־Claude. Gemini API אינו AI Overviews.",
+    aioDisclaimer:
+      "Google AI Overviews / AI Mode: אין API לתשובות. מדידה רשמית = רשמי Search Console (רשמים בלבד).",
+    perplexityReadyHint:
+      "Perplexity: קרדיטים קיימים מאושרים לשימוש אחרי הגדרת מפתח ב־Staging + תקרת תקציב.",
+    monitoringOff: "ניטור אוטומטי כבוי עד GEO_MONITORING_ENABLED=1 ומפתחות תקינים.",
     sources: "מקורות",
     ourSources: "מקורות שלנו",
     competitorSources: "מקורות מתחרים",
