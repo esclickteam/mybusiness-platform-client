@@ -49,8 +49,8 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
 
       <div className="site-mobile__panel">
         <div className="site-mobile__top">
-          <Link to="/" onClick={onClose} className="site-mobile__brand" aria-label={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"}>
-            <img src={logo} alt={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"} />
+          <Link to="/" onClick={onClose} className="site-mobile__brand" aria-label={i18n.language === "he" ? "ביזאפלי (BizUply)" : "BizUply"}>
+            <img src={logo} alt={i18n.language === "he" ? "ביזאפלי (BizUply)" : "BizUply"} />
           </Link>
 
           <button
@@ -81,9 +81,10 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
             return (
               <details key={group.id} className="site-mobile__group">
                 <summary>{group.label}</summary>
-                {group.links.map(([to, label]) => (
+                {group.links.map(([to, label, blurb]) => (
                   <Link key={to} to={to} onClick={onClose} className="site-mobile__sub">
-                    {label}
+                    <span>{label}</span>
+                    {blurb ? <small>{blurb}</small> : null}
                   </Link>
                 ))}
               </details>

@@ -618,7 +618,7 @@
     "ctaTitle": "Build your business OS.",
     "ctaText": "Start managing your business page, CRM, collaborations and AI tools in one place.",
     "ctaButton": "Register now",
-    "rights": "© {{year}} Bizuply. All rights reserved.",
+    "rights": "© {{year}} Bizuply LLC. All rights reserved.",
     "platform": "Platform",
     "services": "Services",
     "crm": "CRM",
@@ -627,7 +627,13 @@
     "appointments": "Appointments",
     "automations": "Automations",
     "agents": "Business Agents",
-    "logoAria": "Bizuply — home"
+    "products": "Products",
+    "resources": "Resources",
+    "whatsapp": "WhatsApp",
+    "meta": "Meta campaigns",
+    "guides": "Guides",
+    "partners": "Partner program",
+    "logoAria": "BizUply — home"
   },
   "businessNav": {
     "dashboard": "Dashboard",

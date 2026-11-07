@@ -618,7 +618,7 @@
     "ctaTitle": "Construye tu sistema operativo de negocio.",
     "ctaText": "Comience a administrar su página de negocios, CRM, colaboraciones y herramientas de IA en un solo lugar.",
     "ctaButton": "Regístrese ahora",
-    "rights": "{{year}} BizUply. Todos los derechos reservados.",
+    "rights": "© {{year}} Bizuply LLC. Todos los derechos reservados.",
     "platform": "Plataforma",
     "services": "Servicios",
     "crm": "CRM",
@@ -627,6 +627,12 @@
     "appointments": "Citas",
     "automations": "Automatizaciones",
     "agents": "Agentes de negocio",
+    "products": "Productos",
+    "resources": "Recursos",
+    "whatsapp": "WhatsApp",
+    "meta": "Campañas de Meta",
+    "guides": "Guías",
+    "partners": "Programa de socios",
     "logoAria": "BizUply Inicio"
   },
   "businessNav": {
