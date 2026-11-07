@@ -50,6 +50,8 @@ export default function PlatformConsentBanner() {
       <p>
         {t("trackingConsent.change")} {t("trackingConsent.more")}
         <Link to="/privacy">{t("trackingConsent.policy")}</Link>
+        {t("trackingConsent.join")}
+        <Link to="/privacy#section-8">{t("trackingConsent.cookiePolicy")}</Link>
       </p>
       <div className="cookie-banner__actions">
         <button type="button" className="cookie-banner__primary" onClick={() => choose("all")}>

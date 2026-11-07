@@ -24839,6 +24839,8 @@
     "change": "You can change this choice at any time through the cookie settings.",
     "more": "For more information, see the ",
     "policy": "Privacy Policy",
+    "join": " and the ",
+    "cookiePolicy": "Cookie Policy",
     "essential": "Essential cookies only",
     "all": "Accept all cookies"
   },
