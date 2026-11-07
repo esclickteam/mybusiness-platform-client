@@ -1,0 +1,218 @@
+/* Shared visual skin for business profile and billing. Logic stays in the components. */
+
+.acct-app {
+  --acct-ink: #21172f;
+  --acct-brand: #5b21b6;
+  --acct-emph: #6334c5;
+  --acct-blue: #3d63ff;
+  --acct-canvas: #f4f1fa;
+  background: var(--acct-canvas);
+  color: var(--acct-ink);
+  font-family: Assistant, Inter, system-ui, sans-serif;
+}
+
+.acct-app,
+.acct-app * {
+  border-radius: 0 !important;
+}
+
+.acct-app .blur-3xl,
+.acct-app .blur-2xl,
+.acct-app .blur-xl {
+  display: none;
+}
+
+.acct-app h1,
+.acct-app h2,
+.acct-app h3 {
+  color: var(--acct-ink);
+  letter-spacing: -0.03em;
+  overflow-wrap: break-word;
+}
+
+.acct-app .text-slate-400,
+.acct-app .text-slate-500 {
+  color: #3d3452 !important;
+}
+
+.acct-app section {
+  box-shadow: 0 14px 36px rgba(50, 16, 100, 0.06);
+}
+
+.acct-app .acct-hero {
+  background: linear-gradient(90deg, #6334c5 0%, #5b21b6 58%, #4c1d95 100%) !important;
+  border-color: transparent !important;
+  color: #fff;
+}
+
+.acct-app .acct-hero h1,
+.acct-app .acct-hero .acct-kicker,
+.acct-app .acct-hero > .relative > p,
+.acct-app .acct-hero .relative > p {
+  color: #fff !important;
+}
+
+.acct-app .acct-kicker {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+}
+
+.acct-app .acct-hero .grid > div {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: transparent !important;
+}
+
+.acct-app .acct-hero .grid > div p {
+  color: #fff !important;
+}
+
+.acct-app button[class*="bg-gradient"],
+.acct-app a[class*="bg-gradient"] {
+  background: var(--acct-brand) !important;
+  color: #fff !important;
+  border-color: var(--acct-brand) !important;
+}
+
+.acct-app button:hover,
+.acct-app a:hover {
+  transform: none !important;
+}
+
+.acct-app button:focus-visible,
+.acct-app a:focus-visible,
+.acct-app input:focus-visible,
+.acct-app textarea:focus-visible,
+.acct-app select:focus-visible {
+  outline: 2px solid var(--acct-brand);
+  outline-offset: 2px;
+}
+
+.acct-app input,
+.acct-app textarea,
+.acct-app select {
+  color: var(--acct-ink);
+  background: #fff;
+}
+
+.acct-app table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.acct-app th {
+  color: var(--acct-ink);
+  font-weight: 800;
+  text-align: start;
+  background: #f7f4fc;
+}
+
+.acct-app td,
+.acct-app th {
+  border-bottom: 1px solid rgba(91, 33, 182, 0.12);
+  padding: 12px 10px;
+}
+
+.acct-app .bg-emerald-50,
+.acct-app .text-emerald-700 {
+  color: #047857 !important;
+}
+
+.acct-app .bg-rose-50,
+.acct-app .text-rose-700,
+.acct-app .text-rose-800 {
+  color: #be123c !important;
+}
+
+.acct-app .bg-amber-50,
+.acct-app .text-amber-700 {
+  color: #b45309 !important;
+}
+
+.acct-upgrade {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+  background: #f4f1fa;
+  color: #21172f;
+}
+
+.acct-upgrade-card {
+  max-width: 520px;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 14px 36px rgba(50, 16, 100, 0.08);
+  padding: 40px 32px;
+  text-align: center;
+  border: 1px solid rgba(91, 33, 182, 0.14);
+}
+
+.acct-upgrade-mark {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  background: #5b21b6;
+  color: #fff;
+  font-weight: 800;
+}
+
+.acct-upgrade-card h2 {
+  margin: 0 0 12px;
+  font-size: 24px;
+  color: #21172f;
+}
+
+.acct-upgrade-card p {
+  margin: 0 0 24px;
+  color: #2a2238;
+  line-height: 1.7;
+  white-space: pre-line;
+}
+
+.acct-upgrade-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.acct-upgrade-actions a {
+  padding: 12px 28px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.acct-upgrade-primary {
+  background: #5b21b6;
+  color: #fff;
+}
+
+.acct-upgrade-secondary {
+  background: #fff;
+  color: #21172f;
+  border: 1px solid rgba(91, 33, 182, 0.28);
+}
+
+.acct-app .react-tel-input .form-control,
+.acct-app .react-tel-input .flag-dropdown {
+  border-radius: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .acct-app {
+    padding-inline: 0;
+  }
+
+  .acct-app h1 {
+    font-size: 1.7rem !important;
+    line-height: 1.2;
+  }
+
+  .acct-upgrade-card {
+    padding: 28px 18px;
+  }
+}

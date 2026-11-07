@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import API from "../api";
+import "./accountDesign.css";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import { getTextDirection } from "../i18n/localeUtils";
@@ -292,7 +293,7 @@ export default function BusinessProfilePage({
   return (
     <main
       dir={pageDir}
-      className="min-h-screen bg-slate-50/70 px-4 py-6 sm:px-6 lg:px-8"
+      className="acct-app min-h-screen px-4 py-6 sm:px-6 lg:px-8"
     >
       <div className="mx-auto w-full max-w-7xl space-y-6">
         {isOwnerViewingOther && (
@@ -306,7 +307,7 @@ export default function BusinessProfilePage({
           </button>
         )}
 
-        <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
+        <section className="acct-hero relative overflow-hidden p-5 sm:p-7">
           <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
@@ -325,7 +326,7 @@ export default function BusinessProfilePage({
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
+                <div className="acct-kicker inline-flex items-center gap-2 px-4 py-2 text-xs font-black">
                   <Sparkles className="h-4 w-4" />
                   {t("collab.businessPage.badge")}
                 </div>
@@ -780,7 +781,7 @@ function ErrorState({ text }: { text: string }) {
   return (
     <div
       dir={pageDir}
-      className="flex min-h-screen items-center justify-center bg-slate-50 p-4"
+      className="acct-app flex min-h-screen items-center justify-center p-4"
     >
       <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center shadow-sm">
         <p className="text-lg font-black text-rose-700">{text}</p>
