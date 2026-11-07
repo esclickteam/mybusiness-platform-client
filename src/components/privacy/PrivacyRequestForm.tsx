@@ -10,6 +10,8 @@ type Copy = {
   intro: string;
   email: string;
   name: string;
+  business: string;
+  confirm: string;
   kind: string;
   about: string;
   details: string;
@@ -36,7 +38,9 @@ const COPY: Record<string, Copy> = {
     title: "Access or correction request",
     intro: "This form records the request. It does not verify identity, it does not show anyone else's information, and it does not delete records.",
     email: "Email",
-    name: "Name",
+    name: "Full name",
+    business: "Business name, if you know it",
+    confirm: "I am sending these details so the request can be handled.",
     kind: "Request",
     about: "The information is about",
     details: "What should be reviewed",
@@ -47,7 +51,7 @@ const COPY: Record<string, Copy> = {
     other: "Another privacy request",
     account: "My Bizuply account, billing, or support record",
     customer: "Information a business customer stored about me",
-    received: "The request was recorded. Identity is not verified yet, nothing was disclosed, and nothing was deleted. Reference",
+    received: "The request was received and recorded. We may contact you to verify identity or to ask for more information. Sending the request does not approve a change or a disclosure. Reference",
     customerNote: "Bizuply will not release a business customer's database from this form. After the account is matched, the request is routed to that customer.",
     unavailable: "The request was not recorded because this server does not have the request route yet.",
     failed: "The request was not recorded.",
@@ -61,7 +65,9 @@ const COPY: Record<string, Copy> = {
     title: "בקשת עיון או תיקון",
     intro: "הטופס מתעד את הבקשה. הוא לא מאמת זהות, לא מציג מידע של אדם אחר, ולא מוחק רשומות.",
     email: "דוא״ל",
-    name: "שם",
+    name: "שם מלא",
+    business: "שם העסק, אם הוא ידוע",
+    confirm: "אני מוסר את הפרטים כדי שאפשר יהיה לטפל בבקשה.",
     kind: "הבקשה",
     about: "המידע נוגע אל",
     details: "מה צריך לבדוק",
@@ -72,7 +78,7 @@ const COPY: Record<string, Copy> = {
     other: "בקשת פרטיות אחרת",
     account: "החשבון, החיוב או הפנייה שלי ב־Bizuply",
     customer: "מידע שלקוח עסקי שמר עליי",
-    received: "הבקשה נרשמה. הזהות עדיין לא אומתה, לא נמסר מידע, ולא נמחקה רשומה. אסמכתה",
+    received: "הבקשה התקבלה ונרשמה במערכת. ייתכן שניצור איתך קשר לצורך אימות זהות או קבלת מידע נוסף. עצם שליחת הבקשה אינה מהווה אישור לביצוע שינוי או למסירת מידע. אסמכתה",
     customerNote: "Bizuply לא מוסרת מטופס זה מאגר של לקוח עסקי. אחרי התאמת החשבון הבקשה מועברת לאותו לקוח.",
     unavailable: "הבקשה לא נרשמה כי השרת הזה עדיין בלי מסלול הבקשות.",
     failed: "הבקשה לא נרשמה.",
@@ -86,7 +92,9 @@ const COPY: Record<string, Copy> = {
     title: "Solicitud de acceso o corrección",
     intro: "El formulario registra la solicitud. No verifica la identidad, no muestra información de otra persona y no borra registros.",
     email: "Correo",
-    name: "Nombre",
+    name: "Nombre completo",
+    business: "Nombre del negocio, si se conoce",
+    confirm: "Envío estos datos para que la solicitud pueda tratarse.",
     kind: "Solicitud",
     about: "La información se refiere a",
     details: "Qué hay que revisar",
@@ -97,7 +105,7 @@ const COPY: Record<string, Copy> = {
     other: "Otra solicitud de privacidad",
     account: "Mi cuenta, facturación o soporte de Bizuply",
     customer: "Información que un cliente empresarial guardó sobre mí",
-    received: "La solicitud quedó registrada. La identidad aún no está verificada, no se divulgó nada y no se borró nada. Referencia",
+    received: "La solicitud se recibió y quedó registrada. Es posible que contactemos para verificar la identidad o pedir más datos. Enviar la solicitud no aprueba un cambio ni una divulgación. Referencia",
     customerNote: "Bizuply no entrega desde este formulario la base de un cliente empresarial. Tras identificar la cuenta, la solicitud se envía a ese cliente.",
     unavailable: "La solicitud no se registró porque este servidor aún no tiene la ruta.",
     failed: "La solicitud no se registró.",
@@ -111,7 +119,9 @@ const COPY: Record<string, Copy> = {
     title: "Pedido de acesso ou correção",
     intro: "O formulário registra o pedido. Ele não verifica a identidade, não mostra informação de outra pessoa e não apaga registros.",
     email: "E-mail",
-    name: "Nome",
+    name: "Nome completo",
+    business: "Nome do negócio, se for conhecido",
+    confirm: "Envio estes dados para que o pedido possa ser tratado.",
     kind: "Pedido",
     about: "A informação é sobre",
     details: "O que deve ser revisto",
@@ -122,7 +132,7 @@ const COPY: Record<string, Copy> = {
     other: "Outro pedido de privacidade",
     account: "Minha conta, cobrança ou suporte na Bizuply",
     customer: "Informação que um cliente empresarial guardou sobre mim",
-    received: "O pedido foi registrado. A identidade ainda não foi verificada, nada foi divulgado e nada foi apagado. Referência",
+    received: "O pedido foi recebido e registrado. Podemos entrar em contato para verificar a identidade ou pedir mais dados. Enviar o pedido não aprova uma alteração nem uma divulgação. Referência",
     customerNote: "A Bizuply não entrega por este formulário a base de um cliente empresarial. Depois de identificar a conta, o pedido segue para esse cliente.",
     unavailable: "O pedido não foi registrado porque este servidor ainda não tem a rota.",
     failed: "O pedido não foi registrado.",
@@ -136,7 +146,9 @@ const COPY: Record<string, Copy> = {
     title: "طلب اطلاع أو تصحيح",
     intro: "يسجّل النموذج الطلب. لا يتحقق من الهوية، ولا يعرض معلومات شخص آخر، ولا يحذف السجلات.",
     email: "البريد",
-    name: "الاسم",
+    name: "الاسم الكامل",
+    business: "اسم النشاط، إن كان معروفًا",
+    confirm: "أُرسل هذه البيانات حتى يمكن معالجة الطلب.",
     kind: "الطلب",
     about: "تتعلق المعلومات بـ",
     details: "ما الذي يجب مراجعته",
@@ -147,7 +159,7 @@ const COPY: Record<string, Copy> = {
     other: "طلب خصوصية آخر",
     account: "حسابي أو الفوترة أو الدعم لدى Bizuply",
     customer: "معلومات حفظها عميل تجاري عني",
-    received: "تم تسجيل الطلب. لم يتم التحقق من الهوية بعد، ولم يُكشف شيء، ولم يُحذف شيء. المرجع",
+    received: "تم استلام الطلب وتسجيله. قد نتواصل للتحقق من الهوية أو لطلب معلومات إضافية. إرسال الطلب ليس موافقة على تغيير أو على كشف معلومات. المرجع",
     customerNote: "لا تسلّم Bizuply من هذا النموذج قاعدة عميل تجاري. بعد مطابقة الحساب يُحال الطلب إلى ذلك العميل.",
     unavailable: "لم يُسجل الطلب لأن هذا الخادم لا يملك مسار الطلبات بعد.",
     failed: "لم يُسجل الطلب.",
@@ -173,6 +185,8 @@ export default function PrivacyRequestForm() {
   const copy = copyFor(i18n.language);
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [confirmed, setConfirmed] = useState(false);
   const [kind, setKind] = useState<Kind>("access");
   const [about, setAbout] = useState<About>("account");
   const [details, setDetails] = useState("");
@@ -189,6 +203,8 @@ export default function PrivacyRequestForm() {
       const { data } = await API.post("/privacy/requests", {
         email,
         name,
+        businessName,
+        confirmed,
         kind,
         about,
         details,
@@ -201,7 +217,7 @@ export default function PrivacyRequestForm() {
       setRequestId(String(data.id));
       const note = data.routing === "forward_to_customer" ? ` ${copy.customerNote}` : "";
       const delivery = data.verificationSent ? copy.codeSent : copy.codeMissing;
-      setMessage(`${copy.received} ${data.id}. ${delivery}${note}`);
+      setMessage(`${copy.received} ${data.reference || data.id}. ${delivery}${note}`);
     } catch (err) {
       const status = (err as { response?: { status?: number } }).response?.status;
       setMessage(status === 404 || status === 405 ? copy.unavailable : copy.failed);
@@ -230,7 +246,7 @@ export default function PrivacyRequestForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="mb-8 rounded-3xl border border-slate-200 bg-white p-5" aria-labelledby="privacy-request-title">
+    <form id="privacy-request" onSubmit={onSubmit} className="mb-8 rounded-3xl border border-slate-200 bg-white p-5" aria-labelledby="privacy-request-title">
       <h2 id="privacy-request-title" className="mb-3 text-xl font-semibold text-slate-900">{copy.title}</h2>
       <p className="mb-4 text-sm leading-7 text-slate-600">{copy.intro}</p>
       <label className="mb-3 block text-sm font-medium text-slate-800">
@@ -240,6 +256,10 @@ export default function PrivacyRequestForm() {
       <label className="mb-3 block text-sm font-medium text-slate-800">
         {copy.name}
         <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2" type="text" autoComplete="name" value={name} onChange={(event) => setName(event.target.value)} />
+      </label>
+      <label className="mb-3 block text-sm font-medium text-slate-800">
+        {copy.business}
+        <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900" type="text" value={businessName} onChange={(event) => setBusinessName(event.target.value)} />
       </label>
       <label className="mb-3 block text-sm font-medium text-slate-800">
         {copy.kind}
@@ -260,6 +280,10 @@ export default function PrivacyRequestForm() {
       <label className="mb-4 block text-sm font-medium text-slate-800">
         {copy.details}
         <textarea className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2" rows={4} maxLength={2000} value={details} onChange={(event) => setDetails(event.target.value)} />
+      </label>
+      <label className="mb-4 flex items-start gap-2 text-sm font-medium text-slate-800">
+        <input type="checkbox" required checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />
+        <span>{copy.confirm}</span>
       </label>
       <button type="submit" className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-60" disabled={pending}>
         {copy.submit}

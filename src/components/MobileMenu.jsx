@@ -4,6 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 const logo = "/logo-mark.svg";
 import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
+import { privacyFacts } from "./privacy/PrivacyFacts";
 import { normalizeMarketingLocale } from "../lib/localePathCore.mjs";
 import { marketingNav } from "../lib/marketingNav.mjs";
 import { businessNoAccessPath } from "../utils/whatsappApiPortal";
@@ -105,6 +106,9 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
             <>
               <Link to={accountPath} onClick={onClose} className="site-mobile__cta">
                 {t("common.myAccount")}
+              </Link>
+              <Link to="/privacy#privacy-request" onClick={onClose} className="site-mobile__cta site-mobile__cta--ghost">
+                {privacyFacts(i18n.language).link}
               </Link>
               <button
                 type="button"

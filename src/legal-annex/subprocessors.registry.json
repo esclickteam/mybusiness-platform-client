@@ -87,15 +87,15 @@
     },
     {
       "provider": "Meta",
-      "service": "WhatsApp Business API and measurement pixel",
-      "data": "Customer messaging data when WhatsApp is connected. Pixel events only after measurement consent in this branch.",
+      "service": "WhatsApp Business, connected lead forms and ads, measurement pixel",
+      "data": "WhatsApp business communication when connected. Lead fields and campaign identifiers stored on the customer record when a lead form is connected. Pixel events only after measurement consent in this branch. Custom-audience membership lists and a Conversions API pipeline were not identified as stored products.",
       "role": "Processor for WhatsApp customer data to the extent the Business Terms say so",
       "region": "Not read from the business account",
       "dpa": "https://www.whatsapp.com/legal/business-data-processing-terms",
       "applicability": "WhatsApp Business Data Processing Terms last updated 22 August 2025. They apply to the extent the Business Terms say WhatsApp processes customer data as processor. Acceptance in this business account was not found. The pixel is a separate Meta tool.",
       "transfer": "Not verified",
       "status": "ACTION_REQUIRED",
-      "gap": "Confirm the WhatsApp Business terms and the pixel terms accepted in the Meta account."
+      "gap": "Confirm the WhatsApp Business terms, the lead and ads permissions, and the pixel terms accepted in the Meta account. No signed copy was found in the repository."
     },
     {
       "provider": "Google Fonts",

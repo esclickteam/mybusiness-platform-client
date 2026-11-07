@@ -4,6 +4,7 @@ import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 import PrivacyRequestForm from "../components/privacy/PrivacyRequestForm";
+import PrivacyFacts from "../components/privacy/PrivacyFacts";
 import { clearTrackingChoice } from "../lib/trackingConsent";
 
 function PrivacyPolicy() {
@@ -374,6 +375,8 @@ function PrivacyPolicy() {
 
             <p className={pBase}>{t("privacyPage.s17.p3")}</p>
           </section>
+
+          <PrivacyFacts className={sectionBase} />
 
           <PrivacyRequestForm />
 

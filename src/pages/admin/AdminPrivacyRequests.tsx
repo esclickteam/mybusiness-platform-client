@@ -4,10 +4,15 @@ import API from "../../api";
 
 type PrivacyRow = {
   id: string;
+  reference?: string;
   email: string;
+  maskedEmail?: string;
   kind: string;
+  about?: string;
   controller: string;
   status: string;
+  createdAt?: string;
+  assigneeId?: string;
   emailVerified: boolean;
   identityVerified: boolean;
   deadlineAt?: string | null;
@@ -32,6 +37,7 @@ const COPY = {
     confirm: "Confirm identity",
     forward: "Route to customer",
     close: "Close",
+    more: "Ask for more information",
     saved: "The action was recorded. No deletion was performed by this screen.",
     blocked: "The action was refused.",
   },
@@ -44,6 +50,7 @@ const COPY = {
     confirm: "אישור זהות",
     forward: "העברה ללקוח",
     close: "סגירה",
+    more: "בקשת מידע נוסף",
     saved: "הפעולה נרשמה. המסך הזה לא ביצע מחיקה.",
     blocked: "הפעולה נדחתה.",
   },
@@ -56,6 +63,7 @@ const COPY = {
     confirm: "Confirmar identidad",
     forward: "Enviar al cliente",
     close: "Cerrar",
+    more: "Pedir más información",
     saved: "La acción quedó registrada. Esta pantalla no borró nada.",
     blocked: "La acción fue rechazada.",
   },
@@ -68,6 +76,7 @@ const COPY = {
     confirm: "Confirmar identidade",
     forward: "Encaminhar ao cliente",
     close: "Encerrar",
+    more: "Pedir mais informação",
     saved: "A ação foi registrada. Esta tela não apagou nada.",
     blocked: "A ação foi recusada.",
   },
@@ -80,6 +89,7 @@ const COPY = {
     confirm: "تأكيد الهوية",
     forward: "إحالة إلى العميل",
     close: "إغلاق",
+    more: "طلب معلومات إضافية",
     saved: "تم تسجيل الإجراء. هذه الشاشة لم تحذف شيئًا.",
     blocked: "تم رفض الإجراء.",
   },
@@ -152,10 +162,11 @@ export default function AdminPrivacyRequests() {
         <ul className="space-y-3">
           {rows.map((row) => (
             <li key={row.id} className="rounded-2xl border border-slate-200 p-4">
-              <p className="font-medium text-slate-900">{row.kind} · {row.controller} · {row.status}</p>
-              <p className="text-sm text-slate-600">{row.email}</p>
+              <p className="font-medium text-slate-900">{row.reference || row.id} · {row.kind} · {row.about || row.controller} · {row.status}</p>
+              <p className="text-sm text-slate-600">{row.maskedEmail || row.email}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <button type="button" className="rounded-full border border-slate-900 px-3 py-1 text-sm" onClick={() => act(row.id, "confirm_identity")}>{copy.confirm}</button>
+                <button type="button" className="rounded-full border border-slate-900 px-3 py-1 text-sm" onClick={() => act(row.id, "waiting_for_info")}>{copy.more}</button>
                 <button type="button" className="rounded-full border border-slate-900 px-3 py-1 text-sm" onClick={() => act(row.id, "forward")}>{copy.forward}</button>
                 <button type="button" className="rounded-full border border-slate-900 px-3 py-1 text-sm" onClick={() => act(row.id, "set_deadline", { deadlineAt: deadline })}>{copy.deadline}</button>
                 <button type="button" className="rounded-full border border-slate-900 px-3 py-1 text-sm" onClick={() => act(row.id, "close")}>{copy.close}</button>
