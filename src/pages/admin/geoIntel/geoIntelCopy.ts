@@ -89,17 +89,18 @@ export function geoIntelCopy() {
     navCosts: "עלויות ומנועים",
     costsTitle: "תקציב ומנועים",
     costsHint:
-      "תקציב משותף $50 לחודש ל־ChatGPT, Gemini, Perplexity ו־Claude — לשני המותגים יחד. Gemini API אינו AI Overviews.",
+      "תקציב משותף $50 לחודש + תתי־תקרות: Perplexity $15, OpenAI $15, Claude $10, Gemini $10. Gemini API אינו AI Overviews.",
     aioDisclaimer:
       "Google AI Overviews / AI Mode: אין API לתשובות. מדידה רשמית = Search Console (רשמים בלבד), בנפרד מתקציב ה־API.",
     perplexityReadyHint:
-      "Perplexity: קרדיטים קיימים נספרים מול התקציב המשותף $50/חודש.",
+      "Perplexity: קרדיטים קיימים נספרים מול תת־תקרה $15 ומול התקציב המשותף $50.",
     monitoringOff: "ניטור אוטומטי כבוי בסביבה זו.",
     sharedBudgetTitle: "תקציב חודשי משותף",
     sharedBudgetUsed: "נוצל",
     sharedBudgetRemaining: "נותר",
+    engineCapsTitle: "תתי־תקרות לפי מנוע",
     providerLimitNote:
-      "מגבלת האפליקציה אינה מגבלת חיוב קשיחה אצל הספק — יש להגדיר תקרות גם בחשבונות OpenAI / Anthropic / Google / Perplexity.",
+      "מגבלת האפליקציה אינה hard-stop אצל הספק. התראת Budget ב־Google/OpenAI אינה בהכרח עוצרת חיוב — יש להגדיר limit חוסם בכל חשבון.",
     sources: "מקורות",
     ourSources: "מקורות שלנו",
     competitorSources: "מקורות מתחרים",

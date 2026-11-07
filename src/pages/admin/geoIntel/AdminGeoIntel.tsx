@@ -1562,6 +1562,43 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   </div>
                 ) : null}
                 <p className="geo-note">{copy.providerLimitNote}</p>
+                {monitoringStatus?.sharedBudget?.engineAllocationUsd ||
+                costMatrix?.engineAllocationUsd ? (
+                  <div className="geo-card" style={{ marginTop: 12 }}>
+                    <h3>{copy.engineCapsTitle}</h3>
+                    <Table
+                      columns={["מנוע", "תקרה חודשית", "נוצל", "נותר", "סיכון ספק"]}
+                      rows={["perplexity", "openai", "claude", "gemini"].map(
+                        (id) => {
+                          const alloc =
+                            monitoringStatus?.sharedBudget
+                              ?.engineAllocationUsd?.[id] ??
+                            costMatrix?.engineAllocationUsd?.[id];
+                          const row =
+                            monitoringStatus?.sharedBudget?.byEngine?.[id] ||
+                            {};
+                          const risk =
+                            monitoringStatus?.sharedBudget?.providerRiskHe?.[
+                              id
+                            ] ||
+                            costMatrix?.providerRiskHe?.[id] ||
+                            "—";
+                          return [
+                            id,
+                            alloc != null ? `$${alloc}` : "—",
+                            row.spentUsd != null
+                              ? `$${Number(row.spentUsd).toFixed(2)}`
+                              : "—",
+                            row.remainingUsd != null
+                              ? `$${Number(row.remainingUsd).toFixed(2)}`
+                              : "—",
+                            String(risk).slice(0, 80),
+                          ];
+                        }
+                      )}
+                    />
+                  </div>
+                ) : null}
                 {monitoringStatus?.lastRunSummary ? (
                   <p className="geo-note">
                     הרצה אחרונה: הושלמו{" "}
