@@ -1,10 +1,89 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
 import { FreeResult, MonitorBoard, PlanCards, RequirementTable, commercialLocale } from "./ComplianceCommercial";
 
 const TOKEN_KEY = "bizuplyComplianceTenant";
+const REVIEW_FLAG = "bizuplyComplianceReview";
+
+const REVIEW_COPY: Record<Locale, { label: string; action: string; on: string; fail: string; history: string }> = {
+  he: { label: "קוד בדיקה", action: "פתחו את הדוח המלא", on: "הגישה הזו פתוחה לדוחות שלה. ניטור אוטומטי לא פועל.", fail: "הקוד לא אומת.", history: "סריקות של הגישה הזו" },
+  en: { label: "Review code", action: "Open the full report", on: "This access can open its own reports. Automatic monitoring is off.", fail: "The code was not accepted.", history: "Scans for this access" },
+  es: { label: "Código de prueba", action: "Abrir el informe completo", on: "Este acceso abre sus propios informes. El seguimiento automático está apagado.", fail: "El código no fue aceptado.", history: "Escaneos de este acceso" },
+  "pt-BR": { label: "Código de teste", action: "Abrir o relatório completo", on: "Este acesso abre os próprios relatórios. O monitoramento automático está desligado.", fail: "O código não foi aceito.", history: "Varreduras deste acesso" },
+  ar: { label: "رمز الفحص", action: "افتحوا التقرير الكامل", on: "هذا الوصول يفتح تقاريره. المراقبة التلقائية متوقفة.", fail: "لم يُقبل الرمز.", history: "فحوصات هذا الوصول" },
+};
+
+function ReviewAccess({ locale, onUnlocked }: { locale: Locale; onUnlocked?: () => void }) {
+  const copy = REVIEW_COPY[locale] || REVIEW_COPY.en;
+  const [code, setCode] = useState("");
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [scans, setScans] = useState<Array<{ id: string; url: string }>>([]);
+
+  async function loadHistory() {
+    const token = localStorage.getItem(TOKEN_KEY) || "";
+    if (!token) return;
+    const response = await fetch("/compliance/api/dashboard", { headers: { "x-tenant-token": token } });
+    if (!response.ok) return;
+    const data = await response.json();
+    setScans(Array.isArray(data.scans) ? data.scans : []);
+  }
+
+  useEffect(() => {
+    const active = sessionStorage.getItem(REVIEW_FLAG) === "1";
+    setOpen(active);
+    if (active) loadHistory();
+  }, []);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    const entered = code;
+    setCode("");
+    setMessage("");
+    const token = localStorage.getItem(TOKEN_KEY) || undefined;
+    const response = await fetch("/compliance/api/review-access", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code: entered, tenantToken: token }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok !== true) {
+      setMessage(copy.fail);
+      return;
+    }
+    if (data.tenantToken) localStorage.setItem(TOKEN_KEY, data.tenantToken);
+    sessionStorage.setItem(REVIEW_FLAG, "1");
+    setOpen(true);
+    setMessage(copy.on);
+    await loadHistory();
+    onUnlocked?.();
+  }
+
+  return (
+    <section className="scan-review">
+      <form onSubmit={submit}>
+        <label>
+          <span>{copy.label}</span>
+          <input type="password" name="review-code" autoComplete="off" value={code} onChange={(event) => setCode(event.target.value)} />
+        </label>
+        <button className="scan-start" type="submit">{copy.action}</button>
+      </form>
+      {message && <p>{message}</p>}
+      {open && scans.length > 0 && (
+        <div>
+          <b>{copy.history}</b>
+          <ul>
+            {scans.slice(0, 8).map((scan) => (
+              <li key={scan.id}><Link to={`/compliance/report/${scan.id}`}>{scan.url}</Link></li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+}
 const TYPES = ["brochure", "shop", "saas", "events", "professional", "other"] as const;
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
@@ -338,6 +417,7 @@ export default function ComplianceScannerPage() {
   const [error, setError] = useState("");
   const [payload, setPayload] = useState<any>(null);
   const [filter, setFilter] = useState("all");
+  const [reload, setReload] = useState(0);
   const names = useMemo(() => {
     try { return new Intl.DisplayNames([locale === "pt-BR" ? "pt" : locale], { type: "region" }); }
     catch { return null; }
@@ -378,7 +458,7 @@ export default function ComplianceScannerPage() {
     };
     tick();
     return () => { stop = true; };
-  }, [id, locale]);
+  }, [id, locale, reload]);
 
   const matches = countries.filter((code) => {
     const name = names?.of(code) || code;
@@ -408,7 +488,7 @@ export default function ComplianceScannerPage() {
   async function downloadPdf() {
     const token = localStorage.getItem(TOKEN_KEY) || "";
     const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers: { "x-tenant-token": token } });
-    if (!response.ok) return;
+    if (!response.ok) { setError(copy.notice); return; }
     const blob = await response.blob();
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
@@ -428,6 +508,7 @@ export default function ComplianceScannerPage() {
 
   return (
     <main className="scan-product" dir={dir} lang={locale}>
+      <ReviewAccess locale={locale} onUnlocked={() => setReload((value) => value + 1)} />
       {!id && <form onSubmit={startScan}>
       <section className="scan-hero">
         <div className="scan-hero__copy">

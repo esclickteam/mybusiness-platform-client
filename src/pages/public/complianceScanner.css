@@ -132,6 +132,15 @@
 .scan-results-list button { display: flex; gap: 0.7rem; align-items: center; width: 100%; padding: 0.7rem 0.8rem; text-align: start; }
 .scan-results-list span { margin-inline-start: auto; color: var(--violet); font-size: 0.78rem; }
 .scan-error { color: #9f1239; font-weight: 700; padding-bottom: 2rem; }
+.scan-review {
+  width: min(1120px, calc(100% - 2rem));
+  margin: 1.5rem auto 0;
+}
+.scan-review form { display: flex; gap: 0.6rem; align-items: end; flex-wrap: wrap; }
+.scan-review label { display: grid; gap: 0.35rem; min-width: min(100%, 280px); }
+.scan-review span, .scan-review b { font-size: 0.82rem; font-weight: 800; }
+.scan-review p, .scan-review li { color: var(--muted); }
+.scan-review ul { margin: 0.4rem 0 0; padding-inline-start: 1.1rem; }
 
 .scan-preview { padding-top: 3.2rem; }
 .scan-preview__sheet {
