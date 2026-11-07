@@ -343,9 +343,9 @@ export default function ProposalForm({
       <form
         onSubmit={handleSubmit}
         dir={pageDir}
-        className="mx-auto w-full max-w-5xl space-y-6"
+        className="biz-doc mx-auto w-full max-w-5xl space-y-4"
       >
-        <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
+        <section className="border border-[rgba(91,33,182,0.16)] border-s-4 border-s-[#5B21B6] bg-white p-4 sm:p-5">
           <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
@@ -356,7 +356,7 @@ export default function ProposalForm({
                 {t("collab.proposal.badge")}
               </div>
 
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
+              <h2 className="mt-3 text-xl font-black text-[#21172F]">
                 {t("collab.proposal.title")}
               </h2>
 

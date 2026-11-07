@@ -1890,7 +1890,7 @@ export default function Build() {
       <div className="mx-auto flex max-w-7xl flex-col gap-7 xl:flex-row">
         <section
           data-demo-target="business-page-editor"
-          className="order-1 w-full overflow-hidden rounded-[2rem] border border-white/90 bg-white/95 shadow-[0_34px_110px_rgba(79,70,229,0.16)] backdrop-blur-xl xl:w-[52%]"
+          className="order-1 w-full overflow-hidden border border-[rgba(91,33,182,0.16)] bg-white xl:w-[52%]"
         >
           <div className="relative overflow-hidden border-b border-violet-100 bg-gradient-to-br from-white via-violet-50 to-blue-50 px-6 py-8 sm:px-8">
             <div className="absolute -left-20 -top-20 h-56 w-56 rounded-full bg-violet-300/35 blur-3xl" />
@@ -1950,7 +1950,7 @@ export default function Build() {
         </section>
 
         <aside data-demo-target="business-page-preview" className="order-2 w-full xl:w-[48%]">
-          <div className="sticky top-6 overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-start shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
+          <div className="sticky top-4 overflow-hidden border border-[rgba(91,33,182,0.16)] bg-white text-start">
             <div className="relative p-5 sm:p-7">
               <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
               <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
@@ -1991,7 +1991,7 @@ export default function Build() {
                 </div>
               )}
 
-              <div className="-mt-16 relative mx-auto max-w-5xl rounded-[2rem] border border-white/90 bg-white/95 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7">
+              <div className="border-t border-[rgba(91,33,182,0.12)] bg-white p-5 text-start sm:p-6">
                 <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
                   {logoPreview ? (
                     <ImageLoader
@@ -2083,7 +2083,7 @@ export default function Build() {
                   </div>
                 </div>
 
-                <div className="mx-auto mt-8 max-w-6xl rounded-[2rem] border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(245,243,255,0.78)_48%,rgba(239,246,255,0.82)_100%)] p-5 text-center shadow-[0_20px_70px_rgba(79,70,229,0.12)] backdrop-blur-xl sm:p-8">
+                <div className="mt-6 border border-[rgba(91,33,182,0.12)] bg-[#F4F1FA] p-4 text-start sm:p-6">
                   {renderPreviewContent()}
                 </div>
               </div>

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useOutletContext } from "react-router-dom";
 import {
   Clock3,
   FileText,
@@ -31,6 +32,11 @@ export default function CollabCollaborationsTab({
   userBusinessId,
   token,
 }: CollabCollaborationsTabProps) {
+  const outlet = useOutletContext<{ userBusinessId?: string | null } | null>();
+  const resolvedBusinessId = userBusinessId || outlet?.userBusinessId || null;
+  const resolvedToken =
+    token ||
+    (typeof window !== "undefined" ? window.localStorage.getItem("token") : null);
   const { t } = useTranslation();
   const [activeView, setActiveView] = useState<CollabView>("active");
 
@@ -93,10 +99,7 @@ export default function CollabCollaborationsTab({
               </div>
 
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-                  Current view
-                </p>
-                <p className="mt-1 text-base font-black text-slate-800">
+                <p className="text-base font-black text-[#21172F]">
                   {activeTab.label}
                 </p>
               </div>
@@ -173,13 +176,13 @@ export default function CollabCollaborationsTab({
         </div>
 
         {activeView === "active" && (
-          <CollabActiveTab userBusinessId={userBusinessId} />
+          <CollabActiveTab userBusinessId={resolvedBusinessId} />
         )}
 
-        {activeView === "pending" && <CollabPendingTab token={token} />}
+        {activeView === "pending" && <CollabPendingTab token={resolvedToken} />}
 
         {activeView === "agreements" && (
-          <PartnershipAgreementsTab userBusinessId={userBusinessId} />
+          <PartnershipAgreementsTab userBusinessId={resolvedBusinessId} />
         )}
       </section>
     </section>

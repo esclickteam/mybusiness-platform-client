@@ -24,9 +24,123 @@
   border-radius: 0 !important;
 }
 
-.biz-interior [class*="blur-"],
-.pub-profile [class*="blur-"] {
+.biz-interior :is(.blur, .blur-sm, .blur-md, .blur-lg, .blur-xl, .blur-2xl, .blur-3xl),
+.pub-profile :is(.blur, .blur-sm, .blur-md, .blur-lg, .blur-xl, .blur-2xl, .blur-3xl) {
   display: none !important;
+}
+
+.advisor-studio,
+.advisor-studio * {
+  border-radius: 0 !important;
+}
+
+.advisor-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+  gap: 0;
+}
+
+.advisor-history { grid-column: 1; grid-row: 1 / span 2; }
+.advisor-chat { grid-column: 2; grid-row: 1; }
+.advisor-quick { grid-column: 2; grid-row: 2; max-height: none; }
+
+.advisor-quick > div:nth-child(2) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.advisor-studio header button {
+  width: auto;
+  white-space: nowrap;
+}
+
+.advisor-history,
+.advisor-chat,
+.advisor-quick {
+  min-height: 0;
+  max-height: none;
+}
+
+.advisor-bubble {
+  max-width: min(100%, 680px);
+  border: 1px solid rgba(91, 33, 182, 0.14);
+  background: #fff;
+  color: #21172f;
+}
+
+.advisor-bubble--user {
+  margin-inline-start: auto;
+  border-inline-start: 4px solid #3d63ff;
+  background: #f4f1fa;
+}
+
+.advisor-bubble--ai {
+  border-inline-start: 4px solid #5b21b6;
+}
+
+.advisor-composer textarea {
+  border-radius: 0 !important;
+  border: 1px solid rgba(91, 33, 182, 0.2) !important;
+  background: #fff !important;
+  box-shadow: none !important;
+}
+
+.advisor-command {
+  min-height: 72px !important;
+  height: auto !important;
+  white-space: normal !important;
+  overflow: visible !important;
+}
+
+@media (max-width: 1100px) {
+  .advisor-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+  }
+
+  .advisor-history,
+  .advisor-chat,
+  .advisor-quick {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .advisor-history,
+  .advisor-chat,
+  .advisor-quick {
+    max-height: none;
+  }
+}
+
+.advisor-studio {
+  background: #f4f1fa;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.biz-interior button,
+.biz-interior a[class*="inline-flex"],
+.pub-profile button,
+.pub-profile a[class*="inline-flex"],
+.crm-dossier button,
+.crm-dossier a,
+.client-file button,
+.client-file a[class*="inline-flex"],
+.ax-shell button,
+.ax-shell a.ax-btn,
+.advisor-studio button,
+.biz-doc button {
+  height: auto;
+  min-height: 2.4rem;
+  max-width: 100%;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  line-height: 1.25;
 }
 
 .biz-interior h1,
@@ -180,4 +294,45 @@
 .tpl-picker input,
 .tpl-picker article {
   border-radius: 0 !important;
+}
+
+.biz-doc,
+.contract-view-container.biz-doc {
+  background: #fff;
+  color: #21172f;
+}
+
+.biz-doc section,
+.contract-view-container.biz-doc .static-field {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(91, 33, 182, 0.14);
+  background: #fff;
+}
+
+.biz-doc input,
+.biz-doc select,
+.biz-doc textarea {
+  border-radius: 0 !important;
+  border: 1px solid rgba(91, 33, 182, 0.22) !important;
+  background: #fff !important;
+  min-height: 44px;
+}
+
+.contract-view-container.biz-doc {
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  padding: 20px;
+}
+
+.contract-view-container.biz-doc .static-field {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(91, 33, 182, 0.12);
+}
+
+.contract-view-container.biz-doc .contract-title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
 }

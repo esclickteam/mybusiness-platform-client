@@ -918,7 +918,7 @@ export default function BusinessProfileView() {
       className="pub-profile min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
     >
       <section className="mx-auto max-w-7xl">
-        <div className="relative overflow-visible rounded-[2.5rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
+        <div className="relative overflow-visible border border-[rgba(91,33,182,0.16)] bg-white">
           <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
           <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
@@ -932,32 +932,27 @@ export default function BusinessProfileView() {
             </Link>
           )}
 
-          <div className="relative p-4 sm:p-6 lg:p-8">
+          <div className="relative">
             {coverImage ? (
-              <div className="overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
+              <div className="h-36 overflow-hidden border-b border-[rgba(91,33,182,0.12)] sm:h-44">
                 <img
                   src={coverImage}
                   alt={t("businessProfile.view.coverAlt", { name: businessName })}
                   loading="lazy"
-                  className="h-72 w-full object-cover sm:h-96 lg:h-[430px]"
+                  className="h-full w-full object-cover"
                 />
               </div>
             ) : (
-              <div className="flex h-72 w-full items-center justify-center rounded-[2rem] border border-white/80 bg-gradient-to-br from-violet-100 via-white to-blue-100 text-center shadow-[0_24px_70px_rgba(30,41,59,0.10)] sm:h-96 lg:h-[430px]">
-                <div>
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
-                    ✨
-                  </div>
-
-                  <p className="mt-4 text-lg font-black text-slate-800">
-                    {t("businessProfile.view.welcome")}
-                  </p>
-                </div>
+              <div className="flex h-24 items-end border-b border-[rgba(91,33,182,0.12)] bg-[#F4F1FA] px-5 pb-4 sm:px-8">
+                <p className="text-sm font-black text-[#5B21B6]">
+                  {t("businessProfile.view.welcome")}
+                </p>
               </div>
             )}
 
-            <div className="mx-auto -mt-20 max-w-5xl rounded-[2.2rem] border border-white/90 bg-white/92 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7">
-              <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
+            <div className="grid gap-6 px-5 py-6 text-start sm:px-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+              <div>
+              <div className="flex h-20 w-20 items-center justify-center overflow-hidden border border-[rgba(91,33,182,0.16)] bg-[#F4F1FA]">
                 {logoUrl ? (
                   <img
                     src={logoUrl}
@@ -972,11 +967,11 @@ export default function BusinessProfileView() {
                 )}
               </div>
 
-              <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-800 sm:text-5xl">
+              <h1 className="mt-4 text-3xl font-black tracking-tight text-[#21172F]">
                 {businessName || t("businessProfile.view.defaultBusinessName")}
               </h1>
 
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+              <div className="mt-4 flex flex-wrap items-center justify-start gap-2">
                 {isMeaningfulCategory(category) && (
                   <span className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
                     <Icon name="category" />
@@ -1002,11 +997,13 @@ export default function BusinessProfileView() {
               </div>
 
               {description && (
-                <p className="mx-auto mt-5 max-w-3xl text-center text-base leading-8 text-slate-600">
+                <p className="mt-4 max-w-3xl text-start text-base leading-7 text-[#3d3452]">
                   {description}
                 </p>
               )}
+              </div>
 
+              <div>
               <ProfileContactBlock
                 phone={phone}
                 email={email}
@@ -1017,9 +1014,9 @@ export default function BusinessProfileView() {
                 normalizedWhatsappUrl={normalizedWhatsappUrl}
               />
 
-              <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
+              <div className="mt-6 border-t border-[rgba(91,33,182,0.12)] pt-4">
                 <div
-                  className="flex flex-wrap items-center justify-center gap-3 text-center"
+                  className="flex flex-wrap items-center justify-start gap-2 text-start"
                   role="tablist"
                   aria-label={t("businessProfile.view.tabListAria")}
                 >
@@ -1047,11 +1044,12 @@ export default function BusinessProfileView() {
                 </div>
               </div>
 
-              <div className="mx-auto mt-8 max-w-6xl rounded-[2rem] border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(245,243,255,0.78)_48%,rgba(239,246,255,0.82)_100%)] p-5 text-center shadow-[0_20px_70px_rgba(79,70,229,0.12)] backdrop-blur-xl sm:p-8">
+              <div className="mt-6 border border-[rgba(91,33,182,0.12)] bg-white p-4 text-start sm:p-6">
                 {renderTabContent()}
               </div>
             </div>
           </div>
+        </div>
         </div>
       </section>
     </main>

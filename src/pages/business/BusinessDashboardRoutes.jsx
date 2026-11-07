@@ -66,6 +66,9 @@ const CollabFindPartnerTab = lazy(() =>
 const CollabMessagesTab = lazy(() =>
   import("./dashboardPages/collabtabs/CollabMessagesTab")
 );
+const CollabCollaborationsTab = lazy(() =>
+  import("./dashboardPages/collabtabs/CollabCollaborationsTab")
+);
 const CollabMarketTab = lazy(() =>
   import("./dashboardPages/collabtabs/CollabMarketTab")
 );
@@ -489,6 +492,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="profile" element={<CollabBusinessProfileTab />} />
             <Route path="find-partner" element={<CollabFindPartnerTab />} />
 
+            <Route path="collaborations" element={<CollabCollaborationsTab />} />
             <Route path="messages" element={<CollabMessagesTab />} />
 
             <Route path="market" element={<CollabMarketTab />} />
