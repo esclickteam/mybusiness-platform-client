@@ -20,12 +20,12 @@ type CodeResult = {
   reverted?: boolean;
   phase?: string;
   buildError?: string;
+  reply?: string;
 };
 type ProjectRow = { projectId: string; title: string; status?: string; updatedAt?: string };
 type ProbeReport = { width?: number; status?: string; ready?: boolean; issues?: QualityIssue[] };
 
-const BRIEF =
-  "צור אתר נדל״ן יוקרתי בדובאי בשם AURELIA ESTATES. עצב כל מסך במלואו: בית, נכסים, מחשבון וקשר. Hero מלא, טיפוגרפיה עם היררכיה, קומפוזיציות שונות, תמונות אדריכלות, אנימציה ומעברים. בלי שטחים ריקים, בלי חפיפת כותרות ובלי חיתוך. עברית מימין לשמאל, והשם באנגלית נשאר קריא. ארבעה נכסי דמו עם סינון לפי אזור, מחיר וחדרי שינה. מחשבון משכנתה שההחזר שלו משתנה. גלריה שנפתחת ומחליפה תמונות. התאמה ל־1440 ול־390. כל התוכן הוא הדגמה.";
+const BRIEF = "";
 
 const ISSUE_LABELS: Record<string, string> = {
   "overflow-x": "העמוד רחב מהמסך",
@@ -81,7 +81,7 @@ export default function AiStudioCodePage() {
   const [savedProjects, setSavedProjects] = useState<ProjectRow[]>([]);
   const [viewport, setViewport] = useState<1440 | 390>(1440);
   const [frameNonce, setFrameNonce] = useState(0);
-  const [publishNote, setPublishNote] = useState("");
+  const [reply, setReply] = useState("");
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const loadWait = useRef<(() => void) | null>(null);
   const probeWait = useRef<((report: ProbeReport) => void) | null>(null);
@@ -229,8 +229,9 @@ export default function AiStudioCodePage() {
       );
       remember(data);
       setMessage("");
+      setReply(data.reply || "");
       setBusy(false);
-      await review(data);
+      if (!data.reply) await review(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || "השינוי נכשל");
       setBusy(false);
@@ -256,19 +257,6 @@ export default function AiStudioCodePage() {
     }
   }
 
-  async function checkPublish() {
-    if (!project) return;
-    setBusy(true);
-    setPublishNote("");
-    try {
-      const { data } = await API.post(`/ai-studio/code-projects/${project.projectId}/publish-plan`, {}, { timeout: 30000 });
-      setPublishNote(data?.published ? "האתר פורסם" : "הפרסום נשאר כבוי. הבדיקה לא פרסמה אתר.");
-    } catch (err: any) {
-      setPublishNote(err?.response?.data?.error || "בדיקת הפרסום נכשלה");
-    }
-    setBusy(false);
-  }
-
   async function openSaved(projectId: string) {
     setBusy(true);
     setError("");
@@ -291,11 +279,10 @@ export default function AiStudioCodePage() {
   return (
     <div className="min-h-[calc(100vh-4rem)] bg-slate-950 text-slate-100" dir="rtl">
       <div className="border-b border-white/10 px-4 py-4">
-        <div className="text-xs font-semibold tracking-wide text-amber-200">AI STUDIO · REACT RUNTIME</div>
-        <h1 className="mt-1 text-xl font-black">אתר שנכתב בקוד, בלי תבנית מארחת</h1>
+        <div className="text-xs font-semibold tracking-wide text-amber-200">BIZUPLY AI STUDIO</div>
+        <h1 className="mt-1 text-xl font-black">תארו אתר, ואז בקשו שינויים</h1>
         <p className="mt-1 max-w-3xl text-sm text-slate-400">
-          התצוגה נטענת מדומיין נפרד, בלי עוגיות ההתחברות. שמירת פנייה או תור עוברת רק דרך הממשק של הפרויקט. רענון העמוד פותח מחדש את הפרויקט השמור.
-          העסק הפעיל: {businessId}
+          התצוגה נפתחת בנפרד מהחשבון. פנייה או תור נשמרים דרך Bizuply, בלי גישה של האתר למסד. פרסום וחיבור דומיין אינם פעילים בגרסה הזו.
         </p>
       </div>
       <div className="grid gap-4 p-4 xl:grid-cols-[380px_minmax(0,1fr)]">
@@ -319,35 +306,32 @@ export default function AiStudioCodePage() {
           <textarea
             value={brief}
             onChange={(event) => setBrief(event.target.value)}
+            placeholder="תארו את העסק, העמודים, והפעולות שהגולש צריך לבצע"
             className="h-40 w-full rounded-lg border border-white/10 bg-slate-900 p-3 text-sm"
           />
           <button
             type="button"
-            disabled={busy || checking}
+            disabled={busy || checking || brief.trim().length < 20}
             onClick={createSite}
             className="rounded-md bg-amber-200 px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-50"
           >
-            {busy ? "המודל כותב…" : "צור אתר React"}
+            {busy ? "יוצרים עבורך אתר בהתאמה אישית" : "צרו אתר"}
           </button>
           {project && (
             <>
               <div className="rounded-md border border-white/10 p-3 text-xs">
                 <div className={project.phase === "ready" || ready ? "text-emerald-300" : "text-amber-200"}>
-                  {project.phase === "inspiration"
-                    ? "מחפש השראה עיצובית בתחום שלך..."
-                    : project.phase === "planning"
-                    ? "מתכנן את האתר"
-                    : project.phase === "pages"
-                      ? "בונה את העמודים. מה שמוצג הוא התקדמות, לא אתר מוכן"
-                      : project.phase === "stopped"
-                        ? "הבנייה נעצרה לפני השלמה"
-                        : checking
-                          ? "בודק את האתר ב־1440 וב־390…"
-                          : ready
-                            ? "האתר עבר את בדיקת האיכות"
-                            : project.phase === "ready"
-                              ? "הבנייה הושלמה"
-                              : "האתר לא מסומן כמוכן"}
+                  {busy && project.phase === "ready"
+                    ? "מעדכנים את האתר"
+                    : project.phase === "planning" || project.phase === "pages" || busy
+                    ? "יוצרים עבורך אתר בהתאמה אישית"
+                    : project.phase === "stopped"
+                      ? "הבנייה נעצרה לפני השלמה"
+                      : checking
+                        ? "בודקים את התצוגה במחשב ובטלפון"
+                        : project.phase === "ready" || ready
+                          ? "האתר שלך מוכן"
+                          : "אפשר להתחיל מתאר חדש"}
                 </div>
                 {project.durationMs ? <div className="mt-1 text-slate-400">הפעולה האחרונה נמשכה {Math.round(project.durationMs / 1000)} שניות</div> : null}
                 <ul className="mt-2 space-y-1 text-slate-300">
@@ -360,7 +344,7 @@ export default function AiStudioCodePage() {
                 <input
                   value={message}
                   onChange={(event) => setMessage(event.target.value)}
-                  placeholder="בקשו שינוי בקוד, במבנה או בפונקציה"
+                  placeholder="שנו צבע, פונט, תמונה, כפתור, מקטע, כותרת או פוטר"
                   className="min-w-0 flex-1 rounded-md border border-white/10 bg-slate-900 px-3 py-2 text-sm"
                 />
                 <button
@@ -372,15 +356,8 @@ export default function AiStudioCodePage() {
                   שלח
                 </button>
               </div>
-              <button
-                type="button"
-                disabled={busy || checking}
-                onClick={checkPublish}
-                className="rounded-md border border-white/10 px-3 py-2 text-xs text-slate-300"
-              >
-                בדיקת פרסום
-              </button>
-              {publishNote ? <p className="text-xs text-slate-400">{publishNote}</p> : null}
+              {reply ? <p className="text-sm text-slate-200">{reply}</p> : null}
+              <div className="text-xs text-slate-400">גרסאות</div>
               <div className="space-y-2">
                 {(project.versions || []).map((version) => (
                   <button
@@ -390,28 +367,23 @@ export default function AiStudioCodePage() {
                     onClick={() => restore(version.versionId)}
                     className="block w-full truncate rounded-md border border-white/10 px-3 py-2 text-right text-xs text-slate-300"
                   >
-                    {version.label || version.versionId}
+                    שחזור · {version.label || version.versionId}
                   </button>
                 ))}
               </div>
-              <ul className="space-y-1 text-xs text-slate-400">
-                {Object.keys(project.files || {}).map((filePath) => (
-                  <li key={filePath}>{filePath}</li>
-                ))}
-              </ul>
             </>
           )}
           {error && <p className="text-sm text-rose-300">{error}</p>}
         </section>
         <section className="min-h-[80vh] overflow-auto rounded-xl border border-white/10 bg-black p-3">
           <div className="mb-3 flex items-center justify-between gap-3">
-            <div className="text-sm text-slate-400">תצוגה מבודדת</div>
+            <div className="text-sm text-slate-400">תצוגה</div>
             <div className="flex gap-2">
               <button type="button" onClick={() => setViewport(1440)} className="rounded-md border border-white/10 px-3 py-1 text-xs">
-                1440
+                מחשב
               </button>
               <button type="button" onClick={() => setViewport(390)} className="rounded-md border border-white/10 px-3 py-1 text-xs">
-                390
+                טלפון
               </button>
             </div>
           </div>
@@ -428,7 +400,7 @@ export default function AiStudioCodePage() {
               style={{ width: viewport }}
             />
           ) : (
-            <p className="p-6 text-sm text-slate-500">האתר יופיע כאן אחרי שהמודל יסיים לכתוב את הקבצים.</p>
+            <p className="p-6 text-sm text-slate-500">האתר יופיע כאן אחרי היצירה.</p>
           )}
         </section>
       </div>
