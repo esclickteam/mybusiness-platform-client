@@ -14,6 +14,11 @@
     },
     {
       "source": "/compliance/api/:path*",
+      "has": [{ "type": "host", "value": "mybusiness-platform-client-git-qa-comp-5bb1c6-esclicks-projects.vercel.app" }],
+      "destination": "https://server-staging-15bb.up.railway.app/compliance/api/:path*"
+    },
+    {
+      "source": "/compliance/api/:path*",
       "destination": "https://api.bizuply.com/compliance/api/:path*"
     },
     {
