@@ -333,7 +333,9 @@ export default function AiStudioCodePage() {
             <>
               <div className="rounded-md border border-white/10 p-3 text-xs">
                 <div className={project.phase === "ready" || ready ? "text-emerald-300" : "text-amber-200"}>
-                  {project.phase === "planning"
+                  {project.phase === "inspiration"
+                    ? "מחפש השראה עיצובית בתחום שלך..."
+                    : project.phase === "planning"
                     ? "מתכנן את האתר"
                     : project.phase === "pages"
                       ? "בונה את העמודים. מה שמוצג הוא התקדמות, לא אתר מוכן"
