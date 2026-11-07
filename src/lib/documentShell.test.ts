@@ -93,7 +93,8 @@ describe("first paint document shell", () => {
     expect(page.body).not.toContain("home-hero__title");
     expect(page.body).not.toContain("#070b18");
     expect(visibleH1Count(page.body)).toBe(1);
-    expect(noscriptCrawl(page.body)).toBe("");
+    expect(noscriptCrawl(page.body)).toContain('class="home-crawl"');
+    expect(rootInner(page.body)).not.toContain('class="home-crawl"');
     expect(rootInner(page.body)).toContain("hx-display");
     expect(rootInner(page.body)).toContain(">Everything</span>");
     expect(rootInner(page.body)).toContain(">platform.</span>");
@@ -169,7 +170,8 @@ describe("first paint document shell", () => {
     expect(body).not.toContain("/home-css-promote.js");
     expect(body).not.toContain('media="print"');
     expect(body).not.toContain('class="bizuply-home');
-    expect(body).not.toContain("/home-critical.css");
+    expect(body).toContain("/home-critical.css");
+    expect(body).toContain('class="site-header"');
     expect(body).not.toContain('id="home-critical"');
     expect(body).toContain("CRM for leads and customers | BizUply");
   });
@@ -181,7 +183,8 @@ describe("first paint document shell", () => {
     expect(hebrew.body).toContain(">אחת.</span>");
     expect(hebrew.body).toContain("ביזאפלי");
     expect(visibleH1Count(hebrew.body)).toBe(1);
-    expect(noscriptCrawl(hebrew.body)).toBe("");
+    expect(noscriptCrawl(hebrew.body)).toContain('class="home-crawl"');
+    expect(rootInner(hebrew.body)).not.toContain('class="home-crawl"');
     expect(rootInner(hebrew.body)).toContain("hx-display");
     expect(rootInner(hebrew.body)).toContain('data-home-design="purple"');
     expect(rootInner(hebrew.body)).not.toContain("home-hero__title");

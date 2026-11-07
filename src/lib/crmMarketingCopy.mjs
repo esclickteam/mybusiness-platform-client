@@ -4,6 +4,7 @@
  * ad-account connections belong to the Business plan, not CRM Only.
  */
 import { marketingPublicUrl } from "./localePathCore.mjs";
+import { renderMarketingHeader } from "./homePurplePaint.mjs";
 
 export function crmPublicUrl(language) {
   return marketingPublicUrl("/crm", language);
@@ -946,28 +947,5 @@ export function renderCrmPrerender(language) {
 }
 
 export function buildCrmHeaderPaint(language) {
-  const c = getCrmCopy(language);
-  const href = (path) => esc(marketingPublicUrl(path, c.lang).replace("https://bizuply.com", "") || "/");
-  const logoAlt = c.lang === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
-  const links = [
-    [c.chrome.about, "/about"],
-    [c.chrome.website, "/website-builder"],
-    [c.chrome.crm, "/crm"],
-    [c.chrome.automations, "/automations"],
-    [c.chrome.appointments, "/appointments"],
-    [c.chrome.pricing, "/pricing"],
-  ].map(([label, path]) => `<a class="crm-paint__link" href="${href(path)}">${esc(label)}</a>`).join("");
-  return `<div class="crm-paint" lang="${esc(c.lang)}" dir="${c.dir}"><style>
-.crm-paint{background:#fff;color:#0b1b33}
-.crm-paint__header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);border-bottom:1px solid #e2e8f0}
-.crm-paint__bar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;max-width:1180px;height:4.5rem;margin-inline:auto;padding-inline:clamp(.85rem,2.5vw,1.5rem);box-sizing:border-box}
-.crm-paint__logo{display:inline-flex;align-items:center;gap:.55rem;color:#0b1b33;font-weight:800;text-decoration:none}
-.crm-paint__logo img{width:2.2rem;height:2.2rem}
-.crm-paint__nav,.crm-paint__actions{display:none;align-items:center;gap:.35rem}
-.crm-paint__link{color:#1e293b;font-weight:700;font-size:.9rem;text-decoration:none;padding:.35rem .5rem;white-space:nowrap}
-.crm-paint__login{color:#0b1b33;font-weight:700;text-decoration:none}
-.crm-paint__cta{background:#0b1b33;color:#fff;font-weight:800;text-decoration:none;border-radius:.7rem;padding:.55rem .9rem}
-.crm-paint__mobile{display:inline-flex;align-items:center;gap:.7rem;color:#0b1b33;font-weight:800}
-@media(min-width:1100px){.crm-paint__nav,.crm-paint__actions{display:flex}.crm-paint__mobile{display:none}}
-</style><header class="crm-paint__header"><nav class="crm-paint__bar" aria-label="${esc(c.chrome.navAria)}"><a class="crm-paint__logo" href="${href("/")}"><img src="/android-chrome-192x192.png" width="36" height="36" alt="${logoAlt}" /><span>Bizuply</span></a><div class="crm-paint__nav">${links}</div><div class="crm-paint__actions"><span>${esc(c.chrome.langCode)}</span><a class="crm-paint__login" href="${href("/login")}">${esc(c.chrome.login)}</a><a class="crm-paint__cta" href="${href("/pricing")}">${esc(c.chrome.cta)}</a></div><div class="crm-paint__mobile"><span>${esc(c.chrome.langCode)}</span></div></nav></header></div>`;
+  return renderMarketingHeader(language);
 }
