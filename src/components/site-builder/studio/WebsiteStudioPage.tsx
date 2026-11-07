@@ -2565,6 +2565,8 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     "__libraryPage",
     "__libraryPageTemplateId",
     "__aiStudioPage",
+    "__aiDocument",
+    "__aiCss",
     // Shared header/footer edits must survive every save path.
     VISUAL_SHARED_CHROME_KEY,
     "snapshotPageId",
@@ -4759,6 +4761,12 @@ export default function WebsiteStudioPage({
 
   const [resolvedTemplateSeed, setResolvedTemplateSeed] =
     useState<ReadyWebsiteTemplateSeed | null>(() => {
+      const queryKey = typeof window === "undefined"
+        ? ""
+        : new URLSearchParams(window.location.search).get("template");
+      if (normalizeStudioTemplateKey(queryKey) === "ai-site") {
+        return buildRendererSeedFromKey("ai-site");
+      }
       if (forceTemplateLoad && initialTemplateSeed) {
         return initialTemplateSeed;
       }
