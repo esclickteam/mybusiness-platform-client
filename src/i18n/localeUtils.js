@@ -70,6 +70,9 @@ export function setCookie(name, value, days = 365) {
       : host === "bizuply.co.il" || host.endsWith(".bizuply.co.il")
         ? "; Domain=.bizuply.co.il"
         : "";
+  if (domain) {
+    document.cookie = `${name}=; Path=/; Max-Age=0; SameSite=Lax`;
+  }
   document.cookie = `${name}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAge}; SameSite=Lax${domain}`;
 }
 
