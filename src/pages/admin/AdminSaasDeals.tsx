@@ -16,7 +16,8 @@ type DealRow = {
   payment?: { recorded?: boolean; reference?: string; amount?: number | null };
   delivery?: { approved?: boolean };
   tenantId?: string;
-  passwordSetupUrl?: string;
+  language?: string;
+  passwordEmail?: { status?: string; language?: string; reason?: string };
   audit?: { at?: string; action?: string; note?: string; actorEmail?: string }[];
 };
 
@@ -45,6 +46,23 @@ export default function AdminSaasDeals() {
   const [paymentFor, setPaymentFor] = useState<string | null>(null);
   const [paymentRef, setPaymentRef] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
+  const [links, setLinks] = useState<Record<string, string>>({});
+  const [languages, setLanguages] = useState<Record<string, string>>({});
+
+  const MAIL_LANGUAGES = [
+    ["he", "עברית"],
+    ["en", "English"],
+    ["es", "Español"],
+    ["pt-BR", "Português"],
+    ["ar", "العربية"],
+  ];
+
+  function mailStatus(row: DealRow) {
+    if (row.passwordEmail?.status === "sent") return "המייל נשלח";
+    if (row.passwordEmail?.status === "pending") return "המייל ממתין";
+    if (row.passwordEmail?.status === "failed") return `שליחת המייל נכשלה${row.passwordEmail.reason ? ` (${row.passwordEmail.reason})` : ""}`;
+    return "";
+  }
 
   async function load() {
     const { data } = await API.get("/admin/saas-deals");
@@ -77,7 +95,9 @@ export default function AdminSaasDeals() {
     try {
       const { data } = await API.post(`/admin/saas-deals/${id}/${path}`, body);
       setNotice(ok);
-      if (data.passwordSetupUrl) setNotice(`${ok} קישור הגדרת סיסמה הונפק.`);
+      if (data.passwordSetupUrl) setLinks((current) => ({ ...current, [id]: data.passwordSetupUrl }));
+      if (data.passwordEmail?.status === "sent") setNotice(`${ok} המייל נשלח.`);
+      if (data.passwordEmail?.status === "failed") setError("המייל לא נשלח. אפשר להעתיק את הקישור.");
       setPaymentFor(null);
       await load();
     } catch (err) {
@@ -151,10 +171,21 @@ export default function AdminSaasDeals() {
                     {row.status !== "provisioned" && row.status !== "cancelled" ? (
                       <button type="button" className="mt-1 block font-bold" onClick={() => act(row.id, "cancel", { note: "בוטל" }, "העסקה בוטלה")}>ביטול</button>
                     ) : null}
-                    {row.passwordSetupUrl ? (
-                      <a className="mt-1 block text-xs font-bold underline" href={row.passwordSetupUrl} target="_blank" rel="noreferrer">
-                        קישור הגדרת סיסמה
-                      </a>
+                    {row.status === "provisioned" ? (
+                      <div className="mt-2 space-y-1">
+                        <p className="text-xs">{mailStatus(row)}</p>
+                        <select
+                          className="w-full rounded border px-2 py-1"
+                          value={languages[row.id] || row.passwordEmail?.language || row.language || "he"}
+                          onChange={(event) => setLanguages((current) => ({ ...current, [row.id]: event.target.value }))}
+                        >
+                          {MAIL_LANGUAGES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
+                        </select>
+                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "הקישור הונפק.")}>שליחת קישור במייל</button>
+                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => { if (links[row.id]) navigator.clipboard.writeText(links[row.id]); else setError("אין קישור להעתקה. צרו קישור חדש."); }}>העתקת קישור</button>
+                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "קישור חדש הונפק והקודם בוטל.")}>יצירת קישור חדש</button>
+                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "קישור איפוס הונפק.")}>איפוס סיסמה ושליחת קישור חדש במייל</button>
+                      </div>
                     ) : null}
                     {(row.audit || []).slice(-4).reverse().map((entry) => (
                       <p key={`${entry.at}-${entry.action}`} className="text-xs">{entry.action} · {entry.note || ""}</p>
