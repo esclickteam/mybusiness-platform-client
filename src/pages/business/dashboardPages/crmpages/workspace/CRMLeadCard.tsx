@@ -164,8 +164,8 @@ export default function CRMLeadCard({
 
   if (!lead) {
     return (
-      <div className="fixed inset-0 z-50 bg-slate-900/40 p-3">
-        <div className="mx-auto flex h-full max-w-6xl items-center justify-center rounded-2xl bg-white">
+      <div className="crm-dossier fixed inset-0 z-50 p-3">
+        <div className="crm-dossier-panel mx-auto flex h-full max-w-6xl items-center justify-center">
           <p className="text-sm font-bold text-slate-500">{t("crm.common.loading")}</p>
         </div>
       </div>
@@ -175,19 +175,19 @@ export default function CRMLeadCard({
   const name = lead.fullName || lead.name || t("crm.common.unnamedClient");
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/40 p-2 sm:p-4" dir={getTextDirection(i18n.language)}>
-      <div className="mx-auto flex min-h-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <header className="sticky top-0 z-10 border-b border-slate-200 bg-white px-4 py-3">
+    <div className="crm-dossier fixed inset-0 z-50 overflow-y-auto p-2 sm:p-4" dir={getTextDirection(i18n.language)}>
+      <div className="crm-dossier-panel mx-auto flex min-h-full max-w-6xl flex-col overflow-hidden">
+        <header className="crm-dossier-head sticky top-0 z-10">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <p className="text-[11px] font-black uppercase tracking-wide text-[#6D28D9]">
+              <p className="crm-dossier-kicker">
                 {t("crm.leads.drawer.dossierBadge")}
               </p>
-              <h2 className="text-xl font-black text-slate-900">{name}</h2>
-              <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs font-bold text-slate-500">
+              <h2 className="text-xl font-black">{name}</h2>
+              <div className="crm-dossier-meta">
                 <span dir="ltr">{lead.phone || t("crm.common.noPhone")}</span>
                 <span>{lead.email || t("crm.common.noEmail")}</span>
-                <span>{t(`crm.leads.statuses.${lead.status || "new"}`, { defaultValue: lead.status })}</span>
+                <span className={`crm-status is-${lead.status || "new"}`}>{t(`crm.leads.statuses.${lead.status || "new"}`, { defaultValue: lead.status })}</span>
                 <span>{lead.assignedToName || t("crm.leads.unassignedAgent")}</span>
                 <span>{lead.source}</span>
                 <span>{lead.createdAt ? new Date(lead.createdAt).toLocaleString(locale) : ""}</span>
@@ -197,7 +197,7 @@ export default function CRMLeadCard({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black"
+              className="quick-btn"
             >
               {t("crm.common.close")}
             </button>
@@ -230,7 +230,7 @@ export default function CRMLeadCard({
             <select
               value={status}
               onChange={(event) => void changeStatus(event.target.value)}
-              className="h-9 rounded-xl border border-slate-200 px-2 text-xs font-black"
+              className="crm-status-select"
             >
               {["new", "contacted", "in_progress", "interested", "quote", "negotiation", "converted", "lost", "old"].map(
                 (value) => (
@@ -250,8 +250,9 @@ export default function CRMLeadCard({
               type="button"
               onClick={() => setTab(key)}
               className={`shrink-0 px-3 py-2 text-xs font-black ${
-                tab === key ? "text-[#6D28D9] border-b-2 border-[#6D28D9]" : "text-slate-500"
+                tab === key ? "text-[#5B21B6]" : "text-slate-500"
               }`}
+              aria-current={tab === key ? "page" : undefined}
             >
               {t(`crm.workspace.tabs.${key}`)}
             </button>
@@ -533,7 +534,6 @@ export default function CRMLeadCard({
           </div>
         </div>
       </div>
-      <style>{`.quick-btn{display:inline-flex;align-items:center;gap:6px;height:36px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;padding:0 10px;font-size:12px;font-weight:800;color:#334155}`}</style>
     </div>
   );
 }

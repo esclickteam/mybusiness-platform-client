@@ -7,6 +7,7 @@ import {
   Line,
   LineChart,
   ResponsiveContainer,
+  Legend,
   Tooltip,
   XAxis,
   YAxis,
@@ -167,7 +168,8 @@ export default function CRMReportsPage() {
               <XAxis dataKey="date" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#6D28D9" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="count" stroke="#5B21B6" strokeWidth={2} dot={false} />
+              <Legend />
             </LineChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -178,7 +180,8 @@ export default function CRMReportsPage() {
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Bar dataKey="count" fill="#6D28D9" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#6334C5" radius={[0, 0, 0, 0]} />
+              <Legend />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -188,7 +191,8 @@ export default function CRMReportsPage() {
               <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11 }} />
               <YAxis type="category" dataKey="label" width={90} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Bar dataKey="count" fill="#0f766e" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="count" fill="#3D63FF" radius={[0, 0, 0, 0]} />
+              <Legend />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -198,7 +202,8 @@ export default function CRMReportsPage() {
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Bar dataKey="count" fill="#2563eb" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="count" fill="#5B21B6" radius={[0, 0, 0, 0]} />
+              <Legend />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -208,7 +213,8 @@ export default function CRMReportsPage() {
               <XAxis dataKey="month" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Bar dataKey="amount" fill="#7c3aed" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="amount" fill="#6334C5" radius={[0, 0, 0, 0]} />
+              <Legend />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
