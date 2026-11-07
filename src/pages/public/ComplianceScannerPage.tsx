@@ -1,5 +1,5 @@
-import { FormEvent, useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
 import { FreeResult, MonitorBoard, PlanCards, RequirementTable, commercialLocale } from "./ComplianceCommercial";
@@ -9,8 +9,8 @@ const TOKEN_KEY = "bizuplyComplianceTenant";
 const REVIEW_FLAG = "bizuplyComplianceReview";
 
 const REVIEW_COPY: Record<Locale, { label: string; action: string; on: string; fail: string; history: string }> = {
-  he: { label: "קוד בדיקה", action: "פתחו את הדוח המלא", on: "הגישה הזו פתוחה לדוחות שלה. ניטור אוטומטי לא פועל.", fail: "הקוד לא אומת.", history: "סריקות של הגישה הזו" },
-  en: { label: "Review code", action: "Open the full report", on: "This access can open its own reports. Automatic monitoring is off.", fail: "The code was not accepted.", history: "Scans for this access" },
+  he: { label: "קוד פנימי", action: "אימות", on: "הגישה הפנימית אומתה. ניטור אוטומטי לא פועל.", fail: "הקוד לא אומת.", history: "סריקות של הגישה הזו" },
+  en: { label: "Internal code", action: "Verify", on: "Internal access was verified. Automatic monitoring is off.", fail: "The code was not accepted.", history: "Scans for this access" },
   es: { label: "Código de prueba", action: "Abrir el informe completo", on: "Este acceso abre sus propios informes. El seguimiento automático está apagado.", fail: "El código no fue aceptado.", history: "Escaneos de este acceso" },
   "pt-BR": { label: "Código de teste", action: "Abrir o relatório completo", on: "Este acesso abre os próprios relatórios. O monitoramento automático está desligado.", fail: "O código não foi aceito.", history: "Varreduras deste acesso" },
   ar: { label: "رمز الفحص", action: "افتحوا التقرير الكامل", on: "هذا الوصول يفتح تقاريره. المراقبة التلقائية متوقفة.", fail: "لم يُقبل الرمز.", history: "فحوصات هذا الوصول" },
@@ -394,6 +394,7 @@ function localeOf(language: string): Locale {
 
 export default function ComplianceScannerPage() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const locale = localeOf(i18n.language || "he");
@@ -428,15 +429,6 @@ export default function ComplianceScannerPage() {
       .catch(() => { if (!ignore) setError(copy.notice); });
     return () => { ignore = true; };
   }, [copy.notice]);
-
-  useLayoutEffect(() => {
-    const session = new URLSearchParams(window.location.hash.replace(/^#/, "")).get("session");
-    if (!session || !/^[a-f0-9]{24,}$/i.test(session)) return;
-    localStorage.setItem(TOKEN_KEY, session);
-    sessionStorage.setItem(REVIEW_FLAG, "1");
-    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
-    setReload((value) => value + 1);
-  }, []);
 
   useEffect(() => {
     if (!id) return undefined;
@@ -486,17 +478,6 @@ export default function ComplianceScannerPage() {
     navigate(`/compliance/report/${data.id}`);
   }
 
-  async function buyReport() {
-    const token = localStorage.getItem(TOKEN_KEY) || "";
-    const response = await fetch("/compliance/api/checkout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tenantToken: token, plan: "report", scanId: id }),
-    });
-    const data = await response.json().catch(() => ({}));
-    setError(data.error || data.message || copy.notice);
-  }
-
   async function downloadPdf() {
     const token = localStorage.getItem(TOKEN_KEY) || "";
     const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers: { "x-tenant-token": token } });
@@ -515,9 +496,16 @@ export default function ComplianceScannerPage() {
     return copy.unavailable;
   };
 
+  if (location.pathname.endsWith("/compliance/review")) {
+    return (
+      <main className="scan-product scan-product--report" dir={dir} lang={locale}>
+        <ReviewAccess locale={locale} onUnlocked={() => setReload((value) => value + 1)} />
+      </main>
+    );
+  }
+
   return (
     <main className={id ? "scan-product scan-product--report" : "scan-product"} dir={dir} lang={locale}>
-      <ReviewAccess locale={locale} onUnlocked={() => setReload((value) => value + 1)} />
       {!id && <form onSubmit={startScan}>
       <section className="scan-hero">
         <div className="scan-hero__copy">
@@ -613,7 +601,7 @@ export default function ComplianceScannerPage() {
               </ol>
             </div>
           ) : payload.access !== "full" ? (
-            <FreeResult locale={commercialLocale(locale)} summary={payload.summary} status={payload.status} onBuy={buyReport} />
+            <FreeResult locale={commercialLocale(locale)} summary={payload.summary} status={payload.status} scanId={id} />
           ) : (
             <>
               <ComplianceReportView locale={locale} payload={payload} onPdf={downloadPdf} />
