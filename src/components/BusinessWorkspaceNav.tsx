@@ -196,7 +196,7 @@ function NavItem({
             isActive
               ? `
                   border border-white bg-white
-                  text-[#321064]
+                  text-[#21172F]
                 `
               : `
                   border border-transparent text-white/80

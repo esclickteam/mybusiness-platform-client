@@ -1831,7 +1831,7 @@ export default function DashboardPage() {
   return (
     <div
       dir={pageDir}
-      className="min-h-screen overflow-x-hidden bg-[#F7F6FC] text-[#1a0b33]"
+      className="min-h-screen overflow-x-hidden bg-[#F4F1FA] text-[#21172F]"
     >
       <div className="mx-auto w-full max-w-[1680px] px-4 py-4 sm:px-6 lg:px-8">
         <main className="min-w-0 pb-10">

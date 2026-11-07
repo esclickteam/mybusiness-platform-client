@@ -539,7 +539,7 @@ export default function BusinessDashboardLayout() {
       <AiProvider>
         <div
           dir={layoutDir}
-          className="bx-shell min-h-screen w-full bg-[#F7F6FC] text-[#1a0b33]"
+          className="bx-shell min-h-screen w-full bg-[#F4F1FA] text-[#21172F]"
         >
           {showTopBanner ? (
             <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
@@ -620,10 +620,10 @@ export default function BusinessDashboardLayout() {
               ref={sidebarRef}
               className={`
                 fixed z-50 flex flex-col overflow-hidden
-                bg-[#321064]
+                bg-[#48218B]
                 shadow-[8px_0_30px_rgba(26,11,51,0.12)]
                 transition-[width,transform] duration-300 ease-in-out
-                ${isRtl ? "right-0 border-l border-[#321064]" : "left-0 border-r border-[#321064]"}
+                ${isRtl ? "right-0 border-l border-[#48218B]" : "left-0 border-r border-[#48218B]"}
                 ${
                   isMobile
                     ? showSidebar
@@ -711,7 +711,7 @@ export default function BusinessDashboardLayout() {
                     }
                     className="
                       flex h-7 w-7 shrink-0 items-center justify-center rounded-none
-                      border border-[#e7e3f5] bg-white text-[#321064]
+                      border border-[#e7e3f5] bg-white text-[#21172F]
                       shadow-[0_2px_8px_rgba(99,102,241,0.06)]
                       transition hover:border-sky-200 hover:bg-white
                       hover:text-sky-600
@@ -814,7 +814,7 @@ export default function BusinessDashboardLayout() {
                     onClick={() => setShowSidebar((value) => !value)}
                     className="
                       flex h-10 w-10 items-center justify-center rounded-none
-                      border border-[#e7e3f5] bg-white text-[#1a0b33]
+                      border border-[#e7e3f5] bg-white text-[#21172F]
                       shadow-sm transition hover:bg-slate-50
                     "
                   >
@@ -830,7 +830,7 @@ export default function BusinessDashboardLayout() {
                 <GuidedDemoResetControl />
                 {apiPortal ? (
                   <span
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-none border border-[#e7e3f5] bg-[#F7F6FC] px-2.5 py-1 text-xs font-black text-[#321064]"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-none border border-[#e7e3f5] bg-[#F7F6FC] px-2.5 py-1 text-xs font-black text-[#5B21B6]"
                     data-testid="wa-api-portal-badge"
                   >
                     <MessageCircle size={14} aria-hidden />
@@ -838,7 +838,7 @@ export default function BusinessDashboardLayout() {
                   </span>
                 ) : null}
                 <div className="hidden min-w-0 sm:block">
-                  <span className="block truncate text-lg font-black tracking-[-0.03em] text-[#1a0b33]">
+                  <span className="block truncate text-lg font-black tracking-[-0.03em] text-[#21172F]">
                     {isInvistimoAdmin
                       ? INVISTIMO_ADMIN_LABEL
                       : t("common.hello", {
@@ -846,7 +846,7 @@ export default function BusinessDashboardLayout() {
                         })}
                   </span>
                   {isAdmin && (
-                    <span className="ms-2 rounded-none bg-[#F7F6FC] px-2 py-0.5 text-xs font-bold text-[#321064]">
+                    <span className="ms-2 rounded-none bg-[#F7F6FC] px-2 py-0.5 text-xs font-bold text-[#5B21B6]">
                       {t("common.admin")}
                     </span>
                   )}
@@ -866,7 +866,7 @@ export default function BusinessDashboardLayout() {
                     className="
                       rounded-none border border-[#5B21B6] bg-[#5B21B6] px-4 py-2.5
                       text-sm font-bold text-white transition
-                      hover:bg-[#321064]
+                      hover:bg-[#48218B]
                     "
                   >
                     {t("common.logOut")}
@@ -878,7 +878,7 @@ export default function BusinessDashboardLayout() {
 
           <main
             className={[
-              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#F7F6FC] transition-[padding] duration-300",
+              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#F4F1FA] transition-[padding] duration-300",
               isWebsiteFullScreen
                 ? showTopBanner
                   ? "pt-14"
