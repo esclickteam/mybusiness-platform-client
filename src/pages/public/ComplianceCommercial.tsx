@@ -15,6 +15,8 @@ const TEXT: Record<Locale, Record<string, string>> = {
     reportLine: "הדוח שנשמר, כולל מקור, ציטוט, חומרה והמלצה. בלי אישור עמידה בחוק.",
     monitorLine: "דוח מלא, סריקה חודשית לאתר אחד, היסטוריה והתראה רק על מקור שאומת.",
     checked: "ציון הבדיקות שהושלמו",
+    coverage: "כיסוי בדיקות",
+    lowCoverage: "הכיסוי נמוך. הציון חלקי ואינו מייצג בדיקות שלא הושלמו.",
     missing: "מסמכים חסרים",
     critical: "ממצאים קריטיים בתוכן שנקרא",
     other: "ליקויים נוספים",
@@ -32,7 +34,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     severity: "חומרה",
     manual: "נדרשת בדיקה אנושית",
     mentioned: "הנושא אוזכר. זו אינה עמידה בדרישה.",
-    not_seen_in_read_text: "הנושא לא הופיע במסמך שנקרא.",
+    not_seen_in_read_text: "הנושא לא הופיע במסמך שנקרא. זו אינה הפרה.",
     document_not_read: "המסמך לא נקרא, ולכן אין ניתוח.",
     not_verifiable: "אי אפשר לאמת את זה בסריקה פומבית.",
     statement_seen: "נראתה הצהרה. הצהרה אינה עמידה בתקן.",
@@ -57,6 +59,8 @@ const TEXT: Record<Locale, Record<string, string>> = {
     reportLine: "The stored report, with source, quote, severity and a recommendation. No compliance approval.",
     monitorLine: "A full report, one monthly scan for one site, history, and an alert only for a verified source.",
     checked: "Score of completed checks",
+    coverage: "Check coverage",
+    lowCoverage: "Coverage is low. The score is partial and does not represent unfinished checks.",
     missing: "Missing documents",
     critical: "Critical findings in text that was read",
     other: "Other issues",
@@ -97,7 +101,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     freeLine: "Puntuación de lo comprobado, documentos ausentes y categorías. Sin citas, artículos ni PDF.",
     reportLine: "El informe guardado, con fuente, cita, gravedad y recomendación. Sin aprobación legal.",
     monitorLine: "Informe completo, un análisis mensual para un sitio, historial y aviso solo con fuente verificada.",
-    checked: "Puntuación de lo comprobado", missing: "Documentos ausentes", critical: "Hallazgos críticos en texto leído",
+    checked: "Puntuación de lo comprobado", coverage: "Cobertura", lowCoverage: "La cobertura es baja. La puntuación es parcial.", missing: "Documentos ausentes", critical: "Hallazgos críticos en texto leído",
     other: "Otros hallazgos", incomplete: "Comprobaciones incompletas", categories: "Categorías", accessibility: "Accesibilidad", security: "Seguridad", privacy: "Privacidad", cookies: "Cookies", when: "Fecha y país",
     locked: "El informe completo permanece en el servidor hasta verificar un pago.",
     sample: "Ver la estructura", sampleNote: "Ilustración de la estructura. No son hallazgos del sitio analizado.",
@@ -115,7 +119,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     freeLine: "Pontuação do que foi verificado, documentos ausentes e categorias. Sem citações, artigos ou PDF.",
     reportLine: "O relatório salvo, com fonte, citação, gravidade e recomendação. Sem aprovação legal.",
     monitorLine: "Relatório completo, uma análise mensal para um site, histórico e alerta só com fonte verificada.",
-    checked: "Pontuação do que foi verificado", missing: "Documentos ausentes", critical: "Achados críticos no texto lido",
+    checked: "Pontuação do que foi verificado", coverage: "Cobertura", lowCoverage: "A cobertura está baixa. A pontuação é parcial.", missing: "Documentos ausentes", critical: "Achados críticos no texto lido",
     other: "Outros achados", incomplete: "Verificações incompletas", categories: "Categorias", accessibility: "Acessibilidade", security: "Segurança", privacy: "Privacidade", cookies: "Cookies", when: "Data e país",
     locked: "O relatório completo fica no servidor até a verificação de um pagamento.",
     sample: "Ver a estrutura", sampleNote: "Ilustração da estrutura. Não são achados do site analisado.",
@@ -133,7 +137,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     freeLine: "درجة ما تم فحصه، والمستندات الناقصة، والفئات. بلا اقتباسات أو مواد أو PDF.",
     reportLine: "التقرير المحفوظ، مع المصدر والاقتباس والشدة والتوصية. بلا اعتماد امتثال.",
     monitorLine: "تقرير كامل، وفحص شهري لموقع واحد، وسجل، وتنبيه فقط لمصدر تم التحقق منه.",
-    checked: "درجة الفحوص المكتملة", missing: "مستندات ناقصة", critical: "نتائج حرجة في نص تمت قراءته",
+    checked: "درجة الفحوص المكتملة", coverage: "تغطية الفحص", lowCoverage: "التغطية منخفضة. الدرجة جزئية.", missing: "مستندات ناقصة", critical: "نتائج حرجة في نص تمت قراءته",
     other: "نتائج أخرى", incomplete: "فحوص لم تكتمل", categories: "فئات", accessibility: "إتاحة", security: "أمن", privacy: "خصوصية", cookies: "ملفات تعريف الارتباط", when: "التاريخ والدولة",
     locked: "يبقى التقرير الكامل على الخادم إلى أن يتم التحقق من عملية دفع.",
     sample: "عرض بنية التقرير", sampleNote: "رسم توضيحي للبنية. هذه ليست نتائج الموقع الذي فُحص.",
@@ -186,7 +190,8 @@ export function FreeResult({ locale, summary }: { locale: Locale; summary: any }
   return (
     <section className="scan-free">
       <div className="scan-scores">
-        <article><b>{summary.checkedScore ?? "—"}</b><span>{copy.checked}</span></article>
+        <article><b>{summary.checkedScore ?? "—"}<small>/100</small></b><span>{copy.checked}</span></article>
+        <article><b>{summary.coverage ?? "—"}%</b><span>{copy.coverage}</span></article>
         <article><b>{summary.missingDocuments ?? 0}</b><span>{copy.missing}</span></article>
         <article><b>{summary.critical ?? 0}</b><span>{copy.critical}</span></article>
         <article><b>{summary.other ?? 0}</b><span>{copy.other}</span></article>
@@ -195,6 +200,7 @@ export function FreeResult({ locale, summary }: { locale: Locale; summary: any }
       <p>{copy.categories}: {(summary.categories || []).map((item: string) => copy[item] || item).join(", ") || "—"}</p>
       <p>{copy.when}: {summary.scannedAt || "—"} · {(summary.countries || []).join(", ") || "—"}</p>
       <p className="scan-not-legal">{summary.checkedScoreLabel || copy.locked}</p>
+      {summary.lowCoverage && <p className="scan-error" role="status">{copy.lowCoverage}</p>}
       <p>{copy.locked}</p>
       <button type="button" className="scan-start" onClick={() => setOpen((value) => !value)}>{copy.sample}</button>
       {open && (
