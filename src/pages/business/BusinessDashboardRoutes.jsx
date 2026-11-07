@@ -44,6 +44,7 @@ const SiteManagementPanelPage = lazyWithPreload(() =>
 );
 const AiSiteWizardPage = lazy(() => import("../AiSiteWizardPage"));
 const AiStudioPocPage = lazy(() => import("../AiStudioPocPage"));
+const AiStudioCodePage = lazy(() => import("../AiStudioCodePage"));
 
 /* Website Templates */
 const WebsiteTemplatesPage = lazy(() => import("../WebsiteTemplatesPage"));
@@ -534,7 +535,9 @@ const BusinessDashboardRoutes = () => {
           />
           <Route path="website/create/ai" element={<AiSiteWizardPage />} />
           {/* AI Studio PoC — server feature-flagged OFF by default */}
-          <Route path="ai-studio" element={<AiStudioPocPage />} />
+          <Route path="ai-studio" element={<AiStudioCodePage />} />
+          <Route path="ai-studio/code" element={<AiStudioCodePage />} />
+          <Route path="ai-studio/classic" element={<AiStudioPocPage />} />
           <Route
             path="website/sites/:siteId/edit"
             element={<WebsiteStudioRoute businessId={businessId} />}

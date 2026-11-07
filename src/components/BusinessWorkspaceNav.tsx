@@ -420,6 +420,13 @@ export default function BusinessWorkspaceNav({
       demoTarget: "nav-website",
     },
     {
+      labelKey: "businessNav.aiStudio",
+      fallback: "AI Studio",
+      to: `${basePath}/dashboard/ai-studio`,
+      icon: AppWindow,
+      moduleKey: "ai-studio",
+    },
+    {
       labelKey: "businessNav.billing",
       fallback: "Billing & Subscription",
       to: `${basePath}/dashboard/billing`,
@@ -536,6 +543,11 @@ export default function BusinessWorkspaceNav({
       return false;
     }
     if (item.moduleKey === "website" && showWebsiteUpsell && !user?.isGuidedDemo) return true;
+    if (item.moduleKey === "ai-studio") {
+      return isModuleEnabled(enabledModules, "website")
+        || isModuleEnabled(enabledModules, "crm")
+        || isModuleEnabled(enabledModules, "automations");
+    }
     if (
       user?.isShowcaseDemo &&
       (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
