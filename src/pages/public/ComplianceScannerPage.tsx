@@ -516,7 +516,7 @@ export default function ComplianceScannerPage() {
   };
 
   return (
-    <main className="scan-product" dir={dir} lang={locale}>
+    <main className={id ? "scan-product scan-product--report" : "scan-product"} dir={dir} lang={locale}>
       <ReviewAccess locale={locale} onUnlocked={() => setReload((value) => value + 1)} />
       {!id && <form onSubmit={startScan}>
       <section className="scan-hero">
