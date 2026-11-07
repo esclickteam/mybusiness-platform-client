@@ -156,14 +156,14 @@ function NavItem({
         className={`
           group relative flex items-center rounded-none border border-transparent transition-all duration-200
           ${collapsed ? "mx-auto h-11 w-11 justify-center" : "h-11 gap-3 px-3"}
-          text-[13.5px] font-medium tracking-[-0.01em] text-[#1a0b33]
-          hover:border-[#e7e3f5] hover:bg-[#F7F6FC] hover:text-[#321064]
+          text-[13.5px] font-medium tracking-[-0.01em] text-white/80
+          hover:border-white/15 hover:bg-white/10 hover:text-white
         `}
       >
         <Icon
           size={19}
           strokeWidth={2}
-          className="shrink-0 text-[#5B21B6] transition-colors group-hover:text-[#321064]"
+          className="shrink-0 text-white/70 transition-colors group-hover:text-white"
         />
         {!collapsed && (
           <>
@@ -195,12 +195,12 @@ function NavItem({
           ${
             isActive
               ? `
-                  border border-[#5B21B6] bg-[#5B21B6]
-                  text-white
+                  border border-white bg-white
+                  text-[#321064]
                 `
               : `
-                  border border-transparent text-[#1a0b33]
-                  hover:border-[#e7e3f5] hover:bg-[#F7F6FC] hover:text-[#321064]
+                  border border-transparent text-white/80
+                  hover:border-white/15 hover:bg-white/10 hover:text-white
                 `
           }
         `
@@ -208,16 +208,6 @@ function NavItem({
     >
       {({ isActive }) => (
         <>
-          {isActive && !collapsed && (
-            <span
-              aria-hidden
-              className="
-                absolute inset-y-0 start-0 w-[3px] rounded-none
-                bg-[#3D63FF]
-              "
-            />
-          )}
-
           <Icon
             size={19}
             strokeWidth={isActive ? 2.25 : 2}
@@ -225,8 +215,8 @@ function NavItem({
               shrink-0 transition-colors
               ${
                 isActive
-                  ? "text-white"
-                  : "text-[#5B21B6] group-hover:text-[#321064]"
+                  ? "text-[#5B21B6]"
+                  : "text-white/70 group-hover:text-white"
               }
             `}
           />
@@ -559,10 +549,10 @@ export default function BusinessWorkspaceNav({
     >
       {showProductSwitcher && businessId ? (
         <div
-          className={`border-b border-slate-200/80 ${collapsed ? "px-1.5 py-2" : "px-2 py-2"}`}
+          className={`border-b border-white/10 ${collapsed ? "px-1.5 py-2" : "px-2 py-2"}`}
         >
           {!collapsed ? (
-            <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+            <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-white/45">
               {translate(t, "businessNav.products.title", "Your products")}
             </p>
           ) : null}
@@ -597,7 +587,7 @@ export default function BusinessWorkspaceNav({
           return (
             <React.Fragment key={item.to || item.href || item.labelKey}>
               {showGroup ? (
-                <p className="px-3 pb-1 pt-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#5B21B6]">
+                <p className="px-3 pb-1 pt-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/45">
                   {translate(t, `businessNav.groups.${group}`, group)}
                 </p>
               ) : null}

@@ -336,7 +336,8 @@ export default function DashboardOverview({
 
   return (
     <div className="bx-command">
-      <header className="bx-rise">
+      <section className="bx-hero bx-rise">
+      <header>
         <p className="bx-kicker">{t("overview.cmdKicker", "Control center")}</p>
         <h1 className="bx-title">
           {t("overview.greeting", {
@@ -354,7 +355,7 @@ export default function DashboardOverview({
         </p>
       </header>
 
-      <section className="bx-panel bx-rise">
+      <div className="bx-hero-controls">
         <div className="bx-row" style={{ justifyContent: "space-between" }}>
           <div className="bx-row">
             {DATE_PRESETS.map((preset) => (
@@ -402,6 +403,23 @@ export default function DashboardOverview({
             />
           </div>
         ) : null}
+        {quickActions.length ? (
+          <div className="bx-row bx-hero-actions">
+            {quickActions.map((action) => (
+              <button
+                key={action!.label}
+                type="button"
+                className="bx-btn"
+                data-demo-target={action!.dataDemoTarget}
+                onClick={() => navigate(action!.to)}
+              >
+                {action!.icon}
+                {action!.label}
+              </button>
+            ))}
+          </div>
+        ) : null}
+        </div>
       </section>
 
       {error ? (
@@ -599,25 +617,6 @@ export default function DashboardOverview({
         }
         onOpen={(path) => navigate(`${basePath}/${path}`)}
       />
-
-      {quickActions.length ? (
-        <section className="bx-panel">
-          <div className="bx-row">
-            {quickActions.map((action) => (
-              <button
-                key={action!.label}
-                type="button"
-                className="bx-btn"
-                data-demo-target={action!.dataDemoTarget}
-                onClick={() => navigate(action!.to)}
-              >
-                {action!.icon}
-                {action!.label}
-              </button>
-            ))}
-          </div>
-        </section>
-      ) : null}
 
       <section className="bx-split">
         {visiblePerformanceTabs.length ? (

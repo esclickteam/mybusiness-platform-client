@@ -592,7 +592,7 @@ export default function BusinessDashboardLayout() {
                 type="button"
                 disabled={exitingImpersonation}
                 onClick={handleExitImpersonation}
-                className="rounded-md border border-amber-200/80 bg-gradient-to-l from-amber-100 via-orange-50 to-white px-4 py-2.5 text-xs font-black text-black transition hover:from-amber-200/80 hover:via-orange-50 hover:to-white disabled:opacity-60"
+                className="rounded-none border border-amber-200/80 bg-gradient-to-l from-amber-100 via-orange-50 to-white px-4 py-2.5 text-xs font-black text-black transition hover:from-amber-200/80 hover:via-orange-50 hover:to-white disabled:opacity-60"
               >
                 {exitingImpersonation
                   ? t("layout.returning")
@@ -620,10 +620,10 @@ export default function BusinessDashboardLayout() {
               ref={sidebarRef}
               className={`
                 fixed z-50 flex flex-col overflow-hidden
-                bg-[#F7F6FC]
-                shadow-none
+                bg-[#321064]
+                shadow-[8px_0_30px_rgba(26,11,51,0.12)]
                 transition-[width,transform] duration-300 ease-in-out
-                ${isRtl ? "right-0 border-l border-[#e7e3f5]" : "left-0 border-r border-[#e7e3f5]"}
+                ${isRtl ? "right-0 border-l border-[#321064]" : "left-0 border-r border-[#321064]"}
                 ${
                   isMobile
                     ? showSidebar
@@ -783,7 +783,7 @@ export default function BusinessDashboardLayout() {
                 type="button"
                 onClick={handleBackToAdmin}
                 className="
-                  shrink-0 rounded-lg bg-white/15 px-3 py-1 text-xs font-bold
+                  shrink-0 rounded-none bg-white/15 px-3 py-1 text-xs font-bold
                   transition hover:bg-white/25
                 "
               >
@@ -795,9 +795,9 @@ export default function BusinessDashboardLayout() {
           {!isWebsiteFullScreen && (
             <header
               className="
-                fixed z-30 flex h-16 items-center justify-between
+                fixed z-30 flex h-[4.5rem] items-center justify-between
                 border-b border-[#e7e3f5] bg-white px-4
-                shadow-none
+                shadow-[0_10px_30px_rgba(50,16,100,0.04)]
                 transition-all duration-300 lg:px-6
               "
               style={{
@@ -837,8 +837,8 @@ export default function BusinessDashboardLayout() {
                     {t("whatsappApiPortal.productName")}
                   </span>
                 ) : null}
-                <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
-                  <span className="font-black text-slate-800">
+                <div className="hidden min-w-0 sm:block">
+                  <span className="block truncate text-base font-black tracking-[-0.03em] text-[#1a0b33]">
                     {isInvistimoAdmin
                       ? INVISTIMO_ADMIN_LABEL
                       : t("common.hello", {
@@ -864,9 +864,9 @@ export default function BusinessDashboardLayout() {
                     type="button"
                     onClick={handleLogout}
                     className="
-                      rounded-none border border-[#e7e3f5] bg-white px-4 py-2.5
-                      text-sm font-bold text-slate-700 shadow-sm transition
-                      hover:bg-slate-50
+                      rounded-none border border-[#5B21B6] bg-[#5B21B6] px-4 py-2.5
+                      text-sm font-bold text-white transition
+                      hover:bg-[#321064]
                     "
                   >
                     {t("common.logOut")}
@@ -884,10 +884,10 @@ export default function BusinessDashboardLayout() {
                   ? "pt-14"
                   : "pt-0"
                 : isAdmin
-                  ? "pt-[104px]"
+                  ? "pt-[112px]"
                   : showTopBanner
                     ? "pt-[120px]"
-                    : "pt-16",
+                    : "pt-[4.5rem]",
               // Lets the last portal actions scroll clear of the floating assistant launcher.
               apiPortal && !isWebsiteFullScreen ? "pb-28" : "",
             ].join(" ")}

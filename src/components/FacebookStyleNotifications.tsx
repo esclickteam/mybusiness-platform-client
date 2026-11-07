@@ -158,7 +158,7 @@ class NotificationPanelErrorBoundary extends React.Component<
         <div
           dir={dir}
           className={[
-            "fixed top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border border-rose-100 bg-white p-4 text-start shadow-xl",
+            "fixed top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-none border border-rose-100 bg-white p-4 text-start shadow-xl",
             dir === "rtl" ? "left-4 sm:left-6" : "right-4 sm:right-6",
           ].join(" ")}
         >
@@ -171,7 +171,7 @@ class NotificationPanelErrorBoundary extends React.Component<
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
-            className="mt-3 inline-flex h-9 items-center rounded-xl bg-sky-50 px-3 text-xs font-black text-sky-700"
+            className="mt-3 inline-flex h-9 items-center rounded-none bg-sky-50 px-3 text-xs font-black text-sky-700"
           >
             {i18n.t("notifications.tryAgain")}
           </button>
@@ -1592,13 +1592,13 @@ export default function FacebookStyleNotifications() {
                     dismissToast(toast.id);
                   }}
                   className={[
-                    "group relative flex w-full items-start gap-3 overflow-hidden rounded-2xl border border-amber-100 bg-white p-4 text-start shadow-[0_18px_50px_rgba(15,23,42,0.16)]",
+                    "group relative flex w-full items-start gap-3 overflow-hidden rounded-none border border-amber-100 bg-white p-4 text-start shadow-[0_18px_50px_rgba(15,23,42,0.16)]",
                     isClickable ? "cursor-pointer" : "cursor-default",
                   ].join(" ")}
                 >
                   <span className="pointer-events-none absolute inset-y-0 end-0 w-1 bg-gradient-to-b from-amber-400 to-red-500" />
 
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none bg-amber-50 text-red-500 ring-1 ring-amber-100">
                     {getIcon(toast.kind)}
                   </span>
 
@@ -1623,7 +1623,7 @@ export default function FacebookStyleNotifications() {
                       clickEvent.stopPropagation();
                       dismissToast(toast.id);
                     }}
-                    className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+                    className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-none bg-slate-50 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -1662,7 +1662,7 @@ export default function FacebookStyleNotifications() {
               className={[
                 "fixed top-20 z-[9999]",
                 "flex max-h-[min(680px,calc(100dvh-5.5rem))] w-[440px] max-w-[calc(100vw-24px)]",
-                "flex-col overflow-hidden rounded-[1.7rem] border border-slate-200",
+                "flex-col overflow-hidden rounded-none border border-slate-200",
                 "bg-white shadow-[0_26px_90px_rgba(15,23,42,0.14)]",
                 sideDockClass,
               ].join(" ")}
@@ -1697,7 +1697,7 @@ export default function FacebookStyleNotifications() {
                           onClick={() => setPanelView("settings")}
                           aria-label={t("notifications.settingsAria")}
                           title={t("notifications.settingsAria")}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-none bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                         >
                           <Settings className="h-4 w-4" />
                         </button>
@@ -1706,7 +1706,7 @@ export default function FacebookStyleNotifications() {
                           type="button"
                           onClick={closePanel}
                           aria-label={t("notifications.closePanelAria")}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-none bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
                         >
                           <X className="h-4 w-4" />
                         </button>
@@ -1721,7 +1721,7 @@ export default function FacebookStyleNotifications() {
                         dir={getTextDirection(i18n.language)}
                         onClick={openPushSettings}
                         data-testid="push-center-badge"
-                        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-3 py-2 text-center text-[11px] font-black leading-4 text-sky-700 shadow-sm transition hover:bg-sky-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-none border border-sky-100 bg-white px-3 py-2 text-center text-[11px] font-black leading-4 text-sky-700 shadow-sm transition hover:bg-sky-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                       >
                         {pushDiscoverability.trialEligible
                           ? t("push.discover.free7Push", "7 days of free Push alerts")
@@ -1735,7 +1735,7 @@ export default function FacebookStyleNotifications() {
                   type="button"
                   onClick={() => setTab("all")}
                   className={[
-                    "h-11 rounded-2xl text-sm font-black transition",
+                    "h-11 rounded-none text-sm font-black transition",
                     tab === "all"
                       ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
@@ -1748,7 +1748,7 @@ export default function FacebookStyleNotifications() {
                   type="button"
                   onClick={() => setTab("unread")}
                   className={[
-                    "h-11 rounded-2xl text-sm font-black transition",
+                    "h-11 rounded-none text-sm font-black transition",
                     tab === "unread"
                       ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
@@ -1776,7 +1776,7 @@ export default function FacebookStyleNotifications() {
                     type="button"
                     onClick={fetchAllNotifications}
                     disabled={loading}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-50"
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-none border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-50"
                     title={t("notifications.refresh")}
                   >
                     {loading ? (
@@ -1790,7 +1790,7 @@ export default function FacebookStyleNotifications() {
                     <button
                       type="button"
                       onClick={markAllAsRead}
-                      className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
+                      className="inline-flex h-9 items-center gap-2 rounded-none border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
                     >
                       <CheckCheck className="h-4 w-4" />
                       {t("notifications.markAll")}
@@ -1801,8 +1801,8 @@ export default function FacebookStyleNotifications() {
 
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
                 {filtered.length === 0 ? (
-                  <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center sm:px-8">
-                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
+                  <div className="flex min-h-[230px] flex-col items-center justify-center rounded-none border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center sm:px-8">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-none bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
                       <ListChecks className="h-7 w-7" />
                     </div>
 
@@ -1845,7 +1845,7 @@ export default function FacebookStyleNotifications() {
                           key={notification.id}
                           onClick={() => openNotificationTarget(notification)}
                           className={[
-                            "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-start transition",
+                            "group relative flex w-full items-start gap-3 rounded-none border p-4 text-start transition",
                             isClickable ? "cursor-pointer" : "cursor-default",
                             notification.read
                               ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
@@ -1854,7 +1854,7 @@ export default function FacebookStyleNotifications() {
                         >
                           <span
                             className={[
-                              "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
+                              "flex h-12 w-12 shrink-0 items-center justify-center rounded-none ring-1",
                               kindClasses.icon,
                             ].join(" ")}
                           >
