@@ -618,7 +618,7 @@
     "ctaTitle": "בנו את מערכת הניהול העסקית שלכם.",
     "ctaText": "התחילו לנהל עמוד עסקי, CRM, שיתופי פעולה וכלי AI במקום אחד.",
     "ctaButton": "הירשמו עכשיו",
-    "rights": "© {{year}} Bizuply · כל הזכויות שמורות",
+    "rights": "© {{year}} Bizuply LLC · כל הזכויות שמורות",
     "platform": "הפלטפורמה",
     "services": "שירותים",
     "crm": "CRM",
@@ -627,7 +627,13 @@
     "appointments": "תורים",
     "automations": "אוטומציות",
     "agents": "נציגים לעסק",
-    "logoAria": "Bizuply — דף הבית"
+    "products": "מוצרים",
+    "resources": "משאבים",
+    "whatsapp": "WhatsApp",
+    "meta": "קמפיינים של Meta",
+    "guides": "מדריכים",
+    "partners": "תוכנית שותפים",
+    "logoAria": "BizUply — דף הבית"
   },
   "businessNav": {
     "dashboard": "דשבורד",

@@ -5,8 +5,6 @@ import {
   buildWhatsappLink,
   GhostButton,
   PrimaryButton,
-  SaasFooter,
-  SaasHeader,
   SaasSeo,
   StickyActions,
   useSaasLocale,
@@ -138,7 +136,6 @@ export default function SaasProductPage() {
         title={product ? story.seoTitle : t("saasMarket.seoTitle")}
         description={product ? story.seoDescription : t("saasMarket.seoDescription")}
       />
-      <SaasHeader onTalk={() => openLead({ ctaSource: "talk_to_us" })} />
       <main>
         {loading ? <p className="px-6 py-16 text-sm font-bold text-slate-500">{t("saasMarket.platforms.loading")}</p> : null}
         {error ? <p className="px-6 py-16 text-sm font-bold text-rose-600">{error}</p> : null}
@@ -277,7 +274,6 @@ export default function SaasProductPage() {
           </>
         ) : null}
       </main>
-      <SaasFooter />
       <WhatsAppDock href={wa} />
       {product ? (
         <StickyActions
