@@ -109,7 +109,7 @@ function PrivacyPolicy() {
               {t("privacyPage.contactPrivacy")}
             </p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
-              privacy@bizuply.com
+              support@bizuply.com
             </p>
           </div>
         </aside>

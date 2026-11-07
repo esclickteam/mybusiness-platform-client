@@ -14,7 +14,7 @@ describe("legal annex", () => {
     for (const pack of packs) {
       expect(Object.keys(pack.docs)).toEqual(ids);
       const text = JSON.stringify(pack.docs);
-      for (const token of ["499", "5,000", "10", "30", "35", "40", "99", "990", "49", "129", "privacy@bizuply.com"]) {
+      for (const token of ["499", "5,000", "10", "30", "35", "40", "99", "990", "49", "129", "support@bizuply.com"]) {
         expect(text).toContain(token);
       }
       expect(text).toContain("Lemon Squeezy");

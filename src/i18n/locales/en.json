@@ -14004,7 +14004,7 @@
   },
   "s10": {
     "h": "10. User Rights",
-    "p1": "Where a privacy law that covers the person grants one of the following rights, the person may send a request to privacy@bizuply.com. This list is not a statement that any one privacy statute applies to every user.",
+    "p1": "Where a privacy law that covers the person grants one of the following rights, the person may send a request to support@bizuply.com. This list is not a statement that any one privacy statute applies to every user.",
     "list": [
       "The right to access personal data stored by BizUply",
       "The right to correct or update inaccurate information",
@@ -14012,7 +14012,7 @@
       "The right to receive a copy of personal data (“data portability”)",
       "The right to object to processing or marketing use"
     ],
-    "p2": "Requests must be submitted in writing to <strong>privacy@bizuply.com</strong>. BizUply may verify the requester's identity. A response within 30 business days is not an implemented process. The deadline, if any, is the one required by a law that covers the request."
+    "p2": "Requests must be submitted in writing to <strong>support@bizuply.com</strong>. BizUply may verify the requester's identity. A response within 30 business days is not an implemented process. The deadline, if any, is the one required by a law that covers the request."
   },
   "s11": {
     "h": "11. Refunds, Payments, and Legal Waiver",
@@ -14068,10 +14068,10 @@
     "h": "18. Contact Details and Data Protection Officer",
     "p1": "If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact:",
     "cardTitle": "<strong>BizUply – Data Protection Office</strong>",
-    "cardEmail": "Email: <strong>privacy@bizuply.com</strong>",
+    "cardEmail": "Email: <strong>support@bizuply.com</strong>",
     "cardSupport": "General support: <strong>support@bizuply.com</strong>",
     "cardHq": "Formation: Delaware, United States. Street address: not verified.",
-    "p2": "No data-protection officer was identified in the records supplied for this draft. Privacy requests go to privacy@bizuply.com. Appointment of a DPO, an EU representative, or a UK representative is not claimed."
+    "p2": "No data-protection officer was identified in the records supplied for this draft. Privacy requests go to support@bizuply.com. Appointment of a DPO, an EU representative, or a UK representative is not claimed."
   },
   "s19": {
     "h": "19. Final Provision",
@@ -14183,7 +14183,7 @@
       "The right to restrict or object to certain types of data processing.",
       "The right to lodge a complaint with a relevant data protection authority or privacy regulator."
     ],
-    "p6": "5.6. Privacy requests may be sent to privacy@bizuply.com. The product does not contain a fixed response deadline, and a response within 30 business days is not an implemented process. Any deadline that applies is the one required by a law that actually covers that request.",
+    "p6": "5.6. Privacy requests may be sent to support@bizuply.com. The product does not contain a fixed response deadline, and a response within 30 business days is not an implemented process. Any deadline that applies is the one required by a law that actually covers that request.",
     "cookiesTitle": "Cookies & Tracking Technologies",
     "p7": "5.7. The Site and the App use cookies and similar technologies for basic functionality, security, and the measurement described in section 5.9. Section 5.9 states which measurement tool loads and on which page.",
     "p8": "5.8. Users may disable or restrict cookies through their browser settings; however, as a result, certain features of the platform may not function properly.",

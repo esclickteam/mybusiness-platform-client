@@ -105,7 +105,7 @@
         "O direito de restringir ou se opor a certos tipos de processamento de dados.",
         "O direito de apresentar uma reclamação a uma autoridade de proteção de dados relevante ou a um regulador de privacidade."
       ],
-      "p6": "5.6. Pedidos de privacidade podem ser enviados para privacy@bizuply.com. O produto não contém um prazo fixo de resposta, e uma resposta em 30 dias úteis não é um processo implementado. O prazo aplicável é apenas o exigido por uma lei que realmente cubra esse pedido.",
+      "p6": "5.6. Pedidos de privacidade podem ser enviados para support@bizuply.com. O produto não contém um prazo fixo de resposta, e uma resposta em 30 dias úteis não é um processo implementado. O prazo aplicável é apenas o exigido por uma lei que realmente cubra esse pedido.",
       "cookiesTitle": "Cookies e Tecnologias de Rastreamento",
       "p7": "5.7. O site e o aplicativo usam cookies e tecnologias semelhantes para a funcionalidade básica, a segurança e a medição descrita na seção 5.9. A seção 5.9 indica qual ferramenta de medição é carregada e em qual página.",
       "p8": "5.8. Os usuários podem desativar ou restringir os cookies através das configurações do navegador; no entanto, como resultado, certos recursos da plataforma podem não funcionar corretamente.",
@@ -362,7 +362,7 @@
     },
     "s10": {
       "h": "10. Direitos do Usuário",
-      "p1": "Quando uma lei de privacidade que abrange a pessoa concede um dos direitos a seguir, a pessoa pode enviar um pedido para privacy@bizuply.com. Esta lista não afirma que uma lei de privacidade específica se aplique a todos os usuários.",
+      "p1": "Quando uma lei de privacidade que abrange a pessoa concede um dos direitos a seguir, a pessoa pode enviar um pedido para support@bizuply.com. Esta lista não afirma que uma lei de privacidade específica se aplique a todos os usuários.",
       "list": [
         "O direito de acessar dados pessoais armazenados pela BizUply",
         "O direito de corrigir ou atualizar informações imprecisas",
@@ -370,7 +370,7 @@
         "O direito de receber uma cópia dos dados pessoais (\"portabilidade de dados\")",
         "O direito de se opor ao processamento ou ao uso de marketing"
       ],
-      "p2": "Os pedidos devem ser apresentados por escrito a <strong>privacy@bizuply.com</strong>. A BizUply pode verificar a identidade do solicitante. Uma resposta em 30 dias úteis não é um processo implementado. O prazo, se houver, é o exigido por uma lei que cubra o pedido."
+      "p2": "Os pedidos devem ser apresentados por escrito a <strong>support@bizuply.com</strong>. A BizUply pode verificar a identidade do solicitante. Uma resposta em 30 dias úteis não é um processo implementado. O prazo, se houver, é o exigido por uma lei que cubra o pedido."
     },
     "s11": {
       "h": "11. Reembolsos, Pagamentos e Renúncia Legal",
@@ -429,7 +429,7 @@
       "cardEmail": "E-mail: <strong>privacy@BizUply.com</strong>",
       "cardSupport": "Suporte geral: <strong>support@BizUply.com</strong>",
       "cardHq": "Constituição: Delaware, Estados Unidos. Endereço: não verificado.",
-      "p2": "Nenhum encarregado de proteção de dados foi identificado nos registros fornecidos para este rascunho. Pedidos de privacidade vão para privacy@bizuply.com. Não se afirma a nomeação de um DPO, de um representante na UE ou de um representante no Reino Unido."
+      "p2": "Nenhum encarregado de proteção de dados foi identificado nos registros fornecidos para este rascunho. Pedidos de privacidade vão para support@bizuply.com. Não se afirma a nomeação de um DPO, de um representante na UE ou de um representante no Reino Unido."
     },
     "s19": {
       "h": "19. Disposição final",
@@ -496,7 +496,7 @@
     {
       "id": "termsPage.s5.p6",
       "original": "5.6. A Empresa responderá a solicitações verificadas relacionadas à privacidade dentro de um prazo razoável, não excedendo <strong>30 dias úteis</strong>, de acordo com a lei aplicável e sujeito a verificação de identidade adequada.",
-      "proposed": "5.6. Pedidos de privacidade podem ser enviados para privacy@bizuply.com. O produto não contém um prazo fixo de resposta, e uma resposta em 30 dias úteis não é um processo implementado. O prazo aplicável é apenas o exigido por uma lei que realmente cubra esse pedido.",
+      "proposed": "5.6. Pedidos de privacidade podem ser enviados para support@bizuply.com. O produto não contém um prazo fixo de resposta, e uma resposta em 30 dias úteis não é um processo implementado. O prazo aplicável é apenas o exigido por uma lei que realmente cubra esse pedido.",
       "why": "The 30-business-day deadline is not an implemented process.",
       "source": "A promised deadline that the product does not perform would be misleading.",
       "protection": "qualified"
@@ -592,7 +592,7 @@
     {
       "id": "privacyPage.s10.p2",
       "original": "Os pedidos devem ser enviados por escrito para <strong>privacy@BizUply.com</strong>. A BizUply verificará a identidade do solicitante e responderá dentro de 30 dias úteis, de acordo com a lei dos Estados Unidos.",
-      "proposed": "Os pedidos devem ser apresentados por escrito a <strong>privacy@bizuply.com</strong>. A BizUply pode verificar a identidade do solicitante. Uma resposta em 30 dias úteis não é um processo implementado. O prazo, se houver, é o exigido por uma lei que cubra o pedido.",
+      "proposed": "Os pedidos devem ser apresentados por escrito a <strong>support@bizuply.com</strong>. A BizUply pode verificar a identidade do solicitante. Uma resposta em 30 dias úteis não é um processo implementado. O prazo, se houver, é o exigido por uma lei que cubra o pedido.",
       "why": "The 30-business-day privacy response is not an implemented process.",
       "source": "Same reason as terms section 5.6.",
       "protection": "qualified"
@@ -696,7 +696,7 @@
     {
       "id": "privacyPage.s10.p1",
       "original": "Sob os regulamentos de privacidade aplicáveis, incluindo a lei federal dos Estados Unidos e a lei de Nova York, os usuários têm os seguintes direitos:",
-      "proposed": "Quando uma lei de privacidade que abrange a pessoa concede um dos direitos a seguir, a pessoa pode enviar um pedido para privacy@bizuply.com. Esta lista não afirma que o GDPR, a CCPA, a CPRA ou a lei de Nova York se apliquem a todos os usuários.",
+      "proposed": "Quando uma lei de privacidade que abrange a pessoa concede um dos direitos a seguir, a pessoa pode enviar um pedido para support@bizuply.com. Esta lista não afirma que o GDPR, a CCPA, a CPRA ou a lei de Nova York se apliquem a todos os usuários.",
       "why": "The sentence granted the rights list under New York law.",
       "source": "The list is not a finding that any one privacy law covers every user.",
       "protection": "qualified"
@@ -840,9 +840,9 @@
     {
       "id": "privacyPage.s18.p2",
       "original": "O Data Protection Officer (DPO) nomeado pela BizUply é responsável por monitorar a conformidade, responder a consultas de usuários e garantir que todas as práticas internas de manipulação de dados atendam aos padrões legais e da indústria.",
-      "proposed": "Nenhum encarregado de proteção de dados foi identificado nos registros fornecidos para este rascunho. Pedidos de privacidade vão para privacy@bizuply.com. Não se afirma a nomeação de um DPO, de um representante na UE ou de um representante no Reino Unido.",
+      "proposed": "Nenhum encarregado de proteção de dados foi identificado nos registros fornecidos para este rascunho. Pedidos de privacidade vão para support@bizuply.com. Não se afirma a nomeação de um DPO, de um representante na UE ou de um representante no Reino Unido.",
       "why": "A data-protection officer was not identified.",
-      "source": "Requests go to privacy@bizuply.com.",
+      "source": "Requests go to support@bizuply.com.",
       "protection": "aligned"
     },
     {

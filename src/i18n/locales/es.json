@@ -13034,7 +13034,7 @@
   },
   "s10": {
     "h": "10. Derechos de usuario",
-    "p1": "Cuando una ley de privacidad que cubre a la persona otorga uno de los derechos siguientes, la persona puede enviar una solicitud a privacy@bizuply.com. Esta lista no afirma que una ley de privacidad concreta se aplique a todos los usuarios.",
+    "p1": "Cuando una ley de privacidad que cubre a la persona otorga uno de los derechos siguientes, la persona puede enviar una solicitud a support@bizuply.com. Esta lista no afirma que una ley de privacidad concreta se aplique a todos los usuarios.",
     "list": [
       "Derecho de acceso a los datos personales almacenados por BizUply",
       "El derecho a corregir o actualizar la información inexacta",
@@ -13042,7 +13042,7 @@
       "Derecho a recibir una copia de los datos personales (“portabilidad de los datos”)",
       "Derecho a oponerse al uso de procesamiento o comercialización"
     ],
-    "p2": "Las solicitudes deben presentarse por escrito a <strong>privacy@bizuply.com</strong>. BizUply puede verificar la identidad del solicitante. Una respuesta en 30 días hábiles no es un proceso implementado. El plazo, si existe, es el que exija una ley que cubra la solicitud."
+    "p2": "Las solicitudes deben presentarse por escrito a <strong>support@bizuply.com</strong>. BizUply puede verificar la identidad del solicitante. Una respuesta en 30 días hábiles no es un proceso implementado. El plazo, si existe, es el que exija una ley que cubra la solicitud."
   },
   "s11": {
     "h": "11. Reembolsos, pagos y exención legal",
@@ -13101,7 +13101,7 @@
     "cardEmail": "Correo electrónico: <strong>privacy@BizUply.com</strong>",
     "cardSupport": "Apoyo general: <strong>support@BizUply.com</strong>",
     "cardHq": "Constitución: Delaware, Estados Unidos. Dirección: no verificada.",
-    "p2": "No se identificó un delegado de protección de datos en los registros facilitados para este borrador. Las solicitudes de privacidad se envían a privacy@bizuply.com. No se afirma el nombramiento de un DPO, de un representante en la UE o de un representante en el Reino Unido."
+    "p2": "No se identificó un delegado de protección de datos en los registros facilitados para este borrador. Las solicitudes de privacidad se envían a support@bizuply.com. No se afirma el nombramiento de un DPO, de un representante en la UE o de un representante en el Reino Unido."
   },
   "s19": {
     "h": "19. Provisión final",
@@ -13213,7 +13213,7 @@
       "El derecho a restringir u oponerse a ciertos tipos de procesamiento de datos.",
       "El derecho a presentar una queja ante una autoridad de protección de datos o un regulador de privacidad relevante."
     ],
-    "p6": "5.6. Las solicitudes de privacidad pueden enviarse a privacy@bizuply.com. El producto no contiene un plazo fijo de respuesta, y una respuesta en 30 días hábiles no es un proceso implementado. El plazo aplicable es solo el que exija una ley que cubra realmente esa solicitud.",
+    "p6": "5.6. Las solicitudes de privacidad pueden enviarse a support@bizuply.com. El producto no contiene un plazo fijo de respuesta, y una respuesta en 30 días hábiles no es un proceso implementado. El plazo aplicable es solo el que exija una ley que cubra realmente esa solicitud.",
     "cookiesTitle": "Cookies y tecnologías de seguimiento",
     "p7": "5.7. El sitio y la aplicación usan cookies y tecnologías similares para la funcionalidad básica, la seguridad y la medición descrita en la sección 5.9. La sección 5.9 indica qué herramienta de medición se carga y en qué página.",
     "p8": "5.8. Los usuarios pueden desactivar o restringir las cookies a través de la configuración de su navegador; sin embargo, como resultado, ciertas características de la plataforma pueden no funcionar correctamente.",
