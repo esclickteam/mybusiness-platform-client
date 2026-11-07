@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   buildAttentionItems,
+  describeLoadedAppointments,
   resolveDashboardSurfaces,
   seriesHasActivity,
   summarizeMessageSample,
@@ -29,6 +30,7 @@ describe("resolveDashboardSurfaces", () => {
 
     expect(surfaces.leads).toBe(true);
     expect(surfaces.appointments).toBe(false);
+    expect(surfaces.automations).toBe(false);
     expect(surfaces.whatsapp).toBe(false);
     expect(surfaces.metaCampaigns).toBe(false);
     expect(surfaces.website).toBe(false);
@@ -74,11 +76,44 @@ describe("resolveDashboardSurfaces", () => {
 
     expect(surfaces.leads).toBe(true);
     expect(surfaces.appointments).toBe(true);
+    expect(surfaces.automations).toBe(true);
     expect(surfaces.whatsapp).toBe(false);
+  });
+
+  it("hides automations when the existing access flag is closed", () => {
+    const surfaces = resolveDashboardSurfaces({
+      enabledModules: ["dashboard", "crm", "automations"],
+      entitlements: {
+        ...crmOnly,
+        automations: { enabled: true, includedInPlan: true },
+      },
+      whatsappInNav: false,
+      metaInNav: false,
+      automationsAccessible: false,
+    });
+
+    expect(surfaces.automations).toBe(false);
   });
 });
 
 describe("dashboard read helpers", () => {
+  it("counts today from appointments the dashboard already loaded", () => {
+    expect(
+      describeLoadedAppointments(
+        [
+          { date: "2026-11-07", status: "confirmed" },
+          { date: "2026-11-08", status: "pending" },
+          { date: "2026-11-07T09:00:00", status: "confirmed" },
+        ],
+        "2026-11-07"
+      )
+    ).toEqual({
+      total: 3,
+      today: 2,
+      byStatus: { confirmed: 2, pending: 1 },
+    });
+  });
+
   it("does not treat an empty series as activity", () => {
     expect(seriesHasActivity([{ value: 0 }, { value: 0 }])).toBe(false);
     expect(seriesHasActivity([{ value: 0 }, { value: 2 }])).toBe(true);

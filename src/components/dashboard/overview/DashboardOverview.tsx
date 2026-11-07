@@ -50,11 +50,14 @@ import {
 } from "./dashboardOverviewUtils";
 import {
   buildAttentionItems,
+  describeLoadedAppointments,
   resolveDashboardSurfaces,
   seriesHasActivity,
   summarizeMessageSample,
   summarizeWhatsAppCampaigns,
 } from "./dashboardVisibility";
+import DashboardModulePanels from "./DashboardModulePanels";
+import { useDashboardModuleReads } from "./useDashboardModuleReads";
 import { useWhatsAppDashboardReads } from "./useWhatsAppDashboardReads";
 import "./dashboardCommand.css";
 
@@ -75,6 +78,7 @@ type AccessUser = {
   businessId?: string | null;
   isGuidedDemo?: boolean;
   isShowcaseDemo?: boolean;
+  automationsAccessible?: boolean;
   role?: string | null;
   subscriptionPlan?: string | null;
   activeProducts?: unknown;
@@ -190,11 +194,21 @@ export default function DashboardOverview({
     entitlements: user?.entitlements,
     whatsappInNav: navModuleVisible(user, businessId, "whatsapp"),
     metaInNav: navModuleVisible(user, businessId, "meta-campaigns"),
+    automationsAccessible: user?.automationsAccessible,
   });
   const whatsappReads = useWhatsAppDashboardReads(
     typeof businessId === "string" ? businessId : undefined,
     surfaces.whatsapp && !demoMode
   );
+  const moduleReads = useDashboardModuleReads({
+    businessId: typeof businessId === "string" ? businessId : undefined,
+    leads: surfaces.leads && !demoMode,
+    website: surfaces.website && !demoMode,
+    meta: surfaces.metaCampaigns && !demoMode,
+    automations: surfaces.automations && !demoMode,
+    since: filters.startDate,
+    until: filters.endDate,
+  });
 
   const visiblePerformanceTabs = PERFORMANCE_TABS.filter((metric) => {
     if (metric === "views") return surfaces.website;
@@ -529,11 +543,9 @@ export default function DashboardOverview({
           <Kpi
             label={t("overview.cmdSent7", "WhatsApp sends, 7 days")}
             value={
-              whatsappReads.status === "ready"
-                ? formatNumber(whatsappReads.overview?.stats?.sentLast7Days || 0)
-                : whatsappReads.status === "error"
-                  ? "—"
-                  : "—"
+              whatsappReads.overview
+                ? formatNumber(whatsappReads.overview.stats?.sentLast7Days || 0)
+                : "—"
             }
             detail={
               whatsappReads.status === "error"
@@ -551,20 +563,42 @@ export default function DashboardOverview({
           <Kpi
             label={t("overview.cmdCampaigns", "WhatsApp campaigns")}
             value={
-              whatsappReads.status === "ready" ? formatNumber(campaignSummary.total) : "—"
+              whatsappReads.campaigns ? formatNumber(campaignSummary.total) : "—"
             }
             detail={
-              whatsappReads.status === "ready"
+              whatsappReads.campaigns
                 ? t("overview.cmdSending", {
                     count: formatNumber(campaignSummary.byStatus.sending || 0),
                     defaultValue: "{{count}} sending",
                   })
-                : t("overview.loadingDashboard")
+                : t("overview.cmdLoadFailed", "These numbers could not be loaded.")
             }
             onClick={() => navigate(`${basePath}/whatsapp/messages/history`)}
           />
         ) : null}
       </section>
+
+      <DashboardModulePanels
+        leads={surfaces.leads && !demoMode ? moduleReads.leads : null}
+        sites={surfaces.website && !demoMode ? moduleReads.sites : null}
+        meta={surfaces.metaCampaigns && !demoMode ? moduleReads.meta : null}
+        automations={surfaces.automations && !demoMode ? moduleReads.automations : null}
+        appointments={
+          surfaces.appointments && !demoMode
+            ? describeLoadedAppointments(
+                calendarAppointments,
+                new Date().toLocaleDateString("en-CA")
+              )
+            : null
+        }
+        health={surfaces.whatsapp && !demoMode ? whatsappReads.health : null}
+        conversations={
+          surfaces.whatsapp && !demoMode && whatsappReads.status === "ready"
+            ? whatsappReads.conversations
+            : null
+        }
+        onOpen={(path) => navigate(`${basePath}/${path}`)}
+      />
 
       {quickActions.length ? (
         <section className="bx-panel">
@@ -897,29 +931,6 @@ export default function DashboardOverview({
               "These are the latest saved records. This is not a live feed."
             )}
           </p>
-        </section>
-      ) : null}
-
-      {surfaces.metaCampaigns ? (
-        <section className="bx-panel">
-          <div className="bx-row" style={{ justifyContent: "space-between" }}>
-            <div>
-              <h2>{t("overview.cmdMeta", "Meta campaigns")}</h2>
-              <p className="bx-note">
-                {t(
-                  "overview.cmdMetaText",
-                  "Ad results stay on the campaigns screen for the connected account. This dashboard does not estimate them."
-                )}
-              </p>
-            </div>
-            <button
-              type="button"
-              className="bx-btn"
-              onClick={() => navigate(`${basePath}/meta-campaigns/campaigns`)}
-            >
-              {t("overview.cmdOpen", "Open")}
-            </button>
-          </div>
         </section>
       ) : null}
 

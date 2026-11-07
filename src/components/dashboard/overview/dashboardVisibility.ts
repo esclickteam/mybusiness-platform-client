@@ -1,5 +1,5 @@
 import { isFeatureAccessible } from "@/utils/entitlementAccess";
-import { isModuleEnabled } from "@/utils/moduleAccess";
+import { isAutomationsAccessible, isModuleEnabled } from "@/utils/moduleAccess";
 
 export type DashboardSurfaces = {
   leads: boolean;
@@ -9,6 +9,7 @@ export type DashboardSurfaces = {
   collaborations: boolean;
   whatsapp: boolean;
   metaCampaigns: boolean;
+  automations: boolean;
   advisor: boolean;
 };
 
@@ -21,6 +22,7 @@ export function resolveDashboardSurfaces(input: {
   entitlements?: unknown;
   whatsappInNav: boolean;
   metaInNav: boolean;
+  automationsAccessible?: boolean;
 }): DashboardSurfaces {
   const feature = (key: string) => isFeatureAccessible(input.entitlements, key);
   const moduleOn = (key: string) => isModuleEnabled(input.enabledModules, key);
@@ -37,7 +39,32 @@ export function resolveDashboardSurfaces(input: {
       input.whatsappInNav &&
       (feature("whatsapp") || feature("whatsappManaged") || feature("whatsappApi")),
     metaCampaigns: input.metaInNav && feature("campaignManagement"),
+    automations:
+      isAutomationsAccessible(input.enabledModules, input.automationsAccessible) &&
+      feature("automations"),
     advisor: moduleOn("BizUply") && feature("aiAssistant"),
+  };
+}
+
+export function describeLoadedAppointments(
+  appointments: Array<{ date?: string; status?: string; isConfirmed?: boolean }>,
+  today: string
+) {
+  const byStatus: Record<string, number> = {};
+  let todayCount = 0;
+
+  appointments.forEach((appointment) => {
+    const status = String(
+      appointment.status || (appointment.isConfirmed ? "confirmed" : "pending")
+    );
+    byStatus[status] = (byStatus[status] || 0) + 1;
+    if (String(appointment.date || "").slice(0, 10) === today) todayCount += 1;
+  });
+
+  return {
+    total: appointments.length,
+    today: todayCount,
+    byStatus,
   };
 }
 
