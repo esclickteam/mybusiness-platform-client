@@ -1517,12 +1517,62 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 <div className="geo-intel-banner muted">
                   {monitoringStatus?.noteHe || copy.monitoringOff}
                 </div>
+                {monitoringStatus?.sharedBudget || monitoringStatus?.budget ? (
+                  <div className="geo-kpi-row" style={{ marginTop: 12 }}>
+                    <div className="geo-kpi">
+                      <div className="geo-kpi-label">{copy.sharedBudgetTitle}</div>
+                      <div className="geo-kpi-value">
+                        $
+                        {Number(
+                          monitoringStatus.sharedBudget?.hardCapUsd ??
+                            costMatrix?.sharedMonthlyCapUsd ??
+                            50
+                        ).toFixed(0)}
+                      </div>
+                      <div className="geo-kpi-sub">
+                        {monitoringStatus.sharedBudget?.monthBucket || ""}
+                      </div>
+                    </div>
+                    <div className="geo-kpi">
+                      <div className="geo-kpi-label">{copy.sharedBudgetUsed}</div>
+                      <div className="geo-kpi-value">
+                        $
+                        {Number(
+                          monitoringStatus.sharedBudget?.spentUsd || 0
+                        ).toFixed(2)}
+                      </div>
+                      <div className="geo-kpi-sub">
+                        {Number(
+                          monitoringStatus.sharedBudget?.usedPct || 0
+                        ).toFixed(1)}
+                        %
+                      </div>
+                    </div>
+                    <div className="geo-kpi">
+                      <div className="geo-kpi-label">
+                        {copy.sharedBudgetRemaining}
+                      </div>
+                      <div className="geo-kpi-value">
+                        $
+                        {Number(
+                          monitoringStatus.sharedBudget?.remainingUsd || 0
+                        ).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+                <p className="geo-note">{copy.providerLimitNote}</p>
                 {monitoringStatus?.lastRunSummary ? (
                   <p className="geo-note">
                     הרצה אחרונה: הושלמו{" "}
                     {monitoringStatus.lastRunSummary.completed ?? 0} · כפולים{" "}
                     {monitoringStatus.lastRunSummary.deduped ?? 0} · נכשלו{" "}
                     {monitoringStatus.lastRunSummary.failed ?? 0}
+                    {monitoringStatus.lastRunSummary.byBrand
+                      ? ` · לפי מותג: ${JSON.stringify(
+                          monitoringStatus.lastRunSummary.byBrand
+                        )}`
+                      : ""}
                   </p>
                 ) : null}
               </div>
@@ -1567,22 +1617,15 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               />
               {costMatrix?.perplexityCreditPlan ? (
                 <div className="geo-card">
-                  <h3>תוכנית קרדיטים Perplexity</h3>
+                  <h3>קרדיטים Perplexity</h3>
                   <p className="geo-note">
                     {costMatrix.perplexityCreditPlan.noteHe}
                   </p>
                   <p>
-                    יתרה מדווחת: $
-                    {costMatrix.perplexityCreditPlan.reportedCreditsUsd} · גל
-                    ראשון מומלץ:{" "}
-                    {costMatrix.perplexityCreditPlan.recommendedFirstWaveChecks}{" "}
-                    בדיקות (~$
-                    {costMatrix.perplexityCreditPlan.recommendedFirstWaveUsd}) ·
-                    תקרת פרודקשן מומלצת: $
-                    {costMatrix.perplexityCreditPlan
-                      .recommendedProductionHardCapUsd ||
-                      costMatrix.perplexityCreditPlan
-                        .recommendedStagingHardCapUsd}
+                    יתרה מדווחת בחשבון: $
+                    {costMatrix.perplexityCreditPlan.reportedCreditsUsd} ·
+                    הערכה לבדיקה: $
+                    {costMatrix.perplexityCreditPlan.estimatedUsdPerCheck}
                   </p>
                 </div>
               ) : null}
