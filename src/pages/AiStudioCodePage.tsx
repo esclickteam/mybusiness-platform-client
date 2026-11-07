@@ -102,7 +102,9 @@ export default function AiStudioCodePage() {
   const [viewport, setViewport] = useState<1440 | 390>(1440);
   const [frameNonce, setFrameNonce] = useState(0);
   const [reply, setReply] = useState("");
-  const [view, setView] = useState<StudioView>("home");
+  const requestedProject = new URLSearchParams(window.location.search).get("project") || "";
+  const [view, setView] = useState<StudioView>(requestedProject ? "studio" : "home");
+  const [accessNotice, setAccessNotice] = useState("");
   const [fullscreen, setFullscreen] = useState(false);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(1);
@@ -136,8 +138,10 @@ export default function AiStudioCodePage() {
         if (cancelled) return;
         const projects = Array.isArray(data?.projects) ? data.projects : [];
         setSavedProjects(projects);
-      } catch {
-        if (!cancelled) setError("לא הצלחתי לפתוח את הפרויקט השמור");
+      } catch (err: any) {
+        if (cancelled || new URLSearchParams(window.location.search).get("project")) return;
+        const status = err?.response?.status || err?.status;
+        if (!cancelled) setError(status === 403 ? "אין לחשבון המחובר הרשאה ל־AI Studio." : "לא הצלחתי לטעון את רשימת האתרים.");
       }
     }
     void reopen();
@@ -312,7 +316,25 @@ export default function AiStudioCodePage() {
     }
   }
 
+  function projectLink(projectId: string) {
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("project") === projectId) return;
+    url.searchParams.set("project", projectId);
+    window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+  }
+
+  function accessText(err: any) {
+    const status = err?.response?.status || err?.status;
+    const code = err?.response?.data?.code || err?.code;
+    if (status === 403 || code === "AI_STUDIO_NOT_IN_ALLOWLIST") return "אין לחשבון המחובר הרשאה לפתוח את הפרויקט הזה.";
+    if (status === 404 || code === "PROJECT_NOT_FOUND") return "הפרויקט הזה שייך לחשבון אחר או שאינו זמין. התחברו לחשבון שבו נוצר האתר.";
+    return "לא הצלחתי לטעון את הפרויקט. רעננו את הדף.";
+  }
+
   async function openSaved(projectId: string) {
+    projectLink(projectId);
+    setView("studio");
+    setAccessNotice("");
     setBusy(true);
     setError("");
     try {
@@ -321,7 +343,8 @@ export default function AiStudioCodePage() {
       setBusy(false);
       if (data.phase === "ready" && data.files?.["src/App.jsx"]) await review(data);
     } catch (err: any) {
-      setError(err?.response?.data?.error || "פתיחת הפרויקט נכשלה");
+      setAccessNotice(accessText(err));
+      setError("");
       setBusy(false);
     }
   }
@@ -404,13 +427,22 @@ export default function AiStudioCodePage() {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <button type="button" onClick={() => { setView("home"); setFullscreen(false); }} className="border border-violet-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700">אתר חדש</button>
+          <button type="button" onClick={() => { const url = new URL(window.location.href); url.searchParams.delete("project"); window.history.replaceState({}, "", `${url.pathname}${url.search}`); setAccessNotice(""); setView("home"); setFullscreen(false); }} className="border border-violet-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700">אתר חדש</button>
           <button type="button" onClick={() => setView("gallery")} className="border border-violet-200 bg-white px-3 py-2 text-sm font-semibold text-[#3730a3]">הפרויקטים שלי</button>
           <a href={`/business/${businessId}/dashboard`} className="border border-transparent px-3 py-2 text-sm font-semibold text-slate-500">חזרה ללוח</a>
         </div>
       </header>
 
-      {view === "home" && (
+      {accessNotice && (
+        <div className="flex h-[calc(100vh-57px)] items-center justify-center px-6">
+          <div className="max-w-lg text-center">
+            <h1 className="text-2xl font-black text-slate-900">אין גישה לפרויקט</h1>
+            <p className="mt-3 text-base leading-7 text-slate-600">{accessNotice}</p>
+          </div>
+        </div>
+      )}
+
+      {view === "home" && !accessNotice && (
         <div className="flex h-[calc(100vh-57px)] items-center justify-center px-6">
           <div className="w-full max-w-2xl">
             <h1 className="text-4xl font-black tracking-tight text-slate-900">איזה אתר נבנה היום?</h1>
@@ -435,7 +467,7 @@ export default function AiStudioCodePage() {
         </div>
       )}
 
-      {view === "gallery" && (
+      {view === "gallery" && !accessNotice && (
         <div className="h-[calc(100vh-57px)] overflow-y-auto px-6 py-6">
           <h1 className="text-2xl font-black text-slate-900">הפרויקטים שלי</h1>
           {savedProjects.length === 0 ? (
@@ -468,7 +500,7 @@ export default function AiStudioCodePage() {
         </div>
       )}
 
-      {view === "studio" && (
+      {view === "studio" && !accessNotice && (
         <div className="grid h-[calc(100vh-57px)] min-h-0 grid-cols-1 xl:grid-cols-[minmax(320px,400px)_minmax(0,1fr)]">
           <section className="flex min-h-0 flex-col border-l border-violet-100 bg-white">
             <div className="border-b border-violet-100 p-4 text-sm">
