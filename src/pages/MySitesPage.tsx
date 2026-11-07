@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import "./interiorDesign.css";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -439,7 +440,7 @@ export default function MySitesPage() {
   return (
     <div
       dir={dir}
-      className="min-h-screen bg-[#f7f8fc] px-4 py-6 text-start sm:px-6 lg:px-8"
+      className="biz-interior min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
     >
       <div className="mx-auto w-full max-w-[1480px]">
         <header className="mb-7 flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">

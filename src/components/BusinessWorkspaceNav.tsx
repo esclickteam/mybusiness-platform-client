@@ -331,10 +331,8 @@ export default function BusinessWorkspaceNav({
       demoTarget: "nav-automations",
     },
     {
-      labelKey: hasWhatsAppApiProduct(user)
-        ? "whatsappApiPortal.nav.overview"
-        : "businessNav.whatsapp",
-      fallback: hasWhatsAppApiProduct(user) ? "WhatsApp API" : "WhatsApp Messages",
+      labelKey: "businessNav.whatsapp",
+      fallback: "WhatsApp API",
       to: hasWhatsAppApiProduct(user)
         ? `${basePath}/dashboard/whatsapp/overview`
         : `${basePath}/dashboard/whatsapp`,
@@ -553,7 +551,7 @@ export default function BusinessWorkspaceNav({
         "businessNav.ariaLabel",
         "Business workspace navigation"
       )}
-      className="flex flex-col overflow-hidden text-start"
+      className="flex min-h-0 flex-1 flex-col overflow-hidden text-start"
     >
       {showProductSwitcher && businessId ? (
         <div
@@ -586,7 +584,7 @@ export default function BusinessWorkspaceNav({
         </div>
       ) : null}
       <div
-        className={`space-y-0.5 overflow-hidden ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
+        className={`min-h-0 flex-1 space-y-0.5 overflow-x-hidden overflow-y-auto overscroll-contain pb-28 ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
       >
         {visibleItems.map((item, index) => {
           const group = workspaceGroup(item.moduleKey);

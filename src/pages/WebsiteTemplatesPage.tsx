@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import "./interiorDesign.css";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -819,7 +820,7 @@ export default function WebsiteTemplatesPage() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-white text-start text-[#111827]"
+      className="tpl-picker min-h-screen text-start"
     >
       <div className="flex min-h-[calc(100vh-64px)]">
         <aside className="hidden w-[310px] shrink-0 border-e border-[#e5e7eb] bg-white lg:block">

@@ -8,6 +8,7 @@ import { BrainCircuit, Zap } from "lucide-react";
 import BusinessAdvisorTab from "./BizUplyTabs/BusinessAdvisorTab";
 import AiAutomationsTab from "./BizUplyTabs/AiAutomationsTab";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
+import "../../interiorDesign.css";
 
 type Appointment = {
   _id?: string;
@@ -157,7 +158,7 @@ const BizUplyAdvisor: React.FC = () => {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-slate-50 px-3 py-4 sm:px-5 lg:px-6"
+      className="biz-interior min-h-screen px-3 py-4 sm:px-5 lg:px-6"
     >
       <div className="mx-auto mb-4 flex w-full max-w-[1700px] flex-wrap gap-2 rounded-[22px] border border-slate-200 bg-white p-2 shadow-sm">
         <button

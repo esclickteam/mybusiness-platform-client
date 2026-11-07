@@ -14,6 +14,7 @@ import {
   connectionReadyLabel,
   formatMessagingLimit,
   formatQualityRating,
+  isUnsetQualityRating,
   qualityBadgeClass,
   toneBadgeClass,
 } from "./hubFormat";
@@ -294,10 +295,24 @@ export default function WhatsAppOverviewTab() {
               </div>
             </StatCard>
             <StatCard label={t("whatsapp.hub.cards.quality")}>
-              {quality ? (
+              {isUnsetQualityRating(
+                connection?.qualityRating || health?.connection?.qualityRating
+              ) &&
+              (connection?.connected ||
+                connection?.qualityRating ||
+                health?.connection?.qualityRating) ? (
+                <>
+                  <p className="text-sm font-black text-slate-900">
+                    {t("whatsapp.hub.qualityUnset")}
+                  </p>
+                  <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">
+                    {t("whatsapp.hub.qualityUnsetHint")}
+                  </p>
+                </>
+              ) : quality ? (
                 <span
                   className={`inline-flex rounded-md border px-2 py-0.5 text-sm font-black ${qualityBadgeClass(
-                    connection?.qualityRating
+                    connection?.qualityRating || health?.connection?.qualityRating
                   )}`}
                 >
                   {quality}

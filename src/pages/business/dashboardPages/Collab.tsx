@@ -10,6 +10,7 @@ import { AiProvider } from "../../../context/AiContext";
 import { fetchMyBusinessId } from "./collabtabs/collabUtils";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
+import "../../interiorDesign.css";
 
 type ProfileData = {
   businessName: string;
@@ -178,7 +179,7 @@ export default function Collab() {
     <AiProvider>
       <section
         dir={dir}
-        className="min-h-[calc(100vh-72px)] bg-[#f4f1fa] px-4 py-6 text-start text-[#21172f] sm:px-6 lg:px-8"
+        className="biz-interior min-h-[calc(100vh-72px)] px-4 py-6 text-start sm:px-6 lg:px-8"
       >
         <div className="mx-auto w-full max-w-7xl">
           <nav
