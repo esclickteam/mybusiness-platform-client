@@ -66,6 +66,7 @@ import WhatsAppTabSuspenseFallback from "./WhatsAppTabSuspenseFallback";
 import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
 import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
+import "../bizModuleDesign.css";
 
 type WhatsAppTab = {
   path: string;
@@ -363,13 +364,13 @@ export default function WhatsAppMain() {
   return (
     <section
       dir={getTextDirection(i18n.language)}
-      className="min-h-[calc(100vh-72px)] bg-[#F5F7FB] px-3 py-3 text-start text-slate-900 sm:px-4 sm:py-4 lg:px-5"
+      className="biz-module min-h-[calc(100vh-72px)] px-3 py-3 text-start sm:px-4 sm:py-4 lg:px-5"
     >
       <div className="mx-auto w-full max-w-[1600px]">
-        <header className="mb-3 overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_4px_16px_rgba(15,23,42,0.04)]">
-          <div className="flex flex-col gap-2.5 border-b border-slate-100 px-3 py-2.5 sm:px-4 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
+        <header className="biz-shell">
+          <div className="biz-shell-top">
             <div className="flex min-w-0 items-center gap-2.5">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
+              <div className="biz-mark">
                 <MessageCircle className="h-4.5 w-4.5" />
               </div>
               <div className="min-w-0">
@@ -493,8 +494,8 @@ export default function WhatsAppMain() {
           </div>
 
           {apiPortal ? null : (
-          <nav aria-label={t("whatsapp.hub.title")} className="px-1.5 sm:px-2">
-            <div className="flex flex-wrap items-stretch gap-0.5">
+          <nav aria-label={t("whatsapp.hub.title")} className="biz-tabs">
+            <div className="biz-tabs-row">
               {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const active =
@@ -505,26 +506,10 @@ export default function WhatsAppMain() {
                   <NavLink
                     key={tab.path}
                     to={tab.to}
-                    className={[
-                      "group relative flex shrink-0 items-center gap-1.5 px-2.5 py-2.5 text-[13px] font-bold transition-colors",
-                      active
-                        ? "text-emerald-700"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
-                    ].join(" ")}
+                    className={["biz-tab", active ? "is-active" : ""].join(" ")}
                   >
-                    <Icon
-                      className={[
-                        "h-3.5 w-3.5 shrink-0",
-                        active ? "text-emerald-600" : "text-slate-400",
-                      ].join(" ")}
-                    />
+                    <Icon />
                     <span className="whitespace-nowrap">{t(tab.labelKey)}</span>
-                    <span
-                      className={[
-                        "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
-                        active ? "bg-emerald-500 opacity-100" : "opacity-0",
-                      ].join(" ")}
-                    />
                   </NavLink>
                 );
               })}

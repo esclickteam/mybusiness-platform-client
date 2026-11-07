@@ -639,7 +639,7 @@ export default function MetaCampaignsOverviewTab() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="biz-board">
       <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h2 className="text-lg font-black text-slate-900">

@@ -186,7 +186,7 @@ export default function WhatsAppOverviewTab() {
     activity.some((event) => String(event.type || "").startsWith("message_"));
 
   return (
-    <div dir={getTextDirection(i18n.language)} className="space-y-3" data-demo-target="whatsapp-overview" data-testid="whatsapp-module-dashboard">
+    <div dir={getTextDirection(i18n.language)} className="biz-board" data-demo-target="whatsapp-overview" data-testid="whatsapp-module-dashboard">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-base font-black text-slate-900">
           {t("whatsapp.hub.overviewTitle")}
@@ -254,7 +254,7 @@ export default function WhatsAppOverviewTab() {
 
       {portalAwaitingConnection ? null : (
       <>
-      <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="biz-stats grid gap-2 sm:grid-cols-2 xl:grid-cols-5">
         {busy ? (
           Array.from({ length: 5 }).map((_, i) => (
             <div key={i} className={`${cardBase} h-[72px] animate-pulse bg-slate-50`} />
