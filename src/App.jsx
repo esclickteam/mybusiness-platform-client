@@ -1123,7 +1123,7 @@ export default function App() {
       <div className={`app-layout${isCinematicHome ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
-          !isSaasMarketplaceRoute && !isSaasPublicSite &&
+          !isSaasPublicSite &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
@@ -1759,7 +1759,7 @@ export default function App() {
           !isPublicBusinessProfile &&
           !isCinematicHome &&
           !isEarlyAccessLanding &&
-          !isSaasMarketplaceRoute && !isSaasPublicSite &&
+          !isSaasPublicSite &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isGuidedDemoRoute &&

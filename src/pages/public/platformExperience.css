@@ -380,7 +380,8 @@
 .px-faq summary:focus-visible { outline: 2px solid var(--violet); }
 
 .px-close {
-  padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 4.5rem);
+  margin-bottom: -92px;
+  padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 4.5rem) calc(clamp(3.5rem, 8vw, 6.5rem) + 92px);
   background:
     radial-gradient(ellipse 50% 80% at 100% 100%, rgba(61, 99, 255, 0.45), transparent 60%),
     linear-gradient(155deg, #321064, #3a1578 50%, #1c2d72);
