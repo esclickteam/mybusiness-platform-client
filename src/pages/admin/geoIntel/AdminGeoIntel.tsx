@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation } from "react-router-dom";
 import {
   LineChart,
   Line,
@@ -21,6 +22,13 @@ import {
 import { canShowMeasurementActions } from "./runActionVisibility";
 import { findingKindHe } from "./improvementWork";
 import ImprovementWorkList from "./ImprovementWorkList";
+import {
+  collectionMethodHe,
+  dataClassHe,
+  priorityHe,
+  sampleSizeHe,
+  severityHe,
+} from "./geoLabels";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
 
@@ -39,11 +47,26 @@ function Kpi({
   label,
   value,
   denom,
+  onClick,
 }: {
   label: string;
   value: string | number | null | undefined;
   denom?: string;
+  onClick?: () => void;
 }) {
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        className="geo-kpi geo-kpi-clickable"
+        onClick={onClick}
+      >
+        <div className="geo-kpi-label">{label}</div>
+        <div className="geo-kpi-value">{value ?? "—"}</div>
+        {denom ? <div className="geo-kpi-sub">{denom}</div> : null}
+      </button>
+    );
+  }
   return (
     <div className="geo-kpi">
       <div className="geo-kpi-label">{label}</div>
@@ -92,8 +115,17 @@ function Table({
 
 export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const copy = geoIntelCopy();
+  const location = useLocation();
+  const embeddedInAdmin = /\/admin(\/|$)/.test(location.pathname);
   const [tab, setTab] = useState<Tab>("overview");
   const [menuOpen, setMenuOpen] = useState(false);
+  const [bannersDismissed, setBannersDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem("geo-intel-banners-dismissed") === "1";
+    } catch {
+      return false;
+    }
+  });
   const [brands, setBrands] = useState<Brand[]>([]);
   const [brandId, setBrandId] = useState("");
   const [status, setStatus] = useState<any>(null);
@@ -352,7 +384,11 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     nav.find((n) => n.id === tab)?.label || copy.title;
 
   return (
-    <div className="geo-intel-root geo-intel-standalone" dir="rtl" lang="he">
+    <div
+      className={`geo-intel-root${embeddedInAdmin ? " geo-intel-embedded" : " geo-intel-standalone"}`}
+      dir="rtl"
+      lang="he"
+    >
       <div className={`geo-intel-shell${menuOpen ? " menu-open" : ""}`}>
         <aside className="geo-intel-side" aria-label="ניווט">
           <div className="geo-intel-brand">
@@ -362,16 +398,18 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               <div className="geo-side-sub">שימוש פנימי בלבד</div>
             </div>
           </div>
-          {nav.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={`geo-intel-nav-btn${tab === item.id ? " active" : ""}`}
-              onClick={() => selectTab(item.id)}
-            >
-              {item.label}
-            </button>
-          ))}
+          <div className="geo-intel-nav-scroll">
+            {nav.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`geo-intel-nav-btn${tab === item.id ? " active" : ""}`}
+                onClick={() => selectTab(item.id)}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
           <div className="geo-intel-side-foot">{copy.privateOwnerOnly}</div>
         </aside>
 
@@ -385,6 +423,20 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         ) : null}
 
         <main className="geo-intel-main">
+          {embeddedInAdmin ? (
+            <div className="geo-embed-tabs" aria-label="ניווט">
+              {nav.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={`geo-intel-nav-btn${tab === item.id ? " active" : ""}`}
+                  onClick={() => selectTab(item.id)}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <div className="geo-intel-topbar">
             <button
               type="button"
@@ -425,8 +477,32 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
             </div>
           </div>
 
-          <div className="geo-intel-banner">{copy.freeOnly}</div>
-          <div className="geo-intel-banner muted">{copy.hebrewUiOnly}</div>
+          {!bannersDismissed ? (
+            <>
+              <div className="geo-intel-banner">{copy.freeOnly}</div>
+              <div className="geo-intel-banner muted">
+                {copy.hebrewUiOnly}
+                {" · "}
+                <button
+                  type="button"
+                  className="geo-link-btn"
+                  onClick={() => {
+                    setBannersDismissed(true);
+                    try {
+                      sessionStorage.setItem(
+                        "geo-intel-banners-dismissed",
+                        "1"
+                      );
+                    } catch {
+                      /* ignore */
+                    }
+                  }}
+                >
+                  {copy.dismissBanners}
+                </button>
+              </div>
+            </>
+          ) : null}
 
           <div className="geo-intel-actions">
             {shouldShowSeedInitButton(status?.seedBootstrap, seedInitConsumed) ? (
@@ -558,8 +634,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               aria-label={copy.language}
             >
               <option value="">{copy.allLanguages}</option>
-              <option value="he">עברית</option>
-              <option value="en">English</option>
+              <option value="he">{copy.langHebrew}</option>
+              <option value="en">{copy.langEnglish}</option>
             </select>
             <input
               type="date"
@@ -594,28 +670,42 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                       ? "—"
                       : `${overview.metrics.visibilityPct}%`
                   }
-                  denom={`n=${overview?.metrics?.sampleSize ?? 0}`}
+                  denom={sampleSizeHe(overview?.metrics?.sampleSize)}
+                  onClick={() => selectTab("visibility")}
                 />
                 <Kpi
                   label={copy.mentions}
                   value={overview?.metrics?.mentions ?? 0}
-                  denom={`מתוך ${overview?.metrics?.sampleSize ?? 0}`}
+                  denom={sampleSizeHe(overview?.metrics?.sampleSize)}
+                  onClick={() => selectTab("appeared")}
                 />
                 <Kpi
                   label={copy.recommendations}
                   value={overview?.metrics?.recommendations ?? 0}
-                  denom={`מתוך ${overview?.metrics?.sampleSize ?? 0}`}
+                  denom={sampleSizeHe(overview?.metrics?.sampleSize)}
+                  onClick={() => selectTab("opportunities")}
                 />
                 <Kpi
                   label={copy.citations}
                   value={overview?.metrics?.citations ?? 0}
-                  denom={`מתוך ${overview?.metrics?.sampleSize ?? 0}`}
+                  denom={sampleSizeHe(overview?.metrics?.sampleSize)}
+                  onClick={() => selectTab("citations")}
                 />
+              </div>
+              {(overview?.metrics?.sampleSize || 0) > 0 &&
+              (overview?.metrics?.sampleSize || 0) < 10 ? (
+                <div className="geo-intel-banner muted" role="status">
+                  {copy.sampleTooSmall}
+                </div>
+              ) : null}
+              <div className="geo-card">
+                <h3>{copy.metricDefinitionsTitle}</h3>
+                <p className="geo-note">{copy.metricDefinitionsBody}</p>
               </div>
               <div className="geo-card">
                 <h3>{copy.engineCompare}</h3>
                 <Table
-                  columns={["מנוע", "n", "הופעות", "נראות %", "סטטוס"]}
+                  columns={["מנוע", "מדגם", "הופעות", "נראות %", "סטטוס"]}
                   rows={(overview?.metrics?.byEngine || []).map((r: any) => [
                     r.labelHe || r.engine,
                     r.n,
@@ -658,7 +748,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                           ? "—"
                           : `${visibility.appearanceRatePct}%`
                       }
-                      denom={`n=${visibility?.sampleSize ?? 0}`}
+                      denom={sampleSizeHe(visibility?.sampleSize)}
                     />
                     <Kpi
                       label="שיעור המלצה"
@@ -667,7 +757,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                           ? "—"
                           : `${visibility.recommendationRatePct}%`
                       }
-                      denom={`n=${visibility?.sampleSize ?? 0}`}
+                      denom={sampleSizeHe(visibility?.sampleSize)}
                     />
                     <Kpi
                       label="שיעור ציטוט"
@@ -676,7 +766,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                           ? "—"
                           : `${visibility.citationRatePct}%`
                       }
-                      denom={`n=${visibility?.sampleSize ?? 0}`}
+                      denom={sampleSizeHe(visibility?.sampleSize)}
                     />
                   </div>
                   <Table
@@ -877,7 +967,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                     <Kpi
                       label="אירועי ציטוט"
                       value={citations?.totalCitationEvents ?? 0}
-                      denom={`n=${citations?.sampleSize ?? 0}`}
+                      denom={sampleSizeHe(citations?.sampleSize)}
                     />
                     <Kpi
                       label="שיתוף שלנו"
@@ -931,7 +1021,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 <Table
                   columns={["עדיפות", "כותרת", "פירוט", "פעולה", "ראיה"]}
                   rows={(opportunities?.opportunities || []).map((o: any) => [
-                    o.priority,
+                    priorityHe(o.priority),
                     o.titleHe,
                     o.bodyHe,
                     o.actionHe,
@@ -1134,7 +1224,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                         <YAxis domain={[0, 100]} />
                         <Tooltip
                           formatter={(v: any, name: string, props: any) => [
-                            `${v}% (n=${props?.payload?.sampleSize ?? 0})`,
+                            `${v}% (${sampleSizeHe(props?.payload?.sampleSize)})`,
                             name,
                           ]}
                         />
@@ -1338,7 +1428,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 columns={[
                   "מנוע",
                   "שיטה",
-                  "API?",
+                  copy.apiCallLabel,
                   "הופיע",
                   "תאריך",
                   "פירוט",
@@ -1347,9 +1437,9 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                   .filter((c: any) => c.dataClass !== "test_fixture")
                   .map((c: any) => [
                     c.engine,
-                    c.collectionMethod,
-                    c.apiCallMade ? "כן" : "לא",
-                    c.detected?.appeared ? "כן" : "לא",
+                    collectionMethodHe(c.collectionMethod),
+                    c.apiCallMade ? copy.yes : copy.no,
+                    c.detected?.appeared ? copy.yes : copy.no,
                     c.checkedAt
                       ? new Date(c.checkedAt).toLocaleString("he-IL")
                       : "—",
@@ -1392,7 +1482,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               <Table
                 columns={["חומרה", "כותרת", "תוכן", "אישור"]}
                 rows={(alerts?.alerts || []).map((a: any) => [
-                  a.severity,
+                  severityHe(a.severity),
                   a.titleHe,
                   a.bodyHe,
                   <button
@@ -1455,38 +1545,86 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
             lang="he"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              type="button"
-              className="geo-btn geo-btn-ghost"
-              onClick={() => setDetail(null)}
-            >
-              {copy.close}
-            </button>
-            <h3>{copy.proofTitle}</h3>
-            <p>
-              מנוע: {detail.check?.engine} · שיטה:{" "}
-              {detail.check?.collectionMethod} · API:{" "}
-              {detail.check?.apiCallMade ? "כן" : "לא"} · dataClass:{" "}
-              {detail.check?.dataClass}
-            </p>
-            <p>
-              תאריך:{" "}
-              {detail.check?.checkedAt
-                ? new Date(detail.check.checkedAt).toLocaleString("he-IL")
-                : "—"}
-            </p>
-            <h4>{copy.rawAnswer}</h4>
-            <pre className="geo-code">{detail.check?.rawAnswer}</pre>
-            <h4>{copy.sources}</h4>
-            <ul>
-              {(detail.check?.sources || []).map((s: any, i: number) => (
-                <li key={i}>
-                  <a href={s.url} target="_blank" rel="noreferrer">
-                    {s.domain || s.url}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className="geo-drawer-head">
+              <h3>{copy.proofTitle}</h3>
+              <button
+                type="button"
+                className="geo-btn geo-btn-ghost"
+                onClick={() => setDetail(null)}
+              >
+                {copy.close}
+              </button>
+            </div>
+            <div className="geo-drawer-body">
+              <div className="geo-card">
+                <h4>{copy.detailMeta}</h4>
+                <p>
+                  {copy.engine}: {detail.check?.engine}
+                  {" · "}
+                  {copy.collectionMethod}:{" "}
+                  {collectionMethodHe(detail.check?.collectionMethod)}
+                  {" · "}
+                  {copy.apiCallLabel}:{" "}
+                  {detail.check?.apiCallMade ? copy.yes : copy.no}
+                  {" · "}
+                  {copy.dataClassLabel}: {dataClassHe(detail.check?.dataClass)}
+                </p>
+                <p>
+                  {copy.date}:{" "}
+                  {detail.check?.checkedAt
+                    ? new Date(detail.check.checkedAt).toLocaleString("he-IL")
+                    : "—"}
+                </p>
+              </div>
+              <div className="geo-card">
+                <h4>{copy.detectedSummary}</h4>
+                <p>
+                  {copy.brandMentioned}:{" "}
+                  {detail.check?.detected?.appeared ? copy.yes : copy.no}
+                  {" · "}
+                  {copy.brandRecommended}:{" "}
+                  {detail.check?.detected?.recommended ? copy.yes : copy.no}
+                  {" · "}
+                  {copy.brandCited}:{" "}
+                  {detail.check?.detected?.hasLink ? copy.yes : copy.no}
+                </p>
+                {(detail.check?.detected?.competitors || []).length ? (
+                  <p>
+                    {copy.competitorsDetected}:{" "}
+                    {(detail.check.detected.competitors || [])
+                      .map((c: any) =>
+                        typeof c === "string" ? c : c?.name || ""
+                      )
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+                ) : null}
+              </div>
+              <div>
+                <h4>{copy.rawAnswer}</h4>
+                <pre className="geo-code">{detail.check?.rawAnswer}</pre>
+              </div>
+              <div>
+                <h4>{copy.sources}</h4>
+                {(detail.check?.sources || []).length === 0 ? (
+                  <p className="geo-note">{copy.noSourcesCited}</p>
+                ) : (
+                  <ul className="geo-source-list">
+                    {(detail.check?.sources || []).map((s: any, i: number) => (
+                      <li
+                        key={i}
+                        className={`geo-source${s.isBrand ? " brand" : ""}${s.isCompetitor ? " competitor" : ""}`}
+                      >
+                        <a href={s.url} target="_blank" rel="noreferrer">
+                          {s.domain || s.url}
+                        </a>
+                        {s.title ? <div className="geo-note">{s.title}</div> : null}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
