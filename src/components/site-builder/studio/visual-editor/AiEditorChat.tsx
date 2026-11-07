@@ -30,14 +30,15 @@ export default function AiEditorChat({ editor }: { editor: ChatEditor }) {
         instruction,
       }, { timeout: 30000 });
       const nextHtml = String(data?.html || "");
-      if (!nextHtml || nextHtml === live) {
+      const nextCss = String(data?.css || css);
+      if (!nextHtml || (nextHtml === live && nextCss === css)) {
         setNote("השינוי לא היה ממוקד, ולכן האתר לא הוחלף.");
         return;
       }
       editor.setData?.((current) => ({
         ...current,
         __aiDocument: nextHtml,
-        __aiCss: String(data?.css || css),
+        __aiCss: nextCss,
       }));
       await editor.flushAutosave?.();
       setMessage("");
