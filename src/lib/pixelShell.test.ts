@@ -60,7 +60,7 @@ function runPixel(script: string, initialCookie: string, publicSite = false) {
     get cookie() {
       return jar;
     },
-    choose(detail: "all" | "essential") {
+    choose(detail: string) {
       document.cookie = `bizuply_tracking=${detail}; Path=/; Max-Age=15552000; SameSite=Lax`;
       for (const listener of listeners) listener({ detail });
     },
@@ -129,6 +129,16 @@ describe("pixel shells", () => {
       expect(refreshed.inserted).toEqual([]);
       const navigated = runPixel(shell.script, "bizuply_tracking=essential");
       expect(navigated.inserted).toEqual([]);
+    });
+
+    it(`${shell.name} treats a category choice separately from a legacy all value`, () => {
+      expect(runPixel(shell.script, "bizuply_tracking=v2:ad:2026-11-07").inserted).toEqual([
+        "https://connect.facebook.net/en_US/fbevents.js",
+      ]);
+      expect(runPixel(shell.script, "bizuply_tracking=v2:none:2026-11-07").inserted).toEqual([]);
+      const page = runPixel(shell.script, "bizuply_tracking=v2:none:2026-11-07");
+      page.choose("v2:ad:2026-11-07");
+      expect(page.inserted).toEqual(["https://connect.facebook.net/en_US/fbevents.js"]);
     });
 
     it(`${shell.name} loads measurement again when consent is given after a withdrawal`, () => {
