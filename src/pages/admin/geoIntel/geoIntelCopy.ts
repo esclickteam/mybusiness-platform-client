@@ -59,9 +59,22 @@ export function geoIntelCopy() {
     noData: "התחל את המעקב כדי לראות נראות לאורך זמן. אין ציון מפוברק.",
     brand: "מותג",
     importCsv: "ייבוא מ־Search Console",
-    freeOnly: "מערכת פרטית לבעלים · Phase A · מכסה חינמית · ללא OpenAI · ללא Billing",
+    freeOnly:
+      "מערכת פרטית לבעלים · שלב א׳ · מכסה חינמית · ללא OpenAI · ללא חיובים ללא אישור",
     plannedHost: "geo.bizuply.com — דומיין פרטי פעיל · בעלים בלבד · noindex",
     privateOwnerOnly: "גישה לחשבון המנהל המורשה בלבד · לא מוצר ללקוחות",
+    metricDefinitionsTitle: "איך מחושבים המדדים",
+    metricDefinitionsBody:
+      "כל אחוז מחושב רק מתוך בדיקות שהושלמו בהצלחה (מדידות אמת). בדיקות שנכשלו או נתוני בדיקה אינן נכנסות למכנה. כשאין מדגם — מוצג «—» ולא 0%. תוצאות API אינן זהות בהכרח לממשק הצרכני.",
+    sampleTooSmall:
+      "מדגם קטן — יש לפרש בזהירות עד שיצטברו מדידות נוספות.",
+    langHebrew: "עברית",
+    langEnglish: "אנגלית",
+    apiCallLabel: "קריאת API",
+    dataClassLabel: "סוג נתון",
+    detailMeta: "פרטי מדידה",
+    competitorsDetected: "מתחרים שזוהו",
+    dismissBanners: "הסתר הערות מערכת",
     sources: "מקורות",
     ourSources: "מקורות שלנו",
     competitorSources: "מקורות מתחרים",
