@@ -77,6 +77,39 @@ function homeStoryHtml(locale) {
   ].join("");
 }
 
+const GLOBE = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>`;
+
+/** Logged-out marketing header. Same structure the React header paints, so hydration does not swap in a different bar. */
+export function renderMarketingHeader(locale) {
+  const meta = marketingLocaleMeta(locale);
+  const hx = HX_HERO_COPY[locale] || HX_HERO_COPY.en;
+  const logoAlt = locale === "he" ? "ביזאפלי (BizUply)" : "BizUply";
+  const navLocale =
+    locale === "he" || locale === "es" || locale === "pt-BR" || locale === "ar" ? locale : "en";
+  const href = (path) => localeHref(navLocale, path);
+  const nav = marketingNav(navLocale)
+    .map((group) =>
+      group.links
+        ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
+        : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`,
+    )
+    .join("");
+  const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
+  return `<header class="site-header" dir="${meta.dir}"><nav class="site-header__bar" aria-label="${escapeText(
+    hx.navAria,
+  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="${escapeHtml(
+    logoAlt,
+  )}" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__end"><span class="site-header__icon-btn"><span class="site-header__lang-code">${escapeText(
+    short,
+  )}</span>${GLOBE}</span><div class="site-header__actions"><a class="site-header__signin" href="${escapeHtml(
+    href("/login"),
+  )}">${escapeText(hx.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(
+    hx.cta,
+  )}</a></div><div class="site-header__mobile"><a class="site-header__icon-btn" href="${escapeHtml(
+    href("/login"),
+  )}" aria-label="${escapeText(hx.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></div></nav></header>`;
+}
+
 function faqBodyHtml(items) {
   return (items || [])
     .map(([question, answer]) => `<h3>${escapeText(question)}</h3><p>${escapeText(answer)}</p>`)
@@ -91,37 +124,12 @@ export function renderPurpleHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
   const hx = HX_HERO_COPY[locale] || HX_HERO_COPY.en;
   const lineTwoHot = Math.max(0, String(hx.lineTwo).trim().split(/\s+/).length - 1);
-  const logoAlt = locale === "he" ? "ביזאפלי (BizUply)" : "BizUply";
-  const navLocale =
-    locale === "he" || locale === "es" || locale === "pt-BR" || locale === "ar" ? locale : "en";
-  const href = (path) => localeHref(navLocale, path);
-  const nav = marketingNav(navLocale)
-    .map((group) =>
-      group.links
-        ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
-        : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`,
-    )
-    .join("");
-  const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
   const faqs = HOME_FAQ[locale] || HOME_FAQ.en;
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
   const headline = `${hx.lineOne} ${hx.lineTwo}`;
 
-  const header = `<header class="site-header"><nav class="site-header__bar" aria-label="${escapeText(
-    hx.navAria,
-  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="${escapeHtml(
-    logoAlt,
-  )}" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__actions"><span class="site-header__icon-btn">${escapeText(
-    short,
-  )}</span><a class="site-header__signin" href="${escapeHtml(href("/login"))}">${escapeText(
-    hx.login,
-  )}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(
-    hx.cta,
-  )}</a></div><div class="site-header__mobile"><span class="site-header__icon-btn">${escapeText(
-    short,
-  )}</span><a class="site-header__icon-btn" href="${escapeHtml(href("/login"))}" aria-label="${escapeText(
-    hx.login,
-  )}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></nav></header>`;
+  const header = renderMarketingHeader(locale);
+  const href = (path) => localeHref(locale === "pt-BR" || locale === "he" || locale === "es" || locale === "ar" ? locale : "en", path);
 
   const heroLead2 = hx.lead2
     ? `<p class="hx-lead">${escapeText(hx.lead2)}</p>`
@@ -148,6 +156,7 @@ export function renderPurpleHomePrerender(locale) {
     lang: meta.htmlLang,
     dir: meta.dir,
     headline,
-    inner: `<main class="home-shell hx-paint" lang="${meta.htmlLang}" dir="${meta.dir}" data-home-design="purple">${header}<div class="hx-page" data-hx-shell="true" dir="${meta.dir}">${hero}${crawl}</div></main>`,
+    crawl,
+    inner: `<main class="home-shell hx-paint" lang="${meta.htmlLang}" dir="${meta.dir}" data-home-design="purple">${header}<div class="hx-page" data-hx-shell="true" dir="${meta.dir}">${hero}</div></main>`,
   };
 }

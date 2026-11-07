@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/home-critical.css" />
+    <link rel="stylesheet" href="/cookie-critical.css" />
     <script>
       (function () {
         var host = String(location.hostname || "");
@@ -129,7 +130,17 @@
           if (pathLocale && pathLocale !== "en") {
             lang = pathLocale;
             try {
-              document.cookie = "bizuply_lang=" + encodeURIComponent(lang) + "; Path=/; Max-Age=31536000; SameSite=Lax";
+              var langHost = String(location.hostname || "").toLowerCase();
+              function langEnds(suffix) {
+                return langHost.length >= suffix.length && langHost.substring(langHost.length - suffix.length) === suffix;
+              }
+              var langDomain = langHost === "bizuply.com" || langEnds(".bizuply.com")
+                ? "; Domain=.bizuply.com"
+                : langHost === "bizuply.co.il" || langEnds(".bizuply.co.il")
+                  ? "; Domain=.bizuply.co.il"
+                  : "";
+              if (langDomain) document.cookie = "bizuply_lang=; Path=/; Max-Age=0; SameSite=Lax";
+              document.cookie = "bizuply_lang=" + encodeURIComponent(lang) + "; Path=/; Max-Age=31536000; SameSite=Lax" + langDomain;
             } catch (ePathCookie) {}
           } else if (!appRoute[bareFirst] && lang !== current) {
             var prefix = lang === "pt-BR" ? "/pt-br" : lang === "en" ? "" : "/" + lang;

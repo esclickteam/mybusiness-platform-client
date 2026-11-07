@@ -15,6 +15,9 @@ describe("purple home first paint", () => {
     expect(en.inner).toContain(">platform.</span>");
     expect(en.inner).toContain(HX_HERO_COPY.en.start);
     expect(en.inner).toContain("/demo-media/home/crm.jpg");
+    expect(en.inner).toContain('class="site-header__end"');
+    expect(en.inner).not.toContain('class="home-crawl"');
+    expect(en.crawl).toContain('class="home-crawl"');
     expect(en.inner).not.toContain('class="home-hero"');
     expect(en.inner).not.toContain("home-hero__title");
     expect(en.inner).not.toContain("/demo-media/crm/poster.jpg");

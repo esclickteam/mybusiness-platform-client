@@ -41,6 +41,7 @@ import {
   isUnknownMarketingPath,
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
+import { renderCookieBannerPaint, trackingChoiceFromCookie } from "./src/lib/cookieBannerPaint.mjs";
 import { lastLanguageCookie, localeFromLanguageTag, marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
 import { buildPartnersPaint } from "./src/lib/partnersPaint.mjs";
@@ -993,6 +994,7 @@ async function handleMarketingDocument(request) {
         } catch {
           /* The linked stylesheet remains. */
         }
+        if (prerender?.crawl) documentHtml = injectCrawlableDocument(documentHtml, prerender.crawl);
         if (prerender) documentHtml = injectRootInner(documentHtml, prerender.inner);
       } else {
         // Partners: replace homepage critical link with partners-critical, then inline.
@@ -1028,11 +1030,14 @@ async function handleMarketingDocument(request) {
         documentHtml = injectRootInner(documentHtml, buildPartnersPaint(locale.locale));
       }
     } else {
-      // Never ship homepage critical CSS to login/dashboard/CRM shells.
-      documentHtml = documentHtml.replace(
-        /<link\s+rel=["']stylesheet["']\s+href=["']\/home-critical\.css["']\s*\/>\s*/i,
-        "",
-      );
+      // Never ship homepage critical CSS to login or dashboard shells.
+      // /crm keeps it so the real header is painted before React, not the old bar.
+      if (locale.path !== "/crm") {
+        documentHtml = documentHtml.replace(
+          /<link\s+rel=["']stylesheet["']\s+href=["']\/home-critical\.css["']\s*\/>\s*/i,
+          "",
+        );
+      }
       if (locale.path === "/crm") {
         if (prerender) documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
         documentHtml = injectRootInner(documentHtml, buildCrmHeaderPaint(locale.locale));
@@ -1061,6 +1066,9 @@ async function handleMarketingDocument(request) {
       }
     }
     if (filteredSearch) headers["x-robots-tag"] = "noindex, follow";
+    if (trackingChoiceFromCookie(request.headers.get("cookie") || "") === "unknown") {
+      documentHtml = documentHtml.replace("</body>", `${renderCookieBannerPaint(locale.locale)}</body>`);
+    }
     return new Response(documentHtml, {
       status: 200,
       headers: withHostLanguageCookieCleared(headers),
