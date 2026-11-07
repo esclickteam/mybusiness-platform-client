@@ -14,17 +14,24 @@
   overflow: clip;
 }
 
-.scan-product::before {
-  content: "";
-  position: absolute;
-  width: 280px;
-  height: 280px;
-  inset-inline-start: -80px;
-  top: 180px;
-  border: 1px solid rgba(109, 40, 217, 0.18);
-  transform: rotate(18deg);
-  pointer-events: none;
-  animation: scan-drift 16s ease-in-out infinite alternate;
+.scan-product--report {
+  overflow-x: clip;
+}
+
+.scan-product--report .scan-report,
+.scan-product--report .scan-cards,
+.scan-product--report .scan-mast,
+.scan-product--report .scan-actions {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.scan-product--report a,
+.scan-product--report p,
+.scan-product--report li,
+.scan-product--report h2,
+.scan-product--report h3 {
+  overflow-wrap: anywhere;
 }
 
 .scan-hero, .scan-report, .scan-error {
@@ -151,7 +158,8 @@
   border-color: transparent;
   color: #fff;
 }
-.scan-start:hover, .scan-types button:hover { transform: translateY(-1px); }
+.scan-product:not(.scan-product--report) .scan-start:hover,
+.scan-product:not(.scan-product--report) .scan-types button:hover { transform: translateY(-1px); }
 .scan-start:focus-visible, .scan-types button:focus-visible, .scan-product input:focus-visible {
   outline: 2px solid #7c3aed;
   outline-offset: 2px;
@@ -176,7 +184,6 @@
   display: grid;
   gap: 0.7rem;
   padding: 1.1rem;
-  animation: scan-drift 8s ease-in-out infinite alternate;
 }
 .scan-preview__sheet b { font-size: 1rem; }
 .scan-preview__sheet i, .scan-preview__bars span {
@@ -209,10 +216,6 @@
 .scan-progress .is-on { background: #6d28d9; color: #fff; }
 .scan-limits { color: var(--muted); }
 
-@keyframes scan-drift {
-  50% { transform: translateY(-8px); }
-}
-
 @media (max-width: 860px) {
   .scan-hero, .scan-report__head { grid-template-columns: 1fr; display: grid; }
   .scan-hero h1 { max-width: none; }
@@ -230,5 +233,5 @@
 .scan-monitor input { border: 0; border-bottom: 1px solid rgba(196,181,253,.8); background: transparent; padding: 8px 0; }
 @media (max-width: 860px) { .scan-plans__grid, .scan-requirements { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
-  .scan-product::before, .scan-preview__sheet, .scan-start, .scan-types button { animation: none; transition: none; }
+  .scan-start, .scan-types button { animation: none; transition: none; }
 }
