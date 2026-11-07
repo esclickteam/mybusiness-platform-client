@@ -177,6 +177,7 @@ function Terms() {
             </p>
 
             <p className={pBase}>{t("termsPage.s3.p4")}</p>
+            <p className={pBase}>{t("termsPage.s3.p5")}</p>
           </section>
 
           <section id="section-4" className={sectionBase}>
@@ -192,6 +193,7 @@ function Terms() {
             <p className={pBase}>
               <Trans i18nKey="termsPage.s4.p7" components={strongComponents} />
             </p>
+            <p className={pBase}>{t("termsPage.s4.p8")}</p>
           </section>
 
           <section id="section-5" className={sectionBase}>
@@ -389,6 +391,7 @@ function Terms() {
 
             <p className={pBase}>{t("termsPage.s12.p4")}</p>
             <p className={pBase}>{t("termsPage.s12.p5")}</p>
+            <p className={pBase}>{t("termsPage.s12.p6")}</p>
           </section>
 
           <section id="section-13" className={sectionBase}>

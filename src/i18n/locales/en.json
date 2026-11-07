@@ -14061,7 +14061,7 @@
   },
   "s8": {
     "h": "8. Cookies and Tracking Technologies",
-    "p1": "The marketing homepage and the other platform pages load the Meta Pixel only when the cookie bizuply_tracking equals all. A missing cookie or the value essential does not load it. Choosing essential revokes measurement at once, so further pixel events are not sent, and deletes the measurement cookies. If the pixel was already loaded, the page reloads and the script does not start again. The choice stays for 180 days across platform pages and return visits. Clearing it on the privacy page asks for the choice again after reload. Published customer sites do not load this pixel.",
+    "p1": "The marketing homepage and the other platform pages load the Meta Pixel only when the cookie bizuply_tracking equals all. A missing cookie or the value essential does not load it. Choosing essential revokes measurement at once, so further pixel events are not sent, and deletes the measurement cookies. If the pixel was already loaded, it is stopped without reloading the page. The choice stays for 180 days across platform pages and return visits. Cookie settings in the footer, and the same control on the privacy page, reopen the choice. Published customer sites do not load this pixel.",
     "h1": "8.1. Types of Cookies Used",
     "list": [
       "Essential cookies – required for system operation and login",
@@ -14189,7 +14189,7 @@
     "h": "1. General",
     "p1": "1.1. The BizUply website and/or mobile application, hereinafter: “the Company,” “BizUply,” “the Site,” “the System,” or “the App,” operate as a <strong>Software-as-a-Service (SaaS)</strong> platform intended for professional business management, customer communication, appointment scheduling, collaboration, and automation. The platform connects service providers and customers in order to streamline day-to-day operations and improve digital business efficiency.",
     "p2": "1.2. Use of the Site, the App, and the System is subject to these Terms of Use, as well as any applicable law and regulation in the United States. Accessing or using BizUply's services constitutes your full and binding consent to comply with all provisions of this Agreement. If you do not agree to these terms, you must not use the Site, the App, or any of the Company's services.",
-    "p3": "1.3. The Company reserves the right, at its sole discretion, to change, amend, update, or remove parts of these terms at any time, with or without prior notice. Any update takes effect immediately upon posting on the Site. Continued use of the platform after such a change constitutes full acceptance of the updated terms.",
+    "p3": "1.3. Bizuply will give an existing customer appropriate prior notice of a material change to these terms before that change takes effect, except when mandatory law requires the change to take effect sooner. This notice does not delay a change that mandatory law requires, and it does not waive a right that the mandatory law of the customer's country does not allow this contract to waive. A non-material update may be posted on the Site. Continued use after a non-material update is posted is acceptance of that update. Continued use does not by itself make a material change binding on an existing customer before the prior notice in this section.",
     "p4": "1.4. These terms are written in English and may from time to time be translated for convenience into other languages. In the event of any conflict or inconsistency between translations, <strong>the English version shall prevail</strong>.",
     "p5": "1.5. These terms are drafted in the masculine form for grammatical convenience only and apply equally to all genders, individuals, and entities.",
     "p6": "1.6. Bizuply LLC is a limited liability company formed in Delaware, United States. These terms, the privacy policy, and any dispute arising out of or related to the platform or these terms are governed by the laws of the State of Delaware and applicable United States federal law, without regard to conflict-of-laws rules that would select another state's law. This choice does not displace a consumer, privacy, or accessibility right that the mandatory law of the customer's country does not allow a contract to waive. The Delaware file number and registered office are not stated because they were not supplied.",
@@ -14216,7 +14216,8 @@
     ],
     "p2": "3.2. The Company may, from time to time, expand, modify, limit, or discontinue certain features or services. BizUply reserves the right to make such changes at its sole discretion and without prior notice.",
     "p3": "3.3. All services, content, and tools provided through the platform are offered <strong>“as is” and “as available”</strong>, without any warranty of any kind, express or implied, including but not limited to merchantability, fitness for a particular purpose, accuracy, or reliability. The Company does not guarantee continuous availability or error-free operation of the platform.",
-    "p4": "3.4. Certain services or features may be subject to additional terms, pricing, or subscription tiers. By activating such services, the User agrees to any relevant supplemental terms or pricing structure provided at the time of use."
+    "p4": "3.4. Certain services or features may be subject to additional terms, pricing, or subscription tiers. By activating such services, the User agrees to any relevant supplemental terms or pricing structure provided at the time of use.",
+    "p5": "3.5. Some Bizuply services depend on outside providers, including Meta, WhatsApp, and payment processors. The availability and operation of those services may be affected by outages, limits, and changes that come from those providers. Bizuply does not promise continuous, uninterrupted availability of an outside service. This is subject to Bizuply's contractual commitments and to the law that applies. It does not change a price, a commission, or a partner term."
   },
   "s4": {
     "h": "4. Registration & Use of the System",
@@ -14226,7 +14227,8 @@
     "p4": "4.4. The Company reserves the right to suspend, restrict, or permanently delete any account that violates these terms, infringes intellectual property rights, distributes harmful or unlawful content, or engages in activity that may harm the integrity of the platform or other users.",
     "p5": "4.5. The Company further reserves the right to remove any business, profile, content, or uploaded material that, in its sole discretion, is deemed inappropriate, misleading, fraudulent, offensive, or inconsistent with BizUply's brand values or its legal obligations, without any obligation to provide prior notice or justification.",
     "p6": "4.6. Creating multiple or duplicate accounts to abuse trial periods, referral programs, or promotions is strictly prohibited. The Company may terminate or merge such accounts and cancel any related benefits without a refund.",
-    "p7": "4.7. Upon registration, the User grants BizUply a limited, non-exclusive, worldwide, royalty-free license to store, process, and display the information provided, solely for the purpose of providing and improving the services in accordance with the Company's <strong>Privacy Policy</strong>."
+    "p7": "4.7. Upon registration, the User grants BizUply a limited, non-exclusive, worldwide, royalty-free license to store, process, and display the information provided, solely for the purpose of providing and improving the services in accordance with the Company's <strong>Privacy Policy</strong>.",
+    "p8": "4.8. The business customer is responsible for making sure there is an appropriate lawful basis to collect personal information, to contact people, to send marketing messages, and to use the Meta and WhatsApp accounts that the customer connects to the platform. Nothing in this paragraph reduces Bizuply's own duties under the law that applies to Bizuply."
   },
   "s5": {
     "h": "5. Privacy & Data Protection",
@@ -14265,7 +14267,7 @@
     "cookiesTitle": "Cookies & Tracking Technologies",
     "p7": "5.7. The Site and the App use cookies and similar technologies for basic functionality, security, and the measurement described in section 5.9. Section 5.9 states which measurement tool loads and on which page.",
     "p8": "5.8. Users may disable or restrict cookies through their browser settings; however, as a result, certain features of the platform may not function properly.",
-    "p9": "5.9. This site does not load Google Analytics, Google Tag Manager, or reCAPTCHA. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On the marketing homepage and the other platform pages, the pixel loads only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, the pixel does not load. Choosing essential revokes measurement at once: further pixel events are not sent, the measurement cookies are deleted, and, if the pixel was already loaded, the page reloads so the pixel script does not start again. Clearing the choice on the privacy page deletes the cookie and reloads the page, so the choice is asked again. The choice stays in a cookie on this browser for 180 days, including when the visitor moves between platform pages and when the visitor returns. A checkout event is sent from registration only when the cookie equals all and measurement has not been revoked. Cloudflare Turnstile loads only on a screen that has a site key configured.",
+    "p9": "5.9. This site does not load Google Analytics, Google Tag Manager, or reCAPTCHA. The Meta Pixel, identifier 1427327632368128, is not loaded on a published customer site. On the marketing homepage and the other platform pages, the pixel loads only when the cookie bizuply_tracking equals all. If the cookie is missing or equals essential, the pixel does not load. Choosing essential revokes measurement at once: further pixel events are not sent, the measurement cookies are deleted, and, if the pixel was already loaded, it is stopped without reloading the page. Cookie settings in the footer, and the same control on the privacy page, reopen the choice. The choice stays in a cookie on this browser for 180 days, including when the visitor moves between platform pages and when the visitor returns. A checkout event is sent from registration only when the cookie equals all and measurement has not been revoked. Cloudflare Turnstile loads only on a screen that has a site key configured.",
     "p10": "For more information about how BizUply collects, uses, and protects data, please review our detailed <strong>Privacy Policy</strong>, which forms an integral part of these Terms of Use."
   },
   "s6": {
@@ -14340,8 +14342,8 @@
   },
   "s12": {
     "h": "12. Changes, Termination & Suspension",
-    "p1": "12.1. The Company reserves the right to modify, update, or amend these Terms of Use, the Privacy Policy, or any other platform policy at any time and at its sole discretion. Updated versions will be posted on the Site with an updated “Last updated” date.",
-    "p2": "12.2. Continued use of the platform after any change is posted shall constitute full and binding acceptance of the updated terms.",
+    "p1": "12.1. The Company may modify, update, or amend these Terms of Use, the Privacy Policy, or any other platform policy. Updated versions will be posted on the Site with an updated “Last updated” date. A material change to these terms is governed by section 1.3.",
+    "p2": "12.2. Continued use of the platform after a non-material update is posted is acceptance of that update. A material change applies to an existing customer only after the prior notice in section 1.3, except when mandatory law requires an earlier effective date.",
     "p3": "12.3. The Company may suspend, restrict, or terminate the User's account or access to the platform, in whole or in part, without prior notice and without liability, if:",
     "list": [
       "The User violates these terms or any applicable law.",
@@ -14350,7 +14352,8 @@
       "Technical or security issues require immediate suspension."
     ],
     "p4": "12.4. Upon termination, all rights granted to the User under these terms shall immediately cease, and the User must discontinue all access to and use of the platform. Any outstanding payment obligation shall survive termination.",
-    "p5": "12.5. The Company reserves the right to discontinue or modify the platform or any of its features at any time, temporarily or permanently, without prior notice."
+    "p5": "12.5. The Company reserves the right to discontinue or modify the platform or any of its features at any time, temporarily or permanently, without prior notice.",
+    "p6": "12.6. When the relationship ends, the customer's ability to export, receive, or delete the customer's information follows these terms, the data-processing annex, and the law that applies. These terms do not state a specific retention, deletion, or export period, because no such period was verified as an operating process."
   },
   "s13": {
     "h": "13. Waiver of Claims, Refunds & Limitation of Actions",
