@@ -118,7 +118,12 @@
             "partner-materials": 1,
             onboarding: 1,
           };
-          if (!appRoute[bareFirst] && lang !== current) {
+          if (pathLocale && pathLocale !== "en") {
+            lang = pathLocale;
+            try {
+              document.cookie = "bizuply_lang=" + encodeURIComponent(lang) + "; Path=/; Max-Age=31536000; SameSite=Lax";
+            } catch (ePathCookie) {}
+          } else if (!appRoute[bareFirst] && lang !== current) {
             var prefix = lang === "pt-BR" ? "/pt-br" : lang === "en" ? "" : "/" + lang;
             var next = prefix + (bare === "/" ? "" : bare);
             if (!next) next = "/";

@@ -12,6 +12,7 @@ type Copy = {
   name: string;
   business: string;
   confirm: string;
+  required: string;
   kind: string;
   about: string;
   details: string;
@@ -51,6 +52,7 @@ const COPY: Record<string, Copy> = {
     other: "Another privacy request",
     account: "My Bizuply account, billing, or support record",
     customer: "Information a business customer stored about me",
+    required: "Enter the required information.",
     received: "The request was received and recorded. We may contact you to verify identity or to ask for more information. Sending the request does not approve a change or a disclosure. Reference",
     customerNote: "Bizuply will not release a business customer's database from this form. After the account is matched, the request is routed to that customer.",
     unavailable: "The request was not recorded because this server does not have the request route yet.",
@@ -78,6 +80,7 @@ const COPY: Record<string, Copy> = {
     other: "בקשת פרטיות אחרת",
     account: "החשבון, החיוב או הפנייה שלי ב־Bizuply",
     customer: "מידע שלקוח עסקי שמר עליי",
+    required: "יש למלא את השדה הנדרש.",
     received: "הבקשה התקבלה ונרשמה במערכת. ייתכן שניצור איתך קשר לצורך אימות זהות או קבלת מידע נוסף. עצם שליחת הבקשה אינה מהווה אישור לביצוע שינוי או למסירת מידע. אסמכתה",
     customerNote: "Bizuply לא מוסרת מטופס זה מאגר של לקוח עסקי. אחרי התאמת החשבון הבקשה מועברת לאותו לקוח.",
     unavailable: "הבקשה לא נרשמה כי השרת הזה עדיין בלי מסלול הבקשות.",
@@ -105,6 +108,7 @@ const COPY: Record<string, Copy> = {
     other: "Otra solicitud de privacidad",
     account: "Mi cuenta, facturación o soporte de Bizuply",
     customer: "Información que un cliente empresarial guardó sobre mí",
+    required: "Completa el dato obligatorio.",
     received: "La solicitud se recibió y quedó registrada. Es posible que contactemos para verificar la identidad o pedir más datos. Enviar la solicitud no aprueba un cambio ni una divulgación. Referencia",
     customerNote: "Bizuply no entrega desde este formulario la base de un cliente empresarial. Tras identificar la cuenta, la solicitud se envía a ese cliente.",
     unavailable: "La solicitud no se registró porque este servidor aún no tiene la ruta.",
@@ -132,6 +136,7 @@ const COPY: Record<string, Copy> = {
     other: "Outro pedido de privacidade",
     account: "Minha conta, cobrança ou suporte na Bizuply",
     customer: "Informação que um cliente empresarial guardou sobre mim",
+    required: "Preencha o dado obrigatório.",
     received: "O pedido foi recebido e registrado. Podemos entrar em contato para verificar a identidade ou pedir mais dados. Enviar o pedido não aprova uma alteração nem uma divulgação. Referência",
     customerNote: "A Bizuply não entrega por este formulário a base de um cliente empresarial. Depois de identificar a conta, o pedido segue para esse cliente.",
     unavailable: "O pedido não foi registrado porque este servidor ainda não tem a rota.",
@@ -159,6 +164,7 @@ const COPY: Record<string, Copy> = {
     other: "طلب خصوصية آخر",
     account: "حسابي أو الفوترة أو الدعم لدى Bizuply",
     customer: "معلومات حفظها عميل تجاري عني",
+    required: "أدخل البيانات المطلوبة.",
     received: "تم استلام الطلب وتسجيله. قد نتواصل للتحقق من الهوية أو لطلب معلومات إضافية. إرسال الطلب ليس موافقة على تغيير أو على كشف معلومات. المرجع",
     customerNote: "لا تسلّم Bizuply من هذا النموذج قاعدة عميل تجاري. بعد مطابقة الحساب يُحال الطلب إلى ذلك العميل.",
     unavailable: "لم يُسجل الطلب لأن هذا الخادم لا يملك مسار الطلبات بعد.",
@@ -251,7 +257,7 @@ export default function PrivacyRequestForm() {
       <p className="mb-4 text-sm leading-7 text-slate-600">{copy.intro}</p>
       <label className="mb-3 block text-sm font-medium text-slate-800">
         {copy.email}
-        <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+        <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900" type="email" required autoComplete="email" value={email} onChange={(event) => { setEmail(event.target.value); event.target.setCustomValidity(""); }} onInvalid={(event) => event.currentTarget.setCustomValidity(copy.required)} />
       </label>
       <label className="mb-3 block text-sm font-medium text-slate-800">
         {copy.name}
@@ -282,7 +288,7 @@ export default function PrivacyRequestForm() {
         <textarea className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2" rows={4} maxLength={2000} value={details} onChange={(event) => setDetails(event.target.value)} />
       </label>
       <label className="mb-4 flex items-start gap-2 text-sm font-medium text-slate-800">
-        <input type="checkbox" required checked={confirmed} onChange={(event) => setConfirmed(event.target.checked)} />
+        <input type="checkbox" required checked={confirmed} onChange={(event) => { setConfirmed(event.target.checked); event.target.setCustomValidity(""); }} onInvalid={(event) => event.currentTarget.setCustomValidity(copy.required)} />
         <span>{copy.confirm}</span>
       </label>
       <button type="submit" className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-60" disabled={pending}>
