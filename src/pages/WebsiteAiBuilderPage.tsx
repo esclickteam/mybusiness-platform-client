@@ -47,7 +47,7 @@ function textBits(source: string) {
   let match = pattern.exec(source);
   while (match && found.length < 8) {
     const text = match[2].replace(/\s+/g, " ").trim();
-    if (text && !found.includes(text)) found.push(text);
+    if (text && /[א-ת]/.test(text) && !/[{}=()]|setScreen|[A-Za-z]{4,}/.test(text) && !found.includes(text)) found.push(text);
     match = pattern.exec(source);
   }
   return found;
