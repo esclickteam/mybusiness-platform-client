@@ -76,7 +76,10 @@ export function useDashboardModuleReads(input: {
     }
 
     let cancelled = false;
-    setState((current) => ({ ...current, leads: loading() }));
+    setState((current) => ({
+      ...current,
+      leads: current.leads.data ? current.leads : loading(),
+    }));
     Promise.all([
       fetchFunnel(),
       fetchWorkspaceLeads({ page: 1, limit: 1 }),
@@ -115,7 +118,10 @@ export function useDashboardModuleReads(input: {
     }
 
     let cancelled = false;
-    setState((current) => ({ ...current, sites: loading() }));
+    setState((current) => ({
+      ...current,
+      sites: current.sites.data ? current.sites : loading(),
+    }));
     listMySites(businessId)
       .then((sites) => {
         if (cancelled) return;
@@ -144,7 +150,10 @@ export function useDashboardModuleReads(input: {
     }
 
     let cancelled = false;
-    setState((current) => ({ ...current, meta: loading() }));
+    setState((current) => ({
+      ...current,
+      meta: current.meta.data ? current.meta : loading(),
+    }));
     getMetaCampaignsOverview(businessId, { since, until })
       .then((overview) => {
         if (cancelled) return;
@@ -173,7 +182,10 @@ export function useDashboardModuleReads(input: {
     }
 
     let cancelled = false;
-    setState((current) => ({ ...current, automations: loading() }));
+    setState((current) => ({
+      ...current,
+      automations: current.automations.data ? current.automations : loading(),
+    }));
     getAutomationStats(businessId)
       .then((stats) => {
         if (cancelled) return;

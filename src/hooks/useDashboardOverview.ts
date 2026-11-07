@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import API from "@/api";
 
@@ -23,6 +23,7 @@ export function useDashboardOverview({
   const [data, setData] = useState<DashboardOverviewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const hasDataRef = useRef(false);
 
   const queryKey = useMemo(
     () =>
@@ -37,8 +38,7 @@ export function useDashboardOverview({
   const fetchDashboard = useCallback(async () => {
     if (!businessId || !enabled) return;
 
-    setLoading(true);
-    setError(null);
+    if (!hasDataRef.current) setLoading(true);
 
     try {
       const range =
@@ -71,7 +71,13 @@ export function useDashboardOverview({
         },
       });
 
-      setData(response.data);
+      const next = response.data as DashboardOverviewData;
+      setData((current) => {
+        if (current && JSON.stringify(current) === JSON.stringify(next)) return current;
+        return next;
+      });
+      hasDataRef.current = true;
+      setError(null);
     } catch (err: any) {
       console.error("Dashboard analytics fetch failed:", err);
       setError(

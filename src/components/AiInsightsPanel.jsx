@@ -89,7 +89,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
     return (
       <section
         dir={dir}
-        className="rounded-[28px] border border-slate-200/70 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+        className="border border-slate-200 bg-white p-3"
         aria-label={t("aiInsights.loadingAria")}
       >
         <div className="flex items-center gap-3">
@@ -195,26 +195,23 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
     <section
       id="ai-insights-panel"
       dir={dir}
-      className="rounded-[28px] border border-violet-100 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
+      className="border border-violet-100 bg-white p-3"
       aria-label={t("aiInsights.panelAria")}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
-            <Sparkles size={20} />
-          </div>
-          <div>
-            <h3 className="text-lg font-black text-slate-800">
-              {t("aiInsights.title")}
-            </h3>
-            <p className="text-sm font-medium text-slate-500">
-              {t("aiInsights.actionCount", { count: visibleInsights.length })}
-            </p>
-          </div>
-        </div>
+      <div className="mb-2 flex items-center gap-2">
+        <Sparkles size={16} className="text-violet-700" aria-hidden="true" />
+        <h3 className="text-sm font-black text-[#21172F]">
+          {t("aiInsights.title")}
+        </h3>
+        <p className="text-xs font-semibold text-[#3a314c]">
+          {t("aiInsights.actionCount", {
+            count: visibleInsights.length,
+            defaultValue: "{{count}} פעולות מומלצות לשיפור העסק",
+          })}
+        </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-2 min-[1100px]:grid-cols-2">
         {groupedInsights.map(({ priority, items }) =>
           items.map((rawInsight) => {
             const insight = localizeInsight(rawInsight, t);
@@ -224,36 +221,31 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
             return (
               <article
                 key={insight.id}
-                className={`relative overflow-hidden rounded-[22px] border border-s-4 p-4 ${styles.card} ${styles.accent}`}
+                className={`relative border border-s-4 px-3 py-2.5 ${styles.card} ${styles.accent}`}
               >
                 <button
                   type="button"
-                  className="absolute end-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-400 transition hover:bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 hover:text-white"
+                  className="absolute end-2 top-2 flex h-7 w-7 items-center justify-center border border-violet-200 bg-white text-slate-500"
                   onClick={() => handleDismiss(rawInsight)}
                   aria-label={t("aiInsights.dismissAria")}
                 >
                   <X size={14} />
                 </button>
 
-                <div className="flex items-start gap-3 pe-8">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
-                    <Icon size={18} />
-                  </div>
-
+                <div className="flex items-start gap-2 pe-8">
+                  <Icon size={16} className="mt-0.5 shrink-0 text-violet-700" aria-hidden="true" />
                   <div className="min-w-0 flex-1">
-                    <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <h4 className="text-sm font-black text-slate-800">{insight.title}</h4>
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-[11px] font-black ${styles.badge}`}
-                      >
+                    <div className="mb-0.5 flex flex-wrap items-center gap-1.5">
+                      <h4 className="text-sm font-black text-[#21172F]">{insight.title}</h4>
+                      <span className={`px-1.5 py-0.5 text-[11px] font-black ${styles.badge}`}>
                         {t(styles.badgeKey)}
                       </span>
                     </div>
 
-                    <p className="text-sm leading-6 text-slate-600">
+                    <p className="text-xs leading-5 text-[#3a314c]">
                       {insight.metric ? (
                         <>
-                          <strong className="text-slate-900">{insight.metric.value}</strong>{" "}
+                          <strong className="text-[#21172F]">{insight.metric.value}</strong>{" "}
                           {insight.metric.label} — {insight.description}
                         </>
                       ) : (
@@ -264,7 +256,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
                     {(insight.actionLabel || insight.cta?.label) && (
                       <button
                         type="button"
-                        className="mt-3 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2 text-xs font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+                        className="mt-2 border border-[#5B21B6] bg-[#5B21B6] px-3 py-1.5 text-xs font-black text-white"
                         onClick={() => handleAction(rawInsight)}
                       >
                         {insight.actionLabel || insight.cta?.label}
