@@ -2,6 +2,13 @@
 
 export const COOKIE_BANNER_COPY = {
   en: {
+    noticeTitle: "Your privacy matters to us",
+    noticeIntro: "We use cookies to run the site and to remember your language and this choice. Advertising cookies load only if you allow them, and they turn on the Meta Pixel only.",
+    essentialOnly: "Essential cookies only",
+    manage: "Manage cookies",
+    manageTitle: "Manage cookie preferences",
+    back: "Back",
+    close: "Close",
     title: "Cookie use on the Bizuply site",
     intro: "Necessary cookies stay on. Advertising cookies are optional and control the Meta Pixel. Analytics and functionality are not used on this site.",
     change: "You can change or withdraw this choice at any time.",
@@ -49,6 +56,13 @@ export const COOKIE_BANNER_COPY = {
     noneFound: "No cookie or script was identified for this category.",
   },
   he: {
+    noticeTitle: "הפרטיות שלכם חשובה לנו",
+    noticeIntro: "אנחנו משתמשים בעוגיות כדי להפעיל את האתר ולזכור את השפה ואת הבחירה שלכם. עוגיות פרסום נטענות רק אם תאשרו אותן, והן מפעילות את Meta Pixel בלבד.",
+    essentialOnly: "עוגיות חיוניות בלבד",
+    manage: "ניהול עוגיות",
+    manageTitle: "ניהול העדפות העוגיות",
+    back: "חזרה",
+    close: "סגירה",
     title: "השימוש בעוגיות באתר Bizuply",
     intro: "עוגיות חיוניות נשארות פעילות. עוגיות פרסום הן אופציונליות ושולטות ב־Meta Pixel. מדידה ופונקציונליות אינן בשימוש באתר הזה.",
     change: "אפשר לשנות או לבטל את הבחירה בכל עת.",
@@ -96,6 +110,13 @@ export const COOKIE_BANNER_COPY = {
     noneFound: "לא זוהו עוגייה או סקריפט בקטגוריה הזו.",
   },
   es: {
+    noticeTitle: "Su privacidad nos importa",
+    noticeIntro: "Usamos cookies para que el sitio funcione y para recordar el idioma y esta elección. Las cookies de publicidad se cargan solo si usted las permite, y activan únicamente el Meta Pixel.",
+    essentialOnly: "Solo cookies esenciales",
+    manage: "Gestionar cookies",
+    manageTitle: "Gestionar las preferencias de cookies",
+    back: "Volver",
+    close: "Cerrar",
     title: "Uso de cookies en el sitio de Bizuply",
     intro: "Las cookies necesarias permanecen activas. Las cookies de publicidad son opcionales y controlan el Meta Pixel. Analítica y funcionalidad no se usan en este sitio.",
     change: "Puede cambiar o retirar esta elección en cualquier momento.",
@@ -143,6 +164,13 @@ export const COOKIE_BANNER_COPY = {
     noneFound: "No se identificó ninguna cookie ni ningún script en esta categoría.",
   },
   "pt-BR": {
+    noticeTitle: "A sua privacidade é importante para nós",
+    noticeIntro: "Usamos cookies para o site funcionar e para lembrar o idioma e esta escolha. Os cookies de publicidade carregam somente se você permitir, e ativam apenas o Meta Pixel.",
+    essentialOnly: "Somente cookies essenciais",
+    manage: "Gerenciar cookies",
+    manageTitle: "Gerenciar preferências de cookies",
+    back: "Voltar",
+    close: "Fechar",
     title: "Uso de cookies no site da Bizuply",
     intro: "Os cookies necessários permanecem ativos. Os cookies de publicidade são opcionais e controlam o Meta Pixel. Análise e funcionalidade não são usadas neste site.",
     change: "Você pode alterar ou retirar esta escolha a qualquer momento.",
@@ -190,6 +218,13 @@ export const COOKIE_BANNER_COPY = {
     noneFound: "Nenhum cookie ou script foi identificado nesta categoria.",
   },
   ar: {
+    noticeTitle: "خصوصيتكم تهمّنا",
+    noticeIntro: "نستخدم ملفات تعريف الارتباط لتشغيل الموقع وتذكّر اللغة وهذا الاختيار. لا تُحمَّل ملفات الإعلان إلا إذا سمحتم بها، وهي تفعّل Meta Pixel فقط.",
+    essentialOnly: "ملفات تعريف الارتباط الضرورية فقط",
+    manage: "إدارة ملفات تعريف الارتباط",
+    manageTitle: "إدارة تفضيلات ملفات تعريف الارتباط",
+    back: "رجوع",
+    close: "إغلاق",
     title: "استخدام ملفات تعريف الارتباط في موقع Bizuply",
     intro: "تبقى ملفات تعريف الارتباط الضرورية مفعّلة. ملفات الإعلان اختيارية وتتحكم في Meta Pixel. القياس والوظائف غير مستخدمين في هذا الموقع.",
     change: "يمكن تغيير هذا الاختيار أو سحبه في أي وقت.",
@@ -269,6 +304,20 @@ export function trackingChoiceFromCookie(cookieHeader = "") {
   return "unknown";
 }
 
+function localePaths(locale) {
+  const prefix = locale === "pt-BR" ? "/pt-br" : locale && locale !== "en" ? `/${locale}` : "";
+  return {
+    privacy: `${prefix}/privacy`,
+    cookies: `${prefix}/privacy#section-8`,
+    terms: `${prefix}/terms`,
+  };
+}
+
+function legalLinks(copy, locale) {
+  const { privacy, cookies, terms } = localePaths(locale);
+  return `${escapeText(copy.change)} ${escapeText(copy.more)}<a href="${privacy}">${escapeText(copy.policy)}</a>${escapeText(copy.join)}<a href="${cookies}">${escapeText(copy.cookiePolicy)}</a>${escapeText(copy.termsJoin)}<a href="${terms}">${escapeText(copy.terms)}</a>`;
+}
+
 function row(copy, name, provider, purpose, duration) {
   return `<tr><td>${escapeText(name)}</td><td>${escapeText(provider)}</td><td>${escapeText(purpose)}</td><td>${escapeText(duration)}</td></tr>`;
 }
@@ -280,13 +329,13 @@ function category(copy, id, title, detail, control, rows, note) {
   return `<section class="cookie-banner__cat"><div class="cookie-banner__row"><h3><button type="button" class="cookie-banner__disclose" aria-expanded="false" aria-controls="${id}" onclick="window.bizuplyToggleCookieDetails(this)"><span class="cookie-banner__chevron" aria-hidden="true"></span>${escapeText(title)}</button></h3>${control}</div><p>${escapeText(detail)}</p><div class="cookie-banner__details" id="${id}" hidden>${inner}</div></section>`;
 }
 
-export function renderCookieBannerPaint(locale) {
+export function renderCookieNoticeInner(locale) {
   const copy = cookieCopy(locale);
-  const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
-  const prefix = locale === "pt-BR" ? "/pt-br" : locale && locale !== "en" ? `/${locale}` : "";
-  const privacy = `${prefix}/privacy`;
-  const cookies = `${prefix}/privacy#section-8`;
-  const terms = `${prefix}/terms`;
+  return `<div class="cookie-banner__scroll"><h2 id="bizuply-cookie-paint-title">${escapeText(copy.noticeTitle)}</h2><p>${escapeText(copy.noticeIntro)}</p><p>${legalLinks(copy, locale)}</p></div><div class="cookie-banner__actions"><button type="button" class="cookie-banner__primary" onclick="window.bizuplyChooseCookies('all')">${escapeText(copy.acceptAll)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplyChooseCookies('essential')">${escapeText(copy.essentialOnly)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplyOpenCookieManager()">${escapeText(copy.manage)}</button></div>`;
+}
+
+export function renderCookieManagerInner(locale) {
+  const copy = cookieCopy(locale);
   const necessary = category(
     copy,
     "bizuply-cookie-necessary",
@@ -330,5 +379,13 @@ export function renderCookieBannerPaint(locale) {
     "",
     copy.noneFound,
   );
-  return `<div id="bizuply-cookie-paint" class="cookie-banner" dir="${dir}" role="dialog" aria-labelledby="bizuply-cookie-paint-title"><div class="cookie-banner__scroll"><h2 id="bizuply-cookie-paint-title">${escapeText(copy.title)}</h2><p>${escapeText(copy.intro)}</p><p>${escapeText(copy.change)} ${escapeText(copy.more)}<a href="${privacy}">${escapeText(copy.policy)}</a>${escapeText(copy.join)}<a href="${cookies}">${escapeText(copy.cookiePolicy)}</a>${escapeText(copy.termsJoin)}<a href="${terms}">${escapeText(copy.terms)}</a></p>${necessary}${analytics}${advertisement}${functionality}</div><div class="cookie-banner__actions"><button type="button" class="cookie-banner__primary" onclick="window.bizuplyChooseCookies('all')">${escapeText(copy.acceptAll)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplyChooseCookies('essential')">${escapeText(copy.rejectAll)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplySaveCookiePreferences()">${escapeText(copy.save)}</button></div></div><script>window.__bizuplyCookieMarketing=false;window.bizuplyChooseCookies=function(choice){var host=String(location.hostname||"").toLowerCase();var domain=(host==="bizuply.com"||host.endsWith(".bizuply.com"))?"; Domain=.bizuply.com":(host==="bizuply.co.il"||host.endsWith(".bizuply.co.il"))?"; Domain=.bizuply.co.il":"";var value=choice==="all"?"v2:ad:2026-11-07":"v2:none:2026-11-07";if(domain)document.cookie="bizuply_tracking=; Path=/; Max-Age=0; SameSite=Lax";document.cookie="bizuply_tracking="+value+"; Path=/; Max-Age=15552000; SameSite=Lax"+domain;var node=document.getElementById("bizuply-cookie-paint");if(node)node.remove();window.dispatchEvent(new CustomEvent("bizuply-tracking-consent",{detail:choice}));};window.bizuplyToggleCookieDetails=function(button){var open=button.getAttribute("aria-expanded")==="true";button.setAttribute("aria-expanded",open?"false":"true");var details=button.closest("section").querySelector(".cookie-banner__details");if(details)details.hidden=open;};window.bizuplyToggleCookieMarketing=function(){window.__bizuplyCookieMarketing=!window.__bizuplyCookieMarketing;var btn=document.getElementById("bizuply-cookie-advertising");if(!btn)return;btn.setAttribute("aria-checked",window.__bizuplyCookieMarketing?"true":"false");btn.textContent=window.__bizuplyCookieMarketing?${JSON.stringify(copy.on)}:${JSON.stringify(copy.off)};};window.bizuplySaveCookiePreferences=function(){window.bizuplyChooseCookies(window.__bizuplyCookieMarketing?"all":"essential");};</script>`;
+  return `<div class="cookie-banner__scroll"><h2 id="bizuply-cookie-manage-title">${escapeText(copy.manageTitle)}</h2><p>${escapeText(copy.intro)}</p><p>${legalLinks(copy, locale)}</p>${necessary}${analytics}${advertisement}${functionality}</div><div class="cookie-banner__actions"><button type="button" class="cookie-banner__primary" onclick="window.bizuplySaveCookiePreferences()">${escapeText(copy.save)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplyBackToCookieNotice()">${escapeText(copy.back)}</button></div>`;
+}
+
+export function renderCookieBannerPaint(locale) {
+  const copy = cookieCopy(locale);
+  const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
+  const notice = renderCookieNoticeInner(locale);
+  const manage = renderCookieManagerInner(locale);
+  return `<div id="bizuply-cookie-paint" class="cookie-banner cookie-banner--notice" dir="${dir}" role="dialog" aria-labelledby="bizuply-cookie-paint-title">${notice}</div><script>window.__bizuplyCookieMarketing=false;window.__bizuplyCookieView="notice";window.__bizuplyNoticeHtml=${JSON.stringify(notice)};window.__bizuplyManageHtml=${JSON.stringify(manage)};window.bizuplyChooseCookies=function(choice){var host=String(location.hostname||"").toLowerCase();var domain=(host==="bizuply.com"||host.endsWith(".bizuply.com"))?"; Domain=.bizuply.com":(host==="bizuply.co.il"||host.endsWith(".bizuply.co.il"))?"; Domain=.bizuply.co.il":"";var value=choice==="all"?"v2:ad:2026-11-07":"v2:none:2026-11-07";if(domain)document.cookie="bizuply_tracking=; Path=/; Max-Age=0; SameSite=Lax";document.cookie="bizuply_tracking="+value+"; Path=/; Max-Age=15552000; SameSite=Lax"+domain;var node=document.getElementById("bizuply-cookie-paint");if(node)node.remove();window.dispatchEvent(new CustomEvent("bizuply-tracking-consent",{detail:choice}));};window.bizuplyOpenCookieManager=function(){window.__bizuplyCookieView="manage";var node=document.getElementById("bizuply-cookie-paint");if(!node)return;node.classList.remove("cookie-banner--notice");node.classList.add("cookie-banner--manage");node.setAttribute("aria-labelledby","bizuply-cookie-manage-title");node.innerHTML=window.__bizuplyManageHtml;};window.bizuplyBackToCookieNotice=function(){window.__bizuplyCookieView="notice";window.__bizuplyCookieMarketing=false;var node=document.getElementById("bizuply-cookie-paint");if(!node)return;node.classList.remove("cookie-banner--manage");node.classList.add("cookie-banner--notice");node.setAttribute("aria-labelledby","bizuply-cookie-paint-title");node.innerHTML=window.__bizuplyNoticeHtml;};window.bizuplyToggleCookieDetails=function(button){var open=button.getAttribute("aria-expanded")==="true";button.setAttribute("aria-expanded",open?"false":"true");var details=button.closest("section").querySelector(".cookie-banner__details");if(details)details.hidden=open;};window.bizuplyToggleCookieMarketing=function(){window.__bizuplyCookieMarketing=!window.__bizuplyCookieMarketing;var btn=document.getElementById("bizuply-cookie-advertising");if(!btn)return;btn.setAttribute("aria-checked",window.__bizuplyCookieMarketing?"true":"false");btn.textContent=window.__bizuplyCookieMarketing?${JSON.stringify(copy.on)}:${JSON.stringify(copy.off)};};window.bizuplySaveCookiePreferences=function(){window.bizuplyChooseCookies(window.__bizuplyCookieMarketing?"all":"essential");};</script>`;
 }

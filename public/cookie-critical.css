@@ -1,3 +1,21 @@
+.cookie-banner--notice {
+  max-width: 28rem;
+  max-height: none;
+}
+
+.cookie-banner--notice .cookie-banner__scroll {
+  overflow: visible;
+}
+
+.cookie-banner--notice .cookie-banner__actions {
+  flex-direction: column;
+}
+
+.cookie-banner--notice .cookie-banner__actions button {
+  flex: none;
+  width: 100%;
+}
+
 .cookie-banner {
   position: fixed;
   z-index: 80;
