@@ -833,8 +833,26 @@ function ScrollToTop() {
   const { pathname, search, hash, key } = useLocation();
 
   useEffect(() => {
-    // Footer / nav links should always open at the top of the destination page.
-    if (hash) return;
+    // A link with a hash opens that section. Other footer and nav links open at the top.
+    if (hash) {
+      const scrollToSection = () => {
+        const id = decodeURIComponent(hash.slice(1));
+        const target = id ? document.getElementById(id) : null;
+        if (!target) return;
+        target.scrollIntoView({ block: "start" });
+      };
+      scrollToSection();
+      const raf = window.requestAnimationFrame(scrollToSection);
+      const t1 = window.setTimeout(scrollToSection, 0);
+      const t2 = window.setTimeout(scrollToSection, 50);
+      const t3 = window.setTimeout(scrollToSection, 200);
+      return () => {
+        window.cancelAnimationFrame(raf);
+        window.clearTimeout(t1);
+        window.clearTimeout(t2);
+        window.clearTimeout(t3);
+      };
+    }
 
     const scrollAllToTop = () => {
       const scroller = document.querySelector(".app-scroll-area");
