@@ -39,6 +39,7 @@ import {
 import SiteShareModal from "../components/website/SiteShareModal";
 import MySiteCardPreview from "../components/website/MySiteCardPreview";
 import { resolveMySiteCardUrls } from "../components/site-builder/studio/utils/customDomainPublishUi";
+import { bizAlert, bizConfirm, bizPrompt } from "../components/ui/bizDialog";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { ensureSiteCardScreenshots } from "../utils/captureSiteScreenshot";
 import { useLocaleDir } from "../hooks/useLocaleDir";
@@ -261,7 +262,7 @@ export default function MySitesPage() {
   }
 
   async function handleCreateFolder() {
-    const name = window.prompt(t("mySites.prompts.newFolderName"));
+    const name = await bizPrompt(t("mySites.prompts.newFolderName"), "", t("mySites.prompts.newFolderName"));
     if (!name?.trim()) return;
 
     try {
@@ -269,7 +270,7 @@ export default function MySitesPage() {
       await createSiteFolder(businessId, name.trim());
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || t("mySites.errors.createFolder"));
+      await bizAlert(err?.message || t("mySites.errors.createFolder"));
     } finally {
       setBusyId(null);
     }
@@ -299,9 +300,10 @@ export default function MySitesPage() {
   async function handleRename(site: MySiteSummary) {
     setMenu(null);
 
-    const name = window.prompt(
+    const name = await bizPrompt(
       t("mySites.prompts.renameSite"),
-      site.name || t("mySites.defaultSiteName")
+      site.name || t("mySites.defaultSiteName"),
+      t("mySites.prompts.renameSite")
     );
     if (!name?.trim()) return;
 
@@ -310,7 +312,7 @@ export default function MySitesPage() {
       await renameMySite(site._id, name.trim());
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || t("mySites.errors.rename"));
+      await bizAlert(err?.message || t("mySites.errors.rename"));
     } finally {
       setBusyId(null);
     }
@@ -324,7 +326,7 @@ export default function MySitesPage() {
       await duplicateMySite(site._id);
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || t("mySites.errors.duplicate"));
+      await bizAlert(err?.message || t("mySites.errors.duplicate"));
     } finally {
       setBusyId(null);
     }
@@ -333,7 +335,7 @@ export default function MySitesPage() {
   async function handleDelete(site: MySiteSummary) {
     setMenu(null);
 
-    const approved = window.confirm(
+    const approved = await bizConfirm(
       t("mySites.prompts.deleteSite", {
         name: site.name || t("mySites.siteFallback"),
       })
@@ -345,7 +347,7 @@ export default function MySitesPage() {
       await deleteMySite(site._id);
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || t("mySites.errors.delete"));
+      await bizAlert(err?.message || t("mySites.errors.delete"));
     } finally {
       setBusyId(null);
     }
@@ -355,7 +357,7 @@ export default function MySitesPage() {
     setMenu(null);
 
     if (!folders.length) {
-      const shouldCreate = window.confirm(t("mySites.prompts.noFoldersCreate"));
+      const shouldCreate = await bizConfirm(t("mySites.prompts.noFoldersCreate"));
 
       if (!shouldCreate) return;
       await handleCreateFolder();
@@ -367,9 +369,10 @@ export default function MySitesPage() {
       .concat(`${folders.length + 1}. ${t("mySites.prompts.noFolderOption")}`)
       .join("\n");
 
-    const choice = window.prompt(
+    const choice = await bizPrompt(
       t("mySites.prompts.moveToFolder", { options }),
-      "1"
+      "1",
+      t("mySites.prompts.moveToFolder", { options: "" })
     );
 
     if (!choice) return;
@@ -383,14 +386,14 @@ export default function MySitesPage() {
       await moveMySiteToFolder(site._id, folderId);
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || t("mySites.errors.moveToFolder"));
+      await bizAlert(err?.message || t("mySites.errors.moveToFolder"));
     } finally {
       setBusyId(null);
     }
   }
 
   async function handleDeleteFolder(folder: SiteFolder) {
-    const approved = window.confirm(
+    const approved = await bizConfirm(
       t("mySites.prompts.deleteFolder", { name: folder.name })
     );
 
@@ -406,7 +409,7 @@ export default function MySitesPage() {
 
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || t("mySites.errors.deleteFolder"));
+      await bizAlert(err?.message || t("mySites.errors.deleteFolder"));
     } finally {
       setBusyId(null);
     }

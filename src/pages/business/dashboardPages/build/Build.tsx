@@ -17,6 +17,7 @@ import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { REVIEW_RATING_PARAMETER_DEFINITIONS } from "@/utils/reviewDisplay";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
 import "../../../interiorDesign.css";
+import { bizAlert, bizConfirm } from "@/components/ui/bizDialog";
 
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
@@ -602,7 +603,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת הלוגו:", err);
-      alert(t("buildPage.alerts.uploadLogoFailed"));
+      void bizAlert(t("buildPage.alerts.uploadLogoFailed"));
     } finally {
       setTimeout(() => URL.revokeObjectURL(previewUrl), 500);
       setLockAutosave(false);
@@ -612,7 +613,7 @@ export default function Build() {
   const handleDeleteLogo = async () => {
     if (isSaving || isDeletingLogo) return;
 
-    const approved = window.confirm(t("buildPage.alerts.deleteLogoConfirm"));
+    const approved = await bizConfirm(t("buildPage.alerts.deleteLogoConfirm"));
     if (!approved) return;
 
     try {
@@ -628,7 +629,7 @@ export default function Build() {
 
       if (!response.ok) {
         const error = await response.json().catch(() => null);
-        alert(t("buildPage.alerts.deleteLogoFailedWith", { detail: error?.error || response.statusText }));
+        void bizAlert(t("buildPage.alerts.deleteLogoFailedWith", { detail: error?.error || response.statusText }));
         return;
       }
 
@@ -641,7 +642,7 @@ export default function Build() {
       window.dispatchEvent(new Event("business-profile-updated"));
     } catch (err) {
       console.error(err);
-      alert(t("buildPage.alerts.deleteLogoFailed"));
+      void bizAlert(t("buildPage.alerts.deleteLogoFailed"));
     } finally {
       setIsDeletingLogo(false);
     }
@@ -687,7 +688,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת התמונות הראשיות:", err);
-      alert(t("buildPage.alerts.uploadMainImagesFailed"));
+      void bizAlert(t("buildPage.alerts.uploadMainImagesFailed"));
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -720,11 +721,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert(t("buildPage.alerts.deleteImageFailed"));
+        void bizAlert(t("buildPage.alerts.deleteImageFailed"));
       }
     } catch (err) {
       console.error("שגיאה במחיקת תמונה ראשית:", err);
-      alert(t("buildPage.alerts.deleteImageFailed"));
+      void bizAlert(t("buildPage.alerts.deleteImageFailed"));
     }
   };
 
@@ -772,7 +773,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת גלריה:", err);
-      alert(t("buildPage.alerts.uploadGalleryFailed"));
+      void bizAlert(t("buildPage.alerts.uploadGalleryFailed"));
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -806,11 +807,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert(t("buildPage.alerts.deleteGalleryImageFailed"));
+        void bizAlert(t("buildPage.alerts.deleteGalleryImageFailed"));
       }
     } catch (err) {
       console.error("שגיאה במחיקת תמונה מהגלריה:", err);
-      alert(t("buildPage.alerts.deleteGalleryImageFailed"));
+      void bizAlert(t("buildPage.alerts.deleteGalleryImageFailed"));
     }
   };
 
@@ -889,13 +890,13 @@ export default function Build() {
 
         setShowViewProfile(true);
         window.dispatchEvent(new Event("business-profile-updated"));
-        alert(t("buildPage.alerts.saved"));
+        void bizAlert(t("buildPage.alerts.saved"));
       } else {
-        alert(t("buildPage.alerts.saveFailedWith", { detail: res.statusText }));
+        void bizAlert(t("buildPage.alerts.saveFailedWith", { detail: res.statusText }));
       }
     } catch (err) {
       console.error("שגיאת שמירה:", err);
-      alert(t("buildPage.alerts.saveFailed"));
+      void bizAlert(t("buildPage.alerts.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -925,12 +926,12 @@ export default function Build() {
       setNewFaq({ question: "", answer: "" });
     } catch (err) {
       console.error("שגיאה בהוספת שאלה:", err);
-      alert(t("buildPage.alerts.addFaqFailed"));
+      void bizAlert(t("buildPage.alerts.addFaqFailed"));
     }
   };
 
   const handleDeleteFaq = async (id: string) => {
-    const approved = window.confirm(t("buildPage.alerts.deleteFaqConfirm"));
+    const approved = await bizConfirm(t("buildPage.alerts.deleteFaqConfirm"));
     if (!approved) return;
 
     try {
@@ -942,7 +943,7 @@ export default function Build() {
       }));
     } catch (err) {
       console.error("שגיאה במחיקת שאלה:", err);
-      alert(t("buildPage.alerts.deleteFaqFailed"));
+      void bizAlert(t("buildPage.alerts.deleteFaqFailed"));
     }
   };
 
@@ -971,7 +972,7 @@ export default function Build() {
       setEditedFaq({ question: "", answer: "" });
     } catch (err) {
       console.error("שגיאה בעדכון שאלה:", err);
-      alert(t("buildPage.alerts.updateFaqFailed"));
+      void bizAlert(t("buildPage.alerts.updateFaqFailed"));
     }
   };
 

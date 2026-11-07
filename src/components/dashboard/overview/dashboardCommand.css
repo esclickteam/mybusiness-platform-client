@@ -8,8 +8,8 @@
 .bx-hero {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem 1.15rem;
+  gap: 0.55rem;
+  padding: 0.7rem 0.9rem;
   background:
     radial-gradient(ellipse 36% 120% at 100% 0%, rgba(61, 99, 255, 0.28), transparent 62%),
     #6334C5;
@@ -20,9 +20,38 @@
 .bx-hero-top {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.75rem 1.25rem;
+  gap: 0.55rem 1rem;
+}
+
+.bx-hero-id {
+  min-width: 0;
+}
+
+.bx-hero-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.bx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid rgba(91, 33, 182, 0.12);
+}
+
+.bx-actions .bx-btn {
+  min-height: 2.35rem;
+  height: auto;
+  background: #f7f6fc;
+  color: #21172f;
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  white-space: normal;
 }
 
 .bx-hero .bx-kicker,
@@ -44,11 +73,11 @@
 }
 
 .bx-title {
-  margin: 0.15rem 0 0;
-  font-size: clamp(1.35rem, 2vw, 1.85rem);
+  margin: 0;
+  font-size: 1.15rem;
   font-weight: 800;
-  letter-spacing: -0.04em;
-  line-height: 1.05;
+  letter-spacing: 0;
+  line-height: 1.25;
 }
 
 .bx-sub {
@@ -159,7 +188,7 @@
 
 .bx-snapshot .bx-kpi:first-child span,
 .bx-snapshot .bx-kpi:first-child .bx-delta {
-  color: rgba(255, 255, 255, 0.76);
+  color: rgba(255, 255, 255, 0.92);
 }
 
 button.bx-kpi {
@@ -177,7 +206,7 @@ button.bx-kpi {
 
 .bx-kpi span,
 .bx-note {
-  color: #5c5470;
+  color: #3a314c;
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.35;
@@ -281,8 +310,8 @@ button.bx-kpi {
 
 .bx-lead {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) auto auto;
-  gap: 0.55rem;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 0.45rem 0.7rem;
   align-items: center;
   width: 100%;
   border: 0;
@@ -297,11 +326,18 @@ div.bx-lead {
   cursor: default;
 }
 
+.bx-lead-main {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
 .bx-lead strong {
-  overflow: hidden;
+  overflow-wrap: anywhere;
   font-size: 0.86rem;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.3;
+  white-space: normal;
 }
 
 .bx-status {
@@ -410,12 +446,6 @@ div.bx-lead {
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .bx-kpi:hover,
-  .bx-lead:hover,
-  .bx-attention a:hover {
-    transform: translateY(-1px);
-  }
-
   .bx-lead:hover,
   .bx-attention a:hover {
     background: #fff;

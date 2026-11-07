@@ -24,6 +24,7 @@ import {
   rewriteDashboardTargetForBusiness,
 } from "../../utils/notificationNavigation";
 import { useDashboardBusinessId } from "../../hooks/useDashboardBusinessId";
+import { BizDialogHost } from "../../components/ui/bizDialog";
 import {
   clearAdminActiveBusinessId,
   setAdminActiveBusinessId,
@@ -541,6 +542,7 @@ export default function BusinessDashboardLayout() {
           dir={layoutDir}
           className="bx-shell min-h-screen w-full bg-[#F4F1FA] text-[#21172F]"
         >
+          <BizDialogHost />
           {showTopBanner ? (
             <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
               <div className="text-start">

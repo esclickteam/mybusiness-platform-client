@@ -1212,8 +1212,13 @@ export default function DashboardPage() {
     refreshToken: analyticsRefreshToken,
   });
 
+  const analyticsRefreshTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const bumpAnalyticsRefresh = useCallback(() => {
-    setAnalyticsRefreshToken((current) => current + 1);
+    if (analyticsRefreshTimer.current) clearTimeout(analyticsRefreshTimer.current);
+    analyticsRefreshTimer.current = setTimeout(() => {
+      analyticsRefreshTimer.current = null;
+      setAnalyticsRefreshToken((current) => current + 1);
+    }, 1600);
   }, []);
 
   const shouldShowEarlyBirdModal =
@@ -1337,22 +1342,25 @@ export default function DashboardPage() {
   const loadStats = useCallback(async () => {
     if (!businessId) return;
 
-    setLoading(true);
-    setError(null);
-
     const cached = localStorage.getItem("dashboardStats");
 
     if (cached) {
-      try {
-        setStats(JSON.parse(cached));
-      } catch {
-        localStorage.removeItem("dashboardStats");
-      }
+      setStats((current) => {
+        if (current) return current;
+        try {
+          return JSON.parse(cached);
+        } catch {
+          localStorage.removeItem("dashboardStats");
+          return current;
+        }
+      });
     }
 
     try {
       const data = await fetchDashboardStats(businessId, refreshAccessToken);
-      setStats(data);
+      setStats((current) =>
+        current && JSON.stringify(current) === JSON.stringify(data) ? current : data
+      );
       localStorage.setItem("dashboardStats", JSON.stringify(data));
     } catch (err: any) {
       setError(

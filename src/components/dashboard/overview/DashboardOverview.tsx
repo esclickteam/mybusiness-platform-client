@@ -39,8 +39,10 @@ import type {
 } from "./dashboardOverviewTypes";
 import {
   buildUpcomingAppointmentsFromCalendar,
+  displayLeadName,
   formatDateRangeLabel,
-  formatLeadDate,
+  formatLeadEntered,
+  formatLeadSource,
   formatLeadStatus,
   formatNumber,
   formatPercent,
@@ -344,54 +346,46 @@ export default function DashboardOverview({
   return (
     <div className="bx-command">
       <section className="bx-hero">
-      <header className="bx-hero-top">
-        <p className="bx-kicker">{t("overview.cmdKicker", "Control center")}</p>
-        <h1 className="bx-title">
-          {t("overview.greeting", {
-            name: (businessName || t("overview.yourBusiness")).trim(),
-          })}
-        </h1>
-        <p className="bx-sub">
-          {formatDateRangeLabel(filters.startDate, filters.endDate)}
-          {surfaces.whatsapp
-            ? ` · ${t(
-                "overview.cmdWhatsappWindow",
-                "WhatsApp sends shown here are the stored last 7 days, not this range."
-              )}`
-            : ""}
-        </p>
-      </header>
-
-      <div className="bx-hero-controls">
-        <div className="bx-row" style={{ justifyContent: "space-between" }}>
-          <div className="bx-row">
-            {DATE_PRESETS.map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                className={`bx-chip ${filters.preset === preset ? "is-on" : ""}`}
-                onClick={() => onFiltersChange({ preset })}
-              >
-                {preset === "custom" ? t("common.customRange") : t(`common.${preset}`)}
-              </button>
-            ))}
+        <header className="bx-hero-top">
+          <div className="bx-hero-id">
+            <h1 className="bx-title">
+              {t("overview.greeting", {
+                name: (businessName || t("overview.yourBusiness")).trim(),
+              })}
+            </h1>
+            <p className="bx-sub">{formatDateRangeLabel(filters.startDate, filters.endDate)}</p>
           </div>
-          <label className="bx-field">
-            <select
-              value={filters.compareToPrevious ? "compare" : "none"}
-              onChange={(event) =>
-                onFiltersChange({
-                  compareToPrevious: event.target.value === "compare",
-                })
-              }
-            >
-              <option value="compare">{t("overview.compareToPrevious")}</option>
-              <option value="none">{t("overview.noComparison")}</option>
-            </select>
-          </label>
-        </div>
+
+          <div className="bx-hero-controls">
+            <div className="bx-row">
+              {DATE_PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  className={`bx-chip ${filters.preset === preset ? "is-on" : ""}`}
+                  onClick={() => onFiltersChange({ preset })}
+                >
+                  {preset === "custom" ? t("common.customRange") : t(`common.${preset}`)}
+                </button>
+              ))}
+            </div>
+            <label className="bx-field">
+              <select
+                value={filters.compareToPrevious ? "compare" : "none"}
+                onChange={(event) =>
+                  onFiltersChange({
+                    compareToPrevious: event.target.value === "compare",
+                  })
+                }
+              >
+                <option value="compare">{t("overview.compareToPrevious")}</option>
+                <option value="none">{t("overview.noComparison")}</option>
+              </select>
+            </label>
+          </div>
+        </header>
         {filters.preset === "custom" ? (
-          <div className="bx-row" style={{ marginTop: "0.75rem" }}>
+          <div className="bx-row">
             <input
               className="bx-field"
               type="date"
@@ -410,24 +404,24 @@ export default function DashboardOverview({
             />
           </div>
         ) : null}
-        {quickActions.length ? (
-          <div className="bx-row bx-hero-actions">
-            {quickActions.map((action) => (
-              <button
-                key={action!.label}
-                type="button"
-                className="bx-btn"
-                data-demo-target={action!.dataDemoTarget}
-                onClick={() => navigate(action!.to)}
-              >
-                {action!.icon}
-                {action!.label}
-              </button>
-            ))}
-          </div>
-        ) : null}
-        </div>
       </section>
+
+      {quickActions.length ? (
+        <section className="bx-actions" aria-label={t("overview.moreActions")}>
+          {quickActions.map((action) => (
+            <button
+              key={action!.label}
+              type="button"
+              className="bx-btn"
+              data-demo-target={action!.dataDemoTarget}
+              onClick={() => navigate(action!.to)}
+            >
+              {action!.icon}
+              {action!.label}
+            </button>
+          ))}
+        </section>
+      ) : null}
 
       {error ? (
         <section className="bx-panel bx-error">
@@ -632,24 +626,41 @@ export default function DashboardOverview({
               </div>
               {(data?.leads.latest || []).length ? (
                 <div className="bx-list">
-                  {data?.leads.latest.map((lead) => (
-                    <button
-                      key={lead.id}
-                      type="button"
-                      className="bx-lead"
-                      onClick={() =>
-                        lead.id
-                          ? navigate(
-                              `${basePath}/crm/leads?leadId=${encodeURIComponent(lead.id)}`
-                            )
-                          : navigate(`${basePath}/crm/leads`)
-                      }
-                    >
-                      <strong>{lead.name}</strong>
-                      <span className="bx-status">{formatLeadStatus(lead.status)}</span>
-                      <span className="bx-note">{formatLeadDate(lead.createdAt)}</span>
-                    </button>
-                  ))}
+                  {[...(data?.leads.latest || [])]
+                    .sort((left, right) => {
+                      const leftAt = left.createdAt ? Date.parse(String(left.createdAt)) : 0;
+                      const rightAt = right.createdAt ? Date.parse(String(right.createdAt)) : 0;
+                      return (Number.isFinite(rightAt) ? rightAt : 0) - (Number.isFinite(leftAt) ? leftAt : 0);
+                    })
+                    .map((lead) => {
+                      const name = displayLeadName(lead.name);
+                      const entered = formatLeadEntered(lead.createdAt);
+                      const source = String(lead.source || "").trim()
+                        ? formatLeadSource(lead.source)
+                        : "";
+                      return (
+                        <button
+                          key={lead.id}
+                          type="button"
+                          className="bx-lead"
+                          title={name}
+                          onClick={() =>
+                            lead.id
+                              ? navigate(
+                                  `${basePath}/crm/leads?leadId=${encodeURIComponent(lead.id)}`
+                                )
+                              : navigate(`${basePath}/crm/leads`)
+                          }
+                        >
+                          <span className="bx-lead-main">
+                            <strong>{name}</strong>
+                            {entered ? <span className="bx-note">{entered}</span> : null}
+                          </span>
+                          {source ? <span className="bx-note">{source}</span> : null}
+                          <span className="bx-status">{formatLeadStatus(lead.status)}</span>
+                        </button>
+                      );
+                    })}
                 </div>
               ) : (
                 <Empty title={t("overview.noLeadsTitle")} text={t("overview.noLeadsText")} />

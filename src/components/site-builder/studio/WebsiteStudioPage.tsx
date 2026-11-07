@@ -32,6 +32,7 @@ import "../../../pages/interiorDesign.css";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
 import BizuplyLoader from "../../ui/BizuplyLoader";
+import { bizAlert, bizConfirm, bizPrompt } from "../../ui/bizDialog";
 import TemplateVisualEditor from "./TemplateVisualEditor";
 import ConnectDomainModal from "../../website/ConnectDomainModal";
 import PageSettingsModal, {
@@ -6539,7 +6540,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
   };
 
-  const handleVisualSitePageAction = (
+  const handleVisualSitePageAction = async (
     action: string,
     pageId: string,
     meta?: {
@@ -6658,7 +6659,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "subpage") {
       if (target.isHome) {
-        window.alert(t("studio.alerts.cannotNestHome"));
+        void bizAlert(t("studio.alerts.cannotNestHome"));
         return;
       }
 
@@ -6693,7 +6694,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const defaultTitle = t("studio.sitePages.newSubpageTitle", {
         title: String(parentPage?.title || t("studio.page")).trim(),
       });
-      const nextTitle = window.prompt(
+      const nextTitle = await bizPrompt(
         parentPage
           ? t("studio.sitePages.subpageNamePrompt", { title: parentPage.title })
           : t("studio.sitePages.subpageNameFallback"),
@@ -6814,10 +6815,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "delete") {
       if (target.isHome) {
-        window.alert(t("studio.alerts.cannotDeleteHome"));
+        void bizAlert(t("studio.alerts.cannotDeleteHome"));
         return;
       }
-      const ok = window.confirm(
+      const ok = await bizConfirm(
         t("studio.alerts.deletePageConfirm", { title: target.title }),
       );
       if (!ok) return;
@@ -6848,7 +6849,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     if (action === "dynamic") {
       if (!clientPortalPluginEnabled) {
-        window.alert(
+        void bizAlert(
           t("studio.alerts.portalPluginRequired"),
         );
         return;
@@ -6861,7 +6862,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     if (action === "background" || action === "copy") {
-      window.alert(
+      void bizAlert(
         t("studio.alerts.pageMenuComingSoon"),
       );
     }
@@ -6931,6 +6932,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleDeleteSection = (sectionId: string) => {
+    void (async () => {
+    const ok = await bizConfirm(t("studio.alerts.deleteSectionConfirm"));
+    if (!ok) return;
     runEditor((editor) => {
       const wrapper: any = editor.getWrapper();
       const found =
@@ -6939,14 +6943,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       if (!found) return;
 
-      const ok = window.confirm(t("studio.alerts.deleteSectionConfirm"));
-      if (!ok) return;
-
       found.remove();
       editor.select(null);
       setSelectedComponent(null);
       syncSections(editor);
     });
+    })();
   };
 
   const handleDuplicateSection = (sectionId: string) => {
@@ -7111,7 +7113,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleReset = () => {
-    const ok = window.confirm(t("studio.alerts.resetDesignConfirm"));
+    void (async () => {
+    const ok = await bizConfirm(t("studio.alerts.resetDesignConfirm"));
     if (!ok) return;
 
     runEditor((editor) => {
@@ -7141,6 +7144,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       setActivePanel(null);
       syncSections(editor);
     });
+    })();
   };
 
   const handleSave = async (
@@ -7161,21 +7165,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (slugChecking) {
       const message = t("studio.alerts.slugStillChecking");
       if (overrides) throw new Error(message);
-      alert(message);
+      void bizAlert(message);
       return;
     }
 
     if (published && slug === "your-business") {
       const message = t("studio.alerts.chooseRealSlug");
       if (overrides) throw new Error(message);
-      alert(message);
+      void bizAlert(message);
       return;
     }
 
     if (published && slugAvailable === false) {
       const message = slugError || t("studio.alerts.slugTakenChooseAnother");
       if (overrides) throw new Error(message);
-      alert(message);
+      void bizAlert(message);
       return;
     }
 
@@ -7307,7 +7311,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     } catch (error: any) {
       const message = error?.message || t("studio.alerts.saveFailedRetry");
       if (overrides) throw new Error(message);
-      alert(message);
+      void bizAlert(message);
     } finally {
       setSaving(false);
     }
@@ -7319,7 +7323,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const target = getSelectedOrWrapper(editor);
 
       if (!target) {
-        alert(t("studio.alerts.selectElementToEdit"));
+        void bizAlert(t("studio.alerts.selectElementToEdit"));
         return;
       }
 
@@ -7342,7 +7346,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectTextToEdit"));
+        void bizAlert(t("studio.alerts.selectTextToEdit"));
         return;
       }
 
@@ -7366,7 +7370,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectLinkToEdit"));
+        void bizAlert(t("studio.alerts.selectLinkToEdit"));
         return;
       }
 
@@ -7399,7 +7403,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected() || getSelectedOrWrapper(editor);
 
       if (!selected) {
-        alert(t("studio.alerts.selectImageToReplace"));
+        void bizAlert(t("studio.alerts.selectImageToReplace"));
         return;
       }
 
@@ -7427,7 +7431,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected: any = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectElementToDuplicate"));
+        void bizAlert(t("studio.alerts.selectElementToDuplicate"));
         return;
       }
 
@@ -7450,16 +7454,17 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectElementToDelete"));
+        void bizAlert(t("studio.alerts.selectElementToDelete"));
         return;
       }
 
-      const ok = window.confirm(t("studio.alerts.deleteElementConfirm"));
-      if (!ok) return;
-
-      selected.remove();
-      setSelectedComponent(null);
-      syncSections(editor);
+      void (async () => {
+        const ok = await bizConfirm(t("studio.alerts.deleteElementConfirm"));
+        if (!ok) return;
+        selected.remove();
+        setSelectedComponent(null);
+        syncSections(editor);
+      })();
     });
   };
 
@@ -7468,7 +7473,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectElement"));
+        void bizAlert(t("studio.alerts.selectElement"));
         return;
       }
 
@@ -7489,7 +7494,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectElement"));
+        void bizAlert(t("studio.alerts.selectElement"));
         return;
       }
 
@@ -7513,7 +7518,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const target = getSelectedOrWrapper(editor);
 
       if (!target) {
-        alert(t("studio.alerts.selectSectionBackground"));
+        void bizAlert(t("studio.alerts.selectSectionBackground"));
         return;
       }
 
@@ -7534,7 +7539,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectForAnimation"));
+        void bizAlert(t("studio.alerts.selectForAnimation"));
         return;
       }
 
@@ -7558,7 +7563,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const selected = editor.getSelected();
 
       if (!selected) {
-        alert(t("studio.alerts.selectToClearAnimation"));
+        void bizAlert(t("studio.alerts.selectToClearAnimation"));
         return;
       }
 
@@ -8634,7 +8639,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       if (!visualPayload.autosave) {
-        alert(error?.message || t("studio.alerts.saveFailedRetry"));
+        void bizAlert(error?.message || t("studio.alerts.saveFailedRetry"));
       }
       throw error;
     } finally {
@@ -8753,9 +8758,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       onClick={async () => {
                         try {
                           await navigator.clipboard.writeText(publishedSiteUrl);
-                          alert(t("studio.linkCopied"));
+                          void bizAlert(t("studio.linkCopied"));
                         } catch {
-                          alert(t("studio.copyFailed"));
+                          void bizAlert(t("studio.copyFailed"));
                         }
                       }}
                       className="shrink-0 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
@@ -8804,9 +8809,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     onClick={async () => {
                       try {
                         await navigator.clipboard.writeText(publishedSiteUrl);
-                        alert(t("studio.linkCopied"));
+                        void bizAlert(t("studio.linkCopied"));
                       } catch {
-                        alert(t("studio.copyFailed"));
+                        void bizAlert(t("studio.copyFailed"));
                       }
                     }}
                     className="h-12 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-800 transition hover:bg-slate-50"
@@ -9401,7 +9406,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             onOpenMedia={handleOpenMedia}
             onOpenClientPortal={() => {
               if (!clientPortalPluginEnabled) {
-                window.alert(
+                void bizAlert(
                   t("studio.alerts.portalPluginRequired"),
                 );
                 return;
@@ -9480,7 +9485,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                           pages[0]?.id ||
                           "";
                         if (!pageId) {
-                          window.alert(t("studio.alerts.noPageForSeo"));
+                          void bizAlert(t("studio.alerts.noPageForSeo"));
                           return;
                         }
                         setActivePanel(null);
