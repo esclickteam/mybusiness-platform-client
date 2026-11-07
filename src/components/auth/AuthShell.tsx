@@ -11,6 +11,7 @@ import {
   type PublicPartnerBranding,
 } from "../../lib/partnerBranding";
 import { isGeoIntelHost } from "../../lib/geoHost.mjs";
+import { isGlobalPartnersHost } from "../../lib/partnersHost.mjs";
 import "./AuthShell.css";
 
 const LoginBrandingContext = createContext<PublicPartnerBranding | null>(null);
@@ -66,6 +67,8 @@ export default function AuthShell({
   const { branding } = usePartnerHostBranding();
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const geoHost = isGeoIntelHost(host);
+  const partnersHost = isGlobalPartnersHost(host);
+  const privateOwnerHost = geoHost || partnersHost;
   const whiteLabel = hidesBizuplyChrome(branding, host);
   const brandName = partnerFacingName(branding, host);
 
@@ -75,17 +78,17 @@ export default function AuthShell({
   }, [whiteLabel, branding?.faviconUrl, branding?.stored?.faviconUrl]);
 
   useEffect(() => {
-    if (!geoHost) return;
+    if (!privateOwnerHost) return;
     if (i18n.language !== "he") {
       void i18n.changeLanguage("he");
     }
     document.documentElement.lang = "he";
     document.documentElement.dir = "rtl";
-  }, [geoHost, i18n]);
+  }, [privateOwnerHost, i18n]);
 
   return (
     <LoginBrandingContext.Provider value={branding}>
-      <div dir={geoHost ? "rtl" : dir} className={`auth-stage${withSiteHeader ? " auth-stage--under-header" : ""}`}>
+      <div dir={privateOwnerHost ? "rtl" : dir} className={`auth-stage${withSiteHeader ? " auth-stage--under-header" : ""}`}>
         <div className="auth-stage__bg" aria-hidden="true">
           <div className="auth-stage__gradient" />
           <div className="auth-stage__grid" />
@@ -93,16 +96,16 @@ export default function AuthShell({
           <div className="auth-orb auth-orb--b" />
           <div className="auth-orb auth-orb--c" />
         </div>
-        {withSiteHeader || geoHost ? null : (
+        {withSiteHeader || privateOwnerHost ? null : (
           <div className="auth-stage__lang">
             <LanguageSwitcher />
           </div>
         )}
-        <main className={`auth-stage__main${geoHost ? " auth-stage__main--geo" : ""}`}>
+        <main className={`auth-stage__main${privateOwnerHost ? " auth-stage__main--geo" : ""}`}>
           <section className={`auth-stage__panel ${cardMaxWidthClassName}`}>
             {children}
           </section>
-          {geoHost ? null : whiteLabel ? (
+          {privateOwnerHost ? null : whiteLabel ? (
             <section className="auth-showcase">
               <div className="auth-showcase__brand">
                 <BrandMark />
