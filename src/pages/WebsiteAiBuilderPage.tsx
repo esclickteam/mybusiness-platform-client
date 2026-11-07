@@ -150,6 +150,19 @@ export default function WebsiteAiBuilderPage() {
           __aiDocument: current.editorHtml,
           __aiCss: current.editorCss || "",
         };
+        const homePage = {
+          id: "home",
+          title: current.title || "ראשי",
+          slug: "",
+          isHome: true,
+          editorMode: "visual-react",
+          templateEditorMode: "visual-react",
+          templateKey: "ai-site",
+          data: visual,
+          templateData: visual,
+          projectData: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
+          visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
+        };
         await API.put("/site-builder/site", {
           businessId,
           siteId: site._id,
@@ -160,6 +173,8 @@ export default function WebsiteAiBuilderPage() {
           editorMode: "visual-react",
           published: false,
           status: "draft",
+          activePageId: "home",
+          pages: [homePage],
           templateData: visual,
           data: visual,
           visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
@@ -167,9 +182,9 @@ export default function WebsiteAiBuilderPage() {
         }, { timeout: 120000 });
         await API.post(`/ai-studio/code-projects/${current.projectId}/editor-site`, { siteId: site._id }, { timeout: 30000 });
         navigate(editorPath(site._id));
-      } catch {
+      } catch (err: any) {
         opening.current = false;
-        setError("האתר נבנה, אבל לא הצלחתי לפתוח אותו בעורך.");
+        setError(err?.response?.data?.error || "האתר נבנה, אבל לא הצלחתי לפתוח אותו בעורך.");
       }
     }
     openEditor();
