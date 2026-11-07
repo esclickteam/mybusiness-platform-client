@@ -63,6 +63,48 @@ test("WhatsApp plus Meta campaigns stays off the club and other modules", () => 
   assert.equal(isDashboardPathAllowed(`${base}/automations`, modules), false);
 });
 
+test("support guides and FAQs stay open on a basic plan", () => {
+  const base = `/business/${businessId}/dashboard`;
+  const plans = [
+    ["website", "billing"],
+    ["dashboard", "billing"],
+    ["crm"],
+    ["dashboard", "whatsapp"],
+    null,
+  ];
+  for (const modules of plans) {
+    assert.equal(isDashboardPathAllowed(`${base}/help-center`, modules), true);
+    assert.equal(
+      isDashboardPathAllowed(`${base}/articles/dashboard-guide`, modules),
+      true
+    );
+    assert.equal(isDashboardPathAllowed(`${base}/faq/profile`, modules), true);
+    assert.equal(isDashboardPathAllowed(`${base}/faq/crm`, modules), true);
+  }
+
+  const basic = ["website", "billing"];
+  assert.equal(isDashboardPathAllowed(`${base}/crm`, basic), false);
+  assert.equal(isDashboardPathAllowed(`${base}/whatsapp`, basic), false);
+  assert.equal(isDashboardPathAllowed(`${base}/meta-campaigns`, basic), false);
+  assert.equal(isDashboardPathAllowed(`${base}/automations`, basic), false);
+  assert.equal(
+    isDashboardPathAllowed(`${base}/collab`, basic),
+    false
+  );
+  assert.equal(
+    isDashboardPathAllowed(`${base}/articles/ai-companion`, basic, {
+      automationsAccessible: false,
+    }),
+    true
+  );
+  assert.equal(
+    isDashboardPathAllowed(`${base}/automations`, ["crm", "automations"], {
+      automationsAccessible: false,
+    }),
+    false
+  );
+});
+
 test("other limited packages can still open the club", () => {
   const club = `/business/${businessId}/dashboard/global-club`;
   assert.equal(isDashboardPathAllowed(club, ["crm"]), true);

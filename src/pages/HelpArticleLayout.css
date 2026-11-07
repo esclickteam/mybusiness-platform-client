@@ -2,8 +2,9 @@
 
 .guide-article-page {
   min-height: 100%;
-  background: #f5f6fb;
+  background: #f4f1fa;
   padding: 1.5rem 0 3rem;
+  color: #21172f;
 }
 
 .guide-article-page[dir="rtl"] {
@@ -21,51 +22,79 @@
   margin: 0 auto;
   padding: 2rem 24px 3rem;
   font-family: Assistant, Inter, system-ui, Arial, sans-serif;
-  color: #1f2937;
-  line-height: 1.75;
+  color: #21172f;
+  line-height: 1.8;
   direction: inherit;
   text-align: inherit;
+}
+
+.guide-article-crumb {
+  margin-bottom: 1.25rem;
+}
+
+.guide-article-crumb a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  color: #5b21b6;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.guide-article-crumb a:hover {
+  color: #6334c5;
+  text-decoration: underline;
+}
+
+.guide-article-crumb a:focus-visible {
+  outline: 2px solid #5b21b6;
+  outline-offset: 3px;
 }
 
 .guide-article-container h1 {
   font-size: 2rem;
   font-weight: 800;
-  margin-bottom: 1.5rem;
-  background: linear-gradient(90deg, #6a11cb, #2575fc);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  color: #21172f;
+  background: none;
+  -webkit-text-fill-color: #21172f;
 }
 
 .guide-article-container h2 {
   font-size: 1.35rem;
   font-weight: 700;
-  margin: 2rem 0 0.75rem;
-  color: #111827;
+  margin: 2.15rem 0 0.75rem;
+  color: #21172f;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
 }
 
 .guide-article-container h3 {
   font-size: 1.1rem;
-  font-weight: 600;
-  margin: 1.25rem 0 0.5rem;
-  color: #374151;
+  font-weight: 700;
+  margin: 1.35rem 0 0.5rem;
+  color: #21172f;
+  line-height: 1.4;
 }
 
 .guide-article-container p {
-  margin: 0.75rem 0;
-  color: #4b5563;
+  margin: 0.85rem 0;
+  color: #2a2238;
 }
 
 .guide-article-container ul,
 .guide-article-container ol {
-  padding-right: 1.5rem;
-  padding-left: 0;
-  margin: 0.75rem 0;
+  padding-inline-start: 1.4rem;
+  padding-inline-end: 0;
+  margin: 0.85rem 0;
 }
 
 .guide-article-container li {
-  margin-bottom: 0.4rem;
-  color: #4b5563;
+  margin-bottom: 0.45rem;
+  color: #2a2238;
 }
 
 .guide-article-container table {
@@ -79,7 +108,7 @@
 .guide-article-container td {
   border: 1px solid #e5e7eb;
   padding: 10px 14px;
-  text-align: right;
+  text-align: start;
 }
 
 .guide-article-container th {
@@ -91,7 +120,7 @@
 .guide-article-container code {
   background: #f3f4f6;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 0.9em;
   direction: ltr;
   display: inline-block;
@@ -108,8 +137,56 @@
 .guide-article-container blockquote {
   margin: 1rem 0;
   padding: 0.75rem 1rem;
-  border-right: 4px solid #6a11cb;
-  background: #f5f3ff;
-  color: #4b5563;
-  border-radius: 0 8px 8px 0;
+  border-inline-start: 4px solid #5b21b6;
+  background: #f4f1fa;
+  color: #2a2238;
+  border-radius: 0;
+}
+
+.guide-article-container a {
+  color: #5b21b6;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.guide-article-container a:hover {
+  color: #6334c5;
+}
+
+.guide-article-container a:focus-visible {
+  outline: 2px solid #5b21b6;
+  outline-offset: 2px;
+}
+
+.guide-article-container img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.guide-article-container h1,
+.guide-article-container h2,
+.guide-article-container h3,
+.guide-article-container p,
+.guide-article-container li {
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 640px) {
+  .guide-article-page {
+    padding: 0.5rem 0 2rem;
+  }
+
+  .guide-article-container {
+    padding: 1.25rem 1rem 2.5rem;
+  }
+
+  .guide-article-container h1 {
+    font-size: 1.7rem;
+  }
+
+  .guide-article-container table {
+    display: block;
+    overflow-x: auto;
+  }
 }

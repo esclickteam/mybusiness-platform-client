@@ -3,6 +3,20 @@
  * null / empty enabledModules = full access.
  */
 
+/**
+ * Temporary hide of the Global Business Club in signed-in navigation.
+ * Flip to true after the club design is approved.
+ * The route, page, membership data, and APIs stay in place.
+ */
+export const SHOW_GLOBAL_BUSINESS_CLUB_NAV = false;
+
+/** Support content. Open to every signed-in account, on every plan. */
+export const SUPPORT_DASHBOARD_SEGMENTS = new Set([
+  "help-center",
+  "articles",
+  "faq",
+]);
+
 export const MODULE_ROUTE_PREFIXES = {
   crm: "crm",
   automations: "automations",
@@ -94,6 +108,9 @@ export function isDashboardPathAllowed(
   { automationsAccessible } = {}
 ) {
   const segment = getDashboardModuleFromPath(pathname);
+  // Guides, FAQs, and the help home are support content, not a paid module.
+  if (segment && SUPPORT_DASHBOARD_SEGMENTS.has(segment)) return true;
+
   const moduleKey = segment ? NAV_PATH_MODULE_MAP[segment] || segment : null;
   if (
     (moduleKey === "automations") &&
@@ -111,8 +128,6 @@ export function isDashboardPathAllowed(
   if (segment === "global-club" && !isWhatsappOnlyPackage(enabledModules)) {
     return true;
   }
-  const alwaysAllowed = new Set(["help-center"]);
-  if (alwaysAllowed.has(segment)) return true;
 
   // AI Studio is part of the business package. A website plan can still open
   // the screen so an admin test grant can load it; the server decides access.

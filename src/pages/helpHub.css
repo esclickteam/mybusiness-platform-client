@@ -1,0 +1,107 @@
+/* Polish for the existing help home. The hero illustration stays as drawn. */
+
+.help-hub {
+  color: #21172f;
+  background: #f4f1fa;
+}
+
+.help-hub h1,
+.help-hub h2,
+.help-hub h3,
+.help-hub p {
+  overflow-wrap: break-word;
+}
+
+.help-hub h1 {
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+}
+
+.help-hub h2 {
+  color: #21172f;
+  letter-spacing: -0.02em;
+}
+
+.help-hub .text-slate-500,
+.help-hub .text-slate-600,
+.help-hub .text-violet-500\/70 {
+  color: #3d3452 !important;
+}
+
+.help-hub .text-slate-400 {
+  color: #4a415c !important;
+}
+
+.help-hub section,
+.help-hub a,
+.help-hub button,
+.help-hub input,
+.help-hub kbd {
+  border-radius: 0 !important;
+}
+
+.help-hub a > div,
+.help-hub button > div,
+.help-hub a span,
+.help-hub button span {
+  border-radius: 0 !important;
+}
+
+.help-hub .help-hero-wash {
+  border-radius: 0 !important;
+}
+
+.help-hub a,
+.help-hub button {
+  transform: none !important;
+  transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.help-hub a:hover,
+.help-hub button:hover {
+  transform: none !important;
+}
+
+.help-hub a:focus-visible,
+.help-hub button:focus-visible,
+.help-hub input:focus-visible {
+  outline: 2px solid #5b21b6;
+  outline-offset: 3px;
+}
+
+.help-search {
+  border: 2px solid #5b21b6 !important;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(91, 33, 182, 0.12);
+}
+
+.help-search input {
+  height: 68px;
+  color: #21172f;
+  font-size: 1rem;
+}
+
+.help-search input::placeholder {
+  color: #4a415c;
+  opacity: 1;
+}
+
+.help-hub section + section {
+  margin-top: 3rem;
+}
+
+@media (max-width: 640px) {
+  .help-hub {
+    padding-inline: 0.75rem;
+  }
+
+  .help-hub h1 {
+    font-size: 2rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .help-search input {
+    height: 56px;
+    font-size: 16px;
+  }
+}
