@@ -50,11 +50,16 @@ export default defineConfig({
 
     proxy: {
       "/compliance/api": {
-        target: "https://api.bizuply.com",
+        target: process.env.VITE_COMPLIANCE_PROXY_TARGET || "https://api.bizuply.com",
         changeOrigin: true,
         secure: false,
         timeout: 180000,
         proxyTimeout: 180000,
+        rewrite: (proxyPath) => (
+          process.env.VITE_COMPLIANCE_PROXY_TARGET
+            ? proxyPath.replace(/^\/compliance/, "")
+            : proxyPath
+        ),
       },
       "/api": {
         // Prefer local API when VITE_API_PROXY_TARGET is set (e.g. http://localhost:5000)

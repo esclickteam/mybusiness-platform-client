@@ -11,6 +11,8 @@ type Finding = {
   title?: string;
   description?: string;
   evidence?: string;
+  evidenceLabel?: string;
+  evidenceNote?: string;
   recommendation?: string;
   severity?: string;
   outcome?: string;
@@ -42,6 +44,10 @@ const COPY: Record<Locale, Record<string, string>> = {
     topicPay: "תשלומים",
     topicSecurity: "אבטחה",
     notice: "הבדיקה אוטומטית. היא אינה ייעוץ משפטי, חוות דעת או אישור עמידה בחוק.",
+    sample: "המחשה",
+    sampleNote: "דוח לדוגמה. זו אינה תוצאת סריקה ואינה ציון אמיתי.",
+    notLegal: "הציונים מפרידים בין קריאה, בדיקה טכנית וכיסוי. הם אינם אישור עמידה בחוק.",
+    unread: "לא נקרא",
     running: "הסריקה רצה",
     documents: "מסמכים",
     technical: "בדיקה טכנית",
@@ -54,6 +60,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     source: "מקור",
     recommendation: "המלצה",
     all: "הכל",
+    high: "גבוה",
+    phaseCrawl: "סריקה",
+    phaseDocuments: "מסמכים",
+    phaseChecks: "בדיקות",
+    phaseAnalysis: "ניתוח",
+    phaseDone: "סיום",
     aiOff: "ניתוח התוכן לא בוצע, ולכן אין ציון משפטי.",
     aiOn: "ניתוח התוכן רץ על המסמכים שנקראו. הציון אינו אישור משפטי.",
     brochure: "אתר תדמית",
@@ -87,6 +99,10 @@ const COPY: Record<Locale, Record<string, string>> = {
     topicPay: "Payments",
     topicSecurity: "Security",
     notice: "This is an automated check. It is not legal advice, a legal opinion, or confirmation of compliance.",
+    sample: "Illustration",
+    sampleNote: "A sample report. This is not a scan result and not a real score.",
+    notLegal: "The scores separate reading, technical checks, and coverage. They are not confirmation of legal compliance.",
+    unread: "Not read",
     running: "Scan in progress",
     documents: "Documents",
     technical: "Technical",
@@ -99,6 +115,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     source: "Source",
     recommendation: "Recommendation",
     all: "All",
+    high: "High",
+    phaseCrawl: "Crawl",
+    phaseDocuments: "Documents",
+    phaseChecks: "Checks",
+    phaseAnalysis: "Analysis",
+    phaseDone: "Done",
     aiOff: "Content analysis did not run, so there is no legal score.",
     aiOn: "Content analysis ran on the documents that were read. The score is not legal approval.",
     brochure: "Brochure",
@@ -132,6 +154,10 @@ const COPY: Record<Locale, Record<string, string>> = {
     topicPay: "Pagos",
     topicSecurity: "Seguridad",
     notice: "Es una revisión automática. No es asesoramiento jurídico ni confirmación de cumplimiento.",
+    sample: "Ilustración",
+    sampleNote: "Informe de ejemplo. No es un resultado real ni una puntuación real.",
+    notLegal: "Las puntuaciones separan lectura, revisión técnica y cobertura. No confirman el cumplimiento legal.",
+    unread: "No leído",
     running: "Revisión en curso",
     documents: "Documentos",
     technical: "Técnico",
@@ -144,6 +170,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     source: "Fuente",
     recommendation: "Recomendación",
     all: "Todo",
+    high: "Alto",
+    phaseCrawl: "Rastreo",
+    phaseDocuments: "Documentos",
+    phaseChecks: "Controles",
+    phaseAnalysis: "Análisis",
+    phaseDone: "Listo",
     aiOff: "El análisis de contenido no se ejecutó, así que no hay puntuación jurídica.",
     aiOn: "El análisis se hizo sobre los documentos leídos. La puntuación no es una aprobación legal.",
     brochure: "Sitio corporativo",
@@ -177,6 +209,10 @@ const COPY: Record<Locale, Record<string, string>> = {
     topicPay: "Pagamentos",
     topicSecurity: "Segurança",
     notice: "Esta é uma verificação automática. Não é aconselhamento jurídico nem confirmação de conformidade.",
+    sample: "Ilustração",
+    sampleNote: "Relatório de exemplo. Não é um resultado real nem uma pontuação real.",
+    notLegal: "As pontuações separam leitura, verificação técnica e cobertura. Elas não confirmam conformidade legal.",
+    unread: "Não lido",
     running: "Verificação em andamento",
     documents: "Documentos",
     technical: "Técnico",
@@ -189,6 +225,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     source: "Fonte",
     recommendation: "Recomendação",
     all: "Tudo",
+    high: "Alto",
+    phaseCrawl: "Rastreio",
+    phaseDocuments: "Documentos",
+    phaseChecks: "Verificações",
+    phaseAnalysis: "Análise",
+    phaseDone: "Concluído",
     aiOff: "A análise de conteúdo não rodou, então não há pontuação jurídica.",
     aiOn: "A análise usou os documentos lidos. A pontuação não é aprovação legal.",
     brochure: "Site institucional",
@@ -222,6 +264,10 @@ const COPY: Record<Locale, Record<string, string>> = {
     topicPay: "المدفوعات",
     topicSecurity: "الأمان",
     notice: "هذا فحص آلي. ليس استشارة قانونية ولا تأكيدًا للامتثال.",
+    sample: "توضيح",
+    sampleNote: "تقرير للعرض. هذه ليست نتيجة فحص وليست درجة حقيقية.",
+    notLegal: "الدرجات تفصل بين القراءة والفحص التقني والتغطية. ليست تأكيدًا للامتثال القانوني.",
+    unread: "لم يُقرأ",
     running: "الفحص جارٍ",
     documents: "المستندات",
     technical: "الفحص التقني",
@@ -234,6 +280,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     source: "المصدر",
     recommendation: "توصية",
     all: "الكل",
+    high: "مرتفع",
+    phaseCrawl: "الزحف",
+    phaseDocuments: "المستندات",
+    phaseChecks: "الفحوصات",
+    phaseAnalysis: "التحليل",
+    phaseDone: "تم",
     aiOff: "لم يُنفَّذ تحليل المحتوى، لذلك لا توجد درجة قانونية.",
     aiOn: "جرى التحليل على المستندات التي قُرئت. الدرجة ليست اعتمادًا قانونيًا.",
     brochure: "موقع تعريفي",
@@ -308,15 +360,20 @@ export default function ComplianceScannerPage() {
     if (!id) return undefined;
     let stop = false;
     const tick = async () => {
-      const token = localStorage.getItem(TOKEN_KEY) || "";
-      const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}`, {
-        headers: token ? { "x-tenant-token": token } : {},
-      });
-      const data = await response.json();
-      if (stop) return;
-      if (!response.ok) { setError(data.error || ""); return; }
-      setPayload(data);
-      if (data.status === "queued" || data.status === "running") window.setTimeout(tick, 1200);
+      try {
+        const token = localStorage.getItem(TOKEN_KEY) || "";
+        const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}`, {
+          headers: token ? { "x-tenant-token": token } : {},
+        });
+        const data = await response.json();
+        if (stop) return;
+        if (!response.ok) { setError(data.error || ""); return; }
+        setError("");
+        setPayload(data);
+        if (data.status === "queued" || data.status === "running") window.setTimeout(tick, 1200);
+      } catch {
+        if (!stop) setError(copy.notice);
+      }
     };
     tick();
     return () => { stop = true; };
@@ -376,80 +433,78 @@ export default function ComplianceScannerPage() {
           <p className="scan-kicker">{copy.kicker}</p>
           <h1>{copy.title}</h1>
           <p className="scan-lead">{copy.lead}</p>
-          <ul className="scan-topics" aria-label={copy.topics}>
-            {TOPIC_KEYS.map((topic) => <li key={topic}>{copy[topic]}</li>)}
-          </ul>
-        </div>
-        <div className="scan-stage">
-          <label className="scan-url">
-            <span>{copy.url}</span>
-            <input value={url} onChange={(event) => setUrl(event.target.value)} inputMode="url" required />
-          </label>
-          <p className="scan-stage__hint">{copy.notice}</p>
-          <div className="scan-float scan-float-a" aria-hidden="true"><b>{copy.topicPrivacy}</b><span>{copy.evidence} · {copy.source}</span></div>
-          <div className="scan-float scan-float-b" aria-hidden="true"><b>{copy.topicAccess}</b><span>{copy.evidence}</span></div>
-          <div className="scan-orbit" aria-hidden="true" />
-        </div>
-      </section>
-
-      <section className="scan-setup">
-        <div>
-          <h2>{copy.country}</h2>
-          <p className="scan-meta">{copy.selected} {selected.length}</p>
-          <div className="scan-tags">
-            {selected.map((code) => (
-              <button key={code} type="button" onClick={() => setSelected(selected.filter((item) => item !== code))}>
-                {(names?.of(code) || code)} · {levelLabel(code)}
-              </button>
-            ))}
-          </div>
-          <input className="scan-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} aria-label={copy.search} />
-          {query && (
-            <ul className="scan-results-list">
-              {matches.map((code) => (
-                <li key={code}>
-                  <button type="button" onClick={() => { setSelected([...new Set([...selected, code])]); setQuery(""); }}>
-                    <strong>{names?.of(code) || code}</strong>
-                    <em>{code}</em>
-                    <span>{levelLabel(code)}</span>
+          <div className="scan-panel">
+            <label className="scan-url">
+              <span>{copy.url}</span>
+              <input value={url} onChange={(event) => setUrl(event.target.value)} inputMode="url" required />
+            </label>
+            <div className="scan-field">
+              <span>{copy.country}</span>
+              <p className="scan-meta">{copy.selected} {selected.length}</p>
+              <div className="scan-tags">
+                {selected.map((code) => (
+                  <button key={code} type="button" onClick={() => setSelected(selected.filter((item) => item !== code))}>
+                    {(names?.of(code) || code)} · {levelLabel(code)}
                   </button>
-                </li>
-              ))}
-            </ul>
-          )}
-          {selected.includes("US") && (
-            <div className="scan-tags">
-              {states.slice(0, 12).map((state) => (
-                <button key={state.code} type="button" onClick={() => setSelected([...new Set([...selected, state.code])])}>
-                  {locale === "he" ? state.he : state.en}
-                </button>
-              ))}
+                ))}
+              </div>
+              <input className="scan-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={copy.search} aria-label={copy.search} />
+              {query && (
+                <ul className="scan-results-list">
+                  {matches.map((code) => (
+                    <li key={code}>
+                      <button type="button" onClick={() => { setSelected([...new Set([...selected, code])]); setQuery(""); }}>
+                        <strong>{names?.of(code) || code}</strong>
+                        <em>{code}</em>
+                        <span>{levelLabel(code)}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              {selected.includes("US") && (
+                <div className="scan-tags">
+                  {states.slice(0, 8).map((state) => (
+                    <button key={state.code} type="button" onClick={() => setSelected([...new Set([...selected, state.code])])}>
+                      {locale === "he" ? state.he : state.en}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-        <div>
-          <h2>{copy.activity}</h2>
-          <div className="scan-types">
-            {TYPES.map((type) => (
-              <button key={type} type="button" className={businessType === type ? "is-on" : ""} onClick={() => setBusinessType(type)} aria-pressed={businessType === type}>
-                <i aria-hidden="true" />
-                {copy[type]}
-              </button>
-            ))}
+            <div className="scan-field">
+              <span>{copy.activity}</span>
+              <div className="scan-types">
+                {TYPES.map((type) => (
+                  <button key={type} type="button" className={businessType === type ? "is-on" : ""} onClick={() => setBusinessType(type)} aria-pressed={businessType === type}>
+                    {copy[type]}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="scan-field">
+              <span>{copy.audience}</span>
+              <div className="scan-choice">
+                <button type="button" className={audience ? "is-on" : ""} onClick={() => setAudience(true)}>{copy.yes}</button>
+                <button type="button" className={!audience ? "is-on" : ""} onClick={() => setAudience(false)}>{copy.no}</button>
+              </div>
+            </div>
+            <button className="scan-start" type="submit">{copy.start}</button>
+            <p className="scan-notice">{copy.notice}</p>
           </div>
-          <h2>{copy.audience}</h2>
-          <div className="scan-choice">
-            <button type="button" className={audience ? "is-on" : ""} onClick={() => setAudience(true)}>{copy.yes}</button>
-            <button type="button" className={!audience ? "is-on" : ""} onClick={() => setAudience(false)}>{copy.no}</button>
-          </div>
         </div>
+        <aside className="scan-preview" aria-hidden="true">
+          <p className="scan-kicker">{copy.sample}</p>
+          <div className="scan-preview__sheet">
+            <b>{copy.topicPrivacy}</b>
+            <i /><i className="short" />
+            <div className="scan-preview__bars"><span /><span /><span /></div>
+            <small>{copy.sampleNote}</small>
+          </div>
+        </aside>
       </section>
-      <div className="scan-actions">
-        <button className="scan-start" type="submit">{copy.start}</button>
-        <p className="scan-notice">{copy.notice}</p>
-      </div>
-      {error && <p className="scan-error" role="alert">{error}</p>}
       </form>}
+      {error && <p className="scan-error" role="alert">{error}</p>}
 
       {payload && (
         <section className="scan-report" aria-live="polite">
@@ -457,8 +512,8 @@ export default function ComplianceScannerPage() {
             <div className="scan-progress">
               <h2>{copy.running}</h2>
               <ol>
-                {["crawl", "documents", "checks", "analysis", "done"].map((phase) => (
-                  <li key={phase} className={payload.phase === phase ? "is-on" : ""}>{phase}</li>
+                {([["crawl", copy.phaseCrawl], ["documents", copy.phaseDocuments], ["checks", copy.phaseChecks], ["analysis", copy.phaseAnalysis], ["done", copy.phaseDone]] as const).map(([phase, label]) => (
+                  <li key={phase} className={payload.phase === phase ? "is-on" : ""}>{label}</li>
                 ))}
               </ol>
             </div>
@@ -466,23 +521,24 @@ export default function ComplianceScannerPage() {
             <>
               <header className="scan-report__head">
                 <div>
-                  <p>{report.url}</p>
+                  <p dir="ltr">{report.url}</p>
                   <h2>{report.ai?.contentPerformed ? copy.aiOn : copy.aiOff}</h2>
                   <a href="/compliance">{copy.start}</a>
                 </div>
                 <button type="button" className="scan-start" onClick={downloadPdf}>{copy.pdf}</button>
               </header>
+              <p className="scan-not-legal">{copy.notLegal}</p>
               <div className="scan-scores">
-                <article><b>{scoreText(report.scores?.documents?.value)}</b><span>{copy.documents}</span></article>
+                <article><b>{report.scores?.documents?.withheld ? copy.unread : scoreText(report.scores?.documents?.value)}</b><span>{copy.documents}</span></article>
                 <article><b>{scoreText(report.scores?.technical?.value)}</b><span>{copy.technical}</span></article>
                 <article><b>{scoreText(report.scores?.coverage?.value)}</b><span>{copy.coverage}</span></article>
-                <article><b>{report.ai?.contentPerformed ? scoreText(report.scores?.consistency?.value) : "—"}</b><span>{copy.content}</span></article>
+                <article><b>{report.ai?.contentPerformed && !report.scores?.consistency?.withheld ? scoreText(report.scores?.consistency?.value) : "—"}</b><span>{copy.content}</span></article>
               </div>
               <p className="scan-summary" dir={textDir(report.summary)}>{report.summary}</p>
               <div className="scan-filters">
                 {["all", "finding", "incomplete", "high"].map((item) => (
                   <button key={item} type="button" className={filter === item ? "is-on" : ""} onClick={() => setFilter(item)}>
-                    {item === "all" ? copy.all : item === "finding" ? copy.findings : item === "incomplete" ? copy.incomplete : item}
+                    {item === "all" ? copy.all : item === "finding" ? copy.findings : item === "incomplete" ? copy.incomplete : copy.high}
                   </button>
                 ))}
               </div>
@@ -491,7 +547,7 @@ export default function ComplianceScannerPage() {
                   <article key={`${item.checkId}-${index}`} className={`sev-${item.severity || "info"}`} dir={textDir(item.title || item.description)}>
                     <h3>{item.title}</h3>
                     <p>{item.description}</p>
-                    {item.evidence && <blockquote><span>{copy.evidence}</span>{item.evidence}</blockquote>}
+                    {item.evidence && <blockquote><span>{item.evidenceLabel || copy.evidence}</span><p dir={textDir(item.evidence)}>{item.evidence}</p>{item.evidenceNote && <small>{item.evidenceNote}</small>}</blockquote>}
                     {item.recommendation && <p><strong>{copy.recommendation}. </strong>{item.recommendation}</p>}
                     {item.source?.name && <p className="scan-source">{copy.source}: {item.source.url ? <a href={item.source.url}>{item.source.name}</a> : item.source.name}</p>}
                   </article>

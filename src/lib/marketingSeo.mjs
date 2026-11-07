@@ -19,6 +19,7 @@ import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
+import { legalCrawl } from "./legalCrawl.mjs";
 import {
   MARKETING_LOCALE_PREFIXES,
   hasLocalizedMarketingPage,
@@ -1120,8 +1121,19 @@ function renderHomePrerender(locale) {
   return renderPurpleHomePrerender(locale);
 }
 
+function legalPrerender(path) {
+  const doc = path === "/terms" ? legalCrawl.terms : legalCrawl.privacy;
+  const body = doc.paragraphs.map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("");
+  return {
+    lang: "en",
+    dir: "ltr",
+    inner: `<article lang="en" dir="ltr"><h1>${escapeText(doc.title)}</h1>${body}</article>`,
+  };
+}
+
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (locale === "en" && (path === "/privacy" || path === "/privacy-policy" || path === "/terms")) return legalPrerender(path);
   if (path === "/crm") {
     const copy = getCrmCopy(locale);
     return { lang: copy.lang, dir: copy.dir, inner: renderCrmPrerender(locale) };
