@@ -19,6 +19,7 @@ type CodeResult = {
   quality?: QualityReport | null;
   reverted?: boolean;
   phase?: string;
+  brief?: string;
   buildError?: string;
   reply?: string;
 };
@@ -67,8 +68,7 @@ function isolatedPreviewUrl(projectId: string, token: string) {
 }
 
 function issueText(issue: QualityIssue) {
-  const label = ISSUE_LABELS[issue.code] || "נדרשת בדיקה";
-  return issue.detail ? `${label} (${issue.detail})` : label;
+  return ISSUE_LABELS[issue.code] || "נדרשת בדיקה";
 }
 
 function displayTitle(title?: string) {
@@ -214,6 +214,7 @@ export default function AiStudioCodePage() {
     } catch (err: any) {
       setError(err?.response?.data?.error || "בדיקת האיכות נכשלה");
     } finally {
+      setViewport(1440);
       setChecking(false);
     }
   }
@@ -237,9 +238,36 @@ export default function AiStudioCodePage() {
       }
       setBusy(false);
       if (latest.phase === "ready") await review(latest);
-      else setError(latest.buildError || "הבנייה עדיין לא הושלמה");
     } catch (err: any) {
       setError(err?.response?.data?.error || "יצירת האתר נכשלה");
+      setBusy(false);
+    }
+  }
+
+  async function resumeSite() {
+    if (!project?.projectId) return;
+    setBusy(true);
+    setError("");
+    const started = Date.now();
+    try {
+      const { data } = await API.post(`/ai-studio/code-projects/${project.projectId}/resume`, {}, { timeout: 30000 });
+      remember(data);
+      let latest = data;
+      while (Date.now() - started < 90000) {
+        await new Promise((resolve) => window.setTimeout(resolve, Date.now() - started < 15000 ? 1000 : 2000));
+        const saved = await API.get(`/ai-studio/code-projects/${project.projectId}`, { timeout: 30000 });
+        latest = saved.data;
+        remember(latest);
+        setFrameNonce((value) => value + 1);
+        if (latest.phase === "ready" || latest.phase === "stopped") break;
+      }
+      setBusy(false);
+      if (latest.phase === "ready") {
+        setReply(`האתר מוכן אחרי ${Math.max(1, Math.round((Date.now() - started) / 1000))} שניות.`);
+        await review(latest);
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "לא הצלחתי להמשיך את הבנייה");
       setBusy(false);
     }
   }
@@ -291,7 +319,7 @@ export default function AiStudioCodePage() {
       const { data } = await API.get(`/ai-studio/code-projects/${projectId}`, { timeout: 30000 });
       remember(data);
       setBusy(false);
-      await review(data);
+      if (data.phase === "ready" && data.files?.["src/App.jsx"]) await review(data);
     } catch (err: any) {
       setError(err?.response?.data?.error || "פתיחת הפרויקט נכשלה");
       setBusy(false);
@@ -299,11 +327,20 @@ export default function AiStudioCodePage() {
   }
 
   useEffect(() => {
+    const requested = new URLSearchParams(window.location.search).get("project");
+    if (requested) void openSaved(requested);
+    // Open the project named in the studio link once.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId]);
+
+  useEffect(() => {
     const node = stageRef.current;
     if (!node || view !== "studio") return undefined;
     const measure = () => {
-      const available = Math.max(280, node.clientWidth - 48);
-      setScale(Math.min(1, available / viewport));
+      const height = viewport === 390 ? 780 : 900;
+      const availableWidth = Math.max(280, node.clientWidth);
+      const availableHeight = Math.max(320, node.clientHeight);
+      setScale(Math.min(1, availableWidth / viewport, availableHeight / height));
     };
     measure();
     const observer = new ResizeObserver(measure);
@@ -321,7 +358,7 @@ export default function AiStudioCodePage() {
     : project?.phase === "planning" || project?.phase === "pages" || busy
       ? "יוצרים עבורך אתר בהתאמה אישית"
       : project?.phase === "stopped"
-        ? "הבנייה נעצרה לפני השלמה"
+        ? "הבנייה נעצרה לפני שהאתר הושלם. התיאור נשמר."
         : checking
           ? "בודקים את התצוגה במחשב ובטלפון"
           : project?.phase === "ready" || ready
@@ -432,11 +469,17 @@ export default function AiStudioCodePage() {
       )}
 
       {view === "studio" && (
-        <div className="grid h-[calc(100vh-57px)] min-h-0 grid-cols-1 xl:grid-cols-[380px_minmax(0,1fr)]">
-          <section className="flex min-h-0 flex-col gap-3 overflow-y-auto border-l border-violet-100 bg-white/75 p-4">
-            <div className="border border-violet-100 bg-white p-3 text-sm">
+        <div className="grid h-[calc(100vh-57px)] min-h-0 grid-cols-1 xl:grid-cols-[minmax(320px,400px)_minmax(0,1fr)]">
+          <section className="flex min-h-0 flex-col border-l border-violet-100 bg-white">
+            <div className="border-b border-violet-100 p-4 text-sm">
               <div className={project?.phase === "ready" || ready ? "font-semibold text-emerald-700" : "font-semibold text-[#5B4CF5]"}>{statusLine}</div>
               {project?.durationMs ? <div className="mt-1 text-slate-500">הפעולה האחרונה נמשכה {Math.round(project.durationMs / 1000)} שניות</div> : null}
+              {project?.phase === "stopped" && (
+                <div className="mt-3 space-y-3">
+                  <p className="leading-6 text-slate-600">התיאור שכתבתם נשמר. אפשר להמשיך מהשלב שכבר הושלם, בלי להתחיל מחדש.</p>
+                  <button type="button" disabled={busy || checking} onClick={() => resumeSite()} className="bg-[#5B4CF5] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">נסו שוב</button>
+                </div>
+              )}
               {qualityIssues.length > 0 && (
                 <ul className="mt-2 space-y-1 text-slate-600">
                   {qualityIssues.map((item, index) => (
@@ -445,25 +488,28 @@ export default function AiStudioCodePage() {
                 </ul>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-4">
+              {project?.brief ? <p className="border border-violet-100 bg-[#faf7ff] p-3 text-sm leading-6 text-slate-700">{project.brief}</p> : null}
+              {reply ? <p className="text-sm leading-6 text-slate-700">{reply}</p> : null}
+              <div className="text-xs font-semibold text-slate-500">גרסאות</div>
+              <div className="space-y-2">
+                {(project?.versions || []).map((version) => (
+                  <button key={version.versionId} type="button" disabled={busy || checking} onClick={() => restore(version.versionId)} className="block w-full truncate border border-violet-100 bg-white px-3 py-2 text-right text-sm text-slate-700">
+                    שחזור · {versionLabel(version)}
+                  </button>
+                ))}
+              </div>
+              {error && <p className="text-sm text-rose-700">{error}</p>}
+            </div>
+            <form className="flex gap-2 border-t border-violet-100 p-3" onSubmit={(event) => { event.preventDefault(); void sendEdit(); }}>
               <input
                 value={message}
                 onChange={(event) => setMessage(event.target.value)}
                 placeholder="שנו צבע, פונט, תמונה, כפתור, מקטע, כותרת או פוטר"
                 className="min-w-0 flex-1 border border-violet-200 bg-white px-3 py-2 text-sm outline-none focus:border-[#5B4CF5]"
               />
-              <button type="button" disabled={busy || checking || !message.trim()} onClick={() => sendEdit()} className="bg-[#2563eb] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">שלח</button>
-            </div>
-            {reply ? <p className="text-sm leading-6 text-slate-700">{reply}</p> : null}
-            <div className="text-xs font-semibold text-slate-500">גרסאות</div>
-            <div className="space-y-2">
-              {(project?.versions || []).map((version) => (
-                <button key={version.versionId} type="button" disabled={busy || checking} onClick={() => restore(version.versionId)} className="block w-full truncate border border-violet-100 bg-white px-3 py-2 text-right text-sm text-slate-700">
-                  שחזור · {versionLabel(version)}
-                </button>
-              ))}
-            </div>
-            {error && <p className="text-sm text-rose-700">{error}</p>}
+              <button type="submit" disabled={busy || checking || !message.trim()} className="bg-[#2563eb] px-4 py-2 text-sm font-bold text-white disabled:opacity-50">שלח</button>
+            </form>
           </section>
           <section className="flex min-h-0 min-w-0 flex-col bg-[#eef2ff]">
             <div className="flex items-center justify-between gap-3 border-b border-violet-100 bg-white/80 px-4 py-2">
@@ -474,10 +520,17 @@ export default function AiStudioCodePage() {
                 <button type="button" onClick={() => setFullscreen(true)} className="border border-violet-200 bg-white px-3 py-1.5 text-sm font-semibold text-slate-700">מסך מלא</button>
               </div>
             </div>
-            <div ref={stageRef} className="min-h-0 flex-1 overflow-hidden p-6">
-              <div className="mx-auto overflow-hidden bg-white shadow-[0_18px_50px_rgba(30,41,59,0.12)]" style={{ width: frameWidth, height: shownHeight }}>
-                {previewFrame(false)}
-              </div>
+            <div ref={stageRef} className="flex min-h-0 flex-1 items-center justify-center overflow-hidden">
+              {previewUrl ? (
+                <div className="overflow-hidden bg-white shadow-[0_18px_50px_rgba(30,41,59,0.12)]" style={{ width: frameWidth, height: shownHeight }}>
+                  {previewFrame(false)}
+                </div>
+              ) : (
+                <div className="max-w-md px-8 text-center">
+                  <p className="text-lg font-semibold text-slate-800">{project?.phase === "stopped" ? "האתר עדיין לא הושלם" : "יוצרים עבורך אתר בהתאמה אישית"}</p>
+                  <p className="mt-2 text-sm leading-6 text-slate-500">{project?.phase === "stopped" ? "התיאור נשמר. לחצו על ״נסו שוב״ כדי להמשיך מהשלב שכבר הושלם." : "התצוגה תופיע כאן ברגע שהאתר מוכן."}</p>
+                </div>
+              )}
             </div>
           </section>
         </div>
