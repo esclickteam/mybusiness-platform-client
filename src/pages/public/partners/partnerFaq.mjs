@@ -1,178 +1,131 @@
-/** Visible FAQ for /partners. Answers follow the signed program. */
-
-import { ar, es, pt } from "./partnerFaqLocales.mjs";
+/** Visible FAQ for /partners. English is the crawlable version. Hebrew is the same answers in the UI. */
 
 const en = [
   [
-    "What is the BizUply Partner Program?",
-    "The International Partner Program appoints you to introduce businesses to BizUply software and eligible services. The program key stays partner_international. Membership is $499 per month or $5,000 per year. It is not a purchase of the platform, the source code, or BizUply intellectual property. Territory, commissions, and the products you may offer are set by the signed agreement.",
+    "Who can join?",
+    "Entrepreneurs, marketing agencies, business consultants, technology service providers and sales professionals who want to introduce Bizuply to customers. Every application is reviewed. Submitting the form does not approve the partnership.",
   ],
   [
-    "Who can become a partner?",
-    "The program is open to entrepreneurs, marketing agencies, business consultants, technology service providers, and sales professionals who want to introduce BizUply to customers. Every application is reviewed. Submitting the form does not approve the partnership.",
+    "How much does the track cost?",
+    "The application is free. Business Partner (International Partner) is $499 per month or $5,000 per year after approval. Affiliate / percent track has no membership fee. Reseller, White Label, Exclusive Territory and Strategic Partner fees follow the appointed plan or signed agreement. Payment is collected manually, outside this website, and only after approval when a fee applies.",
   ],
   [
-    "How much does the program cost?",
-    "The application is free. After approval, Monthly Partner is $499 per month and Annual Partner is $5,000 per year. Payment is collected manually, outside this website, and only after approval. BizUply does not charge a card from this page and does not start an automatic renewal.",
+    "Do partners receive commission every month?",
+    "Recurring commission is calculated on eligible subscription revenue that was actually received, while the customer remains attributed and eligible. There is no guaranteed monthly income. The calculator on this page is a simulation only.",
   ],
   [
-    "What is the difference between monthly and annual billing?",
-    "Both intervals are the same International Partner appointment. Monthly renews each month at $499. Annual renews each year at $5,000, which is $988 less than twelve monthly payments. Annual is the default choice on the application. A monthly link can preselect the monthly interval.",
+    "What happens when a customer cancels a subscription?",
+    "Commission follows received revenue. After cancellation, future recurring commission for that subscription stops. Refunds and reversals reduce or reverse unpaid commission as the agreement and ledger require.",
   ],
   [
-    "Do both plans offer the same benefits?",
-    "Yes. Monthly and annual membership carry the same International Partner rights, including the same commission terms and the same Partner Center access rules. The signed agreement controls the details.",
+    "How do partners get paid?",
+    "Eligible commissions are tracked in the partner ledger. Withdrawals and payouts follow the partner system rules and the signed agreement. Membership fees for Business Partner are paid manually outside this website after approval.",
+  ],
+  [
+    "Can partners market in other countries?",
+    "Only inside the territory named in the agreement, unless Bizuply gives prior written approval for another territory. Permission to work in another territory does not itself grant exclusivity.",
+  ],
+  [
+    "Is there regional exclusivity?",
+    "Not by default. Monthly and annual Business Partner membership do not include exclusivity. An exclusive territory exists only when the signed agreement says exclusive, the territory is available, both parties have signed, and the required payment is complete.",
+  ],
+  [
+    "Can partners sell under their own brand?",
+    "White-label branding is a capability of entitled plans (Partner Premium in the catalog) and still follows brand rules in the agreement. International Partner membership alone does not include white-label rights or source code.",
+  ],
+  [
+    "Does the partner receive ownership of the source code?",
+    "No. Selling SaaS grants the customer a right to use the software under the license. It does not transfer ownership of Bizuply source code or intellectual property to the partner or the customer.",
+  ],
+  [
+    "What happens when the partnership ends?",
+    "Benefits that require an active membership, including the Partner Center, stay closed. Ending the membership does not rewrite payments already recorded. Commission remains payable only for customers and periods that were already eligible under the agreement.",
+  ],
+  [
+    "What is the Bizuply Partner Program?",
+    "The program appoints you to introduce businesses to Bizuply software and eligible services. Business Partner uses plan key partner_international. It is not a purchase of the platform, the source code, or Bizuply intellectual property. Territory, commissions and the products you may offer are set by the signed agreement.",
   ],
   [
     "How do recurring commissions work?",
-    "On eligible subscription revenue that has actually been received, the current tiers are 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time transactions earn 10%. The signed agreement decides what is eligible. These formulas are not changed by this page, and earnings are not guaranteed.",
+    "On eligible subscription revenue that has actually been received, the current International Partner tiers are 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time transactions earn 10%. The signed agreement decides what is eligible. These formulas are not changed by this page, and earnings are not guaranteed.",
   ],
   [
     "How are customers attributed to partners?",
     "A customer is attributed when that customer is recorded through the existing partner attribution in the partner system. Commission follows that record and the signed agreement. Opening this page, or sending someone to it, does not by itself attribute a customer.",
   ],
   [
-    "Can I offer multiple BizUply products?",
-    "Yes. One partnership can introduce the products described on this page where they are available and the agreement allows it. Customer pricing, Meta requirements, and product availability still apply. You may not present a product as available for partner sale when it is marked coming soon.",
-  ],
-  [
-    "Can I operate in multiple countries?",
-    "Only inside the territory named in the agreement, unless BizUply gives prior written approval for another territory. That territory must be available and must not already have an active exclusive appointment. Permission to work in another territory does not itself grant exclusivity.",
-  ],
-  [
-    "Do I receive territorial exclusivity?",
-    "No. Monthly and annual membership do not include exclusivity. An exclusive territory exists only when the signed agreement says exclusive, the territory is available, both parties have signed, and the required payment is complete. A non-exclusive agreement allows BizUply to appoint other partners in the same territory. There is no separate Premium Territory fee on this page.",
-  ],
-  [
-    "Do I need technical experience?",
-    "No technical certification is required to apply. You do need to describe the products accurately. Product knowledge and the training that has been published for partners are in the Partner Center after membership is active.",
-  ],
-  [
-    "Is training available?",
-    "The Partner Center includes onboarding, published training, product knowledge, and approved sales materials when those materials have been published. It also shows partner account and commission information from the existing partner system. The center stays closed until the partner is active, the agreement is active, and payment has been verified. Admin approval alone does not open it.",
-  ],
-  [
-    "When does my membership become active?",
-    "After admin approval, an active partnership agreement, and an admin record of money that was actually received, including the amount, the date, and a reference. Until that record exists, the membership stays payment_due and partner resources stay closed. A partner is not activated before the agreement is active and the payment is verified.",
-  ],
-  [
-    "How are payments handled?",
-    "This website does not charge the membership fee. After approval you pay manually, outside BizUply. An admin records the payment only after the money arrives. There is no automatic charge and no automatic renewal. Customer billing inside BizUply is a separate system.",
-  ],
-  [
-    "What happens if I do not renew?",
-    "If the new period is not paid, the membership moves to payment_due. Benefits that require an active membership, including the Partner Center and training, stay closed. A missed payment does not create a second charge for the same period. Ending the membership does not rewrite payments already recorded. Commission remains payable only for customers and periods that were already eligible under the agreement.",
-  ],
-  [
-    "Can I change my billing frequency?",
-    "A BizUply admin can move the membership between monthly and annual. The change applies from the next period, unless no membership charge exists yet. It does not change historical payments and it does not create an automatic prorated credit or charge.",
-  ],
-  [
-    "Are earnings guaranteed?",
-    "No. Commissions depend on eligible revenue that was actually received, attribution, the commission terms, customer retention, refunds, and the executed agreement. The calculator on this page is an illustration only. It does not create a charge or a right to commission.",
-  ],
-  [
-    "Can I build additional services around BizUply?",
-    "You may offer your own services to your own customers. Those services must not be presented as BizUply services. You may not misstate prices, exclusivity, or BizUply's relationship with the customer. Brand and advertising rules in the agreement apply.",
-  ],
-  [
-    "Can I resell SaaS solutions?",
-    "Only when a product is approved for partner sale in the signed agreement. BeautyFlow, Global Properties, Dinevo, TableFlow, and Cliny are shown here as coming soon for partner resale. International Partner membership does not include source code, white-label rights, or a distribution right.",
+    "Can I resell BeautyFlow, Global Properties, Dinevo, TableFlow or Cliny?",
+    "Only when a product is approved for partner sale in the signed agreement. Those products are shown here as coming soon for partner resale and must not be presented as available for purchase through the program today.",
   ],
   [
     "How do I apply?",
-    "Choose Apply to Become a Partner. The form is the existing international registration. Annual is selected unless you open the monthly link. The application is free, waits for review, and does not charge a card.",
+    "Use the short application form on this page. It saves a review request in Bizuply systems. After approval you may complete registration and any required payment for your track. The page does not charge a card.",
   ],
 ];
 
 const he = [
   [
-    "מהי תוכנית השותפים של BizUply?",
-    "תוכנית השותפים הבינלאומית ממנה אתכם להציג לעסקים את התוכנה והשירותים הזכאים של BizUply. מזהה התוכנית נשאר partner_international. החברות עולה 499 דולר לחודש או 5,000 דולר לשנה. היא אינה רכישה של הפלטפורמה, של קוד המקור או של הקניין הרוחני של BizUply. טריטוריה, עמלות והמוצרים שמותר להציע נקבעים בהסכם החתום.",
+    "מי יכול להצטרף?",
+    "יזמים, סוכנויות שיווק, יועצים עסקיים, ספקי שירותי טכנולוגיה ואנשי מכירות שרוצים להציג את Bizuply ללקוחות. כל בקשה נבדקת. שליחת הטופס אינה מאשרת את השותפות.",
   ],
   [
-    "מי יכול להצטרף כשותף?",
-    "התוכנית פתוחה ליזמים, סוכנויות שיווק, יועצים עסקיים, ספקי שירותי טכנולוגיה ואנשי מכירות שרוצים להציג את BizUply ללקוחות. כל בקשה נבדקת. שליחת הטופס אינה מאשרת את השותפות.",
+    "כמה עולה המסלול?",
+    "הגשת הבקשה ללא תשלום. Business Partner (שותף בינלאומי) עולה 499 דולר לחודש או 5,000 דולר לשנה אחרי אישור. מסלול Affiliate / אחוזים ללא דמי חברות. Reseller, White Label, Exclusive Territory ו־Strategic Partner לפי המסלול או ההסכם. תשלום נגבה ידנית מחוץ לאתר ורק אחרי אישור כשיש תשלום.",
   ],
   [
-    "כמה עולה התוכנית?",
-    "הגשת הבקשה היא ללא תשלום. אחרי אישור, שותף חודשי הוא 499 דולר לחודש ושותף שנתי הוא 5,000 דולר לשנה. התשלום נגבה ידנית, מחוץ לאתר, ורק אחרי האישור. BizUply אינה מחייבת כרטיס מהעמוד הזה ואינה מתחילה חידוש אוטומטי.",
+    "האם מקבלים עמלה בכל חודש?",
+    "עמלה חוזרת מחושבת על הכנסת מנוי זכאית שהתקבלה בפועל, כל עוד הלקוח משויך וזכאי. אין הבטחת הכנסה חודשית. המחשבון בעמוד הוא סימולציה בלבד.",
   ],
   [
-    "מה ההבדל בין חיוב חודשי לחיוב שנתי?",
-    "שני המסלולים הם אותה מינוי של שותף בינלאומי. החודשי מתחדש בכל חודש ב-499 דולר. השנתי מתחדש בכל שנה ב-5,000 דולר, חיסכון של 988 דולר לעומת שנים-עשר תשלומים חודשיים. ברירת המחדל בטופס היא שנתית. קישור חודשי יכול לסמן מראש את המסלול החודשי.",
+    "מה קורה כשהלקוח מבטל מנוי?",
+    "העמלה נגזרת מהכנסה שהתקבלה. אחרי ביטול, עמלה חוזרת עתידית על אותו מנוי נעצרת. החזרים והיפוכים מפחיתים או הופכים עמלה שלא שולמה לפי ההסכם והספרים.",
   ],
   [
-    "האם שני המסלולים מעניקים את אותן זכויות?",
-    "כן. חברות חודשית ושנתית מעניקות את אותן זכויות של שותף בינלאומי, כולל אותם תנאי עמלה ואותם כללי גישה למרכז השותפים. ההסכם החתום קובע את הפרטים.",
+    "איך מקבלים תשלום?",
+    "עמלות זכאיות נרשמות בספרי השותף. משיכות ותשלומים לפי כללי מערכת השותפים וההסכם. דמי חברות של Business Partner משולמים ידנית מחוץ לאתר אחרי אישור.",
+  ],
+  [
+    "האם אפשר לשווק במדינות אחרות?",
+    "רק בתוך הטריטוריה שמופיעה בהסכם, אלא אם Bizuply אישרה בכתב מראש טריטוריה נוספת. אישור לפעול במקום אחר אינו מעניק בלעדיות.",
+  ],
+  [
+    "האם יש בלעדיות אזורית?",
+    "לא כברירת מחדל. חברות Business Partner חודשית או שנתית אינה כוללת בלעדיות. טריטוריה בלעדית קיימת רק כשההסכם החתום קובע בלעדיות, הטריטוריה פנויה, שני הצדדים חתמו, והתשלום הנדרש הושלם.",
+  ],
+  [
+    "האם ניתן למכור תחת מותג עצמי?",
+    "מיתוג White Label הוא יכולת של מסלולים זכאים (Partner Premium בקטלוג) ועדיין כפוף לכללי המותג בהסכם. חברות השותף הבינלאומי לבדה אינה כוללת White Label או קוד מקור.",
+  ],
+  [
+    "האם השותף מקבל בעלות על קוד המקור?",
+    "לא. מכירת SaaS מעניקה ללקוח זכות שימוש בהתאם לרישיון. היא אינה מעבירה בעלות על קוד המקור או על הקניין הרוחני של Bizuply לשותף או ללקוח.",
+  ],
+  [
+    "מה קורה בסיום השותפות?",
+    "הטבות שדורשות חברות פעילה, כולל מרכז השותפים, נשארות סגורות. סיום החברות אינו משכתב תשלומים שכבר תועדו. עמלה ממשיכה רק עבור לקוחות ותקופות שכבר היו זכאים לפי ההסכם.",
+  ],
+  [
+    "מהי תוכנית השותפים של Bizuply?",
+    "התוכנית ממנה אתכם להציג לעסקים את התוכנה והשירותים הזכאים של Bizuply. Business Partner משתמש במפתח partner_international. היא אינה רכישה של הפלטפורמה, של קוד המקור או של הקניין הרוחני. טריטוריה, עמלות והמוצרים שמותר להציע נקבעים בהסכם החתום.",
   ],
   [
     "איך עובדות עמלות חוזרות?",
-    "על הכנסת מנוי זכאית שהתקבלה בפועל, המדרגות הן 30% עבור 1 עד 19 לקוחות משלמים פעילים, 35% עבור 20 עד 39, ו-40% עבור 40 או יותר. עסקאות חד-פעמיות זכאיות מזכות ב-10%. ההסכם החתום קובע מה זכאי. העמוד הזה אינו משנה את הנוסחאות, ואין הבטחת הכנסה.",
+    "על הכנסת מנוי זכאית שהתקבלה בפועל, המדרגות לשותף הבינלאומי הן 30% עבור 1 עד 19 לקוחות משלמים פעילים, 35% עבור 20 עד 39, ו־40% עבור 40 או יותר. עסקאות חד־פעמיות זכאיות מזכות ב־10%. ההסכם החתום קובע מה זכאי. העמוד אינו משנה את הנוסחאות, ואין הבטחת הכנסה.",
   ],
   [
     "איך לקוחות משויכים לשותף?",
-    "לקוח משויך כשהוא נרשם במנגנון השיוך הקיים במערכת השותפים. העמלה נגזרת מהרישום הזה ומההסכם החתום. כניסה לעמוד הזה, או שליחת מישהו אליו, אינה משייכת לקוח בפני עצמה.",
+    "לקוח משויך כשהוא נרשם במנגנון השיוך הקיים במערכת השותפים. העמלה נגזרת מהרישום ומההסכם. כניסה לעמוד הזה, או שליחת מישהו אליו, אינה משייכת לקוח בפני עצמה.",
   ],
   [
-    "אפשר להציע כמה מוצרים של BizUply?",
-    "כן. שותפות אחת יכולה להציג את המוצרים שמתוארים בעמוד, כשהם זמינים וכשההסכם מתיר זאת. מחירי הלקוח, דרישות Meta וזמינות המוצר עדיין חלים. אין להציג מוצר כזמין למכירת שותפים כשהוא מסומן כבקרוב.",
-  ],
-  [
-    "אפשר לפעול בכמה מדינות?",
-    "רק בתוך הטריטוריה שמופיעה בהסכם, אלא אם BizUply אישרה בכתב מראש טריטוריה נוספת. הטריטוריה צריכה להיות פנויה ולא להיות תפוסה במינוי בלעדי פעיל. אישור לפעול במקום אחר אינו מעניק בלעדיות.",
-  ],
-  [
-    "האם מקבלים בלעדיות טריטוריאלית?",
-    "לא. חברות חודשית או שנתית אינה כוללת בלעדיות. טריטוריה בלעדית קיימת רק כשההסכם החתום קובע בלעדיות, הטריטוריה פנויה, שני הצדדים חתמו, והתשלום הנדרש הושלם. הסכם לא בלעדי מאפשר ל-BizUply למנות שותפים נוספים באותה טריטוריה. אין בעמוד הזה דמי טריטוריה פרימיום נפרדים.",
-  ],
-  [
-    "האם צריך ניסיון טכני?",
-    "אין דרישה להסמכה טכנית כדי להגיש בקשה. כן צריך לתאר את המוצרים בצורה מדויקת. היכרות עם המוצרים וההכשרה שפורסמה לשותפים נמצאות במרכז השותפים אחרי שהחברות פעילה.",
-  ],
-  [
-    "יש הכשרה?",
-    "מרכז השותפים כולל קליטה, הכשרה שפורסמה, ידע על המוצרים, וחומרי מכירה מאושרים כשאלה פורסמו. הוא גם מציג את ניהול חשבון השותף ומידע על עמלות מהמערכת הקיימת. המרכז נשאר סגור עד שהשותף פעיל, ההסכם פעיל, והתשלום אומת. אישור אדמין לבדו אינו פותח אותו.",
-  ],
-  [
-    "מתי החברות הופכת לפעילה?",
-    "אחרי אישור אדמין, הסכם שותפות פעיל, ותיעוד אדמין של כסף שהתקבל בפועל, כולל סכום, תאריך ואסמכתה. עד שהתיעוד קיים החברות נשארת payment_due ומשאבי השותף נשארים סגורים. שותף אינו מופעל לפני הסכם פעיל ותשלום מאומת.",
-  ],
-  [
-    "איך מטפלים בתשלומים?",
-    "האתר הזה אינו גובה את דמי החברות. אחרי האישור משלמים ידנית, מחוץ ל-BizUply. אדמין מתעד את התשלום רק אחרי שהכסף הגיע. אין חיוב אוטומטי ואין חידוש אוטומטי. גביית הלקוחות בתוך BizUply היא מערכת נפרדת.",
-  ],
-  [
-    "מה קורה אם לא מחדשים?",
-    "אם התקופה החדשה לא שולמה, החברות עוברת ל-payment_due. הטבות שדורשות חברות פעילה, כולל מרכז השותפים וההכשרה, נשארות סגורות. החמצה אינה יוצרת חיוב שני לאותה תקופה. סיום החברות אינו משכתב תשלומים שכבר תועדו. עמלה ממשיכה רק עבור לקוחות ותקופות שכבר היו זכאים לפי ההסכם.",
-  ],
-  [
-    "אפשר לשנות את תדירות החיוב?",
-    "אדמין של BizUply יכול להעביר את החברות בין חודשי לשנתי. השינוי חל מהתקופה הבאה, אלא אם עדיין לא נוצר חיוב חברות. הוא אינו משנה תשלומים היסטוריים ואינו יוצר זיכוי או חיוב יחסי אוטומטי.",
-  ],
-  [
-    "האם ההכנסה מובטחת?",
-    "לא. העמלות תלויות בהכנסה זכאית שהתקבלה בפועל, בשיוך, בתנאי העמלה, בשימור לקוחות, בהחזרים ובהסכם שנחתם. המחשבון בעמוד הוא להמחשה בלבד. הוא אינו יוצר חיוב או זכות עמלה.",
-  ],
-  [
-    "אפשר לבנות שירותים נוספים סביב BizUply?",
-    "אפשר להציע ללקוחות שלכם שירותים משלכם. אסור להציג אותם כשירותים של BizUply. אסור להציג לא נכון מחירים, בלעדיות או את הקשר של BizUply עם הלקוח. כללי המותג והפרסום שבהסכם חלים.",
-  ],
-  [
-    "אפשר למכור מערכות SaaS?",
-    "רק כשמוצר אושר למכירת שותפים בהסכם החתום. BeautyFlow, Global Properties, Dinevo, TableFlow ו-Cliny מוצגים כאן כבקרוב למכירת שותפים. חברות השותף הבינלאומי אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
+    "אפשר למכור את BeautyFlow, Global Properties, Dinevo, TableFlow או Cliny?",
+    "רק כשמוצר אושר למכירת שותפים בהסכם החתום. המוצרים האלה מוצגים כאן כבקרוב למכירת שותפים ואין להציג אותם כזמינים לרכישה דרך התוכנית היום.",
   ],
   [
     "איך מגישים בקשה?",
-    "בוחרים בהגשת בקשה להצטרפות. הטופס הוא טופס ההרשמה הבינלאומי הקיים. המסלול השנתי מסומן אלא אם נפתח הקישור החודשי. הבקשה ללא תשלום, ממתינה לבדיקה, ואינה מחייבת כרטיס.",
+    "משתמשים בטופס המועמדות הקצר בעמוד. הוא שומר בקשה לבדיקה במערכות Bizuply. אחרי אישור אפשר להשלים הרשמה וכל תשלום נדרש למסלול. העמוד אינו מחייב כרטיס.",
   ],
 ];
 
 export function partnerFaqPairs(language) {
-  const value = String(language || "");
-  if (value.startsWith("he")) return he;
-  if (value.startsWith("es")) return es;
-  if (value.startsWith("pt")) return pt;
-  if (value.startsWith("ar")) return ar;
-  return en;
+  return String(language || "").startsWith("he") ? he : en;
 }
