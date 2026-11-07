@@ -19,6 +19,7 @@ export {
   normalizeMarketingLocale,
   splitMarketingLocale,
   withMarketingLocale,
+  lastLanguageCookie,
   marketingLanguageRedirectPath,
   localeFromAcceptLanguage,
   localeFromLanguageTag,

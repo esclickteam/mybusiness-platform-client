@@ -117,6 +117,21 @@ export function localeFromAcceptLanguage(header) {
  * follows Accept-Language. An explicit /he, /es, /ar, or /pt-br URL stays.
  * Returns a path when the response should redirect, otherwise null.
  */
+/** The newest bizuply_lang value. A host-only cookie and a domain cookie can both be sent. */
+export function lastLanguageCookie(cookieHeader = "") {
+  const values = String(cookieHeader)
+    .split(";")
+    .map((part) => part.trim())
+    .filter((part) => part.startsWith("bizuply_lang="))
+    .map((part) => part.slice("bizuply_lang=".length));
+  const raw = values.length ? values[values.length - 1] : "";
+  try {
+    return decodeURIComponent(raw);
+  } catch {
+    return raw;
+  }
+}
+
 export function marketingLanguageRedirectPath(pathname, { cookie = "", acceptLanguage = "" } = {}) {
   const { locale } = splitMarketingLocale(pathname);
   // An explicit /he, /es, /pt-br, or /ar link is the visitor's choice.

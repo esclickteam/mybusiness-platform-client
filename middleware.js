@@ -41,7 +41,7 @@ import {
   isUnknownMarketingPath,
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
-import { localeFromLanguageTag, marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
+import { lastLanguageCookie, localeFromLanguageTag, marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
 import { buildPartnersPaint } from "./src/lib/partnersPaint.mjs";
 import {
@@ -845,6 +845,16 @@ async function maybeRedirectAuthenticatedHome(request) {
   return buildHomeSessionRedirectResponse(request, redirectPath);
 }
 
+function withHostLanguageCookieCleared(headers) {
+  const next = new Headers();
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === "set-cookie") next.append("set-cookie", value);
+    else next.set(key, value);
+  }
+  next.append("set-cookie", "bizuply_lang=; Path=/; Max-Age=0; SameSite=Lax");
+  return next;
+}
+
 async function handleMarketingDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   const pathname = getPathname(request);
@@ -869,14 +879,7 @@ async function handleMarketingDocument(request) {
     );
   }
   if (headHtml) {
-    const cookie = request.headers.get("cookie") || "";
-    const saved = cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith("bizuply_lang="));
-    let savedValue = saved ? saved.slice("bizuply_lang=".length) : "";
-    try {
-      savedValue = decodeURIComponent(savedValue);
-    } catch {
-      /* Keep the raw cookie value. */
-    }
+    const savedValue = lastLanguageCookie(request.headers.get("cookie") || "");
     const target = marketingLanguageRedirectPath(pathname, {
       cookie: savedValue,
       acceptLanguage: request.headers.get("accept-language") || "",
@@ -899,7 +902,7 @@ async function handleMarketingDocument(request) {
             : "";
         headers["set-cookie"] = `bizuply_lang=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax${domain}`;
       }
-      return new Response(null, { status: 302, headers });
+      return new Response(null, { status: 302, headers: withHostLanguageCookieCleared(headers) });
     }
   }
   if (!headHtml) {
@@ -1046,14 +1049,7 @@ async function handleMarketingDocument(request) {
         : {}),
     };
     if (locale.locale !== "en") {
-      const cookie = request.headers.get("cookie") || "";
-      const saved = cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith("bizuply_lang="));
-      let savedValue = saved ? saved.slice("bizuply_lang=".length) : "";
-      try {
-        savedValue = decodeURIComponent(savedValue);
-      } catch {
-        /* Keep the raw cookie value. */
-      }
+      const savedValue = lastLanguageCookie(request.headers.get("cookie") || "");
       if (localeFromLanguageTag(savedValue) !== locale.locale) {
         const host = getHost(request);
         const domain = host === "bizuply.com" || host.endsWith(".bizuply.com")
@@ -1067,7 +1063,7 @@ async function handleMarketingDocument(request) {
     if (filteredSearch) headers["x-robots-tag"] = "noindex, follow";
     return new Response(documentHtml, {
       status: 200,
-      headers,
+      headers: withHostLanguageCookieCleared(headers),
     });
   } catch {
     return passThrough();
