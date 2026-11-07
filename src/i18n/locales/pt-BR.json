@@ -23859,6 +23859,8 @@
     "change": "Você pode alterar a escolha a qualquer momento nas configurações de cookies.",
     "more": "Para mais informações, consulte a ",
     "policy": "Política de Privacidade",
+    "join": " e a ",
+    "cookiePolicy": "Política de cookies",
     "essential": "Somente cookies essenciais",
     "all": "Aceitar todos os cookies"
   },
