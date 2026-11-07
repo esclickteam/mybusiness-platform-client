@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
+import { FreeResult, MonitorBoard, PlanCards, RequirementTable, commercialLocale } from "./ComplianceCommercial";
 
 const TOKEN_KEY = "bizuplyComplianceTenant";
 const TYPES = ["brochure", "shop", "saas", "events", "professional", "other"] as const;
@@ -505,6 +506,12 @@ export default function ComplianceScannerPage() {
       </section>
       </form>}
       {error && <p className="scan-error" role="alert">{error}</p>}
+      {!id && (
+        <>
+          <PlanCards locale={commercialLocale(locale)} />
+          <MonitorBoard locale={commercialLocale(locale)} />
+        </>
+      )}
 
       {payload && (
         <section className="scan-report" aria-live="polite">
@@ -517,6 +524,8 @@ export default function ComplianceScannerPage() {
                 ))}
               </ol>
             </div>
+          ) : payload.access !== "full" ? (
+            <FreeResult locale={commercialLocale(locale)} summary={payload.summary} />
           ) : (
             <>
               <header className="scan-report__head">
@@ -558,6 +567,7 @@ export default function ComplianceScannerPage() {
                   {report.limitations.map((item: string) => <li key={item}>{item}</li>)}
                 </ul>
               )}
+              <RequirementTable locale={commercialLocale(locale)} rows={report.requirements?.rows || []} />
             </>
           )}
         </section>
