@@ -1831,13 +1831,13 @@ export default function DashboardPage() {
   return (
     <div
       dir={pageDir}
-      className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_34%,#f6f7fb_68%,#ffffff_100%)] text-slate-800"
+      className="min-h-screen overflow-x-hidden bg-[#F4F1FA] text-[#21172F]"
     >
       <div className="mx-auto w-full max-w-[1680px] px-4 py-4 sm:px-6 lg:px-8">
         <main className="min-w-0 pb-10">
 
           {alertMessage && (
-            <div className="mb-4 rounded-[24px] border border-amber-200 bg-amber-50 p-4 text-sm font-black text-amber-800 shadow-sm">
+            <div className="mb-4 rounded-none border border-amber-200 bg-amber-50 p-4 text-sm font-black text-amber-800">
               {alertMessage}
             </div>
           )}

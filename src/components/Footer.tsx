@@ -1,83 +1,162 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-
-const logo = "/logo-mark.svg";
-import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
+import LanguageSwitcher from "./LanguageSwitcher";
+import { changeAppLanguage } from "../i18n/persistLanguage";
+import { coerceSupportedLanguage, getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
+import "../styles/MarketingFooter.css";
 
 type FooterLink = {
   label: string;
   to: string;
 };
 
-type FooterColumnProps = {
-  title: string;
-  links: FooterLink[];
+const SYSTEMS: Record<string, string> = {
+  en: "SaaS systems",
+  he: "מערכות",
+  es: "Sistemas",
+  "pt-BR": "Sistemas",
+  ar: "الأنظمة",
 };
 
-/** Compact, centered footer on the page background. */
+const REGION = [
+  ["he", "ישראל"],
+  ["en", "United States"],
+  ["es", "España"],
+  ["pt-BR", "Brasil"],
+  ["ar", "المنطقة العربية"],
+] as const;
+
+const SOLUTION_LABELS: Record<string, Record<string, string>> = {
+  clinics: { en: "Clinics", he: "קליניקות", es: "Clínicas", "pt-BR": "Clínicas", ar: "عيادات" },
+  beauty: { en: "Beauty", he: "מכוני יופי", es: "Belleza", "pt-BR": "Beleza", ar: "التجميل" },
+  realEstate: { en: "Real estate", he: "נדל״ן", es: "Inmuebles", "pt-BR": "Imóveis", ar: "العقارات" },
+  restaurants: { en: "Restaurants", he: "מסעדות", es: "Restaurantes", "pt-BR": "Restaurantes", ar: "المطاعم" },
+  service: { en: "Service businesses", he: "נותני שירות", es: "Servicios", "pt-BR": "Prestadores", ar: "مقدمو الخدمات" },
+  agencies: { en: "Agencies", he: "סוכנויות", es: "Agencias", "pt-BR": "Agências", ar: "الوكالات" },
+  leads: { en: "Lead-based businesses", he: "עסקים מבוססי לידים", es: "Negocios de leads", "pt-BR": "Negócios de leads", ar: "أعمال العملاء المحتملين" },
+  ready: { en: "Ready systems", he: "מערכות מוכנות", es: "Sistemas listos", "pt-BR": "Sistemas prontos", ar: "أنظمة جاهزة" },
+};
+
+const REGION_COPY: Record<string, { label: string; aria: string }> = {
+  he: { label: "אזור", aria: "בחירת אזור" },
+  en: { label: "Region", aria: "Choose a region" },
+  es: { label: "Región", aria: "Elegir región" },
+  "pt-BR": { label: "Região", aria: "Escolher região" },
+  ar: { label: "المنطقة", aria: "اختيار المنطقة" },
+};
+
+function solutionLabel(locale: string, key: string) {
+  const row = SOLUTION_LABELS[key];
+  return row[locale] || row.en;
+}
+
 export default function Footer() {
   const { t, i18n } = useTranslation();
   const year = new Date().getFullYear();
-  const footerDir = getTextDirection(normalizeLanguage(i18n.language));
+  const language = normalizeLanguage(i18n.language);
+  const footerDir = getTextDirection(language);
+  const region = coerceSupportedLanguage(i18n.language);
+  const logoAlt = language === "he" ? "ביזאפלי (BizUply)" : "BizUply";
+  const regionCopy = REGION_COPY[region] || REGION_COPY.en;
 
-  const solutionsLinks: FooterLink[] = [
-    { label: t("footer.platform"), to: "/platform" },
-    { label: t("footer.services"), to: "/services" },
-    { label: t("footer.crm"), to: "/crm" },
-    { label: t("footer.website"), to: "/website-builder" },
-    { label: t("footer.automations"), to: "/automations" },
-    { label: t("footer.agents"), to: "/agents" },
-    { label: t("footer.collaborations"), to: "/collaborations" },
-    { label: t("footer.appointments"), to: "/appointments" },
-  ];
-
-  const companyLinks: FooterLink[] = [
-    { label: t("footer.aboutUs"), to: "/about" },
-    { label: t("footer.pricing"), to: "/pricing" },
-    { label: t("footer.contact"), to: "/contact" },
-  ];
-
-  const supportLinks: FooterLink[] = [
-    { label: t("footer.faq"), to: "/faq" },
-    { label: t("footer.terms"), to: "/terms" },
-    { label: t("footer.privacy"), to: "/privacy" },
-    { label: t("footer.accessibility"), to: "/accessibility" },
+  const columns: { title: string; links: FooterLink[] }[] = [
+    {
+      title: t("footer.products"),
+      links: [
+        { label: t("footer.platform"), to: "/platform" },
+        { label: t("footer.crm"), to: "/crm" },
+        { label: t("footer.appointments"), to: "/appointments" },
+        { label: t("footer.whatsapp"), to: "/whatsapp-api" },
+        { label: t("footer.meta"), to: "/meta-campaigns" },
+        { label: t("footer.automations"), to: "/automations" },
+        { label: t("footer.website"), to: "/website-builder" },
+        { label: t("footer.agents"), to: "/agents" },
+        { label: SYSTEMS[region] || SYSTEMS.en, to: "/saas" },
+      ],
+    },
+    {
+      title: t("footer.solutions"),
+      links: [
+        { label: solutionLabel(region, "clinics"), to: "/solutions/clinics" },
+        { label: solutionLabel(region, "beauty"), to: "/solutions/beauty" },
+        { label: solutionLabel(region, "realEstate"), to: "/solutions/real-estate" },
+        { label: solutionLabel(region, "restaurants"), to: "/solutions/restaurants" },
+        { label: solutionLabel(region, "service"), to: "/solutions/service-businesses" },
+        { label: solutionLabel(region, "agencies"), to: "/solutions/agencies" },
+        { label: solutionLabel(region, "leads"), to: "/solutions/lead-based" },
+        { label: solutionLabel(region, "ready"), to: "/solutions/ready-systems" },
+      ],
+    },
+    {
+      title: t("footer.company"),
+      links: [
+        { label: t("footer.aboutUs"), to: "/about" },
+        { label: t("footer.pricing"), to: "/pricing" },
+        { label: t("footer.contact"), to: "/contact" },
+        { label: t("footer.partners"), to: "/partners" },
+        { label: t("footer.collaborations"), to: "/collaborations" },
+      ],
+    },
+    {
+      title: t("footer.resources"),
+      links: [
+        { label: t("footer.guides"), to: "/guides" },
+        { label: t("footer.faq"), to: "/faq" },
+        { label: t("footer.services"), to: "/services" },
+      ],
+    },
+    {
+      title: t("footer.support"),
+      links: [
+        { label: t("footer.support"), to: "/support" },
+        { label: t("footer.contact"), to: "/contact" },
+        { label: t("footer.accessibility"), to: "/accessibility" },
+      ],
+    },
   ];
 
   return (
-    <footer
-      className="relative border-t border-slate-200/70 bg-transparent text-slate-700"
-      dir={footerDir}
-    >
-      <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 py-6 text-center sm:px-6 sm:py-8">
-        <Link
-          to="/"
-          className="inline-flex items-center justify-center"
-          aria-label={t("footer.logoAria")}
-        >
-          <img
-            src={logo}
-            alt="Bizuply"
-            width={180}
-            height={56}
-            className="h-11 w-auto max-w-[11rem] object-contain sm:h-12 sm:max-w-[12.5rem]"
-            loading="lazy"
-            decoding="async"
-          />
-        </Link>
-
-        <div className="mt-5 grid w-full max-w-3xl gap-5 sm:grid-cols-3 sm:gap-4">
-          <FooterColumn title={t("footer.solutions")} links={solutionsLinks} />
-          <FooterColumn title={t("footer.company")} links={companyLinks} />
-          <FooterColumn title={t("footer.support")} links={supportLinks} />
+    <footer className="site-footer hx-footer" dir={footerDir}>
+      <div className="site-footer__main">
+        <div className="site-footer__brand">
+          <Link to="/" aria-label={t("footer.logoAria")}>
+            <img src="/logo-mark-light.png" alt={logoAlt} width="180" height="56" />
+          </Link>
+          <p>{t("footer.tagline")}</p>
         </div>
-
-        <div className="mx-auto mt-5 h-px w-full max-w-xl bg-slate-200/80" />
-
-        <p className="mt-3 text-[11px] font-semibold text-slate-600 sm:text-xs">
-          {t("footer.rights", { year })}
-        </p>
+        {columns.map((column) => (
+          <FooterColumn key={column.title} title={column.title} links={column.links} />
+        ))}
+      </div>
+      <div className="site-footer__bar">
+        <p>{t("footer.rights", { year })}</p>
+        <div className="site-footer__legal">
+          <Link to="/terms">{t("footer.terms")}</Link>
+          <Link to="/privacy">{t("footer.privacy")}</Link>
+          <Link to="/accessibility">{t("footer.accessibility")}</Link>
+        </div>
+        <div className="site-footer__tools">
+          <LanguageSwitcher />
+          <label className="site-footer__region">
+            <span>{regionCopy.label}</span>
+            <select
+              value={region}
+              aria-label={regionCopy.aria}
+              onChange={(event) => {
+                void changeAppLanguage(event.target.value);
+              }}
+            >
+              {REGION.map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </label>
+          <div className="site-footer__social">
+            <a href="https://www.facebook.com/bizuply" target="_blank" rel="noreferrer">Facebook</a>
+            <a href="https://www.instagram.com/bizuply" target="_blank" rel="noreferrer">Instagram</a>
+          </div>
+        </div>
       </div>
     </footer>
   );
@@ -91,22 +170,19 @@ function scrollPageToTop() {
   document.body.scrollTop = 0;
 }
 
-function FooterColumn({ title, links }: FooterColumnProps) {
+function FooterColumn({ title, links }: { title: string; links: FooterLink[] }) {
   return (
-    <div className="text-center">
-      <p className="mb-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-600">
-        {title}
-      </p>
-      <ul className="space-y-0.5">
+    <div className="site-footer__col">
+      <h2>{title}</h2>
+      <ul>
         {links.map((link) => (
-          <li key={`${title}-${link.to}-${link.label}`}>
+          <li key={`${title}-${link.to}`}>
             <Link
               to={link.to}
               onClick={() => {
                 window.setTimeout(scrollPageToTop, 0);
                 window.setTimeout(scrollPageToTop, 50);
               }}
-              className="text-[13px] font-semibold leading-5 text-slate-600 transition hover:text-indigo-700"
             >
               {link.label}
             </Link>

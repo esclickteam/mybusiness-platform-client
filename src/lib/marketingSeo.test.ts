@@ -1,6 +1,8 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { HOME_FAQ } from "./homeFaq.mjs";
+import { legalCrawl } from "./legalCrawl.mjs";
 import {
   MARKETING_PAGES,
   buildMarketingDocumentHead,
@@ -42,10 +44,17 @@ describe("marketing crawl files", () => {
       expect(sitemap).toContain(`<loc>https://bizuply.com${page}</loc>`);
     }
     expect(sitemap).toContain("<loc>https://bizuply.com/partners</loc>");
+    expect(sitemap).toContain("<loc>https://bizuply.com/he/partners</loc>");
     expect(isUnknownMarketingPath("/partners")).toBe(false);
+    expect(isUnknownMarketingPath("/he/partners")).toBe(false);
     expect(buildMarketingDocumentHead("/partners") || "").toContain('href="https://bizuply.com/partners"');
+    expect(buildMarketingDocumentHead("/partners") || "").toContain('hreflang="he" href="https://bizuply.com/he/partners"');
+    expect(buildMarketingDocumentHead("/he/partners") || "").toContain('rel="canonical" href="https://bizuply.com/he/partners"');
     expect(buildMarketingPrerender("/partners")?.inner || "").toContain(
       "/partner/register?planKey=partner_international"
+    );
+    expect(buildMarketingPrerender("/he/partners")?.inner || "").toContain(
+      "בונים עסק. מרחיבים הזדמנויות. מרוויחים יחד."
     );
     expect(sitemap).not.toContain("bizuply.com/saas");
     expect(sitemap).not.toContain("bizuply.com/join");
@@ -63,7 +72,8 @@ describe("marketing crawl files", () => {
       expect(head).toContain(`content="${escapeHtml(page.description)}"`);
       expect(head).toContain('content="index, follow"');
       expect(head).toContain('"@type":"Organization"');
-      expect(head).toContain('"name":"Bizuply"');
+      expect(head).toContain('"name":"Bizuply LLC"');
+      expect(head).toContain('"name":"BizUply"');
       expect(head).not.toContain("aggregateRating");
     }
   });
@@ -83,10 +93,11 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/business/123/dashboard")).toContain("noindex, nofollow");
     expect(isMarketingNoindexPath("/business")).toBe(false);
     expect(buildMarketingDocumentHead("/book/abc")).toBeNull();
-    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"name":"BizUply"');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
-      "<title>Bizuply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים</title>",
+      "<title>BizUply | מערכת CRM, ניהול עסק, WhatsApp ואוטומציות</title>",
     );
     expect(buildMarketingDocumentHead("/he/") || "").toContain('rel="canonical" href="https://bizuply.com/he"');
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he</loc>");
@@ -97,20 +108,24 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/") || "").toContain('"@id":"https://bizuply.com/#website"');
     expect(buildMarketingDocumentHead("/") || "").toContain('"publisher":{"@id":"https://bizuply.com/#organization"}');
     for (const page of MARKETING_PAGES) {
-      expect(page.title).not.toContain("BizUply");
-      expect(page.description).not.toContain("BizUply");
+      expect(page.title).not.toContain("Bizamply");
+      expect(page.title).not.toContain("Bizimply");
+      expect(page.description).not.toContain("Bizamply");
+      expect(page.description).not.toContain("Bizimply");
     }
     expect(isUnknownMarketingPath("/this-page-does-not-exist-xyz")).toBe(true);
     expect(isUnknownMarketingPath("/crm")).toBe(false);
     expect(isUnknownMarketingPath("/login")).toBe(false);
     expect(isUnknownMarketingPath("/book/abc")).toBe(false);
+    expect(isUnknownMarketingPath("/compliance")).toBe(false);
+    expect(isUnknownMarketingPath("/compliance/report/1")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
     expect(isMarketingNoindexPath("/home-preview")).toBe(true);
     expect(isUnknownMarketingPath("/home-preview")).toBe(false);
     expect(buildMarketingDocumentHead("/home-preview") || "").toContain("noindex, nofollow");
     expect(buildMarketingSitemapXml()).not.toContain("/home-preview");
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
-    expect(hebrew).toContain("<title>תוכנת CRM לעסקים קטנים וניהול לידים | ביזאפלי</title>");
+    expect(hebrew).toContain("<title>מערכת CRM לניהול לידים ולקוחות | BizUply</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
     expect(hebrew).toContain('hreflang="en" href="https://bizuply.com/crm"');
     expect(hebrew).toContain('hreflang="x-default" href="https://bizuply.com/crm"');
@@ -123,15 +138,15 @@ describe("marketing crawl files", () => {
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he/about</loc>");
     expect(buildMarketingSitemapXml()).not.toContain("<loc>https://bizuply.com/he/terms</loc>");
     expect(buildMarketingPrerender("/crm")?.inner).toContain("CRM only is $49 per month");
-    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>Manage every lead and customer relationship in one place</h1>");
+    expect(buildMarketingPrerender("/crm")?.inner).toContain("<h1>A CRM that connects leads, customers and everyday work</h1>");
     expect(buildMarketingPrerender("/he/crm")?.inner).toContain("49 דולר");
     expect(buildMarketingDocumentHead("/he/whatsapp-api") || "").toContain("מה כוללים 29 הדולר?");
     expect(buildMarketingDocumentHead("/crm") || "").toContain("How much does Bizuply CRM cost?");
     expect(buildMarketingDocumentHead("/about") || "").toContain("Our Mission, Approach");
     expect(buildMarketingDocumentHead("/about") || "").toContain("images/about/og.png");
-    expect(buildMarketingPrerender("/about")?.inner).toContain("Built for businesses that want their work connected");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Meet BizUply");
     expect(buildMarketingPrerender("/about")?.inner).toContain("Ready-Made SaaS Solutions");
-    expect(buildMarketingPrerender("/he/about")?.inner).toContain("נבנתה לעסקים שרוצים שהעבודה שלהם תהיה מחוברת");
+    expect(buildMarketingPrerender("/he/about")?.inner).toContain("הכירו את BizUply");
     expect(buildMarketingPrerender("/he/terms")).toBeNull();
     const spanish = buildMarketingDocumentHead("/es/crm") || "";
     expect(spanish).toContain('hreflang="es" href="https://bizuply.com/es/crm"');
@@ -150,9 +165,9 @@ describe("marketing crawl files", () => {
 
   it("keeps Spanish and Portuguese titles distinct where the wording used to match", () => {
     const pairs = [
-      ["/es/agents", "/pt-br/agents", "Agentes del negocio | Bizuply", "Agentes do negócio | Bizuply"],
-      ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | Bizuply", "Restaurantes: contatos no CRM | Bizuply"],
-      ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp API para empresas | Bizuply", "API do WhatsApp para empresas | Bizuply"],
+      ["/es/agents", "/pt-br/agents", "Agentes humanos para leads y seguimiento | BizUply", "Agentes humanos para leads e acompanhamento | BizUply"],
+      ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | BizUply", "Restaurantes: contatos no CRM | BizUply"],
+      ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp Business API para empresas | BizUply", "API do WhatsApp Business para empresas | BizUply"],
     ];
     for (const [esPath, ptPath, esTitle, ptTitle] of pairs) {
       const esHead = buildMarketingDocumentHead(esPath) || "";
@@ -179,7 +194,7 @@ describe("marketing crawl files", () => {
       const head = buildMarketingDocumentHead(route) || "";
       const body = buildMarketingPrerender(route)?.inner || "";
       expect(head.match(/"@type":"FAQPage"/g)?.length).toBe(1);
-      expect(head.match(/"@type":"Question"/g)?.length).toBe(10);
+      expect(head.match(/"@type":"Question"/g)?.length).toBe(HOME_FAQ[locale].length);
       expect(head).toContain(home.faq1q);
       expect(head).toContain(home.faq10a);
       expect(body).toContain('class="hx-hero"');
@@ -190,16 +205,63 @@ describe("marketing crawl files", () => {
       if (locale === "he") {
         expect(body).toContain(">כל</span>");
         expect(body).toContain(">צריך.</span>");
-        expect(body).toContain(">פלטפורמה</span>");
-        expect(body).toContain(">חזקה.</span>");
+        expect(body).toContain(">אחת.</span>");
+        expect(body).toContain("BizUply");
+      } else if (locale === "es") {
+        expect(body).toContain(">Todo</span>");
+        expect(body).toContain(">plataforma.</span>");
+      } else if (locale === "pt-BR") {
+        expect(body).toContain(">Tudo</span>");
+        expect(body).toContain(">plataforma.</span>");
+      } else if (locale === "ar") {
+        expect(body).toContain(">واحدة.</span>");
       } else {
         expect(body).toContain(">Everything</span>");
         expect(body).toContain(">needs.</span>");
-        expect(body).toContain(">One</span>");
         expect(body).toContain(">platform.</span>");
       }
       expect(body).toContain(home.faqTitle);
-      expect(body).toContain(home.faq8a);
+      expect(body).toContain(HOME_FAQ[locale][7][1]);
+    }
+  });
+
+  it("reads the canonical privacy and terms from the locale source", () => {
+    expect(existsSync(path.join(root, "public/legal"))).toBe(false);
+    const flatten = (node: unknown, out: string[]) => {
+      if (typeof node === "string") {
+        const value = node.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+        if (value) out.push(value);
+      } else if (node && typeof node === "object") Object.values(node).forEach((value) => flatten(value, out));
+    };
+    const en = JSON.parse(readFileSync(path.join(root, "src/i18n/locales/en.json"), "utf8"));
+    const privacyText: string[] = [];
+    const termsText: string[] = [];
+    flatten(en.privacyPage, privacyText);
+    flatten(en.termsPage, termsText);
+    const privacy = new Set(privacyText);
+    const terms = new Set(termsText);
+    expect(legalCrawl.privacy.title).toBe(en.privacyPage.title);
+    expect(legalCrawl.terms.title).toBe(en.termsPage.title);
+    expect(legalCrawl.privacy.paragraphs.length).toBeGreaterThan(20);
+    expect(legalCrawl.terms.paragraphs.length).toBeGreaterThan(20);
+    for (const paragraph of legalCrawl.privacy.paragraphs) expect(privacy.has(paragraph)).toBe(true);
+    for (const paragraph of legalCrawl.terms.paragraphs) expect(terms.has(paragraph)).toBe(true);
+    const privacyHtml = buildMarketingPrerender("/privacy")?.inner || "";
+    const termsHtml = buildMarketingPrerender("/terms")?.inner || "";
+    expect(privacyHtml).toContain("Privacy Policy");
+    expect(privacyHtml.length).toBeGreaterThan(4000);
+    expect(termsHtml).toContain("Terms of Service");
+    expect(termsHtml.length).toBeGreaterThan(4000);
+    expect(buildMarketingPrerender("/privacy-policy")?.inner).toBe(privacyHtml);
+    expect(buildMarketingPrerender("/he/terms")).toBeNull();
+    expect(buildMarketingPrerender("/he/privacy")).toBeNull();
+    expect(buildMarketingDocumentHead("/privacy") || "").toContain('rel="canonical" href="https://bizuply.com/privacy"');
+    expect(buildMarketingDocumentHead("/terms") || "").toContain('rel="canonical" href="https://bizuply.com/terms"');
+    expect(buildMarketingDocumentHead("/es/terms") || "").toContain("noindex");
+    for (const locale of ["he", "en", "es", "pt-BR", "ar"]) {
+      const messages = JSON.parse(readFileSync(path.join(root, "src/i18n/locales", `${locale}.json`), "utf8"));
+      expect(messages.privacyPage.title.length).toBeGreaterThan(3);
+      expect(messages.termsPage.title.length).toBeGreaterThan(3);
     }
   });
 });

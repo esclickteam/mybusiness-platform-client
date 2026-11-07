@@ -32,6 +32,7 @@ import {
   startBizuplySocialAuth,
   type SocialProvider,
 } from "../components/auth/socialAuth";
+import { isGeoIntelHost } from "../lib/geoHost.mjs";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -79,6 +80,8 @@ function BusinessLogin() {
   const { fetchNotifications } = useNotifications();
   const { i18n, t } = useTranslation();
   const { whiteLabelEnabled } = usePartnerHostBranding();
+  const geoHost =
+    typeof window !== "undefined" && isGeoIntelHost(window.location.hostname);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -119,11 +122,19 @@ function BusinessLogin() {
   }, []);
 
   useEffect(() => {
+    if (geoHost) {
+      if (normalizeLanguage(i18n.language) !== "he") {
+        void i18n.changeLanguage("he");
+      }
+      document.documentElement.lang = "he";
+      document.documentElement.dir = "rtl";
+      return;
+    }
     const fromUrl = applyLanguageFromUrl();
     if (fromUrl && normalizeLanguage(i18n.language) !== fromUrl) {
       void i18n.changeLanguage(fromUrl);
     }
-  }, [i18n, location.search]);
+  }, [geoHost, i18n, location.search]);
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -593,10 +604,14 @@ function BusinessLogin() {
   }
 
   return (
-    <AuthShell withSiteHeader>
+    <AuthShell withSiteHeader={!geoHost}>
       <AuthCard
-        title={t("login.cardTitle")}
-        subtitle={t("login.cardSubtitle")}
+        title={geoHost ? "נראות במנועי מענה" : t("login.cardTitle")}
+        subtitle={
+          geoHost
+            ? "התחברות למערכת ניטור GEO — בעלים בלבד"
+            : t("login.cardSubtitle")
+        }
       >
         <form
           onSubmit={linkRequired ? handleLinkSubmit : handleSubmit}
@@ -976,7 +991,7 @@ function BusinessLogin() {
             <p className="pt-2 text-center text-sm font-semibold text-slate-600">
               {t("login.oauth.linkKeepData")}
             </p>
-          ) : (
+          ) : geoHost ? null : (
             <p className="pt-2 text-center text-sm font-semibold text-slate-600">
               {t("login.noAccount")}{" "}
               <Link

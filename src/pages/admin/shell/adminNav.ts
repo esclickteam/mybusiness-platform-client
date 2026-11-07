@@ -33,6 +33,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: "/admin/calendar", label: "יומן" },
       { path: "/admin/system", label: "כלים" },
       { path: "/admin/ai-usage", label: "שימוש ב-AI" },
+      { path: "/admin/geo-intel", label: "נראות במנועי מענה" },
       { path: "/admin/logs", label: "יומן מערכת" },
       { path: "/admin/support-chat", label: "תמיכה" },
     ],
@@ -92,6 +93,7 @@ export const NAV_GROUPS: NavGroup[] = [
     id: "partners",
     label: "שותפים",
     items: [
+      { path: "/admin/global-partners", label: "Global Partners" },
       { path: "/admin/partner-center", label: "מרכז שותפים" },
       { path: "/admin/partners", label: "פרטנרים" },
       { path: "/admin/affiliates", label: "אפיליאייטים" },

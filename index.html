@@ -68,6 +68,13 @@
             return match ? decodeURIComponent(match[1]) : null;
           }
 
+          var parts = String(location.pathname || "/").split("/");
+          var pathLocale = normalize(parts[1] || "");
+          var current = pathLocale && pathLocale !== "en" ? pathLocale : "en";
+          var bare = current === "en" ? (location.pathname || "/") : "/" + parts.slice(2).join("/");
+          if (bare.length > 1 && bare.charAt(bare.length - 1) === "/") bare = bare.slice(0, -1);
+          if (!bare) bare = "/";
+
           var lang = null;
 
           try {
@@ -75,13 +82,20 @@
             if (queryLang && queryLang !== "en") lang = queryLang;
           } catch (eUrl) {}
 
+          // Explicit saved preference (LanguageSwitcher) may still remap the URL.
           if (!lang) {
             try {
               lang = normalize(localStorage.getItem("bizuply_lang_preference"));
             } catch (e0) {}
           }
-
           if (!lang) lang = normalize(readCookie("bizuply_lang"));
+
+          // Match marketingLanguageRedirectPath: an explicit /he|/es|/ar|/pt-br URL
+          // stays unless a saved preference above remaps it. Never let browser
+          // language / geo steal /he/partners (and other localized marketing paths).
+          if (!lang && current !== "en") {
+            lang = current;
+          }
           if (!lang) lang = normalize(readCookie("bizuply_geo_lang"));
           if (!lang) {
             try {
@@ -91,12 +105,6 @@
           }
           if (!lang) lang = "en";
 
-          var parts = String(location.pathname || "/").split("/");
-          var pathLocale = normalize(parts[1] || "");
-          var current = pathLocale && pathLocale !== "en" ? pathLocale : "en";
-          var bare = current === "en" ? (location.pathname || "/") : "/" + parts.slice(2).join("/");
-          if (bare.length > 1 && bare.charAt(bare.length - 1) === "/") bare = bare.slice(0, -1);
-          if (!bare) bare = "/";
           var bareFirst = (bare.split("/")[1] || "").toLowerCase();
           var appRoute = {
             business: 1,
@@ -152,6 +160,13 @@
           ) {
             return;
           }
+          // Private GEO Intelligence host — not a customer mini-site.
+          if (host === "geo.bizuply.com" || host === "www.geo.bizuply.com") {
+            document.documentElement.lang = "he";
+            document.documentElement.dir = "rtl";
+            document.documentElement.setAttribute("data-geo-intel-host", "true");
+            return;
+          }
           var publicDomain = "sites.bizuply.com";
           var marketing = {
             "bizuply.com": 1,
@@ -163,7 +178,10 @@
             (host.endsWith("." + publicDomain) && host !== publicDomain) ||
             (host.endsWith(".bizuply.com") &&
               host !== "bizuply.com" &&
-              host !== "www.bizuply.com") ||
+              host !== "www.bizuply.com" &&
+              host !== "app.bizuply.com" &&
+              host !== "geo.bizuply.com" &&
+              host !== "www.geo.bizuply.com") ||
             (!marketing[host] &&
               !/\.vercel\.app$/.test(host) &&
               host.indexOf(".") !== -1);
@@ -331,9 +349,37 @@
           }
           return;
         }
-        document.documentElement.style.background =
-          "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
-        if (document.body) document.body.style.backgroundColor = "#f6f7fb";
+        var path = String(location.pathname || "/");
+        var partnersPath =
+          path === "/partners" ||
+          path === "/partners/" ||
+          /\/(he|es|ar|pt-BR)\/partners\/?$/.test(path);
+        if (partnersPath) {
+          document.documentElement.classList.add("bizuply-partners");
+          document.documentElement.style.background = "#f7f5fd";
+          if (document.body) document.body.style.backgroundColor = "#f7f5fd";
+          return;
+        }
+        var home =
+          path === "/" ||
+          path === "/he" ||
+          path === "/he/" ||
+          path === "/es" ||
+          path === "/es/" ||
+          path === "/ar" ||
+          path === "/ar/" ||
+          path === "/pt-br" ||
+          path === "/pt-br/" ||
+          path === "/home-preview";
+        if (home) {
+          document.documentElement.classList.add("bizuply-home", "hx-preview");
+          document.documentElement.style.background = "#5b21b6";
+          if (document.body) document.body.style.backgroundColor = "#5b21b6";
+        } else {
+          document.documentElement.style.background =
+            "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
+          if (document.body) document.body.style.backgroundColor = "#f6f7fb";
+        }
       })();
     </script>
 
@@ -367,6 +413,20 @@
         color: var(--text);
         font-family: "Assistant", "Inter", system-ui, sans-serif;
         overflow-x: hidden;
+      }
+
+      html.bizuply-home,
+      html.bizuply-home body,
+      html.hx-preview,
+      html.hx-preview body {
+        background: #5b21b6 !important;
+      }
+
+      html.bizuply-home #root,
+      html.hx-preview #root,
+      html.bizuply-home #initial-bg,
+      html.hx-preview #initial-bg {
+        background: #5b21b6 !important;
       }
 
       html[data-wa-host="true"],

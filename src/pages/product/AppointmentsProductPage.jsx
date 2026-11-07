@@ -1,5 +1,5 @@
-import ProductExplainer from "./ProductExplainer";
+import ProductStory from "./ProductStory";
 
 export default function AppointmentsProductPage() {
-  return <ProductExplainer pageKey="appointments" />;
+  return <ProductStory path="/appointments" />;
 }

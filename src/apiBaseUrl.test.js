@@ -32,6 +32,20 @@ describe("resolveApiBaseUrl", () => {
         hostname: "bizuply.co.il",
       })
     ).toBe("/api");
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "geo.bizuply.com",
+      })
+    ).toBe("/api");
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "partners.bizuply.com",
+      })
+    ).toBe("/api");
   });
 
   it("does not treat unrelated vercel.app hosts as this project's preview", () => {

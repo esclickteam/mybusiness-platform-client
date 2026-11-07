@@ -3,23 +3,25 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 function Terms() {
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const sectionBase =
-    "scroll-mt-28 rounded-[2rem] border border-white/80 bg-white/75 p-6 shadow-xl shadow-slate-900/5 backdrop-blur sm:p-8";
+    "scroll-mt-28 rounded-sm border border-violet-100 bg-white p-5 text-slate-800 shadow-sm sm:p-8";
 
   const h2Base =
-    "mb-5 text-2xl font-black tracking-[-0.03em] text-slate-800 sm:text-3xl";
+    "mb-5 text-2xl font-semibold leading-tight tracking-[-0.02em] text-slate-950 sm:text-3xl";
 
   const h3Base =
-    "mb-3 mt-7 text-xl font-black tracking-[-0.02em] text-slate-900";
+    "mb-3 mt-7 text-xl font-semibold leading-snug tracking-[-0.02em] text-slate-950";
 
-  const pBase = "mb-4 text-base font-medium leading-8 text-slate-600";
+  const pBase = "mb-4 max-w-3xl text-base leading-8 text-slate-700";
 
   const ulBase =
-    "mb-5 ms-5 list-disc space-y-2 text-base font-medium leading-8 text-slate-600";
+    "mb-5 ms-5 max-w-3xl list-disc space-y-2 text-base leading-8 text-slate-700";
 
   const strongComponents = { strong: <strong />, br: <br /> };
 
@@ -49,7 +51,7 @@ function Terms() {
       <Helmet>
         <title>{t("termsPage.seoTitle")}</title>
         <meta name="description" content={t("termsPage.seoDesc")} />
-        <link rel="canonical" href="https://bizuply.com/terms" />
+        <link rel="canonical" href={marketingPublicUrl("/terms", locale)} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 

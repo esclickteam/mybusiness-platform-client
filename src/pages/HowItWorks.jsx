@@ -1,6 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import "../styles/publicStage.css";
 
 const stepMeta = [
   {
@@ -43,7 +45,8 @@ const stepMeta = [
 ];
 
 function HowItWorks() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const overviewStats = [
     ["01", t("howItWorks.overviewStat1Label")],
@@ -94,12 +97,12 @@ function HowItWorks() {
   });
 
   return (
-    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
+    <div className="co-page how-stage relative overflow-hidden text-slate-800">
       <Helmet>
         <title>{t("howItWorks.seoTitle")}</title>
         <meta name="description" content={t("howItWorks.seoDescription")} />
         <meta name="keywords" content={t("howItWorks.seoKeywords")} />
-        <link rel="canonical" href="https://bizuply.com/how-it-works" />
+        <link rel="canonical" href={marketingPublicUrl("/how-it-works", locale)} />
         <meta name="robots" content="index, follow" />
 
         <meta property="og:title" content={t("howItWorks.ogTitle")} />
@@ -107,9 +110,9 @@ function HowItWorks() {
           property="og:description"
           content={t("howItWorks.ogDescription")}
         />
-        <meta property="og:url" content="https://bizuply.com/how-it-works" />
+        <meta property="og:url" content={marketingPublicUrl("/how-it-works", locale)} />
         <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:site_name" content="BizUply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
 
         <meta name="twitter:card" content="summary_large_image" />
@@ -131,23 +134,26 @@ function HowItWorks() {
 
       <main className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 lg:px-8 lg:pt-24">
         {/* Hero */}
-        <section className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("howItWorks.badge")}
+        <section className="stage-hero">
+          <div className="stage-split">
+            <div>
+              <p>{t("howItWorks.badge")}</p>
+              <h1>
+                {t("howItWorks.heroTitleTop")}
+                <br />
+                {t("howItWorks.heroTitleHighlight")}
+              </h1>
+              <p>{t("howItWorks.heroSubtitle")}</p>
+            </div>
           </div>
-
-          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-            {t("howItWorks.heroTitleTop")}
-            <br />
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("howItWorks.heroTitleHighlight")}
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            {t("howItWorks.heroSubtitle")}
-          </p>
+          <ol className="stage-rail">
+            {steps.slice(0, 4).map((step) => (
+              <li key={step.key}>
+                <span>{step.number}</span>
+                <strong>{step.title}</strong>
+              </li>
+            ))}
+          </ol>
         </section>
 
         {/* Premium overview */}

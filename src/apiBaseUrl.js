@@ -47,7 +47,14 @@ export function resolveApiBaseUrl({
     host === "bizuply.com" ||
     host === "www.bizuply.com" ||
     host === "bizuply.co.il" ||
-    host === "www.bizuply.co.il"
+    host === "www.bizuply.co.il" ||
+    // Private GEO Intelligence host — same-origin /api proxy so login cookies work
+    // (avoids cross-site SameSite=Lax session loss vs api.bizuply.com).
+    host === "geo.bizuply.com" ||
+    host === "www.geo.bizuply.com" ||
+    // Private Global Partners host — same-origin /api proxy.
+    host === "partners.bizuply.com" ||
+    host === "www.partners.bizuply.com"
   ) {
     return "/api";
   }

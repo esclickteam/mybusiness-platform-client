@@ -101,13 +101,13 @@ export default function CrmProductPage() {
         {
           "@type": "BreadcrumbList",
           itemListElement: [
-            { "@type": "ListItem", position: 1, name: htmlLang === "he" ? "ביזאפלי" : "Bizuply", item: "https://bizuply.com/" },
+            { "@type": "ListItem", position: 1, name: htmlLang === "he" ? "ביזאפלי" : "BizUply", item: "https://bizuply.com/" },
             { "@type": "ListItem", position: 2, name: copy.crumb, item: canonical },
           ],
         },
         {
           "@type": "SoftwareApplication",
-          name: "Bizuply CRM",
+          name: "BizUply CRM",
           alternateName: ["ביזאפלי CRM", "ביזאפלי"],
           applicationCategory: "BusinessApplication",
           operatingSystem: "Web",
@@ -137,7 +137,7 @@ export default function CrmProductPage() {
         <meta property="og:description" content={copy.description} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonical} />
-        <meta property="og:site_name" content="Bizuply" />
+        <meta property="og:site_name" content="BizUply" />
         <meta property="og:locale" content={og} />
         {LOCALES.filter((item) => item.og !== og).map((item) => (
           <meta key={item.og} property="og:locale:alternate" content={item.og} />

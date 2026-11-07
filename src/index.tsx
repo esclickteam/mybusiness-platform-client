@@ -1,11 +1,8 @@
 import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HelmetProvider } from "react-helmet-async";
 import { Buffer } from "buffer";
-
-import { marketingLocaleBasename } from "./lib/localePathCore.mjs";
 
 /* i18n */
 import { i18nReady } from "./i18n/i18n";
@@ -23,8 +20,16 @@ import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import { isPublicCustomerSiteHost } from "./utils/publicSiteHost";
 import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
 import { isBizuplyWhatsAppHost } from "./lib/whatsappHost.mjs";
+import { isMarketingHomePath } from "./lib/homeSessionRedirect.mjs";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
+import SoftLocaleRouter from "./components/SoftLocaleRouter";
 import App from "./App.jsx";
+
+function isMarketingHomeBootPath(pathname: string) {
+  if (isMarketingHomePath(pathname)) return true;
+  const path = String(pathname || "").split(/[?#]/)[0];
+  return path === "/home-preview" || path.endsWith("/home-preview");
+}
 
 /* ==========================================================
    Types
@@ -134,6 +139,8 @@ function AppLoader() {
     return <PublicSiteLoader fullScreen label="Loading" />;
   }
   if (document.getElementById("bizuply-first-paint")) return null;
+  // Marketing home: never splash Bizuply Loading during Suspense boot.
+  if (isMarketingHomeBootPath(window.location.pathname)) return null;
   return <BizuplyLoader fullScreen label="Loading Bizuply..." />;
 }
 
@@ -160,14 +167,8 @@ void i18nReady.finally(() => {
 ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <HelmetProvider>
-      <BrowserRouter
-        basename={marketingLocaleBasename(window.location.pathname)}
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true,
-        }}
-      >
-        <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <SoftLocaleRouter>
           <AuthProvider>
             <NotificationsProvider>
               <LazyRouteBoundary>
@@ -177,8 +178,8 @@ ReactDOM.createRoot(rootElement).render(
               </LazyRouteBoundary>
             </NotificationsProvider>
           </AuthProvider>
-        </QueryClientProvider>
-      </BrowserRouter>
+        </SoftLocaleRouter>
+      </QueryClientProvider>
     </HelmetProvider>
   </React.StrictMode>
 );

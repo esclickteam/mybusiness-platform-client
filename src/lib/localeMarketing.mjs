@@ -3,6 +3,7 @@
  * English stays in marketingSeo.mjs. Hebrew stays in hebrewMarketing.mjs.
  * Prices and product limits match the shipped English and Hebrew pages.
  */
+import { getCoreProductStory } from "./coreProductStories.mjs";
 
 function page(title, description, crumb, h1, paragraphs, faq) {
   return { title, description, crumb, h1, paragraphs, faq: faq || null };
@@ -465,7 +466,7 @@ cloneShape("ar", {
 });
 
 export function getLocaleMarketingPage(path, locale) {
-  return PAGES[locale]?.[path] || null;
+  return getCoreProductStory(path, locale) || PAGES[locale]?.[path] || null;
 }
 
 export function localizedMarketingLocales() {

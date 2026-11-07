@@ -146,6 +146,23 @@ export default function CRMLeadsWorkspace({
   }, []);
 
   useEffect(() => {
+    const status = new URLSearchParams(window.location.search).get("status");
+    const allowedStatus = new Set([
+      "new",
+      "contacted",
+      "in_progress",
+      "interested",
+      "quote",
+      "negotiation",
+      "converted",
+      "lost",
+      "old",
+    ]);
+    if (!status || !allowedStatus.has(status)) return;
+    setState((prev) => (prev.status === status ? prev : { ...prev, status, page: 1 }));
+  }, []);
+
+  useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const leadId = params.get("leadId");
     if (leadId) setOpenLeadId(leadId);
