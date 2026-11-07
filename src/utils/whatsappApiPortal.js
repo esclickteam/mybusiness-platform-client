@@ -13,7 +13,13 @@ export const WHATSAPP_API_DOCS_URL = "https://whatsapp.bizuply.com/docs";
 export const WHATSAPP_API_HELP_URL = "https://whatsapp.bizuply.com/help";
 
 /** Dashboard sections a portal-only account may open. */
-const PORTAL_DASHBOARD_SEGMENTS = new Set(["whatsapp", "billing"]);
+const PORTAL_DASHBOARD_SEGMENTS = new Set([
+  "whatsapp",
+  "billing",
+  "help-center",
+  "articles",
+  "faq",
+]);
 
 /** WhatsApp hub sections that belong to the Business Plan messaging product. */
 const PORTAL_BLOCKED_WHATSAPP_SEGMENTS = new Set([

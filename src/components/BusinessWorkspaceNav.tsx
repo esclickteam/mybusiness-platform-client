@@ -29,6 +29,7 @@ import {
   isModuleEnabled,
   isWhatsappOnlyPackage,
   normalizeEnabledModules,
+  SHOW_GLOBAL_BUSINESS_CLUB_NAV,
 } from "../utils/moduleAccess";
 import {
   hasWhatsAppApiProduct,
@@ -380,7 +381,8 @@ export default function BusinessWorkspaceNav({
       fallback: "Global Business Club",
       to: `${basePath}/dashboard/global-club`,
       icon: Globe2,
-      moduleKey: hideGlobalClub ? "__hidden__" : null,
+      moduleKey:
+        SHOW_GLOBAL_BUSINESS_CLUB_NAV && !hideGlobalClub ? null : "__hidden__",
       demoTarget: "nav-global-club",
     },
     {
@@ -470,6 +472,12 @@ export default function BusinessWorkspaceNav({
       fallback: "Billing & subscription",
       to: `${whatsappBase}/billing`,
       icon: CreditCard,
+    },
+    {
+      labelKey: "businessNav.helpCenter",
+      fallback: "Help Center",
+      to: `${basePath}/dashboard/help-center`,
+      icon: HelpCircle,
     },
     {
       labelKey: "whatsappApiPortal.nav.docs",

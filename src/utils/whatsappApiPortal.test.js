@@ -85,6 +85,9 @@ describe("isWhatsAppApiPortalPathAllowed", () => {
       "/whatsapp/billing",
       "/whatsapp/meta-costs",
       "/billing",
+      "/help-center",
+      "/articles/dashboard-guide",
+      "/faq/profile",
     ]) {
       expect(isWhatsAppApiPortalPathAllowed(dash(rest))).toBe(true);
     }
@@ -105,7 +108,6 @@ describe("isWhatsAppApiPortalPathAllowed", () => {
       "/BizUply",
       "/meta-campaigns/overview",
       "/build",
-      "/help-center",
       "/whatsapp/messages/compose",
       "/whatsapp/inbox",
       "/whatsapp/lists",
