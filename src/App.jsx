@@ -835,22 +835,35 @@ function ScrollToTop() {
   useEffect(() => {
     // A link with a hash opens that section. Other footer and nav links open at the top.
     if (hash) {
+      let stopped = false;
       const scrollToSection = () => {
+        if (stopped) return;
         const id = decodeURIComponent(hash.slice(1));
         const target = id ? document.getElementById(id) : null;
         if (!target) return;
-        target.scrollIntoView({ block: "start" });
+        const top = target.getBoundingClientRect().top;
+        if (Math.abs(top) <= 80) return;
+        let node = target.parentElement;
+        while (node && node !== document.documentElement) {
+          const style = window.getComputedStyle(node);
+          if (node.scrollHeight > node.clientHeight + 20 && /(auto|scroll)/.test(style.overflowY)) {
+            node.scrollTop += top - 12;
+            return;
+          }
+          node = node.parentElement;
+        }
+        window.scrollTo(0, window.scrollY + top - 12);
       };
       scrollToSection();
-      const raf = window.requestAnimationFrame(scrollToSection);
-      const t1 = window.setTimeout(scrollToSection, 0);
-      const t2 = window.setTimeout(scrollToSection, 50);
-      const t3 = window.setTimeout(scrollToSection, 200);
+      const timer = window.setInterval(scrollToSection, 100);
+      const stop = window.setTimeout(() => {
+        stopped = true;
+        window.clearInterval(timer);
+      }, 4000);
       return () => {
-        window.cancelAnimationFrame(raf);
-        window.clearTimeout(t1);
-        window.clearTimeout(t2);
-        window.clearTimeout(t3);
+        stopped = true;
+        window.clearInterval(timer);
+        window.clearTimeout(stop);
       };
     }
 
