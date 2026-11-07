@@ -195,7 +195,7 @@
 .scan-preview__bars { display: grid; gap: 0.4rem; }
 .scan-preview__sheet small { color: var(--muted); line-height: 1.45; }
 
-.scan-report { padding: 0 0 4rem; }
+.scan-report { padding: 0 0 1.5rem; }
 .scan-report__head { display: flex; justify-content: space-between; gap: 1rem; align-items: end; }
 .scan-report__head p { overflow-wrap: anywhere; }
 .scan-report__head a { color: var(--violet); font-weight: 800; }
@@ -262,10 +262,21 @@
 }
 .free-report dl {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 20px;
   margin: 0;
 }
+.audit-note {
+  margin: 0.2rem 0 0;
+  padding: 0.8rem 0.95rem;
+  background: #f5f3ff;
+  color: #3b0764;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.audit-card h3 { margin: 0 0 0.4rem; font-size: 1.12rem; }
+.audit-card p { margin: 0.4rem 0; line-height: 1.55; }
+.audit-card a { overflow-wrap: anywhere; }
 .free-report dt { color: #64748b; font-size: 0.75rem; font-weight: 800; }
 .free-report dd { margin: 0.2rem 0 0; font-weight: 700; overflow-wrap: anywhere; }
 .free-report__meters { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 14px; }

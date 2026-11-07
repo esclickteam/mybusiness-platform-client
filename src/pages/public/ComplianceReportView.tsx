@@ -45,6 +45,11 @@ const COPY: Record<Locale, Record<string, string>> = {
     completed: "הושלמה", failed: "לא הושלמה", running: "בתהליך",
     http: "כותרת HTTP", document: "מסמך", form: "טופס", image: "תמונה", page: "תוכן העמוד",
     empty: "אין ממצאים בקבוצה הזו.",
+    provenTitle: "ליקויים עם ראיה מהסריקה",
+    gapTitle: "חיפושי ניסוח — לא נקבעה הפרה",
+    gapNote: "הנושא לא אותר בניסוח שנבדק. זו אינה קביעה שהאתר מפר חוק.",
+    missingTitle: "מסמכים שלא אותרו אחרי חיפוש",
+    sourceMissing: "לא צורף קישור למקור רשמי, ולכן אין כאן אסמכתה מאומתת.",
   },
   en: {
     newScan: "New scan", pdf: "Download PDF", site: "Site checked", address: "Address", date: "Date", status: "Status",
@@ -66,6 +71,11 @@ const COPY: Record<Locale, Record<string, string>> = {
     completed: "Completed", failed: "Not completed", running: "Running",
     http: "HTTP header", document: "Document", form: "Form", image: "Image", page: "Page content",
     empty: "No findings in this group.",
+    provenTitle: "Findings with evidence from the scan",
+    gapTitle: "Wording searches — not a legal finding",
+    gapNote: "The topic was not found in the wording that was checked. This is not a finding that the site breaks the law.",
+    missingTitle: "Documents the search did not find",
+    sourceMissing: "No official source link was attached, so this is not a verified citation.",
   },
   es: {
     newScan: "Nuevo análisis", pdf: "Descargar PDF", site: "Sitio revisado", address: "Dirección", date: "Fecha", status: "Estado",
@@ -160,8 +170,21 @@ function statusLabel(status: string, copy: Record<string, string>) {
 
 function kindOf(item: Finding, copy: Record<string, string>) {
   if (String(item.checkId || "").startsWith("security.")) return copy.kindTechnical;
-  if (item.obligationLevel === "possible_legal") return copy.kindLegal;
+  if (item.obligationLevel === "possible_legal" && item.source?.url) return copy.kindLegal;
   return copy.kindAdvice;
+}
+
+function bandOf(item: Finding) {
+  if (item.outcome === "owner") return "owner";
+  if (item.outcome === "gap") return "gap";
+  if (item.outcome === "incomplete" || item.outcome === "uncertain") return "unverified";
+  if (item.outcome === "pass") return "pass";
+  const evidence = String(item.evidence || "");
+  if (/לא נמצא ניסוח שמזוהה/.test(evidence)) return "gap";
+  if ((item.obligationLevel === "possible_legal" || (item as Finding & { level?: string }).level === "possible_legal") && !item.source?.url) return "gap";
+  if (/החיפוש אחרי/.test(evidence) || /לא אותר/.test(String(item.title || ""))) return "missing";
+  if (item.outcome === "finding") return "proven";
+  return "unverified";
 }
 
 export function ComplianceReportView({
@@ -175,25 +198,28 @@ export function ComplianceReportView({
 }) {
   const copy = { ...COPY.en, ...(COPY[locale] || {}) };
   const report = payload?.report || {};
-  const [filter, setFilter] = useState("all");
+  const [filter, setFilter] = useState("action");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const findings: Finding[] = report.findings || [];
-  const unfinished = findings.filter((item) => item.outcome === "incomplete" || item.outcome === "uncertain");
-  const ownerChecks = findings.filter((item) => item.outcome === "owner");
+  const unfinished = findings.filter((item) => bandOf(item) === "unverified");
+  const ownerChecks = findings.filter((item) => bandOf(item) === "owner");
+  const gaps = findings.filter((item) => bandOf(item) === "gap");
+  const missingDocs = findings.filter((item) => bandOf(item) === "missing");
   const visible = useMemo(() => findings.filter((item) => {
-    if (filter === "all") return item.outcome !== "incomplete" && item.outcome !== "uncertain" && item.outcome !== "owner";
-    if (filter === "action") return item.outcome === "finding";
-    if (filter === "pass") return item.outcome === "pass";
-    if (filter === "unverified") return item.outcome === "incomplete" || item.outcome === "uncertain";
-    if (filter === "other") return item.outcome !== "finding" && item.outcome !== "pass" && item.outcome !== "incomplete" && item.outcome !== "owner";
+    const band = bandOf(item);
+    if (filter === "all") return band === "proven" || band === "pass" || band === "missing";
+    if (filter === "action") return band === "proven" || band === "missing";
+    if (filter === "pass") return band === "pass";
+    if (filter === "unverified") return band === "unverified" || band === "gap";
+    if (filter === "other") return band === "owner";
     return true;
   }), [findings, filter]);
   const counts = {
-    pass: findings.filter((item) => item.outcome === "pass").length,
-    action: findings.filter((item) => item.outcome === "finding").length,
-    unknown: findings.filter((item) => item.outcome === "incomplete" || item.outcome === "uncertain").length,
+    pass: findings.filter((item) => bandOf(item) === "pass").length,
+    action: findings.filter((item) => bandOf(item) === "proven" || bandOf(item) === "missing").length,
+    unknown: unfinished.length + gaps.length,
   };
-  const actions = [...findings].filter((item) => item.outcome === "finding" && item.recommendation).slice(0, 6);
+  const actions = findings.filter((item) => (bandOf(item) === "proven" || bandOf(item) === "missing") && item.recommendation).slice(0, 8);
   const status = payload?.status === "completed" ? copy.completed : payload?.status === "failed" ? copy.failed : copy.running;
   const placeLabel = (place?: string) => copy[place === "http-header" ? "http" : place || ""] || place || "";
 
@@ -213,7 +239,7 @@ export function ComplianceReportView({
       </header>
       <div className="scan-scores">
         <article>
-          <b>{report.scores?.overall?.withheld ? "—" : (report.scores?.technical?.value ?? "—")}<small>/100</small></b>
+          <b>{(report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—"}<small>/100</small></b>
           <span>{copy.score}</span>
           <small>{copy.scoreHelp}</small>
         </article>
@@ -229,6 +255,9 @@ export function ComplianceReportView({
         <article><b>{report.documents?.filter((item: { state?: string }) => item.state === "not_found_after_scan").length || 0}</b><span>{copy.missing}</span></article>
         <article><b>{counts.unknown}</b><span>{copy.unknown}</span></article>
       </div>
+      {filter === "action" && (
+        <p className="audit-note">{copy.provenTitle}: {counts.action - missingDocs.length}. {copy.missingTitle}: {missingDocs.length}. {copy.gapTitle}: {gaps.length}.</p>
+      )}
       <div className="scan-filters">
         {(["all", "action", "pass", "unverified", "other"] as const).map((item) => (
           <button key={item} type="button" className={filter === item ? "is-on" : ""} onClick={() => setFilter(item)}>{copy[item]}</button>
@@ -245,32 +274,32 @@ export function ComplianceReportView({
           const located = item.locationVerified === false ? false : Boolean(item.url);
           const detail = detailOf(item, copy);
           const level = copy[item.severity || "info"] || item.severity;
+          const band = bandOf(item);
+          const sourceUrl = String(detail.lawUrl || "");
           return (
-            <article key={key} className={`sev-${item.severity || "info"}`}>
-              <details>
-                <summary><h3>{item.title}</h3></summary>
-                <p className="scan-pills"><span>{statusLabel(String(detail.status || ""), copy)}</span><span>{copy.severity}: {level}</span><span>{kindOf(item, copy)}</span></p>
-                <p><strong>{copy.checked}. </strong>{item.title}</p>
-                <p><strong>{copy.found}. </strong>{quote ? item.description : copy.incomplete}</p>
-                {detail.gap ? <p><strong>{copy.gap}. </strong>{String(detail.gap)}</p> : null}
-                <p><strong>{copy.why}. </strong>{String(detail.why || item.explanation || item.description || "")}</p>
-                {(detail.change || item.recommendation) && <p><strong>{copy.fix}. </strong>{String(detail.change || item.recommendation)}</p>}
-                {detail.proposedText ? <p><strong>{copy.draft}. </strong>{String(detail.proposedText)}</p> : null}
-                <p><strong>{copy.verify}. </strong>{String(detail.verify || "")}</p>
-                <p><strong>{copy.where}. </strong>{located ? `${item.pageTitle || hostName(item.url) || ""} · ${placeLabel(item.place)}` : copy.unknownPlace}</p>
-                <p><strong>{copy.section}. </strong>{detail.sectionVerified ? String(detail.sectionTitle || "") : copy.noSection}</p>
-                <p><strong>{copy.law}. </strong>{detail.lawName ? <>{String(detail.lawName)} {detail.lawUrl ? <a href={String(detail.lawUrl)} target="_blank" rel="noopener noreferrer">{String(detail.lawUrl)}</a> : null}</> : copy.noLaw}</p>
-                {located && item.url && <p><a href={item.url} target="_blank" rel="noopener noreferrer">{copy.open}</a></p>}
-                {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
-                {quote && (
-                  <blockquote>
-                    <span>{item.evidenceLabel || copy.quote}</span>
-                    <p dir="auto">{expanded ? quote : preview}</p>
-                    {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
-                    {item.evidenceNote && <small>{item.evidenceNote}</small>}
-                  </blockquote>
-                )}
-              </details>
+            <article key={key} className={`sev-${item.severity || "info"} audit-card`}>
+              <h3>{item.title}</h3>
+              <p className="scan-pills"><span>{band === "gap" ? copy.gapTitle : statusLabel(String(detail.status || ""), copy)}</span><span>{copy.severity}: {level}</span><span>{kindOf(item, copy)}</span></p>
+              {band === "gap" ? <p className="audit-note">{copy.gapNote}</p> : null}
+              <p><strong>{copy.checked}. </strong>{item.description || item.title}</p>
+              <p><strong>{copy.found}. </strong>{item.evidence || item.description || copy.incomplete}</p>
+              {band !== "pass" && detail.gap ? <p><strong>{copy.gap}. </strong>{String(detail.gap)}</p> : null}
+              <p><strong>{copy.why}. </strong>{String(detail.why || item.explanation || item.description || "")}</p>
+              {(detail.change || item.recommendation) && <p><strong>{copy.fix}. </strong>{String(detail.change || item.recommendation)}</p>}
+              {detail.proposedText && band !== "gap" ? <p><strong>{copy.draft}. </strong>{String(detail.proposedText)}</p> : null}
+              <p><strong>{copy.verify}. </strong>{String(detail.verify || "")}</p>
+              <p><strong>{copy.where}. </strong>{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}{located && item.pageTitle ? ` · ${item.pageTitle}` : ""}{placeLabel(item.place) ? ` · ${placeLabel(item.place)}` : ""}</p>
+              {detail.sectionVerified ? <p><strong>{copy.section}. </strong>{String(detail.sectionTitle || "")}</p> : null}
+              <p><strong>{copy.law}. </strong>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> : copy.sourceMissing}</p>
+              {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
+              {quote && (
+                <blockquote>
+                  <span>{item.evidenceLabel || copy.quote}</span>
+                  <p dir="auto">{expanded ? quote : preview}</p>
+                  {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
+                  {item.evidenceNote && <small>{item.evidenceNote}</small>}
+                </blockquote>
+              )}
             </article>
           );
         })}

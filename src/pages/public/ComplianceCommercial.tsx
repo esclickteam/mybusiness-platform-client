@@ -230,7 +230,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     once: "חד־פעמי",
     offerBody: "הרכישה פותחת את פירוט הממצאים, הראיות, ההמלצות ותוכנית התיקון, וגם קובץ PDF. אף אחד מהפרטים האלה לא מופיע כאן.",
     unavailable: "הסליקה אינה זמינה כרגע. לא מתבצע חיוב, והדוח המלא נשאר סגור.",
-    check: "בדיקת זמינות הרכישה",
+    check: "רכישת הדוח המלא — ₪149",
   },
   en: {
     kicker: "Scan report",
@@ -261,7 +261,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     once: "One time",
     offerBody: "The purchase opens the findings, evidence, recommendations, action plan, and the PDF. None of that detail is shown here.",
     unavailable: "Checkout is temporarily unavailable. Nothing is charged, and the full report stays closed.",
-    check: "Check purchase availability",
+    check: "Buy the full report — ₪149",
   },
   es: {
     kicker: "Informe de análisis",
@@ -292,7 +292,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     once: "Pago único",
     offerBody: "La compra abre los hallazgos, las pruebas, las recomendaciones, el plan de acción y el PDF. Ninguno de esos detalles aparece aquí.",
     unavailable: "El cobro no está disponible por ahora. No se realiza ningún cargo y el informe completo sigue cerrado.",
-    check: "Comprobar disponibilidad de compra",
+    check: "Comprar el informe completo — ₪149",
   },
   "pt-BR": {
     kicker: "Relatório da análise",
@@ -323,7 +323,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     once: "Pagamento único",
     offerBody: "A compra abre os achados, as evidências, as recomendações, o plano de ação e o PDF. Nenhum desses detalhes aparece aqui.",
     unavailable: "A cobrança está indisponível no momento. Nada é cobrado e o relatório completo continua fechado.",
-    check: "Verificar disponibilidade da compra",
+    check: "Comprar o relatório completo — ₪149",
   },
   ar: {
     kicker: "تقرير الفحص",
@@ -354,7 +354,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     once: "مرة واحدة",
     offerBody: "يفتح الشراء تفاصيل النتائج والأدلة والتوصيات وخطة الإصلاح وملف PDF. لا تظهر أي من هذه التفاصيل هنا.",
     unavailable: "التحصيل غير متاح حاليًا. لا يتم أي خصم، ويبقى التقرير الكامل مغلقًا.",
-    check: "التحقق من توفر الشراء",
+    check: "شراء التقرير الكامل — ₪149",
   },
 };
 
@@ -436,9 +436,11 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
 
 export function RequirementTable({ locale, rows }: { locale: Locale; rows: any[] }) {
   const copy = TEXT[locale] || TEXT.en;
+  const shown = rows.filter((row) => row.url);
   return (
     <div className="scan-requirements">
-      {rows.map((row) => (
+      {shown.length < rows.length ? <p>{copy.unverifiedSource || copy.manual}</p> : null}
+      {shown.map((row) => (
         <article key={row.id || row.law}>
           <h3>{row.law || row.section || row.id}</h3>
           <p>{copy.scope}: {row.country || "—"} {row.section || ""}</p>
