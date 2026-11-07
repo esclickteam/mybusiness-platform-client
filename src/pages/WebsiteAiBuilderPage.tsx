@@ -144,9 +144,6 @@ export default function WebsiteAiBuilderPage() {
         });
         if (!site?._id) throw new Error("create");
         const visual = {
-          __aiStudioPage: true,
-          __blankVisualPage: true,
-          __libraryPage: true,
           __aiDocument: current.editorHtml,
           __aiCss: current.editorCss || "",
         };
