@@ -33,6 +33,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     all: "הכול", action: "דורש טיפול", pass: "תקין", unverified: "לא ניתן לאימות", other: "לא רלוונטי",
     checked: "מה נבדק", found: "מה נמצא", why: "למה זה חשוב", fix: "מה מומלץ לעשות", where: "איפה זה נמצא",
     open: "פתחו את העמוד", technical: "פרטים טכניים", quote: "ציטוט מהמקור", more: "הציגו את הציטוט המלא", less: "הציגו פחות",
+    severity: "חומרה", certainty: "רמת ודאות", kind: "סוג הממצא", gap: "מה חסר או אינו תקין", law: "מקור", noLaw: "לא צורף מקור מוסמך לממצא זה",
+    section: "סעיף", noSection: "כותרת הסעיף לא זוהתה", draft: "נוסח מוצע", verify: "איך לוודא שהתיקון בוצע",
+    plan: "תוכנית הפעולה לתיקון האתר", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
+    purpose: "המטרה באתר זה לא אומתה", consent: "לפני הסכמה ואחריה: לא נבדק",
+    okStatus: "תקין", missingStatus: "חסר", fixStatus: "דורש תיקון", unverifiedStatus: "לא ניתן לאימות", otherStatus: "לא רלוונטי",
+    high: "גבוהה", medium: "בינונית", low: "נמוכה", info: "לידיעה",
+    highC: "גבוהה", mediumC: "בינונית", lowC: "נמוכה",
     incomplete: "הבדיקה לא הושלמה כי לא נמצא ציטוט שלם.", unknownPlace: "המיקום המדויק לא אומת",
     kindLegal: "דרישה שמופיעה במקור שאומת", kindTechnical: "סיכון טכני", kindAdvice: "המלצה",
     completed: "הושלמה", failed: "לא הושלמה", running: "בתהליך",
@@ -47,6 +54,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     all: "All", action: "Needs attention", pass: "Sound", unverified: "Could not verify", other: "Not applicable",
     checked: "What was checked", found: "What was found", why: "Why it matters", fix: "What to do", where: "Where it is",
     open: "Open the page", technical: "Technical details", quote: "Source quote", more: "Show the full quote", less: "Show less",
+    severity: "Severity", certainty: "Certainty", kind: "Type", gap: "What is missing or wrong", law: "Source", noLaw: "No verified source was attached to this finding",
+    section: "Section", noSection: "No section heading was identified", draft: "Suggested wording", verify: "How to confirm the fix",
+    plan: "What to fix on the site", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
+    purpose: "The purpose on this site was not verified", consent: "Before and after consent: not checked",
+    okStatus: "Sound", missingStatus: "Missing", fixStatus: "Needs a fix", unverifiedStatus: "Could not verify", otherStatus: "Not applicable",
+    high: "High", medium: "Medium", low: "Low", info: "Note",
+    highC: "High", mediumC: "Medium", lowC: "Low",
     incomplete: "The check was not finished because a complete quote was not found.", unknownPlace: "The exact location was not verified",
     kindLegal: "A requirement from a verified source", kindTechnical: "Technical risk", kindAdvice: "Recommendation",
     completed: "Completed", failed: "Not completed", running: "Running",
@@ -113,6 +127,34 @@ function wholeQuote(item: Finding) {
   return "";
 }
 
+function detailOf(item: Finding, copy: Record<string, string>) {
+  const server = (item as Finding & { detail?: Record<string, unknown> }).detail;
+  if (server) return server as Record<string, unknown>;
+  const status = item.outcome === "pass" ? "ok" : item.outcome === "incomplete" || item.outcome === "uncertain" ? "unverified" : item.outcome === "finding" ? "fix" : "other";
+  return {
+    status,
+    certainty: item.confidence || "medium",
+    found: item.description || "",
+    gap: status === "ok" ? "" : (item.description || ""),
+    why: item.explanation || item.description || "",
+    change: item.recommendation || "",
+    proposedText: "",
+    verify: item.url ? copy.verify : copy.unknownPlace,
+    lawName: item.source?.name || "",
+    lawUrl: item.source?.url || "",
+    sectionVerified: false,
+    needsLegalReview: false,
+  };
+}
+
+function statusLabel(status: string, copy: Record<string, string>) {
+  if (status === "ok") return copy.okStatus;
+  if (status === "missing") return copy.missingStatus;
+  if (status === "fix") return copy.fixStatus;
+  if (status === "unverified") return copy.unverifiedStatus;
+  return copy.otherStatus;
+}
+
 function kindOf(item: Finding, copy: Record<string, string>) {
   if (String(item.checkId || "").startsWith("security.")) return copy.kindTechnical;
   if (item.obligationLevel === "possible_legal") return copy.kindLegal;
@@ -128,7 +170,7 @@ export function ComplianceReportView({
   payload: any;
   onPdf: () => void;
 }) {
-  const copy = COPY[locale] || COPY.en;
+  const copy = { ...COPY.en, ...(COPY[locale] || {}) };
   const report = payload?.report || {};
   const [filter, setFilter] = useState("all");
   const [open, setOpen] = useState<Record<string, boolean>>({});
@@ -195,39 +237,64 @@ export function ComplianceReportView({
           const preview = quote.length > 180 && !expanded ? `${quote.slice(0, quote.lastIndexOf(" ", 180) > 40 ? quote.lastIndexOf(" ", 180) : 180)}.` : quote;
           const pages = (item.pages || []).filter(Boolean);
           const located = item.locationVerified === false ? false : Boolean(item.url);
+          const detail = detailOf(item, copy);
+          const level = copy[item.severity || "info"] || item.severity;
           return (
             <article key={key} className={`sev-${item.severity || "info"}`}>
-              <h3>{item.title}</h3>
-              <p className="scan-pills"><span>{item.outcome}</span><span>{item.severity}</span><span>{kindOf(item, copy)}</span></p>
-              <p><strong>{copy.checked}. </strong>{item.title}</p>
-              <p><strong>{copy.found}. </strong>{quote ? item.description : copy.incomplete}</p>
-              <p><strong>{copy.why}. </strong>{item.explanation || item.description}</p>
-              {item.recommendation && <p><strong>{copy.fix}. </strong>{item.recommendation}</p>}
-              <p><strong>{copy.where}. </strong>{located ? `${item.pageTitle || hostName(item.url) || ""} · ${placeLabel(item.place)}` : copy.unknownPlace}</p>
-              {located && item.url && <p><a href={item.url} target="_blank" rel="noopener noreferrer">{copy.open}</a></p>}
-              {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
-              {quote && (
-                <blockquote>
-                  <span>{item.evidenceLabel || copy.quote}</span>
-                  <p dir="auto">{expanded ? quote : preview}</p>
-                  {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
-                  {item.evidenceNote && <small>{item.evidenceNote}</small>}
-                </blockquote>
-              )}
-              {(item.selector || item.checkId) && (
-                <details>
-                  <summary>{copy.technical}</summary>
-                  <p dir="ltr">{item.checkId}{item.selector ? ` · ${item.selector}` : ""}{item.place === "http-header" && item.url ? ` · ${item.url}` : ""}</p>
-                </details>
-              )}
+              <details>
+                <summary><h3>{item.title}</h3></summary>
+                <p className="scan-pills"><span>{statusLabel(String(detail.status || ""), copy)}</span><span>{copy.severity}: {level}</span><span>{kindOf(item, copy)}</span></p>
+                <p><strong>{copy.checked}. </strong>{item.title}</p>
+                <p><strong>{copy.found}. </strong>{quote ? item.description : copy.incomplete}</p>
+                {detail.gap ? <p><strong>{copy.gap}. </strong>{String(detail.gap)}</p> : null}
+                <p><strong>{copy.why}. </strong>{String(detail.why || item.explanation || item.description || "")}</p>
+                {(detail.change || item.recommendation) && <p><strong>{copy.fix}. </strong>{String(detail.change || item.recommendation)}</p>}
+                {detail.proposedText ? <p><strong>{copy.draft}. </strong>{String(detail.proposedText)}</p> : null}
+                <p><strong>{copy.verify}. </strong>{String(detail.verify || "")}</p>
+                <p><strong>{copy.where}. </strong>{located ? `${item.pageTitle || hostName(item.url) || ""} · ${placeLabel(item.place)}` : copy.unknownPlace}</p>
+                <p><strong>{copy.section}. </strong>{detail.sectionVerified ? String(detail.sectionTitle || "") : copy.noSection}</p>
+                <p><strong>{copy.law}. </strong>{detail.lawName ? <>{String(detail.lawName)} {detail.lawUrl ? <a href={String(detail.lawUrl)} target="_blank" rel="noopener noreferrer">{String(detail.lawUrl)}</a> : null}</> : copy.noLaw}</p>
+                {located && item.url && <p><a href={item.url} target="_blank" rel="noopener noreferrer">{copy.open}</a></p>}
+                {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
+                {quote && (
+                  <blockquote>
+                    <span>{item.evidenceLabel || copy.quote}</span>
+                    <p dir="auto">{expanded ? quote : preview}</p>
+                    {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
+                    {item.evidenceNote && <small>{item.evidenceNote}</small>}
+                  </blockquote>
+                )}
+              </details>
             </article>
           );
         })}
       </div>
       <section className="scan-actions">
-        <h2>{copy.first}</h2>
+        <h2>{copy.tools}</h2>
+        {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
+          <ul>
+            {(report.trackers || []).map((tool: { name?: string; pageUrl?: string }) => (
+              <li key={`${tool.name}-${tool.pageUrl}`}><strong>{tool.name}</strong><p dir="ltr">{tool.pageUrl}</p><p>{copy.purpose}. {copy.consent}.</p></li>
+            ))}
+          </ul>
+        )}
+      </section>
+      <section className="scan-actions">
+        <h2>{copy.plan}</h2>
         <ol>
-          {actions.map((item) => <li key={item.checkId}><strong>{item.title}</strong><p>{item.recommendation}</p></li>)}
+          {actions.map((item) => {
+            const detail = detailOf(item, copy);
+            const located = item.locationVerified === false ? false : Boolean(item.url);
+            return (
+              <li key={item.checkId}>
+                <strong>{item.title}</strong>
+                <p>{located ? item.url : copy.unknownPlace}</p>
+                <p>{String(detail.change || item.recommendation || "")}</p>
+                {detail.proposedText ? <p>{String(detail.proposedText)}</p> : null}
+                <p>{String(detail.verify || "")}</p>
+              </li>
+            );
+          })}
         </ol>
       </section>
     </section>

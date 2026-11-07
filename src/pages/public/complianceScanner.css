@@ -108,6 +108,8 @@
 .scan-cards { display: grid; gap: 0.8rem; }
 .scan-cards article { padding: 1rem 1.1rem; }
 .scan-cards h3 { margin: 0 0 0.4rem; }
+.scan-cards summary { cursor: pointer; list-style: none; }
+.scan-cards summary h3 { display: inline; }
 .scan-plans article { min-height: 180px; }
 @media (max-width: 860px) {
   .scan-steps, .scan-summary-grid, .scan-mast, .scan-launch { display: grid; grid-template-columns: 1fr; }
