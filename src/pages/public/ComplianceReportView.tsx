@@ -35,7 +35,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     open: "פתחו את העמוד", technical: "פרטים טכניים", quote: "ציטוט מהמקור", more: "הציגו את הציטוט המלא", less: "הציגו פחות",
     severity: "חומרה", certainty: "רמת ודאות", kind: "סוג הממצא", gap: "מה חסר או אינו תקין", law: "מקור", noLaw: "לא צורף מקור מוסמך לממצא זה",
     section: "סעיף", noSection: "כותרת הסעיף לא זוהתה", draft: "נוסח מוצע", verify: "איך לוודא שהתיקון בוצע",
-    plan: "תוכנית הפעולה לתיקון האתר", unfinished: "בדיקות שלא ניתן היה להשלים", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
+    plan: "תוכנית הפעולה לתיקון האתר", unfinished: "בדיקות שלא ניתן היה להשלים", owner: "בדיקות שדורשות מידע מבעל האתר", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
     purpose: "המטרה באתר זה לא אומתה", consent: "לפני הסכמה ואחריה: לא נבדק",
     okStatus: "תקין", missingStatus: "חסר", fixStatus: "דורש תיקון", unverifiedStatus: "לא ניתן לאימות", otherStatus: "לא רלוונטי",
     high: "גבוהה", medium: "בינונית", low: "נמוכה", info: "לידיעה",
@@ -56,7 +56,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     open: "Open the page", technical: "Technical details", quote: "Source quote", more: "Show the full quote", less: "Show less",
     severity: "Severity", certainty: "Certainty", kind: "Type", gap: "What is missing or wrong", law: "Source", noLaw: "No verified source was attached to this finding",
     section: "Section", noSection: "No section heading was identified", draft: "Suggested wording", verify: "How to confirm the fix",
-    plan: "What to fix on the site", unfinished: "Checks that could not be completed", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
+    plan: "What to fix on the site", unfinished: "Checks that could not be completed", owner: "Checks that need information from the site owner", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
     purpose: "The purpose on this site was not verified", consent: "Before and after consent: not checked",
     okStatus: "Sound", missingStatus: "Missing", fixStatus: "Needs a fix", unverifiedStatus: "Could not verify", otherStatus: "Not applicable",
     high: "High", medium: "Medium", low: "Low", info: "Note",
@@ -76,6 +76,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     checked: "Qué se revisó", found: "Qué se encontró", why: "Por qué importa", fix: "Qué hacer", where: "Dónde está",
     open: "Abrir la página", technical: "Detalles técnicos", quote: "Cita de la fuente", more: "Ver la cita completa", less: "Ver menos",
     incomplete: "La prueba no terminó porque no hubo una cita completa.", unknownPlace: "La ubicación exacta no se verificó",
+    owner: "Comprobaciones que requieren datos del titular del sitio", unfinished: "Comprobaciones que no se pudieron completar",
     kindLegal: "Requisito de una fuente verificada", kindTechnical: "Riesgo técnico", kindAdvice: "Recomendación",
     completed: "Completado", failed: "No completado", running: "En curso",
     http: "Cabecera HTTP", document: "Documento", form: "Formulario", image: "Imagen", page: "Contenido",
@@ -90,6 +91,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     checked: "O que foi verificado", found: "O que foi encontrado", why: "Por que importa", fix: "O que fazer", where: "Onde está",
     open: "Abrir a página", technical: "Detalhes técnicos", quote: "Citação da fonte", more: "Mostrar a citação completa", less: "Mostrar menos",
     incomplete: "A verificação não terminou porque não havia uma citação completa.", unknownPlace: "O local exato não foi verificado",
+    owner: "Verificações que exigem informação do dono do site", unfinished: "Verificações que não puderam ser concluídas",
     kindLegal: "Exigência de uma fonte verificada", kindTechnical: "Risco técnico", kindAdvice: "Recomendação",
     completed: "Concluída", failed: "Não concluída", running: "Em andamento",
     http: "Cabeçalho HTTP", document: "Documento", form: "Formulário", image: "Imagem", page: "Conteúdo",
@@ -104,6 +106,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     checked: "ما تم فحصه", found: "ما وُجد", why: "لماذا هذا مهم", fix: "ماذا يُنصح بفعله", where: "أين وُجد",
     open: "افتحوا الصفحة", technical: "تفاصيل تقنية", quote: "اقتباس من المصدر", more: "اعرضوا الاقتباس كاملًا", less: "اعرضوا أقل",
     incomplete: "لم يكتمل الفحص لأنه لم يُعثر على اقتباس كامل.", unknownPlace: "لم يُتحقق من الموقع الدقيق",
+    owner: "فحوصات تتطلب معلومات من صاحب الموقع", unfinished: "فحوصات تعذر إكمالها",
     kindLegal: "متطلب من مصدر تم التحقق منه", kindTechnical: "خطر تقني", kindAdvice: "توصية",
     completed: "اكتمل", failed: "لم يكتمل", running: "قيد التنفيذ",
     http: "ترويسة HTTP", document: "مستند", form: "نموذج", image: "صورة", page: "محتوى الصفحة",
@@ -176,12 +179,13 @@ export function ComplianceReportView({
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const findings: Finding[] = report.findings || [];
   const unfinished = findings.filter((item) => item.outcome === "incomplete" || item.outcome === "uncertain");
+  const ownerChecks = findings.filter((item) => item.outcome === "owner");
   const visible = useMemo(() => findings.filter((item) => {
-    if (filter === "all") return item.outcome !== "incomplete" && item.outcome !== "uncertain";
+    if (filter === "all") return item.outcome !== "incomplete" && item.outcome !== "uncertain" && item.outcome !== "owner";
     if (filter === "action") return item.outcome === "finding";
     if (filter === "pass") return item.outcome === "pass";
     if (filter === "unverified") return item.outcome === "incomplete" || item.outcome === "uncertain";
-    if (filter === "other") return item.outcome !== "finding" && item.outcome !== "pass" && item.outcome !== "incomplete";
+    if (filter === "other") return item.outcome !== "finding" && item.outcome !== "pass" && item.outcome !== "incomplete" && item.outcome !== "owner";
     return true;
   }), [findings, filter]);
   const counts = {
@@ -287,12 +291,28 @@ export function ComplianceReportView({
           )}
         </section>
       )}
+      {filter === "all" && (
+        <section className="scan-actions">
+          <h2>{copy.owner}</h2>
+          {ownerChecks.length === 0 ? <p>{copy.empty}</p> : (
+            <ul>
+              {ownerChecks.map((item, index) => (
+                <li key={`${item.checkId}-owner-${index}`}>
+                  <strong>{item.title}</strong>
+                  <p>{item.description}</p>
+                  <p>{item.recommendation}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+      )}
       <section className="scan-actions">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
           <ul>
-            {(report.trackers || []).map((tool: { name?: string; pageUrl?: string }) => (
-              <li key={`${tool.name}-${tool.pageUrl}`}><strong>{tool.name}</strong><p dir="ltr">{tool.pageUrl}</p><p>{copy.purpose}. {copy.consent}.</p></li>
+            {(report.trackers || []).map((tool: { name?: string; pageUrl?: string; beforeConsent?: string }) => (
+              <li key={`${tool.name}-${tool.pageUrl}`}><strong>{tool.name}</strong><p dir="ltr">{tool.pageUrl}</p><p>{copy.purpose}. {tool.beforeConsent || copy.consent}</p></li>
             ))}
           </ul>
         )}
