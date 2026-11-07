@@ -48,7 +48,7 @@ export default function PlatformConsentBanner() {
       <p>{t("trackingConsent.essentialBody")}</p>
       <p>{t("trackingConsent.measurementBody")}</p>
       <p>
-        {t("trackingConsent.change")} {t("trackingConsent.more")}{" "}
+        {t("trackingConsent.change")} {t("trackingConsent.more")}
         <Link to="/privacy">{t("trackingConsent.policy")}</Link>
       </p>
       <div className="cookie-banner__actions">
