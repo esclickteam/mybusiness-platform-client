@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
 
 const TEXT: Record<Locale, Record<string, string>> = {
@@ -24,6 +22,14 @@ const TEXT: Record<Locale, Record<string, string>> = {
     categories: "קטגוריות", accessibility: "נגישות", security: "אבטחה", privacy: "פרטיות", cookies: "עוגיות",
     when: "תאריך ומדינה",
     locked: "הדוח המלא נשאר בשרת עד אימות עסקה.",
+    buy: "רכישת הדוח המלא — ₪149",
+    buyNote: "הרכישה פותחת את פירוט הממצאים, הראיות, הצעות התיקון ותוכנית הפעולה, וגם הורדת PDF. הפירוט עצמו לא מוצג לפני אימות התשלום.",
+    okCount: "בדיקות תקינות",
+    actionCount: "ממצאים שדורשים טיפול",
+    missingCount: "חוסרים",
+    unverifiedCount: "בדיקות שלא ניתן היה לאמת",
+    site: "האתר שנבדק",
+    scanStatus: "סטטוס הסריקה",
     sample: "הצגת מבנה הדוח",
     sampleNote: "המחשה של מבנה הדוח. אלה לא ממצאים של האתר שנסרק.",
     law: "חוק או תקן",
@@ -72,6 +78,14 @@ const TEXT: Record<Locale, Record<string, string>> = {
     cookies: "Cookies",
     when: "Date and country",
     locked: "The full report stays on the server until a payment is verified.",
+    buy: "Buy the full report — ₪149",
+    buyNote: "The purchase opens the findings, evidence, fixes, action plan, and the PDF. None of that detail is shown before payment is verified.",
+    okCount: "Checks that passed",
+    actionCount: "Findings that need action",
+    missingCount: "Gaps",
+    unverifiedCount: "Checks that could not be verified",
+    site: "Site checked",
+    scanStatus: "Scan status",
     sample: "Show the report structure",
     sampleNote: "An illustration of the report structure. These are not findings for the scanned site.",
     law: "Law or standard",
@@ -183,32 +197,27 @@ export function PlanCards({ locale }: { locale: Locale }) {
   );
 }
 
-export function FreeResult({ locale, summary }: { locale: Locale; summary: any }) {
-  const copy = TEXT[locale] || TEXT.en;
-  const [open, setOpen] = useState(false);
+export function FreeResult({ locale, summary, status, onBuy }: { locale: Locale; summary: any; status?: string; onBuy?: () => void }) {
+  const copy = { ...TEXT.en, ...(TEXT[locale] || {}) };
   if (!summary) return <p className="scan-not-legal">{copy.locked}</p>;
   return (
     <section className="scan-free">
+      <p>{copy.site}: {summary.host || "—"}</p>
+      <p dir="ltr">{summary.url || ""}</p>
+      <p>{copy.when}: {summary.scannedAt || "—"}</p>
+      <p>{copy.scanStatus}: {status || "—"}</p>
       <div className="scan-scores">
         <article><b>{summary.checkedScore ?? "—"}<small>/100</small></b><span>{copy.checked}</span></article>
         <article><b>{summary.coverage ?? "—"}%</b><span>{copy.coverage}</span></article>
-        <article><b>{summary.missingDocuments ?? 0}</b><span>{copy.missing}</span></article>
-        <article><b>{summary.critical ?? 0}</b><span>{copy.critical}</span></article>
-        <article><b>{summary.other ?? 0}</b><span>{copy.other}</span></article>
-        <article><b>{summary.incomplete ?? 0}</b><span>{copy.incomplete}</span></article>
+        <article><b>{summary.ok ?? 0}</b><span>{copy.okCount}</span></article>
+        <article><b>{summary.action ?? 0}</b><span>{copy.actionCount}</span></article>
+        <article><b>{summary.missing ?? 0}</b><span>{copy.missingCount}</span></article>
+        <article><b>{summary.unverified ?? 0}</b><span>{copy.unverifiedCount}</span></article>
       </div>
-      <p>{copy.categories}: {(summary.categories || []).map((item: string) => copy[item] || item).join(", ") || "—"}</p>
-      <p>{copy.when}: {summary.scannedAt || "—"} · {(summary.countries || []).join(", ") || "—"}</p>
       <p className="scan-not-legal">{summary.checkedScoreLabel || copy.locked}</p>
       {summary.lowCoverage && <p className="scan-error" role="status">{copy.lowCoverage}</p>}
-      <p>{copy.locked}</p>
-      <button type="button" className="scan-start" onClick={() => setOpen((value) => !value)}>{copy.sample}</button>
-      {open && (
-        <div className="scan-sample">
-          <p>{copy.sampleNote}</p>
-          <RequirementTable locale={locale} rows={SAMPLE} />
-        </div>
-      )}
+      <p>{copy.buyNote}</p>
+      <button type="button" className="scan-start" onClick={onBuy}>{copy.buy}</button>
     </section>
   );
 }
