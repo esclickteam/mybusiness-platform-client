@@ -1,6 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import "../styles/publicStage.css";
 
 const featureMeta = [
   {
@@ -94,7 +96,8 @@ const featureMeta = [
 ];
 
 function Features() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const overviewStats = [
     [t("features.statCrm"), t("features.statCrmLabel")],
@@ -120,12 +123,13 @@ function Features() {
   }));
 
   return (
-    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
+    <div className="co-page features-stage relative overflow-hidden text-slate-800">
       <Helmet>
         <title>{t("features.seoTitle")}</title>
         <meta name="description" content={t("features.seoDescription")} />
         <meta name="keywords" content={t("features.seoKeywords")} />
         <meta name="author" content="BizUply" />
+        <link rel="canonical" href={marketingPublicUrl("/features", locale)} />
       </Helmet>
 
       {/* Background effects */}
@@ -138,23 +142,21 @@ function Features() {
 
       <main className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 lg:px-8 lg:pt-24">
         {/* Hero */}
-        <section className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("features.badge")}
+        <section className="stage-hero">
+          <div className="stage-split">
+            <div>
+              <p>{t("features.badge")}</p>
+              <h1>
+                {t("features.heroTitleTop")}
+                <br />
+                {t("features.heroTitleHighlight")}
+              </h1>
+              <p>{t("features.heroSubtitle")}</p>
+            </div>
+            <figure className="stage-shot">
+              <img src="/demo-media/crm/leads-list.png" alt={t("features.overviewTitle")} width="1600" height="900" />
+            </figure>
           </div>
-
-          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-            {t("features.heroTitleTop")}
-            <br />
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("features.heroTitleHighlight")}
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            {t("features.heroSubtitle")}
-          </p>
         </section>
 
         {/* Product overview card */}

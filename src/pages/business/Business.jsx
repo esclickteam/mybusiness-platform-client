@@ -3,14 +3,17 @@ import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
+import "../../styles/publicStage.css";
 
 function BusinessJoin() {
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
   const pageDir = getTextDirection(i18n.language);
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
+      className="co-page biz-stage relative min-h-screen overflow-hidden text-slate-800"
       dir={pageDir}
     >
       <Helmet>
@@ -19,15 +22,11 @@ function BusinessJoin() {
           name="description"
           content={t("business.profileBuild.seoDesc")}
         />
-        <link rel="canonical" href="https://bizuply.com/business" />
+        <link rel="canonical" href={marketingPublicUrl("/business", locale)} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      <div className="pointer-events-none absolute left-[-10%] top-[-10%] h-[420px] w-[420px] rounded-full bg-amber-200/50 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-8%] top-[20%] h-[520px] w-[520px] rounded-full bg-emerald-100/70 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-15%] left-[25%] h-[480px] w-[480px] rounded-full bg-white/80 blur-3xl" />
-
-      <section className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-20 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-28 lg:pt-24">
+      <section className="stage-hero relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-20 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-28 lg:pt-24">
         <div>
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-bold text-amber-800 shadow-sm backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -83,7 +82,7 @@ function BusinessJoin() {
         <div className="relative">
           <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-amber-200/70 via-white to-emerald-100/80 blur-2xl" />
 
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-900/12 backdrop-blur-xl">
+          <div className="stage-panel relative overflow-hidden p-5">
             <div className="rounded-[2rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 p-5 text-slate-800">
               <div className="mb-6 flex items-center justify-between">
                 <div>

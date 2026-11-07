@@ -318,6 +318,7 @@
           path === "/pt-br/" ||
           path === "/home-preview";
         if (home) {
+          document.documentElement.classList.add("bizuply-home", "hx-preview");
           document.documentElement.style.background = "#5b21b6";
           if (document.body) document.body.style.backgroundColor = "#5b21b6";
         } else if (

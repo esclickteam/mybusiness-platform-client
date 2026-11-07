@@ -3,7 +3,8 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { ACTIVITY_PATHS, getActivityPage } from "../lib/activityPages.mjs";
-import { normalizeMarketingLocale } from "../lib/localePath.mjs";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import "../styles/publicStage.css";
 
 const solutionMeta = [
   {
@@ -65,21 +66,21 @@ function Solutions() {
   }));
 
   return (
-    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
+    <div className="co-page solutions-stage relative overflow-hidden text-slate-800">
       <Helmet>
         <title>{t("solutions.seoTitle")}</title>
         <meta name="description" content={t("solutions.seoDescription")} />
         <meta name="keywords" content={t("solutions.seoKeywords")} />
-        <meta name="author" content="Bizuply" />
+        <meta name="author" content="BizUply" />
         <meta property="og:title" content={t("solutions.ogTitle")} />
         <meta property="og:description" content={t("solutions.ogDescription")} />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://bizuply.com/solutions" />
+        <meta property="og:url" content={marketingPublicUrl("/solutions", locale)} />
         <meta
           property="og:image"
           content="https://bizuply.com/og-image.jpg"
         />
-        <link rel="canonical" href="https://bizuply.com/solutions" />
+        <link rel="canonical" href={marketingPublicUrl("/solutions", locale)} />
       </Helmet>
 
       {/* Background effects */}
@@ -92,23 +93,26 @@ function Solutions() {
 
       <main className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 lg:px-8 lg:pt-24">
         {/* Hero */}
-        <section className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("solutions.badge")}
+        <section className="stage-hero">
+          <div className="stage-split">
+            <div>
+              <p>{t("solutions.badge")}</p>
+              <h1>
+                {t("solutions.heroTitleTop")}
+                <br />
+                {t("solutions.heroTitleHighlight")}
+              </h1>
+              <p>{t("solutions.heroSubtitle")}</p>
+            </div>
           </div>
-
-          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-            {t("solutions.heroTitleTop")}
-            <br />
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("solutions.heroTitleHighlight")}
-            </span>
-          </h1>
-
-          <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            {t("solutions.heroSubtitle")}
-          </p>
+          <div className="stage-industries">
+            {industries.slice(0, 4).map((item) => (
+              <Link key={item.path} to={item.path}>
+                <span>{item.label}</span>
+                <strong>{item.text}</strong>
+              </Link>
+            ))}
+          </div>
         </section>
 
         {/* Premium overview */}

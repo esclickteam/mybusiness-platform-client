@@ -9,6 +9,7 @@ export default defineConfig({
   base: "/",
 
   resolve: {
+    dedupe: ["react", "react-dom"],
     alias: {
       "@": path.resolve(__dirname, "src"),
       "@api": path.resolve(__dirname, "src/api.js"),
@@ -27,6 +28,9 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ["framer-motion"],
     include: [
+      "react",
+      "react-dom",
+      "react-select",
       "chart.js",
       "react-chartjs-2",
       "jwt-decode",

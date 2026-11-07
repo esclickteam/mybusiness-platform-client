@@ -85,8 +85,8 @@
   border-radius: 0;
   border: 1px solid transparent;
   font-size: 1rem;
-  font-weight: 800;
-  color: #334155;
+  font-weight: 600;
+  color: #21172F;
   text-decoration: none;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
@@ -108,7 +108,8 @@
 
 .site-mobile__group summary {
   padding: 0.85rem 0.2rem;
-  font-weight: 800;
+  color: #21172F;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -116,8 +117,8 @@
   display: grid;
   gap: 0.1rem;
   padding: 0.55rem 0.7rem;
-  color: #1a0b33;
-  font-weight: 700;
+  color: #21172F;
+  font-weight: 600;
   text-decoration: none;
 }
 

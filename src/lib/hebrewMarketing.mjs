@@ -2,14 +2,15 @@
  * Hebrew marketing copy already used in the product UI, plus the public
  * WhatsApp API facts from the English product page ($29 per number, Meta fees separate).
  */
+import { getCoreProductStory } from "./coreProductStories.mjs";
 
 export const HEBREW_MARKETING_PAGES = {
   "/": {
-    title: "Bizuply | CRM, ניהול לידים, WhatsApp Business API וכלים לעסקים",
+    title: "BizUply | מערכת CRM, ניהול עסק, WhatsApp ואוטומציות",
     description:
-      "הכירו את Bizuply: פלטפורמה לניהול לקוחות ולידים, WhatsApp Business API, קמפיינים ממומנים, בניית אתרים ואוטומציות עסקיות במקום אחד.",
+      "הכירו את BizUply: פלטפורמה לניהול לידים, לקוחות, CRM, פגישות, WhatsApp, אוטומציות ואתרים עסקיים. כל הפעילות העסקית בסביבת עבודה אחת.",
     crumb: "Bizuply",
-    h1: "כל מה שהעסק שלך צריך. פלטפורמה אחת חזקה.",
+    h1: "BizUply — כל מה שהעסק שלך צריך. בפלטפורמה אחת.",
     paragraphs: [
       "נהלו לקוחות, קלטו פניות, הריצו קמפיינים, דברו ב־WhatsApp, קבעו פגישות והפכו עבודה יומיומית לאוטומטית — מפלטפורמה עסקית אחת ומחוברת.",
       "אם אתם מעדיפים לנהל הכול בעצמכם או שאתם צריכים עזרה מקצועית בהקמה, ביזאפלי (Bizuply) נותנת לעסק כלים וליווי כדי להתקדם.",
@@ -20,7 +21,7 @@ export const HEBREW_MARKETING_PAGES = {
     description:
       "הכירו את ביזאפלי (Bizuply), את החזון ואת הגישה לטכנולוגיה עסקית מחוברת. גלו כיצד פלטפורמת התוכנה והשירותים הדיגיטליים תומכים בעסקים מודרניים.",
     crumb: "אודות",
-    h1: "נבנתה לעסקים שרוצים שהעבודה שלהם תהיה מחוברת",
+    h1: "הכירו את BizUply",
     paragraphs: [
       "Bizuply מפתחת תוכנה ללקוחות, לתקשורת, לשיווק, לאתרים ולעבודה היומיומית, ולצידה שירותים מקצועיים שעוזרים לעסק להפעיל את התוכנה הזו.",
       "Bizuply היא חברת טכנולוגיה עסקית. היא בונה פלטפורמה מחוברת לעבודת הלקוחות, תוכנה מוכנה לתהליכי עבודה מסוימים, וסיוע מקצועי באתרים ובהקמה.",
@@ -90,7 +91,7 @@ export const HEBREW_MARKETING_PAGES = {
     description:
       "ניהול לידים ולקוחות בצינור אחד. לידים ממודעות Meta, מגוגל ומהאתר נכנסים למערכת, עם תיק לקוח ויומן תורים. CRM בלבד ב־49 דולר לחודש.",
     crumb: "CRM",
-    h1: "כל ליד, כל לקוח, כל פגישה במקום אחד",
+    h1: "מערכת CRM לניהול לידים, לקוחות ותהליכי מכירה",
     paragraphs: [
       "פניות מ־Facebook, מ־Instagram, מ־Google Ads ומהאתר שלכם נכנסות אוטומטית לצינור אחד עם סטטוס, תיעוד ומשימות. ומשם ממשיכים לתיק לקוח, ליומן תורים ולקטלוג שירותים — באותה מערכת.",
       "הסטטוסים בצינור הם חדש, נוצר קשר, מעוניין, הומר, אבד, וגם ליד ישן. כל שינוי סטטוס נרשם על ציר הזמן.",
@@ -153,7 +154,7 @@ export const HEBREW_MARKETING_PAGES = {
     description:
       "חיבור WhatsApp Cloud API של Meta דרך ביזאפלי. 29 דולר לחודש למספר מחובר. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
     crumb: "WhatsApp API",
-    h1: "WhatsApp API לעסקים",
+    h1: "WhatsApp Business API לניהול תקשורת עסקית",
     paragraphs: [
       "ביזאפלי (Bizuply) מחברת את WhatsApp Cloud API של Meta לעסק: שליחת תבניות מאושרות, מעקב מסירה ו־webhooks חתומים.",
       "המנוי של Bizuply הוא 29 דולר לחודש עבור מספר וואטסאפ מחובר אחד. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
@@ -192,5 +193,5 @@ export const HEBREW_MARKETING_PAGES = {
 };
 
 export function getHebrewMarketingPage(path) {
-  return HEBREW_MARKETING_PAGES[path] || null;
+  return getCoreProductStory(path, "he") || HEBREW_MARKETING_PAGES[path] || null;
 }

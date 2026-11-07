@@ -289,6 +289,7 @@ const CollabLegacyRedirect = lazy(
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const ActivityPage = lazy(() => import("./pages/public/ActivityPage"));
+const PlatformExperience = lazy(() => import("./pages/public/PlatformExperience"));
 const Support = lazy(() => import("./pages/Support"));
 const TrialEnded = lazy(() => import("./pages/TrialEnded"));
 const MetaCallbackPage = lazy(() =>
@@ -1485,7 +1486,7 @@ export default function App() {
                         <Route path="/support" element={<Support />} />
                         <Route path="/features" element={<Features />} />
                         <Route path="/solutions" element={<Solutions />} />
-                        <Route path="/platform" element={<ActivityPage />} />
+                        <Route path="/platform" element={<PlatformExperience />} />
                         <Route path="/services" element={<ActivityPage />} />
                         <Route path="/services/:slug" element={<ActivityPage />} />
                         <Route path="/solutions/:slug" element={<ActivityPage />} />

@@ -853,7 +853,21 @@ async function handleMarketingDocument(request) {
   const sessionRedirect = await maybeRedirectAuthenticatedHome(request);
   if (sessionRedirect) return sessionRedirect;
 
-  const headHtml = buildMarketingDocumentHead(pathname);
+  let headHtml = buildMarketingDocumentHead(pathname);
+  const marketingPath = splitMarketingLocale(pathname).path;
+  const searchParams = new URL(request.url).searchParams;
+  const filteredSearch = marketingPath === "/search" && Boolean(
+    searchParams.get("name") ||
+    searchParams.get("category") ||
+    searchParams.get("city") ||
+    Number(searchParams.get("page") || "1") > 1
+  );
+  if (filteredSearch && headHtml) {
+    headHtml = headHtml.replace(
+      '<meta name="robots" content="index, follow" />',
+      '<meta name="robots" content="noindex, follow" />',
+    );
+  }
   if (headHtml) {
     const cookie = request.headers.get("cookie") || "";
     const saved = cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith("bizuply_lang="));
@@ -1029,9 +1043,11 @@ async function handleMarketingDocument(request) {
         "content-type": "text/html; charset=utf-8",
         "cache-control": "public, max-age=0, must-revalidate",
         "x-bizuply-seo-edge": "marketing",
-        ...(noindex || isUnindexedPreviewHost(getHost(request))
-          ? { "x-robots-tag": "noindex, nofollow" }
-          : {}),
+        ...(filteredSearch
+          ? { "x-robots-tag": "noindex, follow" }
+          : noindex || isUnindexedPreviewHost(getHost(request))
+            ? { "x-robots-tag": "noindex, nofollow" }
+            : {}),
       },
     });
   } catch {
