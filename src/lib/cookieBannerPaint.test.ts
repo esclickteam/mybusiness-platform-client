@@ -9,20 +9,27 @@ describe("cookie banner first paint", () => {
     expect(trackingChoiceFromCookie("bizuply_tracking=essential")).toBe("essential");
     expect(trackingChoiceFromCookie("bizuply_tracking=all")).toBe("all");
     expect(trackingChoiceFromCookie("bizuply_tracking=essential; bizuply_tracking=all")).toBe("all");
+    expect(trackingChoiceFromCookie("bizuply_tracking=v2:ad:2026-11-07")).toBe("all");
+    expect(trackingChoiceFromCookie("bizuply_tracking=v2:none:2026-11-07")).toBe("essential");
+    expect(trackingChoiceFromCookie("bizuply_tracking=all; bizuply_tracking=v2:none:2026-11-07")).toBe("essential");
   });
 
   it("offers only the Meta Pixel and the real legal pages", () => {
     const hebrew = renderCookieBannerPaint("he");
     expect(hebrew).toContain("השימוש בעוגיות באתר Bizuply");
     expect(hebrew).toContain("אישור כל העוגיות");
-    expect(hebrew).toContain("עוגיות חיוניות בלבד");
-    expect(hebrew).toContain("ניהול העדפות העוגיות");
+    expect(hebrew).toContain("דחיית כל העוגיות הלא חיוניות");
+    expect(hebrew).toContain("שמירת העדפות");
+    expect(hebrew).toContain("אינה בשימוש");
+    expect(hebrew).toContain('role="switch" aria-checked="true" disabled');
+    expect(hebrew).toContain('id="bizuply-cookie-advertising"');
     expect(hebrew).toContain('href="/he/privacy#section-8"');
     expect(hebrew).toContain('href="/he/privacy"');
     expect(hebrew).toContain('href="/he/terms"');
     expect(hebrew).toContain("Meta Pixel");
     expect(hebrew).not.toContain("Google Analytics");
-    expect(hebrew).toContain('data-cookie-view="preferences" hidden');
+    expect(hebrew).toContain("v2:ad:2026-11-07");
+    expect(hebrew).toContain("v2:none:2026-11-07");
 
     const english = renderCookieBannerPaint("en");
     expect(english).toContain('href="/privacy#section-8"');

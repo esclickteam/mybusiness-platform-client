@@ -1,7 +1,26 @@
 export const TRACKING_COOKIE = "bizuply_tracking";
-export const NOTICE_VERSION = "2026-11-06";
+export const NOTICE_VERSION = "2026-11-07";
+const LEGACY_NOTICE_VERSION = "2026-11-06";
 
 export type TrackingChoice = "unknown" | "essential" | "all";
+
+export type ConsentPreferences = {
+  necessary: true;
+  analytics: false;
+  advertisement: boolean;
+  functionality: false;
+  version: string;
+  decided: boolean;
+};
+
+const EMPTY: ConsentPreferences = {
+  necessary: true,
+  analytics: false,
+  advertisement: false,
+  functionality: false,
+  version: "",
+  decided: false,
+};
 
 function cookieDomain(): string {
   if (typeof window === "undefined") return "";
@@ -11,7 +30,7 @@ function cookieDomain(): string {
   return "";
 }
 
-export function readTrackingChoice(cookie = typeof document === "undefined" ? "" : document.cookie): TrackingChoice {
+function lastTrackingValue(cookie: string): string {
   const values = String(cookie)
     .split(";")
     .map((part) => part.trim())
@@ -24,13 +43,61 @@ export function readTrackingChoice(cookie = typeof document === "undefined" ? ""
         return raw;
       }
     });
-  const value = values.length ? values[values.length - 1] : "";
-  if (value === "all" || value === "essential") return value;
-  return "unknown";
+  return values.length ? values[values.length - 1] : "";
+}
+
+export function parseConsentValue(value: string): ConsentPreferences {
+  if (value === "all") {
+    return {
+      necessary: true,
+      analytics: false,
+      advertisement: true,
+      functionality: false,
+      version: LEGACY_NOTICE_VERSION,
+      decided: true,
+    };
+  }
+  if (value === "essential") {
+    return {
+      necessary: true,
+      analytics: false,
+      advertisement: false,
+      functionality: false,
+      version: LEGACY_NOTICE_VERSION,
+      decided: true,
+    };
+  }
+  if (value.startsWith("v2:")) {
+    const [body = "", version = NOTICE_VERSION] = value.slice(3).split(":");
+    const tokens = body.split(".").filter(Boolean);
+    return {
+      necessary: true,
+      analytics: false,
+      advertisement: tokens.includes("ad"),
+      functionality: false,
+      version,
+      decided: body === "ad" || body === "none",
+    };
+  }
+  return { ...EMPTY };
+}
+
+export function readConsent(cookie = typeof document === "undefined" ? "" : document.cookie): ConsentPreferences {
+  return parseConsentValue(lastTrackingValue(cookie));
+}
+
+export function readTrackingChoice(cookie = typeof document === "undefined" ? "" : document.cookie): TrackingChoice {
+  const consent = readConsent(cookie);
+  if (!consent.decided) return "unknown";
+  return consent.advertisement ? "all" : "essential";
 }
 
 export function marketingAllowed(cookie?: string): boolean {
-  return readTrackingChoice(cookie) === "all";
+  return readConsent(cookie).advertisement;
+}
+
+export function analyticsAllowed(): boolean {
+  return false;
 }
 
 function expireCookie(name: string): void {
@@ -64,16 +131,28 @@ export function stopMeasurement(): void {
   clearMeasurementCookies();
 }
 
-export function writeTrackingChoice(choice: "essential" | "all"): void {
-  if (typeof document === "undefined") return;
+function consentCookieValue(advertisement: boolean): string {
+  return `v2:${advertisement ? "ad" : "none"}:${NOTICE_VERSION}`;
+}
+
+export function writeAdvertisementConsent(advertisement: boolean): boolean {
+  if (typeof document === "undefined") return false;
+  const value = consentCookieValue(advertisement);
   const maxAge = 180 * 24 * 60 * 60;
   const domain = cookieDomain();
   if (domain) document.cookie = `${TRACKING_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
-  document.cookie = `${TRACKING_COOKIE}=${choice}; Path=/; Max-Age=${maxAge}; SameSite=Lax${domain}`;
+  document.cookie = `${TRACKING_COOKIE}=${value}; Path=/; Max-Age=${maxAge}; SameSite=Lax${domain}`;
+  const saved = readConsent();
+  if (!saved.decided || saved.advertisement !== advertisement || saved.analytics || saved.functionality) return false;
   const browser = window as Window & { __bizuplyPixelStopped?: boolean };
-  if (choice === "all") browser.__bizuplyPixelStopped = false;
+  if (advertisement) browser.__bizuplyPixelStopped = false;
   else stopMeasurement();
-  window.dispatchEvent(new CustomEvent("bizuply-tracking-consent", { detail: choice }));
+  window.dispatchEvent(new CustomEvent("bizuply-tracking-consent", { detail: advertisement ? "all" : "essential" }));
+  return true;
+}
+
+export function writeTrackingChoice(choice: "essential" | "all"): void {
+  writeAdvertisementConsent(choice === "all");
 }
 
 export function openCookieSettings(): void {

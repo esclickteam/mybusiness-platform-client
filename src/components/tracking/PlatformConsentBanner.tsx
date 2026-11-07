@@ -1,8 +1,8 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { readTrackingChoice, writeTrackingChoice } from "../../lib/trackingConsent";
+import { readConsent, writeAdvertisementConsent } from "../../lib/trackingConsent";
 
 declare global {
   interface Window {
@@ -12,24 +12,93 @@ declare global {
   }
 }
 
+type Row = { name: string; provider: string; purpose: string; duration: string };
+
+function Category({
+  id,
+  title,
+  detail,
+  control,
+  rows,
+  headers,
+  empty,
+}: {
+  id: string;
+  title: string;
+  detail: string;
+  control: ReactNode;
+  rows?: Row[];
+  headers?: Row;
+  empty?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  return (
+    <section className="cookie-banner__cat">
+      <div className="cookie-banner__row">
+        <h3>
+          <button
+            type="button"
+            className="cookie-banner__disclose"
+            aria-expanded={open}
+            aria-controls={id}
+            onClick={() => setOpen((value) => !value)}
+          >
+            <span className="cookie-banner__chevron" aria-hidden="true" />
+            {title}
+          </button>
+        </h3>
+        {control}
+      </div>
+      <p>{detail}</p>
+      {open ? (
+        <div className="cookie-banner__details" id={id}>
+          {rows && rows.length ? (
+            <table className="cookie-banner__table">
+              <thead>
+                <tr>
+                  <th>{headers?.name}</th>
+                  <th>{headers?.provider}</th>
+                  <th>{headers?.purpose}</th>
+                  <th>{headers?.duration}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.name}>
+                    <td>{row.name}</td>
+                    <td>{row.provider}</td>
+                    <td>{row.purpose}</td>
+                    <td>{row.duration}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p className="cookie-banner__note">{empty}</p>
+          )}
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
 export default function PlatformConsentBanner() {
   const { t, i18n } = useTranslation();
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(
-    () => !window.__BIZUPLY_PUBLIC_SITE__ && readTrackingChoice() === "unknown",
+    () => !window.__BIZUPLY_PUBLIC_SITE__ && !readConsent().decided,
   );
-  const [view, setView] = useState<"summary" | "preferences">("summary");
-  const [marketing, setMarketing] = useState(() => readTrackingChoice() === "all");
+  const [advertisement, setAdvertisement] = useState(() => readConsent().advertisement);
+  const [saveFailed, setSaveFailed] = useState(false);
 
   useLayoutEffect(() => {
     if (window.__bizuplyCookieManage) {
       window.__bizuplyCookieManage = false;
-      setMarketing(
+      setAdvertisement(
         typeof window.__bizuplyCookieMarketing === "boolean"
           ? window.__bizuplyCookieMarketing
-          : readTrackingChoice() === "all",
+          : readConsent().advertisement,
       );
-      setView("preferences");
       setOpen(true);
     }
     document.getElementById("bizuply-cookie-paint")?.remove();
@@ -37,8 +106,8 @@ export default function PlatformConsentBanner() {
 
   useEffect(() => {
     const reopen = () => {
-      setMarketing(readTrackingChoice() === "all");
-      setView("summary");
+      setAdvertisement(readConsent().advertisement);
+      setSaveFailed(false);
       setOpen(true);
     };
     window.addEventListener("bizuply-open-cookie-settings", reopen);
@@ -47,89 +116,121 @@ export default function PlatformConsentBanner() {
 
   useEffect(() => {
     if (open) panelRef.current?.focus();
-  }, [open, view]);
+  }, [open]);
 
   if (!open || window.__BIZUPLY_PUBLIC_SITE__) return null;
 
-  function choose(choice: "essential" | "all") {
-    writeTrackingChoice(choice);
+  function persist(next: boolean) {
+    const saved = writeAdvertisementConsent(next);
+    if (!saved) {
+      setSaveFailed(true);
+      setOpen(true);
+      return;
+    }
+    setAdvertisement(next);
+    setSaveFailed(false);
     setOpen(false);
   }
 
-  const dir = getTextDirection(i18n.language);
+  const text = (key: string) => t(`trackingConsent.${key}`);
+  const headers: Row = {
+    name: text("name"),
+    provider: text("provider"),
+    purpose: text("purpose"),
+    duration: text("duration"),
+  };
+  const necessaryRows: Row[] = [
+    { name: "bizuply_lang", provider: text("bizuply"), purpose: text("langPurpose"), duration: text("langDuration") },
+    { name: "bizuply_tracking", provider: text("bizuply"), purpose: text("choicePurpose"), duration: text("choiceDuration") },
+    { name: "bizuply_session", provider: text("bizuply"), purpose: text("sessionPurpose"), duration: text("sessionDuration") },
+    { name: "refreshToken", provider: text("bizuply"), purpose: text("refreshPurpose"), duration: text("refreshDuration") },
+  ];
+  const advertisementRows: Row[] = [
+    { name: "fbevents.js", provider: text("meta"), purpose: text("pixelPurpose"), duration: text("metaDuration") },
+    { name: "_fbp", provider: text("meta"), purpose: text("fbpPurpose"), duration: text("metaDuration") },
+    { name: "_fbc", provider: text("meta"), purpose: text("fbcPurpose"), duration: text("metaDuration") },
+  ];
 
   return (
     <div
       ref={panelRef}
       className="cookie-banner"
-      dir={dir}
+      dir={getTextDirection(i18n.language)}
       role="dialog"
       aria-labelledby="tracking-consent-title"
       tabIndex={-1}
     >
-      <h2 id="tracking-consent-title">
-        {view === "summary" ? t("trackingConsent.title") : t("trackingConsent.preferencesTitle")}
-      </h2>
-      {view === "summary" ? (
-        <>
-          <p>{t("trackingConsent.essentialBody")}</p>
-          <p>{t("trackingConsent.measurementBody")}</p>
-          <p>
-            {t("trackingConsent.change")} {t("trackingConsent.more")}
-            <Link to="/privacy">{t("trackingConsent.policy")}</Link>
-            {t("trackingConsent.join")}
-            <Link to="/privacy#section-8">{t("trackingConsent.cookiePolicy")}</Link>
-            {t("trackingConsent.termsJoin")}
-            <Link to="/terms">{t("trackingConsent.terms")}</Link>
-          </p>
-          <div className="cookie-banner__actions">
-            <button type="button" className="cookie-banner__primary" onClick={() => choose("all")}>
-              {t("trackingConsent.all")}
-            </button>
-            <button type="button" className="cookie-banner__secondary" onClick={() => choose("essential")}>
-              {t("trackingConsent.essential")}
-            </button>
-            <button type="button" className="cookie-banner__secondary" onClick={() => setView("preferences")}>
-              {t("trackingConsent.manage")}
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="cookie-banner__row">
-            <div>
-              <h3>{t("trackingConsent.essentialTitle")}</h3>
-              <p>{t("trackingConsent.essentialDetail")}</p>
-            </div>
+      <div className="cookie-banner__scroll">
+        <h2 id="tracking-consent-title">{text("title")}</h2>
+        <p>{text("intro")}</p>
+        <p>
+          {text("change")} {text("more")}
+          <Link to="/privacy">{text("policy")}</Link>
+          {text("join")}
+          <Link to="/privacy#section-8">{text("cookiePolicy")}</Link>
+          {text("termsJoin")}
+          <Link to="/terms">{text("terms")}</Link>
+        </p>
+        <Category
+          id="cookie-necessary"
+          title={text("necessaryTitle")}
+          detail={text("necessaryDetail")}
+          headers={headers}
+          rows={necessaryRows}
+          control={
             <button type="button" className="cookie-banner__switch" role="switch" aria-checked="true" disabled>
-              {t("trackingConsent.alwaysOn")}
+              {text("alwaysOn")}
             </button>
-          </div>
-          <div className="cookie-banner__row">
-            <div>
-              <h3>{t("trackingConsent.marketingTitle")}</h3>
-              <p>{t("trackingConsent.marketingDetail")}</p>
-            </div>
+          }
+        />
+        <Category
+          id="cookie-analytics"
+          title={text("analyticsTitle")}
+          detail={text("analyticsDetail")}
+          empty={text("noneFound")}
+          control={<span className="cookie-banner__unused">{text("unused")}</span>}
+        />
+        <Category
+          id="cookie-advertisement"
+          title={text("advertisementTitle")}
+          detail={text("advertisementDetail")}
+          headers={headers}
+          rows={advertisementRows}
+          control={
             <button
               type="button"
               className="cookie-banner__switch"
               role="switch"
-              aria-checked={marketing}
-              onClick={() => setMarketing((value) => !value)}
+              aria-checked={advertisement}
+              onClick={() => {
+                setAdvertisement((value) => !value);
+                setSaveFailed(false);
+              }}
             >
-              {marketing ? t("trackingConsent.on") : t("trackingConsent.off")}
+              {advertisement ? text("on") : text("off")}
             </button>
-          </div>
-          <div className="cookie-banner__actions">
-            <button type="button" className="cookie-banner__primary" onClick={() => choose(marketing ? "all" : "essential")}>
-              {t("trackingConsent.save")}
-            </button>
-            <button type="button" className="cookie-banner__secondary" onClick={() => setView("summary")}>
-              {t("trackingConsent.back")}
-            </button>
-          </div>
-        </>
-      )}
+          }
+        />
+        <Category
+          id="cookie-functionality"
+          title={text("functionalityTitle")}
+          detail={text("functionalityDetail")}
+          empty={text("noneFound")}
+          control={<span className="cookie-banner__unused">{text("unused")}</span>}
+        />
+        {saveFailed ? <p className="cookie-banner__error" role="alert">{text("saveFailed")}</p> : null}
+      </div>
+      <div className="cookie-banner__actions">
+        <button type="button" className="cookie-banner__primary" onClick={() => persist(true)}>
+          {text("acceptAll")}
+        </button>
+        <button type="button" className="cookie-banner__secondary" onClick={() => persist(false)}>
+          {text("rejectAll")}
+        </button>
+        <button type="button" className="cookie-banner__secondary" onClick={() => persist(advertisement)}>
+          {text("save")}
+        </button>
+      </div>
     </div>
   );
 }
