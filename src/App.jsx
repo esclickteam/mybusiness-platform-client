@@ -1340,6 +1340,7 @@ export default function App() {
 
                         <Route path="/about" element={<About />} />
                         <Route path="/crm" element={<CrmProductPage />} />
+                        <Route path="/compliance/review" element={<ComplianceScannerPage />} />
                         <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
                         <Route path="/compliance" element={<ComplianceScannerPage />} />
                         <Route
