@@ -23,6 +23,7 @@ import {
   SHOW_CRM_PAYMENTS,
 } from "./crmFeatureFlags";
 import "./crmUi.css";
+import "./crmDesign.css";
 
 type CrmTab = {
   path: string;
@@ -211,42 +212,25 @@ export default function CRMMain() {
   return (
     <section
       dir={dir}
-      className="crm-surface min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-3 text-start text-slate-900 sm:px-5 sm:py-4 lg:px-6"
+      className="crm-surface crm-app min-h-[calc(100vh-72px)] px-3 py-3 text-start sm:px-5 sm:py-4 lg:px-6"
     >
       <div className="mx-auto w-full max-w-[1920px]">
-        <header className="mb-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
-          <div className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <header className="crm-shell">
+          <div className="crm-shell-top">
             <div className="min-w-0">
-              <p className="text-[11px] font-black uppercase tracking-[0.18em] text-[#6D28D9]">
-                {t("crm.shell.badge")}
-              </p>
-              <h1 className="mt-1 truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
-                {t("crm.shell.title")}
-              </h1>
-              <p className="mt-0.5 hidden text-sm font-semibold text-slate-500 sm:block">
-                {t("crm.shell.subtitle")}
-              </p>
+              <p className="crm-kicker">{t("crm.shell.badge")}</p>
+              <h1 className="crm-shell-title">{t("crm.shell.title")}</h1>
+              <p className="crm-shell-sub">{t("crm.shell.subtitle")}</p>
             </div>
 
-            <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span className="text-xs font-black text-emerald-700">
-                {t("crm.shell.crmActive")}
-              </span>
+            <div className="crm-live">
+              <span className="crm-live-dot" />
+              <span>{t("crm.shell.crmActive")}</span>
             </div>
           </div>
 
-          <nav
-            aria-label={t("crm.shell.title")}
-            className="border-t border-slate-100 px-2 sm:px-3"
-          >
-            <div
-              className={[
-                "flex items-stretch gap-0.5 overflow-x-auto",
-                "[scrollbar-width:none] [-ms-overflow-style:none]",
-                "[&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0 [&::-webkit-scrollbar]:bg-transparent",
-              ].join(" ")}
-            >
+          <nav aria-label={t("crm.shell.title")} className="crm-tabs">
+            <div className="crm-tabs-row">
               {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
 
@@ -256,42 +240,13 @@ export default function CRMMain() {
                     to={tab.path}
                     data-demo-target={`crm-nav-${tab.path}`}
                     className={({ isActive }) =>
-                      [
-                        "group relative flex shrink-0 items-center gap-2 px-3 py-3 text-sm font-black transition-colors",
-                        "focus:outline-none focus-visible:bg-violet-50",
-                        isActive
-                          ? "text-[#6D28D9]"
-                          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
-                      ].join(" ")
+                      `crm-tab${isActive ? " is-active" : ""}`
                     }
                   >
-                    {({ isActive }) => (
-                      <>
-                        <Icon
-                          className={[
-                            "h-4 w-4 shrink-0",
-                            isActive
-                              ? "text-[#6D28D9]"
-                              : "text-slate-400 group-hover:text-slate-600",
-                          ].join(" ")}
-                        />
-                        <span className="whitespace-nowrap">
-                          {t(tab.labelKey)}
-                        </span>
-                        {tab.badgeKey && (
-                          <span className="rounded-md bg-violet-50 px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wide text-[#6D28D9]">
-                            {t(tab.badgeKey)}
-                          </span>
-                        )}
-                        <span
-                          className={[
-                            "absolute inset-x-2 bottom-0 h-0.5 rounded-full transition-opacity",
-                            isActive
-                              ? "bg-[#6D28D9] opacity-100"
-                              : "opacity-0",
-                          ].join(" ")}
-                        />
-                      </>
+                    <Icon />
+                    <span className="whitespace-nowrap">{t(tab.labelKey)}</span>
+                    {tab.badgeKey && (
+                      <span className="crm-tab-badge">{t(tab.badgeKey)}</span>
                     )}
                   </NavLink>
                 );
