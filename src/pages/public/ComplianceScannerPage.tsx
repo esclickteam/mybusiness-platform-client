@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
 import { FreeResult, MonitorBoard, PlanCards, RequirementTable, commercialLocale } from "./ComplianceCommercial";
+import { ComplianceReportView } from "./ComplianceReportView";
 
 const TOKEN_KEY = "bizuplyComplianceTenant";
 const REVIEW_FLAG = "bizuplyComplianceReview";
@@ -391,14 +392,6 @@ function localeOf(language: string): Locale {
   return "en";
 }
 
-function scoreText(value: number | null | undefined) {
-  return value == null ? "—" : String(value);
-}
-
-function textDir(value?: string) {
-  return value && /[\u0590-\u05FF\u0600-\u06FF]/.test(value) ? "rtl" : "ltr";
-}
-
 export default function ComplianceScannerPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -416,7 +409,6 @@ export default function ComplianceScannerPage() {
   const [audience, setAudience] = useState(false);
   const [error, setError] = useState("");
   const [payload, setPayload] = useState<any>(null);
-  const [filter, setFilter] = useState("all");
   const [reload, setReload] = useState(0);
   const names = useMemo(() => {
     try { return new Intl.DisplayNames([locale === "pt-BR" ? "pt" : locale], { type: "region" }); }
@@ -496,9 +488,6 @@ export default function ComplianceScannerPage() {
     link.click();
   }
 
-  const report = payload?.report;
-  const findings: Finding[] = report?.findings || [];
-  const visible = findings.filter((item) => filter === "all" || item.outcome === filter || item.severity === filter || item.country === filter);
   const levelLabel = (code: string) => {
     const level = support[code]?.level;
     if (level === "supported") return copy.supported;
@@ -516,10 +505,13 @@ export default function ComplianceScannerPage() {
           <h1>{copy.title}</h1>
           <p className="scan-lead">{copy.lead}</p>
           <div className="scan-panel">
-            <label className="scan-url">
-              <span>{copy.url}</span>
-              <input value={url} onChange={(event) => setUrl(event.target.value)} inputMode="url" required />
-            </label>
+            <div className="scan-launch">
+              <label className="scan-url">
+                <span>{copy.url}</span>
+                <input value={url} onChange={(event) => setUrl(event.target.value)} inputMode="url" required />
+              </label>
+              <button className="scan-start" type="submit">{copy.start}</button>
+            </div>
             <div className="scan-field">
               <span>{copy.country}</span>
               <p className="scan-meta">{copy.selected} {selected.length}</p>
@@ -571,20 +563,15 @@ export default function ComplianceScannerPage() {
                 <button type="button" className={!audience ? "is-on" : ""} onClick={() => setAudience(false)}>{copy.no}</button>
               </div>
             </div>
-            <button className="scan-start" type="submit">{copy.start}</button>
             <p className="scan-notice">{copy.notice}</p>
           </div>
         </div>
-        <aside className="scan-preview" aria-hidden="true">
-          <p className="scan-kicker">{copy.sample}</p>
-          <div className="scan-preview__sheet">
-            <b>{copy.topicPrivacy}</b>
-            <i /><i className="short" />
-            <div className="scan-preview__bars"><span /><span /><span /></div>
-            <small>{copy.sampleNote}</small>
-          </div>
-        </aside>
       </section>
+      <ol className="scan-steps">
+        <li>{copy.phaseCrawl}</li>
+        <li>{copy.phaseDocuments}</li>
+        <li>{copy.phaseDone}</li>
+      </ol>
       </form>}
       {error && <p className="scan-error" role="alert">{error}</p>}
       {!id && (
@@ -609,46 +596,13 @@ export default function ComplianceScannerPage() {
             <FreeResult locale={commercialLocale(locale)} summary={payload.summary} />
           ) : (
             <>
-              <header className="scan-report__head">
-                <div>
-                  <p dir="ltr">{report.url}</p>
-                  <h2>{report.ai?.contentPerformed ? copy.aiOn : copy.aiOff}</h2>
-                  <a href="/compliance">{copy.start}</a>
-                </div>
-                <button type="button" className="scan-start" onClick={downloadPdf}>{copy.pdf}</button>
-              </header>
-              <p className="scan-not-legal">{copy.notLegal}</p>
-              <div className="scan-scores">
-                <article><b>{report.scores?.documents?.withheld ? copy.unread : scoreText(report.scores?.documents?.value)}</b><span>{copy.documents}</span></article>
-                <article><b>{scoreText(report.scores?.technical?.value)}</b><span>{copy.technical}</span></article>
-                <article><b>{scoreText(report.scores?.coverage?.value)}</b><span>{copy.coverage}</span></article>
-                <article><b>{report.ai?.contentPerformed && !report.scores?.consistency?.withheld ? scoreText(report.scores?.consistency?.value) : "—"}</b><span>{copy.content}</span></article>
-              </div>
-              <p className="scan-summary" dir={textDir(report.summary)}>{report.summary}</p>
-              <div className="scan-filters">
-                {["all", "finding", "incomplete", "high"].map((item) => (
-                  <button key={item} type="button" className={filter === item ? "is-on" : ""} onClick={() => setFilter(item)}>
-                    {item === "all" ? copy.all : item === "finding" ? copy.findings : item === "incomplete" ? copy.incomplete : copy.high}
-                  </button>
-                ))}
-              </div>
-              <div className="scan-cards">
-                {visible.map((item, index) => (
-                  <article key={`${item.checkId}-${index}`} className={`sev-${item.severity || "info"}`} dir={textDir(item.title || item.description)}>
-                    <h3>{item.title}</h3>
-                    <p>{item.description}</p>
-                    {item.evidence && <blockquote><span>{item.evidenceLabel || copy.evidence}</span><p dir={textDir(item.evidence)}>{item.evidence}</p>{item.evidenceNote && <small>{item.evidenceNote}</small>}</blockquote>}
-                    {item.recommendation && <p><strong>{copy.recommendation}. </strong>{item.recommendation}</p>}
-                    {item.source?.name && <p className="scan-source">{copy.source}: {item.source.url ? <a href={item.source.url}>{item.source.name}</a> : item.source.name}</p>}
-                  </article>
-                ))}
-              </div>
-              {(report.limitations || []).length > 0 && (
+              <ComplianceReportView locale={locale} payload={payload} onPdf={downloadPdf} />
+              {(payload.report?.limitations || []).length > 0 && (
                 <ul className="scan-limits">
-                  {report.limitations.map((item: string) => <li key={item}>{item}</li>)}
+                  {payload.report.limitations.map((item: string) => <li key={item}>{item}</li>)}
                 </ul>
               )}
-              <RequirementTable locale={commercialLocale(locale)} rows={report.requirements?.rows || []} />
+              <RequirementTable locale={commercialLocale(locale)} rows={payload.report?.requirements?.rows || []} />
             </>
           )}
         </section>

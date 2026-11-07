@@ -238,9 +238,6 @@ export function MonitorBoard({ locale }: { locale: Locale }) {
     <section className="scan-monitor">
       <h2>{copy.dashboard}</h2>
       <p>{copy.inactive}</p>
-      <label>{copy.day}<input type="number" min={1} max={31} defaultValue={1} /></label>
-      <label><input type="checkbox" /> {copy.last}</label>
-      <label>{copy.email}<input type="email" dir="ltr" /></label>
     </section>
   );
 }
