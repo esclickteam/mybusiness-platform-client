@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getTextDirection } from "../i18n/i18n";
+import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 import en from "../legal-annex/en.json";
 import he from "../legal-annex/he.json";
