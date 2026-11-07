@@ -183,6 +183,9 @@ export function pickPersistedVisualSnapshot(source: Record<string, any>) {
     "__blankVisualPage",
     "__libraryPage",
     "__libraryPageTemplateId",
+    "__aiStudioPage",
+    "__aiDocument",
+    "__aiCss",
     "snapshotPageId",
     VISUAL_SHARED_CHROME_KEY,
   ].forEach((key) => {

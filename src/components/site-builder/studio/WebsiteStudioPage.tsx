@@ -2537,7 +2537,9 @@ function hasMeaningfulVisualCollections(source: Record<string, any>) {
           !Array.isArray(value) &&
           Object.keys(value).length > 0,
       );
-    }) || hasStoreVisualScalars(input)
+    }) ||
+    hasStoreVisualScalars(input) ||
+    (typeof input.__aiDocument === "string" && input.__aiDocument.trim().length > 0)
   );
 }
 
@@ -9164,7 +9166,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   siteId={siteId}
   renderer={selectedTemplateRenderer}
   businessId={businessId}
-  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
+  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}-${typeof activePageVisualData?.__aiDocument === "string" && activePageVisualData.__aiDocument ? "ai" : "shell"}`}
   initialData={applySharedChromeScalarsToVisualData({
     /*
       Header/footer are site-global. Strip page-scoped chrome from every merge
