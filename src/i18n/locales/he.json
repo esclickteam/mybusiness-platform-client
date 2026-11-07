@@ -2410,7 +2410,13 @@
     "cmdMetaDisconnected": "קמפיינים ב־Meta כלולים בחבילה, וחשבון המודעות לא מחובר.",
     "cmdWaHealth": "בריאות חשבון WhatsApp",
     "cmdWaConversations": "שיחות שחזרו",
-    "cmdWaChart": "WhatsApp, 7 הימים השמורים האחרונים"
+    "cmdWaChart": "WhatsApp, 7 הימים השמורים האחרונים",
+    "cmdNeedsAction": "דורשים טיפול",
+    "cmdModules": "מודולים כלולים",
+    "cmdWaAvailable": "זמין, בלי בדיקה נוספת",
+    "cmdWaApproved": "מאושר",
+    "cmdWaPending": "ממתין לבדיקה",
+    "cmdWaRejected": "דורש בדיקה"
   },
   "dashboard": {
     "live": "פעיל",

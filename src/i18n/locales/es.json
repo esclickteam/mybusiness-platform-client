@@ -2402,7 +2402,13 @@
     "cmdMetaDisconnected": "Las campañas de Meta están incluidas y la cuenta publicitaria no está conectada.",
     "cmdWaHealth": "Salud de la cuenta de WhatsApp",
     "cmdWaConversations": "Conversaciones devueltas",
-    "cmdWaChart": "WhatsApp, últimos 7 días guardados"
+    "cmdWaChart": "WhatsApp, últimos 7 días guardados",
+    "cmdNeedsAction": "Requieren atención",
+    "cmdModules": "Módulos incluidos",
+    "cmdWaAvailable": "Disponible, sin revisión adicional",
+    "cmdWaApproved": "Aprobado",
+    "cmdWaPending": "Pendiente de revisión",
+    "cmdWaRejected": "Requiere revisión"
   },
   "dashboard": {
     "live": "Vivo",
