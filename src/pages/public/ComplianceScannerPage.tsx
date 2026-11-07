@@ -1,4 +1,4 @@
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
@@ -428,6 +428,15 @@ export default function ComplianceScannerPage() {
       .catch(() => { if (!ignore) setError(copy.notice); });
     return () => { ignore = true; };
   }, [copy.notice]);
+
+  useLayoutEffect(() => {
+    const session = new URLSearchParams(window.location.hash.replace(/^#/, "")).get("session");
+    if (!session || !/^[a-f0-9]{24,}$/i.test(session)) return;
+    localStorage.setItem(TOKEN_KEY, session);
+    sessionStorage.setItem(REVIEW_FLAG, "1");
+    window.history.replaceState(null, "", `${window.location.pathname}${window.location.search}`);
+    setReload((value) => value + 1);
+  }, []);
 
   useEffect(() => {
     if (!id) return undefined;
