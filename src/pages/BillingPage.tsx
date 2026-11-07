@@ -27,6 +27,7 @@ import {
 } from "../services/domainService";
 import { WEBSITE_ADDON } from "../data/pricingPackagesData";
 import { billingCheckoutErrorMessage } from "../components/billing/billingCopy";
+import "./accountDesign.css";
 
 const ADDON_PLAN_POLL_MS = 4000;
 const ADDON_PLAN_POLL_LIMIT = 15;
@@ -103,7 +104,7 @@ function StatChip({ label, value }: { label: string; value: React.ReactNode }) {
       <p className="text-xs font-black uppercase tracking-wide text-slate-500">
         {label}
       </p>
-      <p className="mt-1 truncate text-lg font-black text-slate-800">{value}</p>
+      <p className="mt-1 break-words text-lg font-black leading-snug text-slate-800">{value}</p>
     </div>
   );
 }
@@ -409,7 +410,7 @@ export default function BillingPage() {
 
   if (loading) {
     return (
-      <main dir={dir} className="flex min-h-screen items-center justify-center bg-slate-50">
+      <main dir={dir} className="acct-app flex min-h-screen items-center justify-center">
         <BizuplyLoader size="xl" label={t("billing.loading")} />
       </main>
     );
@@ -422,7 +423,7 @@ export default function BillingPage() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-slate-50 px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
+      className="acct-app min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-6xl space-y-6">
         {loadError ? (
@@ -479,10 +480,10 @@ export default function BillingPage() {
 
         {/* Summary */}
         <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative overflow-hidden bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-6 py-8 sm:px-8 lg:px-10">
+          <div className="acct-hero relative overflow-hidden px-6 py-8 sm:px-8 lg:px-10">
             <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-violet-500/30 blur-3xl" />
             <div className="relative">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-black/80 backdrop-blur">
+              <div className="acct-kicker inline-flex items-center gap-2 px-4 py-1.5 text-xs font-black">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
                 {t("billing.badge")}
               </div>

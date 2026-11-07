@@ -178,13 +178,13 @@ export default function Collab() {
     <AiProvider>
       <section
         dir={dir}
-        className="min-h-[calc(100vh-72px)] bg-gradient-to-br from-white via-sky-50/40 to-cyan-50/60 px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
+        className="min-h-[calc(100vh-72px)] bg-[#f4f1fa] px-4 py-6 text-start text-[#21172f] sm:px-6 lg:px-8"
       >
         <div className="mx-auto w-full max-w-7xl">
           <nav
             role="tablist"
             aria-label={t("collab.navAria")}
-            className="mb-8 flex flex-row justify-center gap-5 overflow-x-auto rounded-[2rem] border border-slate-100 bg-white/85 px-4 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl"
+            className="mb-6 flex flex-wrap gap-2 bg-transparent p-0"
           >
             {tabs.map((tab) => (
               <NavLink
@@ -192,11 +192,11 @@ export default function Collab() {
                 to={tab.to}
                 className={({ isActive }) =>
                   [
-                    "flex min-h-14 shrink-0 items-center justify-center rounded-full px-8 text-lg font-black transition-all duration-300",
-                    "focus:outline-none focus:ring-4 focus:ring-violet-100",
+                    "flex min-h-11 items-center justify-center px-4 text-sm font-black",
+                    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5b21b6]",
                     isActive
-                      ? "bg-purple-700 text-white shadow-[0_14px_34px_rgba(126,34,206,0.30)] hover:bg-purple-800"
-                      : "bg-slate-100 text-slate-700 hover:-translate-y-0.5 hover:bg-violet-50 hover:text-purple-700",
+                      ? "bg-[#5b21b6] text-white"
+                      : "border border-[rgba(91,33,182,0.18)] bg-white text-[#21172f]",
                   ].join(" ")
                 }
               >
@@ -205,7 +205,7 @@ export default function Collab() {
             ))}
           </nav>
 
-          <div className="rounded-[2rem] border border-white/80 bg-white/80 p-4 shadow-[0_24px_80px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6">
+          <div>
             <Outlet
               key={location.pathname}
               context={{
