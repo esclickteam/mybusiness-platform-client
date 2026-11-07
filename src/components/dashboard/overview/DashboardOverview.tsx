@@ -39,10 +39,8 @@ import type {
 } from "./dashboardOverviewTypes";
 import {
   buildUpcomingAppointmentsFromCalendar,
-  formatAppointmentBadge,
   formatDateRangeLabel,
   formatLeadDate,
-  formatLeadSource,
   formatLeadStatus,
   formatNumber,
   formatPercent,
@@ -50,7 +48,6 @@ import {
 } from "./dashboardOverviewUtils";
 import {
   buildAttentionItems,
-  describeLoadedAppointments,
   resolveDashboardSurfaces,
   seriesHasActivity,
   summarizeMessageSample,
@@ -85,6 +82,7 @@ type AccessUser = {
 };
 
 const DATE_PRESETS: DatePreset[] = ["today", "week", "month", "year", "custom"];
+const FUNNEL_COLORS = ["#321064", "#5B21B6", "#7437F5", "#3D63FF", "#8EA2FF", "#C4B5FD"];
 const PERFORMANCE_TABS: PerformanceMetric[] = [
   "views",
   "leads",
@@ -331,13 +329,22 @@ export default function DashboardOverview({
           icon: <Megaphone size={16} />,
           to: `${basePath}/meta-campaigns/campaigns`,
         }
-      : null,
+        : null,
   ].filter(Boolean);
+
+  const funnel = !demoMode ? moduleReads.leads.data?.funnel || [] : [];
+  const funnelTotal = funnel.reduce((sum, stage) => sum + (stage.count || 0), 0);
+  const newLeadCount = demoMode
+    ? Math.max(data?.leads.newCount || 0, demoKpis.leads.newCount)
+    : data?.leads.newCount || 0;
+  const untreatedCount = demoMode
+    ? Math.max(data?.leads.untreatedCount || 0, demoKpis.leads.untreatedCount)
+    : data?.leads.untreatedCount || 0;
 
   return (
     <div className="bx-command">
-      <section className="bx-hero bx-rise">
-      <header>
+      <section className="bx-hero">
+      <header className="bx-hero-top">
         <p className="bx-kicker">{t("overview.cmdKicker", "Control center")}</p>
         <h1 className="bx-title">
           {t("overview.greeting", {
@@ -436,27 +443,27 @@ export default function DashboardOverview({
         </section>
       ) : null}
 
-      <section className="bx-kpis" data-demo-target="dashboard-kpi-section">
+      <section className="bx-snapshot" data-demo-target="dashboard-kpi-section">
         {surfaces.leads ? (
           <Kpi
             label={t("overview.newLeads")}
-            value={count(
-              demoMode
-                ? Math.max(data?.leads.newCount || 0, demoKpis.leads.newCount)
-                : data?.leads.newCount || 0
-            )}
-            detail={t("overview.untreatedLeads", {
-              count: count(
-                demoMode
-                  ? Math.max(data?.leads.untreatedCount || 0, demoKpis.leads.untreatedCount)
-                  : data?.leads.untreatedCount || 0
-              ),
-            })}
+            value={count(newLeadCount)}
+            detail={t("overview.cmdPipelineNote")}
             delta={delta(
               demoMode ? data?.leads.change || demoKpis.leads.change : data?.leads.change || 0
             )}
             onClick={() => navigate(`${basePath}/crm/leads`)}
             demoTarget="dashboard-kpi-new-leads"
+          />
+        ) : null}
+        {surfaces.leads ? (
+          <Kpi
+            label={t("overview.cmdNeedsAction", "Needs action")}
+            value={count(untreatedCount)}
+            detail={t("overview.cmdUntreated", {
+              count: count(untreatedCount),
+            })}
+            onClick={() => navigate(`${basePath}/crm/leads?status=new`)}
           />
         ) : null}
         {surfaces.appointments ? (
@@ -466,9 +473,23 @@ export default function DashboardOverview({
             detail={t("overview.next7Days")}
             delta={delta(data?.appointments.change || 0)}
             onClick={() => navigate(`${basePath}/crm/appointments`)}
+            demoTarget="dashboard-upcoming-appointments"
           />
         ) : null}
-        {surfaces.website ? (
+        {surfaces.whatsapp && !demoMode ? (
+          <Kpi
+            label={t("overview.cmdSent7", "WhatsApp sends, 7 days")}
+            value={
+              whatsappReads.overview
+                ? formatNumber(whatsappReads.overview.stats?.sentLast7Days || 0)
+                : "—"
+            }
+            detail={t("overview.cmdRecentNote")}
+            onClick={() => navigate(`${basePath}/whatsapp/overview`)}
+          />
+        ) : null}
+        {surfaces.website &&
+        !(surfaces.leads && surfaces.appointments && surfaces.whatsapp && !demoMode) ? (
           <Kpi
             label={t("overview.websiteViews")}
             value={count(
@@ -483,267 +504,124 @@ export default function DashboardOverview({
                   : data?.website.uniqueVisitors || 0
               ),
             })}
-            delta={delta(
-              demoMode
-                ? data?.website.viewsChange || demoKpis.website.viewsChange
-                : data?.website.viewsChange || 0
-            )}
             onClick={() => navigate(`${basePath}/website`)}
-          />
-        ) : null}
-        {surfaces.reviews ? (
-          <Kpi
-            label={t("overview.reviews")}
-            value={
-              !numbersReady && !demoMode
-                ? "—"
-                : demoMode
-                  ? demoKpis.reviews.averageRating.toFixed(1)
-                  : (data?.reviews.totalCount || 0) > 0
-                    ? (data?.reviews.averageRating || 0).toFixed(1)
-                    : "0"
-            }
-            detail={t("overview.reviewsSubtitle", {
-              newCount: count(
-                demoMode
-                  ? Math.max(data?.reviews.newCount || 0, demoKpis.reviews.newCount)
-                  : data?.reviews.newCount || 0
-              ),
-              totalCount: count(
-                demoMode
-                  ? Math.max(data?.reviews.totalCount || 0, demoKpis.reviews.totalCount)
-                  : data?.reviews.totalCount || 0
-              ),
-            })}
-            delta={delta(
-              demoMode ? data?.reviews.change || demoKpis.reviews.change : data?.reviews.change || 0
-            )}
-          />
-        ) : null}
-        {surfaces.collaborations ? (
-          <Kpi
-            label={t("overview.collaborations")}
-            value={count(
-              demoMode
-                ? Math.max(
-                    data?.collaborations.totalInPeriod || 0,
-                    demoKpis.collaborations.totalInPeriod
-                  )
-                : data?.collaborations.totalInPeriod || 0
-            )}
-            detail={t("overview.collabSubtitle", {
-              approved: count(
-                demoMode
-                  ? Math.max(
-                      data?.collaborations.newInPeriod || 0,
-                      demoKpis.collaborations.newInPeriod
-                    )
-                  : data?.collaborations.newInPeriod || 0
-              ),
-              total: count(
-                demoMode
-                  ? Math.max(
-                      data?.collaborations.totalInPeriod || 0,
-                      demoKpis.collaborations.totalInPeriod
-                    )
-                  : data?.collaborations.totalInPeriod || 0
-              ),
-            })}
-            delta={delta(
-              demoMode
-                ? data?.collaborations.change || demoKpis.collaborations.change
-                : data?.collaborations.change || 0
-            )}
-            onClick={() => navigate(`${basePath}/collab`)}
-          />
-        ) : null}
-        {surfaces.whatsapp && !demoMode ? (
-          <Kpi
-            label={t("overview.cmdSent7", "WhatsApp sends, 7 days")}
-            value={
-              whatsappReads.overview
-                ? formatNumber(whatsappReads.overview.stats?.sentLast7Days || 0)
-                : "—"
-            }
-            detail={
-              whatsappReads.status === "error"
-                ? t("overview.cmdLoadFailed", "These numbers could not be loaded.")
-                : whatsappReads.overview?.connection?.connected
-                  ? t("overview.cmdConnected", "Connected")
-                  : whatsappReads.status === "ready"
-                    ? t("overview.cmdNotConnected", "Not connected")
-                    : t("overview.loadingDashboard")
-            }
-            onClick={() => navigate(`${basePath}/whatsapp/overview`)}
-          />
-        ) : null}
-        {surfaces.whatsapp && !demoMode ? (
-          <Kpi
-            label={t("overview.cmdCampaigns", "WhatsApp campaigns")}
-            value={
-              whatsappReads.campaigns ? formatNumber(campaignSummary.total) : "—"
-            }
-            detail={
-              whatsappReads.campaigns
-                ? t("overview.cmdSending", {
-                    count: formatNumber(campaignSummary.byStatus.sending || 0),
-                    defaultValue: "{{count}} sending",
-                  })
-                : t("overview.cmdLoadFailed", "These numbers could not be loaded.")
-            }
-            onClick={() => navigate(`${basePath}/whatsapp/messages/history`)}
           />
         ) : null}
       </section>
 
-      <DashboardModulePanels
-        leads={surfaces.leads && !demoMode ? moduleReads.leads : null}
-        sites={surfaces.website && !demoMode ? moduleReads.sites : null}
-        meta={surfaces.metaCampaigns && !demoMode ? moduleReads.meta : null}
-        automations={surfaces.automations && !demoMode ? moduleReads.automations : null}
-        appointments={
-          surfaces.appointments && !demoMode
-            ? describeLoadedAppointments(
-                calendarAppointments,
-                new Date().toLocaleDateString("en-CA")
-              )
-            : null
-        }
-        health={surfaces.whatsapp && !demoMode ? whatsappReads.health : null}
-        conversations={
-          surfaces.whatsapp && !demoMode && whatsappReads.status === "ready"
-            ? whatsappReads.conversations
-            : null
-        }
-        onOpen={(path) => navigate(`${basePath}/${path}`)}
-      />
-
-      <section className="bx-split">
-        {visiblePerformanceTabs.length ? (
-          <div className="bx-panel" data-demo-target="dashboard-performance-chart">
-            <div className="bx-row" style={{ justifyContent: "space-between" }}>
-              <h2>{t("overview.performanceOverview")}</h2>
+      <section className="bx-work">
+        <div className="bx-stage" data-demo-target="dashboard-performance-chart">
+          {visiblePerformanceTabs.length ? (
+            <>
               <div className="bx-row">
+                <h2>{t("overview.performanceOverview")}</h2>
                 {visiblePerformanceTabs.map((metric) => (
                   <button
                     key={metric}
                     type="button"
-                    className={`bx-chip ${
-                      filters.performanceMetric === metric ? "is-on" : ""
-                    }`}
+                    className={`bx-chip ${filters.performanceMetric === metric ? "is-on" : ""}`}
                     onClick={() => onFiltersChange({ performanceMetric: metric })}
                   >
-                    {t(
-                      `overview.metric${metric.charAt(0).toUpperCase()}${metric.slice(1)}`
-                    )}
+                    {t(`overview.metric${metric.charAt(0).toUpperCase()}${metric.slice(1)}`)}
                   </button>
                 ))}
               </div>
-            </div>
-            <div className="bx-row" style={{ marginTop: "0.6rem" }}>
-              {RESOLUTIONS.map((resolution) => (
-                <button
-                  key={resolution}
-                  type="button"
-                  className={`bx-chip ${filters.resolution === resolution ? "is-on" : ""}`}
-                  onClick={() => onFiltersChange({ resolution })}
-                >
-                  {t(`common.${resolution}`)}
-                </button>
-              ))}
-            </div>
-            <div className="bx-chart">
-              {chartHasActivity ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={performanceChartData}>
-                    <CartesianGrid stroke="#efeaf8" vertical={false} />
-                    <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#5c5470" }} />
-                    <YAxis tick={{ fontSize: 12, fill: "#5c5470" }} />
-                    <Tooltip />
-                    <Line
-                      type="monotone"
-                      dataKey="current"
-                      stroke="#5B21B6"
-                      strokeWidth={2.5}
-                      dot={false}
-                      name={t("overview.thisPeriod")}
-                    />
-                    {showComparison ? (
+              <div className="bx-chart">
+                {chartHasActivity ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={performanceChartData}>
+                      <CartesianGrid stroke="#efeaf8" vertical={false} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#5c5470" }} />
+                      <YAxis width={36} tick={{ fontSize: 11, fill: "#5c5470" }} />
+                      <Tooltip />
                       <Line
                         type="monotone"
-                        dataKey="previous"
-                        stroke="#3D63FF"
-                        strokeWidth={2}
-                        strokeDasharray="5 5"
+                        dataKey="current"
+                        stroke="#5B21B6"
+                        strokeWidth={2.5}
                         dot={false}
-                        name={t("overview.previousPeriod")}
+                        name={t("overview.thisPeriod")}
                       />
-                    ) : null}
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <Empty
-                  title={t("overview.noPerformanceTitle")}
-                  text={t("overview.noPerformanceText")}
-                />
-              )}
-            </div>
-          </div>
-        ) : null}
+                      {showComparison ? (
+                        <Line
+                          type="monotone"
+                          dataKey="previous"
+                          stroke="#3D63FF"
+                          strokeWidth={2}
+                          strokeDasharray="5 5"
+                          dot={false}
+                          name={t("overview.previousPeriod")}
+                        />
+                      ) : null}
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <Empty
+                    title={t("overview.noPerformanceTitle")}
+                    text={t("overview.noPerformanceText")}
+                  />
+                )}
+              </div>
+            </>
+          ) : null}
 
-        <div className="bx-panel">
-          <h2>{t("overview.cmdAttention", "Needs attention")}</h2>
-          {attention.length ? (
-            <div className="bx-attention">
-              {attention.map((item) => (
-                <a key={item.id} href={item.href} onClick={(event) => {
-                  event.preventDefault();
-                  navigate(item.href);
-                }}>
-                  <span>
-                    {item.id === "untreated"
-                      ? t("overview.cmdUntreated", {
-                          count: formatNumber(item.count),
-                          defaultValue: "{{count}} leads are still marked new",
-                        })
-                      : item.id === "appointments"
-                        ? t("overview.cmdUpcoming", {
-                            count: formatNumber(item.count),
-                            defaultValue: "{{count}} appointments in the next 7 days",
-                          })
-                        : item.id === "wa-failed"
-                          ? t("overview.cmdWaFailed", {
-                              count: formatNumber(item.count),
-                              defaultValue: "{{count}} recent WhatsApp messages failed",
-                            })
-                          : item.id === "campaign-failed"
-                            ? t("overview.cmdCampaignFailed", {
-                                count: formatNumber(item.count),
-                                defaultValue: "{{count}} WhatsApp campaigns failed",
-                              })
-                            : t("overview.cmdWaConnect", "WhatsApp is included and not connected")}
-                  </span>
-                  <b>{t("overview.cmdOpen", "Open")}</b>
-                </a>
-              ))}
+          {surfaces.leads && !demoMode && moduleReads.leads.status !== "idle" ? (
+            <div className="bx-funnel-block">
+              <div className="bx-row">
+                <h2>{t("overview.cmdPipeline", "Sales pipeline")}</h2>
+                <span className="bx-note">{t("overview.cmdPipelineNote")}</span>
+              </div>
+              {moduleReads.leads.status === "error" ? (
+                <p className="bx-note">{moduleReads.leads.message}</p>
+              ) : null}
+              {funnelTotal > 0 ? (
+                <>
+                  <div className="bx-funnel-bar" role="list">
+                    {funnel.map((stage, index) => (
+                      <button
+                        key={stage.key}
+                        type="button"
+                        role="listitem"
+                        title={`${stage.label} ${formatNumber(stage.count)}`}
+                        style={{
+                          flexGrow: stage.count || 0,
+                          background: FUNNEL_COLORS[index % FUNNEL_COLORS.length],
+                        }}
+                        onClick={() =>
+                          navigate(`${basePath}/crm/leads?status=${encodeURIComponent(stage.key)}`)
+                        }
+                      />
+                    ))}
+                  </div>
+                  <div className="bx-funnel-legend">
+                    {funnel.map((stage, index) => (
+                      <button
+                        key={stage.key}
+                        type="button"
+                        className="bx-chip"
+                        onClick={() =>
+                          navigate(`${basePath}/crm/leads?status=${encodeURIComponent(stage.key)}`)
+                        }
+                      >
+                        <i style={{ background: FUNNEL_COLORS[index % FUNNEL_COLORS.length] }} />
+                        {stage.label}
+                        <b>{formatNumber(stage.count)}</b>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : moduleReads.leads.status === "ready" ? (
+                <p className="bx-note">{t("overview.noLeadsText")}</p>
+              ) : null}
             </div>
-          ) : (
-            <p className="bx-note" style={{ marginTop: "0.8rem" }}>
-              {t(
-                "overview.cmdAttentionClear",
-                "Nothing in the connected products needs attention right now."
-              )}
-            </p>
-          )}
+          ) : null}
         </div>
-      </section>
 
-      {surfaces.leads || surfaces.appointments ? (
-        <section className="bx-pair">
+        <aside className="bx-side">
           {surfaces.leads ? (
-            <div className="bx-panel" data-demo-target="dashboard-latest-leads">
-              <div className="bx-row" style={{ justifyContent: "space-between" }}>
-                <h3>{t("overview.latestLeads")}</h3>
+            <div data-demo-target="dashboard-latest-leads">
+              <div className="bx-row">
+                <h2>{t("overview.latestLeads")}</h2>
                 <button
                   type="button"
                   className="bx-btn"
@@ -753,189 +631,91 @@ export default function DashboardOverview({
                 </button>
               </div>
               {(data?.leads.latest || []).length ? (
-                <table className="bx-table">
-                  <thead>
-                    <tr>
-                      <th>{t("overview.name")}</th>
-                      <th>{t("overview.source")}</th>
-                      <th>{t("overview.status")}</th>
-                      <th>{t("overview.time")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data?.leads.latest.map((lead) => (
-                      <tr key={lead.id}>
-                        <td>{lead.name}</td>
-                        <td>{formatLeadSource(lead.source)}</td>
-                        <td>
-                          <span className="bx-status">{formatLeadStatus(lead.status)}</span>
-                        </td>
-                        <td>{formatLeadDate(lead.createdAt)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="bx-list">
+                  {data?.leads.latest.map((lead) => (
+                    <button
+                      key={lead.id}
+                      type="button"
+                      className="bx-lead"
+                      onClick={() =>
+                        lead.id
+                          ? navigate(
+                              `${basePath}/crm/leads?leadId=${encodeURIComponent(lead.id)}`
+                            )
+                          : navigate(`${basePath}/crm/leads`)
+                      }
+                    >
+                      <strong>{lead.name}</strong>
+                      <span className="bx-status">{formatLeadStatus(lead.status)}</span>
+                      <span className="bx-note">{formatLeadDate(lead.createdAt)}</span>
+                    </button>
+                  ))}
+                </div>
               ) : (
                 <Empty title={t("overview.noLeadsTitle")} text={t("overview.noLeadsText")} />
               )}
             </div>
           ) : null}
 
-          {surfaces.appointments ? (
-            <div className="bx-panel" data-demo-target="dashboard-upcoming-appointments">
-              <div className="bx-row" style={{ justifyContent: "space-between" }}>
-                <h3>{t("overview.upcomingAppointments")}</h3>
-                <button
-                  type="button"
-                  className="bx-btn"
-                  onClick={() => navigate(`${basePath}/crm/appointments`)}
-                >
-                  {t("overview.viewCalendar")}
-                </button>
+          <div>
+            <h2>{t("overview.cmdAttention", "Needs attention")}</h2>
+            {attention.filter((item) => item.id !== "untreated" && item.id !== "appointments").length ? (
+              <div className="bx-attention">
+                {attention
+                  .filter((item) => item.id !== "untreated" && item.id !== "appointments")
+                  .map((item) => (
+                  <a
+                    key={item.id}
+                    href={item.href}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      navigate(item.href);
+                    }}
+                  >
+                    <span>
+                      {item.id === "untreated"
+                        ? t("overview.cmdUntreated", { count: formatNumber(item.count) })
+                        : item.id === "appointments"
+                          ? t("overview.cmdUpcoming", { count: formatNumber(item.count) })
+                          : item.id === "wa-failed"
+                            ? t("overview.cmdWaFailed", { count: formatNumber(item.count) })
+                            : item.id === "campaign-failed"
+                              ? t("overview.cmdCampaignFailed", { count: formatNumber(item.count) })
+                              : t("overview.cmdWaConnect")}
+                    </span>
+                  </a>
+                ))}
               </div>
-              {upcomingAppointments.length ? (
-                <div className="bx-list">
-                  {upcomingAppointments.map((appointment) => {
-                    const badge = formatAppointmentBadge(appointment.date);
-                    return (
-                      <article key={appointment.id}>
-                        <div>
-                          <strong>
-                            {badge.day} {badge.month}
-                          </strong>
-                          <div>
-                            {appointment.clientName
-                              ? t("overview.withClient", {
-                                  title: appointment.title,
-                                  client: appointment.clientName,
-                                })
-                              : appointment.title}
-                          </div>
-                          <span className="bx-note">{appointment.time}</span>
-                        </div>
-                        <span className="bx-status">
-                          {appointment.status === "Confirmed"
-                            ? t("overview.confirmed")
-                            : appointment.status === "Pending"
-                              ? t("overview.pending")
-                              : appointment.status}
-                        </span>
-                      </article>
-                    );
-                  })}
-                </div>
-              ) : (
-                <Empty
-                  title={t("overview.noAppointmentsTitle")}
-                  text={t("overview.noAppointmentsText")}
-                />
-              )}
-            </div>
-          ) : null}
-        </section>
-      ) : null}
-
-      {surfaces.website ? (
-        <section className="bx-pair">
-          <div className="bx-panel">
-            <h3>{t("overview.trafficSources")}</h3>
-            {(data?.website.trafficSources || []).some((source) => source.visitors > 0) ? (
-              <table className="bx-table">
-                <tbody>
-                  {data?.website.trafficSources
-                    .filter((source) => source.visitors > 0)
-                    .map((source) => (
-                      <tr key={source.source}>
-                        <td>{source.label}</td>
-                        <td>{formatNumber(source.visitors)}</td>
-                        <td>{showComparison ? formatPercent(source.change) : ""}</td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
             ) : (
-              <Empty title={t("overview.noTrafficTitle")} text={t("overview.noTrafficText")} />
+              <p className="bx-note">{t("overview.cmdAttentionClear")}</p>
             )}
           </div>
-          <div className="bx-panel">
-            <h3>{t("overview.topPages")}</h3>
-            {(data?.website.topPages || []).length ? (
-              <table className="bx-table">
-                <tbody>
-                  {data?.website.topPages.map((page) => (
-                    <tr key={`${page.pageId}-${page.pageSlug}`}>
-                      <td>{page.page}</td>
-                      <td>{formatNumber(page.views)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <Empty title={t("overview.noPagesTitle")} text={t("overview.noPagesText")} />
-            )}
-          </div>
-        </section>
-      ) : null}
+        </aside>
+      </section>
 
-      {surfaces.whatsapp && !demoMode ? (
-        <section className="bx-panel">
-          <div className="bx-row" style={{ justifyContent: "space-between" }}>
-            <h2>{t("overview.cmdWhatsappTitle", "WhatsApp")}</h2>
-            <span className="bx-status">
-              {whatsappReads.status === "error"
-                ? t("overview.cmdLoadFailed", "These numbers could not be loaded.")
-                : whatsappReads.overview?.connection?.connected
-                  ? t("overview.cmdConnected", "Connected")
-                  : whatsappReads.status === "ready"
-                    ? t("overview.cmdNotConnected", "Not connected")
-                    : t("overview.loadingDashboard")}
-            </span>
-          </div>
-          {whatsappReads.status === "error" ? (
-            <p className="bx-note" style={{ marginTop: "0.7rem" }}>
-              {whatsappReads.message}
-            </p>
-          ) : whatsappReads.status === "ready" ? (
-            <div className="bx-kpis" style={{ marginTop: "0.8rem" }}>
-              <Kpi
-                label={t("overview.cmdSample", "Latest messages returned")}
-                value={formatNumber(messageSample.total)}
-                detail={t("overview.cmdSampleDetail", {
-                  inbound: formatNumber(messageSample.inbound),
-                  outbound: formatNumber(messageSample.outbound),
-                  defaultValue: "{{inbound}} received · {{outbound}} sent in this sample",
-                })}
-              />
-              <Kpi
-                label={t("overview.cmdDeliverySample", "Delivery in that sample")}
-                value={formatNumber(messageSample.delivered)}
-                detail={t("overview.cmdReadSample", {
-                  count: formatNumber(messageSample.read),
-                  defaultValue: "{{count}} marked read",
-                })}
-              />
-              <Kpi
-                label={t("overview.cmdScheduled", "Scheduled campaigns")}
-                value={formatNumber(campaignSummary.scheduled)}
-                detail={t("overview.cmdCompleted", {
-                  count: formatNumber(campaignSummary.byStatus.completed || 0),
-                  defaultValue: "{{count}} completed",
-                })}
-              />
-            </div>
-          ) : null}
-          <p className="bx-note" style={{ marginTop: "0.75rem" }}>
-            {t(
-              "overview.cmdRecentNote",
-              "These are the latest saved records. This is not a live feed."
-            )}
-          </p>
-        </section>
-      ) : null}
+      <DashboardModulePanels
+        leads={null}
+        sites={surfaces.website && !demoMode ? moduleReads.sites : null}
+        meta={surfaces.metaCampaigns && !demoMode ? moduleReads.meta : null}
+        automations={surfaces.automations && !demoMode ? moduleReads.automations : null}
+        appointments={null}
+        health={surfaces.whatsapp && !demoMode ? whatsappReads.health : null}
+        conversations={null}
+        whatsapp={
+          surfaces.whatsapp && !demoMode
+            ? {
+                status: whatsappReads.status,
+                connected: whatsappReads.overview?.connection?.connected ?? null,
+                message: whatsappReads.message,
+              }
+            : null
+        }
+        onOpen={(path) => navigate(`${basePath}/${path}`)}
+      />
 
       {demoMode ? (
-        <section className="bx-panel" data-demo-target="dashboard-recent-activity">
-          <h3>{t("leftover.dashboard.recentActivity", "Recent activity")}</h3>
+        <section className="bx-mod" data-demo-target="dashboard-recent-activity">
+          <h2>{t("leftover.dashboard.recentActivity", "Recent activity")}</h2>
           <div className="bx-list">
             {getDemoActivityTimeline().map((item) => (
               <article key={item.id}>
@@ -944,30 +724,6 @@ export default function DashboardOverview({
               </article>
             ))}
           </div>
-        </section>
-      ) : surfaces.leads ? (
-        <section className="bx-panel">
-          <h3>{t("overview.cmdRecentTitle", "Recent records")}</h3>
-          <p className="bx-note">
-            {t(
-              "overview.cmdRecentNote",
-              "These are the latest saved records. This is not a live feed."
-            )}
-          </p>
-          {(data?.leads.latest || []).length ? (
-            <div className="bx-list">
-              {data?.leads.latest.map((lead) => (
-                <article key={`feed-${lead.id}`}>
-                  <span>
-                    {lead.name} · {formatLeadStatus(lead.status)}
-                  </span>
-                  <span className="bx-note">{formatLeadDate(lead.createdAt)}</span>
-                </article>
-              ))}
-            </div>
-          ) : (
-            <Empty title={t("overview.noLeadsTitle")} text={t("overview.noLeadsText")} />
-          )}
         </section>
       ) : null}
 

@@ -647,7 +647,7 @@ export default function BusinessDashboardLayout() {
                   ${
                     sidebarCollapsed && !isMobile
                       ? "h-[76px] flex-col justify-center gap-1.5 px-2"
-                      : "h-[80px] justify-between gap-2 px-3"
+                      : "h-[72px] justify-between gap-2 px-3"
                   }
                 `}
               >
@@ -693,7 +693,7 @@ export default function BusinessDashboardLayout() {
                       ${
                         sidebarCollapsed && !isMobile
                           ? "h-10 w-10"
-                          : "h-11 w-auto max-w-[168px]"
+                          : "h-14 w-auto max-w-[210px]"
                       }
                     `}
                     />
@@ -838,7 +838,7 @@ export default function BusinessDashboardLayout() {
                   </span>
                 ) : null}
                 <div className="hidden min-w-0 sm:block">
-                  <span className="block truncate text-base font-black tracking-[-0.03em] text-[#1a0b33]">
+                  <span className="block truncate text-lg font-black tracking-[-0.03em] text-[#1a0b33]">
                     {isInvistimoAdmin
                       ? INVISTIMO_ADMIN_LABEL
                       : t("common.hello", {

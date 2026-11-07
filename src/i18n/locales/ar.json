@@ -2402,7 +2402,13 @@
     "cmdMetaDisconnected": "حملات Meta مشمولة وحساب الإعلانات غير متصل.",
     "cmdWaHealth": "سلامة حساب واتساب",
     "cmdWaConversations": "المحادثات المعادة",
-    "cmdWaChart": "واتساب، آخر 7 أيام محفوظة"
+    "cmdWaChart": "واتساب، آخر 7 أيام محفوظة",
+    "cmdNeedsAction": "بحاجة إلى متابعة",
+    "cmdModules": "الوحدات المشمولة",
+    "cmdWaAvailable": "متاح، بدون مراجعة إضافية",
+    "cmdWaApproved": "معتمد",
+    "cmdWaPending": "بانتظار المراجعة",
+    "cmdWaRejected": "يحتاج إلى مراجعة"
   },
   "dashboard": {
     "live": "مباشر",

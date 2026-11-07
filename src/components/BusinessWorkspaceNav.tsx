@@ -188,8 +188,8 @@ function NavItem({
           group relative flex items-center rounded-none transition-all duration-200
           ${
             collapsed
-              ? "mx-auto h-11 w-11 justify-center"
-              : "h-11 gap-3 px-3"
+              ? "mx-auto h-10 w-10 justify-center"
+              : "h-10 gap-2.5 px-2.5"
           }
           text-[13.5px] font-medium tracking-[-0.01em]
           ${
@@ -587,7 +587,7 @@ export default function BusinessWorkspaceNav({
           return (
             <React.Fragment key={item.to || item.href || item.labelKey}>
               {showGroup ? (
-                <p className="px-3 pb-1 pt-4 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/45">
+                <p className="px-2.5 pb-0.5 pt-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/55">
                   {translate(t, `businessNav.groups.${group}`, group)}
                 </p>
               ) : null}

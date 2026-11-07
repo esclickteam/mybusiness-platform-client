@@ -2410,7 +2410,13 @@
     "cmdMetaDisconnected": "Meta campaigns are included and the ad account is not connected.",
     "cmdWaHealth": "WhatsApp account health",
     "cmdWaConversations": "Conversations returned",
-    "cmdWaChart": "WhatsApp, last 7 stored days"
+    "cmdWaChart": "WhatsApp, last 7 stored days",
+    "cmdNeedsAction": "Needs action",
+    "cmdModules": "Included modules",
+    "cmdWaAvailable": "Available, no extra review",
+    "cmdWaApproved": "Approved",
+    "cmdWaPending": "Pending review",
+    "cmdWaRejected": "Needs review"
   },
   "dashboard": {
     "live": "Live",
