@@ -1,0 +1,149 @@
+{
+  "checkedOn": "2026-11-07",
+  "rows": [
+    {
+      "provider": "MongoDB",
+      "service": "Application database",
+      "data": "Account, billing, CRM, consent, and support records stored by the application",
+      "role": "Processor, if the cloud agreement applies",
+      "region": "Not in the repository",
+      "dpa": "https://www.mongodb.com/legal/data-processing-agreement",
+      "applicability": "Incorporated into the Cloud Subscription Agreement. Last updated 21 October 2024. Account acceptance was not found here.",
+      "transfer": "Not verified",
+      "status": "ACTION_REQUIRED",
+      "gap": "Confirm the account agreement and record the Atlas cluster region."
+    },
+    {
+      "provider": "Railway",
+      "service": "Application hosting",
+      "data": "The application and the data it processes on that host",
+      "role": "Processor, after a DPA is executed",
+      "region": "Not in railway.toml",
+      "dpa": "https://railway.com/legal/dpa",
+      "applicability": "Railway's compliance page says the DPA is executed through its request form. No executed copy was found.",
+      "transfer": "Not verified",
+      "status": "ACTION_REQUIRED",
+      "gap": "https://docs.railway.com/enterprise/compliance"
+    },
+    {
+      "provider": "Redis",
+      "service": "Cache and queues",
+      "data": "Short-lived operational data. The host is not named in the repository.",
+      "role": "Unknown until the host is identified",
+      "region": "Not in the repository",
+      "dpa": "https://redis.io/legal/data-processing-addendum-dpa/",
+      "applicability": "The Redis Cloud addendum was last updated 26 March 2025 and applies when that agreement is the contract. This repository does not show that the host is Redis Cloud.",
+      "transfer": "Not verified",
+      "status": "UNKNOWN",
+      "gap": "Identify the Redis provider from the account, without copying the connection string into a document."
+    },
+    {
+      "provider": "Vercel",
+      "service": "Site hosting",
+      "data": "The public site and request data Vercel processes to serve it",
+      "role": "Processor for Enterprise and Pro, according to the addendum",
+      "region": "Not read from the account",
+      "dpa": "https://vercel.com/legal/dpa",
+      "applicability": "Addendum last updated 17 March 2026, effective 31 March 2026. Its text says it applies to Enterprise and Pro plans. This account's plan was not read.",
+      "transfer": "Not verified",
+      "status": "ACTION_REQUIRED",
+      "gap": "Read the plan in the Vercel account and confirm the addendum applies."
+    },
+    {
+      "provider": "Lemon Squeezy",
+      "service": "Platform subscription checkout",
+      "data": "Customer and payment data collected at checkout",
+      "role": "Not decided for this store",
+      "region": "Not read from the store",
+      "dpa": "https://www.lemonsqueezy.com/dpa",
+      "applicability": "A public DPA and buyer terms exist. The buyer terms describe Lemon as merchant of record. The signed agreement for this store was not found, so that role is not adopted here.",
+      "transfer": "Not verified",
+      "status": "ACTION_REQUIRED",
+      "gap": "Read the signed store agreement before describing Lemon as merchant of record or tax collector."
+    },
+    {
+      "provider": "Resend",
+      "service": "Email",
+      "data": "Recipient address and the message content the application sends",
+      "role": "Processor when its terms are accepted",
+      "region": "Not in the repository",
+      "dpa": "https://resend.com/legal/dpa",
+      "applicability": "The addendum says it is incorporated when the customer accepts the terms. That acceptance was not found in the repository.",
+      "transfer": "Not verified",
+      "status": "ACTION_REQUIRED",
+      "gap": "Confirm the account accepted the current terms."
+    },
+    {
+      "provider": "Cloudinary",
+      "service": "Media storage",
+      "data": "Files the product uploads",
+      "role": "Processor after an order form is executed",
+      "region": "Not in the repository",
+      "dpa": "https://cloudinary-marketing-res.cloudinary.com/image/upload/v1700254778/Cloudinary_Data_Processing_Agreenent_DPA_Nov_2023.pdf",
+      "applicability": "The November 2023 DPA text says it takes effect when the customer executes an order form. No executed copy was found.",
+      "transfer": "Not verified",
+      "status": "ACTION_REQUIRED",
+      "gap": "Confirm an executed order form. The public PDF that was read is dated November 2023."
+    },
+    {
+      "provider": "Meta",
+      "service": "WhatsApp Business API and measurement pixel",
+      "data": "Customer messaging data when WhatsApp is connected. Pixel events only after measurement consent in this branch.",
+      "role": "Processor for WhatsApp customer data to the extent the Business Terms say so",
+      "region": "Not read from the business account",
+      "dpa": "https://www.whatsapp.com/legal/business-data-processing-terms",
+      "applicability": "WhatsApp Business Data Processing Terms last updated 22 August 2025. They apply to the extent the Business Terms say WhatsApp processes customer data as processor. Acceptance in this business account was not found. The pixel is a separate Meta tool.",
+      "transfer": "Not verified",
+      "status": "ACTION_REQUIRED",
+      "gap": "Confirm the WhatsApp Business terms and the pixel terms accepted in the Meta account."
+    },
+    {
+      "provider": "Google Fonts",
+      "service": "Fonts on platform pages",
+      "data": "The browser requests the font from Google. No analytics tag was found.",
+      "role": "Font delivery",
+      "region": "Not stated in the repository",
+      "dpa": "https://developers.google.com/fonts/faq/privacy",
+      "applicability": "The site preloads fonts.googleapis.com. No signed processing agreement was found, and Google Analytics was not found.",
+      "transfer": "Not verified",
+      "status": "UNKNOWN",
+      "gap": "Decide whether the font request is covered by a Google terms acceptance for this account."
+    },
+    {
+      "provider": "OpenAI",
+      "service": "AI features when a key is configured",
+      "data": "The content needed for the configured feature",
+      "role": "Not stated",
+      "region": "Not in the repository",
+      "dpa": "https://openai.com/policies/data-processing-addendum",
+      "applicability": "Used only when a key is configured. Whether that account accepted the addendum, and whether content is used for training, was not found.",
+      "transfer": "Not verified",
+      "status": "UNKNOWN",
+      "gap": "Confirm the key's account and the accepted addendum. Do not state a training position."
+    },
+    {
+      "provider": "Twilio",
+      "service": "Phone calls when enabled",
+      "data": "Call metadata when the phone channel is enabled",
+      "role": "Not confirmed",
+      "region": "Not in the repository",
+      "dpa": "https://www.twilio.com/en-us/legal/data-protection-addendum",
+      "applicability": "The channel is optional. No accepted addendum was found.",
+      "transfer": "Not verified",
+      "status": "UNKNOWN",
+      "gap": "Confirm only if the phone channel is enabled on the account."
+    },
+    {
+      "provider": "Cloudflare Turnstile",
+      "service": "Bot check when a site key is set",
+      "data": "The check request when the site key is configured",
+      "role": "Not confirmed",
+      "region": "Not in the repository",
+      "dpa": "https://www.cloudflare.com/cloudflare-customer-dpa/",
+      "applicability": "The widget loads only with a site key. Acceptance of Cloudflare's DPA was not found.",
+      "transfer": "Not verified",
+      "status": "UNKNOWN",
+      "gap": "Confirm only for the account that holds the site key."
+    }
+  ]
+}

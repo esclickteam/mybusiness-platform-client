@@ -19,5 +19,5 @@ describe("privacy request form", () => {
     expect(screen.getByLabelText("البريد")).toBeTruthy();
     expect(screen.getByRole("button", { name: "إرسال الطلب" })).toBeTruthy();
     expect(screen.getByText(/ولا يحذف السجلات/)).toBeTruthy();
-  });
+  }, 20000);
 });

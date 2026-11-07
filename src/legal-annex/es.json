@@ -19,7 +19,7 @@
         "Los fines son las funciones contratadas que el cliente usa, incluidos CRM, mensajes, agenda y funciones de IA cuando se usan. La información es la que el cliente introduce y los registros técnicos necesarios para el servicio. Esta página no enumera cada campo.",
         "El acceso sigue las cuentas que ofrece el producto. El sitio público usa HTTPS. No se afirman el cifrado en reposo, un plazo fijo de supresión ni un plazo fijo de aviso de incidente porque no se verificaron.",
         "Los proveedores están en la página de subencargados. No se encontraron regiones de almacenamiento en el repositorio. No se afirman cláusulas contractuales tipo, un addendum de transferencia del Reino Unido, un representante en la UE o el Reino Unido, ni un delegado de protección de datos.",
-        "Una solicitud de privacidad sobre información que Bizuply conserva puede enviarse a privacy@bizuply.com. No se verificaron la exportación y la supresión de autoservicio de cada registro.",
+        "Una solicitud de privacidad puede registrarse en la página de privacidad o enviarse a privacy@bizuply.com. El formulario puede confirmar un código de correo. No confirma la identidad, no divulga información y no borra registros. Una solicitud sobre la base de un cliente empresarial se envía a ese cliente. No se verificaron la exportación y la supresión de autoservicio de cada registro.",
         "Al terminar la suscripción, el acceso termina según las condiciones del servicio. Esta página no promete que cada registro se suprima o se devuelva en un número fijo de días."
       ]
     },
@@ -29,7 +29,8 @@
         "Esta lista nombra proveedores encontrados en el producto. No dice que se haya firmado un contrato de tratamiento con cada uno, ni indica un país de almacenamiento.",
         "Lemon Squeezy gestiona el pago de las suscripciones de la plataforma. MongoDB guarda la base de datos de la aplicación. Redis se usa para caché y colas. Railway aloja la aplicación. Vercel aloja el sitio. Cloudinary guarda medios. Resend envía correo.",
         "OpenAI se usa para funciones de IA cuando hay una clave configurada. Esta lista no dice si ese proveedor entrena con el contenido. Meta proporciona la API de WhatsApp Business y el píxel publicitario después del consentimiento de medición. Twilio se usa para teléfono cuando está activado.",
-        "Stripe se usa para algunos pagos de tienda del comerciante y no es el procesador de la suscripción de la plataforma. PayPal se usa para algunas confirmaciones de pedidos de tienda. Google Fonts sirve fuentes en las páginas de la plataforma. Cloudflare Turnstile se carga solo cuando hay una clave de sitio."
+        "Stripe se usa para algunos pagos de tienda del comerciante y no es el procesador de la suscripción de la plataforma. PayPal se usa para algunas confirmaciones de pedidos de tienda. Google Fonts sirve fuentes en las páginas de la plataforma. Cloudflare Turnstile se carga solo cuando hay una clave de sitio.",
+        "Las condiciones públicas de tratamiento se leyeron el 7 de noviembre de 2026. Leer una página no es una aceptación firmada ni una región de almacenamiento. El registro de esta página es esa lectura. El DPA de MongoDB está incorporado a su acuerdo de nube. El DPA de Railway se firma mediante una solicitud aparte, y no se encontró una copia firmada. La adenda de Vercel dice que se aplica a los planes Enterprise y Pro, y el plan de esta cuenta no se leyó. El servidor de Redis no está nombrado, así que la adenda de Redis Cloud no se trata aquí como el contrato. Las condiciones de comprador de Lemon Squeezy describen un comerciante registrado, y no se encontró el acuerdo firmado de esta tienda, así que ese papel no se adopta aquí."
       ]
     },
     "transfers": {

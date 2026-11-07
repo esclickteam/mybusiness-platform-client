@@ -3,12 +3,12 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { useOpenFilm, type Film } from "./film";
-import { homeButtonLabel } from "./homeCopy";
+import { homeText } from "./homeCopy";
 
 function useCopy() {
   const { i18n, t } = useTranslation();
   const he = i18n.language.startsWith("he");
-  const text = (hebrew: string, english: string) => (he ? hebrew : homeButtonLabel(i18n.language, english));
+  const text = (hebrew: string, english: string) => homeText(i18n.language, hebrew, english);
   return { text, he, t, language: i18n.language, dir: getTextDirection(i18n.language) };
 }
 

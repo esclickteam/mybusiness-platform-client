@@ -19,7 +19,7 @@
         "The purposes are the subscribed features the customer uses, including CRM, messaging, scheduling, and AI features when they are used. The information is what the customer submits and the technical logs needed to run the service. This page does not list every field.",
         "Access follows the accounts the product provides. The public site uses HTTPS. Encryption at rest, a fixed deletion period, and a fixed breach-notice period are not stated because they were not verified.",
         "The providers are listed on the subprocessor page. Storage regions were not found in the product repository. Standard contractual clauses, a UK transfer addendum, an EU or UK representative, and a data-protection officer are not claimed.",
-        "A privacy request about information Bizuply holds may be sent to privacy@bizuply.com. Self-service export and deletion of every record were not verified.",
+        "A privacy request can be recorded on the privacy page or sent to privacy@bizuply.com. The form can confirm an email code. It does not confirm identity, it does not disclose information, and it does not delete records. A request about a business customer's database is routed to that customer. Self-service export and deletion of every record were not verified.",
         "When the subscription ends, access ends under the terms of service. This page does not promise that every record is deleted or returned within a stated number of days."
       ]
     },
@@ -29,7 +29,8 @@
         "This list names providers found in the product. It does not say a data-processing agreement with each provider was signed, and it does not state a storage country.",
         "Lemon Squeezy handles platform subscription checkout. MongoDB holds the application database. Redis is used for cache and queues. Railway hosts the application. Vercel hosts the site. Cloudinary stores media. Resend sends email.",
         "OpenAI is used for AI features when a key is configured. This list does not state whether that provider trains on the content. Meta provides the WhatsApp Business API and the advertising pixel after measurement consent. Twilio is used for phone calls when it is enabled.",
-        "Stripe is used for some merchant storefront payments and is not the platform subscription processor. PayPal is used for some store order confirmations. Google Fonts serves fonts on platform pages. Cloudflare Turnstile loads only when a site key is configured."
+        "Stripe is used for some merchant storefront payments and is not the platform subscription processor. PayPal is used for some store order confirmations. Google Fonts serves fonts on platform pages. Cloudflare Turnstile loads only when a site key is configured.",
+        "Public processing terms were read on 7 November 2026. Reading a page is not a signed acceptance and is not a storage region. The register on this page is that reading. MongoDB's DPA is incorporated into its cloud agreement. Railway's DPA is executed through a separate request, and no executed copy was found. Vercel's addendum says it applies to Enterprise and Pro plans, and this account's plan was not read. The Redis host is not named, so the Redis Cloud addendum is not treated as the contract. Lemon Squeezy's buyer terms describe a merchant of record, and the signed store agreement was not found, so that role is not adopted here."
       ]
     },
     "transfers": {

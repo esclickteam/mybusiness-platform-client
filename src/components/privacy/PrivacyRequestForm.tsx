@@ -24,6 +24,11 @@ type Copy = {
   customerNote: string;
   unavailable: string;
   failed: string;
+  code: string;
+  verify: string;
+  codeSent: string;
+  codeMissing: string;
+  emailVerified: string;
 };
 
 const COPY: Record<string, Copy> = {
@@ -46,6 +51,11 @@ const COPY: Record<string, Copy> = {
     customerNote: "Bizuply will not release a business customer's database from this form. After the account is matched, the request is routed to that customer.",
     unavailable: "The request was not recorded because this server does not have the request route yet.",
     failed: "The request was not recorded.",
+    code: "Email code",
+    verify: "Confirm the email code",
+    codeSent: "A code was sent to the email address. The code does not prove identity and does not release any information.",
+    codeMissing: "The request was recorded, but the email code was not sent because mail is not configured.",
+    emailVerified: "The email code matched. Identity is still not confirmed, nothing was disclosed, and nothing was deleted.",
   },
   he: {
     title: "בקשת עיון או תיקון",
@@ -66,6 +76,11 @@ const COPY: Record<string, Copy> = {
     customerNote: "Bizuply לא מוסרת מטופס זה מאגר של לקוח עסקי. אחרי התאמת החשבון הבקשה מועברת לאותו לקוח.",
     unavailable: "הבקשה לא נרשמה כי השרת הזה עדיין בלי מסלול הבקשות.",
     failed: "הבקשה לא נרשמה.",
+    code: "קוד מהדוא״ל",
+    verify: "אישור הקוד",
+    codeSent: "נשלח קוד לכתובת הדוא״ל. הקוד אינו מוכיח זהות ואינו מוסר מידע.",
+    codeMissing: "הבקשה נרשמה, אבל קוד הדוא״ל לא נשלח כי הדואר אינו מוגדר.",
+    emailVerified: "הקוד תאם. הזהות עדיין לא אושרה, לא נמסר מידע, ולא נמחקה רשומה.",
   },
   es: {
     title: "Solicitud de acceso o corrección",
@@ -86,6 +101,11 @@ const COPY: Record<string, Copy> = {
     customerNote: "Bizuply no entrega desde este formulario la base de un cliente empresarial. Tras identificar la cuenta, la solicitud se envía a ese cliente.",
     unavailable: "La solicitud no se registró porque este servidor aún no tiene la ruta.",
     failed: "La solicitud no se registró.",
+    code: "Código del correo",
+    verify: "Confirmar el código",
+    codeSent: "Se envió un código al correo. El código no prueba la identidad y no entrega información.",
+    codeMissing: "La solicitud quedó registrada, pero el código no se envió porque el correo no está configurado.",
+    emailVerified: "El código coincide. La identidad aún no está confirmada, no se divulgó nada y no se borró nada.",
   },
   pt: {
     title: "Pedido de acesso ou correção",
@@ -106,6 +126,11 @@ const COPY: Record<string, Copy> = {
     customerNote: "A Bizuply não entrega por este formulário a base de um cliente empresarial. Depois de identificar a conta, o pedido segue para esse cliente.",
     unavailable: "O pedido não foi registrado porque este servidor ainda não tem a rota.",
     failed: "O pedido não foi registrado.",
+    code: "Código do e-mail",
+    verify: "Confirmar o código",
+    codeSent: "Um código foi enviado ao e-mail. O código não prova a identidade e não entrega informação.",
+    codeMissing: "O pedido foi registrado, mas o código não foi enviado porque o e-mail não está configurado.",
+    emailVerified: "O código confere. A identidade ainda não foi confirmada, nada foi divulgado e nada foi apagado.",
   },
   ar: {
     title: "طلب اطلاع أو تصحيح",
@@ -126,6 +151,11 @@ const COPY: Record<string, Copy> = {
     customerNote: "لا تسلّم Bizuply من هذا النموذج قاعدة عميل تجاري. بعد مطابقة الحساب يُحال الطلب إلى ذلك العميل.",
     unavailable: "لم يُسجل الطلب لأن هذا الخادم لا يملك مسار الطلبات بعد.",
     failed: "لم يُسجل الطلب.",
+    code: "رمز البريد",
+    verify: "تأكيد الرمز",
+    codeSent: "أُرسل رمز إلى البريد. الرمز لا يثبت الهوية ولا يسلّم أي معلومات.",
+    codeMissing: "تم تسجيل الطلب، لكن رمز البريد لم يُرسل لأن البريد غير مُعد.",
+    emailVerified: "تطابق الرمز. لم يتم تأكيد الهوية بعد، ولم يُكشف شيء، ولم يُحذف شيء.",
   },
 };
 
@@ -148,6 +178,8 @@ export default function PrivacyRequestForm() {
   const [details, setDetails] = useState("");
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
+  const [requestId, setRequestId] = useState("");
+  const [code, setCode] = useState("");
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -161,15 +193,37 @@ export default function PrivacyRequestForm() {
         about,
         details,
         locale: i18n.language,
+        companyFax: "",
       });
-      if (data?.success !== true || data?.disclosed !== false || data?.deletionPerformed !== false || !data?.id) {
+      if (data?.success !== true || data?.disclosed !== false || data?.deletionPerformed !== false || data?.identityVerified !== false || !data?.id) {
         throw new Error("request_not_stored");
       }
+      setRequestId(String(data.id));
       const note = data.routing === "forward_to_customer" ? ` ${copy.customerNote}` : "";
-      setMessage(`${copy.received} ${data.id}.${note}`);
+      const delivery = data.verificationSent ? copy.codeSent : copy.codeMissing;
+      setMessage(`${copy.received} ${data.id}. ${delivery}${note}`);
     } catch (err) {
       const status = (err as { response?: { status?: number } }).response?.status;
       setMessage(status === 404 || status === 405 ? copy.unavailable : copy.failed);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  async function onVerify() {
+    setPending(true);
+    try {
+      const { data } = await API.post("/privacy/requests/verify-email", {
+        id: requestId,
+        email,
+        code,
+      });
+      if (data?.emailVerified !== true || data?.disclosed !== false || data?.identityVerified !== false) {
+        throw new Error("verification_failed");
+      }
+      setMessage(copy.emailVerified);
+    } catch {
+      setMessage(copy.failed);
     } finally {
       setPending(false);
     }
@@ -181,7 +235,7 @@ export default function PrivacyRequestForm() {
       <p className="mb-4 text-sm leading-7 text-slate-600">{copy.intro}</p>
       <label className="mb-3 block text-sm font-medium text-slate-800">
         {copy.email}
-        <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} />
+        <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900" type="email" required autoComplete="email" value={email} onChange={(event) => setEmail(event.target.value)} />
       </label>
       <label className="mb-3 block text-sm font-medium text-slate-800">
         {copy.name}
@@ -207,10 +261,21 @@ export default function PrivacyRequestForm() {
         {copy.details}
         <textarea className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2" rows={4} maxLength={2000} value={details} onChange={(event) => setDetails(event.target.value)} />
       </label>
-      <button type="submit" className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white disabled:opacity-60" disabled={pending}>
+      <button type="submit" className="rounded-full bg-slate-900 px-5 py-2 text-sm font-semibold text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-60" disabled={pending}>
         {copy.submit}
       </button>
       {message ? <p role="status" className="mt-4 text-sm leading-7 text-slate-700">{message}</p> : null}
+      {requestId ? (
+        <div className="mt-4 border-t border-slate-200 pt-4">
+          <label className="mb-3 block text-sm font-medium text-slate-800">
+            {copy.code}
+            <input className="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900" inputMode="numeric" autoComplete="one-time-code" value={code} onChange={(event) => setCode(event.target.value)} />
+          </label>
+          <button type="button" className="rounded-full border border-slate-900 px-5 py-2 text-sm font-semibold text-slate-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900 disabled:opacity-60" disabled={pending || code.trim().length < 6} onClick={onVerify}>
+            {copy.verify}
+          </button>
+        </div>
+      ) : null}
     </form>
   );
 }

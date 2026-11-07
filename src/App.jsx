@@ -238,6 +238,7 @@ const PartnerCenterPage = lazy(() => import("./pages/partner/PartnerCenterPage")
 const PublicPartnerMaterial = lazy(() => import("./pages/public/PublicPartnerMaterial"));
 const AdminPartnerDossier = lazy(() => import("./pages/admin/AdminPartnerDossier"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
+const AdminPrivacyRequests = lazy(() => import("./pages/admin/AdminPrivacyRequests"));
 const MarketerDashboardPage = lazy(() =>
   import("./pages/marketer/MarketerDashboardPage")
 );
@@ -1628,6 +1629,7 @@ export default function App() {
                         <Route path="partners/:partnerId" element={<AdminPartnerDossier />} />
                         <Route path="partners" element={<AdminPartners />} />
                         <Route path="support-chat" element={<AdminSupportChat />} />
+                        <Route path="privacy-requests" element={<AdminPrivacyRequests />} />
                         <Route path="affiliate-payouts" element={<AdminPayoutPage />} />
                         </Route>
 

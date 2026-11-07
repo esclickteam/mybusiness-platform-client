@@ -116,6 +116,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { path: "/admin/settings", label: "הגדרות כלליות" },
       { path: "/admin/settings/legal", label: "פרופיל משפטי" },
+      { path: "/admin/privacy-requests", label: "בקשות פרטיות" },
     ],
   },
 ];

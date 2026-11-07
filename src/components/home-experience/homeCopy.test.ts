@@ -1,16 +1,62 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { homeButtonLabel } from "./homeCopy";
+import { homeText } from "./homeCopy";
+import locales from "./homeLocales.json";
 
-describe("homepage buttons outside Hebrew", () => {
-  it("keeps Arabic, Spanish, and Portuguese buttons out of English", () => {
-    expect(homeButtonLabel("ar", "See the system")).toBe("شاهدوا النظام");
-    expect(homeButtonLabel("ar", "Start free")).toBe("ابدأوا مجانًا");
-    expect(homeButtonLabel("es", "Skip to content")).toBe("Saltar al contenido");
-    expect(homeButtonLabel("pt-BR", "Watch the demo")).toBe("Ver a demonstração");
+const source = [
+  "src/components/home-experience/HomeExperienceSections.tsx",
+  "src/components/home-experience/HomeExperienceFooter.tsx",
+]
+  .map((file) => readFileSync(file, "utf8"))
+  .join("\n");
+
+function englishStrings() {
+  const found = new Set<string>();
+  const direct = /text\(\s*"((?:\\.|[^"\\])*)"\s*,\s*"((?:\\.|[^"\\])*)"/g;
+  let match: RegExpExecArray | null;
+  while ((match = direct.exec(source))) found.add(match[2]);
+  const columns = /\[\s*"\/[^"]+"\s*,\s*"[^"]*"\s*,\s*"((?:\\.|[^"\\])*)"\s*\]/g;
+  while ((match = columns.exec(source))) found.add(match[1]);
+  const headings = /\ben:\s*"((?:\\.|[^"\\])*)"/g;
+  while ((match = headings.exec(source))) found.add(match[1]);
+  return [...found];
+}
+
+const PROPER = new Set([
+  "CRM",
+  "WhatsApp",
+  "WhatsApp API",
+  "FAQ",
+  "SaaS",
+  "Meta",
+  "Facebook",
+  "Instagram",
+  "Studio",
+  "Website Studio",
+  "Emma Wilson",
+  "Sophia Mitchell",
+  "Olivia Bennett",
+  "Northwind Studio",
+]);
+
+describe("homepage copy", () => {
+  it("translates every homepage string into Spanish, Portuguese, and Arabic", () => {
+    const missing: string[] = [];
+    for (const english of englishStrings()) {
+      if (PROPER.has(english)) continue;
+      for (const pack of [locales.es, locales.pt, locales.ar]) {
+        const value = pack[english];
+        if (!value || value === english) missing.push(english);
+      }
+    }
+    expect(missing).toEqual([]);
   });
 
-  it("leaves English and unknown sentences unchanged", () => {
-    expect(homeButtonLabel("en", "See the system")).toBe("See the system");
-    expect(homeButtonLabel("ar", "A sentence that is not a button.")).toBe("A sentence that is not a button.");
+  it("keeps Hebrew and does not leave the named Arabic buttons in English", () => {
+    expect(homeText("he", "לראות את המערכת", "See the system")).toBe("לראות את המערכת");
+    expect(homeText("ar", "לראות את המערכת", "See the system")).toBe("شاهدوا النظام");
+    expect(homeText("es", "דילוג לתוכן", "Skip to content")).toBe("Saltar al contenido");
+    expect(homeText("pt-BR", "לצפות בהדגמה", "Watch the demo")).toBe("Ver a demonstração");
+    expect(homeText("en", "שלום", "See the system")).toBe("See the system");
   });
 });

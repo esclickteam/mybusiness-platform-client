@@ -8,6 +8,7 @@ import he from "../legal-annex/he.json";
 import es from "../legal-annex/es.json";
 import pt from "../legal-annex/pt-BR.json";
 import ar from "../legal-annex/ar.json";
+import registry from "../legal-annex/subprocessors.registry.json";
 
 const packs = { en, he, es, "pt-BR": pt, ar };
 
@@ -50,6 +51,26 @@ export default function LegalAnnex() {
                 {paragraph}
               </p>
             ))}
+            {doc === "subprocessors" ? (
+              <table className="mt-6 w-full border-collapse text-sm">
+                <caption className="mb-3 text-start font-semibold">
+                  {registry.checkedOn}
+                </caption>
+                <tbody>
+                  {registry.rows.map((row) => (
+                    <tr key={row.provider} className="border-t border-slate-200 align-top">
+                      <th scope="row" className="py-3 pe-3 text-start font-semibold text-slate-800">{row.provider}</th>
+                      <td className="py-3 text-slate-600">
+                        <p>{row.service}</p>
+                        <p>{row.status}</p>
+                        <p>{row.region}</p>
+                        <p><a href={row.dpa}>{row.dpa}</a></p>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : null}
           </div>
         ) : null}
       </section>
