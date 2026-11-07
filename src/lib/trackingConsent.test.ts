@@ -7,6 +7,8 @@ describe("tracking consent", () => {
     expect(marketingAllowed("bizuply_lang=he")).toBe(false);
     expect(marketingAllowed("bizuply_tracking=essential")).toBe(false);
     expect(marketingAllowed("bizuply_lang=he; bizuply_tracking=all")).toBe(true);
+    expect(readTrackingChoice("bizuply_tracking=essential; bizuply_tracking=all")).toBe("all");
+    expect(readTrackingChoice("bizuply_tracking=all; bizuply_tracking=essential")).toBe("essential");
   });
 
   it("keeps a choice across a later read and can clear it", () => {

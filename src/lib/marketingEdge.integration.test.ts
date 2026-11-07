@@ -115,7 +115,7 @@ describe("marketing edge integration", () => {
     expect(hebrewCrm.body).toContain('lang="he" dir="rtl"');
     expect(hebrewCrm.body).toContain("<h1>מערכת CRM שמחברת בין הלידים, הלקוחות והעבודה היומיומית</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
-    expect(hebrewCrm.body).toContain('alt="ביזאפלי (Bizuply)"');
+    expect(hebrewCrm.body).toContain('alt="ביזאפלי (BizUply)"');
     const hebrewHome = await read(await middleware(request("https://bizuply.com/he", "bizuply.com")));
     expect(hebrewHome.body).toContain('rel="canonical" href="https://bizuply.com/he"');
     const whatsappHebrew = await read(await middleware(request("https://bizuply.com/he/whatsapp-api", "bizuply.com")));
