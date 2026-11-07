@@ -105,10 +105,20 @@ const RESTRICTED_NAV_ALLOWED_BUSINESS_IDS = new Set([
 ]);
 
 /** Allowlist only: an unresolved or unlisted business never sees the entries. */
-function canSeeRestrictedNav(businessId: unknown): boolean {
+export function canSeeRestrictedNav(businessId: unknown): boolean {
   const normalized = normalizeBusinessId(businessId);
   if (!normalized) return false;
   return RESTRICTED_NAV_ALLOWED_BUSINESS_IDS.has(normalized);
+}
+
+function workspaceGroup(moduleKey?: string | null) {
+  if (!moduleKey || moduleKey === "dashboard") return "overview";
+  if (moduleKey === "crm" || moduleKey === "automations" || moduleKey === "integrations") {
+    return "crm";
+  }
+  if (moduleKey === "whatsapp" || moduleKey === "meta-campaigns") return "channels";
+  if (moduleKey === "billing" || moduleKey === "help-center") return "account";
+  return "work";
 }
 
 /* =========================
@@ -144,16 +154,16 @@ function NavItem({
         title={collapsed ? label : undefined}
         aria-label={label}
         className={`
-          group relative flex items-center rounded-md border border-transparent transition-all duration-200
+          group relative flex items-center rounded-none border border-transparent transition-all duration-200
           ${collapsed ? "mx-auto h-11 w-11 justify-center" : "h-11 gap-3 px-3"}
-          text-[13.5px] font-medium tracking-[-0.01em] text-slate-600
-          hover:border-violet-100/80 hover:bg-white/55 hover:text-slate-800
+          text-[13.5px] font-medium tracking-[-0.01em] text-[#1a0b33]
+          hover:border-[#e7e3f5] hover:bg-[#F7F6FC] hover:text-[#321064]
         `}
       >
         <Icon
           size={19}
           strokeWidth={2}
-          className="shrink-0 text-slate-400 transition-colors group-hover:text-sky-600"
+          className="shrink-0 text-[#5B21B6] transition-colors group-hover:text-[#321064]"
         />
         {!collapsed && (
           <>
@@ -175,7 +185,7 @@ function NavItem({
       data-demo-target={demoTarget || undefined}
       className={({ isActive }) =>
         `
-          group relative flex items-center rounded-md transition-all duration-200
+          group relative flex items-center rounded-none transition-all duration-200
           ${
             collapsed
               ? "mx-auto h-11 w-11 justify-center"
@@ -185,13 +195,12 @@ function NavItem({
           ${
             isActive
               ? `
-                  border border-violet-200/70 bg-gradient-to-r
-                  from-violet-100/90 via-sky-100/80 to-cyan-100/70
-                  text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_4px_14px_rgba(99,102,241,0.08)]
+                  border border-[#5B21B6] bg-[#5B21B6]
+                  text-white
                 `
               : `
-                  border border-transparent text-slate-600
-                  hover:border-violet-100/80 hover:bg-white/55 hover:text-slate-800
+                  border border-transparent text-[#1a0b33]
+                  hover:border-[#e7e3f5] hover:bg-[#F7F6FC] hover:text-[#321064]
                 `
           }
         `
@@ -203,8 +212,8 @@ function NavItem({
             <span
               aria-hidden
               className="
-                absolute inset-y-1.5 start-0 w-[3px] rounded-full
-                bg-gradient-to-b from-violet-400 via-sky-400 to-cyan-400
+                absolute inset-y-0 start-0 w-[3px] rounded-none
+                bg-[#3D63FF]
               "
             />
           )}
@@ -216,8 +225,8 @@ function NavItem({
               shrink-0 transition-colors
               ${
                 isActive
-                  ? "text-violet-600"
-                  : "text-slate-400 group-hover:text-sky-600"
+                  ? "text-white"
+                  : "text-[#5B21B6] group-hover:text-[#321064]"
               }
             `}
           />
@@ -581,19 +590,30 @@ export default function BusinessWorkspaceNav({
       <div
         className={`space-y-0.5 overflow-hidden ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
       >
-        {visibleItems.map((item) => (
-          <NavItem
-            key={item.to}
-            label={translate(t, item.labelKey, item.fallback)}
-            to={item.to}
-            href={item.href}
-            icon={item.icon}
-            exact={item.exact}
-            onNavigate={onNavigate}
-            collapsed={collapsed}
-            demoTarget={item.demoTarget || null}
-          />
-        ))}
+        {visibleItems.map((item, index) => {
+          const group = workspaceGroup(item.moduleKey);
+          const previous = index > 0 ? workspaceGroup(visibleItems[index - 1].moduleKey) : "";
+          const showGroup = !collapsed && group !== previous;
+          return (
+            <React.Fragment key={item.to || item.href || item.labelKey}>
+              {showGroup ? (
+                <p className="px-3 pb-1 pt-3 text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#5B21B6]">
+                  {translate(t, `businessNav.groups.${group}`, group)}
+                </p>
+              ) : null}
+              <NavItem
+                label={translate(t, item.labelKey, item.fallback)}
+                to={item.to}
+                href={item.href}
+                icon={item.icon}
+                exact={item.exact}
+                onNavigate={onNavigate}
+                collapsed={collapsed}
+                demoTarget={item.demoTarget || null}
+              />
+            </React.Fragment>
+          );
+        })}
       </div>
     </nav>
   );

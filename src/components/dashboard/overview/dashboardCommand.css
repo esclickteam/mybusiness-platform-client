@@ -1,0 +1,290 @@
+.bx-command {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  color: #1a0b33;
+}
+
+.bx-kicker {
+  margin: 0;
+  color: #5b21b6;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.bx-title {
+  margin: 0.35rem 0 0;
+  color: #1a0b33;
+  font-size: clamp(1.7rem, 2.4vw, 2.35rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.bx-sub {
+  margin: 0.45rem 0 0;
+  max-width: 42rem;
+  color: #5c5470;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.bx-panel {
+  border: 1px solid #e7e3f5;
+  background: #fff;
+  padding: 1rem;
+}
+
+.bx-panel h2,
+.bx-panel h3 {
+  margin: 0;
+  color: #1a0b33;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.bx-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.bx-btn,
+.bx-chip,
+.bx-field,
+.bx-kpi,
+.bx-link {
+  border-radius: 0;
+}
+
+.bx-btn,
+.bx-chip {
+  border: 1px solid #e7e3f5;
+  background: #fff;
+  color: #1a0b33;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.84rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.bx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.bx-chip.is-on,
+.bx-btn.is-on {
+  border-color: #5b21b6;
+  background: #5b21b6;
+  color: #fff;
+}
+
+.bx-btn:hover,
+.bx-chip:hover,
+.bx-kpi:hover,
+.bx-link:hover {
+  border-color: #5b21b6;
+}
+
+.bx-field {
+  border: 1px solid #e7e3f5;
+  background: #fff;
+  color: #1a0b33;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.7rem;
+  font-weight: 700;
+}
+
+.bx-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0.75rem;
+}
+
+.bx-kpi {
+  display: flex;
+  min-height: 148px;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid #e7e3f5;
+  background:
+    linear-gradient(180deg, rgba(91, 33, 182, 0.05), transparent 42%),
+    #fff;
+  padding: 1rem;
+  text-align: start;
+  color: inherit;
+}
+
+button.bx-kpi {
+  cursor: pointer;
+}
+
+.bx-kpi strong {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+
+.bx-kpi span,
+.bx-note {
+  color: #5c5470;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.bx-delta {
+  color: #321064;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.bx-split {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 1100px) {
+  .bx-split {
+    grid-template-columns: 1.3fr 0.7fr;
+  }
+
+  .bx-pair {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.bx-pair {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.bx-chart {
+  height: 280px;
+  margin-top: 1rem;
+}
+
+.bx-empty {
+  display: grid;
+  min-height: 160px;
+  place-items: center;
+  align-content: center;
+  gap: 0.35rem;
+  border: 1px solid #e7e3f5;
+  background: #f7f6fc;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.bx-empty strong {
+  font-size: 0.95rem;
+}
+
+.bx-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.8rem;
+  font-size: 0.88rem;
+}
+
+.bx-table th {
+  color: #5c5470;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.bx-table th,
+.bx-table td {
+  border-bottom: 1px solid #efeaf8;
+  padding: 0.7rem 0.4rem;
+}
+
+.bx-status {
+  display: inline-flex;
+  border: 1px solid #e7e3f5;
+  background: #f7f6fc;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.bx-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.8rem;
+}
+
+.bx-list article,
+.bx-attention a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid #e7e3f5;
+  background: #fff;
+  padding: 0.75rem 0.85rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.bx-attention {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.bx-error {
+  border-color: #fecdd3;
+  background: #fff1f2;
+  color: #9f1239;
+}
+
+@media (max-width: 720px) {
+  .bx-command {
+    gap: 0.85rem;
+  }
+
+  .bx-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .bx-rise {
+    animation: bx-rise 0.45s ease both;
+  }
+
+  .bx-kpi:hover,
+  .bx-btn:hover,
+  .bx-chip:hover {
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes bx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

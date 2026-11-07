@@ -1511,7 +1511,7 @@ export default function FacebookStyleNotifications() {
         aria-label={t("notifications.ariaLabel")}
         data-testid="notifications-bell-button"
         className={[
-          "relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+          "relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-none border bg-white shadow-none transition hover:border-[#5B21B6]",
           unreadCount > 0
             ? "border-amber-200 from-amber-50 to-white hover:border-amber-300"
             : "border-slate-200 from-white to-white hover:border-amber-200 hover:from-amber-50",
