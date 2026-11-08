@@ -308,28 +308,19 @@ export default function HomeExperienceSections() {
   const { text } = useCopy();
   return (
     <>
-      <a className="hx-skip" href="#story">{text("דילוג לתוכן", "Skip to content")}</a>
+      <a className="hx-skip" href="#hx-connect">{text("דילוג לתוכן", "Skip to content")}</a>
       <main>
       <Hero />
       <Why />
       <ProductShowcase />
-      <SplitStory />
       <CrmDepth />
       <WhatsApp />
-      <Campaigns />
-      <AppointmentsSection />
-      <Websites />
       <HomeSiteGallery />
-      <Automations />
       <HomeAi />
-      <HomeJourney />
+      <Automations />
+      <Campaigns />
       <ReadySystems />
-      <Connect />
       <HomeTrust />
-      <Films />
-      <Audiences />
-      <OrbitSection />
-      <GrowthSection />
       <Faq />
       <Close />
       </main>
@@ -986,47 +977,42 @@ function CrmDepth() {
   const { text, language, cine } = useCopy();
   const open = useOpenFilm();
   const points = [
-    [text("ניהול לידים", "Lead management"), text("ריכוז פניות נכנסות ומעקב אחר הסטטוס של כל ליד.", "Incoming enquiries in one list, with a status for each lead.")],
-    [text("כרטיס לקוח", "Customer record"), text("מידע ופרטים רלוונטיים שמאפשרים להמשיך את הטיפול בצורה מסודרת.", "The details the team needs in order to continue the work in an orderly way.")],
-    [text("משימות ומעקב", "Tasks and follow-up"), text("תכנון פעולות המשך והבנה מה עדיין דורש טיפול.", "A place to plan the next action and see what still needs attention.")],
-    [text("סינון וארגון", "Search and filters"), text("חיפוש, סינון וסידור מידע כדי להגיע במהירות לרשומות הרלוונטיות.", "Search, filter, and sort so the relevant records are easy to reach.")],
-    [text("עבודת צוות", "Shared work"), text("סביבת עבודה משותפת שמסייעת לעקוב אחר אחריות והמשך טיפול, בהתאם להרשאות וליכולות הפעילות.", "A shared workspace for responsibility and follow-up, within the permissions and features that are active.")],
+    [text("לידים במקום אחד", "Leads in one place"), text("רואים מי פנה, מאיפה הגיע ומה הסטטוס — בלי לחפש בין כלים.", "See who got in touch, where they came from, and the status — without hunting across tools.")],
+    [text("כרטיס לקוח ברור", "A clear customer record"), text("הפרטים שצריך כדי להמשיך טיפול נשארים ברשומה אחת.", "The details needed for follow-up stay on one record.")],
+    [text("הצעד הבא מוכן", "The next step is ready"), text("משימת המשך נפתחת ליד אותו לקוח, כדי שהצוות יידע מה לעשות עכשיו.", "A follow-up task sits with the same customer, so the team knows what to do next.")],
   ] as const;
   const shots = [
-    ["/demo-media/crm/leads-list.png", text("פתיחת רשימת הלידים", "Open the lead list")],
-    ["/demo-media/crm/lead-file.png", text("כניסה לכרטיס ליד", "Open a lead record")],
-    ["/demo-media/crm/lead-task.png", text("יצירת משימת המשך", "Create a follow-up task")],
+    ["/demo-media/crm/leads-list.png", text("רשימת לידים ממוקדת", "Focused lead list"), "hx-crop-leads"],
+    ["/demo-media/crm/lead-file.png", text("כרטיס ליד", "Lead record"), "hx-crop-record"],
+    ["/demo-media/crm/lead-task.png", text("משימת המשך", "Follow-up task"), "hx-crop-task"],
   ] as const;
   return (
-    <section className="hx-depth" aria-labelledby="hx-crm-title">
+    <section className="hx-depth" id="crm" aria-labelledby="hx-crm-title">
       <div className="hx-depth-wrap">
         <div>
           <h2 id="hx-crm-title">{cine.crmTitle}</h2>
           <p className="hx-prose">{cine.crmLead}</p>
-          <p className="hx-prose">
-            {text(
-              "עם ה־CRM של BizUply אפשר לרכז מידע על לידים ולקוחות, לעקוב אחר סטטוסים, לתעד את המשך הטיפול ולנהל משימות מתוך סביבת עבודה מרכזית. כך קל יותר להבין מי פנה, מה הוא ביקש, מי מטפל בו ומה צריך לקרות בהמשך.",
-              "With BizUply CRM, a business can keep lead and customer information together, follow statuses, record what happens next, and manage tasks from one workspace. It is easier to see who got in touch, what they asked for, who is handling it, and what should happen next.",
-            )}
-          </p>
           <div className="hx-actions">
-            <Cta to="/crm" tone="ink">{text("לגלות את מערכת ה־CRM", "Explore BizUply CRM")}</Cta>
+            <Cta to="/crm" tone="ink">{text("לעמוד ה־CRM", "CRM page")}</Cta>
             <DemoButton
               label={text("לצפות בהדגמה", "Watch the demo")}
               onClick={() => open(filmOf("crm", "crm", "/demo-media/crm/poster.jpg", "CRM", text("לידים → כרטיס לקוח → משימת המשך.", "Leads → customer record → follow-up task."), language, text))}
             />
           </div>
         </div>
-        <div className="hx-crm-stage">
-          <LocaleShot language={language} src={shots[0][0]} alt={shots[0][1]} width={1200} height={750} loading="lazy" decoding="async" />
+        <div className="hx-crm-stage hx-crm-stage-focus">
+          <LocaleShot language={language} src={shots[0][0]} alt={shots[0][1]} width={1200} height={750} loading="lazy" decoding="async" className={shots[0][2]} />
           <div className="hx-crm-float">
-            <LocaleShot language={language} src={shots[1][0]} alt={shots[1][1]} width={1200} height={750} loading="lazy" decoding="async" />
+            <LocaleShot language={language} src={shots[1][0]} alt={shots[1][1]} width={1200} height={750} loading="lazy" decoding="async" className={shots[1][2]} />
           </div>
           <div className="hx-crm-task">
-            <LocaleShot language={language} src={shots[2][0]} alt={shots[2][1]} width={1200} height={750} loading="lazy" decoding="async" />
+            <LocaleShot language={language} src={shots[2][0]} alt={shots[2][1]} width={1200} height={750} loading="lazy" decoding="async" className={shots[2][2]} />
           </div>
           <p className="hx-crm-toast">{text("ליד חדש התקבל", "A new lead arrived")}</p>
           <CrmStory copy={cine} />
+          <div className="hx-crm-demo" aria-hidden="true">
+            <PreviewFilm src="/demo-media/home/crm.mp4" poster="/demo-media/home/crm.jpg" />
+          </div>
         </div>
         <ul className="hx-points">
           {points.map(([title, body]) => (
@@ -1077,19 +1063,13 @@ function WhatsApp() {
     [text("אוליביה בנט", "Olivia Bennett"), text("ההצעה מוכנה לבדיקה.", "The proposal is ready whenever you want to review it.")],
   ];
   return (
-    <section className="hx-chapter hx-wa" ref={ref} aria-labelledby="hx-wa-title">
+    <section className="hx-chapter hx-wa" id="whatsapp" ref={ref} aria-labelledby="hx-wa-title">
       <div className="hx-chapter-pin">
         <div className="hx-wa-grid">
           <div>
             <h2 id="hx-wa-title">{cine.waTitle}</h2>
             <p className="hx-prose">{cine.waLead}</p>
-            <p className="hx-prose">
-              {text(
-                "BizUply מאפשרת לעסקים לעבוד עם WhatsApp Business API ולשלב תקשורת לקוחות בתהליכים העסקיים שלהם. אפשר לנהל שיחות, לעבוד עם תבניות הודעה מאושרות ולחבר פעולות לתהליכים נוספים במערכת, בהתאם לתנאי השימוש ולהרשאות של Meta.",
-                "BizUply lets a business work with the WhatsApp Business API and bring customer communication into its processes. Teams can manage conversations, use approved message templates, and connect actions to other workflows, within Meta’s terms and the permissions on the account.",
-              )}
-            </p>
-            <ul className="hx-quotes">
+            <ul className="hx-quotes" aria-hidden="true">
               {quotes.map(([name, line]) => (
                 <li className="hx-quote" key={name}>
                   {line}
@@ -1099,27 +1079,27 @@ function WhatsApp() {
             </ul>
             <ul className="hx-points hx-points-on-dark">
               <li>
-                <h3>{text("תיבת שיחות עסקית", "A business inbox")}</h3>
-                <p>{text("ניהול תקשורת לקוחות בסביבה המיועדת לעבודה עסקית.", "Customer conversations in a workspace meant for the business.")}</p>
+                <h3>{text("שיחה ליד הכרטיס", "Conversation beside the record")}</h3>
+                <p>{text("אותו לקוח מה־CRM ממשיך בשיחה בתוך סביבת העבודה.", "The same CRM customer continues in a conversation inside the workspace.")}</p>
               </li>
               <li>
-                <h3>{text("תבניות הודעה", "Message templates")}</h3>
-                <p>{text("שימוש בתבניות המאושרות על ידי Meta כאשר נדרשת פתיחת שיחה מחוץ לחלון השירות.", "Meta-approved templates when a conversation has to start outside the service window.")}</p>
+                <h3>{text("תבניות מאושרות", "Approved templates")}</h3>
+                <p>{text("כשצריך לפתוח שיחה מחוץ לחלון השירות — לפי כללי Meta.", "When a conversation must start outside the service window — under Meta’s rules.")}</p>
               </li>
               <li>
-                <h3>{text("חיבור לניהול לקוחות", "Connected to the customer record")}</h3>
-                <p>{text("במקום ששיחה תישאר פעולה מנותקת, היא יכולה להפוך לחלק מתהליך העבודה של העסק.", "A conversation can stay part of the work, instead of a separate action.")}</p>
+                <h3>{text("פחות הקשר שאבד", "Less lost context")}</h3>
+                <p>{text("ההודעה לא נשארת מנותקת מהטיפול בפנייה.", "The message does not stay detached from the enquiry work.")}</p>
               </li>
             </ul>
             <div className="hx-actions">
-              <Cta to="/whatsapp-api" tone="line">{text("להכיר את WhatsApp Business API", "Explore WhatsApp Business API")}</Cta>
+              <Cta to="/whatsapp-api" tone="line">{text("לעמוד WhatsApp", "WhatsApp page")}</Cta>
               <DemoButton
                 label={text("לראות איך זה עובד", "See how it works")}
                 onClick={() => open(filmOf("whatsapp", "whatsapp", "/demo-media/whatsapp/poster.jpg", "WhatsApp", text("הקלטת תיבת ההודעות מתוך סביבת הדמו.", "A recording of the inbox from the demo workspace."), language, text))}
               />
             </div>
           </div>
-          <div className="hx-wa-frame">
+          <div className="hx-wa-frame hx-wa-frame-focus">
             <PhoneStory copy={cine} />
             <LocaleShot
               language={language}
@@ -1129,7 +1109,11 @@ function WhatsApp() {
               height={1000}
               loading="lazy"
               decoding="async"
+              className="hx-crop-chat"
             />
+            <div className="hx-wa-demo" aria-hidden="true">
+              <PreviewFilm src="/demo-media/home/whatsapp.mp4" poster="/demo-media/home/whatsapp.jpg" />
+            </div>
           </div>
         </div>
       </div>
@@ -1145,20 +1129,20 @@ function Campaigns() {
     ref.current?.style.setProperty("--zoom", progress.toFixed(3));
   });
   const points = [
-    [text("ניהול קמפיינים", "Campaign management"), text("עבודה עם קמפיינים של Facebook ו־Instagram מתוך המערכת, בהתאם לחשבון ולהרשאות המחוברות.", "Work with Facebook and Instagram campaigns from the workspace, according to the connected account and its permissions.")],
-    [text("מעקב אחר פעילות", "Activity you can review"), text("צפייה במידע ובביצועים הזמינים דרך החיבור לחשבון המודעות.", "Review the information and performance available through the connected ads account.")],
-    [text("חיבור לידים", "Leads stay in the workflow"), text("העברת פניות רלוונטיות להמשך טיפול בסביבת העבודה.", "Relevant enquiries can continue into the workspace for follow-up.")],
+    [text("אחרי הקליק", "After the click"), text("הפנייה נכנסת להמשך טיפול, לא נשארת רק בדוח המודעה.", "The enquiry continues into follow-up — not only in the ad report.")],
+    [text("ביצועים במבט אחד", "Performance at a glance"), text("רואים את מה שזמין דרך חשבון המודעות המחובר.", "Review what the connected ads account makes available.")],
+    [text("ליד שממשיך ב־CRM", "A lead that continues in CRM"), text("אותה פנייה מקבלת סטטוס וצעד הבא בסביבת העבודה.", "The same enquiry gets a status and a next step in the workspace.")],
   ] as const;
   return (
-    <section className="hx-chapter hx-camp" ref={ref} aria-labelledby="hx-camp-title">
+    <section className="hx-chapter hx-camp" id="campaigns" ref={ref} aria-labelledby="hx-camp-title">
       <div className="hx-chapter-pin">
         <div className="hx-camp-grid">
           <div className="hx-camp-copy">
-            <h2 id="hx-camp-title">{text("הקמפיין מביא את הליד. עכשיו מתחילה העבודה החשובה.", "The campaign brings the lead. Then the important work begins.")}</h2>
+            <h2 id="hx-camp-title">{text("המודעה הביאה פנייה. עכשיו אפשר לטפל בה.", "The ad brought an enquiry. Now you can handle it.")}</h2>
             <p className="hx-prose">
               {text(
-                "קמפיין ממומן לא מסתיים ברגע שמישהו לוחץ על מודעה או משאיר פרטים. הערך האמיתי מתחיל כאשר העסק יודע מה לעשות עם הפנייה. BizUply משלבת יכולות לניהול קמפיינים של Meta עם סביבת עבודה לניהול לידים, כדי לעזור לעסקים לחבר בין הפעילות השיווקית לבין הטיפול בלקוחות.",
-                "A paid campaign does not end when someone clicks an ad or leaves their details. The useful part starts when the business knows what to do with that enquiry. BizUply connects Meta campaign tools with a lead workspace, so marketing activity and customer follow-up can stay related.",
+                "קמפיין Meta שווה יותר כשהליד ממשיך לעבודה אמיתית: סטטוס, משימה והמשך טיפול — באותה מערכת.",
+                "A Meta campaign is more useful when the lead becomes real work: a status, a task, and follow-up — in the same system.",
               )}
             </p>
             <ul className="hx-points">
@@ -1169,14 +1153,8 @@ function Campaigns() {
                 </li>
               ))}
             </ul>
-            <p className="hx-prose">
-              {text(
-                "לא מספיק לדעת כמה אנשים נחשפו למודעה. חשוב להבין מה קורה עם האנשים שבחרו לפנות לעסק.",
-                "Reach is only part of the story. What matters next is what happens with the people who chose to get in touch.",
-              )}
-            </p>
             <div className="hx-actions">
-              <Cta to="/meta-campaigns" tone="ink">{text("לגלות את ניהול הקמפיינים", "Explore campaign management")}</Cta>
+              <Cta to="/meta-campaigns" tone="ink">{text("לעמוד הקמפיינים", "Campaigns page")}</Cta>
               <DemoButton
                 label={text("לצפות בהדגמה", "Watch the demo")}
                 onClick={() => open(filmOf("campaigns", "campaigns", "/demo-media/campaigns/poster.jpg", text("קמפיינים", "Campaigns"), text("סיור מוצר של מסך הקמפיינים עם נתוני דמו.", "Product walkthrough of the campaigns screen with demo data."), language, text))}
@@ -1193,6 +1171,7 @@ function Campaigns() {
                 height={1000}
                 loading="lazy"
                 decoding="async"
+                className="hx-crop-campaigns"
               />
             </div>
           </div>
@@ -1330,14 +1309,14 @@ function Automations() {
   }, "pass");
   const shown = steps[active];
   return (
-    <section className="hx-auto" ref={ref} aria-labelledby="hx-auto-title">
+    <section className="hx-auto" id="automations" ref={ref} aria-labelledby="hx-auto-title">
       <div className="hx-auto-top">
         <div className="hx-auto-wrap">
-          <h2 id="hx-auto-title">{text("פחות פעולות שחוזרות על עצמן. יותר זמן לנהל את העסק.", "Fewer repeated actions. More time to run the business.")}</h2>
+          <h2 id="hx-auto-title">{text("פחות עבודה ידנית חוזרת. יותר זמן ללקוח.", "Less repeated manual work. More time for the customer.")}</h2>
           <p className="hx-prose">
             {text(
-              "לא כל פעולה בעסק צריכה להתבצע ידנית. כאשר לקוח משאיר פרטים, כאשר נוצר ליד חדש או כאשר מגיע הזמן להמשיך טיפול — אפשר להגדיר תהליכים שעוזרים לצוות לעבוד בצורה מסודרת יותר. האוטומציות של BizUply מחברות בין אירועים לפעולות מוגדרות, בהתאם ליכולות ולחיבורים הפעילים בחשבון.",
-              "Not every action in a business has to be done by hand. When a customer leaves details, a new lead arrives, or it is time to follow up, a defined process can help the team work in a more orderly way. BizUply automations connect events to defined actions, within the features and connections that are active on the account.",
+              "כשלקוח משאיר פרטים או נוצר ליד חדש — אפשר להגדיר פעולת המשך אוטומטית, לפי החיבורים וההרשאות הפעילים בחשבון.",
+              "When a customer leaves details or a new lead arrives, you can define the next automatic action — within the connections and permissions active on the account.",
             )}
           </p>
           <ol className="hx-chain">
@@ -1361,18 +1340,30 @@ function Automations() {
           <div>
             <h3>{shown.title}</h3>
             <p>{shown.body}</p>
-            <p>
-              {text(
-                "אוטומציה טובה לא מחליפה את הקשר האישי עם הלקוח. היא עוזרת לפנות זמן לקשר הזה.",
-                "A good automation does not replace a personal conversation. It frees time for that conversation.",
-              )}
-            </p>
             <div className="hx-actions">
-              <Cta to="/automations" tone="ink">{text("לגלות את האוטומציות", "Explore automations")}</Cta>
+              <Cta to="/automations" tone="ink">{text("לעמוד האוטומציות", "Automations page")}</Cta>
             </div>
           </div>
           <div className="hx-step">
-            <LocaleShot language={language} src={shown.img} alt={shown.alt} width={1600} height={1000} decoding="async" />
+            <LocaleShot
+              language={language}
+              src={shown.img}
+              alt={shown.alt}
+              width={1600}
+              height={1000}
+              decoding="async"
+              className={
+                shown.img.includes("leads-list")
+                  ? "hx-crop-leads"
+                  : shown.img.includes("lead-task")
+                    ? "hx-crop-task"
+                    : shown.img.includes("whatsapp")
+                      ? "hx-crop-chat"
+                      : shown.img.includes("automations")
+                        ? "hx-crop-auto"
+                        : "hx-crop-studio"
+              }
+            />
           </div>
         </div>
       </div>
@@ -1452,22 +1443,22 @@ function ReadySystems() {
     setSlideIndex((current) => (current === nearest ? current : nearest));
   });
   const slides = [
-    ["/template-screenshots/studiora.webp", text("סטודיו", "Studio"), "hx-crop-studio"],
-    ["/template-screenshots/vitalcare.webp", text("קליניקה", "Clinic"), "hx-crop-leads"],
-    ["/template-screenshots/wantravel.webp", text("תיירות", "Travel"), "hx-crop-campaigns"],
+    ["/template-screenshots/studiora.webp", text("סטודיו", "Studio"), "hx-crop-site-top"],
+    ["/template-screenshots/vitalcare.webp", text("קליניקה", "Clinic"), "hx-crop-site-top"],
+    ["/template-screenshots/wantravel.webp", text("תיירות", "Travel"), "hx-crop-site-top"],
     ["/demo-media/home/appointments.jpg", text("יומן פגישות", "Appointments"), "hx-crop-record"],
-    ["/template-screenshots/summitops.webp", text("שירותים", "Services"), "hx-crop-auto"],
-    ["/template-screenshots/serenova.webp", text("אירוח", "Hospitality"), "hx-crop-chat"],
-    ["/template-screenshots/soleora.webp", text("מותג", "Brand"), "hx-crop-studio"],
+    ["/template-screenshots/summitops.webp", text("שירותים", "Services"), "hx-crop-site-top"],
+    ["/template-screenshots/serenova.webp", text("אירוח", "Hospitality"), "hx-crop-site-top"],
+    ["/template-screenshots/soleora.webp", text("מותג", "Brand"), "hx-crop-site-top"],
   ] as const;
   return (
-    <section className="hx-chapter hx-saas" aria-labelledby="hx-saas-title">
+    <section className="hx-chapter hx-saas" id="saas" aria-labelledby="hx-saas-title">
       <div className="hx-saas-head">
-          <h2 id="hx-saas-title">{text("רוצים להקים עסק דיגיטלי? לא תמיד חייבים להתחיל מאפס.", "Want to launch a digital business? You do not always have to start from a blank page.")}</h2>
+          <h2 id="hx-saas-title">{text("מערכות מוכנות לענפים — בלי לבנות הכל מאפס.", "Ready systems for real industries — without building everything from scratch.")}</h2>
           <p className="hx-prose">
             {text(
-              "BizUply מפתחת מערכות SaaS מוכנות לעסקים וליזמים. בקטלוג רואים מה זמין, מה בהכנה, ומה אפשר להתאים.",
-              "BizUply builds ready SaaS systems for businesses and founders. The catalog shows what is available, what is in preparation, and what can be adapted.",
+              "בקטלוג רואים מה זמין היום, מה בהכנה, ומה אפשר להתאים לעסק שלכם.",
+              "The catalog shows what is available today, what is in preparation, and what can be adapted to your business.",
             )}
           </p>
           <ul className="hx-saas-links">
@@ -1658,7 +1649,7 @@ function Faq() {
   const { text, cine } = useCopy();
   const items = cine.faq;
   return (
-    <section className="hx-faq" aria-labelledby="hx-faq-title">
+    <section className="hx-faq" id="faq" aria-labelledby="hx-faq-title">
       <div className="hx-faq-split">
         <div className="hx-faq-intro">
           <h2 id="hx-faq-title">{cine.faqTitle}</h2>

@@ -188,6 +188,7 @@ export function HomeAi() {
             height={800}
             loading="lazy"
             decoding="async"
+            className="hx-crop-studio"
           />
           <figcaption>{text("הדגמה מעורך האתרים — לא צ׳אטבוט נפרד.", "From the website editor — not a separate chatbot.")}</figcaption>
         </figure>
@@ -208,29 +209,69 @@ const SITE_SAMPLES = [
 export function HomeSiteGallery() {
   const cine = useCine();
   const text = useText();
+  const reduced = useReduced();
   const [index, setIndex] = useState(0);
   const current = SITE_SAMPLES[index] || SITE_SAMPLES[0];
+
+  useEffect(() => {
+    if (reduced) return undefined;
+    const timer = window.setInterval(() => {
+      setIndex((value) => (value + 1) % SITE_SAMPLES.length);
+    }, 5200);
+    return () => window.clearInterval(timer);
+  }, [reduced]);
+
   return (
-    <section className="hx-site-gallery" aria-labelledby="hx-site-gallery-title">
+    <section className="hx-site-gallery" id="sites" aria-labelledby="hx-site-gallery-title">
       <div className="hx-site-gallery-wrap">
         <div className="hx-site-gallery-head">
           <h2 id="hx-site-gallery-title">{cine.sitesGalleryTitle}</h2>
           <p className="hx-prose">{cine.sitesGalleryLead}</p>
         </div>
-        <div className="hx-site-gallery-stage">
-          <div className="hx-site-desktop">
-            <img
-              src={current[0]}
-              alt={`${current[1]} — desktop`}
-              width={1400}
-              height={900}
-              loading="lazy"
-              decoding="async"
-            />
-          </div>
-          <div className="hx-site-mobile" aria-hidden="true">
-            <img src={current[0]} alt="" width={420} height={760} loading="lazy" decoding="async" />
-          </div>
+        <div className="hx-site-gallery-stage" aria-live="polite">
+          <figure className="hx-site-desktop">
+            <div className="hx-site-chrome" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+              <em>{current[1]}</em>
+            </div>
+            <div className="hx-site-desktop-view">
+              {SITE_SAMPLES.map(([src, label], i) => (
+                <img
+                  key={`desk-${src}`}
+                  src={src}
+                  alt={i === index ? text(`אתר ${label} בתצוגת מחשב`, `${label} website on desktop`) : ""}
+                  width={960}
+                  height={600}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  className={i === index ? "is-on" : undefined}
+                  aria-hidden={i === index ? undefined : true}
+                />
+              ))}
+            </div>
+            <figcaption>{text("תצוגת מחשב", "Desktop view")}</figcaption>
+          </figure>
+          <figure className="hx-site-mobile">
+            <div className="hx-site-mobile-notch" aria-hidden="true" />
+            <div className="hx-site-mobile-view">
+              {SITE_SAMPLES.map(([src, label], i) => (
+                <img
+                  key={`mob-${src}`}
+                  src={src}
+                  alt={i === index ? text(`אתר ${label} בתצוגת מובייל`, `${label} website on mobile`) : ""}
+                  width={390}
+                  height={780}
+                  loading={i === 0 ? "eager" : "lazy"}
+                  decoding="async"
+                  className={i === index ? "is-on" : undefined}
+                  aria-hidden={i === index ? undefined : true}
+                />
+              ))}
+            </div>
+            <figcaption>{text("תצוגת מובייל", "Mobile view")}</figcaption>
+          </figure>
         </div>
         <div className="hx-site-gallery-nav" role="tablist" aria-label={text("דוגמאות אתרים", "Website examples")}>
           {SITE_SAMPLES.map(([src, label], i) => (
