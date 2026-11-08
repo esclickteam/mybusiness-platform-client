@@ -290,7 +290,7 @@ export function ComplianceReportView({
               <p><strong>{copy.verify}. </strong>{String(detail.verify || "")}</p>
               <p><strong>{copy.where}. </strong>{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}{located && item.pageTitle ? ` · ${item.pageTitle}` : ""}{placeLabel(item.place) ? ` · ${placeLabel(item.place)}` : ""}</p>
               {detail.sectionVerified ? <p><strong>{copy.section}. </strong>{String(detail.sectionTitle || "")}</p> : null}
-              <p><strong>{copy.law}. </strong>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> : copy.sourceMissing}</p>
+              <p><strong>{copy.law}. </strong>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> : <>{detail.lawName ? `${String(detail.lawName)}. ` : ""}{copy.sourceMissing}</>}</p>
               {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
               {quote && (
                 <blockquote>
