@@ -76,18 +76,20 @@
 
 .hx-display {
   max-width: none;
-  font-size: clamp(2.1rem, 3.8vw, 3.85rem);
-  line-height: 1.05;
+  font-size: clamp(2rem, 3.4vw, 3.45rem);
+  line-height: 1.06;
   letter-spacing: -0.05em;
 }
 
 [dir="rtl"] .hx-display {
   max-width: none;
-  line-height: 1.08;
+  line-height: 1.1;
+  font-size: clamp(1.95rem, 3.2vw, 3.25rem);
 }
 
 .hx-hero .hx-line {
   white-space: nowrap;
+  max-width: none;
 }
 
 .hx-hero-copy .hx-lead {
