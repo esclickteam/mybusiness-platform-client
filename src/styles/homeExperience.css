@@ -4435,13 +4435,17 @@ html.hx-preview body {
   }
 
   .hx-hero .hx-line {
-    white-space: normal;
+    white-space: nowrap;
   }
 
   .hx-display,
   [dir="rtl"] .hx-display {
     max-width: none;
-    font-size: clamp(1.7rem, 7.2vw, 2.45rem);
+    font-size: clamp(1.55rem, 6.2vw, 2.2rem);
+  }
+
+  .hx-hero-copy .hx-lead {
+    font-size: 0.98rem;
   }
 
   .hx-site-gallery-stage {
@@ -4450,10 +4454,16 @@ html.hx-preview body {
   }
 
   .hx-site-mobile {
-    width: min(140px, 42vw);
+    width: min(118px, 34vw);
     justify-self: start;
-    margin-top: -2.8rem;
-    margin-inline-start: auto;
+    margin-top: 0.75rem;
+    margin-inline-start: 0;
+  }
+
+  .hx-site-gallery-stage {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
   }
 
   .hx-crm-demo,
