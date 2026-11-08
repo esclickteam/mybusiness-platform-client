@@ -373,22 +373,22 @@ export default function ClientDocumentationPanel({
       <button
         type="button"
         onClick={() => setJourneyOpen(true)}
-        className="flex w-full items-center justify-between gap-3 rounded-2xl border border-transparent bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-4 text-start text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)] transition hover:brightness-105"
+        className="client-journey-link"
       >
         <div className="min-w-0">
-          <p className="text-[11px] font-black uppercase tracking-[0.14em] text-white/80">
+          <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#6b6280]">
             {t("crm.clients.documentation.journeyBadge")}
           </p>
-          <h3 className="mt-1 truncate text-lg font-black">
+          <h3 className="mt-1 truncate text-base font-black text-[#21172f]">
             {t("crm.clients.documentation.openFullJourney")}
           </h3>
-          <p className="mt-1 text-xs font-bold text-white/80">
+          <p className="mt-1 text-xs font-bold text-[#6b6280]">
             {t("crm.clients.documentation.journeyCount", {
               count: sortedActivities.length,
             })}
           </p>
         </div>
-        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/15 ring-1 ring-white/25">
+        <span className="grid h-11 w-11 shrink-0 place-items-center bg-[#efe8fb] text-[#5b21b6]">
           <Route className="h-5 w-5" />
         </span>
       </button>
@@ -531,9 +531,9 @@ export default function ClientDocumentationPanel({
             <p className="mb-3 text-xs font-black text-rose-600">{error}</p>
           )}
 
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="text-[11px] font-bold text-slate-400">
-              {t("crm.clients.documentation.defaultNowHint")}
+          <div className="crm-form-bar">
+            <p className="crm-unsaved">
+              {text.trim() ? t("crm.workspace.unsaved") : t("crm.clients.documentation.defaultNowHint")}
             </p>
             <button
               type="button"
@@ -544,7 +544,7 @@ export default function ClientDocumentationPanel({
                 (!text.trim() && pendingFiles.length === 0) ||
                 (needsAttachment && pendingFiles.length === 0)
               }
-              className="inline-flex h-9 items-center gap-2 rounded-xl border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-xs font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-50"
+              className="crm-save"
             >
               {(saving || uploading) && (
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
