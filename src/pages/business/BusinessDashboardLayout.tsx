@@ -198,11 +198,15 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
       full.includes("buildwebsite") ||
       full.includes("/studio"));
 
+  const isAiStudio =
+    path.endsWith("/dashboard/ai-studio") || path.endsWith("/dashboard/ai-studio/code");
+
   return Boolean(
     isWebsiteTemplateEditor ||
       isAnyTemplatePreview ||
       isAnyStudioEditor ||
-      isWebsiteSitesEditor
+      isWebsiteSitesEditor ||
+      isAiStudio
   );
 }
 

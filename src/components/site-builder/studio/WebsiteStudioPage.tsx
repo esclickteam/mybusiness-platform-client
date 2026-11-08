@@ -2042,9 +2042,17 @@ function pageHasLibraryOrigin(page: StudioSitePageWithPortal): boolean {
       (page as any)?.visualEditorPayload?.data,
   );
   return Boolean(
+    (page as { __aiStudioPage?: boolean }).__aiStudioPage === true ||
+    data.__aiStudioPage === true ||
     data.__libraryPage ||
       data.__libraryPageTemplateId ||
-      (page as any)?.__libraryPageTemplateId,
+      (page as any)?.__libraryPageTemplateId ||
+      Object.values(asPlainObject(data.__insertedSections)).some(
+        (section) =>
+          Boolean(section) &&
+          typeof section === "object" &&
+          (section as { aiStudio?: boolean }).aiStudio === true,
+      ),
   );
 }
 
@@ -2531,7 +2539,9 @@ function hasMeaningfulVisualCollections(source: Record<string, any>) {
           !Array.isArray(value) &&
           Object.keys(value).length > 0,
       );
-    }) || hasStoreVisualScalars(input)
+    }) ||
+    hasStoreVisualScalars(input) ||
+    (typeof input.__aiDocument === "string" && input.__aiDocument.trim().length > 0)
   );
 }
 
@@ -2559,6 +2569,8 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     "__libraryPage",
     "__libraryPageTemplateId",
     "__aiStudioPage",
+    "__aiDocument",
+    "__aiCss",
     // Shared header/footer edits must survive every save path.
     VISUAL_SHARED_CHROME_KEY,
     "snapshotPageId",
@@ -4753,6 +4765,12 @@ export default function WebsiteStudioPage({
 
   const [resolvedTemplateSeed, setResolvedTemplateSeed] =
     useState<ReadyWebsiteTemplateSeed | null>(() => {
+      const queryKey = typeof window === "undefined"
+        ? ""
+        : new URLSearchParams(window.location.search).get("template");
+      if (normalizeStudioTemplateKey(queryKey) === "ai-site") {
+        return buildRendererSeedFromKey("ai-site");
+      }
       if (forceTemplateLoad && initialTemplateSeed) {
         return initialTemplateSeed;
       }
@@ -4845,6 +4863,7 @@ export default function WebsiteStudioPage({
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
 
   const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() => {
+    if (/(?:\?|&)ai=1(?:&|$)/.test(location.search)) return [];
     if (selectedTemplateSeed) {
       // Shells only — full SSR of every template page here blocked first paint.
       return createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
@@ -5258,11 +5277,18 @@ export default function WebsiteStudioPage({
         // Hydrate studio pages from saved payloads, but never drop template pages
         // (server often persists only the active page — e.g. home only).
         // Shells only: visual-react renders live; full SSR of all pages blocks open.
-        const templatePages = selectedTemplateSeed
-          ? createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
-              htmlMode: "none",
-            }).pages
-          : [];
+        const savedAiStudio = (data.site.pages || []).some(
+          (page: { __aiStudioPage?: boolean; data?: { __aiStudioPage?: boolean } }) =>
+            page?.__aiStudioPage === true || page?.data?.__aiStudioPage === true,
+        );
+        const templatePages =
+          savedAiStudio || /(?:\?|&)ai=1(?:&|$)/.test(location.search)
+            ? []
+            : selectedTemplateSeed
+              ? createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
+                  htmlMode: "none",
+                }).pages
+              : [];
 
         if (Array.isArray(data.site.pages) && data.site.pages.length) {
           const savedPages = data.site.pages.map((page: any) => {
@@ -5372,6 +5398,7 @@ export default function WebsiteStudioPage({
     businessId,
     siteId,
     initialSlug,
+    location.search,
     selectedTemplateRenderer?.key,
     selectedTemplateSeed,
   ]);
@@ -9145,7 +9172,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   siteId={siteId}
   renderer={selectedTemplateRenderer}
   businessId={businessId}
-  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
+  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}-${typeof activePageVisualData?.__aiDocument === "string" && activePageVisualData.__aiDocument ? "ai" : "shell"}`}
   initialData={applySharedChromeScalarsToVisualData({
     /*
       Header/footer are site-global. Strip page-scoped chrome from every merge

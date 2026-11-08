@@ -7,6 +7,7 @@ import type {
   StudioTemplateRendererPage,
 } from "./templateEditorTypes";
 import { withTemplateResponsiveCss } from "./shared/templateResponsiveCss";
+import { aiSiteRenderer } from "./AiSiteDocument";
 
 const pageLoaders = import.meta.glob("./*/pages.{tsx,ts,jsx,js}");
 const defaultDataLoaders = import.meta.glob("./*/defaultData.{ts,tsx,js}");
@@ -242,6 +243,7 @@ export function getStudioTemplateRenderer(
 ): StudioTemplateRenderer | null {
   const key = normalizeTemplateKey(templateKey);
   if (!key) return null;
+  if (key === "ai-site") return aiSiteRenderer;
   return rendererCache.get(key) || null;
 }
 
@@ -371,6 +373,7 @@ export async function loadStudioTemplateRenderer(
 ): Promise<StudioTemplateRenderer | null> {
   const key = normalizeTemplateKey(templateKey);
   if (!key) return null;
+  if (key === "ai-site") return getStudioTemplateRenderer(key);
   const cached = rendererCache.get(key);
   if (cached) return cached;
   const pending = inflight.get(key);

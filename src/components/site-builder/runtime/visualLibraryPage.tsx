@@ -89,6 +89,18 @@ export function isVisualLibraryPage(input: {
   const rawPageId = String(input.pageId || "").trim();
   const data = input.data || null;
 
+  if (data?.__aiStudioPage === true) return true;
+  const inserted = data?.__insertedSections;
+  if (inserted && typeof inserted === "object") {
+    const replacesTemplate = Object.values(inserted as Record<string, unknown>).some(
+      (section) =>
+        Boolean(section) &&
+        typeof section === "object" &&
+        (section as { aiStudio?: boolean }).aiStudio === true,
+    );
+    if (replacesTemplate) return true;
+  }
+
   if (!rawPageId || rawPageId === VISUAL_LIBRARY_STACK_ID) return false;
 
   const langCode = rawPageId.toLowerCase();

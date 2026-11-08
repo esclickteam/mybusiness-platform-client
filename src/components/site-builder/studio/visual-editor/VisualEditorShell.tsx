@@ -12,6 +12,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
 import VisualEditorCanvas from "./VisualEditorCanvas";
+import AiEditorChat from "./AiEditorChat";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualTextSettingsPanel from "./VisualTextSettingsPanel";
 import VisualContextMenu from "./VisualContextMenu";
@@ -779,6 +780,8 @@ export default function VisualEditorShell({
         siteSlug={siteSlug}
         refreshKey={overlayRefreshKey}
       />
+
+      <AiEditorChat editor={editor as any} />
 
       <ConnectDomainModal
         open={connectDomainOpen}

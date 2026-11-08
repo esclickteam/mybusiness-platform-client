@@ -2863,6 +2863,14 @@ export function useVisualEditorState({
     [linkModal.elementId, updateContent],
   );
 
+  const aiResponsiveDevice = useCallback((elementId: string) => {
+    if (deviceMode === "desktop") return null;
+    const root = canvasRef.current;
+    const node = root?.querySelector(`[data-visual-edit-id="${elementId}"]`);
+    if (!node?.closest("[data-template-id='ai-site']")) return null;
+    return deviceMode;
+  }, [canvasRef, deviceMode]);
+
   const applyStyle = useCallback(
     (elementId: string, style: StylePatch) => {
       if (!elementId) return false;
@@ -2870,9 +2878,15 @@ export function useVisualEditorState({
       /*
         צבעים/סגנון נקודתי: מעדכנים את ה-DOM ישירות במקום
         applyAllVisualDataToDom המלא (כבד מאוד בזמן גרירת color picker).
+        במצב טאבלט או מובייל של אתר AI הסגנון נשמר רק לאותו מסך.
       */
       previewVisualStyleOnDom(canvasRef.current, elementId, style as any);
-      setData((current) => writeVisualStyleItem(current, elementId, style));
+      const responsiveDevice = aiResponsiveDevice(elementId);
+      setData((current) => (
+        responsiveDevice
+          ? writeVisualResponsiveItem(current, elementId, responsiveDevice, { styles: style })
+          : writeVisualStyleItem(current, elementId, style)
+      ));
 
       window.requestAnimationFrame(() => {
         selection.refreshSelectedElement?.();
@@ -2880,7 +2894,7 @@ export function useVisualEditorState({
 
       return true;
     },
-    [canvasRef, selection, setData],
+    [aiResponsiveDevice, canvasRef, selection, setData],
   );
 
   const findTextFormatNode = useCallback(
@@ -3107,10 +3121,15 @@ export function useVisualEditorState({
   const applyLayout = useCallback(
     (elementId: string, patch: Record<string, any>) => {
       if (!elementId) return false;
-      setData((current) => writeVisualLayoutItem(current || {}, elementId, patch));
+      const responsiveDevice = aiResponsiveDevice(elementId);
+      setData((current) => (
+        responsiveDevice
+          ? writeVisualResponsiveItem(current || {}, elementId, responsiveDevice, { layout: patch })
+          : writeVisualLayoutItem(current || {}, elementId, patch)
+      ));
       return true;
     },
-    [setData],
+    [aiResponsiveDevice, setData],
   );
 
   const updateLayout = applyLayout;
@@ -3158,10 +3177,15 @@ export function useVisualEditorState({
   const setElementHidden = useCallback(
     (elementId: string, value: boolean) => {
       if (!elementId) return false;
-      setData((current) => setVisualElementHidden(current || {}, elementId, value));
+      const responsiveDevice = aiResponsiveDevice(elementId);
+      setData((current) => (
+        responsiveDevice
+          ? writeVisualResponsiveItem(current || {}, elementId, responsiveDevice, { hidden: value })
+          : setVisualElementHidden(current || {}, elementId, value)
+      ));
       return true;
     },
-    [setData],
+    [aiResponsiveDevice, setData],
   );
 
   const toggleElementHidden = useCallback(

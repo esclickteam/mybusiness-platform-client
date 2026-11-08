@@ -64,6 +64,7 @@ export default function SaasSystemBuilder() {
   const [records, setRecords] = useState<{ id: string; values: Record<string, unknown> }[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [ask, setAsk] = useState("");
   const dir = lang === "he" ? "rtl" : "ltr";
 
   async function load() {
@@ -172,6 +173,26 @@ export default function SaasSystemBuilder() {
     }
   }
 
+  async function assistDraft() {
+    const text = ask.trim();
+    if (text.length < 2) return;
+    if (/התחברות|הרשא|משתמש|סליק|תשלום|login|permission|payment|user/i.test(text)) {
+      setMessage(lang === "he"
+        ? "התחברות, הרשאות וסליקה אינם פעילים כל עוד אין להם מימוש מאובטח. אפשר לשמור טיוטת נתונים בלבד."
+        : "Login, permissions, and payments stay inactive until they have a secure implementation. Only a data draft can be saved.");
+      return;
+    }
+    setError("");
+    try {
+      const { data } = await API.post(`/saas-owner/${tenantId}/builder/record-types`, { label: text.split(/[.,]/)[0].slice(0, 40) });
+      setDraft(data.draft);
+      setAsk("");
+      setMessage(lang === "he" ? "נוספה טיוטת נתונים. התחברות, הרשאות וסליקה אינם פעילים." : "A data draft was added. Login, permissions, and payments stay inactive.");
+    } catch (err) {
+      setError(apiError(err, "Save failed"));
+    }
+  }
+
   const types = draft?.recordTypes || [];
   const publishedType = (published?.recordTypes || []).find((item) => item.id === recordTypeId);
 
@@ -189,6 +210,10 @@ export default function SaasSystemBuilder() {
       </div>
       {error ? <p className="mb-3 rounded-xl bg-rose-50 px-3 py-2 text-sm font-bold text-rose-700">{error}</p> : null}
       {message ? <p className="mb-3 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-800">{message}</p> : null}
+      <form className="mb-4 flex flex-wrap gap-2 bg-white p-3" onSubmit={(event) => { event.preventDefault(); assistDraft(); }}>
+        <input value={ask} onChange={(event) => setAsk(event.target.value)} className="min-w-64 flex-1 border border-slate-200 px-3 py-2 text-sm" placeholder={lang === "he" ? "תארו סוג רשומה לטיוטה" : "Describe a record type to draft"} />
+        <button type="submit" className="bg-[#5B4CF5] px-4 py-2 text-sm font-black text-white">{lang === "he" ? "טיוטה" : "Draft"}</button>
+      </form>
       <SaasStudio
         tenantId={tenantId}
         lang={lang}

@@ -2413,6 +2413,12 @@ export function applyVisualResponsiveToDom(
     nodes.forEach((node) => {
       if (isEditorOnlyNode(node)) return;
 
+      if (!item) {
+        applyStyleRecord(node, {}, "data-visual-applied-responsive-properties");
+        node.removeAttribute("data-visual-responsive-hidden");
+        return;
+      }
+
       const style = {
         ...(item?.styles || {}),
         ...layoutItemToStyle(item?.layout),
