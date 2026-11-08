@@ -5,18 +5,18 @@ type TextFn = (hebrew: string, english: string) => string;
 type HeroStep = "lead" | "crm" | "wa" | "auto" | "task";
 type WaStep = "message" | "crm" | "auto";
 
-const HERO_FILMS: Record<HeroStep, { src: string; poster: string }> = {
-  lead: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg" },
-  crm: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg" },
-  wa: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg" },
-  auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg" },
-  task: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg" },
+const HERO_FILMS: Record<HeroStep, { src: string; poster: string; startAt: number }> = {
+  lead: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg", startAt: 0.2 },
+  crm: { src: "/demo-media/crm/crm-en-product.mp4", poster: "/demo-media/crm/poster-product.jpg", startAt: 0.4 },
+  wa: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg", startAt: 0.3 },
+  auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg", startAt: 1.2 },
+  task: { src: "/demo-media/home/appointments.mp4", poster: "/demo-media/home/appointments.jpg", startAt: 0.3 },
 };
 
-const WA_FILMS: Record<WaStep, { src: string; poster: string }> = {
-  message: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg" },
-  crm: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg" },
-  auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg" },
+const WA_FILMS: Record<WaStep, { src: string; poster: string; startAt: number }> = {
+  message: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg", startAt: 0.4 },
+  crm: { src: "/demo-media/crm/crm-en-product.mp4", poster: "/demo-media/crm/poster-product.jpg", startAt: 0.5 },
+  auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg", startAt: 1.4 },
 };
 
 function useReduced() {
@@ -109,18 +109,11 @@ export function HeroProductStage({
   const activeIndex = steps.findIndex((item) => item.key === step);
 
   useEffect(() => {
-    const video = filmRef.current;
-    if (!video || reduced) return;
-    video.currentTime = 0;
-    video.play().catch(() => undefined);
-  }, [step, reduced]);
-
-  useEffect(() => {
     if (reduced || paused) return undefined;
     const order = steps.map((item) => item.key);
     const timer = window.setInterval(() => {
       setStep((currentStep) => order[(order.indexOf(currentStep) + 1) % order.length]);
-    }, 4200);
+    }, 4800);
     return () => window.clearInterval(timer);
   }, [paused, reduced, steps.length]);
 
@@ -158,6 +151,7 @@ export function HeroProductStage({
 
         <div className="b2-theater-screen">
           <video
+            key={`${step}-${film.src}`}
             ref={filmRef}
             className="b2-theater-film"
             src={film.src}
@@ -165,8 +159,18 @@ export function HeroProductStage({
             muted
             playsInline
             loop
+            preload="auto"
             autoPlay={!reduced}
             aria-label={current.title}
+            onLoadedData={(event) => {
+              const video = event.currentTarget;
+              try {
+                video.currentTime = film.startAt;
+              } catch {
+                /* ignore */
+              }
+              if (!reduced) video.play().catch(() => undefined);
+            }}
           />
         </div>
         <div className="b2-theater-status">
@@ -247,18 +251,11 @@ export function WhatsAppFlowStage({
   }, []);
 
   useEffect(() => {
-    const video = filmRef.current;
-    if (!video || reduced) return;
-    video.currentTime = 0;
-    video.play().catch(() => undefined);
-  }, [step, reduced]);
-
-  useEffect(() => {
     if (!live || reduced || paused) return undefined;
     const order: WaStep[] = ["message", "crm", "auto"];
     const timer = window.setInterval(() => {
       setStep((currentStep) => order[(order.indexOf(currentStep) + 1) % order.length]);
-    }, 4500);
+    }, 5000);
     return () => window.clearInterval(timer);
   }, [live, paused, reduced]);
 
@@ -290,14 +287,25 @@ export function WhatsAppFlowStage({
       <div className="b2-wa-theater" key={step} aria-live="polite">
         <div className="b2-wa-main">
           <video
+            key={`${step}-${film.src}`}
             ref={filmRef}
             src={film.src}
             poster={film.poster}
             muted
             playsInline
             loop
+            preload="auto"
             autoPlay={!reduced}
             aria-label={current.label}
+            onLoadedData={(event) => {
+              const video = event.currentTarget;
+              try {
+                video.currentTime = film.startAt;
+              } catch {
+                /* ignore */
+              }
+              if (!reduced) video.play().catch(() => undefined);
+            }}
           />
         </div>
 
