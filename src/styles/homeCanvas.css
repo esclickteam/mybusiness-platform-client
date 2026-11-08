@@ -1735,7 +1735,10 @@
 
 .b2-wa-main {
   overflow: hidden;
-  background: #12061f;
+  background-color: #12061f;
+  background-position: top center;
+  background-size: cover;
+  background-repeat: no-repeat;
   border: 1px solid rgba(18, 6, 31, 0.12);
   box-shadow: 0 24px 56px rgba(18, 6, 31, 0.16);
 }

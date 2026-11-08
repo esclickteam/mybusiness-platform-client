@@ -9,14 +9,14 @@ const HERO_FILMS: Record<HeroStep, { src: string; poster: string; startAt: numbe
   lead: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg", startAt: 0.2 },
   crm: { src: "/demo-media/crm/crm-en-product.mp4", poster: "/demo-media/crm/poster-product.jpg", startAt: 0.4 },
   wa: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg", startAt: 0.3 },
-  auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg", startAt: 1.2 },
+  auto: { src: "/demo-media/automations/automations-en-product.mp4", poster: "/demo-media/automations/poster-product.jpg", startAt: 0.5 },
   task: { src: "/demo-media/home/appointments.mp4", poster: "/demo-media/home/appointments.jpg", startAt: 0.3 },
 };
 
 const WA_FILMS: Record<WaStep, { src: string; poster: string; startAt: number }> = {
   message: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg", startAt: 0.4 },
   crm: { src: "/demo-media/crm/crm-en-product.mp4", poster: "/demo-media/crm/poster-product.jpg", startAt: 0.5 },
-  auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg", startAt: 1.4 },
+  auto: { src: "/demo-media/automations/automations-en-product.mp4", poster: "/demo-media/automations/poster-product.jpg", startAt: 0.6 },
 };
 
 function useReduced() {
@@ -285,7 +285,7 @@ export function WhatsAppFlowStage({
       </div>
 
       <div className="b2-wa-theater" key={step} aria-live="polite">
-        <div className="b2-wa-main">
+        <div className="b2-wa-main" style={{ backgroundImage: `url(${film.poster})` }}>
           <video
             key={`${step}-${film.src}`}
             ref={filmRef}
