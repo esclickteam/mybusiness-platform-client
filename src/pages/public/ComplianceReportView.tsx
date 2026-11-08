@@ -26,8 +26,8 @@ type Finding = {
 const COPY: Record<Locale, Record<string, string>> = {
   he: {
     newScan: "סריקה חדשה", pdf: "הורדת PDF", site: "האתר שנבדק", address: "כתובת", date: "תאריך", status: "סטטוס",
-    score: "ציון הבדיקות", scoreHelp: "הציון מסכם רק בדיקות שהושלמו. הוא אינו אישור עמידה בחוק.",
-    coverage: "כיסוי", coverageHelp: "אחוז הבדיקות שהסתיימו מתוך מה שהסריקה ניסתה לבדוק.",
+    score: "ציון הבדיקות", scoreHelp: "הציון מבוסס על הבדיקות שהושלמו. בדיקות שלא ניתן היה להשלים אינן נחשבות לכישלון, אך הן מגבילות את היקף הבדיקה.",
+    coverage: "היקף הבדיקה שהושלם", coverageHelp: "אחוז הבדיקות שהסתיימו מתוך מה שהסריקה ניסתה לבדוק.",
     ok: "מה נמצא תקין", todo: "מה דורש טיפול", missing: "מה חסר לפי הראיות", unknown: "מה לא ניתן לבדוק", first: "מה מומלץ לתקן קודם",
     all: "הכול", action: "דורש טיפול", pass: "תקין", unverified: "לא ניתן לאימות", other: "לא רלוונטי",
     checked: "מה נבדק", found: "מה נמצא", why: "למה זה חשוב", fix: "מה מומלץ לעשות", where: "איפה זה נמצא",
@@ -55,8 +55,8 @@ const COPY: Record<Locale, Record<string, string>> = {
   },
   en: {
     newScan: "New scan", pdf: "Download PDF", site: "Site checked", address: "Address", date: "Date", status: "Status",
-    score: "Check score", scoreHelp: "The score sums finished checks only. It is not legal approval.",
-    coverage: "Coverage", coverageHelp: "The share of checks that finished out of those the scan attempted.",
+    score: "Check score", scoreHelp: "The score uses the checks that were completed. Checks that could not be completed are not failures, but they limit the scope of the check.",
+    coverage: "Completed check scope", coverageHelp: "The share of checks that finished out of those the scan attempted.",
     ok: "What looked sound", todo: "What needs attention", missing: "What the evidence did not show", unknown: "What could not be checked", first: "What to fix first",
     all: "All", action: "Needs attention", pass: "Sound", unverified: "Could not verify", other: "Not applicable",
     checked: "What was checked", found: "What was found", why: "Why it matters", fix: "What to do", where: "Where it is",
@@ -84,8 +84,8 @@ const COPY: Record<Locale, Record<string, string>> = {
   },
   es: {
     newScan: "Nuevo análisis", pdf: "Descargar PDF", site: "Sitio revisado", address: "Dirección", date: "Fecha", status: "Estado",
-    score: "Puntuación de las pruebas", scoreHelp: "La puntuación resume solo las pruebas terminadas. No es una aprobación legal.",
-    coverage: "Cobertura", coverageHelp: "Porcentaje de pruebas terminadas entre las que el análisis intentó.",
+    score: "Puntuación de las pruebas", scoreHelp: "La puntuación usa las pruebas completadas. Las que no se pudieron completar no son fallos, pero limitan el alcance.",
+    coverage: "Alcance completado", coverageHelp: "Porcentaje de pruebas terminadas entre las que el análisis intentó.",
     ok: "Lo que se vio correcto", todo: "Lo que requiere atención", missing: "Lo que las pruebas no mostraron", unknown: "Lo que no se pudo comprobar", first: "Qué corregir primero",
     all: "Todo", action: "Requiere atención", pass: "Correcto", unverified: "No verificable", other: "No aplica",
     checked: "Qué se revisó", found: "Qué se encontró", why: "Por qué importa", fix: "Qué hacer", where: "Dónde está",
@@ -99,8 +99,8 @@ const COPY: Record<Locale, Record<string, string>> = {
   },
   "pt-BR": {
     newScan: "Nova varredura", pdf: "Baixar PDF", site: "Site verificado", address: "Endereço", date: "Data", status: "Status",
-    score: "Pontuação das verificações", scoreHelp: "A pontuação resume só as verificações concluídas. Não é aprovação jurídica.",
-    coverage: "Cobertura", coverageHelp: "A parte das verificações concluídas entre as que a varredura tentou.",
+    score: "Pontuação das verificações", scoreHelp: "A pontuação usa as verificações concluídas. As que não puderam ser concluídas não são falhas, mas limitam o escopo.",
+    coverage: "Escopo concluído", coverageHelp: "A parte das verificações concluídas entre as que a varredura tentou.",
     ok: "O que pareceu adequado", todo: "O que precisa de atenção", missing: "O que as evidências não mostraram", unknown: "O que não foi possível verificar", first: "O que corrigir primeiro",
     all: "Tudo", action: "Precisa de atenção", pass: "Adequado", unverified: "Não verificável", other: "Não se aplica",
     checked: "O que foi verificado", found: "O que foi encontrado", why: "Por que importa", fix: "O que fazer", where: "Onde está",
@@ -114,8 +114,8 @@ const COPY: Record<Locale, Record<string, string>> = {
   },
   ar: {
     newScan: "فحص جديد", pdf: "تنزيل PDF", site: "الموقع الذي فُحص", address: "العنوان", date: "التاريخ", status: "الحالة",
-    score: "درجة الفحوصات", scoreHelp: "تلخص الدرجة الفحوصات المكتملة فقط. ليست موافقة قانونية.",
-    coverage: "التغطية", coverageHelp: "نسبة الفحوصات التي اكتملت من تلك التي حاول الفحص إجراءها.",
+    score: "درجة الفحوصات", scoreHelp: "الدرجة مبنية على الفحوصات المكتملة. الفحوصات التي تعذر إكمالها ليست إخفاقًا، لكنها تحد من النطاق.",
+    coverage: "نطاق الفحص المكتمل", coverageHelp: "نسبة الفحوصات التي اكتملت من تلك التي حاول الفحص إجراءها.",
     ok: "ما بدا سليمًا", todo: "ما يحتاج معالجة", missing: "ما لم تظهره الأدلة", unknown: "ما تعذر فحصه", first: "ما يُفضَّل إصلاحه أولًا",
     all: "الكل", action: "يحتاج معالجة", pass: "سليم", unverified: "غير قابل للتحقق", other: "غير منطبق",
     checked: "ما تم فحصه", found: "ما وُجد", why: "لماذا هذا مهم", fix: "ماذا يُنصح بفعله", where: "أين وُجد",
@@ -260,15 +260,15 @@ export function ComplianceReportView({
         <div>
           <b>{shownScore}<small>/100</small></b>
           <span>{copy.score}</span>
-          <p>{copy.scoreHelp}</p>
         </div>
         <div>
           <b>{shownCoverage}<small>%</small></b>
           <span>{copy.coverage}</span>
           <div className="report-sheet__bar" aria-hidden="true"><span style={{ width: `${Number(shownCoverage) || 0}%` }} /></div>
-          <p>{copy.coverageHelp}</p>
         </div>
       </div>
+      <p className="report-sheet__scope">{copy.scoreHelp}</p>
+      <p className="report-sheet__scope">{copy.unknown}: {counts.unknown}</p>
       <div className="report-sheet__metrics">
         <article><b>{counts.pass}</b><span>{copy.ok}</span></article>
         <article><b>{counts.action}</b><span>{copy.todo}</span></article>

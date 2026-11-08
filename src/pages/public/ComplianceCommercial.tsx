@@ -213,8 +213,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "לא הושלמה",
     score: "ציון",
     scoreOf: "מתוך 100",
-    coverage: "כיסוי",
-    scoreHelp: "הציון מסכם רק בדיקות שהושלמו. הוא אינו אישור עמידה בחוק.",
+    coverage: "היקף הבדיקה שהושלם",
+    scoreHelp: "הציון מבוסס על הבדיקות שהושלמו. בדיקות שלא ניתן היה להשלים אינן נחשבות לכישלון, אך הן מגבילות את היקף הבדיקה.",
     coverageHelp: "האחוז מתוך הבדיקות שהסריקה הספיקה להשלים.",
     lowCoverage: "הכיסוי נמוך. הציון חלקי ואינו מייצג בדיקות שלא הושלמו.",
     ok: "תקין",
@@ -248,8 +248,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "Not completed",
     score: "Score",
     scoreOf: "out of 100",
-    coverage: "Coverage",
-    scoreHelp: "The score sums finished checks only. It is not legal approval.",
+    coverage: "Completed check scope",
+    scoreHelp: "The score uses the checks that were completed. Checks that could not be completed are not failures, but they limit the scope of the check.",
     coverageHelp: "The share of checks the scan was able to finish.",
     lowCoverage: "Coverage is low. The score is partial and does not represent unfinished checks.",
     ok: "Passed",
@@ -283,8 +283,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "No completado",
     score: "Puntuación",
     scoreOf: "de 100",
-    coverage: "Cobertura",
-    scoreHelp: "La puntuación resume solo las pruebas terminadas. No es una aprobación legal.",
+    coverage: "Alcance completado",
+    scoreHelp: "La puntuación usa las pruebas completadas. Las que no se pudieron completar no son fallos, pero limitan el alcance.",
     coverageHelp: "El porcentaje de pruebas que el análisis pudo terminar.",
     lowCoverage: "La cobertura es baja. La puntuación es parcial y no representa las pruebas sin terminar.",
     ok: "Correcto",
@@ -318,8 +318,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "Não concluída",
     score: "Pontuação",
     scoreOf: "de 100",
-    coverage: "Cobertura",
-    scoreHelp: "A pontuação resume só as verificações concluídas. Não é aprovação jurídica.",
+    coverage: "Escopo concluído",
+    scoreHelp: "A pontuação usa as verificações concluídas. As que não puderam ser concluídas não são falhas, mas limitam o escopo.",
     coverageHelp: "A parcela das verificações que a análise conseguiu concluir.",
     lowCoverage: "A cobertura está baixa. A pontuação é parcial e não representa verificações inacabadas.",
     ok: "Regular",
@@ -353,8 +353,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "لم يكتمل",
     score: "الدرجة",
     scoreOf: "من 100",
-    coverage: "التغطية",
-    scoreHelp: "تلخص الدرجة الفحوصات المكتملة فقط. ليست موافقة قانونية.",
+    coverage: "نطاق الفحص المكتمل",
+    scoreHelp: "الدرجة مبنية على الفحوصات المكتملة. الفحوصات التي تعذر إكمالها ليست إخفاقًا، لكنها تحد من النطاق.",
     coverageHelp: "نسبة الفحوصات التي تمكّن الفحص من إكمالها.",
     lowCoverage: "التغطية منخفضة. الدرجة جزئية ولا تمثل الفحوصات التي لم تكتمل.",
     ok: "سليم",
@@ -423,15 +423,15 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
         <div>
           <b>{summary.checkedScore ?? "—"}<small>/100</small></b>
           <span>{copy.score}</span>
-          <p>{copy.scoreHelp}</p>
         </div>
         <div>
           <b>{summary.coverage ?? "—"}<small>%</small></b>
           <span>{copy.coverage}</span>
           <div className="report-sheet__bar" aria-hidden="true"><span style={{ width: `${coverage}%` }} /></div>
-          <p>{summary.lowCoverage ? copy.lowCoverage : copy.coverageHelp}</p>
         </div>
       </div>
+      <p className="report-sheet__scope">{copy.scoreHelp}</p>
+      <p className="report-sheet__scope">{copy.unverified}: {summary.unverified ?? 0}</p>
       <div className="report-sheet__metrics">
         <article><b>{summary.ok ?? 0}</b><span>{copy.ok}</span></article>
         <article><b>{summary.action ?? 0}</b><span>{copy.action}</span></article>
