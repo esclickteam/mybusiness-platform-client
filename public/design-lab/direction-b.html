@@ -357,9 +357,10 @@
     .stage-side {
       position: absolute;
       z-index: 4;
-      inset-inline-start: -0.55rem;
-      top: 58%;
-      width: min(46%, 15.2rem);
+      inset-inline-start: -1.1rem;
+      bottom: 0.15rem;
+      top: auto;
+      width: min(42%, 13.8rem);
       background: #12061f;
       color: #fff;
       border: 1px solid rgba(255,255,255,0.2);
@@ -369,6 +370,9 @@
       opacity: 0;
       transition: 0.55s var(--ease);
       pointer-events: none;
+    }
+    .stage-main .panel {
+      padding-bottom: 1.35rem;
     }
     .stage.is-live .stage-side {
       opacity: 1;
@@ -675,15 +679,22 @@
         min-height: 0;
         padding: 1.5rem 0 2rem;
       }
+      .hero-copy .brand { font-size: 1.35rem; margin-bottom: 0.45rem; }
       .hero-copy .display {
         max-width: none;
-        font-size: clamp(1.95rem, 8.5vw, 2.55rem);
+        font-size: clamp(1.85rem, 7.8vw, 2.35rem);
+      }
+      .hero-copy .lead {
+        margin-top: 0.8rem;
+        font-size: 1rem;
       }
       .hero-copy .actions {
         display: grid;
         grid-template-columns: 1fr;
+        margin-top: 1.15rem;
       }
-      .hero-copy .btn { width: 100%; min-width: 0; }
+      .hero-copy .btn { width: 100%; min-width: 0; min-height: 2.95rem; }
+      .hero-proof { margin-top: 0.85rem; font-size: 0.8rem; }
       .stage { min-height: 0; gap: 0.75rem; }
       .stage-canvas {
         min-height: 0;
@@ -717,8 +728,20 @@
       .tabs { gap: 0.35rem; }
       .tabs button { flex: 1 1 auto; min-width: calc(33% - 0.35rem); padding-inline: 0.5rem; font-size: 0.85rem; }
 
+      .wa {
+        padding: 3rem 1rem 3.4rem;
+      }
       .wa-wrap { grid-template-columns: 1fr; }
-      .wa h2 { max-width: none; }
+      .wa h2 {
+        max-width: none;
+        font-size: clamp(1.85rem, 7.5vw, 2.4rem);
+      }
+      .wa .copy { font-size: 1rem; }
+      .wa .actions {
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .wa .actions .btn { width: 100%; }
       .wa-stage {
         position: relative;
         min-height: 0;
@@ -736,7 +759,7 @@
         max-width: 24rem;
         margin-inline: auto;
       }
-      .wa-phone { width: min(72%, 240px); }
+      .wa-phone { width: min(78%, 250px); }
       .wa-film { display: none; }
       .wa-link { display: none; }
       .wa-crm {
