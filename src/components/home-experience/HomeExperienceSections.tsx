@@ -11,6 +11,7 @@ import {
   useCinematic,
 } from "./HomeCinematic";
 import { HomeAi, HomeJourney, HomeSiteGallery, HomeTrust } from "./HomePremiumBands";
+import { HeroProductStage, WhatsAppFlowStage } from "./B2ProductStage";
 import { CampaignPulse, CrmCard, InboxPane, LeadBoard, PipelineStrip, WaPhone } from "./ProductMocks";
 import { homeText } from "./homeCopy";
 
@@ -337,7 +338,6 @@ export default function HomeExperienceSections() {
       <Hero />
       <Why />
       <ProductShowcase />
-      <CrmDepth />
       <WhatsApp />
       <HomeSiteGallery />
       <HomeAi />
@@ -368,7 +368,7 @@ function Hero() {
   const hot = Math.max(0, (lineThree || lineTwo).trim().split(/\s+/).length - 1);
 
   return (
-    <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
+    <section className="hx-hero hx-hero-b2" ref={ref} aria-labelledby="hx-hero-title">
       <div className="hx-hero-pin">
         <div className="hx-hero-core">
           <div className="hx-hero-copy">
@@ -383,44 +383,23 @@ function Hero() {
               <Cta to="/register">{hero.start}</Cta>
               <Cta to="#products" tone="line">{hero.see}</Cta>
             </div>
+            <p className="hx-hero-proof">
+              {text("הדגמה עם נתוני דמו · לא נתוני לקוחות אמיתיים", "Demo with sample data · not real customer data")}
+            </p>
           </div>
           <div className="hx-hero-stage" aria-label={hero.stageAlt}>
-            <div className="hx-hero-frame hx-compose">
-              <div className="hx-compose-main">
-                <LeadBoard text={text} />
-                <video
-                  className="hx-compose-film hx-hero-shot hx-hero-shot-1"
-                  src="/demo-media/home/crm.mp4"
-                  poster="/demo-media/home/crm.jpg"
-                  muted
-                  playsInline
-                  loop
-                  autoPlay={!reduced}
-                  preload="metadata"
-                  aria-hidden="true"
-                />
-                {/* Keep first-paint asset present for hydration/SEO continuity */}
-                <img
-                  className="hx-hero-shot hx-hero-shot-1"
-                  src="/demo-media/home/crm.jpg"
-                  alt=""
-                  width={1600}
-                  height={1000}
-                  fetchPriority="high"
-                  decoding="async"
-                  hidden
-                />
-              </div>
-              <div className="hx-compose-side">
-                <WaPhone text={text} />
-              </div>
-              <div className="hx-compose-card">
-                <CrmCard text={text} />
-              </div>
-            </div>
-            <div className="hx-compose-pipe">
-              <PipelineStrip text={text} />
-            </div>
+            {/* Keep first-paint asset present for hydration/SEO continuity */}
+            <img
+              className="hx-hero-shot hx-hero-shot-1"
+              src="/demo-media/home/crm.jpg"
+              alt=""
+              width={1600}
+              height={1000}
+              fetchPriority="high"
+              decoding="async"
+              hidden
+            />
+            <HeroProductStage text={text} label={hero.stageAlt} />
           </div>
         </div>
         <a className={`hx-scroll-cue${reduced ? " is-still" : ""}`} href="#hx-connect">
@@ -560,46 +539,6 @@ function ProductShowcase() {
         text("נציגים אנושיים נשארים נפרדים", "Human agents stay a separate product"),
       ],
       caption: text("יכולות AI בתוך בונה האתרים.", "AI capabilities inside the website builder."),
-    },
-    {
-      key: "collaborations",
-      title: text("שיתופי פעולה", "Collaborations"),
-      body: text(
-        "מקום למצוא עסקים אחרים, לפרסם הזדמנות ולהחליף הצעה — בלי הבטחת שותף או הכנסה.",
-        "A place to find other businesses, post an opportunity, and exchange a proposal — without promising a partner or revenue.",
-      ),
-      img: "/images/about/shot-campaigns.webp",
-      crop: "hx-crop-campaigns",
-      tab: text("שיתופים", "Collabs"),
-      href: "/collaborations",
-      film: null,
-      status: text("זמין", "Available"),
-      benefits: [
-        text("חיפוש עסקים", "Find businesses"),
-        text("פרסום הזדמנות", "Publish an opportunity"),
-        text("החלפת הצעות", "Exchange proposals"),
-      ],
-      caption: text("עמוד שיתופי הפעולה של BizUply.", "The BizUply collaborations product page."),
-    },
-    {
-      key: "appointments",
-      title: text("ניהול פגישות", "Appointments"),
-      body: text(
-        "יומן שירותים, שעות פעילות ופתיחות של 15 דקות — ליד כרטיס הלקוח.",
-        "A service calendar, business hours, and 15-minute openings — next to the customer record.",
-      ),
-      img: "/demo-media/home/appointments.jpg",
-      crop: "hx-crop-record",
-      tab: text("פגישות", "Meetings"),
-      href: "/appointments",
-      film: null,
-      status: text("זמין בתוכנית העסקית", "Available on the business plan"),
-      benefits: [
-        text("יומן שירותים", "Service calendar"),
-        text("הזמנה בעמוד ציבורי", "Public booking page"),
-        text("קשר לכרטיס הלקוח", "Tied to the customer record"),
-      ],
-      caption: text("סיור מוצר: יומן פגישות.", "Product walkthrough: appointment calendar."),
     },
   ] as const;
   const open = useOpenFilm();
@@ -1027,27 +966,28 @@ function WhatsApp() {
     node.style.setProperty("--q1", clamp01((progress - 0.08) / 0.2).toFixed(3));
     node.style.setProperty("--q2", clamp01((progress - 0.28) / 0.2).toFixed(3));
     node.style.setProperty("--q3", clamp01((progress - 0.48) / 0.2).toFixed(3));
-    if (progress > 0.35) setActive(true);
+    if (progress > 0.2) setActive(true);
   });
   return (
-    <section className={`hx-chapter hx-wa hx-reveal${active ? " is-live" : ""}`} id="whatsapp" ref={ref} aria-labelledby="hx-wa-title">
+    <section className={`hx-chapter hx-wa hx-wa-b2 hx-reveal${active ? " is-live" : ""}`} id="whatsapp" ref={ref} aria-labelledby="hx-wa-title">
       <div className="hx-chapter-pin">
         <div className="hx-wa-grid">
           <div>
+            <p className="hx-eyebrow">{text("WhatsApp Business API", "WhatsApp Business API")}</p>
             <h2 id="hx-wa-title">{cine.waTitle}</h2>
             <p className="hx-prose">{cine.waLead}</p>
             <ul className="hx-points">
               <li>
-                <h3>{text("שיחה ליד הכרטיס", "Conversation beside the record")}</h3>
-                <p>{text("אותו לקוח מה־CRM ממשיך בשיחה בתוך סביבת העבודה.", "The same CRM customer continues in a conversation inside the workspace.")}</p>
+                <h3>{text("הודעה נכנסת", "Incoming message")}</h3>
+                <p>{text("השיחה נפתחת בתיבה העסקית עם טקסט קריא בעברית.", "The chat opens in the business inbox with readable Hebrew text.")}</p>
               </li>
               <li>
-                <h3>{text("תבניות מאושרות", "Approved templates")}</h3>
-                <p>{text("כשצריך לפתוח שיחה מחוץ לחלון השירות — לפי כללי Meta.", "When a conversation must start outside the service window — under Meta’s rules.")}</p>
+                <h3>{text("איש קשר ב־CRM", "CRM contact")}</h3>
+                <p>{text("אותה פנייה יוצרת או מעדכנת כרטיס לקוח עם סטטוס.", "The same enquiry creates or updates a customer record with status.")}</p>
               </li>
               <li>
-                <h3>{text("פנייה שנכנסת לטיפול", "An enquiry that becomes work")}</h3>
-                <p>{text("מהודעה לכרטיס לקוח ומשימת המשך — באותו מסלול.", "From a message to a customer record and follow-up task — on one path.")}</p>
+                <h3>{text("אוטומציה להמשך", "Follow-up automation")}</h3>
+                <p>{text("תהליך מוגדר במערכת יוצר משימת המשך — בלי להמציא יכולות שלא קיימות.", "A defined system flow creates a follow-up task — only shipped capabilities.")}</p>
               </li>
             </ul>
             <div className="hx-actions">
@@ -1058,12 +998,7 @@ function WhatsApp() {
               />
             </div>
           </div>
-          <div className={`hx-wa-stage${active ? " is-active" : ""}`} aria-label={text("המחשת WhatsApp ו־CRM", "WhatsApp and CRM illustration")}>
-            <div className="hx-wa-link" aria-hidden="true" />
-            <WaPhone text={text} />
-            <InboxPane text={text} />
-            <CrmCard text={text} />
-          </div>
+          <WhatsAppFlowStage text={text} />
         </div>
       </div>
     </section>

@@ -67,11 +67,11 @@
     .hero-shell {
       position: relative;
       z-index: 2;
-      width: min(1240px, calc(100% - 2rem));
+      width: min(1280px, calc(100% - 2rem));
       margin: 0 auto;
       display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-      gap: clamp(1.5rem, 4vw, 3.5rem);
+      grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.2fr);
+      gap: clamp(1.4rem, 3.6vw, 3.2rem);
       align-items: center;
       min-height: calc(100svh - 3.6rem);
       padding: 2.2rem 0 2.6rem;
@@ -159,7 +159,7 @@
     .stage-main {
       position: relative;
       z-index: 2;
-      width: 88%;
+      width: 92%;
       margin-inline-end: auto;
       background: #fff;
       color: var(--ink);
@@ -168,7 +168,12 @@
         0 34px 80px rgba(0,0,0,0.32),
         0.85rem 0.85rem 0 rgba(239,228,255,0.9);
       overflow: hidden;
-      min-height: 23.5rem;
+      min-height: 26rem;
+      transition: transform 0.55s var(--ease), box-shadow 0.55s var(--ease);
+    }
+    .stage.is-wa .stage-main,
+    .stage.is-auto .stage-main {
+      transform: translateY(-0.3rem);
     }
     .stage-chrome {
       display: flex;
@@ -204,10 +209,14 @@
       padding: 0.85rem 1rem 1.05rem;
       min-height: 17.5rem;
     }
-    .panel.is-on { display: block; animation: panelIn 0.55s var(--ease); }
+    .panel.is-on { display: block; animation: panelIn 0.6s var(--ease); }
     @keyframes panelIn {
-      from { opacity: 0; transform: translateY(0.55rem); }
+      from { opacity: 0; transform: translateY(0.85rem) scale(0.985); }
       to { opacity: 1; transform: none; }
+    }
+    .stage-float,
+    .stage-side {
+      transition: opacity 0.55s var(--ease), transform 0.55s var(--ease);
     }
 
     .crm-toolbar {
@@ -836,7 +845,6 @@
                 <div class="bubble in">שלום, אשמח לפרטים על השירות<small>תומר · עכשיו</small></div>
                 <div class="bubble out">שמחים שפנית. נציג ממשיך איתך מהמערכת.<small>BizUply · נשלח</small></div>
                 <div class="bubble in">מעולה, אפשר גם לקבוע שיחה?<small>תומר</small></div>
-                <div class="typing" aria-hidden="true"><i></i><i></i><i></i></div>
               </div>
             </div>
 
