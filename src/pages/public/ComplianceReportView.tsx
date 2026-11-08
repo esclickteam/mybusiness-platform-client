@@ -183,6 +183,12 @@ const WCAG_URLS: Record<string, string> = {
   "3.3.2": "https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html",
 };
 
+function formatWhen(value: unknown, locale: Locale) {
+  const date = new Date(String(value || ""));
+  if (Number.isNaN(date.getTime())) return "—";
+  return new Intl.DateTimeFormat(locale === "pt-BR" ? "pt-BR" : locale, { dateStyle: "medium", timeStyle: "short" }).format(date);
+}
+
 function officialSource(name: unknown, url: unknown) {
   const stored = String(url || "");
   if (stored) return stored;
@@ -251,7 +257,7 @@ export function ComplianceReportView({
       </header>
       <dl className="report-sheet__meta">
         <div><dt>{copy.address}</dt><dd dir="ltr">{report.url || "—"}</dd></div>
-        <div><dt>{copy.date}</dt><dd>{report.scannedAt || "—"}</dd></div>
+        <div><dt>{copy.date}</dt><dd>{formatWhen(report.scannedAt, locale)}</dd></div>
         <div><dt>{copy.status}</dt><dd>{status}</dd></div>
         <div><dt>{copy.score}</dt><dd>{shownScore}/100</dd></div>
       </dl>
