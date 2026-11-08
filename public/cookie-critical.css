@@ -231,30 +231,30 @@
 @media (max-width: 640px) {
   .cookie-banner {
     max-width: none;
-    right: 0.5rem;
-    left: 0.5rem;
-    bottom: 0.5rem;
-    max-height: min(42dvh, 18rem);
+    right: 0.45rem;
+    left: 0.45rem;
+    bottom: 0.45rem;
+    max-height: min(34dvh, 14.5rem);
   }
 
   .cookie-banner--notice {
     max-width: none;
-    max-height: min(38dvh, 15.5rem);
+    max-height: min(30dvh, 12.75rem);
   }
 
   .cookie-banner--notice .cookie-banner__scroll {
-    padding: 0.7rem 0.75rem 0.2rem;
+    padding: 0.55rem 0.7rem 0.15rem;
     overflow: auto;
   }
 
   .cookie-banner--notice h2 {
-    font-size: 0.98rem;
+    font-size: 0.92rem;
   }
 
   .cookie-banner--notice p {
-    margin-top: 0.3rem;
-    font-size: 0.8rem;
-    line-height: 1.35;
+    margin-top: 0.22rem;
+    font-size: 0.74rem;
+    line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -262,13 +262,13 @@
   }
 
   .cookie-banner--notice .cookie-banner__actions {
-    gap: 0.35rem;
-    padding: 0.45rem 0.75rem 0.7rem;
+    gap: 0.3rem;
+    padding: 0.35rem 0.7rem 0.55rem;
   }
 
   .cookie-banner--notice .cookie-banner__actions button {
-    min-height: 2.25rem;
-    font-size: 0.88rem;
+    min-height: 2.05rem;
+    font-size: 0.84rem;
   }
 
   .cookie-banner__row {

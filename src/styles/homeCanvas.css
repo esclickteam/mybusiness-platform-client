@@ -1573,8 +1573,8 @@
 }
 
 @keyframes b2-film-ken {
-  from { transform: scale(1.04); }
-  to { transform: scale(1.12); }
+  from { transform: scale(1.05); }
+  to { transform: scale(1.14); }
 }
 
 .b2-click-pulse {
@@ -1943,6 +1943,11 @@
 
   .b2-theater-screen {
     aspect-ratio: 16 / 11;
+  }
+
+  .b2-theater-film,
+  .b2-theater-poster {
+    object-position: center 28%;
   }
 
   .b2-theater-title {

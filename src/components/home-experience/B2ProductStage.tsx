@@ -7,59 +7,61 @@ type WaStep = "message" | "crm" | "auto";
 
 type FilmRef = { src: string; poster: string; startAt: number };
 
+const FILM_V = "v=6";
+
 const HERO_FILMS_DESKTOP: Record<HeroStep, FilmRef> = {
   lead: {
-    src: "/demo-media/home/walkthrough/hero-01-lead.mp4",
-    poster: "/demo-media/home/walkthrough/hero-01-lead.jpg",
-    startAt: 0.12,
+    src: `/demo-media/home/walkthrough/hero-01-lead.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/hero-01-lead.jpg?${FILM_V}`,
+    startAt: 0.08,
   },
   crm: {
-    src: "/demo-media/home/walkthrough/hero-02-crm.mp4",
-    poster: "/demo-media/home/walkthrough/hero-02-crm.jpg",
-    startAt: 0.15,
+    src: `/demo-media/home/walkthrough/hero-02-crm.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/hero-02-crm.jpg?${FILM_V}`,
+    startAt: 0.1,
   },
   wa: {
-    src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4",
-    poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg",
-    startAt: 0.2,
+    src: `/demo-media/home/walkthrough/hero-03-whatsapp.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/hero-03-whatsapp.jpg?${FILM_V}`,
+    startAt: 0.12,
   },
   auto: {
-    src: "/demo-media/home/walkthrough/hero-04-automation.mp4",
-    poster: "/demo-media/home/walkthrough/hero-04-automation.jpg",
-    startAt: 0.15,
+    src: `/demo-media/home/walkthrough/hero-04-automation.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/hero-04-automation.jpg?${FILM_V}`,
+    startAt: 0.1,
   },
   task: {
-    src: "/demo-media/home/walkthrough/hero-05-task.mp4",
-    poster: "/demo-media/home/walkthrough/hero-05-task.jpg",
-    startAt: 0.12,
+    src: `/demo-media/home/walkthrough/hero-05-task.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/hero-05-task.jpg?${FILM_V}`,
+    startAt: 0.08,
   },
 };
 
 const HERO_FILMS_MOBILE: Record<HeroStep, FilmRef> = {
   lead: {
-    src: "/demo-media/home/walkthrough/mobile-01-lead.mp4",
-    poster: "/demo-media/home/walkthrough/mobile-01-lead.jpg",
-    startAt: 0.12,
+    src: `/demo-media/home/walkthrough/mobile-01-lead.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/mobile-01-lead.jpg?${FILM_V}`,
+    startAt: 0.08,
   },
   crm: {
-    src: "/demo-media/home/walkthrough/mobile-02-crm.mp4",
-    poster: "/demo-media/home/walkthrough/mobile-02-crm.jpg",
-    startAt: 0.15,
+    src: `/demo-media/home/walkthrough/mobile-02-crm.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/mobile-02-crm.jpg?${FILM_V}`,
+    startAt: 0.1,
   },
   wa: {
-    src: "/demo-media/home/walkthrough/mobile-03-whatsapp.mp4",
-    poster: "/demo-media/home/walkthrough/mobile-03-whatsapp.jpg",
-    startAt: 0.2,
+    src: `/demo-media/home/walkthrough/mobile-03-whatsapp.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/mobile-03-whatsapp.jpg?${FILM_V}`,
+    startAt: 0.12,
   },
   auto: {
-    src: "/demo-media/home/walkthrough/mobile-04-automation.mp4",
-    poster: "/demo-media/home/walkthrough/mobile-04-automation.jpg",
-    startAt: 0.15,
+    src: `/demo-media/home/walkthrough/mobile-04-automation.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/mobile-04-automation.jpg?${FILM_V}`,
+    startAt: 0.1,
   },
   task: {
-    src: "/demo-media/home/walkthrough/mobile-05-task.mp4",
-    poster: "/demo-media/home/walkthrough/mobile-05-task.jpg",
-    startAt: 0.12,
+    src: `/demo-media/home/walkthrough/mobile-05-task.mp4?${FILM_V}`,
+    poster: `/demo-media/home/walkthrough/mobile-05-task.jpg?${FILM_V}`,
+    startAt: 0.08,
   },
 };
 
