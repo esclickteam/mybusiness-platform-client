@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
 import { FreeResult, MonitorBoard, PlanCards, commercialLocale } from "./ComplianceCommercial";
@@ -370,13 +370,159 @@ function localeOf(language: string): Locale {
   return "en";
 }
 
+const LIVE: Record<Locale, Record<string, string>> = {
+  he: {
+    liveTitle: "אנחנו בודקים את האתר שלך",
+    live_wait: "ממתינים לנתוני ההתקדמות מהשרת",
+    live_crawl: "קוראים את העמודים הציבוריים",
+    live_browser: "טוענים עמוד בדפדפן",
+    live_documents: "קוראים מסמכים משפטיים",
+    live_checks: "מריצים בדיקות אבטחה, פרטיות ונגישות",
+    live_analysis: "משווים את מה שנקרא",
+    live_done: "הסריקה הסתיימה",
+    catSecurity: "אבטחה",
+    catPrivacy: "פרטיות ועוגיות",
+    catAccess: "נגישות",
+    catDocs: "מסמכים משפטיים",
+    state_waiting: "ממתין",
+    state_checking: "בבדיקה",
+    state_done: "הושלם",
+    state_blocked: "לא ניתן להשלים",
+  },
+  en: {
+    liveTitle: "We are checking your site",
+    live_wait: "Waiting for progress from the server",
+    live_crawl: "Reading public pages",
+    live_browser: "Loading a page in the browser",
+    live_documents: "Reading legal documents",
+    live_checks: "Running security, privacy, and accessibility checks",
+    live_analysis: "Comparing what was read",
+    live_done: "The scan finished",
+    catSecurity: "Security",
+    catPrivacy: "Privacy and cookies",
+    catAccess: "Accessibility",
+    catDocs: "Legal documents",
+    state_waiting: "Waiting",
+    state_checking: "Checking",
+    state_done: "Completed",
+    state_blocked: "Could not complete",
+  },
+  es: {
+    liveTitle: "Estamos revisando tu sitio",
+    live_wait: "Esperando el avance del servidor",
+    live_crawl: "Leyendo páginas públicas",
+    live_browser: "Cargando una página en el navegador",
+    live_documents: "Leyendo documentos legales",
+    live_checks: "Ejecutando controles de seguridad, privacidad y accesibilidad",
+    live_analysis: "Comparando lo leído",
+    live_done: "El análisis terminó",
+    catSecurity: "Seguridad",
+    catPrivacy: "Privacidad y cookies",
+    catAccess: "Accesibilidad",
+    catDocs: "Documentos legales",
+    state_waiting: "En espera",
+    state_checking: "En revisión",
+    state_done: "Completado",
+    state_blocked: "No se pudo completar",
+  },
+  "pt-BR": {
+    liveTitle: "Estamos verificando o seu site",
+    live_wait: "Aguardando o progresso do servidor",
+    live_crawl: "Lendo páginas públicas",
+    live_browser: "Carregando uma página no navegador",
+    live_documents: "Lendo documentos legais",
+    live_checks: "Executando verificações de segurança, privacidade e acessibilidade",
+    live_analysis: "Comparando o que foi lido",
+    live_done: "A varredura terminou",
+    catSecurity: "Segurança",
+    catPrivacy: "Privacidade e cookies",
+    catAccess: "Acessibilidade",
+    catDocs: "Documentos legais",
+    state_waiting: "Aguardando",
+    state_checking: "Em verificação",
+    state_done: "Concluído",
+    state_blocked: "Não foi possível concluir",
+  },
+  ar: {
+    liveTitle: "نحن نفحص موقعك",
+    live_wait: "بانتظار تقدم الفحص من الخادم",
+    live_crawl: "نقرأ الصفحات العلنية",
+    live_browser: "نحمّل صفحة في المتصفح",
+    live_documents: "نقرأ المستندات القانونية",
+    live_checks: "نجري فحوصات الأمن والخصوصية والإتاحة",
+    live_analysis: "نقارن ما قُرئ",
+    live_done: "اكتمل الفحص",
+    catSecurity: "الأمن",
+    catPrivacy: "الخصوصية وملفات تعريف الارتباط",
+    catAccess: "الإتاحة",
+    catDocs: "مستندات قانونية",
+    state_waiting: "بالانتظار",
+    state_checking: "قيد الفحص",
+    state_done: "اكتمل",
+    state_blocked: "تعذر الإكمال",
+  },
+};
+
+function ScanLive({
+  copy,
+  url,
+  progress,
+}: {
+  copy: Record<string, string>;
+  url: string;
+  progress?: { phase?: string; categories?: Record<string, string>; completed?: number; total?: number } | null;
+}) {
+  const categories = [
+    ["security", copy.catSecurity],
+    ["privacy", copy.catPrivacy],
+    ["accessibility", copy.catAccess],
+    ["documents", copy.catDocs],
+  ] as const;
+  const phase = progress?.phase || "";
+  const total = Number(progress?.total);
+  const completed = Number(progress?.completed);
+  const hasBar = Number.isFinite(completed) && Number.isFinite(total) && total > 0;
+  return (
+    <section className="scan-live" aria-live="polite">
+      <div className="scan-live__mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <circle cx="28" cy="28" r="14" />
+          <path d="M38 38 L52 52" />
+        </svg>
+      </div>
+      <h2>{copy.liveTitle}</h2>
+      <p className="scan-live__url" dir="ltr">{url || "—"}</p>
+      <p className="scan-live__phase">{copy[`live_${phase}`] || copy.live_wait}</p>
+      {hasBar ? (
+        <div className="scan-live__bar" role="progressbar" aria-valuenow={completed} aria-valuemin={0} aria-valuemax={total}>
+          <span style={{ width: `${Math.max(0, Math.min(100, (completed / total) * 100))}%` }} />
+        </div>
+      ) : null}
+      <ul className="scan-live__cats">
+        {categories.map(([key, label]) => {
+          const state = progress?.categories?.[key] || "waiting";
+          return (
+            <li key={key} className={`is-${state}`}>
+              <b>{label}</b>
+              <em>{copy[`state_${state}`] || copy.state_waiting}</em>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 export default function ComplianceScannerPage() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const locale = localeOf(i18n.language || "he");
   const copy = COPY[locale];
+  const live = LIVE[locale] || LIVE.en;
+  const previewScan = !id && searchParams.get("ui") === "scan";
   const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
   const [url, setUrl] = useState("https://");
   const [query, setQuery] = useState("");
@@ -490,7 +636,7 @@ export default function ComplianceScannerPage() {
 
   return (
     <main className={id ? "scan-product scan-product--report" : "scan-product"} dir={dir} lang={locale}>
-      {!id && <form onSubmit={startScan}>
+      {!id && !previewScan && <form onSubmit={startScan}>
       <section className="scan-hero">
         <div className="scan-hero__copy">
           <p className="scan-kicker">{copy.kicker}</p>
@@ -566,7 +712,14 @@ export default function ComplianceScannerPage() {
       </ol>
       </form>}
       {error && <p className="scan-error" role="alert">{error}</p>}
-      {!id && (
+      {previewScan && (
+        <ScanLive
+          copy={live}
+          url="https://example.com"
+          progress={{ phase: "checks", categories: { security: "checking", privacy: "waiting", accessibility: "done", documents: "blocked" } }}
+        />
+      )}
+      {!id && !previewScan && (
         <>
           <PlanCards locale={commercialLocale(locale)} />
           <MonitorBoard locale={commercialLocale(locale)} />
@@ -576,14 +729,7 @@ export default function ComplianceScannerPage() {
       {payload && (
         <section className="scan-report" aria-live="polite">
           {payload.status !== "completed" ? (
-            <div className="scan-progress">
-              <h2>{copy.running}</h2>
-              <ol>
-                {([["crawl", copy.phaseCrawl], ["documents", copy.phaseDocuments], ["checks", copy.phaseChecks], ["analysis", copy.phaseAnalysis], ["done", copy.phaseDone]] as const).map(([phase, label]) => (
-                  <li key={phase} className={payload.phase === phase ? "is-on" : ""}>{label}</li>
-                ))}
-              </ol>
-            </div>
+            <ScanLive copy={live} url={payload.url || ""} progress={payload.progress} />
           ) : payload.access !== "full" ? (
             <FreeResult locale={commercialLocale(locale)} summary={payload.summary} status={payload.status} scanId={id} />
           ) : (
