@@ -388,6 +388,8 @@ const LIVE: Record<Locale, Record<string, string>> = {
     state_checking: "בבדיקה",
     state_done: "הושלם",
     state_blocked: "לא ניתן להשלים",
+    now: "עכשיו: {name}",
+    doneOf: "הושלמו {done} מתוך {total}",
   },
   en: {
     liveTitle: "We are checking your site",
@@ -406,6 +408,8 @@ const LIVE: Record<Locale, Record<string, string>> = {
     state_checking: "Checking",
     state_done: "Completed",
     state_blocked: "Could not complete",
+    now: "Now: {name}",
+    doneOf: "{done} of {total} completed",
   },
   es: {
     liveTitle: "Estamos revisando tu sitio",
@@ -424,6 +428,8 @@ const LIVE: Record<Locale, Record<string, string>> = {
     state_checking: "En revisión",
     state_done: "Completado",
     state_blocked: "No se pudo completar",
+    now: "Ahora: {name}",
+    doneOf: "{done} de {total} completadas",
   },
   "pt-BR": {
     liveTitle: "Estamos verificando o seu site",
@@ -442,6 +448,8 @@ const LIVE: Record<Locale, Record<string, string>> = {
     state_checking: "Em verificação",
     state_done: "Concluído",
     state_blocked: "Não foi possível concluir",
+    now: "Agora: {name}",
+    doneOf: "{done} de {total} concluídas",
   },
   ar: {
     liveTitle: "نحن نفحص موقعك",
@@ -460,6 +468,8 @@ const LIVE: Record<Locale, Record<string, string>> = {
     state_checking: "قيد الفحص",
     state_done: "اكتمل",
     state_blocked: "تعذر الإكمال",
+    now: "الآن: {name}",
+    doneOf: "اكتمل {done} من {total}",
   },
 };
 
@@ -470,7 +480,7 @@ function ScanLive({
 }: {
   copy: Record<string, string>;
   url: string;
-  progress?: { phase?: string; categories?: Record<string, string>; completed?: number; total?: number } | null;
+  progress?: { phase?: string; categories?: Record<string, string>; completed?: number; total?: number; current?: string } | null;
 }) {
   const categories = [
     ["security", copy.catSecurity],
@@ -493,6 +503,8 @@ function ScanLive({
       <h2>{copy.liveTitle}</h2>
       <p className="scan-live__url" dir="ltr">{url || "—"}</p>
       <p className="scan-live__phase">{copy[`live_${phase}`] || copy.live_wait}</p>
+      {progress?.current ? <p className="scan-live__phase">{copy.now.replace("{name}", progress.current)}</p> : null}
+      {hasBar ? <p className="scan-live__phase">{copy.doneOf.replace("{done}", String(completed)).replace("{total}", String(total))}</p> : null}
       {hasBar ? (
         <div className="scan-live__bar" role="progressbar" aria-valuenow={completed} aria-valuemin={0} aria-valuemax={total}>
           <span style={{ width: `${Math.max(0, Math.min(100, (completed / total) * 100))}%` }} />
@@ -716,7 +728,7 @@ export default function ComplianceScannerPage() {
         <ScanLive
           copy={live}
           url="https://example.com"
-          progress={{ phase: "checks", categories: { security: "checking", privacy: "waiting", accessibility: "done", documents: "blocked" } }}
+          progress={{ phase: "checks", current: "נגישות", completed: 4, total: 12, categories: { security: "checking", privacy: "waiting", accessibility: "done", documents: "blocked" } }}
         />
       )}
       {!id && !previewScan && (
