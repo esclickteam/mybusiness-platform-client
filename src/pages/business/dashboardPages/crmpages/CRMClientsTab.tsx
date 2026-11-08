@@ -615,7 +615,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     let cancelled = false;
     fetchClientDetail(clientId, t)
       .then((detail) => {
-        if (cancelled || !detail) return;
+        if (cancelled || !detail || String(detail._id) !== String(clientId)) return;
         setSelectedClient(detail);
       })
       .catch((err) => {
