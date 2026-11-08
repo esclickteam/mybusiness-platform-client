@@ -433,10 +433,10 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
         </div>
       </div>
       <div className="report-sheet__metrics">
-        <article><b>{summary.ok ?? 0}</b><span>{copy.ok}</span><p>{copy.okHelp}</p></article>
-        <article><b>{summary.action ?? 0}</b><span>{copy.action}</span><p>{copy.actionHelp}</p></article>
-        <article><b>{summary.missing ?? 0}</b><span>{copy.missing}</span><p>{copy.missingHelp}</p></article>
-        <article><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span><p>{copy.unverifiedHelp}</p></article>
+        <article><b>{summary.ok ?? 0}</b><span>{copy.ok}</span></article>
+        <article><b>{summary.action ?? 0}</b><span>{copy.action}</span></article>
+        <article><b>{summary.missing ?? 0}</b><span>{copy.missing}</span></article>
+        <article><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span></article>
       </div>
       <aside className="report-sheet__buy">
         <div>
