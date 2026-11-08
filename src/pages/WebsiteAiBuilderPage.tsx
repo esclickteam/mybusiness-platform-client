@@ -53,6 +53,10 @@ export default function WebsiteAiBuilderPage() {
   const [systemNote, setSystemNote] = useState("");
   const opening = useRef(false);
 
+  useEffect(() => {
+    navigate(base, { replace: true });
+  }, [base, navigate]);
+
   const building = project?.phase === "planning" || project?.phase === "pages";
   const ready = project?.phase === "ready" && Boolean(project.editorHtml);
 
@@ -68,6 +72,7 @@ export default function WebsiteAiBuilderPage() {
   }
 
   useEffect(() => {
+    if (true) return;
     if (!requested) return;
     let stop = false;
     async function load() {
@@ -129,6 +134,7 @@ export default function WebsiteAiBuilderPage() {
 
   useEffect(() => {
     const current = project;
+    if (true) return undefined;
     if (!ready || !current?.editorHtml || !businessId || opening.current) return undefined;
     opening.current = true;
     const editorPath = (siteId: string) => `/business/${businessId}/dashboard/website/sites/${siteId}/edit?template=ai-site&ai=1`;
@@ -270,6 +276,7 @@ export default function WebsiteAiBuilderPage() {
     return undefined;
   }, [ready, project, businessId, navigate]);
 
+  return null;
   return (
     <div dir="rtl" className="min-h-screen bg-[#f7f8fc] text-slate-900">
       <style>{`

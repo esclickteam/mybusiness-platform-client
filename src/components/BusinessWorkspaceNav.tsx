@@ -536,11 +536,7 @@ export default function BusinessWorkspaceNav({
       return false;
     }
     if (item.moduleKey === "website" && showWebsiteUpsell && !user?.isGuidedDemo) return true;
-    if (item.moduleKey === "ai-studio") {
-      return isModuleEnabled(enabledModules, "website")
-        || isModuleEnabled(enabledModules, "crm")
-        || isModuleEnabled(enabledModules, "automations");
-    }
+    if (item.moduleKey === "ai-studio") return false;
     if (
       user?.isShowcaseDemo &&
       (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
