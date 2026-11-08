@@ -49,10 +49,10 @@
 
 .hx-hero-core {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
   gap: clamp(1.2rem, 3.5vw, 3rem);
   align-items: center;
-  width: min(1220px, 100%);
+  width: min(1240px, 100%);
   margin-inline: auto;
 }
 
@@ -60,14 +60,14 @@
   position: relative;
   z-index: 3;
   width: auto;
-  max-width: 34rem;
+  max-width: 38rem;
   padding: 0;
   transform: none;
 }
 
 .hx-hero-brand {
-  margin: 0 0 0.9rem;
-  font-size: clamp(1.85rem, 3vw, 2.7rem);
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.7rem, 2.6vw, 2.35rem);
   font-weight: 800;
   letter-spacing: -0.05em;
   line-height: 0.95;
@@ -76,8 +76,8 @@
 
 .hx-display {
   max-width: none;
-  font-size: clamp(2.35rem, 4.6vw, 4.4rem);
-  line-height: 1.02;
+  font-size: clamp(2.1rem, 3.8vw, 3.85rem);
+  line-height: 1.05;
   letter-spacing: -0.05em;
 }
 
@@ -154,8 +154,10 @@
 .hx-compose-main {
   position: relative;
   z-index: 2;
-  width: 86%;
+  width: 88%;
   margin-inline-start: 0;
+  aspect-ratio: auto;
+  max-width: none;
   border: 1px solid rgba(255, 255, 255, 0.18);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.04)),
@@ -164,12 +166,13 @@
     0 28px 70px rgba(18, 6, 31, 0.35),
     0 0 0 1px rgba(255, 255, 255, 0.05) inset;
   backdrop-filter: blur(10px);
-  overflow: hidden;
+  overflow: visible;
   transform: translate3d(0, calc(var(--hp) * -1.5vh), 0);
 }
 
 .hx-compose-main .pm-board {
-  min-height: 16.5rem;
+  min-height: 15.5rem;
+  background: #fff;
 }
 
 .hx-compose-film {
@@ -844,6 +847,17 @@
 .hx-wa .hx-points-on-dark,
 .hx-wa .hx-points {
   color: #12061f;
+  grid-template-columns: 1fr;
+  gap: 0.55rem;
+}
+
+.hx-wa .hx-points li {
+  padding: 0.55rem 0 0;
+  border-block-start: 1px solid rgba(91, 33, 182, 0.18);
+  background: transparent;
+  box-shadow: none;
+  border-inline: 0;
+  border-block-end: 0;
 }
 
 .hx-wa .hx-points h3 {
@@ -944,21 +958,24 @@
 }
 
 .hx-site-gallery-stage {
-  width: min(100%, 980px);
-  margin-top: 1.6rem;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(9rem, 12rem);
-  gap: 1.2rem;
-  align-items: end;
+  position: relative;
+  width: min(100%, 1040px);
+  margin-top: 1.8rem;
+  display: block;
+  min-height: clamp(18rem, 42vw, 28rem);
 }
 
 .hx-site-gallery .pm-site-desktop {
-  width: 100%;
+  width: min(100%, 860px);
+  margin-inline-end: 4rem;
 }
 
 .hx-site-gallery .pm-site-mobile {
-  width: min(100%, 12rem);
-  justify-self: end;
+  position: absolute;
+  inset-inline-end: 0;
+  bottom: -0.4rem;
+  width: min(28%, 13.5rem);
+  z-index: 3;
 }
 
 .hx-site-gallery .pm-site-view {
@@ -1194,8 +1211,9 @@
   .hx-compose-side {
     position: relative;
     inset: auto;
-    width: min(72%, 14rem);
-    margin: -2.4rem auto 0;
+    width: min(68%, 13rem);
+    margin: -3rem auto 0;
+    z-index: 4;
   }
 
   .hx-compose-card {
@@ -1203,6 +1221,10 @@
     inset: auto;
     width: 100%;
     margin-top: 0.85rem;
+  }
+
+  .hx-compose-pipe {
+    display: none;
   }
 
   .hx-compose-film {
@@ -1235,19 +1257,29 @@
   }
 
   .hx-wa-stage {
-    min-height: 0;
-    display: grid;
-    gap: 0.9rem;
+    position: relative;
+    min-height: 22rem;
+    display: block;
+    margin-top: 0.5rem;
   }
 
-  .hx-wa-stage .pm-phone,
-  .hx-wa-stage .pm-inbox,
-  .hx-wa-stage .pm-crm {
+  .hx-wa-stage .pm-phone {
     position: relative;
-    inset: auto;
-    width: 100%;
-    max-width: 22rem;
+    width: min(58%, 12.5rem);
     margin-inline: auto;
+    z-index: 3;
+  }
+
+  .hx-wa-stage .pm-inbox {
+    display: none;
+  }
+
+  .hx-wa-stage .pm-crm {
+    position: absolute;
+    inset-inline: 0.4rem auto auto 0.4rem;
+    bottom: 0;
+    width: min(78%, 16rem);
+    z-index: 4;
   }
 
   .hx-wa-stage .hx-wa-link {
@@ -1255,13 +1287,19 @@
   }
 
   .hx-site-gallery-stage {
-    grid-template-columns: 1fr;
+    min-height: 0;
   }
 
-  .hx-site-mobile,
-  .hx-site-gallery .hx-site-mobile {
-    width: min(160px, 46vw);
+  .hx-site-gallery .pm-site-desktop {
+    width: 100%;
     margin: 0;
+  }
+
+  .hx-site-gallery .pm-site-mobile {
+    position: relative;
+    inset: auto;
+    width: min(148px, 42vw);
+    margin: 0.85rem 0 0;
   }
 }
 
