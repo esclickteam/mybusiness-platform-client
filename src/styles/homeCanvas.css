@@ -970,6 +970,12 @@
   margin-top: 1.8rem;
   display: block;
   min-height: clamp(18rem, 42vw, 28rem);
+  animation: hx-gallery-swap 0.65s var(--hx-ease);
+}
+
+@keyframes hx-gallery-swap {
+  from { opacity: 0; transform: translateY(0.55rem) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 
 .hx-site-gallery .pm-site-desktop {
@@ -1131,11 +1137,23 @@
 }
 
 .hx-trust {
-  background: #fff;
+  background:
+    radial-gradient(ellipse 40% 45% at 0% 0%, rgba(219, 234, 254, 0.55), transparent 55%),
+    #fff;
 }
 
 .hx-faq {
-  background: #efe4ff;
+  background:
+    radial-gradient(ellipse 45% 40% at 100% 100%, rgba(196, 181, 253, 0.45), transparent 50%),
+    #f5f3ff;
+}
+
+/* Light ↔ dark visual rhythm between major bands */
+.hx-page .hx-why + .hx-showcase,
+.hx-page .hx-depth + .hx-wa,
+.hx-page .hx-wa + .hx-site-gallery,
+.hx-page .hx-site-gallery + .hx-ai {
+  border-block-start: 0;
 }
 
 .hx-close {
@@ -1357,30 +1375,33 @@
 }
 
 .hx-hero-b2 .hx-hero-core {
-  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(1.2rem, 3.2vw, 2.8rem);
+  grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
+  gap: clamp(1.35rem, 3.4vw, 3rem);
   align-items: center;
 }
 
 .hx-hero-b2 .hx-hero-brand {
-  font-size: clamp(1.45rem, 2vw, 1.9rem);
-  margin-bottom: 0.55rem;
+  font-size: clamp(1.55rem, 2.2vw, 2.05rem);
+  margin-bottom: 0.45rem;
+  letter-spacing: -0.02em;
 }
 
 .hx-hero-b2 .hx-display {
-  font-size: clamp(2rem, 3.4vw, 3.2rem);
-  line-height: 1.06;
+  font-size: clamp(1.85rem, 3vw, 2.85rem);
+  line-height: 1.08;
+  max-width: 14ch;
 }
 
 [dir="rtl"] .hx-hero-b2 .hx-display {
-  font-size: clamp(1.95rem, 3.2vw, 3.05rem);
-  line-height: 1.1;
+  font-size: clamp(1.8rem, 2.9vw, 2.75rem);
+  line-height: 1.12;
+  max-width: 13ch;
 }
 
 .hx-hero-b2 .hx-lead {
-  margin-top: 0.95rem;
-  max-width: 28rem;
-  font-size: clamp(1rem, 1.2vw, 1.12rem);
+  margin-top: 0.85rem;
+  max-width: 26rem;
+  font-size: clamp(0.98rem, 1.15vw, 1.08rem);
 }
 
 .hx-hero-proof {
@@ -1524,6 +1545,30 @@
   height: 100%;
   object-fit: cover;
   object-position: top center;
+  transform-origin: top center;
+  transition: transform 0.55s var(--hx-ease), object-position 0.55s var(--hx-ease);
+}
+
+/* One focused UI per step — zoom into the action area */
+.b2-journey.is-lead .b2-theater-film {
+  object-position: center 62%;
+  transform: scale(1.28);
+}
+.b2-journey.is-crm .b2-theater-film {
+  object-position: center center;
+  transform: scale(1.18);
+}
+.b2-journey.is-wa .b2-theater-film {
+  object-position: center 28%;
+  transform: scale(1.16);
+}
+.b2-journey.is-auto .b2-theater-film {
+  object-position: center 40%;
+  transform: scale(1.14);
+}
+.b2-journey.is-task .b2-theater-film {
+  object-position: center 35%;
+  transform: scale(1.2);
 }
 
 .b2-theater-status {
@@ -1748,7 +1793,25 @@
   width: 100%;
   aspect-ratio: 16 / 9.4;
   object-fit: cover;
-  object-position: top center;
+  object-position: center 28%;
+  transform: scale(1.12);
+  transform-origin: center top;
+  transition: transform 0.55s var(--hx-ease), object-position 0.55s var(--hx-ease);
+}
+
+.b2-wa-journey.is-message .b2-wa-main video {
+  object-position: center 24%;
+  transform: scale(1.14);
+}
+
+.b2-wa-journey.is-crm .b2-wa-main video {
+  object-position: center center;
+  transform: scale(1.18);
+}
+
+.b2-wa-journey.is-auto .b2-wa-main video {
+  object-position: center 40%;
+  transform: scale(1.12);
 }
 
 .b2-wa-bridge {
@@ -1872,6 +1935,34 @@
 
   .b2-wa-main video {
     aspect-ratio: 16 / 11;
+    transform: scale(1.08);
+  }
+
+  .hx-site-gallery-stage {
+    min-height: clamp(16rem, 68vw, 24rem);
+  }
+
+  .hx-site-gallery .pm-site-desktop {
+    width: 100%;
+    margin-inline-end: 0;
+  }
+
+  .hx-site-gallery .pm-site-mobile {
+    inset-inline-end: 0.4rem;
+    bottom: -0.2rem;
+    width: min(34%, 9.5rem);
+  }
+
+  .hx-site-gallery-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.4rem;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .hx-site-gallery-nav button {
+    flex: 0 0 auto;
   }
 }
 

@@ -6,17 +6,49 @@ type HeroStep = "lead" | "crm" | "wa" | "auto" | "task";
 type WaStep = "message" | "crm" | "auto";
 
 const HERO_FILMS: Record<HeroStep, { src: string; poster: string; startAt: number }> = {
-  lead: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg", startAt: 0.2 },
-  crm: { src: "/demo-media/crm/crm-en-product.mp4", poster: "/demo-media/crm/poster-product.jpg", startAt: 0.4 },
-  wa: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg", startAt: 0.3 },
-  auto: { src: "/demo-media/automations/automations-en-product.mp4", poster: "/demo-media/automations/poster-product.jpg", startAt: 0.5 },
-  task: { src: "/demo-media/home/appointments.mp4", poster: "/demo-media/home/appointments.jpg", startAt: 0.3 },
+  lead: {
+    src: "/demo-media/home/walkthrough/hero-01-lead.mp4",
+    poster: "/demo-media/home/walkthrough/hero-01-lead.jpg",
+    startAt: 0.15,
+  },
+  crm: {
+    src: "/demo-media/home/walkthrough/hero-02-crm.mp4",
+    poster: "/demo-media/home/walkthrough/hero-02-crm.jpg",
+    startAt: 0.2,
+  },
+  wa: {
+    src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4",
+    poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg",
+    startAt: 0.25,
+  },
+  auto: {
+    src: "/demo-media/home/walkthrough/hero-04-automation.mp4",
+    poster: "/demo-media/home/walkthrough/hero-04-automation.jpg",
+    startAt: 0.2,
+  },
+  task: {
+    src: "/demo-media/home/walkthrough/hero-05-task.mp4",
+    poster: "/demo-media/home/walkthrough/hero-05-task.jpg",
+    startAt: 0.15,
+  },
 };
 
 const WA_FILMS: Record<WaStep, { src: string; poster: string; startAt: number }> = {
-  message: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg", startAt: 0.4 },
-  crm: { src: "/demo-media/crm/crm-en-product.mp4", poster: "/demo-media/crm/poster-product.jpg", startAt: 0.5 },
-  auto: { src: "/demo-media/automations/automations-en-product.mp4", poster: "/demo-media/automations/poster-product.jpg", startAt: 0.6 },
+  message: {
+    src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4",
+    poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg",
+    startAt: 0.3,
+  },
+  crm: {
+    src: "/demo-media/home/walkthrough/hero-02-crm.mp4",
+    poster: "/demo-media/home/walkthrough/hero-02-crm.jpg",
+    startAt: 0.35,
+  },
+  auto: {
+    src: "/demo-media/home/walkthrough/hero-04-automation.mp4",
+    poster: "/demo-media/home/walkthrough/hero-04-automation.jpg",
+    startAt: 0.4,
+  },
 };
 
 function useReduced() {

@@ -408,26 +408,17 @@ function Hero() {
             <HeroProductStage
               text={text}
               label={hero.stageAlt}
-              onWatchDemo={(step) => {
-                const map = {
-                  lead: "crm",
-                  crm: "crm",
-                  wa: "whatsapp",
-                  auto: "automations",
-                  task: "automations",
-                } as const;
-                const folder = map[step];
-                open(
-                  filmOf(
-                    folder,
-                    folder,
-                    "",
-                    text("הדגמת מערכת", "System demo"),
-                    text("הקלטת מסך מתוך סביבת הדמו — תנועות עכבר ותהליך עבודה אמיתי.", "A screen recording from the demo workspace — real mouse movement and workflow."),
-                    language,
-                    text,
+              onWatchDemo={() => {
+                open({
+                  src: "/demo-media/home/walkthrough/process-full.mp4",
+                  poster: "/demo-media/home/walkthrough/process-full.jpg",
+                  title: text("הדגמת התהליך המרכזי", "Core process demo"),
+                  caption: text(
+                    "ליד חדש → כרטיס CRM → WhatsApp → אוטומציה → משימת מעקב. הקלטה נקייה מסביבת הדמו.",
+                    "New lead → CRM record → WhatsApp → automation → follow-up task. Clean recording from the demo workspace.",
                   ),
-                );
+                  tag: text("הקלטת מסך · נתוני דמו", "Screen recording · demo data"),
+                });
               }}
             />
           </div>
@@ -1024,25 +1015,49 @@ function WhatsApp() {
               <Cta to="/whatsapp-api" tone="ink">{text("לעמוד WhatsApp", "WhatsApp page")}</Cta>
               <DemoButton
                 label={text("לראות איך זה עובד", "See how it works")}
-                onClick={() => open(filmOf("whatsapp", "whatsapp", "/demo-media/whatsapp/poster.jpg", "WhatsApp", text("הקלטת תיבת ההודעות מתוך סביבת הדמו.", "A recording of the inbox from the demo workspace."), language, text))}
+                onClick={() =>
+                  open({
+                    src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4",
+                    poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg",
+                    title: text("תיבת WhatsApp", "WhatsApp inbox"),
+                    caption: text(
+                      "הקלטת תיבת ההודעות מסביבת הדמו — לחיצות ותנועת עכבר אמיתיות.",
+                      "Inbox recording from the demo workspace — real clicks and mouse movement.",
+                    ),
+                    tag: text("הקלטת מסך · נתוני דמו", "Screen recording · demo data"),
+                  })
+                }
               />
             </div>
           </div>
           <WhatsAppFlowStage
             text={text}
             onWatchDemo={(step) => {
-              const folder = step === "message" ? "whatsapp" : step === "crm" ? "crm" : "automations";
-              open(
-                filmOf(
-                  folder,
-                  folder,
-                  "",
-                  text("הדגמת WhatsApp", "WhatsApp demo"),
-                  text("הקלטת מסך מתוך סביבת הדמו — תהליך עבודה אמיתי.", "A screen recording from the demo workspace — a real workflow."),
-                  language,
-                  text,
+              const map = {
+                message: {
+                  src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4",
+                  poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg",
+                },
+                crm: {
+                  src: "/demo-media/home/walkthrough/hero-02-crm.mp4",
+                  poster: "/demo-media/home/walkthrough/hero-02-crm.jpg",
+                },
+                auto: {
+                  src: "/demo-media/home/walkthrough/hero-04-automation.mp4",
+                  poster: "/demo-media/home/walkthrough/hero-04-automation.jpg",
+                },
+              } as const;
+              const film = map[step];
+              open({
+                src: film.src,
+                poster: film.poster,
+                title: text("הדגמת WhatsApp", "WhatsApp demo"),
+                caption: text(
+                  "הקלטת מסך נקייה מסביבת הדמו — הודעה, CRM ואוטומציה.",
+                  "Clean screen recording from the demo workspace — message, CRM, and automation.",
                 ),
-              );
+                tag: text("הקלטת מסך · נתוני דמו", "Screen recording · demo data"),
+              });
             }}
           />
         </div>
