@@ -223,7 +223,7 @@ export function HomeSiteGallery() {
     if (reduced) return undefined;
     const timer = window.setInterval(() => {
       setIndex((value) => (value + 1) % SITE_SAMPLES.length);
-    }, 5600);
+    }, 4800);
     return () => window.clearInterval(timer);
   }, [reduced]);
 
@@ -234,7 +234,7 @@ export function HomeSiteGallery() {
           <h2 id="hx-site-gallery-title">{cine.sitesGalleryTitle}</h2>
           <p className="hx-prose">{cine.sitesGalleryLead}</p>
         </div>
-        <div className="hx-site-gallery-stage" aria-live="polite">
+        <div className="hx-site-gallery-stage" aria-live="polite" key={current[0]}>
           <StudioFrame src={current[0]} label={current[1]} mode="desktop" />
           <StudioFrame src={current[0]} label={current[1]} mode="mobile" />
         </div>

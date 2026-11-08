@@ -353,8 +353,9 @@ export default function HomeExperienceSections() {
 }
 
 function Hero() {
-  const { text, cine } = useCopy();
+  const { text, language, cine } = useCopy();
   const reduced = useReduced();
+  const open = useOpenFilm();
   const hero = cine.hero;
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
@@ -378,10 +379,15 @@ function Hero() {
               <Words text={lineTwo} delay={180} />
               {lineThree ? <Words text={lineThree} hot={hot} delay={360} /> : null}
             </h1>
-            <p className="hx-lead">{hero.lead1}</p>
+            <p className="hx-lead">
+              {text(
+                "ליד נכנס, השיחה ממשיכה ב־WhatsApp, והצעד הבא נוצר אוטומטית — באותה מערכת.",
+                "A lead arrives, the conversation continues on WhatsApp, and the next step is created automatically — in one system.",
+              )}
+            </p>
             <div className="hx-actions">
               <Cta to="/register">{hero.start}</Cta>
-              <Cta to="#products" tone="line">{hero.see}</Cta>
+              <Cta to="#whatsapp" tone="line">{hero.see}</Cta>
             </div>
             <p className="hx-hero-proof">
               {text("הדגמה עם נתוני דמו · לא נתוני לקוחות אמיתיים", "Demo with sample data · not real customer data")}
@@ -399,7 +405,31 @@ function Hero() {
               decoding="async"
               hidden
             />
-            <HeroProductStage text={text} label={hero.stageAlt} />
+            <HeroProductStage
+              text={text}
+              label={hero.stageAlt}
+              onWatchDemo={(step) => {
+                const map = {
+                  lead: "crm",
+                  crm: "crm",
+                  wa: "whatsapp",
+                  auto: "automations",
+                  task: "automations",
+                } as const;
+                const folder = map[step];
+                open(
+                  filmOf(
+                    folder,
+                    folder,
+                    "",
+                    text("הדגמת מערכת", "System demo"),
+                    text("הקלטת מסך מתוך סביבת הדמו — תנועות עכבר ותהליך עבודה אמיתי.", "A screen recording from the demo workspace — real mouse movement and workflow."),
+                    language,
+                    text,
+                  ),
+                );
+              }}
+            />
           </div>
         </div>
         <a className={`hx-scroll-cue${reduced ? " is-still" : ""}`} href="#hx-connect">
@@ -998,7 +1028,23 @@ function WhatsApp() {
               />
             </div>
           </div>
-          <WhatsAppFlowStage text={text} />
+          <WhatsAppFlowStage
+            text={text}
+            onWatchDemo={(step) => {
+              const folder = step === "message" ? "whatsapp" : step === "crm" ? "crm" : "automations";
+              open(
+                filmOf(
+                  folder,
+                  folder,
+                  "",
+                  text("הדגמת WhatsApp", "WhatsApp demo"),
+                  text("הקלטת מסך מתוך סביבת הדמו — תהליך עבודה אמיתי.", "A screen recording from the demo workspace — a real workflow."),
+                  language,
+                  text,
+                ),
+              );
+            }}
+          />
         </div>
       </div>
     </section>

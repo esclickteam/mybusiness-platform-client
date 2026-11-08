@@ -2,11 +2,20 @@ import { useEffect, useRef, useState } from "react";
 
 type TextFn = (hebrew: string, english: string) => string;
 
-type Mode = "crm" | "wa" | "auto";
+type HeroStep = "lead" | "crm" | "wa" | "auto" | "task";
+type WaStep = "message" | "crm" | "auto";
 
-const FILMS: Record<Mode, { src: string; poster: string }> = {
+const HERO_FILMS: Record<HeroStep, { src: string; poster: string }> = {
+  lead: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg" },
   crm: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg" },
   wa: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg" },
+  auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg" },
+  task: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg" },
+};
+
+const WA_FILMS: Record<WaStep, { src: string; poster: string }> = {
+  message: { src: "/demo-media/home/whatsapp.mp4", poster: "/demo-media/home/whatsapp.jpg" },
+  crm: { src: "/demo-media/home/crm.mp4", poster: "/demo-media/home/crm.jpg" },
   auto: { src: "/demo-media/home/automations.mp4", poster: "/demo-media/home/automations.jpg" },
 };
 
@@ -23,249 +32,203 @@ function useReduced() {
   return reduced;
 }
 
-export function HeroProductStage({ text, label }: { text: TextFn; label: string }) {
+function useNarrow() {
+  const [narrow, setNarrow] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia("(max-width: 900px)").matches : false,
+  );
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 900px)");
+    const apply = () => setNarrow(query.matches);
+    query.addEventListener("change", apply);
+    return () => query.removeEventListener("change", apply);
+  }, []);
+  return narrow;
+}
+
+export function HeroProductStage({
+  text,
+  label,
+  onWatchDemo,
+}: {
+  text: TextFn;
+  label: string;
+  onWatchDemo?: (step: HeroStep) => void;
+}) {
   const reduced = useReduced();
-  const [mode, setMode] = useState<Mode>("crm");
-  const [panelKey, setPanelKey] = useState(0);
+  const narrow = useNarrow();
+  const [step, setStep] = useState<HeroStep>("lead");
+  const [paused, setPaused] = useState(false);
   const filmRef = useRef<HTMLVideoElement | null>(null);
-  const pauseRotate = useRef(false);
 
-  const copy: Record<
-    Mode,
+  const steps: Array<{
+    key: HeroStep;
+    short: string;
+    title: string;
+    status: string;
+    detail: string;
+  }> = [
     {
-      title: string;
-      live: string;
-      caption: string;
-      filmLabel: string;
-      kicker: string;
-      name: string;
-      body: string;
-      pills: Array<[string, string]>;
-    }
-  > = {
-    crm: {
-      title: text("CRM · לידים", "CRM · Leads"),
-      live: text("ליד חדש התקבל", "New lead received"),
-      caption: text(
-        "ליד חדש נכנס לרשימה — במבט גדול וקריא, לא דשבורד שלם.",
-        "A new lead enters the list — large and readable, not a full dashboard.",
-      ),
-      filmLabel: text("הקלטת מסך ממוקדת · CRM", "Focused screen recording · CRM"),
-      kicker: text("כרטיס לקוח", "Customer record"),
-      name: text("תומר שפירא", "Tomer Shapira"),
-      body: text("מקור: WhatsApp Business API", "Source: WhatsApp Business API"),
-      pills: [
-        [text("חדש", "New"), ""],
-        [text("משימה ממתינה", "Pending task"), "blue"],
-      ],
+      key: "lead",
+      short: text("ליד", "Lead"),
+      title: text("ליד חדש נכנס", "New lead arrives"),
+      status: text("תומר שפירא · מקור WhatsApp", "Tomer Shapira · WhatsApp source"),
+      detail: text("פנייה חדשה מופיעה ברשימת הלידים.", "A new enquiry appears in the lead list."),
     },
-    wa: {
-      title: text("WhatsApp · שיחה", "WhatsApp · Chat"),
-      live: text("השיחה ממשיכה במערכת", "Conversation continues in the system"),
-      caption: text(
-        "אותו לקוח ממשיך בשיחה — טקסט גדול, בלי חיתוך מסך רחב.",
-        "The same customer continues in chat — large text, no wide-screen crop.",
-      ),
-      filmLabel: text("הקלטת מסך ממוקדת · WhatsApp", "Focused screen recording · WhatsApp"),
-      kicker: text("שיחה פעילה", "Active chat"),
-      name: text("תומר שפירא", "Tomer Shapira"),
-      body: text("תבנית מאושרת · חלון שירות פתוח", "Approved template · open service window"),
-      pills: [
-        [text("בשיחה", "In chat"), "green"],
-        [text("מקושר ל־CRM", "Linked to CRM"), "blue"],
-      ],
+    {
+      key: "crm",
+      short: "CRM",
+      title: text("כרטיס לקוח ב־CRM", "Customer record in CRM"),
+      status: text("סטטוס: חדש · ממתין לטיפול", "Status: New · awaiting follow-up"),
+      detail: text("אותה פנייה נשמרת כרשומת לקוח.", "The same enquiry is saved as a customer record."),
     },
-    auto: {
-      title: text("אוטומציות · תהליך", "Automations · Flow"),
-      live: text("פעולה נוצרה אוטומטית", "Action created automatically"),
-      caption: text(
-        "מאירוע עסקי לפעולה: פנייה → משימה → עדכון סטטוס.",
-        "From business event to action: enquiry → task → status update.",
-      ),
-      filmLabel: text("הקלטת מסך ממוקדת · אוטומציות", "Focused screen recording · Automations"),
-      kicker: text("תוצאת האוטומציה", "Automation result"),
-      name: text("משימת המשך נוצרה", "Follow-up task created"),
-      body: text("שיחת חזרה · משויכת לתומר שפירא", "Callback · assigned to Tomer Shapira"),
-      pills: [
-        [text("פעיל", "Active"), "green"],
-        [text("CRM עודכן", "CRM updated"), "blue"],
-      ],
+    {
+      key: "wa",
+      short: "WhatsApp",
+      title: text("הודעת WhatsApp", "WhatsApp message"),
+      status: text("השיחה ממשיכה בתיבה העסקית", "Conversation continues in the inbox"),
+      detail: text("הודעה והמשך טיפול באותו לקוח.", "Message and follow-up for the same customer."),
     },
-  };
+    {
+      key: "auto",
+      short: text("אוטומציה", "Auto"),
+      title: text("אוטומציה מופעלת", "Automation runs"),
+      status: text("תהליך: פנייה → משימה", "Flow: enquiry → task"),
+      detail: text("המערכת מריצה תהליך מוגדר מראש.", "The system runs a predefined flow."),
+    },
+    {
+      key: "task",
+      short: text("משימה", "Task"),
+      title: text("משימת מעקב נוצרה", "Follow-up task created"),
+      status: text("שיחת חזרה · משויכת לצוות", "Callback · assigned to the team"),
+      detail: text("הצעד הבא מוכן לעבודה.", "The next step is ready to work."),
+    },
+  ];
 
-  const cfg = copy[mode];
+  const current = steps.find((item) => item.key === step) || steps[0];
+  const film = HERO_FILMS[step];
+  const activeIndex = steps.findIndex((item) => item.key === step);
 
   useEffect(() => {
     const video = filmRef.current;
     if (!video || reduced) return;
+    video.currentTime = 0;
     video.play().catch(() => undefined);
-  }, [mode, reduced]);
+  }, [step, reduced]);
 
   useEffect(() => {
-    if (reduced) return undefined;
-    const order: Mode[] = ["crm", "wa", "auto"];
+    if (reduced || paused) return undefined;
+    const order = steps.map((item) => item.key);
     const timer = window.setInterval(() => {
-      if (pauseRotate.current) return;
-      setMode((current) => {
-        const next = order[(order.indexOf(current) + 1) % order.length];
-        setPanelKey((value) => value + 1);
-        return next;
-      });
-    }, 5600);
+      setStep((currentStep) => order[(order.indexOf(currentStep) + 1) % order.length]);
+    }, 4200);
     return () => window.clearInterval(timer);
-  }, [reduced]);
+  }, [paused, reduced, steps.length]);
 
-  const show = (next: Mode) => {
-    pauseRotate.current = true;
-    setMode(next);
-    setPanelKey((value) => value + 1);
-    window.setTimeout(() => {
-      pauseRotate.current = false;
-    }, 9000);
+  const select = (next: HeroStep) => {
+    setPaused(true);
+    setStep(next);
+    window.setTimeout(() => setPaused(false), 10000);
   };
 
   return (
-    <div className={`b2-stage is-${mode}`} aria-label={label}>
-      <div className="b2-stage-canvas">
-        <div className="b2-stage-glow" aria-hidden="true" />
-        <div className="b2-stage-main">
-          <div className="b2-stage-chrome">
-            <i /><i /><i />
-            <strong>{cfg.title}</strong>
-            <em>{cfg.live}</em>
-          </div>
-          <div className="b2-panel is-on" key={`${mode}-${panelKey}`}>
-            {mode === "crm" ? (
-              <>
-                <div className="b2-crm-toolbar" aria-hidden="true">
-                  <span>{text("היום", "Today")}</span>
-                  <span>{text("מקור · הכל", "Source · All")}</span>
-                  <strong>{text("4 פתוחים", "4 open")}</strong>
-                </div>
-                <div className="b2-lead is-live">
-                  <b><i className="b2-pulse" aria-hidden="true" />{text("תומר שפירא", "Tomer Shapira")}</b>
-                  <span>WhatsApp</span>
-                  <em className="b2-pill">{text("חדש", "New")}</em>
-                </div>
-                <div className="b2-lead">
-                  <b>{text("מיכל שחר", "Michal Shahar")}</b>
-                  <span>{text("אתר", "Website")}</span>
-                  <em className="b2-pill blue">{text("בטיפול", "In progress")}</em>
-                </div>
-                <div className="b2-lead">
-                  <b>{text("נועה כהן", "Noa Cohen")}</b>
-                  <span>{text("קמפיין", "Campaign")}</span>
-                  <em className="b2-pill">{text("משימה", "Task")}</em>
-                </div>
-                <div className="b2-lead">
-                  <b>{text("איתי לוי", "Itay Levi")}</b>
-                  <span>{text("המלצה", "Referral")}</span>
-                  <em className="b2-pill green">{text("נסגר", "Closed")}</em>
-                </div>
-              </>
-            ) : null}
-            {mode === "wa" ? (
-              <div className="b2-chat">
-                <div className="b2-bubble in">
-                  {text("שלום, אשמח לפרטים על השירות", "Hi, I would like details about the service")}
-                  <small>{text("תומר · עכשיו", "Tomer · now")}</small>
-                </div>
-                <div className="b2-bubble out">
-                  {text("שמחים שפנית. נציג ממשיך איתך מהמערכת.", "Glad you reached out. A teammate continues from the system.")}
-                  <small>{text("BizUply · נשלח", "BizUply · sent")}</small>
-                </div>
-                <div className="b2-bubble in">
-                  {text("מעולה, אפשר גם לקבוע שיחה?", "Great — can we also schedule a call?")}
-                  <small>{text("תומר", "Tomer")}</small>
-                </div>
-              </div>
-            ) : null}
-            {mode === "auto" ? (
-              <ol className="b2-auto-steps">
-                <li className="is-on">
-                  <span className="b2-num">1</span>
-                  <div>
-                    <strong>{text("פנייה התקבלה", "Enquiry received")}</strong>
-                    <span>{text("ליד חדש מ־WhatsApp נכנס ל־CRM", "A new WhatsApp lead enters CRM")}</span>
-                  </div>
-                </li>
-                <li className="is-on">
-                  <span className="b2-num">2</span>
-                  <div>
-                    <strong>{text("נוצרת משימת המשך", "Follow-up task created")}</strong>
-                    <span>{text("שיחת חזרה מתוזמנת לצוות", "A callback is scheduled for the team")}</span>
-                  </div>
-                </li>
-                <li className="is-on">
-                  <span className="b2-num">3</span>
-                  <div>
-                    <strong>{text("הסטטוס מתעדכן", "Status updates")}</strong>
-                    <span>{text("אותו לקוח עובר ל־בטיפול", "The same customer moves to In progress")}</span>
-                  </div>
-                </li>
-              </ol>
-            ) : null}
-          </div>
-        </div>
+    <div className={`b2-journey is-${step}${narrow ? " is-mobile" : ""}`} aria-label={label}>
+      <ol className="b2-journey-rail" aria-label={text("תהליך עסקי", "Business flow")}>
+        {steps.map((item, index) => (
+          <li key={item.key} className={index <= activeIndex ? "is-done" : undefined}>
+            <button
+              type="button"
+              className={step === item.key ? "is-on" : undefined}
+              aria-current={step === item.key ? "step" : undefined}
+              onClick={() => select(item.key)}
+            >
+              <span className="b2-journey-num">{index + 1}</span>
+              <span className="b2-journey-label">{item.short}</span>
+            </button>
+            {index < steps.length - 1 ? <i className="b2-journey-link" aria-hidden="true" /> : null}
+          </li>
+        ))}
+      </ol>
 
-        <aside className="b2-float" aria-live="polite">
-          <p className="b2-kicker">{cfg.kicker}</p>
-          <strong>{cfg.name}</strong>
-          <span>{cfg.body}</span>
-          <div className="b2-float-row">
-            {cfg.pills.map(([labelText, tone]) => (
-              <em key={labelText} className={`b2-pill${tone ? ` ${tone}` : ""}`}>{labelText}</em>
-            ))}
-          </div>
-        </aside>
+      <div className="b2-theater" key={step}>
+        <header className="b2-theater-chrome">
+          <div className="b2-theater-dots" aria-hidden="true"><i /><i /><i /></div>
+          <strong>{current.title}</strong>
+          <em>{text("הקלטת מסך מערכת · נתוני דמו", "System screen recording · demo data")}</em>
+        </header>
 
-        <div className="b2-side" aria-hidden="true">
+        <div className="b2-theater-screen">
           <video
             ref={filmRef}
-            key={FILMS[mode].src}
-            src={FILMS[mode].src}
-            poster={FILMS[mode].poster}
+            className="b2-theater-film"
+            src={film.src}
+            poster={film.poster}
             muted
             playsInline
             loop
             autoPlay={!reduced}
+            aria-label={current.title}
           />
-          <p>{cfg.filmLabel}</p>
+        </div>
+        <div className="b2-theater-status">
+          <p className="b2-theater-kicker">{text("שלב פעיל", "Active step")}</p>
+          <p className="b2-theater-title">{current.status}</p>
+          <p className="b2-theater-detail">{current.detail}</p>
         </div>
       </div>
 
-      <div className="b2-tabs" role="tablist" aria-label={text("מעבר בין מוצרים", "Switch products")}>
-        {(
-          [
-            ["crm", "CRM"],
-            ["wa", "WhatsApp"],
-            ["auto", text("אוטומציות", "Automations")],
-          ] as const
-        ).map(([key, labelText]) => (
-          <button
-            key={key}
-            type="button"
-            role="tab"
-            aria-selected={mode === key}
-            className={mode === key ? "is-on" : undefined}
-            onClick={() => show(key)}
-          >
-            {labelText}
+      <div className="b2-journey-actions">
+        {onWatchDemo ? (
+          <button type="button" className="b2-watch" onClick={() => onWatchDemo(step)}>
+            {text("צפו בהדגמת המערכת", "Watch the system demo")}
           </button>
-        ))}
+        ) : null}
+        <p className="b2-caption">
+          {text(
+            "ליד חדש ← CRM ← WhatsApp ← אוטומציה ← משימת מעקב",
+            "New lead ← CRM ← WhatsApp ← Automation ← Follow-up task",
+          )}
+        </p>
       </div>
-      <p className="b2-caption">{cfg.caption}</p>
     </div>
   );
 }
 
-type FlowStep = "message" | "crm" | "auto";
-
-export function WhatsAppFlowStage({ text }: { text: TextFn }) {
+export function WhatsAppFlowStage({
+  text,
+  onWatchDemo,
+}: {
+  text: TextFn;
+  onWatchDemo?: (step: WaStep) => void;
+}) {
   const reduced = useReduced();
-  const [step, setStep] = useState<FlowStep>("message");
+  const narrow = useNarrow();
+  const [step, setStep] = useState<WaStep>("message");
   const [live, setLive] = useState(false);
+  const [paused, setPaused] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const filmRef = useRef<HTMLVideoElement | null>(null);
+
+  const steps: Array<{ key: WaStep; label: string; result: string }> = [
+    {
+      key: "message",
+      label: text("הודעה נכנסת", "Incoming message"),
+      result: text("שיחה נפתחת בתיבה העסקית", "A chat opens in the business inbox"),
+    },
+    {
+      key: "crm",
+      label: text("כרטיס לקוח", "Customer record"),
+      result: text("אותה פנייה נשמרת ב־CRM", "The same enquiry is saved in CRM"),
+    },
+    {
+      key: "auto",
+      label: text("אוטומציה", "Automation"),
+      result: text("נוצרת משימת מעקב להמשך", "A follow-up task is created"),
+    },
+  ];
+
+  const activeIndex = steps.findIndex((item) => item.key === step);
+  const current = steps[activeIndex] || steps[0];
+  const film = WA_FILMS[step];
 
   useEffect(() => {
     const node = rootRef.current;
@@ -277,144 +240,111 @@ export function WhatsAppFlowStage({ text }: { text: TextFn }) {
           io.disconnect();
         }
       },
-      { threshold: 0.28 },
+      { threshold: 0.25 },
     );
     io.observe(node);
     return () => io.disconnect();
   }, []);
 
   useEffect(() => {
-    if (!live || reduced) return undefined;
-    const order: FlowStep[] = ["message", "crm", "auto"];
-    const timer = window.setInterval(() => {
-      setStep((current) => order[(order.indexOf(current) + 1) % order.length]);
-    }, 4800);
-    return () => window.clearInterval(timer);
-  }, [live, reduced]);
+    const video = filmRef.current;
+    if (!video || reduced) return;
+    video.currentTime = 0;
+    video.play().catch(() => undefined);
+  }, [step, reduced]);
 
-  const steps: Array<{ key: FlowStep; label: string; body: string }> = [
-    {
-      key: "message",
-      label: text("1 · הודעה", "1 · Message"),
-      body: text("נכנסת לתיבה העסקית", "Enters the business inbox"),
-    },
-    {
-      key: "crm",
-      label: text("2 · CRM", "2 · CRM"),
-      body: text("כרטיס לקוח מתעדכן", "Customer record updates"),
-    },
-    {
-      key: "auto",
-      label: text("3 · אוטומציה", "3 · Automation"),
-      body: text("נוצרת משימת המשך", "Follow-up task is created"),
-    },
-  ];
+  useEffect(() => {
+    if (!live || reduced || paused) return undefined;
+    const order: WaStep[] = ["message", "crm", "auto"];
+    const timer = window.setInterval(() => {
+      setStep((currentStep) => order[(order.indexOf(currentStep) + 1) % order.length]);
+    }, 4500);
+    return () => window.clearInterval(timer);
+  }, [live, paused, reduced]);
+
+  const select = (next: WaStep) => {
+    setPaused(true);
+    setStep(next);
+    window.setTimeout(() => setPaused(false), 10000);
+  };
 
   return (
-    <div className={`b2-wa-flow${live ? " is-live" : ""} is-${step}`} ref={rootRef}>
-      <div className="b2-wa-steps" role="tablist" aria-label={text("תהליך WhatsApp → CRM", "WhatsApp → CRM flow")}>
-        {steps.map((item) => (
+    <div className={`b2-wa-journey${live ? " is-live" : ""} is-${step}${narrow ? " is-mobile" : ""}`} ref={rootRef}>
+      <div className="b2-wa-path" role="tablist" aria-label={text("תהליך WhatsApp", "WhatsApp flow")}>
+        {steps.map((item, index) => (
           <button
             key={item.key}
             type="button"
             role="tab"
             aria-selected={step === item.key}
-            className={step === item.key ? "is-on" : undefined}
-            onClick={() => setStep(item.key)}
+            className={`${step === item.key ? "is-on" : ""}${index <= activeIndex ? " is-reached" : ""}`}
+            onClick={() => select(item.key)}
           >
+            <span className="b2-wa-path-num">{index + 1}</span>
             <strong>{item.label}</strong>
-            <span>{item.body}</span>
           </button>
         ))}
+        <div className="b2-wa-path-progress" style={{ ["--wa-p" as string]: String((activeIndex + 1) / steps.length) }} aria-hidden="true" />
       </div>
 
-      <div className="b2-wa-stage" aria-live="polite">
-        <div className={`b2-wa-layer b2-wa-phone${step === "message" ? " is-focus" : ""}`}>
-          <div className="pm-phone" aria-hidden="true">
-            <div className="pm-phone-notch" />
-            <div className="pm-phone-screen">
-              <header>
-                <strong>Northwind</strong>
-                <span>{text("מחובר", "Online")}</span>
-              </header>
-              <div className="pm-chat">
-                <p className="pm-bubble is-in">{text("שלום, אשמח לפרטים על השירות", "Hi, I would like details about the service")}</p>
-                <p className="pm-bubble is-out">{text("שמחים שפנית. נציג ממשיך איתך עכשיו.", "Glad you reached out. A teammate will continue with you.")}</p>
-                <p className="pm-bubble is-in">{text("מעולה, תודה", "Great, thank you")}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className={`b2-wa-layer b2-wa-inbox${step === "message" || step === "crm" ? " is-focus" : ""}`}>
-          <div className="pm-inbox" dir="auto">
-            <header>
-              <strong>WhatsApp</strong>
-              <span>{text("תיבה עסקית", "Business inbox")}</span>
-            </header>
-            <ul>
-              <li className="is-on">
-                <b>{text("תומר שפירא", "Tomer Shapira")}</b>
-                <span>{text("אשמח לפרטים על השירות", "I would like details about the service")}</span>
-              </li>
-              <li>
-                <b>{text("אמה וילסון", "Emma Wilson")}</b>
-                <span>{text("יום חמישי ב-10:00 נרשם ביומן", "Thursday at 10:00 is on the calendar")}</span>
-              </li>
-              <li>
-                <b>{text("סופיה מיטשל", "Sophia Mitchell")}</b>
-                <span>{text("בוקר חמישי מתאים?", "Does Thursday morning work?")}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className={`b2-wa-layer b2-wa-crm${step === "crm" || step === "auto" ? " is-focus" : ""}`}>
-          <div className="pm-crm" dir="auto">
-            <p className="pm-kicker">{text("כרטיס לקוח", "Customer record")}</p>
-            <strong>{text("תומר שפירא", "Tomer Shapira")}</strong>
-            <span>{text("מקור: WhatsApp Business API", "Source: WhatsApp Business API")}</span>
-            <div className="pm-crm-row">
-              <em className="pm-pill pm-pill-work">{step === "auto" ? text("בטיפול", "In progress") : text("חדש", "New")}</em>
-              <em className="pm-task">
-                {step === "auto"
-                  ? text("משימה: שיחת המשך", "Task: follow-up call")
-                  : text("ממתין לעדכון", "Awaiting update")}
-              </em>
-            </div>
-          </div>
-        </div>
-
-        <div className={`b2-wa-layer b2-wa-film${step === "auto" ? " is-focus" : ""}`} aria-hidden="true">
+      <div className="b2-wa-theater" key={step} aria-live="polite">
+        <div className="b2-wa-main">
           <video
-            key={step}
-            src={
-              step === "message"
-                ? "/demo-media/home/whatsapp.mp4"
-                : step === "crm"
-                  ? "/demo-media/home/crm.mp4"
-                  : "/demo-media/home/automations.mp4"
-            }
-            poster={
-              step === "message"
-                ? "/demo-media/home/whatsapp.jpg"
-                : step === "crm"
-                  ? "/demo-media/home/crm.jpg"
-                  : "/demo-media/home/automations.jpg"
-            }
+            ref={filmRef}
+            src={film.src}
+            poster={film.poster}
             muted
             playsInline
             loop
             autoPlay={!reduced}
+            aria-label={current.label}
           />
-          <p>
-            {step === "message"
-              ? text("הקלטה · הודעה נכנסת", "Recording · incoming message")
-              : step === "crm"
-                ? text("הקלטה · כרטיס ב־CRM", "Recording · CRM record")
-                : text("הקלטה · אוטומציה", "Recording · automation")}
-          </p>
         </div>
+
+        <div className="b2-wa-bridge" aria-hidden="true">
+          <span />
+        </div>
+
+        <aside className="b2-wa-aside">
+          {step === "message" ? (
+            <div className="b2-wa-card b2-wa-card-chat">
+              <header>
+                <strong>Northwind</strong>
+                <span>{text("מחובר", "Online")}</span>
+              </header>
+              <p className="b2-bubble in">{text("שלום, אשמח לפרטים על השירות", "Hi, I would like details about the service")}</p>
+              <p className="b2-bubble out">{text("שמחים שפנית. נציג ממשיך איתך עכשיו.", "Glad you reached out. A teammate will continue with you.")}</p>
+            </div>
+          ) : null}
+          {step === "crm" ? (
+            <div className="b2-wa-card b2-wa-card-crm">
+              <p className="b2-kicker">{text("כרטיס לקוח", "Customer record")}</p>
+              <strong>{text("תומר שפירא", "Tomer Shapira")}</strong>
+              <span>{text("מקור: WhatsApp Business API", "Source: WhatsApp Business API")}</span>
+              <div className="b2-float-row">
+                <em className="b2-pill">{text("חדש", "New")}</em>
+                <em className="b2-pill blue">{text("ממתין לעדכון", "Awaiting update")}</em>
+              </div>
+            </div>
+          ) : null}
+          {step === "auto" ? (
+            <div className="b2-wa-card b2-wa-card-auto">
+              <p className="b2-kicker">{text("תוצאת האוטומציה", "Automation result")}</p>
+              <strong>{text("משימת מעקב נוצרה", "Follow-up task created")}</strong>
+              <span>{text("שיחת חזרה · משויכת לתומר שפירא", "Callback · assigned to Tomer Shapira")}</span>
+              <div className="b2-float-row">
+                <em className="b2-pill green">{text("פעיל", "Active")}</em>
+                <em className="b2-pill blue">{text("CRM עודכן", "CRM updated")}</em>
+              </div>
+            </div>
+          ) : null}
+          <p className="b2-wa-result">{current.result}</p>
+          {onWatchDemo ? (
+            <button type="button" className="b2-watch b2-watch-ink" onClick={() => onWatchDemo(step)}>
+              {text("צפו בהקלטת המערכת", "Watch the system recording")}
+            </button>
+          ) : null}
+        </aside>
       </div>
     </div>
   );
