@@ -131,7 +131,62 @@ export default function WebsiteAiBuilderPage() {
     if (!ready || !current?.editorHtml || !businessId || opening.current) return undefined;
     opening.current = true;
     const editorPath = (siteId: string) => `/business/${businessId}/dashboard/website/sites/${siteId}/edit?template=ai-site&ai=1`;
+    async function measureFrame(html: string, css: string, width: number) {
+      const frame = document.createElement("iframe");
+      frame.title = "בדיקת עיצוב";
+      frame.style.cssText = `position:fixed;left:-12000px;top:0;width:${width}px;height:900px;border:0;visibility:hidden`;
+      frame.srcdoc = `<!doctype html><html dir="rtl"><head><meta charset="utf-8"><style>html,body{margin:0}${css.replace(/<\/style/gi, "")}</style></head><body>${html}</body></html>`;
+      document.body.appendChild(frame);
+      await new Promise((resolve) => {
+        frame.onload = () => resolve(null);
+        window.setTimeout(resolve, 2500);
+      });
+      const doc = frame.contentDocument;
+      const view = frame.contentWindow;
+      const critical: string[] = [];
+      if (!doc || !view) {
+        frame.remove();
+        return { width, critical: ["measure"] };
+      }
+      const images = Array.from(doc.images);
+      await Promise.race([
+        Promise.all(images.map((img) => (img.complete ? Promise.resolve() : new Promise((resolve) => {
+          img.addEventListener("load", () => resolve(null), { once: true });
+          img.addEventListener("error", () => resolve(null), { once: true });
+        })))),
+        new Promise((resolve) => window.setTimeout(resolve, 2000)),
+      ]);
+      images.forEach((img) => {
+        if (img.complete && img.naturalWidth === 0) critical.push("broken-image");
+      });
+      const heading = doc.querySelector("h1");
+      if (!heading) critical.push("clipped-heading");
+      else {
+        const rect = heading.getBoundingClientRect();
+        if (rect.width < 8 || rect.left < -2 || rect.right > width + 2) critical.push("clipped-heading");
+      }
+      const section = doc.querySelector("section");
+      if (section) {
+        const box = section.getBoundingClientRect();
+        const title = section.querySelector("h1, h2");
+        if (title && title.getBoundingClientRect().top - box.top > view.innerHeight * 0.42) critical.push("hero-void");
+        if (box.height > view.innerHeight * 1.2) critical.push("hero-void");
+      }
+      const header = doc.querySelector("header");
+      const headerBox = header?.getBoundingClientRect();
+      if (!headerBox || headerBox.height < 32 || headerBox.height > 180) critical.push("header");
+      frame.remove();
+      return { width, critical: [...new Set(critical)] };
+    }
     async function openEditor() {
+      const desktop = await measureFrame(current.editorHtml || "", current.editorCss || "", 1280);
+      const mobile = await measureFrame(current.editorHtml || "", current.editorCss || "", 390);
+      const visualReport = {
+        measured: true,
+        desktop,
+        mobile,
+        critical: [...new Set([...desktop.critical, ...mobile.critical])],
+      };
       try {
         if (current.editorSiteId) {
           navigate(editorPath(current.editorSiteId));
@@ -179,7 +234,7 @@ export default function WebsiteAiBuilderPage() {
           projectData: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
         }, { timeout: 120000 });
         try {
-          await API.post(`/ai-studio/code-projects/${current.projectId}/editor-site`, { siteId: site._id }, { timeout: 30000 });
+          await API.post(`/ai-studio/code-projects/${current.projectId}/editor-site`, { siteId: site._id, visualReport }, { timeout: 30000 });
         } catch {
           /* The saved site still opens in the editor when the link is recorded later. */
         }
