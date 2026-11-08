@@ -218,9 +218,10 @@ export default function WebsiteAiBuilderPage() {
         const pages = (current.editorPages?.length ? current.editorPages : [{ id: "home", label: current.title || "ראשי", html: current.editorHtml || "" }]).map((page) => {
           const visual = { __aiDocument: page.html, __aiCss: current.editorCss || "" };
           const home = page.id === "home";
+          const title = /[A-Za-zא-ת]/.test(page.label || "") ? page.label : home ? (current.title || "בית") : page.id;
           return {
             id: page.id,
-            title: page.label || page.id,
+            title,
             slug: home ? "" : page.id,
             isHome: home,
             editorMode: "visual-react",
@@ -232,6 +233,7 @@ export default function WebsiteAiBuilderPage() {
             visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
           };
         });
+        const homeVisual = pages[0]?.data || { __aiDocument: current.editorHtml || "", __aiCss: current.editorCss || "" };
         await API.put("/site-builder/site", {
           businessId,
           siteId: site._id,
@@ -244,10 +246,10 @@ export default function WebsiteAiBuilderPage() {
           status: "draft",
           activePageId: "home",
           pages,
-          templateData: visual,
-          data: visual,
-          visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
-          projectData: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
+          templateData: homeVisual,
+          data: homeVisual,
+          visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: homeVisual, templateData: homeVisual },
+          projectData: { editorMode: "visual-react", templateKey: "ai-site", data: homeVisual, templateData: homeVisual },
         }, { timeout: 120000 });
         try {
           await API.post(`/ai-studio/code-projects/${current.projectId}/editor-site`, { siteId: site._id, visualReport }, { timeout: 30000 });
