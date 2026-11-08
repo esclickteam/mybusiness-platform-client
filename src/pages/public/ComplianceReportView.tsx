@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
@@ -197,7 +197,6 @@ function bandOf(item: Finding) {
   if (item.outcome === "pass") return "pass";
   const evidence = String(item.evidence || "");
   if (/לא נמצא ניסוח שמזוהה/.test(evidence)) return "gap";
-  if ((item.obligationLevel === "possible_legal" || (item as Finding & { level?: string }).level === "possible_legal") && !item.source?.url) return "gap";
   if (/החיפוש אחרי/.test(evidence) || /לא אותר/.test(String(item.title || ""))) return "missing";
   if (item.outcome === "finding") return "proven";
   return "unverified";
@@ -214,22 +213,19 @@ export function ComplianceReportView({
 }) {
   const copy = { ...COPY.en, ...(COPY[locale] || {}) };
   const report = payload?.report || {};
-  const [filter, setFilter] = useState("action");
   const [open, setOpen] = useState<Record<string, boolean>>({});
   const findings: Finding[] = report.findings || [];
   const unfinished = findings.filter((item) => bandOf(item) === "unverified");
   const ownerChecks = findings.filter((item) => bandOf(item) === "owner");
   const gaps = findings.filter((item) => bandOf(item) === "gap");
   const missingDocs = findings.filter((item) => bandOf(item) === "missing");
-  const visible = useMemo(() => findings.filter((item) => {
-    const band = bandOf(item);
-    if (filter === "all") return band === "proven" || band === "pass" || band === "missing";
-    if (filter === "action") return band === "proven" || band === "missing";
-    if (filter === "pass") return band === "pass";
-    if (filter === "unverified") return band === "unverified" || band === "gap";
-    if (filter === "other") return band === "owner";
-    return true;
-  }), [findings, filter]);
+  const ordered = [
+    ...findings.filter((item) => bandOf(item) === "proven"),
+    ...missingDocs,
+    ...gaps,
+    ...unfinished,
+    ...ownerChecks,
+  ];
   const counts = {
     pass: findings.filter((item) => bandOf(item) === "pass").length,
     action: findings.filter((item) => bandOf(item) === "proven" || bandOf(item) === "missing").length,
@@ -253,7 +249,7 @@ export function ComplianceReportView({
           <Link className="scan-ghost" to="/compliance">{copy.newScan}</Link>
         </div>
       </header>
-      <div className="scan-scores">
+      <div className="audit-hero">
         <article>
           <b>{(report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—"}<small>/100</small></b>
           <span>{copy.score}</span>
@@ -271,17 +267,9 @@ export function ComplianceReportView({
         <article><b>{report.documents?.filter((item: { state?: string }) => item.state === "not_found_after_scan").length || 0}</b><span>{copy.missing}</span></article>
         <article><b>{counts.unknown}</b><span>{copy.unknown}</span></article>
       </div>
-      {filter === "action" && (
-        <p className="audit-note">{copy.provenTitle}: {counts.action - missingDocs.length}. {copy.missingTitle}: {missingDocs.length}. {copy.gapTitle}: {gaps.length}.</p>
-      )}
-      <div className="scan-filters">
-        {(["all", "action", "pass", "unverified", "other"] as const).map((item) => (
-          <button key={item} type="button" className={filter === item ? "is-on" : ""} onClick={() => setFilter(item)}>{copy[item]}</button>
-        ))}
-      </div>
       <div className="scan-cards">
-        {visible.length === 0 && <p>{copy.empty}</p>}
-        {visible.map((item, index) => {
+        {ordered.length === 0 && <p>{copy.empty}</p>}
+        {ordered.map((item, index) => {
           const quote = wholeQuote(item);
           const key = `${item.checkId}-${index}`;
           const expanded = open[key] === true;
@@ -292,8 +280,11 @@ export function ComplianceReportView({
           const level = copy[item.severity || "info"] || item.severity;
           const band = bandOf(item);
           const sourceUrl = officialSource(detail.lawName, detail.lawUrl);
+          const bandTitle = band === "proven" ? copy.provenTitle : band === "missing" ? copy.missingTitle : band === "gap" ? copy.gapTitle : band === "owner" ? copy.owner : copy.unfinished;
+          const showBand = index === 0 || bandOf(ordered[index - 1]) !== band;
           return (
             <article key={key} className={`sev-${item.severity || "info"} audit-card`}>
+              {showBand ? <h2 className="audit-band">{bandTitle}</h2> : null}
               <h3>{item.title}</h3>
               <p className="scan-pills"><span>{band === "gap" ? copy.gapTitle : statusLabel(String(detail.status || ""), copy)}</span><span>{copy.severity}: {level}</span><span>{kindOf(item, copy)}</span></p>
               {band === "gap" ? <p className="audit-note">{copy.gapNote}</p> : null}
@@ -320,39 +311,7 @@ export function ComplianceReportView({
           );
         })}
       </div>
-      {filter === "all" && (
-        <section className="scan-actions">
-          <h2>{copy.unfinished}</h2>
-          {unfinished.length === 0 ? <p>{copy.empty}</p> : (
-            <ul>
-              {unfinished.map((item, index) => (
-                <li key={`${item.checkId}-${index}`}>
-                  <strong>{item.title}</strong>
-                  <p>{item.description}</p>
-                  <p dir="ltr">{item.url || copy.unknownPlace}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-      {filter === "all" && (
-        <section className="scan-actions">
-          <h2>{copy.owner}</h2>
-          {ownerChecks.length === 0 ? <p>{copy.empty}</p> : (
-            <ul>
-              {ownerChecks.map((item, index) => (
-                <li key={`${item.checkId}-owner-${index}`}>
-                  <strong>{item.title}</strong>
-                  <p>{item.description}</p>
-                  <p>{item.recommendation}</p>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      )}
-      <section className="scan-actions">
+      <section className="scan-actions audit-section">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
           <ul>

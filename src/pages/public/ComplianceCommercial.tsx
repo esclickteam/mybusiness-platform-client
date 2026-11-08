@@ -400,7 +400,7 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
           <div><dt>{copy.status}</dt><dd>{statusLabel}</dd></div>
         </dl>
       </header>
-      <div className="free-report__meters">
+      <div className="free-report__meters audit-hero">
         <article>
           <b>{summary.checkedScore ?? "—"}<small>/100</small></b>
           <span>{copy.score}</span>
