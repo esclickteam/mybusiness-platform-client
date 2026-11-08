@@ -228,7 +228,7 @@ export function ComplianceReportView({
   ];
   const counts = {
     pass: findings.filter((item) => bandOf(item) === "pass").length,
-    action: findings.filter((item) => bandOf(item) === "proven" || bandOf(item) === "missing").length,
+    action: findings.filter((item) => bandOf(item) === "proven").length,
     unknown: unfinished.length + gaps.length,
   };
   const actions = findings.filter((item) => (bandOf(item) === "proven" || bandOf(item) === "missing") && item.recommendation).slice(0, 8);
