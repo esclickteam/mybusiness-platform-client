@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BizUply Design Lab — כיוון B: Precision Ribbon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./lab.css" />
+  <style>
+    body { background: #f7f5ff; }
+    .hero-b {
+      position: relative;
+      min-height: 100svh;
+      overflow: clip;
+      color: #fff;
+      background:
+        radial-gradient(ellipse 55% 50% at 12% 20%, rgba(196, 181, 253, 0.35), transparent 55%),
+        radial-gradient(ellipse 45% 40% at 90% 85%, rgba(29, 78, 216, 0.35), transparent 50%),
+        linear-gradient(125deg, #4c1d95 0%, #5b21b6 38%, #312e81 72%, #1e3a8a 100%);
+    }
+    .hero-b::after {
+      content: "";
+      position: absolute;
+      inset: -10% 40% auto -15%;
+      height: 70%;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+      transform: rotate(-18deg);
+      pointer-events: none;
+    }
+    .hero-b-grid {
+      position: relative;
+      z-index: 2;
+      width: min(1220px, calc(100% - 2rem));
+      margin: 0 auto;
+      min-height: calc(100svh - 3.5rem);
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: clamp(1.4rem, 4vw, 3.2rem);
+      align-items: center;
+      padding: 2.4rem 0 2.8rem;
+    }
+    .hero-b .brand {
+      margin: 0 0 0.85rem;
+      font-size: clamp(1.7rem, 2.6vw, 2.35rem);
+      font-weight: 800;
+      letter-spacing: -0.045em;
+    }
+    .hero-b .display { max-width: 12ch; }
+    .instrument {
+      position: relative;
+      isolation: isolate;
+    }
+    .instrument-frame {
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 16 / 11;
+      background: rgba(18, 6, 31, 0.45);
+      border: 1px solid rgba(255,255,255,0.2);
+      box-shadow:
+        0 30px 80px rgba(0,0,0,0.35),
+        1rem 1rem 0 rgba(239, 228, 255, 0.85);
+    }
+    .instrument-frame .layer {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity 0.7s var(--ease);
+    }
+    .instrument-frame .layer.is-on { opacity: 1; }
+    .instrument-frame img,
+    .instrument-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .layer-crm img { object-position: left 10% top 12%; transform: scale(1.28); transform-origin: left top; }
+    .layer-wa img { object-position: right 5% center; transform: scale(1.35); transform-origin: right center; }
+    .layer-task img { object-position: center 20%; transform: scale(1.3); transform-origin: center top; }
+    .instrument-rail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 1rem;
+    }
+    .instrument-rail button {
+      min-height: 2.4rem;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .instrument-rail button.is-on {
+      background: #fff;
+      color: var(--violet);
+      border-color: #fff;
+    }
+    .instrument-caption {
+      margin: 0.7rem 0 0;
+      color: rgba(255,255,255,0.75);
+      font-size: 0.9rem;
+    }
+
+    .wa-b {
+      padding: clamp(3.5rem, 8vw, 6.5rem) 1.25rem 4rem;
+      background:
+        radial-gradient(ellipse 35% 40% at 100% 0%, rgba(224,231,255,0.9), transparent 55%),
+        #fff;
+      color: var(--ink);
+    }
+    .wa-b-head {
+      width: min(980px, 100%);
+      margin: 0 auto 2rem;
+      text-align: center;
+    }
+    .wa-b-head .eyebrow { color: var(--blue); }
+    .wa-b-head h2 {
+      margin: 0 auto;
+      max-width: 16ch;
+      font-size: clamp(2.2rem, 4.4vw, 3.7rem);
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+    }
+    .wa-b-head p {
+      margin: 0.9rem auto 0;
+      max-width: 40rem;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.55;
+    }
+    .hubs {
+      width: min(760px, 100%);
+      margin: 1.6rem auto 0;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      align-items: center;
+    }
+    .hubs span {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 3.2rem;
+      padding: 0.5rem;
+      border-block-start: 3px solid var(--violet);
+      background: var(--mist);
+      font-weight: 800;
+    }
+    .hubs span::after {
+      content: "";
+      position: absolute;
+      inset-inline-end: -0.4rem;
+      top: 50%;
+      width: 0.4rem;
+      height: 2px;
+      background: #c4b5fd;
+    }
+    .hubs span:last-child::after { display: none; }
+
+    .ribbon {
+      width: min(1180px, 100%);
+      margin: 2.2rem auto 0;
+      display: grid;
+      grid-template-columns: 0.9fr 1.2fr 0.9fr;
+      gap: 1rem;
+      align-items: end;
+    }
+    .ribbon figure {
+      margin: 0;
+      overflow: hidden;
+      background: #12061f;
+      border: 1px solid rgba(91,33,182,0.14);
+      box-shadow: 0 22px 50px rgba(18,6,31,0.12);
+    }
+    .ribbon figcaption {
+      padding: 0.65rem 0.8rem;
+      background: #fff;
+      font-size: 0.85rem;
+      font-weight: 800;
+      border-top: 1px solid rgba(18,6,31,0.06);
+    }
+    .ribbon-phone {
+      aspect-ratio: 9 / 16;
+      max-width: 220px;
+      margin-inline: auto;
+      border-radius: 1.2rem;
+      border: 3px solid #1a0b33;
+    }
+    .ribbon-phone img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: right top;
+      transform: scale(1.35);
+      transform-origin: right top;
+    }
+    .ribbon-main {
+      aspect-ratio: 16 / 10;
+    }
+    .ribbon-main video,
+    .ribbon-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left top;
+      transform: scale(1.15);
+      transform-origin: left top;
+    }
+    .ribbon-crm {
+      aspect-ratio: 5 / 4;
+      transform: translateY(-1.2rem);
+    }
+    .ribbon-crm img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transform: scale(1.2);
+      transform-origin: center top;
+    }
+    .wa-b .actions { justify-content: center; }
+    .note {
+      width: min(1180px, calc(100% - 2.5rem));
+      margin: 0 auto;
+      padding: 0 0 2.5rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    @media (max-width: 900px) {
+      .hero-b-grid { grid-template-columns: 1fr; padding-top: 1.6rem; }
+      .hero-b .display { max-width: none; font-size: clamp(1.9rem, 8vw, 2.6rem); }
+      .hero-b .actions { display: grid; }
+      .instrument-frame { box-shadow: 0.6rem 0.6rem 0 rgba(239,228,255,0.85); }
+      .hubs { grid-template-columns: 1fr; }
+      .hubs span::after { display: none; }
+      .ribbon {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+      }
+      .ribbon-phone { max-width: 180px; }
+      .ribbon-crm { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-top">
+    <strong>Design Lab · כיוון B — Precision Ribbon</strong>
+    <nav>
+      <a href="./index.html">בחירה</a>
+      <a href="./direction-a.html">כיוון A</a>
+      <a class="is-on" href="./direction-b.html">כיוון B</a>
+    </nav>
+  </header>
+
+  <section class="hero-b" aria-labelledby="hero-b-title">
+    <div class="hero-b-grid">
+      <div>
+        <p class="brand">BizUply</p>
+        <h1 class="display" id="hero-b-title">כל העסק שלכם.<br />מערכת אחת.<br />אינסוף אפשרויות.</h1>
+        <p class="lead">פלטפורמה עסקית אחת ללקוחות, שיחות, קמפיינים ואתרים — בלי לקפוץ בין כלים.</p>
+        <div class="actions">
+          <a class="btn btn-solid" href="/register">התחילו עכשיו</a>
+          <a class="btn btn-line" href="#wa">צפו במערכת</a>
+        </div>
+      </div>
+      <div class="instrument" aria-label="במת מוצר ממוקדת">
+        <div class="instrument-frame" id="instrument">
+          <div class="layer layer-crm is-on"><img src="/demo-media/crm/leads-list.png" alt="רשימת לידים ממוקדת" width="1200" height="750" /></div>
+          <div class="layer layer-wa"><img src="/demo-media/whatsapp/still-3.jpg" alt="שיחת WhatsApp ממוקדת" width="1200" height="750" /></div>
+          <div class="layer layer-task"><img src="/demo-media/crm/lead-task.png" alt="משימת המשך" width="1200" height="750" /></div>
+        </div>
+        <div class="instrument-rail" role="tablist" aria-label="שכבות מוצר">
+          <button type="button" class="is-on" data-layer="0">CRM</button>
+          <button type="button" data-layer="1">WhatsApp</button>
+          <button type="button" data-layer="2">משימה</button>
+        </div>
+        <p class="instrument-caption" id="instrument-caption">לידים במבט ממוקד — לא דשבורד שלם.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wa-b" id="wa" aria-labelledby="wa-b-title">
+    <div class="wa-b-head">
+      <p class="eyebrow">תהליך אמיתי · WhatsApp → CRM</p>
+      <h2 id="wa-b-title">מהודעה לטיפול — בקו אחד</h2>
+      <p>במקום צילום מסך אחד עמוס: שלושה אזורים ממוקדים שמראים את אותו לקוח עובר משיחה לכרטיס ולמשימה.</p>
+      <div class="hubs" aria-hidden="true">
+        <span>WhatsApp</span>
+        <span>CRM</span>
+        <span>משימה</span>
+      </div>
+    </div>
+    <div class="ribbon" aria-label="רצועת תהליך WhatsApp">
+      <figure>
+        <div class="ribbon-phone"><img src="/demo-media/whatsapp/still-3.jpg" alt="שיחה בטלפון" /></div>
+        <figcaption>שיחה</figcaption>
+      </figure>
+      <figure>
+        <div class="ribbon-main">
+          <video src="/demo-media/home/whatsapp.mp4" poster="/demo-media/home/whatsapp.jpg" muted playsinline loop autoplay></video>
+        </div>
+        <figcaption>תיבה עסקית בתנועה</figcaption>
+      </figure>
+      <figure>
+        <div class="ribbon-crm"><img src="/demo-media/crm/lead-file.png" alt="כרטיס לקוח" /></div>
+        <figcaption>כרטיס לקוח</figcaption>
+      </figure>
+    </div>
+    <div class="actions" style="margin-top:1.8rem">
+      <a class="btn btn-ink" href="/whatsapp-api">לעמוד WhatsApp</a>
+      <a class="btn btn-ghost" href="/crm">לעמוד ה־CRM</a>
+    </div>
+  </section>
+
+  <p class="note">
+    כיוון B · Precision Ribbon — השראה מ־Stripe/HubSpot: Hero אסימטרי עם במה מוצר אחת מתחלפת,
+    ומקטע בהיר כרצועת תהליך אופקית (לא כרטיסיות גנריות). לא שומר על פריסת ה־homepage הנוכחית.
+  </p>
+
+  <script>
+    const layers = [...document.querySelectorAll("#instrument .layer")];
+    const buttons = [...document.querySelectorAll(".instrument-rail button")];
+    const caption = document.getElementById("instrument-caption");
+    const captions = [
+      "לידים במבט ממוקד — לא דשבורד שלם.",
+      "שיחת WhatsApp באזור הקריא של המסך.",
+      "משימת המשך על אותו לקוח.",
+    ];
+    let index = 0;
+    function show(next) {
+      index = next;
+      layers.forEach((node, i) => node.classList.toggle("is-on", i === index));
+      buttons.forEach((node, i) => node.classList.toggle("is-on", i === index));
+      caption.textContent = captions[index];
+    }
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => show(Number(button.dataset.layer)));
+    });
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduced) {
+      setInterval(() => show((index + 1) % layers.length), 4200);
+    }
+  </script>
+</body>
+</html>
