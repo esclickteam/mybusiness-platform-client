@@ -1,0 +1,136 @@
+{
+  "commitHint": "PR #1075 finish pass — regenerating after film/header/gallery polish",
+  "base": "http://127.0.0.1:5175/he",
+  "checks": [
+    {
+      "id": "first-paint-purple",
+      "result": "PASS",
+      "detail": "{\"html\":\"rgb(91, 33, 182)\",\"body\":\"rgb(91, 33, 182)\"}"
+    },
+    {
+      "id": "no-mobile-login-icon",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "hero-journey-steps",
+      "result": "PASS",
+      "detail": "count=5"
+    },
+    {
+      "id": "hero-film-cache-v9",
+      "result": "PASS",
+      "detail": "/demo-media/home/walkthrough/hero-05-task.mp4?v=9"
+    },
+    {
+      "id": "hero-video-playback",
+      "result": "PASS",
+      "detail": "{\"ok\":true,\"readyState\":4,\"paused\":false}"
+    },
+    {
+      "id": "cta-start-visible",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-hscroll-320",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-login-icon-320",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "cta-320",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-hscroll-375",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-login-icon-375",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "cta-375",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-hscroll-390",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-login-icon-390",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "cta-390",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-hscroll-430",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "no-login-icon-430",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "cta-430",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "reduced-motion-theater-present",
+      "result": "PASS",
+      "detail": ""
+    }
+  ],
+  "widths": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "clientWidth": 320,
+      "overflow": false,
+      "loginIcon": false
+    },
+    {
+      "width": 375,
+      "scrollWidth": 375,
+      "clientWidth": 375,
+      "overflow": false,
+      "loginIcon": false
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "overflow": false,
+      "loginIcon": false
+    },
+    {
+      "width": 430,
+      "scrollWidth": 430,
+      "clientWidth": 430,
+      "overflow": false,
+      "loginIcon": false
+    }
+  ],
+  "videos": {
+    "desktopScroll": "/opt/cursor/artifacts/v6_final_homepage_scroll.mp4",
+    "mobileScroll": "/opt/cursor/artifacts/v6_final_mobile_ux.mp4",
+    "process": "/opt/cursor/artifacts/v6_final_process_marketing.mp4"
+  }
+}
