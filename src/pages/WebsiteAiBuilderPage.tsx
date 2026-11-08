@@ -19,6 +19,7 @@ type Project = {
   reply?: string;
   editorHtml?: string;
   editorCss?: string;
+  editorPages?: { id: string; label?: string; html: string }[];
   editorSiteId?: string;
   designGate?: { presentation?: string; customerReady?: boolean; designReview?: boolean } | null;
 };
@@ -175,17 +176,32 @@ export default function WebsiteAiBuilderPage() {
       const header = doc.querySelector("header");
       const headerBox = header?.getBoundingClientRect();
       if (!headerBox || headerBox.height < 32 || headerBox.height > 180) critical.push("header");
+      if (/\.filter\s*\(|\.map\s*\(|=>/.test(doc.body.innerText || "")) critical.push("visible-code");
+      if (doc.documentElement.scrollHeight > view.innerHeight * 4.5) critical.push("long-page");
       frame.remove();
       return { width, critical: [...new Set(critical)] };
     }
     async function openEditor() {
-      const desktop = await measureFrame(current.editorHtml || "", current.editorCss || "", 1280);
-      const mobile = await measureFrame(current.editorHtml || "", current.editorCss || "", 390);
+      const documents = current.editorPages?.length
+        ? current.editorPages
+        : [{ id: "home", html: current.editorHtml || "" }];
+      const desktop = await measureFrame(documents[0].html, current.editorCss || "", 1280);
+      const mobile = await measureFrame(documents[0].html, current.editorCss || "", 390);
+      const rest = [];
+      for (const page of documents.slice(1)) {
+        rest.push(await measureFrame(page.html, current.editorCss || "", 1280));
+        rest.push(await measureFrame(page.html, current.editorCss || "", 390));
+      }
+      const homeNav = new DOMParser().parseFromString(documents[0].html, "text/html");
+      const hrefs = [...homeNav.querySelectorAll("header a[href]")].map((node) => node.getAttribute("href") || "");
+      const navigation = documents.length > 1 && documents.some((page) => !hrefs.includes(page.id === "home" ? "/" : `/${page.id}`))
+        ? ["navigation"]
+        : [];
       const visualReport = {
         measured: true,
         desktop,
         mobile,
-        critical: [...new Set([...desktop.critical, ...mobile.critical])],
+        critical: [...new Set([...desktop.critical, ...mobile.critical, ...rest.flatMap((item) => item.critical), ...navigation])],
       };
       try {
         if (current.editorSiteId) {
@@ -199,23 +215,23 @@ export default function WebsiteAiBuilderPage() {
           templateName: current.title || "AI",
         });
         if (!site?._id) throw new Error("create");
-        const visual = {
-          __aiDocument: current.editorHtml,
-          __aiCss: current.editorCss || "",
-        };
-        const homePage = {
-          id: "home",
-          title: current.title || "ראשי",
-          slug: "",
-          isHome: true,
-          editorMode: "visual-react",
-          templateEditorMode: "visual-react",
-          templateKey: "ai-site",
-          data: visual,
-          templateData: visual,
-          projectData: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
-          visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
-        };
+        const pages = (current.editorPages?.length ? current.editorPages : [{ id: "home", label: current.title || "ראשי", html: current.editorHtml || "" }]).map((page) => {
+          const visual = { __aiDocument: page.html, __aiCss: current.editorCss || "" };
+          const home = page.id === "home";
+          return {
+            id: page.id,
+            title: page.label || page.id,
+            slug: home ? "" : page.id,
+            isHome: home,
+            editorMode: "visual-react",
+            templateEditorMode: "visual-react",
+            templateKey: "ai-site",
+            data: visual,
+            templateData: visual,
+            projectData: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
+            visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
+          };
+        });
         await API.put("/site-builder/site", {
           businessId,
           siteId: site._id,
@@ -227,7 +243,7 @@ export default function WebsiteAiBuilderPage() {
           published: false,
           status: "draft",
           activePageId: "home",
-          pages: [homePage],
+          pages,
           templateData: visual,
           data: visual,
           visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
