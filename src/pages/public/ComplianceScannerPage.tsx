@@ -87,6 +87,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "בדקו את האתר מול מה שהוא באמת מפרסם",
     lead: "סריקה טכנית וניתוח מסמכים של תקנון, פרטיות, עוגיות, נגישות ותנאי תשלום. הממצאים נשענים על הטקסט שנקרא, לא על ניחוש.",
     url: "כתובת האתר",
+    fullName: "שם מלא",
+    nameInvalid: "יש להזין שם פרטי ושם משפחה.",
+    nameNotice: "השם נשמר עם הסריקה כדי לזהות את הדוח ולנהל את הפנייה. הוא לא נמכר ולא משמש לפרסום.",
     start: "התחילו סריקה",
     country: "איפה העסק פועל",
     search: "חיפוש מדינה",
@@ -142,6 +145,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "Check the site against what it actually publishes",
     lead: "A technical scan and a reading of terms, privacy, cookies, accessibility, and payment terms. Findings stay tied to the text that was read.",
     url: "Website address",
+    fullName: "Full name",
+    nameInvalid: "Enter a first name and a last name.",
+    nameNotice: "The name is stored with the scan so the report can be identified. It is not sold and it is not used for advertising.",
     start: "Start scan",
     country: "Where the business operates",
     search: "Search countries",
@@ -197,6 +203,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "Revisen el sitio frente a lo que realmente publica",
     lead: "Escaneo técnico y lectura de condiciones, privacidad, cookies, accesibilidad y pagos. Los hallazgos se apoyan en el texto leído.",
     url: "Dirección del sitio",
+    fullName: "Nombre completo",
+    nameInvalid: "Escriban un nombre y un apellido.",
+    nameNotice: "El nombre se guarda con el análisis para identificar el informe. No se vende ni se usa para publicidad.",
     start: "Iniciar revisión",
     country: "Dónde opera el negocio",
     search: "Buscar país",
@@ -252,6 +261,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "Confira o site diante do que ele realmente publica",
     lead: "Varredura técnica e leitura de termos, privacidade, cookies, acessibilidade e pagamentos. Os achados ficam ligados ao texto lido.",
     url: "Endereço do site",
+    fullName: "Nome completo",
+    nameInvalid: "Informem um nome e um sobrenome.",
+    nameNotice: "O nome fica salvo com a varredura para identificar o relatório. Ele não é vendido nem usado para publicidade.",
     start: "Iniciar verificação",
     country: "Onde o negócio atua",
     search: "Buscar país",
@@ -307,6 +319,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "افحصوا الموقع مقابل ما ينشره فعلًا",
     lead: "فحص تقني وقراءة للشروط والخصوصية وملفات الارتباط والإتاحة وشروط الدفع. النتائج تستند إلى النص الذي قُرئ.",
     url: "عنوان الموقع",
+    fullName: "الاسم الكامل",
+    nameInvalid: "أدخلوا الاسم الأول واسم العائلة.",
+    nameNotice: "يُحفظ الاسم مع الفحص للتعرّف على التقرير وإدارة الطلب. لا يُباع ولا يُستخدم للإعلان.",
     start: "ابدأوا الفحص",
     country: "أين يعمل النشاط",
     search: "بحث عن دولة",
@@ -537,6 +552,7 @@ export default function ComplianceScannerPage() {
   const previewScan = !id && searchParams.get("ui") === "scan";
   const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
   const [url, setUrl] = useState("https://");
+  const [fullName, setFullName] = useState("");
   const [query, setQuery] = useState("");
   const [countries, setCountries] = useState<string[]>([]);
   const [support, setSupport] = useState<Record<string, { level?: string }>>({});
@@ -573,10 +589,13 @@ export default function ComplianceScannerPage() {
       try {
         const token = localStorage.getItem(TOKEN_KEY) || "";
         const admin = sessionStorage.getItem(ADMIN_KEY) || "";
+        const platform = localStorage.getItem("token") || "";
         const headers: Record<string, string> = {};
         if (token) headers["x-tenant-token"] = token;
         if (admin) headers["x-admin-session"] = admin;
-        const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}`, { headers });
+        if (platform) headers.Authorization = `Bearer ${platform}`;
+        const view = searchParams.get("view") === "summary" ? "&view=summary" : "";
+        const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}${view}`, { headers });
         const data = await response.json();
         if (stop) return;
         if (!response.ok) { setError(data.error || ""); return; }
@@ -589,7 +608,7 @@ export default function ComplianceScannerPage() {
     };
     tick();
     return () => { stop = true; };
-  }, [id, locale, reload]);
+  }, [id, locale, reload, searchParams]);
 
   const matches = countries.filter((code) => {
     const name = names?.of(code) || code;
@@ -601,12 +620,18 @@ export default function ComplianceScannerPage() {
     event.preventDefault();
     setError("");
     if (!selected.length) { setError(copy.country); return; }
+    const nameParts = fullName.trim().split(/\s+/).filter((part) => part.length >= 2);
+    if (nameParts.length < 2) { setError(copy.nameInvalid); return; }
     const token = localStorage.getItem(TOKEN_KEY) || undefined;
+    const platform = localStorage.getItem("token") || "";
     const response = await fetch("/compliance/api/scans", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(platform ? { Authorization: `Bearer ${platform}` } : {}),
+      },
       body: JSON.stringify({
-        url, plan: "free", countries: selected, businessType,
+        url, requesterName: fullName.trim(), plan: "free", countries: selected, businessType,
         targetsOtherCountries: audience, locale, tenantToken: token,
       }),
     });
@@ -619,9 +644,11 @@ export default function ComplianceScannerPage() {
   async function downloadPdf() {
     const token = localStorage.getItem(TOKEN_KEY) || "";
     const admin = sessionStorage.getItem(ADMIN_KEY) || "";
+    const platform = localStorage.getItem("token") || "";
     const headers: Record<string, string> = {};
     if (token) headers["x-tenant-token"] = token;
     if (admin) headers["x-admin-session"] = admin;
+    if (platform) headers.Authorization = `Bearer ${platform}`;
     const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers });
     if (!response.ok) { setError(copy.notice); return; }
     const blob = await response.blob();
@@ -657,11 +684,16 @@ export default function ComplianceScannerPage() {
           <div className="scan-panel">
             <div className="scan-launch">
               <label className="scan-url">
+                <span>{copy.fullName}</span>
+                <input value={fullName} onChange={(event) => setFullName(event.target.value)} autoComplete="name" required />
+              </label>
+              <label className="scan-url">
                 <span>{copy.url}</span>
                 <input value={url} onChange={(event) => setUrl(event.target.value)} inputMode="url" required />
               </label>
               <button className="scan-start" type="submit">{copy.start}</button>
             </div>
+            <p className="scan-name-note">{copy.nameNotice}</p>
             <div className="scan-field">
               <span>{copy.country}</span>
               <p className="scan-meta">{copy.selected} {selected.length}</p>
