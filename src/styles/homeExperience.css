@@ -1209,10 +1209,10 @@ html.hx-preview body {
 
 .hx-wa-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
   gap: clamp(1rem, 3vw, 2.4rem);
   align-items: center;
-  width: min(1320px, 100%);
+  width: min(1180px, 100%);
   margin-inline: auto;
 }
 
@@ -1226,10 +1226,11 @@ html.hx-preview body {
 .hx-faq h2,
 .hx-close h2 {
   margin: 0;
-  font-size: clamp(2.4rem, 5vw, 4.8rem);
+  max-width: 18ch;
+  font-size: clamp(2rem, 3.8vw, 3.4rem);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 0.94;
+  line-height: 1.08;
 }
 
 [dir="rtl"] .hx-wa h2,
@@ -2556,7 +2557,7 @@ html.hx-preview body {
 
 .hx-auto-detail-grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1.38fr);
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
   gap: 1.4rem;
   align-items: center;
 }
@@ -2601,8 +2602,19 @@ html.hx-preview body {
 }
 
 .hx-auto-detail .hx-step {
-  min-height: min(32rem, 64vh);
-  aspect-ratio: auto;
+  min-height: 0;
+  max-width: 34rem;
+  margin-inline: auto;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+}
+
+.hx-auto-detail .hx-step img,
+.hx-auto-detail .hx-step video {
+  width: 100%;
+  height: 100%;
+  max-height: 20rem;
+  object-fit: cover;
 }
 
 .hx-saas-links span {
@@ -4080,11 +4092,11 @@ html.hx-preview body {
 .hx-site-gallery h2,
 .hx-ai h2 {
   margin: 0;
-  max-width: 18ch;
-  font-size: clamp(2.1rem, 4.2vw, 3.8rem);
+  max-width: 22ch;
+  font-size: clamp(1.9rem, 3.4vw, 3.1rem);
   font-weight: 800;
   letter-spacing: -0.04em;
-  line-height: 1.05;
+  line-height: 1.08;
 }
 
 .hx-journey-steps {

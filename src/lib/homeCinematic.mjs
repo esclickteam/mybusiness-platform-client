@@ -164,7 +164,7 @@ const REST = {
       ["Supported connections", "WhatsApp Business API and Meta ads follow the connected account and permissions."],
       ["Honest demos", "Homepage films and stills come from the demo workspace, not private customer data."],
     ],
-    aiTitle: "AI help inside Website Studio — only where it already ships",
+    aiTitle: "AI help inside Website Studio",
     aiLead:
       "Use AI-assisted building blocks in the site editor when those tools are active. This is not a separate chatbot-agent product.",
     aiPoints: [
@@ -172,7 +172,7 @@ const REST = {
       ["Shown only when real", "We present capabilities that exist in the shipped product."],
       ["Agents stay people", "The Agents product is human follow-up — not an AI chatbot."],
     ],
-    sitesGalleryTitle: "Finished sites you can actually publish",
+    sitesGalleryTitle: "Sites ready to publish",
     sitesGalleryLead: "Browse real Website Studio templates in desktop and mobile view.",
     crmTitle: "Know who got in touch — and what happens next",
     crmLead:
@@ -181,7 +181,7 @@ const REST = {
     crmStatusTo: "In progress",
     crmTask: "Follow-up task",
     crmCustomer: "Customer record",
-    waTitle: "Continue the customer conversation where the work already lives",
+    waTitle: "Keep the customer chat next to the work",
     waLead:
       "Use WhatsApp Business API beside the customer record, with approved templates and the permissions Meta requires.",
     waBiz: "Hello Tomer, thank you for getting in touch. How can we help?",
@@ -252,7 +252,7 @@ const REST = {
       ["חיבורים נתמכים", "WhatsApp Business API ומודעות Meta פועלים לפי החשבון וההרשאות המחוברים."],
       ["הדגמות כנות", "הסרטונים והתמונות מגיעים מסביבת הדמו, לא מנתוני לקוחות פרטיים."],
     ],
-    aiTitle: "עזרת AI בתוך Website Studio — רק איפה שזה כבר קיים",
+    aiTitle: "עזרת AI בתוך Website Studio",
     aiLead:
       "אפשר להיעזר בבלוקי AI בעורך האתרים כשהכלים האלה פעילים. זה אינו מוצר צ׳אטבוט נפרד של נציגים.",
     aiPoints: [
@@ -260,7 +260,7 @@ const REST = {
       ["רק מה שקיים באמת", "מוצגות יכולות שקיימות במוצר המשלוח."],
       ["נציגים נשארים אנשים", "מוצר הנציגים הוא המשך טיפול אנושי — לא צ׳אטבוט."],
     ],
-    sitesGalleryTitle: "אתרים מוגמרים שאפשר באמת לפרסם",
+    sitesGalleryTitle: "אתרים מוכנים לפרסום",
     sitesGalleryLead: "עברו בין תבניות אמיתיות של Website Studio בתצוגת מחשב ומובייל.",
     crmTitle: "לדעת מי פנה — ומה קורה אחר כך",
     crmLead: "פרטי הפנייה, המקור, הסטטוס והמשימה הבאה נשארים יחד, כדי שהמשך הטיפול יהיה ברור.",
@@ -268,7 +268,7 @@ const REST = {
     crmStatusTo: "בטיפול",
     crmTask: "משימת המשך",
     crmCustomer: "כרטיס לקוח",
-    waTitle: "להמשיך את שיחת הלקוח במקום שבו העבודה כבר חיה",
+    waTitle: "שיחת הלקוח נשארת ליד העבודה",
     waLead: "עובדים עם WhatsApp Business API ליד כרטיס הלקוח, עם תבניות מאושרות וההרשאות ש־Meta דורשת.",
     waBiz: "שלום תומר, תודה שפנית אלינו. איך נוכל לעזור?",
     waCustomer: "אשמח לקבל מידע נוסף על השירות.",
