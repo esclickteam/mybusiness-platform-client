@@ -970,7 +970,7 @@
   margin-top: 1.8rem;
   display: block;
   min-height: clamp(18rem, 42vw, 28rem);
-  animation: hx-gallery-swap 0.65s var(--hx-ease);
+  animation: hx-gallery-swap 0.85s var(--hx-ease);
 }
 
 @keyframes hx-gallery-swap {
@@ -989,7 +989,7 @@
   bottom: -0.2rem;
   width: min(30%, 14.5rem);
   z-index: 3;
-  animation: hx-gallery-phone 0.7s var(--hx-ease) 0.12s both;
+  animation: hx-gallery-phone 0.9s var(--hx-ease) 0.1s both;
 }
 
 @keyframes hx-gallery-phone {
@@ -1989,10 +1989,21 @@
 
   .hx-hero-b2 .hx-lead {
     max-width: 34rem;
+    color: rgba(255, 255, 255, 0.94);
   }
 
   .hx-hero-b2 .hx-hero-proof {
     font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.86);
+  }
+
+  .b2-theater-detail,
+  .b2-theater-chrome em {
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .b2-theater-kicker {
+    color: #ddd6fe;
   }
 
   .hx-site-gallery-stage {

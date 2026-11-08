@@ -192,17 +192,6 @@ export default function HeaderView({
             </div>
 
             <div className="site-header__mobile">
-              {!user ? (
-                <Link
-                  to="/login"
-                  className="site-header__icon-btn"
-                  aria-label={t("common.login")}
-                  title={t("common.login")}
-                >
-                  <FaUser size={14} />
-                </Link>
-              ) : null}
-
               <button
                 type="button"
                 onClick={() => setMenuOpen(true)}

@@ -223,7 +223,7 @@ export function HomeSiteGallery() {
     if (reduced) return undefined;
     const timer = window.setInterval(() => {
       setIndex((value) => (value + 1) % SITE_SAMPLES.length);
-    }, 4800);
+    }, 6800);
     return () => window.clearInterval(timer);
   }, [reduced]);
 
