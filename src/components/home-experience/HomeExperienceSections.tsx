@@ -410,7 +410,7 @@ function Hero() {
               label={hero.stageAlt}
               onWatchDemo={() => {
                 open({
-                  src: "/demo-media/home/walkthrough/process-full.mp4",
+                  src: `/demo-media/home/walkthrough/process-full.mp4?v=5`,
                   poster: "/demo-media/home/walkthrough/process-full.jpg",
                   title: text("הדגמת התהליך המרכזי", "Core process demo"),
                   caption: text(

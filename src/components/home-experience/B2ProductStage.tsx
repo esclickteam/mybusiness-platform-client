@@ -5,50 +5,74 @@ type TextFn = (hebrew: string, english: string) => string;
 type HeroStep = "lead" | "crm" | "wa" | "auto" | "task";
 type WaStep = "message" | "crm" | "auto";
 
-const HERO_FILMS: Record<HeroStep, { src: string; poster: string; startAt: number }> = {
+type FilmRef = { src: string; poster: string; startAt: number };
+
+const HERO_FILMS_DESKTOP: Record<HeroStep, FilmRef> = {
   lead: {
     src: "/demo-media/home/walkthrough/hero-01-lead.mp4",
     poster: "/demo-media/home/walkthrough/hero-01-lead.jpg",
-    startAt: 0.15,
+    startAt: 0.12,
   },
   crm: {
     src: "/demo-media/home/walkthrough/hero-02-crm.mp4",
     poster: "/demo-media/home/walkthrough/hero-02-crm.jpg",
-    startAt: 0.2,
+    startAt: 0.15,
   },
   wa: {
     src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4",
     poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg",
-    startAt: 0.25,
+    startAt: 0.2,
   },
   auto: {
     src: "/demo-media/home/walkthrough/hero-04-automation.mp4",
     poster: "/demo-media/home/walkthrough/hero-04-automation.jpg",
-    startAt: 0.2,
+    startAt: 0.15,
   },
   task: {
     src: "/demo-media/home/walkthrough/hero-05-task.mp4",
     poster: "/demo-media/home/walkthrough/hero-05-task.jpg",
-    startAt: 0.15,
+    startAt: 0.12,
   },
 };
 
-const WA_FILMS: Record<WaStep, { src: string; poster: string; startAt: number }> = {
-  message: {
-    src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4",
-    poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg",
-    startAt: 0.3,
+const HERO_FILMS_MOBILE: Record<HeroStep, FilmRef> = {
+  lead: {
+    src: "/demo-media/home/walkthrough/mobile-01-lead.mp4",
+    poster: "/demo-media/home/walkthrough/mobile-01-lead.jpg",
+    startAt: 0.12,
   },
   crm: {
-    src: "/demo-media/home/walkthrough/hero-02-crm.mp4",
-    poster: "/demo-media/home/walkthrough/hero-02-crm.jpg",
-    startAt: 0.35,
+    src: "/demo-media/home/walkthrough/mobile-02-crm.mp4",
+    poster: "/demo-media/home/walkthrough/mobile-02-crm.jpg",
+    startAt: 0.15,
+  },
+  wa: {
+    src: "/demo-media/home/walkthrough/mobile-03-whatsapp.mp4",
+    poster: "/demo-media/home/walkthrough/mobile-03-whatsapp.jpg",
+    startAt: 0.2,
   },
   auto: {
-    src: "/demo-media/home/walkthrough/hero-04-automation.mp4",
-    poster: "/demo-media/home/walkthrough/hero-04-automation.jpg",
-    startAt: 0.4,
+    src: "/demo-media/home/walkthrough/mobile-04-automation.mp4",
+    poster: "/demo-media/home/walkthrough/mobile-04-automation.jpg",
+    startAt: 0.15,
   },
+  task: {
+    src: "/demo-media/home/walkthrough/mobile-05-task.mp4",
+    poster: "/demo-media/home/walkthrough/mobile-05-task.jpg",
+    startAt: 0.12,
+  },
+};
+
+const WA_FILMS_DESKTOP: Record<WaStep, FilmRef> = {
+  message: HERO_FILMS_DESKTOP.wa,
+  crm: HERO_FILMS_DESKTOP.crm,
+  auto: HERO_FILMS_DESKTOP.auto,
+};
+
+const WA_FILMS_MOBILE: Record<WaStep, FilmRef> = {
+  message: HERO_FILMS_MOBILE.wa,
+  crm: HERO_FILMS_MOBILE.crm,
+  auto: HERO_FILMS_MOBILE.auto,
 };
 
 function useReduced() {
@@ -77,6 +101,15 @@ function useNarrow() {
   return narrow;
 }
 
+function seekAndPlay(video: HTMLVideoElement, startAt: number, reduced: boolean) {
+  try {
+    video.currentTime = startAt;
+  } catch {
+    /* ignore */
+  }
+  if (!reduced) video.play().catch(() => undefined);
+}
+
 export function HeroProductStage({
   text,
   label,
@@ -90,7 +123,9 @@ export function HeroProductStage({
   const narrow = useNarrow();
   const [step, setStep] = useState<HeroStep>("lead");
   const [paused, setPaused] = useState(false);
+  const [pulse, setPulse] = useState(0);
   const filmRef = useRef<HTMLVideoElement | null>(null);
+  const films = narrow ? HERO_FILMS_MOBILE : HERO_FILMS_DESKTOP;
 
   const steps: Array<{
     key: HeroStep;
@@ -98,46 +133,52 @@ export function HeroProductStage({
     title: string;
     status: string;
     detail: string;
+    result: string;
   }> = [
     {
       key: "lead",
       short: text("ליד", "Lead"),
       title: text("ליד חדש נכנס", "New lead arrives"),
-      status: text("תומר שפירא · מקור WhatsApp", "Tomer Shapira · WhatsApp source"),
-      detail: text("פנייה חדשה מופיעה ברשימת הלידים.", "A new enquiry appears in the lead list."),
+      status: text("פנייה חדשה מופיעה ברשימה", "A new enquiry appears in the list"),
+      detail: text("שם, טלפון וסטטוס ״חדש״ — מוכנים לטיפול.", "Name, phone, and “New” status — ready to handle."),
+      result: text("ליד חדש נשמר במערכת", "New lead saved in the system"),
     },
     {
       key: "crm",
       short: "CRM",
       title: text("כרטיס לקוח ב־CRM", "Customer record in CRM"),
-      status: text("סטטוס: חדש · ממתין לטיפול", "Status: New · awaiting follow-up"),
-      detail: text("אותה פנייה נשמרת כרשומת לקוח.", "The same enquiry is saved as a customer record."),
+      status: text("אותה פנייה נפתחת ככרטיס מלא", "The same enquiry opens as a full record"),
+      detail: text("שיחה, WhatsApp ומשימה — מאותו כרטיס.", "Call, WhatsApp, and task — from the same card."),
+      result: text("כרטיס לקוח פתוח לפעולה", "Customer card open for action"),
     },
     {
       key: "wa",
       short: "WhatsApp",
       title: text("הודעת WhatsApp", "WhatsApp message"),
       status: text("השיחה ממשיכה בתיבה העסקית", "Conversation continues in the inbox"),
-      detail: text("הודעה והמשך טיפול באותו לקוח.", "Message and follow-up for the same customer."),
+      detail: text("הודעות נכנסות ויוצאות על אותו לקוח.", "Inbound and outbound messages for the same customer."),
+      result: text("שיחה פעילה בתיבה", "Active conversation in the inbox"),
     },
     {
       key: "auto",
       short: text("אוטומציה", "Auto"),
       title: text("אוטומציה מופעלת", "Automation runs"),
-      status: text("תהליך: פנייה → משימה", "Flow: enquiry → task"),
+      status: text("תהליך: ליד → WhatsApp → מעקב", "Flow: lead → WhatsApp → follow-up"),
       detail: text("המערכת מריצה תהליך מוגדר מראש.", "The system runs a predefined flow."),
+      result: text("תהליך אוטומטי רץ", "Automation is running"),
     },
     {
       key: "task",
       short: text("משימה", "Task"),
       title: text("משימת מעקב נוצרה", "Follow-up task created"),
-      status: text("שיחת חזרה · משויכת לצוות", "Callback · assigned to the team"),
-      detail: text("הצעד הבא מוכן לעבודה.", "The next step is ready to work."),
+      status: text("הצעד הבא מוכן לצוות", "The next step is ready for the team"),
+      detail: text("שיחת חזרה משויכת לאותו ליד.", "A callback task linked to the same lead."),
+      result: text("משימת מעקב מוכנה", "Follow-up task ready"),
     },
   ];
 
   const current = steps.find((item) => item.key === step) || steps[0];
-  const film = HERO_FILMS[step];
+  const film = films[step];
   const activeIndex = steps.findIndex((item) => item.key === step);
 
   useEffect(() => {
@@ -145,9 +186,14 @@ export function HeroProductStage({
     const order = steps.map((item) => item.key);
     const timer = window.setInterval(() => {
       setStep((currentStep) => order[(order.indexOf(currentStep) + 1) % order.length]);
-    }, 4800);
+      setPulse((value) => value + 1);
+    }, 4200);
     return () => window.clearInterval(timer);
   }, [paused, reduced, steps.length]);
+
+  useEffect(() => {
+    setPulse((value) => value + 1);
+  }, [step]);
 
   const select = (next: HeroStep) => {
     setPaused(true);
@@ -176,14 +222,19 @@ export function HeroProductStage({
 
       <div className="b2-theater" key={step}>
         <header className="b2-theater-chrome">
-          <div className="b2-theater-dots" aria-hidden="true"><i /><i /><i /></div>
+          <div className="b2-theater-dots" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </div>
           <strong>{current.title}</strong>
           <em>{text("הקלטת מסך מערכת · נתוני דמו", "System screen recording · demo data")}</em>
         </header>
 
         <div className="b2-theater-screen">
+          <img className="b2-theater-poster" src={film.poster} alt="" width={1360} height={820} decoding="async" />
           <video
-            key={`${step}-${film.src}`}
+            key={`${step}-${film.src}-${narrow ? "m" : "d"}`}
             ref={filmRef}
             className="b2-theater-film"
             src={film.src}
@@ -194,19 +245,13 @@ export function HeroProductStage({
             preload="auto"
             autoPlay={!reduced}
             aria-label={current.title}
-            onLoadedData={(event) => {
-              const video = event.currentTarget;
-              try {
-                video.currentTime = film.startAt;
-              } catch {
-                /* ignore */
-              }
-              if (!reduced) video.play().catch(() => undefined);
-            }}
+            onLoadedData={(event) => seekAndPlay(event.currentTarget, film.startAt, reduced)}
           />
+          <span className="b2-click-pulse" key={pulse} aria-hidden="true" />
+          <p className="b2-theater-result">{current.result}</p>
         </div>
         <div className="b2-theater-status">
-          <p className="b2-theater-kicker">{text("שלב פעיל", "Active step")}</p>
+          <p className="b2-theater-kicker">{text("מה קורה עכשיו", "What happens now")}</p>
           <p className="b2-theater-title">{current.status}</p>
           <p className="b2-theater-detail">{current.detail}</p>
         </div>
@@ -241,30 +286,34 @@ export function WhatsAppFlowStage({
   const [step, setStep] = useState<WaStep>("message");
   const [live, setLive] = useState(false);
   const [paused, setPaused] = useState(false);
+  const [pulse, setPulse] = useState(0);
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const filmRef = useRef<HTMLVideoElement | null>(null);
+  const films = narrow ? WA_FILMS_MOBILE : WA_FILMS_DESKTOP;
 
-  const steps: Array<{ key: WaStep; label: string; result: string }> = [
+  const steps: Array<{ key: WaStep; label: string; result: string; change: string }> = [
     {
       key: "message",
       label: text("הודעה נכנסת", "Incoming message"),
       result: text("שיחה נפתחת בתיבה העסקית", "A chat opens in the business inbox"),
+      change: text("הודעה חדשה מופיעה בתיבה", "A new message appears in the inbox"),
     },
     {
       key: "crm",
       label: text("כרטיס לקוח", "Customer record"),
       result: text("אותה פנייה נשמרת ב־CRM", "The same enquiry is saved in CRM"),
+      change: text("סטטוס הלקוח מתעדכן בכרטיס", "Customer status updates on the card"),
     },
     {
       key: "auto",
       label: text("אוטומציה", "Automation"),
       result: text("נוצרת משימת מעקב להמשך", "A follow-up task is created"),
+      change: text("תהליך מופעל ויוצר משימה", "A flow runs and creates a task"),
     },
   ];
 
   const activeIndex = steps.findIndex((item) => item.key === step);
   const current = steps[activeIndex] || steps[0];
-  const film = WA_FILMS[step];
+  const film = films[step];
 
   useEffect(() => {
     const node = rootRef.current;
@@ -287,9 +336,14 @@ export function WhatsAppFlowStage({
     const order: WaStep[] = ["message", "crm", "auto"];
     const timer = window.setInterval(() => {
       setStep((currentStep) => order[(order.indexOf(currentStep) + 1) % order.length]);
-    }, 5000);
+      setPulse((value) => value + 1);
+    }, 4600);
     return () => window.clearInterval(timer);
   }, [live, paused, reduced]);
+
+  useEffect(() => {
+    setPulse((value) => value + 1);
+  }, [step]);
 
   const select = (next: WaStep) => {
     setPaused(true);
@@ -318,27 +372,24 @@ export function WhatsAppFlowStage({
 
       <div className="b2-wa-theater" key={step} aria-live="polite">
         <div className="b2-wa-main" style={{ backgroundImage: `url(${film.poster})` }}>
-          <video
-            key={`${step}-${film.src}`}
-            ref={filmRef}
-            src={film.src}
-            poster={film.poster}
-            muted
-            playsInline
-            loop
-            preload="auto"
-            autoPlay={!reduced}
-            aria-label={current.label}
-            onLoadedData={(event) => {
-              const video = event.currentTarget;
-              try {
-                video.currentTime = film.startAt;
-              } catch {
-                /* ignore */
-              }
-              if (!reduced) video.play().catch(() => undefined);
-            }}
-          />
+          {live ? (
+            <video
+              key={`${step}-${film.src}-${narrow ? "m" : "d"}`}
+              src={film.src}
+              poster={film.poster}
+              muted
+              playsInline
+              loop
+              preload="metadata"
+              autoPlay={!reduced}
+              aria-label={current.label}
+              onLoadedData={(event) => seekAndPlay(event.currentTarget, film.startAt, reduced)}
+            />
+          ) : (
+            <img src={film.poster} alt="" width={1360} height={820} loading="lazy" decoding="async" />
+          )}
+          <span className="b2-click-pulse" key={pulse} aria-hidden="true" />
+          <p className="b2-wa-change">{current.change}</p>
         </div>
 
         <div className="b2-wa-bridge" aria-hidden="true">
@@ -359,11 +410,11 @@ export function WhatsAppFlowStage({
           {step === "crm" ? (
             <div className="b2-wa-card b2-wa-card-crm">
               <p className="b2-kicker">{text("כרטיס לקוח", "Customer record")}</p>
-              <strong>{text("תומר שפירא", "Tomer Shapira")}</strong>
+              <strong>{text("יעל אברהם", "Yael Avraham")}</strong>
               <span>{text("מקור: WhatsApp Business API", "Source: WhatsApp Business API")}</span>
               <div className="b2-float-row">
                 <em className="b2-pill">{text("חדש", "New")}</em>
-                <em className="b2-pill blue">{text("ממתין לעדכון", "Awaiting update")}</em>
+                <em className="b2-pill blue">{text("סטטוס עודכן", "Status updated")}</em>
               </div>
             </div>
           ) : null}
@@ -371,7 +422,7 @@ export function WhatsAppFlowStage({
             <div className="b2-wa-card b2-wa-card-auto">
               <p className="b2-kicker">{text("תוצאת האוטומציה", "Automation result")}</p>
               <strong>{text("משימת מעקב נוצרה", "Follow-up task created")}</strong>
-              <span>{text("שיחת חזרה · משויכת לתומר שפירא", "Callback · assigned to Tomer Shapira")}</span>
+              <span>{text("שיחת חזרה · משויכת ליעל אברהם", "Callback · assigned to Yael Avraham")}</span>
               <div className="b2-float-row">
                 <em className="b2-pill green">{text("פעיל", "Active")}</em>
                 <em className="b2-pill blue">{text("CRM עודכן", "CRM updated")}</em>
