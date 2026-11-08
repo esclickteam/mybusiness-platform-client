@@ -2,14 +2,14 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
-import { FreeResult, MonitorBoard, PlanCards, RequirementTable, commercialLocale } from "./ComplianceCommercial";
+import { FreeResult, MonitorBoard, PlanCards, commercialLocale } from "./ComplianceCommercial";
 import { ComplianceReportView } from "./ComplianceReportView";
 
 const TOKEN_KEY = "bizuplyComplianceTenant";
-const REVIEW_FLAG = "bizuplyComplianceReview";
+const ADMIN_KEY = "bizuplyComplianceAdmin";
 
 const REVIEW_COPY: Record<Locale, { label: string; action: string; on: string; fail: string; history: string }> = {
-  he: { label: "קוד פנימי", action: "אימות", on: "הגישה הפנימית אומתה. ניטור אוטומטי לא פועל.", fail: "הקוד לא אומת.", history: "סריקות של הגישה הזו" },
+  he: { label: "קוד פנימי", action: "אימות", on: "הגישה הפנימית פתוחה בכרטיסייה הזו בלבד. היא לא נשמרת כהרשאה של החשבון.", fail: "הקוד לא אומת.", history: "סריקות של הגישה הזו" },
   en: { label: "Internal code", action: "Verify", on: "Internal access was verified. Automatic monitoring is off.", fail: "The code was not accepted.", history: "Scans for this access" },
   es: { label: "Código de prueba", action: "Abrir el informe completo", on: "Este acceso abre sus propios informes. El seguimiento automático está apagado.", fail: "El código no fue aceptado.", history: "Escaneos de este acceso" },
   "pt-BR": { label: "Código de teste", action: "Abrir o relatório completo", on: "Este acesso abre os próprios relatórios. O monitoramento automático está desligado.", fail: "O código não foi aceito.", history: "Varreduras deste acesso" },
@@ -21,21 +21,9 @@ function ReviewAccess({ locale, onUnlocked }: { locale: Locale; onUnlocked?: () 
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const [scans, setScans] = useState<Array<{ id: string; url: string }>>([]);
-
-  async function loadHistory() {
-    const token = localStorage.getItem(TOKEN_KEY) || "";
-    if (!token) return;
-    const response = await fetch("/compliance/api/dashboard", { headers: { "x-tenant-token": token } });
-    if (!response.ok) return;
-    const data = await response.json();
-    setScans(Array.isArray(data.scans) ? data.scans : []);
-  }
 
   useEffect(() => {
-    const active = sessionStorage.getItem(REVIEW_FLAG) === "1";
-    setOpen(active);
-    if (active) loadHistory();
+    setOpen(Boolean(sessionStorage.getItem(ADMIN_KEY)));
   }, []);
 
   async function submit(event: FormEvent) {
@@ -43,22 +31,21 @@ function ReviewAccess({ locale, onUnlocked }: { locale: Locale; onUnlocked?: () 
     const entered = code;
     setCode("");
     setMessage("");
-    const token = localStorage.getItem(TOKEN_KEY) || undefined;
     const response = await fetch("/compliance/api/review-access", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: entered, tenantToken: token }),
+      body: JSON.stringify({ code: entered }),
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok || data.ok !== true) {
+    if (!response.ok || data.ok !== true || !data.adminSession) {
+      sessionStorage.removeItem(ADMIN_KEY);
+      setOpen(false);
       setMessage(copy.fail);
       return;
     }
-    if (data.tenantToken) localStorage.setItem(TOKEN_KEY, data.tenantToken);
-    sessionStorage.setItem(REVIEW_FLAG, "1");
+    sessionStorage.setItem(ADMIN_KEY, data.adminSession);
     setOpen(true);
     setMessage(copy.on);
-    await loadHistory();
     onUnlocked?.();
   }
 
@@ -72,16 +59,7 @@ function ReviewAccess({ locale, onUnlocked }: { locale: Locale; onUnlocked?: () 
         <button className="scan-start" type="submit">{copy.action}</button>
       </form>
       {message && <p>{message}</p>}
-      {open && scans.length > 0 && (
-        <div>
-          <b>{copy.history}</b>
-          <ul>
-            {scans.slice(0, 8).map((scan) => (
-              <li key={scan.id}><Link to={`/compliance/report/${scan.id}`}>{scan.url}</Link></li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {open && !message ? <p>{copy.on}</p> : null}
     </section>
   );
 }
@@ -436,9 +414,11 @@ export default function ComplianceScannerPage() {
     const tick = async () => {
       try {
         const token = localStorage.getItem(TOKEN_KEY) || "";
-        const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}`, {
-          headers: token ? { "x-tenant-token": token } : {},
-        });
+        const admin = sessionStorage.getItem(ADMIN_KEY) || "";
+        const headers: Record<string, string> = {};
+        if (token) headers["x-tenant-token"] = token;
+        if (admin) headers["x-admin-session"] = admin;
+        const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}`, { headers });
         const data = await response.json();
         if (stop) return;
         if (!response.ok) { setError(data.error || ""); return; }
@@ -480,7 +460,11 @@ export default function ComplianceScannerPage() {
 
   async function downloadPdf() {
     const token = localStorage.getItem(TOKEN_KEY) || "";
-    const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers: { "x-tenant-token": token } });
+    const admin = sessionStorage.getItem(ADMIN_KEY) || "";
+    const headers: Record<string, string> = {};
+    if (token) headers["x-tenant-token"] = token;
+    if (admin) headers["x-admin-session"] = admin;
+    const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers });
     if (!response.ok) { setError(copy.notice); return; }
     const blob = await response.blob();
     const link = document.createElement("a");
@@ -605,12 +589,6 @@ export default function ComplianceScannerPage() {
           ) : (
             <>
               <ComplianceReportView locale={locale} payload={payload} onPdf={downloadPdf} />
-              {(payload.report?.limitations || []).length > 0 && (
-                <ul className="scan-limits">
-                  {payload.report.limitations.map((item: string) => <li key={item}>{item}</li>)}
-                </ul>
-              )}
-              <RequirementTable locale={commercialLocale(locale)} rows={payload.report?.requirements?.rows || []} />
             </>
           )}
         </section>

@@ -1,4 +1,3 @@
-import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
@@ -50,6 +49,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     gapNote: "הנושא לא אותר בניסוח שנבדק. זו אינה קביעה שהאתר מפר חוק.",
     missingTitle: "מסמכים שלא אותרו אחרי חיפוש",
     sourceMissing: "לא צורף קישור למקור רשמי, ולכן אין כאן אסמכתה מאומתת.",
+    technicalNote: "ממצא טכני. לא צורף מקור משפטי, ואין כאן קביעת הפרה.",
+    linkedSource: "מקור טכני. הקישור אינו קביעה שהאתר מפר חוק.",
+    navAccess: "נגישות", navSecurity: "אבטחה", navPrivacy: "פרטיות", navDocs: "מסמכים", navPlan: "תוכנית פעולה", navOpen: "לא אומתו",
   },
   en: {
     newScan: "New scan", pdf: "Download PDF", site: "Site checked", address: "Address", date: "Date", status: "Status",
@@ -76,6 +78,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     gapNote: "The topic was not found in the wording that was checked. This is not a finding that the site breaks the law.",
     missingTitle: "Documents the search did not find",
     sourceMissing: "No official source link was attached, so this is not a verified citation.",
+    technicalNote: "Technical finding. No legal source is attached, and this is not a finding of a legal breach.",
+    linkedSource: "Technical source. The link is not a finding that the site breaks the law.",
+    navAccess: "Accessibility", navSecurity: "Security", navPrivacy: "Privacy", navDocs: "Documents", navPlan: "Action plan", navOpen: "Not verified",
   },
   es: {
     newScan: "Nuevo análisis", pdf: "Descargar PDF", site: "Sitio revisado", address: "Dirección", date: "Fecha", status: "Estado",
@@ -126,18 +131,6 @@ const COPY: Record<Locale, Record<string, string>> = {
 
 function hostName(url?: string) {
   try { return new URL(String(url || "")).hostname.replace(/^www\./, ""); } catch { return ""; }
-}
-
-function wholeQuote(item: Finding) {
-  const raw = String(item.evidence || "").replace(/\s+/g, " ").trim();
-  if (!raw) return "";
-  if (item.evidenceComplete === false) return "";
-  const sentences = raw.match(/[^.!?؟。]+[.!?؟。]+/g) || [];
-  const kept = sentences.map((part) => part.trim()).filter((part) => part.length >= 16);
-  if (kept.length) return kept.join(" ");
-  if (item.evidenceComplete === true && raw.length <= 180 && raw.length >= 8) return raw;
-  if (/[.!?؟。:"]$/.test(raw) && raw.length >= 16 && raw.length <= 180) return raw;
-  return "";
 }
 
 function detailOf(item: Finding, copy: Record<string, string>) {
@@ -219,27 +212,29 @@ export function ComplianceReportView({
 }) {
   const copy = { ...COPY.en, ...(COPY[locale] || {}) };
   const report = payload?.report || {};
-  const [open, setOpen] = useState<Record<string, boolean>>({});
   const findings: Finding[] = report.findings || [];
-  const unfinished = findings.filter((item) => bandOf(item) === "unverified");
-  const ownerChecks = findings.filter((item) => bandOf(item) === "owner");
-  const gaps = findings.filter((item) => bandOf(item) === "gap");
-  const missingDocs = findings.filter((item) => bandOf(item) === "missing");
-  const ordered = [
-    ...findings.filter((item) => bandOf(item) === "proven"),
-    ...missingDocs,
-    ...gaps,
-    ...unfinished,
-    ...ownerChecks,
-  ];
+  const unfinished = findings.filter((item) => ["unverified", "gap", "owner"].includes(bandOf(item)));
+  const proven = findings.filter((item) => bandOf(item) === "proven" || bandOf(item) === "missing");
   const counts = {
     pass: findings.filter((item) => bandOf(item) === "pass").length,
     action: findings.filter((item) => bandOf(item) === "proven").length,
-    unknown: unfinished.length + gaps.length,
+    unknown: unfinished.length,
   };
-  const actions = findings.filter((item) => (bandOf(item) === "proven" || bandOf(item) === "missing") && item.recommendation).slice(0, 8);
+  const actions = (report.priorities || []).slice(0, 12);
   const status = payload?.status === "completed" ? copy.completed : payload?.status === "failed" ? copy.failed : copy.running;
-  const placeLabel = (place?: string) => copy[place === "http-header" ? "http" : place || ""] || place || "";
+  const groupOf = (item: Finding) => {
+    const id = String(item.checkId || "");
+    if (id.startsWith("a11y") || id.startsWith("accessibility")) return "access";
+    if (id.startsWith("security")) return "security";
+    if (id.startsWith("document") || bandOf(item) === "missing") return "docs";
+    return "privacy";
+  };
+  const sections = [
+    ["access", copy.navAccess],
+    ["security", copy.navSecurity],
+    ["privacy", copy.navPrivacy],
+    ["docs", copy.navDocs],
+  ] as const;
 
   const shownScore = (report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—";
   const shownCoverage = report.scores?.coverage?.value ?? "—";
@@ -280,55 +275,44 @@ export function ComplianceReportView({
         <article><b>{report.documents?.filter((item: { state?: string }) => item.state === "not_found_after_scan").length || 0}</b><span>{copy.missing}</span></article>
         <article><b>{counts.unknown}</b><span>{copy.unknown}</span></article>
       </div>
-      <div className="report-findings">
-        {ordered.length === 0 && <p>{copy.empty}</p>}
-        {ordered.map((item, index) => {
-          const quote = wholeQuote(item);
-          const key = `${item.checkId}-${index}`;
-          const expanded = open[key] === true;
-          const preview = quote.length > 180 && !expanded ? `${quote.slice(0, quote.lastIndexOf(" ", 180) > 40 ? quote.lastIndexOf(" ", 180) : 180)}.` : quote;
-          const pages = (item.pages || []).filter(Boolean);
-          const located = item.locationVerified === false ? false : Boolean(item.url);
-          const detail = detailOf(item, copy);
-          const level = copy[item.severity || "info"] || item.severity;
-          const band = bandOf(item);
-          const sourceUrl = officialSource(detail.lawName, detail.lawUrl);
-          const bandTitle = band === "proven" ? copy.provenTitle : band === "missing" ? copy.missingTitle : band === "gap" ? copy.gapTitle : band === "owner" ? copy.owner : copy.unfinished;
-          const showBand = index === 0 || bandOf(ordered[index - 1]) !== band;
-          return (
-            <Fragment key={key}>
-              {showBand ? <h2 className="report-band">{bandTitle}</h2> : null}
-              <article className={`report-finding sev-${item.severity || "info"}`}>
-                <header>
-                  <p>{copy.severity}: {level}</p>
-                  <h3>{item.title}</h3>
-                </header>
-                {band === "gap" ? <p className="report-note">{copy.gapNote}</p> : null}
-                <dl>
-                  <div><dt>{copy.checked}</dt><dd>{item.description || item.title}</dd></div>
-                  <div><dt>{copy.found}</dt><dd className="report-finding__evidence" dir="auto">{item.evidence || item.description || copy.incomplete}</dd></div>
-                  {band !== "pass" && detail.gap ? <div><dt>{copy.gap}</dt><dd>{String(detail.gap)}</dd></div> : null}
-                  <div><dt>{copy.why}</dt><dd>{String(detail.why || item.explanation || item.description || "")}</dd></div>
-                  {(detail.change || item.recommendation) ? <div><dt>{copy.fix}</dt><dd>{String(detail.change || item.recommendation)}</dd></div> : null}
-                  {detail.proposedText && band !== "gap" ? <div><dt>{copy.draft}</dt><dd>{String(detail.proposedText)}</dd></div> : null}
-                  <div><dt>{copy.verify}</dt><dd>{String(detail.verify || "")}</dd></div>
-                  <div><dt>{copy.where}</dt><dd>{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}{located && item.pageTitle ? ` · ${item.pageTitle}` : ""}{placeLabel(item.place) ? ` · ${placeLabel(item.place)}` : ""}</dd></div>
-                  <div><dt>{copy.law}</dt><dd>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> : <>{detail.lawName ? `${String(detail.lawName)}. ` : ""}{copy.sourceMissing}</>}</dd></div>
-                </dl>
-                {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
-                {quote && (
-                  <blockquote>
-                    <span>{item.evidenceLabel || copy.quote}</span>
-                    <p dir="auto">{expanded ? quote : preview}</p>
-                    {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
-                    {item.evidenceNote && <small>{item.evidenceNote}</small>}
-                  </blockquote>
-                )}
-              </article>
-            </Fragment>
-          );
-        })}
-      </div>
+      <nav className="report-nav">
+        {sections.map(([id, label]) => <a key={id} href={`#report-${id}`}>{label}</a>)}
+        <a href="#report-plan">{copy.navPlan}</a>
+        <a href="#report-open">{copy.navOpen}</a>
+      </nav>
+      {sections.map(([id, label]) => {
+        const rank = (value?: string) => ({ high: 0, medium: 1, low: 2, info: 3 } as Record<string, number>)[value || "info"] ?? 4;
+        const rows = proven.filter((item) => groupOf(item) === id).sort((a, b) => rank(a.severity) - rank(b.severity));
+        return (
+          <section key={id} id={`report-${id}`} className="report-findings">
+            <h2 className="report-band">{label}</h2>
+            {rows.length === 0 ? <p className="report-empty">{copy.empty}</p> : rows.map((item, index) => {
+              const detail = detailOf(item, copy);
+              const body = String(item.explanation || item.description || "").trim();
+              const title = String(item.title || "").trim();
+              const fix = String(detail.change || item.recommendation || "");
+              const draft = String(detail.proposedText || "");
+              const sourceUrl = officialSource(detail.lawName, detail.lawUrl);
+              const located = item.locationVerified === false ? false : Boolean(item.url);
+              return (
+                <article key={`${item.checkId}-${index}`} className={`report-finding sev-${item.severity || "info"}`}>
+                  <header>
+                    <p>{copy.severity}: {copy[item.severity || "info"] || item.severity}</p>
+                    <h3>{item.title}</h3>
+                  </header>
+                  {body && body !== title ? <p>{body}</p> : null}
+                  <p dir="ltr">{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}</p>
+                  {item.evidence ? <p className="report-finding__evidence" dir="auto">{item.evidence}</p> : null}
+                  {fix ? <p><strong>{copy.fix}. </strong>{fix}</p> : null}
+                  {draft && draft !== fix ? <p><strong>{copy.draft}. </strong>{draft}</p> : null}
+                  {detail.verify ? <p><strong>{copy.verify}. </strong>{String(detail.verify)}</p> : null}
+                  <p><strong>{copy.law}. </strong>{sourceUrl ? <><a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> {copy.linkedSource}</> : copy.technicalNote}</p>
+                </article>
+              );
+            })}
+          </section>
+        );
+      })}
       <section className="report-sheet__block">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
@@ -339,23 +323,27 @@ export function ComplianceReportView({
           </ul>
         )}
       </section>
-      <section className="report-sheet__block">
+      <section id="report-plan" className="report-sheet__block">
         <h2>{copy.plan}</h2>
         <ol>
-          {actions.map((item) => {
-            const detail = detailOf(item, copy);
-            const located = item.locationVerified === false ? false : Boolean(item.url);
-            return (
-              <li key={item.checkId}>
-                <strong>{item.title}</strong>
-                <p>{located ? item.url : copy.unknownPlace}</p>
-                <p>{String(detail.change || item.recommendation || "")}</p>
-                {detail.proposedText ? <p>{String(detail.proposedText)}</p> : null}
-                <p>{String(detail.verify || "")}</p>
-              </li>
-            );
-          })}
+          {actions.map((item: Finding & { order?: number; change?: string; verify?: string }) => (
+            <li key={`${item.order || ""}-${item.checkId}`}>
+              <strong>{item.title}</strong>
+              <p dir="ltr">{item.url || copy.unknownPlace}</p>
+              <p>{String(item.change || item.recommendation || "")}</p>
+              {item.verify ? <p>{String(item.verify)}</p> : null}
+            </li>
+          ))}
         </ol>
+      </section>
+      <section id="report-open" className="report-sheet__block">
+        <h2>{copy.unfinished}</h2>
+        {unfinished.length === 0 ? <p>{copy.empty}</p> : unfinished.map((item, index) => (
+          <article key={`${item.checkId}-${index}`} className="report-open">
+            <h3>{item.title}</h3>
+            <p>{item.explanation || item.evidence || copy.incomplete}</p>
+          </article>
+        ))}
       </section>
     </section>
   );
