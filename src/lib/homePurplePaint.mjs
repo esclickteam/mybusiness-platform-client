@@ -123,10 +123,10 @@ function faqBodyHtml(items) {
 export function renderPurpleHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
   const hx = HX_HERO_COPY[locale] || HX_HERO_COPY.en;
-  const lineTwoHot = Math.max(0, String(hx.lineTwo).trim().split(/\s+/).length - 1);
+  const lineThreeHot = Math.max(0, String(hx.lineThree || hx.lineTwo).trim().split(/\s+/).length - 1);
   const faqs = HOME_FAQ[locale] || HOME_FAQ.en;
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
-  const headline = `${hx.lineOne} ${hx.lineTwo}`;
+  const headline = [hx.lineOne, hx.lineTwo, hx.lineThree].filter(Boolean).join(" ");
 
   const header = renderMarketingHeader(locale);
   const href = (path) => localeHref(locale === "pt-BR" || locale === "he" || locale === "es" || locale === "ar" ? locale : "en", path);
@@ -135,12 +135,14 @@ export function renderPurpleHomePrerender(locale) {
     ? `<p class="hx-lead">${escapeText(hx.lead2)}</p>`
     : "";
   const heroNote = hx.note ? `<p class="hx-note">${escapeText(hx.note)}</p>` : "";
+  const lineThree = hx.lineThree
+    ? `<span class="hx-line">${heroWords(hx.lineThree, lineThreeHot)}</span>`
+    : "";
   const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy"><p class="hx-hero-brand">BizUply</p><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(
     hx.lineTwo,
-    lineTwoHot,
-  )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p>${heroLead2}<div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
+  )}</span>${lineThree}</h1><p class="hx-lead">${escapeText(hx.lead1)}</p>${heroLead2}<div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,
   )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="#products"><span>${escapeText(
     hx.see,

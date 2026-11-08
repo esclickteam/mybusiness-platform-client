@@ -13,11 +13,13 @@ import {
   PhoneStory,
   useCinematic,
 } from "./HomeCinematic";
+import { HomeAi, HomeJourney, HomeSiteGallery, HomeTrust } from "./HomePremiumBands";
+import { homeText } from "./homeCopy";
 
 function useCopy() {
   const { i18n, t } = useTranslation();
   const he = i18n.language.startsWith("he");
-  const text = (hebrew: string, english: string) => (he ? hebrew : english);
+  const text = (hebrew: string, english: string) => homeText(i18n.language, hebrew, english);
   const cine = useCinematic(i18n.language);
   return { text, he, t, cine, language: i18n.language, dir: getTextDirection(i18n.language) };
 }
@@ -317,9 +319,13 @@ export default function HomeExperienceSections() {
       <Campaigns />
       <AppointmentsSection />
       <Websites />
+      <HomeSiteGallery />
       <Automations />
+      <HomeAi />
+      <HomeJourney />
       <ReadySystems />
       <Connect />
+      <HomeTrust />
       <Films />
       <Audiences />
       <OrbitSection />
@@ -351,7 +357,8 @@ function Hero() {
   });
   const lineOne = hero.lineOne;
   const lineTwo = hero.lineTwo;
-  const hot = Math.max(0, lineTwo.trim().split(/\s+/).length - 1);
+  const lineThree = hero.lineThree || "";
+  const hot = Math.max(0, (lineThree || lineTwo).trim().split(/\s+/).length - 1);
 
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
@@ -370,7 +377,8 @@ function Hero() {
           <p className="hx-hero-brand">BizUply</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={lineOne} />
-            <Words text={lineTwo} hot={hot} delay={280} />
+            <Words text={lineTwo} delay={180} />
+            {lineThree ? <Words text={lineThree} hot={hot} delay={360} /> : null}
           </h1>
           <p className="hx-lead">{hero.lead1}</p>
           <div className="hx-actions">
@@ -442,6 +450,19 @@ function Hero() {
               forceStill
             />
           </div>
+          <div className="hx-hero-float hx-hero-float-c" aria-hidden="true">
+            <LocaleShot
+              language={language}
+              src="/demo-media/campaigns/still-chart.jpg"
+              alt=""
+              width={900}
+              height={560}
+              decoding="async"
+              fetchPriority="low"
+              className="hx-crop-campaigns"
+              forceStill
+            />
+          </div>
         </div>
         <HeroDecor copy={cine} reduced={reduced} />
       </div>
@@ -476,47 +497,37 @@ function ProductShowcase() {
   const products = [
     {
       key: "crm",
-      title: "CRM",
+      title: text("CRM וניהול לקוחות", "CRM and customers"),
       body: text("רשימת לידים, כרטיס לקוח ומשימת המשך — במסך אחד.", "Lead list, customer record, and follow-up task — on one stage."),
       img: "/demo-media/crm/leads-list.png",
       crop: "hx-crop-leads",
       tab: text("CRM", "CRM"),
       href: "/crm",
-      film: "crm" as const,
+      film: "crm" as const | null,
+      status: text("זמין", "Available"),
+      benefits: [
+        text("ניהול לידים וסטטוסים", "Lead and status management"),
+        text("כרטיס לקוח מרוכז", "A single customer record"),
+        text("משימות המשך", "Follow-up tasks"),
+      ],
       caption: text("סיור מוצר: לידים → כרטיס לקוח → משימה.", "Product walkthrough: leads → customer record → task."),
     },
     {
       key: "whatsapp",
-      title: "WhatsApp",
+      title: "WhatsApp Business",
       body: text("תיבת שיחות עסקית שממשיכה את אותו לקוח מה־CRM.", "A business inbox that continues the same customer from the CRM."),
       img: "/demo-media/whatsapp/still-3.jpg",
       crop: "hx-crop-chat",
       tab: "WhatsApp",
       href: "/whatsapp-api",
-      film: "whatsapp" as const,
+      film: "whatsapp" as const | null,
+      status: text("זמין", "Available"),
+      benefits: [
+        text("תיבת שיחות עסקית", "Business inbox"),
+        text("תבניות מאושרות של Meta", "Meta-approved templates"),
+        text("חיבור לכרטיס הלקוח", "Tied to the customer record"),
+      ],
       caption: text("סיור מוצר: תיבת שיחות עסקית.", "Product walkthrough: business inbox."),
-    },
-    {
-      key: "campaigns",
-      title: text("קמפיינים", "Campaigns"),
-      body: text("קמפיין Meta עם נתוני ביצוע — והטיפול בליד ממשיך במערכת.", "A Meta campaign with performance data — then lead follow-up continues in the system."),
-      img: "/demo-media/campaigns/still-chart.jpg",
-      crop: "hx-crop-campaigns",
-      tab: text("קמפיינים", "Campaigns"),
-      href: "/meta-campaigns",
-      film: "campaigns" as const,
-      caption: text("סיור מוצר: ביצועי קמפיין וטיפול בליד.", "Product walkthrough: campaign performance and lead follow-up."),
-    },
-    {
-      key: "websites",
-      title: text("Website Studio", "Website Studio"),
-      body: text("עריכת אתר — והשינוי נראה מיד בתצוגה.", "Site editing — and the change shows up in preview."),
-      img: "/demo-media/home/websites.jpg",
-      crop: "hx-crop-studio",
-      tab: text("אתרים", "Sites"),
-      href: "/website-builder",
-      film: "websites" as const,
-      caption: text("סיור מוצר: רשימת אתרים → עורך → תצוגה.", "Product walkthrough: site list → editor → preview."),
     },
     {
       key: "automations",
@@ -526,8 +537,108 @@ function ProductShowcase() {
       crop: "hx-crop-auto",
       tab: text("אוטומציות", "Automations"),
       href: "/automations",
-      film: "automations" as const,
+      film: "automations" as const | null,
+      status: text("זמין בתוכנית העסקית", "Available on the business plan"),
+      benefits: [
+        text("מאירוע לפעולה", "From event to action"),
+        text("משימות והודעות", "Tasks and messages"),
+        text("שמירה על הקשר ב־CRM", "Context stays in the CRM"),
+      ],
       caption: text("סיור מוצר: מאירוע עסקי לפעולה מוגדרת.", "Product walkthrough: from a business event to a defined action."),
+    },
+    {
+      key: "websites",
+      title: text("בניית אתרים וחנויות", "Websites and stores"),
+      body: text("עריכת אתר — והשינוי נראה מיד בתצוגה.", "Site editing — and the change shows up in preview."),
+      img: "/demo-media/home/websites.jpg",
+      crop: "hx-crop-studio",
+      tab: text("אתרים", "Sites"),
+      href: "/website-builder",
+      film: "websites" as const | null,
+      status: text("זמין", "Available"),
+      benefits: [
+        text("עורך ויזואלי", "Visual editor"),
+        text("תצוגת Desktop ו־Mobile", "Desktop and mobile preview"),
+        text("טפסים שמזינים את ה־CRM", "Forms that feed the CRM"),
+      ],
+      caption: text("סיור מוצר: רשימת אתרים → עורך → תצוגה.", "Product walkthrough: site list → editor → preview."),
+    },
+    {
+      key: "campaigns",
+      title: text("קמפיינים ושיווק", "Campaigns and marketing"),
+      body: text("קמפיין Meta עם נתוני ביצוע — והטיפול בליד ממשיך במערכת.", "A Meta campaign with performance data — then lead follow-up continues in the system."),
+      img: "/demo-media/campaigns/still-chart.jpg",
+      crop: "hx-crop-campaigns",
+      tab: text("קמפיינים", "Campaigns"),
+      href: "/meta-campaigns",
+      film: "campaigns" as const | null,
+      status: text("זמין עם חשבון Meta מחובר", "Available with a connected Meta account"),
+      benefits: [
+        text("ניהול קמפיינים", "Campaign management"),
+        text("מעקב ביצועים", "Performance review"),
+        text("לידים ממשיכים ב־CRM", "Leads continue in the CRM"),
+      ],
+      caption: text("סיור מוצר: ביצועי קמפיין וטיפול בליד.", "Product walkthrough: campaign performance and lead follow-up."),
+    },
+    {
+      key: "ai",
+      title: text("בינה מלאכותית", "Artificial intelligence"),
+      body: text(
+        "כלי עזר מבוססי AI בתוך Website Studio — רק במקומות שהמוצר כבר תומך בהם.",
+        "AI-assisted tools inside Website Studio — only where the shipped product already supports them.",
+      ),
+      img: "/images/about/shot-editor.webp",
+      crop: "hx-crop-studio",
+      tab: text("AI", "AI"),
+      href: "/website-builder",
+      film: null,
+      status: text("זמין בתוך Website Studio", "Available inside Website Studio"),
+      benefits: [
+        text("בלוקים ועוזרים בעורך", "Blocks and assistants in the editor"),
+        text("בלי הבטחות ניסיוניות", "No experimental overclaims"),
+        text("נציגים אנושיים נשארים נפרדים", "Human agents stay a separate product"),
+      ],
+      caption: text("יכולות AI בתוך בונה האתרים.", "AI capabilities inside the website builder."),
+    },
+    {
+      key: "collaborations",
+      title: text("שיתופי פעולה", "Collaborations"),
+      body: text(
+        "מקום למצוא עסקים אחרים, לפרסם הזדמנות ולהחליף הצעה — בלי הבטחת שותף או הכנסה.",
+        "A place to find other businesses, post an opportunity, and exchange a proposal — without promising a partner or revenue.",
+      ),
+      img: "/images/about/shot-campaigns.webp",
+      crop: "hx-crop-campaigns",
+      tab: text("שיתופים", "Collabs"),
+      href: "/collaborations",
+      film: null,
+      status: text("זמין", "Available"),
+      benefits: [
+        text("חיפוש עסקים", "Find businesses"),
+        text("פרסום הזדמנות", "Publish an opportunity"),
+        text("החלפת הצעות", "Exchange proposals"),
+      ],
+      caption: text("עמוד שיתופי הפעולה של BizUply.", "The BizUply collaborations product page."),
+    },
+    {
+      key: "appointments",
+      title: text("ניהול פגישות", "Appointments"),
+      body: text(
+        "יומן שירותים, שעות פעילות ופתיחות של 15 דקות — ליד כרטיס הלקוח.",
+        "A service calendar, business hours, and 15-minute openings — next to the customer record.",
+      ),
+      img: "/demo-media/home/appointments.jpg",
+      crop: "hx-crop-record",
+      tab: text("פגישות", "Meetings"),
+      href: "/appointments",
+      film: null,
+      status: text("זמין בתוכנית העסקית", "Available on the business plan"),
+      benefits: [
+        text("יומן שירותים", "Service calendar"),
+        text("הזמנה בעמוד ציבורי", "Public booking page"),
+        text("קשר לכרטיס הלקוח", "Tied to the customer record"),
+      ],
+      caption: text("סיור מוצר: יומן פגישות.", "Product walkthrough: appointment calendar."),
     },
   ] as const;
   const open = useOpenFilm();
@@ -611,14 +722,26 @@ function ProductShowcase() {
           <h2 id="hx-show-title">{cine.toolsTitle}</h2>
           <p className="hx-show-live" aria-live="polite">
             <strong>{current.title}</strong>
-            <span>{cine.toolsLead}</span>
+            <span>{current.body}</span>
           </p>
+          <p className="hx-show-status">{current.status}</p>
+          <ul className="hx-show-benefits">
+            {current.benefits.map((benefit) => (
+              <li key={benefit}>{benefit}</li>
+            ))}
+          </ul>
           <div className="hx-actions hx-show-actions">
-            <Cta to={current.href} tone="ink">{current.title}</Cta>
-            <DemoButton
-              label={cine.hero.watch}
-              onClick={() => open(filmOf(current.film, current.film, "", current.title, current.caption, language, text))}
-            />
+            <Cta to={current.href} tone="ink">{text("לעמוד המוצר", "Product page")}</Cta>
+            {current.film ? (
+              <DemoButton
+                label={cine.hero.watch}
+                onClick={() => {
+                  const film = current.film;
+                  if (!film) return;
+                  open(filmOf(film, film, "", current.title, current.caption, language, text));
+                }}
+              />
+            ) : null}
           </div>
         </div>
         <div className="hx-show-viewport" ref={railRef}>
@@ -1562,7 +1685,7 @@ function Faq() {
             <Link to="/meta-campaigns">{text("קמפיינים", "Campaigns")}</Link>
             <Link to="/website-builder">{text("בניית אתרים", "Website builder")}</Link>
             <Link to="/pricing">{text("מחירים", "Pricing")}</Link>
-            <Link to="/guides">{text("מדריכים", "Guides")}</Link>
+            <Link to="/guides">{text("בלוג", "Blog")}</Link>
           </nav>
         </div>
       </div>
