@@ -1,5 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import './CartPage.css';
 
 const demoCart = [
@@ -29,8 +30,15 @@ const demoCart = [
   }
 ];
 
-const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
+const CartPage = ({ cart: cartProp, setCart: setCartProp, coupon: couponProp, setCoupon: setCouponProp }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const [localCart, setLocalCart] = useState([]);
+  const [localCoupon, setLocalCoupon] = useState({ code: "", discount: 10 });
+  const cart = Array.isArray(cartProp) ? cartProp : localCart;
+  const setCart = setCartProp || setLocalCart;
+  const coupon = couponProp || localCoupon;
+  const setCoupon = setCouponProp || setLocalCoupon;
 
   // If the cart is empty – load demo items
   useEffect(() => {
@@ -70,10 +78,12 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
 
   return (
     <div className="cart-page">
-      <h2>🛒 Your Shopping Cart</h2>
+      <header className="cart-head">
+        <h2>{t("leftover.shopChrome.shoppingCart")}</h2>
+      </header>
 
       {cart.length === 0 ? (
-        <p className="empty-cart">Your cart is currently empty</p>
+        <p className="empty-cart">{t("leftover.shopChrome.emptyCart")}</p>
       ) : (
         <div className="cart-list">
           {cart.map((item, i) => (
@@ -86,30 +96,23 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
 
               <div className="item-details">
                 <h4>{item.name}</h4>
-                {item.color && <p>Color: {item.color}</p>}
-                {item.size && <p>Size: {item.size}</p>}
-                <p>
-                  Quantity:
+                {item.color && <p>{t("leftover.shopChrome.color")}: {item.color}</p>}
+                {item.size && <p>{t("leftover.shopChrome.size")}: {item.size}</p>}
+                <label>
+                  {t("leftover.shopChrome.qtyLabel")}
                   <input
                     type="number"
                     min="1"
                     value={item.quantity}
                     onChange={(e) => handleQuantityChange(i, e.target.value)}
-                    style={{
-                      width: "50px",
-                      marginRight: "8px",
-                      marginLeft: "8px",
-                      padding: "4px",
-                      borderRadius: "6px",
-                      border: "1px solid #ccc",
-                      fontSize: "1rem"
-                    }}
                   />
-                </p>
-                <p>Total: $ {item.price * item.quantity}</p>
+                </label>
+                <p>{t("leftover.shopChrome.lineTotal", { amount: item.price * item.quantity })}</p>
               </div>
 
-              <button className="remove-btn" onClick={() => handleRemove(i)}>🗑️</button>
+              <button type="button" className="remove-btn" onClick={() => handleRemove(i)}>
+                {t("leftover.shopChrome.removeItem")}
+              </button>
             </div>
           ))}
         </div>
@@ -118,21 +121,21 @@ const CartPage = ({ cart, setCart, coupon, setCoupon }) => {
       <div className="coupon-box">
         <input
           className="coupon-input"
-          placeholder="Enter coupon code (e.g., SUMMER10)"
+          placeholder={t("leftover.shopChrome.couponPh")}
           value={coupon.code}
           onChange={handleCouponChange}
         />
       </div>
 
       <div className="summary">
-        <p>🧾 Before Discount: {totalBefore.toFixed(2)} $</p>
-        {discount > 0 && <p className="discount">💸 Discount: {discount.toFixed(2)} $</p>}
-        <h3>💰 Total to Pay: {final.toFixed(2)} $</h3>
+        <p>{t("leftover.shopChrome.beforeDiscount", { amount: totalBefore.toFixed(2) })}</p>
+        {discount > 0 && <p className="discount">{t("leftover.shopChrome.discountLine", { amount: discount.toFixed(2) })}</p>}
+        <h3>{t("leftover.shopChrome.totalToPay", { amount: final.toFixed(2) })}</h3>
       </div>
 
       <div className="cart-actions">
-        <button className="back-btn" onClick={handleBack}>⬅️ Back to Store</button>
-        <button className="pay-btn">Proceed to Payment 💳</button>
+        <button type="button" className="back-btn" onClick={handleBack}>{t("leftover.shopChrome.backToStore")}</button>
+        <button type="button" className="pay-btn">{t("leftover.shopChrome.proceedPayment")}</button>
       </div>
     </div>
   );

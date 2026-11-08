@@ -1,0 +1,91 @@
+.upgrade-page {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+  background: #f4f1fa;
+  color: #21172f;
+  min-height: calc(100vh - 72px);
+}
+
+.upgrade-head,
+.upgrade-card {
+  background: #fff;
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  padding: 18px;
+}
+
+.upgrade-head {
+  border-inline-start: 4px solid #5b21b6;
+}
+
+.upgrade-page h1,
+.upgrade-page h2 {
+  margin: 0;
+  font-weight: 900;
+}
+
+.upgrade-page h1 {
+  font-size: 1.5rem;
+}
+
+.upgrade-page p {
+  margin: 8px 0 0;
+  max-width: 68ch;
+  color: #3d3452;
+  font-weight: 650;
+}
+
+.upgrade-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 10px;
+  margin: 14px 0 0;
+}
+
+.upgrade-facts div {
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  background: #f4f1fa;
+  padding: 12px;
+}
+
+.upgrade-facts dt {
+  color: #5b21b6;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.upgrade-facts dd {
+  margin: 4px 0 0;
+  font-weight: 900;
+}
+
+.upgrade-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.upgrade-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 8px 14px;
+  background: #5b21b6;
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.upgrade-actions a:last-child {
+  background: #fff;
+  color: #21172f;
+  border: 1px solid #5b21b6;
+}
+
+@media (max-width: 640px) {
+  .upgrade-actions a {
+    width: 100%;
+  }
+}
