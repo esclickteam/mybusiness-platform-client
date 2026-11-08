@@ -174,6 +174,22 @@ function kindOf(item: Finding, copy: Record<string, string>) {
   return copy.kindAdvice;
 }
 
+const WCAG_URLS: Record<string, string> = {
+  "1.1.1": "https://www.w3.org/WAI/WCAG22/Understanding/non-text-content.html",
+  "1.3.1": "https://www.w3.org/WAI/WCAG22/Understanding/info-and-relationships.html",
+  "1.4.3": "https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html",
+  "2.1.1": "https://www.w3.org/WAI/WCAG22/Understanding/keyboard.html",
+  "3.1.1": "https://www.w3.org/WAI/WCAG22/Understanding/language-of-page.html",
+  "3.3.2": "https://www.w3.org/WAI/WCAG22/Understanding/labels-or-instructions.html",
+};
+
+function officialSource(name: unknown, url: unknown) {
+  const stored = String(url || "");
+  if (stored) return stored;
+  const match = String(name || "").match(/(\d+\.\d+\.\d+)/);
+  return match ? WCAG_URLS[match[1]] || "" : "";
+}
+
 function bandOf(item: Finding) {
   if (item.outcome === "owner") return "owner";
   if (item.outcome === "gap") return "gap";
@@ -275,7 +291,7 @@ export function ComplianceReportView({
           const detail = detailOf(item, copy);
           const level = copy[item.severity || "info"] || item.severity;
           const band = bandOf(item);
-          const sourceUrl = String(detail.lawUrl || "");
+          const sourceUrl = officialSource(detail.lawName, detail.lawUrl);
           return (
             <article key={key} className={`sev-${item.severity || "info"} audit-card`}>
               <h3>{item.title}</h3>
