@@ -178,6 +178,7 @@ export default function WebsiteAiBuilderPage() {
       if (!headerBox || headerBox.height < 32 || headerBox.height > 180) critical.push("header");
       if (/\.filter\s*\(|\.map\s*\(|=>/.test(doc.body.innerText || "")) critical.push("visible-code");
       if (doc.documentElement.scrollHeight > view.innerHeight * 4.5) critical.push("long-page");
+      if (doc.documentElement.scrollWidth > width + 4) critical.push("horizontal-scroll");
       frame.remove();
       return { width, critical: [...new Set(critical)] };
     }
@@ -185,8 +186,11 @@ export default function WebsiteAiBuilderPage() {
       const documents = current.editorPages?.length
         ? current.editorPages
         : [{ id: "home", html: current.editorHtml || "" }];
-      const desktop = await measureFrame(documents[0].html, current.editorCss || "", 1280);
-      const mobile = await measureFrame(documents[0].html, current.editorCss || "", 390);
+      const widths = [1440, 1024, 768, 390, 375, 320];
+      const measured = [];
+      for (const width of widths) measured.push(await measureFrame(documents[0].html, current.editorCss || "", width));
+      const desktop = measured[0];
+      const mobile = measured[3];
       const rest = [];
       for (const page of documents.slice(1)) {
         rest.push(await measureFrame(page.html, current.editorCss || "", 1280));
@@ -201,7 +205,7 @@ export default function WebsiteAiBuilderPage() {
         measured: true,
         desktop,
         mobile,
-        critical: [...new Set([...desktop.critical, ...mobile.critical, ...rest.flatMap((item) => item.critical), ...navigation])],
+        critical: [...new Set([...measured.flatMap((item) => item.critical), ...rest.flatMap((item) => item.critical), ...navigation])],
       };
       try {
         if (current.editorSiteId) {

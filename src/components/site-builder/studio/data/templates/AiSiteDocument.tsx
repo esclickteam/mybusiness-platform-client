@@ -46,7 +46,7 @@ function scopeEditorCss(css: string): string {
       cursor += 1;
     }
     const inner = source.slice(brace + 1, cursor - 1);
-    if (selector.startsWith("@media") || selector.startsWith("@supports")) {
+    if (selector.startsWith("@media") || selector.startsWith("@supports") || selector.startsWith("@container")) {
       output += `${selector}{${scopeEditorCss(inner)}}`;
     } else if (selector.startsWith("@keyframes") || selector.startsWith("@font-face")) {
       output += `${selector}{${inner}}`;
@@ -67,7 +67,7 @@ export const aiSiteRenderer: StudioTemplateRenderer = {
     const html = String(data?.__aiDocument || "");
     const css = scopeEditorCss(String(data?.__aiCss || ""));
     return (
-      <div data-template-id="ai-site" style={{ width: "100%", maxWidth: "100%", overflowX: "hidden" }}>
+      <div data-template-id="ai-site" style={{ width: "100%", maxWidth: "100%", overflowX: "hidden", containerType: "inline-size", containerName: "biz" }}>
         <style>{css}</style>
         <div dangerouslySetInnerHTML={{ __html: html }} />
       </div>
