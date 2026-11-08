@@ -11,6 +11,8 @@ import API from "../api";
 import BizuplyLoader from "./ui/BizuplyLoader";
 import { useTranslation } from "react-i18next";
 import GuidedDemoSandboxButton from "../guidedDemo/GuidedDemoSandboxButton";
+import { useLocaleDir } from "../hooks/useLocaleDir";
+import "./BusinessChatPage.css";
 
 /* =====================================================
    TYPES
@@ -61,6 +63,7 @@ type NewMessagePayload = {
 
 export default function BusinessChatPage() {
   const { t } = useTranslation();
+  const dir = useLocaleDir();
   const { user, initialized } = useAuth() as any;
   const socket = useSocket() as any;
   const location = useLocation();
@@ -115,7 +118,7 @@ export default function BusinessChatPage() {
       ...c,
       conversationId,
       clientId,
-      clientName: c.clientName || c.customer?.name || "Client",
+      clientName: c.clientName || c.customer?.name || t("leftover.bizChatChrome.client"),
       conversationType: c.conversationType || "user-business",
     };
   };
@@ -311,7 +314,7 @@ export default function BusinessChatPage() {
   ===================================================== */
 
   if (!initialized) {
-    return <BizuplyLoader fullScreen label="Loading data…" />;
+    return <BizuplyLoader fullScreen label={t("leftover.bizChatChrome.loadingData")} />;
   }
 
   /* =====================================================
@@ -320,20 +323,11 @@ export default function BusinessChatPage() {
 
   if (!businessId) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="max-w-md rounded-[2rem] border border-rose-100 bg-white p-8 text-center shadow-2xl">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 text-3xl">
-            ⚠️
-          </div>
-
-          <h2 className="mt-5 text-xl font-black text-slate-800">
-            Business account not found
-          </h2>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            We could not find an active business ID for this user.
-          </p>
-        </div>
+      <main className="biz-inbox" dir={dir}>
+        <section className="biz-inbox-empty">
+          <h2>{t("leftover.bizChatChrome.noBusinessTitle")}</h2>
+          <p>{t("leftover.bizChatChrome.noBusinessBody")}</p>
+        </section>
       </main>
     );
   }
@@ -343,173 +337,89 @@ export default function BusinessChatPage() {
   ===================================================== */
 
   return (
-    <main className="min-h-screen bg-slate-50 px-3 py-4 text-slate-800 sm:px-5 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        {/* HEADER */}
-        <div className="mb-5 overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative overflow-hidden bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-5 py-6 text-white sm:px-7">
-            <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
-
-            <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-black/80 backdrop-blur">
-                  <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  Business Inbox
-                </div>
-
-                <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-                  Client Messages
-                </h1>
-
-                <div className="mt-3">
-                  <GuidedDemoSandboxButton
-                    target="messages-demo-send"
-                    className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
-                  >
-                    {t("leftover.waInbox.demoSend")}
-                  </GuidedDemoSandboxButton>
-                </div>
-
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
-                  Manage all customer conversations, reply faster, and keep your
-                  communication organized in one professional workspace.
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 sm:min-w-[280px]">
-                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    Conversations
-                  </p>
-                  <p className="mt-1 text-2xl font-black">{convos.length}</p>
-                </div>
-
-                <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    Unread
-                  </p>
-                  <p className="mt-1 text-2xl font-black">{totalUnread}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+    <main className="biz-inbox" dir={dir}>
+      <header className="biz-inbox-head">
+        <div>
+          <p className="biz-inbox-kicker">{t("leftover.bizChatChrome.inbox")}</p>
+          <h1>{t("leftover.bizChatChrome.title")}</h1>
+          <p>{t("leftover.bizChatChrome.subtitle")}</p>
+          <GuidedDemoSandboxButton target="messages-demo-send" className="biz-inbox-demo">
+            {t("leftover.waInbox.demoSend")}
+          </GuidedDemoSandboxButton>
         </div>
-
-        {/* ERROR */}
-        {error && (
-          <div className="mb-4 rounded-2xl border border-rose-100 bg-rose-50 px-5 py-4 text-sm font-bold text-rose-700">
-            {error}
+        <dl className="biz-inbox-facts">
+          <div>
+            <dt>{t("leftover.bizChatChrome.conversations")}</dt>
+            <dd>{convos.length}</dd>
           </div>
+          <div>
+            <dt>{t("leftover.bizChatChrome.unread")}</dt>
+            <dd>{totalUnread}</dd>
+          </div>
+        </dl>
+      </header>
+
+      {error && <p className="biz-inbox-error">{error}</p>}
+
+      <section className="biz-inbox-grid">
+        {(!isMobile || !selected) && (
+          <aside className="biz-inbox-list">
+            <div className="biz-inbox-list-head">
+              <h2>{t("leftover.bizChatChrome.conversations")}</h2>
+              <p>
+                {isLoadingConvos
+                  ? t("leftover.bizChatChrome.loadingList")
+                  : t("leftover.bizChatChrome.chatsCount", { count: convos.length })}
+              </p>
+            </div>
+            <div className="biz-inbox-scroll">
+              {isLoadingConvos ? (
+                <BizuplyLoader size="lg" label={t("leftover.bizChatChrome.loadingConversations")} />
+              ) : convos.length > 0 ? (
+                <ConversationsList
+                  conversations={convos}
+                  businessId={businessId}
+                  selectedConversationId={selected?.conversationId}
+                  onSelect={handleSelect}
+                  unreadCountsByConversation={unreadCounts}
+                  isBusiness
+                />
+              ) : (
+                <div className="biz-inbox-empty">
+                  <h3>{t("leftover.bizChatChrome.emptyTitle")}</h3>
+                  <p>{t("leftover.bizChatChrome.emptyBody")}</p>
+                </div>
+              )}
+            </div>
+          </aside>
         )}
 
-        {/* CHAT LAYOUT */}
-        <section className="grid min-h-[72vh] overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)] lg:grid-cols-[360px_1fr]">
-          {/* SIDEBAR */}
-          {(!isMobile || !selected) && (
-            <aside className="border-b border-slate-100 bg-white lg:border-b-0 lg:border-r">
-              <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
-                <div>
-                  <h2 className="text-lg font-black text-slate-800">
-                    Conversations
-                  </h2>
-
-                  <p className="mt-1 text-xs font-bold text-slate-400">
-                    {isLoadingConvos
-                      ? "Loading conversations..."
-                      : `${convos.length} client chats`}
-                  </p>
-                </div>
-
-                {totalUnread > 0 && (
-                  <div className="flex h-9 min-w-9 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-black shadow-lg shadow-violet-500/25">
-                    {totalUnread}
-                  </div>
-                )}
+        <section className="biz-inbox-thread">
+          {selected ? (
+            <div className="biz-inbox-thread-body">
+              {isMobile && (
+                <button type="button" className="biz-inbox-back" onClick={() => setSelected(null)}>
+                  {t("leftover.bizChatChrome.back")}
+                </button>
+              )}
+              <BusinessChatTab
+                conversationId={selected.conversationId}
+                businessId={businessId}
+                customerId={selected.partnerId}
+                customerName={selected.partnerName}
+                conversationType={selected.conversationType}
+              />
+            </div>
+          ) : (
+            !isMobile && (
+              <div className="biz-inbox-empty">
+                <h3>{t("leftover.bizChatChrome.selectTitle")}</h3>
+                <p>{t("leftover.bizChatChrome.selectBody")}</p>
               </div>
-
-              <div className="h-[calc(72vh-73px)] overflow-y-auto p-3">
-                {isLoadingConvos ? (
-                  <div className="flex h-full flex-col items-center justify-center text-center">
-                    <BizuplyLoader size="lg" label="Loading conversations…" />
-                  </div>
-                ) : convos.length > 0 ? (
-                  <ConversationsList
-                    conversations={convos}
-                    businessId={businessId}
-                    selectedConversationId={selected?.conversationId}
-                    onSelect={handleSelect}
-                    unreadCountsByConversation={unreadCounts}
-                    isBusiness
-                  />
-                ) : (
-                  <div className="flex h-full flex-col items-center justify-center rounded-[1.5rem] border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-sm">
-                      💬
-                    </div>
-
-                    <h3 className="mt-4 text-lg font-black text-slate-800">
-                      No conversations yet
-                    </h3>
-
-                    <p className="mt-2 max-w-xs text-sm leading-6 text-slate-500">
-                      When customers message your business, their conversations
-                      will appear here.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </aside>
+            )
           )}
-
-          {/* CHAT AREA */}
-          <section className="min-h-[72vh] bg-slate-50/70">
-            {selected ? (
-              <div className="flex h-full min-h-[72vh] flex-col">
-                {isMobile && (
-                  <div className="border-b border-slate-200 bg-white px-4 py-3">
-                    <button
-                      type="button"
-                      onClick={() => setSelected(null)}
-                      className="inline-flex h-10 items-center justify-center rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
-                    >
-                      ← Back to conversations
-                    </button>
-                  </div>
-                )}
-
-                <div className="min-h-0 flex-1">
-                  <BusinessChatTab
-                    conversationId={selected.conversationId}
-                    businessId={businessId}
-                    customerId={selected.partnerId}
-                    customerName={selected.partnerName}
-                    conversationType={selected.conversationType}
-                  />
-                </div>
-              </div>
-            ) : (
-              <div className="flex h-full min-h-[72vh] flex-col items-center justify-center px-6 text-center">
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-[2rem] bg-violet-300/30 blur-2xl" />
-                  <div className="relative flex h-20 w-20 items-center justify-center rounded-[2rem] bg-white text-4xl shadow-xl">
-                    💭
-                  </div>
-                </div>
-
-                <h3 className="mt-6 text-2xl font-black tracking-tight text-slate-800">
-                  Select a conversation
-                </h3>
-
-                <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
-                  Choose a client from the conversations list to view messages
-                  and reply.
-                </p>
-              </div>
-            )}
-          </section>
         </section>
-      </div>
+      </section>
     </main>
   );
 }

@@ -615,7 +615,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     let cancelled = false;
     fetchClientDetail(clientId, t)
       .then((detail) => {
-        if (cancelled || !detail) return;
+        if (cancelled || !detail || String(detail._id) !== String(clientId)) return;
         setSelectedClient(detail);
       })
       .catch((err) => {
@@ -2889,7 +2889,7 @@ function ClientFormPanel({
   const { t } = useTranslation();
 
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
+    <div className="client-edit-sheet">
       <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
@@ -2918,7 +2918,7 @@ function ClientFormPanel({
         </button>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="client-edit-fields grid gap-4 lg:grid-cols-2">
         <FormField label={t("crm.clients.form.fullName")} required>
           <input
             placeholder={t("crm.clients.form.fullName")}
@@ -2977,11 +2977,13 @@ function ClientFormPanel({
         </FormField>
       </div>
 
-      <div className="mt-6 flex flex-col gap-3 border-t border-slate-100 pt-5 sm:flex-row sm:justify-end">
+      <div className="crm-form-bar">
+        <p className="crm-unsaved" />
+        <div className="crm-form-bar-actions">
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
+          className="crm-cancel"
         >
           {t("crm.common.cancel")}
         </button>
@@ -2990,10 +2992,11 @@ function ClientFormPanel({
           type="button"
           onClick={onSave}
           disabled={isSaving}
-          className="rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+          className="crm-save"
         >
           {isSaving ? t("crm.common.saving") : t("crm.clients.form.saveClient")}
         </button>
+        </div>
       </div>
     </div>
   );

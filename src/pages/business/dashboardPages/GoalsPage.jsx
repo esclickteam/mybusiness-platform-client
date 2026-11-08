@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import API from "../../../api";
-import { CSSTransition, TransitionGroup } from "react-transition-group";
 import "./GoalsPage.css";
 
 const GoalsPage = () => {
@@ -123,23 +122,24 @@ const GoalsPage = () => {
 
   return (
     <div className="goals-container">
-      <div className="goals-header">
-        <h1>🎯 {t("leftover.goalsChrome.title")}</h1>
+      <header className="goals-header">
         <div>
-          <button className="add-goal-btn" onClick={handleAddGoal}>
-            ➕ {t("leftover.goalsChrome.addGoal")}
-          </button>
-          <button
-            className="add-goal-btn"
-            style={{ marginRight: "10px", backgroundColor: "#555" }}
-            onClick={() => setShowHistory(!showHistory)}
-          >
-            🕘 {t("leftover.goalsChrome.history")}
-          </button>
+          <h1>{t("leftover.goalsChrome.title")}</h1>
+          <p>{t("leftover.goalsChrome.pageHint", "ההתקדמות מחושבת מנתוני העסק שכבר נטענים. היעדים נשמרים במסך הזה.")}</p>
         </div>
-      </div>
+        <button type="button" className="add-goal-btn add-goal-btn--ghost" onClick={() => setShowHistory(!showHistory)}>
+          {t("leftover.goalsChrome.history")}
+        </button>
+      </header>
 
-      <div className="new-goal-form">
+      <form
+        className="new-goal-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          handleAddGoal();
+        }}
+      >
+        <h2>{t("leftover.goalsChrome.addGoal")}</h2>
         <label>{t("leftover.goalsChrome.nameLabel")}</label>
         <input
           placeholder={t("leftover.goalsChrome.namePh")}
@@ -171,7 +171,10 @@ const GoalsPage = () => {
           value={newGoal.deadline}
           onChange={(e) => setNewGoal({ ...newGoal, deadline: e.target.value })}
         />
-      </div>
+        <button type="submit" className="add-goal-btn">
+          {t("leftover.goalsChrome.addGoal")}
+        </button>
+      </form>
 
       {showHistory && (
         <div className="history-list">
@@ -187,33 +190,40 @@ const GoalsPage = () => {
         </div>
       )}
 
-      <TransitionGroup className="goals-list">
+      {goals.length === 0 && (
+        <p className="goals-empty">
+          {t("leftover.goalsChrome.empty", "עדיין אין יעדים. מלאו את הטופס כדי לראות התקדמות.")}
+        </p>
+      )}
+
+      <div className="goals-list">
         {goals.map((goal) => {
           const progress = calculateProgress(goal);
           return (
-            <CSSTransition key={goal.id} timeout={400} classNames="fade" appear>
-              <div className="goal-card">
-                <h3>
-                  {renderIcon(goal.type)} {goal.title}
-                </h3>
-                <p className="goal-sub">
-                  {t("leftover.goalsChrome.targetLine", {
-                    target: goal.target,
-                    date: goal.deadline,
-                  })}
-                </p>
-                <div className="progress-bar">
-                  <div className="progress" style={{ width: `${progress}%` }} />
+              <article className="goal-card" key={goal.id}>
+                <div>
+                  <h3>{goal.title}</h3>
+                  <p className="goal-sub">
+                    {renderIcon(goal.type)}{" "}
+                    {t("leftover.goalsChrome.targetLine", {
+                      target: goal.target,
+                      date: formatDate(goal.deadline),
+                    })}
+                  </p>
                 </div>
-                <span className="progress-label">{Math.round(progress)}%</span>
-                <button className="summary-btn" onClick={() => setSelectedGoal(goal)}>
-                  📋 {t("leftover.goalsChrome.summaryBtn")}
+                <div className="progress-wrap">
+                  <div className="progress-bar">
+                    <div className="progress" style={{ width: `${progress}%` }} />
+                  </div>
+                  <span className="progress-label">{Math.round(progress)}%</span>
+                </div>
+                <button type="button" className="summary-btn" onClick={() => setSelectedGoal(goal)}>
+                  {t("leftover.goalsChrome.summaryBtn")}
                 </button>
-              </div>
-            </CSSTransition>
+              </article>
           );
         })}
-      </TransitionGroup>
+      </div>
 
       {selectedGoal && (
         <div className="summary-modal">

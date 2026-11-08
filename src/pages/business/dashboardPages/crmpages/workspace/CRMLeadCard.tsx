@@ -7,7 +7,7 @@ import {
   MessageCircle,
   Phone,
   Plus,
-  Save,
+  X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../../i18n/localeUtils";
@@ -173,33 +173,33 @@ export default function CRMLeadCard({
   }
 
   const name = lead.fullName || lead.name || t("crm.common.unnamedClient");
+  const personalDirty =
+    JSON.stringify(customValues) !== JSON.stringify(lead.customValues || {});
+  const statusLabel = t(`crm.leads.statuses.${lead.status || "new"}`, {
+    defaultValue: lead.status || "new",
+  });
 
   return (
     <div className="crm-dossier fixed inset-0 z-50" dir={getTextDirection(i18n.language)}>
       <div className="crm-dossier-panel">
         <header className="crm-dossier-head">
-          <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="crm-record-title">
             <div className="min-w-0">
               <p className="crm-dossier-kicker">
                 {t("crm.leads.drawer.dossierBadge")}
               </p>
-              <h2 className="text-xl font-black">{name}</h2>
-              <div className="crm-dossier-meta">
-                <span dir="ltr">{lead.phone || t("crm.common.noPhone")}</span>
-                <span>{lead.email || t("crm.common.noEmail")}</span>
-                <span className={`crm-status is-${lead.status || "new"}`}>{t(`crm.leads.statuses.${lead.status || "new"}`, { defaultValue: lead.status })}</span>
-                <span>{lead.assignedToName || t("crm.leads.unassignedAgent")}</span>
-                <span>{lead.source}</span>
-                <span>{lead.createdAt ? new Date(lead.createdAt).toLocaleString(locale) : ""}</span>
-              </div>
+              <h2>{name}</h2>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="quick-btn"
-            >
+            <button type="button" onClick={onClose} className="crm-close">
+              <X className="h-4 w-4" />
               {t("crm.common.close")}
             </button>
+          </div>
+          <div className="crm-record-facts">
+            <span className="crm-chip" dir="ltr">{lead.phone || t("crm.common.noPhone")}</span>
+            <span className="crm-chip">{lead.email || t("crm.common.noEmail")}</span>
+            <span className="crm-chip">{lead.source || "—"}</span>
+            <span className={`crm-status-pill is-${lead.status || "new"}`}>{statusLabel}</span>
           </div>
           <div className="crm-file-actions">
             {lead.phone && (
@@ -259,26 +259,51 @@ export default function CRMLeadCard({
           ))}
         </nav>
 
-        <div className="crm-file-main space-y-4">
-          {error && <p className="rounded-xl bg-rose-50 p-3 text-sm font-bold text-rose-700">{error}</p>}
-          {notice && <p className="rounded-xl bg-emerald-50 p-3 text-sm font-bold text-emerald-700">{notice}</p>}
+        <div className="crm-file-main">
+          <div className="crm-file-scroll">
+          {error && <p className="crm-banner is-error">{error}</p>}
+          {notice && <p className="crm-banner is-ok">{notice}</p>}
 
           {tab === "overview" && (
-            <div className="crm-sheet">
-              <Fact label={t("crm.common.name")} value={name} />
-              <Fact label={t("crm.common.phone")} value={lead.phone} ltr />
-              <Fact label={t("crm.common.email")} value={lead.email} />
-              <Fact label={t("crm.common.status")} value={lead.status} />
-              <Fact label={t("crm.leads.table.agent")} value={lead.assignedToName} />
-              <Fact label={t("crm.leads.table.source")} value={lead.source} />
+            <div className="crm-pane">
+              <div className="crm-facts">
+                <Fact label={t("crm.common.name")} value={name} />
+                <Fact label={t("crm.common.phone")} value={lead.phone} ltr />
+                <Fact label={t("crm.common.email")} value={lead.email} />
+                <Fact label={t("crm.common.status")} value={statusLabel} />
+                <Fact label={t("crm.leads.table.agent")} value={lead.assignedToName || t("crm.leads.unassignedAgent")} />
+                <Fact label={t("crm.leads.table.source")} value={lead.source} />
+              </div>
+              <label className="crm-field">
+                <span>{t("crm.leads.table.agent")}</span>
+                <select
+                  value={lead.assignedToUserId || ""}
+                  onChange={(event) => {
+                    const agent = agents.find((item) => item._id === event.target.value);
+                    void assignLead(lead._id, event.target.value, agent?.name || "").then(() =>
+                      flash(t("crm.workspace.assigned"))
+                    );
+                  }}
+                >
+                  <option value="">{t("crm.leads.unassignedAgent")}</option>
+                  {agents.map((agent) => (
+                    <option key={agent._id} value={agent._id}>
+                      {agent.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
           )}
 
           {tab === "personal" && (
-            <div className="crm-sheet">
+            <div className="crm-pane">
+              {fields.filter((field) => field.active !== false).length === 0 && (
+                <p className="crm-empty">{t("crm.workspace.noCustomFields")}</p>
+              )}
               {fields.filter((field) => field.active !== false).map((field) => (
-                <label key={field.id} className="block text-xs font-black text-slate-600">
-                  {field.label}
+                <label key={field.id} className="crm-field">
+                  <span>{field.label}</span>
                   {field.type === "boolean" ? (
                     <input
                       type="checkbox"
@@ -290,7 +315,6 @@ export default function CRMLeadCard({
                     />
                   ) : field.type === "select" ? (
                     <select
-                      className="mt-1 h-10 w-full rounded-xl border px-3"
                       value={String(customValues[field.key] || "")}
                       onChange={(event) =>
                         setCustomValues((prev) => ({ ...prev, [field.key]: event.target.value }))
@@ -305,7 +329,6 @@ export default function CRMLeadCard({
                     </select>
                   ) : (
                     <input
-                      className="mt-1 h-10 w-full rounded-xl border px-3"
                       type={field.type === "number" || field.type === "money" ? "number" : field.type === "url" ? "url" : "text"}
                       value={String(customValues[field.key] ?? "")}
                       onChange={(event) =>
@@ -315,14 +338,12 @@ export default function CRMLeadCard({
                   )}
                 </label>
               ))}
-              <button type="button" onClick={() => void saveCustom()} className="quick-btn">
-                <Save className="h-3.5 w-3.5" /> {saving ? t("crm.common.saving") : t("crm.common.save")}
-              </button>
             </div>
           )}
 
           {tab === "source" && (
-            <div className="crm-sheet">
+            <div className="crm-pane">
+            <div className="crm-facts">
               <Fact label={t("crm.workspace.adPlatform")} value={lead.provider || lead.source} />
               <Fact label={t("crm.leads.drawer.campaign")} value={lead.facebook?.campaignName || lead.google?.campaignName || lead.campaignName} />
               <Fact label={t("crm.leads.drawer.campaignId")} value={lead.facebook?.campaignId || lead.google?.campaignId} />
@@ -332,9 +353,10 @@ export default function CRMLeadCard({
               <Fact label={t("crm.leads.drawer.form")} value={lead.facebook?.formName || lead.google?.formName || lead.formName} />
               <Fact label={t("crm.leads.drawer.formId")} value={lead.facebook?.formId || lead.formId} />
               <Fact label={t("crm.workspace.receivedAt")} value={lead.facebook?.createdTime || lead.google?.createdTime || lead.createdAt} />
+            </div>
               {(lead.facebook?.campaignId || lead.google?.campaignId) && (
                 <a
-                  className="quick-btn"
+                  className="crm-secondary"
                   href="/business/dashboard/meta-campaigns"
                   onClick={(event) => {
                     event.preventDefault();
@@ -348,7 +370,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "form" && (
-            <div className="crm-sheet">
+            <div className="crm-facts">
               {(lead.details || []).length ? (
                 (lead.details || []).map((detail, index) => (
                   <Fact key={`${detail.label}-${index}`} label={detail.label} value={detail.value} />
@@ -360,69 +382,64 @@ export default function CRMLeadCard({
           )}
 
           {tab === "activity" && (
-            <div className="crm-sheet">
-              <textarea
-                className="w-full rounded-xl border p-3 text-sm"
-                rows={3}
-                value={note}
-                onChange={(event) => setNote(event.target.value)}
-                placeholder={t("crm.leads.drawer.notePlaceholder")}
-              />
-              <button type="button" className="quick-btn" onClick={() => void addActivity("note", note).then(() => setNote(""))}>
-                {t("crm.common.save")}
-              </button>
-              <div className="flex flex-wrap gap-2">
-                <select value={callOutcome} onChange={(event) => setCallOutcome(event.target.value)} className="h-10 rounded-xl border px-2 text-xs font-black">
-                  <option value="answered">{t("crm.workspace.callOutcomes.answered")}</option>
-                  <option value="no_answer">{t("crm.workspace.callOutcomes.no_answer")}</option>
-                  <option value="interested">{t("crm.workspace.callOutcomes.interested")}</option>
-                  <option value="not_interested">{t("crm.workspace.callOutcomes.not_interested")}</option>
-                </select>
-                <input className="h-10 flex-1 rounded-xl border px-3 text-sm" value={callNote} onChange={(event) => setCallNote(event.target.value)} placeholder={t("crm.workspace.callNote")} />
-                <button
-                  type="button"
-                  className="quick-btn"
-                  onClick={() => void logCall(lead._id, callOutcome, callNote).then(() => flash(t("crm.workspace.callLogged")))}
-                >
-                  {t("crm.workspace.logCall")}
-                </button>
-              </div>
-              <ol className="space-y-2">
+            <div className="crm-pane">
+              <section className="crm-composer">
+                <label className="crm-field">
+                  <span>{t("crm.common.note")}</span>
+                  <textarea
+                    rows={4}
+                    value={note}
+                    onChange={(event) => setNote(event.target.value)}
+                    placeholder={t("crm.leads.drawer.notePlaceholder")}
+                  />
+                </label>
+                <div className="crm-inline">
+                  <select value={callOutcome} onChange={(event) => setCallOutcome(event.target.value)}>
+                    <option value="answered">{t("crm.workspace.callOutcomes.answered")}</option>
+                    <option value="no_answer">{t("crm.workspace.callOutcomes.no_answer")}</option>
+                    <option value="interested">{t("crm.workspace.callOutcomes.interested")}</option>
+                    <option value="not_interested">{t("crm.workspace.callOutcomes.not_interested")}</option>
+                  </select>
+                  <input value={callNote} onChange={(event) => setCallNote(event.target.value)} placeholder={t("crm.workspace.callNote")} />
+                  <button
+                    type="button"
+                    className="crm-secondary"
+                    onClick={() => void logCall(lead._id, callOutcome, callNote).then(() => { setCallNote(""); flash(t("crm.workspace.callLogged")); })}
+                  >
+                    {t("crm.workspace.logCall")}
+                  </button>
+                </div>
+              </section>
+              <ol className="crm-timeline">
                 {timeline.map((event, index) => (
-                  <li key={event.id || index} className="rounded-xl border border-slate-100 p-3">
-                    <p className="text-sm font-bold text-slate-800">{event.text}</p>
-                    <p className="mt-1 text-[11px] font-bold text-slate-400">
-                      {event.at ? new Date(event.at).toLocaleString(locale) : ""} · {event.actor || t("crm.common.systemUser")}
-                      {event.callOutcome ? ` · ${t(`crm.workspace.callOutcomes.${event.callOutcome}`)}` : ""}
-                    </p>
-                  </li>
+                  <TimelineItem key={event.id || index} event={event} locale={locale} />
                 ))}
               </ol>
             </div>
           )}
 
           {tab === "tasks" && (
-            <div className="crm-sheet">
-              <input className="h-10 w-full rounded-xl border px-3" value={taskText} onChange={(event) => setTaskText(event.target.value)} placeholder={t("crm.leads.drawer.taskPlaceholder")} />
-              <input className="h-10 w-full rounded-xl border px-3" type="datetime-local" value={taskDue} onChange={(event) => setTaskDue(event.target.value)} />
-              <button
-                type="button"
-                className="quick-btn"
-                onClick={() =>
-                  void addActivity("task", taskText, { taskDueAt: taskDue }).then(() => {
-                    setTaskText("");
-                    setTaskDue("");
-                  })
-                }
-              >
-                {t("crm.workspace.addTask")}
-              </button>
-              <ul className="space-y-2">
+            <div className="crm-pane">
+              <section className="crm-composer">
+                <label className="crm-field">
+                  <span>{t("crm.common.task")}</span>
+                  <input value={taskText} onChange={(event) => setTaskText(event.target.value)} placeholder={t("crm.leads.drawer.taskPlaceholder")} />
+                </label>
+                <label className="crm-field">
+                  <span>{t("crm.leads.drawer.dueTime")}</span>
+                  <input type="datetime-local" value={taskDue} onChange={(event) => setTaskDue(event.target.value)} />
+                </label>
+              </section>
+              <ul className="crm-timeline">
                 {(lead.activities || [])
                   .filter((activity) => activity.type === "task")
                   .map((activity) => (
-                    <li key={String(activity._id || activity.id)} className="rounded-xl border p-3 text-sm font-bold">
-                      {String(activity.text || "")}
+                    <li key={String(activity._id || activity.id)}>
+                      <p className="crm-timeline-meta">
+                        <span>{t("crm.common.task")}</span>
+                        <time>{activity.createdAt ? new Date(String(activity.createdAt)).toLocaleString(locale) : ""}</time>
+                      </p>
+                      <p>{String(activity.text || "")}</p>
                     </li>
                   ))}
               </ul>
@@ -430,38 +447,34 @@ export default function CRMLeadCard({
           )}
 
           {tab === "meetings" && (
-            <div className="crm-sheet">
-              <input className="h-10 w-full rounded-xl border px-3" value={meetingTitle} onChange={(event) => setMeetingTitle(event.target.value)} placeholder={t("crm.workspace.meetingTitle")} />
-              <input className="h-10 w-full rounded-xl border px-3" type="datetime-local" value={meetingAt} onChange={(event) => setMeetingAt(event.target.value)} />
-              <button
-                type="button"
-                className="quick-btn"
-                onClick={() =>
-                  void createMeeting(lead._id, meetingTitle, meetingAt).then(() => flash(t("crm.workspace.saved")))
-                }
-              >
-                {t("crm.workspace.addMeeting")}
-              </button>
-            </div>
+            <section className="crm-composer">
+              <label className="crm-field">
+                <span>{t("crm.workspace.meetingTitle")}</span>
+                <input value={meetingTitle} onChange={(event) => setMeetingTitle(event.target.value)} placeholder={t("crm.workspace.meetingTitle")} />
+              </label>
+              <label className="crm-field">
+                <span>{t("crm.leads.drawer.dueTime")}</span>
+                <input type="datetime-local" value={meetingAt} onChange={(event) => setMeetingAt(event.target.value)} />
+              </label>
+            </section>
           )}
 
           {tab === "documents" && (
-            <div className="crm-sheet">
-              <input className="h-10 w-full rounded-xl border px-3" value={docName} onChange={(event) => setDocName(event.target.value)} placeholder={t("crm.workspace.documentName")} />
-              <input className="h-10 w-full rounded-xl border px-3" value={docUrl} onChange={(event) => setDocUrl(event.target.value)} placeholder="https://" />
-              <button
-                type="button"
-                className="quick-btn"
-                onClick={() => void addDocument(lead._id, docName, docUrl).then(() => flash(t("crm.workspace.saved")))}
-              >
-                {t("crm.workspace.addDocument")}
-              </button>
-              <ul className="space-y-2">
+            <div className="crm-pane">
+              <section className="crm-composer">
+                <label className="crm-field">
+                  <span>{t("crm.workspace.documentName")}</span>
+                  <input value={docName} onChange={(event) => setDocName(event.target.value)} placeholder={t("crm.workspace.documentName")} />
+                </label>
+                <label className="crm-field">
+                  <span>URL</span>
+                  <input value={docUrl} onChange={(event) => setDocUrl(event.target.value)} placeholder="https://" dir="ltr" />
+                </label>
+              </section>
+              <ul className="crm-timeline">
                 {(lead.documents || []).map((doc) => (
                   <li key={doc.url}>
-                    <a className="text-sm font-bold text-[#6D28D9]" href={doc.url} target="_blank" rel="noreferrer">
-                      {doc.name}
-                    </a>
+                    <a href={doc.url} target="_blank" rel="noreferrer">{doc.name}</a>
                   </li>
                 ))}
               </ul>
@@ -469,28 +482,16 @@ export default function CRMLeadCard({
           )}
 
           {tab === "deals" && (
-            <div className="crm-sheet">
-              <div className="grid gap-2 sm:grid-cols-2">
-                <input className="h-10 rounded-xl border px-3" value={dealName} onChange={(event) => setDealName(event.target.value)} placeholder={t("crm.workspace.dealName")} />
-                <input className="h-10 rounded-xl border px-3" value={dealAmount} onChange={(event) => setDealAmount(event.target.value)} placeholder={t("crm.workspace.dealAmount")} />
-              </div>
-              <button
-                type="button"
-                className="quick-btn"
-                onClick={() =>
-                  void createDeal({
-                    name: dealName,
-                    amount: Number(dealAmount) || 0,
-                    leadId: lead._id,
-                    contactName: name,
-                  }).then(() => flash(t("crm.workspace.saved")))
-                }
-              >
-                {t("crm.workspace.addDeal")}
-              </button>
-              <ul className="space-y-2">
+            <div className="crm-pane">
+              <section className="crm-composer">
+                <div className="crm-inline">
+                  <input value={dealName} onChange={(event) => setDealName(event.target.value)} placeholder={t("crm.workspace.dealName")} />
+                  <input value={dealAmount} onChange={(event) => setDealAmount(event.target.value)} placeholder={t("crm.workspace.dealAmount")} />
+                </div>
+              </section>
+              <ul className="crm-timeline">
                 {deals.map((deal) => (
-                  <li key={deal._id} className="rounded-xl border p-3 text-sm font-bold">
+                  <li key={deal._id}>
                     {deal.name} · {deal.amount} {deal.currency} · {deal.status}
                   </li>
                 ))}
@@ -499,39 +500,92 @@ export default function CRMLeadCard({
           )}
 
           {tab === "payments" && (
-            <ul className="crm-sheet">
+            <ul className="crm-timeline">
               {payments.length ? (
                 payments.map((deal) => (
-                  <li key={deal._id} className="rounded-xl border p-3 text-sm font-bold">
+                  <li key={deal._id}>
                     {deal.name} · {deal.amount} {deal.currency}
                   </li>
                 ))
               ) : (
-                <p className="text-sm font-bold text-slate-500">{t("crm.leads.drawer.paymentsEmpty")}</p>
+                <p className="crm-empty">{t("crm.leads.drawer.paymentsEmpty")}</p>
               )}
             </ul>
           )}
-
-          <div className="rounded-xl border border-slate-100 p-3">
-            <p className="text-xs font-black text-slate-500">{t("crm.leads.table.agent")}</p>
-            <select
-              className="mt-2 h-10 w-full rounded-xl border px-3 text-sm"
-              value={lead.assignedToUserId || ""}
-              onChange={(event) => {
-                const agent = agents.find((item) => item._id === event.target.value);
-                void assignLead(lead._id, event.target.value, agent?.name || "").then(() =>
-                  flash(t("crm.workspace.assigned"))
-                );
-              }}
-            >
-              <option value="">{t("crm.leads.unassignedAgent")}</option>
-              {agents.map((agent) => (
-                <option key={agent._id} value={agent._id}>
-                  {agent.name}
-                </option>
-              ))}
-            </select>
           </div>
+          {tab === "personal" && (
+            <FormBar
+              dirty={personalDirty}
+              saving={saving}
+              unsavedLabel={t("crm.workspace.unsaved")}
+              cancelLabel={t("crm.common.cancel")}
+              saveLabel={saving ? t("crm.common.saving") : t("crm.common.save")}
+              onCancel={() => setCustomValues(lead.customValues || {})}
+              onSave={() => void saveCustom()}
+            />
+          )}
+          {tab === "activity" && (
+            <FormBar
+              dirty={Boolean(note.trim())}
+              unsavedLabel={t("crm.workspace.unsaved")}
+              cancelLabel={t("crm.common.cancel")}
+              saveLabel={t("crm.workspace.saveNote")}
+              onCancel={() => setNote("")}
+              onSave={() => void addActivity("note", note).then(() => setNote(""))}
+            />
+          )}
+          {tab === "tasks" && (
+            <FormBar
+              dirty={Boolean(taskText.trim())}
+              unsavedLabel={t("crm.workspace.unsaved")}
+              cancelLabel={t("crm.common.cancel")}
+              saveLabel={t("crm.workspace.addTask")}
+              onCancel={() => { setTaskText(""); setTaskDue(""); }}
+              onSave={() =>
+                void addActivity("task", taskText, { taskDueAt: taskDue }).then(() => {
+                  setTaskText("");
+                  setTaskDue("");
+                })
+              }
+            />
+          )}
+          {tab === "meetings" && (
+            <FormBar
+              dirty={Boolean(meetingTitle.trim())}
+              unsavedLabel={t("crm.workspace.unsaved")}
+              cancelLabel={t("crm.common.cancel")}
+              saveLabel={t("crm.workspace.addMeeting")}
+              onCancel={() => { setMeetingTitle(""); setMeetingAt(""); }}
+              onSave={() => void createMeeting(lead._id, meetingTitle, meetingAt).then(() => { setMeetingTitle(""); setMeetingAt(""); flash(t("crm.workspace.saved")); })}
+            />
+          )}
+          {tab === "documents" && (
+            <FormBar
+              dirty={Boolean(docName.trim() || docUrl.trim())}
+              unsavedLabel={t("crm.workspace.unsaved")}
+              cancelLabel={t("crm.common.cancel")}
+              saveLabel={t("crm.workspace.addDocument")}
+              onCancel={() => { setDocName(""); setDocUrl(""); }}
+              onSave={() => void addDocument(lead._id, docName, docUrl).then(() => { setDocName(""); setDocUrl(""); flash(t("crm.workspace.saved")); })}
+            />
+          )}
+          {tab === "deals" && (
+            <FormBar
+              dirty={Boolean(dealName.trim())}
+              unsavedLabel={t("crm.workspace.unsaved")}
+              cancelLabel={t("crm.common.cancel")}
+              saveLabel={t("crm.workspace.addDeal")}
+              onCancel={() => { setDealName(""); setDealAmount(""); }}
+              onSave={() =>
+                void createDeal({
+                  name: dealName,
+                  amount: Number(dealAmount) || 0,
+                  leadId: lead._id,
+                  contactName: name,
+                }).then(() => { setDealName(""); setDealAmount(""); flash(t("crm.workspace.saved")); })
+              }
+            />
+          )}
         </div>
         </div>
       </div>
@@ -545,5 +599,62 @@ function Fact({ label, value, ltr = false }: { label: string; value?: unknown; l
       <p className="crm-fact__label">{label}</p>
       <p className="crm-fact__value" dir={ltr ? "ltr" : undefined}>{value ? String(value) : "—"}</p>
     </div>
+  );
+}
+
+function FormBar({
+  dirty,
+  saving = false,
+  unsavedLabel,
+  cancelLabel,
+  saveLabel,
+  onCancel,
+  onSave,
+}: {
+  dirty: boolean;
+  saving?: boolean;
+  unsavedLabel: string;
+  cancelLabel: string;
+  saveLabel: string;
+  onCancel: () => void;
+  onSave: () => void;
+}) {
+  return (
+    <div className="crm-form-bar">
+      <p className="crm-unsaved">{dirty ? unsavedLabel : ""}</p>
+      <div className="crm-form-bar-actions">
+        <button type="button" className="crm-cancel" onClick={onCancel}>
+          {cancelLabel}
+        </button>
+        <button type="button" className="crm-save" onClick={onSave} disabled={saving}>
+          {saveLabel}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function TimelineItem({ event, locale }: { event: TimelineEvent; locale: string }) {
+  const { t } = useTranslation();
+  const when = event.at ? new Date(event.at) : null;
+  const valid = when && !Number.isNaN(when.getTime());
+  const typeLabels: Record<string, string> = {
+    note: t("crm.common.note"),
+    task: t("crm.common.task"),
+    call: t("crm.workspace.logCall"),
+    meeting: t("crm.workspace.meeting"),
+  };
+  const typeLabel = typeLabels[event.type] || event.type || t("crm.workspace.tabs.activity");
+
+  return (
+    <li>
+      <p className="crm-timeline-meta">
+        <span>{typeLabel}</span>
+        <time>{valid ? when.toLocaleString(locale) : ""}</time>
+        <span>{event.actor || t("crm.common.systemUser")}</span>
+        {event.callOutcome ? <span>{t(`crm.workspace.callOutcomes.${event.callOutcome}`)}</span> : null}
+      </p>
+      <p>{event.text}</p>
+    </li>
   );
 }

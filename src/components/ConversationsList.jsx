@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { useSocket } from "../context/socketContext";
 import UnreadBadge from "./UnreadBadge";
 import styles from "./ConversationsList.module.css";
@@ -23,6 +24,7 @@ export default function ConversationsList({
   unreadCountsByConversation = {},
 }) {
   const socket = useSocket();
+  const { t } = useTranslation();
   const [selectedId, setSelectedId] = useState(selectedConversationId);
 
   // -------- API ENDPOINT ----------
@@ -68,19 +70,19 @@ export default function ConversationsList({
   // -------- UI STATES ----------
   if (isLoading)
     return (
-      <div className={styles.noSelection}>Loading conversations…</div>
+      <div className={styles.noSelection}>{t("leftover.bizChatChrome.loadingConversations")}</div>
     );
 
   if (error)
     return (
       <div className={styles.noSelection}>
-        Error loading conversations: {error.message}
+        {t("leftover.bizChatChrome.loadError")}: {error.message}
       </div>
     );
 
   if (!list.length)
     return (
-      <div className={styles.noSelection}>No conversations yet</div>
+      <div className={styles.noSelection}>{t("leftover.bizChatChrome.noConversations")}</div>
     );
 
   // -------- HELPERS ----------
@@ -118,7 +120,9 @@ export default function ConversationsList({
     <div className={styles.conversationsList}>
       <div className={styles.sidebar}>
         <div className={styles.sidebarTitle}>
-          {isBusiness ? "Chats with Clients" : "Chat with Business"}
+          {isBusiness
+            ? t("leftover.bizChatChrome.chatsWithClients")
+            : t("leftover.bizChatChrome.chatWithBusiness")}
         </div>
 
         {uniqueConvs.map((conv) => {

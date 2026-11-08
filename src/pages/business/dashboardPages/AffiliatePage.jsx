@@ -4,9 +4,12 @@ import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
+import { bizAlert } from "../../../components/ui/bizDialog";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
 
 const AffiliatePage = () => {
   const { t } = useTranslation();
+  const dir = useLocaleDir();
 
   const [affiliateId, setAffiliateId] = useState(null);
   const [referralCode, setReferralCode] = useState(null);
@@ -83,7 +86,7 @@ const AffiliatePage = () => {
   const handleCreateClient = async () => {
 
     if (!clientBusinessName || !clientName || !clientEmail || !clientPhone) {
-      return alert(t("leftover.affiliate.fillAll"));
+      return void bizAlert(t("leftover.affiliate.fillAll"));
     }
 
     try {
@@ -106,7 +109,7 @@ const AffiliatePage = () => {
       setClientPhone("");
 
     } catch (err) {
-      alert(err.response?.data?.message || t("leftover.affiliate.createClientError"));
+      void bizAlert(err.response?.data?.message || t("leftover.affiliate.createClientError"));
     }
   };
 
@@ -119,11 +122,11 @@ const AffiliatePage = () => {
     const amount = Number(withdrawAmount);
 
     if (isNaN(amount) || amount < 200) {
-      return alert(t("leftover.affiliate.minWithdraw"));
+      return void bizAlert(t("leftover.affiliate.minWithdraw"));
     }
 
     if (amount > currentBalance) {
-      return alert(t("leftover.affiliate.withdrawExceeds"));
+      return void bizAlert(t("leftover.affiliate.withdrawExceeds"));
     }
 
     try {
@@ -136,7 +139,7 @@ const AffiliatePage = () => {
       setWithdrawStatus(data.message || t("leftover.affiliate.withdrawReceived"));
 
     } catch (err) {
-      alert(err.response?.data?.message || t("leftover.affiliate.withdrawError"));
+      void bizAlert(err.response?.data?.message || t("leftover.affiliate.withdrawError"));
     }
   };
 
@@ -153,9 +156,12 @@ const AffiliatePage = () => {
   // ----------------------------------------------------
 
   return (
-    <div className="affiliate-page">
+    <div className="affiliate-page" dir={dir}>
 
-      <h1>Affiliate Program</h1>
+      <header className="affiliate-head">
+        <h1>{t("leftover.affiliate.pageTitle", "תוכנית שותפים")}</h1>
+        <p>{t("leftover.affiliate.pageHint", "קישור אישי, לקוחות חדשים, סטטיסטיקה ומשיכת יתרה.")}</p>
+      </header>
 
       {/* -------------------------------------------------- */}
       {/* PERSONAL LINK */}
@@ -163,20 +169,20 @@ const AffiliatePage = () => {
 
       <section className="affiliate-section">
 
-        <h2>🎯 Your Personal Affiliate Link</h2>
+        <h2>{t("leftover.affiliate.linkTitle")}</h2>
 
-        <input
-          type="text"
-          value={affiliateLink}
-          readOnly
-          className="affiliate-link-input"
-        />
+        <div className="affiliate-link-row">
+          <input
+            type="text"
+            value={affiliateLink}
+            readOnly
+            className="affiliate-link-input"
+          />
 
-        <button
-          onClick={() => navigator.clipboard.writeText(affiliateLink)}
-        >
-          Copy Link
-        </button>
+          <button type="button" onClick={() => navigator.clipboard.writeText(affiliateLink)}>
+            {t("leftover.affiliate.copyLink")}
+          </button>
+        </div>
 
       </section>
 
@@ -186,7 +192,7 @@ const AffiliatePage = () => {
 
       <section className="create-client-section">
 
-        <h2>Create New Client</h2>
+        <h2>{t("leftover.affiliate.createTitle")}</h2>
 
         <input
           type="text"
@@ -204,20 +210,20 @@ const AffiliatePage = () => {
 
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t("leftover.affiliate.emailPh")}
           value={clientEmail}
           onChange={(e) => setClientEmail(e.target.value)}
         />
 
         <input
           type="text"
-          placeholder="Phone"
+          placeholder={t("leftover.affiliate.phonePh")}
           value={clientPhone}
           onChange={(e) => setClientPhone(e.target.value)}
         />
 
-        <button onClick={handleCreateClient}>
-          Create Client & Payment Link
+        <button type="button" onClick={handleCreateClient}>
+          {t("leftover.affiliate.createButton")}
         </button>
 
         {clientStatus && (
@@ -226,10 +232,10 @@ const AffiliatePage = () => {
 
         {paymentLink && (
           <div className="payment-link-box">
-            <p>Payment link:</p>
+            <p>{t("leftover.affiliate.paymentLink")}</p>
             <input value={paymentLink} readOnly />
-            <button onClick={() => navigator.clipboard.writeText(paymentLink)}>
-              Copy Link
+            <button type="button" onClick={() => navigator.clipboard.writeText(paymentLink)}>
+              {t("leftover.affiliate.copyLink")}
             </button>
           </div>
         )}
@@ -242,9 +248,9 @@ const AffiliatePage = () => {
 
       <section className="affiliate-stats">
 
-        <h2>Statistics</h2>
+        <h2>{t("leftover.affiliate.statsTitle")}</h2>
 
-        {loadingStats && <BizuplyLoader size="lg" label="Loading..." />}
+        {loadingStats && <BizuplyLoader size="lg" label={t("leftover.affiliate.loading")} />}
         {errorStats && <p>{errorStats}</p>}
 
         {!loadingStats && allStats.length > 0 && (
@@ -253,10 +259,10 @@ const AffiliatePage = () => {
 
             <thead>
               <tr>
-                <th>Month</th>
-                <th>Purchases</th>
-                <th>Paid</th>
-                <th>Unpaid</th>
+                <th>{t("leftover.affiliate.month")}</th>
+                <th>{t("leftover.affiliate.purchases")}</th>
+                <th>{t("leftover.affiliate.paid")}</th>
+                <th>{t("leftover.affiliate.unpaid")}</th>
               </tr>
             </thead>
 
@@ -284,6 +290,10 @@ const AffiliatePage = () => {
 
         )}
 
+        {!loadingStats && !errorStats && allStats.length === 0 && (
+          <p className="affiliate-empty">{t("leftover.affiliate.emptyStats")}</p>
+        )}
+
       </section>
 
       {/* -------------------------------------------------- */}
@@ -292,31 +302,34 @@ const AffiliatePage = () => {
 
       <section className="affiliate-bank-section">
 
-        <h2>Withdraw Balance</h2>
+        <h2>{t("leftover.affiliate.withdrawTitle")}</h2>
 
         <p>
-          Available balance: <b>${currentBalance.toFixed(2)}</b>
+          {t("leftover.affiliate.available")}: <b>${currentBalance.toFixed(2)}</b>
         </p>
 
         <input
           type="number"
           value={withdrawAmount}
           onChange={(e) => setWithdrawAmount(e.target.value)}
-          placeholder="Minimum $200"
+          placeholder={t("leftover.affiliate.minPh")}
         />
 
-        <button onClick={handleWithdrawRequest}>
-          Request Withdrawal
-        </button>
+        <div className="affiliate-actions">
+          <button type="button" onClick={handleWithdrawRequest}>
+            {t("leftover.affiliate.requestWithdraw")}
+          </button>
+
+          <button
+            type="button"
+            className="payment-button"
+            onClick={() => setShowBankForm(!showBankForm)}
+          >
+            {t("leftover.affiliate.manageBank")}
+          </button>
+        </div>
 
         {withdrawStatus && <p>{withdrawStatus}</p>}
-
-        <button
-          className="payment-button"
-          onClick={() => setShowBankForm(!showBankForm)}
-        >
-          Manage Bank Details
-        </button>
 
         {showBankForm && (
           <div className="bank-form-wrapper">
