@@ -177,7 +177,11 @@ export default function WebsiteAiBuilderPage() {
           visualEditorPayload: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
           projectData: { editorMode: "visual-react", templateKey: "ai-site", data: visual, templateData: visual },
         }, { timeout: 120000 });
-        await API.post(`/ai-studio/code-projects/${current.projectId}/editor-site`, { siteId: site._id }, { timeout: 30000 });
+        try {
+          await API.post(`/ai-studio/code-projects/${current.projectId}/editor-site`, { siteId: site._id }, { timeout: 30000 });
+        } catch {
+          /* The saved site still opens in the editor when the link is recorded later. */
+        }
         navigate(editorPath(site._id));
       } catch (err: any) {
         opening.current = false;
