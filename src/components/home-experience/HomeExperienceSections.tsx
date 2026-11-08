@@ -6,14 +6,12 @@ import { useOpenFilm, type Film } from "./film";
 import {
   AppointmentsBand,
   ConnectedFlow,
-  CrmStory,
   GrowthBand,
-  HeroDecor,
   OrbitBand,
-  PhoneStory,
   useCinematic,
 } from "./HomeCinematic";
 import { HomeAi, HomeJourney, HomeSiteGallery, HomeTrust } from "./HomePremiumBands";
+import { CampaignPulse, CrmCard, InboxPane, LeadBoard, PipelineStrip, WaPhone } from "./ProductMocks";
 import { homeText } from "./homeCopy";
 
 function useCopy() {
@@ -304,8 +302,34 @@ function GrowthSection() {
   return <GrowthBand copy={cine} />;
 }
 
+function useReveal() {
+  const reduced = useReduced();
+  useEffect(() => {
+    const nodes = [...document.querySelectorAll<HTMLElement>(".hx-reveal")];
+    if (!nodes.length) return undefined;
+    if (reduced) {
+      nodes.forEach((node) => node.classList.add("is-in"));
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-in");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.18, rootMargin: "0px 0px -8% 0px" },
+    );
+    nodes.forEach((node) => observer.observe(node));
+    return () => observer.disconnect();
+  }, [reduced]);
+}
+
 export default function HomeExperienceSections() {
   const { text } = useCopy();
+  useReveal();
   return (
     <>
       <a className="hx-skip" href="#hx-connect">{text("דילוג לתוכן", "Skip to content")}</a>
@@ -329,22 +353,14 @@ export default function HomeExperienceSections() {
 }
 
 function Hero() {
-  const { text, language, cine } = useCopy();
+  const { text, cine } = useCopy();
   const reduced = useReduced();
   const hero = cine.hero;
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
     const node = ref.current;
     if (!node) return;
-    // Keep a product layer always opaque so the purple frame never flashes empty.
-    const s2 = band(progress, 0.3, 0.44, 0.6, 0.74);
-    const s3 = progress < 0.6 ? 0 : Math.min(1, (progress - 0.6) / 0.14);
-    const s1Fade = progress < 0.3 ? 1 : progress < 0.44 ? 1 - (progress - 0.3) / 0.14 : 0;
-    const s1 = Math.max(s1Fade, 1 - Math.max(s2, s3));
     node.style.setProperty("--hp", progress.toFixed(3));
-    node.style.setProperty("--s1", s1.toFixed(3));
-    node.style.setProperty("--s2", s2.toFixed(3));
-    node.style.setProperty("--s3", s3.toFixed(3));
   });
   const lineOne = hero.lineOne;
   const lineTwo = hero.lineTwo;
@@ -354,110 +370,64 @@ function Hero() {
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
       <div className="hx-hero-pin">
-        <div className="hx-hero-atmosphere" aria-hidden="true">
-          <div className="hx-hero-glow hx-hero-glow-a" />
-          <div className="hx-hero-glow hx-hero-glow-b" />
-          <div className="hx-hero-glow hx-hero-glow-c" />
-          <div className="hx-hero-mesh" />
-          <div className="hx-hero-beam" />
-        </div>
-        <div className="hx-geo hx-geo-a" aria-hidden="true" />
-        <div className="hx-geo hx-geo-b" aria-hidden="true" />
-        <div className="hx-geo hx-geo-c" aria-hidden="true" />
-        <div className="hx-hero-copy">
-          <p className="hx-hero-brand">BizUply</p>
-          <h1 className="hx-display" id="hx-hero-title">
-            <Words text={lineOne} />
-            <Words text={lineTwo} delay={180} />
-            {lineThree ? <Words text={lineThree} hot={hot} delay={360} /> : null}
-          </h1>
-          <p className="hx-lead">{hero.lead1}</p>
-          <div className="hx-actions">
-            <Cta to="/register">{hero.start}</Cta>
-            <Cta to="#products" tone="line">{hero.see}</Cta>
-          </div>
-        </div>
-        <div className="hx-hero-stage">
-          <div className="hx-hero-frame">
-            <div className="hx-hero-chrome" aria-hidden="true">
-              <span /><span /><span />
+        <div className="hx-hero-core">
+          <div className="hx-hero-copy">
+            <p className="hx-hero-brand">BizUply</p>
+            <h1 className="hx-display" id="hx-hero-title">
+              <Words text={lineOne} />
+              <Words text={lineTwo} delay={180} />
+              {lineThree ? <Words text={lineThree} hot={hot} delay={360} /> : null}
+            </h1>
+            <p className="hx-lead">{hero.lead1}</p>
+            <div className="hx-actions">
+              <Cta to="/register">{hero.start}</Cta>
+              <Cta to="#products" tone="line">{hero.see}</Cta>
             </div>
-            <LocaleShot
-              className="hx-hero-shot hx-hero-shot-1 hx-crop-leads"
-              language={language}
-              src="/demo-media/home/crm.jpg"
-              alt={hero.stageAlt}
-              width={1600}
-              height={1000}
-              fetchPriority="high"
-              decoding="async"
-              forceStill
-            />
-            <LocaleShot
-              className="hx-hero-shot hx-hero-shot-2 hx-crop-chat"
-              language={language}
-              src="/demo-media/whatsapp/still-3.jpg"
-              alt={text("שיחת WhatsApp של Northwind Studio בתוך BizUply", "A Northwind Studio WhatsApp conversation inside BizUply")}
-              width={1600}
-              height={1000}
-              decoding="async"
-              forceStill
-            />
-            <LocaleShot
-              className="hx-hero-shot hx-hero-shot-3 hx-crop-campaigns"
-              language={language}
-              src="/demo-media/campaigns/still-chart.jpg"
-              alt={text("מסך ניהול קמפיינים של Meta ב-BizUply", "Meta campaign management inside BizUply")}
-              width={1600}
-              height={1000}
-              decoding="async"
-              forceStill
-            />
-            <div className="hx-hero-shine" aria-hidden="true" />
           </div>
-          <div className="hx-hero-float hx-hero-float-a" aria-hidden="true">
-            <LocaleShot
-              language={language}
-              src="/demo-media/crm/lead-file.png"
-              alt=""
-              width={900}
-              height={560}
-              decoding="async"
-              fetchPriority="low"
-              className="hx-crop-record"
-              forceStill
-            />
-          </div>
-          <div className="hx-hero-float hx-hero-float-b" aria-hidden="true">
-            <LocaleShot
-              language={language}
-              src="/demo-media/whatsapp/still-3.jpg"
-              alt=""
-              width={900}
-              height={560}
-              decoding="async"
-              fetchPriority="low"
-              className="hx-crop-chat"
-              forceStill
-            />
-          </div>
-          <div className="hx-hero-float hx-hero-float-c" aria-hidden="true">
-            <LocaleShot
-              language={language}
-              src="/demo-media/campaigns/still-chart.jpg"
-              alt=""
-              width={900}
-              height={560}
-              decoding="async"
-              fetchPriority="low"
-              className="hx-crop-campaigns"
-              forceStill
-            />
+          <div className="hx-hero-stage" aria-label={hero.stageAlt}>
+            <div className="hx-hero-frame hx-compose">
+              <div className="hx-compose-main">
+                <LeadBoard text={text} />
+                <video
+                  className="hx-compose-film hx-hero-shot hx-hero-shot-1"
+                  src="/demo-media/home/crm.mp4"
+                  poster="/demo-media/home/crm.jpg"
+                  muted
+                  playsInline
+                  loop
+                  autoPlay={!reduced}
+                  preload="metadata"
+                  aria-hidden="true"
+                />
+                {/* Keep first-paint asset present for hydration/SEO continuity */}
+                <img
+                  className="hx-hero-shot hx-hero-shot-1"
+                  src="/demo-media/home/crm.jpg"
+                  alt=""
+                  width={1600}
+                  height={1000}
+                  fetchPriority="high"
+                  decoding="async"
+                  hidden
+                />
+              </div>
+              <div className="hx-compose-side">
+                <WaPhone text={text} />
+              </div>
+              <div className="hx-compose-card">
+                <CrmCard text={text} />
+              </div>
+            </div>
+            <div className="hx-compose-pipe">
+              <PipelineStrip text={text} />
+            </div>
           </div>
         </div>
-        <HeroDecor copy={cine} reduced={reduced} />
+        <a className={`hx-scroll-cue${reduced ? " is-still" : ""}`} href="#hx-connect">
+          <span>{hero.scroll}</span>
+          <i aria-hidden="true" />
+        </a>
       </div>
-      <div className="hx-wave" aria-hidden="true" />
     </section>
   );
 }
@@ -743,18 +713,29 @@ function ProductShowcase() {
                 key={product.key}
                 data-product={product.key}
               >
-                <div className="hx-show-frame">
-                  <LocaleShot
-                    language={language}
-                    src={product.img}
-                    alt={product.title}
-                    width={1600}
-                    height={1000}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    decoding="async"
-                    className={product.crop}
-                    forceStill
-                  />
+                <div className={`hx-show-frame${product.key === "crm" || product.key === "whatsapp" || product.key === "campaigns" ? " is-mock" : ""}`}>
+                  {product.key === "crm" ? (
+                    <LeadBoard text={text} />
+                  ) : product.key === "whatsapp" ? (
+                    <div className="hx-show-mock-wa">
+                      <WaPhone text={text} />
+                      <InboxPane text={text} />
+                    </div>
+                  ) : product.key === "campaigns" ? (
+                    <CampaignPulse text={text} />
+                  ) : (
+                    <LocaleShot
+                      language={language}
+                      src={product.img}
+                      alt={product.title}
+                      width={1600}
+                      height={1000}
+                      loading={index === 0 ? "eager" : "lazy"}
+                      decoding="async"
+                      className={product.crop}
+                      forceStill
+                    />
+                  )}
                   <div className="hx-show-veil" aria-hidden="true" />
                 </div>
                 <figcaption dir={dir}>
@@ -981,13 +962,8 @@ function CrmDepth() {
     [text("כרטיס לקוח ברור", "A clear customer record"), text("הפרטים שצריך כדי להמשיך טיפול נשארים ברשומה אחת.", "The details needed for follow-up stay on one record.")],
     [text("הצעד הבא מוכן", "The next step is ready"), text("משימת המשך נפתחת ליד אותו לקוח, כדי שהצוות יידע מה לעשות עכשיו.", "A follow-up task sits with the same customer, so the team knows what to do next.")],
   ] as const;
-  const shots = [
-    ["/demo-media/crm/leads-list.png", text("רשימת לידים ממוקדת", "Focused lead list"), "hx-crop-leads"],
-    ["/demo-media/crm/lead-file.png", text("כרטיס ליד", "Lead record"), "hx-crop-record"],
-    ["/demo-media/crm/lead-task.png", text("משימת המשך", "Follow-up task"), "hx-crop-task"],
-  ] as const;
   return (
-    <section className="hx-depth" id="crm" aria-labelledby="hx-crm-title">
+    <section className="hx-depth hx-reveal" id="crm" aria-labelledby="hx-crm-title">
       <div className="hx-depth-wrap">
         <div>
           <h2 id="hx-crm-title">{cine.crmTitle}</h2>
@@ -1001,17 +977,12 @@ function CrmDepth() {
           </div>
         </div>
         <div className="hx-crm-stage hx-crm-stage-focus">
-          <LocaleShot language={language} src={shots[0][0]} alt={shots[0][1]} width={1200} height={750} loading="lazy" decoding="async" className={shots[0][2]} />
-          <div className="hx-crm-float">
-            <LocaleShot language={language} src={shots[1][0]} alt={shots[1][1]} width={1200} height={750} loading="lazy" decoding="async" className={shots[1][2]} />
-          </div>
-          <div className="hx-crm-task">
-            <LocaleShot language={language} src={shots[2][0]} alt={shots[2][1]} width={1200} height={750} loading="lazy" decoding="async" className={shots[2][2]} />
-          </div>
-          <p className="hx-crm-toast">{text("ליד חדש התקבל", "A new lead arrived")}</p>
-          <CrmStory copy={cine} />
-          <div className="hx-crm-demo" aria-hidden="true">
-            <PreviewFilm src="/demo-media/home/crm.mp4" poster="/demo-media/home/crm.jpg" />
+          <div className="hx-crm-live">
+            <LeadBoard text={text} />
+            <CrmCard text={text} />
+            <div className="hx-crm-demo" aria-hidden="true">
+              <PreviewFilm src="/demo-media/home/crm.mp4" poster="/demo-media/home/crm.jpg" />
+            </div>
           </div>
         </div>
         <ul className="hx-points">
@@ -1049,35 +1020,23 @@ function WhatsApp() {
   const { text, language, cine } = useCopy();
   const open = useOpenFilm();
   const ref = useRef<HTMLElement | null>(null);
+  const [active, setActive] = useState(false);
   useScrollSpan(ref, (progress) => {
     const node = ref.current;
     if (!node) return;
-    node.style.setProperty("--q1", clamp01((progress - 0.12) / 0.18).toFixed(3));
-    node.style.setProperty("--q2", clamp01((progress - 0.32) / 0.18).toFixed(3));
-    node.style.setProperty("--q3", clamp01((progress - 0.52) / 0.18).toFixed(3));
-    node.style.setProperty("--wa-mask", lerpStops(progress, [0, 0.6], [46, 0]).toFixed(3));
+    node.style.setProperty("--q1", clamp01((progress - 0.08) / 0.2).toFixed(3));
+    node.style.setProperty("--q2", clamp01((progress - 0.28) / 0.2).toFixed(3));
+    node.style.setProperty("--q3", clamp01((progress - 0.48) / 0.2).toFixed(3));
+    if (progress > 0.35) setActive(true);
   });
-  const quotes = [
-    [text("אמה וילסון", "Emma Wilson"), text("יום חמישי ב-10:00 נרשם ביומן.", "Thursday at 10:00 is booked, and added to the calendar.")],
-    [text("סופיה מיטשל", "Sophia Mitchell"), text("בוקר יום חמישי מתאים. האם 10:00 נוח?", "Thursday morning works. Does 10:00 suit you?")],
-    [text("אוליביה בנט", "Olivia Bennett"), text("ההצעה מוכנה לבדיקה.", "The proposal is ready whenever you want to review it.")],
-  ];
   return (
-    <section className="hx-chapter hx-wa" id="whatsapp" ref={ref} aria-labelledby="hx-wa-title">
+    <section className={`hx-chapter hx-wa hx-reveal${active ? " is-live" : ""}`} id="whatsapp" ref={ref} aria-labelledby="hx-wa-title">
       <div className="hx-chapter-pin">
         <div className="hx-wa-grid">
           <div>
             <h2 id="hx-wa-title">{cine.waTitle}</h2>
             <p className="hx-prose">{cine.waLead}</p>
-            <ul className="hx-quotes" aria-hidden="true">
-              {quotes.map(([name, line]) => (
-                <li className="hx-quote" key={name}>
-                  {line}
-                  <small>{name}</small>
-                </li>
-              ))}
-            </ul>
-            <ul className="hx-points hx-points-on-dark">
+            <ul className="hx-points">
               <li>
                 <h3>{text("שיחה ליד הכרטיס", "Conversation beside the record")}</h3>
                 <p>{text("אותו לקוח מה־CRM ממשיך בשיחה בתוך סביבת העבודה.", "The same CRM customer continues in a conversation inside the workspace.")}</p>
@@ -1087,33 +1046,23 @@ function WhatsApp() {
                 <p>{text("כשצריך לפתוח שיחה מחוץ לחלון השירות — לפי כללי Meta.", "When a conversation must start outside the service window — under Meta’s rules.")}</p>
               </li>
               <li>
-                <h3>{text("פחות הקשר שאבד", "Less lost context")}</h3>
-                <p>{text("ההודעה לא נשארת מנותקת מהטיפול בפנייה.", "The message does not stay detached from the enquiry work.")}</p>
+                <h3>{text("פנייה שנכנסת לטיפול", "An enquiry that becomes work")}</h3>
+                <p>{text("מהודעה לכרטיס לקוח ומשימת המשך — באותו מסלול.", "From a message to a customer record and follow-up task — on one path.")}</p>
               </li>
             </ul>
             <div className="hx-actions">
-              <Cta to="/whatsapp-api" tone="line">{text("לעמוד WhatsApp", "WhatsApp page")}</Cta>
+              <Cta to="/whatsapp-api" tone="ink">{text("לעמוד WhatsApp", "WhatsApp page")}</Cta>
               <DemoButton
                 label={text("לראות איך זה עובד", "See how it works")}
                 onClick={() => open(filmOf("whatsapp", "whatsapp", "/demo-media/whatsapp/poster.jpg", "WhatsApp", text("הקלטת תיבת ההודעות מתוך סביבת הדמו.", "A recording of the inbox from the demo workspace."), language, text))}
               />
             </div>
           </div>
-          <div className="hx-wa-frame hx-wa-frame-focus">
-            <PhoneStory copy={cine} />
-            <LocaleShot
-              language={language}
-              src="/demo-media/whatsapp/still-3.jpg"
-              alt={text("שיחת WhatsApp של Northwind Studio בתוך BizUply", "A Northwind Studio WhatsApp conversation inside BizUply")}
-              width={1600}
-              height={1000}
-              loading="lazy"
-              decoding="async"
-              className="hx-crop-chat"
-            />
-            <div className="hx-wa-demo" aria-hidden="true">
-              <PreviewFilm src="/demo-media/home/whatsapp.mp4" poster="/demo-media/home/whatsapp.jpg" />
-            </div>
+          <div className={`hx-wa-stage${active ? " is-active" : ""}`} aria-label={text("המחשת WhatsApp ו־CRM", "WhatsApp and CRM illustration")}>
+            <div className="hx-wa-link" aria-hidden="true" />
+            <WaPhone text={text} />
+            <InboxPane text={text} />
+            <CrmCard text={text} />
           </div>
         </div>
       </div>
@@ -1163,16 +1112,7 @@ function Campaigns() {
           </div>
           <div className="hx-camp-visual">
             <div className="hx-camp-frame">
-              <LocaleShot
-                language={language}
-                src="/demo-media/campaigns/still-chart.jpg"
-                alt={text("מסך ניהול קמפיינים של Meta ב-BizUply עם נתוני ביצוע", "Meta campaign management inside BizUply with performance data")}
-                width={1600}
-                height={1000}
-                loading="lazy"
-                decoding="async"
-                className="hx-crop-campaigns"
-              />
+              <CampaignPulse text={text} />
             </div>
           </div>
         </div>

@@ -138,7 +138,7 @@ export function renderPurpleHomePrerender(locale) {
   const lineThree = hx.lineThree
     ? `<span class="hx-line">${heroWords(hx.lineThree, lineThreeHot)}</span>`
     : "";
-  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy"><p class="hx-hero-brand">BizUply</p><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-hero-core"><div class="hx-hero-copy"><p class="hx-hero-brand">BizUply</p><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(
     hx.lineTwo,
@@ -146,9 +146,9 @@ export function renderPurpleHomePrerender(locale) {
     hx.start,
   )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="#products"><span>${escapeText(
     hx.see,
-  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-stage"><div class="hx-hero-frame"><div class="hx-hero-chrome" aria-hidden="true"><span></span><span></span><span></span></div><img class="hx-hero-shot hx-hero-shot-1 hx-crop-leads" src="/demo-media/home/crm.jpg" alt="${escapeHtml(
+  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-stage"><div class="hx-hero-frame hx-compose"><div class="hx-compose-main"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/crm.jpg" alt="${escapeHtml(
     hx.stageAlt,
-  )}" width="1600" height="1000" fetchpriority="high" decoding="async"></div></div></div></section>`;
+  )}" width="1600" height="1000" fetchpriority="high" decoding="async"></div></div></div></div></div></section>`;
 
   const crawl = `<div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,

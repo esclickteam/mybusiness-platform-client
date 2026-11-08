@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
+import { StudioFrame } from "./ProductMocks";
 
 function useCine() {
   const { i18n } = useTranslation();
@@ -129,7 +130,7 @@ export function HomeTrust() {
   const points = cine.trustPoints || [];
   if (!points.length) return null;
   return (
-    <section className="hx-trust" aria-labelledby="hx-trust-title">
+    <section className="hx-trust hx-reveal" aria-labelledby="hx-trust-title">
       <div className="hx-trust-wrap">
         <h2 id="hx-trust-title">{cine.trustTitle}</h2>
         <p className="hx-prose">{cine.trustLead}</p>
@@ -159,13 +160,13 @@ export function HomeAi() {
   const points = cine.aiPoints || [];
   if (!points.length) return null;
   return (
-    <section className="hx-ai" aria-labelledby="hx-ai-title">
+    <section className="hx-ai hx-reveal" aria-labelledby="hx-ai-title">
       <div className="hx-ai-wrap">
         <div className="hx-ai-copy">
           <p className="hx-eyebrow hx-eyebrow-on-dark">{text("זמין בתוך Website Studio", "Available inside Website Studio")}</p>
           <h2 id="hx-ai-title">{cine.aiTitle}</h2>
           <p className="hx-prose">{cine.aiLead}</p>
-          <ul className="hx-points hx-points-on-dark">
+          <ul className="hx-points">
             {points.map(([title, body]) => (
               <li key={title}>
                 <h3>{title}</h3>
@@ -174,10 +175,10 @@ export function HomeAi() {
             ))}
           </ul>
           <div className="hx-actions">
-            <Cta to="/website-builder" tone="line">
+            <Cta to="/website-builder" tone="ink">
               {text("לבניית אתרים", "Website builder")}
             </Cta>
-            <Cta to="/agents">{text("לנציגים אנושיים", "Human agents")}</Cta>
+            <Cta to="/agents" tone="line">{text("לנציגים אנושיים", "Human agents")}</Cta>
           </div>
         </div>
         <figure className="hx-ai-visual">
@@ -198,12 +199,12 @@ export function HomeAi() {
 }
 
 const SITE_SAMPLES = [
-  ["/template-screenshots/studiora.webp", "Studiora"],
-  ["/template-screenshots/vitalcare.webp", "Vitalcare"],
-  ["/template-screenshots/serenova.webp", "Serenova"],
-  ["/template-screenshots/soleora.webp", "Soleora"],
-  ["/template-screenshots/glowhaus.webp", "Glowhaus"],
-  ["/template-screenshots/talentix.webp", "Talentix"],
+  ["/template-screenshots/studiora.webp", "Studiora", "#5b21b6"],
+  ["/template-screenshots/vitalcare.webp", "Vitalcare", "#0f766e"],
+  ["/template-screenshots/serenova.webp", "Serenova", "#7c3aed"],
+  ["/template-screenshots/soleora.webp", "Soleora", "#1d4ed8"],
+  ["/template-screenshots/glowhaus.webp", "Glowhaus", "#9a3412"],
+  ["/template-screenshots/talentix.webp", "Talentix", "#312e81"],
 ] as const;
 
 export function HomeSiteGallery() {
@@ -212,66 +213,30 @@ export function HomeSiteGallery() {
   const reduced = useReduced();
   const [index, setIndex] = useState(0);
   const current = SITE_SAMPLES[index] || SITE_SAMPLES[0];
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    sectionRef.current?.style.setProperty("--gallery-tint", current[2]);
+  }, [current]);
 
   useEffect(() => {
     if (reduced) return undefined;
     const timer = window.setInterval(() => {
       setIndex((value) => (value + 1) % SITE_SAMPLES.length);
-    }, 5200);
+    }, 5600);
     return () => window.clearInterval(timer);
   }, [reduced]);
 
   return (
-    <section className="hx-site-gallery" id="sites" aria-labelledby="hx-site-gallery-title">
+    <section className="hx-site-gallery hx-reveal" id="sites" ref={sectionRef} aria-labelledby="hx-site-gallery-title">
       <div className="hx-site-gallery-wrap">
         <div className="hx-site-gallery-head">
           <h2 id="hx-site-gallery-title">{cine.sitesGalleryTitle}</h2>
           <p className="hx-prose">{cine.sitesGalleryLead}</p>
         </div>
         <div className="hx-site-gallery-stage" aria-live="polite">
-          <figure className="hx-site-desktop">
-            <div className="hx-site-chrome" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <em>{current[1]}</em>
-            </div>
-            <div className="hx-site-desktop-view">
-              {SITE_SAMPLES.map(([src, label], i) => (
-                <img
-                  key={`desk-${src}`}
-                  src={src}
-                  alt={i === index ? text(`אתר ${label} בתצוגת מחשב`, `${label} website on desktop`) : ""}
-                  width={960}
-                  height={600}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                  className={i === index ? "is-on" : undefined}
-                  aria-hidden={i === index ? undefined : true}
-                />
-              ))}
-            </div>
-            <figcaption>{text("תצוגת מחשב", "Desktop view")}</figcaption>
-          </figure>
-          <figure className="hx-site-mobile">
-            <div className="hx-site-mobile-notch" aria-hidden="true" />
-            <div className="hx-site-mobile-view">
-              {SITE_SAMPLES.map(([src, label], i) => (
-                <img
-                  key={`mob-${src}`}
-                  src={src}
-                  alt={i === index ? text(`אתר ${label} בתצוגת מובייל`, `${label} website on mobile`) : ""}
-                  width={390}
-                  height={780}
-                  loading={i === 0 ? "eager" : "lazy"}
-                  decoding="async"
-                  className={i === index ? "is-on" : undefined}
-                  aria-hidden={i === index ? undefined : true}
-                />
-              ))}
-            </div>
-            <figcaption>{text("תצוגת מובייל", "Mobile view")}</figcaption>
-          </figure>
+          <StudioFrame src={current[0]} label={current[1]} mode="desktop" />
+          <StudioFrame src={current[0]} label={current[1]} mode="mobile" />
         </div>
         <div className="hx-site-gallery-nav" role="tablist" aria-label={text("דוגמאות אתרים", "Website examples")}>
           {SITE_SAMPLES.map(([src, label], i) => (
