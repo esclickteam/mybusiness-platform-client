@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
@@ -235,39 +235,46 @@ export function ComplianceReportView({
   const status = payload?.status === "completed" ? copy.completed : payload?.status === "failed" ? copy.failed : copy.running;
   const placeLabel = (place?: string) => copy[place === "http-header" ? "http" : place || ""] || place || "";
 
+  const shownScore = (report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—";
+  const shownCoverage = report.scores?.coverage?.value ?? "—";
   return (
-    <section className="scan-report">
-      <header className="scan-mast">
+    <section className="scan-report report-sheet">
+      <header className="report-sheet__mast">
         <div>
-          <p className="scan-kicker">{copy.site}</p>
+          <p className="report-sheet__kicker">{copy.site}</p>
           <h2>{hostName(report.url) || report.url}</h2>
-          <p dir="ltr">{report.url}</p>
-          <p>{copy.date}: {report.scannedAt || "—"} · {copy.status}: {status}</p>
         </div>
-        <div className="scan-mast__actions">
-          <button type="button" className="scan-start" onClick={onPdf}>{copy.pdf}</button>
-          <Link className="scan-ghost" to="/compliance">{copy.newScan}</Link>
+        <div className="report-sheet__actions">
+          <button type="button" onClick={onPdf}>{copy.pdf}</button>
+          <Link to="/compliance">{copy.newScan}</Link>
         </div>
       </header>
-      <div className="audit-hero">
-        <article>
-          <b>{(report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—"}<small>/100</small></b>
+      <dl className="report-sheet__meta">
+        <div><dt>{copy.address}</dt><dd dir="ltr">{report.url || "—"}</dd></div>
+        <div><dt>{copy.date}</dt><dd>{report.scannedAt || "—"}</dd></div>
+        <div><dt>{copy.status}</dt><dd>{status}</dd></div>
+        <div><dt>{copy.score}</dt><dd>{shownScore}/100</dd></div>
+      </dl>
+      <div className="report-sheet__score">
+        <div>
+          <b>{shownScore}<small>/100</small></b>
           <span>{copy.score}</span>
-          <small>{copy.scoreHelp}</small>
-        </article>
-        <article>
-          <b>{report.scores?.coverage?.value ?? "—"}%</b>
+          <p>{copy.scoreHelp}</p>
+        </div>
+        <div>
+          <b>{shownCoverage}<small>%</small></b>
           <span>{copy.coverage}</span>
-          <small>{copy.coverageHelp}</small>
-        </article>
+          <div className="report-sheet__bar" aria-hidden="true"><span style={{ width: `${Number(shownCoverage) || 0}%` }} /></div>
+          <p>{copy.coverageHelp}</p>
+        </div>
       </div>
-      <div className="scan-summary-grid">
+      <div className="report-sheet__metrics">
         <article><b>{counts.pass}</b><span>{copy.ok}</span></article>
         <article><b>{counts.action}</b><span>{copy.todo}</span></article>
         <article><b>{report.documents?.filter((item: { state?: string }) => item.state === "not_found_after_scan").length || 0}</b><span>{copy.missing}</span></article>
         <article><b>{counts.unknown}</b><span>{copy.unknown}</span></article>
       </div>
-      <div className="scan-cards">
+      <div className="report-findings">
         {ordered.length === 0 && <p>{copy.empty}</p>}
         {ordered.map((item, index) => {
           const quote = wholeQuote(item);
@@ -283,35 +290,40 @@ export function ComplianceReportView({
           const bandTitle = band === "proven" ? copy.provenTitle : band === "missing" ? copy.missingTitle : band === "gap" ? copy.gapTitle : band === "owner" ? copy.owner : copy.unfinished;
           const showBand = index === 0 || bandOf(ordered[index - 1]) !== band;
           return (
-            <article key={key} className={`sev-${item.severity || "info"} audit-card`}>
-              {showBand ? <h2 className="audit-band">{bandTitle}</h2> : null}
-              <h3>{item.title}</h3>
-              <p className="scan-pills"><span>{band === "gap" ? copy.gapTitle : statusLabel(String(detail.status || ""), copy)}</span><span>{copy.severity}: {level}</span><span>{kindOf(item, copy)}</span></p>
-              {band === "gap" ? <p className="audit-note">{copy.gapNote}</p> : null}
-              <p><strong>{copy.checked}. </strong>{item.description || item.title}</p>
-              <p><strong>{copy.found}. </strong>{item.evidence || item.description || copy.incomplete}</p>
-              {band !== "pass" && detail.gap ? <p><strong>{copy.gap}. </strong>{String(detail.gap)}</p> : null}
-              <p><strong>{copy.why}. </strong>{String(detail.why || item.explanation || item.description || "")}</p>
-              {(detail.change || item.recommendation) && <p><strong>{copy.fix}. </strong>{String(detail.change || item.recommendation)}</p>}
-              {detail.proposedText && band !== "gap" ? <p><strong>{copy.draft}. </strong>{String(detail.proposedText)}</p> : null}
-              <p><strong>{copy.verify}. </strong>{String(detail.verify || "")}</p>
-              <p><strong>{copy.where}. </strong>{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}{located && item.pageTitle ? ` · ${item.pageTitle}` : ""}{placeLabel(item.place) ? ` · ${placeLabel(item.place)}` : ""}</p>
-              {detail.sectionVerified ? <p><strong>{copy.section}. </strong>{String(detail.sectionTitle || "")}</p> : null}
-              <p><strong>{copy.law}. </strong>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> : <>{detail.lawName ? `${String(detail.lawName)}. ` : ""}{copy.sourceMissing}</>}</p>
-              {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
-              {quote && (
-                <blockquote>
-                  <span>{item.evidenceLabel || copy.quote}</span>
-                  <p dir="auto">{expanded ? quote : preview}</p>
-                  {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
-                  {item.evidenceNote && <small>{item.evidenceNote}</small>}
-                </blockquote>
-              )}
-            </article>
+            <Fragment key={key}>
+              {showBand ? <h2 className="report-band">{bandTitle}</h2> : null}
+              <article className={`report-finding sev-${item.severity || "info"}`}>
+                <header>
+                  <p>{copy.severity}: {level}</p>
+                  <h3>{item.title}</h3>
+                </header>
+                {band === "gap" ? <p className="report-note">{copy.gapNote}</p> : null}
+                <dl>
+                  <div><dt>{copy.checked}</dt><dd>{item.description || item.title}</dd></div>
+                  <div><dt>{copy.found}</dt><dd className="report-finding__evidence" dir="auto">{item.evidence || item.description || copy.incomplete}</dd></div>
+                  {band !== "pass" && detail.gap ? <div><dt>{copy.gap}</dt><dd>{String(detail.gap)}</dd></div> : null}
+                  <div><dt>{copy.why}</dt><dd>{String(detail.why || item.explanation || item.description || "")}</dd></div>
+                  {(detail.change || item.recommendation) ? <div><dt>{copy.fix}</dt><dd>{String(detail.change || item.recommendation)}</dd></div> : null}
+                  {detail.proposedText && band !== "gap" ? <div><dt>{copy.draft}</dt><dd>{String(detail.proposedText)}</dd></div> : null}
+                  <div><dt>{copy.verify}</dt><dd>{String(detail.verify || "")}</dd></div>
+                  <div><dt>{copy.where}</dt><dd>{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}{located && item.pageTitle ? ` · ${item.pageTitle}` : ""}{placeLabel(item.place) ? ` · ${placeLabel(item.place)}` : ""}</dd></div>
+                  <div><dt>{copy.law}</dt><dd>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> : <>{detail.lawName ? `${String(detail.lawName)}. ` : ""}{copy.sourceMissing}</>}</dd></div>
+                </dl>
+                {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
+                {quote && (
+                  <blockquote>
+                    <span>{item.evidenceLabel || copy.quote}</span>
+                    <p dir="auto">{expanded ? quote : preview}</p>
+                    {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
+                    {item.evidenceNote && <small>{item.evidenceNote}</small>}
+                  </blockquote>
+                )}
+              </article>
+            </Fragment>
           );
         })}
       </div>
-      <section className="scan-actions audit-section">
+      <section className="report-sheet__block">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
           <ul>
@@ -321,7 +333,7 @@ export function ComplianceReportView({
           </ul>
         )}
       </section>
-      <section className="scan-actions">
+      <section className="report-sheet__block">
         <h2>{copy.plan}</h2>
         <ol>
           {actions.map((item) => {
