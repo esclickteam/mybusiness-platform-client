@@ -20,6 +20,7 @@ type Project = {
   editorHtml?: string;
   editorCss?: string;
   editorSiteId?: string;
+  designGate?: { presentation?: string; customerReady?: boolean; designReview?: boolean } | null;
 };
 
 const STEP_LABELS: Record<string, string> = {
@@ -248,7 +249,7 @@ export default function WebsiteAiBuilderPage() {
                 <button type="button" onClick={resume} disabled={busy} className="mt-3 bg-[#5B4CF5] px-5 py-3 text-sm font-black text-white">נסו שוב</button>
               </div>
             ) : null}
-            {ready ? <p className="mt-6 text-sm font-bold text-slate-600">האתר שלך מוכן. פותחים אותו בעורך.</p> : null}
+            {ready ? <p className="mt-6 text-sm font-bold text-slate-600">{project.designGate?.presentation === "draft" ? "נפתחת טיוטה בעורך. העיצוב עדיין דורש שיפור." : "הטיוטה נפתחת בעורך. איכות העיצוב ממתינה לבדיקה."}</p> : null}
             <p className="mt-4 max-w-md text-center text-xs leading-5 text-slate-500">פרסום וחיבור דומיין אינם פעילים בגרסה הזו.</p>
           </div>
         )}
