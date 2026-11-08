@@ -1,45 +1,23 @@
 {
-  "commit": "pending-v6-push",
   "branch": "cursor/homepage-premium-redesign-5eb9",
   "pr": 1075,
+  "baseCommitPrevious": "80299b7cf",
+  "note": "Task save+list fix + process cleanup after 80299b7cf",
   "checks": [
-    {"id": "first-paint-purple", "result": "PASS", "detail": "html/body rgb(91, 33, 182)"},
-    {"id": "hero-journey-steps", "result": "PASS", "detail": "5 steps Lead→CRM→WA→Auto→Task"},
-    {"id": "hero-film-src", "result": "PASS", "detail": "walkthrough hero films v6"},
-    {"id": "hero-video-playback", "result": "PASS"},
-    {"id": "cta-start-visible", "result": "PASS"},
-    {"id": "cta-watch-visible", "result": "PASS"},
-    {"id": "a11y-h1", "result": "PASS"},
-    {"id": "brand-hero", "result": "PASS", "detail": "BizUply"},
-    {"id": "mobile-no-horizontal-scroll", "result": "PASS", "detail": "document scrollWidth==clientWidth at 320/375/390/430; journey/gallery rails intentional overflow-x inside containers"},
-    {"id": "cookie-compact-320", "result": "PASS"},
-    {"id": "cookie-compact-375", "result": "PASS"},
-    {"id": "cookie-compact-390", "result": "PASS"},
-    {"id": "cookie-compact-430", "result": "PASS"},
-    {"id": "reduced-motion-theater-present", "result": "PASS"}
-  ],
-  "remaining": [
-    {"id": "vercel-shareable-link", "result": "FAIL", "detail": "No VERCEL_TOKEN / dashboard share mint; Preview still SSO-protected. Project Deployment Protection left unchanged."},
-    {"id": "cloudflare-tunnel", "result": "FAIL", "detail": "External viewers previously blocked (Your request was blocked)"},
-    {"id": "task-film-density", "result": "WARN", "detail": "Task clip shows filled title form; task list remains sparse in demo data"}
-  ],
-  "previewAlternatives": {
-    "bore": "http://bore.pub:47715/he",
-    "localtunnel": "https://open-ads-raise.loca.lt/he",
-    "note": "Temporary tunnels to local Vite of PR branch. Prefer MP4 review pack if tunnels are blocked."
-  },
-  "artifacts": {
-    "desktopScroll": "/opt/cursor/artifacts/v6_homepage_scroll.mp4",
-    "mobileScroll": "/opt/cursor/artifacts/v6_mobile_ux.mp4",
-    "process": "/opt/cursor/artifacts/v6_process_marketing.mp4",
-    "screens": [
-      "/opt/cursor/artifacts/v6_desktop_hero.png",
-      "/opt/cursor/artifacts/v6_desktop_hero_flow.png",
-      "/opt/cursor/artifacts/v6_desktop_whatsapp.png",
-      "/opt/cursor/artifacts/v6_desktop_gallery.png",
-      "/opt/cursor/artifacts/v6_mobile_hero.png",
-      "/opt/cursor/artifacts/v6_mobile_whatsapp.png",
-      "/opt/cursor/artifacts/v6_mobile_gallery.png"
-    ]
-  }
+    {
+      "id": "task-create-save-list",
+      "result": "PASS",
+      "detail": "datetime-local filled; green נשמר; task appears in list"
+    },
+    {
+      "id": "process-no-loading-frames",
+      "result": "PASS",
+      "detail": "sampled every 1s; no white/loading frames"
+    },
+    {
+      "id": "process-xfade",
+      "result": "PASS",
+      "detail": "~31s Lead→CRM→WA→Auto→Task"
+    }
+  ]
 }
