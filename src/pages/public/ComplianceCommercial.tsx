@@ -228,6 +228,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     newScan: "סריקה חדשה",
     offer: "הדוח המלא",
     once: "חד־פעמי",
+    includes: "מה נפתח אחרי הרכישה",
+    inc1: "ליקויים עם ראיה, כתובת עמוד והוראות תיקון",
+    inc2: "מקור רשמי כשיש קריטריון או תקן מתאים",
+    inc3: "תוכנית עבודה לפי סדר עדיפות, וקובץ PDF",
     offerBody: "הרכישה פותחת את פירוט הממצאים, הראיות, ההמלצות ותוכנית התיקון, וגם קובץ PDF. אף אחד מהפרטים האלה לא מופיע כאן.",
     unavailable: "הסליקה אינה זמינה כרגע. לא מתבצע חיוב, והדוח המלא נשאר סגור.",
     check: "רכישת הדוח המלא — ₪149",
@@ -259,6 +263,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     newScan: "New scan",
     offer: "Full report",
     once: "One time",
+    includes: "What the purchase opens",
+    inc1: "Findings with evidence, the page address, and a fix",
+    inc2: "An official source when a criterion or standard applies",
+    inc3: "A prioritized work plan, and the PDF",
     offerBody: "The purchase opens the findings, evidence, recommendations, action plan, and the PDF. None of that detail is shown here.",
     unavailable: "Checkout is temporarily unavailable. Nothing is charged, and the full report stays closed.",
     check: "Buy the full report — ₪149",
@@ -290,6 +298,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     newScan: "Nuevo análisis",
     offer: "Informe completo",
     once: "Pago único",
+    includes: "Qué abre la compra",
+    inc1: "Hallazgos con evidencia, la página y la corrección",
+    inc2: "Una fuente oficial cuando hay un criterio o norma",
+    inc3: "Un plan de trabajo por prioridad, y el PDF",
     offerBody: "La compra abre los hallazgos, las pruebas, las recomendaciones, el plan de acción y el PDF. Ninguno de esos detalles aparece aquí.",
     unavailable: "El cobro no está disponible por ahora. No se realiza ningún cargo y el informe completo sigue cerrado.",
     check: "Comprar el informe completo — ₪149",
@@ -321,6 +333,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     newScan: "Nova análise",
     offer: "Relatório completo",
     once: "Pagamento único",
+    includes: "O que a compra abre",
+    inc1: "Achados com evidência, o endereço da página e a correção",
+    inc2: "Uma fonte oficial quando há critério ou norma",
+    inc3: "Um plano de trabalho por prioridade, e o PDF",
     offerBody: "A compra abre os achados, as evidências, as recomendações, o plano de ação e o PDF. Nenhum desses detalhes aparece aqui.",
     unavailable: "A cobrança está indisponível no momento. Nada é cobrado e o relatório completo continua fechado.",
     check: "Comprar o relatório completo — ₪149",
@@ -352,6 +368,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     newScan: "فحص جديد",
     offer: "التقرير الكامل",
     once: "مرة واحدة",
+    includes: "ما يفتحه الشراء",
+    inc1: "نتائج مع دليل، وعنوان الصفحة، وتعليمات الإصلاح",
+    inc2: "مصدر رسمي عندما ينطبق معيار أو مواصفة",
+    inc3: "خطة عمل حسب الأولوية، وملف PDF",
     offerBody: "يفتح الشراء تفاصيل النتائج والأدلة والتوصيات وخطة الإصلاح وملف PDF. لا تظهر أي من هذه التفاصيل هنا.",
     unavailable: "التحصيل غير متاح حاليًا. لا يتم أي خصم، ويبقى التقرير الكامل مغلقًا.",
     check: "شراء التقرير الكامل — ₪149",
@@ -375,7 +395,6 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
   const [purchaseNote, setPurchaseNote] = useState(copy.unavailable);
   useEffect(() => { setPurchaseNote(copy.unavailable); }, [copy.unavailable]);
   if (!summary) return null;
-  const score = meter(summary.checkedScore);
   const coverage = meter(summary.coverage);
   const statusLabel = copy[status || ""] || status || "—";
   async function checkPurchase() {
@@ -389,47 +408,55 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
     setPurchaseNote(copy.unavailable);
   }
   return (
-    <section className="free-report">
-      <header className="free-report__mast">
-        <p className="free-report__kicker">{copy.kicker}</p>
+    <section className="report-sheet">
+      <header className="report-sheet__mast">
+        <p className="report-sheet__kicker">{copy.kicker}</p>
         <h1>{summary.host || "—"}</h1>
-        <dl>
-          <div><dt>{copy.domain}</dt><dd>{summary.host || "—"}</dd></div>
-          <div><dt>{copy.address}</dt><dd dir="ltr">{summary.url || "—"}</dd></div>
-          <div><dt>{copy.when}</dt><dd>{formatWhen(summary.scannedAt, locale)}</dd></div>
-          <div><dt>{copy.status}</dt><dd>{statusLabel}</dd></div>
-        </dl>
       </header>
-      <div className="free-report__meters audit-hero">
-        <article>
+      <dl className="report-sheet__meta">
+        <div><dt>{copy.domain}</dt><dd>{summary.host || "—"}</dd></div>
+        <div><dt>{copy.address}</dt><dd dir="ltr">{summary.url || "—"}</dd></div>
+        <div><dt>{copy.when}</dt><dd>{formatWhen(summary.scannedAt, locale)}</dd></div>
+        <div><dt>{copy.status}</dt><dd>{statusLabel}</dd></div>
+      </dl>
+      <div className="report-sheet__score">
+        <div>
           <b>{summary.checkedScore ?? "—"}<small>/100</small></b>
           <span>{copy.score}</span>
-          <i>{copy.scoreOf}</i>
-          <div className="free-report__track" aria-hidden="true"><span style={{ width: `${score}%` }} /></div>
           <p>{copy.scoreHelp}</p>
-        </article>
-        <article>
+        </div>
+        <div>
           <b>{summary.coverage ?? "—"}<small>%</small></b>
           <span>{copy.coverage}</span>
-          <div className="free-report__track" aria-hidden="true"><span style={{ width: `${coverage}%` }} /></div>
+          <div className="report-sheet__bar" aria-hidden="true"><span style={{ width: `${coverage}%` }} /></div>
           <p>{summary.lowCoverage ? copy.lowCoverage : copy.coverageHelp}</p>
-        </article>
+        </div>
       </div>
-      <div className="free-report__metrics">
-        <article className="is-ok"><b>{summary.ok ?? 0}</b><span>{copy.ok}</span><p>{copy.okHelp}</p></article>
-        <article className="is-action"><b>{summary.action ?? 0}</b><span>{copy.action}</span><p>{copy.actionHelp}</p></article>
-        <article className="is-missing"><b>{summary.missing ?? 0}</b><span>{copy.missing}</span><p>{copy.missingHelp}</p></article>
-        <article className="is-open"><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span><p>{copy.unverifiedHelp}</p></article>
+      <div className="report-sheet__metrics">
+        <article><b>{summary.ok ?? 0}</b><span>{copy.ok}</span><p>{copy.okHelp}</p></article>
+        <article><b>{summary.action ?? 0}</b><span>{copy.action}</span><p>{copy.actionHelp}</p></article>
+        <article><b>{summary.missing ?? 0}</b><span>{copy.missing}</span><p>{copy.missingHelp}</p></article>
+        <article><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span><p>{copy.unverifiedHelp}</p></article>
       </div>
-      <Link className="free-report__new" to="/compliance">{copy.newScan}</Link>
-      <aside className="free-report__offer">
-        <p>{copy.offer}</p>
-        <strong>₪149</strong>
-        <em>{copy.once}</em>
-        <span>{copy.offerBody}</span>
-        <button type="button" onClick={checkPurchase}>{copy.check}</button>
-        <small role="status">{purchaseNote}</small>
+      <aside className="report-sheet__buy">
+        <div>
+          <h2>{copy.includes}</h2>
+          <ul>
+            <li>{copy.inc1}</li>
+            <li>{copy.inc2}</li>
+            <li>{copy.inc3}</li>
+          </ul>
+          <p>{copy.offerBody}</p>
+        </div>
+        <div>
+          <p>{copy.offer}</p>
+          <strong>₪149</strong>
+          <em>{copy.once}</em>
+          <button type="button" onClick={checkPurchase}>{copy.check}</button>
+          <small role="status">{purchaseNote}</small>
+        </div>
       </aside>
+      <p className="report-sheet__foot"><Link to="/compliance">{copy.newScan}</Link></p>
     </section>
   );
 }
