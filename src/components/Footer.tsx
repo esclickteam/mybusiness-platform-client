@@ -19,6 +19,8 @@ const SCAN_LABEL: Record<string, string> = {
   "pt-BR": "Varredura inteligente do site",
   ar: "فحص ذكي للموقع",
 };
+
+const SYSTEMS: Record<string, string> = {
   en: "SaaS systems",
   he: "מערכות",
   es: "Sistemas",
