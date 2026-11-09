@@ -14,3 +14,36 @@
 @media (max-width: 860px) {
   .demo-scan .scan-hero { display: block; }
 }
+.demo-scan--film {
+  background: #fff;
+  min-height: 100vh;
+  padding: 18px 28px 32px;
+}
+.demo-scan--film .scan-kicker,
+.demo-scan--film .scan-hero h1,
+.demo-scan--film .scan-lead { display: none; }
+.demo-scan--film .scan-hero { display: block; padding: 0; }
+.demo-scan--film .scan-panel { margin: 0; padding: 4px 0 0; background: #fff; border: 0; box-shadow: none; }
+.demo-scan--film .demo-banner { margin: 0 0 16px; padding: 0.3rem 0.55rem; background: #fff; color: #312e81; border: 1px solid #ddd6fe; text-align: start; font-size: 18px; }
+.demo-scan--film .scan-url > span { font-size: 22px; color: #1e1b4b; }
+.demo-scan--film .scan-url input { width: 100%; box-sizing: border-box; font-size: 32px; min-height: 72px; border: 1px solid #c4b5fd; padding: 0 14px; color: #12141c; background: #fff; }
+.demo-scan--film .scan-launch { grid-template-columns: 1fr 1fr; }
+.demo-scan--film .scan-start { grid-column: 1 / -1; width: 100%; height: 68px; font-size: 26px; }
+.demo-scan--film .scan-name-note, .demo-scan--film .scan-notice { font-size: 18px; color: #334155; }
+.demo-scan--film .scan-live { width: 100%; margin: 0; min-height: calc(100vh - 90px); }
+.demo-scan--film form, .demo-scan--film .scan-hero, .demo-scan--film .scan-hero__copy { min-height: calc(100vh - 90px); }
+.demo-scan--film .scan-panel { min-height: calc(100vh - 110px); align-content: center; }
+.demo-scan--film .scan-live h2 { font-size: 40px; color: #1e1b4b; }
+.demo-scan--film .scan-live__phase { color: #334155; font-size: 22px; }
+.demo-scan--film .scan-live__url { font-size: 24px; }
+.demo-scan--film .scan-live__cats { font-size: 22px; }
+.demo-scan--film .scan-live__cats b { color: #1e1b4b; }
+.demo-scan--film .free-report, .demo-scan--film .report-sheet { font-size: 18px; }
+.demo-scan--film .report-finding h3 { font-size: 26px; color: #1e1b4b; }
+.demo-scan--film .demo-pdf article { width: min(980px, 100%); font-size: 20px; }
+.demo-scan--film .demo-pdf h2 { font-size: 34px; }
+.demo-scan--film .demo-pdf h3 { font-size: 24px; }
+body:has(.demo-scan--film) { background: #fff; }
+body:has(.demo-scan--film) .app-main { padding: 0; background: #fff; }
+body:has(.demo-scan--film) [data-bizuply-accessibility-widget],
+body:has(.demo-scan--film) .bizuply-a11y-trigger { display: none !important; }

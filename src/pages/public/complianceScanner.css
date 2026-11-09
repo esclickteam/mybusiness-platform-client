@@ -229,18 +229,21 @@
 .scan-plans__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; }
 .scan-plans article { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
 .scan-plans li, .scan-price__extra { overflow-wrap: anywhere; }
-.scan-plans article a { margin-top: auto; align-self: flex-start; background: #5b2cff; color: white; text-decoration: none; padding: 0.65rem 0.8rem; font-weight: 700; }
-.scan-plans article.is-featured { border-color: #5b2cff; }
-.scan-price__badge { align-self: flex-start; background: #5b2cff; color: white; padding: 0.15rem 0.4rem; font-size: 0.75rem; }
-.scan-price__badge--empty { visibility: hidden; }
+.scan-plans article a { margin-top: auto; align-self: stretch; background: #5b2cff; color: #fff; text-decoration: none; padding: 0.65rem 0.8rem; font-weight: 700; text-align: center; }
+.scan-plans article.is-featured { border: 1px solid #5b2cff; background: #fff; }
+.scan-price__badge { align-self: flex-start; background: #fff; color: #4c1d95; border: 1px solid #5b2cff; padding: 0.12rem 0.4rem; font-size: 0.75rem; font-style: normal; }
 .scan-plans article, .scan-requirements article, .scan-monitor, .scan-sample {
-  background: rgba(255,255,255,.72); border: 1px solid rgba(196,181,253,.55); padding: 18px; box-shadow: 0 16px 40px rgba(109,40,217,.06);
+  background: #fff; border: 1px solid #e5e7eb; padding: 18px; color: #1e293b;
 }
-.scan-plans strong { display: block; font-size: 1.6rem; color: #6d28d9; }
+.scan-plans strong { display: block; font-size: 2.2rem; color: #1e1b4b; }
+.scan-plans li span { color: #4338ca; font-weight: 800; margin-inline-end: 0.35rem; }
 .scan-monitor label { display: block; margin: 10px 0; }
 .scan-monitor input { border: 0; border-bottom: 1px solid rgba(196,181,253,.8); background: transparent; padding: 8px 0; }
-@media (max-width: 1080px) { .scan-plans__grid { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 860px) { .scan-plans__grid, .scan-requirements { grid-template-columns: 1fr; } }
+.scan-plans__grid { grid-template-columns: 1fr; }
+@media (min-width: 760px) { .scan-plans__grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1440px) { .scan-plans__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (max-width: 860px) { .scan-requirements { grid-template-columns: 1fr; } }
+@media (max-width: 720px) { .scan-plans__grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
   .scan-start, .scan-types button { animation: none; transition: none; }
 }

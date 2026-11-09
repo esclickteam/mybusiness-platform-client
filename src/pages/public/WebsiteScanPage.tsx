@@ -9,11 +9,18 @@ import "./websiteScan.css";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
 
-const SHOTS = [
-  { src: "/media/compliance-demo/scan.png", width: 1920, height: 666 },
-  { src: "/media/compliance-demo/free.png", width: 1120, height: 951 },
-  { src: "/media/compliance-demo/report.png", width: 1920, height: 1080 },
-];
+function mediaCode(locale: Locale) {
+  return locale === "pt-BR" ? "pt" : locale;
+}
+
+function shotsFor(locale: Locale) {
+  const code = mediaCode(locale);
+  return [
+    { src: `/media/compliance-demo/scan-${code}.png`, width: 1280, height: 720 },
+    { src: `/media/compliance-demo/free-${code}.png`, width: 1280, height: 720 },
+    { src: `/media/compliance-demo/report-${code}.png`, width: 1280, height: 720 },
+  ];
+}
 const LINKS: Record<Locale, { privacy: string; access: string; guides: string }> = {
   he: { privacy: "מדיניות הפרטיות", access: "הצהרת הנגישות", guides: "מדריכים" },
   en: { privacy: "privacy policy", access: "accessibility statement", guides: "guides" },
@@ -37,7 +44,11 @@ function schemaFor(copy: typeof WEBSITE_SCAN.he, canonical: string, locale: stri
         { "@type": "ListItem", position: 2, name: copy.crumb, item: canonical },
       ] },
       { "@type": "Service", name: "Bizuply Compliance AI", serviceType: "Website scan", provider: { "@id": "https://bizuply.com/#organization" }, areaServed: "Worldwide", url: canonical, description: copy.description },
-      { "@type": "VideoObject", name: copy.videoTitle, description: copy.transcript, thumbnailUrl: "https://bizuply.com/media/compliance-demo/poster.jpg", uploadDate: "2026-11-09", contentUrl: "https://bizuply.com/media/compliance-demo/desktop.mp4", inLanguage: "he" },
+      { "@type": "VideoObject", name: copy.videoTitle, description: copy.transcript, thumbnailUrl: `https://bizuply.com/media/compliance-demo/poster-${mediaCode(locale as Locale)}.jpg`, uploadDate: "2026-11-09", contentUrl: `https://bizuply.com/media/compliance-demo/${mediaCode(locale as Locale)}.mp4`, inLanguage: locale },
+      { "@type": "Offer", name: "Free scan", price: "0", priceCurrency: "USD", description: "First scan with a score and a finding summary. Checkout is not open." },
+      { "@type": "Offer", name: "One-time full report", price: "35", priceCurrency: "USD", description: "One full scan. Checkout is not open." },
+      { "@type": "Offer", name: "Quarterly monitoring", price: "119", priceCurrency: "USD", description: "Four full scans a year, billed yearly in advance. Checkout is not open." },
+      { "@type": "Offer", name: "Monthly monitoring", price: "300", priceCurrency: "USD", description: "Twelve full scans a year, billed yearly in advance. Checkout is not open." },
     ],
   };
 }
@@ -95,13 +106,42 @@ function ExampleCard({ locale, flag }: { locale: Locale; flag: string }) {
   );
 }
 
+const POINTS: Record<Locale, string[]> = {
+  he: ["בלי התקנת תוכנה", "תמונת מצב חינמית", "ממצאים, ראיות והמלצות בדוח המלא"],
+  en: ["No software to install", "A free first picture", "Findings, evidence and recommendations in the full report"],
+  es: ["Sin instalar software", "Una primera imagen gratis", "Hallazgos, pruebas y recomendaciones en el informe completo"],
+  "pt-BR": ["Sem instalar software", "Um primeiro panorama grátis", "Achados, evidências e recomendações no relatório completo"],
+  ar: ["بلا تثبيت برنامج", "صورة أولى مجانية", "نتائج وأدلة وتوصيات في التقرير الكامل"],
+};
+const STEPS: Record<Locale, string[]> = {
+  he: ["מזינים שם וכתובת אתר", "הסריקה בודקת פרטיות, אבטחה, נגישות ומסמכים", "מתקבלת תמונת מצב, ואפשר לפתוח דוח מלא"],
+  en: ["Enter a name and a website address", "The scan checks privacy, security, accessibility and documents", "You get a first picture, and can open a full report"],
+  es: ["Escriba un nombre y la dirección del sitio", "El escaneo revisa privacidad, seguridad, accesibilidad y documentos", "Recibe una primera imagen y puede abrir un informe completo"],
+  "pt-BR": ["Informe um nome e o endereço do site", "A varredura verifica privacidade, segurança, acessibilidade e documentos", "Você recebe um panorama e pode abrir um relatório completo"],
+  ar: ["أدخلوا اسمًا وعنوان الموقع", "يفحص النظام الخصوصية والأمن والإتاحة والمستندات", "تصل صورة أولى، ويمكن فتح تقرير كامل"],
+};
+const INCLUDED: Record<Locale, { line: string; plans: string[] }> = {
+  he: { line: "הדוח המלא כלול ברכישה חד־פעמית ובכל סריקה במסלולי המעקב.", plans: ["דוח חד־פעמי — $35", "מעקב רבעוני — $119 לשנה", "מעקב חודשי — $300 לשנה"] },
+  en: { line: "The full report is included in the one-time purchase and in every scan on the monitoring plans.", plans: ["One-time report — $35", "Quarterly monitoring — $119 a year", "Monthly monitoring — $300 a year"] },
+  es: { line: "El informe completo está incluido en la compra única y en cada escaneo de los planes de seguimiento.", plans: ["Informe único — 35 $", "Seguimiento trimestral — 119 $ al año", "Seguimiento mensual — 300 $ al año"] },
+  "pt-BR": { line: "O relatório completo está incluído na compra avulsa e em cada varredura dos planos de acompanhamento.", plans: ["Relatório avulso — US$ 35", "Acompanhamento trimestral — US$ 119 por ano", "Acompanhamento mensal — US$ 300 por ano"] },
+  ar: { line: "التقرير الكامل مشمول في الشراء لمرة واحدة وفي كل فحص ضمن مسارات المتابعة.", plans: ["تقرير لمرة واحدة — 35 دولارًا", "متابعة ربع سنوية — 119 دولارًا في السنة", "متابعة شهرية — 300 دولار في السنة"] },
+};
+const TRANSCRIPT: Record<Locale, string> = {
+  he: "תמלול ההדגמה", en: "Demo transcript", es: "Transcripción de la demostración", "pt-BR": "Transcrição da demonstração", ar: "تفريغ العرض",
+};
+
 export function WebsiteScanPage() {
   const { i18n } = useTranslation();
   const { locale, copy } = storyOf(i18n.language);
   const links = LINKS[locale] || LINKS.en;
   const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
   const canonical = marketingPublicUrl("/website-scan", locale);
+  const code = mediaCode(locale);
+  const shots = shotsFor(locale);
+  const included = INCLUDED[locale] || INCLUDED.en;
   const [openShot, setOpenShot] = useState<number | null>(null);
+  const order = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9];
   return (
     <article className="scan-product" dir={dir} lang={locale}>
       <Helmet>
@@ -115,98 +155,104 @@ export function WebsiteScanPage() {
         <script type="application/ld+json">{JSON.stringify(schemaFor(copy, canonical, locale))}</script>
       </Helmet>
       <div className="scan-product__wrap">
-        <header className="scan-hero">
+        <header className="scan-hero scan-rise">
           <div>
             <h1>{copy.h1}</h1>
             <p>{copy.lede}</p>
-            <p>{copy.note}</p>
             <div className="scan-product__actions">
               <Link to="/compliance">{copy.primary}</Link>
               <a href="#scan-demo">{copy.watch}</a>
             </div>
-            <p className="scan-note">{copy.aside}</p>
+            <ul className="scan-points">
+              {(POINTS[locale] || POINTS.en).map((point) => <li key={point}>{point}</li>)}
+            </ul>
           </div>
           <figure className="scan-frame" id="scan-demo">
-            <div className="scan-frame__bar" dir="ltr"><span /><span /><span /><b>bizuply.com</b></div>
-            <video className="scan-video scan-video--desk" controls preload="none" poster="/media/compliance-demo/poster.jpg" width="1280" height="720" playsInline>
-              <source src="/media/compliance-demo/desktop.mp4" type="video/mp4" />
-              <track kind="subtitles" srcLang="he" src="/media/compliance-demo/captions-he.vtt" label="עברית" default={locale === "he"} />
-              <track kind="subtitles" srcLang="en" src="/media/compliance-demo/captions-en.vtt" label="English" default={locale === "en"} />
-              <track kind="subtitles" srcLang="es" src="/media/compliance-demo/captions-es.vtt" label="Español" default={locale === "es"} />
-              <track kind="subtitles" srcLang="pt-BR" src="/media/compliance-demo/captions-pt.vtt" label="Português" default={locale === "pt-BR"} />
-              <track kind="subtitles" srcLang="ar" src="/media/compliance-demo/captions-ar.vtt" label="العربية" default={locale === "ar"} />
+            <div className="scan-frame__bar" dir="ltr"><span /><span /><span /><b>bizuply.com/scan</b></div>
+            <video controls preload="none" poster={`/media/compliance-demo/poster-${code}.jpg`} width="1280" height="720" playsInline>
+              <source src={`/media/compliance-demo/${code}.mp4`} type="video/mp4" />
+              <track kind="captions" srcLang={locale === "pt-BR" ? "pt-BR" : locale} src={`/media/compliance-demo/captions-${code}.vtt`} label={copy.crumb} default />
             </video>
-            <video className="scan-video scan-video--phone" controls preload="none" poster="/media/compliance-demo/poster-mobile.jpg" width="390" height="844" playsInline>
-              <source src="/media/compliance-demo/mobile.mp4" type="video/mp4" />
-              <track kind="subtitles" srcLang={locale === "pt-BR" ? "pt-BR" : locale} src={`/media/compliance-demo/captions-${locale === "pt-BR" ? "pt" : locale}.vtt`} label={copy.crumb} default />
-            </video>
-            <figcaption>{copy.videoTitle}</figcaption>
           </figure>
         </header>
-        <details className="scan-transcript"><summary>{copy.watch}</summary><p>{copy.transcript}</p></details>
-        {copy.sections.map((section: { heading: string; paragraphs?: string[]; subsections?: { heading: string; paragraphs: string[] }[] }, index: number) => (
-          <section className="scan-section" key={section.heading}>
-            <h2>{section.heading}</h2>
-            {(section.paragraphs || []).map((paragraph) => <p key={paragraph.slice(0, 24)}>{paragraph}</p>)}
-            {index === 1 && (
-              <p className="scan-inline-links">
-                <Link to="/privacy">{links.privacy}</Link>
-                <Link to="/accessibility">{links.access}</Link>
-                <Link to="/guides">{links.guides}</Link>
-              </p>
-            )}
-            {section.subsections && (
-              <div className={index === 1 || index === 6 ? "scan-grid" : "scan-stack"}>
-                {section.subsections.map((sub) => (
-                  <article className="scan-card" key={sub.heading}>
-                    <h3>{sub.heading}</h3>
-                    {sub.paragraphs.map((paragraph) => <p key={paragraph.slice(0, 24)}>{paragraph}</p>)}
-                  </article>
-                ))}
-              </div>
-            )}
-            {index === 2 && (
-              <div className="scan-shots">
-                {SHOTS.map((shot, index) => (
-                  <figure key={shot.src}>
-                    <button type="button" aria-label={copy.shotAlt[index]} onClick={() => setOpenShot(index)}>
-                      <img src={shot.src} alt={copy.shotAlt[index]} width={shot.width} height={shot.height} />
-                    </button>
-                    <figcaption><b className="scan-demo__flag">{copy.demoFlag}</b> {copy.shots[index]}</figcaption>
-                  </figure>
-                ))}
-              </div>
-            )}
-            {index === 3 && (
-              <>
+        <details className="scan-transcript"><summary>{TRANSCRIPT[locale]}</summary><p>{copy.transcript}</p></details>
+      </div>
+      {order.map((index) => {
+        const section = copy.sections[index] as { heading: string; paragraphs?: string[]; subsections?: { heading: string; paragraphs: string[] }[] };
+        if (!section) return null;
+        const band = index === 1 || index === 7;
+        const block = (
+          <section className={`scan-section scan-rise${index === 9 ? " scan-close" : ""}`} key={section.heading}>
+            <div className="scan-product__wrap">
+              <h2>{section.heading}</h2>
+              {(section.paragraphs || []).map((paragraph) => <p key={paragraph.slice(0, 32)}>{paragraph}</p>)}
+              {index === 1 && (
+                <p className="scan-inline-links">
+                  <Link to="/privacy">{links.privacy}</Link>
+                  <Link to="/accessibility">{links.access}</Link>
+                  <Link to="/guides">{links.guides}</Link>
+                </p>
+              )}
+              {section.subsections && (
+                <div className={index === 1 || index === 6 ? "scan-grid" : "scan-stack"}>
+                  {section.subsections.map((sub) => (
+                    <article className="scan-card" key={sub.heading}>
+                      <h3>{sub.heading}</h3>
+                      {sub.paragraphs.map((paragraph) => <p key={paragraph.slice(0, 32)}>{paragraph}</p>)}
+                    </article>
+                  ))}
+                </div>
+              )}
+              {index === 2 && (
+                <ol className="scan-steps">
+                  {(STEPS[locale] || STEPS.en).map((step) => <li key={step}>{step}</li>)}
+                </ol>
+              )}
+              {index === 3 && (
                 <figure className="scan-shot-single">
-                  <img src={SHOTS[1].src} alt={copy.shotAlt[1]} width={SHOTS[1].width} height={SHOTS[1].height} />
-                  <figcaption>{copy.freeCaption}</figcaption>
+                  <button type="button" aria-label={copy.shotAlt[1]} onClick={() => setOpenShot(1)}>
+                    <img src={shots[1].src} alt={copy.shotAlt[1]} width={shots[1].width} height={shots[1].height} />
+                  </button>
+                  <figcaption><b className="scan-demo__flag">{copy.demoFlag}</b> {copy.freeCaption}</figcaption>
                 </figure>
-                <p><Link className="scan-cta" to="/compliance">{copy.freeCta}</Link></p>
-              </>
-            )}
-            {index === 4 && (
-              <figure className="scan-shot-single">
-                <img src={SHOTS[2].src} alt={copy.shotAlt[2]} width={SHOTS[2].width} height={SHOTS[2].height} />
-              </figure>
-            )}
-            {index === 5 && <ExampleCard locale={locale} flag={copy.exampleFlag} />}
-            {index === 8 && <PriceBoard locale={locale} showHeading={false} />}
-            {index === 9 && <p><Link className="scan-cta" to="/compliance">{copy.closeCta}</Link></p>}
+              )}
+              {index === 4 && (
+                <>
+                  <figure className="scan-shot-single">
+                    <button type="button" aria-label={copy.shotAlt[2]} onClick={() => setOpenShot(2)}>
+                      <img src={shots[2].src} alt={copy.shotAlt[2]} width={shots[2].width} height={shots[2].height} />
+                    </button>
+                    <figcaption><b className="scan-demo__flag">{copy.demoFlag}</b> {copy.shots[2]}</figcaption>
+                  </figure>
+                  <p className="scan-included__line">{included.line}</p>
+                  <ul className="scan-included">
+                    {included.plans.map((plan) => <li key={plan}><a href="#scan-prices">{plan}</a></li>)}
+                  </ul>
+                  <p>{copy.note}</p>
+                </>
+              )}
+              {index === 5 && <ExampleCard locale={locale} flag={copy.exampleFlag} />}
+              {index === 8 && <PriceBoard locale={locale} showHeading={false} />}
+              {index === 9 && <p><Link className="scan-cta" to="/compliance">{copy.closeCta}</Link></p>}
+            </div>
           </section>
-        ))}
+        );
+        return band ? <div className="scan-band" key={section.heading}>{block}</div> : block;
+      })}
+      <div className="scan-band">
         <section className="scan-section scan-faq">
-          <h2>{copy.faqTitle}</h2>
-          {copy.faq.map(([question, answer]: [string, string]) => (
-            <details key={question}><summary>{question}</summary><p>{answer}</p></details>
-          ))}
+          <div className="scan-product__wrap">
+            <h2>{copy.faqTitle}</h2>
+            {copy.faq.map(([question, answer]: [string, string]) => (
+              <details key={question}><summary>{question}</summary><p>{answer}</p></details>
+            ))}
+          </div>
         </section>
       </div>
       {openShot !== null && (
         <div className="scan-lightbox" role="dialog" aria-modal="true">
-          <button type="button" onClick={() => setOpenShot(null)}>×</button>
-          <img src={SHOTS[openShot].src} alt={copy.shotAlt[openShot]} width={SHOTS[openShot].width} height={SHOTS[openShot].height} />
+          <button type="button" onClick={() => setOpenShot(null)} aria-label={TRANSCRIPT[locale]}>×</button>
+          <img src={shots[openShot].src} alt={copy.shotAlt[openShot]} width={shots[openShot].width} height={shots[openShot].height} />
         </div>
       )}
     </article>

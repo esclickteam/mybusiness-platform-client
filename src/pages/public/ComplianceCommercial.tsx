@@ -255,32 +255,41 @@ const PRICE: Record<Locale, {
   },
 };
 
+const BLURB: Record<Locale, Record<"free" | "report" | "quarter" | "month", string>> = {
+  he: { free: "סריקה ראשונית עם ציון וסיכום ממצאים.", report: "סריקה מלאה אחת, ממצאים, ראיות, המלצות ו־PDF.", quarter: "ארבע סריקות מלאות, אחת בכל שלושה חודשים.", month: "12 סריקות מלאות, אחת בכל חודש." },
+  en: { free: "A first scan with a score and a finding summary.", report: "One full scan, with findings, evidence, recommendations and a PDF.", quarter: "Four full scans, one every three months.", month: "12 full scans, one each month." },
+  es: { free: "Un escaneo inicial con puntuación y resumen de hallazgos.", report: "Un escaneo completo, con hallazgos, pruebas, recomendaciones y PDF.", quarter: "Cuatro escaneos completos, uno cada tres meses.", month: "12 escaneos completos, uno cada mes." },
+  "pt-BR": { free: "Uma varredura inicial com nota e resumo dos achados.", report: "Uma varredura completa, com achados, evidências, recomendações e PDF.", quarter: "Quatro varreduras completas, uma a cada três meses.", month: "12 varreduras completas, uma por mês." },
+  ar: { free: "فحص أولي مع درجة وملخص للنتائج.", report: "فحص كامل واحد، مع النتائج والأدلة والتوصيات وPDF.", quarter: "أربعة فحوص كاملة، واحد كل ثلاثة أشهر.", month: "12 فحصًا كاملًا، واحد كل شهر." },
+};
+
 export function PriceBoard({ locale, showHeading = true }: { locale: Locale; showHeading?: boolean }) {
   const copy = PRICE[locale] || PRICE.en;
+  const blurb = BLURB[locale] || BLURB.en;
   const cards = [
-    { key: "free", name: locale === "he" ? "סריקה ראשונית בחינם" : locale === "es" ? "Escaneo inicial gratis" : locale === "pt-BR" ? "Varredura inicial grátis" : locale === "ar" ? "فحص أولي مجاني" : "Free first scan", price: "$0", unit: "", extra: "", items: copy.free, href: "/compliance", cta: copy.freeCta, featured: false },
-    { key: "report", name: locale === "he" ? "דוח מלא חד־פעמי" : locale === "es" ? "Informe completo único" : locale === "pt-BR" ? "Relatório completo avulso" : locale === "ar" ? "تقرير كامل لمرة واحدة" : "One-time full report", price: "$35", unit: copy.once, extra: "", items: copy.report, href: "/compliance", cta: copy.scanCta, featured: false },
-    { key: "quarter", name: locale === "he" ? "מעקב רבעוני" : locale === "es" ? "Seguimiento trimestral" : locale === "pt-BR" ? "Acompanhamento trimestral" : locale === "ar" ? "متابعة ربع سنوية" : "Quarterly monitoring", price: "$119", unit: copy.yearly, extra: locale === "he" ? "$29.75 לסריקה — ארבע סריקות בשנה" : locale === "es" ? "29,75 $ por escaneo — cuatro al año" : locale === "pt-BR" ? "US$ 29,75 por varredura — quatro por ano" : locale === "ar" ? "29.75 دولارًا للفحص — أربعة فحوص في السنة" : "$29.75 per scan — four scans a year", items: copy.quarter, href: "/compliance/account", cta: copy.dayCta, featured: false },
-    { key: "month", name: locale === "he" ? "מעקב חודשי" : locale === "es" ? "Seguimiento mensual" : locale === "pt-BR" ? "Acompanhamento mensal" : locale === "ar" ? "متابعة شهرية" : "Monthly monitoring", price: "$300", unit: copy.yearly, extra: locale === "he" ? "$25 לסריקה — 12 סריקות בשנה" : locale === "es" ? "25 $ por escaneo — 12 al año" : locale === "pt-BR" ? "US$ 25 por varredura — 12 por ano" : locale === "ar" ? "25 دولارًا للفحص — 12 فحصًا في السنة" : "$25 per scan — 12 scans a year", items: copy.month, href: "/compliance/account", cta: copy.dayCta, featured: true },
+    { key: "free" as const, name: locale === "he" ? "חינם" : locale === "es" ? "Gratis" : locale === "pt-BR" ? "Grátis" : locale === "ar" ? "مجاني" : "Free", price: "$0", unit: "", items: copy.free.slice(0, 4), href: "/compliance", cta: copy.freeCta, featured: false },
+    { key: "report" as const, name: locale === "he" ? "חד־פעמי" : locale === "es" ? "Único" : locale === "pt-BR" ? "Avulso" : locale === "ar" ? "لمرة واحدة" : "One-time", price: "$35", unit: copy.once, items: copy.report.slice(0, 4), href: "/compliance", cta: copy.scanCta, featured: false },
+    { key: "quarter" as const, name: locale === "he" ? "מעקב רבעוני" : locale === "es" ? "Seguimiento trimestral" : locale === "pt-BR" ? "Acompanhamento trimestral" : locale === "ar" ? "متابعة ربع سنوية" : "Quarterly monitoring", price: "$119", unit: copy.yearly, items: copy.quarter.slice(0, 4), href: "/compliance/account", cta: copy.dayCta, featured: false },
+    { key: "month" as const, name: locale === "he" ? "מעקב חודשי" : locale === "es" ? "Seguimiento mensual" : locale === "pt-BR" ? "Acompanhamento mensal" : locale === "ar" ? "متابعة شهرية" : "Monthly monitoring", price: "$300", unit: copy.yearly, items: copy.month.slice(0, 4), href: "/compliance/account", cta: copy.dayCta, featured: true },
   ];
   return (
-    <section className="scan-plans">
+    <section className="scan-plans" id="scan-prices">
       {showHeading ? <h2>{copy.heading}</h2> : null}
       {showHeading ? <p>{copy.lede}</p> : null}
       <div className="scan-plans__grid scan-prices">
         {cards.map((card) => (
           <article className={card.featured ? "is-featured" : undefined} key={card.key}>
-            {card.featured ? <em className="scan-price__badge">{copy.best}</em> : <em className="scan-price__badge scan-price__badge--empty" />}
+            {card.featured ? <em className="scan-price__badge">{copy.best}</em> : null}
             <b>{card.name}</b>
             <strong>{card.price}</strong>
-            <small>{card.unit}</small>
-            {card.extra ? <em className="scan-price__extra">{card.extra}</em> : <em className="scan-price__extra" />}
-            <ul>{card.items.map((item) => <li key={item}>{item}</li>)}</ul>
+            {card.unit ? <small>{card.unit}</small> : null}
+            <p>{blurb[card.key]}</p>
+            <ul>{card.items.map((item) => <li key={item}><span aria-hidden="true">✓</span>{item}</li>)}</ul>
             <Link to={card.href}>{card.cta}</Link>
           </article>
         ))}
       </div>
-      <p>{copy.note}</p>
+      <p className="scan-price__note">{copy.note}</p>
     </section>
   );
 }
