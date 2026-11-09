@@ -102,6 +102,10 @@ export default function ProtectedRoute({
     return <BizuplyLoader fullScreen label="Loading data..." />;
   }
 
+  if (role === "compliance_customer" && !location.pathname.includes("/compliance")) {
+    return <Navigate to="/compliance/account" replace />;
+  }
+
   /* ===========================
      🚫 Not authenticated
   =========================== */

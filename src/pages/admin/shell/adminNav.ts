@@ -64,6 +64,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: "/admin/system", label: "כלים" },
       { path: "/admin/ai-usage", label: "שימוש בבינה מלאכותית" },
       { path: "/admin/geo-intel", label: "נראות במנועי מענה" },
+      { path: "/admin/compliance-scans", label: "סריקות ודוחות" },
     ],
   },
   {

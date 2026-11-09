@@ -25,12 +25,12 @@ const TEXT: Record<Locale, Record<string, string>> = {
     categories: "קטגוריות", accessibility: "נגישות", security: "אבטחה", privacy: "פרטיות", cookies: "עוגיות",
     when: "תאריך ומדינה",
     locked: "הדוח המלא נשאר בשרת עד אימות עסקה.",
-    buy: "רכישת הדוח המלא — ₪149",
+    buy: "רכישת דוח מפורט — $35",
     buyNote: "הרכישה פותחת את פירוט הממצאים, הראיות, הצעות התיקון ותוכנית הפעולה, וגם הורדת PDF. הפירוט עצמו לא מוצג לפני אימות התשלום.",
     okCount: "בדיקות תקינות",
     actionCount: "ממצאים שדורשים טיפול",
     missingCount: "חוסרים",
-    unverifiedCount: "בדיקות שלא ניתן היה לאמת",
+    unverifiedCount: "לא ניתן לקבוע אוטומטית",
     site: "האתר שנבדק",
     scanStatus: "סטטוס הסריקה",
     sample: "הצגת מבנה הדוח",
@@ -41,7 +41,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     seen: "מה נמצא",
     gap: "מה חסר",
     severity: "חומרה",
-    manual: "נדרשת בדיקה אנושית",
+    manual: "לא ניתן לקבוע אוטומטית",
     mentioned: "הנושא אוזכר. זו אינה עמידה בדרישה.",
     not_seen_in_read_text: "הנושא לא הופיע במסמך שנקרא. זו אינה הפרה.",
     document_not_read: "המסמך לא נקרא, ולכן אין ניתוח.",
@@ -81,7 +81,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     cookies: "Cookies",
     when: "Date and country",
     locked: "The full report stays on the server until a payment is verified.",
-    buy: "Buy the full report — ₪149",
+    buy: "Buy the detailed report — $35",
     buyNote: "The purchase opens the findings, evidence, fixes, action plan, and the PDF. None of that detail is shown before payment is verified.",
     okCount: "Checks that passed",
     actionCount: "Findings that need action",
@@ -97,7 +97,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     seen: "What was found",
     gap: "What is missing",
     severity: "Severity",
-    manual: "A person needs to review this",
+    manual: "Cannot be decided automatically",
     mentioned: "The topic was mentioned. That is not compliance.",
     not_seen_in_read_text: "The topic did not appear in the text that was read.",
     document_not_read: "The document was not read, so there is no analysis.",
@@ -122,7 +122,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     other: "Otros hallazgos", incomplete: "Comprobaciones incompletas", categories: "Categorías", accessibility: "Accesibilidad", security: "Seguridad", privacy: "Privacidad", cookies: "Cookies", when: "Fecha y país",
     locked: "El informe completo permanece en el servidor hasta verificar un pago.",
     sample: "Ver la estructura", sampleNote: "Ilustración de la estructura. No son hallazgos del sitio analizado.",
-    law: "Ley o norma", scope: "País y alcance", source: "Fuente", seen: "Qué apareció", gap: "Qué falta", severity: "Gravedad", manual: "Hace falta revisión humana",
+    law: "Ley o norma", scope: "País y alcance", source: "Fuente", seen: "Qué apareció", gap: "Qué falta", severity: "Gravedad", manual: "No se puede decidir automáticamente",
     mentioned: "El tema aparece. Eso no es cumplimiento.", not_seen_in_read_text: "El tema no apareció en el texto leído.",
     document_not_read: "El documento no se leyó.", not_verifiable: "Un análisis público no puede verificarlo.",
     statement_seen: "Hay una declaración. Una declaración no es conformidad.", needs_human: "La fuente está en el catálogo. La aplicación requiere una persona.",
@@ -140,7 +140,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     other: "Outros achados", incomplete: "Verificações incompletas", categories: "Categorias", accessibility: "Acessibilidade", security: "Segurança", privacy: "Privacidade", cookies: "Cookies", when: "Data e país",
     locked: "O relatório completo fica no servidor até a verificação de um pagamento.",
     sample: "Ver a estrutura", sampleNote: "Ilustração da estrutura. Não são achados do site analisado.",
-    law: "Lei ou norma", scope: "País e alcance", source: "Fonte", seen: "O que apareceu", gap: "O que falta", severity: "Gravidade", manual: "Exige revisão humana",
+    law: "Lei ou norma", scope: "País e alcance", source: "Fonte", seen: "O que apareceu", gap: "O que falta", severity: "Gravidade", manual: "Não é possível decidir automaticamente",
     mentioned: "O tema apareceu. Isso não é conformidade.", not_seen_in_read_text: "O tema não apareceu no texto lido.",
     document_not_read: "O documento não foi lido.", not_verifiable: "Uma análise pública não consegue verificar isto.",
     statement_seen: "Havia uma declaração. Declaração não é conformidade.", needs_human: "A fonte está no catálogo. A aplicação exige uma pessoa.",
@@ -158,7 +158,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     other: "نتائج أخرى", incomplete: "فحوص لم تكتمل", categories: "فئات", accessibility: "إتاحة", security: "أمن", privacy: "خصوصية", cookies: "ملفات تعريف الارتباط", when: "التاريخ والدولة",
     locked: "يبقى التقرير الكامل على الخادم إلى أن يتم التحقق من عملية دفع.",
     sample: "عرض بنية التقرير", sampleNote: "رسم توضيحي للبنية. هذه ليست نتائج الموقع الذي فُحص.",
-    law: "القانون أو المعيار", scope: "الدولة والنطاق", source: "المصدر", seen: "ما وُجد", gap: "ما ينقص", severity: "الشدة", manual: "يلزم مراجعة بشرية",
+    law: "القانون أو المعيار", scope: "الدولة والنطاق", source: "المصدر", seen: "ما وُجد", gap: "ما ينقص", severity: "الشدة", manual: "يتعذر الحسم تلقائيًا",
     mentioned: "ذُكر الموضوع. هذا ليس امتثالًا.", not_seen_in_read_text: "لم يظهر الموضوع في النص الذي قُرئ.",
     document_not_read: "لم يُقرأ المستند.", not_verifiable: "لا يمكن التحقق من هذا بفحص علني.",
     statement_seen: "ظهرت تصريح. التصريح ليس مطابقة للمعيار.", needs_human: "المصدر موجود في الفهرس. السريان يحتاج إلى شخص.",
@@ -178,7 +178,7 @@ export function PlanCards({ locale }: { locale: Locale }) {
   const copy = TEXT[locale] || TEXT.en;
   const plans = [
     ["0", copy.free, "", copy.freeLine],
-    ["149", copy.report, copy.once, copy.reportLine],
+    ["35", copy.report, copy.once, copy.reportLine],
     ["99", copy.monitor, copy.month, copy.monitorLine],
   ];
   return (
@@ -213,9 +213,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "לא הושלמה",
     score: "ציון",
     scoreOf: "מתוך 100",
-    coverage: "כיסוי",
-    scoreHelp: "הציון מסכם רק בדיקות שהושלמו. הוא אינו אישור עמידה בחוק.",
-    coverageHelp: "האחוז מתוך הבדיקות שהסריקה הספיקה להשלים.",
+    scoreHelp: "הציון מבוסס על הבדיקות שהוכרעו. הוא אינו אישור שהאתר עומד בדרישות הדין.",
+    coverage: "היקף הבדיקות שהוכרעו",
+    coverageHelp: "אחוז הבדיקות שהתקבלה עבורן תוצאה. בדיקות שלא ניתן לקבוע אינן נספרות כתקינות.",
+    process: "השלמת תהליך הסריקה",
     lowCoverage: "הכיסוי נמוך. הציון חלקי ואינו מייצג בדיקות שלא הושלמו.",
     ok: "תקין",
     okHelp: "בדיקות שהסתיימו בלי ליקוי מאומת.",
@@ -223,8 +224,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     actionHelp: "ליקויים עם ראיה מהסריקה. מסמך שלא אותר נספר בכרטיס הנפרד.",
     missing: "חסר",
     missingHelp: "מסמכים פומביים שהחיפוש לא מצא.",
-    unverified: "לא אומת",
-    unverifiedHelp: "בדיקות שלא הושלמו וחיפושי ניסוח. הם לא מורידים את הציון.",
+    unverified: "לא ניתן לקבוע אוטומטית",
+    unverifiedHelp: "בדיקות שהסתיימו בלי תוצאה מבוססת. הן אינן כשל ואינן מעלות את היקף הבדיקות שהוכרעו.",
     newScan: "סריקה חדשה",
     offer: "הדוח המלא",
     once: "חד־פעמי",
@@ -234,7 +235,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "תוכנית עבודה לפי סדר עדיפות, וקובץ PDF",
     offerBody: "הרכישה פותחת את פירוט הממצאים, הראיות, ההמלצות ותוכנית התיקון, וגם קובץ PDF. אף אחד מהפרטים האלה לא מופיע כאן.",
     unavailable: "הסליקה אינה זמינה כרגע. לא מתבצע חיוב, והדוח המלא נשאר סגור.",
-    check: "רכישת הדוח המלא — ₪149",
+    check: "סרקו בחינם וגלו את התוצאה",
   },
   en: {
     kicker: "Scan report",
@@ -248,9 +249,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "Not completed",
     score: "Score",
     scoreOf: "out of 100",
-    coverage: "Coverage",
-    scoreHelp: "The score sums finished checks only. It is not legal approval.",
-    coverageHelp: "The share of checks the scan was able to finish.",
+    scoreHelp: "The score uses the checks that were decided. It is not confirmation that the site meets the law.",
+    coverage: "Checks that were decided",
+    coverageHelp: "The share of checks that received a result. Checks that could not be decided are not counted as passed.",
+    process: "Scan process complete",
     lowCoverage: "Coverage is low. The score is partial and does not represent unfinished checks.",
     ok: "Passed",
     okHelp: "Checks that finished without a verified defect.",
@@ -258,8 +260,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     actionHelp: "Defects with evidence from the scan. A document the search missed is counted separately.",
     missing: "Missing",
     missingHelp: "Public documents the search did not find.",
-    unverified: "Unverified",
-    unverifiedHelp: "Unfinished checks and wording searches. They do not lower the score.",
+    unverified: "Could not be decided",
+    unverifiedHelp: "Checks that ended without an evidence-based result. They are not failures and do not raise the decided share.",
     newScan: "New scan",
     offer: "Full report",
     once: "One time",
@@ -269,7 +271,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "A prioritized work plan, and the PDF",
     offerBody: "The purchase opens the findings, evidence, recommendations, action plan, and the PDF. None of that detail is shown here.",
     unavailable: "Checkout is temporarily unavailable. Nothing is charged, and the full report stays closed.",
-    check: "Buy the full report — ₪149",
+    check: "Scan for free and see the result",
   },
   es: {
     kicker: "Informe de análisis",
@@ -283,9 +285,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "No completado",
     score: "Puntuación",
     scoreOf: "de 100",
-    coverage: "Cobertura",
-    scoreHelp: "La puntuación resume solo las pruebas terminadas. No es una aprobación legal.",
-    coverageHelp: "El porcentaje de pruebas que el análisis pudo terminar.",
+    coverage: "Pruebas decididas",
+    scoreHelp: "La puntuación usa las pruebas decididas. No confirma que el sitio cumple la ley.",
+    process: "Proceso de análisis completo",
+    coverageHelp: "Porcentaje de pruebas con resultado. Las que no se pudieron decidir no cuentan como correctas.",
     lowCoverage: "La cobertura es baja. La puntuación es parcial y no representa las pruebas sin terminar.",
     ok: "Correcto",
     okHelp: "Pruebas que terminaron sin un defecto verificado.",
@@ -293,8 +296,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     actionHelp: "Defectos con evidencia del escaneo. Un documento no hallado se cuenta aparte.",
     missing: "Ausente",
     missingHelp: "Documentos públicos que la búsqueda no encontró.",
-    unverified: "Sin verificar",
-    unverifiedHelp: "Pruebas incompletas y búsquedas de redacción. No bajan la puntuación.",
+    unverified: "No decidido",
+    unverifiedHelp: "Pruebas que terminaron sin un resultado basado en pruebas. No son fallos.",
     newScan: "Nuevo análisis",
     offer: "Informe completo",
     once: "Pago único",
@@ -304,7 +307,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "Un plan de trabajo por prioridad, y el PDF",
     offerBody: "La compra abre los hallazgos, las pruebas, las recomendaciones, el plan de acción y el PDF. Ninguno de esos detalles aparece aquí.",
     unavailable: "El cobro no está disponible por ahora. No se realiza ningún cargo y el informe completo sigue cerrado.",
-    check: "Comprar el informe completo — ₪149",
+    check: "Escanear gratis y ver el resultado",
   },
   "pt-BR": {
     kicker: "Relatório da análise",
@@ -318,9 +321,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "Não concluída",
     score: "Pontuação",
     scoreOf: "de 100",
-    coverage: "Cobertura",
-    scoreHelp: "A pontuação resume só as verificações concluídas. Não é aprovação jurídica.",
-    coverageHelp: "A parcela das verificações que a análise conseguiu concluir.",
+    coverage: "Verificações decididas",
+    scoreHelp: "A pontuação usa as verificações decididas. Não confirma que o site cumpre a lei.",
+    process: "Processo de varredura concluído",
+    coverageHelp: "A parte das verificações com resultado. As que não puderam ser decididas não contam como adequadas.",
     lowCoverage: "A cobertura está baixa. A pontuação é parcial e não representa verificações inacabadas.",
     ok: "Regular",
     okHelp: "Verificações concluídas sem um defeito confirmado.",
@@ -328,8 +332,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     actionHelp: "Defeitos com evidência da varredura. Um documento não encontrado é contado à parte.",
     missing: "Ausente",
     missingHelp: "Documentos públicos que a busca não encontrou.",
-    unverified: "Não verificado",
-    unverifiedHelp: "Verificações incompletas e buscas de redação. Não reduzem a pontuação.",
+    unverified: "Não decidido",
+    unverifiedHelp: "Verificações que terminaram sem um resultado baseado em evidência. Não são falhas.",
     newScan: "Nova análise",
     offer: "Relatório completo",
     once: "Pagamento único",
@@ -339,7 +343,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "Um plano de trabalho por prioridade, e o PDF",
     offerBody: "A compra abre os achados, as evidências, as recomendações, o plano de ação e o PDF. Nenhum desses detalhes aparece aqui.",
     unavailable: "A cobrança está indisponível no momento. Nada é cobrado e o relatório completo continua fechado.",
-    check: "Comprar o relatório completo — ₪149",
+    check: "Varrer grátis e ver o resultado",
   },
   ar: {
     kicker: "تقرير الفحص",
@@ -353,9 +357,10 @@ const FREE: Record<Locale, Record<string, string>> = {
     failed: "لم يكتمل",
     score: "الدرجة",
     scoreOf: "من 100",
-    coverage: "التغطية",
-    scoreHelp: "تلخص الدرجة الفحوصات المكتملة فقط. ليست موافقة قانونية.",
-    coverageHelp: "نسبة الفحوصات التي تمكّن الفحص من إكمالها.",
+    coverage: "فحوصات تم حسمها",
+    scoreHelp: "الدرجة مبنية على الفحوصات التي حُسمت. ليست تأكيدًا أن الموقع يستوفي القانون.",
+    process: "اكتمال عملية الفحص",
+    coverageHelp: "نسبة الفحوصات التي صدرت لها نتيجة. الفحوصات التي تعذر حسمها لا تُحتسب سليمة.",
     lowCoverage: "التغطية منخفضة. الدرجة جزئية ولا تمثل الفحوصات التي لم تكتمل.",
     ok: "سليم",
     okHelp: "فحوصات انتهت دون خلل مؤكد.",
@@ -363,8 +368,8 @@ const FREE: Record<Locale, Record<string, string>> = {
     actionHelp: "عيوب معها دليل من الفحص. المستند الذي لم يُعثر عليه يُحسب على حدة.",
     missing: "ناقص",
     missingHelp: "مستندات علنية لم يعثر عليها البحث.",
-    unverified: "غير مؤكد",
-    unverifiedHelp: "فحوصات لم تكتمل وعمليات بحث عن صياغة. لا تخفض الدرجة.",
+    unverified: "لم يُحسم",
+    unverifiedHelp: "فحوصات انتهت بلا نتيجة مبنية على دليل. ليست إخفاقًا.",
     newScan: "فحص جديد",
     offer: "التقرير الكامل",
     once: "مرة واحدة",
@@ -374,7 +379,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "خطة عمل حسب الأولوية، وملف PDF",
     offerBody: "يفتح الشراء تفاصيل النتائج والأدلة والتوصيات وخطة الإصلاح وملف PDF. لا تظهر أي من هذه التفاصيل هنا.",
     unavailable: "التحصيل غير متاح حاليًا. لا يتم أي خصم، ويبقى التقرير الكامل مغلقًا.",
-    check: "شراء التقرير الكامل — ₪149",
+    check: "ابدأ مجانًا واطلع على النتيجة",
   },
 };
 
@@ -423,20 +428,24 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
         <div>
           <b>{summary.checkedScore ?? "—"}<small>/100</small></b>
           <span>{copy.score}</span>
-          <p>{copy.scoreHelp}</p>
+        </div>
+        <div>
+          <b>{summary.process ?? "—"}<small>%</small></b>
+          <span>{copy.process || copy.coverage}</span>
         </div>
         <div>
           <b>{summary.coverage ?? "—"}<small>%</small></b>
           <span>{copy.coverage}</span>
           <div className="report-sheet__bar" aria-hidden="true"><span style={{ width: `${coverage}%` }} /></div>
-          <p>{summary.lowCoverage ? copy.lowCoverage : copy.coverageHelp}</p>
         </div>
       </div>
+      <p className="report-sheet__scope">{copy.scoreHelp}</p>
+      <p className="report-sheet__scope">{copy.unverified}: {summary.unverified ?? 0}</p>
       <div className="report-sheet__metrics">
-        <article><b>{summary.ok ?? 0}</b><span>{copy.ok}</span><p>{copy.okHelp}</p></article>
-        <article><b>{summary.action ?? 0}</b><span>{copy.action}</span><p>{copy.actionHelp}</p></article>
-        <article><b>{summary.missing ?? 0}</b><span>{copy.missing}</span><p>{copy.missingHelp}</p></article>
-        <article><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span><p>{copy.unverifiedHelp}</p></article>
+        <article><b>{summary.ok ?? 0}</b><span>{copy.ok}</span></article>
+        <article><b>{summary.action ?? 0}</b><span>{copy.action}</span></article>
+        <article><b>{summary.missing ?? 0}</b><span>{copy.missing}</span></article>
+        <article><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span></article>
       </div>
       <aside className="report-sheet__buy">
         <div>
@@ -450,7 +459,7 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
         </div>
         <div>
           <p>{copy.offer}</p>
-          <strong>₪149</strong>
+          <strong>$35</strong>
           <em>{copy.once}</em>
           <button type="button" onClick={checkPurchase}>{copy.check}</button>
           <small role="status">{purchaseNote}</small>

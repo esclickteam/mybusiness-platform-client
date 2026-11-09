@@ -12,7 +12,13 @@ type FooterLink = {
   to: string;
 };
 
-const SYSTEMS: Record<string, string> = {
+const SCAN_LABEL: Record<string, string> = {
+  en: "AI website scan",
+  he: "סריקת אתר חכמה AI",
+  es: "Escaneo inteligente del sitio",
+  "pt-BR": "Varredura inteligente do site",
+  ar: "فحص ذكي للموقع",
+};
   en: "SaaS systems",
   he: "מערכות",
   es: "Sistemas",
@@ -67,6 +73,7 @@ export default function Footer() {
       links: [
         { label: t("footer.platform"), to: "/platform" },
         { label: t("footer.crm"), to: "/crm" },
+        { label: SCAN_LABEL[region] || SCAN_LABEL.en, to: "/website-scan" },
         { label: t("footer.appointments"), to: "/appointments" },
         { label: t("footer.whatsapp"), to: "/whatsapp-api" },
         { label: t("footer.meta"), to: "/meta-campaigns" },

@@ -20,6 +20,8 @@ const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneH
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 const ComplianceScannerPage = lazy(() => import("./pages/public/ComplianceScannerPage"));
+const WebsiteScanPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.WebsiteScanPage })));
+const ComplianceAccountPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.ComplianceAccountPage })));
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
@@ -198,6 +200,7 @@ const AdminManagedWhatsApp = lazy(
   () => import("./pages/admin/AdminManagedWhatsApp")
 );
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const ComplianceScansAdminPage = lazy(() => import("./pages/admin/ComplianceScansAdminPage"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
 const AdminGlobalPartners = lazy(() =>
@@ -1342,6 +1345,8 @@ export default function App() {
 
                         <Route path="/about" element={<About />} />
                         <Route path="/crm" element={<CrmProductPage />} />
+                        <Route path="/compliance/account" element={<ComplianceAccountPage />} />
+                        <Route path="/website-scan" element={<WebsiteScanPage />} />
                         <Route path="/compliance/review" element={<ComplianceScannerPage />} />
                         <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
                         <Route path="/compliance" element={<ComplianceScannerPage />} />
@@ -1739,6 +1744,7 @@ export default function App() {
                         <Route path="system" element={<AdminSystemHub />} />
                         <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
                         <Route path="logs" element={<AdminLogs />} />
+                        <Route path="compliance-scans" element={<ComplianceScansAdminPage />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
                         <Route path="geo-intel" element={<AdminGeoIntel />} />
                         <Route path="global-partners" element={<AdminGlobalPartners />} />

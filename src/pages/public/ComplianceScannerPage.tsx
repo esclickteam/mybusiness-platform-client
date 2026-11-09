@@ -1,15 +1,15 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
-import { FreeResult, MonitorBoard, PlanCards, RequirementTable, commercialLocale } from "./ComplianceCommercial";
+import { FreeResult, MonitorBoard, PlanCards, commercialLocale } from "./ComplianceCommercial";
 import { ComplianceReportView } from "./ComplianceReportView";
 
 const TOKEN_KEY = "bizuplyComplianceTenant";
-const REVIEW_FLAG = "bizuplyComplianceReview";
+const ADMIN_KEY = "bizuplyComplianceAdmin";
 
 const REVIEW_COPY: Record<Locale, { label: string; action: string; on: string; fail: string; history: string }> = {
-  he: { label: "קוד פנימי", action: "אימות", on: "הגישה הפנימית אומתה. ניטור אוטומטי לא פועל.", fail: "הקוד לא אומת.", history: "סריקות של הגישה הזו" },
+  he: { label: "קוד פנימי", action: "אימות", on: "הגישה הפנימית פתוחה בכרטיסייה הזו בלבד. היא לא נשמרת כהרשאה של החשבון.", fail: "הקוד לא אומת.", history: "סריקות של הגישה הזו" },
   en: { label: "Internal code", action: "Verify", on: "Internal access was verified. Automatic monitoring is off.", fail: "The code was not accepted.", history: "Scans for this access" },
   es: { label: "Código de prueba", action: "Abrir el informe completo", on: "Este acceso abre sus propios informes. El seguimiento automático está apagado.", fail: "El código no fue aceptado.", history: "Escaneos de este acceso" },
   "pt-BR": { label: "Código de teste", action: "Abrir o relatório completo", on: "Este acesso abre os próprios relatórios. O monitoramento automático está desligado.", fail: "O código não foi aceito.", history: "Varreduras deste acesso" },
@@ -21,21 +21,9 @@ function ReviewAccess({ locale, onUnlocked }: { locale: Locale; onUnlocked?: () 
   const [code, setCode] = useState("");
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
-  const [scans, setScans] = useState<Array<{ id: string; url: string }>>([]);
-
-  async function loadHistory() {
-    const token = localStorage.getItem(TOKEN_KEY) || "";
-    if (!token) return;
-    const response = await fetch("/compliance/api/dashboard", { headers: { "x-tenant-token": token } });
-    if (!response.ok) return;
-    const data = await response.json();
-    setScans(Array.isArray(data.scans) ? data.scans : []);
-  }
 
   useEffect(() => {
-    const active = sessionStorage.getItem(REVIEW_FLAG) === "1";
-    setOpen(active);
-    if (active) loadHistory();
+    setOpen(Boolean(sessionStorage.getItem(ADMIN_KEY)));
   }, []);
 
   async function submit(event: FormEvent) {
@@ -43,22 +31,21 @@ function ReviewAccess({ locale, onUnlocked }: { locale: Locale; onUnlocked?: () 
     const entered = code;
     setCode("");
     setMessage("");
-    const token = localStorage.getItem(TOKEN_KEY) || undefined;
     const response = await fetch("/compliance/api/review-access", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: entered, tenantToken: token }),
+      body: JSON.stringify({ code: entered }),
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok || data.ok !== true) {
+    if (!response.ok || data.ok !== true || !data.adminSession) {
+      sessionStorage.removeItem(ADMIN_KEY);
+      setOpen(false);
       setMessage(copy.fail);
       return;
     }
-    if (data.tenantToken) localStorage.setItem(TOKEN_KEY, data.tenantToken);
-    sessionStorage.setItem(REVIEW_FLAG, "1");
+    sessionStorage.setItem(ADMIN_KEY, data.adminSession);
     setOpen(true);
     setMessage(copy.on);
-    await loadHistory();
     onUnlocked?.();
   }
 
@@ -72,16 +59,7 @@ function ReviewAccess({ locale, onUnlocked }: { locale: Locale; onUnlocked?: () 
         <button className="scan-start" type="submit">{copy.action}</button>
       </form>
       {message && <p>{message}</p>}
-      {open && scans.length > 0 && (
-        <div>
-          <b>{copy.history}</b>
-          <ul>
-            {scans.slice(0, 8).map((scan) => (
-              <li key={scan.id}><Link to={`/compliance/report/${scan.id}`}>{scan.url}</Link></li>
-            ))}
-          </ul>
-        </div>
-      )}
+      {open && !message ? <p>{copy.on}</p> : null}
     </section>
   );
 }
@@ -109,6 +87,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "בדקו את האתר מול מה שהוא באמת מפרסם",
     lead: "סריקה טכנית וניתוח מסמכים של תקנון, פרטיות, עוגיות, נגישות ותנאי תשלום. הממצאים נשענים על הטקסט שנקרא, לא על ניחוש.",
     url: "כתובת האתר",
+    fullName: "שם מלא",
+    nameInvalid: "יש להזין שם פרטי ושם משפחה.",
+    nameNotice: "השם נשמר עם הסריקה כדי לזהות את הדוח ולנהל את הפנייה. הוא לא נמכר ולא משמש לפרסום.",
     start: "התחילו סריקה",
     country: "איפה העסק פועל",
     search: "חיפוש מדינה",
@@ -164,6 +145,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "Check the site against what it actually publishes",
     lead: "A technical scan and a reading of terms, privacy, cookies, accessibility, and payment terms. Findings stay tied to the text that was read.",
     url: "Website address",
+    fullName: "Full name",
+    nameInvalid: "Enter a first name and a last name.",
+    nameNotice: "The name is stored with the scan so the report can be identified. It is not sold and it is not used for advertising.",
     start: "Start scan",
     country: "Where the business operates",
     search: "Search countries",
@@ -219,6 +203,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "Revisen el sitio frente a lo que realmente publica",
     lead: "Escaneo técnico y lectura de condiciones, privacidad, cookies, accesibilidad y pagos. Los hallazgos se apoyan en el texto leído.",
     url: "Dirección del sitio",
+    fullName: "Nombre completo",
+    nameInvalid: "Escriban un nombre y un apellido.",
+    nameNotice: "El nombre se guarda con el análisis para identificar el informe. No se vende ni se usa para publicidad.",
     start: "Iniciar revisión",
     country: "Dónde opera el negocio",
     search: "Buscar país",
@@ -274,6 +261,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "Confira o site diante do que ele realmente publica",
     lead: "Varredura técnica e leitura de termos, privacidade, cookies, acessibilidade e pagamentos. Os achados ficam ligados ao texto lido.",
     url: "Endereço do site",
+    fullName: "Nome completo",
+    nameInvalid: "Informem um nome e um sobrenome.",
+    nameNotice: "O nome fica salvo com a varredura para identificar o relatório. Ele não é vendido nem usado para publicidade.",
     start: "Iniciar verificação",
     country: "Onde o negócio atua",
     search: "Buscar país",
@@ -329,6 +319,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     title: "افحصوا الموقع مقابل ما ينشره فعلًا",
     lead: "فحص تقني وقراءة للشروط والخصوصية وملفات الارتباط والإتاحة وشروط الدفع. النتائج تستند إلى النص الذي قُرئ.",
     url: "عنوان الموقع",
+    fullName: "الاسم الكامل",
+    nameInvalid: "أدخلوا الاسم الأول واسم العائلة.",
+    nameNotice: "يُحفظ الاسم مع الفحص للتعرّف على التقرير وإدارة الطلب. لا يُباع ولا يُستخدم للإعلان.",
     start: "ابدأوا الفحص",
     country: "أين يعمل النشاط",
     search: "بحث عن دولة",
@@ -392,15 +385,174 @@ function localeOf(language: string): Locale {
   return "en";
 }
 
+const LIVE: Record<Locale, Record<string, string>> = {
+  he: {
+    liveTitle: "אנחנו בודקים את האתר שלך",
+    live_wait: "ממתינים לנתוני ההתקדמות מהשרת",
+    live_crawl: "קוראים את העמודים הציבוריים",
+    live_browser: "טוענים עמוד בדפדפן",
+    live_documents: "קוראים מסמכים משפטיים",
+    live_checks: "מריצים בדיקות אבטחה, פרטיות ונגישות",
+    live_analysis: "משווים את מה שנקרא",
+    live_done: "הסריקה הסתיימה",
+    catSecurity: "אבטחה",
+    catPrivacy: "פרטיות ועוגיות",
+    catAccess: "נגישות",
+    catDocs: "מסמכים משפטיים",
+    state_waiting: "ממתין",
+    state_checking: "בבדיקה",
+    state_done: "הושלם",
+    state_blocked: "לא ניתן להשלים",
+    now: "עכשיו: {name}",
+    doneOf: "הושלמו {done} מתוך {total}",
+  },
+  en: {
+    liveTitle: "We are checking your site",
+    live_wait: "Waiting for progress from the server",
+    live_crawl: "Reading public pages",
+    live_browser: "Loading a page in the browser",
+    live_documents: "Reading legal documents",
+    live_checks: "Running security, privacy, and accessibility checks",
+    live_analysis: "Comparing what was read",
+    live_done: "The scan finished",
+    catSecurity: "Security",
+    catPrivacy: "Privacy and cookies",
+    catAccess: "Accessibility",
+    catDocs: "Legal documents",
+    state_waiting: "Waiting",
+    state_checking: "Checking",
+    state_done: "Completed",
+    state_blocked: "Could not complete",
+    now: "Now: {name}",
+    doneOf: "{done} of {total} completed",
+  },
+  es: {
+    liveTitle: "Estamos revisando tu sitio",
+    live_wait: "Esperando el avance del servidor",
+    live_crawl: "Leyendo páginas públicas",
+    live_browser: "Cargando una página en el navegador",
+    live_documents: "Leyendo documentos legales",
+    live_checks: "Ejecutando controles de seguridad, privacidad y accesibilidad",
+    live_analysis: "Comparando lo leído",
+    live_done: "El análisis terminó",
+    catSecurity: "Seguridad",
+    catPrivacy: "Privacidad y cookies",
+    catAccess: "Accesibilidad",
+    catDocs: "Documentos legales",
+    state_waiting: "En espera",
+    state_checking: "En revisión",
+    state_done: "Completado",
+    state_blocked: "No se pudo completar",
+    now: "Ahora: {name}",
+    doneOf: "{done} de {total} completadas",
+  },
+  "pt-BR": {
+    liveTitle: "Estamos verificando o seu site",
+    live_wait: "Aguardando o progresso do servidor",
+    live_crawl: "Lendo páginas públicas",
+    live_browser: "Carregando uma página no navegador",
+    live_documents: "Lendo documentos legais",
+    live_checks: "Executando verificações de segurança, privacidade e acessibilidade",
+    live_analysis: "Comparando o que foi lido",
+    live_done: "A varredura terminou",
+    catSecurity: "Segurança",
+    catPrivacy: "Privacidade e cookies",
+    catAccess: "Acessibilidade",
+    catDocs: "Documentos legais",
+    state_waiting: "Aguardando",
+    state_checking: "Em verificação",
+    state_done: "Concluído",
+    state_blocked: "Não foi possível concluir",
+    now: "Agora: {name}",
+    doneOf: "{done} de {total} concluídas",
+  },
+  ar: {
+    liveTitle: "نحن نفحص موقعك",
+    live_wait: "بانتظار تقدم الفحص من الخادم",
+    live_crawl: "نقرأ الصفحات العلنية",
+    live_browser: "نحمّل صفحة في المتصفح",
+    live_documents: "نقرأ المستندات القانونية",
+    live_checks: "نجري فحوصات الأمن والخصوصية والإتاحة",
+    live_analysis: "نقارن ما قُرئ",
+    live_done: "اكتمل الفحص",
+    catSecurity: "الأمن",
+    catPrivacy: "الخصوصية وملفات تعريف الارتباط",
+    catAccess: "الإتاحة",
+    catDocs: "مستندات قانونية",
+    state_waiting: "بالانتظار",
+    state_checking: "قيد الفحص",
+    state_done: "اكتمل",
+    state_blocked: "تعذر الإكمال",
+    now: "الآن: {name}",
+    doneOf: "اكتمل {done} من {total}",
+  },
+};
+
+function ScanLive({
+  copy,
+  url,
+  progress,
+}: {
+  copy: Record<string, string>;
+  url: string;
+  progress?: { phase?: string; categories?: Record<string, string>; completed?: number; total?: number; current?: string } | null;
+}) {
+  const categories = [
+    ["security", copy.catSecurity],
+    ["privacy", copy.catPrivacy],
+    ["accessibility", copy.catAccess],
+    ["documents", copy.catDocs],
+  ] as const;
+  const phase = progress?.phase || "";
+  const total = Number(progress?.total);
+  const completed = Number(progress?.completed);
+  const hasBar = Number.isFinite(completed) && Number.isFinite(total) && total > 0;
+  return (
+    <section className="scan-live" aria-live="polite">
+      <div className="scan-live__mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <circle cx="28" cy="28" r="14" />
+          <path d="M38 38 L52 52" />
+        </svg>
+      </div>
+      <h2>{copy.liveTitle}</h2>
+      <p className="scan-live__url" dir="ltr">{url || "—"}</p>
+      <p className="scan-live__phase">{copy[`live_${phase}`] || copy.live_wait}</p>
+      {progress?.current ? <p className="scan-live__phase">{copy.now.replace("{name}", progress.current)}</p> : null}
+      {hasBar ? <p className="scan-live__phase">{copy.doneOf.replace("{done}", String(completed)).replace("{total}", String(total))}</p> : null}
+      {hasBar ? (
+        <div className="scan-live__bar" role="progressbar" aria-valuenow={completed} aria-valuemin={0} aria-valuemax={total}>
+          <span style={{ width: `${Math.max(0, Math.min(100, (completed / total) * 100))}%` }} />
+        </div>
+      ) : null}
+      <ul className="scan-live__cats">
+        {categories.map(([key, label]) => {
+          const state = progress?.categories?.[key] || "waiting";
+          return (
+            <li key={key} className={`is-${state}`}>
+              <b>{label}</b>
+              <em>{copy[`state_${state}`] || copy.state_waiting}</em>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 export default function ComplianceScannerPage() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const locale = localeOf(i18n.language || "he");
   const copy = COPY[locale];
+  const live = LIVE[locale] || LIVE.en;
+  const previewScan = !id && searchParams.get("ui") === "scan";
   const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
   const [url, setUrl] = useState("https://");
+  const [fullName, setFullName] = useState("");
   const [query, setQuery] = useState("");
   const [countries, setCountries] = useState<string[]>([]);
   const [support, setSupport] = useState<Record<string, { level?: string }>>({});
@@ -436,9 +588,14 @@ export default function ComplianceScannerPage() {
     const tick = async () => {
       try {
         const token = localStorage.getItem(TOKEN_KEY) || "";
-        const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}`, {
-          headers: token ? { "x-tenant-token": token } : {},
-        });
+        const admin = sessionStorage.getItem(ADMIN_KEY) || "";
+        const platform = localStorage.getItem("token") || "";
+        const headers: Record<string, string> = {};
+        if (token) headers["x-tenant-token"] = token;
+        if (admin) headers["x-admin-session"] = admin;
+        if (platform) headers.Authorization = `Bearer ${platform}`;
+        const view = searchParams.get("view") === "summary" ? "&view=summary" : "";
+        const response = await fetch(`/compliance/api/scans/${id}?locale=${encodeURIComponent(locale)}${view}`, { headers });
         const data = await response.json();
         if (stop) return;
         if (!response.ok) { setError(data.error || ""); return; }
@@ -451,7 +608,7 @@ export default function ComplianceScannerPage() {
     };
     tick();
     return () => { stop = true; };
-  }, [id, locale, reload]);
+  }, [id, locale, reload, searchParams]);
 
   const matches = countries.filter((code) => {
     const name = names?.of(code) || code;
@@ -463,12 +620,18 @@ export default function ComplianceScannerPage() {
     event.preventDefault();
     setError("");
     if (!selected.length) { setError(copy.country); return; }
+    const nameParts = fullName.trim().split(/\s+/).filter((part) => part.length >= 2);
+    if (nameParts.length < 2) { setError(copy.nameInvalid); return; }
     const token = localStorage.getItem(TOKEN_KEY) || undefined;
+    const platform = localStorage.getItem("token") || "";
     const response = await fetch("/compliance/api/scans", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(platform ? { Authorization: `Bearer ${platform}` } : {}),
+      },
       body: JSON.stringify({
-        url, plan: "free", countries: selected, businessType,
+        url, requesterName: fullName.trim(), plan: "free", countries: selected, businessType,
         targetsOtherCountries: audience, locale, tenantToken: token,
       }),
     });
@@ -480,7 +643,13 @@ export default function ComplianceScannerPage() {
 
   async function downloadPdf() {
     const token = localStorage.getItem(TOKEN_KEY) || "";
-    const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers: { "x-tenant-token": token } });
+    const admin = sessionStorage.getItem(ADMIN_KEY) || "";
+    const platform = localStorage.getItem("token") || "";
+    const headers: Record<string, string> = {};
+    if (token) headers["x-tenant-token"] = token;
+    if (admin) headers["x-admin-session"] = admin;
+    if (platform) headers.Authorization = `Bearer ${platform}`;
+    const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers });
     if (!response.ok) { setError(copy.notice); return; }
     const blob = await response.blob();
     const link = document.createElement("a");
@@ -506,7 +675,7 @@ export default function ComplianceScannerPage() {
 
   return (
     <main className={id ? "scan-product scan-product--report" : "scan-product"} dir={dir} lang={locale}>
-      {!id && <form onSubmit={startScan}>
+      {!id && !previewScan && <form onSubmit={startScan}>
       <section className="scan-hero">
         <div className="scan-hero__copy">
           <p className="scan-kicker">{copy.kicker}</p>
@@ -515,11 +684,16 @@ export default function ComplianceScannerPage() {
           <div className="scan-panel">
             <div className="scan-launch">
               <label className="scan-url">
+                <span>{copy.fullName}</span>
+                <input value={fullName} onChange={(event) => setFullName(event.target.value)} autoComplete="name" required />
+              </label>
+              <label className="scan-url">
                 <span>{copy.url}</span>
                 <input value={url} onChange={(event) => setUrl(event.target.value)} inputMode="url" required />
               </label>
               <button className="scan-start" type="submit">{copy.start}</button>
             </div>
+            <p className="scan-name-note">{copy.nameNotice}</p>
             <div className="scan-field">
               <span>{copy.country}</span>
               <p className="scan-meta">{copy.selected} {selected.length}</p>
@@ -582,7 +756,14 @@ export default function ComplianceScannerPage() {
       </ol>
       </form>}
       {error && <p className="scan-error" role="alert">{error}</p>}
-      {!id && (
+      {previewScan && (
+        <ScanLive
+          copy={live}
+          url="https://example.com"
+          progress={{ phase: "checks", current: "נגישות", completed: 4, total: 12, categories: { security: "checking", privacy: "waiting", accessibility: "done", documents: "blocked" } }}
+        />
+      )}
+      {!id && !previewScan && (
         <>
           <PlanCards locale={commercialLocale(locale)} />
           <MonitorBoard locale={commercialLocale(locale)} />
@@ -592,25 +773,12 @@ export default function ComplianceScannerPage() {
       {payload && (
         <section className="scan-report" aria-live="polite">
           {payload.status !== "completed" ? (
-            <div className="scan-progress">
-              <h2>{copy.running}</h2>
-              <ol>
-                {([["crawl", copy.phaseCrawl], ["documents", copy.phaseDocuments], ["checks", copy.phaseChecks], ["analysis", copy.phaseAnalysis], ["done", copy.phaseDone]] as const).map(([phase, label]) => (
-                  <li key={phase} className={payload.phase === phase ? "is-on" : ""}>{label}</li>
-                ))}
-              </ol>
-            </div>
+            <ScanLive copy={live} url={payload.url || ""} progress={payload.progress} />
           ) : payload.access !== "full" ? (
             <FreeResult locale={commercialLocale(locale)} summary={payload.summary} status={payload.status} scanId={id} />
           ) : (
             <>
               <ComplianceReportView locale={locale} payload={payload} onPdf={downloadPdf} />
-              {(payload.report?.limitations || []).length > 0 && (
-                <ul className="scan-limits">
-                  {payload.report.limitations.map((item: string) => <li key={item}>{item}</li>)}
-                </ul>
-              )}
-              <RequirementTable locale={commercialLocale(locale)} rows={payload.report?.requirements?.rows || []} />
             </>
           )}
         </section>

@@ -1,4 +1,3 @@
-import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
@@ -27,15 +26,16 @@ type Finding = {
 const COPY: Record<Locale, Record<string, string>> = {
   he: {
     newScan: "סריקה חדשה", pdf: "הורדת PDF", site: "האתר שנבדק", address: "כתובת", date: "תאריך", status: "סטטוס",
-    score: "ציון הבדיקות", scoreHelp: "הציון מסכם רק בדיקות שהושלמו. הוא אינו אישור עמידה בחוק.",
-    coverage: "כיסוי", coverageHelp: "אחוז הבדיקות שהסתיימו מתוך מה שהסריקה ניסתה לבדוק.",
+    score: "ציון הבדיקות", scoreHelp: "הציון מבוסס על הבדיקות שהוכרעו. הוא אינו אישור שהאתר עומד בדרישות הדין.",
+    coverage: "היקף הבדיקות שהוכרעו", coverageHelp: "אחוז הבדיקות שהתקבלה עבורן תוצאה, מתוך הבדיקות שאפשר היה להכריע.",
+    process: "השלמת תהליך הסריקה", processHelp: "100% כאשר כל בדיקה הגיעה למצב סופי, גם אם חלקן לא הוכרעו.",
     ok: "מה נמצא תקין", todo: "מה דורש טיפול", missing: "מה חסר לפי הראיות", unknown: "מה לא ניתן לבדוק", first: "מה מומלץ לתקן קודם",
     all: "הכול", action: "דורש טיפול", pass: "תקין", unverified: "לא ניתן לאימות", other: "לא רלוונטי",
     checked: "מה נבדק", found: "מה נמצא", why: "למה זה חשוב", fix: "מה מומלץ לעשות", where: "איפה זה נמצא",
     open: "פתחו את העמוד", technical: "פרטים טכניים", quote: "ציטוט מהמקור", more: "הציגו את הציטוט המלא", less: "הציגו פחות",
-    severity: "חומרה", certainty: "רמת ודאות", kind: "סוג הממצא", gap: "מה חסר או אינו תקין", law: "מקור", noLaw: "לא צורף מקור מוסמך לממצא זה",
+    severity: "חומרה", certainty: "רמת ודאות", kind: "סוג הממצא", gap: "מה חסר או אינו תקין", law: "מקור", noLaw: "",
     section: "סעיף", noSection: "כותרת הסעיף לא זוהתה", draft: "נוסח מוצע", verify: "איך לוודא שהתיקון בוצע",
-    plan: "תוכנית הפעולה לתיקון האתר", unfinished: "בדיקות שלא ניתן היה להשלים", owner: "בדיקות שדורשות מידע מבעל האתר", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
+    plan: "תוכנית הפעולה לתיקון האתר", unfinished: "בדיקות שלא ניתן היה להשלים", owner: "מסמכים שאינם פתוחים לציבור", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
     purpose: "המטרה באתר זה לא אומתה", consent: "לפני הסכמה ואחריה: לא נבדק",
     okStatus: "תקין", missingStatus: "חסר", fixStatus: "דורש תיקון", unverifiedStatus: "לא ניתן לאימות", otherStatus: "לא רלוונטי",
     high: "גבוהה", medium: "בינונית", low: "נמוכה", info: "לידיעה",
@@ -49,19 +49,27 @@ const COPY: Record<Locale, Record<string, string>> = {
     gapTitle: "חיפושי ניסוח — לא נקבעה הפרה",
     gapNote: "הנושא לא אותר בניסוח שנבדק. זו אינה קביעה שהאתר מפר חוק.",
     missingTitle: "מסמכים שלא אותרו אחרי חיפוש",
-    sourceMissing: "לא צורף קישור למקור רשמי, ולכן אין כאן אסמכתה מאומתת.",
+    sourceMissing: "",
+    technicalNote: "זהו ממצא טכני. אין כאן קביעת הפרה.",
+    linkedSource: "מקור מקצועי. הקישור אינו קביעה שהאתר מפר חוק.",
+    navAccess: "נגישות", navSecurity: "אבטחה", navPrivacy: "פרטיות", navDocs: "מסמכים", navPlan: "תוכנית פעולה", navOpen: "לא הוכרע",
+    blockedTitle: "מסמכים שאינם פתוחים לציבור",
+    notFoundTitle: "לא אותר מידע בנושא",
+    undecidedTitle: "לא ניתן לקבוע אוטומטית",
+    technicalTitle: "בדיקה שלא הושלמה",
   },
   en: {
     newScan: "New scan", pdf: "Download PDF", site: "Site checked", address: "Address", date: "Date", status: "Status",
-    score: "Check score", scoreHelp: "The score sums finished checks only. It is not legal approval.",
-    coverage: "Coverage", coverageHelp: "The share of checks that finished out of those the scan attempted.",
+    score: "Check score", scoreHelp: "The score uses the checks that were decided. It is not confirmation that the site meets the law.",
+    coverage: "Checks that were decided", coverageHelp: "The share of checks that received a result, out of the checks that could be decided.",
+    process: "Scan process complete", processHelp: "100% when every check reached a final state, including checks that were not decided.",
     ok: "What looked sound", todo: "What needs attention", missing: "What the evidence did not show", unknown: "What could not be checked", first: "What to fix first",
     all: "All", action: "Needs attention", pass: "Sound", unverified: "Could not verify", other: "Not applicable",
     checked: "What was checked", found: "What was found", why: "Why it matters", fix: "What to do", where: "Where it is",
     open: "Open the page", technical: "Technical details", quote: "Source quote", more: "Show the full quote", less: "Show less",
-    severity: "Severity", certainty: "Certainty", kind: "Type", gap: "What is missing or wrong", law: "Source", noLaw: "No verified source was attached to this finding",
+    severity: "Severity", certainty: "Certainty", kind: "Type", gap: "What is missing or wrong", law: "Source", noLaw: "",
     section: "Section", noSection: "No section heading was identified", draft: "Suggested wording", verify: "How to confirm the fix",
-    plan: "What to fix on the site", unfinished: "Checks that could not be completed", owner: "Checks that need information from the site owner", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
+    plan: "What to fix on the site", unfinished: "Checks that could not be completed", owner: "Documents that are not public", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
     purpose: "The purpose on this site was not verified", consent: "Before and after consent: not checked",
     okStatus: "Sound", missingStatus: "Missing", fixStatus: "Needs a fix", unverifiedStatus: "Could not verify", otherStatus: "Not applicable",
     high: "High", medium: "Medium", low: "Low", info: "Note",
@@ -75,12 +83,20 @@ const COPY: Record<Locale, Record<string, string>> = {
     gapTitle: "Wording searches — not a legal finding",
     gapNote: "The topic was not found in the wording that was checked. This is not a finding that the site breaks the law.",
     missingTitle: "Documents the search did not find",
-    sourceMissing: "No official source link was attached, so this is not a verified citation.",
+    sourceMissing: "",
+    technicalNote: "This is a technical finding. It is not a legal breach.",
+    linkedSource: "Professional source. The link is not a finding that the site breaks the law.",
+    navAccess: "Accessibility", navSecurity: "Security", navPrivacy: "Privacy", navDocs: "Documents", navPlan: "Action plan", navOpen: "Not decided",
+    blockedTitle: "Documents that are not public",
+    notFoundTitle: "No information found on this topic",
+    undecidedTitle: "Could not be decided automatically",
+    technicalTitle: "Check that did not finish",
   },
   es: {
     newScan: "Nuevo análisis", pdf: "Descargar PDF", site: "Sitio revisado", address: "Dirección", date: "Fecha", status: "Estado",
-    score: "Puntuación de las pruebas", scoreHelp: "La puntuación resume solo las pruebas terminadas. No es una aprobación legal.",
-    coverage: "Cobertura", coverageHelp: "Porcentaje de pruebas terminadas entre las que el análisis intentó.",
+    score: "Puntuación de las pruebas", scoreHelp: "La puntuación usa las pruebas completadas. Las que no se pudieron completar no son fallos, pero limitan el alcance.",
+    coverage: "Pruebas decididas", coverageHelp: "Porcentaje de pruebas con resultado, entre las que se podían decidir.",
+    process: "Proceso de análisis completo", processHelp: "100% cuando cada prueba llegó a un estado final, aunque algunas no se decidieron.",
     ok: "Lo que se vio correcto", todo: "Lo que requiere atención", missing: "Lo que las pruebas no mostraron", unknown: "Lo que no se pudo comprobar", first: "Qué corregir primero",
     all: "Todo", action: "Requiere atención", pass: "Correcto", unverified: "No verificable", other: "No aplica",
     checked: "Qué se revisó", found: "Qué se encontró", why: "Por qué importa", fix: "Qué hacer", where: "Dónde está",
@@ -91,11 +107,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     completed: "Completado", failed: "No completado", running: "En curso",
     http: "Cabecera HTTP", document: "Documento", form: "Formulario", image: "Imagen", page: "Contenido",
     empty: "No hay hallazgos en este grupo.",
+    blockedTitle: "Documentos que no son públicos", notFoundTitle: "No se encontró información sobre el tema", undecidedTitle: "No se pudo decidir automáticamente", technicalTitle: "Comprobación que no terminó",
   },
   "pt-BR": {
     newScan: "Nova varredura", pdf: "Baixar PDF", site: "Site verificado", address: "Endereço", date: "Data", status: "Status",
-    score: "Pontuação das verificações", scoreHelp: "A pontuação resume só as verificações concluídas. Não é aprovação jurídica.",
-    coverage: "Cobertura", coverageHelp: "A parte das verificações concluídas entre as que a varredura tentou.",
+    score: "Pontuação das verificações", scoreHelp: "A pontuação usa as verificações concluídas. As que não puderam ser concluídas não são falhas, mas limitam o escopo.",
+    coverage: "Verificações decididas", coverageHelp: "A parte das verificações com resultado, entre as que podiam ser decididas.",
+    process: "Processo de varredura concluído", processHelp: "100% quando cada verificação chegou a um estado final, mesmo que algumas não tenham sido decididas.",
     ok: "O que pareceu adequado", todo: "O que precisa de atenção", missing: "O que as evidências não mostraram", unknown: "O que não foi possível verificar", first: "O que corrigir primeiro",
     all: "Tudo", action: "Precisa de atenção", pass: "Adequado", unverified: "Não verificável", other: "Não se aplica",
     checked: "O que foi verificado", found: "O que foi encontrado", why: "Por que importa", fix: "O que fazer", where: "Onde está",
@@ -106,11 +124,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     completed: "Concluída", failed: "Não concluída", running: "Em andamento",
     http: "Cabeçalho HTTP", document: "Documento", form: "Formulário", image: "Imagem", page: "Conteúdo",
     empty: "Não há achados neste grupo.",
+    blockedTitle: "Documentos que não são públicos", notFoundTitle: "Não foi encontrada informação sobre o tema", undecidedTitle: "Não foi possível decidir automaticamente", technicalTitle: "Verificação que não terminou",
   },
   ar: {
     newScan: "فحص جديد", pdf: "تنزيل PDF", site: "الموقع الذي فُحص", address: "العنوان", date: "التاريخ", status: "الحالة",
-    score: "درجة الفحوصات", scoreHelp: "تلخص الدرجة الفحوصات المكتملة فقط. ليست موافقة قانونية.",
-    coverage: "التغطية", coverageHelp: "نسبة الفحوصات التي اكتملت من تلك التي حاول الفحص إجراءها.",
+    score: "درجة الفحوصات", scoreHelp: "الدرجة مبنية على الفحوصات المكتملة. الفحوصات التي تعذر إكمالها ليست إخفاقًا، لكنها تحد من النطاق.",
+    coverage: "فحوصات تم حسمها", coverageHelp: "نسبة الفحوصات التي صدرت لها نتيجة، من الفحوصات التي أمكن حسمها.",
+    process: "اكتمال عملية الفحص", processHelp: "100% عندما وصل كل فحص إلى حالة نهائية، حتى إذا لم يُحسم بعضها.",
     ok: "ما بدا سليمًا", todo: "ما يحتاج معالجة", missing: "ما لم تظهره الأدلة", unknown: "ما تعذر فحصه", first: "ما يُفضَّل إصلاحه أولًا",
     all: "الكل", action: "يحتاج معالجة", pass: "سليم", unverified: "غير قابل للتحقق", other: "غير منطبق",
     checked: "ما تم فحصه", found: "ما وُجد", why: "لماذا هذا مهم", fix: "ماذا يُنصح بفعله", where: "أين وُجد",
@@ -121,23 +141,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     completed: "اكتمل", failed: "لم يكتمل", running: "قيد التنفيذ",
     http: "ترويسة HTTP", document: "مستند", form: "نموذج", image: "صورة", page: "محتوى الصفحة",
     empty: "لا توجد نتائج في هذه المجموعة.",
+    blockedTitle: "مستندات غير متاحة للعموم", notFoundTitle: "لم يُعثر على معلومات في هذا الموضوع", undecidedTitle: "تعذر الحسم تلقائيًا", technicalTitle: "فحص لم يكتمل",
   },
 };
 
 function hostName(url?: string) {
   try { return new URL(String(url || "")).hostname.replace(/^www\./, ""); } catch { return ""; }
-}
-
-function wholeQuote(item: Finding) {
-  const raw = String(item.evidence || "").replace(/\s+/g, " ").trim();
-  if (!raw) return "";
-  if (item.evidenceComplete === false) return "";
-  const sentences = raw.match(/[^.!?؟。]+[.!?؟。]+/g) || [];
-  const kept = sentences.map((part) => part.trim()).filter((part) => part.length >= 16);
-  if (kept.length) return kept.join(" ");
-  if (item.evidenceComplete === true && raw.length <= 180 && raw.length >= 8) return raw;
-  if (/[.!?؟。:"]$/.test(raw) && raw.length >= 16 && raw.length <= 180) return raw;
-  return "";
 }
 
 function detailOf(item: Finding, copy: Record<string, string>) {
@@ -219,30 +228,37 @@ export function ComplianceReportView({
 }) {
   const copy = { ...COPY.en, ...(COPY[locale] || {}) };
   const report = payload?.report || {};
-  const [open, setOpen] = useState<Record<string, boolean>>({});
   const findings: Finding[] = report.findings || [];
-  const unfinished = findings.filter((item) => bandOf(item) === "unverified");
-  const ownerChecks = findings.filter((item) => bandOf(item) === "owner");
-  const gaps = findings.filter((item) => bandOf(item) === "gap");
-  const missingDocs = findings.filter((item) => bandOf(item) === "missing");
-  const ordered = [
-    ...findings.filter((item) => bandOf(item) === "proven"),
-    ...missingDocs,
-    ...gaps,
-    ...unfinished,
-    ...ownerChecks,
-  ];
+  const unfinished = findings.filter((item) => ["unverified", "gap", "owner"].includes(bandOf(item)));
+  const proven = findings.filter((item) => bandOf(item) === "proven" || bandOf(item) === "missing");
   const counts = {
     pass: findings.filter((item) => bandOf(item) === "pass").length,
     action: findings.filter((item) => bandOf(item) === "proven").length,
-    unknown: unfinished.length + gaps.length,
+    unknown: unfinished.length,
   };
-  const actions = findings.filter((item) => (bandOf(item) === "proven" || bandOf(item) === "missing") && item.recommendation).slice(0, 8);
+  const actions = (report.priorities || []).slice(0, 12);
   const status = payload?.status === "completed" ? copy.completed : payload?.status === "failed" ? copy.failed : copy.running;
-  const placeLabel = (place?: string) => copy[place === "http-header" ? "http" : place || ""] || place || "";
+  const groupOf = (item: Finding) => {
+    const id = String(item.checkId || "");
+    if (id.startsWith("a11y") || id.startsWith("accessibility")) return "access";
+    if (id.startsWith("security")) return "security";
+    if (id.startsWith("document") || bandOf(item) === "missing") return "docs";
+    return "privacy";
+  };
+  const sections = [
+    ["access", copy.navAccess],
+    ["security", copy.navSecurity],
+    ["privacy", copy.navPrivacy],
+    ["docs", copy.navDocs],
+  ] as const;
 
   const shownScore = (report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—";
   const shownCoverage = report.scores?.coverage?.value ?? "—";
+  const shownProcess = report.scores?.coverage?.process ?? "—";
+  const blocked = findings.filter((item) => bandOf(item) === "owner");
+  const notFound = findings.filter((item) => bandOf(item) === "gap");
+  const technical = findings.filter((item) => item.checkId === "content.not_performed" || item.checkId === "a11y.axe");
+  const undecided = findings.filter((item) => bandOf(item) === "unverified" && !technical.includes(item));
   return (
     <section className="scan-report report-sheet">
       <header className="report-sheet__mast">
@@ -265,7 +281,11 @@ export function ComplianceReportView({
         <div>
           <b>{shownScore}<small>/100</small></b>
           <span>{copy.score}</span>
-          <p>{copy.scoreHelp}</p>
+        </div>
+        <div>
+          <b>{shownProcess}<small>%</small></b>
+          <span>{copy.process}</span>
+          <p>{copy.processHelp}</p>
         </div>
         <div>
           <b>{shownCoverage}<small>%</small></b>
@@ -274,61 +294,51 @@ export function ComplianceReportView({
           <p>{copy.coverageHelp}</p>
         </div>
       </div>
+      <p className="report-sheet__scope">{copy.scoreHelp}</p>
+      <p className="report-sheet__scope">{copy.unknown}: {counts.unknown}</p>
       <div className="report-sheet__metrics">
         <article><b>{counts.pass}</b><span>{copy.ok}</span></article>
         <article><b>{counts.action}</b><span>{copy.todo}</span></article>
         <article><b>{report.documents?.filter((item: { state?: string }) => item.state === "not_found_after_scan").length || 0}</b><span>{copy.missing}</span></article>
         <article><b>{counts.unknown}</b><span>{copy.unknown}</span></article>
       </div>
-      <div className="report-findings">
-        {ordered.length === 0 && <p>{copy.empty}</p>}
-        {ordered.map((item, index) => {
-          const quote = wholeQuote(item);
-          const key = `${item.checkId}-${index}`;
-          const expanded = open[key] === true;
-          const preview = quote.length > 180 && !expanded ? `${quote.slice(0, quote.lastIndexOf(" ", 180) > 40 ? quote.lastIndexOf(" ", 180) : 180)}.` : quote;
-          const pages = (item.pages || []).filter(Boolean);
-          const located = item.locationVerified === false ? false : Boolean(item.url);
-          const detail = detailOf(item, copy);
-          const level = copy[item.severity || "info"] || item.severity;
-          const band = bandOf(item);
-          const sourceUrl = officialSource(detail.lawName, detail.lawUrl);
-          const bandTitle = band === "proven" ? copy.provenTitle : band === "missing" ? copy.missingTitle : band === "gap" ? copy.gapTitle : band === "owner" ? copy.owner : copy.unfinished;
-          const showBand = index === 0 || bandOf(ordered[index - 1]) !== band;
-          return (
-            <Fragment key={key}>
-              {showBand ? <h2 className="report-band">{bandTitle}</h2> : null}
-              <article className={`report-finding sev-${item.severity || "info"}`}>
-                <header>
-                  <p>{copy.severity}: {level}</p>
-                  <h3>{item.title}</h3>
-                </header>
-                {band === "gap" ? <p className="report-note">{copy.gapNote}</p> : null}
-                <dl>
-                  <div><dt>{copy.checked}</dt><dd>{item.description || item.title}</dd></div>
-                  <div><dt>{copy.found}</dt><dd className="report-finding__evidence" dir="auto">{item.evidence || item.description || copy.incomplete}</dd></div>
-                  {band !== "pass" && detail.gap ? <div><dt>{copy.gap}</dt><dd>{String(detail.gap)}</dd></div> : null}
-                  <div><dt>{copy.why}</dt><dd>{String(detail.why || item.explanation || item.description || "")}</dd></div>
-                  {(detail.change || item.recommendation) ? <div><dt>{copy.fix}</dt><dd>{String(detail.change || item.recommendation)}</dd></div> : null}
-                  {detail.proposedText && band !== "gap" ? <div><dt>{copy.draft}</dt><dd>{String(detail.proposedText)}</dd></div> : null}
-                  <div><dt>{copy.verify}</dt><dd>{String(detail.verify || "")}</dd></div>
-                  <div><dt>{copy.where}</dt><dd>{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}{located && item.pageTitle ? ` · ${item.pageTitle}` : ""}{placeLabel(item.place) ? ` · ${placeLabel(item.place)}` : ""}</dd></div>
-                  <div><dt>{copy.law}</dt><dd>{sourceUrl ? <a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a> : <>{detail.lawName ? `${String(detail.lawName)}. ` : ""}{copy.sourceMissing}</>}</dd></div>
-                </dl>
-                {pages.length > 1 && <ul>{pages.map((url) => <li key={url} dir="ltr"><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>}
-                {quote && (
-                  <blockquote>
-                    <span>{item.evidenceLabel || copy.quote}</span>
-                    <p dir="auto">{expanded ? quote : preview}</p>
-                    {quote.length > 180 && <button type="button" onClick={() => setOpen({ ...open, [key]: !expanded })}>{expanded ? copy.less : copy.more}</button>}
-                    {item.evidenceNote && <small>{item.evidenceNote}</small>}
-                  </blockquote>
-                )}
-              </article>
-            </Fragment>
-          );
-        })}
-      </div>
+      <nav className="report-nav">
+        {sections.map(([id, label]) => <a key={id} href={`#report-${id}`}>{label}</a>)}
+        <a href="#report-plan">{copy.navPlan}</a>
+        <a href="#report-open">{copy.navOpen}</a>
+      </nav>
+      {sections.map(([id, label]) => {
+        const rank = (value?: string) => ({ high: 0, medium: 1, low: 2, info: 3 } as Record<string, number>)[value || "info"] ?? 4;
+        const rows = proven.filter((item) => groupOf(item) === id).sort((a, b) => rank(a.severity) - rank(b.severity));
+        return (
+          <section key={id} id={`report-${id}`} className="report-findings">
+            <h2 className="report-band">{label}</h2>
+            {rows.length === 0 ? <p className="report-empty">{copy.empty}</p> : rows.map((item, index) => {
+              const detail = detailOf(item, copy);
+              const body = String(item.explanation || item.description || "").trim();
+              const title = String(item.title || "").trim();
+              const fix = String(detail.change || item.recommendation || "");
+              const draft = String(detail.proposedText || "");
+              const sourceUrl = officialSource(detail.lawName, detail.lawUrl);
+              const located = item.locationVerified === false ? false : Boolean(item.url);
+              return (
+                <article key={`${item.checkId}-${index}`} className={`report-finding sev-${item.severity || "info"}`}>
+                  <header>
+                    <p>{copy.severity}: {copy[item.severity || "info"] || item.severity}</p>
+                    <h3>{item.title}</h3>
+                  </header>
+                  {body && body !== title ? <p>{body}</p> : null}
+                  <p dir="ltr">{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}</p>
+                  {item.evidence ? <p className="report-finding__evidence" dir="auto">{item.evidence}</p> : null}
+                  {fix ? <p><strong>{copy.fix}. </strong>{fix}</p> : null}
+                  {draft && draft !== fix ? <p><strong>{copy.draft}. </strong>{draft}</p> : null}
+                  {sourceUrl ? <p><strong>{copy.law}. </strong><a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a></p> : null}
+                </article>
+              );
+            })}
+          </section>
+        );
+      })}
       <section className="report-sheet__block">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
@@ -339,23 +349,36 @@ export function ComplianceReportView({
           </ul>
         )}
       </section>
-      <section className="report-sheet__block">
+      <section id="report-plan" className="report-sheet__block">
         <h2>{copy.plan}</h2>
         <ol>
-          {actions.map((item) => {
-            const detail = detailOf(item, copy);
-            const located = item.locationVerified === false ? false : Boolean(item.url);
-            return (
-              <li key={item.checkId}>
-                <strong>{item.title}</strong>
-                <p>{located ? item.url : copy.unknownPlace}</p>
-                <p>{String(detail.change || item.recommendation || "")}</p>
-                {detail.proposedText ? <p>{String(detail.proposedText)}</p> : null}
-                <p>{String(detail.verify || "")}</p>
-              </li>
-            );
-          })}
+          {actions.map((item: Finding & { order?: number; change?: string; verify?: string }) => (
+            <li key={`${item.order || ""}-${item.checkId}`}>
+              <strong>{item.title}</strong>
+              <p dir="ltr">{item.url || copy.unknownPlace}</p>
+              <p>{String(item.change || item.recommendation || "")}</p>
+              {item.verify ? <p>{String(item.verify)}</p> : null}
+            </li>
+          ))}
         </ol>
+      </section>
+      <section id="report-open" className="report-sheet__block">
+        <h2>{copy.notFoundTitle}</h2>
+        {notFound.length === 0 ? <p>{copy.empty}</p> : notFound.map((item, index) => (
+          <article key={`gap-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
+        ))}
+        <h2>{copy.undecidedTitle}</h2>
+        {undecided.length === 0 ? <p>{copy.empty}</p> : undecided.map((item, index) => (
+          <article key={`open-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
+        ))}
+        <h2>{copy.blockedTitle}</h2>
+        {blocked.length === 0 ? <p>{copy.empty}</p> : blocked.map((item, index) => (
+          <article key={`blocked-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
+        ))}
+        <h2>{copy.technicalTitle}</h2>
+        {technical.length === 0 ? <p>{copy.empty}</p> : technical.map((item, index) => (
+          <article key={`tech-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
+        ))}
       </section>
     </section>
   );
