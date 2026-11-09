@@ -24,16 +24,16 @@ export const WEBSITE_SCAN = {
     title: "סריקת אתר חכמה AI | פרטיות, אבטחה ונגישות | Bizuply",
     description: "בדקו את האתר שלכם בחינם עם Bizuply Compliance AI. סריקה חכמה לפרטיות, עוגיות, אבטחה, נגישות ומסמכים. דוח ראשוני חינם ודוח מפורט עם המלצות.",
     crumb: "סריקת אתר",
-    h1: "סריקת אתר חכמה עם AI — גלו מה כדאי לבדוק ולתקן באתר שלכם",
-    lede: "האתר שלכם יכול להיראות מצוין ועדיין להכיל בעיות שלא רואים במבט ראשון. Bizuply Compliance AI מבצעת בדיקות אוטומטיות של פרטיות ועוגיות, הגדרות אבטחה, נגישות ומסמכים ציבוריים — ומרכזת את התוצאות בדוח ברור עם ממצאים והמלצות מעשיות.",
+    h1: "סריקת אתר חכמה עם AI — גלו מה כדאי לתקן באתר שלכם",
+    lede: "בדקו פרטיות, אבטחה, נגישות ומסמכים באתר שלכם. התחילו בסריקה בחינם, קבלו תמונת מצב ברורה וגלו כיצד דוח מפורט יכול לעזור לכם לטפל בממצאים.",
     note: "מתחילים בסריקה ראשונית בחינם. רוצים להבין מה בדיוק נמצא, באיזה עמוד ואיך מטפלים? הדוח המלא מציג את פירוט הממצאים, הראיות וההמלצות.",
     aside: "בדיקה אוטומטית של מידע ורכיבים נגישים באתר. ללא התקנת תוכנה.",
     primary: "סרקו את האתר בחינם",
-    watch: "צפו בסריקה לדוגמה",
+    watch: "צפו בהדגמה",
     videoTitle: "סריקת אתר לדוגמה ב־Bizuply Compliance AI",
     transcript: "ההדגמה מציגה הזנת שם וכתובת example.com, התקדמות בין פרטיות, אבטחה, נגישות ומסמכים, דוח ראשוני עם ציון 82, ואחר כך דוח מלא לדוגמה עם ראיה, המלצה ומקור. הנתונים פיקטיביים. לא מתבצעת סריקה אמיתית.",
     sections: [
-      { heading: "האתר עובד. אבל האם אתם יודעים מה קורה מאחורי הקלעים?", paragraphs: ["כשבונים אתר, רוב תשומת הלב מופנית לעיצוב, למהירות ולחוויית המשתמש. אבל יש עוד שכבה שמשפיעה על האופן שבו האתר פועל: הגדרות אבטחה, רכיבי מעקב, מסמכי פרטיות, נגישות ומידע שמוצג למבקרים.", "חלק מהבעיות אינן בולטות לעין. למשל, אתר יכול להשתמש בחיבור HTTPS ועדיין להחסיר כותרות אבטחה מסוימות. עמוד יכול להיראות קריא לבעל האתר, אבל להכיל ניגודיות צבעים נמוכה או רכיבים שקשה להפעיל באמצעות מקלדת.", "גם מסמכים ציבוריים דורשים תשומת לב: האם אפשר להגיע למדיניות הפרטיות? האם יש הסבר ברור על שימוש בעוגיות? האם תנאי השימוש זמינים למבקרים?", "סריקת אתר חכמה מאפשרת לקבל תמונת מצב ראשונית ומסודרת, במקום לבדוק כל נושא בנפרד."] },
+      { heading: "האתר עובד. אבל האם אתם יודעים מה קורה מאחורי הקלעים?", paragraphs: ["האתר שלכם יכול להיראות מצוין ועדיין להכיל בעיות שלא רואים במבט ראשון. Bizuply Compliance AI מבצעת בדיקות אוטומטיות של פרטיות ועוגיות, הגדרות אבטחה, נגישות ומסמכים ציבוריים, ומרכזת את התוצאות בדוח ברור עם ממצאים והמלצות מעשיות.", "כשבונים אתר, רוב תשומת הלב מופנית לעיצוב, למהירות ולחוויית המשתמש. אבל יש עוד שכבה שמשפיעה על האופן שבו האתר פועל: הגדרות אבטחה, רכיבי מעקב, מסמכי פרטיות, נגישות ומידע שמוצג למבקרים.", "חלק מהבעיות אינן בולטות לעין. למשל, אתר יכול להשתמש בחיבור HTTPS ועדיין להחסיר כותרות אבטחה מסוימות. עמוד יכול להיראות קריא לבעל האתר, אבל להכיל ניגודיות צבעים נמוכה או רכיבים שקשה להפעיל באמצעות מקלדת.", "גם מסמכים ציבוריים דורשים תשומת לב: האם אפשר להגיע למדיניות הפרטיות? האם יש הסבר ברור על שימוש בעוגיות? האם תנאי השימוש זמינים למבקרים?", "סריקת אתר חכמה מאפשרת לקבל תמונת מצב ראשונית ומסודרת, במקום לבדוק כל נושא בנפרד."] },
       { heading: "ארבעה תחומים שכדאי להכיר באתר שלכם", paragraphs: [], subsections: [
         { heading: "פרטיות ועוגיות", paragraphs: ["האם האתר מפעיל רכיבי מעקב? האם קיימת מדיניות פרטיות נגישה? האם מנגנון בחירת העוגיות מוצג ופועל בהתאם למה שניתן לבדוק באופן אוטומטי?", "המערכת בוחנת סימנים טכניים ותוכן ציבורי הקשורים לפרטיות ולעוגיות, ומציגה ממצאים כאשר קיימות ראיות מתאימות."] },
         { heading: "אבטחת אתר", paragraphs: ["חיבור מאובטח הוא רק חלק מהתמונה. כותרות HTTP מסוימות מסייעות לדפדפן לאכוף הגנות נוספות.", "הסריקה בודקת מאפייני אבטחה שניתן לזהות מבחוץ, כגון HTTPS וכותרות אבטחה רלוונטיות, ומצביעה על הגדרות שכדאי לבחון."] },
@@ -70,12 +70,12 @@ export const WEBSITE_SCAN = {
     title: "AI website scan | Privacy, security and accessibility | Bizuply",
     description: "Scan your website free with Bizuply Compliance AI. An automatic check of privacy, cookies, security, accessibility and public documents, with a free summary and a detailed report.",
     crumb: "Website scan",
-    h1: "An AI website scan that shows what to check and what to fix",
-    lede: "A site can look polished and still hide issues that are easy to miss. Bizuply Compliance AI runs automatic checks of privacy and cookies, security settings, accessibility and public documents, then gathers the results in a clear report.",
+    h1: "An AI website scan that shows what is worth fixing",
+    lede: "Check privacy, security, accessibility and documents on your site. Start with a free scan, get a clear picture, and see how a detailed report helps you handle the findings.",
     note: "Start with a free summary. The full report adds the findings, the evidence and practical recommendations.",
     aside: "An automatic check of information and components the scan can reach. Nothing to install.",
     primary: "Scan your site free",
-    watch: "Watch a sample scan",
+    watch: "Watch the demo",
     videoTitle: "A sample website scan in Bizuply Compliance AI",
     transcript: "The demo types a name and example.com, moves through privacy, security, accessibility and documents, shows a free summary with a score of 82, then a sample full report with evidence, a recommendation and a source. The data is fictional. No live scan runs.",
     sections: [
@@ -134,29 +134,29 @@ function short(locale, title, description, h1, lede, sections, faq, rest) {
 WEBSITE_SCAN.es = short("es",
   "Escaneo de sitio con IA | Privacidad, seguridad y accesibilidad | Bizuply",
   "Escanee su sitio gratis con Bizuply Compliance AI. Revisión automática de privacidad, cookies, seguridad, accesibilidad y documentos públicos.",
-  "Un escaneo con IA que muestra qué revisar y qué corregir en su sitio",
-  "Un sitio puede verse bien y aun así ocultar problemas. Bizuply Compliance AI revisa de forma automática privacidad, cookies, seguridad, accesibilidad y documentos públicos.",
+  "Un escaneo con IA que muestra qué conviene corregir en su sitio",
+  "Revise privacidad, seguridad, accesibilidad y documentos. Empiece gratis, obtenga una imagen clara y vea cómo un informe detallado ayuda a tratar los hallazgos.",
   WEBSITE_SCAN.en.sections.map((section) => ({ ...section, heading: section.heading })),
   WEBSITE_SCAN.en.faq,
-  { crumb: "Escaneo", note: "Empiece con un resumen gratis. El informe completo añade hallazgos, pruebas y recomendaciones.", aside: "Revisión automática de lo que el escaneo puede alcanzar. Sin instalar nada.", primary: "Escanear gratis", watch: "Ver un escaneo de ejemplo", videoTitle: "Escaneo de ejemplo en Bizuply Compliance AI", transcript: WEBSITE_SCAN.en.transcript, faqTitle: "Preguntas antes de escanear un sitio", shots: ["Paso uno — indicar la dirección", "Paso dos — ver el resumen", "Paso tres — ver qué corregir"], shotAlt: WEBSITE_SCAN.en.shotAlt, freeCaption: "El informe gratis es una visión general. El detalle y las recomendaciones están en el informe completo.", freeCta: "Obtener el resumen gratis", scanCta: "Escanear el sitio", closeCta: "Empezar un escaneo gratis", exampleFlag: "Ejemplo ficticio de la estructura del informe. No describe un sitio real.", demoFlag: "Datos de ilustración" });
+  { crumb: "Escaneo", note: "Empiece con un resumen gratis. El informe completo añade hallazgos, pruebas y recomendaciones.", aside: "Revisión automática de lo que el escaneo puede alcanzar. Sin instalar nada.", primary: "Escanear gratis", watch: "Ver la demostración", videoTitle: "Escaneo de ejemplo en Bizuply Compliance AI", transcript: WEBSITE_SCAN.en.transcript, faqTitle: "Preguntas antes de escanear un sitio", shots: ["Paso uno — indicar la dirección", "Paso dos — ver el resumen", "Paso tres — ver qué corregir"], shotAlt: WEBSITE_SCAN.en.shotAlt, freeCaption: "El informe gratis es una visión general. El detalle y las recomendaciones están en el informe completo.", freeCta: "Obtener el resumen gratis", scanCta: "Escanear el sitio", closeCta: "Empezar un escaneo gratis", exampleFlag: "Ejemplo ficticio de la estructura del informe. No describe un sitio real.", demoFlag: "Datos de ilustración" });
 
 WEBSITE_SCAN["pt-BR"] = short("pt-BR",
   "Varredura de site com IA | Privacidade, segurança e acessibilidade | Bizuply",
   "Verifique seu site grátis com a Bizuply Compliance AI. Checagem automática de privacidade, cookies, segurança, acessibilidade e documentos públicos.",
-  "Uma varredura com IA que mostra o que conferir e o que corrigir no site",
-  "Um site pode parecer ótimo e ainda esconder problemas. A Bizuply Compliance AI verifica privacidade, cookies, segurança, acessibilidade e documentos públicos.",
+  "Uma varredura com IA que mostra o que vale corrigir no site",
+  "Verifique privacidade, segurança, acessibilidade e documentos. Comece grátis, receba um panorama claro e veja como um relatório detalhado ajuda a tratar os achados.",
   WEBSITE_SCAN.en.sections,
   WEBSITE_SCAN.en.faq,
-  { crumb: "Varredura", note: "Comece com um resumo grátis. O relatório completo acrescenta achados, evidências e recomendações.", aside: "Verificação automática do que a varredura alcança. Sem instalar nada.", primary: "Verificar grátis", watch: "Ver uma varredura de exemplo", videoTitle: "Varredura de exemplo na Bizuply Compliance AI", transcript: WEBSITE_SCAN.en.transcript, faqTitle: "Perguntas antes de verificar um site", shots: ["Passo um — informar o endereço", "Passo dois — ver o resumo", "Passo três — ver o que corrigir"], shotAlt: WEBSITE_SCAN.en.shotAlt, freeCaption: "O relatório grátis é uma visão geral. O detalhe e as recomendações ficam no relatório completo.", freeCta: "Receber o resumo grátis", scanCta: "Verificar o site", closeCta: "Começar uma varredura grátis", exampleFlag: "Exemplo fictício da estrutura do relatório. Não descreve um site real.", demoFlag: "Dados de ilustração" });
+  { crumb: "Varredura", note: "Comece com um resumo grátis. O relatório completo acrescenta achados, evidências e recomendações.", aside: "Verificação automática do que a varredura alcança. Sem instalar nada.", primary: "Verificar grátis", watch: "Assistir à demonstração", videoTitle: "Varredura de exemplo na Bizuply Compliance AI", transcript: WEBSITE_SCAN.en.transcript, faqTitle: "Perguntas antes de verificar um site", shots: ["Passo um — informar o endereço", "Passo dois — ver o resumo", "Passo três — ver o que corrigir"], shotAlt: WEBSITE_SCAN.en.shotAlt, freeCaption: "O relatório grátis é uma visão geral. O detalhe e as recomendações ficam no relatório completo.", freeCta: "Receber o resumo grátis", scanCta: "Verificar o site", closeCta: "Começar uma varredura grátis", exampleFlag: "Exemplo fictício da estrutura do relatório. Não descreve um site real.", demoFlag: "Dados de ilustração" });
 
 WEBSITE_SCAN.ar = short("ar",
   "فحص الموقع بالذكاء الاصطناعي | الخصوصية والأمن والإتاحة | Bizuply",
   "افحصوا موقعكم مجانًا مع Bizuply Compliance AI. فحص تلقائي للخصوصية وملفات تعريف الارتباط والأمن والإتاحة والمستندات العلنية.",
-  "فحص ذكي يبيّن ما يجدر مراجعته وإصلاحه في موقعكم",
-  "قد يبدو الموقع متقنًا ويخفي مشكلات لا تُرى من النظرة الأولى. تفحص Bizuply Compliance AI الخصوصية وملفات تعريف الارتباط وإعدادات الأمن والإتاحة والمستندات العلنية.",
+  "فحص ذكي بالذكاء الاصطناعي يبيّن ما يجدر إصلاحه في موقعكم",
+  "افحصوا الخصوصية والأمن والإتاحة والمستندات. ابدأوا مجانًا، واحصلوا على صورة واضحة، وتعرفوا كيف يساعد تقرير مفصل في معالجة النتائج.",
   WEBSITE_SCAN.en.sections,
   WEBSITE_SCAN.en.faq,
-  { crumb: "فحص الموقع", note: "ابدأوا بملخص مجاني. التقرير الكامل يضيف النتائج والأدلة والتوصيات.", aside: "فحص تلقائي لما يمكن الوصول إليه. بلا تثبيت.", primary: "افحصوا الموقع مجانًا", watch: "شاهدوا فحصًا للعرض", videoTitle: "فحص تجريبي في Bizuply Compliance AI", transcript: "يعرض الفيديو إدخال اسم وعنوان example.com، ثم التقدم بين الخصوصية والأمن والإتاحة والمستندات، وملخصًا بدرجة 82، ثم تقريرًا مفصلًا للعرض. البيانات وهمية ولا تُنفَّذ عملية فحص حقيقية.", faqTitle: "أسئلة قبل فحص الموقع", shots: ["الخطوة الأولى — إدخال العنوان", "الخطوة الثانية — رؤية الملخص", "الخطوة الثالثة — فهم ما يُصلح"], shotAlt: ["نموذج الفحص مع example.com", "ملخص مجاني للعرض بدرجة 82", "تقرير مفصل للعرض مع دليل وتوصية"], freeCaption: "التقرير المجاني يعرض صورة عامة. تفاصيل النتائج والتوصيات في التقرير الكامل.", freeCta: "احصلوا على ملخص مجاني", scanCta: "افحصوا الموقع", closeCta: "ابدأوا فحصًا مجانيًا", exampleFlag: "مثال وهمي لبنية التقرير. لا يصف موقعًا حقيقيًا.", demoFlag: "بيانات للتوضيح فقط" });
+  { crumb: "فحص الموقع", note: "ابدأوا بملخص مجاني. التقرير الكامل يضيف النتائج والأدلة والتوصيات.", aside: "فحص تلقائي لما يمكن الوصول إليه. بلا تثبيت.", primary: "افحصوا الموقع مجانًا", watch: "شاهدوا العرض", videoTitle: "فحص تجريبي في Bizuply Compliance AI", transcript: "يعرض الفيديو إدخال اسم وعنوان example.com، ثم التقدم بين الخصوصية والأمن والإتاحة والمستندات، وملخصًا بدرجة 82، ثم تقريرًا مفصلًا للعرض. البيانات وهمية ولا تُنفَّذ عملية فحص حقيقية.", faqTitle: "أسئلة قبل فحص الموقع", shots: ["الخطوة الأولى — إدخال العنوان", "الخطوة الثانية — رؤية الملخص", "الخطوة الثالثة — فهم ما يُصلح"], shotAlt: ["نموذج الفحص مع example.com", "ملخص مجاني للعرض بدرجة 82", "تقرير مفصل للعرض مع دليل وتوصية"], freeCaption: "التقرير المجاني يعرض صورة عامة. تفاصيل النتائج والتوصيات في التقرير الكامل.", freeCta: "احصلوا على ملخص مجاني", scanCta: "افحصوا الموقع", closeCta: "ابدأوا فحصًا مجانيًا", exampleFlag: "مثال وهمي لبنية التقرير. لا يصف موقعًا حقيقيًا.", demoFlag: "بيانات للتوضيح فقط" });
 
 for (const locale of ["es", "pt-BR", "ar"]) {
   WEBSITE_SCAN[locale].sections = SCAN_LOCALES[locale].sections;

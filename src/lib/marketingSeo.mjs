@@ -1137,6 +1137,12 @@ function scanServiceSchema(locale, canonical) {
     url: canonical,
     description: copy.description,
     inLanguage: locale,
+    offers: [
+      { "@type": "Offer", name: "Free scan", price: "0", priceCurrency: "USD", description: "First scan with a score and a finding summary. No checkout." },
+      { "@type": "Offer", name: "One-time full report", price: "35", priceCurrency: "USD", description: "One full scan with findings, evidence, recommendations and a PDF. Checkout is not open." },
+      { "@type": "Offer", name: "Quarterly monitoring", price: "119", priceCurrency: "USD", description: "Four full scans a year, billed once a year in advance. Checkout is not open." },
+      { "@type": "Offer", name: "Monthly monitoring", price: "300", priceCurrency: "USD", description: "Twelve full scans a year, billed once a year in advance. Checkout is not open." },
+    ],
   };
 }
 
@@ -1147,10 +1153,10 @@ function scanVideoSchema(locale) {
     "@type": "VideoObject",
     name: copy.videoTitle,
     description: copy.transcript,
-    thumbnailUrl: `${MARKETING_ORIGIN}/media/compliance-demo/poster.jpg`,
+    thumbnailUrl: `${MARKETING_ORIGIN}/media/compliance-demo/poster-${locale === "pt-BR" ? "pt" : locale}.jpg`,
     uploadDate: "2026-11-09",
-    contentUrl: `${MARKETING_ORIGIN}/media/compliance-demo/desktop.mp4`,
-    inLanguage: "he",
+    contentUrl: `${MARKETING_ORIGIN}/media/compliance-demo/${locale === "pt-BR" ? "pt" : locale}.mp4`,
+    inLanguage: locale,
   };
 }
 

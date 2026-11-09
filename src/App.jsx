@@ -1169,6 +1169,7 @@ export default function App() {
     !isPublicPartnerDeal &&
     !isPublicPartnerSales &&
     !isBizuplyPublicBookingRoute;
+  const scanFilm = /\/compliance\/demo\/?$/.test(location.pathname) && new URLSearchParams(location.search).get("film") === "1";
 
   return (
     <NotificationsProvider>
@@ -1188,7 +1189,8 @@ export default function App() {
           !isPartnerSignRoute &&
           !isWhatsAppApiLogin &&
           (!isAuthShellRoute || isLoginRoute) &&
-          !isBizuplyPublicBookingRoute && <Header />}
+          !isBizuplyPublicBookingRoute &&
+          !scanFilm && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
         {isStaffRoute ? <Suspense fallback={null}><StaffSoftphoneHost /></Suspense> : null}
@@ -1871,12 +1873,13 @@ export default function App() {
           !isWhatsAppApiLogin &&
           !isAuthShellRoute &&
           !isPrivateOwnerSurface &&
-          !isBizuplyPublicBookingRoute && <Footer />}
+          !isBizuplyPublicBookingRoute &&
+          !scanFilm && <Footer />}
       </div>
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isPrivateOwnerSurface && (
+      {!scanFilm && !user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isPrivateOwnerSurface && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
@@ -1907,7 +1910,8 @@ export default function App() {
         !isPrivateOwnerSurface &&
         !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
-        !isMiniSiteHost && (
+        !isMiniSiteHost &&
+        !scanFilm && (
           <Suspense fallback={null}><SupportChatWidget /></Suspense>
         )}
 
@@ -1924,7 +1928,8 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isCinematicHome &&
-        !isBizuplyPublicBookingRoute && (
+        !isBizuplyPublicBookingRoute &&
+        !scanFilm && (
           <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
         )}
 
