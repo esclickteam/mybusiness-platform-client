@@ -102,10 +102,10 @@ const COPY = {
   en: {
     seoTitle: "Bizuply Partner Program | Build recurring revenue with CRM and SaaS",
     seoDescription:
-      "Apply to the Bizuply Partner Program. Offer CRM, WhatsApp, automation and SaaS. Eligible recurring commission is 30% to 40%. Business Partner membership is $5,000 per year or $499 per month after approval.",
+      "Apply to the Bizuply Partner Program. Offer CRM, Meta campaigns for Facebook and Instagram ads, WhatsApp, automation and SaaS. Eligible recurring commission is 30% to 40%. Business Partner membership is $5,000 per year or $499 per month after approval.",
     kicker: "Bizuply Partner Program",
     h1: "Build businesses. Expand opportunities. Earn together.",
-    sub: "Join the Bizuply Partner Program. Introduce businesses to CRM, automation, WhatsApp and SaaS systems, and grow with a recurring commission model.",
+    sub: "Join the Bizuply Partner Program. Introduce businesses to CRM, Meta campaigns, automation, WhatsApp and SaaS systems, and grow with a recurring commission model.",
     become: "Apply for partnership",
     explore: "See how the program works",
     stickyJoin: "Ready to apply?",
@@ -145,7 +145,7 @@ const COPY = {
       ["Long-term development", "Grow your customer base, deepen product knowledge and progress through published commission tiers."],
     ],
     productsTitle: "What partners can sell",
-    productsLead: "Product categories available through Bizuply today. Screens come from the published demo workspace, not from a customer account.",
+    productsLead: "Product categories available through Bizuply today. Screens and clips come from the published demo workspace, not from a customer account.",
     products: [
       {
         title: "CRM & customer management",
@@ -153,6 +153,24 @@ const COPY = {
         image: "/demo-media/crm/leads-list.png",
         alt: "Bizuply demo CRM lead list",
         points: ["Customer relationship management", "Lead tracking", "Sales pipelines", "Customer records", "Follow-up workflows"],
+      },
+      {
+        title: "Meta campaigns — Facebook & Instagram Ads",
+        href: "/meta-campaigns",
+        image: "/demo-media/campaigns/poster.jpg",
+        video: "/demo-media/campaigns/campaigns-en.mp4",
+        videoHe: "/demo-media/campaigns/campaigns-he.mp4",
+        captions: "/demo-media/campaigns/campaigns.en.vtt",
+        captionsHe: "/demo-media/campaigns/campaigns.he.vtt",
+        alt: "Bizuply demo Meta campaign manager",
+        note: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Not a separate partner SKU. Meta bills media spend. Drafts can be prepared without publishing or spending. Partners earn on eligible Bizuply subscription revenue under the signed agreement — not on Meta ad spend.",
+        points: [
+          "Connect the business’s own Meta ad account",
+          "Create and edit campaigns, ad sets and ads",
+          "Set budget on the campaign or the ad set",
+          "Review performance for connected campaigns",
+          "Lead Ads can enter the CRM with source and status for follow-up",
+        ],
       },
       {
         title: "WhatsApp Business API & campaigns",
@@ -370,10 +388,10 @@ const COPY = {
   he: {
     seoTitle: "תוכנית השותפים של Bizuply | בונים עסק עם CRM ו־SaaS",
     seoDescription:
-      "הגישו מועמדות לתוכנית השותפים של Bizuply. הציעו CRM, WhatsApp, אוטומציה ו־SaaS. עמלה חוזרת זכאית 30% עד 40%. מסלול Business Partner: 5,000 דולר לשנה או 499 דולר לחודש אחרי אישור.",
+      "הגישו מועמדות לתוכנית השותפים של Bizuply. הציעו CRM, קמפיינים במטא ל־Facebook ו־Instagram, WhatsApp, אוטומציה ו־SaaS. עמלה חוזרת זכאית 30% עד 40%. מסלול Business Partner: 5,000 דולר לשנה או 499 דולר לחודש אחרי אישור.",
     kicker: "תוכנית השותפים של Bizuply",
     h1: "בונים עסק. מרחיבים הזדמנויות. מרוויחים יחד.",
-    sub: "הצטרפו לתוכנית השותפים של Bizuply, הציעו לעסקים פתרונות CRM, אוטומציה, WhatsApp ומערכות SaaS, ובנו פעילות עסקית עם מודל עמלות מתמשך.",
+    sub: "הצטרפו לתוכנית השותפים של Bizuply, הציעו לעסקים פתרונות CRM, קמפיינים במטא, אוטומציה, WhatsApp ומערכות SaaS, ובנו פעילות עסקית עם מודל עמלות מתמשך.",
     become: "הגישו מועמדות לשותפות",
     explore: "גלו איך התוכנית עובדת",
     stickyJoin: "מוכנים להגיש מועמדות?",
@@ -413,7 +431,7 @@ const COPY = {
       ["פיתוח לטווח ארוך", "הגדילו את בסיס הלקוחות, העמיקו ידע במוצרים והתקדמו במדרגות העמלה."],
     ],
     productsTitle: "מה השותפים יכולים למכור?",
-    productsLead: "קטגוריות מוצרים שזמינות ב־Bizuply היום. הצילומים מסביבת הדמו המפורסמת, לא מחשבון לקוח.",
+    productsLead: "קטגוריות מוצרים שזמינות ב־Bizuply היום. הצילומים והסרטונים מסביבת הדמו המפורסמת, לא מחשבון לקוח.",
     products: [
       {
         title: "CRM וניהול לקוחות",
@@ -421,6 +439,24 @@ const COPY = {
         image: "/demo-media/crm/leads-list.png",
         alt: "רשימת לידים בסביבת הדמו של Bizuply",
         points: ["ניהול קשרי לקוחות", "מעקב לידים", "צינורות מכירה", "כרטיסי לקוח", "תהליכי המשך טיפול"],
+      },
+      {
+        title: "קמפיינים במטא — Facebook & Instagram Ads",
+        href: "/meta-campaigns",
+        image: "/demo-media/campaigns/poster.jpg",
+        video: "/demo-media/campaigns/campaigns-en.mp4",
+        videoHe: "/demo-media/campaigns/campaigns-he.mp4",
+        captions: "/demo-media/campaigns/campaigns.en.vtt",
+        captionsHe: "/demo-media/campaigns/campaigns.he.vtt",
+        alt: "מנהל קמפיינים של Meta בסביבת הדמו של Bizuply",
+        note: "כלול בחבילת Business של Bizuply אחרי חיבור חשבון מודעות מורשה של Meta. אינו SKU שותפים נפרד. את הוצאת המדיה גובה Meta. אפשר להכין טיוטות בלי לפרסם ובלי להוציא תקציב. עמלה לשותף נגזרת מהכנסת מנוי זכאית של Bizuply לפי ההסכם — לא מהוצאת הפרסום ב־Meta.",
+        points: [
+          "חיבור חשבון המודעות של העסק ב־Meta",
+          "יצירה ועריכה של קמפיינים, קבוצות מודעות ומודעות",
+          "תקציב ברמת הקמפיין או קבוצת המודעות",
+          "הצגת ביצועים של קמפיינים מחוברים",
+          "Lead Ads יכולים להיכנס ל־CRM עם מקור וסטטוס להמשך טיפול",
+        ],
       },
       {
         title: "WhatsApp Business API וקמפיינים",
@@ -839,25 +875,62 @@ export default function PartnersRecruitment() {
           <h2>{copy.productsTitle}</h2>
           <p className="ip-copy">{copy.productsLead}</p>
           <div className="ip-products">
-            {copy.products.map((product) => (
-              <article className="ip-product" key={product.href}>
-                <figure className="ip-shot">
-                  <img src={product.image} alt={product.alt} width="960" height="600" loading="lazy" />
-                </figure>
-                <div>
-                  <h3>{product.title}</h3>
-                  <ul>
-                    {product.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                  {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
-                  <p>
-                    <Link to={product.href}>{product.title}</Link>
-                  </p>
-                </div>
-              </article>
-            ))}
+            {copy.products.map((product) => {
+              const videoSrc =
+                "video" in product && product.video
+                  ? hebrew && "videoHe" in product && product.videoHe
+                    ? product.videoHe
+                    : product.video
+                  : null;
+              const captionSrc =
+                hebrew && "captionsHe" in product && product.captionsHe
+                  ? product.captionsHe
+                  : "captions" in product
+                    ? product.captions
+                    : null;
+              return (
+                <article className="ip-product" key={product.href} data-testid={`product-${product.href.replace(/^\//, "")}`}>
+                  <figure className="ip-shot">
+                    {videoSrc ? (
+                      <video
+                        controls
+                        playsInline
+                        preload="none"
+                        poster={product.image}
+                        width={960}
+                        height={600}
+                        aria-label={product.alt}
+                      >
+                        <source src={videoSrc} type="video/mp4" />
+                        {captionSrc ? (
+                          <track
+                            kind="captions"
+                            src={captionSrc}
+                            srcLang={hebrew ? "he" : "en"}
+                            label={hebrew ? "עברית" : "English"}
+                            default
+                          />
+                        ) : null}
+                      </video>
+                    ) : (
+                      <img src={product.image} alt={product.alt} width="960" height="600" loading="lazy" />
+                    )}
+                  </figure>
+                  <div>
+                    <h3>{product.title}</h3>
+                    <ul>
+                      {product.points.map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                    {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
+                    <p>
+                      <Link to={product.href}>{product.title}</Link>
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
           <h3 className="ip-saas-heading">{copy.saasTitle}</h3>
           <p className="ip-copy">{copy.saasLead}</p>
