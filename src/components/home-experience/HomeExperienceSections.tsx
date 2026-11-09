@@ -8,11 +8,16 @@ import {
   ConnectedFlow,
   CrmStory,
   GrowthBand,
-  HeroDecor,
   OrbitBand,
   PhoneStory,
   useCinematic,
 } from "./HomeCinematic";
+import ProductProcessTheater from "./ProductProcessTheater";
+
+/** Chapter markers for the continuous process film (seconds). */
+const PROCESS_MARKS = [0, 6, 12, 19, 26, 32] as const;
+const PROCESS_SRC = "/demo-media/home/walkthrough/process-full.mp4?v=sketch2";
+const PROCESS_POSTER = "/demo-media/home/walkthrough/process-full.jpg";
 
 function useCopy() {
   const { i18n, t } = useTranslation();
@@ -309,21 +314,15 @@ export default function HomeExperienceSections() {
       <a className="hx-skip" href="#story">{text("דילוג לתוכן", "Skip to content")}</a>
       <main>
       <Hero />
-      <Why />
-      <ProductShowcase />
-      <SplitStory />
+      <HowItWorks />
       <CrmDepth />
       <WhatsApp />
+      <Automations />
+      <ProductShowcase />
       <Campaigns />
       <AppointmentsSection />
       <Websites />
-      <Automations />
       <ReadySystems />
-      <Connect />
-      <Films />
-      <Audiences />
-      <OrbitSection />
-      <GrowthSection />
       <Faq />
       <Close />
       </main>
@@ -332,135 +331,85 @@ export default function HomeExperienceSections() {
 }
 
 function Hero() {
-  const { text, language, cine } = useCopy();
-  const reduced = useReduced();
+  const { cine } = useCopy();
   const hero = cine.hero;
   const ref = useRef<HTMLElement | null>(null);
   useScrollSpan(ref, (progress) => {
-    const node = ref.current;
-    if (!node) return;
-    // Keep a product layer always opaque so the purple frame never flashes empty.
-    const s2 = band(progress, 0.3, 0.44, 0.6, 0.74);
-    const s3 = progress < 0.6 ? 0 : Math.min(1, (progress - 0.6) / 0.14);
-    const s1Fade = progress < 0.3 ? 1 : progress < 0.44 ? 1 - (progress - 0.3) / 0.14 : 0;
-    const s1 = Math.max(s1Fade, 1 - Math.max(s2, s3));
-    node.style.setProperty("--hp", progress.toFixed(3));
-    node.style.setProperty("--s1", s1.toFixed(3));
-    node.style.setProperty("--s2", s2.toFixed(3));
-    node.style.setProperty("--s3", s3.toFixed(3));
+    ref.current?.style.setProperty("--hp", progress.toFixed(3));
   });
   const lineOne = hero.lineOne;
   const lineTwo = hero.lineTwo;
   const hot = Math.max(0, lineTwo.trim().split(/\s+/).length - 1);
+  const steps = (hero.processSteps || []).map(([id, label]: [string, string], index: number) => ({
+    id,
+    label,
+    at: PROCESS_MARKS[Math.min(index, PROCESS_MARKS.length - 1)],
+  }));
 
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
       <div className="hx-hero-pin">
-        <div className="hx-hero-atmosphere" aria-hidden="true">
-          <div className="hx-hero-glow hx-hero-glow-a" />
-          <div className="hx-hero-glow hx-hero-glow-b" />
-          <div className="hx-hero-glow hx-hero-glow-c" />
-          <div className="hx-hero-mesh" />
-          <div className="hx-hero-beam" />
-        </div>
         <div className="hx-geo hx-geo-a" aria-hidden="true" />
         <div className="hx-geo hx-geo-b" aria-hidden="true" />
         <div className="hx-geo hx-geo-c" aria-hidden="true" />
         <div className="hx-hero-copy">
-          <p className="hx-hero-brand">BizUply</p>
+          <p className="hx-hero-kicker">{hero.kicker || "BizUply"}</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={lineOne} />
-            <Words text={lineTwo} hot={hot} delay={280} />
+            <Words text={lineTwo} hot={hot} delay={220} />
           </h1>
           <p className="hx-lead">{hero.lead1}</p>
           <div className="hx-actions">
             <Cta to="/register">{hero.start}</Cta>
-            <Cta to="#products" tone="line">{hero.see}</Cta>
+            <Cta to="/contact" tone="line">{hero.see}</Cta>
           </div>
+          {Array.isArray(hero.trust) && hero.trust.length ? (
+            <ul className="hx-hero-trust">
+              {hero.trust.map((item: string) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          ) : null}
         </div>
         <div className="hx-hero-stage">
           <div className="hx-hero-frame">
-            <div className="hx-hero-chrome" aria-hidden="true">
-              <span /><span /><span />
-            </div>
-            <LocaleShot
-              className="hx-hero-shot hx-hero-shot-1 hx-crop-leads"
-              language={language}
-              src="/demo-media/home/crm.jpg"
-              alt={hero.stageAlt}
-              width={1600}
-              height={1000}
-              fetchPriority="high"
-              decoding="async"
-              forceStill
-            />
-            <LocaleShot
-              className="hx-hero-shot hx-hero-shot-2 hx-crop-chat"
-              language={language}
-              src="/demo-media/whatsapp/still-3.jpg"
-              alt={text("שיחת WhatsApp של Northwind Studio בתוך BizUply", "A Northwind Studio WhatsApp conversation inside BizUply")}
-              width={1600}
-              height={1000}
-              decoding="async"
-              forceStill
-            />
-            <LocaleShot
-              className="hx-hero-shot hx-hero-shot-3 hx-crop-campaigns"
-              language={language}
-              src="/demo-media/campaigns/still-chart.jpg"
-              alt={text("מסך ניהול קמפיינים של Meta ב-BizUply", "Meta campaign management inside BizUply")}
-              width={1600}
-              height={1000}
-              decoding="async"
-              forceStill
-            />
-            <div className="hx-hero-shine" aria-hidden="true" />
-          </div>
-          <div className="hx-hero-float hx-hero-float-a" aria-hidden="true">
-            <LocaleShot
-              language={language}
-              src="/demo-media/crm/lead-file.png"
-              alt=""
-              width={900}
-              height={560}
-              decoding="async"
-              fetchPriority="low"
-              className="hx-crop-record"
-              forceStill
-            />
-          </div>
-          <div className="hx-hero-float hx-hero-float-b" aria-hidden="true">
-            <LocaleShot
-              language={language}
-              src="/demo-media/whatsapp/still-3.jpg"
-              alt=""
-              width={900}
-              height={560}
-              decoding="async"
-              fetchPriority="low"
-              className="hx-crop-chat"
-              forceStill
+            <ProductProcessTheater
+              src={PROCESS_SRC}
+              poster={PROCESS_POSTER}
+              steps={steps}
+              label={hero.processLabel || hero.stageAlt}
+              playLabel={hero.play || "Play"}
+              pauseLabel={hero.pause || "Pause"}
+              restartLabel={hero.restart || "Restart"}
             />
           </div>
         </div>
-        <HeroDecor copy={cine} reduced={reduced} />
       </div>
-      <div className="hx-wave" aria-hidden="true" />
     </section>
   );
 }
 
-function Why() {
+function HowItWorks() {
   const { cine } = useCopy();
+  const steps = cine.flowSteps || [];
   return (
-    <section className="hx-why" id="hx-connect" aria-labelledby="hx-why-title">
-      <div className="hx-why-wrap">
+    <section className="hx-why hx-sketch-band" id="story" aria-labelledby="hx-why-title">
+      <div className="hx-sketch-wrap">
         <p className="hx-eyebrow">{cine.connectEyebrow}</p>
         <h2 id="hx-why-title">{cine.connectTitle}</h2>
-        <div className="hx-why-copy">
-          <p>{cine.connectBody}</p>
-        </div>
-        <ConnectedFlow copy={cine} />
+        <p className="hx-prose">{cine.connectBody}</p>
+        {steps.length ? (
+          <ol className="hx-flow-steps">
+            {steps.map(([title, body]: [string, string]) => (
+              <li key={title}>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <ConnectedFlow copy={cine} />
+        )}
       </div>
     </section>
   );

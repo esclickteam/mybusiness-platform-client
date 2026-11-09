@@ -1,6 +1,6 @@
 /**
  * First-paint HTML for the marketing homepage.
- * Matches the live cinematic purple hero (hx-*) so React takeover never
+ * Matches the live sketch hero (hx-*, white canvas) so React takeover never
  * flashes the legacy dark home-hero design.
  */
 
@@ -105,9 +105,7 @@ export function renderMarketingHeader(locale) {
     href("/login"),
   )}">${escapeText(hx.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/pricing"))}">${escapeText(
     hx.cta,
-  )}</a></div><div class="site-header__mobile"><a class="site-header__icon-btn" href="${escapeHtml(
-    href("/login"),
-  )}" aria-label="${escapeText(hx.login)}"></a><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></div></nav></header>`;
+  )}</a></div><div class="site-header__mobile"><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></div></nav></header>`;
 }
 
 function faqBodyHtml(items) {
@@ -135,18 +133,21 @@ export function renderPurpleHomePrerender(locale) {
     ? `<p class="hx-lead">${escapeText(hx.lead2)}</p>`
     : "";
   const heroNote = hx.note ? `<p class="hx-note">${escapeText(hx.note)}</p>` : "";
-  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy"><p class="hx-hero-brand">BizUply</p><h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const kicker = hx.kicker
+    ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
+    : `<p class="hx-hero-brand">BizUply</p>`;
+  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-hero-pin"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(
     hx.lineTwo,
     lineTwoHot,
   )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p>${heroLead2}<div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,
-  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="#products"><span>${escapeText(
+  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
     hx.see,
-  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-stage"><div class="hx-hero-frame"><div class="hx-hero-chrome" aria-hidden="true"><span></span><span></span><span></span></div><img class="hx-hero-shot hx-hero-shot-1 hx-crop-leads" src="/demo-media/home/crm.jpg" alt="${escapeHtml(
+  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-stage"><div class="hx-hero-frame"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/walkthrough/process-full.jpg" alt="${escapeHtml(
     hx.stageAlt,
-  )}" width="1600" height="1000" fetchpriority="high" decoding="async"></div></div></div></section>`;
+  )}" width="1920" height="1080" fetchpriority="high" decoding="async"></div></div></div></section>`;
 
   const crawl = `<div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,
@@ -157,6 +158,6 @@ export function renderPurpleHomePrerender(locale) {
     dir: meta.dir,
     headline,
     crawl,
-    inner: `<main class="home-shell hx-paint" lang="${meta.htmlLang}" dir="${meta.dir}" data-home-design="purple">${header}<div class="hx-page" data-hx-shell="true" dir="${meta.dir}">${hero}</div></main>`,
+    inner: `<main class="home-shell hx-paint" lang="${meta.htmlLang}" dir="${meta.dir}" data-home-design="sketch">${header}<div class="hx-page" data-hx-shell="true" dir="${meta.dir}">${hero}</div></main>`,
   };
 }

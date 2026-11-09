@@ -947,7 +947,7 @@ async function handleMarketingDocument(request) {
       const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale === "en" ? "en" : locale.locale);
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       const htmlClass = isHome
-        ? ' class="bizuply-home hx-preview" style="background:#5b21b6"'
+        ? ' class="bizuply-home hx-preview" style="background:#ffffff"'
         : isPartners
           ? ' class="bizuply-partners" style="background:#f7f5fd"'
           : "";

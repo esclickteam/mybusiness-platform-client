@@ -1,17 +1,17 @@
-/* First paint for the marketing homepage — cinematic purple (hx-*), not legacy dark home-hero. */
+/* First paint for the marketing homepage — sketch white canvas (hx-*), not legacy dark home-hero. */
 html.bizuply-home,
 html.bizuply-home body,
 html.hx-preview,
 html.hx-preview body {
   margin: 0;
-  background: #5b21b6;
-  color: #1a0b33;
+  background: #ffffff;
+  color: #14082a;
 }
 html.bizuply-home #root,
 html.hx-preview #root,
 html.bizuply-home #initial-bg,
 html.hx-preview #initial-bg {
-  background: #5b21b6 !important;
+  background: #ffffff !important;
 }
 html.bizuply-home body,
 html.hx-preview body {
@@ -200,9 +200,9 @@ html.hx-preview img {
 .hx-page {
   --hx-header: 5rem;
   position: relative;
-  color: #1a0b33;
-  background: #5b21b6;
-  font-family: Assistant, Inter, system-ui, sans-serif;
+  color: #14082a;
+  background: #ffffff;
+  font-family: Assistant, Heebo, system-ui, sans-serif;
 }
 /* Skip link: visually hidden until keyboard focus so it never covers the logo on first paint. */
 .hx-skip {
@@ -270,18 +270,25 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   --s3: 0;
   --hx-header: 5rem;
   position: relative;
-  height: 132vh;
+  min-height: calc(100svh - var(--hx-header, 5rem));
   background:
-    radial-gradient(ellipse 70% 55% at 88% 18%, rgba(79, 70, 229, 0.55), transparent 58%),
-    radial-gradient(ellipse 50% 45% at 12% 78%, rgba(124, 58, 237, 0.5), transparent 55%),
-    linear-gradient(155deg, #5b21b6 0%, #4c1d95 48%, #5b21b6 100%);
-  color: #fff;
+    radial-gradient(ellipse 48% 55% at 12% 18%, rgba(147, 197, 253, 0.34), transparent 60%),
+    radial-gradient(ellipse 42% 50% at 88% 8%, rgba(196, 181, 253, 0.45), transparent 58%),
+    linear-gradient(180deg, #ffffff 0%, #f8f5ff 48%, #ffffff 100%);
+  color: #14082a;
+  overflow: clip;
 }
 .hx-hero-pin {
-  position: sticky;
-  top: var(--hx-header, 5rem);
-  height: calc(100svh - var(--hx-header, 5rem));
-  overflow: hidden;
+  position: relative;
+  z-index: 2;
+  width: min(1240px, calc(100% - 2rem));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(1.25rem, 3.5vw, 3rem);
+  align-items: center;
+  min-height: calc(100svh - var(--hx-header, 5rem));
+  padding: clamp(1.4rem, 3vw, 2.4rem) 0 clamp(2rem, 4vw, 3rem);
 }
 .hx-geo {
   position: absolute;
@@ -289,28 +296,45 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   z-index: 0;
 }
 .hx-geo-a {
-  width: min(42vw, 560px);
-  height: min(42vw, 560px);
-  border: 1px solid rgba(228, 212, 255, 0.4);
+  width: min(58vw, 640px);
+  height: min(42vw, 420px);
+  inset-inline-start: -8%;
+  bottom: -6%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(59, 130, 246, 0.35), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(124, 58, 237, 0.42), transparent 58%);
+  border-radius: 48% 52% 45% 55% / 55% 45% 55% 45%;
+}
+.hx-geo-b {
+  width: min(36vw, 380px);
+  height: min(36vw, 380px);
+  inset-inline-end: -4%;
+  top: 8%;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.4), transparent 68%);
   border-radius: 50%;
-  top: -14vh;
-  inset-inline-end: -10vw;
 }
 .hx-geo-c {
-  width: 130%;
-  height: 4.5rem;
-  inset-inline-start: -12%;
-  top: 76%;
-  background: #7c3aed;
-  transform: rotate(-8deg);
+  width: min(28vw, 280px);
+  height: min(18vw, 180px);
+  inset-inline-start: 38%;
+  top: 4%;
+  background: linear-gradient(120deg, rgba(96, 165, 250, 0.28), rgba(167, 139, 250, 0.18));
+  border-radius: 40% 60% 55% 45%;
 }
 .hx-hero-copy {
   position: relative;
   z-index: 2;
-  width: min(32rem, 38%);
-  padding: 2.4rem clamp(1.25rem, 3.5vw, 3.8rem) 0;
-  transform: translate3d(0, 0, 0) scale(1);
-  transform-origin: top center;
+  max-width: 34rem;
+}
+.hx-hero-kicker {
+  display: inline-flex;
+  margin: 0 0 0.85rem;
+  padding: 0.35rem 0.7rem;
+  color: #5b21b6;
+  background: rgba(91, 33, 182, 0.08);
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  font-size: 0.92rem;
+  font-weight: 700;
 }
 .hx-kicker {
   margin: 0 0 0.8rem;
@@ -318,17 +342,17 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: #e4d4ff;
+  color: #5b21b6;
 }
 .hx-display {
   margin: 0;
-  font-family: Assistant, Inter, system-ui, sans-serif;
-  font-size: clamp(2.15rem, 3.8vw, 4.35rem);
+  font-family: Assistant, Heebo, system-ui, sans-serif;
+  font-size: clamp(2.35rem, 5.2vw, 4.15rem);
   font-weight: 800;
   letter-spacing: -0.045em;
-  line-height: 1.08;
-  max-width: 18ch;
-  color: #fff;
+  line-height: 1.05;
+  max-width: 12ch;
+  color: #5b21b6;
 }
 .hx-hero-brand {
   margin: 0 0 0.85rem;
@@ -336,7 +360,7 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   font-weight: 800;
   letter-spacing: -0.045em;
   line-height: 1;
-  color: #fff;
+  color: #5b21b6;
 }
 [dir="rtl"] .hx-display {
   letter-spacing: -0.03em;
@@ -355,19 +379,19 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   display: inline-block;
 }
 .hx-word.is-hot > span {
-  color: #e4d4ff;
+  color: #7c3aed;
 }
 .hx-lead {
-  margin: 1.3rem 0 0;
-  font-size: clamp(1.05rem, 1.4vw, 1.28rem);
-  line-height: 1.45;
-  color: #efe4ff;
+  margin: 1.15rem 0 0;
+  font-size: clamp(1.02rem, 1.35vw, 1.18rem);
+  line-height: 1.55;
+  color: #1f2937;
 }
 .hx-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-top: 1.6rem;
+  margin-top: 1.55rem;
 }
 .hx-btn {
   position: relative;
@@ -378,12 +402,12 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   justify-content: center;
   flex: 0 0 auto;
   gap: 0.7rem;
-  min-height: 3.1rem;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid transparent;
+  min-height: 3.15rem;
+  padding: 0.75rem 1.35rem;
+  border: 1px solid #5b21b6;
   border-radius: 0;
-  background: #fff;
-  color: #5b21b6;
+  background: #5b21b6;
+  color: #fff;
   font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
@@ -402,48 +426,36 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   transform: rotate(-135deg);
 }
 .hx-btn-line {
-  background: transparent;
-  border-color: #fff;
-  color: #fff;
+  background: #fff;
+  border-color: #5b21b6;
+  color: #5b21b6;
 }
 .hx-note {
   margin: 1rem 0 0;
   font-size: 0.85rem;
   font-weight: 750;
   line-height: 1.4;
-  color: #fff;
+  color: #4b5563;
 }
 .hx-hero-stage {
-  position: absolute;
+  position: relative;
   z-index: 2;
-  inset-inline-end: 0;
-  bottom: 0;
-  width: min(66vw, 1080px);
-  height: min(82%, 680px);
-  pointer-events: none;
+  min-width: 0;
+  pointer-events: auto;
 }
 .hx-hero-frame {
-  position: absolute;
+  position: relative;
   z-index: 2;
   overflow: hidden;
-  inset: auto 0 0 auto;
-  width: 92%;
+  width: 100%;
   aspect-ratio: 16 / 10;
-  max-height: 100%;
-  background: #4c1d95;
-  box-shadow:
-    0 28px 60px rgba(26, 11, 51, 0.28),
-    1rem 1rem 0 #efe4ff;
+  max-width: 900px;
+  margin-inline-start: auto;
+  background: #0f172a;
+  box-shadow: 0 28px 64px rgba(67, 56, 202, 0.18);
 }
 .hx-hero-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to right, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
-}
-[dir="rtl"] .hx-hero-frame::after {
-  background: linear-gradient(to left, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
+  content: none;
 }
 .hx-hero-frame img,
 .hx-hero-frame video {
@@ -452,8 +464,9 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: left center;
+  object-fit: contain;
+  object-position: center;
+  background: #0b1220;
 }
 .home-crawl {
   background: #fff;
@@ -470,26 +483,28 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   font-size: 1.6rem;
 }
 
-/* Match live homeExperience.css mobile breakpoint (max-width: 900px). */
+/* Sketch home mobile first paint. */
 @media (max-width: 900px) {
   .hx-hero {
+    min-height: auto;
     height: auto;
   }
   .hx-hero-pin {
     position: relative;
     top: auto;
     height: auto;
-    min-height: 100svh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-bottom: 1.2rem;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    justify-content: start;
+    padding: 1.2rem 0 1.6rem;
   }
   .hx-hero-copy,
   [dir="rtl"] .hx-hero-copy {
     width: auto;
+    max-width: none;
     margin: 0;
-    padding: 1.4rem 1.1rem 0;
+    padding: 0;
     transform: none;
   }
   .hx-hero-stage,
@@ -507,10 +522,11 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
     right: auto;
     left: auto;
     bottom: auto;
-    width: calc(100% - 1.2rem);
-    margin: 0 0.6rem;
+    width: 100%;
+    max-width: none;
+    margin: 0;
     transform: none;
-    box-shadow: 10px 10px 0 #efe4ff;
+    box-shadow: 0 18px 40px rgba(67, 56, 202, 0.16);
   }
   .hx-hero-frame::after,
   .hx-geo-c {
@@ -522,3 +538,4 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
     inset: 0;
   }
 }
+
