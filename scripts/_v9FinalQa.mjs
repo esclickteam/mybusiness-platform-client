@@ -29,7 +29,7 @@ function run(cmd, args) {
 
 const report = {
   base: BASE,
-  commitHint: "PR #1075 final polish — readable enlarge, slow mobile scroll, v=12",
+  commitHint: "PR #1075 final polish — readable enlarge, slow mobile scroll, v=13",
   checks: [],
   videos: {},
 };
@@ -74,8 +74,8 @@ const browser = await chromium.launch({ headless: true });
   else fail("no-mobile-login-icon");
 
   const filmSrc = await page.locator(".b2-theater-film").getAttribute("src");
-  if (filmSrc?.includes("v=12")) pass("hero-film-cache-v12", filmSrc);
-  else fail("hero-film-cache-v12", String(filmSrc));
+  if (filmSrc?.includes("v=13")) pass("hero-film-cache-v13", filmSrc);
+  else fail("hero-film-cache-v13", String(filmSrc));
 
   const journey = page.locator(".b2-journey-rail button");
   for (let i = 0; i < Math.min(await journey.count(), 5); i += 1) {
