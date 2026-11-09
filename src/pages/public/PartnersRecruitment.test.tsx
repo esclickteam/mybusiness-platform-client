@@ -74,6 +74,14 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("compare-Business Partner")).toHaveTextContent(/\$499/);
     expect(screen.getByTestId("compare-Affiliate")).toHaveTextContent(/15%/);
     expect(screen.getByTestId("partner-sticky-join")).toBeInTheDocument();
+    expect(screen.getByTestId("product-meta-campaigns")).toBeInTheDocument();
+    expect(screen.getByTestId("product-meta-campaigns").querySelector("a")).toHaveAttribute(
+      "href",
+      "/meta-campaigns"
+    );
+    expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/Lead Ads/i);
+    expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/not on Meta ad spend/i);
+    expect(screen.getByTestId("product-meta-campaigns").querySelector("video")).toBeTruthy();
     expect(screen.getAllByText(/Coming soon/i).length).toBeGreaterThan(0);
   });
 
@@ -113,6 +121,11 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("annual-savings").textContent).toContain("$988");
     expect(screen.getAllByText(/הגשת הבקשה ללא תשלום|הגשת הבקשה היא ללא תשלום/).length).toBeGreaterThan(0);
     expect(screen.getByTestId("compare-Affiliate")).toHaveTextContent(/15%/);
+    expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/קמפיינים במטא/);
+    expect(screen.getByTestId("product-meta-campaigns").querySelector("a")).toHaveAttribute(
+      "href",
+      "/meta-campaigns"
+    );
   });
 
   it("validates required fields and privacy before calling the API", async () => {

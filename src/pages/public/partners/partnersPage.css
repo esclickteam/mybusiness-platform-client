@@ -113,13 +113,19 @@
   box-shadow: 0 20px 48px rgba(49, 22, 109, 0.12);
 }
 
-.ip-shot img {
+.ip-shot img,
+.ip-shot video {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
   object-position: top left;
+  background: #0f172a;
+}
+
+.ip-shot video {
+  object-fit: contain;
 }
 
 .ip-portal-shell {
