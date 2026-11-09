@@ -1,5 +1,26 @@
 import { FormEvent, useEffect, useState } from "react";
 
+type Alert = { level: "warning" | "severe" | "stopped"; message: string };
+
+type Usage = {
+  day: string;
+  spentUsd: number;
+  capUsd: number;
+  remainingUsd: number;
+  percent: number;
+  scansToday: number;
+  liveCalls: number;
+  cacheHits: number;
+  averageUsd: number | null;
+  reservedUsd: number;
+  level: "ok" | "warning" | "severe" | "stopped";
+  resetAt: string;
+  measured: boolean;
+  alerts: Alert[];
+};
+
+type HistoryRow = { day: string; spentUsd: number; liveCalls: number; cacheHits: number };
+
 type Row = {
   id: string;
   requesterName: string | null;
@@ -34,6 +55,16 @@ function count(value: number | null) {
   return value == null ? "—" : String(value);
 }
 
+function money(value: number) {
+  return `$${value.toFixed(value >= 1 ? 2 : 4)}`;
+}
+
+function resetLabel(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return `${new Intl.DateTimeFormat("he-IL", { dateStyle: "short", timeStyle: "short", timeZone: "UTC" }).format(date)} UTC`;
+}
+
 export default function ComplianceScansAdminPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [total, setTotal] = useState(0);
@@ -44,6 +75,8 @@ export default function ComplianceScansAdminPage() {
   const [to, setTo] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [usage, setUsage] = useState<Usage | null>(null);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
   const pageSize = 25;
 
   async function load(nextPage = page, event?: FormEvent) {
@@ -77,8 +110,28 @@ export default function ComplianceScansAdminPage() {
     }
   }
 
+  async function loadUsage() {
+    const token = localStorage.getItem("token") || "";
+    try {
+      const response = await fetch("/compliance/api/admin/ai-usage", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setUsage(null);
+        setHistory([]);
+        return;
+      }
+      setUsage(data.today || null);
+      setHistory(data.history || []);
+    } catch {
+      setUsage(null);
+    }
+  }
+
   useEffect(() => {
     load(1);
+    loadUsage();
     // The first view uses the current filters. Later searches submit the form.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -107,6 +160,56 @@ export default function ComplianceScansAdminPage() {
         <h1>סריקות ודוחות</h1>
         <p>הצפייה כאן שמורה לבעלת המערכת ולמנהלים עם הרשאת compliance.reports. פתיחת דוח אינה רושמת רכישה.</p>
       </header>
+      {usage ? (
+        <section className="compliance-admin__usage" aria-label="צריכת AI היום">
+          <div>
+            <h2>צריכת AI היום</h2>
+            <p>הסכום הוא עלות מדודה לפי טוקנים ומחיר המודל. הוא אינו חיוב ללקוח.</p>
+          </div>
+          {usage.alerts.map((alert) => (
+            <p key={alert.level} className={`compliance-admin__alert compliance-admin__alert--${alert.level}`} role="status">
+              {alert.message}
+            </p>
+          ))}
+          <div className="compliance-admin__bar" aria-hidden="true">
+            <span style={{ width: `${Math.min(100, usage.percent)}%` }} />
+          </div>
+          <div className="compliance-admin__stats">
+            <p><span>עלות היום</span><b>{money(usage.spentUsd)}</b></p>
+            <p><span>תקציב יומי</span><b>{money(usage.capUsd)}</b></p>
+            <p><span>סריקות היום</span><b>{usage.scansToday}</b></p>
+            <p><span>ממוצע לסריקה עם AI</span><b>{usage.averageUsd == null ? "—" : money(usage.averageUsd)}</b></p>
+            <p><span>קריאות חיות</span><b>{usage.liveCalls}</b></p>
+            <p><span>מטמון, בלי חיוב</span><b>{usage.cacheHits}</b></p>
+            <p><span>איפוס הבא</span><b>{resetLabel(usage.resetAt)}</b></p>
+          </div>
+          {usage.reservedUsd > usage.spentUsd ? <p>יש שמירת תקציב לסריקות שרצות כרגע. השמירה אינה חיוב.</p> : null}
+          {history.length ? (
+            <div className="compliance-admin__table compliance-admin__history">
+              <table>
+                <thead>
+                  <tr>
+                    <th>יום UTC</th>
+                    <th>עלות מדודה</th>
+                    <th>קריאות חיות</th>
+                    <th>מטמון</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {history.map((row) => (
+                    <tr key={row.day}>
+                      <td>{row.day}</td>
+                      <td>{money(row.spentUsd)}</td>
+                      <td>{row.liveCalls}</td>
+                      <td>{row.cacheHits}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
       <form className="compliance-admin__filters" onSubmit={(event) => load(1, event)}>
         <label>
           <span>שם או דומיין</span>
@@ -201,8 +304,21 @@ export default function ComplianceScansAdminPage() {
         .compliance-admin__actions { display: flex; flex-wrap: wrap; gap: 6px; }
         .compliance-admin__actions a, .compliance-admin__actions button { padding: 6px 8px; text-decoration: none; font-size: 0.8rem; }
         .compliance-admin__pager { display: flex; gap: 12px; align-items: center; }
+        .compliance-admin__usage { display: grid; gap: 12px; border: 1px solid #d7dce8; background: #fff; padding: 16px; }
+        .compliance-admin__usage h2 { margin: 0; font-size: 1.15rem; }
+        .compliance-admin__usage p { margin: 0; }
+        .compliance-admin__stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+        .compliance-admin__stats p { display: grid; gap: 4px; }
+        .compliance-admin__stats span { color: #5c6578; font-size: 0.78rem; }
+        .compliance-admin__bar { height: 10px; background: #eceff6; }
+        .compliance-admin__bar > span { display: block; height: 100%; background: #5b4bdb; }
+        .compliance-admin__history table { min-width: 0; }
+        .compliance-admin__alert { padding: 12px; font-weight: 800; }
+        .compliance-admin__alert--warning { background: #fff6d8; color: #6a4b00; }
+        .compliance-admin__alert--severe { background: #ffe8d6; color: #8a2e00; }
+        .compliance-admin__alert--stopped { background: #fde2e6; color: #8d1d32; }
         @media (max-width: 800px) {
-          .compliance-admin__filters { grid-template-columns: 1fr; }
+          .compliance-admin__filters, .compliance-admin__stats { grid-template-columns: 1fr; }
         }
       `}</style>
     </section>
