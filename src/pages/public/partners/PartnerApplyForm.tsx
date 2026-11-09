@@ -118,7 +118,16 @@ export default function PartnerApplyForm({
     setErrors(nextErrors);
     const firstInvalid = (Object.keys(nextErrors) as Array<keyof FormState>)[0];
     if (firstInvalid) {
-      document.getElementById(`${id}-${firstInvalid}`)?.focus();
+      const field = document.getElementById(`${id}-${firstInvalid}`);
+      if (field && typeof field.scrollIntoView === "function") {
+        try {
+          field.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch {
+          /* jsdom / older engines */
+        }
+      }
+      field?.focus();
+      setFailure(copy.requiredHint);
       return;
     }
 
