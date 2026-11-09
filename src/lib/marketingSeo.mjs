@@ -866,6 +866,7 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, locale))}</script>`,
       path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
+      path === "/website-scan" ? `<script type="application/ld+json">${jsonLd(scanVideoSchema(locale))}</script>` : "",
       faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
   }
@@ -1120,6 +1121,20 @@ function websiteSchema() {
       "BizUply (ביזאפלי) is the business platform at https://bizuply.com, published by Bizuply LLC.",
     inLanguage: ["en", "he", "es", "pt-BR", "ar"],
     publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
+  };
+}
+
+function scanVideoSchema(locale) {
+  const copy = WEBSITE_SCAN[locale] || WEBSITE_SCAN.en;
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: copy.videoTitle,
+    description: copy.transcript,
+    thumbnailUrl: `${MARKETING_ORIGIN}/media/compliance-demo/poster.jpg`,
+    uploadDate: "2026-11-09",
+    contentUrl: `${MARKETING_ORIGIN}/media/compliance-demo/desktop.mp4`,
+    inLanguage: "he",
   };
 }
 
