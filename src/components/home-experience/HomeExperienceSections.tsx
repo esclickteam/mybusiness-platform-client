@@ -475,6 +475,17 @@ function ProductShowcase() {
   const narrow = useNarrow();
   const products = [
     {
+      key: "scan",
+      title: text("סריקת אתר חכמה AI", "AI website scan"),
+      body: text("בדיקה אוטומטית של פרטיות, אבטחה, נגישות ומסמכים ציבוריים. מתחילים בסיכום חינמי.", "An automatic check of privacy, security, accessibility, and public documents. Start with a free summary."),
+      img: "/demo-media/scan/card.svg",
+      crop: "hx-crop-studio",
+      tab: text("סריקה", "Scan"),
+      href: "/website-scan",
+      film: "scan" as const,
+      caption: text("המחשה בלבד. אין כאן נתונים של אתר אמיתי.", "Illustration only. This is not data from a real site."),
+    },
+    {
       key: "crm",
       title: "CRM",
       body: text("רשימת לידים, כרטיס לקוח ומשימת המשך — במסך אחד.", "Lead list, customer record, and follow-up task — on one stage."),
@@ -615,10 +626,12 @@ function ProductShowcase() {
           </p>
           <div className="hx-actions hx-show-actions">
             <Cta to={current.href} tone="ink">{current.title}</Cta>
-            <DemoButton
-              label={cine.hero.watch}
-              onClick={() => open(filmOf(current.film, current.film, "", current.title, current.caption, language, text))}
-            />
+            {current.key === "scan" ? null : (
+              <DemoButton
+                label={cine.hero.watch}
+                onClick={() => open(filmOf(current.film, current.film, "", current.title, current.caption, language, text))}
+              />
+            )}
           </div>
         </div>
         <div className="hx-show-viewport" ref={railRef}>
@@ -1556,6 +1569,7 @@ function Faq() {
             </details>
           ))}
           <nav className="hx-faq-links" aria-label={text("עמודים קשורים", "Related pages")}>
+            <Link to="/website-scan">{text("סריקת אתר", "Website scan")}</Link>
             <Link to="/crm">CRM</Link>
             <Link to="/whatsapp-api">WhatsApp</Link>
             <Link to="/automations">{text("אוטומציות", "Automations")}</Link>

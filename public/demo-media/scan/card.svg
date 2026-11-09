@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <rect width="1600" height="1000" fill="#f4f0ff"/>
+  <rect x="160" y="120" width="1280" height="760" fill="#ffffff" stroke="#ddd4ff"/>
+  <text x="220" y="210" fill="#5b2cff" font-family="Arial, sans-serif" font-size="28" font-weight="700">ILLUSTRATION ONLY · example.com</text>
+  <text x="220" y="360" fill="#5b2cff" font-family="Arial, sans-serif" font-size="140" font-weight="700">82</text>
+  <text x="470" y="360" fill="#5c5670" font-family="Arial, sans-serif" font-size="40">/ 100</text>
+  <text x="220" y="470" fill="#241b3a" font-family="Arial, sans-serif" font-size="36">94% decided · 28 passed · 7 to review</text>
+  <text x="220" y="540" fill="#5c5670" font-family="Arial, sans-serif" font-size="32">2 missing · 2 not decided</text>
+  <rect x="220" y="620" width="280" height="88" fill="#5b2cff"/>
+  <text x="250" y="676" fill="#ffffff" font-family="Arial, sans-serif" font-size="28" font-weight="700">Free scan</text>
+</svg>
