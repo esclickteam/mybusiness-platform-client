@@ -410,8 +410,8 @@ function Hero() {
               label={hero.stageAlt}
               onWatchDemo={() => {
                 open({
-                  src: `/demo-media/home/walkthrough/process-full.mp4?v=9`,
-                  poster: "/demo-media/home/walkthrough/process-full.jpg?v=9",
+                  src: `/demo-media/home/walkthrough/process-full.mp4?v=10`,
+                  poster: "/demo-media/home/walkthrough/process-full.jpg?v=10",
                   title: text("הדגמת התהליך המרכזי", "Core process demo"),
                   caption: text(
                     "ליד חדש → כרטיס CRM → WhatsApp → אוטומציה → משימת מעקב. הקלטה נקייה מסביבת הדמו.",
@@ -1017,8 +1017,8 @@ function WhatsApp() {
                 label={text("לראות איך זה עובד", "See how it works")}
                 onClick={() =>
                   open({
-                    src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4?v=9",
-                    poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg?v=9",
+                    src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4?v=10",
+                    poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg?v=10",
                     title: text("תיבת WhatsApp", "WhatsApp inbox"),
                     caption: text(
                       "הקלטת תיבת ההודעות מסביבת הדמו — לחיצות ותנועת עכבר אמיתיות.",
@@ -1035,16 +1035,16 @@ function WhatsApp() {
             onWatchDemo={(step) => {
               const map = {
                 message: {
-                  src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4?v=9",
-                  poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg?v=9",
+                  src: "/demo-media/home/walkthrough/hero-03-whatsapp.mp4?v=10",
+                  poster: "/demo-media/home/walkthrough/hero-03-whatsapp.jpg?v=10",
                 },
                 crm: {
-                  src: "/demo-media/home/walkthrough/hero-02-crm.mp4?v=9",
-                  poster: "/demo-media/home/walkthrough/hero-02-crm.jpg?v=9",
+                  src: "/demo-media/home/walkthrough/hero-02-crm.mp4?v=10",
+                  poster: "/demo-media/home/walkthrough/hero-02-crm.jpg?v=10",
                 },
                 auto: {
-                  src: "/demo-media/home/walkthrough/hero-04-automation.mp4?v=9",
-                  poster: "/demo-media/home/walkthrough/hero-04-automation.jpg?v=9",
+                  src: "/demo-media/home/walkthrough/hero-04-automation.mp4?v=10",
+                  poster: "/demo-media/home/walkthrough/hero-04-automation.jpg?v=10",
                 },
               } as const;
               const film = map[step];

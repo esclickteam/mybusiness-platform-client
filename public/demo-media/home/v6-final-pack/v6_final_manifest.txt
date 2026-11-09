@@ -1,18 +1,3 @@
-PR #1075 finish review media
-commit: faae6f130f6cb0efd466e3e758ad7ad737cfe93d
-short: faae6f130
-parent_was: ff7b28796 (task save/list + process cleanup)
-branch: cursor/homepage-premium-redesign-5eb9
-qa: 19 PASS / 0 FAIL (320–430, login icon removed, purple paint, film v=9, CTAs)
-files:
-- v6_final_homepage_scroll.mp4
-- v6_final_mobile_ux.mp4
-- v6_final_process_marketing.mp4
-- v6_final_desktop_hero.png
-- v6_final_desktop_hero_flow.png
-- v6_final_desktop_whatsapp.png
-- v6_final_desktop_gallery.png
-- v6_final_mobile_hero.png
-- v6_final_mobile_whatsapp.png
-- v6_final_mobile_gallery.png
-- v6_final_qa_report.json
+PR #1075 V8 readable-crop finish pack
+qa: 15 PASS / 0 FAIL (390/430/1440, gallery clear of header, cookie dismissed, film v=10)
+files: homepage_scroll, mobile_ux, process_marketing, screenshots, visual frames
