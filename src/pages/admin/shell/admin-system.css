@@ -737,6 +737,25 @@
   background: var(--bz-success);
 }
 
+.biz-system-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.biz-system-name i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: #efeaff;
+  color: #5b3de6;
+  font-style: normal;
+  font-weight: 700;
+}
+
 .biz-admin-footer {
   display: flex;
   flex-wrap: wrap;

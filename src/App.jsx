@@ -192,6 +192,8 @@ const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminClubPage = lazy(() => import("./pages/admin/AdminClubPage"));
 const AdminEarlyAccess = lazy(() => import("./pages/admin/AdminEarlyAccess"));
+const AdminSaasHome = lazy(() => import("./pages/admin/saas/AdminSaasHome"));
+const AdminSaasSystems = lazy(() => import("./pages/admin/saas/AdminSaasSystems"));
 const AdminSaasMarketplace = lazy(() => import("./pages/admin/AdminSaasMarketplace"));
 const AdminSaasControlCenter = lazy(() => import("./pages/admin/AdminSaasControlCenter"));
 const AdminManagedWhatsApp = lazy(
@@ -1732,6 +1734,8 @@ export default function App() {
                         <Route path="dashboard" element={<AdminDashboard />} />
                         <Route path="club" element={<AdminClubPage />} />
                         <Route path="early-access" element={<AdminEarlyAccess />} />
+                        <Route path="saas" element={<AdminSaasHome />} />
+                        <Route path="saas-systems" element={<AdminSaasSystems />} />
                         <Route path="saas-marketplace" element={<AdminSaasMarketplace />} />
                         <Route path="saas-control-center" element={<AdminSaasControlCenter />} />
                         <Route path="managed-whatsapp" element={<AdminManagedWhatsApp />} />

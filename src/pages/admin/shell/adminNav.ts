@@ -21,22 +21,50 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [{ path: "/admin/dashboard", label: "סקירה" }],
   },
   {
-    id: "platform",
-    label: "פלטפורמה",
+    id: "saasOverview",
+    label: "סקירה כללית",
+    items: [{ path: "/admin/saas", label: "לוח בקרה" }],
+  },
+  {
+    id: "saasSystems",
+    label: "ניהול מערכות",
     items: [
-      { path: "/admin/saas-marketplace", label: "SaaS Marketplace" },
-      { path: "/admin/saas-control-center", label: "SaaS Control Center" },
-      { path: "/admin/saas-deals", label: "עסקאות SaaS" },
-      { path: "/admin/saas-tenants", label: "מערכות SaaS" },
+      { path: "/admin/saas-systems", label: "עשר המערכות" },
+      { path: "/admin/saas-control-center", label: "תבניות המערכות" },
+      { path: "/admin/saas-marketplace", label: "קטלוג המכירה" },
+    ],
+  },
+  {
+    id: "saasCustomers",
+    label: "לקוחות ועסקים",
+    items: [
+      { path: "/admin/saas-tenants", label: "עסקים על המערכות" },
       { path: "/admin/club", label: "מועדון עסקים" },
       { path: "/admin/early-access", label: "הרשמה מוקדמת" },
+    ],
+  },
+  {
+    id: "saasSales",
+    label: "מכירות ותשלומים",
+    items: [{ path: "/admin/saas-deals", label: "עסקאות והקמה" }],
+  },
+  {
+    id: "saasOps",
+    label: "תפעול ותמיכה",
+    items: [
+      { path: "/admin/support-chat", label: "תמיכה" },
+      { path: "/admin/logs", label: "יומן מערכת" },
       { path: "/admin/calendar", label: "יומן" },
+    ],
+  },
+  {
+    id: "saasTools",
+    label: "כלים מתקדמים",
+    items: [
       { path: "/admin/system", label: "כלים" },
-      { path: "/admin/ai-usage", label: "שימוש ב-AI" },
+      { path: "/admin/ai-usage", label: "שימוש בבינה מלאכותית" },
       { path: "/admin/geo-intel", label: "נראות במנועי מענה" },
       { path: "/admin/compliance-scans", label: "סריקות ודוחות" },
-      { path: "/admin/logs", label: "יומן מערכת" },
-      { path: "/admin/support-chat", label: "תמיכה" },
     ],
   },
   {
@@ -94,7 +122,7 @@ export const NAV_GROUPS: NavGroup[] = [
     id: "partners",
     label: "שותפים",
     items: [
-      { path: "/admin/global-partners", label: "Global Partners" },
+      { path: "/admin/global-partners", label: "שותפים גלובליים" },
       { path: "/admin/partner-center", label: "מרכז שותפים" },
       { path: "/admin/partners", label: "פרטנרים" },
       { path: "/admin/affiliates", label: "אפיליאייטים" },

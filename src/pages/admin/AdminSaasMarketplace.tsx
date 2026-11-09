@@ -197,7 +197,7 @@ export default function AdminSaasMarketplace() {
       <AdminHeader />
       <main className="mx-auto max-w-6xl px-4 py-8">
         <AdminPageHeader
-          title="SaaS Marketplace"
+          title="קטלוג המכירה"
           description="פרסום כאן לא מוסיף קישור לעמוד הבית. העמודים נשארים לא מפורסמים עד השקה נפרדת."
           actions={
             <button type="button" onClick={openNew} className="biz-btn">
