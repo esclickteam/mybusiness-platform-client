@@ -2,7 +2,7 @@
   "he-desktop": {
     "width": 1920,
     "height": 1080,
-    "duration": 90.5,
+    "duration": 86.0,
     "chapters": [
       {
         "id": "lead",
@@ -16,30 +16,30 @@
       },
       {
         "id": "whatsapp",
-        "at": 27.09,
-        "seek": 27.34
+        "at": 28.29,
+        "seek": 28.54
       },
       {
         "id": "task",
-        "at": 36.71,
-        "seek": 36.96
+        "at": 37.77,
+        "seek": 38.02
       },
       {
         "id": "automation",
-        "at": 56.39,
-        "seek": 56.64
+        "at": 55.36,
+        "seek": 55.61
       },
       {
         "id": "done",
-        "at": 76.57,
-        "seek": 76.82
+        "at": 74.04,
+        "seek": 74.29
       }
     ]
   },
   "en-desktop": {
     "width": 1920,
     "height": 1080,
-    "duration": 89.9,
+    "duration": 85.8,
     "chapters": [
       {
         "id": "lead",
@@ -48,35 +48,35 @@
       },
       {
         "id": "crm",
-        "at": 10.97,
-        "seek": 11.22
+        "at": 9.97,
+        "seek": 10.22
       },
       {
         "id": "whatsapp",
-        "at": 27.96,
-        "seek": 28.21
+        "at": 28.13,
+        "seek": 28.38
       },
       {
         "id": "task",
-        "at": 38.11,
-        "seek": 38.36
+        "at": 38.14,
+        "seek": 38.39
       },
       {
         "id": "automation",
-        "at": 56.66,
-        "seek": 56.91
+        "at": 56.33,
+        "seek": 56.58
       },
       {
         "id": "done",
-        "at": 76.04,
-        "seek": 76.29
+        "at": 73.88,
+        "seek": 74.13
       }
     ]
   },
   "he-mobile": {
     "width": 1170,
     "height": 2532,
-    "duration": 89.3,
+    "duration": 90.3,
     "chapters": [
       {
         "id": "lead",
@@ -85,35 +85,35 @@
       },
       {
         "id": "crm",
-        "at": 10.64,
-        "seek": 10.89
+        "at": 10.58,
+        "seek": 10.83
       },
       {
         "id": "whatsapp",
-        "at": 26.46,
-        "seek": 26.71
+        "at": 29.56,
+        "seek": 29.81
       },
       {
         "id": "task",
-        "at": 36.61,
-        "seek": 36.86
+        "at": 38.88,
+        "seek": 39.13
       },
       {
         "id": "automation",
-        "at": 56.53,
-        "seek": 56.78
+        "at": 57.43,
+        "seek": 57.68
       },
       {
         "id": "done",
-        "at": 77.34,
-        "seek": 77.59
+        "at": 77.44,
+        "seek": 77.69
       }
     ]
   },
   "en-mobile": {
     "width": 1170,
     "height": 2532,
-    "duration": 91.5,
+    "duration": 91.1,
     "chapters": [
       {
         "id": "lead",
@@ -122,28 +122,28 @@
       },
       {
         "id": "crm",
-        "at": 10.34,
-        "seek": 10.59
+        "at": 9.14,
+        "seek": 9.39
       },
       {
         "id": "whatsapp",
-        "at": 28.33,
-        "seek": 28.58
+        "at": 28.56,
+        "seek": 28.81
       },
       {
         "id": "task",
-        "at": 39.01,
-        "seek": 39.26
+        "at": 38.91,
+        "seek": 39.16
       },
       {
         "id": "automation",
-        "at": 57.09,
-        "seek": 57.34
+        "at": 58.06,
+        "seek": 58.31
       },
       {
         "id": "done",
-        "at": 77.47,
-        "seek": 77.72
+        "at": 78.48,
+        "seek": 78.73
       }
     ]
   }

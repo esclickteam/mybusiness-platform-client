@@ -111,7 +111,7 @@ export function renderMarketingHeader(locale) {
 const HERO_WAVES = `<svg class="ht-waves ht-hero-waves" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ht-wave-a" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#6d28d9" stop-opacity="0.55"></stop><stop offset="0.55" stop-color="#4f46e5" stop-opacity="0.4"></stop><stop offset="1" stop-color="#3b82f6" stop-opacity="0.35"></stop></linearGradient><linearGradient id="ht-wave-b" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#a78bfa" stop-opacity="0.4"></stop><stop offset="1" stop-color="#93c5fd" stop-opacity="0.32"></stop></linearGradient></defs><g class="ht-wave ht-wave-1"><path d="M0 210 C 240 140 420 280 720 214 S 1180 120 1440 190 V320 H0Z" fill="url(#ht-wave-b)"></path><path d="M1440 210 C 1680 140 1860 280 2160 214 S 2620 120 2880 190 V320 H1440Z" fill="url(#ht-wave-b)"></path></g><g class="ht-wave ht-wave-2"><path d="M0 250 C 260 196 470 300 760 252 S 1210 176 1440 236 V320 H0Z" fill="url(#ht-wave-a)"></path><path d="M1440 250 C 1700 196 1910 300 2200 252 S 2650 176 2880 236 V320 H1440Z" fill="url(#ht-wave-a)"></path></g><path class="ht-wave-line" d="M0 176 C 300 120 520 236 820 186 S 1250 110 1440 160" fill="none"></path></svg>`;
 
 const THEATER_MEDIA = "/demo-media/home/theater";
-const THEATER_VERSION = "t1";
+const THEATER_VERSION = "t2";
 
 function heroSideHtml(hx) {
   const steps = (hx.processSteps || [])

@@ -13,7 +13,7 @@ function fail0(msg) { console.error(msg); process.exit(2); }
 const LANG = process.env.LANG_UI || "he";
 const MOBILE = process.env.MOBILE === "1";
 const DRY = process.env.DRY === "1";
-const BASE = "https://mybusiness-platform-client-staging.vercel.app";
+const BASE = process.env.FILM_BASE || "https://mybusiness-platform-client-staging.vercel.app";
 const API = "https://server-staging-15bb.up.railway.app/api";
 const BIZ = "6ab62f565ba1a92f3046b5ad";
 const AUTO_ID = process.env.AUTO_ID || "6af1e65d76c39b752eefa9e4";
@@ -32,11 +32,11 @@ const PX_H = Math.round(CSS_H * DPR);
 const C = JSON.parse(fs.readFileSync(process.env.CUSTOMER || new URL(`./customers/customer-${TAG}.json`, import.meta.url), "utf8"));
 const L = {
   he: {
-    notesTab: "הערות ופעילות", tasksTab: "משימות", taskQuick: "משימה", noteSave: "שמירה", addTask: "הוספת משימה",
+    notesTab: "הערות ופעילות", tasksTab: "משימות", taskQuick: "משימה", noteSave: "שמור הערה", addTask: "הוספת משימה",
     reply: "תשובה", test: "בדיקה", runTest: "הרצת בדיקה", close: "סגירה",
   },
   en: {
-    notesTab: "Notes and activity", tasksTab: "Tasks", taskQuick: "Task", noteSave: "Save", addTask: "Add task",
+    notesTab: "Notes and activity", tasksTab: "Tasks", taskQuick: "Task", noteSave: "Save note", addTask: "Add task",
     reply: "Reply", test: "Test", runTest: "Run a test", close: "Close",
   },
 }[LANG];
@@ -64,15 +64,28 @@ const ctx = await browser.newContext({
     : undefined,
 });
 await ctx.addInitScript(cursorScript(MOBILE ? "touch" : "desktop"));
+await ctx.addInitScript(() => {
+  const hide = () => {
+    if (document.getElementById("film-hide-assistant")) return;
+    const style = document.createElement("style");
+    style.id = "film-hide-assistant";
+    style.textContent = ".bizuply-chat-launcher{visibility:hidden !important;pointer-events:none !important}";
+    document.documentElement.appendChild(style);
+  };
+  hide();
+  document.addEventListener("DOMContentLoaded", hide);
+});
 await ctx.addInitScript((lang) => {
   localStorage.setItem("i18nextLng", lang);
   localStorage.setItem("bizuply.lang", lang);
   localStorage.setItem("bizuply_lang_preference", lang);
   localStorage.setItem("bizuply_lang_resolved", lang);
 }, LANG);
+await ctx.addCookies([{ name: "bizuply_tracking", value: "v2:none:2026-11-07", url: BASE }]);
 const page = await ctx.newPage();
 page.setDefaultTimeout(30000);
 await login(page, BASE, LANG);
+await page.getByRole("button", { name: /חיוניות בלבד|Essential cookies only|Solo cookies esenciales|Somente cookies essenciais|الضرورية فقط/ }).click({ timeout: 2500 }).catch(() => {});
 await ctx.storageState({ path: (process.env.CAPTURE_DIR || "/tmp/home-theater") + "/auth.json" });
 {
   const token = await page.evaluate(() => localStorage.getItem("token"));
@@ -113,6 +126,15 @@ async function endChapter() {
 }
 
 const dashboard = (p) => `${BASE}${LANG === "he" ? "/he" : ""}/business/${BIZ}/dashboard/${p}`;
+const AUTO = process.env.AUTO_ID || (LANG === "he" ? "6af1e65d76c39b752eefa9e4" : "6af1ed4e76c39b752eefb2b2");
+
+/** Compile the dashboard routes before the film, so the take does not sit on the loading screen. */
+for (const path of ["crm/leads", "whatsapp/inbox", "automations", `automations/${AUTO}`]) {
+  await page.goto(dashboard(path), { waitUntil: "domcontentloaded", timeout: 120000 });
+  await page.locator("aside, .ht-root, .crm-leads, .react-flow").first().waitFor({ timeout: 90000 }).catch(() => {});
+  await page.waitForTimeout(1200);
+  log("warmed", path, page.url());
+}
 
 async function settle(ms = 600) { await page.waitForTimeout(ms); }
 
@@ -121,6 +143,7 @@ async function goto(p, ready) {
   await page.goto(dashboard(p), { waitUntil: "domcontentloaded", timeout: 90000 });
   await rec.restart();
   await ready();
+  await page.getByRole("button", { name: /חיוניות בלבד|Essential cookies only|Solo cookies esenciales|Somente cookies essenciais|الضرورية רק|الضرورية فقط/ }).click({ timeout: 800 }).catch(() => {});
   await page.mouse.move(cur.x, cur.y);
   await settle(700);
 }
@@ -141,7 +164,18 @@ async function waitOrCut(fn, { grace = 650, timeout = 45000, label = "" } = {}) 
   }
 }
 
+async function hideAssistant() {
+  await page.evaluate(() => {
+    document.querySelectorAll(".bizuply-chat-launcher").forEach((node) => node.remove());
+    for (const button of document.querySelectorAll("button[aria-label]")) {
+      const label = button.getAttribute("aria-label") || "";
+      if (label === "Close chat" || label.includes("הצ'אט") || label.includes("הצ׳אט")) button.click();
+    }
+  }).catch(() => {});
+}
+
 async function to(locator, { click = true, pause = 220, after = 380, dx = 0.5, dy = 0.5 } = {}) {
+  await hideAssistant();
   await locator.waitFor({ state: "visible" });
   const pre = await locator.boundingBox();
   if (pre && (pre.y < 56 || pre.y + pre.height > CSS_H - 24 || pre.x < 0 || pre.x + pre.width > CSS_W)) {
@@ -167,7 +201,7 @@ async function typeText(text, delay = 15) {
 }
 
 const leadRow = () => page.locator("table tbody tr").filter({ hasText: C.name }).first();
-const listReady = async () => { await page.locator("table tbody tr").first().waitFor({ timeout: 60000 }); };
+const listReady = async () => { await page.locator("table").first().waitFor({ timeout: 60000 }); };
 const cardReady = async () => { await page.getByRole("button", { name: L.notesTab, exact: true }).waitFor({ timeout: 60000 }); };
 
 /* ---------- 1. Lead intake ---------- */
@@ -180,23 +214,37 @@ if (DRY) C.name = process.env.DRY_NAME || "Dana Israeli";
 else if ((await leadRow().count()) > 0) fail(`customer ${C.name} already exists — pick a new customer`);
 await keep();
 await settle(900);
-const hook = DRY ? { status: 201, json: async () => ({ lead: { _id: "dry", source: "dry" } }) } : await fetch(WEBHOOK, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ name: C.name, phone: C.phone, email: C.email, message: C.message, form_name: C.formName }),
-});
+cut();
+let hook = null;
+for (let attempt = 0; attempt < 3 && !hook; attempt++) {
+  try {
+    hook = DRY
+      ? { status: 201, json: async () => ({ lead: { _id: "dry", source: "dry" } }) }
+      : await fetch(WEBHOOK, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: C.name, phone: C.phone, email: C.email, message: C.message, form_name: C.formName }),
+          signal: AbortSignal.timeout(20000),
+        });
+  } catch (error) {
+    log("webhook retry", attempt + 1, error.message);
+    if (attempt === 2) throw error;
+    await page.waitForTimeout(1500);
+  }
+}
+await keep();
 const hookJson = await hook.json();
 if (hook.status !== 201 || !hookJson?.lead?._id) fail(`webhook ${hook.status} ${JSON.stringify(hookJson).slice(0, 300)}`);
 C.leadId = hookJson.lead._id;
 log("lead created", C.leadId, hookJson.lead.source);
 await settle(1600);
-const refresh = page.locator("button.icon-btn").filter({ hasText: /^$/ }).first();
+const refresh = page.locator("button.crm-tool").filter({ has: page.locator("svg.lucide-refresh-cw") }).first();
 await to(refresh, { after: 200 });
-await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { label: "row" });
+await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 200, label: "row" });
 await settle(700);
 await to(leadRow().locator("td").nth(1), { click: false, pause: 500 });
 await to(leadRow().locator("td").nth(1), { after: 150 });
-await waitOrCut(cardReady, { label: "card" });
+await waitOrCut(cardReady, { grace: 120, label: "card" });
 await settle(1400);
 await endChapter();
 
@@ -260,7 +308,7 @@ await goto("crm/leads", listReady);
 await keep();
 await settle(500);
 await to(leadRow().locator("td").nth(1), { after: 150 });
-await waitOrCut(cardReady, { label: "card2" });
+await waitOrCut(cardReady, { grace: 120, label: "card2" });
 await settle(700);
 await to(page.getByRole("button", { name: L.taskQuick, exact: true }), { after: 600 });
 const taskInput = page.locator(`input[placeholder^="${C.taskPlaceholder}"]`).first();
@@ -300,7 +348,7 @@ await keep();
 await settle(700);
 await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { click: false, pause: 400 });
 await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { after: 100 });
-await waitOrCut(() => page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 }).then(() => page.locator(".react-flow__node").first().waitFor()), { label: "editor" });
+await waitOrCut(() => page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 }).then(() => page.locator(".react-flow__node").first().waitFor()), { grace: 150, label: "editor" });
 await settle(1200);
 if (!MOBILE) {
 await to(page.locator(".react-flow__node").first(), { click: false, pause: 550 });
@@ -329,7 +377,7 @@ await keep();
 await settle(600);
 if (!MOBILE) await to(leadRow().locator("td").nth(4), { click: false, pause: 900 });
 await to(leadRow().locator("td").nth(1), { after: 150 });
-await waitOrCut(cardReady, { label: "card3" });
+await waitOrCut(cardReady, { grace: 120, label: "card3" });
 await settle(900);
 await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 500 });
 await settle(1700);
