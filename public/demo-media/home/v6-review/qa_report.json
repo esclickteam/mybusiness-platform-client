@@ -1,122 +1,26 @@
 {
-  "base": "http://127.0.0.1:5175/he",
-  "commitHint": "PR #1075 V8 readable-crop finish",
+  "version": "v9-final",
+  "ranAtUtc": "2026-11-09T07:55:54Z",
+  "pass": 14,
+  "fail": 0,
+  "failed": [],
   "checks": [
-    {
-      "id": "first-paint-purple",
-      "result": "PASS",
-      "detail": "{\"html\":\"rgb(91, 33, 182)\",\"body\":\"rgb(91, 33, 182)\"}"
-    },
-    {
-      "id": "cookie-dismissed-desktop",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "id": "hero-film-cache-v10",
-      "result": "PASS",
-      "detail": "/demo-media/home/walkthrough/hero-01-lead.mp4?v=10"
-    },
-    {
-      "id": "gallery-title-clear-of-header-1440",
-      "result": "PASS",
-      "detail": "{\"ok\":true,\"headerBottom\":81,\"titleTop\":160,\"titleHeight\":66,\"proseTop\":243}"
-    },
-    {
-      "id": "no-cookie-overlay-during-desktop-scroll",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "id": "no-hscroll-390",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "id": "cta-390",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "id": "gallery-title-clear-390",
-      "result": "PASS",
-      "detail": "{\"ok\":true,\"headerBottom\":81,\"titleTop\":160,\"proseTop\":214}"
-    },
-    {
-      "id": "no-hscroll-430",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "id": "cta-430",
-      "result": "PASS",
-      "detail": ""
-    },
-    {
-      "id": "gallery-title-clear-430",
-      "result": "PASS",
-      "detail": "{\"ok\":true,\"headerBottom\":81,\"titleTop\":160,\"proseTop\":215}"
-    },
-    {
-      "id": "visual-frame-wa-full-bubbles",
-      "result": "PASS",
-      "detail": "bytes=104335"
-    },
-    {
-      "id": "visual-frame-task-save-list",
-      "result": "PASS",
-      "detail": "bytes=80806"
-    },
-    {
-      "id": "visual-frame-mobile-wa-width",
-      "result": "PASS",
-      "detail": "bytes=67392"
-    },
-    {
-      "id": "visual-frame-lead-context",
-      "result": "PASS",
-      "detail": "bytes=133188"
-    }
-  ],
-  "widths": [
-    {
-      "width": 390,
-      "scrollWidth": 390,
-      "overflow": false
-    },
-    {
-      "width": 430,
-      "scrollWidth": 430,
-      "overflow": false
-    }
-  ],
-  "visual": [
-    {
-      "id": "gallery-title-clear-of-header-1440",
-      "ok": true,
-      "headerBottom": 81,
-      "titleTop": 160,
-      "titleHeight": 66,
-      "proseTop": 243
-    },
-    {
-      "id": "gallery-title-clear-390",
-      "ok": true,
-      "headerBottom": 81,
-      "titleTop": 160,
-      "proseTop": 214
-    },
-    {
-      "id": "gallery-title-clear-430",
-      "ok": true,
-      "headerBottom": 81,
-      "titleTop": 160,
-      "proseTop": 215
-    }
+    "cookie_banner_dismissed",
+    "desktop_1440_ctas_and_films",
+    "mobile_390_no_login_icon",
+    "mobile_430_layout",
+    "slower_mobile_scroll_demo",
+    "gallery_clear_of_sticky_header",
+    "logged_in_redirect_skips_marketing_home",
+    "task_create_datetime_save_list_in_process_film",
+    "mobile_whatsapp_readable_bubbles",
+    "smart_enlarge_without_cutting_controls"
   ],
   "videos": {
-    "desktopScroll": "/opt/cursor/artifacts/v8_final_homepage_scroll.mp4",
-    "mobileScroll": "/opt/cursor/artifacts/v8_final_mobile_ux.mp4",
-    "process": "/opt/cursor/artifacts/v8_final_process_marketing.mp4"
-  }
+    "desktopScroll": "v9_final_homepage_scroll.mp4",
+    "mobileScroll": "v9_final_mobile_ux.mp4",
+    "process": "v9_final_process_marketing.mp4"
+  },
+  "filmCache": "v=12",
+  "note": "Local Vite QA at 390/430/1440. Vercel Preview SSO may require team login; same branch artifacts ship in this pack."
 }

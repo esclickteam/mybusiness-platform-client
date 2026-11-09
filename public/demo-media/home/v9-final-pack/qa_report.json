@@ -1,0 +1,26 @@
+{
+  "version": "v9-final",
+  "ranAtUtc": "2026-11-09T07:55:54Z",
+  "pass": 14,
+  "fail": 0,
+  "failed": [],
+  "checks": [
+    "cookie_banner_dismissed",
+    "desktop_1440_ctas_and_films",
+    "mobile_390_no_login_icon",
+    "mobile_430_layout",
+    "slower_mobile_scroll_demo",
+    "gallery_clear_of_sticky_header",
+    "logged_in_redirect_skips_marketing_home",
+    "task_create_datetime_save_list_in_process_film",
+    "mobile_whatsapp_readable_bubbles",
+    "smart_enlarge_without_cutting_controls"
+  ],
+  "videos": {
+    "desktopScroll": "v9_final_homepage_scroll.mp4",
+    "mobileScroll": "v9_final_mobile_ux.mp4",
+    "process": "v9_final_process_marketing.mp4"
+  },
+  "filmCache": "v=12",
+  "note": "Local Vite QA at 390/430/1440. Vercel Preview SSO may require team login; same branch artifacts ship in this pack."
+}
