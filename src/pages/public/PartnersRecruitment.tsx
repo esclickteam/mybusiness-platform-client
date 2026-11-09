@@ -116,7 +116,7 @@ const COPY = {
       {
         key: "Affiliate",
         title: "Affiliate",
-        fee: "Membership fee: none on the percent track (partner_percent).",
+        fee: "Membership fee: none on the percent track.",
         rate: "Commission: currently 15% of eligible sales in the catalog.",
         featured: false,
       },
@@ -384,7 +384,7 @@ const COPY = {
       {
         key: "Affiliate",
         title: "Affiliate",
-        fee: "דמי חברות: אין במסלול האחוזים (partner_percent).",
+        fee: "דמי חברות: אין במסלול האחוזים.",
         rate: "עמלה: כיום 15% ממכירות זכאיות לפי הקטלוג.",
         featured: false,
       },
@@ -1191,7 +1191,19 @@ export default function PartnersRecruitment() {
       >
         <div className="ip-sticky-join__inner">
           <p className="ip-sticky-join__copy">{copy.stickyJoin}</p>
-          <a className="ip-btn ip-btn-primary" href="#apply" tabIndex={stickyVisible ? 0 : -1}>
+          <a
+            className="ip-btn ip-btn-primary"
+            href="#apply"
+            tabIndex={stickyVisible ? 0 : -1}
+            onClick={(event) => {
+              const target = document.getElementById("apply");
+              if (!target) return;
+              event.preventDefault();
+              target.classList.add("is-in");
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+              window.history.replaceState(null, "", "#apply");
+            }}
+          >
             {copy.stickyCta}
           </a>
         </div>
