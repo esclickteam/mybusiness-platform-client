@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
@@ -58,6 +59,9 @@ function PrivacyPolicy() {
 
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("privacyPage.intro")}
+        </p>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-slate-700">
+          <Link to="/website-scan">{locale === "he" ? "בדיקת פרטיות ואבטחה לאתר" : locale === "es" ? "Revisión de privacidad y seguridad del sitio" : locale === "pt-BR" ? "Verificação de privacidade e segurança do site" : locale === "ar" ? "فحص خصوصية وأمن الموقع" : "Website privacy and security check"}</Link>
         </p>
         <LegalDocumentLinks current="/privacy" />
 

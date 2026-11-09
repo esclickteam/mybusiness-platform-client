@@ -1,0 +1,16 @@
+.demo-banner, .demo-flag { margin: 0; background: #ede9fe; color: #4c1d95; font-weight: 700; }
+.demo-banner { padding: 0.45rem 1rem; text-align: center; }
+.demo-flag { display: inline-block; margin: 0.8rem 1rem 0; padding: 0.2rem 0.45rem; }
+.demo-next { margin: 1rem; }
+.demo-next button, .demo-scan .scan-start { border: 0; background: #5b2cff; color: white; min-height: 46px; padding: 0 1rem; font-weight: 700; border-radius: 0; cursor: pointer; }
+.demo-scan { padding-bottom: 4.5rem; }
+.demo-scan [data-bizuply-accessibility-widget] { display: none; }
+.demo-caption { position: sticky; bottom: 0; z-index: 5; margin: 0; padding: 0.55rem 1rem; background: rgba(18, 20, 28, 0.88); color: white; font-weight: 700; pointer-events: none; }
+.demo-pdf { position: fixed; inset: 0; background: rgba(18, 20, 28, 0.55); display: grid; place-items: center; z-index: 30; padding: 1rem; }
+.demo-pdf article { width: min(720px, 100%); max-height: calc(100% - 2rem); overflow: auto; background: white; color: #12141c; padding: 1.4rem 1.5rem; border: 1px solid #ddd6fe; }
+.demo-pdf h2, .demo-pdf h3 { color: #2a1464; }
+.demo-pdf footer { margin-top: 1rem; color: #4c1d95; font-weight: 700; }
+.demo-pdf button { border: 0; background: #5b2cff; color: white; min-height: 44px; padding: 0 1rem; font-weight: 700; cursor: pointer; }
+@media (max-width: 860px) {
+  .demo-scan .scan-hero { display: block; }
+}
