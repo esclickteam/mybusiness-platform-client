@@ -145,7 +145,7 @@ export function renderPurpleHomePrerender(locale) {
     hx.start,
   )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
     hx.see,
-  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-stage"><div class="hx-hero-frame"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/walkthrough/process-full.jpg" alt="${escapeHtml(
+  )}</span><i aria-hidden="true"></i></a></div>${heroNote}</div><div class="hx-hero-stage"><div class="hx-hero-stage-inner"><img class="hx-hero-shot hx-hero-shot-1" src="/demo-media/home/walkthrough/process-full.jpg" alt="${escapeHtml(
     hx.stageAlt,
   )}" width="1920" height="1080" fetchpriority="high" decoding="async"></div></div></div></section>`;
 

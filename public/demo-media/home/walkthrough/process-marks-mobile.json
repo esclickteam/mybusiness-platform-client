@@ -1,0 +1,33 @@
+{
+  "viewport": [
+    390,
+    844
+  ],
+  "chapterLen": 8,
+  "marks": [
+    {
+      "id": "Lead in",
+      "at": 0
+    },
+    {
+      "id": "CRM",
+      "at": 8
+    },
+    {
+      "id": "WhatsApp",
+      "at": 16
+    },
+    {
+      "id": "Meeting",
+      "at": 24
+    },
+    {
+      "id": "Auto",
+      "at": 32
+    },
+    {
+      "id": "Done",
+      "at": 40
+    }
+  ]
+}

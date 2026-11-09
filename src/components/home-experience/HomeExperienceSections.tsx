@@ -14,10 +14,13 @@ import {
 } from "./HomeCinematic";
 import ProductProcessTheater from "./ProductProcessTheater";
 
-/** Chapter markers for the continuous process film (seconds). */
-const PROCESS_MARKS = [0, 7, 14, 21, 28, 35] as const;
-const PROCESS_SRC = "/demo-media/home/walkthrough/process-full.mp4?v=sketch3";
-const PROCESS_POSTER = "/demo-media/home/walkthrough/process-full.jpg";
+/** Chapter markers for the continuous process films (seconds). Synced from V14 capture. */
+const PROCESS_MARKS = [0, 10, 20, 30, 40, 50] as const;
+const PROCESS_MARKS_MOBILE = [0, 8, 16, 24, 32, 40] as const;
+const PROCESS_SRC = "/demo-media/home/walkthrough/process-full.mp4?v=sketch5";
+const PROCESS_POSTER = "/demo-media/home/walkthrough/process-full.jpg?v=sketch5";
+const PROCESS_MOBILE_SRC = "/demo-media/home/walkthrough/process-full-mobile.mp4?v=sketch5";
+const PROCESS_MOBILE_POSTER = "/demo-media/home/walkthrough/process-full-mobile.jpg?v=sketch5";
 
 function useCopy() {
   const { i18n, t } = useTranslation();
@@ -345,6 +348,11 @@ function Hero() {
     label,
     at: PROCESS_MARKS[Math.min(index, PROCESS_MARKS.length - 1)],
   }));
+  const mobileSteps = (hero.processSteps || []).map(([id, label]: [string, string], index: number) => ({
+    id,
+    label,
+    at: PROCESS_MARKS_MOBILE[Math.min(index, PROCESS_MARKS_MOBILE.length - 1)],
+  }));
 
   return (
     <section className="hx-hero" ref={ref} aria-labelledby="hx-hero-title">
@@ -372,15 +380,20 @@ function Hero() {
           ) : null}
         </div>
         <div className="hx-hero-stage">
-          <div className="hx-hero-frame">
+          <div className="hx-hero-stage-inner">
             <ProductProcessTheater
               src={PROCESS_SRC}
               poster={PROCESS_POSTER}
+              mobileSrc={PROCESS_MOBILE_SRC}
+              mobilePoster={PROCESS_MOBILE_POSTER}
               steps={steps}
+              mobileSteps={mobileSteps}
               label={hero.processLabel || hero.stageAlt}
               playLabel={hero.play || "Play"}
               pauseLabel={hero.pause || "Pause"}
               restartLabel={hero.restart || "Restart"}
+              prevLabel={hero.prev || "Previous"}
+              nextLabel={hero.next || "Next"}
             />
           </div>
         </div>

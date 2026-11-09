@@ -33,6 +33,8 @@ const HERO = {
     play: "Play",
     pause: "Pause",
     restart: "Restart",
+    prev: "Previous",
+    next: "Next",
     processLabel: "Continuous BizUply product process",
     processSteps: [
       ["Lead in", "Lead arrives"],
@@ -72,6 +74,8 @@ const HERO = {
     play: "הפעלה",
     pause: "השהיה",
     restart: "הפעלה מחדש",
+    prev: "הקודם",
+    next: "הבא",
     processLabel: "תהליך עסקי רציף בתוך BizUply",
     processSteps: [
       ["Lead in", "קליטת ליד"],
@@ -111,6 +115,8 @@ const HERO = {
     play: "Reproducir",
     pause: "Pausa",
     restart: "Reiniciar",
+    prev: "Anterior",
+    next: "Siguiente",
     processLabel: "Proceso continuo del producto BizUply",
     processSteps: [
       ["Lead in", "Llega el lead"],
@@ -150,6 +156,8 @@ const HERO = {
     play: "Reproduzir",
     pause: "Pausar",
     restart: "Reiniciar",
+    prev: "Anterior",
+    next: "Próximo",
     processLabel: "Processo contínuo do produto BizUply",
     processSteps: [
       ["Lead in", "Lead chega"],
@@ -189,6 +197,8 @@ const HERO = {
     play: "تشغيل",
     pause: "إيقاف مؤقت",
     restart: "إعادة التشغيل",
+    prev: "السابق",
+    next: "التالي",
     processLabel: "عملية منتج BizUply المستمرة",
     processSteps: [
       ["Lead in", "وصول عميل محتمل"],

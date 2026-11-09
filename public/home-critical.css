@@ -443,7 +443,8 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   min-width: 0;
   pointer-events: auto;
 }
-.hx-hero-frame {
+.hx-hero-frame,
+.hx-hero-stage-inner {
   position: relative;
   z-index: 2;
   overflow: hidden;
@@ -458,7 +459,9 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   content: none;
 }
 .hx-hero-frame img,
-.hx-hero-frame video {
+.hx-hero-frame video,
+.hx-hero-stage-inner img,
+.hx-hero-stage-inner video {
   position: absolute;
   inset: 0;
   display: block;
@@ -516,7 +519,9 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
     margin-top: 1.1rem;
   }
   .hx-hero-frame,
-  [dir="rtl"] .hx-hero-frame {
+  .hx-hero-stage-inner,
+  [dir="rtl"] .hx-hero-frame,
+  [dir="rtl"] .hx-hero-stage-inner {
     position: relative;
     inset: auto;
     right: auto;
@@ -533,7 +538,9 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
     display: none;
   }
   .hx-hero-frame img,
-  .hx-hero-frame video {
+  .hx-hero-frame video,
+  .hx-hero-stage-inner img,
+  .hx-hero-stage-inner video {
     position: absolute;
     inset: 0;
   }

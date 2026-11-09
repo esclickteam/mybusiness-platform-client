@@ -97,7 +97,9 @@ export function heroMediaReady(doc: Document = document): boolean {
   if (!isUsableHero(hero)) return false;
   const shot =
     doc.querySelector<HTMLImageElement>("#root .hx-hero-shot-1") ||
+    doc.querySelector<HTMLImageElement>("#root .hx-hero-stage-inner img") ||
     doc.querySelector<HTMLImageElement>("#root .hx-hero-frame img") ||
+    doc.querySelector<HTMLVideoElement>("#root .hx-theater-video") ||
     doc.querySelector<HTMLVideoElement>("#root .hx-hero-frame video");
   if (!shot) return false;
   if (shot instanceof HTMLImageElement) {
