@@ -11,6 +11,7 @@ import { crmFaqPairs, getCrmCopy, renderCrmPrerender } from "./crmMarketingCopy.
 import { collaborationsPrerender, collaborationsSchemas } from "./collaborationsSeo.mjs";
 import { getCollaborationsCopy } from "../pages/product/collaborations/runtime.js";
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+import { WEBSITE_SCAN } from "./websiteScanStory.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { HOME_SHELL } from "./homeShell.mjs";
 import { STORY } from "./homepageStory.mjs";
@@ -69,10 +70,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/website-scan",
-    title: "AI website scan | Bizuply",
-    description:
-      "An automatic website scan for privacy, security, accessibility and public documents. Start with a free summary. A detailed report is $35 once. An annual plan is $300, shown as $25 a month, and renews yearly unless cancelled.",
-    crumb: "Website scan",
+    title: WEBSITE_SCAN.en.title,
+    description: WEBSITE_SCAN.en.description,
+    crumb: WEBSITE_SCAN.en.crumb,
     lastmod: "2026-11-09",
     changefreq: "monthly",
     priority: "0.8",
@@ -317,6 +317,10 @@ const NOINDEX_PREFIXES = [
   "/store",
   "/whatsapp-api/login",
   "/home-preview",
+  "/compliance/report",
+  "/compliance/account",
+  "/compliance/demo",
+  "/compliance/review",
 ];
 
 export function isSeoDiscoveryPath(pathname) {
@@ -608,6 +612,7 @@ const ABOUT_FAQ = {
 };
 
 function faqItems(path, language) {
+  if (path === "/website-scan") return WEBSITE_SCAN[language]?.faq || WEBSITE_SCAN.en.faq;
   if (path === "/partners") return partnerFaqPairs(language);
   if (path === "/crm") return crmFaqPairs(language);
   if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
@@ -1031,6 +1036,10 @@ function renderSection(section) {
   }
   const parts = [`<h2>${escapeText(section.heading)}</h2>`];
   for (const paragraph of section.paragraphs || []) parts.push(`<p>${escapeText(paragraph)}</p>`);
+  for (const sub of section.subsections || []) {
+    parts.push(`<h3>${escapeText(sub.heading)}</h3>`);
+    for (const paragraph of sub.paragraphs || []) parts.push(`<p>${escapeText(paragraph)}</p>`);
+  }
   if (section.steps?.length) parts.push(`<ol>${section.steps.map((step) => `<li>${escapeText(step)}</li>`).join("")}</ol>`);
   if (section.example?.body) parts.push(`<p><strong>${escapeText(section.example.title || "")}</strong> ${escapeText(section.example.body)}</p>`);
   for (const item of section.mistakes || []) parts.push(`<p><strong>${escapeText(item.problem)}</strong> ${escapeText(item.fix)}</p>`);
@@ -1173,6 +1182,7 @@ export function buildMarketingPrerender(pathname) {
     if (!localized?.h1) return null;
     return renderLocalized(localized, locale, path);
   }
+  if (path === "/website-scan") return renderLocalized(WEBSITE_SCAN.en, "en", path);
   const englishStory = getCoreProductStory(path, "en");
   if (englishStory?.h1) return renderLocalized(englishStory, "en", path);
   const found = findMarketingPage(path);

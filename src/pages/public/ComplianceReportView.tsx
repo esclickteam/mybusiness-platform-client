@@ -267,7 +267,7 @@ export function ComplianceReportView({
           <h2>{hostName(report.url) || report.url}</h2>
         </div>
         <div className="report-sheet__actions">
-          <button type="button" onClick={onPdf}>{copy.pdf}</button>
+          <button type="button" data-action="pdf" onClick={onPdf}>{copy.pdf}</button>
           <Link to="/compliance">{copy.newScan}</Link>
         </div>
       </header>

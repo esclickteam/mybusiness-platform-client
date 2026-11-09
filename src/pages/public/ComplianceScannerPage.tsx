@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
@@ -668,6 +669,7 @@ export default function ComplianceScannerPage() {
   if (location.pathname.endsWith("/compliance/review")) {
     return (
       <main className="scan-product scan-product--report" dir={dir} lang={locale}>
+        <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet>
         <ReviewAccess locale={locale} onUnlocked={() => setReload((value) => value + 1)} />
       </main>
     );
@@ -675,6 +677,7 @@ export default function ComplianceScannerPage() {
 
   return (
     <main className={id ? "scan-product scan-product--report" : "scan-product"} dir={dir} lang={locale}>
+      {id ? <Helmet><meta name="robots" content="noindex, nofollow" /></Helmet> : null}
       {!id && !previewScan && <form onSubmit={startScan}>
       <section className="scan-hero">
         <div className="scan-hero__copy">

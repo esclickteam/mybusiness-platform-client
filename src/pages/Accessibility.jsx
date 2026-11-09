@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
@@ -55,6 +56,9 @@ export default function Accessibility() {
 
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("accessibilityPage.intro")}
+        </p>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-slate-700">
+          <Link to="/website-scan">{locale === "he" ? "בדיקת נגישות אתר" : locale === "es" ? "Revisión de accesibilidad del sitio" : locale === "pt-BR" ? "Verificação de acessibilidade do site" : locale === "ar" ? "فحص إتاحة الموقع" : "Website accessibility check"}</Link>
         </p>
         <LegalDocumentLinks current="/accessibility" />
 

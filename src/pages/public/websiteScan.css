@@ -16,7 +16,7 @@
 .scan-grid, .scan-steps, .scan-prices { display: grid; gap: 0.8rem; }
 .scan-grid { grid-template-columns: repeat(4, 1fr); }
 .scan-steps { grid-template-columns: repeat(4, 1fr); }
-.scan-prices { grid-template-columns: 1fr 1fr; }
+.scan-prices { grid-template-columns: repeat(3, 1fr); }
 .scan-card, .scan-price, .scan-demo, .scan-faq details { background: white; border: 1px solid #e4dcff; padding: 1rem 1.05rem; }
 .scan-card h3, .scan-price h3 { color: #312e81; margin-bottom: 0.35rem; }
 .scan-card p, .scan-price li, .scan-faq p { line-height: 1.55; color: #334155; }
@@ -44,4 +44,26 @@
 @media (max-width: 640px) {
   .scan-hero, .scan-grid, .scan-steps, .scan-prices, .scan-meters { grid-template-columns: 1fr; }
   .scan-product__actions a { width: 100%; }
+}
+.scan-frame { background: #1e1b4b; padding: 0.55rem; border: 1px solid #312e81; }
+.scan-frame__bar { display: flex; align-items: center; gap: 0.35rem; color: #ddd6fe; font-size: 0.78rem; margin-bottom: 0.45rem; }
+.scan-frame__bar span { width: 9px; height: 9px; background: #7c3aed; }
+.scan-frame video, .scan-shot-single img, .scan-shots img { width: 100%; height: auto; display: block; background: white; }
+.scan-frame video.scan-video--phone { display: none; }
+.scan-shots { display: grid; grid-template-columns: 1fr; gap: 0.8rem; }
+.scan-shots button, .scan-lightbox button { border: 0; background: transparent; padding: 0; cursor: zoom-in; }
+.scan-shots figcaption, .scan-frame figcaption, .scan-shot-single figcaption { color: #475569; font-size: 0.92rem; margin-top: 0.35rem; }
+.scan-example { background: white; border: 1px solid #e4dcff; padding: 1rem; }
+.scan-inline-links { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+.scan-cta { display: inline-flex; min-height: 46px; align-items: center; padding: 0 1.1rem; background: #5b2cff; color: white; font-weight: 700; text-decoration: none; }
+.scan-transcript { margin: 0.4rem 0 1rem; }
+.scan-lightbox { position: fixed; inset: 0; background: rgba(15, 10, 40, 0.86); z-index: 80; display: grid; place-items: center; padding: 1.5rem; }
+.scan-lightbox img { max-width: min(1280px, 100%); max-height: 88vh; width: auto; height: auto; }
+.scan-lightbox button { position: absolute; top: 0.6rem; inset-inline-end: 0.6rem; color: white; font-size: 2rem; cursor: pointer; }
+@media (max-width: 860px) {
+  .scan-frame video.scan-video--desk { display: none; }
+  .scan-frame video.scan-video--phone { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scan-card { transition: none; }
 }
