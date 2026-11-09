@@ -15,8 +15,8 @@ import {
 import ProductProcessTheater from "./ProductProcessTheater";
 
 /** Chapter markers for the continuous process film (seconds). */
-const PROCESS_MARKS = [0, 6, 12, 19, 26, 32] as const;
-const PROCESS_SRC = "/demo-media/home/walkthrough/process-full.mp4?v=sketch2";
+const PROCESS_MARKS = [0, 7, 14, 21, 28, 35] as const;
+const PROCESS_SRC = "/demo-media/home/walkthrough/process-full.mp4?v=sketch3";
 const PROCESS_POSTER = "/demo-media/home/walkthrough/process-full.jpg";
 
 function useCopy() {
