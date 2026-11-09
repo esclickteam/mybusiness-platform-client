@@ -8,7 +8,7 @@
 .scan-hero p { font-size: 1.05rem; line-height: 1.65; color: #334155; }
 .scan-product__actions { display: flex; flex-wrap: wrap; gap: 0.7rem; margin: 1.1rem 0 0.6rem; }
 .scan-product__actions a, .scan-price a { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 1.1rem; text-decoration: none; font-weight: 700; }
-.scan-product__actions a:first-child, .scan-price a { background: #5b2cff; color: white; }
+.scan-product__actions a:first-child, .scan-price a, .scan-plans article a { background: #5b2cff; color: white; }
 .scan-product__actions a:last-child { background: white; color: #2a1464; border: 1px solid #c4b5fd; }
 .scan-note { color: #475569; font-size: 0.95rem; }
 .scan-section { padding: 1.4rem 0; }
@@ -16,7 +16,7 @@
 .scan-grid, .scan-steps, .scan-prices { display: grid; gap: 0.8rem; }
 .scan-grid { grid-template-columns: repeat(4, 1fr); }
 .scan-steps { grid-template-columns: repeat(4, 1fr); }
-.scan-prices { grid-template-columns: repeat(3, 1fr); }
+.scan-prices, .scan-plans__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; }
 .scan-card, .scan-price, .scan-demo, .scan-faq details { background: white; border: 1px solid #e4dcff; padding: 1rem 1.05rem; }
 .scan-card h3, .scan-price h3 { color: #312e81; margin-bottom: 0.35rem; }
 .scan-card p, .scan-price li, .scan-faq p { line-height: 1.55; color: #334155; }
@@ -32,17 +32,36 @@
 .scan-meters b { display: block; font-size: 1.5rem; color: #2a1464; }
 .scan-counts { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
 .scan-finding { background: white; border-inline-start: 3px solid #5b2cff; padding: 0.7rem; }
+.scan-price, .scan-plans article { display: flex; flex-direction: column; min-width: 0; min-height: 100%; overflow-wrap: anywhere; }
+.scan-price li, .scan-plans li, .scan-price__extra, .scan-plans small { overflow-wrap: anywhere; }
 .scan-price ul { margin: 0.4rem 0 0.8rem; padding-inline-start: 1.1rem; }
-.scan-price strong { display: block; font-size: 2rem; color: #2a1464; margin: 0.4rem 0; }
-.scan-price em { display: block; color: #6d28d9; font-style: normal; margin-bottom: 0.7rem; }
+.scan-price strong, .scan-plans strong { display: block; font-size: 2.2rem; color: #2a1464; margin: 0.35rem 0; line-height: 1; }
+.scan-price em, .scan-plans em, .scan-price small, .scan-plans small { display: block; color: #5b2cff; font-style: normal; font-weight: 700; }
+.scan-price__extra { min-height: 2.6rem; color: #312e81; }
+.scan-price__badge { align-self: flex-start; background: #5b2cff; color: white; padding: 0.2rem 0.45rem; font-size: 0.78rem; margin-bottom: 0.45rem; }
+.scan-price__badge--empty { visibility: hidden; }
+.scan-price.is-featured, .scan-plans article.is-featured { border: 2px solid #5b2cff; }
+.scan-price a, .scan-plans article a { margin-top: auto; }
 .scan-faq details { margin-bottom: 0.45rem; }
 .scan-faq summary { cursor: pointer; font-weight: 700; color: #2a1464; }
-.scan-account { padding: 2rem 0 3rem; }
-@media (max-width: 900px) {
-  .scan-hero, .scan-grid, .scan-steps, .scan-prices, .scan-meters { grid-template-columns: 1fr 1fr; }
+.scan-account { padding: 2rem 0 3rem; display: grid; gap: 1.2rem; }
+.scan-account__form, .scan-account__summary { display: grid; gap: 0.55rem; background: white; border: 1px solid #e4dcff; padding: 1rem; }
+.scan-account__form input, .scan-account__form select, .scan-account__form button, .scan-account button { border: 1px solid #c4b5fd; border-radius: 0; min-height: 44px; padding: 0 0.7rem; background: white; }
+.scan-account__form button, .scan-account button { background: #5b2cff; color: white; font-weight: 700; }
+.scan-account__choice { display: grid; gap: 0.35rem; }
+.scan-calendar { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
+.scan-calendar li { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; background: white; border: 1px solid #e4dcff; padding: 0.55rem 0.7rem; }
+.scan-progress { height: 10px; background: #ede9fe; }
+.scan-progress span { display: block; height: 100%; background: #5b2cff; }
+.scan-chart { display: flex; align-items: flex-end; gap: 0.45rem; min-height: 140px; }
+.scan-chart div { display: grid; align-items: end; justify-items: center; min-width: 42px; height: 140px; }
+.scan-chart span { display: block; width: 22px; background: #5b2cff; }
+@media (max-width: 1080px) {
+  .scan-hero, .scan-grid, .scan-steps, .scan-meters { grid-template-columns: 1fr 1fr; }
+  .scan-prices, .scan-plans__grid { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 640px) {
-  .scan-hero, .scan-grid, .scan-steps, .scan-prices, .scan-meters { grid-template-columns: 1fr; }
+  .scan-hero, .scan-grid, .scan-steps, .scan-prices, .scan-plans__grid, .scan-meters { grid-template-columns: 1fr; }
   .scan-product__actions a { width: 100%; }
 }
 .scan-frame { background: #1e1b4b; padding: 0.55rem; border: 1px solid #312e81; }

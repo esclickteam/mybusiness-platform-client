@@ -77,6 +77,7 @@ export default function ComplianceScansAdminPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState<Usage | null>(null);
+  const [subscriptions, setSubscriptions] = useState<Array<Record<string, unknown>>>([]);
   const [history, setHistory] = useState<HistoryRow[]>([]);
   const pageSize = 25;
 
@@ -133,6 +134,11 @@ export default function ComplianceScansAdminPage() {
   useEffect(() => {
     load(1);
     loadUsage();
+    const token = localStorage.getItem("token") || "";
+    fetch("/compliance/api/admin/subscriptions", { headers: token ? { Authorization: `Bearer ${token}` } : {} })
+      .then((response) => response.ok ? response.json() : { rows: [] })
+      .then((data) => setSubscriptions(data.rows || []))
+      .catch(() => setSubscriptions([]));
     // The first view uses the current filters. Later searches submit the form.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -272,13 +278,39 @@ export default function ComplianceScansAdminPage() {
                 <td>{count(row.action)}</td>
                 <td>{count(row.missing)}</td>
                 <td>{count(row.unverified)}</td>
-                <td>{row.plan === "annual" || row.plan === "monitor" ? "שנתי" : row.plan === "report" ? "חד־פעמי" : "חינם"}</td>
+                <td>{row.plan === "quarterly" ? "רבעוני" : row.plan === "annual" || row.plan === "monitor" || row.plan === "monthly" ? "חודשי" : row.plan === "report" ? "חד־פעמי" : "חינם"}</td>
                 <td>{row.purchaseStatus === "verified" ? "רכישה מאומתת" : "לא נרכש"}</td>
                 <td className="compliance-admin__actions">
                   <a href={`/he/compliance/report/${row.id}?view=summary`}>דוח ראשוני</a>
                   <a href={`/he/compliance/report/${row.id}`}>דוח מפורט</a>
                   <button type="button" onClick={() => downloadPdf(row.id)}>PDF</button>
                 </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <h2>מנויים</h2>
+      <div className="compliance-admin__table">
+        <table>
+          <thead>
+            <tr>
+              <th>מזהה</th><th>דומיין</th><th>מסלול</th><th>הושלמו</th><th>נותרו</th><th>יום</th><th>הבאה</th><th>מצב</th><th>סיום</th><th>חידוש</th>
+            </tr>
+          </thead>
+          <tbody>
+            {subscriptions.map((row) => (
+              <tr key={`${row.host}-${row.plan}`}>
+                <td>{String(row.userId || "—")}</td>
+                <td>{String(row.host || "—")}</td>
+                <td>{row.plan === "quarterly" ? "רבעוני" : "חודשי"}</td>
+                <td>{String(row.completed ?? "—")}</td>
+                <td>{String(row.remaining ?? "—")}</td>
+                <td>{String(row.scanDay ?? "—")}</td>
+                <td>{String(row.nextAt || "—").slice(0, 10)}</td>
+                <td>{String(row.nextState || "—")}</td>
+                <td>{String(row.periodEnd || "—").slice(0, 10)}</td>
+                <td>{row.renew ? "פעיל" : "כבוי"}</td>
               </tr>
             ))}
           </tbody>

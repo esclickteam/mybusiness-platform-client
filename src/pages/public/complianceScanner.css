@@ -226,12 +226,20 @@
 
 .scan-plans, .scan-free, .scan-monitor, .scan-requirements, .scan-sample { margin: 28px 0; }
 .scan-plans__grid, .scan-requirements { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.scan-plans__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: stretch; }
+.scan-plans article { display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; }
+.scan-plans li, .scan-price__extra { overflow-wrap: anywhere; }
+.scan-plans article a { margin-top: auto; align-self: flex-start; background: #5b2cff; color: white; text-decoration: none; padding: 0.65rem 0.8rem; font-weight: 700; }
+.scan-plans article.is-featured { border-color: #5b2cff; }
+.scan-price__badge { align-self: flex-start; background: #5b2cff; color: white; padding: 0.15rem 0.4rem; font-size: 0.75rem; }
+.scan-price__badge--empty { visibility: hidden; }
 .scan-plans article, .scan-requirements article, .scan-monitor, .scan-sample {
   background: rgba(255,255,255,.72); border: 1px solid rgba(196,181,253,.55); padding: 18px; box-shadow: 0 16px 40px rgba(109,40,217,.06);
 }
 .scan-plans strong { display: block; font-size: 1.6rem; color: #6d28d9; }
 .scan-monitor label { display: block; margin: 10px 0; }
 .scan-monitor input { border: 0; border-bottom: 1px solid rgba(196,181,253,.8); background: transparent; padding: 8px 0; }
+@media (max-width: 1080px) { .scan-plans__grid { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 860px) { .scan-plans__grid, .scan-requirements { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) {
   .scan-start, .scan-types button { animation: none; transition: none; }

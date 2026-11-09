@@ -174,30 +174,119 @@ const SAMPLE = [
   { law: "IS 5568 / WCAG 2.0 AA", country: "IL", status: "statement_seen", severity: "medium", manual: true },
 ];
 
-export function PlanCards({ locale }: { locale: Locale }) {
-  const copy = TEXT[locale] || TEXT.en;
-  const plans = [
-    ["0", copy.free, "", copy.freeLine],
-    ["35", copy.report, copy.once, copy.reportLine],
-    ["300", copy.monitor, copy.month, copy.monitorLine],
+const PRICE: Record<Locale, {
+  heading: string; lede: string; note: string; best: string; yearly: string; once: string; freeCta: string; scanCta: string; dayCta: string;
+  free: string[]; report: string[]; quarter: string[]; month: string[];
+}> = {
+  he: {
+    heading: "בחרו את רמת הבדיקה שמתאימה לאתר שלכם",
+    lede: "מתחילים בסריקה חינמית, ממשיכים לדוח מפורט או בוחרים מעקב אוטומטי לאורך השנה.",
+    note: "המעקב הרבעוני הוא תשלום שנתי אחד של $119, לא $119 בכל רבעון. המעקב החודשי הוא תשלום שנתי אחד של $300. ביטול החידוש משאיר את הסריקות ששולמו. הרכישה אינה פתוחה, ולא רצה סריקת מנוי לפני אימות תשלום.",
+    best: "הכי משתלם לסריקה",
+    yearly: "חיוב שנתי מראש",
+    once: "תשלום חד־פעמי",
+    freeCta: "התחילו סריקה בחינם",
+    scanCta: "לטופס הסריקה",
+    dayCta: "בחרו יום סריקה",
+    free: ["סריקה ראשונית", "ציון האתר", "היקף הבדיקות שהוכרעו", "סיכום ממצאים לפי מצב", "בלי פירוט ממצאים והמלצות", "בלי PDF מלא"],
+    report: ["סריקה אחת", "דוח מפורט", "ממצאים וראיות", "המלצות תיקון", "סדר עדיפויות", "PDF מלא להורדה", "בלי מנוי ובלי חידוש"],
+    quarter: ["ארבע סריקות מלאות בשנה", "סריקה אוטומטית אחת בכל שלושה חודשים", "דוח מפורט ו־PDF בכל סריקה", "אזור אישי והיסטוריית דוחות", "השוואת תוצאות בין סריקות", "חידוש אוטומטי אחת לשנה, ואפשר לבטל אותו"],
+    month: ["12 סריקות מלאות בשנה", "סריקה אוטומטית אחת בכל חודש", "דוח מפורט ו־PDF בכל סריקה", "אזור אישי והיסטוריית דוחות", "השוואת תוצאות", "חידוש אוטומטי אחת לשנה, ואפשר לבטל אותו"],
+  },
+  en: {
+    heading: "Choose how closely to check the site",
+    lede: "Start with a free scan, continue to a detailed report, or choose automatic checks through the year.",
+    note: "Quarterly monitoring is one yearly payment of $119, not $119 each quarter. Monthly monitoring is one yearly payment of $300. Cancelling renewal keeps the scans already paid for. Purchase is not open, and a monitoring scan does not run before payment is verified.",
+    best: "Best value per scan",
+    yearly: "Billed yearly in advance",
+    once: "One-time payment",
+    freeCta: "Start a free scan",
+    scanCta: "Go to the scan form",
+    dayCta: "Choose a scan day",
+    free: ["First scan", "Site score", "Share of checks decided", "Finding counts by status", "No finding details or recommendations", "No full PDF"],
+    report: ["One scan", "Detailed report", "Findings and evidence", "Fix recommendations", "Priority order", "Full PDF download", "No subscription and no renewal"],
+    quarter: ["Four full scans a year", "One automatic scan every three months", "Detailed report and PDF each scan", "Personal area and report history", "Comparison between scans", "Renews once a year, and renewal can be cancelled"],
+    month: ["12 full scans a year", "One automatic scan each month", "Detailed report and PDF each scan", "Personal area and report history", "Result comparison", "Renews once a year, and renewal can be cancelled"],
+  },
+  es: {
+    heading: "Elija el nivel de revisión del sitio",
+    lede: "Empiece con un escaneo gratis, siga con un informe detallado o elija un seguimiento automático durante el año.",
+    note: "El seguimiento trimestral es un pago anual de 119 dólares, no 119 cada trimestre. El mensual es un pago anual de 300 dólares. Cancelar la renovación conserva los escaneos pagados. La compra no está abierta y no hay un escaneo de seguimiento antes de verificar el pago.",
+    best: "Mejor valor por escaneo",
+    yearly: "Cobro anual por adelantado",
+    once: "Pago único",
+    freeCta: "Empezar gratis",
+    scanCta: "Ir al formulario",
+    dayCta: "Elegir el día",
+    free: ["Escaneo inicial", "Puntuación", "Alcance decidido", "Conteos por estado", "Sin detalle ni recomendaciones", "Sin PDF completo"],
+    report: ["Un escaneo", "Informe detallado", "Hallazgos y pruebas", "Recomendaciones", "Orden de prioridad", "PDF completo", "Sin suscripción ni renovación"],
+    quarter: ["Cuatro escaneos al año", "Uno automático cada tres meses", "Informe y PDF en cada uno", "Área personal e historial", "Comparación entre escaneos", "Renovación anual que se puede cancelar"],
+    month: ["12 escaneos al año", "Uno automático cada mes", "Informe y PDF en cada uno", "Área personal e historial", "Comparación de resultados", "Renovación anual que se puede cancelar"],
+  },
+  "pt-BR": {
+    heading: "Escolha o nível de verificação do site",
+    lede: "Comece com uma varredura grátis, siga para um relatório detalhado ou escolha o acompanhamento automático ao longo do ano.",
+    note: "O acompanhamento trimestral é um pagamento anual de 119 dólares, não 119 a cada trimestre. O mensal é um pagamento anual de 300 dólares. Cancelar a renovação mantém as varreduras pagas. A compra não está aberta e nenhuma varredura de acompanhamento começa antes da verificação do pagamento.",
+    best: "Melhor valor por varredura",
+    yearly: "Cobrança anual antecipada",
+    once: "Pagamento único",
+    freeCta: "Começar grátis",
+    scanCta: "Ir ao formulário",
+    dayCta: "Escolher o dia",
+    free: ["Varredura inicial", "Pontuação", "Alcance decidido", "Contagens por estado", "Sem detalhes nem recomendações", "Sem PDF completo"],
+    report: ["Uma varredura", "Relatório detalhado", "Achados e evidências", "Recomendações", "Ordem de prioridade", "PDF completo", "Sem assinatura e sem renovação"],
+    quarter: ["Quatro varreduras por ano", "Uma automática a cada três meses", "Relatório e PDF em cada uma", "Área pessoal e histórico", "Comparação entre varreduras", "Renovação anual que pode ser cancelada"],
+    month: ["12 varreduras por ano", "Uma automática por mês", "Relatório e PDF em cada uma", "Área pessoal e histórico", "Comparação de resultados", "Renovação anual que pode ser cancelada"],
+  },
+  ar: {
+    heading: "اختاروا مستوى الفحص المناسب لموقعكم",
+    lede: "ابدأوا بفحص مجاني، ثم تقرير مفصل، أو متابعة تلقائية على مدار السنة.",
+    note: "المتابعة الربع سنوية دفعة سنوية واحدة قدرها 119 دولارًا، وليست 119 كل ربع. المتابعة الشهرية دفعة سنوية واحدة قدرها 300 دولار. إلغاء التجديد يبقي الفحوصات المدفوعة. الشراء غير مفتوح، ولا يبدأ فحص متابعة قبل التحقق من الدفع.",
+    best: "الأوفر لكل فحص",
+    yearly: "فاتورة سنوية مقدمًا",
+    once: "دفعة واحدة",
+    freeCta: "ابدأوا فحصًا مجانيًا",
+    scanCta: "إلى نموذج الفحص",
+    dayCta: "اختاروا يوم الفحص",
+    free: ["فحص أولي", "درجة الموقع", "نطاق ما حُسم", "ملخص النتائج حسب الحالة", "بلا تفاصيل أو توصيات", "بلا PDF كامل"],
+    report: ["فحص واحد", "تقرير مفصل", "نتائج وأدلة", "توصيات إصلاح", "ترتيب أولويات", "PDF كامل", "بلا اشتراك وبلا تجديد"],
+    quarter: ["أربعة فحوص كاملة في السنة", "فحص تلقائي كل ثلاثة أشهر", "تقرير وPDF في كل فحص", "منطقة شخصية وسجل تقارير", "مقارنة بين الفحوص", "تجديد سنوي يمكن إلغاؤه"],
+    month: ["12 فحصًا كاملًا في السنة", "فحص تلقائي كل شهر", "تقرير وPDF في كل فحص", "منطقة شخصية وسجل تقارير", "مقارنة النتائج", "تجديد سنوي يمكن إلغاؤه"],
+  },
+};
+
+export function PriceBoard({ locale, showHeading = true }: { locale: Locale; showHeading?: boolean }) {
+  const copy = PRICE[locale] || PRICE.en;
+  const cards = [
+    { key: "free", name: locale === "he" ? "סריקה ראשונית בחינם" : locale === "es" ? "Escaneo inicial gratis" : locale === "pt-BR" ? "Varredura inicial grátis" : locale === "ar" ? "فحص أولي مجاني" : "Free first scan", price: "$0", unit: "", extra: "", items: copy.free, href: "/compliance", cta: copy.freeCta, featured: false },
+    { key: "report", name: locale === "he" ? "דוח מלא חד־פעמי" : locale === "es" ? "Informe completo único" : locale === "pt-BR" ? "Relatório completo avulso" : locale === "ar" ? "تقرير كامل لمرة واحدة" : "One-time full report", price: "$35", unit: copy.once, extra: "", items: copy.report, href: "/compliance", cta: copy.scanCta, featured: false },
+    { key: "quarter", name: locale === "he" ? "מעקב רבעוני" : locale === "es" ? "Seguimiento trimestral" : locale === "pt-BR" ? "Acompanhamento trimestral" : locale === "ar" ? "متابعة ربع سنوية" : "Quarterly monitoring", price: "$119", unit: copy.yearly, extra: locale === "he" ? "$29.75 לסריקה — ארבע סריקות בשנה" : locale === "es" ? "29,75 $ por escaneo — cuatro al año" : locale === "pt-BR" ? "US$ 29,75 por varredura — quatro por ano" : locale === "ar" ? "29.75 دولارًا للفحص — أربعة فحوص في السنة" : "$29.75 per scan — four scans a year", items: copy.quarter, href: "/compliance/account", cta: copy.dayCta, featured: false },
+    { key: "month", name: locale === "he" ? "מעקב חודשי" : locale === "es" ? "Seguimiento mensual" : locale === "pt-BR" ? "Acompanhamento mensal" : locale === "ar" ? "متابعة شهرية" : "Monthly monitoring", price: "$300", unit: copy.yearly, extra: locale === "he" ? "$25 לסריקה — 12 סריקות בשנה" : locale === "es" ? "25 $ por escaneo — 12 al año" : locale === "pt-BR" ? "US$ 25 por varredura — 12 por ano" : locale === "ar" ? "25 دولارًا للفحص — 12 فحصًا في السنة" : "$25 per scan — 12 scans a year", items: copy.month, href: "/compliance/account", cta: copy.dayCta, featured: true },
   ];
   return (
     <section className="scan-plans">
-      <h2>{copy.plans}</h2>
-      <div className="scan-plans__grid">
-        {plans.map(([price, name, unit, line]) => (
-          <article key={name}>
-            <b>{name}</b>
-            <strong>{price === "0" ? copy.free : `$${price}`}</strong>
-            <small>{unit}</small>
-            <p>{line}</p>
+      {showHeading ? <h2>{copy.heading}</h2> : null}
+      {showHeading ? <p>{copy.lede}</p> : null}
+      <div className="scan-plans__grid scan-prices">
+        {cards.map((card) => (
+          <article className={card.featured ? "is-featured" : undefined} key={card.key}>
+            {card.featured ? <em className="scan-price__badge">{copy.best}</em> : <em className="scan-price__badge scan-price__badge--empty" />}
+            <b>{card.name}</b>
+            <strong>{card.price}</strong>
+            <small>{card.unit}</small>
+            {card.extra ? <em className="scan-price__extra">{card.extra}</em> : <em className="scan-price__extra" />}
+            <ul>{card.items.map((item) => <li key={item}>{item}</li>)}</ul>
+            <Link to={card.href}>{card.cta}</Link>
           </article>
         ))}
       </div>
-      <p>{copy.priceNote}</p>
-      <p>{copy.capacity}</p>
+      <p>{copy.note}</p>
     </section>
   );
+}
+
+export function PlanCards({ locale }: { locale: Locale }) {
+  return <PriceBoard locale={locale} />;
 }
 
 const FREE: Record<Locale, Record<string, string>> = {
