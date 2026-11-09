@@ -36,9 +36,11 @@ export default function HeaderView({
   const accountPath =
     user?.role === "partner"
       ? "/partner/dashboard"
-      : user?.role === "business" && !user?.hasAccess
-        ? businessNoAccessPath(user)
-        : "/dashboard";
+      : user?.role === "compliance_customer"
+        ? "/compliance/account"
+        : user?.role === "business" && !user?.hasAccess
+          ? businessNoAccessPath(user)
+          : "/dashboard";
 
   const isDashboard =
     location.pathname.includes("/dashboard") ||
@@ -141,7 +143,11 @@ export default function HeaderView({
                   >
                     {group.links.map(([to, label, blurb]) => (
                       <Link key={to} to={to} onClick={() => setOpenGroup(null)}>
-                        {group.id === "industries" ? <IndustryMark path={to} /> : null}
+                        {to === "/website-scan" ? (
+                          <svg className="site-nav__shield" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                            <path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 8.4 8 9.5 4.6-1.1 8-4.5 8-9.5V5l-8-3Z" />
+                          </svg>
+                        ) : group.id === "industries" ? <IndustryMark path={to} /> : null}
                         <span>
                           <strong>{label}</strong>
                           {blurb ? <small>{blurb}</small> : null}
