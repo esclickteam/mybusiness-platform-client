@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePathCore.mjs";
 import { WEBSITE_SCAN } from "../../lib/websiteScanStory.mjs";
+import { PriceBoard } from "./ComplianceCommercial";
 import "./websiteScan.css";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
@@ -191,13 +192,7 @@ export function WebsiteScanPage() {
               </figure>
             )}
             {index === 5 && <ExampleCard locale={locale} flag={copy.exampleFlag} />}
-            {index === 8 && (
-              <div className="scan-prices">
-                <article className="scan-price"><h3>{locale === "he" ? "סריקה ראשונית — חינם" : locale === "es" ? "Escaneo inicial — gratis" : locale === "pt-BR" ? "Varredura inicial — grátis" : locale === "ar" ? "فحص أولي — مجانًا" : "First scan — free"}</h3><strong>$0</strong><Link to="/compliance">{locale === "he" ? "סרקו בחינם" : copy.primary}</Link></article>
-                <article className="scan-price"><h3>{locale === "he" ? "דוח מלא — $35" : locale === "es" ? "Informe completo — $35" : locale === "pt-BR" ? "Relatório completo — $35" : locale === "ar" ? "تقرير كامل — $35" : "Full report — $35"}</h3><strong>$35</strong><Link to="/compliance">{copy.scanCta}</Link></article>
-                <article className="scan-price"><h3>{locale === "he" ? "תוכנית שנתית — $300" : locale === "es" ? "Plan anual — $300" : locale === "pt-BR" ? "Plano anual — $300" : locale === "ar" ? "خطة سنوية — $300" : "Annual plan — $300"}</h3><strong>$300</strong><em>$25</em><p>{locale === "he" ? "מתחדש אוטומטית מדי שנה. ביטול החידוש משאיר את מה ששולם. הרכישה אינה פתוחה." : locale === "es" ? "Se renueva cada año. Cancelar la renovación conserva lo pagado. La compra no está abierta." : locale === "pt-BR" ? "Renova todo ano. Cancelar a renovação mantém o que foi pago. A compra não está aberta." : locale === "ar" ? "يتجدد كل سنة. إلغاء التجديد يبقي ما دُفع. الشراء غير مفتوح." : "Renews each year. Cancelling renewal keeps what was paid. Purchase is not open."}</p></article>
-              </div>
-            )}
+            {index === 8 && <PriceBoard locale={locale} showHeading={false} />}
             {index === 9 && <p><Link className="scan-cta" to="/compliance">{copy.closeCta}</Link></p>}
           </section>
         ))}
@@ -218,24 +213,4 @@ export function WebsiteScanPage() {
   );
 }
 
-export function ComplianceAccountPage() {
-  const { i18n } = useTranslation();
-  const { locale, copy } = storyOf(i18n.language);
-  const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
-  return (
-    <article className="scan-product" dir={dir} lang={locale}>
-      <Helmet>
-        <title>{copy.crumb}</title>
-        <meta name="robots" content="noindex, nofollow" />
-      </Helmet>
-      <div className="scan-product__wrap scan-account">
-        <h1>{copy.crumb}</h1>
-        <p>{copy.note}</p>
-        <div className="scan-product__actions">
-          <Link to="/website-scan">{copy.watch}</Link>
-          <Link to="/compliance">{copy.primary}</Link>
-        </div>
-      </div>
-    </article>
-  );
-}
+export { ComplianceAccountPage } from "./ComplianceAccountPage";
