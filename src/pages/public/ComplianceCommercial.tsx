@@ -6,15 +6,15 @@ type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
 const TEXT: Record<Locale, Record<string, string>> = {
   he: {
     plans: "שלוש חבילות",
-    priceNote: "המחיר מוצג בשקלים. Lemon Squeezy מחייב בדולר לפי שער ההמרה, לא בשקלים. הסליקה כבויה ולא מתבצע חיוב.",
+    priceNote: "הרכישה אינה פעילה כרגע ולא מתבצע חיוב. המנוי השנתי מחויב $300 מראש ומתחדש אוטומטית מדי שנה. ביטול החידוש משאיר את הסריקות עד סוף התקופה ששולמה.",
     free: "חינם",
     report: "דוח מלא",
-    monitor: "ניטור חודשי",
-    once: "לסריקה",
-    month: "לחודש",
+    monitor: "מנוי שנתי",
+    once: "חד־פעמי",
+    month: "לשנה · $25 לחודש",
     freeLine: "ציון של מה שנבדק, ממצאים חסרים וקטגוריות. בלי ציטוטים, סעיפים או PDF.",
     reportLine: "הדוח שנשמר, כולל מקור, ציטוט, חומרה והמלצה. בלי אישור עמידה בחוק.",
-    monitorLine: "דוח מלא, סריקה חודשית לאתר אחד, היסטוריה והתראה רק על מקור שאומת.",
+    monitorLine: "12 סריקות, אחת בכל חודש, דוח מלא ו־PDF לכל סריקה. הסריקה שלא נוצלה אינה עוברת לחודש הבא.",
     checked: "ציון הבדיקות שהושלמו",
     coverage: "כיסוי בדיקות",
     lowCoverage: "הכיסוי נמוך. הציון חלקי ואינו מייצג בדיקות שלא הושלמו.",
@@ -58,15 +58,15 @@ const TEXT: Record<Locale, Record<string, string>> = {
   },
   en: {
     plans: "Three plans",
-    priceNote: "The price is shown in shekels. Lemon Squeezy charges the USD equivalent, not shekels. Checkout is off and nothing is charged.",
+    priceNote: "Purchase is not open and nothing is charged. The annual plan is $300 paid up front and renews each year. Cancelling renewal keeps the scans until the paid period ends.",
     free: "Free",
     report: "Full report",
-    monitor: "Monthly monitoring",
-    once: "per scan",
-    month: "per month",
+    monitor: "Annual plan",
+    once: "one time",
+    month: "per year · $25 a month",
     freeLine: "A score of what was checked, missing documents and categories. No quotes, sections or PDF.",
     reportLine: "The stored report, with source, quote, severity and a recommendation. No compliance approval.",
-    monitorLine: "A full report, one monthly scan for one site, history, and an alert only for a verified source.",
+    monitorLine: "12 scans, one each month, with a full report and PDF for each scan. An unused scan does not roll into the next month.",
     checked: "Score of completed checks",
     coverage: "Check coverage",
     lowCoverage: "Coverage is low. The score is partial and does not represent unfinished checks.",
@@ -113,11 +113,11 @@ const TEXT: Record<Locale, Record<string, string>> = {
     capacity: "The chosen day is a preference. The scan runs in a window during the month, subject to capacity, and is not promised for a date or time.",
   },
   es: {
-    plans: "Tres planes", priceNote: "El precio se muestra en séqueles. Lemon Squeezy cobra el equivalente en USD, no en séqueles. El cobro está apagado.",
-    free: "Gratis", report: "Informe completo", monitor: "Seguimiento mensual", once: "por análisis", month: "al mes",
+    plans: "Tres planes", priceNote: "La compra no está abierta y no hay cobro. El plan anual son 300 dólares por adelantado y se renueva cada año. Cancelar la renovación mantiene los análisis hasta el final del período pagado.",
+    free: "Gratis", report: "Informe completo", monitor: "Plan anual", once: "pago único", month: "al año · 25 al mes",
     freeLine: "Puntuación de lo comprobado, documentos ausentes y categorías. Sin citas, artículos ni PDF.",
     reportLine: "El informe guardado, con fuente, cita, gravedad y recomendación. Sin aprobación legal.",
-    monitorLine: "Informe completo, un análisis mensual para un sitio, historial y aviso solo con fuente verificada.",
+    monitorLine: "12 análisis, uno cada mes, con informe completo y PDF. Un análisis no usado no pasa al mes siguiente.",
     checked: "Puntuación de lo comprobado", coverage: "Cobertura", lowCoverage: "La cobertura es baja. La puntuación es parcial.", missing: "Documentos ausentes", critical: "Hallazgos críticos en texto leído",
     other: "Otros hallazgos", incomplete: "Comprobaciones incompletas", categories: "Categorías", accessibility: "Accesibilidad", security: "Seguridad", privacy: "Privacidad", cookies: "Cookies", when: "Fecha y país",
     locked: "El informe completo permanece en el servidor hasta verificar un pago.",
@@ -131,11 +131,11 @@ const TEXT: Record<Locale, Record<string, string>> = {
     capacity: "El día elegido es una preferencia. La ejecución es una ventana durante el mes, sujeta a la capacidad, y no promete una fecha ni una hora.",
   },
   "pt-BR": {
-    plans: "Três planos", priceNote: "O preço aparece em shekels. A Lemon Squeezy cobra o equivalente em USD, não em shekels. A cobrança está desligada.",
-    free: "Grátis", report: "Relatório completo", monitor: "Monitoramento mensal", once: "por análise", month: "por mês",
+    plans: "Três planos", priceNote: "A compra não está aberta e nada é cobrado. O plano anual é de 300 dólares antecipados e renova todo ano. Cancelar a renovação mantém as análises até o fim do período pago.",
+    free: "Grátis", report: "Relatório completo", monitor: "Plano anual", once: "pagamento único", month: "por ano · 25 por mês",
     freeLine: "Pontuação do que foi verificado, documentos ausentes e categorias. Sem citações, artigos ou PDF.",
     reportLine: "O relatório salvo, com fonte, citação, gravidade e recomendação. Sem aprovação legal.",
-    monitorLine: "Relatório completo, uma análise mensal para um site, histórico e alerta só com fonte verificada.",
+    monitorLine: "12 análises, uma por mês, com relatório completo e PDF. Uma análise não usada não passa para o mês seguinte.",
     checked: "Pontuação do que foi verificado", coverage: "Cobertura", lowCoverage: "A cobertura está baixa. A pontuação é parcial.", missing: "Documentos ausentes", critical: "Achados críticos no texto lido",
     other: "Outros achados", incomplete: "Verificações incompletas", categories: "Categorias", accessibility: "Acessibilidade", security: "Segurança", privacy: "Privacidade", cookies: "Cookies", when: "Data e país",
     locked: "O relatório completo fica no servidor até a verificação de um pagamento.",
@@ -149,11 +149,11 @@ const TEXT: Record<Locale, Record<string, string>> = {
     capacity: "O dia escolhido é uma preferência. A execução é uma janela durante o mês, sujeita à capacidade, e não promete data nem hora.",
   },
   ar: {
-    plans: "ثلاث باقات", priceNote: "السعر معروض بالشيكل. Lemon Squeezy تخصم ما يعادله بالدولار، وليس بالشيكل. التحصيل متوقف.",
-    free: "مجاني", report: "تقرير كامل", monitor: "مراقبة شهرية", once: "لكل فحص", month: "شهريًا",
+    plans: "ثلاث باقات", priceNote: "الشراء غير مفتوح الآن ولا يتم أي تحصيل. الاشتراك السنوي 300 دولار مقدمًا ويتجدد كل سنة. إلغاء التجديد يبقي الفحوصات حتى نهاية الفترة المدفوعة.",
+    free: "مجاني", report: "تقرير كامل", monitor: "اشتراك سنوي", once: "دفعة واحدة", month: "سنويًا · 25 شهريًا",
     freeLine: "درجة ما تم فحصه، والمستندات الناقصة، والفئات. بلا اقتباسات أو مواد أو PDF.",
     reportLine: "التقرير المحفوظ، مع المصدر والاقتباس والشدة والتوصية. بلا اعتماد امتثال.",
-    monitorLine: "تقرير كامل، وفحص شهري لموقع واحد، وسجل، وتنبيه فقط لمصدر تم التحقق منه.",
+    monitorLine: "12 فحصًا، فحص واحد كل شهر، مع تقرير كامل وPDF. الفحص غير المستخدم لا ينتقل إلى الشهر التالي.",
     checked: "درجة الفحوص المكتملة", coverage: "تغطية الفحص", lowCoverage: "التغطية منخفضة. الدرجة جزئية.", missing: "مستندات ناقصة", critical: "نتائج حرجة في نص تمت قراءته",
     other: "نتائج أخرى", incomplete: "فحوص لم تكتمل", categories: "فئات", accessibility: "إتاحة", security: "أمن", privacy: "خصوصية", cookies: "ملفات تعريف الارتباط", when: "التاريخ والدولة",
     locked: "يبقى التقرير الكامل على الخادم إلى أن يتم التحقق من عملية دفع.",
@@ -179,7 +179,7 @@ export function PlanCards({ locale }: { locale: Locale }) {
   const plans = [
     ["0", copy.free, "", copy.freeLine],
     ["35", copy.report, copy.once, copy.reportLine],
-    ["99", copy.monitor, copy.month, copy.monitorLine],
+    ["300", copy.monitor, copy.month, copy.monitorLine],
   ];
   return (
     <section className="scan-plans">
@@ -188,7 +188,7 @@ export function PlanCards({ locale }: { locale: Locale }) {
         {plans.map(([price, name, unit, line]) => (
           <article key={name}>
             <b>{name}</b>
-            <strong>{price === "0" ? copy.free : `₪${price}`}</strong>
+            <strong>{price === "0" ? copy.free : `$${price}`}</strong>
             <small>{unit}</small>
             <p>{line}</p>
           </article>
