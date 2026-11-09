@@ -11,6 +11,11 @@ import {
   STATUS_LABELS,
 } from "./copy";
 import { buildOwnerReviewFallback } from "./ownerReviewGate";
+import {
+  blockerLabelHe,
+  buildAttestationEvidence,
+  gateStepStatusHe,
+} from "./ownerReviewLabels";
 
 type Props = {
   onError: (msg: string) => void;
@@ -391,7 +396,9 @@ export default function OutreachCenter({
                             ownerGateLabel(c.ownerGateStatus || c.ownerReview?.gateKey) ||
                             "—"}
                         </span>
-                        <div className="gp-muted">{c.businessEmail || ""}</div>
+                        <div className="gp-muted gp-ltr" dir="ltr">
+                          {c.businessEmail || ""}
+                        </div>
                         <button
                           type="button"
                           className="gp-btn gp-btn--review"
@@ -410,7 +417,9 @@ export default function OutreachCenter({
                       ]
                         .filter(Boolean)
                         .join(" · ") || "אין"}
-                      <div className="gp-muted">{c.businessEmail || ""}</div>
+                      <div className="gp-muted gp-ltr" dir="ltr">
+                        {c.businessEmail || ""}
+                      </div>
                     </td>
                     <td className="gp-desktop-only">
                       <span className={gateClass(c.ownerGateStatus || c.ownerReview?.gateKey)}>
@@ -467,7 +476,9 @@ export default function OutreachCenter({
                 <h2>בדיקה ואישור · {active.companyName}</h2>
                 <p className="gp-muted" style={{ margin: "6px 0 0" }}>
                   {active.countryCode || "—"} · {statusLabel(active.recruitmentStatus)} ·{" "}
-                  {active.businessEmail || "ללא אימייל"}
+                  <span className="gp-ltr" dir="ltr">
+                    {active.businessEmail || "ללא אימייל"}
+                  </span>
                 </p>
                 {review ? (
                   <span className={gateClass(review.gateKey)} style={{ marginTop: 8 }}>
@@ -483,17 +494,34 @@ export default function OutreachCenter({
             {review ? (
               <div className="gp-section gp-section--review">
                 <h3>מסך בדיקת בעלים</h3>
-
+                {(() => {
+                  const evidence = buildAttestationEvidence(review);
+                  const messageApproved =
+                    preview?.message?.status === "approved" ||
+                    Boolean(review.ownerAttestationRecorded && preview?.message?.compliance?.allowed);
+                  return (
+                    <>
                 <dl className="gp-dl">
                   <dt>נמען</dt>
                   <dd>
                     {review.recipient?.toName || "—"}
-                    <div className="gp-muted">{review.recipient?.toEmail || "—"}</div>
+                    <div className="gp-muted gp-ltr" dir="ltr">
+                      {review.recipient?.toEmail || "—"}
+                    </div>
+                    <p className="gp-note">
+                      כתובת מייל עסקית שפורסמה באתר אינה בהכרח כתובת אישית מאומתת של איש הקשר.
+                    </p>
                   </dd>
                   <dt>מקור כתובת המייל</dt>
                   <dd>
                     {review.recipient?.emailSource ? (
-                      <a href={review.recipient.emailSource} target="_blank" rel="noreferrer">
+                      <a
+                        className="gp-ltr"
+                        dir="ltr"
+                        href={review.recipient.emailSource}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         {review.recipient.emailSource}
                       </a>
                     ) : (
@@ -503,21 +531,25 @@ export default function OutreachCenter({
                       {[review.recipient?.emailMethod, review.recipient?.emailClass]
                         .filter(Boolean)
                         .join(" · ") || ""}
-                      {review.recipient?.recipientNote
-                        ? ` · ${review.recipient.recipientNote}`
-                        : ""}
                     </div>
+                    {review.recipient?.recipientNote ? (
+                      <div className="gp-muted" style={{ marginTop: 4 }}>
+                        {review.recipient.recipientNote}
+                      </div>
+                    ) : null}
                   </dd>
                   <dt>כתובת Firstbase מאושרת לספק</dt>
                   <dd>
-                    {(review.firstbaseAddress?.lines || []).map((line: string) => (
-                      <div key={line}>{line}</div>
-                    ))}
+                    <div className="gp-ltr gp-address" dir="ltr">
+                      {(review.firstbaseAddress?.lines || []).map((line: string) => (
+                        <div key={line}>{line}</div>
+                      ))}
+                    </div>
                     <div className="gp-muted" style={{ marginTop: 6 }}>
                       {review.firstbaseAddress?.note}
                     </div>
-                    <div className="gp-muted">
-                      ספק: {review.firstbaseAddress?.agentName || "—"} ·{" "}
+                    <div className="gp-muted gp-ltr" dir="ltr" style={{ marginTop: 4 }}>
+                      vendor={review.firstbaseAddress?.agentName || "—"} ·{" "}
                       {review.firstbaseAddress?.approvedAt || "—"} · commercialFooterApproved=
                       {review.firstbaseAddress?.commercialFooterApproved ? "true" : "false"} (
                       {review.firstbaseAddress?.commercialFooterApprovedMeaning})
@@ -525,18 +557,21 @@ export default function OutreachCenter({
                   </dd>
                 </dl>
 
-                <h4 className="gp-subhead">סטטוס בדיקות כשירות</h4>
+                <h4 className="gp-subhead">סטטוס בדיקות כשירות (טכני בלבד)</h4>
+                <p className="gp-note">
+                  רשימה זו מתארת ממצאים טכניים. היא אינה אישור משפטי ואינה מחליפה הצהרת בעלים.
+                </p>
                 <ul className="gp-checklist">
                   <li>
-                    מייל פורסם בציבור:{" "}
+                    מייל עסקי פורסם בציבור:{" "}
                     {review.fitness?.emailPubliclyPublished ? "כן" : "לא / לא ידוע"}
                   </li>
                   <li>
-                    קישור אדם↔תיבה הוכח:{" "}
+                    קישור אדם↔תיבה אישית הוכח:{" "}
                     {review.fitness?.personLinkedToMailbox ? "כן" : "לא"}
                   </li>
                   <li>
-                    כיתוב UNSUBSCRIBE בטיוטה:{" "}
+                    כיתוב הסרה בטיוטה:{" "}
                     {review.fitness?.unsubscribeInDraft ? "כן" : "חסר"}
                   </li>
                   <li>
@@ -547,80 +582,186 @@ export default function OutreachCenter({
                     {review.fitness?.firstbaseVendorPermission ? "כן" : "לא"}
                   </li>
                   <li>
-                    שולח רשמי: {review.fitness?.senderIdentity || "—"}
+                    שולח רשמי:{" "}
+                    <span className="gp-ltr" dir="ltr">
+                      {review.fitness?.senderIdentity || "—"}
+                    </span>
                   </li>
                   <li>
                     סיווג תיבה / אספקה:{" "}
-                    {[review.fitness?.mailboxClass, review.fitness?.deliverability]
-                      .filter(Boolean)
-                      .join(" · ") || "—"}
+                    <span className="gp-ltr" dir="ltr">
+                      {[review.fitness?.mailboxClass, review.fitness?.deliverability]
+                        .filter(Boolean)
+                        .join(" · ") || "—"}
+                    </span>
                     {review.fitness?.manualVerified ? " · אומת ידנית" : " · לא אומת ידנית"}
                   </li>
                 </ul>
 
                 <h4 className="gp-subhead">נושא ותוכן מלא</h4>
-                <div className="gp-preview-box">
-                  <strong>נושא:</strong> {draftSubject || review.draft?.subject || "—"}
+                <div className="gp-preview-box gp-preview-box--ltr" dir="ltr">
+                  <div className="gp-mail-subject">
+                    <span className="gp-mail-label">Subject</span>
+                    <div>{draftSubject || review.draft?.subject || "—"}</div>
+                  </div>
                   <div
-                    style={{ marginTop: 10 }}
+                    className="gp-mail-body"
                     dangerouslySetInnerHTML={{
                       __html: draftHtml || review.draft?.bodyHtml || "<p>—</p>",
                     }}
                   />
+                  <p className="gp-mail-hint">
+                    Full draft including signature and unsubscribe — display only; content not edited
+                    here unless you save below.
+                  </p>
                 </div>
 
-                <h4 className="gp-subhead">אישור נוסח נפרד</h4>
-                <p className="gp-muted">
-                  {review.needsCopyApproval
-                    ? review.marketingCopyApproved
-                      ? "נוסח השיווק אושר על ידי הבעלים. אינו כולל הצהרה או הרשאת שליחה."
-                      : "נדרש אישור נוסח מפורש לפני הצהרת בעלים (חברות הרחבה / שלא אושרו בניסוח)."
-                    : "נוסח זה כבר מסומן כמאושר (טייס / אישור קודם). ניתן לאשר מחדש במידת הצורך."}
-                </p>
-                <div className="gp-actions gp-actions--sticky">
-                  <button
-                    type="button"
-                    className="gp-btn"
-                    disabled={
-                      busy ||
-                      !preview?.message?._id ||
-                      preview.message.status === "sent" ||
-                      Boolean(review.marketingCopyApproved)
-                    }
-                    onClick={() => void doApproveCopy()}
-                  >
-                    {review.marketingCopyApproved ? "נוסח אושר" : "אישור נוסח שיווקי"}
-                  </button>
-                </div>
+                <div className="gp-gate-steps">
+                  <div className="gp-gate-step">
+                    <div className="gp-gate-step__head">
+                      <h4>1. אישור נוסח</h4>
+                      <span
+                        className={
+                          review.marketingCopyApproved ? "gp-gate gp-gate--ready" : "gp-gate gp-gate--copy"
+                        }
+                      >
+                        {gateStepStatusHe(
+                          Boolean(review.marketingCopyApproved),
+                          "ממתין לאישור נוסח"
+                        )}
+                      </span>
+                    </div>
+                    <p className="gp-muted">
+                      {review.needsCopyApproval
+                        ? review.marketingCopyApproved
+                          ? "נוסח השיווק אושר. שלב זה אינו כולל הצהרת בעלים ואינו מאשר שליחה."
+                          : "נדרש אישור נוסח מפורש לפני הצהרת בעלים."
+                        : "נוסח זה מסומן כמאושר (טייס / אישור קודם)."}
+                    </p>
+                    <div className="gp-actions gp-actions--sticky">
+                      <button
+                        type="button"
+                        className="gp-btn"
+                        disabled={
+                          busy ||
+                          !preview?.message?._id ||
+                          preview.message.status === "sent" ||
+                          Boolean(review.marketingCopyApproved)
+                        }
+                        onClick={() => void doApproveCopy()}
+                      >
+                        {review.marketingCopyApproved ? "נוסח אושר" : "אישור נוסח שיווקי"}
+                      </button>
+                    </div>
+                  </div>
 
-                <h4 className="gp-subhead">הצהרת Attestation ידנית</h4>
-                <label className="gp-attest">
-                  <input
-                    type="checkbox"
-                    checked={attest}
-                    onChange={(e) => setAttest(e.target.checked)}
-                  />
-                  <span>
-                    אני מאשר/ת ידנית שיש בסיס חוקי לפנייה למועמד זה. פרסום אימייל באתר אינו הסכמה
-                    כשלעצמו. הצהרה זו אינה מאשרת שליחה חיה ואינה משנה את מתגי הבטיחות (SEND=0 /
-                    DRY_RUN=1).
-                  </span>
-                </label>
-                <div className="gp-actions gp-actions--sticky">
-                  <button
-                    type="button"
-                    className="gp-btn gp-btn--review"
-                    disabled={
-                      busy ||
-                      !preview?.message?._id ||
-                      preview.message.status === "sent" ||
-                      (review.needsCopyApproval && !review.marketingCopyApproved) ||
-                      !attest
-                    }
-                    onClick={() => void doApprove()}
-                  >
-                    אישור פנייה לאחר הצהרה
-                  </button>
+                  <div className="gp-gate-step">
+                    <div className="gp-gate-step__head">
+                      <h4>2. הצהרת בעלים</h4>
+                      <span
+                        className={
+                          review.ownerAttestationRecorded
+                            ? "gp-gate gp-gate--ready"
+                            : "gp-gate gp-gate--attest"
+                        }
+                      >
+                        {gateStepStatusHe(
+                          Boolean(review.ownerAttestationRecorded),
+                          "ממתין להצהרת בעלים"
+                        )}
+                      </span>
+                    </div>
+                    <p className="gp-note">
+                      בדיקות טכניות אינן אישור משפטי. ההצהרה היא החלטה ידנית של הבעלים בלבד.
+                    </p>
+                    <div className="gp-evidence">
+                      <h5>מה אומת בפועל</h5>
+                      <ul>
+                        {evidence.verified.map((item) => (
+                          <li key={item.id}>
+                            <strong>{item.labelHe}</strong>
+                            {item.detailHe ? (
+                              <div className="gp-muted">{item.detailHe}</div>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                      <h5>מה עדיין לא אומת</h5>
+                      <ul>
+                        {evidence.notVerified.length === 0 ? (
+                          <li className="gp-muted">אין פריטים פתוחים בקטגוריה זו.</li>
+                        ) : (
+                          evidence.notVerified.map((item) => (
+                            <li key={item.id}>
+                              <strong>{item.labelHe}</strong>
+                              {item.detailHe ? (
+                                <div className="gp-muted">{item.detailHe}</div>
+                              ) : null}
+                            </li>
+                          ))
+                        )}
+                      </ul>
+                      <h5>מה נדרש להחלטת הבעלים</h5>
+                      <ul>
+                        {evidence.ownerDecision.map((item) => (
+                          <li key={item.id}>
+                            <strong>{item.labelHe}</strong>
+                            {item.detailHe ? (
+                              <div className="gp-muted">{item.detailHe}</div>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <label className="gp-attest">
+                      <input
+                        type="checkbox"
+                        checked={attest}
+                        onChange={(e) => setAttest(e.target.checked)}
+                      />
+                      <span>
+                        אני מאשר/ת ידנית שיש בסיס חוקי לפנייה למועמד זה. פרסום אימייל באתר אינו
+                        הסכמה כשלעצמו, ואינו מוכיח תיבה אישית מאומתת. הצהרה זו אינה מאשרת שליחה
+                        חיה ואינה משנה את מתגי הבטיחות (SEND=0 / DRY_RUN=1).
+                      </span>
+                    </label>
+                  </div>
+
+                  <div className="gp-gate-step">
+                    <div className="gp-gate-step__head">
+                      <h4>3. אישור הודעה לשליחה עתידית</h4>
+                      <span
+                        className={
+                          messageApproved ? "gp-gate gp-gate--ready" : "gp-gate gp-gate--blocked"
+                        }
+                      >
+                        {gateStepStatusHe(Boolean(messageApproved), "ממתין לאישור הודעה")}
+                      </span>
+                    </div>
+                    <p className="gp-muted">
+                      אישור ההודעה שומר אותה כמאושרת במערכת בלבד. שליחה חיה נשארת חסומה כל עוד
+                      SEND=0 ו־DRY_RUN=1.
+                    </p>
+                    <div className="gp-actions gp-actions--sticky">
+                      <button
+                        type="button"
+                        className="gp-btn gp-btn--review"
+                        disabled={
+                          busy ||
+                          !preview?.message?._id ||
+                          preview.message.status === "sent" ||
+                          (review.needsCopyApproval && !review.marketingCopyApproved) ||
+                          !attest ||
+                          Boolean(messageApproved)
+                        }
+                        onClick={() => void doApprove()}
+                      >
+                        {messageApproved
+                          ? "ההודעה אושרה לשליחה עתידית"
+                          : "אישור הודעה לשליחה עתידית"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
                 <h4 className="gp-subhead">חסימות שנותרו</h4>
@@ -629,10 +770,18 @@ export default function OutreachCenter({
                 ) : (
                   <ul className="gp-blockers">
                     {(review.remainingBlockers || []).map((b: string) => (
-                      <li key={b}>{b}</li>
+                      <li key={b}>
+                        <span>{blockerLabelHe(b)}</span>
+                        <code className="gp-blocker-code gp-ltr" dir="ltr">
+                          {b}
+                        </code>
+                      </li>
                     ))}
                   </ul>
                 )}
+                    </>
+                  );
+                })()}
               </div>
             ) : null}
 
@@ -644,7 +793,13 @@ export default function OutreachCenter({
                 <dt>אתר</dt>
                 <dd>
                   {active.website ? (
-                    <a href={active.website} target="_blank" rel="noreferrer">
+                    <a
+                      className="gp-ltr"
+                      dir="ltr"
+                      href={active.website}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       {active.website}
                     </a>
                   ) : (
@@ -652,9 +807,13 @@ export default function OutreachCenter({
                   )}
                 </dd>
                 <dt>אימייל</dt>
-                <dd>{active.businessEmail || "—"}</dd>
+                <dd className="gp-ltr" dir="ltr">
+                  {active.businessEmail || "—"}
+                </dd>
                 <dt>טלפון</dt>
-                <dd>{active.businessPhone || "—"}</dd>
+                <dd className="gp-ltr" dir="ltr">
+                  {active.businessPhone || "—"}
+                </dd>
                 <dt>מסלול מומלץ</dt>
                 <dd>{trackLabel(chosenTrack)}</dd>
               </dl>
@@ -719,24 +878,32 @@ export default function OutreachCenter({
                   <label>
                     נושא
                     <input
+                      className="gp-ltr"
+                      dir="ltr"
                       value={draftSubject}
                       onChange={(e) => setDraftSubject(e.target.value)}
-                      style={{ width: "100%", marginTop: 6 }}
+                      style={{ width: "100%", marginTop: 6, textAlign: "left" }}
                     />
                   </label>
                   <label style={{ display: "block", marginTop: 10 }}>
                     גוף ההודעה (לעריכה)
                     <textarea
+                      className="gp-ltr"
+                      dir="ltr"
                       rows={10}
                       value={draftHtml}
                       onChange={(e) => setDraftHtml(e.target.value)}
-                      style={{ width: "100%", marginTop: 6 }}
+                      style={{ width: "100%", marginTop: 6, textAlign: "left" }}
                     />
                   </label>
                   <p className="gp-muted" style={{ marginTop: 8 }}>
                     תצוגה מקדימה:
                   </p>
-                  <div dangerouslySetInnerHTML={{ __html: draftHtml }} />
+                  <div
+                    className="gp-mail-body gp-ltr"
+                    dir="ltr"
+                    dangerouslySetInnerHTML={{ __html: draftHtml }}
+                  />
                   <div className="gp-actions gp-actions--sticky">
                     <button
                       type="button"

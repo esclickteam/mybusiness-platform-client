@@ -420,6 +420,133 @@
   z-index: 1;
 }
 
+.gp-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+
+.gp-address {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.gp-note {
+  margin: 8px 0 0;
+  color: #9a3412;
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 8px 10px;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.gp-preview-box--ltr {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.gp-mail-subject {
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gp-line);
+}
+
+.gp-mail-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--gp-muted);
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gp-mail-body {
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.gp-mail-body p {
+  margin: 0 0 0.85em;
+}
+
+.gp-mail-hint {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  color: var(--gp-muted);
+}
+
+.gp-gate-steps {
+  display: grid;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.gp-gate-step {
+  border: 1px solid #99f6e4;
+  background: #fff;
+  padding: 12px;
+}
+
+.gp-gate-step__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.gp-gate-step__head h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #0f766e;
+}
+
+.gp-evidence {
+  margin: 10px 0 12px;
+  padding: 10px;
+  background: #f8fafc;
+  border: 1px solid var(--gp-line);
+}
+
+.gp-evidence h5 {
+  margin: 10px 0 6px;
+  font-size: 0.86rem;
+  color: #1e3a8a;
+}
+
+.gp-evidence h5:first-child {
+  margin-top: 0;
+}
+
+.gp-evidence ul {
+  margin: 0;
+  padding-inline-start: 1.1rem;
+  line-height: 1.5;
+}
+
+.gp-blockers li {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.gp-blocker-code {
+  display: inline-block;
+  font-size: 0.72rem;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  padding: 2px 6px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
 .gp-btn--danger {
   background: #fff;
   border-color: #fecaca;
@@ -611,5 +738,12 @@
   }
   .gp-table-wrap {
     overflow-x: visible;
+  }
+  .gp-gate-step__head {
+    align-items: flex-start;
+  }
+  .gp-preview-box--ltr,
+  .gp-mail-body {
+    font-size: 0.92rem;
   }
 }
