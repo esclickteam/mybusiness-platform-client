@@ -6,7 +6,7 @@
 const HERO = {
   en: {
     lineOne: "Your business.",
-    lineTwo: "Works smarter.",
+    lineTwo: "Working smarter.",
     kicker: "BizUply | Smart CRM for growing businesses",
     lead1:
       "CRM, customer communication on WhatsApp, smart automations, meeting management and reports — in one platform that moves your business forward.",
@@ -36,6 +36,10 @@ const HERO = {
     prev: "Previous",
     next: "Next",
     processLabel: "Continuous BizUply product process",
+    stepOf: "Step {n} of {total}",
+    processCopy: [["A new lead arrives from a test source", "The enquiry comes in through the business lead connection, appears in the list, and the lead card opens."], ["Status update and a note on the record", "The status moves to Interested, a call note is written, and it is saved to the customer history."], ["A reply in the same conversation", "The WhatsApp inbox opens on the customer number. In the demo account the reply is recorded in the thread and not sent to a real person."], ["A follow-up task with a date and time", "A task is opened on the customer record, a date and time are chosen, and the task is saved and listed."], ["Trigger and actions — in a test run", "When a lead moves to Interested, a tag is added and a note is logged. The test run executes every step without sending messages or changing data."], ["Back on the customer record", "The updated status, the note and the task are all saved on the same customer, and the team knows the next step."]],
+    demoEyebrow: "A real recording from BizUply",
+    demoLead: "One demo customer, six steps: from the first lead to an updated customer record — with real clicks in the demo account.",
     processSteps: [
       ["Lead in", "Lead arrives"],
       ["CRM", "Manage customer"],
@@ -77,6 +81,10 @@ const HERO = {
     prev: "הקודם",
     next: "הבא",
     processLabel: "תהליך עסקי רציף בתוך BizUply",
+    stepOf: "שלב {n} מתוך {total}",
+    processCopy: [["ליד חדש נכנס ממקור בדיקה", "הפנייה נשלחת דרך חיבור הלידים של העסק, מופיעה ברשימה, וכרטיס הליד נפתח."], ["עדכון סטטוס והערה בכרטיס", "הסטטוס משתנה ל״מתעניין״, נכתבת הערת שיחה, והיא נשמרת בהיסטוריית הלקוח."], ["תשובה באותה שיחה", "תיבת ה־WhatsApp נפתחת על מספר הלקוח. בחשבון הדמו התשובה נרשמת בשיחה ואינה נשלחת ללקוח אמיתי."], ["משימת המשך עם תאריך ושעה", "בכרטיס הלקוח נפתחת משימה, נבחרים תאריך ושעה, והמשימה נשמרת ומופיעה ברשימה."], ["טריגר ופעולה — בהרצת בדיקה", "כשליד עובר ל״מתעניין״ מתווספת תגית ונרשמת הערה. הרצת הבדיקה מריצה את כל השלבים בלי לשלוח הודעות ובלי לשנות נתונים."], ["חוזרים לכרטיס הלקוח", "הסטטוס המעודכן, ההערה והמשימה שמורים על אותו לקוח — והצוות יודע מה הצעד הבא."]],
+    demoEyebrow: "הקלטה אמיתית מתוך BizUply",
+    demoLead: "לקוח דמו אחד, שישה שלבים: מהליד הראשון ועד כרטיס לקוח מעודכן — עם לחיצות אמיתיות בחשבון הדמו.",
     processSteps: [
       ["Lead in", "קליטת ליד"],
       ["CRM", "ניהול לקוח"],
@@ -118,6 +126,10 @@ const HERO = {
     prev: "Anterior",
     next: "Siguiente",
     processLabel: "Proceso continuo del producto BizUply",
+    stepOf: "Paso {n} de {total}",
+    processCopy: [["Llega un lead nuevo desde una fuente de prueba", "La consulta entra por la conexión de leads del negocio, aparece en la lista y se abre la ficha del lead."], ["Cambio de estado y una nota en la ficha", "El estado pasa a Interesado, se escribe una nota de la llamada y se guarda en el historial del cliente."], ["Una respuesta en la misma conversación", "La bandeja de WhatsApp se abre en el número del cliente. En la cuenta demo la respuesta queda registrada en la conversación y no se envía a una persona real."], ["Una tarea de seguimiento con fecha y hora", "Se abre una tarea en la ficha del cliente, se eligen fecha y hora, y la tarea se guarda y aparece en la lista."], ["Disparador y acciones, en una prueba", "Cuando un lead pasa a Interesado se añade una etiqueta y se registra una nota. La prueba ejecuta todos los pasos sin enviar mensajes ni cambiar datos."], ["De vuelta en la ficha del cliente", "El estado actualizado, la nota y la tarea quedan guardados en el mismo cliente, y el equipo sabe cuál es el siguiente paso."]],
+    demoEyebrow: "Una grabación real de BizUply",
+    demoLead: "Un cliente de demostración, seis pasos: del primer lead a una ficha de cliente actualizada, con clics reales en la cuenta demo.",
     processSteps: [
       ["Lead in", "Llega el lead"],
       ["CRM", "Gestionar cliente"],
@@ -159,6 +171,10 @@ const HERO = {
     prev: "Anterior",
     next: "Próximo",
     processLabel: "Processo contínuo do produto BizUply",
+    stepOf: "Etapa {n} de {total}",
+    processCopy: [["Um novo lead chega de uma fonte de teste", "O contato entra pela conexão de leads da empresa, aparece na lista e a ficha do lead é aberta."], ["Atualização de status e uma nota na ficha", "O status muda para Interessado, uma nota da ligação é escrita e salva no histórico do cliente."], ["Uma resposta na mesma conversa", "A caixa do WhatsApp abre no número do cliente. Na conta demo a resposta fica registrada na conversa e não é enviada a uma pessoa real."], ["Uma tarefa de acompanhamento com data e hora", "Uma tarefa é aberta na ficha do cliente, data e hora são escolhidas, e a tarefa é salva e listada."], ["Gatilho e ações, em um teste", "Quando um lead passa para Interessado, uma tag é adicionada e uma nota é registrada. O teste executa todas as etapas sem enviar mensagens nem alterar dados."], ["De volta à ficha do cliente", "O status atualizado, a nota e a tarefa ficam salvos no mesmo cliente, e a equipe sabe qual é o próximo passo."]],
+    demoEyebrow: "Uma gravação real do BizUply",
+    demoLead: "Um cliente de demonstração, seis etapas: do primeiro lead a um registo de cliente atualizado, com cliques reais na conta demo.",
     processSteps: [
       ["Lead in", "Lead chega"],
       ["CRM", "Gerir cliente"],
@@ -200,6 +216,10 @@ const HERO = {
     prev: "السابق",
     next: "التالي",
     processLabel: "عملية منتج BizUply المستمرة",
+    stepOf: "الخطوة {n} من {total}",
+    processCopy: [["عميل محتمل جديد من مصدر اختبار", "يصل الاستفسار عبر ربط العملاء المحتملين الخاص بالنشاط، ويظهر في القائمة، وتُفتح بطاقة العميل المحتمل."], ["تحديث الحالة وملاحظة في البطاقة", "تتغير الحالة إلى مهتم، وتُكتب ملاحظة عن المكالمة وتُحفظ في سجل العميل."], ["رد في المحادثة نفسها", "يُفتح صندوق واتساب على رقم العميل. في الحساب التجريبي يُسجَّل الرد في المحادثة ولا يُرسل إلى شخص حقيقي."], ["مهمة متابعة بتاريخ ووقت", "تُفتح مهمة في بطاقة العميل، ويُختار التاريخ والوقت، ثم تُحفظ المهمة وتظهر في القائمة."], ["مشغّل وإجراءات في تشغيل تجريبي", "عندما ينتقل العميل المحتمل إلى مهتم تُضاف وسمة وتُسجَّل ملاحظة. يشغّل الاختبار كل الخطوات دون إرسال رسائل أو تغيير البيانات."], ["العودة إلى بطاقة العميل", "الحالة المحدّثة والملاحظة والمهمة محفوظة على العميل نفسه، ويعرف الفريق الخطوة التالية."]],
+    demoEyebrow: "تسجيل حقيقي من BizUply",
+    demoLead: "عميل تجريبي واحد، ست خطوات: من أول عميل محتمل حتى سجل عميل محدّث، بنقرات حقيقية في الحساب التجريبي.",
     processSteps: [
       ["Lead in", "وصول عميل محتمل"],
       ["CRM", "إدارة العميل"],
