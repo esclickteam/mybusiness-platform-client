@@ -82,6 +82,14 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/Lead Ads/i);
     expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/not on Meta ad spend/i);
     expect(screen.getByTestId("product-meta-campaigns").querySelector("video")).toBeTruthy();
+    expect(screen.getByTestId("product-crm").querySelector("video source")?.getAttribute("src")).toContain(
+      "/demo-media/crm/crm-en.mp4"
+    );
+    expect(screen.getByTestId("product-whatsapp-api").querySelector("video")).toBeTruthy();
+    expect(screen.getByTestId("product-automations").querySelector("video")).toBeTruthy();
+    expect(screen.getByTestId("product-website-builder").querySelector("video")).toBeTruthy();
+    expect(screen.getByTestId("partner-tracks-table")).toHaveTextContent(/Reseller/i);
+    expect(screen.getAllByText(/Illustration only/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Coming soon/i).length).toBeGreaterThan(0);
   });
 
@@ -126,6 +134,11 @@ describe("bizuply.com/partners recruitment", () => {
       "href",
       "/meta-campaigns"
     );
+    expect(screen.getByTestId("product-crm").querySelector("video source")?.getAttribute("src")).toContain(
+      "/demo-media/crm/crm-he.mp4"
+    );
+    expect(screen.getByTestId("partner-tracks-table")).toHaveTextContent(/Reseller/);
+    expect(screen.getAllByText(/המחשה בלבד/).length).toBeGreaterThan(0);
   });
 
   it("validates required fields and privacy before calling the API", async () => {

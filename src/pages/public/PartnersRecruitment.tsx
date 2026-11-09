@@ -14,6 +14,7 @@ import { marketingPublicUrl } from "../../lib/localePathCore.mjs";
 import { partnerFaqPairs } from "./partners/partnerFaq.mjs";
 import PartnerApplyForm from "./partners/PartnerApplyForm";
 import PartnerPortalVisual from "./partners/PartnerPortalVisual";
+import PartnerProductMedia from "./partners/PartnerProductMedia";
 import {
   ONE_TIME_RATE,
   commissionRateForCustomers,
@@ -145,14 +146,33 @@ const COPY = {
       ["Long-term development", "Grow your customer base, deepen product knowledge and progress through published commission tiers."],
     ],
     productsTitle: "What partners can sell",
-    productsLead: "Product categories available through Bizuply today. Screens and clips come from the published demo workspace, not from a customer account.",
+    productsLead: "Product categories available through Bizuply today. Clips are real recordings from the published demo workspace — not a customer account and not live Meta spend.",
+    demoCaption: "Authorized demo recording. No live publishing and no media spend.",
     products: [
       {
-        title: "CRM & customer management",
+        title: "CRM & lead management",
         href: "/crm",
-        image: "/demo-media/crm/leads-list.png",
-        alt: "Bizuply demo CRM lead list",
+        image: "/demo-media/crm/poster.jpg",
+        video: "/demo-media/crm/crm-en.mp4",
+        videoHe: "/demo-media/crm/crm-he.mp4",
+        captions: "/demo-media/crm/crm.en.vtt",
+        captionsHe: "/demo-media/crm/crm.he.vtt",
+        alt: "Bizuply demo CRM lead workflow",
+        sell: "Sell organized lead and customer management that keeps follow-ups in one place.",
         points: ["Customer relationship management", "Lead tracking", "Sales pipelines", "Customer records", "Follow-up workflows"],
+      },
+      {
+        title: "WhatsApp Business API",
+        href: "/whatsapp-api",
+        image: "/demo-media/whatsapp/poster.jpg",
+        video: "/demo-media/whatsapp/whatsapp-en.mp4",
+        videoHe: "/demo-media/whatsapp/whatsapp-he.mp4",
+        captions: "/demo-media/whatsapp/whatsapp.en.vtt",
+        captionsHe: "/demo-media/whatsapp/whatsapp.he.vtt",
+        alt: "Bizuply demo WhatsApp inbox",
+        sell: "Sell official WhatsApp Business API connectivity with templates and business messaging.",
+        note: "Use is subject to Meta policy, approvals and messaging costs.",
+        points: ["Official WhatsApp Business API", "Business messaging", "Approved templates", "Campaign-related workflows"],
       },
       {
         title: "Meta campaigns — Facebook & Instagram Ads",
@@ -163,6 +183,7 @@ const COPY = {
         captions: "/demo-media/campaigns/campaigns.en.vtt",
         captionsHe: "/demo-media/campaigns/campaigns.he.vtt",
         alt: "Bizuply demo Meta campaign manager",
+        sell: "Sell Meta campaign tools next to CRM so Lead Ads can continue into follow-up.",
         note: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Not a separate partner SKU. Meta bills media spend. Drafts can be prepared without publishing or spending. Partners earn on eligible Bizuply subscription revenue under the signed agreement — not on Meta ad spend.",
         points: [
           "Connect the business’s own Meta ad account",
@@ -173,25 +194,27 @@ const COPY = {
         ],
       },
       {
-        title: "WhatsApp Business API & campaigns",
-        href: "/whatsapp-api",
-        image: "/demo-media/whatsapp/poster.jpg",
-        alt: "Bizuply demo WhatsApp inbox",
-        note: "Use is subject to Meta policy, approvals and messaging costs.",
-        points: ["Official WhatsApp Business API", "Business messaging", "Approved templates", "Campaign-related workflows"],
-      },
-      {
         title: "Business automations",
         href: "/automations",
         image: "/demo-media/automations/poster.jpg",
+        video: "/demo-media/automations/automations-en.mp4",
+        videoHe: "/demo-media/automations/automations-he.mp4",
+        captions: "/demo-media/automations/automations.en.vtt",
+        captionsHe: "/demo-media/automations/automations.he.vtt",
         alt: "Bizuply automation workspace",
+        sell: "Sell workflow automation that routes leads and creates follow-up tasks.",
         points: ["Automated follow-ups", "Lead routing", "Workflow automation", "Supported integrations"],
       },
       {
         title: "Websites & digital tools",
         href: "/website-builder",
-        image: "/demo-media/websites/my-sites.jpg",
+        image: "/demo-media/websites/poster.jpg",
+        video: "/demo-media/websites/websites-en.mp4",
+        videoHe: "/demo-media/websites/websites-he.mp4",
+        captions: "/demo-media/websites/websites.en.vtt",
+        captionsHe: "/demo-media/websites/websites.he.vtt",
         alt: "Bizuply website workspace",
+        sell: "Sell business websites and landing pages that capture leads into CRM.",
         points: ["Business websites", "Landing pages", "Lead capture forms", "Appointment booking"],
       },
     ],
@@ -211,6 +234,7 @@ const COPY = {
       ["Attribution", "A customer is attributed through the existing partner attribution record — not by visiting this page alone."],
     ],
     calcTitle: "Revenue calculator",
+    calcSimBadge: "Illustration only",
     calcCustomers: "Active paying customers",
     calcPrice: "Average monthly subscription price (USD)",
     calcTier: "Commission tier",
@@ -224,6 +248,18 @@ const COPY = {
     disclaimer: "Simulation only. Not a forecast or income guarantee. Actual earnings depend on eligible revenue, attribution, commission terms, retention, refunds and the executed agreement.",
     tracksTitle: "Partnership tracks",
     tracksLead: "Only tracks that already exist contractually or technically are shown as open. Others require a signed agreement or invitation and are not self-serve.",
+    tracksTableTitle: "Affiliate · Business Partner · Reseller at a glance",
+    tracksTable: {
+      fee: "Membership fee",
+      reward: "Reward model",
+      access: "Access",
+      rows: [
+        ["Affiliate", "None on the percent track", "Currently 15% of eligible sales in the catalog", "Application review. No Partner Center membership fee."],
+        ["Business Partner", "$499 / month or $5,000 / year after approval", "Recurring 30% / 35% / 40% · 10% one-time", "Partner Center after agreement and verified payment."],
+        ["Reseller", "Setup and monthly fees follow the appointed catalog plan", "Markup-share per appointed plan — not the international tier table", "By agreement. Not selected automatically on this page."],
+      ],
+    },
+    heroMediaCaption: "Live product demo from the authorized workspace — Partner Center illustration beside CRM recording.",
     tracks: [
       {
         key: "Affiliate",
@@ -431,14 +467,33 @@ const COPY = {
       ["פיתוח לטווח ארוך", "הגדילו את בסיס הלקוחות, העמיקו ידע במוצרים והתקדמו במדרגות העמלה."],
     ],
     productsTitle: "מה השותפים יכולים למכור?",
-    productsLead: "קטגוריות מוצרים שזמינות ב־Bizuply היום. הצילומים והסרטונים מסביבת הדמו המפורסמת, לא מחשבון לקוח.",
+    productsLead: "קטגוריות מוצרים שזמינות ב־Bizuply היום. הסרטונים הם הקלטות אמיתיות מסביבת הדמו המפורסמת — לא חשבון לקוח ולא הוצאת פרסום חיה.",
+    demoCaption: "הקלטת דמו מורשית. ללא פרסום חי וללא הוצאת מדיה.",
     products: [
       {
-        title: "CRM וניהול לקוחות",
+        title: "CRM וניהול לידים",
         href: "/crm",
-        image: "/demo-media/crm/leads-list.png",
-        alt: "רשימת לידים בסביבת הדמו של Bizuply",
+        image: "/demo-media/crm/poster.jpg",
+        video: "/demo-media/crm/crm-en.mp4",
+        videoHe: "/demo-media/crm/crm-he.mp4",
+        captions: "/demo-media/crm/crm.en.vtt",
+        captionsHe: "/demo-media/crm/crm.he.vtt",
+        alt: "תהליך לידים בסביבת הדמו של Bizuply",
+        sell: "מכרו ניהול לידים ולקוחות שמחזיק את ההמשך במקום אחד.",
         points: ["ניהול קשרי לקוחות", "מעקב לידים", "צינורות מכירה", "כרטיסי לקוח", "תהליכי המשך טיפול"],
+      },
+      {
+        title: "WhatsApp Business API",
+        href: "/whatsapp-api",
+        image: "/demo-media/whatsapp/poster.jpg",
+        video: "/demo-media/whatsapp/whatsapp-en.mp4",
+        videoHe: "/demo-media/whatsapp/whatsapp-he.mp4",
+        captions: "/demo-media/whatsapp/whatsapp.en.vtt",
+        captionsHe: "/demo-media/whatsapp/whatsapp.he.vtt",
+        alt: "תיבת דואר של WhatsApp בסביבת הדמו",
+        sell: "מכרו חיבור WhatsApp Business API רשמי עם תבניות ומסרים עסקיים.",
+        note: "השימוש כפוף למדיניות Meta, לאישורים ולעלויות ההודעות.",
+        points: ["WhatsApp Business API רשמי", "מסרים עסקיים", "תבניות מאושרות", "תהליכים לקמפיינים"],
       },
       {
         title: "קמפיינים במטא — Facebook & Instagram Ads",
@@ -449,6 +504,7 @@ const COPY = {
         captions: "/demo-media/campaigns/campaigns.en.vtt",
         captionsHe: "/demo-media/campaigns/campaigns.he.vtt",
         alt: "מנהל קמפיינים של Meta בסביבת הדמו של Bizuply",
+        sell: "מכרו כלי קמפיין של Meta ליד ה־CRM, כדי ש־Lead Ads ימשיכו לטיפול.",
         note: "כלול בחבילת Business של Bizuply אחרי חיבור חשבון מודעות מורשה של Meta. אינו SKU שותפים נפרד. את הוצאת המדיה גובה Meta. אפשר להכין טיוטות בלי לפרסם ובלי להוציא תקציב. עמלה לשותף נגזרת מהכנסת מנוי זכאית של Bizuply לפי ההסכם — לא מהוצאת הפרסום ב־Meta.",
         points: [
           "חיבור חשבון המודעות של העסק ב־Meta",
@@ -459,25 +515,27 @@ const COPY = {
         ],
       },
       {
-        title: "WhatsApp Business API וקמפיינים",
-        href: "/whatsapp-api",
-        image: "/demo-media/whatsapp/poster.jpg",
-        alt: "תיבת דואר של WhatsApp בסביבת הדמו",
-        note: "השימוש כפוף למדיניות Meta, לאישורים ולעלויות ההודעות.",
-        points: ["WhatsApp Business API רשמי", "מסרים עסקיים", "תבניות מאושרות", "תהליכים לקמפיינים"],
-      },
-      {
         title: "אוטומציות עסקיות",
         href: "/automations",
         image: "/demo-media/automations/poster.jpg",
+        video: "/demo-media/automations/automations-en.mp4",
+        videoHe: "/demo-media/automations/automations-he.mp4",
+        captions: "/demo-media/automations/automations.en.vtt",
+        captionsHe: "/demo-media/automations/automations.he.vtt",
         alt: "סביבת האוטומציות של Bizuply",
+        sell: "מכרו אוטומציות שמנתבות לידים ויוצרות משימות המשך.",
         points: ["המשך טיפול אוטומטי", "ניתוב לידים", "אוטומציית תהליכים", "חיבורים נתמכים"],
       },
       {
-        title: "אתרים וכלים דיגיטליים",
+        title: "אתרים ופתרונות דיגיטליים",
         href: "/website-builder",
-        image: "/demo-media/websites/my-sites.jpg",
+        image: "/demo-media/websites/poster.jpg",
+        video: "/demo-media/websites/websites-en.mp4",
+        videoHe: "/demo-media/websites/websites-he.mp4",
+        captions: "/demo-media/websites/websites.en.vtt",
+        captionsHe: "/demo-media/websites/websites.he.vtt",
         alt: "סביבת האתרים של Bizuply",
+        sell: "מכרו אתרים ודפי נחיתה שקולטים לידים ל־CRM.",
         points: ["אתרים עסקיים", "דפי נחיתה", "טפסי לידים", "זימון תורים"],
       },
     ],
@@ -497,6 +555,7 @@ const COPY = {
       ["שיוך לקוחות", "השיוך נעשה במנגנון השיוך הקיים — כניסה לעמוד הזה לבדה אינה משייכת לקוח."],
     ],
     calcTitle: "מחשבון הכנסות",
+    calcSimBadge: "המחשה בלבד",
     calcCustomers: "מספר לקוחות פעילים",
     calcPrice: "מחיר מנוי חודשי ממוצע (דולר)",
     calcTier: "שיעור עמלה לפי מסלול",
@@ -510,6 +569,18 @@ const COPY = {
     disclaimer: "סימולציה בלבד. לא תחזית ולא הבטחת הכנסה. ההכנסה בפועל תלויה בהכנסה זכאית, בשיוך, בתנאי העמלה, בשימור, בהחזרים ובהסכם שנחתם.",
     tracksTitle: "מסלולי שותפות",
     tracksLead: "מוצגים רק מסלולים שכבר קיימים חוזית או טכנית כפתוחים. אחרים דורשים הסכם או הזמנה ואינם בהרשמה עצמית.",
+    tracksTableTitle: "Affiliate · Business Partner · Reseller במבט אחד",
+    tracksTable: {
+      fee: "דמי חברות",
+      reward: "מודל תגמול",
+      access: "גישה",
+      rows: [
+        ["Affiliate", "אין במסלול האחוזים", "כיום 15% ממכירות זכאיות לפי הקטלוג", "בדיקת מועמדות. בלי דמי חברות למרכז השותפים."],
+        ["Business Partner", "499$ לחודש או 5,000$ לשנה אחרי אישור", "מדרגות 30% / 35% / 40% · 10% חד־פעמי", "מרכז השותפים אחרי הסכם ותשלום מאומת."],
+        ["Reseller", "דמי הקמה וחודשי לפי המסלול בקטלוג", "markup-share לפי המסלול שמונה — לא טבלת המדרגות הבינלאומית", "לפי הסכם. לא נבחר אוטומטית בעמוד הזה."],
+      ],
+    },
+    heroMediaCaption: "הדגמת מוצר מסביבת הדמו המורשית — המחשת מרכז השותפים לצד הקלטת CRM.",
     tracks: [
       {
         key: "Affiliate",
@@ -812,8 +883,9 @@ export default function PartnersRecruitment() {
       </Helmet>
 
       <header className="ip-hero">
+        <div className="ip-hero-glow" aria-hidden="true" />
         <div className="ip-wrap ip-hero-grid">
-          <div>
+          <div className="ip-hero-copy">
             <p className="ip-kicker">{copy.kicker}</p>
             <h1>{copy.h1}</h1>
             <p className="ip-sub">{copy.sub}</p>
@@ -826,7 +898,28 @@ export default function PartnersRecruitment() {
               </a>
             </div>
           </div>
-          <PartnerPortalVisual copy={copy.visual} />
+          <div className="ip-hero-media">
+            <div className="ip-hero-stack">
+              <div className="ip-hero-demo">
+                <PartnerProductMedia
+                  hebrew={hebrew}
+                  priority
+                  product={{
+                    image: "/demo-media/crm/poster.jpg",
+                    alt: hebrew ? "הקלטת CRM מסביבת הדמו" : "CRM demo recording",
+                    video: "/demo-media/crm/crm-en.mp4",
+                    videoHe: "/demo-media/crm/crm-he.mp4",
+                    captions: "/demo-media/crm/crm.en.vtt",
+                    captionsHe: "/demo-media/crm/crm.he.vtt",
+                  }}
+                />
+              </div>
+              <div className="ip-hero-portal">
+                <PartnerPortalVisual copy={copy.visual} />
+              </div>
+            </div>
+            <p className="ip-hero-media-caption">{copy.heroMediaCaption}</p>
+          </div>
         </div>
         <div className="ip-wrap" data-testid="partner-track-compare">
           <p className="ip-kicker">{copy.compareTitle}</p>
@@ -875,73 +968,42 @@ export default function PartnersRecruitment() {
           <h2>{copy.productsTitle}</h2>
           <p className="ip-copy">{copy.productsLead}</p>
           <div className="ip-products">
-            {copy.products.map((product) => {
-              const videoSrc =
-                "video" in product && product.video
-                  ? hebrew && "videoHe" in product && product.videoHe
-                    ? product.videoHe
-                    : product.video
-                  : null;
-              const captionSrc =
-                hebrew && "captionsHe" in product && product.captionsHe
-                  ? product.captionsHe
-                  : "captions" in product
-                    ? product.captions
-                    : null;
-              return (
-                <article className="ip-product" key={product.href} data-testid={`product-${product.href.replace(/^\//, "")}`}>
-                  <figure className="ip-shot">
-                    {videoSrc ? (
-                      <video
-                        controls
-                        playsInline
-                        preload="none"
-                        poster={product.image}
-                        width={960}
-                        height={600}
-                        aria-label={product.alt}
-                      >
-                        <source src={videoSrc} type="video/mp4" />
-                        {captionSrc ? (
-                          <track
-                            kind="captions"
-                            src={captionSrc}
-                            srcLang={hebrew ? "he" : "en"}
-                            label={hebrew ? "עברית" : "English"}
-                            default
-                          />
-                        ) : null}
-                      </video>
-                    ) : (
-                      <img src={product.image} alt={product.alt} width="960" height="600" loading="lazy" />
-                    )}
-                  </figure>
-                  <div>
-                    <h3>{product.title}</h3>
-                    <ul>
-                      {product.points.map((point) => (
-                        <li key={point}>{point}</li>
-                      ))}
-                    </ul>
-                    {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
-                    <p>
-                      <Link to={product.href}>{product.title}</Link>
-                    </p>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
-          <h3 className="ip-saas-heading">{copy.saasTitle}</h3>
-          <p className="ip-copy">{copy.saasLead}</p>
-          <div className="ip-saas-grid">
-            {copy.saas.map((name) => (
-              <article className="ip-saas" key={name}>
-                <span className="ip-badge">{copy.soon}</span>
-                <h3>{name}</h3>
+            {copy.products.map((product) => (
+              <article className="ip-product" key={product.href} data-testid={`product-${product.href.replace(/^\//, "")}`}>
+                <PartnerProductMedia hebrew={hebrew} product={product} />
+                <div>
+                  <h3>{product.title}</h3>
+                  {"sell" in product && product.sell ? <p className="ip-sell">{product.sell}</p> : null}
+                  <ul>
+                    {product.points.map((point) => (
+                      <li key={point}>{point}</li>
+                    ))}
+                  </ul>
+                  {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
+                  <p className="ip-demo-caption">{copy.demoCaption}</p>
+                  <p>
+                    <Link className="ip-product-link" to={product.href}>
+                      {product.title}
+                    </Link>
+                  </p>
+                </div>
               </article>
             ))}
           </div>
+          <aside className="ip-saas-block" aria-labelledby="saas-heading">
+            <h3 className="ip-saas-heading" id="saas-heading">
+              {copy.saasTitle}
+            </h3>
+            <p className="ip-copy">{copy.saasLead}</p>
+            <div className="ip-saas-grid">
+              {copy.saas.map((name) => (
+                <article className="ip-saas" key={name}>
+                  <span className="ip-badge">{copy.soon}</span>
+                  <h3>{name}</h3>
+                </article>
+              ))}
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -983,7 +1045,10 @@ export default function PartnersRecruitment() {
             ))}
           </div>
 
-          <h3 className="ip-calc-heading">{copy.calcTitle}</h3>
+          <div className="ip-calc-heading-row">
+            <h3 className="ip-calc-heading">{copy.calcTitle}</h3>
+            <span className="ip-sim-badge">{copy.calcSimBadge}</span>
+          </div>
           <form
             className="ip-calc"
             data-testid="partner-commission-calculator"
@@ -1079,6 +1144,29 @@ export default function PartnersRecruitment() {
         <div className="ip-wrap">
           <h2>{copy.tracksTitle}</h2>
           <p className="ip-copy">{copy.tracksLead}</p>
+          <div className="ip-table-wrap ip-tracks-table" data-testid="partner-tracks-table">
+            <table className="ip-table">
+              <caption className="ip-sr-only">{copy.tracksTableTitle}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{copy.tracksTableTitle}</th>
+                  <th scope="col">{copy.tracksTable.fee}</th>
+                  <th scope="col">{copy.tracksTable.reward}</th>
+                  <th scope="col">{copy.tracksTable.access}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {copy.tracksTable.rows.map(([name, fee, reward, access]) => (
+                  <tr key={name}>
+                    <th scope="row">{name}</th>
+                    <td>{fee}</td>
+                    <td>{reward}</td>
+                    <td>{access}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="ip-tracks">
             {copy.tracks.map((track) => (
               <article className="ip-track" key={track.key} data-testid={`track-${track.key}`}>
