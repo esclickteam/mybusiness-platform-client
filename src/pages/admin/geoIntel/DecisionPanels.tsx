@@ -37,6 +37,69 @@ export function DecisionBrief({ weekly }: { weekly: any }) {
   );
 }
 
+function ScoreDetails({ score }: { score: any }) {
+  if (!score) return null;
+  return (
+    <details className="geo-score-details">
+      <summary>
+        {score.labelHe}: {score.score} (פנימי בלבד — לא Google / לא AI Score)
+      </summary>
+      <p className="geo-note">{score.disclaimerHe}</p>
+      {score.formulaHe ? (
+        <p className="geo-note">
+          <strong>נוסחה:</strong> {score.formulaHe}
+        </p>
+      ) : null}
+      <ul>
+        {(score.factors || []).map((f: any) => (
+          <li key={f.id}>
+            {f.labelHe}: {f.points} — {f.detailHe}
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
+function ActionCard({ a }: { a: any }) {
+  return (
+    <article className="geo-decision-item">
+      <div className="geo-decision-item-top">
+        <span className="geo-pill-rect">{a.brand?.name}</span>
+        <span className="geo-pill-rect muted">{a.kindHe}</span>
+        <span className="geo-pill-rect">{a.statusHe}</span>
+        <span className="geo-pill-rect muted">מאמץ: {a.effortHe}</span>
+        {a.dataSourceHe ? (
+          <span className="geo-pill-rect muted">מקור: {a.dataSourceHe}</span>
+        ) : null}
+      </div>
+      <h3>{a.queryOrQuestion}</h3>
+      <p>
+        <strong>עמוד:</strong> {a.pagePath || "לא נמדד"}
+      </p>
+      <p>
+        <strong>למה עכשיו:</strong> {a.whyNowHe}
+      </p>
+      <p>
+        <strong>השפעה צפויה:</strong> {a.expectedImpactHe} ·{" "}
+        <strong>ביטחון:</strong> {a.confidenceHe}
+      </p>
+      <div className="geo-evidence-block">
+        <div>
+          <em>מה נמדד:</em> {a.evidence?.measuredHe || "לא נמדד"}
+        </div>
+        <div>
+          <em>השערה:</em> {a.evidence?.hypothesisHe || "—"}
+        </div>
+        <div>
+          <em>המלצה:</em> {a.evidence?.recommendationHe || "—"}
+        </div>
+      </div>
+      <ScoreDetails score={a.internalPriority} />
+    </article>
+  );
+}
+
 export function WeeklyActionsPanel({ data }: { data: any }) {
   if (!data) return <AwaitBox />;
   if (data.awaitingData) return <AwaitBox message={data.messageHe} />;
@@ -45,57 +108,31 @@ export function WeeklyActionsPanel({ data }: { data: any }) {
       <header className="geo-decision-head">
         <h2>{data.titleHe || "מה כדאי לעשות השבוע"}</h2>
         <p className="geo-note">{data.disclaimerHe}</p>
+        <p className="geo-note">
+          מקור GSC: {data.gscDataSourceHe || "לא נמדד"}
+          {data.gscSyncedAt
+            ? ` · סנכרון: ${new Date(data.gscSyncedAt).toLocaleString("he-IL")}`
+            : ""}
+        </p>
       </header>
       <div className="geo-decision-list">
         {(data.actions || []).map((a: any) => (
-          <article key={a.id} className="geo-decision-item">
-            <div className="geo-decision-item-top">
-              <span className="geo-pill-rect">{a.brand?.name}</span>
-              <span className="geo-pill-rect muted">{a.kindHe}</span>
-              <span className="geo-pill-rect">{a.statusHe}</span>
-              <span className="geo-pill-rect muted">מאמץ: {a.effortHe}</span>
-            </div>
-            <h3>{a.queryOrQuestion}</h3>
-            <p>
-              <strong>עמוד:</strong> {a.pagePath || "לא נמדד"}
-            </p>
-            <p>
-              <strong>למה עכשיו:</strong> {a.whyNowHe}
-            </p>
-            <p>
-              <strong>השפעה צפויה:</strong> {a.expectedImpactHe} ·{" "}
-              <strong>ביטחון:</strong> {a.confidenceHe}
-            </p>
-            <div className="geo-evidence-block">
-              <div>
-                <em>מה נמדד:</em> {a.evidence?.measuredHe || "לא נמדד"}
-              </div>
-              <div>
-                <em>השערה:</em> {a.evidence?.hypothesisHe || "—"}
-              </div>
-              <div>
-                <em>המלצה:</em> {a.evidence?.recommendationHe || "—"}
-              </div>
-            </div>
-            {a.internalPriority ? (
-              <details className="geo-score-details">
-                <summary>
-                  {a.internalPriority.labelHe}: {a.internalPriority.score}{" "}
-                  (פנימי בלבד)
-                </summary>
-                <p className="geo-note">{a.internalPriority.disclaimerHe}</p>
-                <ul>
-                  {(a.internalPriority.factors || []).map((f: any) => (
-                    <li key={f.id}>
-                      {f.labelHe}: {f.points} — {f.detailHe}
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            ) : null}
-          </article>
+          <ActionCard key={a.id} a={a} />
         ))}
       </div>
+      {(data.awaitingResults || []).length ? (
+        <div className="geo-awaiting-block">
+          <h3>{data.awaitingResultsTitleHe || "ממתין לתוצאה"}</h3>
+          <p className="geo-note">
+            משימות שבוצעו וממתינות למדידה מחדש — לא לביצוע חוזר כעת.
+          </p>
+          <div className="geo-decision-list">
+            {(data.awaitingResults || []).map((a: any) => (
+              <ActionCard key={a.id} a={a} />
+            ))}
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
@@ -131,6 +168,24 @@ export function GscOpportunitiesPanel({
       <header className="geo-decision-head">
         <h2>הזדמנויות בחיפוש</h2>
         <p className="geo-note">{data.disclaimerHe}</p>
+        <p className="geo-note">
+          <strong>מקור נתונים:</strong> {data.dataSourceHe || "לא נמדד"}
+          {data.syncedAt
+            ? ` · מועד סנכרון: ${new Date(data.syncedAt).toLocaleString("he-IL")}`
+            : ""}
+          {data.sourceImport?.propertyUrl
+            ? ` · נכס: ${data.sourceImport.propertyUrl}`
+            : ""}
+          {data.sourceImport?.startDate
+            ? ` · טווח: ${data.sourceImport.startDate} → ${data.sourceImport.endDate}`
+            : ""}
+        </p>
+        {data.dataSource === "csv_fallback" ? (
+          <p className="geo-note">
+            CSV מוצג כגיבוי ידני בלבד. כשיש סנכרון Google — הוא מקור ראשי ואין
+            דרישה ל־CSV.
+          </p>
+        ) : null}
       </header>
       <div className="geo-filter-row">
         {GSC_FILTERS.map((f) => (
@@ -209,7 +264,20 @@ export function GscOpportunitiesPanel({
                   </td>
                   <td>
                     {o.internalPriority?.score ?? "—"}
-                    <div className="geo-cell-note">פנימי · לא Google</div>
+                    <div className="geo-cell-note">פנימי · לא Google · לא AI Score</div>
+                    {o.internalPriority?.formulaHe ? (
+                      <details className="geo-score-details">
+                        <summary>פירוט חישוב</summary>
+                        <p className="geo-note">{o.internalPriority.formulaHe}</p>
+                        <ul>
+                          {(o.internalPriority.factors || []).map((f: any) => (
+                            <li key={f.id}>
+                              {f.labelHe}: {f.points} — {f.detailHe}
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    ) : null}
                   </td>
                 </tr>
               ))
@@ -231,6 +299,10 @@ export function AiRadarPanel({ data }: { data: any }) {
         <p className="geo-note">
           {data.disclaimerHe ||
             "מציג מדידות קיימות בלבד — לא מריץ מדידות AI חדשות."}
+        </p>
+        <p className="geo-note">
+          מקור: מדידות Perplexity/GEO שמורות ב־Mongo · אין השלמת היסטוריה חסרה
+          בהרצה חדשה.
         </p>
       </header>
       <div className="geo-decision-list">
@@ -318,7 +390,7 @@ export function BeforeAfterPanel({ data }: { data: any }) {
             <p>שאילתות: {(ev.queries || []).join(" · ") || "לא נמדד"}</p>
             <div className="geo-ba-grid">
               <div>
-                <strong>לפני</strong>
+                <strong>לפני (מדויק)</strong>
                 <ul>
                   <li>חשיפות: {fmtNum(ev.baseline?.impressions)}</li>
                   <li>קליקים: {fmtNum(ev.baseline?.clicks)}</li>
@@ -422,13 +494,21 @@ export function SeoGeoMatrixPanel({ data }: { data: any }) {
       <header className="geo-decision-head">
         <h2>SEO + GEO ביחד</h2>
         <p className="geo-note">{data.disclaimerHe}</p>
+        <p className="geo-note">
+          מקור GSC: {data.gscDataSourceHe || "לא נמדד"}
+          {data.gscSyncedAt
+            ? ` · ${new Date(data.gscSyncedAt).toLocaleString("he-IL")}`
+            : ""}
+        </p>
       </header>
       <div className="geo-table-wrap">
         <table className="geo-table">
           <thead>
             <tr>
               <th>מקרה</th>
-              <th>שאלה / שאילתה</th>
+              <th>שאלה</th>
+              <th>Google</th>
+              <th>AI</th>
               <th>המלצה מאוחדת</th>
             </tr>
           </thead>
@@ -437,6 +517,12 @@ export function SeoGeoMatrixPanel({ data }: { data: any }) {
               <tr key={i}>
                 <td>{c.caseHe || c.caseId}</td>
                 <td>{c.promptText || c.query || "—"}</td>
+                <td>
+                  {c.seoMeasured
+                    ? `מיקום ${fmtNum(c.search?.position)} · ${fmtNum(c.search?.impressions)} חשיפות`
+                    : "לא נמדד"}
+                </td>
+                <td>{c.geo?.labelHe || (c.geoMeasured ? "—" : "לא נמדד")}</td>
                 <td>{c.recommendationHe}</td>
               </tr>
             ))}
@@ -455,11 +541,27 @@ export function MonthlyReportPanel({
   data: any;
 }) {
   if (!data) return <AwaitBox />;
+  const legend = data.sourceLegendHe || {};
   return (
     <section className="geo-decision-panel">
       <header className="geo-decision-head">
         <h2>{data.titleHe || "דוח חודשי פנימי"}</h2>
-        <p className="geo-note">דוח פנימי בעברית · CSV דרך אותו API</p>
+        <p className="geo-note">{data.disclaimerHe}</p>
+        <ul className="geo-source-legend">
+          <li>
+            <strong>Google:</strong> {legend.google || "נתוני Search Console"}
+          </li>
+          <li>
+            <strong>Perplexity:</strong>{" "}
+            {legend.perplexity || "מדידות GEO שמורות"}
+          </li>
+          <li>
+            <strong>פנימי:</strong> {legend.internal || "המלצות פנימיות"}
+          </li>
+          <li>
+            <strong>לא נמדד:</strong> {legend.unmeasured || "לא נמדד"}
+          </li>
+        </ul>
         <a
           className="geo-link-btn"
           href={`/api/geo-intel/monthly-report?brandId=${encodeURIComponent(brandId)}&format=csv`}
@@ -470,7 +572,12 @@ export function MonthlyReportPanel({
       <div className="geo-decision-list">
         {Object.entries(data.sections || {}).map(([key, sec]: any) => (
           <article key={key} className="geo-decision-item">
-            <h3>{sec.titleHe || key}</h3>
+            <h3>
+              {sec.titleHe || key}
+              {sec.sourceKind ? (
+                <span className="geo-pill-rect muted"> {sec.sourceKind}</span>
+              ) : null}
+            </h3>
             <pre className="geo-json-pre">{JSON.stringify(sec, null, 2)}</pre>
           </article>
         ))}
@@ -552,6 +659,11 @@ export function PageAuditPanel({ brandId }: { brandId: string }) {
             </ul>
             {result.noInventedScoreHe ? (
               <p className="geo-note">{result.noInventedScoreHe}</p>
+            ) : null}
+            {result.readOnly ? (
+              <p className="geo-note">
+                קריאה בלבד · אין שינוי אוטומטי באתר · אין יצירת תוכן אוטומטית
+              </p>
             ) : null}
           </div>
         </div>
