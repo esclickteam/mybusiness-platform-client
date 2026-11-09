@@ -14,6 +14,7 @@ import { marketingPublicUrl } from "../../lib/localePathCore.mjs";
 import { partnerFaqPairs } from "./partners/partnerFaq.mjs";
 import PartnerApplyForm from "./partners/PartnerApplyForm";
 import PartnerPortalVisual from "./partners/PartnerPortalVisual";
+import PartnerProductMedia from "./partners/PartnerProductMedia";
 import {
   ONE_TIME_RATE,
   commissionRateForCustomers,
@@ -23,6 +24,77 @@ import {
 } from "./partners/partnersCommission.mjs";
 import "./partners/partnersPage.css";
 
+function revealPartnersSections(root: HTMLElement) {
+  const reduce =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>(".ip-reveal"));
+  if (reduce || typeof IntersectionObserver !== "function") {
+    nodes.forEach((node) => node.classList.add("is-in"));
+    return () => undefined;
+  }
+
+  let observer: IntersectionObserver | null = null;
+
+  const markVisible = (node: Element) => {
+    node.classList.add("is-in");
+    observer?.unobserve(node);
+  };
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting || entry.intersectionRatio > 0) markVisible(entry.target);
+      });
+    },
+    { threshold: [0, 0.08, 0.2], rootMargin: "80px 0px 80px 0px" }
+  );
+
+  const revealPassed = () => {
+    nodes.forEach((node) => {
+      if (node.classList.contains("is-in")) return;
+      const top = node.getBoundingClientRect().top;
+      if (top < window.innerHeight * 0.98) markVisible(node);
+    });
+  };
+
+  nodes.forEach((node) => observer?.observe(node));
+  revealPassed();
+  root.classList.add("is-reveal-ready");
+
+  let scrollFrame = 0;
+  const onScroll = () => {
+    if (!scrollFrame) {
+      scrollFrame = window.requestAnimationFrame(() => {
+        scrollFrame = 0;
+        revealPassed();
+      });
+    }
+  };
+  const onHash = () => {
+    const id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    if (target.classList.contains("ip-reveal")) markVisible(target);
+    const parentReveal = target.closest(".ip-reveal");
+    if (parentReveal) markVisible(parentReveal);
+    target.querySelectorAll<HTMLElement>(".ip-reveal").forEach((node) => markVisible(node));
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("hashchange", onHash);
+  onHash();
+
+  return () => {
+    window.cancelAnimationFrame(scrollFrame);
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("hashchange", onHash);
+    observer?.disconnect();
+    root.classList.remove("is-reveal-ready");
+  };
+}
+
 export { commissionRateForCustomers, estimatePartnerCommission } from "./partners/partnersCommission.mjs";
 
 const PAGE_PATH = "/partners";
@@ -31,12 +103,32 @@ const COPY = {
   en: {
     seoTitle: "Bizuply Partner Program | Build recurring revenue with CRM and SaaS",
     seoDescription:
-      "Apply to the Bizuply Partner Program. Offer CRM, WhatsApp, automation and SaaS. Eligible recurring commission is 30% to 40%. Business Partner membership is $5,000 per year or $499 per month after approval.",
+      "Apply to the Bizuply Partner Program. Offer CRM, Meta campaigns for Facebook and Instagram ads, WhatsApp, automation and SaaS. Eligible recurring commission is 30% to 40%. Business Partner membership is $5,000 per year or $499 per month after approval.",
     kicker: "Bizuply Partner Program",
     h1: "Build businesses. Expand opportunities. Earn together.",
-    sub: "Join the Bizuply Partner Program. Introduce businesses to CRM, automation, WhatsApp and SaaS systems, and grow with a recurring commission model.",
+    sub: "Join the Bizuply Partner Program. Introduce businesses to CRM, Meta campaigns, automation, WhatsApp and SaaS systems, and grow with a recurring commission model.",
     become: "Apply for partnership",
     explore: "See how the program works",
+    stickyJoin: "Ready to apply?",
+    stickyCta: "Join as a partner",
+    compareTitle: "Choose your open track",
+    compareNote: "Verified commercial terms. Application is free. Membership fees are collected only after approval.",
+    compare: [
+      {
+        key: "Affiliate",
+        title: "Affiliate",
+        fee: "Membership fee: none on the percent track.",
+        rate: "Commission: currently 15% of eligible sales in the catalog.",
+        featured: false,
+      },
+      {
+        key: "Business Partner",
+        title: "Business Partner",
+        fee: "Membership: $499 / month or $5,000 / year after approval.",
+        rate: "Recurring commission: 30% / 35% / 40% tiers · 10% on eligible one-time deals.",
+        featured: true,
+      },
+    ],
     facts: [
       ["Up to 40% recurring commission", "On eligible subscription revenue in qualifying tracks, under the signed agreement."],
       ["One platform. Multiple solutions.", "CRM, WhatsApp, automation, websites and industry SaaS under one partnership."],
@@ -54,35 +146,75 @@ const COPY = {
       ["Long-term development", "Grow your customer base, deepen product knowledge and progress through published commission tiers."],
     ],
     productsTitle: "What partners can sell",
-    productsLead: "Product categories available through Bizuply today. Screens come from the published demo workspace, not from a customer account.",
+    productsLead: "Product categories available through Bizuply today. Clips are real recordings from the published demo workspace — not a customer account and not live Meta spend.",
+    demoCaption: "Authorized demo recording. No live publishing and no media spend.",
     products: [
       {
-        title: "CRM & customer management",
+        title: "CRM & lead management",
         href: "/crm",
-        image: "/demo-media/crm/leads-list.png",
-        alt: "Bizuply demo CRM lead list",
+        image: "/demo-media/crm/poster.jpg",
+        video: "/demo-media/crm/crm-en.mp4",
+        videoHe: "/demo-media/crm/crm-he.mp4",
+        captions: "/demo-media/crm/crm.en.vtt",
+        captionsHe: "/demo-media/crm/crm.he.vtt",
+        alt: "Bizuply demo CRM lead workflow",
+        sell: "Sell organized lead and customer management that keeps follow-ups in one place.",
         points: ["Customer relationship management", "Lead tracking", "Sales pipelines", "Customer records", "Follow-up workflows"],
       },
       {
-        title: "WhatsApp Business API & campaigns",
+        title: "WhatsApp Business API",
         href: "/whatsapp-api",
         image: "/demo-media/whatsapp/poster.jpg",
+        video: "/demo-media/whatsapp/whatsapp-en.mp4",
+        videoHe: "/demo-media/whatsapp/whatsapp-he.mp4",
+        captions: "/demo-media/whatsapp/whatsapp.en.vtt",
+        captionsHe: "/demo-media/whatsapp/whatsapp.he.vtt",
         alt: "Bizuply demo WhatsApp inbox",
+        sell: "Sell official WhatsApp Business API connectivity with templates and business messaging.",
         note: "Use is subject to Meta policy, approvals and messaging costs.",
         points: ["Official WhatsApp Business API", "Business messaging", "Approved templates", "Campaign-related workflows"],
+      },
+      {
+        title: "Meta campaigns — Facebook & Instagram Ads",
+        href: "/meta-campaigns",
+        image: "/demo-media/campaigns/poster.jpg",
+        video: "/demo-media/campaigns/campaigns-en.mp4",
+        videoHe: "/demo-media/campaigns/campaigns-he.mp4",
+        captions: "/demo-media/campaigns/campaigns.en.vtt",
+        captionsHe: "/demo-media/campaigns/campaigns.he.vtt",
+        alt: "Bizuply demo Meta campaign manager",
+        sell: "Sell Meta campaign tools next to CRM so Lead Ads can continue into follow-up.",
+        note: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Not a separate partner SKU. Meta bills media spend. Drafts can be prepared without publishing or spending. Partners earn on eligible Bizuply subscription revenue under the signed agreement — not on Meta ad spend.",
+        points: [
+          "Connect the business’s own Meta ad account",
+          "Create and edit campaigns, ad sets and ads",
+          "Set budget on the campaign or the ad set",
+          "Review performance for connected campaigns",
+          "Lead Ads can enter the CRM with source and status for follow-up",
+        ],
       },
       {
         title: "Business automations",
         href: "/automations",
         image: "/demo-media/automations/poster.jpg",
+        video: "/demo-media/automations/automations-en.mp4",
+        videoHe: "/demo-media/automations/automations-he.mp4",
+        captions: "/demo-media/automations/automations.en.vtt",
+        captionsHe: "/demo-media/automations/automations.he.vtt",
         alt: "Bizuply automation workspace",
+        sell: "Sell workflow automation that routes leads and creates follow-up tasks.",
         points: ["Automated follow-ups", "Lead routing", "Workflow automation", "Supported integrations"],
       },
       {
         title: "Websites & digital tools",
         href: "/website-builder",
-        image: "/demo-media/websites/my-sites.jpg",
+        image: "/demo-media/websites/poster.jpg",
+        video: "/demo-media/websites/websites-en.mp4",
+        videoHe: "/demo-media/websites/websites-he.mp4",
+        captions: "/demo-media/websites/websites.en.vtt",
+        captionsHe: "/demo-media/websites/websites.he.vtt",
         alt: "Bizuply website workspace",
+        sell: "Sell business websites and landing pages that capture leads into CRM.",
         points: ["Business websites", "Landing pages", "Lead capture forms", "Appointment booking"],
       },
     ],
@@ -102,6 +234,7 @@ const COPY = {
       ["Attribution", "A customer is attributed through the existing partner attribution record — not by visiting this page alone."],
     ],
     calcTitle: "Revenue calculator",
+    calcSimBadge: "Illustration only",
     calcCustomers: "Active paying customers",
     calcPrice: "Average monthly subscription price (USD)",
     calcTier: "Commission tier",
@@ -115,6 +248,18 @@ const COPY = {
     disclaimer: "Simulation only. Not a forecast or income guarantee. Actual earnings depend on eligible revenue, attribution, commission terms, retention, refunds and the executed agreement.",
     tracksTitle: "Partnership tracks",
     tracksLead: "Only tracks that already exist contractually or technically are shown as open. Others require a signed agreement or invitation and are not self-serve.",
+    tracksTableTitle: "Affiliate · Business Partner · Reseller at a glance",
+    tracksTable: {
+      fee: "Membership fee",
+      reward: "Reward model",
+      access: "Access",
+      rows: [
+        ["Affiliate", "None on the percent track", "Currently 15% of eligible sales in the catalog", "Application review. No Partner Center membership fee."],
+        ["Business Partner", "$499 / month or $5,000 / year after approval", "Recurring 30% / 35% / 40% · 10% one-time", "Partner Center after agreement and verified payment."],
+        ["Reseller", "Setup and monthly fees follow the appointed catalog plan", "Markup-share per appointed plan — not the international tier table", "By agreement. Not selected automatically on this page."],
+      ],
+    },
+    heroMediaCaption: "Live product demo from the authorized workspace — Partner Center illustration beside CRM recording.",
     tracks: [
       {
         key: "Affiliate",
@@ -201,8 +346,9 @@ const COPY = {
     planNotes: ["Application is free", "Payment is required only after approval", "Manual payment outside the website", "No automatic charging", "Subject to the partnership agreement"],
     noCharge: "This page does not start a live charge.",
     due: "After approval, and until the manual payment is recorded, the membership stays payment_due.",
-    applyMonthly: "Apply monthly",
-    applyAnnual: "Apply annually",
+    applyMonthly: "Apply for monthly membership",
+    applyAnnual: "Apply for annual membership",
+    registerAfterApproval: "Full registration (after approval)",
     territoryTitle: "Territory is agreed separately",
     territoryLead: "Monthly and annual billing do not choose a territory and do not include exclusivity.",
     territories: [
@@ -242,7 +388,13 @@ const COPY = {
       successTitle: "Application received",
       successBody: "Your application was saved. Our team will review it and follow up by email. Completing registration and any payment happens only after approval.",
       errorGeneric: "We could not save your application right now. Please email support@bizuply.com.",
+      errorConsent: "We could not record your privacy choice. Please try again or email support@bizuply.com.",
       requiredHint: "Required",
+      emailInvalid: "Enter a valid business email",
+      privacyNotice: "We use your details to review this partnership application and to contact you about it. See our",
+      privacyAccept: "I have read the Privacy Policy and agree that Bizuply may process my application details.",
+      privacyLink: "Privacy Policy",
+      marketingOptIn: "Optional: send me partner program updates (you can unsubscribe anytime).",
       trackLabels: {
         Affiliate: "Affiliate",
         "Business Partner": "Business Partner",
@@ -254,9 +406,9 @@ const COPY = {
     },
     faqTitle: "Questions partners ask",
     closeTitle: "Ready to partner with Bizuply?",
-    closeBody: "Submit an application or continue to the full partner registration once you know which billing interval you want after approval.",
+    closeBody: "Submit a free application first. Full registration and any membership payment happen only after approval.",
     closeCta: "Apply for partnership",
-    registerCta: "Open full registration",
+    registerCta: "Full registration (after approval)",
     login: "Partner sign in",
     visual: {
       caption: "Illustration of the partner workspace — not live account data",
@@ -272,12 +424,32 @@ const COPY = {
   he: {
     seoTitle: "תוכנית השותפים של Bizuply | בונים עסק עם CRM ו־SaaS",
     seoDescription:
-      "הגישו מועמדות לתוכנית השותפים של Bizuply. הציעו CRM, WhatsApp, אוטומציה ו־SaaS. עמלה חוזרת זכאית 30% עד 40%. מסלול Business Partner: 5,000 דולר לשנה או 499 דולר לחודש אחרי אישור.",
+      "הגישו מועמדות לתוכנית השותפים של Bizuply. הציעו CRM, קמפיינים במטא ל־Facebook ו־Instagram, WhatsApp, אוטומציה ו־SaaS. עמלה חוזרת זכאית 30% עד 40%. מסלול Business Partner: 5,000 דולר לשנה או 499 דולר לחודש אחרי אישור.",
     kicker: "תוכנית השותפים של Bizuply",
     h1: "בונים עסק. מרחיבים הזדמנויות. מרוויחים יחד.",
-    sub: "הצטרפו לתוכנית השותפים של Bizuply, הציעו לעסקים פתרונות CRM, אוטומציה, WhatsApp ומערכות SaaS, ובנו פעילות עסקית עם מודל עמלות מתמשך.",
+    sub: "הצטרפו לתוכנית השותפים של Bizuply, הציעו לעסקים פתרונות CRM, קמפיינים במטא, אוטומציה, WhatsApp ומערכות SaaS, ובנו פעילות עסקית עם מודל עמלות מתמשך.",
     become: "הגישו מועמדות לשותפות",
     explore: "גלו איך התוכנית עובדת",
+    stickyJoin: "מוכנים להגיש מועמדות?",
+    stickyCta: "הצטרפות כשותפים",
+    compareTitle: "בחרו מסלול פתוח",
+    compareNote: "תנאים מסחריים מאומתים. הגשת הבקשה ללא תשלום. דמי חברות נגבים רק אחרי אישור.",
+    compare: [
+      {
+        key: "Affiliate",
+        title: "Affiliate",
+        fee: "דמי חברות: אין במסלול האחוזים.",
+        rate: "עמלה: כיום 15% ממכירות זכאיות לפי הקטלוג.",
+        featured: false,
+      },
+      {
+        key: "Business Partner",
+        title: "Business Partner",
+        fee: "דמי חברות: 499$ לחודש או 5,000$ לשנה אחרי אישור.",
+        rate: "עמלה חוזרת: מדרגות 30% / 35% / 40% · 10% על עסקאות חד־פעמיות זכאיות.",
+        featured: true,
+      },
+    ],
     facts: [
       ["עד 40% עמלה חוזרת", "במסלולים הזכאים, על הכנסת מנוי זכאית לפי ההסכם החתום."],
       ["מגוון פתרונות תחת פלטפורמה אחת", "CRM, WhatsApp, אוטומציה, אתרים ו־SaaS לפי תחום."],
@@ -295,35 +467,75 @@ const COPY = {
       ["פיתוח לטווח ארוך", "הגדילו את בסיס הלקוחות, העמיקו ידע במוצרים והתקדמו במדרגות העמלה."],
     ],
     productsTitle: "מה השותפים יכולים למכור?",
-    productsLead: "קטגוריות מוצרים שזמינות ב־Bizuply היום. הצילומים מסביבת הדמו המפורסמת, לא מחשבון לקוח.",
+    productsLead: "קטגוריות מוצרים שזמינות ב־Bizuply היום. הסרטונים הם הקלטות אמיתיות מסביבת הדמו המפורסמת — לא חשבון לקוח ולא הוצאת פרסום חיה.",
+    demoCaption: "הקלטת דמו מורשית. ללא פרסום חי וללא הוצאת מדיה.",
     products: [
       {
-        title: "CRM וניהול לקוחות",
+        title: "CRM וניהול לידים",
         href: "/crm",
-        image: "/demo-media/crm/leads-list.png",
-        alt: "רשימת לידים בסביבת הדמו של Bizuply",
+        image: "/demo-media/crm/poster.jpg",
+        video: "/demo-media/crm/crm-en.mp4",
+        videoHe: "/demo-media/crm/crm-he.mp4",
+        captions: "/demo-media/crm/crm.en.vtt",
+        captionsHe: "/demo-media/crm/crm.he.vtt",
+        alt: "תהליך לידים בסביבת הדמו של Bizuply",
+        sell: "מכרו ניהול לידים ולקוחות שמחזיק את ההמשך במקום אחד.",
         points: ["ניהול קשרי לקוחות", "מעקב לידים", "צינורות מכירה", "כרטיסי לקוח", "תהליכי המשך טיפול"],
       },
       {
-        title: "WhatsApp Business API וקמפיינים",
+        title: "WhatsApp Business API",
         href: "/whatsapp-api",
         image: "/demo-media/whatsapp/poster.jpg",
+        video: "/demo-media/whatsapp/whatsapp-en.mp4",
+        videoHe: "/demo-media/whatsapp/whatsapp-he.mp4",
+        captions: "/demo-media/whatsapp/whatsapp.en.vtt",
+        captionsHe: "/demo-media/whatsapp/whatsapp.he.vtt",
         alt: "תיבת דואר של WhatsApp בסביבת הדמו",
+        sell: "מכרו חיבור WhatsApp Business API רשמי עם תבניות ומסרים עסקיים.",
         note: "השימוש כפוף למדיניות Meta, לאישורים ולעלויות ההודעות.",
         points: ["WhatsApp Business API רשמי", "מסרים עסקיים", "תבניות מאושרות", "תהליכים לקמפיינים"],
+      },
+      {
+        title: "קמפיינים במטא — Facebook & Instagram Ads",
+        href: "/meta-campaigns",
+        image: "/demo-media/campaigns/poster.jpg",
+        video: "/demo-media/campaigns/campaigns-en.mp4",
+        videoHe: "/demo-media/campaigns/campaigns-he.mp4",
+        captions: "/demo-media/campaigns/campaigns.en.vtt",
+        captionsHe: "/demo-media/campaigns/campaigns.he.vtt",
+        alt: "מנהל קמפיינים של Meta בסביבת הדמו של Bizuply",
+        sell: "מכרו כלי קמפיין של Meta ליד ה־CRM, כדי ש־Lead Ads ימשיכו לטיפול.",
+        note: "כלול בחבילת Business של Bizuply אחרי חיבור חשבון מודעות מורשה של Meta. אינו SKU שותפים נפרד. את הוצאת המדיה גובה Meta. אפשר להכין טיוטות בלי לפרסם ובלי להוציא תקציב. עמלה לשותף נגזרת מהכנסת מנוי זכאית של Bizuply לפי ההסכם — לא מהוצאת הפרסום ב־Meta.",
+        points: [
+          "חיבור חשבון המודעות של העסק ב־Meta",
+          "יצירה ועריכה של קמפיינים, קבוצות מודעות ומודעות",
+          "תקציב ברמת הקמפיין או קבוצת המודעות",
+          "הצגת ביצועים של קמפיינים מחוברים",
+          "Lead Ads יכולים להיכנס ל־CRM עם מקור וסטטוס להמשך טיפול",
+        ],
       },
       {
         title: "אוטומציות עסקיות",
         href: "/automations",
         image: "/demo-media/automations/poster.jpg",
+        video: "/demo-media/automations/automations-en.mp4",
+        videoHe: "/demo-media/automations/automations-he.mp4",
+        captions: "/demo-media/automations/automations.en.vtt",
+        captionsHe: "/demo-media/automations/automations.he.vtt",
         alt: "סביבת האוטומציות של Bizuply",
+        sell: "מכרו אוטומציות שמנתבות לידים ויוצרות משימות המשך.",
         points: ["המשך טיפול אוטומטי", "ניתוב לידים", "אוטומציית תהליכים", "חיבורים נתמכים"],
       },
       {
-        title: "אתרים וכלים דיגיטליים",
+        title: "אתרים ופתרונות דיגיטליים",
         href: "/website-builder",
-        image: "/demo-media/websites/my-sites.jpg",
+        image: "/demo-media/websites/poster.jpg",
+        video: "/demo-media/websites/websites-en.mp4",
+        videoHe: "/demo-media/websites/websites-he.mp4",
+        captions: "/demo-media/websites/websites.en.vtt",
+        captionsHe: "/demo-media/websites/websites.he.vtt",
         alt: "סביבת האתרים של Bizuply",
+        sell: "מכרו אתרים ודפי נחיתה שקולטים לידים ל־CRM.",
         points: ["אתרים עסקיים", "דפי נחיתה", "טפסי לידים", "זימון תורים"],
       },
     ],
@@ -343,6 +555,7 @@ const COPY = {
       ["שיוך לקוחות", "השיוך נעשה במנגנון השיוך הקיים — כניסה לעמוד הזה לבדה אינה משייכת לקוח."],
     ],
     calcTitle: "מחשבון הכנסות",
+    calcSimBadge: "המחשה בלבד",
     calcCustomers: "מספר לקוחות פעילים",
     calcPrice: "מחיר מנוי חודשי ממוצע (דולר)",
     calcTier: "שיעור עמלה לפי מסלול",
@@ -356,6 +569,18 @@ const COPY = {
     disclaimer: "סימולציה בלבד. לא תחזית ולא הבטחת הכנסה. ההכנסה בפועל תלויה בהכנסה זכאית, בשיוך, בתנאי העמלה, בשימור, בהחזרים ובהסכם שנחתם.",
     tracksTitle: "מסלולי שותפות",
     tracksLead: "מוצגים רק מסלולים שכבר קיימים חוזית או טכנית כפתוחים. אחרים דורשים הסכם או הזמנה ואינם בהרשמה עצמית.",
+    tracksTableTitle: "Affiliate · Business Partner · Reseller במבט אחד",
+    tracksTable: {
+      fee: "דמי חברות",
+      reward: "מודל תגמול",
+      access: "גישה",
+      rows: [
+        ["Affiliate", "אין במסלול האחוזים", "כיום 15% ממכירות זכאיות לפי הקטלוג", "בדיקת מועמדות. בלי דמי חברות למרכז השותפים."],
+        ["Business Partner", "499$ לחודש או 5,000$ לשנה אחרי אישור", "מדרגות 30% / 35% / 40% · 10% חד־פעמי", "מרכז השותפים אחרי הסכם ותשלום מאומת."],
+        ["Reseller", "דמי הקמה וחודשי לפי המסלול בקטלוג", "markup-share לפי המסלול שמונה — לא טבלת המדרגות הבינלאומית", "לפי הסכם. לא נבחר אוטומטית בעמוד הזה."],
+      ],
+    },
+    heroMediaCaption: "הדגמת מוצר מסביבת הדמו המורשית — המחשת מרכז השותפים לצד הקלטת CRM.",
     tracks: [
       {
         key: "Affiliate",
@@ -442,8 +667,9 @@ const COPY = {
     planNotes: ["הגשת הבקשה ללא תשלום", "תשלום נדרש רק אחרי אישור", "תשלום ידני מחוץ לאתר", "אין חיוב אוטומטי", "כפוף להסכם השותפות"],
     noCharge: "העמוד הזה לא מתחיל חיוב אוטומטי.",
     due: "אחרי האישור, ועד לתיעוד התשלום הידני, החברות נשארת payment_due.",
-    applyMonthly: "הרשמה חודשית",
-    applyAnnual: "הרשמה שנתית",
+    applyMonthly: "הגישו מועמדות לחברות חודשית",
+    applyAnnual: "הגישו מועמדות לחברות שנתית",
+    registerAfterApproval: "הרשמה מלאה (אחרי אישור)",
     territoryTitle: "הטריטוריה נקבעת בנפרד",
     territoryLead: "החיוב החודשי והשנתי אינו בוחר טריטוריה ואינו כולל בלעדיות.",
     territories: [
@@ -483,7 +709,13 @@ const COPY = {
       successTitle: "המועמדות התקבלה",
       successBody: "הבקשה נשמרה במערכת. הצוות יבדוק ויחזור אליכם במייל. השלמת הרשמה ותשלום, אם נדרש, רק אחרי אישור.",
       errorGeneric: "לא הצלחנו לשמור את המועמדות כרגע. שלחו מייל ל־support@bizuply.com.",
+      errorConsent: "לא הצלחנו לשמור את בחירת הפרטיות. נסו שוב או שלחו מייל ל־support@bizuply.com.",
       requiredHint: "שדה חובה",
+      emailInvalid: "הזינו אימייל עסקי תקין",
+      privacyNotice: "אנחנו משתמשים בפרטים לבדיקת מועמדות השותפות ולחזרה אליכם בנושא. ראו את",
+      privacyAccept: "קראתי את מדיניות הפרטיות ואני מסכים/ה ש־Bizuply תעבד את פרטי המועמדות שלי.",
+      privacyLink: "מדיניות הפרטיות",
+      marketingOptIn: "אופציונלי: שלחו לי עדכונים על תוכנית השותפים (אפשר לבטל בכל עת).",
       trackLabels: {
         Affiliate: "Affiliate",
         "Business Partner": "Business Partner",
@@ -495,9 +727,9 @@ const COPY = {
     },
     faqTitle: "שאלות נפוצות",
     closeTitle: "מוכנים להצטרף כשותפים של Bizuply?",
-    closeBody: "הגישו מועמדות או המשיכו להרשמה המלאה כשתדעו איזה מרווח חיוב תרצו אחרי האישור.",
+    closeBody: "הגישו קודם מועמדות ללא תשלום. הרשמה מלאה וכל תשלום חברות מתבצעים רק אחרי אישור.",
     closeCta: "הגישו מועמדות לשותפות",
-    registerCta: "להרשמה המלאה",
+    registerCta: "הרשמה מלאה (אחרי אישור)",
     login: "כניסת שותפים",
     visual: {
       caption: "המחשה של סביבת השותפים — לא נתוני חשבון אמיתיים",
@@ -546,6 +778,7 @@ export default function PartnersRecruitment() {
   const [price, setPrice] = useState(99);
   const [oneTimeDeals, setOneTimeDeals] = useState(2);
   const [oneTimeAverage, setOneTimeAverage] = useState(500);
+  const [stickyVisible, setStickyVisible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -562,24 +795,40 @@ export default function PartnersRecruitment() {
   }, []);
 
   useEffect(() => {
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".ip-reveal"));
-    const reduce =
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || typeof IntersectionObserver !== "function") {
-      nodes.forEach((node) => node.classList.add("is-in"));
-      return undefined;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("is-in");
+    const root = document.querySelector<HTMLElement>(".ipartner");
+    if (!root) return undefined;
+    return revealPartnersSections(root);
+  }, [hebrew]);
+
+  useEffect(() => {
+    const apply = document.getElementById("apply");
+    const hero = document.querySelector<HTMLElement>(".ip-hero");
+    if (!apply) return undefined;
+
+    const sync = () => {
+      const applyRect = apply.getBoundingClientRect();
+      const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
+      const applyInView = applyRect.top < window.innerHeight * 0.85 && applyRect.bottom > 80;
+      setStickyVisible(heroBottom < 0 && !applyInView);
+    };
+
+    let frame = 0;
+    const onScroll = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(() => {
+          frame = 0;
+          sync();
         });
-      },
-      { threshold: 0.12 }
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+      }
+    };
+    sync();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [hebrew]);
 
   const monthly = options.find((row) => row.interval === "monthly") || INTERNATIONAL_BILLING_OPTIONS[0];
@@ -634,8 +883,9 @@ export default function PartnersRecruitment() {
       </Helmet>
 
       <header className="ip-hero">
+        <div className="ip-hero-glow" aria-hidden="true" />
         <div className="ip-wrap ip-hero-grid">
-          <div>
+          <div className="ip-hero-copy">
             <p className="ip-kicker">{copy.kicker}</p>
             <h1>{copy.h1}</h1>
             <p className="ip-sub">{copy.sub}</p>
@@ -648,7 +898,45 @@ export default function PartnersRecruitment() {
               </a>
             </div>
           </div>
-          <PartnerPortalVisual copy={copy.visual} />
+          <div className="ip-hero-media">
+            <div className="ip-hero-stack">
+              <div className="ip-hero-demo">
+                <PartnerProductMedia
+                  hebrew={hebrew}
+                  priority
+                  product={{
+                    image: "/demo-media/crm/poster.jpg",
+                    alt: hebrew ? "הקלטת CRM מסביבת הדמו" : "CRM demo recording",
+                    video: "/demo-media/crm/crm-en.mp4",
+                    videoHe: "/demo-media/crm/crm-he.mp4",
+                    captions: "/demo-media/crm/crm.en.vtt",
+                    captionsHe: "/demo-media/crm/crm.he.vtt",
+                  }}
+                />
+              </div>
+              <div className="ip-hero-portal">
+                <PartnerPortalVisual copy={copy.visual} />
+              </div>
+            </div>
+            <p className="ip-hero-media-caption">{copy.heroMediaCaption}</p>
+          </div>
+        </div>
+        <div className="ip-wrap" data-testid="partner-track-compare">
+          <p className="ip-kicker">{copy.compareTitle}</p>
+          <div className="ip-compare" aria-label={copy.compareTitle}>
+            {copy.compare.map((track) => (
+              <article
+                key={track.key}
+                className={`ip-compare-card${track.featured ? " is-featured" : ""}`}
+                data-testid={`compare-${track.key}`}
+              >
+                <h2>{track.title}</h2>
+                <p className="ip-compare-fee">{track.fee}</p>
+                <p className="ip-compare-rate">{track.rate}</p>
+              </article>
+            ))}
+          </div>
+          <p className="ip-compare-note">{copy.compareNote}</p>
         </div>
         <div className="ip-wrap ip-facts" aria-label={copy.kicker}>
           {copy.facts.map(([title, body]) => (
@@ -681,35 +969,41 @@ export default function PartnersRecruitment() {
           <p className="ip-copy">{copy.productsLead}</p>
           <div className="ip-products">
             {copy.products.map((product) => (
-              <article className="ip-product" key={product.href}>
-                <figure className="ip-shot">
-                  <img src={product.image} alt={product.alt} width="960" height="600" loading="lazy" />
-                </figure>
+              <article className="ip-product" key={product.href} data-testid={`product-${product.href.replace(/^\//, "")}`}>
+                <PartnerProductMedia hebrew={hebrew} product={product} />
                 <div>
                   <h3>{product.title}</h3>
+                  {"sell" in product && product.sell ? <p className="ip-sell">{product.sell}</p> : null}
                   <ul>
                     {product.points.map((point) => (
                       <li key={point}>{point}</li>
                     ))}
                   </ul>
                   {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
+                  <p className="ip-demo-caption">{copy.demoCaption}</p>
                   <p>
-                    <Link to={product.href}>{product.title}</Link>
+                    <Link className="ip-product-link" to={product.href}>
+                      {product.title}
+                    </Link>
                   </p>
                 </div>
               </article>
             ))}
           </div>
-          <h3 className="ip-saas-heading">{copy.saasTitle}</h3>
-          <p className="ip-copy">{copy.saasLead}</p>
-          <div className="ip-saas-grid">
-            {copy.saas.map((name) => (
-              <article className="ip-saas" key={name}>
-                <span className="ip-badge">{copy.soon}</span>
-                <h3>{name}</h3>
-              </article>
-            ))}
-          </div>
+          <aside className="ip-saas-block" aria-labelledby="saas-heading">
+            <h3 className="ip-saas-heading" id="saas-heading">
+              {copy.saasTitle}
+            </h3>
+            <p className="ip-copy">{copy.saasLead}</p>
+            <div className="ip-saas-grid">
+              {copy.saas.map((name) => (
+                <article className="ip-saas" key={name}>
+                  <span className="ip-badge">{copy.soon}</span>
+                  <h3>{name}</h3>
+                </article>
+              ))}
+            </div>
+          </aside>
         </div>
       </section>
 
@@ -751,7 +1045,10 @@ export default function PartnersRecruitment() {
             ))}
           </div>
 
-          <h3 className="ip-calc-heading">{copy.calcTitle}</h3>
+          <div className="ip-calc-heading-row">
+            <h3 className="ip-calc-heading">{copy.calcTitle}</h3>
+            <span className="ip-sim-badge">{copy.calcSimBadge}</span>
+          </div>
           <form
             className="ip-calc"
             data-testid="partner-commission-calculator"
@@ -847,6 +1144,29 @@ export default function PartnersRecruitment() {
         <div className="ip-wrap">
           <h2>{copy.tracksTitle}</h2>
           <p className="ip-copy">{copy.tracksLead}</p>
+          <div className="ip-table-wrap ip-tracks-table" data-testid="partner-tracks-table">
+            <table className="ip-table">
+              <caption className="ip-sr-only">{copy.tracksTableTitle}</caption>
+              <thead>
+                <tr>
+                  <th scope="col">{copy.tracksTableTitle}</th>
+                  <th scope="col">{copy.tracksTable.fee}</th>
+                  <th scope="col">{copy.tracksTable.reward}</th>
+                  <th scope="col">{copy.tracksTable.access}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {copy.tracksTable.rows.map(([name, fee, reward, access]) => (
+                  <tr key={name}>
+                    <th scope="row">{name}</th>
+                    <td>{fee}</td>
+                    <td>{reward}</td>
+                    <td>{access}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
           <div className="ip-tracks">
             {copy.tracks.map((track) => (
               <article className="ip-track" key={track.key} data-testid={`track-${track.key}`}>
@@ -900,8 +1220,11 @@ export default function PartnersRecruitment() {
                   <li key={point}>{point}</li>
                 ))}
               </ul>
-              <Link className="ip-btn ip-btn-ghost" to={monthlyHref} data-testid="international-monthly-link">
+              <a className="ip-btn ip-btn-ghost" href="#apply" data-testid="international-monthly-link">
                 {copy.applyMonthly}
+              </a>
+              <Link className="ip-btn ip-btn-ghost" to={monthlyHref} data-testid="international-monthly-register-link">
+                {copy.registerAfterApproval}
               </Link>
             </article>
             <article className="ip-plan ip-plan-best" data-testid="annual-price-card">
@@ -920,8 +1243,11 @@ export default function PartnersRecruitment() {
                   <li key={point}>{point}</li>
                 ))}
               </ul>
-              <Link className="ip-btn ip-btn-primary" to={annualHref} data-testid="international-register-link">
+              <a className="ip-btn ip-btn-primary" href="#apply" data-testid="international-register-link">
                 {copy.applyAnnual}
+              </a>
+              <Link className="ip-btn ip-btn-ghost" to={annualHref} data-testid="international-annual-register-link">
+                {copy.registerAfterApproval}
               </Link>
             </article>
           </div>
@@ -981,7 +1307,7 @@ export default function PartnersRecruitment() {
 
       <section className="ip-section ip-band ip-reveal" id="apply" aria-labelledby="apply-heading">
         <div className="ip-wrap">
-          <PartnerApplyForm copy={copy.form} pageUrl={pageUrl} />
+          <PartnerApplyForm copy={copy.form} pageUrl={pageUrl} locale={locale} />
         </div>
       </section>
 
@@ -1018,6 +1344,31 @@ export default function PartnersRecruitment() {
           </div>
         </div>
       </section>
+
+      <div
+        className={`ip-sticky-join${stickyVisible ? " is-visible" : ""}`}
+        data-testid="partner-sticky-join"
+        aria-hidden={!stickyVisible}
+      >
+        <div className="ip-sticky-join__inner">
+          <p className="ip-sticky-join__copy">{copy.stickyJoin}</p>
+          <a
+            className="ip-btn ip-btn-primary"
+            href="#apply"
+            tabIndex={stickyVisible ? 0 : -1}
+            onClick={(event) => {
+              const target = document.getElementById("apply");
+              if (!target) return;
+              event.preventDefault();
+              target.classList.add("is-in");
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+              window.history.replaceState(null, "", "#apply");
+            }}
+          >
+            {copy.stickyCta}
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

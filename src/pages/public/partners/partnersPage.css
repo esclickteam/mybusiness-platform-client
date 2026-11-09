@@ -1,18 +1,21 @@
 .ipartner {
   padding-bottom: calc(7rem + env(safe-area-inset-bottom));
-  --ink: #0f172a;
+  --ink: #0b1220;
   --muted: #475569;
   --violet: #5b21b6;
   --violet-deep: #4c1d95;
   --blue: #1d4ed8;
-  --line: rgba(15, 23, 42, 0.09);
+  --line: rgba(15, 23, 42, 0.1);
   --surface: #ffffff;
-  --canvas: #f4f2fa;
+  --canvas: #f3f0fa;
+  --radius: 4px;
+  --radius-md: 6px;
   color: var(--ink);
+  font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
   background:
-    radial-gradient(980px 460px at 100% -10%, rgba(37, 99, 235, 0.14), transparent 60%),
-    radial-gradient(820px 400px at -10% 0%, rgba(91, 33, 182, 0.16), transparent 58%),
-    linear-gradient(180deg, #f7f5fd 0%, var(--canvas) 42%, #f8f7fb 100%);
+    radial-gradient(1100px 520px at 100% -8%, rgba(29, 78, 216, 0.16), transparent 58%),
+    radial-gradient(900px 460px at -8% 0%, rgba(91, 33, 182, 0.18), transparent 56%),
+    linear-gradient(180deg, #f6f3fd 0%, var(--canvas) 38%, #f7f6fb 100%);
   overflow-x: clip;
 }
 
@@ -23,12 +26,73 @@
   margin-inline: auto;
 }
 
-.ip-hero { padding: 40px 0 20px; }
+.ip-hero {
+  position: relative;
+  padding: 48px 0 28px;
+  isolation: isolate;
+}
+
+.ip-hero-glow {
+  position: absolute;
+  inset: 8% 8% auto;
+  height: min(42vw, 420px);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(91, 33, 182, 0.18), transparent 55%),
+    radial-gradient(circle at 70% 35%, rgba(29, 78, 216, 0.16), transparent 50%);
+  filter: blur(8px);
+  z-index: -1;
+  pointer-events: none;
+}
 
 .ip-hero-grid {
   display: grid;
-  gap: 32px;
+  gap: 36px;
   align-items: center;
+}
+
+.ip-hero-media {
+  display: grid;
+  gap: 12px;
+}
+
+.ip-hero-stack {
+  position: relative;
+  min-height: 280px;
+}
+
+.ip-hero-demo {
+  position: relative;
+  z-index: 1;
+  animation: ip-float 7s ease-in-out infinite;
+}
+
+.ip-hero-portal {
+  position: absolute;
+  inset-inline-end: -4%;
+  bottom: -10%;
+  width: min(58%, 280px);
+  z-index: 2;
+  filter: drop-shadow(0 18px 36px rgba(49, 22, 109, 0.22));
+  animation: ip-float-delayed 8s ease-in-out infinite;
+}
+
+.ip-hero-media-caption {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+@keyframes ip-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes ip-float-delayed {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
 }
 
 .ip-kicker {
@@ -77,8 +141,9 @@
   justify-content: center;
   min-height: 48px;
   padding: 0 22px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   font-weight: 800;
+  letter-spacing: 0.01em;
   text-decoration: none;
   border: 1px solid transparent;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
@@ -106,32 +171,38 @@
 }
 
 .ip-shot {
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   overflow: hidden;
-  background: #fff;
+  background: #0f172a;
   border: 1px solid var(--line);
-  box-shadow: 0 20px 48px rgba(49, 22, 109, 0.12);
+  box-shadow: 0 18px 40px rgba(49, 22, 109, 0.14);
 }
 
-.ip-shot img {
+.ip-shot img,
+.ip-shot video {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
   object-position: top left;
+  background: #0f172a;
+}
+
+.ip-shot video {
+  object-fit: contain;
 }
 
 .ip-portal-shell {
-  border-radius: 18px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   border: 1px solid var(--line);
   background:
-    linear-gradient(160deg, rgba(76, 29, 149, 0.92), rgba(29, 78, 216, 0.88)),
+    linear-gradient(160deg, rgba(76, 29, 149, 0.94), rgba(29, 78, 216, 0.9)),
     #312e81;
   color: #fff;
-  box-shadow: 0 28px 60px rgba(49, 22, 109, 0.28);
-  min-height: 320px;
+  box-shadow: 0 22px 48px rgba(49, 22, 109, 0.28);
+  min-height: 240px;
 }
 
 .ip-portal-top {
@@ -163,7 +234,7 @@
 .ip-portal-panel {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 12px;
+  border-radius: var(--radius);
   padding: 14px 16px;
 }
 
@@ -228,10 +299,16 @@
 .ip-plan,
 .ip-step,
 .ip-saas,
-.ip-track {
+.ip-track,
+.ip-compare-card,
+.ip-product,
+.ip-apply-form,
+.ip-calc,
+.ip-faq details,
+.ip-saas-block {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--radius-md);
 }
 
 .ip-facts article { padding: 16px 18px; }
@@ -286,46 +363,88 @@
 
 .ip-product {
   display: grid;
-  gap: 18px;
-  padding: 16px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 18px;
+  gap: 20px;
+  padding: 18px;
+}
+
+.ip-sell {
+  margin: 0 0 4px;
+  color: var(--muted);
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.ip-demo-caption {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+  font-weight: 600;
+}
+
+.ip-product-link {
+  color: var(--blue);
+  font-weight: 800;
+  text-decoration: none;
+  border-bottom: 2px solid rgba(29, 78, 216, 0.25);
 }
 
 .ip-product ul,
 .ip-plan ul { margin: 12px 0 0; padding: 0; list-style: none; }
 .ip-product li,
-.ip-plan li { margin-top: 8px; }
+.ip-plan li { margin-top: 8px; color: var(--muted); line-height: 1.55; }
 .ip-product a { color: var(--blue); font-weight: 800; }
+
+.ip-saas-block {
+  margin-top: 40px;
+  padding: 22px;
+}
 
 .ip-saas-heading,
 .ip-calc-heading { margin-top: 36px; margin-bottom: 0; font-size: 1.35rem; }
 
 .ip-table-wrap {
   overflow-x: auto;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--line);
   background: #fff;
 }
 .ip-table { width: 100%; border-collapse: collapse; min-width: 280px; }
 .ip-table th,
-.ip-table td { padding: 16px 18px; text-align: start; border-bottom: 1px solid var(--line); }
+.ip-table td { padding: 16px 18px; text-align: start; border-bottom: 1px solid var(--line); vertical-align: top; }
 .ip-table th { background: #f3efff; font-size: 0.92rem; }
+.ip-tracks-table { margin: 0 0 24px; }
+.ip-tracks-table .ip-table { min-width: 640px; }
 .ip-onetime {
   margin-top: 16px;
   padding: 18px 20px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: #eef2ff;
   font-weight: 800;
 }
 
+.ip-calc-heading-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 36px;
+}
+.ip-calc-heading { margin: 0; font-size: 1.35rem; }
+.ip-sim-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: var(--radius);
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
 .ip-calc {
-  margin-top: 22px;
+  margin-top: 18px;
   padding: 22px;
-  border-radius: 18px;
-  background: #fff;
-  border: 1px solid var(--line);
   display: grid;
   gap: 16px;
 }
@@ -341,7 +460,7 @@
 .ip-apply-form textarea {
   width: 100%;
   min-height: 48px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   border: 1px solid rgba(15, 23, 42, 0.16);
   padding: 0 12px;
   font: inherit;
@@ -351,7 +470,7 @@
 .ip-tiers { display: flex; flex-wrap: wrap; gap: 8px; }
 .ip-tiers button {
   min-height: 44px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   border: 1px solid rgba(15, 23, 42, 0.14);
   background: #fff;
   padding: 0 14px;
@@ -366,7 +485,7 @@
 .ip-results { display: grid; gap: 10px; }
 .ip-results div {
   padding: 14px 16px;
-  border-radius: 12px;
+  border-radius: var(--radius);
   background: #f8f7fc;
 }
 .ip-results-total {
@@ -391,7 +510,7 @@
   align-items: center;
   min-height: 28px;
   padding: 0 10px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   background: #f3efff;
   color: var(--violet);
   font-size: 0.78rem;
@@ -409,7 +528,7 @@
 }
 .ip-badge {
   align-self: flex-start;
-  border-radius: 6px;
+  border-radius: var(--radius);
   background: var(--violet);
   color: #fff;
   font-size: 0.75rem;
@@ -434,7 +553,7 @@
 .ip-num {
   width: 42px;
   height: 42px;
-  border-radius: 8px;
+  border-radius: var(--radius);
   display: grid;
   place-items: center;
   background: #f3efff;
@@ -444,9 +563,6 @@
 
 .ip-apply-form {
   padding: 28px;
-  border-radius: 20px;
-  background: #fff;
-  border: 1px solid var(--line);
   box-shadow: 0 18px 40px rgba(49, 22, 109, 0.08);
 }
 .ip-apply-intro h2 { margin: 0; }
@@ -464,7 +580,7 @@
 }
 .ip-form-success {
   padding: 28px;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   background: #ecfdf5;
   border: 1px solid #a7f3d0;
 }
@@ -472,9 +588,6 @@
 .ip-form-success p { margin: 0; color: #065f46; line-height: 1.6; }
 
 .ip-faq details {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 12px;
   padding: 14px 16px;
   margin-top: 10px;
 }
@@ -483,7 +596,7 @@
 
 .ip-close {
   padding: 28px;
-  border-radius: 20px;
+  border-radius: var(--radius-md);
   background: linear-gradient(135deg, #4c1d95, #1d4ed8);
   color: #fff;
 }
@@ -491,24 +604,23 @@
 .ip-close p { color: #fff; max-width: 40rem; }
 .ip-close .ip-btn-primary { background: #fff; color: var(--violet); box-shadow: none; }
 
-/* Hero stays visible on first paint — never opacity:0 above the fold. */
+/* Scroll motion never hides content. Only a subtle lift once JS is ready. */
 .ip-hero,
-.ip-hero.ip-reveal {
+.ip-hero.ip-reveal,
+.ip-reveal {
   opacity: 1;
   transform: none;
 }
 
-.ip-reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 720px;
+.ipartner.is-reveal-ready .ip-reveal:not(.is-in) {
+  opacity: 1;
+  transform: translateY(10px);
+  transition: transform 0.45s ease;
 }
-.ip-reveal.is-in {
+
+.ipartner.is-reveal-ready .ip-reveal.is-in {
   opacity: 1;
   transform: none;
-  content-visibility: visible;
 }
 
 .ipartner a:focus-visible,
@@ -522,10 +634,140 @@
 }
 
 .ip-section,
-.ip-close { scroll-margin-top: 88px; }
+.ip-close,
+#apply { scroll-margin-top: 96px; }
+
+.ip-compare {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.ip-compare-card {
+  padding: 18px 20px;
+}
+
+.ip-compare-card.is-featured {
+  border-color: rgba(91, 33, 182, 0.35);
+  box-shadow: 0 12px 28px rgba(76, 29, 149, 0.1);
+}
+
+.ip-compare-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.ip-compare-fee,
+.ip-compare-rate {
+  margin: 8px 0 0;
+  line-height: 1.55;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.ip-compare-fee strong,
+.ip-compare-rate strong {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.ip-compare-note {
+  margin: 12px 0 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.ip-sticky-join {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  transform: translateY(110%);
+  transition: transform 0.28s ease;
+  pointer-events: none;
+}
+
+.ip-sticky-join.is-visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.ip-sticky-join__inner {
+  width: min(1160px, 100%);
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ip-sticky-join__copy {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.ip-sticky-join .ip-btn {
+  min-width: 11rem;
+}
+
+.ip-privacy {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.ip-privacy-notice {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.ip-privacy-notice a {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.ip-privacy-check {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.ip-privacy-check input {
+  width: auto;
+  min-height: 0;
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+
+.ip-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 @media (min-width: 720px) {
   .ip-facts,
+  .ip-compare,
   .ip-grid-2,
   .ip-plans,
   .ip-results,
@@ -555,17 +797,37 @@
     grid-template-columns: repeat(3, 1fr);
   }
   .ip-results-total { grid-column: span 3; }
+  .ip-hero-portal { width: min(52%, 300px); bottom: -8%; }
+}
+
+@media (max-width: 719px) {
+  .ip-hero-portal {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    margin-top: 12px;
+    filter: none;
+    animation: none;
+  }
+  .ip-hero-demo { animation: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ip-reveal {
+  .ipartner.is-reveal-ready .ip-reveal:not(.is-in),
+  .ipartner.is-reveal-ready .ip-reveal.is-in,
+  .ip-reveal,
+  .ip-hero-demo,
+  .ip-hero-portal {
     opacity: 1;
     transform: none;
     transition: none;
+    animation: none;
   }
+  .ip-sticky-join { transition: none; }
   .ip-btn { transition: none; }
   .ip-btn:hover { transform: none; }
 }
 
-[dir="rtl"] .ip-shot img { object-position: top right; }
+[dir="rtl"] .ip-shot img,
+[dir="rtl"] .ip-shot video { object-position: top right; }
 [dir="rtl"] .ipartner h1 { max-width: none; }
