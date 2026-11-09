@@ -866,6 +866,7 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, locale))}</script>`,
       path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
+      path === "/website-scan" ? `<script type="application/ld+json">${jsonLd(scanServiceSchema(locale, canonical))}</script>` : "",
       path === "/website-scan" ? `<script type="application/ld+json">${jsonLd(scanVideoSchema(locale))}</script>` : "",
       faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
@@ -1121,6 +1122,21 @@ function websiteSchema() {
       "BizUply (ביזאפלי) is the business platform at https://bizuply.com, published by Bizuply LLC.",
     inLanguage: ["en", "he", "es", "pt-BR", "ar"],
     publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
+  };
+}
+
+function scanServiceSchema(locale, canonical) {
+  const copy = WEBSITE_SCAN[locale] || WEBSITE_SCAN.en;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Bizuply Compliance AI",
+    serviceType: "Website scan",
+    provider: { "@id": `${MARKETING_ORIGIN}/#organization` },
+    areaServed: "Worldwide",
+    url: canonical,
+    description: copy.description,
+    inLanguage: locale,
   };
 }
 
