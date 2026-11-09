@@ -1565,7 +1565,7 @@
 
 .b2-theater-screen {
   position: relative;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 10;
   background: #12061f;
   overflow: hidden;
 }
@@ -1859,7 +1859,7 @@
 .b2-wa-main img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 16 / 10;
   object-fit: contain;
   object-position: center center;
   background: #12061f;

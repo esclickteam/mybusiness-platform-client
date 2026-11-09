@@ -1,0 +1,14 @@
+{
+  "version": "v10c-action-compositions",
+  "filmCache": "v=21",
+  "visualReview": {
+    "lead": "PASS — table then lead-card actions readable",
+    "crm": "PASS — lead modal + action icons clear",
+    "whatsapp": "PASS — chat bubbles + Reply visible without strain",
+    "automation": "PASS — workflow nodes readable in focused crop",
+    "task": "PASS — datetime + Add Task + נשמר visible",
+    "gallery": "PASS — 1920 live heroes, titles intact",
+    "mobile": "PASS — dedicated action panels, not stretched desktop"
+  },
+  "note": "Action crops from 1920 masters without upscaling. Theater object-fit contain, no ken-burns."
+}

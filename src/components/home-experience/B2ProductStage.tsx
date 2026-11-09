@@ -7,7 +7,7 @@ type WaStep = "message" | "crm" | "auto";
 
 type FilmRef = { src: string; poster: string; startAt: number };
 
-const FILM_V = "v=20";
+const FILM_V = "v=21";
 
 const HERO_FILMS_DESKTOP: Record<HeroStep, FilmRef> = {
   lead: {

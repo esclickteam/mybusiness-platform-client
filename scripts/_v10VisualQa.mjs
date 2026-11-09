@@ -48,11 +48,8 @@ const browser = await chromium.launch({ headless: true });
   await page.screenshot({ path: `${ART}/v10_desktop_home.png`, fullPage: false });
 
   const filmSrc = await page.locator(".b2-theater-film").first().getAttribute("src");
-  if (filmSrc?.includes("v=20") && filmSrc.includes("1920") === false) {
-    // src is path with v=20; resolution checked offline
-    pass("film-cache-v20", filmSrc);
-  } else if (filmSrc?.includes("v=20")) pass("film-cache-v20", filmSrc);
-  else fail("film-cache-v20", String(filmSrc));
+  if (filmSrc?.includes("v=21")) pass("film-cache-v21", filmSrc);
+  else fail("film-cache-v21", String(filmSrc));
 
   const fit = await page.evaluate(() => {
     const v = document.querySelector(".b2-theater-film");
@@ -120,7 +117,7 @@ const browser = await chromium.launch({ headless: true });
   else fail("no-mobile-login-icon");
 
   const filmSrc = await page.locator(".b2-theater-film").first().getAttribute("src");
-  if (filmSrc?.includes("mobile-") && filmSrc.includes("v=20")) pass("mobile-dedicated-film", filmSrc);
+  if (filmSrc?.includes("mobile-") && filmSrc.includes("v=21")) pass("mobile-dedicated-film", filmSrc);
   else fail("mobile-dedicated-film", String(filmSrc));
 
   await page.locator("#sites").scrollIntoViewIfNeeded();
