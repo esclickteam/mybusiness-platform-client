@@ -11,8 +11,9 @@ describe("purple home first paint", () => {
     expect(en.inner).toContain('data-home-design="purple"');
     expect(en.inner).toContain('class="hx-hero"');
     expect(en.inner).toContain('class="hx-display"');
-    expect(en.inner).toContain(">Everything</span>");
-    expect(en.inner).toContain(">platform.</span>");
+    expect(en.inner).toContain(">Your</span>");
+    expect(en.inner).toContain(">business.</span>");
+    expect(en.inner).toContain(">possibilities.</span>");
     expect(en.inner).toContain(HX_HERO_COPY.en.start);
     expect(en.inner).toContain("/demo-media/home/crm.jpg");
     expect(en.inner).toContain('class="site-header__end"');
@@ -28,9 +29,12 @@ describe("purple home first paint", () => {
     expect(he.dir).toBe("rtl");
     expect(he.inner).toContain(">כל</span>");
     expect(he.inner).toContain(">אחת.</span>");
+    expect(he.inner).toContain(">אפשרויות.</span>");
     expect(he.inner).toContain("BizUply");
     expect(he.inner).toContain(HX_HERO_COPY.he.start);
-    expect(he.headline).toBe(`${HX_HERO_COPY.he.lineOne} ${HX_HERO_COPY.he.lineTwo}`);
+    expect(he.headline).toBe(
+      `${HX_HERO_COPY.he.lineOne} ${HX_HERO_COPY.he.lineTwo} ${HX_HERO_COPY.he.lineThree}`,
+    );
   });
 
   it("critical CSS paints purple, never the legacy dark hero gradient", () => {

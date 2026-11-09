@@ -270,11 +270,12 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   --s3: 0;
   --hx-header: 5rem;
   position: relative;
-  height: 132vh;
+  height: auto;
+  min-height: 100svh;
   background:
-    radial-gradient(ellipse 70% 55% at 88% 18%, rgba(79, 70, 229, 0.55), transparent 58%),
-    radial-gradient(ellipse 50% 45% at 12% 78%, rgba(124, 58, 237, 0.5), transparent 55%),
-    linear-gradient(155deg, #5b21b6 0%, #4c1d95 48%, #5b21b6 100%);
+    radial-gradient(ellipse 55% 45% at 18% 12%, rgba(129, 140, 248, 0.38), transparent 58%),
+    radial-gradient(ellipse 50% 40% at 88% 78%, rgba(168, 85, 247, 0.32), transparent 55%),
+    linear-gradient(165deg, #4c1d95 0%, #5b21b6 42%, #312e81 100%);
   color: #fff;
 }
 .hx-hero-pin {
@@ -282,35 +283,25 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   top: var(--hx-header, 5rem);
   height: calc(100svh - var(--hx-header, 5rem));
   overflow: hidden;
+  display: grid;
+  align-content: center;
+  padding: 1.4rem clamp(1rem, 4vw, 3.5rem) 2rem;
 }
-.hx-geo {
-  position: absolute;
-  pointer-events: none;
-  z-index: 0;
-}
-.hx-geo-a {
-  width: min(42vw, 560px);
-  height: min(42vw, 560px);
-  border: 1px solid rgba(228, 212, 255, 0.4);
-  border-radius: 50%;
-  top: -14vh;
-  inset-inline-end: -10vw;
-}
-.hx-geo-c {
-  width: 130%;
-  height: 4.5rem;
-  inset-inline-start: -12%;
-  top: 76%;
-  background: #7c3aed;
-  transform: rotate(-8deg);
+.hx-hero-core {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(1rem, 3vw, 2.4rem);
+  align-items: center;
+  width: min(1220px, 100%);
+  margin-inline: auto;
 }
 .hx-hero-copy {
   position: relative;
   z-index: 2;
-  width: min(32rem, 38%);
-  padding: 2.4rem clamp(1.25rem, 3.5vw, 3.8rem) 0;
-  transform: translate3d(0, 0, 0) scale(1);
-  transform-origin: top center;
+  width: auto;
+  max-width: 34rem;
+  padding: 0;
+  transform: none;
 }
 .hx-kicker {
   margin: 0 0 0.8rem;
@@ -323,11 +314,11 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
 .hx-display {
   margin: 0;
   font-family: Assistant, Inter, system-ui, sans-serif;
-  font-size: clamp(2.15rem, 3.8vw, 4.35rem);
+  font-size: clamp(2.15rem, 4.2vw, 4.2rem);
   font-weight: 800;
-  letter-spacing: -0.045em;
-  line-height: 1.08;
-  max-width: 18ch;
+  letter-spacing: -0.05em;
+  line-height: 1.05;
+  max-width: none;
   color: #fff;
 }
 .hx-hero-brand {
@@ -414,39 +405,31 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   color: #fff;
 }
 .hx-hero-stage {
-  position: absolute;
+  position: relative;
   z-index: 2;
-  inset-inline-end: 0;
-  bottom: 0;
-  width: min(66vw, 1080px);
-  height: min(82%, 680px);
+  width: 100%;
+  max-width: 900px;
+  height: auto;
   pointer-events: none;
 }
-.hx-hero-frame {
-  position: absolute;
+.hx-hero-frame,
+.hx-compose-main {
+  position: relative;
   z-index: 2;
   overflow: hidden;
-  inset: auto 0 0 auto;
-  width: 92%;
+  width: 100%;
   aspect-ratio: 16 / 10;
+  max-width: 900px;
   max-height: 100%;
-  background: #4c1d95;
-  box-shadow:
-    0 28px 60px rgba(26, 11, 51, 0.28),
-    1rem 1rem 0 #efe4ff;
-}
-.hx-hero-frame::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(to right, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
-}
-[dir="rtl"] .hx-hero-frame::after {
-  background: linear-gradient(to left, #5b21b6 0%, rgba(91, 33, 182, 0) 18%);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), transparent 28%),
+    #4c1d95;
+  box-shadow: 0 28px 60px rgba(26, 11, 51, 0.28);
 }
 .hx-hero-frame img,
-.hx-hero-frame video {
+.hx-hero-frame video,
+.hx-compose-main img,
+.hx-compose-main video {
   position: absolute;
   inset: 0;
   display: block;

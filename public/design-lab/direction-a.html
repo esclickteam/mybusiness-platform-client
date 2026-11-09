@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BizUply Design Lab — כיוון A: Deep Stage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./lab.css" />
+  <style>
+    body { background: #0f0620; }
+    .hero-a {
+      position: relative;
+      min-height: 100svh;
+      overflow: clip;
+      color: #fff;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(167, 139, 250, 0.28), transparent 42%),
+        radial-gradient(circle at 80% 70%, rgba(79, 70, 229, 0.35), transparent 45%),
+        linear-gradient(180deg, #3b0764 0%, #4c1d95 45%, #1e1b4b 100%);
+    }
+    .hero-a::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.55) 0.7px, transparent 0.8px);
+      background-size: 3px 3px;
+      opacity: 0.12;
+      pointer-events: none;
+    }
+    .hero-a-inner {
+      position: relative;
+      z-index: 2;
+      width: min(980px, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 4.5rem 0 0;
+      text-align: center;
+    }
+    .hero-a .brand {
+      margin: 0 0 1rem;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .hero-a .display { max-width: 16ch; margin-inline: auto; }
+    .hero-a .lead { margin-inline: auto; }
+    .hero-a .actions { justify-content: center; }
+
+    .stage-peek {
+      position: relative;
+      z-index: 2;
+      width: min(1120px, calc(100% - 1.5rem));
+      margin: 3.2rem auto 0;
+      min-height: 18rem;
+      perspective: 1200px;
+    }
+    .peek {
+      position: absolute;
+      overflow: hidden;
+      background: #1a0b33;
+      border: 1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 28px 70px rgba(0,0,0,0.35);
+    }
+    .peek-a {
+      inset-inline-start: 6%;
+      bottom: 0;
+      width: min(46%, 420px);
+      aspect-ratio: 16 / 10;
+      transform: rotate(-4deg) translateY(12%);
+      animation: riseA 1.1s var(--ease) both;
+    }
+    .peek-b {
+      inset-inline-end: 8%;
+      bottom: 1.2rem;
+      width: min(34%, 280px);
+      aspect-ratio: 9 / 14;
+      border-radius: 1.2rem;
+      transform: rotate(3deg);
+      animation: riseB 1.2s 0.12s var(--ease) both;
+      z-index: 3;
+    }
+    .peek-c {
+      left: 50%;
+      bottom: -0.4rem;
+      width: min(42%, 380px);
+      aspect-ratio: 16 / 9;
+      transform: translateX(-50%) rotate(1deg);
+      animation: riseC 1.15s 0.2s var(--ease) both;
+      z-index: 2;
+    }
+    .peek img, .peek video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+    }
+    .peek-b img { object-position: right center; transform: scale(1.35); transform-origin: right top; }
+    .peek-a img { object-position: left top; transform: scale(1.25); transform-origin: left top; }
+    .peek-c video { object-position: center top; }
+    .peek-label {
+      position: absolute;
+      inset-inline-start: 0.7rem;
+      top: 0.7rem;
+      padding: 0.25rem 0.5rem;
+      background: rgba(18,6,31,0.75);
+      color: #efe4ff;
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+    @keyframes riseA { from { opacity: 0; transform: rotate(-4deg) translateY(28%); } to { opacity: 1; transform: rotate(-4deg) translateY(12%); } }
+    @keyframes riseB { from { opacity: 0; transform: rotate(3deg) translateY(24%); } to { opacity: 1; transform: rotate(3deg) translateY(0); } }
+    @keyframes riseC { from { opacity: 0; transform: translateX(-50%) translateY(30%); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+    .wa-a {
+      background:
+        radial-gradient(ellipse 40% 40% at 0% 0%, rgba(219,234,254,0.7), transparent 55%),
+        linear-gradient(180deg, #fbfaff 0%, #f3f0ff 100%);
+      color: var(--ink);
+      padding: clamp(3.5rem, 8vw, 6.5rem) 1.25rem;
+    }
+    .wa-a-wrap {
+      width: min(1180px, 100%);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+      gap: clamp(1.5rem, 4vw, 3.5rem);
+      align-items: center;
+    }
+    .wa-a h2 {
+      margin: 0;
+      max-width: 11ch;
+      font-size: clamp(2.3rem, 4.5vw, 3.8rem);
+      letter-spacing: -0.045em;
+      line-height: 1.05;
+    }
+    .wa-a p.copy {
+      margin: 1rem 0 0;
+      max-width: 34rem;
+      color: var(--muted);
+      font-size: 1.08rem;
+      line-height: 1.55;
+    }
+    .wa-a .points {
+      margin: 1.4rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 0.85rem;
+    }
+    .wa-a .points li {
+      padding-block-start: 0.75rem;
+      border-block-start: 2px solid var(--violet);
+    }
+    .wa-a .points strong { display: block; margin-bottom: 0.25rem; }
+    .wa-a .points span { color: var(--muted); line-height: 1.45; }
+
+    .wa-compose {
+      position: relative;
+      min-height: 28rem;
+    }
+    .wa-phone {
+      position: absolute;
+      inset-inline-start: 0;
+      top: 8%;
+      width: min(46%, 210px);
+      padding: 0.55rem;
+      background: linear-gradient(160deg, #1a0b33, #312e81);
+      border-radius: 1.4rem;
+      z-index: 3;
+      box-shadow: 0 24px 50px rgba(18,6,31,0.28);
+    }
+    .wa-phone .notch {
+      width: 36%;
+      height: 0.45rem;
+      margin: 0.15rem auto 0.45rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.25);
+    }
+    .wa-phone .screen {
+      overflow: hidden;
+      border-radius: 1rem;
+      aspect-ratio: 9 / 16;
+      background: #0b141a;
+    }
+    .wa-phone img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: right top;
+      transform: scale(1.4);
+      transform-origin: right top;
+    }
+    .wa-inbox {
+      position: absolute;
+      inset-inline-end: 0;
+      top: 0;
+      width: min(68%, 360px);
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(91,33,182,0.14);
+      box-shadow: 0 24px 60px rgba(18,6,31,0.14);
+      aspect-ratio: 16 / 11;
+      z-index: 2;
+    }
+    .wa-inbox img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: left top;
+      transform: scale(1.2);
+      transform-origin: left top;
+    }
+    .wa-crm {
+      position: absolute;
+      inset-inline-start: 22%;
+      bottom: 0;
+      width: min(55%, 280px);
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid rgba(29,78,216,0.18);
+      box-shadow: 0 20px 50px rgba(18,6,31,0.16);
+      aspect-ratio: 5 / 3;
+      z-index: 4;
+      animation: crmIn 0.9s 0.6s var(--ease) both;
+    }
+    .wa-crm img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transform: scale(1.18);
+      transform-origin: center top;
+    }
+    .wa-path {
+      position: absolute;
+      inset: 20% 18% 18% 28%;
+      border: 1px dashed rgba(91,33,182,0.35);
+      border-radius: 45% 55% 50% 50%;
+      pointer-events: none;
+      z-index: 1;
+    }
+    @keyframes crmIn {
+      from { opacity: 0; transform: translateY(1.2rem); }
+      to { opacity: 1; transform: none; }
+    }
+    .note {
+      width: min(1180px, calc(100% - 2.5rem));
+      margin: 0 auto;
+      padding: 1.2rem 0 2.5rem;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    @media (max-width: 900px) {
+      .hero-a-inner { padding-top: 2.4rem; text-align: start; }
+      .hero-a .display, .hero-a .lead { margin-inline: 0; }
+      .hero-a .actions { justify-content: stretch; display: grid; }
+      .stage-peek { min-height: 14rem; margin-top: 2rem; }
+      .peek-a { width: 72%; inset-inline-start: 0; }
+      .peek-b { width: 36%; inset-inline-end: 0; }
+      .peek-c { display: none; }
+      .wa-a-wrap { grid-template-columns: 1fr; }
+      .wa-compose { min-height: 22rem; }
+      .wa-phone { width: 42%; }
+      .wa-inbox { width: 70%; }
+      .wa-crm { width: 70%; inset-inline-start: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-top">
+    <strong>Design Lab · כיוון A — Deep Stage</strong>
+    <nav>
+      <a href="./index.html">בחירה</a>
+      <a class="is-on" href="./direction-a.html">כיוון A</a>
+      <a href="./direction-b.html">כיוון B</a>
+    </nav>
+  </header>
+
+  <section class="hero-a" aria-labelledby="hero-a-title">
+    <div class="hero-a-inner">
+      <p class="brand">BizUply</p>
+      <h1 class="display" id="hero-a-title">כל העסק שלכם.<br />מערכת אחת.<br />אינסוף אפשרויות.</h1>
+      <p class="lead">לקוחות, WhatsApp, אוטומציות ואתרים — עובדים יחד בפלטפורמה עסקית אחת.</p>
+      <div class="actions">
+        <a class="btn btn-solid" href="/register">התחילו עכשיו</a>
+        <a class="btn btn-line" href="#wa">צפו במערכת</a>
+      </div>
+    </div>
+    <div class="stage-peek" aria-label="המחשות מוצר ממוקדות">
+      <figure class="peek peek-a">
+        <span class="peek-label">CRM · לידים</span>
+        <img src="/demo-media/crm/leads-list.png" alt="רשימת לידים ממוקדת" width="900" height="560" />
+      </figure>
+      <figure class="peek peek-b">
+        <span class="peek-label">WhatsApp</span>
+        <img src="/demo-media/whatsapp/still-3.jpg" alt="שיחת WhatsApp ממוקדת" width="420" height="760" />
+      </figure>
+      <figure class="peek peek-c">
+        <span class="peek-label">תהליך בזמן אמת</span>
+        <video src="/demo-media/home/crm.mp4" poster="/demo-media/home/crm.jpg" muted playsinline loop autoplay></video>
+      </figure>
+    </div>
+  </section>
+
+  <section class="wa-a" id="wa" aria-labelledby="wa-a-title">
+    <div class="wa-a-wrap">
+      <div>
+        <p class="eyebrow" style="color:var(--violet)">WhatsApp Business API</p>
+        <h2 id="wa-a-title">שיחת הלקוח נשארת ליד העבודה</h2>
+        <p class="copy">הודעה נכנסת, ממשיכה ליד כרטיס הלקוח, ויוצרת צעד הבא — לפי ההרשאות והתבניות המאושרות של Meta.</p>
+        <ul class="points">
+          <li><strong>טלפון + תיבה עסקית</strong><span>רואים את השיחה ואת ההקשר באותה סביבה.</span></li>
+          <li><strong>חיבור ל־CRM</strong><span>אותה פנייה מקבלת סטטוס ומשימת המשך.</span></li>
+          <li><strong>תנועה עם משמעות</strong><span>ההמחשה מראה מעבר מפנייה לטיפול — לא Fade ריק.</span></li>
+        </ul>
+        <div class="actions">
+          <a class="btn btn-ink" href="/whatsapp-api">לעמוד WhatsApp</a>
+          <a class="btn btn-ghost" href="/demo-media/home/whatsapp.mp4">הדגמה קצרה</a>
+        </div>
+      </div>
+      <div class="wa-compose" aria-label="קומפוזיציית WhatsApp ו־CRM">
+        <div class="wa-path" aria-hidden="true"></div>
+        <div class="wa-phone">
+          <div class="notch"></div>
+          <div class="screen"><img src="/demo-media/whatsapp/still-3.jpg" alt="" /></div>
+        </div>
+        <div class="wa-inbox"><img src="/demo-media/home/whatsapp.jpg" alt="תיבת הודעות עסקית" /></div>
+        <div class="wa-crm"><img src="/demo-media/crm/lead-file.png" alt="כרטיס לקוח" /></div>
+      </div>
+    </div>
+  </section>
+
+  <p class="note">
+    כיוון A · Deep Stage — השראה מ־monday/Linear: Hero כהה ממורכז, מסכי מוצר שפולשים מלמטה כשכבות ממוקדות,
+    ומקטע בהיר עם קומפוזיציה ייחודית ל־WhatsApp. לא שומר על פריסת ה־homepage הנוכחית.
+  </p>
+</body>
+</html>

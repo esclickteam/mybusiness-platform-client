@@ -6,6 +6,7 @@ import HomeExperienceSections from "../components/home-experience/HomeExperience
 import HomeExperienceFooter from "../components/home-experience/HomeExperienceFooter";
 import { FilmProvider, type Film } from "../components/home-experience/film";
 import "../styles/homeExperience.css";
+import "../styles/homeCanvas.css";
 
 const HREFLANG = [
   ["en", marketingPublicUrl("/", "en")],

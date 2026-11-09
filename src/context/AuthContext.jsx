@@ -1130,7 +1130,7 @@ export function AuthProvider({ children }) {
           ) {
             return;
           } else if (
-            location.pathname === "/" ||
+            isMarketingHomePath(location.pathname) ||
             location.pathname === "/dashboard" ||
             location.pathname.startsWith("/dashboard/") ||
             (location.pathname.startsWith("/business/") &&

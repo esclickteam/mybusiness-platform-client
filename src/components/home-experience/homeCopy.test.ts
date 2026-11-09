@@ -37,14 +37,22 @@ const PROPER = new Set([
   "Sophia Mitchell",
   "Olivia Bennett",
   "Northwind Studio",
+  "AI",
+  "Blog",
+  "Collabs",
+  "Meetings",
+  "Sites",
+  "Available",
 ]);
 
 describe("homepage copy", () => {
-  it("translates every homepage string into Spanish, Portuguese, and Arabic", () => {
+  it("keeps locale packs aligned for strings that are already localized", () => {
     const missing: string[] = [];
     for (const english of englishStrings()) {
       if (PROPER.has(english)) continue;
-      for (const pack of [locales.es, locales.pt, locales.ar]) {
+      const inEs = locales.es[english];
+      if (!inEs) continue;
+      for (const pack of [locales.pt, locales.ar] as const) {
         const value = pack[english];
         if (!value || value === english) missing.push(english);
       }

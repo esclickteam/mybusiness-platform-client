@@ -87,8 +87,8 @@ describe("first paint document shell", () => {
     expect(page.body).toContain('class="hx-hero"');
     expect(page.body).toContain('data-home-design="purple"');
     expect(page.body).toContain('class="hx-display"');
-    expect(page.body).toContain(">Everything</span>");
-    expect(page.body).toContain(">platform.</span>");
+    expect(page.body).toContain(">Your</span>");
+    expect(page.body).toContain(">possibilities.</span>");
     expect(page.body).not.toContain('class="home-hero"');
     expect(page.body).not.toContain("home-hero__title");
     expect(page.body).not.toContain("#070b18");
@@ -96,8 +96,8 @@ describe("first paint document shell", () => {
     expect(noscriptCrawl(page.body)).toContain('class="home-crawl"');
     expect(rootInner(page.body)).not.toContain('class="home-crawl"');
     expect(rootInner(page.body)).toContain("hx-display");
-    expect(rootInner(page.body)).toContain(">Everything</span>");
-    expect(rootInner(page.body)).toContain(">platform.</span>");
+    expect(rootInner(page.body)).toContain(">Your</span>");
+    expect(rootInner(page.body)).toContain(">possibilities.</span>");
     expect(rootInner(page.body)).not.toContain("The official website is bizuply.com");
     expect(rootInner(page.body)).not.toContain("<h1>Bizuply</h1>");
     expect(page.body).not.toContain("position:absolute;width:1px;height:1px");
@@ -179,8 +179,9 @@ describe("first paint document shell", () => {
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
     const hebrew = await documentFor("https://bizuply.com/he/", "bizuply.com");
     expect(hebrew.body).toContain('lang="he" dir="rtl"');
-    expect(hebrew.body).toContain(">צריך.</span>");
+    expect(hebrew.body).toContain(">כל</span>");
     expect(hebrew.body).toContain(">אחת.</span>");
+    expect(hebrew.body).toContain(">אפשרויות.</span>");
     expect(hebrew.body).toContain("ביזאפלי");
     expect(visibleH1Count(hebrew.body)).toBe(1);
     expect(noscriptCrawl(hebrew.body)).toContain('class="home-crawl"');
