@@ -1028,7 +1028,7 @@
   transform: none;
   object-fit: cover;
   object-position: top center;
-  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
 }
 
 .hx-site-gallery-nav button {
@@ -1565,7 +1565,7 @@
 
 .b2-theater-screen {
   position: relative;
-  aspect-ratio: 16 / 9.6;
+  aspect-ratio: 16 / 9;
   background: #12061f;
   overflow: hidden;
 }
@@ -1575,7 +1575,7 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center center;
   z-index: 0;
 }
@@ -1586,15 +1586,10 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center center;
   background: transparent;
-  animation: b2-film- ken 4.2s var(--hx-ease) both;
-}
-
-@keyframes b2-film-ken {
-  from { transform: scale(1.05); }
-  to { transform: scale(1.14); }
+  transform: none;
 }
 
 .b2-click-pulse {
@@ -1864,13 +1859,14 @@
 .b2-wa-main img {
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 9.4;
-  object-fit: cover;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
   object-position: center center;
+  background: #12061f;
 }
 
 .b2-wa-main video {
-  animation: b2-film-ken 4.6s var(--hx-ease) both;
+  transform: none;
 }
 
 .b2-wa-bridge {
@@ -1962,12 +1958,13 @@
   .b2-theater-chrome em { display: none; }
 
   .b2-theater-screen {
-    aspect-ratio: 16 / 11;
+    aspect-ratio: 9 / 12;
   }
 
   .b2-theater-film,
   .b2-theater-poster {
-    object-position: center 28%;
+    object-fit: contain;
+    object-position: center center;
   }
 
   .b2-theater-title {
@@ -1999,7 +1996,8 @@
 
   .b2-wa-main video,
   .b2-wa-main img {
-    aspect-ratio: 16 / 11;
+    aspect-ratio: 9 / 12;
+    object-fit: contain;
   }
 
   .b2-click-pulse {

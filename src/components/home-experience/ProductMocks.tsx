@@ -126,13 +126,17 @@ export function CampaignPulse({ text }: { text: TextFn }) {
 
 export function StudioFrame({
   src,
+  mobileSrc,
   label,
   mode,
 }: {
   src: string;
+  /** Optional dedicated mobile hero — avoids stretching a desktop full-page shot. */
+  mobileSrc?: string;
   label: string;
   mode: "desktop" | "mobile";
 }) {
+  const image = mode === "mobile" && mobileSrc ? mobileSrc : src;
   return (
     <figure className={`pm-site pm-site-${mode}`}>
       {mode === "desktop" ? (
@@ -144,7 +148,14 @@ export function StudioFrame({
         <div className="pm-site-notch" aria-hidden="true" />
       )}
       <div className="pm-site-view">
-        <img src={src} alt="" width={mode === "desktop" ? 960 : 390} height={mode === "desktop" ? 600 : 780} loading="lazy" decoding="async" />
+        <img
+          src={image}
+          alt=""
+          width={mode === "desktop" ? 1920 : 780}
+          height={mode === "desktop" ? 1200 : 1600}
+          loading="lazy"
+          decoding="async"
+        />
       </div>
     </figure>
   );

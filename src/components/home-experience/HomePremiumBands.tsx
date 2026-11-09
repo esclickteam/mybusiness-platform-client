@@ -199,12 +199,12 @@ export function HomeAi() {
 }
 
 const SITE_SAMPLES = [
-  ["/template-screenshots/studiora.webp", "Studiora", "#5b21b6"],
-  ["/template-screenshots/vitalcare.webp", "Vitalcare", "#0f766e"],
-  ["/template-screenshots/serenova.webp", "Serenova", "#7c3aed"],
-  ["/template-screenshots/soleora.webp", "Soleora", "#1d4ed8"],
-  ["/template-screenshots/glowhaus.webp", "Glowhaus", "#9a3412"],
-  ["/template-screenshots/talentix.webp", "Talentix", "#312e81"],
+  ["/demo-media/home/gallery-heroes/studiora-desktop.jpg", "/demo-media/home/gallery-heroes/studiora-mobile.jpg", "Studiora", "#5b21b6"],
+  ["/demo-media/home/gallery-heroes/vitalcare-desktop.jpg", "/demo-media/home/gallery-heroes/vitalcare-mobile.jpg", "Vitalcare", "#0f766e"],
+  ["/demo-media/home/gallery-heroes/serenova-desktop.jpg", "/demo-media/home/gallery-heroes/serenova-mobile.jpg", "Serenova", "#7c3aed"],
+  ["/demo-media/home/gallery-heroes/soleora-desktop.jpg", "/demo-media/home/gallery-heroes/soleora-mobile.jpg", "Soleora", "#1d4ed8"],
+  ["/demo-media/home/gallery-heroes/glowhaus-desktop.jpg", "/demo-media/home/gallery-heroes/glowhaus-mobile.jpg", "Glowhaus", "#9a3412"],
+  ["/demo-media/home/gallery-heroes/talentix-desktop.jpg", "/demo-media/home/gallery-heroes/talentix-mobile.jpg", "Talentix", "#312e81"],
 ] as const;
 
 export function HomeSiteGallery() {
@@ -216,7 +216,7 @@ export function HomeSiteGallery() {
   const sectionRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    sectionRef.current?.style.setProperty("--gallery-tint", current[2]);
+    sectionRef.current?.style.setProperty("--gallery-tint", current[3]);
   }, [current]);
 
   useEffect(() => {
@@ -235,11 +235,11 @@ export function HomeSiteGallery() {
           <p className="hx-prose">{cine.sitesGalleryLead}</p>
         </div>
         <div className="hx-site-gallery-stage" aria-live="polite" key={current[0]}>
-          <StudioFrame src={current[0]} label={current[1]} mode="desktop" />
-          <StudioFrame src={current[0]} label={current[1]} mode="mobile" />
+          <StudioFrame src={current[0]} mobileSrc={current[1]} label={current[2]} mode="desktop" />
+          <StudioFrame src={current[0]} mobileSrc={current[1]} label={current[2]} mode="mobile" />
         </div>
         <div className="hx-site-gallery-nav" role="tablist" aria-label={text("דוגמאות אתרים", "Website examples")}>
-          {SITE_SAMPLES.map(([src, label], i) => (
+          {SITE_SAMPLES.map(([src, , label], i) => (
             <button
               key={src}
               type="button"

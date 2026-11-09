@@ -1,0 +1,36 @@
+{
+  "pass": 6,
+  "fail": 0,
+  "checks": [
+    {
+      "id": "film-cache-v20",
+      "result": "PASS",
+      "detail": "/demo-media/home/walkthrough/hero-01-lead.mp4?v=20"
+    },
+    {
+      "id": "theater-object-fit-contain",
+      "result": "PASS",
+      "detail": "contain"
+    },
+    {
+      "id": "no-ken-burns",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "gallery-desktop-hero",
+      "result": "PASS",
+      "detail": "/demo-media/home/gallery-heroes/vitalcare-desktop.jpg"
+    },
+    {
+      "id": "no-mobile-login-icon",
+      "result": "PASS",
+      "detail": ""
+    },
+    {
+      "id": "mobile-dedicated-film",
+      "result": "PASS",
+      "detail": "/demo-media/home/walkthrough/mobile-01-lead.mp4?v=20"
+    }
+  ]
+}
