@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { CONSENT_UI, SCOPE } from "../../lib/complianceConsentCopy";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
 type Finding = {
@@ -375,6 +376,8 @@ export function ComplianceReportView({
         {blocked.length === 0 ? <p>{copy.empty}</p> : blocked.map((item, index) => (
           <article key={`blocked-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
         ))}
+        <h2>{CONSENT_UI[locale].scopeTitle}</h2>
+        <p>{SCOPE[locale]}</p>
         <h2>{copy.technicalTitle}</h2>
         {technical.length === 0 ? <p>{copy.empty}</p> : technical.map((item, index) => (
           <article key={`tech-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>

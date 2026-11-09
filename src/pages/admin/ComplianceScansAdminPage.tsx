@@ -37,6 +37,9 @@ type Row = {
   unverified: number | null;
   purchaseStatus: string;
   plan?: string;
+  consentStatus?: string | null;
+  consentAt?: string | null;
+  consentId?: string | null;
 };
 
 const STATUS: Record<string, string> = {
@@ -78,6 +81,7 @@ export default function ComplianceScansAdminPage() {
   const [loading, setLoading] = useState(false);
   const [usage, setUsage] = useState<Usage | null>(null);
   const [subscriptions, setSubscriptions] = useState<Array<Record<string, unknown>>>([]);
+  const [consent, setConsent] = useState<Record<string, string> | null>(null);
   const [history, setHistory] = useState<HistoryRow[]>([]);
   const pageSize = 25;
 
@@ -157,6 +161,17 @@ export default function ComplianceScansAdminPage() {
     link.href = URL.createObjectURL(blob);
     link.download = `bizuply-website-report-${id.slice(0, 8)}.pdf`;
     link.click();
+  }
+
+  async function openConsent(id: string | null | undefined) {
+    if (!id) return;
+    const token = localStorage.getItem("token") || "";
+    const response = await fetch(`/compliance/api/admin/consents/${id}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) { setError(data.error || "ההצהרה לא נפתחה"); return; }
+    setConsent(data);
   }
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
@@ -261,6 +276,7 @@ export default function ComplianceScansAdminPage() {
               <th>לא אומתו</th>
               <th>מסלול</th>
               <th>רכישה</th>
+              <th>הצהרה וחתימה</th>
               <th>דוחות</th>
             </tr>
           </thead>
@@ -280,6 +296,17 @@ export default function ComplianceScansAdminPage() {
                 <td>{count(row.unverified)}</td>
                 <td>{row.plan === "quarterly" ? "רבעוני" : row.plan === "annual" || row.plan === "monitor" || row.plan === "monthly" ? "חודשי" : row.plan === "report" ? "חד־פעמי" : "חינם"}</td>
                 <td>{row.purchaseStatus === "verified" ? "רכישה מאומתת" : "לא נרכש"}</td>
+                <td>
+                  {row.consentStatus === "signed" ? (
+                    <>
+                      <b>נחתם</b>
+                      <div>{stamp(row.consentAt)}</div>
+                      <button type="button" onClick={() => openConsent(row.consentId)}>צפייה בהצהרה</button>
+                    </>
+                  ) : (
+                    <span>סריקה קודמת — לא קיים אישור חתום במערכת</span>
+                  )}
+                </td>
                 <td className="compliance-admin__actions">
                   <a href={`/he/compliance/report/${row.id}?view=summary`}>דוח ראשוני</a>
                   <a href={`/he/compliance/report/${row.id}`}>דוח מפורט</a>
@@ -321,6 +348,26 @@ export default function ComplianceScansAdminPage() {
         <span>{page} / {pages}</span>
         <button type="button" disabled={page >= pages} onClick={() => load(page + 1)}>הבא</button>
       </div>
+      {consent && (
+        <div className="compliance-admin__dialog" role="dialog" aria-modal="true">
+          <article>
+            <h2>פרטי החותם</h2>
+            <p>{consent.fullName}</p>
+            <p>{consent.email}</p>
+            <p>{consent.phone}</p>
+            <p>{consent.site}</p>
+            <h2>פרטי ההסכמה</h2>
+            <p>{stamp(consent.signedAt)}</p>
+            <p>{consent.statementText}</p>
+            <p>{consent.termsVersion} · {consent.privacyVersion} · {consent.scannerVersion}</p>
+            <p>{consent.locale}</p>
+            <p>{consent.id}</p>
+            <h2>חתימה</h2>
+            {consent.signature ? <img src={consent.signature} alt="" /> : null}
+            <button type="button" onClick={() => setConsent(null)}>סגירה</button>
+          </article>
+        </div>
+      )}
       <style>{`
         .compliance-admin { display: grid; gap: 16px; color: #1d2433; }
         .compliance-admin__head h1 { margin: 0; font-size: 1.5rem; }
@@ -333,6 +380,9 @@ export default function ComplianceScansAdminPage() {
         .compliance-admin button { background: #5b4bdb; color: #fff; padding: 0 14px; cursor: pointer; }
         .compliance-admin button:disabled { opacity: 0.45; }
         .compliance-admin__error { color: #9b2335; margin: 0; }
+        .compliance-admin__dialog { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.72); display: grid; place-items: center; z-index: 80; padding: 1rem; }
+        .compliance-admin__dialog article { background: #fff; color: #1a0b33; max-width: 640px; width: 100%; padding: 1rem; display: grid; gap: 0.4rem; max-height: 86vh; overflow: auto; }
+        .compliance-admin__dialog img { width: min(100%, 320px); background: #fff; border: 1px solid #e5e7eb; }
         .compliance-admin__table { overflow-x: auto; max-width: 100%; }
         .compliance-admin table { width: 100%; border-collapse: collapse; min-width: 980px; background: #fff; }
         .compliance-admin th, .compliance-admin td { border-bottom: 1px solid #e6eaf2; padding: 8px; text-align: right; vertical-align: top; font-size: 0.86rem; }

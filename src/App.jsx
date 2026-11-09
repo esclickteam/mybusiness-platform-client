@@ -975,6 +975,7 @@ export default function App() {
   const isCinematicHome =
     !isPrivateOwnerHost &&
     (location.pathname === "/" || isHomePreview);
+  const shareSiteHeader = isCinematicHome || /\/website-scan\/?$/.test(location.pathname);
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -1173,7 +1174,7 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <div className={`app-layout${isCinematicHome ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
+      <div className={`app-layout${shareSiteHeader ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
           !isSaasPublicSite &&

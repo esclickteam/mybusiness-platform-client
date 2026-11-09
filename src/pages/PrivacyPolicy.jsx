@@ -8,6 +8,7 @@ import PrivacyRequestForm from "../components/privacy/PrivacyRequestForm";
 import PrivacyFacts from "../components/privacy/PrivacyFacts";
 import { openCookieSettings } from "../lib/trackingConsent";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import { SCOPE, TERMS_CHAPTER } from "../lib/complianceConsentCopy";
 
 function PrivacyPolicy() {
   const { t, i18n } = useTranslation();
@@ -119,6 +120,13 @@ function PrivacyPolicy() {
 
         {/* Content */}
         <div className="space-y-6">
+          <section id="compliance-ai" className={sectionBase}>
+            <h2 className={h2Base}>Bizuply Compliance AI</h2>
+            <p className="mb-4 max-w-3xl text-base leading-8 text-slate-800">{SCOPE[locale]}</p>
+            {TERMS_CHAPTER[locale].blocks[10].p.map((paragraph) => (
+              <p className="mb-4 max-w-3xl text-base leading-8 text-slate-800" key={paragraph.slice(0, 24)}>{paragraph}</p>
+            ))}
+          </section>
           <section id="section-1" className={sectionBase}>
             <h2 className={h2Base}>{t("privacyPage.s1.h")}</h2>
 

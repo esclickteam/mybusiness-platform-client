@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
+import { TERMS_CHAPTER } from "../lib/complianceConsentCopy";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 function Terms() {
@@ -432,6 +433,16 @@ function Terms() {
             <p className={pBase}>
               <Trans i18nKey="termsPage.s14.p5" components={strongComponents} />
             </p>
+          </section>
+
+          <section id="compliance-ai" className={sectionBase}>
+            <h2 className={h2Base}>{TERMS_CHAPTER[locale].title}</h2>
+            {TERMS_CHAPTER[locale].blocks.map((block) => (
+              <div key={block.h}>
+                <h3 className={h3Base}>{block.h}</h3>
+                {block.p.map((paragraph) => <p className={pBase} key={paragraph.slice(0, 24)}>{paragraph}</p>)}
+              </div>
+            ))}
           </section>
 
           <section id="section-15" className={sectionBase}>

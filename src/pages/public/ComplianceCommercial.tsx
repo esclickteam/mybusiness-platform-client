@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SCOPE } from "../../lib/complianceConsentCopy";
 import { Link } from "react-router-dom";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
@@ -563,6 +564,7 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
           <small role="status">{purchaseNote}</small>
         </div>
       </aside>
+      <p className="report-sheet__scope">{SCOPE[locale]}</p>
       <p className="report-sheet__foot"><Link to="/compliance">{copy.newScan}</Link></p>
     </section>
   );
