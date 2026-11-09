@@ -337,6 +337,89 @@
   color: var(--gp-text);
 }
 
+.gp-btn--review {
+  background: #0f766e;
+  border-color: #0f766e;
+  color: #fff;
+  white-space: nowrap;
+  min-height: 40px;
+  padding-inline: 14px;
+}
+
+.gp-gate {
+  display: inline-block;
+  border: 1px solid var(--gp-line);
+  padding: 4px 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: #fff;
+  line-height: 1.35;
+}
+
+.gp-gate--copy {
+  color: #9a3412;
+  border-color: #fdba74;
+  background: #fff7ed;
+}
+
+.gp-gate--attest {
+  color: #1e3a8a;
+  border-color: #93c5fd;
+  background: #eff6ff;
+}
+
+.gp-gate--blocked {
+  color: #9f1239;
+  border-color: #fda4af;
+  background: #fff1f2;
+}
+
+.gp-gate--ready {
+  color: #166534;
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.gp-section--review {
+  border-color: #99f6e4;
+  background: #f0fdfa;
+}
+
+.gp-subhead {
+  margin: 16px 0 8px;
+  font-size: 0.92rem;
+  color: #0f766e;
+}
+
+.gp-checklist,
+.gp-blockers {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+  line-height: 1.55;
+}
+
+.gp-attest {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 8px 0 12px;
+  line-height: 1.45;
+}
+
+.gp-attest input {
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.gp-actions--sticky {
+  flex-wrap: wrap;
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(180deg, transparent, #f0fdfa 35%);
+  padding: 10px 0 4px;
+  z-index: 1;
+}
+
 .gp-btn--danger {
   background: #fff;
   border-color: #fecaca;
@@ -488,6 +571,10 @@
   }
 }
 
+.gp-mobile-only {
+  display: none;
+}
+
 @media (max-width: 560px) {
   .gp-grid {
     grid-template-columns: 1fr;
@@ -497,5 +584,32 @@
   }
   .gp-drawer {
     width: 100vw;
+  }
+  .gp-desktop-only {
+    display: none !important;
+  }
+  .gp-mobile-only {
+    display: block;
+  }
+  .gp-mobile-row-meta {
+    margin-top: 10px;
+    display: grid;
+    gap: 8px;
+  }
+  .gp-mobile-row-meta .gp-btn--review {
+    width: 100%;
+    justify-content: center;
+  }
+  .gp-btn--review,
+  .gp-actions .gp-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .gp-actions--sticky {
+    position: sticky;
+    bottom: 0;
+  }
+  .gp-table-wrap {
+    overflow-x: visible;
   }
 }

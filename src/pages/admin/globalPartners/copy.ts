@@ -33,6 +33,14 @@ export const OUTREACH_WORKFLOW_LABELS: Record<string, string> = {
   closed: "סגור",
 };
 
+/** Owner-facing send-readiness gates (Hebrew). */
+export const OWNER_GATE_LABELS: Record<string, string> = {
+  awaiting_copy_approval: "ממתין לאישור נוסח",
+  awaiting_owner_attestation: "ממתין להצהרת בעלים",
+  blocked: "חסום",
+  ready_to_send: "מוכן לשליחה",
+};
+
 export const PIPELINE_STAGE_LABELS: Record<string, string> = {
   expressed_interest: "הביע עניין",
   contact_established: "נוצר קשר",
@@ -99,6 +107,7 @@ export const AUDIT_LABELS: Record<string, string> = {
   "outreach.preview": "הכנת טיוטת פנייה",
   "outreach.draft_save": "שמירת טיוטת פנייה",
   "outreach.approve": "אישור פנייה",
+  "outreach.copy_approve": "אישור נוסח שיווקי",
   "outreach.send": "שליחת פנייה",
   "outreach.status": "עדכון סטטוס פנייה",
   "outreach.inbound_unmatched": "תשובה שלא שויכה",
@@ -123,6 +132,10 @@ export function workAreaLabel(area: string) {
 
 export function outreachWorkflowLabel(status: string) {
   return OUTREACH_WORKFLOW_LABELS[status] || status || "—";
+}
+
+export function ownerGateLabel(status: string) {
+  return OWNER_GATE_LABELS[status] || status || "—";
 }
 
 export function pipelineStageLabel(stage: string) {
