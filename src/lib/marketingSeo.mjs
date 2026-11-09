@@ -68,6 +68,16 @@ export const MARKETING_PAGES = [
     priority: "1.0",
   },
   {
+    path: "/website-scan",
+    title: "AI website scan | Bizuply",
+    description:
+      "An automatic website scan for privacy, security, accessibility and public documents. Start with a free summary. A detailed report is $35 once. An annual plan is $300, shown as $25 a month, and renews yearly unless cancelled.",
+    crumb: "Website scan",
+    lastmod: "2026-11-09",
+    changefreq: "monthly",
+    priority: "0.8",
+  },
+  {
     path: "/about",
     title: "About Bizuply | Our Mission, Approach & Business Platform",
     description:

@@ -25,7 +25,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     categories: "קטגוריות", accessibility: "נגישות", security: "אבטחה", privacy: "פרטיות", cookies: "עוגיות",
     when: "תאריך ומדינה",
     locked: "הדוח המלא נשאר בשרת עד אימות עסקה.",
-    buy: "רכישת הדוח המלא — ₪149",
+    buy: "רכישת דוח מפורט — $35",
     buyNote: "הרכישה פותחת את פירוט הממצאים, הראיות, הצעות התיקון ותוכנית הפעולה, וגם הורדת PDF. הפירוט עצמו לא מוצג לפני אימות התשלום.",
     okCount: "בדיקות תקינות",
     actionCount: "ממצאים שדורשים טיפול",
@@ -81,7 +81,7 @@ const TEXT: Record<Locale, Record<string, string>> = {
     cookies: "Cookies",
     when: "Date and country",
     locked: "The full report stays on the server until a payment is verified.",
-    buy: "Buy the full report — ₪149",
+    buy: "Buy the detailed report — $35",
     buyNote: "The purchase opens the findings, evidence, fixes, action plan, and the PDF. None of that detail is shown before payment is verified.",
     okCount: "Checks that passed",
     actionCount: "Findings that need action",
@@ -178,7 +178,7 @@ export function PlanCards({ locale }: { locale: Locale }) {
   const copy = TEXT[locale] || TEXT.en;
   const plans = [
     ["0", copy.free, "", copy.freeLine],
-    ["149", copy.report, copy.once, copy.reportLine],
+    ["35", copy.report, copy.once, copy.reportLine],
     ["99", copy.monitor, copy.month, copy.monitorLine],
   ];
   return (
@@ -235,7 +235,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "תוכנית עבודה לפי סדר עדיפות, וקובץ PDF",
     offerBody: "הרכישה פותחת את פירוט הממצאים, הראיות, ההמלצות ותוכנית התיקון, וגם קובץ PDF. אף אחד מהפרטים האלה לא מופיע כאן.",
     unavailable: "הסליקה אינה זמינה כרגע. לא מתבצע חיוב, והדוח המלא נשאר סגור.",
-    check: "רכישת הדוח המלא — ₪149",
+    check: "סרקו בחינם וגלו את התוצאה",
   },
   en: {
     kicker: "Scan report",
@@ -271,7 +271,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "A prioritized work plan, and the PDF",
     offerBody: "The purchase opens the findings, evidence, recommendations, action plan, and the PDF. None of that detail is shown here.",
     unavailable: "Checkout is temporarily unavailable. Nothing is charged, and the full report stays closed.",
-    check: "Buy the full report — ₪149",
+    check: "Scan for free and see the result",
   },
   es: {
     kicker: "Informe de análisis",
@@ -307,7 +307,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "Un plan de trabajo por prioridad, y el PDF",
     offerBody: "La compra abre los hallazgos, las pruebas, las recomendaciones, el plan de acción y el PDF. Ninguno de esos detalles aparece aquí.",
     unavailable: "El cobro no está disponible por ahora. No se realiza ningún cargo y el informe completo sigue cerrado.",
-    check: "Comprar el informe completo — ₪149",
+    check: "Escanear gratis y ver el resultado",
   },
   "pt-BR": {
     kicker: "Relatório da análise",
@@ -343,7 +343,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "Um plano de trabalho por prioridade, e o PDF",
     offerBody: "A compra abre os achados, as evidências, as recomendações, o plano de ação e o PDF. Nenhum desses detalhes aparece aqui.",
     unavailable: "A cobrança está indisponível no momento. Nada é cobrado e o relatório completo continua fechado.",
-    check: "Comprar o relatório completo — ₪149",
+    check: "Varrer grátis e ver o resultado",
   },
   ar: {
     kicker: "تقرير الفحص",
@@ -379,7 +379,7 @@ const FREE: Record<Locale, Record<string, string>> = {
     inc3: "خطة عمل حسب الأولوية، وملف PDF",
     offerBody: "يفتح الشراء تفاصيل النتائج والأدلة والتوصيات وخطة الإصلاح وملف PDF. لا تظهر أي من هذه التفاصيل هنا.",
     unavailable: "التحصيل غير متاح حاليًا. لا يتم أي خصم، ويبقى التقرير الكامل مغلقًا.",
-    check: "شراء التقرير الكامل — ₪149",
+    check: "ابدأ مجانًا واطلع على النتيجة",
   },
 };
 
@@ -459,7 +459,7 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
         </div>
         <div>
           <p>{copy.offer}</p>
-          <strong>₪149</strong>
+          <strong>$35</strong>
           <em>{copy.once}</em>
           <button type="button" onClick={checkPurchase}>{copy.check}</button>
           <small role="status">{purchaseNote}</small>

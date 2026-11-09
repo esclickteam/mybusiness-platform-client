@@ -36,6 +36,7 @@ type Row = {
   missing: number | null;
   unverified: number | null;
   purchaseStatus: string;
+  plan?: string;
 };
 
 const STATUS: Record<string, string> = {
@@ -252,6 +253,7 @@ export default function ComplianceScansAdminPage() {
               <th>טיפול</th>
               <th>חסרות</th>
               <th>לא אומתו</th>
+              <th>מסלול</th>
               <th>רכישה</th>
               <th>דוחות</th>
             </tr>
@@ -270,6 +272,7 @@ export default function ComplianceScansAdminPage() {
                 <td>{count(row.action)}</td>
                 <td>{count(row.missing)}</td>
                 <td>{count(row.unverified)}</td>
+                <td>{row.plan === "annual" || row.plan === "monitor" ? "שנתי" : row.plan === "report" ? "חד־פעמי" : "חינם"}</td>
                 <td>{row.purchaseStatus === "verified" ? "רכישה מאומתת" : "לא נרכש"}</td>
                 <td className="compliance-admin__actions">
                   <a href={`/he/compliance/report/${row.id}?view=summary`}>דוח ראשוני</a>
