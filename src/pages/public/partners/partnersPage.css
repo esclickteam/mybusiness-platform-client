@@ -491,7 +491,9 @@
 .ip-close p { color: #fff; max-width: 40rem; }
 .ip-close .ip-btn-primary { background: #fff; color: var(--violet); box-shadow: none; }
 
-/* Hero stays visible on first paint — never opacity:0 above the fold. */
+/* Progressive enhancement: content stays visible until JS opts into reveal.
+   Never use content-visibility here — it caused empty-looking sections and
+   hash/anchor jumps when intrinsic height did not match real content. */
 .ip-hero,
 .ip-hero.ip-reveal {
   opacity: 1;
@@ -499,16 +501,19 @@
 }
 
 .ip-reveal {
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.55s ease, transform 0.55s ease;
-  content-visibility: auto;
-  contain-intrinsic-size: 1px 720px;
-}
-.ip-reveal.is-in {
   opacity: 1;
   transform: none;
-  content-visibility: visible;
+}
+
+.ipartner.is-reveal-ready .ip-reveal:not(.is-in) {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.ipartner.is-reveal-ready .ip-reveal.is-in {
+  opacity: 1;
+  transform: none;
 }
 
 .ipartner a:focus-visible,
@@ -522,10 +527,143 @@
 }
 
 .ip-section,
-.ip-close { scroll-margin-top: 88px; }
+.ip-close,
+#apply { scroll-margin-top: 96px; }
+
+.ip-compare {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.ip-compare-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+
+.ip-compare-card.is-featured {
+  border-color: rgba(91, 33, 182, 0.35);
+  box-shadow: 0 12px 28px rgba(76, 29, 149, 0.1);
+}
+
+.ip-compare-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.ip-compare-fee,
+.ip-compare-rate {
+  margin: 8px 0 0;
+  line-height: 1.55;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.ip-compare-fee strong,
+.ip-compare-rate strong {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.ip-compare-note {
+  margin: 12px 0 0;
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.ip-sticky-join {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 40;
+  padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid var(--line);
+  backdrop-filter: blur(10px);
+  transform: translateY(110%);
+  transition: transform 0.28s ease;
+  pointer-events: none;
+}
+
+.ip-sticky-join.is-visible {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.ip-sticky-join__inner {
+  width: min(1160px, 100%);
+  margin-inline: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ip-sticky-join__copy {
+  margin: 0;
+  font-weight: 700;
+  color: var(--ink);
+  font-size: 0.95rem;
+}
+
+.ip-sticky-join .ip-btn {
+  min-width: 11rem;
+}
+
+.ip-privacy {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.ip-privacy-notice {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.ip-privacy-notice a {
+  color: var(--blue);
+  font-weight: 800;
+}
+
+.ip-privacy-check {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.ip-privacy-check input {
+  width: auto;
+  min-height: 0;
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+
+.ip-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
 @media (min-width: 720px) {
   .ip-facts,
+  .ip-compare,
   .ip-grid-2,
   .ip-plans,
   .ip-results,
@@ -558,11 +696,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .ipartner.is-reveal-ready .ip-reveal:not(.is-in),
+  .ipartner.is-reveal-ready .ip-reveal.is-in,
   .ip-reveal {
     opacity: 1;
     transform: none;
     transition: none;
   }
+  .ip-sticky-join { transition: none; }
   .ip-btn { transition: none; }
   .ip-btn:hover { transform: none; }
 }

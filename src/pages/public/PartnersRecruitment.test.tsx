@@ -19,6 +19,11 @@ vi.mock("../../lib/partnerApi", () => ({
   fetchPartnerPlans: vi.fn(async () => []),
 }));
 
+vi.mock("../../lib/privacyConsentClient", () => ({
+  createConsentKey: () => "testconsentkey0001",
+  storePrivacyConsent: vi.fn(async () => ({ status: "stored", id: "consent1" })),
+}));
+
 describe("bizuply.com/partners recruitment", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -38,13 +43,18 @@ describe("bizuply.com/partners recruitment", () => {
         <PartnersRecruitment />
       </MemoryRouter>
     );
-    const link = screen.getByTestId("international-register-link");
-    expect(link).toHaveAttribute("href", "/partner/register?planKey=partner_international&billing=annual");
+    const applyLink = screen.getByTestId("international-register-link");
+    expect(applyLink).toHaveAttribute("href", "#apply");
+    expect(screen.getByTestId("international-annual-register-link")).toHaveAttribute(
+      "href",
+      "/partner/register?planKey=partner_international&billing=annual"
+    );
     expect(screen.getAllByText(/\$5,000/).length).toBeGreaterThan(0);
     expect(screen.getByTestId("international-monthly-price").textContent).toContain("$499");
     expect(screen.getByTestId("annual-best-value")).toHaveTextContent(/Best value/i);
     expect(screen.getByTestId("annual-savings").textContent).toContain("$988");
-    expect(screen.getByTestId("international-monthly-link")).toHaveAttribute(
+    expect(screen.getByTestId("international-monthly-link")).toHaveAttribute("href", "#apply");
+    expect(screen.getByTestId("international-monthly-register-link")).toHaveAttribute(
       "href",
       "/partner/register?planKey=partner_international&billing=monthly"
     );
@@ -60,6 +70,10 @@ describe("bizuply.com/partners recruitment", () => {
       })
     ).toBeInTheDocument();
     expect(screen.getByTestId("track-Business Partner")).toBeInTheDocument();
+    expect(screen.getByTestId("compare-Affiliate")).toBeInTheDocument();
+    expect(screen.getByTestId("compare-Business Partner")).toHaveTextContent(/\$499/);
+    expect(screen.getByTestId("compare-Affiliate")).toHaveTextContent(/15%/);
+    expect(screen.getByTestId("partner-sticky-join")).toBeInTheDocument();
     expect(screen.getAllByText(/Coming soon/i).length).toBeGreaterThan(0);
   });
 
@@ -98,9 +112,22 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("international-annual-price").textContent).toContain("$5,000");
     expect(screen.getByTestId("annual-savings").textContent).toContain("$988");
     expect(screen.getAllByText(/הגשת הבקשה ללא תשלום|הגשת הבקשה היא ללא תשלום/).length).toBeGreaterThan(0);
+    expect(screen.getByTestId("compare-Affiliate")).toHaveTextContent(/15%/);
+  });
+
+  it("validates required fields and privacy before calling the API", async () => {
+    render(
+      <MemoryRouter>
+        <PartnersRecruitment />
+      </MemoryRouter>
+    );
+    fireEvent.click(screen.getByTestId("partner-apply-submit"));
+    expect(await screen.findAllByText(/Required/i)).not.toHaveLength(0);
+    expect(fetch).not.toHaveBeenCalled();
   });
 
   it("saves the application form only after a successful backend response", async () => {
+    const { storePrivacyConsent } = await import("../../lib/privacyConsentClient");
     render(
       <MemoryRouter>
         <PartnersRecruitment />
@@ -114,15 +141,22 @@ describe("bizuply.com/partners recruitment", () => {
     fireEvent.change(screen.getByLabelText(/Short note/i), {
       target: { value: "We sell CRM services to local businesses." },
     });
+    fireEvent.click(
+      screen.getByLabelText(/I have read the Privacy Policy/i)
+    );
     fireEvent.click(screen.getByTestId("partner-apply-submit"));
     await waitFor(() => {
       expect(screen.getByTestId("partner-apply-success")).toBeInTheDocument();
     });
+    expect(storePrivacyConsent).toHaveBeenCalled();
     expect(fetch).toHaveBeenCalledWith(
       expect.stringMatching(/\/support\/partner-application$/),
       expect.objectContaining({
         method: "POST",
       })
     );
+    const body = JSON.parse((fetch as any).mock.calls[0][1].body);
+    expect(body.privacyAccepted).toBe(true);
+    expect(body.consentKey).toBe("testconsentkey0001");
   });
 });

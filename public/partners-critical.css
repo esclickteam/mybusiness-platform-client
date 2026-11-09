@@ -96,3 +96,56 @@ html.bizuply-partners *::after {
 [dir="rtl"] .ip-paint__hero h1 {
   max-width: none;
 }
+
+.ip-paint__compare-title {
+  margin: 28px 0 0;
+  color: #5b21b6;
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.ip-paint__compare {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.ip-paint__compare-card {
+  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  border-radius: 8px;
+  padding: 16px 18px;
+}
+
+.ip-paint__compare-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.1rem;
+  max-width: none;
+  letter-spacing: -0.02em;
+}
+
+.ip-paint__compare-card p {
+  margin: 6px 0 0;
+  color: #475569;
+  line-height: 1.55;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.ip-paint__compare-card--featured {
+  border-color: rgba(91, 33, 182, 0.35);
+}
+
+.ip-paint__compare-note {
+  margin: 12px 0 0;
+  color: #475569;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+@media (min-width: 720px) {
+  .ip-paint__compare {
+    grid-template-columns: 1fr 1fr;
+  }
+}

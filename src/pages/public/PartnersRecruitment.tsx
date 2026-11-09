@@ -23,6 +23,77 @@ import {
 } from "./partners/partnersCommission.mjs";
 import "./partners/partnersPage.css";
 
+function revealPartnersSections(root: HTMLElement) {
+  const reduce =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const nodes = Array.from(root.querySelectorAll<HTMLElement>(".ip-reveal"));
+  if (reduce || typeof IntersectionObserver !== "function") {
+    nodes.forEach((node) => node.classList.add("is-in"));
+    return () => undefined;
+  }
+
+  let observer: IntersectionObserver | null = null;
+
+  const markVisible = (node: Element) => {
+    node.classList.add("is-in");
+    observer?.unobserve(node);
+  };
+
+  observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting || entry.intersectionRatio > 0) markVisible(entry.target);
+      });
+    },
+    { threshold: [0, 0.08, 0.2], rootMargin: "80px 0px 80px 0px" }
+  );
+
+  const revealPassed = () => {
+    nodes.forEach((node) => {
+      if (node.classList.contains("is-in")) return;
+      const top = node.getBoundingClientRect().top;
+      if (top < window.innerHeight * 0.98) markVisible(node);
+    });
+  };
+
+  nodes.forEach((node) => observer?.observe(node));
+  revealPassed();
+  root.classList.add("is-reveal-ready");
+
+  let scrollFrame = 0;
+  const onScroll = () => {
+    if (!scrollFrame) {
+      scrollFrame = window.requestAnimationFrame(() => {
+        scrollFrame = 0;
+        revealPassed();
+      });
+    }
+  };
+  const onHash = () => {
+    const id = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target) return;
+    if (target.classList.contains("ip-reveal")) markVisible(target);
+    const parentReveal = target.closest(".ip-reveal");
+    if (parentReveal) markVisible(parentReveal);
+    target.querySelectorAll<HTMLElement>(".ip-reveal").forEach((node) => markVisible(node));
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("hashchange", onHash);
+  onHash();
+
+  return () => {
+    window.cancelAnimationFrame(scrollFrame);
+    window.removeEventListener("scroll", onScroll);
+    window.removeEventListener("hashchange", onHash);
+    observer?.disconnect();
+    root.classList.remove("is-reveal-ready");
+  };
+}
+
 export { commissionRateForCustomers, estimatePartnerCommission } from "./partners/partnersCommission.mjs";
 
 const PAGE_PATH = "/partners";
@@ -37,6 +108,26 @@ const COPY = {
     sub: "Join the Bizuply Partner Program. Introduce businesses to CRM, automation, WhatsApp and SaaS systems, and grow with a recurring commission model.",
     become: "Apply for partnership",
     explore: "See how the program works",
+    stickyJoin: "Ready to apply?",
+    stickyCta: "Join as a partner",
+    compareTitle: "Choose your open track",
+    compareNote: "Verified commercial terms. Application is free. Membership fees are collected only after approval.",
+    compare: [
+      {
+        key: "Affiliate",
+        title: "Affiliate",
+        fee: "Membership fee: none on the percent track (partner_percent).",
+        rate: "Commission: currently 15% of eligible sales in the catalog.",
+        featured: false,
+      },
+      {
+        key: "Business Partner",
+        title: "Business Partner",
+        fee: "Membership: $499 / month or $5,000 / year after approval.",
+        rate: "Recurring commission: 30% / 35% / 40% tiers · 10% on eligible one-time deals.",
+        featured: true,
+      },
+    ],
     facts: [
       ["Up to 40% recurring commission", "On eligible subscription revenue in qualifying tracks, under the signed agreement."],
       ["One platform. Multiple solutions.", "CRM, WhatsApp, automation, websites and industry SaaS under one partnership."],
@@ -201,8 +292,9 @@ const COPY = {
     planNotes: ["Application is free", "Payment is required only after approval", "Manual payment outside the website", "No automatic charging", "Subject to the partnership agreement"],
     noCharge: "This page does not start a live charge.",
     due: "After approval, and until the manual payment is recorded, the membership stays payment_due.",
-    applyMonthly: "Apply monthly",
-    applyAnnual: "Apply annually",
+    applyMonthly: "Apply for monthly membership",
+    applyAnnual: "Apply for annual membership",
+    registerAfterApproval: "Full registration (after approval)",
     territoryTitle: "Territory is agreed separately",
     territoryLead: "Monthly and annual billing do not choose a territory and do not include exclusivity.",
     territories: [
@@ -242,7 +334,13 @@ const COPY = {
       successTitle: "Application received",
       successBody: "Your application was saved. Our team will review it and follow up by email. Completing registration and any payment happens only after approval.",
       errorGeneric: "We could not save your application right now. Please email support@bizuply.com.",
+      errorConsent: "We could not record your privacy choice. Please try again or email support@bizuply.com.",
       requiredHint: "Required",
+      emailInvalid: "Enter a valid business email",
+      privacyNotice: "We use your details to review this partnership application and to contact you about it. See our",
+      privacyAccept: "I have read the Privacy Policy and agree that Bizuply may process my application details.",
+      privacyLink: "Privacy Policy",
+      marketingOptIn: "Optional: send me partner program updates (you can unsubscribe anytime).",
       trackLabels: {
         Affiliate: "Affiliate",
         "Business Partner": "Business Partner",
@@ -254,9 +352,9 @@ const COPY = {
     },
     faqTitle: "Questions partners ask",
     closeTitle: "Ready to partner with Bizuply?",
-    closeBody: "Submit an application or continue to the full partner registration once you know which billing interval you want after approval.",
+    closeBody: "Submit a free application first. Full registration and any membership payment happen only after approval.",
     closeCta: "Apply for partnership",
-    registerCta: "Open full registration",
+    registerCta: "Full registration (after approval)",
     login: "Partner sign in",
     visual: {
       caption: "Illustration of the partner workspace — not live account data",
@@ -278,6 +376,26 @@ const COPY = {
     sub: "הצטרפו לתוכנית השותפים של Bizuply, הציעו לעסקים פתרונות CRM, אוטומציה, WhatsApp ומערכות SaaS, ובנו פעילות עסקית עם מודל עמלות מתמשך.",
     become: "הגישו מועמדות לשותפות",
     explore: "גלו איך התוכנית עובדת",
+    stickyJoin: "מוכנים להגיש מועמדות?",
+    stickyCta: "הצטרפות כשותפים",
+    compareTitle: "בחרו מסלול פתוח",
+    compareNote: "תנאים מסחריים מאומתים. הגשת הבקשה ללא תשלום. דמי חברות נגבים רק אחרי אישור.",
+    compare: [
+      {
+        key: "Affiliate",
+        title: "Affiliate",
+        fee: "דמי חברות: אין במסלול האחוזים (partner_percent).",
+        rate: "עמלה: כיום 15% ממכירות זכאיות לפי הקטלוג.",
+        featured: false,
+      },
+      {
+        key: "Business Partner",
+        title: "Business Partner",
+        fee: "דמי חברות: 499$ לחודש או 5,000$ לשנה אחרי אישור.",
+        rate: "עמלה חוזרת: מדרגות 30% / 35% / 40% · 10% על עסקאות חד־פעמיות זכאיות.",
+        featured: true,
+      },
+    ],
     facts: [
       ["עד 40% עמלה חוזרת", "במסלולים הזכאים, על הכנסת מנוי זכאית לפי ההסכם החתום."],
       ["מגוון פתרונות תחת פלטפורמה אחת", "CRM, WhatsApp, אוטומציה, אתרים ו־SaaS לפי תחום."],
@@ -442,8 +560,9 @@ const COPY = {
     planNotes: ["הגשת הבקשה ללא תשלום", "תשלום נדרש רק אחרי אישור", "תשלום ידני מחוץ לאתר", "אין חיוב אוטומטי", "כפוף להסכם השותפות"],
     noCharge: "העמוד הזה לא מתחיל חיוב אוטומטי.",
     due: "אחרי האישור, ועד לתיעוד התשלום הידני, החברות נשארת payment_due.",
-    applyMonthly: "הרשמה חודשית",
-    applyAnnual: "הרשמה שנתית",
+    applyMonthly: "הגישו מועמדות לחברות חודשית",
+    applyAnnual: "הגישו מועמדות לחברות שנתית",
+    registerAfterApproval: "הרשמה מלאה (אחרי אישור)",
     territoryTitle: "הטריטוריה נקבעת בנפרד",
     territoryLead: "החיוב החודשי והשנתי אינו בוחר טריטוריה ואינו כולל בלעדיות.",
     territories: [
@@ -483,7 +602,13 @@ const COPY = {
       successTitle: "המועמדות התקבלה",
       successBody: "הבקשה נשמרה במערכת. הצוות יבדוק ויחזור אליכם במייל. השלמת הרשמה ותשלום, אם נדרש, רק אחרי אישור.",
       errorGeneric: "לא הצלחנו לשמור את המועמדות כרגע. שלחו מייל ל־support@bizuply.com.",
+      errorConsent: "לא הצלחנו לשמור את בחירת הפרטיות. נסו שוב או שלחו מייל ל־support@bizuply.com.",
       requiredHint: "שדה חובה",
+      emailInvalid: "הזינו אימייל עסקי תקין",
+      privacyNotice: "אנחנו משתמשים בפרטים לבדיקת מועמדות השותפות ולחזרה אליכם בנושא. ראו את",
+      privacyAccept: "קראתי את מדיניות הפרטיות ואני מסכים/ה ש־Bizuply תעבד את פרטי המועמדות שלי.",
+      privacyLink: "מדיניות הפרטיות",
+      marketingOptIn: "אופציונלי: שלחו לי עדכונים על תוכנית השותפים (אפשר לבטל בכל עת).",
       trackLabels: {
         Affiliate: "Affiliate",
         "Business Partner": "Business Partner",
@@ -495,9 +620,9 @@ const COPY = {
     },
     faqTitle: "שאלות נפוצות",
     closeTitle: "מוכנים להצטרף כשותפים של Bizuply?",
-    closeBody: "הגישו מועמדות או המשיכו להרשמה המלאה כשתדעו איזה מרווח חיוב תרצו אחרי האישור.",
+    closeBody: "הגישו קודם מועמדות ללא תשלום. הרשמה מלאה וכל תשלום חברות מתבצעים רק אחרי אישור.",
     closeCta: "הגישו מועמדות לשותפות",
-    registerCta: "להרשמה המלאה",
+    registerCta: "הרשמה מלאה (אחרי אישור)",
     login: "כניסת שותפים",
     visual: {
       caption: "המחשה של סביבת השותפים — לא נתוני חשבון אמיתיים",
@@ -546,6 +671,7 @@ export default function PartnersRecruitment() {
   const [price, setPrice] = useState(99);
   const [oneTimeDeals, setOneTimeDeals] = useState(2);
   const [oneTimeAverage, setOneTimeAverage] = useState(500);
+  const [stickyVisible, setStickyVisible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -562,24 +688,40 @@ export default function PartnersRecruitment() {
   }, []);
 
   useEffect(() => {
-    const nodes = Array.from(document.querySelectorAll<HTMLElement>(".ip-reveal"));
-    const reduce =
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || typeof IntersectionObserver !== "function") {
-      nodes.forEach((node) => node.classList.add("is-in"));
-      return undefined;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) entry.target.classList.add("is-in");
+    const root = document.querySelector<HTMLElement>(".ipartner");
+    if (!root) return undefined;
+    return revealPartnersSections(root);
+  }, [hebrew]);
+
+  useEffect(() => {
+    const apply = document.getElementById("apply");
+    const hero = document.querySelector<HTMLElement>(".ip-hero");
+    if (!apply) return undefined;
+
+    const sync = () => {
+      const applyRect = apply.getBoundingClientRect();
+      const heroBottom = hero?.getBoundingClientRect().bottom ?? 0;
+      const applyInView = applyRect.top < window.innerHeight * 0.85 && applyRect.bottom > 80;
+      setStickyVisible(heroBottom < 0 && !applyInView);
+    };
+
+    let frame = 0;
+    const onScroll = () => {
+      if (!frame) {
+        frame = window.requestAnimationFrame(() => {
+          frame = 0;
+          sync();
         });
-      },
-      { threshold: 0.12 }
-    );
-    nodes.forEach((node) => observer.observe(node));
-    return () => observer.disconnect();
+      }
+    };
+    sync();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
   }, [hebrew]);
 
   const monthly = options.find((row) => row.interval === "monthly") || INTERNATIONAL_BILLING_OPTIONS[0];
@@ -649,6 +791,23 @@ export default function PartnersRecruitment() {
             </div>
           </div>
           <PartnerPortalVisual copy={copy.visual} />
+        </div>
+        <div className="ip-wrap" data-testid="partner-track-compare">
+          <p className="ip-kicker">{copy.compareTitle}</p>
+          <div className="ip-compare" aria-label={copy.compareTitle}>
+            {copy.compare.map((track) => (
+              <article
+                key={track.key}
+                className={`ip-compare-card${track.featured ? " is-featured" : ""}`}
+                data-testid={`compare-${track.key}`}
+              >
+                <h2>{track.title}</h2>
+                <p className="ip-compare-fee">{track.fee}</p>
+                <p className="ip-compare-rate">{track.rate}</p>
+              </article>
+            ))}
+          </div>
+          <p className="ip-compare-note">{copy.compareNote}</p>
         </div>
         <div className="ip-wrap ip-facts" aria-label={copy.kicker}>
           {copy.facts.map(([title, body]) => (
@@ -900,8 +1059,11 @@ export default function PartnersRecruitment() {
                   <li key={point}>{point}</li>
                 ))}
               </ul>
-              <Link className="ip-btn ip-btn-ghost" to={monthlyHref} data-testid="international-monthly-link">
+              <a className="ip-btn ip-btn-ghost" href="#apply" data-testid="international-monthly-link">
                 {copy.applyMonthly}
+              </a>
+              <Link className="ip-btn ip-btn-ghost" to={monthlyHref} data-testid="international-monthly-register-link">
+                {copy.registerAfterApproval}
               </Link>
             </article>
             <article className="ip-plan ip-plan-best" data-testid="annual-price-card">
@@ -920,8 +1082,11 @@ export default function PartnersRecruitment() {
                   <li key={point}>{point}</li>
                 ))}
               </ul>
-              <Link className="ip-btn ip-btn-primary" to={annualHref} data-testid="international-register-link">
+              <a className="ip-btn ip-btn-primary" href="#apply" data-testid="international-register-link">
                 {copy.applyAnnual}
+              </a>
+              <Link className="ip-btn ip-btn-ghost" to={annualHref} data-testid="international-annual-register-link">
+                {copy.registerAfterApproval}
               </Link>
             </article>
           </div>
@@ -981,7 +1146,7 @@ export default function PartnersRecruitment() {
 
       <section className="ip-section ip-band ip-reveal" id="apply" aria-labelledby="apply-heading">
         <div className="ip-wrap">
-          <PartnerApplyForm copy={copy.form} pageUrl={pageUrl} />
+          <PartnerApplyForm copy={copy.form} pageUrl={pageUrl} locale={locale} />
         </div>
       </section>
 
@@ -1018,6 +1183,19 @@ export default function PartnersRecruitment() {
           </div>
         </div>
       </section>
+
+      <div
+        className={`ip-sticky-join${stickyVisible ? " is-visible" : ""}`}
+        data-testid="partner-sticky-join"
+        aria-hidden={!stickyVisible}
+      >
+        <div className="ip-sticky-join__inner">
+          <p className="ip-sticky-join__copy">{copy.stickyJoin}</p>
+          <a className="ip-btn ip-btn-primary" href="#apply" tabIndex={stickyVisible ? 0 : -1}>
+            {copy.stickyCta}
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,5 +1,8 @@
-import { useId, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
 import { browserHostname, resolveApiBaseUrl } from "../../../apiBaseUrl";
+import { createConsentKey, storePrivacyConsent } from "../../../lib/privacyConsentClient";
+import { NOTICE_VERSION } from "../../../lib/trackingConsent";
 
 export const PARTNER_TRACK_OPTIONS = [
   "Affiliate",
@@ -21,6 +24,8 @@ type FormState = {
   website: string;
   partnershipType: PartnerTrackOption | "";
   message: string;
+  privacyAccepted: boolean;
+  marketingOptIn: boolean;
 };
 
 type FormCopy = {
@@ -40,7 +45,13 @@ type FormCopy = {
   successTitle: string;
   successBody: string;
   errorGeneric: string;
+  errorConsent: string;
   requiredHint: string;
+  emailInvalid: string;
+  privacyNotice: string;
+  privacyAccept: string;
+  privacyLink: string;
+  marketingOptIn: string;
   trackLabels: Record<PartnerTrackOption, string>;
 };
 
@@ -55,14 +66,18 @@ const EMPTY: FormState = {
   website: "",
   partnershipType: "Business Partner",
   message: "",
+  privacyAccepted: false,
+  marketingOptIn: false,
 };
 
 function validate(form: FormState, copy: FormCopy): Errors {
   const errors: Errors = {};
   if (!form.name.trim()) errors.name = copy.requiredHint;
   if (!form.company.trim()) errors.company = copy.requiredHint;
-  if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+  if (!form.email.trim()) {
     errors.email = copy.requiredHint;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+    errors.email = copy.emailInvalid;
   }
   if (!form.phone.trim()) errors.phone = copy.requiredHint;
   if (!form.country.trim()) errors.country = copy.requiredHint;
@@ -70,17 +85,21 @@ function validate(form: FormState, copy: FormCopy): Errors {
     errors.partnershipType = copy.requiredHint;
   }
   if (!form.message.trim()) errors.message = copy.requiredHint;
+  if (!form.privacyAccepted) errors.privacyAccepted = copy.requiredHint;
   return errors;
 }
 
 export default function PartnerApplyForm({
   copy,
   pageUrl,
+  locale,
 }: {
   copy: FormCopy;
   pageUrl: string;
+  locale: string;
 }) {
   const id = useId();
+  const consentKeyRef = useRef(createConsentKey());
   const [form, setForm] = useState<FormState>(EMPTY);
   const [errors, setErrors] = useState<Errors>({});
   const [submitting, setSubmitting] = useState(false);
@@ -105,6 +124,21 @@ export default function PartnerApplyForm({
 
     setSubmitting(true);
     try {
+      let saved;
+      try {
+        saved = await storePrivacyConsent({
+          consentKey: consentKeyRef.current,
+          source: "contact",
+          email: form.email.trim(),
+          termsAccepted: false,
+          marketingOptIn: form.marketingOptIn,
+          locale,
+        });
+      } catch {
+        setFailure(copy.errorConsent);
+        return;
+      }
+
       // Preview/staging Vercel hosts must hit Railway staging — not the
       // production /api rewrite baked into vercel.json.
       const apiBase = resolveApiBaseUrl({
@@ -112,21 +146,30 @@ export default function PartnerApplyForm({
         mode: import.meta.env.MODE,
         hostname: browserHostname(),
       }).replace(/\/+$/, "");
+      const payload: Record<string, unknown> = {
+        name: form.name.trim(),
+        company: form.company.trim(),
+        email: form.email.trim(),
+        phone: form.phone.trim(),
+        country: form.country.trim(),
+        website: form.website.trim(),
+        partnershipType: form.partnershipType,
+        message: form.message.trim(),
+        pageUrl,
+        locale,
+        privacyAccepted: true,
+      };
+      if (saved.status === "stored") {
+        payload.consentKey = consentKeyRef.current;
+        payload.marketingOptIn = form.marketingOptIn;
+        payload.noticeVersion = NOTICE_VERSION;
+      }
+
       const response = await fetch(`${apiBase}/support/partner-application`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "omit",
-        body: JSON.stringify({
-          name: form.name.trim(),
-          company: form.company.trim(),
-          email: form.email.trim(),
-          phone: form.phone.trim(),
-          country: form.country.trim(),
-          website: form.website.trim(),
-          partnershipType: form.partnershipType,
-          message: form.message.trim(),
-          pageUrl,
-        }),
+        body: JSON.stringify(payload),
       });
       const data = await response.json().catch(() => null);
       if (!response.ok || data?.success === false) {
@@ -134,6 +177,7 @@ export default function PartnerApplyForm({
       }
       setSent(true);
       setForm(EMPTY);
+      consentKeyRef.current = createConsentKey();
     } catch {
       setFailure(copy.errorGeneric);
     } finally {
@@ -143,7 +187,7 @@ export default function PartnerApplyForm({
 
   if (sent) {
     return (
-      <div className="ip-form-success" role="status" data-testid="partner-apply-success">
+      <div className="ip-form-success" role="status" aria-live="polite" data-testid="partner-apply-success">
         <h3>{copy.successTitle}</h3>
         <p>{copy.successBody}</p>
       </div>
@@ -174,9 +218,14 @@ export default function PartnerApplyForm({
             autoComplete="name"
             value={form.name}
             aria-invalid={errors.name ? true : undefined}
+            aria-describedby={errors.name ? `${id}-name-error` : undefined}
             onChange={(e) => update("name", e.target.value)}
           />
-          {errors.name ? <span className="ip-field-error">{errors.name}</span> : null}
+          {errors.name ? (
+            <span className="ip-field-error" id={`${id}-name-error`} role="alert">
+              {errors.name}
+            </span>
+          ) : null}
         </label>
         <label>
           {copy.company}
@@ -186,9 +235,14 @@ export default function PartnerApplyForm({
             autoComplete="organization"
             value={form.company}
             aria-invalid={errors.company ? true : undefined}
+            aria-describedby={errors.company ? `${id}-company-error` : undefined}
             onChange={(e) => update("company", e.target.value)}
           />
-          {errors.company ? <span className="ip-field-error">{errors.company}</span> : null}
+          {errors.company ? (
+            <span className="ip-field-error" id={`${id}-company-error`} role="alert">
+              {errors.company}
+            </span>
+          ) : null}
         </label>
         <label>
           {copy.email}
@@ -200,9 +254,14 @@ export default function PartnerApplyForm({
             inputMode="email"
             value={form.email}
             aria-invalid={errors.email ? true : undefined}
+            aria-describedby={errors.email ? `${id}-email-error` : undefined}
             onChange={(e) => update("email", e.target.value)}
           />
-          {errors.email ? <span className="ip-field-error">{errors.email}</span> : null}
+          {errors.email ? (
+            <span className="ip-field-error" id={`${id}-email-error`} role="alert">
+              {errors.email}
+            </span>
+          ) : null}
         </label>
         <label>
           {copy.phone}
@@ -214,9 +273,14 @@ export default function PartnerApplyForm({
             inputMode="tel"
             value={form.phone}
             aria-invalid={errors.phone ? true : undefined}
+            aria-describedby={errors.phone ? `${id}-phone-error` : undefined}
             onChange={(e) => update("phone", e.target.value)}
           />
-          {errors.phone ? <span className="ip-field-error">{errors.phone}</span> : null}
+          {errors.phone ? (
+            <span className="ip-field-error" id={`${id}-phone-error`} role="alert">
+              {errors.phone}
+            </span>
+          ) : null}
         </label>
         <label>
           {copy.country}
@@ -226,9 +290,14 @@ export default function PartnerApplyForm({
             autoComplete="country-name"
             value={form.country}
             aria-invalid={errors.country ? true : undefined}
+            aria-describedby={errors.country ? `${id}-country-error` : undefined}
             onChange={(e) => update("country", e.target.value)}
           />
-          {errors.country ? <span className="ip-field-error">{errors.country}</span> : null}
+          {errors.country ? (
+            <span className="ip-field-error" id={`${id}-country-error`} role="alert">
+              {errors.country}
+            </span>
+          ) : null}
         </label>
         <label>
           {copy.website} <span className="ip-optional">{copy.websiteOptional}</span>
@@ -250,6 +319,7 @@ export default function PartnerApplyForm({
             name="partnershipType"
             value={form.partnershipType}
             aria-invalid={errors.partnershipType ? true : undefined}
+            aria-describedby={errors.partnershipType ? `${id}-partnershipType-error` : undefined}
             onChange={(e) => update("partnershipType", e.target.value as PartnerTrackOption | "")}
           >
             {PARTNER_TRACK_OPTIONS.map((track) => (
@@ -259,7 +329,9 @@ export default function PartnerApplyForm({
             ))}
           </select>
           {errors.partnershipType ? (
-            <span className="ip-field-error">{errors.partnershipType}</span>
+            <span className="ip-field-error" id={`${id}-partnershipType-error`} role="alert">
+              {errors.partnershipType}
+            </span>
           ) : null}
         </label>
         <label className="ip-apply-span">
@@ -270,14 +342,53 @@ export default function PartnerApplyForm({
             rows={4}
             value={form.message}
             aria-invalid={errors.message ? true : undefined}
+            aria-describedby={errors.message ? `${id}-message-error` : undefined}
             onChange={(e) => update("message", e.target.value)}
           />
-          {errors.message ? <span className="ip-field-error">{errors.message}</span> : null}
+          {errors.message ? (
+            <span className="ip-field-error" id={`${id}-message-error`} role="alert">
+              {errors.message}
+            </span>
+          ) : null}
+        </label>
+      </div>
+
+      <div className="ip-privacy">
+        <p className="ip-privacy-notice">
+          {copy.privacyNotice}{" "}
+          <Link to="/privacy">{copy.privacyLink}</Link>.
+        </p>
+        <label className="ip-privacy-check">
+          <input
+            id={`${id}-privacyAccepted`}
+            name="privacyAccepted"
+            type="checkbox"
+            checked={form.privacyAccepted}
+            aria-invalid={errors.privacyAccepted ? true : undefined}
+            aria-describedby={errors.privacyAccepted ? `${id}-privacyAccepted-error` : undefined}
+            onChange={(e) => update("privacyAccepted", e.target.checked)}
+          />
+          <span>{copy.privacyAccept}</span>
+        </label>
+        {errors.privacyAccepted ? (
+          <span className="ip-field-error" id={`${id}-privacyAccepted-error`} role="alert">
+            {errors.privacyAccepted}
+          </span>
+        ) : null}
+        <label className="ip-privacy-check">
+          <input
+            id={`${id}-marketingOptIn`}
+            name="marketingOptIn"
+            type="checkbox"
+            checked={form.marketingOptIn}
+            onChange={(e) => update("marketingOptIn", e.target.checked)}
+          />
+          <span>{copy.marketingOptIn}</span>
         </label>
       </div>
 
       {failure ? (
-        <p className="ip-form-error" role="alert">
+        <p className="ip-form-error" role="alert" aria-live="assertive">
           {failure}
         </p>
       ) : null}
