@@ -431,7 +431,7 @@
 .report-sheet__score > div:last-child { border-inline-end: 0; }
 .report-sheet dt { color: #64748b; font-size: 0.74rem; font-weight: 800; }
 .report-sheet dd { margin: 0.25rem 0 0; font-weight: 700; overflow-wrap: anywhere; }
-.report-sheet__score { grid-template-columns: 1.25fr 0.75fr; }
+.report-sheet__score { grid-template-columns: 1fr 1fr 1fr; }
 .report-sheet__score > div:last-child { background: #f8fafc; }
 .report-sheet__score b {
   display: block;
