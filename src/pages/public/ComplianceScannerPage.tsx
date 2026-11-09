@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import "./complianceScanner.css";
 import { FreeResult, MonitorBoard, PlanCards, commercialLocale } from "./ComplianceCommercial";
 import { ComplianceReportView } from "./ComplianceReportView";
+import { SignaturePad } from "./SignaturePad";
+import { CONSENT_UI, CONSENT_VERSIONS, SCOPE, STATEMENT } from "../../lib/complianceConsentCopy";
 
 const TOKEN_KEY = "bizuplyComplianceTenant";
 const ADMIN_KEY = "bizuplyComplianceAdmin";
@@ -561,6 +563,10 @@ export default function ComplianceScannerPage() {
   const [states, setStates] = useState<Array<{ code: string; en: string; he: string }>>([]);
   const [businessType, setBusinessType] = useState<(typeof TYPES)[number]>("brochure");
   const [audience, setAudience] = useState(false);
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [accepted, setAccepted] = useState(false);
+  const [signature, setSignature] = useState("");
   const [error, setError] = useState("");
   const [payload, setPayload] = useState<any>(null);
   const [reload, setReload] = useState(0);
@@ -623,6 +629,11 @@ export default function ComplianceScannerPage() {
     if (!selected.length) { setError(copy.country); return; }
     const nameParts = fullName.trim().split(/\s+/).filter((part) => part.length >= 2);
     if (nameParts.length < 2) { setError(copy.nameInvalid); return; }
+    const consent = CONSENT_UI[locale];
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) { setError(consent.needEmail); return; }
+    if (!/^\+[1-9]\d{7,14}$/.test(phone.replace(/[\s-]/g, ""))) { setError(consent.needPhone); return; }
+    if (!accepted) { setError(consent.needBox); return; }
+    if (!signature.startsWith("data:image/png")) { setError(consent.needSign); return; }
     const token = localStorage.getItem(TOKEN_KEY) || undefined;
     const platform = localStorage.getItem("token") || "";
     const response = await fetch("/compliance/api/scans", {
@@ -634,6 +645,20 @@ export default function ComplianceScannerPage() {
       body: JSON.stringify({
         url, requesterName: fullName.trim(), plan: "free", countries: selected, businessType,
         targetsOtherCountries: audience, locale, tenantToken: token,
+        consent: {
+          accepted: true,
+          locale,
+          name: fullName.trim(),
+          email: email.trim(),
+          phone: phone.replace(/[\s-]/g, ""),
+          signature,
+          statementText: STATEMENT[locale],
+          ...CONSENT_VERSIONS,
+          termsVersion: CONSENT_VERSIONS.terms,
+          privacyVersion: CONSENT_VERSIONS.privacy,
+          scannerVersion: CONSENT_VERSIONS.scanner,
+          statementVersion: CONSENT_VERSIONS.statement,
+        },
       }),
     });
     const data = await response.json();
@@ -694,7 +719,6 @@ export default function ComplianceScannerPage() {
                 <span>{copy.url}</span>
                 <input value={url} onChange={(event) => setUrl(event.target.value)} inputMode="url" required />
               </label>
-              <button className="scan-start" type="submit">{copy.start}</button>
             </div>
             <p className="scan-name-note">{copy.nameNotice}</p>
             <div className="scan-field">
@@ -748,7 +772,32 @@ export default function ComplianceScannerPage() {
                 <button type="button" className={!audience ? "is-on" : ""} onClick={() => setAudience(false)}>{copy.no}</button>
               </div>
             </div>
-            <p className="scan-notice">{copy.notice}</p>
+            <p className="scan-notice">{SCOPE[locale]}</p>
+            <div className="scan-consent">
+              <label className="scan-url">
+                <span>{CONSENT_UI[locale].email}</span>
+                <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" required />
+              </label>
+              <label className="scan-url">
+                <span>{CONSENT_UI[locale].phone}</span>
+                <input value={phone} onChange={(event) => setPhone(event.target.value)} autoComplete="tel" inputMode="tel" placeholder="+972" required />
+              </label>
+              <label className="scan-consent__box">
+                <input type="checkbox" checked={accepted} onChange={(event) => setAccepted(event.target.checked)} />
+                <span>
+                  {CONSENT_UI[locale].before}
+                  <Link to="/terms#compliance-ai">{CONSENT_UI[locale].terms}</Link>
+                  {CONSENT_UI[locale].mid}
+                  <Link to="/privacy#compliance-ai">{CONSENT_UI[locale].privacy}</Link>
+                  {CONSENT_UI[locale].and}
+                  <Link to="/terms#compliance-ai">{CONSENT_UI[locale].scanner}</Link>
+                  {CONSENT_UI[locale].after}
+                </span>
+              </label>
+              <p>{CONSENT_UI[locale].signHelp}</p>
+              <SignaturePad label={CONSENT_UI[locale].signTitle} clearLabel={CONSENT_UI[locale].clear} onChange={setSignature} />
+              <button className="scan-start" type="submit">{CONSENT_UI[locale].submit}</button>
+            </div>
           </div>
         </div>
       </section>

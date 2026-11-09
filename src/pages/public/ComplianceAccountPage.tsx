@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { normalizeMarketingLocale } from "../../lib/localePathCore.mjs";
 import "./websiteScan.css";
+import { CONSENT_UI } from "../../lib/complianceConsentCopy";
 
 type Locale = "he" | "en" | "es" | "pt-BR" | "ar";
 type Slot = { number: number; dueOn: string; state: string; scanId: string | null; performed: boolean; score?: number | null; coverage?: number | null };
@@ -230,6 +231,7 @@ export function ComplianceAccountPage() {
       <div className="scan-product__wrap scan-account">
         <h1>{copy.title}</h1>
         <p>{copy.intro}</p>
+        <p><Link to="/terms#compliance-ai">{CONSENT_UI[locale].accountLink}</Link></p>
         {!signedIn && (
           <form className="scan-account__form" onSubmit={register}>
             <h2>{copy.register}</h2>

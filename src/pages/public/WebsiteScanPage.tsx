@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { CONSENT_UI, SCOPE } from "../../lib/complianceConsentCopy";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -127,6 +128,13 @@ const INCLUDED: Record<Locale, { line: string; plans: string[] }> = {
   "pt-BR": { line: "O relatório completo está incluído na compra avulsa e em cada varredura dos planos de acompanhamento.", plans: ["Relatório avulso — US$ 35", "Acompanhamento trimestral — US$ 119 por ano", "Acompanhamento mensal — US$ 300 por ano"] },
   ar: { line: "التقرير الكامل مشمول في الشراء لمرة واحدة وفي كل فحص ضمن مسارات المتابعة.", plans: ["تقرير لمرة واحدة — 35 دولارًا", "متابعة ربع سنوية — 119 دولارًا في السنة", "متابعة شهرية — 300 دولار في السنة"] },
 };
+const ICONS: ReactNode[] = [
+  <svg key="shield" viewBox="0 0 32 32"><path d="M16 3.5 6.5 7.2v7.4c0 6.2 4 10.2 9.5 12.4 5.5-2.2 9.5-6.2 9.5-12.4V7.2L16 3.5z" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>,
+  <svg key="lock" viewBox="0 0 32 32"><rect x="8" y="14" width="16" height="12" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M11 14v-3a5 5 0 0 1 10 0v3" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>,
+  <svg key="eye" viewBox="0 0 32 32"><path d="M4 16s4.5-7 12-7 12 7 12 7-4.5 7-12 7S4 16 4 16z" fill="none" stroke="currentColor" strokeWidth="1.6" /><circle cx="16" cy="16" r="3" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>,
+  <svg key="file" viewBox="0 0 32 32"><path d="M9 5h9l6 6v16H9V5z" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M18 5v6h6M12 17h8M12 21h8" fill="none" stroke="currentColor" strokeWidth="1.6" /></svg>,
+];
+
 const TRANSCRIPT: Record<Locale, string> = {
   he: "תמלול ההדגמה", en: "Demo transcript", es: "Transcripción de la demostración", "pt-BR": "Transcrição da demonstração", ar: "تفريغ العرض",
 };
@@ -154,11 +162,12 @@ export function WebsiteScanPage() {
         <meta property="og:url" content={canonical} />
         <script type="application/ld+json">{JSON.stringify(schemaFor(copy, canonical, locale))}</script>
       </Helmet>
-      <div className="scan-product__wrap">
-        <header className="scan-hero scan-rise">
+      <header className="scan-hero">
+        <div className="scan-product__wrap scan-hero__grid">
           <div>
             <h1>{copy.h1}</h1>
             <p>{copy.lede}</p>
+            <p className="scan-limits">{SCOPE[locale]}</p>
             <div className="scan-product__actions">
               <Link to="/compliance">{copy.primary}</Link>
               <a href="#scan-demo">{copy.watch}</a>
@@ -174,18 +183,22 @@ export function WebsiteScanPage() {
               <track kind="captions" srcLang={locale === "pt-BR" ? "pt-BR" : locale} src={`/media/compliance-demo/captions-${code}.vtt`} label={copy.crumb} default />
             </video>
           </figure>
-        </header>
+        </div>
+      </header>
+      <div className="scan-product__wrap">
         <details className="scan-transcript"><summary>{TRANSCRIPT[locale]}</summary><p>{copy.transcript}</p></details>
       </div>
       {order.map((index) => {
         const section = copy.sections[index] as { heading: string; paragraphs?: string[]; subsections?: { heading: string; paragraphs: string[] }[] };
         if (!section) return null;
-        const band = index === 1 || index === 7;
+        const tone = index === 7 ? "scan-dark" : index === 1 ? "scan-band" : "";
+        const ui = CONSENT_UI[locale];
         const block = (
-          <section className={`scan-section scan-rise${index === 9 ? " scan-close" : ""}`} key={section.heading}>
+          <section className={`scan-section${index === 9 ? " scan-close" : ""}`} key={section.heading}>
             <div className="scan-product__wrap">
               <h2>{section.heading}</h2>
               {(section.paragraphs || []).map((paragraph) => <p key={paragraph.slice(0, 32)}>{paragraph}</p>)}
+              {index === 1 && <p>{ui.widgetLine}</p>}
               {index === 1 && (
                 <p className="scan-inline-links">
                   <Link to="/privacy">{links.privacy}</Link>
@@ -195,8 +208,9 @@ export function WebsiteScanPage() {
               )}
               {section.subsections && (
                 <div className={index === 1 || index === 6 ? "scan-grid" : "scan-stack"}>
-                  {section.subsections.map((sub) => (
+                  {section.subsections.map((sub, iconIndex) => (
                     <article className="scan-card" key={sub.heading}>
+                      {index === 1 ? <span className="scan-card__icon">{ICONS[iconIndex] || ICONS[0]}</span> : null}
                       <h3>{sub.heading}</h3>
                       {sub.paragraphs.map((paragraph) => <p key={paragraph.slice(0, 32)}>{paragraph}</p>)}
                     </article>
@@ -237,7 +251,7 @@ export function WebsiteScanPage() {
             </div>
           </section>
         );
-        return band ? <div className="scan-band" key={section.heading}>{block}</div> : block;
+        return tone ? <div className={tone} key={section.heading}>{block}</div> : block;
       })}
       <div className="scan-band">
         <section className="scan-section scan-faq">
@@ -246,6 +260,10 @@ export function WebsiteScanPage() {
             {copy.faq.map(([question, answer]: [string, string]) => (
               <details key={question}><summary>{question}</summary><p>{answer}</p></details>
             ))}
+            <details>
+              <summary>{CONSENT_UI[locale].faqQ}</summary>
+              <p>{CONSENT_UI[locale].faqA}</p>
+            </details>
           </div>
         </section>
       </div>
