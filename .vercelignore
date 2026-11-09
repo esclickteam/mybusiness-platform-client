@@ -8,6 +8,7 @@ review-assets
 *.mp4
 !public/saas-media/**/*.mp4
 !public/demo-media/**/*.mp4
+!public/media/compliance-demo/**/*.mp4
 node_modules
 .git
 agent-transcripts
