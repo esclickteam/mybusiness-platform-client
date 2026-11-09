@@ -1,0 +1,134 @@
+{
+  "he-desktop": {
+    "size": [
+      1920,
+      1080
+    ],
+    "duration": 90.5,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0
+      },
+      {
+        "id": "crm",
+        "at": 10.81
+      },
+      {
+        "id": "whatsapp",
+        "at": 27.09
+      },
+      {
+        "id": "task",
+        "at": 36.71
+      },
+      {
+        "id": "automation",
+        "at": 56.39
+      },
+      {
+        "id": "done",
+        "at": 76.57
+      }
+    ]
+  },
+  "en-desktop": {
+    "size": [
+      1920,
+      1080
+    ],
+    "duration": 89.9,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0
+      },
+      {
+        "id": "crm",
+        "at": 10.97
+      },
+      {
+        "id": "whatsapp",
+        "at": 27.96
+      },
+      {
+        "id": "task",
+        "at": 38.11
+      },
+      {
+        "id": "automation",
+        "at": 56.66
+      },
+      {
+        "id": "done",
+        "at": 76.04
+      }
+    ]
+  },
+  "he-mobile": {
+    "size": [
+      1170,
+      2532
+    ],
+    "duration": 89.3,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0
+      },
+      {
+        "id": "crm",
+        "at": 10.64
+      },
+      {
+        "id": "whatsapp",
+        "at": 26.46
+      },
+      {
+        "id": "task",
+        "at": 36.61
+      },
+      {
+        "id": "automation",
+        "at": 56.53
+      },
+      {
+        "id": "done",
+        "at": 77.34
+      }
+    ]
+  },
+  "en-mobile": {
+    "size": [
+      1170,
+      2532
+    ],
+    "duration": 91.5,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0
+      },
+      {
+        "id": "crm",
+        "at": 10.34
+      },
+      {
+        "id": "whatsapp",
+        "at": 28.33
+      },
+      {
+        "id": "task",
+        "at": 39.01
+      },
+      {
+        "id": "automation",
+        "at": 57.09
+      },
+      {
+        "id": "done",
+        "at": 77.47
+      }
+    ]
+  }
+}

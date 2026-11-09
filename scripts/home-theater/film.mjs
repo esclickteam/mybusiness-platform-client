@@ -1,0 +1,362 @@
+/**
+ * Records the six-step BizUply process film on the staging demo workspace.
+ *   LEADS_WEBHOOK_URL=... LANG_UI=he|en MOBILE=0|1 [DRY=1] [CLEAN_PHONES=972...,972...] node scripts/home-theater/film.mjs
+ * Each take creates one new demo lead, so give every take a new customer file.
+ * Every step asserts its real server response / UI result; nothing is faked.
+ */
+import { chromium } from "playwright";
+import fs from "node:fs";
+import path from "node:path";
+import { cursorScript, createRecorder, segmentsToMp4, joinChapters, glide, run, login } from "./recorder.mjs";
+
+function fail0(msg) { console.error(msg); process.exit(2); }
+const LANG = process.env.LANG_UI || "he";
+const MOBILE = process.env.MOBILE === "1";
+const DRY = process.env.DRY === "1";
+const BASE = "https://mybusiness-platform-client-staging.vercel.app";
+const API = "https://server-staging-15bb.up.railway.app/api";
+const BIZ = "6ab62f565ba1a92f3046b5ad";
+const AUTO_ID = process.env.AUTO_ID || "6af1e65d76c39b752eefa9e4";
+const WEBHOOK = process.env.LEADS_WEBHOOK_URL || (process.env.DRY === "1" ? "" : fail0("Set LEADS_WEBHOOK_URL to the demo business Make/Facebook leads webhook (GET /integrations/facebook-leads/webhook-url)."));
+const TAG = `${LANG}-${MOBILE ? "mobile" : "desktop"}`;
+const OUT = `${process.env.CAPTURE_DIR || "/tmp/home-theater"}/film-${TAG}`;
+fs.mkdirSync(OUT, { recursive: true });
+fs.mkdirSync(process.env.CAPTURE_DIR || "/tmp/home-theater", { recursive: true });
+
+const CSS_W = MOBILE ? 390 : 1280;
+const CSS_H = MOBILE ? 844 : 720;
+const DPR = MOBILE ? 3 : 1.5;
+const PX_W = Math.round(CSS_W * DPR);
+const PX_H = Math.round(CSS_H * DPR);
+
+const C = JSON.parse(fs.readFileSync(process.env.CUSTOMER || new URL(`./customers/customer-${TAG}.json`, import.meta.url), "utf8"));
+const L = {
+  he: {
+    notesTab: "הערות ופעילות", tasksTab: "משימות", taskQuick: "משימה", noteSave: "שמירה", addTask: "הוספת משימה",
+    reply: "תשובה", test: "בדיקה", runTest: "הרצת בדיקה", close: "סגירה",
+  },
+  en: {
+    notesTab: "Notes and activity", tasksTab: "Tasks", taskQuick: "Task", noteSave: "Save", addTask: "Add task",
+    reply: "Reply", test: "Test", runTest: "Run a test", close: "Close",
+  },
+}[LANG];
+if (process.env.LABELS) Object.assign(L, JSON.parse(process.env.LABELS));
+
+const log = (...a) => console.log(`[${TAG}]`, ...a);
+const fail = (msg) => { throw new Error(`[${TAG}] ${msg}`); };
+
+const browser = await chromium.launch({
+  executablePath: "/usr/local/bin/google-chrome",
+  headless: true,
+  args: [
+    `--force-device-scale-factor=${DPR}`,
+    MOBILE ? "--window-size=500,1000" : `--window-size=${CSS_W},${CSS_H + 86}`,
+    "--hide-scrollbars",
+    `--lang=${LANG === "he" ? "he-IL" : "en-US"}`,
+  ],
+});
+const ctx = await browser.newContext({
+  ...(MOBILE ? { viewport: { width: CSS_W, height: CSS_H }, deviceScaleFactor: DPR, isMobile: true, hasTouch: true } : { viewport: null }),
+  locale: LANG === "he" ? "he-IL" : "en-US",
+  timezoneId: "Asia/Jerusalem",
+  userAgent: MOBILE
+    ? "Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1"
+    : undefined,
+});
+await ctx.addInitScript(cursorScript(MOBILE ? "touch" : "desktop"));
+await ctx.addInitScript((lang) => {
+  localStorage.setItem("i18nextLng", lang);
+  localStorage.setItem("bizuply.lang", lang);
+  localStorage.setItem("bizuply_lang_preference", lang);
+  localStorage.setItem("bizuply_lang_resolved", lang);
+}, LANG);
+const page = await ctx.newPage();
+page.setDefaultTimeout(30000);
+await login(page, BASE, LANG);
+await ctx.storageState({ path: (process.env.CAPTURE_DIR || "/tmp/home-theater") + "/auth.json" });
+{
+  const token = await page.evaluate(() => localStorage.getItem("token"));
+  const H = { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "x-business-id": BIZ, Origin: BASE };
+  const own = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+  for (const ph of (process.env.CLEAN_PHONES || "").split(",").filter(Boolean)) {
+    if (ph === own) continue;
+    const r = await fetch(`${API}/whatsapp/conversations/${ph}`, { method: "DELETE", headers: H });
+    log("cleanup thread", ph, r.status);
+  }
+}
+const replies = [];
+page.on("response", async (r) => {
+  if (/\/whatsapp\/conversations\/[^/]+\/reply$/.test(r.url())) {
+    try { replies.push(await r.json()); } catch { replies.push({ unreadable: true }); }
+  }
+});
+
+process.on("exit", () => { try { fs.writeFileSync(`${OUT}/partial.json`, JSON.stringify({ chapters, C })); } catch {} });
+process.on("unhandledRejection", async (e) => { console.error("FAIL", e?.message?.slice(0, 400)); try { await page.screenshot({ path: `${OUT}/fail.png` }); console.error("url", page.url()); } catch {} process.exit(1); });
+const cur = { x: CSS_W * 0.55, y: CSS_H * 0.6 };
+const rec = await createRecorder(page, path.join(OUT, "frames"), { width: PX_W, height: PX_H });
+const chapters = [];
+let chapter = null;
+
+function beginChapter(id) {
+  cut();
+  chapter = { id, firstSeg: rec.segmentCount };
+  chapters.push(chapter);
+}
+async function keep() { await rec.resume(); }
+function cut() {
+  if (!rec.keeping) return;
+  rec.pause();
+}
+async function endChapter() {
+  cut();
+}
+
+const dashboard = (p) => `${BASE}${LANG === "he" ? "/he" : ""}/business/${BIZ}/dashboard/${p}`;
+
+async function settle(ms = 600) { await page.waitForTimeout(ms); }
+
+async function goto(p, ready) {
+  cut();
+  await page.goto(dashboard(p), { waitUntil: "domcontentloaded", timeout: 90000 });
+  await rec.restart();
+  await ready();
+  await page.mouse.move(cur.x, cur.y);
+  await settle(700);
+}
+
+/** Wait for a condition; if it takes longer than `grace` ms, the wait is cut from the film. */
+async function waitOrCut(fn, { grace = 650, timeout = 45000, label = "" } = {}) {
+  const started = Date.now();
+  let done = false;
+  const p = fn().then(() => { done = true; });
+  while (!done && Date.now() - started < grace) await page.waitForTimeout(50);
+  if (!done) {
+    cut();
+    await Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout " + label)), timeout))]);
+    await settle(450);
+    await keep();
+  } else {
+    await p;
+  }
+}
+
+async function to(locator, { click = true, pause = 220, after = 380, dx = 0.5, dy = 0.5 } = {}) {
+  await locator.waitFor({ state: "visible" });
+  const pre = await locator.boundingBox();
+  if (pre && (pre.y < 56 || pre.y + pre.height > CSS_H - 24 || pre.x < 0 || pre.x + pre.width > CSS_W)) {
+    await locator.evaluate((el) => el.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" }));
+    await page.waitForTimeout(800);
+  }
+  await locator.scrollIntoViewIfNeeded();
+  const box = await locator.boundingBox();
+  if (!box) fail("no box");
+  const x = box.x + box.width * dx, y = box.y + box.height * dy;
+  await glide(page, cur, x, y);
+  await page.waitForTimeout(pause);
+  if (click) {
+    await page.mouse.down();
+    await page.waitForTimeout(70);
+    await page.mouse.up();
+    await page.waitForTimeout(after);
+  }
+}
+
+async function typeText(text, delay = 15) {
+  await page.keyboard.type(text, { delay });
+}
+
+const leadRow = () => page.locator("table tbody tr").filter({ hasText: C.name }).first();
+const listReady = async () => { await page.locator("table tbody tr").first().waitFor({ timeout: 60000 }); };
+const cardReady = async () => { await page.getByRole("button", { name: L.notesTab, exact: true }).waitFor({ timeout: 60000 }); };
+
+/* ---------- 1. Lead intake ---------- */
+beginChapter("lead");
+await goto("crm/leads", listReady);
+const vp = await page.evaluate(() => [innerWidth, innerHeight]);
+log("viewport", vp);
+if (vp[0] !== CSS_W) fail(`viewport width ${vp[0]}`);
+if (DRY) C.name = process.env.DRY_NAME || "Dana Israeli";
+else if ((await leadRow().count()) > 0) fail(`customer ${C.name} already exists — pick a new customer`);
+await keep();
+await settle(900);
+const hook = DRY ? { status: 201, json: async () => ({ lead: { _id: "dry", source: "dry" } }) } : await fetch(WEBHOOK, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ name: C.name, phone: C.phone, email: C.email, message: C.message, form_name: C.formName }),
+});
+const hookJson = await hook.json();
+if (hook.status !== 201 || !hookJson?.lead?._id) fail(`webhook ${hook.status} ${JSON.stringify(hookJson).slice(0, 300)}`);
+C.leadId = hookJson.lead._id;
+log("lead created", C.leadId, hookJson.lead.source);
+await settle(1600);
+const refresh = page.locator("button.icon-btn").filter({ hasText: /^$/ }).first();
+await to(refresh, { after: 200 });
+await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { label: "row" });
+await settle(700);
+await to(leadRow().locator("td").nth(1), { click: false, pause: 500 });
+await to(leadRow().locator("td").nth(1), { after: 150 });
+await waitOrCut(cardReady, { label: "card" });
+await settle(1400);
+await endChapter();
+
+/* ---------- 2. Customer management ---------- */
+beginChapter("crm");
+await keep();
+await settle(500);
+const statusSelect = page.locator("select").filter({ has: page.locator('option[value="interested"]') }).first();
+await to(statusSelect, { after: 250 });
+if (!DRY) {
+const statusResp = page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/status/.test(r.url()) && r.request().method() !== "GET", { timeout: 20000 });
+await statusSelect.selectOption("interested");
+const sr = await statusResp;
+if (!sr.ok()) fail(`status ${sr.status()}`);
+log("status saved", sr.status());
+}
+await settle(1100);
+await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 600 });
+const note = page.locator("textarea").first();
+await to(note, { after: 200 });
+await typeText(C.note);
+await settle(350);
+const noteResp = DRY ? null : page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/activities/.test(r.url()) && r.request().method() === "POST", { timeout: 20000 });
+await to(page.getByRole("button", { name: L.noteSave, exact: true }), { click: !DRY, after: 100 });
+if (!DRY) {
+const nr = await noteResp;
+if (!nr.ok()) fail(`note ${nr.status()}`);
+await page.getByText(C.note.slice(0, 30)).first().waitFor({ timeout: 15000 });
+log("note saved");
+}
+await settle(1500);
+await endChapter();
+
+/* ---------- 3. WhatsApp ---------- */
+beginChapter("whatsapp");
+const waPhone = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+await goto(`whatsapp/inbox?phone=${waPhone}`, async () => {
+  await page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first().waitFor({ timeout: 60000 });
+  await page.getByText(waPhone).first().waitFor({ timeout: 30000 });
+  await page.waitForTimeout(1500);
+});
+await keep();
+await settle(900);
+const composer = page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first();
+await to(composer, { after: 200 });
+await typeText(C.reply);
+await settle(300);
+await to(page.getByRole("button", { name: L.reply, exact: true }), { click: !DRY, after: 200 });
+if (!DRY) {
+await page.getByText(C.reply.slice(0, 24)).first().waitFor({ timeout: 15000 });
+await settle(1800);
+const rj = replies[replies.length - 1];
+if (!rj?.demoSafe) fail(`reply not demo-safe: ${JSON.stringify(rj).slice(0, 300)}`);
+log("whatsapp reply demoSafe", rj.providerMessageId);
+}
+await endChapter();
+
+/* ---------- 4. Task & meeting ---------- */
+beginChapter("task");
+await goto("crm/leads", listReady);
+await keep();
+await settle(500);
+await to(leadRow().locator("td").nth(1), { after: 150 });
+await waitOrCut(cardReady, { label: "card2" });
+await settle(700);
+await to(page.getByRole("button", { name: L.taskQuick, exact: true }), { after: 600 });
+const taskInput = page.locator(`input[placeholder^="${C.taskPlaceholder}"]`).first();
+await to(taskInput, { after: 150 });
+await typeText(C.task);
+await settle(300);
+const dt = page.locator('input[type="datetime-local"]:visible').first();
+const dtBox = await dt.boundingBox();
+await to(dt, { after: 150, dx: Math.min(0.2, 18 / dtBox.width) });
+await typeText(C.taskDate, 60);
+await page.keyboard.press("ArrowRight");
+await typeText(C.taskTime, 60);
+await settle(400);
+const dtValue = await dt.inputValue();
+if (dtValue !== C.taskValue) {
+  log("datetime typed value", dtValue, "→ fill", C.taskValue);
+  await dt.fill(C.taskValue);
+}
+await settle(500);
+const taskResp = DRY ? null : page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/activities/.test(r.url()) && r.request().method() === "POST", { timeout: 20000 });
+await to(page.getByRole("button", { name: L.addTask, exact: true }), { click: !DRY, after: 100 });
+if (!DRY) {
+const tr = await taskResp;
+if (!tr.ok()) fail(`task ${tr.status()} ${tr.url()}`);
+await page.getByText(C.task.slice(0, 24)).first().waitFor({ timeout: 15000 });
+log("task saved", tr.url());
+}
+await settle(1900);
+await endChapter();
+
+/* ---------- 5. Automation ---------- */
+beginChapter("automation");
+await goto("automations", async () => {
+  await page.getByText(C.autoName).and(page.locator(":visible")).first().waitFor({ timeout: 60000 });
+});
+await keep();
+await settle(700);
+await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { click: false, pause: 400 });
+await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { after: 100 });
+await waitOrCut(() => page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 }).then(() => page.locator(".react-flow__node").first().waitFor()), { label: "editor" });
+await settle(1200);
+if (!MOBILE) {
+await to(page.locator(".react-flow__node").first(), { click: false, pause: 550 });
+await to(page.locator(".react-flow__node").nth(1), { click: false, pause: 350 });
+await to(page.locator(".react-flow__node").nth(2), { click: false, pause: 350 });
+}
+await to(page.getByRole("button", { name: L.test, exact: true }), { after: 700 });
+const dryResp = page.waitForResponse((r) => /\/dry-run$/.test(r.url()), { timeout: 20000 });
+await to(page.getByRole("button", { name: L.runTest, exact: true }), { after: 100 });
+const dr = await dryResp;
+if (!dr.ok()) fail(`dry-run ${dr.status()}`);
+await page.getByText("completed").first().waitFor({ timeout: 15000 });
+log("automation test completed");
+await settle(2600);
+if (MOBILE) {
+  const zin = page.locator(".react-flow__controls-zoomin");
+  for (let i = 0; i < 3; i++) await to(zin, { pause: i ? 120 : 260, after: 420 });
+  await settle(1800);
+}
+await endChapter();
+
+/* ---------- 6. Wrap-up ---------- */
+beginChapter("done");
+await goto("crm/leads", listReady);
+await keep();
+await settle(600);
+if (!MOBILE) await to(leadRow().locator("td").nth(4), { click: false, pause: 900 });
+await to(leadRow().locator("td").nth(1), { after: 150 });
+await waitOrCut(cardReady, { label: "card3" });
+await settle(900);
+await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 500 });
+await settle(1700);
+await to(page.getByRole("button", { name: L.tasksTab, exact: true }), { after: 500 });
+await settle(2200);
+await endChapter();
+
+const { frames, segments } = await rec.stop();
+await browser.close();
+
+fs.writeFileSync(path.join(OUT, "raw.json"), JSON.stringify({ frames, segments, chapters, C }, null, 1));
+log("frames", frames.length, "segments", segments.length);
+
+const clips = [];
+for (let i = 0; i < chapters.length; i++) {
+  const segs = segments.slice(chapters[i].firstSeg, chapters[i + 1]?.firstSeg ?? segments.length);
+  const clip = path.join(OUT, `ch${i + 1}-${chapters[i].id}.mp4`);
+  const { duration } = await segmentsToMp4(frames, segs, clip, { width: PX_W, height: PX_H });
+  log("chapter", chapters[i].id, duration.toFixed(2) + "s", segs.length, "segments");
+  clips.push(clip);
+}
+const final = path.join(OUT, `process-${TAG}.mp4`);
+const { marks, duration } = await joinChapters(clips, final, { crf: MOBILE ? 21 : 20 });
+await run("ffmpeg", ["-y", "-ss", "1.0", "-i", final, "-frames:v", "1", "-q:v", "2", "-update", "1", path.join(OUT, `process-${TAG}.jpg`)]);
+fs.writeFileSync(path.join(OUT, `process-${TAG}.json`), JSON.stringify({
+  size: [PX_W, PX_H], duration: Number(duration.toFixed(2)),
+  chapters: chapters.map((c, i) => ({ id: c.id, at: marks[i] })),
+  customer: { name: C.name, leadId: C.leadId },
+}, null, 2));
+log("final", final, duration, JSON.stringify(marks));
