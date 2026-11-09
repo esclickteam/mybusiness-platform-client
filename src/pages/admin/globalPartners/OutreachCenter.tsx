@@ -363,13 +363,13 @@ export default function OutreachCenter({
             <thead>
               <tr>
                 <th>חברה</th>
-                <th>מסלול מומלץ</th>
-                <th>פרטי קשר</th>
-                <th>סטטוס אישור</th>
-                <th>סטטוס פנייה</th>
-                <th>פנייה אחרונה</th>
-                <th>מעקב</th>
-                <th>פעולה</th>
+                <th className="gp-desktop-only">מסלול מומלץ</th>
+                <th className="gp-desktop-only">פרטי קשר</th>
+                <th className="gp-desktop-only">סטטוס אישור</th>
+                <th className="gp-desktop-only">סטטוס פנייה</th>
+                <th className="gp-desktop-only">פנייה אחרונה</th>
+                <th className="gp-desktop-only">מעקב</th>
+                <th className="gp-desktop-only">פעולה</th>
               </tr>
             </thead>
             <tbody>
@@ -385,9 +385,24 @@ export default function OutreachCenter({
                     <td>
                       {c.companyName}
                       <div className="gp-muted">{c.countryCode || "—"}</div>
+                      <div className="gp-mobile-only gp-mobile-row-meta">
+                        <span className={gateClass(c.ownerGateStatus || c.ownerReview?.gateKey)}>
+                          {c.ownerGateLabelHe ||
+                            ownerGateLabel(c.ownerGateStatus || c.ownerReview?.gateKey) ||
+                            "—"}
+                        </span>
+                        <div className="gp-muted">{c.businessEmail || ""}</div>
+                        <button
+                          type="button"
+                          className="gp-btn gp-btn--review"
+                          onClick={() => void openThread(c._id)}
+                        >
+                          בדיקה ואישור
+                        </button>
+                      </div>
                     </td>
-                    <td>{trackLabel(c.recommendedTrack)}</td>
-                    <td>
+                    <td className="gp-desktop-only">{trackLabel(c.recommendedTrack)}</td>
+                    <td className="gp-desktop-only">
                       {[
                         c.businessEmail ? "אימייל" : null,
                         c.businessPhone ? "טלפון" : null,
@@ -397,29 +412,29 @@ export default function OutreachCenter({
                         .join(" · ") || "אין"}
                       <div className="gp-muted">{c.businessEmail || ""}</div>
                     </td>
-                    <td>
+                    <td className="gp-desktop-only">
                       <span className={gateClass(c.ownerGateStatus || c.ownerReview?.gateKey)}>
                         {c.ownerGateLabelHe ||
                           ownerGateLabel(c.ownerGateStatus || c.ownerReview?.gateKey) ||
                           "—"}
                       </span>
                     </td>
-                    <td>
+                    <td className="gp-desktop-only">
                       {outreachWorkflowLabel(
                         c.outreachWorkflowStatus || "awaiting_prep"
                       )}
                     </td>
-                    <td>
+                    <td className="gp-desktop-only">
                       {c.lastOutreach?.at
                         ? new Date(c.lastOutreach.at).toLocaleString("he-IL")
                         : "—"}
                     </td>
-                    <td>
+                    <td className="gp-desktop-only">
                       {c.nextFollowUpAt
                         ? new Date(c.nextFollowUpAt).toLocaleDateString("he-IL")
                         : "—"}
                     </td>
-                    <td>
+                    <td className="gp-desktop-only">
                       <button
                         type="button"
                         className="gp-btn gp-btn--review"
