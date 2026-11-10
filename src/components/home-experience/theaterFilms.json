@@ -1,0 +1,150 @@
+{
+  "he-desktop": {
+    "width": 1680,
+    "height": 944,
+    "duration": 96.8,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0,
+        "seek": 0
+      },
+      {
+        "id": "crm",
+        "at": 9.38,
+        "seek": 9.63
+      },
+      {
+        "id": "whatsapp",
+        "at": 27.73,
+        "seek": 27.98
+      },
+      {
+        "id": "task",
+        "at": 36.54,
+        "seek": 36.79
+      },
+      {
+        "id": "automation",
+        "at": 65.32,
+        "seek": 65.57
+      },
+      {
+        "id": "done",
+        "at": 84.84,
+        "seek": 85.09
+      }
+    ]
+  },
+  "en-desktop": {
+    "width": 1680,
+    "height": 944,
+    "duration": 87.6,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0,
+        "seek": 0
+      },
+      {
+        "id": "crm",
+        "at": 9.38,
+        "seek": 9.63
+      },
+      {
+        "id": "whatsapp",
+        "at": 29.79,
+        "seek": 30.04
+      },
+      {
+        "id": "task",
+        "at": 38.91,
+        "seek": 39.16
+      },
+      {
+        "id": "automation",
+        "at": 56.79,
+        "seek": 57.04
+      },
+      {
+        "id": "done",
+        "at": 75.61,
+        "seek": 75.86
+      }
+    ]
+  },
+  "he-mobile": {
+    "width": 1170,
+    "height": 2532,
+    "duration": 96.7,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0,
+        "seek": 0
+      },
+      {
+        "id": "crm",
+        "at": 13.24,
+        "seek": 13.49
+      },
+      {
+        "id": "whatsapp",
+        "at": 32.06,
+        "seek": 32.31
+      },
+      {
+        "id": "task",
+        "at": 41.34,
+        "seek": 41.59
+      },
+      {
+        "id": "automation",
+        "at": 59.52,
+        "seek": 59.77
+      },
+      {
+        "id": "done",
+        "at": 80.07,
+        "seek": 80.32
+      }
+    ]
+  },
+  "en-mobile": {
+    "width": 1170,
+    "height": 2532,
+    "duration": 96.6,
+    "chapters": [
+      {
+        "id": "lead",
+        "at": 0,
+        "seek": 0
+      },
+      {
+        "id": "crm",
+        "at": 12.97,
+        "seek": 13.22
+      },
+      {
+        "id": "whatsapp",
+        "at": 31.96,
+        "seek": 32.21
+      },
+      {
+        "id": "task",
+        "at": 41.94,
+        "seek": 42.19
+      },
+      {
+        "id": "automation",
+        "at": 60.62,
+        "seek": 60.87
+      },
+      {
+        "id": "done",
+        "at": 79.97,
+        "seek": 80.22
+      }
+    ]
+  }
+}

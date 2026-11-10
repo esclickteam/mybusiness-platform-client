@@ -947,7 +947,7 @@ async function handleMarketingDocument(request) {
       const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale === "en" ? "en" : locale.locale);
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       const htmlClass = isHome
-        ? ' class="bizuply-home hx-preview" style="background:#5b21b6"'
+        ? ' class="bizuply-home hx-preview" style="background:#ffffff"'
         : isPartners
           ? ' class="bizuply-partners" style="background:#f7f5fd"'
           : "";
@@ -969,10 +969,12 @@ async function handleMarketingDocument(request) {
         return `${deferred}<noscript><link rel="stylesheet" href="${hrefMatch[1]}"></noscript>`;
       });
       if (isHome) {
+        const theaterLang = locale.locale === "he" ? "he" : "en";
         documentHtml = documentHtml.replace(
           "</head>",
           [
-            '<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high">',
+            `<link rel="preload" as="image" href="/demo-media/home/theater/${theaterLang}-desktop.webp?v=t3" media="(min-width: 761px)" fetchpriority="high">`,
+            `<link rel="preload" as="image" href="/demo-media/home/theater/${theaterLang}-mobile.webp?v=t3" media="(max-width: 760px)" fetchpriority="high">`,
             '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
             '<script src="/home-css-promote.js" defer></script>',
             "</head>",

@@ -1,0 +1,16 @@
+{
+  "name": "Leah Morgan",
+  "phone": "0525552212",
+  "email": "leah.morgan@example.com",
+  "formName": "Test form — Make",
+  "message": "Hi, I saw your ad and would love details about a family photo session at the end of the month.",
+  "note": "First call: interested in an outdoor family shoot. Send a quote by Thursday.",
+  "replyPlaceholder": "Type a reply",
+  "reply": "Hi Leah, thanks for reaching out! I'll send over the family session package. Does Thursday at 10:30 work for a quick call?",
+  "taskPlaceholder": "Write the task",
+  "task": "Follow-up call with Leah — family session quote",
+  "taskDate": "11192026",
+  "taskTime": "1030A",
+  "taskValue": "2026-11-19T10:30",
+  "autoName": "[Demo] Interested lead — tag & note"
+}
