@@ -230,10 +230,19 @@ export async function logCall(leadId: string, outcome: string, note: string) {
   return data;
 }
 
+/** datetime-local is the viewer's wall time. Send a real instant so the card shows that time. */
+export function localInputToIso(value: string) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) return raw;
+  return date.toISOString();
+}
+
 export async function createMeeting(leadId: string, title: string, meetingAt: string, notes = "") {
   const { data } = await API.post(`/crm/workspace/leads/${leadId}/meetings`, {
     title,
-    meetingAt,
+    meetingAt: localInputToIso(meetingAt),
     notes,
   });
   return data;

@@ -1,7 +1,7 @@
 /**
  * Records the six-step BizUply process film on the staging demo workspace.
- *   LEADS_WEBHOOK_URL=... LANG_UI=he|en MOBILE=0|1 [DRY=1] [CLEAN_PHONES=972...,972...] node scripts/home-theater/film.mjs
- * Each take creates one new demo lead, so give every take a new customer file.
+ *   LANG_UI=he|en MOBILE=0|1 [DRY=1] [FILM_BASE=...] node scripts/home-theater/film.mjs
+ * Opens the marked demo lead that is already in the account. It does not call Meta or a webhook.
  * Every step asserts its real server response / UI result; nothing is faked.
  */
 import { chromium } from "playwright";
@@ -9,7 +9,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { cursorScript, createRecorder, segmentsToMp4, joinChapters, glide, run, login } from "./recorder.mjs";
 
-function fail0(msg) { console.error(msg); process.exit(2); }
 const LANG = process.env.LANG_UI || "he";
 const MOBILE = process.env.MOBILE === "1";
 const DRY = process.env.DRY === "1";
@@ -17,7 +16,6 @@ const BASE = process.env.FILM_BASE || "https://mybusiness-platform-client-stagin
 const API = "https://server-staging-15bb.up.railway.app/api";
 const BIZ = "6ab62f565ba1a92f3046b5ad";
 const AUTO_ID = process.env.AUTO_ID || "6af1e65d76c39b752eefa9e4";
-const WEBHOOK = process.env.LEADS_WEBHOOK_URL || (process.env.DRY === "1" ? "" : fail0("Set LEADS_WEBHOOK_URL to the demo business Make/Facebook leads webhook (GET /integrations/facebook-leads/webhook-url)."));
 const TAG = `${LANG}-${MOBILE ? "mobile" : "desktop"}`;
 const OUT = `${process.env.CAPTURE_DIR || "/tmp/home-theater"}/film-${TAG}`;
 fs.mkdirSync(OUT, { recursive: true });
@@ -32,11 +30,11 @@ const PX_H = Math.round(CSS_H * DPR);
 const C = JSON.parse(fs.readFileSync(process.env.CUSTOMER || new URL(`./customers/customer-${TAG}.json`, import.meta.url), "utf8"));
 const L = {
   he: {
-    notesTab: "הערות ופעילות", tasksTab: "משימות", taskQuick: "משימה", noteSave: "שמור הערה", addTask: "הוספת משימה",
+    notesTab: "הערות ופעילות", tasksTab: "משימות", meetingsTab: "פגישות", meetingTitle: "כותרת פגישה", addMeeting: "הוספת פגישה", taskQuick: "משימה", noteSave: "שמור הערה", addTask: "הוספת משימה",
     reply: "תשובה", test: "בדיקה", runTest: "הרצת בדיקה", close: "סגירה",
   },
   en: {
-    notesTab: "Notes and activity", tasksTab: "Tasks", taskQuick: "Task", noteSave: "Save note", addTask: "Add task",
+    notesTab: "Notes and activity", tasksTab: "Tasks", meetingsTab: "Meetings", meetingTitle: "Meeting title", addMeeting: "Add meeting", taskQuick: "Task", noteSave: "Save note", addTask: "Add task",
     reply: "Reply", test: "Test", runTest: "Run a test", close: "Close",
   },
 }[LANG];
@@ -249,7 +247,7 @@ async function typeText(text, delay = 15) {
   await page.keyboard.type(text, { delay });
 }
 
-const leadRow = () => page.locator("table tbody tr").filter({ hasText: C.name }).first();
+const leadRow = () => page.locator("table tbody tr").filter({ hasText: C.phone }).first();
 const listReady = async () => { await page.locator("table").first().waitFor({ timeout: 60000 }); };
 const cardReady = async () => { await page.getByRole("button", { name: L.notesTab, exact: true }).waitFor({ timeout: 60000 }); };
 
@@ -260,45 +258,15 @@ const vp = await page.evaluate(() => [innerWidth, innerHeight]);
 log("viewport", vp);
 if (vp[0] !== CSS_W) fail(`viewport width ${vp[0]}`);
 if (DRY) C.name = process.env.DRY_NAME || "Dana Israeli";
-else if ((await leadRow().count()) > 0) fail(`customer ${C.name} already exists — pick a new customer`);
+C.meetingTitle = C.meetingTitle || (LANG === "he" ? "הדגמה אישית עם שירה מזרחי" : "Personal demo with Olivia Parker");
 await keep();
 await settle(900);
-cut();
-let hook = null;
-for (let attempt = 0; attempt < 3 && !hook; attempt++) {
-  try {
-    hook = DRY
-      ? { status: 201, json: async () => ({ lead: { _id: "dry", source: "dry" } }) }
-      : await fetch(WEBHOOK, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: C.name,
-            phone: C.phone,
-            email: C.email,
-            message: C.message,
-            form_name: C.formName,
-            campaign_name: C.campaignName,
-            lead_id: C.leadId,
-          }),
-          signal: AbortSignal.timeout(20000),
-        });
-  } catch (error) {
-    log("webhook retry", attempt + 1, error.message);
-    if (attempt === 2) throw error;
-    await page.waitForTimeout(1500);
-  }
+await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 400, label: "row" });
+const rowText = await leadRow().innerText();
+if (!rowText.includes(C.name) || !rowText.includes(C.campaignName) || !rowText.includes(C.formName) || !rowText.includes("Meta Lead Ads")) {
+  fail(`demo row mismatch ${rowText.slice(0, 240)}`);
 }
-await keep();
-const hookJson = await hook.json();
-if (hook.status !== 201 || !hookJson?.lead?._id) fail(`webhook ${hook.status} ${JSON.stringify(hookJson).slice(0, 300)}`);
-C.leadId = hookJson.lead._id;
-log("lead created", C.leadId, hookJson.lead.source);
-await settle(1600);
-const refresh = page.locator("button.crm-tool").filter({ has: page.locator("svg.lucide-refresh-cw") }).first();
-await to(refresh, { after: 200 });
-await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 200, label: "row" });
-await settle(700);
+log("opened existing demo lead", C.phone);
 await panLeadsTable();
 await to(leadRow().locator("td").nth(1), { click: false, pause: 500 });
 await to(leadRow().locator("td").nth(1), { after: 150 });
@@ -368,7 +336,29 @@ await settle(500);
 await to(leadRow().locator("td").nth(1), { after: 150 });
 await waitOrCut(cardReady, { grace: 120, label: "card2" });
 await settle(700);
+await to(page.getByRole("button", { name: L.meetingsTab, exact: true }), { after: 500 });
+if (await page.getByText(C.meetingTitle).count()) {
+  log("meeting already on the card");
+} else {
+const meetingInput = page.getByPlaceholder(L.meetingTitle).first();
+await to(meetingInput, { after: 150 });
+await typeText(C.meetingTitle);
+await page.locator(".crm-dossier input[type='datetime-local']").first().fill(C.taskValue);
+await settle(300);
+const meetingResp = DRY ? null : page.waitForResponse((r) => /\/crm\/workspace\/leads\/[^/]+\/meetings$/.test(r.url()) && r.request().method() === "POST", { timeout: 20000 });
+await to(page.getByRole("button", { name: L.addMeeting, exact: true }), { click: !DRY, after: 100 });
+if (!DRY) {
+  const mr = await meetingResp;
+  if (!mr.ok()) fail(`meeting ${mr.status()}`);
+  await page.getByText(C.meetingTitle).first().waitFor({ timeout: 15000 });
+  log("meeting saved");
+}
+}
+await settle(900);
 await to(page.getByRole("button", { name: L.taskQuick, exact: true }), { after: 600 });
+if (await page.getByText(C.task).count()) {
+  log("task already on the card");
+} else {
 const taskInput = page.locator(`input[placeholder^="${C.taskPlaceholder}"]`).first();
 await to(taskInput, { after: 150 });
 await typeText(C.task);
@@ -395,6 +385,7 @@ const savedTask = page.getByText(C.task.slice(0, 24)).first();
 await savedTask.waitFor({ state: "attached", timeout: 15000 });
 await savedTask.scrollIntoViewIfNeeded();
 log("task saved", tr.url());
+}
 }
 await settle(1900);
 await endChapter();

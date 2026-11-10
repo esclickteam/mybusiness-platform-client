@@ -181,6 +181,34 @@ export function isHomepageDemoLead(lead?: DemoSourceLead | null): boolean {
   return external.startsWith("demo-");
 }
 
+/** Isolated staging account used by the homepage films. */
+export const HOMEPAGE_DEMO_BUSINESS_ID = "6ab62f565ba1a92f3046b5ad";
+
+export function isHomepageDemoBusiness(businessId?: string | null): boolean {
+  return String(businessId || "") === HOMEPAGE_DEMO_BUSINESS_ID;
+}
+
+type DemoStoryLead = DemoSourceLead & {
+  name?: string;
+  fullName?: string;
+  phone?: string;
+};
+
+/** Hebrew story rows use a Hebrew name and +972. English rows use a Latin name and +1. */
+export function homepageDemoLeadLanguage(lead?: DemoStoryLead | null): "he" | "en" | "" {
+  if (!isHomepageDemoLead(lead)) return "";
+  const name = String(lead?.fullName || lead?.name || "");
+  const phone = String(lead?.phone || "");
+  if (/[\u0590-\u05FF]/.test(name) && !/[A-Za-z]/.test(name) && phone.startsWith("+972")) return "he";
+  if (/^[A-Za-z .'-]+$/.test(name) && phone.startsWith("+1")) return "en";
+  return "";
+}
+
+export function filterHomepageDemoStoryLeads<T extends DemoStoryLead>(leads: T[], language?: string): T[] {
+  const want = String(language || "").toLowerCase().startsWith("he") ? "he" : "en";
+  return leads.filter((lead) => homepageDemoLeadLanguage(lead) === want);
+}
+
 /**
  * The words "Meta Lead Ads" are a label for a marked demo record.
  * Every other lead keeps the stored source text.

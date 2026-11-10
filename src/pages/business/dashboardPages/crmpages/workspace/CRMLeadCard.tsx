@@ -19,6 +19,7 @@ import {
   assignLead,
   createDeal,
   createMeeting,
+  localInputToIso,
   fetchDeals,
   fetchTimeline,
   fetchWorkspaceSettings,
@@ -475,7 +476,7 @@ export default function CRMLeadCard({
                     <li key={String(activity._id || activity.id)}>
                       <p className="crm-timeline-meta">
                         <span>{t("crm.common.task")}</span>
-                        <time>{activity.createdAt ? new Date(String(activity.createdAt)).toLocaleString(locale) : ""}</time>
+                        <time>{String(activity.taskDueAt || activity.createdAt || "") ? new Date(String(activity.taskDueAt || activity.createdAt)).toLocaleString(locale) : ""}</time>
                       </p>
                       <p>{String(activity.text || "")}</p>
                     </li>
@@ -485,6 +486,7 @@ export default function CRMLeadCard({
           )}
 
           {tab === "meetings" && (
+            <div className="crm-pane">
             <section className="crm-composer">
               <label className="crm-field">
                 <span>{t("crm.workspace.meetingTitle")}</span>
@@ -495,6 +497,20 @@ export default function CRMLeadCard({
                 <input type="datetime-local" value={meetingAt} onChange={(event) => setMeetingAt(event.target.value)} />
               </label>
             </section>
+              <ul className="crm-timeline">
+                {(lead.activities || [])
+                  .filter((activity) => activity.type === "meeting")
+                  .map((activity) => (
+                    <li key={String(activity._id || activity.id)}>
+                      <p className="crm-timeline-meta">
+                        <span>{t("crm.workspace.meeting")}</span>
+                        <time>{activity.meetingAt ? new Date(String(activity.meetingAt)).toLocaleString(locale) : ""}</time>
+                      </p>
+                      <p>{String(activity.text || "")}</p>
+                    </li>
+                  ))}
+              </ul>
+            </div>
           )}
 
           {tab === "documents" && (
@@ -580,7 +596,7 @@ export default function CRMLeadCard({
               saveLabel={t("crm.workspace.addTask")}
               onCancel={() => { setTaskText(""); setTaskDue(""); }}
               onSave={() =>
-                void addActivity("task", taskText, { taskDueAt: taskDue }).then(() => {
+                void addActivity("task", taskText, { taskDueAt: localInputToIso(taskDue) }).then(() => {
                   setTaskText("");
                   setTaskDue("");
                 })
@@ -594,7 +610,13 @@ export default function CRMLeadCard({
               cancelLabel={t("crm.common.cancel")}
               saveLabel={t("crm.workspace.addMeeting")}
               onCancel={() => { setMeetingTitle(""); setMeetingAt(""); }}
-              onSave={() => void createMeeting(lead._id, meetingTitle, meetingAt).then(() => { setMeetingTitle(""); setMeetingAt(""); flash(t("crm.workspace.saved")); })}
+              onSave={() => void createMeeting(lead._id, meetingTitle, meetingAt).then((data) => {
+                const saved = (data as { lead?: WorkspaceLead })?.lead;
+                if (saved) setLead(saved);
+                setMeetingTitle("");
+                setMeetingAt("");
+                flash(t("crm.workspace.saved"));
+              })}
             />
           )}
           {tab === "documents" && (
@@ -632,10 +654,11 @@ export default function CRMLeadCard({
 }
 
 function Fact({ label, value, ltr = false }: { label: string; value?: unknown; ltr?: boolean }) {
+  if (value === null || value === undefined || value === "") return null;
   return (
     <div className="crm-fact">
       <p className="crm-fact__label">{label}</p>
-      <p className="crm-fact__value" dir={ltr ? "ltr" : undefined}>{value ? String(value) : "—"}</p>
+      <p className="crm-fact__value" dir={ltr ? "ltr" : undefined}>{String(value)}</p>
     </div>
   );
 }
