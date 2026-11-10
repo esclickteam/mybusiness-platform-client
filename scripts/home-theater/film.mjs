@@ -275,11 +275,14 @@ async function showDemoForm() {
     wrap.setAttribute("dir", copy.dir);
     const aside = document.querySelector("aside");
     const box = aside ? aside.getBoundingClientRect() : null;
-    const onRight = box && box.left > window.innerWidth / 2;
-    const gap = box ? Math.ceil(box.width) : 0;
-    wrap.style.cssText = `position:fixed;top:0;bottom:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(33,23,47,.46);padding:24px;${onRight ? `left:0;right:${gap}px;` : `right:0;left:${gap}px;`}`;
+    const overlap = box ? Math.min(box.right, innerWidth) - Math.max(box.left, 0) : 0;
+    const visible = overlap > 40;
+    const onRight = visible && box.left > innerWidth / 2;
+    const gap = visible ? Math.ceil(overlap) : 0;
+    const narrow = innerWidth < 520;
+    wrap.style.cssText = `position:fixed;top:0;bottom:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(33,23,47,.46);padding:${narrow ? 12 : 24}px;${onRight ? `left:0;right:${gap}px;` : `right:0;left:${gap}px;`}`;
     wrap.innerHTML = `
-      <form id="demo-form-card" style="width:min(540px,100%);background:#fff;border-radius:24px;padding:28px 28px 22px;box-shadow:0 24px 70px rgba(33,23,47,.28);color:#21172f;font-family:Assistant,Arial,sans-serif;">
+      <form id="demo-form-card" style="width:min(540px,100%);max-height:calc(100vh - 24px);overflow:auto;background:#fff;border-radius:${narrow ? 18 : 24}px;padding:${narrow ? "18px 16px 16px" : "28px 28px 22px"};box-shadow:0 24px 70px rgba(33,23,47,.28);color:#21172f;font-family:Assistant,Arial,sans-serif;">
         <p style="margin:0;color:#6d28d9;font-size:13px;font-weight:800;letter-spacing:.02em;">${copy.kicker}</p>
         <h2 style="margin:8px 0 6px;font-size:28px;line-height:1.2;">${copy.title}</h2>
         <p style="margin:0 0 14px;color:#5b5568;font-size:14px;line-height:1.5;">${copy.note}</p>
@@ -376,7 +379,8 @@ const waPhone = conversationPhone(C.phone);
 await goto(`whatsapp/inbox?phone=${waPhone}`, async () => {
   await page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first().waitFor({ timeout: 60000 });
   await page.getByText(waPhone).first().waitFor({ timeout: 30000 });
-  await page.waitForTimeout(1500);
+  await page.getByText(LANG === "he" ? "טוען את וואטסאפ" : "Loading WhatsApp").first().waitFor({ state: "hidden", timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(800);
 });
 await keep();
 await settle(900);

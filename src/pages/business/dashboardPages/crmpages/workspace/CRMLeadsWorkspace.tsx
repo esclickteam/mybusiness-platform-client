@@ -17,8 +17,8 @@ import { getTextDirection } from "../../../../../i18n/localeUtils";
 import {
   displayLeadSource,
   filterHomepageDemoStoryLeads,
+  homepageDemoLeadLanguage,
   isHomepageDemoBusiness,
-  isHomepageDemoLead,
 } from "../../../../../components/dashboard/overview/dashboardOverviewUtils";
 import ExcelJS from "exceljs";
 import {
@@ -257,8 +257,9 @@ export default function CRMLeadsWorkspace({
   };
 
   const visibleColumns = state.columnOrder.filter((column) => state.visibleColumns.includes(column));
-  const storyLeads = demoStory && leads.some((lead) => isHomepageDemoLead(lead));
-  const languageLeads = storyLeads ? filterHomepageDemoStoryLeads(leads, i18n.language) : leads;
+  const storyOptions = { demoBusiness: demoStory };
+  const storyLeads = demoStory && leads.some((lead) => homepageDemoLeadLanguage(lead, storyOptions));
+  const languageLeads = storyLeads ? filterHomepageDemoStoryLeads(leads, i18n.language, storyOptions) : leads;
   const storyQuery = storyLeads ? state.q.trim().toLowerCase() : "";
   const shownLeads = storyQuery
     ? languageLeads.filter((lead) =>
@@ -602,7 +603,7 @@ export default function CRMLeadsWorkspace({
                       <p className="line-clamp-1">{lead.fullName || lead.name}</p>
                       <p className="text-slate-400" dir="ltr">{lead.phone}</p>
                       <p className="mt-1 text-[10px] font-semibold text-slate-400">
-                        {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source ? displayLeadSource(lead.source, lead) : "—"}
+                        {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source ? displayLeadSource(lead.source, lead, storyOptions) : "—"}
                       </p>
                     </article>
                   ))}
@@ -669,7 +670,7 @@ export default function CRMLeadsWorkspace({
                         className="cursor-pointer p-2 font-semibold"
                         onClick={() => openLead(lead._id)}
                       >
-                        {renderCell(lead, column, locale, t)}
+                        {renderCell(lead, column, locale, t, storyOptions)}
                       </td>
                     ))}
                   </tr>
@@ -749,7 +750,13 @@ export default function CRMLeadsWorkspace({
   );
 }
 
-function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key: string, opts?: any) => string) {
+function renderCell(
+  lead: WorkspaceLead,
+  column: string,
+  locale: string,
+  t: (key: string, opts?: any) => string,
+  sourceOptions?: { demoBusiness?: boolean }
+) {
   switch (column) {
     case "name":
       return <span className="crm-lead-name">{lead.fullName || lead.name || ""}</span>;
@@ -764,7 +771,7 @@ function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key
         </span>
       );
     case "source":
-      return lead.source ? <span className="crm-source">{displayLeadSource(lead.source, lead)}</span> : "";
+      return lead.source ? <span className="crm-source">{displayLeadSource(lead.source, lead, sourceOptions)}</span> : "";
     case "campaign":
       return lead.campaignName || lead.campaignId || "";
     case "form":

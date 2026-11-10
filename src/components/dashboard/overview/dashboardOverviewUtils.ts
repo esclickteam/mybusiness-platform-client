@@ -194,9 +194,18 @@ type DemoStoryLead = DemoSourceLead & {
   phone?: string;
 };
 
+function isMetaLeadAdsSource(lead?: { source?: string } | null): boolean {
+  const source = String(lead?.source || "").toLowerCase();
+  return source === "meta_lead_ads" || source === "facebook_lead_ads";
+}
+
 /** Hebrew story rows use a Hebrew name and +972. English rows use a Latin name and +1. */
-export function homepageDemoLeadLanguage(lead?: DemoStoryLead | null): "he" | "en" | "" {
-  if (!isHomepageDemoLead(lead)) return "";
+export function homepageDemoLeadLanguage(
+  lead?: DemoStoryLead | null,
+  options?: { demoBusiness?: boolean }
+): "he" | "en" | "" {
+  const marked = isHomepageDemoLead(lead) || Boolean(options?.demoBusiness && isMetaLeadAdsSource(lead));
+  if (!marked) return "";
   const name = String(lead?.fullName || lead?.name || "");
   const phone = String(lead?.phone || "");
   if (/[\u0590-\u05FF]/.test(name) && !/[A-Za-z]/.test(name) && phone.startsWith("+972")) return "he";
@@ -204,19 +213,27 @@ export function homepageDemoLeadLanguage(lead?: DemoStoryLead | null): "he" | "e
   return "";
 }
 
-export function filterHomepageDemoStoryLeads<T extends DemoStoryLead>(leads: T[], language?: string): T[] {
+export function filterHomepageDemoStoryLeads<T extends DemoStoryLead>(
+  leads: T[],
+  language?: string,
+  options?: { demoBusiness?: boolean }
+): T[] {
   const want = String(language || "").toLowerCase().startsWith("he") ? "he" : "en";
-  return leads.filter((lead) => homepageDemoLeadLanguage(lead) === want);
+  return leads.filter((lead) => homepageDemoLeadLanguage(lead, options) === want);
 }
 
 /**
  * The words "Meta Lead Ads" are a label for a marked demo record.
  * Every other lead keeps the stored source text.
  */
-export function displayLeadSource(source?: string, lead?: DemoSourceLead | null): string {
-  const key = String(source || "").toLowerCase();
+export function displayLeadSource(
+  source?: string,
+  lead?: DemoSourceLead | null,
+  options?: { demoBusiness?: boolean }
+): string {
+  const key = String(source || lead?.source || "").toLowerCase();
   if (
-    isHomepageDemoLead(lead) &&
+    (isHomepageDemoLead(lead) || options?.demoBusiness) &&
     (key === "meta_lead_ads" || key === "facebook_lead_ads")
   ) {
     return "Meta Lead Ads";
