@@ -121,7 +121,11 @@
   border-color: rgba(255, 255, 255, 0.45);
 }
 
-.ip-hero-media { display: grid; gap: 12px; }
+.ip-hero-media {
+  display: grid;
+  gap: 14px;
+  align-self: stretch;
+}
 .ip-hero-media-caption {
   margin: 0;
   color: var(--muted);
@@ -130,25 +134,38 @@
   font-weight: 600;
 }
 
-.ip-shot { margin: 0; }
 .ip-shot {
-  border-radius: var(--radius-md);
+  margin: 0;
+  border-radius: 4px;
   overflow: hidden;
-  background: #0f172a;
-  border: 0;
-  border-bottom: 1px solid var(--line);
+  background: #f3f4f6;
+  border: 1px solid var(--line);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 18px 40px rgba(15, 23, 42, 0.08);
 }
-.ip-shot img,
-.ip-shot video {
+.ip-hero-media .ip-shot {
+  background:
+    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+  padding: 14px 14px 0;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+.ip-shot img {
   display: block;
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
   object-position: top left;
-  background: #0f172a;
+  background: #fff;
 }
-.ip-shot video { object-fit: contain; }
+.ip-hero-media .ip-shot img {
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 2px 2px 0 0;
+  box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.04);
+}
 
 /* ========== Open tracks compare — Structured B ========== */
 .ip-open-tracks {
@@ -289,14 +306,27 @@
 }
 .ip-product-media { position: relative; }
 .ip-product-media .ip-shot {
-  border: 1px solid var(--line);
-  border-bottom-width: 1px;
-  box-shadow: none;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  padding: 12px 12px 0;
 }
-.ip-product-media .ip-shot video,
 .ip-product-media .ip-shot img {
-  aspect-ratio: 16 / 9;
-  min-height: 280px;
+  aspect-ratio: 16 / 10;
+  min-height: 240px;
+  object-fit: cover;
+  object-position: top center;
+  border-radius: 2px 2px 0 0;
+}
+@media (max-width: 719px) {
+  .ip-hero-media .ip-shot,
+  .ip-product-media .ip-shot {
+    padding: 8px 8px 0;
+  }
+  .ip-hero-media .ip-shot img,
+  .ip-product-media .ip-shot img {
+    aspect-ratio: 4 / 5;
+    min-height: 0;
+    object-position: top center;
+  }
 }
 .ip-product-chapter { display: none; }
 .ip-product-copy h3 {
@@ -874,6 +904,7 @@
   .ip-btn:hover { transform: none; }
 }
 
-[dir="rtl"] .ip-shot img,
-[dir="rtl"] .ip-shot video { object-position: top right; }
+[dir="rtl"] .ip-shot img { object-position: top right; }
+[dir="rtl"] .ip-hero-media .ip-shot img,
+[dir="rtl"] .ip-product-media .ip-shot img { object-position: top center; }
 [dir="rtl"] .ipartner h1 { max-width: none; }
