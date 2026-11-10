@@ -494,7 +494,7 @@ function formatWhen(value: unknown, locale: Locale) {
   return new Intl.DateTimeFormat(locale === "pt-BR" ? "pt-BR" : locale, { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
-export function FreeResult({ locale, summary, status, scanId }: { locale: Locale; summary: any; status?: string; scanId?: string }) {
+export function FreeResult({ locale, summary, status, scanId, audience = "customer" }: { locale: Locale; summary: any; status?: string; scanId?: string; audience?: "customer" | "admin" }) {
   const copy = FREE[locale] || FREE.en;
   const [purchaseNote, setPurchaseNote] = useState(copy.unavailable);
   useEffect(() => { setPurchaseNote(copy.unavailable); }, [copy.unavailable]);
@@ -546,7 +546,7 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
         <article><b>{summary.missing ?? 0}</b><span>{copy.missing}</span></article>
         <article><b>{summary.unverified ?? 0}</b><span>{copy.unverified}</span></article>
       </div>
-      <aside className="report-sheet__buy">
+      {audience === "customer" ? <aside className="report-sheet__buy">
         <div>
           <h2>{copy.includes}</h2>
           <ul>
@@ -563,9 +563,9 @@ export function FreeResult({ locale, summary, status, scanId }: { locale: Locale
           <button type="button" onClick={checkPurchase}>{copy.check}</button>
           <small role="status">{purchaseNote}</small>
         </div>
-      </aside>
+      </aside> : null}
       <p className="report-sheet__scope">{SCOPE[locale]}</p>
-      <p className="report-sheet__foot"><Link to="/compliance">{copy.newScan}</Link></p>
+      {audience === "customer" ? <p className="report-sheet__foot"><Link to="/compliance">{copy.newScan}</Link></p> : null}
     </section>
   );
 }

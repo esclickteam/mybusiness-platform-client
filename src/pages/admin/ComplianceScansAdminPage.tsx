@@ -164,23 +164,6 @@ export default function ComplianceScansAdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  async function downloadPdf(id: string) {
-    const token = localStorage.getItem("token") || "";
-    const response = await fetch(`/compliance/api/scans/${id}/pdf`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      credentials: "include",
-    });
-    if (!response.ok) {
-      setError("ה־PDF לא נפתח");
-      return;
-    }
-    const blob = await response.blob();
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `bizuply-website-report-${id.slice(0, 8)}.pdf`;
-    link.click();
-  }
-
   async function openConsent(id: string | null | undefined) {
     if (!id) return;
     const token = localStorage.getItem("token") || "";
@@ -354,9 +337,9 @@ export default function ComplianceScansAdminPage() {
                   )}
                 </td>
                 <td><a href={`/admin/compliance-scans/${row.id}`}>פרטי הסריקה</a></td>
-                <td><a href={`/he/compliance/report/${row.id}?view=summary`}>דוח ראשוני</a></td>
-                <td><a href={`/he/compliance/report/${row.id}`}>דוח מלא</a></td>
-                <td><button type="button" onClick={() => downloadPdf(row.id)}>PDF</button></td>
+                <td><a href={`/admin/compliance-scans/${row.id}?tab=free`}>דוח ראשוני</a></td>
+                <td><a href={`/admin/compliance-scans/${row.id}?tab=full`}>דוח מלא</a></td>
+                <td><a href={`/admin/compliance-scans/${row.id}?tab=pdf`}>PDF</a></td>
               </tr>
             ))}
           </tbody>

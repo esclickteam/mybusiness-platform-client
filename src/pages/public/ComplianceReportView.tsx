@@ -222,10 +222,12 @@ export function ComplianceReportView({
   locale,
   payload,
   onPdf,
+  audience = "customer",
 }: {
   locale: Locale;
   payload: any;
   onPdf: () => void;
+  audience?: "customer" | "admin";
 }) {
   const copy = { ...COPY.en, ...(COPY[locale] || {}) };
   const report = payload?.report || {};
@@ -269,7 +271,7 @@ export function ComplianceReportView({
         </div>
         <div className="report-sheet__actions">
           <button type="button" data-action="pdf" onClick={onPdf}>{copy.pdf}</button>
-          <Link to="/compliance">{copy.newScan}</Link>
+          {audience === "customer" ? <Link to="/compliance">{copy.newScan}</Link> : null}
         </div>
       </header>
       <dl className="report-sheet__meta">
@@ -330,7 +332,7 @@ export function ComplianceReportView({
                   </header>
                   {body && body !== title ? <p>{body}</p> : null}
                   <p dir="ltr">{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}</p>
-                  {item.evidence ? <p className="report-finding__evidence" dir="auto">{item.evidence}</p> : null}
+                  {item.evidence ? <p className="report-finding__evidence" dir="auto">{typeof item.evidence === "string" ? item.evidence : ""}</p> : null}
                   {fix ? <p><strong>{copy.fix}. </strong>{fix}</p> : null}
                   {draft && draft !== fix ? <p><strong>{copy.draft}. </strong>{draft}</p> : null}
                   {sourceUrl ? <p><strong>{copy.law}. </strong><a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a></p> : null}
