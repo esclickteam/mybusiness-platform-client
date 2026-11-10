@@ -40,6 +40,9 @@ export type WorkspaceLead = {
   stageKey?: string;
   source?: string;
   provider?: string;
+  externalLeadId?: string;
+  testData?: boolean;
+  tags?: string[];
   assignedToUserId?: string | null;
   assignedToName?: string;
   assignedAt?: string;

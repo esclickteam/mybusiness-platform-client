@@ -165,11 +165,35 @@ export function formatLeadSource(source?: string): string {
   return map[key] || source || String(i18n.t("overview.leadSourceOther", "Other"));
 }
 
-/** Customer-facing channel name used in the CRM list and lead file. */
-export function displayLeadSource(source?: string): string {
+type DemoSourceLead = {
+  testData?: boolean;
+  tags?: string[];
+  externalLeadId?: string;
+  facebook?: { leadId?: string };
+};
+
+/** Synthetic homepage demo rows are marked on the server. Real leads are not. */
+export function isHomepageDemoLead(lead?: DemoSourceLead | null): boolean {
+  if (!lead?.testData) return false;
+  const tags = Array.isArray(lead.tags) ? lead.tags : [];
+  if (!tags.includes("homepage-demo")) return false;
+  const external = String(lead.externalLeadId || lead.facebook?.leadId || "");
+  return external.startsWith("demo-");
+}
+
+/**
+ * The words "Meta Lead Ads" are a label for a marked demo record.
+ * Every other lead keeps the stored source text.
+ */
+export function displayLeadSource(source?: string, lead?: DemoSourceLead | null): string {
   const key = String(source || "").toLowerCase();
-  if (key === "meta_lead_ads" || key === "facebook_lead_ads") return "Meta Lead Ads";
-  return formatLeadSource(source);
+  if (
+    isHomepageDemoLead(lead) &&
+    (key === "meta_lead_ads" || key === "facebook_lead_ads")
+  ) {
+    return "Meta Lead Ads";
+  }
+  return source || "";
 }
 
 export function formatLeadStatus(status?: string): string {

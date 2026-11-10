@@ -572,7 +572,7 @@ export default function CRMLeadsWorkspace({
                       <p className="line-clamp-1">{lead.fullName || lead.name}</p>
                       <p className="text-slate-400" dir="ltr">{lead.phone}</p>
                       <p className="mt-1 text-[10px] font-semibold text-slate-400">
-                        {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source ? displayLeadSource(lead.source) : "—"}
+                        {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source ? displayLeadSource(lead.source, lead) : "—"}
                       </p>
                     </article>
                   ))}
@@ -734,7 +734,7 @@ function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key
         </span>
       );
     case "source":
-      return lead.source ? <span className="crm-source">{displayLeadSource(lead.source)}</span> : "";
+      return lead.source ? <span className="crm-source">{displayLeadSource(lead.source, lead)}</span> : "";
     case "campaign":
       return lead.campaignName || lead.campaignId || "";
     case "form":

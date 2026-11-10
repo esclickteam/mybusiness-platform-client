@@ -148,44 +148,45 @@ const have = new Set((existingBody.leads || []).map((lead) => String(lead.email 
 const pending = wanted.filter((row) => !have.has(row.email));
 console.log("pending", pending.length, "already", have.size);
 
-const imported = await fetch(`${API}/crm/workspace/leads/import`, {
-  method: "POST",
-  headers,
-  body: JSON.stringify({ rows: pending }),
-});
-const importedBody = await imported.json();
-console.log("import", imported.status, importedBody.created, importedBody.errors?.length || 0);
-if (!imported.ok || !importedBody.leadIds?.length && pending.length) {
-  console.error(JSON.stringify(importedBody).slice(0, 500));
-  process.exit(1);
+let created = [];
+if (pending.length) {
+  const imported = await fetch(`${API}/crm/workspace/leads/import`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ rows: pending }),
+  });
+  const importedBody = await imported.json();
+  console.log("import", imported.status, "created", importedBody.created, "existing", importedBody.existing || 0, "errors", importedBody.errors?.length || 0);
+  if (!imported.ok) {
+    console.error(JSON.stringify(importedBody).slice(0, 500));
+    process.exit(1);
+  }
+  created = importedBody.createdLeadIds || importedBody.leadIds || [];
 }
 
-const created = importedBody.leadIds || [];
-const sampleId = created[0];
-const sample = sampleId ? await getLead(sampleId) : null;
-const campaign = sample?.facebook?.campaignName || sample?.campaignName || "";
-const form = sample?.facebook?.formName || sample?.formName || "";
-console.log("sample", sample?.name, sample?.source, sample?.provider, campaign, form, sample?.phone);
-if (!campaign || !form || sample?.source !== "meta_lead_ads") {
-  console.error("staging import did not store campaign, form, and Meta source. Removing this run only.");
+const listed = await fetch(`${API}/crm/workspace/leads?limit=200&page=1`, { headers });
+const listedBody = await listed.json();
+const byEmail = new Map((listedBody.leads || []).map((lead) => [String(lead.email || "").toLowerCase(), lead]));
+const problems = [];
+for (const row of wanted) {
+  const lead = byEmail.get(row.email);
+  if (!lead) {
+    problems.push(`${row.email} missing`);
+    continue;
+  }
+  const full = await getLead(lead._id);
+  const hebrew = /[\u0590-\u05ff]/.test(row.name);
+  const phoneOk = hebrew ? String(full.phone || "").startsWith("+972") : String(full.phone || "").startsWith("+1");
+  const nameOk = hebrew ? /[\u0590-\u05ff]/.test(full.name) && !/[A-Za-z]/.test(full.name) : /^[A-Za-z .'-]+$/.test(full.name);
+  const marked = full.testData === true && Array.isArray(full.tags) && full.tags.includes("homepage-demo") && String(full.externalLeadId || "").startsWith("demo-");
+  if (!phoneOk || !nameOk || !marked || full.source !== "meta_lead_ads" || full.facebook?.campaignName !== row.campaignName || full.facebook?.formName !== row.formName || full.status !== row.status) {
+    problems.push(`${row.name} phone=${full.phone} source=${full.source} campaign=${full.facebook?.campaignName} form=${full.facebook?.formName} status=${full.status} marked=${marked} nameOk=${nameOk}`);
+  }
+}
+if (problems.length) {
+  console.error(problems.join("\n"));
+  console.error("removing only the leads created in this run");
   await removeIds(created);
   process.exit(2);
 }
-
-const report = [];
-for (const id of created) {
-  const lead = await getLead(id);
-  report.push({
-    id,
-    name: lead.name,
-    phone: lead.phone,
-    email: lead.email,
-    source: lead.source,
-    provider: lead.provider,
-    status: lead.status,
-    campaign: lead.facebook?.campaignName || "",
-    form: lead.facebook?.formName || "",
-    leadId: lead.facebook?.leadId || lead.externalLeadId || "",
-  });
-}
-console.log(JSON.stringify(report, null, 2));
+console.log("verified", wanted.length, "demo leads");

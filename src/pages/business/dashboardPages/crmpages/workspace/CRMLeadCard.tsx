@@ -236,7 +236,7 @@ export default function CRMLeadCard({
           <div className="crm-record-facts">
             <span className="crm-chip" dir="ltr">{lead.phone || t("crm.common.noPhone")}</span>
             <span className="crm-chip">{lead.email || t("crm.common.noEmail")}</span>
-            <span className="crm-chip">{lead.source ? displayLeadSource(lead.source) : "—"}</span>
+            <span className="crm-chip">{lead.source ? displayLeadSource(lead.source, lead) : "—"}</span>
             <span className={`crm-status-pill is-${lead.status || "new"}`}>{statusLabel}</span>
           </div>
           <div className="crm-file-actions">
@@ -310,7 +310,7 @@ export default function CRMLeadCard({
                 <Fact label={t("crm.common.email")} value={lead.email} />
                 <Fact label={t("crm.common.status")} value={statusLabel} />
                 <Fact label={t("crm.leads.table.agent")} value={lead.assignedToName || t("crm.leads.unassignedAgent")} />
-                <Fact label={t("crm.leads.table.source")} value={lead.source ? displayLeadSource(lead.source) : ""} />
+                <Fact label={t("crm.leads.table.source")} value={lead.source ? displayLeadSource(lead.source, lead) : ""} />
               </div>
               <label className="crm-field">
                 <span>{t("crm.leads.table.agent")}</span>
@@ -382,7 +382,7 @@ export default function CRMLeadCard({
           {tab === "source" && (
             <div className="crm-pane">
             <div className="crm-facts">
-              <Fact label={t("crm.workspace.adPlatform")} value={displayLeadSource(lead.provider || lead.source)} />
+              <Fact label={t("crm.workspace.adPlatform")} value={displayLeadSource(lead.provider || lead.source, lead)} />
               <Fact label={t("crm.leads.drawer.campaign")} value={lead.facebook?.campaignName || lead.google?.campaignName || lead.campaignName} />
               <Fact label={t("crm.leads.drawer.campaignId")} value={lead.facebook?.campaignId || lead.google?.campaignId} />
               <Fact label={t("crm.workspace.adset")} value={lead.facebook?.adsetName} />
