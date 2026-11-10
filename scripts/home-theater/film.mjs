@@ -23,9 +23,9 @@ const OUT = `${process.env.CAPTURE_DIR || "/tmp/home-theater"}/film-${TAG}`;
 fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(process.env.CAPTURE_DIR || "/tmp/home-theater", { recursive: true });
 
-const CSS_W = MOBILE ? 390 : 1280;
-const CSS_H = MOBILE ? 844 : 720;
-const DPR = MOBILE ? 3 : 1.5;
+const CSS_W = MOBILE ? 390 : 1680;
+const CSS_H = MOBILE ? 844 : 945;
+const DPR = MOBILE ? 3 : 1;
 const PX_W = Math.round(CSS_W * DPR);
 const PX_H = Math.round(CSS_H * DPR);
 
@@ -49,14 +49,17 @@ const browser = await chromium.launch({
   executablePath: "/usr/local/bin/google-chrome",
   headless: true,
   args: [
-    `--force-device-scale-factor=${DPR}`,
-    MOBILE ? "--window-size=500,1000" : `--window-size=${CSS_W},${CSS_H + 86}`,
+    ...(MOBILE ? [`--force-device-scale-factor=${DPR}`] : []),
+    MOBILE ? "--window-size=500,1000" : `--window-size=${CSS_W},${CSS_H}`,
     "--hide-scrollbars",
     `--lang=${LANG === "he" ? "he-IL" : "en-US"}`,
   ],
 });
 const ctx = await browser.newContext({
-  ...(MOBILE ? { viewport: { width: CSS_W, height: CSS_H }, deviceScaleFactor: DPR, isMobile: true, hasTouch: true } : { viewport: null }),
+  viewport: { width: CSS_W, height: CSS_H },
+  deviceScaleFactor: DPR,
+  isMobile: MOBILE,
+  hasTouch: MOBILE,
   locale: LANG === "he" ? "he-IL" : "en-US",
   timezoneId: "Asia/Jerusalem",
   userAgent: MOBILE
@@ -64,17 +67,25 @@ const ctx = await browser.newContext({
     : undefined,
 });
 await ctx.addInitScript(cursorScript(MOBILE ? "touch" : "desktop"));
-await ctx.addInitScript(() => {
-  const hide = () => {
-    if (document.getElementById("film-hide-assistant")) return;
+const FILM_CSS = `
+  header.fixed.z-30 { display: none !important; }
+  .bizuply-chat-launcher,
+  section.fixed.bottom-6.right-6,
+  .cookie-banner { display: none !important; }
+  main[data-testid="business-dashboard-main"] { padding-top: 0 !important; }
+`;
+await ctx.addInitScript((css) => {
+  const install = () => {
+    const root = document.head || document.documentElement;
+    if (!root || document.getElementById("film-chrome")) return;
     const style = document.createElement("style");
-    style.id = "film-hide-assistant";
-    style.textContent = ".bizuply-chat-launcher{visibility:hidden !important;pointer-events:none !important}";
-    document.documentElement.appendChild(style);
+    style.id = "film-chrome";
+    style.textContent = css;
+    root.appendChild(style);
   };
-  hide();
-  document.addEventListener("DOMContentLoaded", hide);
-});
+  install();
+  document.addEventListener("DOMContentLoaded", install);
+}, FILM_CSS);
 await ctx.addInitScript((lang) => {
   localStorage.setItem("i18nextLng", lang);
   localStorage.setItem("bizuply.lang", lang);
@@ -143,6 +154,8 @@ async function goto(p, ready) {
   await page.goto(dashboard(p), { waitUntil: "domcontentloaded", timeout: 90000 });
   await rec.restart();
   await ready();
+  await page.addStyleTag({ content: FILM_CSS }).catch(() => {});
+  await hideAssistant();
   await page.getByRole("button", { name: /חיוניות בלבד|Essential cookies only|Solo cookies esenciales|Somente cookies essenciais|الضرورية רק|الضرورية فقط/ }).click({ timeout: 800 }).catch(() => {});
   await page.mouse.move(cur.x, cur.y);
   await settle(700);
@@ -196,6 +209,37 @@ async function to(locator, { click = true, pause = 220, after = 380, dx = 0.5, d
   }
 }
 
+/** Mobile tables are wider than the phone. Glide the real overflow so every column is shown, then return to the name. */
+async function panLeadsTable() {
+  if (!MOBILE) return;
+  await page.evaluate(async () => {
+    const el = document.querySelector(".crm-leads-table");
+    if (!el) return;
+    const max = el.scrollWidth - el.clientWidth;
+    if (max < 24) return;
+    const start = el.scrollLeft;
+    el.scrollLeft = start + 8;
+    const positive = el.scrollLeft > start + 1;
+    el.scrollLeft = start;
+    const end = positive ? start + max : start - max;
+    const glideTo = (from, to, ms) => new Promise((resolve) => {
+      const t0 = performance.now();
+      const frame = (now) => {
+        const p = Math.min(1, (now - t0) / ms);
+        const eased = 1 - (1 - p) ** 3;
+        el.scrollLeft = from + (to - from) * eased;
+        if (p < 1) requestAnimationFrame(frame);
+        else resolve();
+      };
+      requestAnimationFrame(frame);
+    });
+    await glideTo(start, end, 1500);
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    await glideTo(el.scrollLeft, start, 1200);
+  });
+  await settle(350);
+}
+
 async function typeText(text, delay = 15) {
   await page.keyboard.type(text, { delay });
 }
@@ -242,6 +286,7 @@ const refresh = page.locator("button.crm-tool").filter({ has: page.locator("svg.
 await to(refresh, { after: 200 });
 await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 200, label: "row" });
 await settle(700);
+await panLeadsTable();
 await to(leadRow().locator("td").nth(1), { click: false, pause: 500 });
 await to(leadRow().locator("td").nth(1), { after: 150 });
 await waitOrCut(cardReady, { grace: 120, label: "card" });
@@ -333,7 +378,9 @@ await to(page.getByRole("button", { name: L.addTask, exact: true }), { click: !D
 if (!DRY) {
 const tr = await taskResp;
 if (!tr.ok()) fail(`task ${tr.status()} ${tr.url()}`);
-await page.getByText(C.task.slice(0, 24)).first().waitFor({ timeout: 15000 });
+const savedTask = page.getByText(C.task.slice(0, 24)).first();
+await savedTask.waitFor({ state: "attached", timeout: 15000 });
+await savedTask.scrollIntoViewIfNeeded();
 log("task saved", tr.url());
 }
 await settle(1900);
@@ -375,6 +422,7 @@ beginChapter("done");
 await goto("crm/leads", listReady);
 await keep();
 await settle(600);
+await panLeadsTable();
 if (!MOBILE) await to(leadRow().locator("td").nth(4), { click: false, pause: 900 });
 await to(leadRow().locator("td").nth(1), { after: 150 });
 await waitOrCut(cardReady, { grace: 120, label: "card3" });
