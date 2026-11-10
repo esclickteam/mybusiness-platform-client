@@ -43,6 +43,11 @@ const L = {
 if (process.env.LABELS) Object.assign(L, JSON.parse(process.env.LABELS));
 
 const log = (...a) => console.log(`[${TAG}]`, ...a);
+const conversationPhone = (phone) => {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (digits.startsWith("972") || digits.startsWith("1")) return digits;
+  return "972" + digits.replace(/^0/, "");
+};
 const fail = (msg) => { throw new Error(`[${TAG}] ${msg}`); };
 
 const browser = await chromium.launch({
@@ -101,7 +106,7 @@ await ctx.storageState({ path: (process.env.CAPTURE_DIR || "/tmp/home-theater") 
 {
   const token = await page.evaluate(() => localStorage.getItem("token"));
   const H = { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "x-business-id": BIZ, Origin: BASE };
-  const own = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+  const own = conversationPhone(C.phone);
   for (const ph of (process.env.CLEAN_PHONES || "").split(",").filter(Boolean)) {
     if (ph === own) continue;
     const r = await fetch(`${API}/whatsapp/conversations/${ph}`, { method: "DELETE", headers: H });
@@ -267,7 +272,15 @@ for (let attempt = 0; attempt < 3 && !hook; attempt++) {
       : await fetch(WEBHOOK, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: C.name, phone: C.phone, email: C.email, message: C.message, form_name: C.formName }),
+          body: JSON.stringify({
+            name: C.name,
+            phone: C.phone,
+            email: C.email,
+            message: C.message,
+            form_name: C.formName,
+            campaign_name: C.campaignName,
+            lead_id: C.leadId,
+          }),
           signal: AbortSignal.timeout(20000),
         });
   } catch (error) {
@@ -325,7 +338,7 @@ await endChapter();
 
 /* ---------- 3. WhatsApp ---------- */
 beginChapter("whatsapp");
-const waPhone = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+const waPhone = conversationPhone(C.phone);
 await goto(`whatsapp/inbox?phone=${waPhone}`, async () => {
   await page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first().waitFor({ timeout: 60000 });
   await page.getByText(waPhone).first().waitFor({ timeout: 30000 });

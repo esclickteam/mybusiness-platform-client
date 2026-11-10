@@ -165,6 +165,13 @@ export function formatLeadSource(source?: string): string {
   return map[key] || source || String(i18n.t("overview.leadSourceOther", "Other"));
 }
 
+/** Customer-facing channel name used in the CRM list and lead file. */
+export function displayLeadSource(source?: string): string {
+  const key = String(source || "").toLowerCase();
+  if (key === "meta_lead_ads" || key === "facebook_lead_ads") return "Meta Lead Ads";
+  return formatLeadSource(source);
+}
+
 export function formatLeadStatus(status?: string): string {
   const key = String(status || "new").toLowerCase();
   const known = ["new", "contacted", "interested", "converted", "lost", "old"];
