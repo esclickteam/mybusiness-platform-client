@@ -89,7 +89,18 @@ describe("resolveApiBaseUrl", () => {
     ).toBe(PRODUCTION_API);
   });
 
-  it("uses /api in local development when env is empty", () => {
+  
+  it("uses same-origin /api on localhost even if Production env is baked", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "127.0.0.1",
+      })
+    ).toBe("/api");
+  });
+
+it("uses /api in local development when env is empty", () => {
     expect(resolveApiBaseUrl({ envApiUrl: "", mode: "development", hostname: "localhost" })).toBe(
       "/api"
     );

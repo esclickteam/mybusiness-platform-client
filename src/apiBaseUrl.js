@@ -50,6 +50,8 @@ export function resolveApiBaseUrl({
     .split(":")[0];
   const trimmed = trimApiUrl(envApiUrl);
 
+  // Local Staging proxy / Vite same-origin /api (never cross-origin Production).
+  if (host === "localhost" || host === "127.0.0.1") return "/api";
   // Staging Preview / temporary Vercel hosts must never silently use Production.
   if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
   // Cloudflare Staging tunnels are served with a same-origin /api proxy to Railway Staging.
