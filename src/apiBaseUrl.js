@@ -21,6 +21,15 @@ export function isVercelPreviewHost(hostname) {
   );
 }
 
+/** Ephemeral Staging preview tunnels used by agents — never Production API. */
+export function isStagingTunnelHost(hostname) {
+  const host = String(hostname || "")
+    .toLowerCase()
+    .trim()
+    .split(":")[0];
+  return host.endsWith(".trycloudflare.com");
+}
+
 export function browserHostname() {
   if (typeof window === "undefined" || !window.location) return "";
   return String(window.location.hostname || "");
@@ -41,8 +50,10 @@ export function resolveApiBaseUrl({
     .split(":")[0];
   const trimmed = trimApiUrl(envApiUrl);
 
-  // Staging Preview / temporary Vercel hosts must never silently use Production.
-  if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
+  // Staging Preview / temporary Vercel / tunnel hosts must never silently use Production.
+  if (isVercelPreviewHost(hostname) || isStagingTunnelHost(hostname)) {
+    return RAILWAY_STAGING_API;
+  }
   if (host === "mybusiness-platform-client-staging.vercel.app") {
     return RAILWAY_STAGING_API;
   }
