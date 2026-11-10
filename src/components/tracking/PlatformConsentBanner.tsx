@@ -187,22 +187,26 @@ export default function PlatformConsentBanner() {
       className={`cookie-banner cookie-banner--${view}`}
       dir={getTextDirection(i18n.language)}
       role="dialog"
+      aria-modal="false"
       aria-labelledby="tracking-consent-title"
       tabIndex={-1}
     >
       {view === "notice" ? (
         <>
           <div className="cookie-banner__scroll">
-            <h2 id="tracking-consent-title">{text("noticeTitle")}</h2>
-            <p>{text("noticeIntro")}</p>
-            {legal}
+            <h2 id="tracking-consent-title" className="cookie-banner__sr">{text("noticeTitle")}</h2>
+            <p className="cookie-banner__message">{text("noticeIntro")}</p>
+            <p className="cookie-banner__links">
+              <Link to="/privacy">{text("policy")}</Link>
+              <Link to="/privacy#section-8">{text("cookiePolicy")}</Link>
+            </p>
             {saveFailed ? <p className="cookie-banner__error" role="alert">{text("saveFailed")}</p> : null}
           </div>
           <div className="cookie-banner__actions">
             <button type="button" className="cookie-banner__primary" onClick={() => persist(true)}>
               {text("acceptAll")}
             </button>
-            <button type="button" className="cookie-banner__secondary" onClick={() => persist(false)}>
+            <button type="button" className="cookie-banner__outline" onClick={() => persist(false)}>
               {text("essentialOnly")}
             </button>
             <button
