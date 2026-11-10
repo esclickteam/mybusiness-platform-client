@@ -4450,7 +4450,8 @@
         "taskDueRequired": "To save a task, choose a due date and time.",
         "saveActivityFailed": "Failed to save the activity. Check that the activities API is updated.",
         "updateTaskFailed": "Failed to update the task",
-        "requestFailed": "Request failed"
+        "requestFailed": "Request failed",
+        "recordMismatch": "The data received does not belong to the selected lead. Saving is blocked."
       },
       "drawer": {
         "dossierBadge": "Lead file",
@@ -4977,7 +4978,8 @@
         "phoneRequired": "Phone is required",
         "businessIdMissing": "We couldn't identify the business. Please refresh the page.",
         "createFailed": "Client creation failed",
-        "updateFailed": "Client update failed"
+        "updateFailed": "Client update failed",
+        "recordMismatch": "The data received does not belong to the selected client. Saving is blocked."
       },
       "customFields": {
         "manageButton": "Manage variable fields",

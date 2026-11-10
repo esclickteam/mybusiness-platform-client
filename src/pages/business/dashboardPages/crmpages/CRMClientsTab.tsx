@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDownUp,
   Building2,
@@ -528,6 +528,19 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   const dir = useLocaleDir();
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
+  const requestedClientId = searchParams.get("clientId") || "";
+  const [detailVerifiedId, setDetailVerifiedId] = useState("");
+  const [clientRecordError, setClientRecordError] = useState("");
+  const openedClientRef = useRef("");
+  const clientIsCurrent = (
+    client: { _id?: string } | null | undefined,
+  ): client is CRMClient =>
+    Boolean(
+      client &&
+        requestedClientId &&
+        detailVerifiedId === requestedClientId &&
+        String(client._id) === requestedClientId
+    );
 
   const [mode, setMode] = useState<Mode>("list");
   const [search, setSearch] = useState("");
@@ -603,29 +616,56 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
   useEffect(() => {
     const clientId = searchParams.get("clientId");
-    if (!clientId || clients.length === 0) return;
+    if (!clientId) return;
+    if (isLoading && clients.length === 0) return;
 
-    const match = clients.find((client) => client._id === clientId);
-    if (!match) return;
+    const match = clients.find((client) => String(client._id) === String(clientId));
+    if (!match) {
+      setSelectedClient(null);
+      setDetailVerifiedId("");
+      setClientRecordError(t("crm.clients.alerts.recordMismatch"));
+      setMode("list");
+      return;
+    }
 
-    setSelectedClient(match);
-    setActiveClientTab("profile");
-    setMode("view");
+    setClientRecordError("");
+    setSelectedClient((current) =>
+      current && String(current._id) === String(clientId) ? current : match
+    );
+    setMode((current) => (current === "edit" || current === "create" ? current : "view"));
+    if (openedClientRef.current !== clientId) {
+      openedClientRef.current = clientId;
+      setActiveClientTab("profile");
+      setDetailVerifiedId("");
+    }
 
     let cancelled = false;
     fetchClientDetail(clientId, t)
       .then((detail) => {
-        if (cancelled || !detail || String(detail._id) !== String(clientId)) return;
+        if (cancelled) return;
+        if (!detail || String(detail._id) !== String(clientId)) {
+          setSelectedClient(null);
+          setDetailVerifiedId("");
+          setClientRecordError(t("crm.clients.alerts.recordMismatch"));
+          setMode("list");
+          return;
+        }
         setSelectedClient(detail);
+        setDetailVerifiedId(clientId);
       })
       .catch((err) => {
+        if (cancelled) return;
         console.error("Failed loading client detail:", err);
+        setSelectedClient(null);
+        setDetailVerifiedId("");
+        setClientRecordError(t("crm.clients.customerFile.loadFailed"));
+        setMode("list");
       });
 
     return () => {
       cancelled = true;
     };
-  }, [clients, searchParams, t]);
+  }, [clients, isLoading, searchParams, t]);
 
   const filteredClients = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -722,13 +762,17 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const openView = (client: CRMClient) => {
+    openedClientRef.current = "";
+    setDetailVerifiedId("");
+    setClientRecordError("");
     setSelectedClient(client);
     setActiveClientTab("profile");
     setMode("view");
-    const next = new URLSearchParams(searchParams);
-    next.set("clientId", client._id);
-    // Detail is loaded by the clientId searchParams effect.
-    setSearchParams(next, { replace: true });
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.set("clientId", client._id);
+      return next;
+    }, { replace: true });
   };
 
   const closeForm = () => {
@@ -748,11 +792,16 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const closeClientDossier = () => {
+    openedClientRef.current = "";
     setSelectedClient(null);
+    setDetailVerifiedId("");
+    setClientRecordError("");
     setMode("list");
-    const next = new URLSearchParams(searchParams);
-    next.delete("clientId");
-    setSearchParams(next, { replace: true });
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("clientId");
+      return next;
+    }, { replace: true });
     void invalidateClients();
   };
 
@@ -775,7 +824,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   const updateSelectedClientCustomTabs = async (
     updater: (tabs: CustomClientTab[]) => CustomClientTab[],
   ) => {
-    if (!selectedClient) return;
+    if (!selectedClient || !clientIsCurrent(selectedClient)) return;
 
     const currentTabs = normalizeCustomTabs(selectedClient.customTabs, t);
     const nextTabs = updater(currentTabs);
@@ -801,7 +850,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const handleSaveClientData = async (values: ClientDataDraft) => {
-    if (!selectedClient) return;
+    if (!clientIsCurrent(selectedClient)) return;
 
     await updateSelectedClientCustomTabs((currentTabs) => {
       const nextDataTab = buildClientDataTab(
@@ -815,7 +864,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const handleSavePortalAccess = async (settings: PortalAccessSettings) => {
-    if (!selectedClient) return;
+    if (!clientIsCurrent(selectedClient)) return;
 
     await updateSelectedClientCustomTabs((currentTabs) => {
       const nextPortalTab = buildPortalAccessTab(settings, currentTabs, t);
@@ -824,7 +873,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const handleSendPortalInvite = async () => {
-    if (!selectedClient) return;
+    if (!clientIsCurrent(selectedClient)) return;
 
     const current = getPortalAccessSettings(selectedClient, t);
 
@@ -843,6 +892,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     event?: React.MouseEvent<HTMLButtonElement>,
   ) => {
     event?.stopPropagation();
+    if (!clientIsCurrent(client)) return;
 
     if (!window.confirm(t("crm.clients.alerts.deleteConfirm", { name: client.fullName }))) return;
 
@@ -997,7 +1047,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const handleUpdate = async () => {
-    if (isSaving || !validateForm() || !selectedClient) return;
+    if (isSaving || !validateForm() || !clientIsCurrent(selectedClient)) return;
 
     setIsSaving(true);
 
@@ -1030,7 +1080,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const handleClientActivitiesChange = (activities: ClientActivity[]) => {
-    if (!selectedClient) return;
+    if (!clientIsCurrent(selectedClient)) return;
 
     const nextClient: CRMClient = {
       ...selectedClient,
@@ -1048,7 +1098,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   };
 
   const handleClientTagsChange = async (tags: string[]) => {
-    if (!selectedClient) return;
+    if (!clientIsCurrent(selectedClient)) return;
 
     await API.put(`/crm-clients/${selectedClient._id}`, { tags });
 
@@ -1067,9 +1117,37 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     });
   };
 
-  if (mode === "view" && selectedClient) {
+  if (requestedClientId && clientRecordError) {
+    return (
+      <div dir={dir} className="bg-white p-6">
+        <p className="text-sm font-bold text-rose-700">{clientRecordError}</p>
+        <button type="button" className="crm-close mt-4" onClick={closeClientDossier}>
+          {t("crm.common.close")}
+        </button>
+      </div>
+    );
+  }
+
+  if (requestedClientId && mode === "view" && !clientIsCurrent(selectedClient)) {
+    const pendingName =
+      selectedClient && String(selectedClient._id) === requestedClientId
+        ? selectedClient.fullName
+        : "";
+    return (
+      <div dir={dir} className="bg-white p-6">
+        <p className="text-sm font-bold text-slate-500">{t("crm.common.loading")}</p>
+        {pendingName ? <p className="mt-2 text-lg font-black">{pendingName}</p> : null}
+        <button type="button" className="crm-close mt-4" onClick={closeClientDossier}>
+          {t("crm.common.close")}
+        </button>
+      </div>
+    );
+  }
+
+  if (mode === "view" && selectedClient && clientIsCurrent(selectedClient)) {
     return (
       <CRMClientDossier
+        key={selectedClient._id}
         client={selectedClient}
         businessId={businessId}
         activeTab={activeClientTab}
