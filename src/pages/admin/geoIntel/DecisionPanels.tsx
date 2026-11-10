@@ -180,11 +180,26 @@ export function GscOpportunitiesPanel({
             ? ` · טווח: ${data.sourceImport.startDate} → ${data.sourceImport.endDate}`
             : ""}
         </p>
+        {data.totals ? (
+          <p className="geo-note" data-testid="gsc-totals">
+            <strong>סיכום מהסנכרון:</strong> חשיפות{" "}
+            {fmtNum(data.totals.impressions)} · קליקים {fmtNum(data.totals.clicks)}{" "}
+            · CTR{" "}
+            {data.totals.ctr == null || !Number.isFinite(Number(data.totals.ctr))
+              ? "לא נמדד"
+              : `${(Number(data.totals.ctr) * 100).toFixed(2)}%`}{" "}
+            · מיקום ממוצע {fmtNum(data.totals.position)} · שאילתות{" "}
+            {fmtNum(data.totals.queryCount)}
+          </p>
+        ) : null}
         {data.dataSource === "csv_fallback" ? (
           <p className="geo-note">
             CSV מוצג כגיבוי ידני בלבד. כשיש סנכרון Google — הוא מקור ראשי ואין
             דרישה ל־CSV.
           </p>
+        ) : null}
+        {data.dataSource === "google_sync" ? (
+          <p className="geo-note">CSV לא בשימוש — קיים סנכרון Google פעיל.</p>
         ) : null}
       </header>
       <div className="geo-filter-row">

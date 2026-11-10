@@ -17,6 +17,26 @@ describe("resolveApiBaseUrl", () => {
     ).toBe(RAILWAY_STAGING_API);
   });
 
+  it("keeps an explicit Railway Staging API when baked into the build", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://server-staging-15bb.up.railway.app/api",
+        mode: "production",
+        hostname: "geo-decision-staging-preview.vercel.app",
+      })
+    ).toBe(RAILWAY_STAGING_API);
+  });
+
+  it("forces the dedicated staging client host to Railway Staging", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "mybusiness-platform-client-staging.vercel.app",
+      })
+    ).toBe(RAILWAY_STAGING_API);
+  });
+
   it("uses the same-origin /api proxy on production hosts so the session cookie is sent", () => {
     expect(
       resolveApiBaseUrl({

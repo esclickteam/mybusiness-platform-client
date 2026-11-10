@@ -3,9 +3,14 @@ import {
   getValidAccessToken as sharedGetValidAccessToken,
   isAccessTokenExpired,
 } from "./tokenRefresh";
+import { browserHostname, resolveApiBaseUrl } from "../apiBaseUrl";
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL || "https://api.bizuply.com/api";
+// Never silently fall back to Production from Staging/Preview hosts.
+const BASE_URL = resolveApiBaseUrl({
+  envApiUrl: import.meta.env.VITE_API_URL,
+  mode: import.meta.env.MODE,
+  hostname: browserHostname(),
+});
 
 // Checks if the token is expired
 export function isTokenExpired(token) {

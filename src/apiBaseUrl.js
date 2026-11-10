@@ -35,30 +35,38 @@ export function resolveApiBaseUrl({
   mode = "development",
   hostname = "",
 } = {}) {
-  if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
   const host = String(hostname || "")
     .toLowerCase()
     .trim()
     .split(":")[0];
+  const trimmed = trimApiUrl(envApiUrl);
+
+  // Staging Preview / temporary Vercel hosts must never silently use Production.
+  if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
+  if (host === "mybusiness-platform-client-staging.vercel.app") {
+    return RAILWAY_STAGING_API;
+  }
+  // Explicit Staging API baked into the build wins over Production defaults.
+  if (/server-staging-15bb\.up\.railway\.app/i.test(trimmed)) {
+    return trimmed.endsWith("/api") ? trimmed : `${trimmed}/api`;
+  }
+
   // Login and refresh must stay on the site host. A cross-site POST to
   // api.bizuply.com does not send a SameSite=Lax session cookie, so the
   // access token expires and the user looks logged out. Vercel proxies /api.
+  // NOTE: geo.bizuply.com is Production and must keep Production /api proxy.
   if (
     host === "bizuply.com" ||
     host === "www.bizuply.com" ||
     host === "bizuply.co.il" ||
     host === "www.bizuply.co.il" ||
-    // Private GEO Intelligence host — same-origin /api proxy so login cookies work
-    // (avoids cross-site SameSite=Lax session loss vs api.bizuply.com).
     host === "geo.bizuply.com" ||
     host === "www.geo.bizuply.com" ||
-    // Private Global Partners host — same-origin /api proxy.
     host === "partners.bizuply.com" ||
     host === "www.partners.bizuply.com"
   ) {
     return "/api";
   }
-  const trimmed = trimApiUrl(envApiUrl);
   if (trimmed) return trimmed;
   if (mode === "production") return PRODUCTION_API;
   return "/api";
