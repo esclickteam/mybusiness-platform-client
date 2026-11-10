@@ -1,6 +1,6 @@
-/* Bizuply Partners — enterprise SaaS redesign (preview directions A / B).
-   Mandatory: white-dominant canvas, purple primary / blue secondary,
-   sharp rectangular buttons, no purple-gradient wallpaper, no fake portal. */
+/* Bizuply Partners — unified enterprise system
+   70% Editorial (A) + 30% Structured (B).
+   White-dominant, purple primary / blue secondary, sharp rectangles. */
 
 .ipartner {
   --ink: #0b1220;
@@ -15,7 +15,6 @@
   --radius: 2px;
   --radius-md: 2px;
   --wrap: min(1180px, calc(100% - 2.5rem));
-  --wrap-wide: min(1280px, calc(100% - 2rem));
   padding-bottom: calc(7rem + env(safe-area-inset-bottom));
   color: var(--ink);
   font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
@@ -30,68 +29,19 @@
   margin-inline: auto;
 }
 
-/* Preview design switcher — remove before production merge if undesired */
-.ip-design-chooser {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: #fff;
-  border-bottom: 1px solid var(--line);
-}
-.ip-design-chooser__inner {
-  display: grid;
-  gap: 12px;
-  padding: 12px 0;
-}
-.ip-design-chooser__title {
-  margin: 0;
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: var(--violet);
-  letter-spacing: 0.02em;
-}
-.ip-design-chooser__actions {
-  display: grid;
-  gap: 10px;
-}
-.ip-design-option {
-  display: grid;
-  gap: 4px;
-  text-align: start;
-  padding: 12px 14px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: #fff;
-  cursor: pointer;
-  font: inherit;
-  color: inherit;
-  transition: border-color 0.2s ease, background 0.2s ease;
-}
-.ip-design-option strong { font-size: 0.95rem; }
-.ip-design-option span {
-  color: var(--muted);
-  font-size: 0.84rem;
-  line-height: 1.45;
-  font-weight: 600;
-}
-.ip-design-option.is-active {
-  border-color: var(--violet);
-  background: #faf7ff;
-}
-.ip-design-option:focus-visible {
-  outline: 3px solid var(--blue);
-  outline-offset: 2px;
-}
-
-/* Hero */
+/* ========== Hero — Editorial A ========== */
 .ip-hero {
   position: relative;
-  padding: 72px 0 56px;
+  padding: 80px 0 64px;
   background: #ffffff;
   border-bottom: 1px solid var(--line);
 }
 
-.ip-hero-glow { display: none; }
+.ip-hero-glow,
+.ip-hero-stack,
+.ip-hero-demo,
+.ip-hero-portal,
+.ip-portal-shell { display: none !important; }
 
 .ip-hero-grid {
   display: grid;
@@ -110,7 +60,7 @@
 
 .ipartner h1 {
   margin: 18px 0 0;
-  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  font-size: clamp(2.7rem, 6.2vw, 4.7rem);
   line-height: 1.02;
   letter-spacing: -0.045em;
   font-weight: 800;
@@ -119,7 +69,7 @@
 
 .ip-sub {
   margin: 22px 0 0;
-  max-width: 38rem;
+  max-width: 36rem;
   font-size: clamp(1.08rem, 2vw, 1.28rem);
   line-height: 1.55;
   color: var(--muted);
@@ -180,12 +130,13 @@
   font-weight: 600;
 }
 
-.ip-shot, .ip-portal { margin: 0; }
+.ip-shot { margin: 0; }
 .ip-shot {
   border-radius: var(--radius-md);
   overflow: hidden;
   background: #0f172a;
-  border: 1px solid var(--line);
+  border: 0;
+  border-bottom: 1px solid var(--line);
 }
 .ip-shot img,
 .ip-shot video {
@@ -199,23 +150,19 @@
 }
 .ip-shot video { object-fit: contain; }
 
-/* Hide legacy portal styles if referenced elsewhere */
-.ip-hero-stack,
-.ip-hero-demo,
-.ip-hero-portal,
-.ip-portal-shell { display: none; }
-
-/* Open tracks + proof strip */
+/* ========== Open tracks compare — Structured B ========== */
 .ip-open-tracks {
-  padding-top: 56px;
-  padding-bottom: 24px;
-  background: #fff;
+  padding: 64px 0 28px;
+  background: var(--band);
+  border-bottom: 1px solid var(--line);
 }
+
 .ip-compare {
   display: grid;
   gap: 0;
   margin-top: 20px;
   border: 1px solid var(--line);
+  background: #fff;
 }
 .ip-compare-card {
   padding: 28px 26px;
@@ -271,7 +218,6 @@
   margin-bottom: 6px;
 }
 .ip-facts span,
-.ip-card p,
 .ip-plan li,
 .ip-step p,
 .ip-saas p,
@@ -282,20 +228,25 @@
   line-height: 1.65;
 }
 
-/* Sections */
-.ip-section { padding: 88px 0; }
+/* ========== Sections ========== */
+.ip-section { padding: 96px 0; }
 .ip-section h2 {
   margin: 0;
-  font-size: clamp(2rem, 3.6vw, 3rem);
+  font-size: clamp(2rem, 3.6vw, 3.05rem);
   letter-spacing: -0.035em;
   line-height: 1.12;
   max-width: 18em;
   font-weight: 800;
 }
-.ip-section .ip-copy { margin-bottom: 36px; }
+.ip-section .ip-copy { margin-bottom: 40px; }
 .ip-band { background: var(--band); }
+.ip-subsection-title {
+  margin: 40px 0 18px;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
 
-/* Editorial benefits */
+/* Editorial lists — benefits / trust / eligibility */
 .ip-editorial-list {
   display: grid;
   gap: 0;
@@ -306,7 +257,7 @@
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 22px;
-  padding: 28px 0;
+  padding: 32px 0;
   border-bottom: 1px solid var(--line);
   align-items: start;
 }
@@ -324,49 +275,35 @@
 }
 .ip-editorial-item p { margin: 0; max-width: 46rem; }
 
-/* Products — large editorial showcases */
+/* ========== Products — Editorial A ========== */
 .ip-products {
   display: grid;
-  gap: 72px;
+  gap: 88px;
 }
 .ip-product {
   display: grid;
-  gap: 28px;
+  gap: 32px;
   padding: 0;
   background: transparent;
   border: 0;
 }
 .ip-product-media { position: relative; }
-.ip-product-chapter {
-  position: absolute;
-  top: 14px;
-  inset-inline-start: 14px;
-  z-index: 2;
-  min-width: 42px;
-  min-height: 32px;
-  display: inline-grid;
-  place-items: center;
-  padding: 0 10px;
-  background: #fff;
-  border: 1px solid var(--line);
-  color: var(--violet);
-  font-weight: 800;
-  font-size: 0.85rem;
-}
+.ip-product-chapter { display: none; }
 .ip-product-copy h3 {
-  margin: 0 0 10px;
-  font-size: clamp(1.5rem, 2.4vw, 2rem);
+  margin: 0 0 12px;
+  font-size: clamp(1.55rem, 2.5vw, 2.15rem);
   letter-spacing: -0.03em;
 }
 .ip-sell {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   color: var(--muted);
   font-weight: 650;
   line-height: 1.55;
-  font-size: 1.05rem;
+  font-size: 1.08rem;
+  max-width: 36rem;
 }
 .ip-demo-caption {
-  margin: 14px 0 0;
+  margin: 16px 0 0;
   color: var(--muted);
   font-size: 0.86rem;
   font-weight: 600;
@@ -400,8 +337,8 @@
 .ip-product a { color: var(--blue); font-weight: 800; }
 
 .ip-saas-block {
-  margin-top: 64px;
-  padding: 28px 0 0;
+  margin-top: 72px;
+  padding: 32px 0 0;
   border-top: 1px solid var(--line);
   background: transparent;
 }
@@ -412,6 +349,7 @@
   gap: 0;
   margin-top: 18px;
   border: 1px solid var(--line);
+  background: #fff;
 }
 .ip-saas {
   padding: 18px 20px;
@@ -420,6 +358,7 @@
   border-radius: 0;
 }
 .ip-saas:last-child { border-bottom: 0; }
+.ip-saas h3 { margin: 8px 0 0; font-size: 1.05rem; }
 
 .ip-grid-3,
 .ip-grid-2,
@@ -427,7 +366,6 @@
 .ip-tracks,
 .ip-eligibility { display: grid; gap: 16px; }
 
-.ip-card,
 .ip-plan,
 .ip-step,
 .ip-track,
@@ -439,10 +377,6 @@
   border-radius: var(--radius-md);
 }
 
-.ip-card,
-.ip-step,
-.ip-track { padding: 24px; }
-.ip-card h3,
 .ip-plan h3,
 .ip-saas h3,
 .ip-step h3,
@@ -451,7 +385,7 @@
   font-size: 1.15rem;
 }
 
-/* Commercial / calc / tracks */
+/* ========== Commercial / calc — Structured B ========== */
 .ip-table-wrap {
   overflow-x: auto;
   border-radius: var(--radius-md);
@@ -467,13 +401,19 @@
   vertical-align: top;
 }
 .ip-table th { background: #faf7ff; font-size: 0.92rem; }
-.ip-tracks-table { margin: 0 0 28px; }
+.ip-table tr.is-featured-row th,
+.ip-table tr.is-featured-row td {
+  background: #faf7ff;
+  font-weight: 700;
+}
+.ip-tracks-table { margin: 0 0 12px; }
 .ip-tracks-table .ip-table { min-width: 640px; }
 .ip-onetime {
   margin-top: 16px;
   padding: 18px 20px;
   border-radius: var(--radius);
   background: #eef2ff;
+  border: 1px solid rgba(29, 78, 216, 0.16);
   font-weight: 800;
 }
 
@@ -482,7 +422,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  margin-top: 48px;
+  margin-top: 56px;
 }
 .ip-calc-heading { margin: 0; font-size: 1.45rem; }
 .ip-sim-badge {
@@ -500,9 +440,11 @@
 
 .ip-calc {
   margin-top: 18px;
-  padding: 28px;
+  padding: 32px;
   display: grid;
   gap: 16px;
+  background: #fff;
+  border: 1px solid var(--line-strong);
 }
 .ip-calc label,
 .ip-apply-form label {
@@ -540,7 +482,7 @@
 .ip-calc-tier p { font-weight: 800; margin: 0 0 8px; }
 .ip-results { display: grid; gap: 10px; }
 .ip-results div {
-  padding: 14px 16px;
+  padding: 16px;
   border-radius: var(--radius);
   background: #f8f9fb;
   border: 1px solid var(--line);
@@ -554,7 +496,44 @@
 .ip-calc-note { grid-column: 1 / -1; }
 .ip-token { white-space: nowrap; }
 
+/* ========== Tracks — Structured B hierarchy ========== */
 .ip-tracks { align-items: stretch; }
+.ip-tracks-primary {
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--line);
+  background: #fff;
+  margin-bottom: 8px;
+}
+.ip-tracks-primary .ip-track {
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  padding: 28px 24px;
+  background: #fff;
+}
+.ip-tracks-primary .ip-track:last-child { border-bottom: 0; }
+.ip-tracks-primary .ip-track.is-featured {
+  background: #faf7ff;
+  box-shadow: inset 4px 0 0 var(--violet);
+}
+[dir="rtl"] .ip-tracks-primary .ip-track.is-featured {
+  box-shadow: inset -4px 0 0 var(--violet);
+}
+
+.ip-tracks-secondary {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+.ip-tracks-secondary .ip-track {
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: transparent;
+  padding: 22px 0;
+}
+
 .ip-track-head {
   display: flex;
   flex-wrap: wrap;
@@ -579,11 +558,16 @@
 .ip-track dt { font-weight: 800; margin-bottom: 2px; }
 .ip-track dd { margin: 0; }
 
-.ip-plans { align-items: stretch; margin-top: 24px; }
-.ip-plan { padding: 28px; display: flex; flex-direction: column; gap: 8px; }
-.ip-plan-best {
-  border: 2px solid var(--violet);
+/* Plans — structured pricing */
+.ip-plans { align-items: stretch; margin-top: 28px; }
+.ip-plan {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-radius: var(--radius);
 }
+.ip-plan-best { border: 2px solid var(--violet); }
 .ip-badge {
   align-self: flex-start;
   border-radius: var(--radius);
@@ -606,21 +590,30 @@
 }
 .ip-plan-notes li { margin-top: 6px; }
 
-.ip-steps { display: grid; gap: 0; margin-top: 28px; border-top: 1px solid var(--line); }
+/* Journey — Structured B */
+.ip-steps {
+  display: grid;
+  gap: 0;
+  margin-top: 28px;
+  border: 1px solid var(--line);
+  background: #fff;
+}
 .ip-step {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: 18px;
   align-items: start;
-  padding: 24px 0;
+  padding: 26px 24px;
   border: 0;
   border-bottom: 1px solid var(--line);
   border-radius: 0;
-  background: transparent;
+  background: #fff;
 }
+.ip-step:last-child { border-bottom: 0; }
 .ip-num {
-  width: 44px;
+  min-width: 44px;
   height: 44px;
+  padding: 0 8px;
   border-radius: var(--radius);
   display: grid;
   place-items: center;
@@ -628,11 +621,13 @@
   color: var(--violet);
   border: 1px solid rgba(91, 33, 182, 0.18);
   font-weight: 800;
+  font-size: 0.9rem;
 }
 
 .ip-apply-form {
-  padding: 32px;
+  padding: 36px;
   box-shadow: none;
+  border: 1px solid var(--line-strong);
 }
 .ip-apply-intro h2 { margin: 0; }
 .ip-apply-grid {
@@ -664,7 +659,7 @@
 .ip-faq p { margin: 10px 0 0; color: var(--muted); line-height: 1.65; }
 
 .ip-close {
-  padding: 40px;
+  padding: 48px 40px;
   border-radius: var(--radius-md);
   background: var(--violet-deep);
   color: #fff;
@@ -705,7 +700,7 @@
 
 .ip-section,
 .ip-close,
-#apply { scroll-margin-top: 120px; }
+#apply { scroll-margin-top: 96px; }
 
 .ip-sticky-join {
   position: fixed;
@@ -783,160 +778,45 @@
   border: 0;
 }
 
-/* ========== Direction A — Editorial asymmetric ========== */
-.ipartner[data-design="a"] .ip-hero-grid {
-  align-items: end;
-}
-.ipartner[data-design="a"] .ip-hero-copy {
-  max-width: 34rem;
-}
-.ipartner[data-design="a"] .ip-hero-media .ip-shot {
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  box-shadow: none;
-}
-.ipartner[data-design="a"] .ip-product:nth-child(even) {
-  direction: inherit;
-}
-.ipartner[data-design="a"] .ip-compare {
-  border: 0;
-  gap: 28px;
-}
-.ipartner[data-design="a"] .ip-compare-card {
-  border: 0;
-  border-top: 3px solid var(--line);
-  padding: 22px 0 0;
-  background: transparent;
-}
-.ipartner[data-design="a"] .ip-compare-card.is-featured {
-  background: transparent;
-  border-top-color: var(--violet);
-  box-shadow: none;
-}
-.ipartner[data-design="a"] .ip-facts {
-  margin-top: 56px;
-  grid-template-columns: 1fr;
-}
-.ipartner[data-design="a"] .ip-editorial-item {
-  padding: 36px 0;
-}
-.ipartner[data-design="a"] .ip-product-chapter { display: none; }
-
-/* ========== Direction B — Structured enterprise ========== */
-.ipartner[data-design="b"] .ip-hero {
-  text-align: start;
-  padding-bottom: 40px;
-}
-.ipartner[data-design="b"] .ip-hero-grid {
-  gap: 48px;
-}
-.ipartner[data-design="b"] .ipartner h1,
-.ipartner[data-design="b"] h1 {
-  max-width: 16ch;
-}
-.ipartner[data-design="b"] .ip-hero-media .ip-shot {
-  border: 1px solid var(--line-strong);
-}
-.ipartner[data-design="b"] .ip-open-tracks {
-  background: var(--band);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  padding: 64px 0;
-}
-.ipartner[data-design="b"] .ip-compare {
-  grid-template-columns: 1fr;
-}
-.ipartner[data-design="b"] .ip-facts article {
-  padding: 18px 0;
-}
-.ipartner[data-design="b"] .ip-editorial-list {
-  display: grid;
-  grid-template-columns: 1fr;
-}
-.ipartner[data-design="b"] .ip-editorial-item {
-  border: 1px solid var(--line);
-  border-bottom: 0;
-  padding: 22px 20px;
-  background: #fff;
-}
-.ipartner[data-design="b"] .ip-editorial-item:last-child {
-  border-bottom: 1px solid var(--line);
-}
-.ipartner[data-design="b"] .ip-product {
-  gap: 24px;
-  padding: 28px;
-  border: 1px solid var(--line);
-  background: #fff;
-}
-.ipartner[data-design="b"] .ip-band {
-  background: #fff;
-}
-.ipartner[data-design="b"] #products.ip-band {
-  background: var(--band);
-}
-.ipartner[data-design="b"] .ip-product-chapter {
-  position: static;
-  margin-bottom: 12px;
-}
-
 @media (min-width: 720px) {
-  .ip-design-chooser__actions { grid-template-columns: 1fr 1fr; }
   .ip-facts { grid-template-columns: 1fr 1fr; gap: 0 28px; }
-  .ip-facts article { padding-inline: 0; }
   .ip-compare { grid-template-columns: 1fr 1fr; }
   .ip-compare-card { border-bottom: 0; border-inline-end: 1px solid var(--line); }
   .ip-compare-card:last-child { border-inline-end: 0; }
   .ip-grid-2,
   .ip-plans,
   .ip-results,
-  .ip-tracks,
   .ip-apply-grid { grid-template-columns: 1fr 1fr; }
+  .ip-tracks-primary { grid-template-columns: 1fr; }
+  .ip-tracks-secondary { grid-template-columns: 1fr 1fr; gap: 0 28px; }
   .ip-saas-grid { grid-template-columns: repeat(3, 1fr); }
-  .ip-saas { border-inline-end: 1px solid var(--line); }
+  .ip-saas { border-inline-end: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .ip-saas:nth-child(3n) { border-inline-end: 0; }
-  .ip-product { grid-template-columns: 1.15fr 0.85fr; align-items: center; }
+  .ip-product { grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 40px; }
   .ip-product:nth-child(even) .ip-product-media { order: 2; }
   .ip-apply-span { grid-column: 1 / -1; }
   .ip-results-total { grid-column: 1 / -1; }
-
-  .ipartner[data-design="a"] .ip-compare {
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-  }
-  .ipartner[data-design="a"] .ip-compare-card {
-    border-inline-end: 0;
-  }
-  .ipartner[data-design="b"] .ip-editorial-list {
-    grid-template-columns: 1fr 1fr;
-  }
-  .ipartner[data-design="b"] .ip-editorial-item:nth-child(odd) {
-    border-inline-end: 0;
-  }
 }
 
 @media (min-width: 1080px) {
-  .ip-hero { padding-top: 88px; padding-bottom: 72px; }
-  .ipartner[data-design="a"] .ip-hero-grid {
-    grid-template-columns: 0.95fr 1.05fr;
-    gap: 64px;
+  .ip-hero { padding-top: 96px; padding-bottom: 80px; }
+  .ip-hero-grid {
+    grid-template-columns: 0.92fr 1.08fr;
+    gap: 72px;
   }
-  .ipartner[data-design="b"] .ip-hero-grid {
-    grid-template-columns: 1fr;
-    max-width: 980px;
-  }
-  .ipartner[data-design="b"] .ip-hero-copy {
-    max-width: 46rem;
-  }
-  .ipartner[data-design="b"] .ip-hero-media {
-    width: min(100%, 980px);
-  }
-  .ipartner h1 { max-width: 14ch; }
+  .ip-hero-copy { max-width: 34rem; }
+  .ipartner h1 { max-width: 13ch; }
   .ip-facts { grid-template-columns: repeat(4, 1fr); gap: 0 24px; }
-  .ip-grid-3 { grid-template-columns: repeat(3, 1fr); }
   .ip-saas-grid { grid-template-columns: repeat(5, 1fr); }
-  .ip-saas { border-inline-end: 1px solid var(--line); border-bottom: 0; }
+  .ip-saas { border-bottom: 0; border-inline-end: 1px solid var(--line); }
   .ip-saas:last-child { border-inline-end: 0; }
-  .ip-tracks { grid-template-columns: repeat(2, 1fr); }
+  .ip-tracks-primary { grid-template-columns: repeat(3, 1fr); }
+  .ip-tracks-primary .ip-track {
+    border-bottom: 0;
+    border-inline-end: 1px solid var(--line);
+  }
+  .ip-tracks-primary .ip-track:last-child { border-inline-end: 0; }
+  .ip-tracks-secondary { grid-template-columns: repeat(3, 1fr); gap: 0 28px; }
   .ip-calc { grid-template-columns: 1fr 1fr; }
   .ip-calc-tier { grid-column: 1 / -1; }
   .ip-results {
@@ -944,13 +824,11 @@
     grid-template-columns: repeat(3, 1fr);
   }
   .ip-results-total { grid-column: span 3; }
-  .ipartner[data-design="a"] .ip-product {
-    grid-template-columns: 1.25fr 0.75fr;
-    gap: 48px;
+  .ip-product {
+    grid-template-columns: 1.28fr 0.72fr;
+    gap: 56px;
   }
-  .ipartner[data-design="b"] .ip-editorial-list {
-    grid-template-columns: 1fr 1fr;
-  }
+  .ip-section { padding: 112px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

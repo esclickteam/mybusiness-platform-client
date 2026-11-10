@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { fetchPartnerPlans } from "../../lib/partnerApi";
@@ -23,11 +23,7 @@ import {
 } from "./partners/partnersCommission.mjs";
 import "./partners/partnersPage.css";
 
-type DesignDirection = "a" | "b";
-
-function resolveDesign(raw: string | null): DesignDirection {
-  return raw === "b" ? "b" : "a";
-}
+const PRIMARY_TRACK_KEYS = new Set(["Affiliate", "Business Partner", "Reseller"]);
 
 function revealPartnersSections(root: HTMLElement) {
   const reduce =
@@ -265,11 +261,8 @@ const COPY = {
       ],
     },
     heroMediaCaption: "Authorized CRM demo recording from the published Bizuply demo workspace.",
-    designChooserTitle: "Choose a design direction (preview only)",
-    designALabel: "A · Editorial",
-    designAHint: "Asymmetric HubSpot-style layout, large type, open whitespace",
-    designBLabel: "B · Structured",
-    designBHint: "Salesforce-style clarity, chaptered products, crisp comparison",
+    primaryTracksTitle: "Core partnership tracks",
+    secondaryTracksTitle: "Additional capabilities by agreement",
     tracks: [
       {
         key: "Affiliate",
@@ -591,11 +584,8 @@ const COPY = {
       ],
     },
     heroMediaCaption: "הקלטת CRM מורשית מסביבת הדמו המפורסמת של Bizuply.",
-    designChooserTitle: "בחרו כיוון עיצובי (תצוגה מקדימה בלבד)",
-    designALabel: "A · Editorial",
-    designAHint: "פריסה אסימטרית בסגנון HubSpot, טיפוגרפיה גדולה וריווח פתוח",
-    designBLabel: "B · Structured",
-    designBHint: "בהירות בסגנון Salesforce, מוצרים בפרקים והשוואה חדה",
+    primaryTracksTitle: "מסלולי הליבה",
+    secondaryTracksTitle: "יכולות נוספות לפי הסכם",
     tracks: [
       {
         key: "Affiliate",
@@ -777,8 +767,6 @@ function Rich({ text }: { text: string }) {
 
 export default function PartnersRecruitment() {
   const { i18n } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const design = resolveDesign(searchParams.get("design"));
   const hebrew = Boolean(i18n.language?.startsWith("he"));
   const copy = (hebrew ? COPY.he : COPY.en) as Copy;
   const dir = getTextDirection(i18n.language);
@@ -797,11 +785,8 @@ export default function PartnersRecruitment() {
   const [oneTimeAverage, setOneTimeAverage] = useState(500);
   const [stickyVisible, setStickyVisible] = useState(false);
 
-  const setDesign = (next: DesignDirection) => {
-    const params = new URLSearchParams(searchParams);
-    params.set("design", next);
-    setSearchParams(params, { replace: true });
-  };
+  const primaryTracks = copy.tracks.filter((track) => PRIMARY_TRACK_KEYS.has(track.key));
+  const secondaryTracks = copy.tracks.filter((track) => !PRIMARY_TRACK_KEYS.has(track.key));
 
   useEffect(() => {
     let cancelled = false;
@@ -890,12 +875,7 @@ export default function PartnersRecruitment() {
   ];
 
   return (
-    <div
-      className="ipartner"
-      dir={dir}
-      data-testid="partners-recruitment"
-      data-design={design}
-    >
+    <div className="ipartner" dir={dir} data-testid="partners-recruitment">
       <Helmet>
         <title>{copy.seoTitle}</title>
         <meta name="description" content={copy.seoDescription} />
@@ -909,32 +889,6 @@ export default function PartnersRecruitment() {
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
-
-      <div className="ip-design-chooser" data-testid="partners-design-chooser" role="region" aria-label={copy.designChooserTitle}>
-        <div className="ip-wrap ip-design-chooser__inner">
-          <p className="ip-design-chooser__title">{copy.designChooserTitle}</p>
-          <div className="ip-design-chooser__actions">
-            <button
-              type="button"
-              className={`ip-design-option${design === "a" ? " is-active" : ""}`}
-              aria-pressed={design === "a"}
-              onClick={() => setDesign("a")}
-            >
-              <strong>{copy.designALabel}</strong>
-              <span>{copy.designAHint}</span>
-            </button>
-            <button
-              type="button"
-              className={`ip-design-option${design === "b" ? " is-active" : ""}`}
-              aria-pressed={design === "b"}
-              onClick={() => setDesign("b")}
-            >
-              <strong>{copy.designBLabel}</strong>
-              <span>{copy.designBHint}</span>
-            </button>
-          </div>
-        </div>
-      </div>
 
       <header className="ip-hero">
         <div className="ip-wrap ip-hero-grid">
@@ -1024,23 +978,20 @@ export default function PartnersRecruitment() {
           <h2>{copy.productsTitle}</h2>
           <p className="ip-copy">{copy.productsLead}</p>
           <div className="ip-products">
-            {copy.products.map((product, index) => (
+            {copy.products.map((product) => (
               <article
                 className="ip-product"
                 key={product.href}
                 data-testid={`product-${product.href.replace(/^\//, "")}`}
               >
                 <div className="ip-product-media">
-                  <span className="ip-product-chapter" aria-hidden="true">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
                   <PartnerProductMedia hebrew={hebrew} product={product} />
                 </div>
                 <div className="ip-product-copy">
                   <h3>{product.title}</h3>
                   {"sell" in product && product.sell ? <p className="ip-sell">{product.sell}</p> : null}
                   <ul>
-                    {product.points.map((point) => (
+                    {product.points.slice(0, 4).map((point) => (
                       <li key={point}>{point}</li>
                     ))}
                   </ul>
@@ -1101,11 +1052,16 @@ export default function PartnersRecruitment() {
             </table>
           </div>
           <p className="ip-onetime">{copy.oneTime}</p>
-          <div className="ip-grid-2 ip-eligibility">
-            {copy.eligibility.map(([title, body]) => (
-              <article className="ip-card" key={title}>
-                <h3>{title}</h3>
-                <p>{body}</p>
+          <div className="ip-editorial-list ip-eligibility">
+            {copy.eligibility.map(([title, body], index) => (
+              <article className="ip-editorial-item" key={title}>
+                <span className="ip-editorial-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </div>
               </article>
             ))}
           </div>
@@ -1222,7 +1178,7 @@ export default function PartnersRecruitment() {
               </thead>
               <tbody>
                 {copy.tracksTable.rows.map(([name, fee, reward, access]) => (
-                  <tr key={name}>
+                  <tr key={name} className={name === "Business Partner" ? "is-featured-row" : undefined}>
                     <th scope="row">{name}</th>
                     <td>{fee}</td>
                     <td>{reward}</td>
@@ -1232,9 +1188,15 @@ export default function PartnersRecruitment() {
               </tbody>
             </table>
           </div>
-          <div className="ip-tracks">
-            {copy.tracks.map((track) => (
-              <article className="ip-track" key={track.key} data-testid={`track-${track.key}`}>
+
+          <h3 className="ip-subsection-title">{copy.primaryTracksTitle}</h3>
+          <div className="ip-tracks ip-tracks-primary">
+            {primaryTracks.map((track) => (
+              <article
+                className={`ip-track is-primary${track.key === "Business Partner" ? " is-featured" : ""}`}
+                key={track.key}
+                data-testid={`track-${track.key}`}
+              >
                 <div className="ip-track-head">
                   <h3>{track.title}</h3>
                   <span className="ip-status">{track.status}</span>
@@ -1259,6 +1221,36 @@ export default function PartnersRecruitment() {
                   <div>
                     <dt>{copy.trackLabels.approval}</dt>
                     <dd>{track.approval}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy.trackLabels.limits}</dt>
+                    <dd>{track.limits}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+
+          <h3 className="ip-subsection-title">{copy.secondaryTracksTitle}</h3>
+          <div className="ip-tracks ip-tracks-secondary">
+            {secondaryTracks.map((track) => (
+              <article className="ip-track is-secondary" key={track.key} data-testid={`track-${track.key}`}>
+                <div className="ip-track-head">
+                  <h3>{track.title}</h3>
+                  <span className="ip-status">{track.status}</span>
+                </div>
+                <dl>
+                  <div>
+                    <dt>{copy.trackLabels.who}</dt>
+                    <dd>{track.who}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy.trackLabels.allows}</dt>
+                    <dd>{track.allows}</dd>
+                  </div>
+                  <div>
+                    <dt>{copy.trackLabels.fee}</dt>
+                    <dd>{track.fee}</dd>
                   </div>
                   <div>
                     <dt>{copy.trackLabels.limits}</dt>
@@ -1327,11 +1319,16 @@ export default function PartnersRecruitment() {
           </ul>
           <h3>{copy.territoryTitle}</h3>
           <p className="ip-copy">{copy.territoryLead}</p>
-          <div className="ip-grid-2">
-            {copy.territories.map(([title, body]) => (
-              <article className="ip-card" key={title}>
-                <h3>{title}</h3>
-                <p>{body}</p>
+          <div className="ip-editorial-list">
+            {copy.territories.map(([title, body], index) => (
+              <article className="ip-editorial-item" key={title}>
+                <span className="ip-editorial-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </div>
               </article>
             ))}
           </div>
@@ -1344,7 +1341,7 @@ export default function PartnersRecruitment() {
           <div className="ip-steps">
             {copy.steps.map(([title, body], index) => (
               <article className="ip-step" key={title}>
-                <span className="ip-num">{index + 1}</span>
+                <span className="ip-num">{String(index + 1).padStart(2, "0")}</span>
                 <div>
                   <h3>{title}</h3>
                   <p>{body}</p>
@@ -1359,11 +1356,16 @@ export default function PartnersRecruitment() {
         <div className="ip-wrap">
           <h2>{copy.trustTitle}</h2>
           <p className="ip-copy">{copy.trustLead}</p>
-          <div className="ip-grid-2">
-            {copy.trust.map(([title, body]) => (
-              <article className="ip-card" key={title}>
-                <h3>{title}</h3>
-                <p>{body}</p>
+          <div className="ip-editorial-list">
+            {copy.trust.map(([title, body], index) => (
+              <article className="ip-editorial-item" key={title}>
+                <span className="ip-editorial-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </div>
               </article>
             ))}
           </div>
