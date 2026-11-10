@@ -329,8 +329,8 @@
   }
   .ip-product-media .ip-shot img,
   .ip-product.is-feature .ip-product-media .ip-shot img {
-    aspect-ratio: 16 / 11;
-    min-height: 0;
+    aspect-ratio: 16 / 10;
+    min-height: 210px;
     object-position: top center;
   }
 }

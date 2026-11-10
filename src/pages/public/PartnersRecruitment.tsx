@@ -1174,7 +1174,6 @@ export default function PartnersRecruitment() {
 
           <div className="ip-billing" id="plans" data-testid="international-price-cards">
             <h3 className="ip-subsection-title">{copy.plansTitle}</h3>
-            <p className="ip-copy">{copy.compareNote}</p>
             <div className="ip-billing-rows">
               <div className="ip-billing-row is-featured" data-testid="annual-price-card">
                 <div className="ip-billing-main">
