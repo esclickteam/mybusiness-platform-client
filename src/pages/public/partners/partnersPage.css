@@ -15,7 +15,8 @@
   --radius: 2px;
   --radius-md: 2px;
   --wrap: min(1180px, calc(100% - 2.5rem));
-  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+  --wrap-wide: min(1320px, calc(100% - 2rem));
+  padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
   color: var(--ink);
   font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
   background: #ffffff;
@@ -26,6 +27,10 @@
 
 .ip-wrap {
   width: var(--wrap);
+  margin-inline: auto;
+}
+.ip-wrap-wide {
+  width: var(--wrap-wide);
   margin-inline: auto;
 }
 
@@ -45,8 +50,8 @@
 
 .ip-hero-grid {
   display: grid;
-  gap: 40px;
-  align-items: end;
+  gap: 36px;
+  align-items: center;
 }
 
 .ip-kicker {
@@ -123,8 +128,8 @@
 
 .ip-hero-media {
   display: grid;
-  gap: 14px;
-  align-self: stretch;
+  gap: 12px;
+  min-width: 0;
 }
 .ip-hero-media-caption {
   margin: 0;
@@ -136,19 +141,15 @@
 
 .ip-shot {
   margin: 0;
-  border-radius: 4px;
+  border-radius: 2px;
   overflow: hidden;
-  background: #f3f4f6;
+  background: #fff;
   border: 1px solid var(--line);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 18px 40px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
 }
 .ip-hero-media .ip-shot {
-  background:
-    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
-  padding: 14px 14px 0;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  padding: 0;
+  background: #fff;
 }
 .ip-shot img {
   display: block;
@@ -156,24 +157,15 @@
   height: auto;
   aspect-ratio: 16 / 10;
   object-fit: cover;
-  object-position: top left;
+  object-position: top center;
   background: #fff;
 }
 .ip-hero-media .ip-shot img {
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: top center;
-  border-radius: 2px 2px 0 0;
-  box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.04);
+  aspect-ratio: 16 / 10.2;
+  min-height: 320px;
 }
 
-/* ========== Open tracks compare — Structured B ========== */
-.ip-open-tracks {
-  padding: 64px 0 28px;
-  background: var(--band);
-  border-bottom: 1px solid var(--line);
-}
-
+/* ========== Track compare — Structured B ========== */
 .ip-compare {
   display: grid;
   gap: 0;
@@ -292,38 +284,52 @@
 }
 .ip-editorial-item p { margin: 0; max-width: 46rem; }
 
-/* ========== Products — Editorial A ========== */
+/* ========== Products — Editorial A (media-dominant) ========== */
 .ip-products {
   display: grid;
-  gap: 112px;
+  gap: 120px;
 }
 .ip-product {
   display: grid;
-  gap: 36px;
+  gap: 40px;
   padding: 0;
   background: transparent;
   border: 0;
+  align-items: center;
 }
-.ip-product-media { position: relative; }
+.ip-product-media { position: relative; min-width: 0; }
 .ip-product-media .ip-shot {
-  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
-  padding: 12px 12px 0;
+  background: #fff;
+  padding: 0;
 }
 .ip-product-media .ip-shot img {
   aspect-ratio: 16 / 10;
-  min-height: 240px;
+  min-height: 320px;
   object-fit: cover;
   object-position: top center;
-  border-radius: 2px 2px 0 0;
+}
+.ip-product.is-feature {
+  gap: 28px;
+}
+.ip-product.is-feature .ip-product-media .ip-shot img {
+  aspect-ratio: 16 / 9.4;
+  min-height: 380px;
+}
+.ip-product.is-feature .ip-product-copy {
+  max-width: 42rem;
 }
 @media (max-width: 719px) {
   .ip-hero-media .ip-shot,
   .ip-product-media .ip-shot {
-    padding: 8px 8px 0;
+    padding: 0;
   }
-  .ip-hero-media .ip-shot img,
-  .ip-product-media .ip-shot img {
+  .ip-hero-media .ip-shot img {
     aspect-ratio: 4 / 5;
+    min-height: 0;
+  }
+  .ip-product-media .ip-shot img,
+  .ip-product.is-feature .ip-product-media .ip-shot img {
+    aspect-ratio: 16 / 11;
     min-height: 0;
     object-position: top center;
   }
@@ -598,32 +604,39 @@
 .ip-track dt { font-weight: 800; margin-bottom: 2px; }
 .ip-track dd { margin: 0; }
 
-/* Plans — structured pricing (open panel, not card grid) */
-.ip-plans {
-  align-items: stretch;
-  margin-top: 28px;
+/* Business Partner billing — open rows, not twin cards */
+.ip-billing { margin-top: 40px; }
+.ip-billing-rows {
+  display: grid;
   gap: 0;
   border: 1px solid var(--line);
   background: #fff;
 }
-.ip-plan {
-  padding: 28px 26px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  border: 0;
-  border-radius: 0;
-  border-inline-end: 1px solid var(--line);
+.ip-billing-row {
+  display: grid;
+  gap: 18px;
+  padding: 26px 24px;
+  border-bottom: 1px solid var(--line);
   background: #fff;
 }
-.ip-plan:last-child { border-inline-end: 0; }
-.ip-plan-best {
-  border: 0;
-  border-inline-end: 1px solid var(--line);
-  box-shadow: inset 0 3px 0 var(--violet);
+.ip-billing-row:last-child { border-bottom: 0; }
+.ip-billing-row.is-featured {
   background: #faf7ff;
+  box-shadow: inset 0 3px 0 var(--violet);
+}
+.ip-billing-main h4 {
+  margin: 10px 0 0;
+  font-size: 1.25rem;
+  letter-spacing: -0.02em;
+}
+.ip-billing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 .ip-badge {
+  display: inline-flex;
   align-self: flex-start;
   border-radius: var(--radius);
   background: var(--violet);
@@ -635,7 +648,6 @@
 .ip-price { margin: 8px 0; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.04em; }
 .ip-price span { font-size: 1rem; font-weight: 700; color: var(--muted); }
 .ip-save { margin: 0; color: #047857; font-weight: 800; }
-.ip-plan .ip-btn { margin-top: auto; }
 .ip-plan-notes {
   margin: 20px 0 0;
   padding: 0;
@@ -644,6 +656,7 @@
   line-height: 1.7;
 }
 .ip-plan-notes li { margin-top: 6px; }
+.ip-territory-note { margin-top: 24px; max-width: 48rem; }
 
 /* Journey — Structured B */
 .ip-steps {
@@ -761,9 +774,10 @@
   position: fixed;
   inset-inline: 0;
   bottom: 0;
-  z-index: 40;
+  z-index: 50;
   padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
-  background: rgba(255, 255, 255, 0.96);
+  padding-inline-end: max(16px, 5.25rem);
+  background: rgba(255, 255, 255, 0.97);
   border-top: 1px solid var(--line);
   backdrop-filter: blur(10px);
   transform: translateY(110%);
@@ -790,6 +804,27 @@
   font-size: 0.95rem;
 }
 .ip-sticky-join .ip-btn { min-width: 11rem; }
+@media (max-width: 719px) {
+  .ip-sticky-join {
+    padding-inline: 12px;
+    padding-inline-end: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  .ip-sticky-join__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .ip-sticky-join .ip-btn {
+    width: 100%;
+    min-width: 0;
+  }
+  .ip-sticky-join__copy { text-align: center; }
+  /* Keep chat FAB above the sticky join bar */
+  body:has(.ip-sticky-join.is-visible) [class*="chat"],
+  body:has(.ip-sticky-join.is-visible) iframe[title*="chat" i] {
+    bottom: calc(5.75rem + env(safe-area-inset-bottom)) !important;
+  }
+}
 
 .ip-privacy {
   display: grid;
@@ -834,49 +869,58 @@
 }
 
 @media (min-width: 720px) {
-  .ip-facts { grid-template-columns: 1fr 1fr; gap: 0 28px; }
   .ip-compare { grid-template-columns: 1fr 1fr; }
   .ip-compare-card { border-bottom: 0; border-inline-end: 1px solid var(--line); }
   .ip-compare-card:nth-child(2n) { border-inline-end: 0; }
   .ip-compare-card:nth-child(n + 3) { border-top: 1px solid var(--line); }
   .ip-grid-2,
-  .ip-plans,
   .ip-results,
   .ip-apply-grid { grid-template-columns: 1fr 1fr; }
-  .ip-tracks-primary { grid-template-columns: 1fr; }
-  .ip-tracks-secondary { grid-template-columns: 1fr 1fr; gap: 0 28px; }
   .ip-saas-grid { grid-template-columns: repeat(3, 1fr); }
   .ip-saas { border-inline-end: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .ip-saas:nth-child(3n) { border-inline-end: 0; }
-  .ip-product { grid-template-columns: 1.2fr 0.8fr; align-items: center; gap: 40px; }
-  .ip-product:nth-child(even) .ip-product-media { order: 2; }
+  .ip-product {
+    grid-template-columns: minmax(0, 1.75fr) minmax(220px, 0.7fr);
+    gap: 44px;
+  }
+  .ip-product.is-flip {
+    grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.75fr);
+  }
+  .ip-product.is-flip .ip-product-copy { order: 1; }
+  .ip-product.is-flip .ip-product-media { order: 2; }
+  .ip-product.is-feature {
+    grid-template-columns: 1fr;
+  }
+  .ip-billing-row {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
   .ip-apply-span { grid-column: 1 / -1; }
   .ip-results-total { grid-column: 1 / -1; }
 }
 
 @media (min-width: 1080px) {
-  .ip-hero { padding-top: 96px; padding-bottom: 80px; }
-  .ip-hero-grid {
-    grid-template-columns: 0.92fr 1.08fr;
-    gap: 72px;
+  .ip-hero { padding-top: 88px; padding-bottom: 72px; }
+  .ip-hero .ip-wrap {
+    width: var(--wrap-wide);
   }
-  .ip-hero-copy { max-width: 34rem; }
-  .ipartner h1 { max-width: 13ch; }
+  .ip-hero-grid {
+    grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.42fr);
+    gap: 56px;
+    align-items: center;
+  }
+  .ip-hero-copy { max-width: 32rem; }
+  .ipartner h1 { max-width: 12ch; }
+  .ip-hero-media .ip-shot img {
+    min-height: 420px;
+  }
   .ip-compare { grid-template-columns: repeat(3, 1fr); }
   .ip-compare-card { border-top: 0; }
   .ip-compare-card:nth-child(2n) { border-inline-end: 1px solid var(--line); }
   .ip-compare-card:last-child { border-inline-end: 0; }
-  .ip-facts { grid-template-columns: repeat(4, 1fr); gap: 0 24px; }
   .ip-saas-grid { grid-template-columns: repeat(5, 1fr); }
   .ip-saas { border-bottom: 0; border-inline-end: 1px solid var(--line); }
   .ip-saas:last-child { border-inline-end: 0; }
-  .ip-tracks-primary { grid-template-columns: repeat(3, 1fr); }
-  .ip-tracks-primary .ip-track {
-    border-bottom: 0;
-    border-inline-end: 1px solid var(--line);
-  }
-  .ip-tracks-primary .ip-track:last-child { border-inline-end: 0; }
-  .ip-tracks-secondary { grid-template-columns: repeat(3, 1fr); gap: 0 28px; }
   .ip-calc { grid-template-columns: 1fr 1fr; }
   .ip-calc-tier { grid-column: 1 / -1; }
   .ip-results {
@@ -885,10 +929,20 @@
   }
   .ip-results-total { grid-column: span 3; }
   .ip-product {
-    grid-template-columns: 1.28fr 0.72fr;
+    grid-template-columns: minmax(0, 1.85fr) minmax(240px, 0.65fr);
     gap: 56px;
   }
-  .ip-section { padding: 112px 0; }
+  .ip-product.is-flip {
+    grid-template-columns: minmax(240px, 0.65fr) minmax(0, 1.85fr);
+  }
+  .ip-product.is-feature {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .ip-product.is-feature .ip-product-media .ip-shot img {
+    min-height: 460px;
+  }
+  .ip-section { padding: 104px 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -23,8 +23,6 @@ import {
 } from "./partners/partnersCommission.mjs";
 import "./partners/partnersPage.css";
 
-const PRIMARY_TRACK_KEYS = new Set(["Affiliate", "Business Partner", "Reseller"]);
-
 function revealPartnersSections(root: HTMLElement) {
   const reduce =
     typeof window.matchMedia === "function" &&
@@ -164,6 +162,7 @@ const COPY = {
         imageHe: "/demo-media/partners/crm-he.webp",
         imageMobile: "/demo-media/partners/crm-en-mobile.webp",
         imageMobileHe: "/demo-media/partners/crm-he-mobile.webp",
+        feature: true,
         alt: "Bizuply CRM lead list in the demo workspace",
         sell: "Sell organized lead and customer management that keeps follow-ups in one place.",
         points: ["Customer relationship management", "Lead tracking", "Sales pipelines", "Customer records", "Follow-up workflows"],
@@ -173,6 +172,8 @@ const COPY = {
         href: "/whatsapp-api",
         image: "/demo-media/partners/whatsapp-en.webp",
         imageHe: "/demo-media/partners/whatsapp-he.webp",
+        imageMobile: "/demo-media/partners/whatsapp-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/whatsapp-he-mobile.webp",
         alt: "Bizuply WhatsApp Business API inbox in the demo workspace",
         sell: "Sell official WhatsApp Business API connectivity with templates and business messaging.",
         note: "Use is subject to Meta policy, approvals and messaging costs.",
@@ -183,6 +184,9 @@ const COPY = {
         href: "/meta-campaigns",
         image: "/demo-media/partners/campaigns-en.webp",
         imageHe: "/demo-media/partners/campaigns-he.webp",
+        imageMobile: "/demo-media/partners/campaigns-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/campaigns-he-mobile.webp",
+        feature: true,
         alt: "Bizuply Meta campaign manager in the demo workspace",
         sell: "Sell Meta campaign tools next to CRM so Lead Ads can continue into follow-up.",
         note: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Not a separate partner SKU. Meta bills media spend. Drafts can be prepared without publishing or spending. Partners earn on eligible Bizuply subscription revenue under the signed agreement — not on Meta ad spend.",
@@ -199,6 +203,8 @@ const COPY = {
         href: "/automations",
         image: "/demo-media/partners/automations-en.webp",
         imageHe: "/demo-media/partners/automations-he.webp",
+        imageMobile: "/demo-media/partners/automations-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/automations-he-mobile.webp",
         alt: "Bizuply automations workspace",
         sell: "Sell workflow automation that routes leads and creates follow-up tasks.",
         points: ["Automated follow-ups", "Lead routing", "Workflow automation", "Supported integrations"],
@@ -208,7 +214,9 @@ const COPY = {
         href: "/website-builder",
         image: "/demo-media/partners/websites-en.webp",
         imageHe: "/demo-media/partners/websites-he.webp",
-        alt: "Bizuply website builder workspace",
+        imageMobile: "/demo-media/partners/websites-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/websites-he-mobile.webp",
+        alt: "Bizuply website template gallery in the demo workspace",
         sell: "Sell business websites and landing pages that capture leads into CRM.",
         points: ["Business websites", "Landing pages", "Lead capture forms", "Appointment booking"],
       },
@@ -481,6 +489,7 @@ const COPY = {
         imageHe: "/demo-media/partners/crm-he.webp",
         imageMobile: "/demo-media/partners/crm-en-mobile.webp",
         imageMobileHe: "/demo-media/partners/crm-he-mobile.webp",
+        feature: true,
         alt: "רשימת לידים ב־CRM בסביבת הדמו של Bizuply",
         sell: "מכרו ניהול לידים ולקוחות שמחזיק את ההמשך במקום אחד.",
         points: ["ניהול קשרי לקוחות", "מעקב לידים", "צינורות מכירה", "כרטיסי לקוח", "תהליכי המשך טיפול"],
@@ -490,6 +499,8 @@ const COPY = {
         href: "/whatsapp-api",
         image: "/demo-media/partners/whatsapp-en.webp",
         imageHe: "/demo-media/partners/whatsapp-he.webp",
+        imageMobile: "/demo-media/partners/whatsapp-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/whatsapp-he-mobile.webp",
         alt: "תיבת דואר WhatsApp Business API בסביבת הדמו",
         sell: "מכרו חיבור WhatsApp Business API רשמי עם תבניות ומסרים עסקיים.",
         note: "השימוש כפוף למדיניות Meta, לאישורים ולעלויות ההודעות.",
@@ -500,6 +511,9 @@ const COPY = {
         href: "/meta-campaigns",
         image: "/demo-media/partners/campaigns-en.webp",
         imageHe: "/demo-media/partners/campaigns-he.webp",
+        imageMobile: "/demo-media/partners/campaigns-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/campaigns-he-mobile.webp",
+        feature: true,
         alt: "מנהל קמפיינים של Meta בסביבת הדמו של Bizuply",
         sell: "מכרו כלי קמפיין של Meta ליד ה־CRM, כדי ש־Lead Ads ימשיכו לטיפול.",
         note: "כלול בחבילת Business של Bizuply אחרי חיבור חשבון מודעות מורשה של Meta. אינו SKU שותפים נפרד. את הוצאת המדיה גובה Meta. אפשר להכין טיוטות בלי לפרסם ובלי להוציא תקציב. עמלה לשותף נגזרת מהכנסת מנוי זכאית של Bizuply לפי ההסכם — לא מהוצאת הפרסום ב־Meta.",
@@ -516,6 +530,8 @@ const COPY = {
         href: "/automations",
         image: "/demo-media/partners/automations-en.webp",
         imageHe: "/demo-media/partners/automations-he.webp",
+        imageMobile: "/demo-media/partners/automations-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/automations-he-mobile.webp",
         alt: "סביבת האוטומציות של Bizuply",
         sell: "מכרו אוטומציות שמנתבות לידים ויוצרות משימות המשך.",
         points: ["המשך טיפול אוטומטי", "ניתוב לידים", "אוטומציית תהליכים", "חיבורים נתמכים"],
@@ -525,7 +541,9 @@ const COPY = {
         href: "/website-builder",
         image: "/demo-media/partners/websites-en.webp",
         imageHe: "/demo-media/partners/websites-he.webp",
-        alt: "סביבת בניית האתרים של Bizuply",
+        imageMobile: "/demo-media/partners/websites-en-mobile.webp",
+        imageMobileHe: "/demo-media/partners/websites-he-mobile.webp",
+        alt: "גלריית תבניות אתרים בסביבת הדמו של Bizuply",
         sell: "מכרו אתרים ודפי נחיתה שקולטים לידים ל־CRM.",
         points: ["אתרים עסקיים", "דפי נחיתה", "טפסי לידים", "זימון תורים"],
       },
@@ -773,9 +791,6 @@ export default function PartnersRecruitment() {
   const [oneTimeAverage, setOneTimeAverage] = useState(500);
   const [stickyVisible, setStickyVisible] = useState(false);
 
-  const primaryTracks = copy.tracks.filter((track) => PRIMARY_TRACK_KEYS.has(track.key));
-  const secondaryTracks = copy.tracks.filter((track) => !PRIMARY_TRACK_KEYS.has(track.key));
-
   useEffect(() => {
     let cancelled = false;
     fetchPartnerPlans()
@@ -910,42 +925,12 @@ export default function PartnersRecruitment() {
         </div>
       </header>
 
-      <section className="ip-section ip-open-tracks" data-testid="partner-track-compare" aria-labelledby="open-tracks-heading">
-        <div className="ip-wrap">
-          <p className="ip-kicker" id="open-tracks-heading">
-            {copy.compareTitle}
-          </p>
-          <div className="ip-compare" aria-label={copy.compareTitle}>
-            {copy.compare.map((track) => (
-              <article
-                key={track.key}
-                className={`ip-compare-card${track.featured ? " is-featured" : ""}`}
-                data-testid={`compare-${track.key}`}
-              >
-                <h2>{track.title}</h2>
-                <p className="ip-compare-fee">{track.fee}</p>
-                <p className="ip-compare-rate">{track.rate}</p>
-              </article>
-            ))}
-          </div>
-          <p className="ip-compare-note">{copy.compareNote}</p>
-          <div className="ip-facts" aria-label={copy.kicker}>
-            {copy.facts.map(([title, body]) => (
-              <article key={title}>
-                <strong>{title}</strong>
-                <span>{body}</span>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="ip-section ip-reveal" id="benefits">
         <div className="ip-wrap">
           <h2>{copy.whyTitle}</h2>
           <p className="ip-copy">{copy.whyLead}</p>
           <div className="ip-editorial-list">
-            {copy.why.map(([title, body], index) => (
+            {copy.why.slice(0, 4).map(([title, body], index) => (
               <article className="ip-editorial-item" key={title}>
                 <span className="ip-editorial-index" aria-hidden="true">
                   {String(index + 1).padStart(2, "0")}
@@ -961,37 +946,41 @@ export default function PartnersRecruitment() {
       </section>
 
       <section className="ip-section ip-band ip-reveal" id="products">
-        <div className="ip-wrap">
+        <div className="ip-wrap ip-wrap-wide">
           <h2>{copy.productsTitle}</h2>
           <p className="ip-copy">{copy.productsLead}</p>
           <div className="ip-products">
-            {copy.products.map((product) => (
-              <article
-                className="ip-product"
-                key={product.href}
-                data-testid={`product-${product.href.replace(/^\//, "")}`}
-              >
-                <div className="ip-product-media">
-                  <PartnerProductMedia hebrew={hebrew} product={product} />
-                </div>
-                <div className="ip-product-copy">
-                  <h3>{product.title}</h3>
-                  {"sell" in product && product.sell ? <p className="ip-sell">{product.sell}</p> : null}
-                  <ul>
-                    {product.points.slice(0, 4).map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                  {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
-                  <p className="ip-demo-caption">{copy.demoCaption}</p>
-                  <p>
-                    <Link className="ip-product-link" to={product.href}>
-                      {product.title}
-                    </Link>
-                  </p>
-                </div>
-              </article>
-            ))}
+            {copy.products.map((product, index) => {
+              const featured = "feature" in product && product.feature;
+              const flip = !featured && index % 2 === 1;
+              return (
+                <article
+                  className={`ip-product${featured ? " is-feature" : ""}${flip ? " is-flip" : ""}`}
+                  key={product.href}
+                  data-testid={`product-${product.href.replace(/^\//, "")}`}
+                >
+                  <div className="ip-product-media">
+                    <PartnerProductMedia hebrew={hebrew} product={product} />
+                  </div>
+                  <div className="ip-product-copy">
+                    <h3>{product.title}</h3>
+                    {"sell" in product && product.sell ? <p className="ip-sell">{product.sell}</p> : null}
+                    <ul>
+                      {product.points.slice(0, 4).map((point) => (
+                        <li key={point}>{point}</li>
+                      ))}
+                    </ul>
+                    {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
+                    <p className="ip-demo-caption">{copy.demoCaption}</p>
+                    <p>
+                      <Link className="ip-product-link" to={product.href}>
+                        {product.title}
+                      </Link>
+                    </p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
           <aside className="ip-saas-block" aria-labelledby="saas-heading">
             <h3 className="ip-saas-heading" id="saas-heading">
@@ -1039,20 +1028,6 @@ export default function PartnersRecruitment() {
             </table>
           </div>
           <p className="ip-onetime">{copy.oneTime}</p>
-          <div className="ip-editorial-list ip-eligibility">
-            {copy.eligibility.map(([title, body], index) => (
-              <article className="ip-editorial-item" key={title}>
-                <span className="ip-editorial-index" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-
           <div className="ip-calc-heading-row">
             <h3 className="ip-calc-heading">{copy.calcTitle}</h3>
             <span className="ip-sim-badge">{copy.calcSimBadge}</span>
@@ -1152,6 +1127,25 @@ export default function PartnersRecruitment() {
         <div className="ip-wrap">
           <h2>{copy.tracksTitle}</h2>
           <p className="ip-copy">{copy.tracksLead}</p>
+
+          <p className="ip-kicker" id="open-tracks-heading">
+            {copy.compareTitle}
+          </p>
+          <div className="ip-compare" data-testid="partner-track-compare" aria-label={copy.compareTitle}>
+            {copy.compare.map((track) => (
+              <article
+                key={track.key}
+                className={`ip-compare-card${track.featured ? " is-featured" : ""}`}
+                data-testid={`compare-${track.key}`}
+              >
+                <h2>{track.title}</h2>
+                <p className="ip-compare-fee">{track.fee}</p>
+                <p className="ip-compare-rate">{track.rate}</p>
+              </article>
+            ))}
+          </div>
+          <p className="ip-compare-note">{copy.compareNote}</p>
+
           <div className="ip-table-wrap ip-tracks-table" data-testid="partner-tracks-table">
             <table className="ip-table">
               <caption className="ip-sr-only">{copy.tracksTableTitle}</caption>
@@ -1166,7 +1160,9 @@ export default function PartnersRecruitment() {
               <tbody>
                 {copy.tracksTable.rows.map(([name, fee, reward, access]) => (
                   <tr key={name} className={name === "Business Partner" ? "is-featured-row" : undefined}>
-                    <th scope="row">{name}</th>
+                    <th scope="row" data-testid={name === "Business Partner" ? "track-Business Partner" : undefined}>
+                      {name}
+                    </th>
                     <td>{fee}</td>
                     <td>{reward}</td>
                     <td>{access}</td>
@@ -1176,148 +1172,61 @@ export default function PartnersRecruitment() {
             </table>
           </div>
 
-          <h3 className="ip-subsection-title">{copy.primaryTracksTitle}</h3>
-          <div className="ip-tracks ip-tracks-primary">
-            {primaryTracks.map((track) => (
-              <article
-                className={`ip-track is-primary${track.key === "Business Partner" ? " is-featured" : ""}`}
-                key={track.key}
-                data-testid={`track-${track.key}`}
-              >
-                <div className="ip-track-head">
-                  <h3>{track.title}</h3>
-                  <span className="ip-status">{track.status}</span>
+          <div className="ip-billing" id="plans" data-testid="international-price-cards">
+            <h3 className="ip-subsection-title">{copy.plansTitle}</h3>
+            <p className="ip-copy">{copy.compareNote}</p>
+            <div className="ip-billing-rows">
+              <div className="ip-billing-row is-featured" data-testid="annual-price-card">
+                <div className="ip-billing-main">
+                  <span className="ip-badge" data-testid="annual-best-value">
+                    {copy.best}
+                  </span>
+                  <h4>{hebrew ? annual.labelHe : annual.labelEn}</h4>
+                  <p className="ip-price" data-testid="international-annual-price">
+                    {money(annual.amountUsd)} <span>{copy.perYear}</span>
+                  </p>
+                  <p className="ip-save" data-testid="annual-savings">
+                    {copy.save.replace("$988", money(savings))}
+                  </p>
                 </div>
-                <dl>
-                  <div>
-                    <dt>{copy.trackLabels.who}</dt>
-                    <dd>{track.who}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.allows}</dt>
-                    <dd>{track.allows}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.reward}</dt>
-                    <dd>{track.reward}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.fee}</dt>
-                    <dd>{track.fee}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.approval}</dt>
-                    <dd>{track.approval}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.limits}</dt>
-                    <dd>{track.limits}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
-          </div>
-
-          <h3 className="ip-subsection-title">{copy.secondaryTracksTitle}</h3>
-          <div className="ip-tracks ip-tracks-secondary">
-            {secondaryTracks.map((track) => (
-              <article className="ip-track is-secondary" key={track.key} data-testid={`track-${track.key}`}>
-                <div className="ip-track-head">
-                  <h3>{track.title}</h3>
-                  <span className="ip-status">{track.status}</span>
+                <div className="ip-billing-actions">
+                  <a className="ip-btn ip-btn-primary" href="#apply" data-testid="international-register-link">
+                    {copy.applyAnnual}
+                  </a>
+                  <Link className="ip-btn ip-btn-ghost" to={annualHref} data-testid="international-annual-register-link">
+                    {copy.registerAfterApproval}
+                  </Link>
                 </div>
-                <dl>
-                  <div>
-                    <dt>{copy.trackLabels.who}</dt>
-                    <dd>{track.who}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.allows}</dt>
-                    <dd>{track.allows}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.fee}</dt>
-                    <dd>{track.fee}</dd>
-                  </div>
-                  <div>
-                    <dt>{copy.trackLabels.limits}</dt>
-                    <dd>{track.limits}</dd>
-                  </div>
-                </dl>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="ip-section ip-reveal" id="plans">
-        <div className="ip-wrap">
-          <h2>{copy.plansTitle}</h2>
-          <div className="ip-plans" data-testid="international-price-cards">
-            <article className="ip-plan" data-testid="monthly-price-card">
-              <h3>{hebrew ? monthly.labelHe : monthly.labelEn}</h3>
-              <p className="ip-price" data-testid="international-monthly-price">
-                {money(monthly.amountUsd)} <span>{copy.perMonth}</span>
-              </p>
-              <ul>
-                {copy.monthlyPoints.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
-              <a className="ip-btn ip-btn-ghost" href="#apply" data-testid="international-monthly-link">
-                {copy.applyMonthly}
-              </a>
-              <Link className="ip-btn ip-btn-ghost" to={monthlyHref} data-testid="international-monthly-register-link">
-                {copy.registerAfterApproval}
-              </Link>
-            </article>
-            <article className="ip-plan ip-plan-best" data-testid="annual-price-card">
-              <span className="ip-badge" data-testid="annual-best-value">
-                {copy.best}
-              </span>
-              <h3>{hebrew ? annual.labelHe : annual.labelEn}</h3>
-              <p className="ip-price" data-testid="international-annual-price">
-                {money(annual.amountUsd)} <span>{copy.perYear}</span>
-              </p>
-              <p className="ip-save" data-testid="annual-savings">
-                {copy.save.replace("$988", money(savings))}
-              </p>
-              <ul>
-                {copy.annualPoints.map((point) => (
-                  <li key={point}>{point}</li>
-                ))}
-              </ul>
-              <a className="ip-btn ip-btn-primary" href="#apply" data-testid="international-register-link">
-                {copy.applyAnnual}
-              </a>
-              <Link className="ip-btn ip-btn-ghost" to={annualHref} data-testid="international-annual-register-link">
-                {copy.registerAfterApproval}
-              </Link>
-            </article>
-          </div>
-          <ul className="ip-plan-notes">
-            {copy.planNotes.map((note) => (
-              <li key={note}>{note}</li>
-            ))}
-            <li>{copy.noCharge}</li>
-            <li>
-              <Rich text={copy.due} />
-            </li>
-          </ul>
-          <h3>{copy.territoryTitle}</h3>
-          <p className="ip-copy">{copy.territoryLead}</p>
-          <div className="ip-editorial-list">
-            {copy.territories.map(([title, body], index) => (
-              <article className="ip-editorial-item" key={title}>
-                <span className="ip-editorial-index" aria-hidden="true">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
+              </div>
+              <div className="ip-billing-row" data-testid="monthly-price-card">
+                <div className="ip-billing-main">
+                  <h4>{hebrew ? monthly.labelHe : monthly.labelEn}</h4>
+                  <p className="ip-price" data-testid="international-monthly-price">
+                    {money(monthly.amountUsd)} <span>{copy.perMonth}</span>
+                  </p>
                 </div>
-              </article>
-            ))}
+                <div className="ip-billing-actions">
+                  <a className="ip-btn ip-btn-ghost" href="#apply" data-testid="international-monthly-link">
+                    {copy.applyMonthly}
+                  </a>
+                  <Link className="ip-btn ip-btn-ghost" to={monthlyHref} data-testid="international-monthly-register-link">
+                    {copy.registerAfterApproval}
+                  </Link>
+                </div>
+              </div>
+            </div>
+            <ul className="ip-plan-notes">
+              {copy.planNotes.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+              <li>{copy.noCharge}</li>
+              <li>
+                <Rich text={copy.due} />
+              </li>
+            </ul>
+            <p className="ip-copy ip-territory-note">
+              <strong>{copy.territoryTitle}.</strong> {copy.territoryLead}
+            </p>
           </div>
         </div>
       </section>
