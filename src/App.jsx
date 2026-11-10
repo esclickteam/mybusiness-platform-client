@@ -202,6 +202,7 @@ const AdminManagedWhatsApp = lazy(
 );
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const ComplianceScansAdminPage = lazy(() => import("./pages/admin/ComplianceScansAdminPage"));
+const ComplianceScanDetailPage = lazy(() => import("./pages/admin/ComplianceScanDetailPage"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
 const AdminGlobalPartners = lazy(() =>
@@ -1749,6 +1750,7 @@ export default function App() {
                         <Route path="system" element={<AdminSystemHub />} />
                         <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
                         <Route path="logs" element={<AdminLogs />} />
+                        <Route path="compliance-scans/:scanId" element={<ComplianceScanDetailPage />} />
                         <Route path="compliance-scans" element={<ComplianceScansAdminPage />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
                         <Route path="geo-intel" element={<AdminGeoIntel />} />
