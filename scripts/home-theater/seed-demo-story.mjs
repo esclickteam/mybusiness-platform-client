@@ -10,11 +10,6 @@ const API = "https://server-staging-15bb.up.railway.app/api";
 const BIZ = "6ab62f565ba1a92f3046b5ad";
 const ORIGIN = "https://mybusiness-platform-client-staging.vercel.app";
 
-const ACCIDENTAL = [
-  { id: "6af34fe2673b21a04b13f341", name: "PROBE" },
-  { id: "6af35091673b21a04b13f369", name: "שירה מזרחי" },
-];
-
 const heForms = [
   ["CRM לעסקים — נובמבר", "בקשת הדגמה אישית"],
   ["ניהול לקוחות ולידים", "קבלת פרטים על המערכת"],
@@ -135,18 +130,15 @@ async function removeIds(ids) {
   console.log("removed", response.status, body.updated || body.message || body);
 }
 
-for (const item of ACCIDENTAL) {
-  const lead = await getLead(item.id).catch(() => null);
-  if (lead && lead.name === item.name && String(lead.businessId) === BIZ) {
-    await removeIds([item.id]);
-  }
-}
-
-const existing = await fetch(`${API}/crm/leads/my?limit=100&page=1`, { headers });
+const existing = await fetch(`${API}/crm/workspace/leads?limit=200&page=1`, { headers });
 const existingBody = await existing.json();
-const have = new Set((existingBody.leads || []).map((lead) => String(lead.email || "").toLowerCase()));
-const pending = wanted.filter((row) => !have.has(row.email));
-console.log("pending", pending.length, "already", have.size);
+const have = new Set(
+  (existingBody.leads || [])
+    .filter((lead) => lead.testData && (lead.tags || []).includes("homepage-demo"))
+    .map((lead) => String(lead.externalLeadId || ""))
+);
+const pending = wanted.filter((row) => !have.has(row.leadId));
+console.log("pending", pending.length, "marked", have.size);
 
 let created = [];
 if (pending.length) {
@@ -166,10 +158,11 @@ if (pending.length) {
 
 const listed = await fetch(`${API}/crm/workspace/leads?limit=200&page=1`, { headers });
 const listedBody = await listed.json();
-const byEmail = new Map((listedBody.leads || []).map((lead) => [String(lead.email || "").toLowerCase(), lead]));
+const markedLeads = (listedBody.leads || []).filter((lead) => lead.testData && (lead.tags || []).includes("homepage-demo"));
+const byExternal = new Map(markedLeads.map((lead) => [String(lead.externalLeadId || ""), lead]));
 const problems = [];
 for (const row of wanted) {
-  const lead = byEmail.get(row.email);
+  const lead = byExternal.get(row.leadId);
   if (!lead) {
     problems.push(`${row.email} missing`);
     continue;
