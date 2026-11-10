@@ -29,6 +29,17 @@ import {
   sampleSizeHe,
   severityHe,
 } from "./geoLabels";
+import {
+  AiRadarPanel,
+  BeforeAfterPanel,
+  BrandProfilePanel,
+  DecisionBrief,
+  GscOpportunitiesPanel,
+  MonthlyReportPanel,
+  PageAuditPanel,
+  SeoGeoMatrixPanel,
+  WeeklyActionsPanel,
+} from "./DecisionPanels";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
 
@@ -173,6 +184,14 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [catalogDraft, setCatalogDraft] = useState<any>(null);
   const [costMatrix, setCostMatrix] = useState<any>(null);
   const [monitoringStatus, setMonitoringStatus] = useState<any>(null);
+  const [weeklyActions, setWeeklyActions] = useState<any>(null);
+  const [gscOpps, setGscOpps] = useState<any>(null);
+  const [gscFilter, setGscFilter] = useState("all");
+  const [aiRadar, setAiRadar] = useState<any>(null);
+  const [beforeAfter, setBeforeAfter] = useState<any>(null);
+  const [brandProfile, setBrandProfile] = useState<any>(null);
+  const [seoGeoMatrix, setSeoGeoMatrix] = useState<any>(null);
+  const [monthlyDecision, setMonthlyDecision] = useState<any>(null);
 
   const activeBrand = useMemo(
     () => brands.find((b) => b._id === brandId) || null,
@@ -222,6 +241,13 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         ch,
         pr,
         gsc,
+        weekly,
+        gscOppData,
+        radar,
+        ba,
+        profile,
+        matrix,
+        monthly,
       ] = await Promise.all([
         geoGet("/dashboard", filterParams),
         geoGet("/visibility", filterParams),
@@ -237,6 +263,13 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         geoGet("/checks", { brandId, limit: 100 }),
         geoGet("/prompts", { brandId, active: "1" }),
         geoGet("/gsc/imports", { brandId }),
+        geoGet("/weekly-actions", filterParams),
+        geoGet("/gsc-opportunities", { brandId, filter: gscFilter }),
+        geoGet("/ai-radar", filterParams),
+        geoGet("/before-after", { brandId }),
+        geoGet("/brand-profile", { brandId }),
+        geoGet("/seo-geo-matrix", filterParams),
+        geoGet("/monthly-report", filterParams),
       ]);
       setOverview(dash);
       setVisibility(vis);
@@ -252,6 +285,13 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
       setChecks(ch.checks || []);
       setPrompts(pr.prompts || []);
       setGscImports(gsc.imports || []);
+      setWeeklyActions(weekly);
+      setGscOpps(gscOppData);
+      setAiRadar(radar);
+      setBeforeAfter(ba);
+      setBrandProfile(profile);
+      setSeoGeoMatrix(matrix);
+      setMonthlyDecision(monthly);
       setManualForm((prev) => ({
         ...prev,
         promptId: prev.promptId || pr.prompts?.[0]?._id || "",
@@ -268,7 +308,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     } finally {
       setBusy(false);
     }
-  }, [brandId, filterParams, activeBrand?.slug]);
+  }, [brandId, filterParams, activeBrand?.slug, gscFilter]);
 
   useEffect(() => {
     loadCore().catch((e) =>
@@ -335,6 +375,14 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
 
   const nav: Array<{ id: Tab; label: string }> = [
     { id: "overview", label: copy.navOverview },
+    { id: "weeklyActions", label: "מה לעשות השבוע" },
+    { id: "gscOpportunities", label: "הזדמנויות בחיפוש" },
+    { id: "aiRadar", label: "מכ״ם AI" },
+    { id: "beforeAfter", label: "לפני / אחרי" },
+    { id: "seoGeoMatrix", label: "SEO + GEO" },
+    { id: "brandProfile", label: "פרופיל מותג" },
+    { id: "pageAudit", label: "בדיקת עמוד" },
+    { id: "monthlyDecision", label: "דוח חודשי" },
     { id: "visibility", label: "נראות AI" },
     { id: "appeared", label: "שאלות שבהן הופענו" },
     { id: "missing", label: "שאלות שבהן לא הופענו" },
@@ -711,6 +759,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
 
           {tab === "overview" ? (
             <section>
+              <DecisionBrief weekly={weeklyActions} />
+              <WeeklyActionsPanel data={weeklyActions} />
               {(overview?.metrics?.sampleSize || 0) === 0 ? (
                 <AwaitBox message={overview?.metrics?.visibilityNote} />
               ) : null}
@@ -784,6 +834,32 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               </div>
             </section>
           ) : null}
+
+          {tab === "weeklyActions" ? (
+            <WeeklyActionsPanel data={weeklyActions} />
+          ) : null}
+          {tab === "gscOpportunities" ? (
+            <GscOpportunitiesPanel
+              brandId={brandId}
+              data={gscOpps}
+              filter={gscFilter}
+              onFilter={setGscFilter}
+            />
+          ) : null}
+          {tab === "aiRadar" ? <AiRadarPanel data={aiRadar} /> : null}
+          {tab === "beforeAfter" ? (
+            <BeforeAfterPanel data={beforeAfter} />
+          ) : null}
+          {tab === "brandProfile" ? (
+            <BrandProfilePanel data={brandProfile} />
+          ) : null}
+          {tab === "seoGeoMatrix" ? (
+            <SeoGeoMatrixPanel data={seoGeoMatrix} />
+          ) : null}
+          {tab === "monthlyDecision" ? (
+            <MonthlyReportPanel brandId={brandId} data={monthlyDecision} />
+          ) : null}
+          {tab === "pageAudit" ? <PageAuditPanel brandId={brandId} /> : null}
 
           {tab === "visibility" ? (
             <section>
