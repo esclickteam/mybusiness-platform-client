@@ -37,14 +37,14 @@ describe("resolveApiBaseUrl", () => {
     ).toBe(RAILWAY_STAGING_API);
   });
 
-  it("forces Cloudflare Staging tunnels to Railway Staging", () => {
+  it("uses same-origin /api on Cloudflare Staging tunnels (proxied to Railway Staging)", () => {
     expect(
       resolveApiBaseUrl({
         envApiUrl: "https://api.bizuply.com/api",
         mode: "production",
         hostname: "screens-continuing-thesaurus-farming.trycloudflare.com",
       })
-    ).toBe(RAILWAY_STAGING_API);
+    ).toBe("/api");
   });
 
   it("uses the same-origin /api proxy on production hosts so the session cookie is sent", () => {

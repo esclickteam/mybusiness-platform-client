@@ -50,10 +50,10 @@ export function resolveApiBaseUrl({
     .split(":")[0];
   const trimmed = trimApiUrl(envApiUrl);
 
-  // Staging Preview / temporary Vercel / tunnel hosts must never silently use Production.
-  if (isVercelPreviewHost(hostname) || isStagingTunnelHost(hostname)) {
-    return RAILWAY_STAGING_API;
-  }
+  // Staging Preview / temporary Vercel hosts must never silently use Production.
+  if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
+  // Cloudflare Staging tunnels are served with a same-origin /api proxy to Railway Staging.
+  if (isStagingTunnelHost(hostname)) return "/api";
   if (host === "mybusiness-platform-client-staging.vercel.app") {
     return RAILWAY_STAGING_API;
   }
