@@ -158,7 +158,7 @@ export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
         throw new Error(t("whatsapp.settings.invistimoShareStartBlocked"));
       }
       const FB = await loadFacebookSdk(
-        signup.appId,
+        launch.appId,
         signup.graphVersion || "v21.0"
       );
       await new Promise<void>((resolve, reject) => {
@@ -193,6 +193,7 @@ export default function WhatsAppInvistimoSharePanel({ businessId }: Props) {
                   metaBusinessId: assets.metaBusinessId,
                   metaEventType: assets.event || "FINISH",
                   confirmInvistimoAccountShare: INVISTIMO_SHARE_CONFIRM_PHRASE,
+                  embeddedSignupConfigId: launch.configId,
                 });
                 if (!status.staged || status.liveUnchanged === false) {
                   reject(new Error(t("whatsapp.settings.invistimoShareMetaAbort")));

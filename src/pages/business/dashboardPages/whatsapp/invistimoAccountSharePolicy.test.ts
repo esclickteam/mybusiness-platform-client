@@ -5,6 +5,7 @@ import {
   isInvistimoShareTenant,
   planInvistimoShareLaunch,
   selectInvistimoShareConfigId,
+  BIZUPLY_CRM_META_APP_ID,
   INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID,
   INVISTIMO_SHARE_PHONE_NUMBER_ID,
   INVISTIMO_SHARE_PORTFOLIO_ID,
@@ -34,14 +35,23 @@ describe("Invistimo account-share-only policy", () => {
       STALE_INVISTIMO_SHARE_PHONE_NUMBER_ID
     );
     const launch = planInvistimoShareLaunch({
+      appId: BIZUPLY_CRM_META_APP_ID,
       configId: PRODUCTION_EMBEDDED_SIGNUP_CONFIG_ID,
       invistimoAccountShare: { extras: serverExtras },
     });
     expect(launch).toEqual({
       ok: true,
+      appId: BIZUPLY_CRM_META_APP_ID,
       configId: INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID,
       extras: serverExtras,
     });
+    expect(
+      planInvistimoShareLaunch({
+        appId: "999000111",
+        configId: INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID,
+        invistimoAccountShare: { extras: serverExtras },
+      })
+    ).toEqual({ ok: false, reason: "app_mismatch" });
     expect(selectInvistimoShareConfigId(PRODUCTION_EMBEDDED_SIGNUP_CONFIG_ID)).toEqual({
       ok: true,
       configId: INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID,

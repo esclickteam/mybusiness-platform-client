@@ -870,6 +870,7 @@ export async function completeWhatsAppEmbeddedSignup(
     session?: Record<string, unknown>;
     pin?: string;
     confirmInvistimoAccountShare?: string;
+    embeddedSignupConfigId?: string;
   }
 ) {
   const { data } = await API.post("/whatsapp/embedded-signup/complete", {
