@@ -37,6 +37,10 @@ type Row = {
   unverified: number | null;
   purchaseStatus: string;
   plan?: string;
+  paid?: boolean;
+  guest?: boolean;
+  findings?: number | null;
+  demo?: boolean;
   consentStatus?: string | null;
   consentAt?: string | null;
   consentId?: string | null;
@@ -82,6 +86,11 @@ export default function ComplianceScansAdminPage() {
   const [usage, setUsage] = useState<Usage | null>(null);
   const [subscriptions, setSubscriptions] = useState<Array<Record<string, unknown>>>([]);
   const [consent, setConsent] = useState<Record<string, string> | null>(null);
+  const [payment, setPayment] = useState("");
+  const [audience, setAudience] = useState("");
+  const [signature, setSignature] = useState("");
+  const [summary, setSummary] = useState<{ total: number; free: number; paid: number; completed: number; failed: number } | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const [history, setHistory] = useState<HistoryRow[]>([]);
   const pageSize = 25;
 
@@ -95,22 +104,30 @@ export default function ComplianceScansAdminPage() {
     if (status) params.set("status", status);
     if (from) params.set("from", from);
     if (to) params.set("to", to);
+    if (payment) params.set("payment", payment);
+    if (audience) params.set("audience", audience);
+    if (signature) params.set("signature", signature);
     try {
       const response = await fetch(`/compliance/api/admin/scans?${params.toString()}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
+        credentials: "include",
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
-        setRows([]);
-        setTotal(0);
-        setError(data.error || "אין הרשאה לצפייה בסריקות");
+        setLoaded(false);
+        setSummary(null);
+        setError(data.error || (response.status === 401 ? "נדרשת התחברות מנהל" : "לא ניתן לטעון את רשימת הסריקות"));
         return;
       }
+      setLoaded(true);
       setRows(data.rows || []);
       setTotal(Number(data.total) || 0);
+      setSummary(data.summary || null);
       setPage(Number(data.page) || nextPage);
     } catch {
-      setError("לא ניתן לטעון את הסריקות");
+      setLoaded(false);
+      setSummary(null);
+      setError("לא ניתן לטעון את רשימת הסריקות. הרשימה לא ריקה בהכרח — הטעינה נכשלה.");
     } finally {
       setLoading(false);
     }
@@ -151,6 +168,7 @@ export default function ComplianceScansAdminPage() {
     const token = localStorage.getItem("token") || "";
     const response = await fetch(`/compliance/api/scans/${id}/pdf`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: "include",
     });
     if (!response.ok) {
       setError("ה־PDF לא נפתח");
@@ -234,7 +252,7 @@ export default function ComplianceScansAdminPage() {
       ) : null}
       <form className="compliance-admin__filters" onSubmit={(event) => load(1, event)}>
         <label>
-          <span>שם או דומיין</span>
+          <span>שם, אימייל או דומיין</span>
           <input value={q} onChange={(event) => setQ(event.target.value)} />
         </label>
         <label>
@@ -255,47 +273,73 @@ export default function ComplianceScansAdminPage() {
             <option value="failed">נכשלה</option>
           </select>
         </label>
+        <label>
+          <span>תשלום</span>
+          <select value={payment} onChange={(event) => setPayment(event.target.value)}>
+            <option value="">הכל</option>
+            <option value="free">חינם</option>
+            <option value="paid">בתשלום</option>
+          </select>
+        </label>
+        <label>
+          <span>לקוח</span>
+          <select value={audience} onChange={(event) => setAudience(event.target.value)}>
+            <option value="">הכל</option>
+            <option value="guest">אורח</option>
+            <option value="registered">רשום</option>
+          </select>
+        </label>
+        <label>
+          <span>חתימה</span>
+          <select value={signature} onChange={(event) => setSignature(event.target.value)}>
+            <option value="">הכל</option>
+            <option value="signed">נחתם</option>
+            <option value="unsigned">לא נחתם</option>
+          </select>
+        </label>
         <button type="submit">חיפוש</button>
       </form>
-      {error ? <p className="compliance-admin__error">{error}</p> : null}
-      <p className="compliance-admin__meta">{loading ? "טוען…" : `${total} סריקות`}</p>
+      {error ? <p className="compliance-admin__error" role="alert">{error}</p> : null}
+      {loaded && summary ? (
+        <div className="compliance-admin__stats">
+          <p><span>סך כל הסריקות</span><b>{summary.total}</b></p>
+          <p><span>חינמיות</span><b>{summary.free}</b></p>
+          <p><span>בתשלום</span><b>{summary.paid}</b></p>
+          <p><span>הושלמו</span><b>{summary.completed}</b></p>
+          <p><span>נכשלו</span><b>{summary.failed}</b></p>
+        </div>
+      ) : null}
+      <p className="compliance-admin__meta">{loading ? "טוען…" : loaded ? `${total} סריקות בסינון הנוכחי` : "הרשימה לא נטענה"}</p>
       <div className="compliance-admin__table">
         <table>
           <thead>
             <tr>
-              <th>שם</th>
-              <th>אימייל</th>
               <th>תאריך</th>
-              <th>אתר</th>
+              <th>שם לקוח</th>
+              <th>אימייל</th>
+              <th>דומיין</th>
               <th>סטטוס</th>
               <th>ציון</th>
-              <th>היקף</th>
-              <th>תקינות</th>
-              <th>טיפול</th>
-              <th>חסרות</th>
-              <th>לא אומתו</th>
-              <th>מסלול</th>
-              <th>רכישה</th>
+              <th>ממצאים</th>
+              <th>סוג סריקה</th>
+              <th>תשלום</th>
               <th>הצהרה וחתימה</th>
-              <th>דוחות</th>
+              <th>דוח מלא</th>
+              <th>PDF</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => (
               <tr key={row.id}>
-                <td>{row.requesterName || "לא נשמר"}</td>
-                <td>{row.requesterEmail || "—"}</td>
                 <td>{stamp(row.createdAt)}</td>
+                <td>{row.requesterName || (row.guest ? "אורח" : "לא נשמר")}</td>
+                <td>{row.requesterEmail || "—"}</td>
                 <td><a href={row.url}>{row.host || row.url}</a></td>
                 <td>{STATUS[row.status] || row.status}</td>
                 <td>{count(row.score)}</td>
-                <td>{row.coverage == null ? "—" : `${row.coverage}%`}</td>
-                <td>{count(row.ok)}</td>
-                <td>{count(row.action)}</td>
-                <td>{count(row.missing)}</td>
-                <td>{count(row.unverified)}</td>
-                <td>{row.plan === "quarterly" ? "רבעוני" : row.plan === "annual" || row.plan === "monitor" || row.plan === "monthly" ? "חודשי" : row.plan === "report" ? "חד־פעמי" : "חינם"}</td>
-                <td>{row.purchaseStatus === "verified" ? "רכישה מאומתת" : "לא נרכש"}</td>
+                <td>{count(row.findings ?? row.action)}</td>
+                <td>{row.demo ? "בדיקה" : row.plan === "quarterly" ? "רבעוני" : row.plan === "annual" || row.plan === "monitor" || row.plan === "monthly" ? "חודשי" : row.plan === "report" ? "חד־פעמי" : "חינם"}</td>
+                <td>{row.paid || row.purchaseStatus === "verified" ? "שולם" : "לא שולם"}</td>
                 <td>
                   {row.consentStatus === "signed" ? (
                     <>
@@ -307,11 +351,8 @@ export default function ComplianceScansAdminPage() {
                     <span>סריקה קודמת — לא קיים אישור חתום במערכת</span>
                   )}
                 </td>
-                <td className="compliance-admin__actions">
-                  <a href={`/he/compliance/report/${row.id}?view=summary`}>דוח ראשוני</a>
-                  <a href={`/he/compliance/report/${row.id}`}>דוח מפורט</a>
-                  <button type="button" onClick={() => downloadPdf(row.id)}>PDF</button>
-                </td>
+                <td><a href={`/he/compliance/report/${row.id}`}>דוח מלא</a></td>
+                <td><button type="button" onClick={() => downloadPdf(row.id)}>PDF</button></td>
               </tr>
             ))}
           </tbody>
@@ -372,7 +413,7 @@ export default function ComplianceScansAdminPage() {
         .compliance-admin { display: grid; gap: 16px; color: #1d2433; }
         .compliance-admin__head h1 { margin: 0; font-size: 1.5rem; }
         .compliance-admin__head p, .compliance-admin__meta { margin: 0; color: #5c6578; }
-        .compliance-admin__filters { display: grid; grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr)) auto; gap: 10px; align-items: end; }
+        .compliance-admin__filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; align-items: end; }
         .compliance-admin label { display: grid; gap: 4px; font-size: 0.82rem; font-weight: 700; }
         .compliance-admin input, .compliance-admin select, .compliance-admin button, .compliance-admin a {
           border: 1px solid #d7dce8; border-radius: 0; background: #fff; color: #1d2433; min-height: 40px;
