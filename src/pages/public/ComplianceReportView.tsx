@@ -39,7 +39,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     plan: "תוכנית הפעולה לתיקון האתר", unfinished: "בדיקות שלא ניתן היה להשלים", owner: "מסמכים שאינם פתוחים לציבור", tools: "כלי מדידה שזוהו", noTools: "לא זוהה כלי מדידה מוכר בדפים שנקראו. מצבי ההסכמה לא נבדקו.",
     purpose: "המטרה באתר זה לא אומתה", consent: "לפני הסכמה ואחריה: לא נבדק",
     okStatus: "תקין", missingStatus: "חסר", fixStatus: "דורש תיקון", unverifiedStatus: "לא ניתן לאימות", otherStatus: "לא רלוונטי",
-    high: "גבוהה", medium: "בינונית", low: "נמוכה", info: "לידיעה",
+    critical: "קריטית", high: "גבוהה", medium: "בינונית", low: "נמוכה", info: "לידיעה",
     highC: "גבוהה", mediumC: "בינונית", lowC: "נמוכה",
     incomplete: "הבדיקה לא הושלמה כי לא נמצא ציטוט שלם.", unknownPlace: "המיקום המדויק לא אומת",
     kindLegal: "דרישה שמופיעה במקור שאומת", kindTechnical: "סיכון טכני", kindAdvice: "המלצה",
@@ -53,11 +53,26 @@ const COPY: Record<Locale, Record<string, string>> = {
     sourceMissing: "",
     technicalNote: "זהו ממצא טכני. אין כאן קביעת הפרה.",
     linkedSource: "מקור מקצועי. הקישור אינו קביעה שהאתר מפר חוק.",
-    navAccess: "נגישות", navSecurity: "אבטחה", navPrivacy: "פרטיות", navDocs: "מסמכים", navPlan: "תוכנית פעולה", navOpen: "לא הוכרע",
+    navAccess: "נגישות", navSecurity: "אבטחה", navPrivacy: "פרטיות", navDocs: "מסמכים", navCookies: "עוגיות וכלי מדידה", navWidgets: "תוספי נגישות", navPlan: "תוכנית פעולה", navOpen: "לא הוכרע",
     blockedTitle: "מסמכים שאינם פתוחים לציבור",
     notFoundTitle: "לא אותר מידע בנושא",
     undecidedTitle: "לא ניתן לקבוע אוטומטית",
     technicalTitle: "בדיקה שלא הושלמה",
+    techTitle: "ניתוח טכני והוראות למפתח",
+    foundTitle: "מה בדיוק נמצא",
+    whyTitle: "למה זה חשוב",
+    whereTitle: "היכן נמצא הממצא",
+    stepsTitle: "הוראות תיקון",
+    exampleTitle: "דוגמת קוד מוצעת",
+    verifyTitle: "איך בודקים שהתיקון הצליח",
+    limitsTitle: "מגבלות הממצא",
+    whoTitle: "מי מתאים לבצע",
+    evidenceTitle: "ראיה שנשמרה",
+    executiveTitle: "סיכום למנהלים",
+    checksTitle: "בדיקות שבוצעו",
+    soundTitle: "תחומים שנבדקו ונמצאו תקינים בבדיקות שבוצעו",
+    openTitle: "תחומים שלא ניתן היה לקבוע לגביהם",
+    firstTitle: "הפעולות הראשונות",
   },
   en: {
     newScan: "New scan", pdf: "Download PDF", site: "Site checked", address: "Address", date: "Date", status: "Status",
@@ -73,7 +88,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     plan: "What to fix on the site", unfinished: "Checks that could not be completed", owner: "Documents that are not public", tools: "Measurement tools seen", noTools: "No known measurement tool was seen. Consent states were not checked.",
     purpose: "The purpose on this site was not verified", consent: "Before and after consent: not checked",
     okStatus: "Sound", missingStatus: "Missing", fixStatus: "Needs a fix", unverifiedStatus: "Could not verify", otherStatus: "Not applicable",
-    high: "High", medium: "Medium", low: "Low", info: "Note",
+    critical: "Critical", high: "High", medium: "Medium", low: "Low", info: "Note",
     highC: "High", mediumC: "Medium", lowC: "Low",
     incomplete: "The check was not finished because a complete quote was not found.", unknownPlace: "The exact location was not verified",
     kindLegal: "A requirement from a verified source", kindTechnical: "Technical risk", kindAdvice: "Recommendation",
@@ -87,14 +102,30 @@ const COPY: Record<Locale, Record<string, string>> = {
     sourceMissing: "",
     technicalNote: "This is a technical finding. It is not a legal breach.",
     linkedSource: "Professional source. The link is not a finding that the site breaks the law.",
-    navAccess: "Accessibility", navSecurity: "Security", navPrivacy: "Privacy", navDocs: "Documents", navPlan: "Action plan", navOpen: "Not decided",
+    navAccess: "Accessibility", navSecurity: "Security", navPrivacy: "Privacy", navDocs: "Documents", navCookies: "Cookies and measurement", navWidgets: "Accessibility widgets", navPlan: "Action plan", navOpen: "Not decided",
     blockedTitle: "Documents that are not public",
     notFoundTitle: "No information found on this topic",
     undecidedTitle: "Could not be decided automatically",
     technicalTitle: "Check that did not finish",
+    techTitle: "Technical analysis and developer instructions",
+    foundTitle: "What was found",
+    whyTitle: "Why it matters",
+    whereTitle: "Where it was found",
+    stepsTitle: "How to fix it",
+    exampleTitle: "Proposed code example",
+    verifyTitle: "How to confirm the fix",
+    limitsTitle: "Limits of this finding",
+    whoTitle: "Who should do it",
+    evidenceTitle: "Stored evidence",
+    executiveTitle: "Executive summary",
+    checksTitle: "Checks performed",
+    soundTitle: "Areas checked with no defect in the tests that ran",
+    openTitle: "Areas that could not be decided",
+    firstTitle: "First actions",
   },
   es: {
     newScan: "Nuevo análisis", pdf: "Descargar PDF", site: "Sitio revisado", address: "Dirección", date: "Fecha", status: "Estado",
+    critical: "Crítica", high: "Alta", medium: "Media", low: "Baja", info: "Información",
     score: "Puntuación de las pruebas", scoreHelp: "La puntuación usa las pruebas completadas. Las que no se pudieron completar no son fallos, pero limitan el alcance.",
     coverage: "Pruebas decididas", coverageHelp: "Porcentaje de pruebas con resultado, entre las que se podían decidir.",
     process: "Proceso de análisis completo", processHelp: "100% cuando cada prueba llegó a un estado final, aunque algunas no se decidieron.",
@@ -109,9 +140,16 @@ const COPY: Record<Locale, Record<string, string>> = {
     http: "Cabecera HTTP", document: "Documento", form: "Formulario", image: "Imagen", page: "Contenido",
     empty: "No hay hallazgos en este grupo.",
     blockedTitle: "Documentos que no son públicos", notFoundTitle: "No se encontró información sobre el tema", undecidedTitle: "No se pudo decidir automáticamente", technicalTitle: "Comprobación que no terminó",
+    techTitle: "Análisis técnico e instrucciones para quien desarrolla",
+    foundTitle: "Qué se encontró exactamente", whyTitle: "Por qué importa", whereTitle: "Dónde se encontró",
+    stepsTitle: "Cómo corregirlo", exampleTitle: "Ejemplo de código propuesto", verifyTitle: "Cómo comprobar que la corrección funcionó",
+    limitsTitle: "Límites del hallazgo", whoTitle: "Quién conviene que lo haga", evidenceTitle: "Evidencia guardada",
+    executiveTitle: "Resumen para la dirección", checksTitle: "Pruebas realizadas",
+    soundTitle: "Áreas revisadas sin defecto en las pruebas realizadas", openTitle: "Áreas que no se pudieron decidir", firstTitle: "Primeras acciones",
   },
   "pt-BR": {
     newScan: "Nova varredura", pdf: "Baixar PDF", site: "Site verificado", address: "Endereço", date: "Data", status: "Status",
+    critical: "Crítica", high: "Alta", medium: "Média", low: "Baixa", info: "Informação",
     score: "Pontuação das verificações", scoreHelp: "A pontuação usa as verificações concluídas. As que não puderam ser concluídas não são falhas, mas limitam o escopo.",
     coverage: "Verificações decididas", coverageHelp: "A parte das verificações com resultado, entre as que podiam ser decididas.",
     process: "Processo de varredura concluído", processHelp: "100% quando cada verificação chegou a um estado final, mesmo que algumas não tenham sido decididas.",
@@ -126,9 +164,16 @@ const COPY: Record<Locale, Record<string, string>> = {
     http: "Cabeçalho HTTP", document: "Documento", form: "Formulário", image: "Imagem", page: "Conteúdo",
     empty: "Não há achados neste grupo.",
     blockedTitle: "Documentos que não são públicos", notFoundTitle: "Não foi encontrada informação sobre o tema", undecidedTitle: "Não foi possível decidir automaticamente", technicalTitle: "Verificação que não terminou",
+    techTitle: "Análise técnica e instruções para quem desenvolve",
+    foundTitle: "O que foi encontrado", whyTitle: "Por que importa", whereTitle: "Onde foi encontrado",
+    stepsTitle: "Como corrigir", exampleTitle: "Exemplo de código proposto", verifyTitle: "Como confirmar que a correção funcionou",
+    limitsTitle: "Limites do achado", whoTitle: "Quem deve fazer", evidenceTitle: "Evidência salva",
+    executiveTitle: "Resumo para a gestão", checksTitle: "Verificações feitas",
+    soundTitle: "Áreas verificadas sem defeito nos testes executados", openTitle: "Áreas que não puderam ser decididas", firstTitle: "Primeiras ações",
   },
   ar: {
     newScan: "فحص جديد", pdf: "تنزيل PDF", site: "الموقع الذي فُحص", address: "العنوان", date: "التاريخ", status: "الحالة",
+    critical: "حرجة", high: "عالية", medium: "متوسطة", low: "منخفضة", info: "معلومة",
     score: "درجة الفحوصات", scoreHelp: "الدرجة مبنية على الفحوصات المكتملة. الفحوصات التي تعذر إكمالها ليست إخفاقًا، لكنها تحد من النطاق.",
     coverage: "فحوصات تم حسمها", coverageHelp: "نسبة الفحوصات التي صدرت لها نتيجة، من الفحوصات التي أمكن حسمها.",
     process: "اكتمال عملية الفحص", processHelp: "100% عندما وصل كل فحص إلى حالة نهائية، حتى إذا لم يُحسم بعضها.",
@@ -143,6 +188,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     http: "ترويسة HTTP", document: "مستند", form: "نموذج", image: "صورة", page: "محتوى الصفحة",
     empty: "لا توجد نتائج في هذه المجموعة.",
     blockedTitle: "مستندات غير متاحة للعموم", notFoundTitle: "لم يُعثر على معلومات في هذا الموضوع", undecidedTitle: "تعذر الحسم تلقائيًا", technicalTitle: "فحص لم يكتمل",
+    techTitle: "تحليل تقني وتعليمات للمطوّر",
+    foundTitle: "ما الذي وُجد تحديدًا", whyTitle: "لماذا هذا مهم", whereTitle: "أين وُجدت النتيجة",
+    stepsTitle: "تعليمات الإصلاح", exampleTitle: "مثال شيفرة مقترح", verifyTitle: "كيف يُفحص نجاح الإصلاح",
+    limitsTitle: "حدود النتيجة", whoTitle: "من الأنسب أن ينفّذ", evidenceTitle: "دليل محفوظ",
+    executiveTitle: "ملخص للإدارة", checksTitle: "فحوصات نُفذت",
+    soundTitle: "مجالات فُحصت ولم يظهر فيها خلل في الاختبارات المنفذة", openTitle: "مجالات تعذر حسمها", firstTitle: "الإجراءات الأولى",
   },
 };
 
@@ -242,17 +293,24 @@ export function ComplianceReportView({
   const actions = (report.priorities || []).slice(0, 12);
   const status = payload?.status === "completed" ? copy.completed : payload?.status === "failed" ? copy.failed : copy.running;
   const groupOf = (item: Finding) => {
+    const stored = (item as Finding & { brief?: { domain?: string } }).brief?.domain;
+    if (stored) return stored;
     const id = String(item.checkId || "");
+    if (id === "a11y.widget") return "widgets";
     if (id.startsWith("a11y") || id.startsWith("accessibility")) return "access";
     if (id.startsWith("security")) return "security";
+    if (id === "privacy.cookies" || id === "privacy.trackers" || id === "privacy.consent_behavior" || id === "document.cookies") return "cookies";
     if (id.startsWith("document") || bandOf(item) === "missing") return "docs";
-    return "privacy";
+    if (id.startsWith("privacy.") || id.startsWith("behavior.")) return "privacy";
+    return "other";
   };
   const sections = [
     ["access", copy.navAccess],
     ["security", copy.navSecurity],
     ["privacy", copy.navPrivacy],
     ["docs", copy.navDocs],
+    ["cookies", copy.navCookies || "Cookies"],
+    ["widgets", copy.navWidgets || "Widgets"],
   ] as const;
 
   const shownScore = (report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—";
@@ -305,6 +363,19 @@ export function ComplianceReportView({
         <article><b>{report.documents?.filter((item: { state?: string }) => item.state === "not_found_after_scan").length || 0}</b><span>{copy.missing}</span></article>
         <article><b>{counts.unknown}</b><span>{copy.unknown}</span></article>
       </div>
+      {report.executive ? (
+        <section className="report-executive">
+          <h2>{copy.executiveTitle}</h2>
+          <p>{report.executive.scoreMeaning}</p>
+          <p><strong>{report.executive.score ?? shownScore}/100</strong> · {copy.checksTitle}: {report.executive.checks}</p>
+          <p>{["critical", "high", "medium", "low", "info"].map((key) => `${copy[key] || key} ${report.executive.bySeverity?.[key] || 0}`).join(" · ")}</p>
+          {(report.executive.significant || []).length ? <ul>{report.executive.significant.map((title: string) => <li key={title}>{title}</li>)}</ul> : null}
+          {(report.executive.soundDomains || []).length ? <p><strong>{copy.soundTitle}. </strong>{report.executive.soundDomains.join(" · ")}</p> : null}
+          {(report.executive.openDomains || []).length ? <p><strong>{copy.openTitle}. </strong>{report.executive.openDomains.map((area: { label: string; note: string }) => `${area.label}: ${area.note}`).join(" · ")}</p> : null}
+          <h3>{copy.firstTitle}</h3>
+          <ol>{(report.executive.firstActions || []).map((step: { order: number; title: string; who: string }) => <li key={step.order}><strong>{step.title}</strong> · {step.who}</li>)}</ol>
+        </section>
+      ) : null}
       <nav className="report-nav">
         {sections.map(([id, label]) => <a key={id} href={`#report-${id}`}>{label}</a>)}
         <a href="#report-plan">{copy.navPlan}</a>
@@ -316,26 +387,40 @@ export function ComplianceReportView({
         return (
           <section key={id} id={`report-${id}`} className="report-findings">
             <h2 className="report-band">{label}</h2>
-            {rows.length === 0 ? <p className="report-empty">{copy.empty}</p> : rows.map((item, index) => {
+            {rows.length === 0 ? <p className="report-empty">{report.domains?.find((area: { id: string; note?: string }) => area.id === id)?.note || copy.empty}</p> : rows.map((item, index) => {
               const detail = detailOf(item, copy);
-              const body = String(item.explanation || item.description || "").trim();
-              const title = String(item.title || "").trim();
-              const fix = String(detail.change || item.recommendation || "");
-              const draft = String(detail.proposedText || "");
-              const sourceUrl = officialSource(detail.lawName, detail.lawUrl);
-              const located = item.locationVerified === false ? false : Boolean(item.url);
+              const brief = (item as Finding & { brief?: any }).brief;
+              const title = String(brief?.title || item.title || "").trim();
+              const fix = String(brief?.recommendation || detail.change || item.recommendation || "");
+              const located = item.locationVerified === false ? false : Boolean(item.url || brief?.where?.url);
+              const pageUrl = brief?.where?.url || item.url;
+              const evidence = typeof item.evidence === "string" ? item.evidence : "";
               return (
                 <article key={`${item.checkId}-${index}`} className={`report-finding sev-${item.severity || "info"}`}>
                   <header>
-                    <p>{copy.severity}: {copy[item.severity || "info"] || item.severity}</p>
-                    <h3>{item.title}</h3>
+                    <p>{copy.severity}: {brief?.severityLabel || copy[item.severity || "info"] || item.severity} · {copy.certainty}: {brief?.certaintyLabel || "—"}</p>
+                    <h3>{title}</h3>
                   </header>
-                  {body && body !== title ? <p>{body}</p> : null}
-                  <p dir="ltr">{located ? <a href={item.url} target="_blank" rel="noopener noreferrer">{item.url}</a> : copy.unknownPlace}</p>
-                  {item.evidence ? <p className="report-finding__evidence" dir="auto">{typeof item.evidence === "string" ? item.evidence : ""}</p> : null}
+                  <h4>{copy.foundTitle}</h4>
+                  <p>{brief?.found || item.description}</p>
+                  <h4>{copy.whyTitle}</h4>
+                  <p>{brief?.why || item.explanation}</p>
+                  <h4>{copy.whereTitle}</h4>
+                  <p dir="ltr">{located && pageUrl ? <a href={pageUrl} target="_blank" rel="noopener noreferrer">{pageUrl}</a> : copy.unknownPlace}</p>
+                  {brief?.where?.selector ? <p dir="ltr">{brief.where.selector}</p> : null}
+                  {brief?.where?.countLabel ? <p>{brief.where.countLabel}</p> : null}
+                  {evidence ? <details className="report-evidence" open={evidence.length < 280}><summary>{copy.evidenceTitle}</summary><p className="report-finding__evidence" dir="ltr">{evidence}</p></details> : null}
                   {fix ? <p><strong>{copy.fix}. </strong>{fix}</p> : null}
-                  {draft && draft !== fix ? <p><strong>{copy.draft}. </strong>{draft}</p> : null}
-                  {sourceUrl ? <p><strong>{copy.law}. </strong><a href={sourceUrl} target="_blank" rel="noopener noreferrer">{String(detail.lawName || sourceUrl)}</a></p> : null}
+                  <details className="report-tech" open>
+                    <summary>{copy.techTitle}</summary>
+                    {brief?.technical ? <p>{brief.technical}</p> : null}
+                    {brief?.whoLabel ? <p><strong>{copy.whoTitle}. </strong>{brief.whoLabel}</p> : null}
+                    {(brief?.steps || []).length ? <ol>{brief.steps.map((step: string) => <li key={step}>{step}</li>)}</ol> : null}
+                    {brief?.example?.code ? <div><p>{copy.exampleTitle}. {brief.example.note}</p><pre className="report-code" dir="ltr">{brief.example.code}</pre></div> : null}
+                    {brief?.verify ? <p><strong>{copy.verifyTitle}. </strong>{brief.verify}</p> : null}
+                    {(brief?.sources || []).map((source: { name?: string; url?: string }) => source.url ? <p key={source.url} dir="ltr"><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name || source.url}</a></p> : null)}
+                    {brief?.limits ? <p><strong>{copy.limitsTitle}. </strong>{brief.limits}</p> : null}
+                  </details>
                 </article>
               );
             })}
@@ -355,12 +440,15 @@ export function ComplianceReportView({
       <section id="report-plan" className="report-sheet__block">
         <h2>{copy.plan}</h2>
         <ol>
-          {actions.map((item: Finding & { order?: number; change?: string; verify?: string }) => (
+          {(report.workPlan || actions).map((item: Finding & { order?: number; change?: string; verify?: string; who?: string; impact?: string; steps?: string[] }) => (
             <li key={`${item.order || ""}-${item.checkId}`}>
               <strong>{item.title}</strong>
+              {item.who ? <p>{copy.whoTitle}: {item.who}</p> : null}
+              {item.impact ? <p>{item.impact}</p> : null}
               <p dir="ltr">{item.url || copy.unknownPlace}</p>
+              {(item.steps || []).map((step) => <p key={step}>{step}</p>)}
               <p>{String(item.change || item.recommendation || "")}</p>
-              {item.verify ? <p>{String(item.verify)}</p> : null}
+              {item.verify ? <p><strong>{copy.verifyTitle}. </strong>{String(item.verify)}</p> : null}
             </li>
           ))}
         </ol>
