@@ -22,7 +22,7 @@ fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(process.env.CAPTURE_DIR || "/tmp/home-theater", { recursive: true });
 
 const CSS_W = MOBILE ? 390 : 1680;
-const CSS_H = MOBILE ? 844 : 945;
+const CSS_H = MOBILE ? 844 : 1000;
 const DPR = MOBILE ? 3 : 1;
 const PX_W = Math.round(CSS_W * DPR);
 const PX_H = Math.round(CSS_H * DPR);
@@ -71,11 +71,9 @@ const ctx = await browser.newContext({
 });
 await ctx.addInitScript(cursorScript(MOBILE ? "touch" : "desktop"));
 const FILM_CSS = `
-  header.fixed.z-30 { display: none !important; }
   .bizuply-chat-launcher,
   section.fixed.bottom-6.right-6,
   .cookie-banner { display: none !important; }
-  main[data-testid="business-dashboard-main"] { padding-top: 0 !important; }
 `;
 await ctx.addInitScript((css) => {
   const install = () => {
@@ -143,7 +141,7 @@ const dashboard = (p) => `${BASE}${LANG === "he" ? "/he" : ""}/business/${BIZ}/d
 const AUTO = process.env.AUTO_ID || (LANG === "he" ? "6af1e65d76c39b752eefa9e4" : "6af1ed4e76c39b752eefb2b2");
 
 /** Compile the dashboard routes before the film, so the take does not sit on the loading screen. */
-for (const path of ["crm/leads", "whatsapp/inbox", "automations", `automations/${AUTO}`]) {
+for (const path of ["crm/leads", "whatsapp/inbox"]) {
   await page.goto(dashboard(path), { waitUntil: "domcontentloaded", timeout: 120000 });
   await page.locator("aside, .ht-root, .crm-leads, .react-flow").first().waitFor({ timeout: 90000 }).catch(() => {});
   await page.waitForTimeout(1200);
@@ -250,58 +248,124 @@ async function typeText(text, delay = 15) {
 const leadRow = () => page.locator("table tbody tr").filter({ hasText: C.phone }).first();
 const listReady = async () => { await page.locator("table").first().waitFor({ timeout: 60000 }); };
 const cardReady = async () => { await page.getByRole("button", { name: L.notesTab, exact: true }).waitFor({ timeout: 60000 }); };
+const card = () => page.locator(".crm-dossier");
 
-/* ---------- 1. Lead intake ---------- */
-beginChapter("lead");
+async function revealLeadRow() {
+  await leadRow().evaluate((row) => row.scrollIntoView({ behavior: "smooth", block: "center" }));
+  await settle(1100);
+}
+
+async function assertLeadRow() {
+  await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 400, label: "row" });
+  const rowText = await leadRow().innerText();
+  if (!rowText.includes(C.name) || !rowText.includes(C.campaignName) || !rowText.includes(C.formName) || !rowText.includes("Meta Lead Ads")) {
+    fail(`demo row mismatch ${rowText.slice(0, 240)}`);
+  }
+  log("demo lead row", C.phone);
+}
+
+/** A product-tour form. It never posts to Meta or to a webhook. */
+async function showDemoForm() {
+  await page.evaluate((copy) => {
+    document.getElementById("demo-form-sim")?.remove();
+    const wrap = document.createElement("div");
+    wrap.id = "demo-form-sim";
+    wrap.setAttribute("dir", copy.dir);
+    const aside = document.querySelector("aside");
+    const box = aside ? aside.getBoundingClientRect() : null;
+    const onRight = box && box.left > window.innerWidth / 2;
+    const gap = box ? Math.ceil(box.width) : 0;
+    wrap.style.cssText = `position:fixed;top:0;bottom:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(33,23,47,.46);padding:24px;${onRight ? `left:0;right:${gap}px;` : `right:0;left:${gap}px;`}`;
+    wrap.innerHTML = `
+      <form id="demo-form-card" style="width:min(540px,100%);background:#fff;border-radius:24px;padding:28px 28px 22px;box-shadow:0 24px 70px rgba(33,23,47,.28);color:#21172f;font-family:Assistant,Arial,sans-serif;">
+        <p style="margin:0;color:#6d28d9;font-size:13px;font-weight:800;letter-spacing:.02em;">${copy.kicker}</p>
+        <h2 style="margin:8px 0 6px;font-size:28px;line-height:1.2;">${copy.title}</h2>
+        <p style="margin:0 0 14px;color:#5b5568;font-size:14px;line-height:1.5;">${copy.note}</p>
+        <p style="margin:0 0 16px;padding:8px 12px;border-radius:12px;background:#f6f3ff;color:#5b21b6;font-size:13px;font-weight:700;">${copy.campaign}</p>
+        <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:800;">${copy.name}<input id="demo-lead-name" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;"></label>
+        <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:800;">${copy.phone}<input id="demo-lead-phone" dir="ltr" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;text-align:left;"></label>
+        <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:800;">${copy.email}<input id="demo-lead-email" dir="ltr" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;text-align:left;"></label>
+        <label style="display:block;margin-bottom:16px;font-size:13px;font-weight:800;">${copy.message}<textarea id="demo-lead-message" rows="2" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;resize:none;"></textarea></label>
+        <button id="demo-lead-submit" type="button" style="border:0;border-radius:14px;background:#6d28d9;color:#fff;font:inherit;font-weight:800;padding:12px 18px;cursor:pointer;">${copy.submit}</button>
+      </form>`;
+    wrap.querySelector("#demo-lead-submit").addEventListener("click", (event) => {
+      event.preventDefault();
+      wrap.remove();
+    });
+    document.body.appendChild(wrap);
+  }, LANG === "he" ? {
+    dir: "rtl",
+    kicker: "הדמיית טופס לידים",
+    title: C.formName,
+    note: "סיור במוצר בלבד. הטופס לא נשלח לפייסבוק ולא נוצרת פנייה אמיתית.",
+    campaign: `קמפיין: ${C.campaignName}`,
+    name: "שם",
+    phone: "טלפון",
+    email: "אימייל",
+    message: "הודעה",
+    submit: "שליחה להדגמה",
+  } : {
+    dir: "ltr",
+    kicker: "Lead form simulation",
+    title: C.formName,
+    note: "Product tour only. This form is not sent to Facebook and no real enquiry is created.",
+    campaign: `Campaign: ${C.campaignName}`,
+    name: "Name",
+    phone: "Phone",
+    email: "Email",
+    message: "Message",
+    submit: "Submit demo",
+  });
+}
+
+async function playDemoForm() {
+  await settle(800);
+  for (const [sel, value] of [
+    ["#demo-lead-name", C.name],
+    ["#demo-lead-phone", C.phone],
+    ["#demo-lead-email", C.email],
+    ["#demo-lead-message", C.message],
+  ]) {
+    await to(page.locator(sel), { after: 160 });
+    await typeText(value, 34);
+    await settle(240);
+  }
+  await settle(500);
+  await to(page.locator("#demo-lead-submit"), { after: 250 });
+  await page.locator("#demo-form-sim").waitFor({ state: "detached", timeout: 5000 });
+  await settle(900);
+}
+
+/* ---------- 1. Simulated lead form ---------- */
+beginChapter("form");
 await goto("crm/leads", listReady);
 const vp = await page.evaluate(() => [innerWidth, innerHeight]);
 log("viewport", vp);
 if (vp[0] !== CSS_W) fail(`viewport width ${vp[0]}`);
 if (DRY) C.name = process.env.DRY_NAME || "Dana Israeli";
 C.meetingTitle = C.meetingTitle || (LANG === "he" ? "הדגמה אישית עם שירה מזרחי" : "Personal demo with Olivia Parker");
+await showDemoForm();
 await keep();
-await settle(900);
-await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 400, label: "row" });
-const rowText = await leadRow().innerText();
-if (!rowText.includes(C.name) || !rowText.includes(C.campaignName) || !rowText.includes(C.formName) || !rowText.includes("Meta Lead Ads")) {
-  fail(`demo row mismatch ${rowText.slice(0, 240)}`);
-}
-log("opened existing demo lead", C.phone);
-await panLeadsTable();
-await to(leadRow().locator("td").nth(1), { click: false, pause: 500 });
-await to(leadRow().locator("td").nth(1), { after: 150 });
-await waitOrCut(cardReady, { grace: 120, label: "card" });
-await settle(1400);
+await playDemoForm();
 await endChapter();
 
-/* ---------- 2. Customer management ---------- */
-beginChapter("crm");
+/* ---------- 2. The lead is in the CRM list ---------- */
+beginChapter("list");
 await keep();
-await settle(500);
-const statusSelect = page.locator("select").filter({ has: page.locator('option[value="interested"]') }).first();
-await to(statusSelect, { after: 250 });
-if (!DRY) {
-const statusResp = page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/status/.test(r.url()) && r.request().method() !== "GET", { timeout: 20000 });
-await statusSelect.selectOption("interested");
-const sr = await statusResp;
-if (!sr.ok()) fail(`status ${sr.status()}`);
-log("status saved", sr.status());
-}
-await settle(1100);
-await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 600 });
-const note = page.locator("textarea").first();
-await to(note, { after: 200 });
-await typeText(C.note);
-await settle(350);
-const noteResp = DRY ? null : page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/activities/.test(r.url()) && r.request().method() === "POST", { timeout: 20000 });
-await to(page.getByRole("button", { name: L.noteSave, exact: true }), { click: !DRY, after: 100 });
-if (!DRY) {
-const nr = await noteResp;
-if (!nr.ok()) fail(`note ${nr.status()}`);
-await page.getByText(C.note.slice(0, 30)).first().waitFor({ timeout: 15000 });
-log("note saved");
-}
-await settle(1500);
+await settle(400);
+await revealLeadRow();
+await assertLeadRow();
+await panLeadsTable();
+await to(leadRow().locator("td").nth(1), { click: false, pause: 800 });
+await settle(700);
+await endChapter();
+
+/* ---------- 3. Open Shira's card ---------- */
+beginChapter("card");
+await keep();
+await to(leadRow().locator("td").nth(1), { after: 180 });
+await waitOrCut(cardReady, { grace: 120, label: "card" });
+await settle(1600);
 await endChapter();
 
 /* ---------- 3. WhatsApp ---------- */
@@ -316,12 +380,16 @@ await keep();
 await settle(900);
 const composer = page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first();
 await to(composer, { after: 200 });
-await typeText(C.reply);
+await typeText(C.reply, 28);
 await settle(300);
 await to(page.getByRole("button", { name: L.reply, exact: true }), { click: !DRY, after: 200 });
 if (!DRY) {
 await page.getByText(C.reply.slice(0, 24)).first().waitFor({ timeout: 15000 });
-await settle(1800);
+const demoNote = LANG === "he"
+  ? "הודעת הדמו נשמרה. היא לא נשלחה ללקוח אמיתי."
+  : "Demo message saved. It was not sent to a real customer.";
+await page.getByText(demoNote).first().waitFor({ timeout: 8000 });
+await settle(2400);
 const rj = replies[replies.length - 1];
 if (!rj?.demoSafe) fail(`reply not demo-safe: ${JSON.stringify(rj).slice(0, 300)}`);
 log("whatsapp reply demoSafe", rj.providerMessageId);
@@ -387,53 +455,37 @@ await savedTask.scrollIntoViewIfNeeded();
 log("task saved", tr.url());
 }
 }
-await settle(1900);
-await endChapter();
-
-/* ---------- 5. Automation ---------- */
-beginChapter("automation");
-await goto("automations", async () => {
-  await page.getByText(C.autoName).and(page.locator(":visible")).first().waitFor({ timeout: 60000 });
-});
-await keep();
 await settle(700);
-await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { click: false, pause: 400 });
-await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { after: 100 });
-await waitOrCut(() => page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 }).then(() => page.locator(".react-flow__node").first().waitFor()), { grace: 150, label: "editor" });
-await settle(1200);
-if (!MOBILE) {
-await to(page.locator(".react-flow__node").first(), { click: false, pause: 550 });
-await to(page.locator(".react-flow__node").nth(1), { click: false, pause: 350 });
-await to(page.locator(".react-flow__node").nth(2), { click: false, pause: 350 });
+const statusSelect = card().locator("select").filter({ has: page.locator('option[value="interested"]') }).first();
+await to(statusSelect, { after: 280 });
+if (!DRY) {
+  const statusResp = page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/status/.test(r.url()) && r.request().method() !== "GET", { timeout: 20000 });
+  await statusSelect.selectOption("interested");
+  const sr = await statusResp;
+  if (!sr.ok()) fail(`status ${sr.status()}`);
+  log("status saved", sr.status());
 }
-await to(page.getByRole("button", { name: L.test, exact: true }), { after: 700 });
-const dryResp = page.waitForResponse((r) => /\/dry-run$/.test(r.url()), { timeout: 20000 });
-await to(page.getByRole("button", { name: L.runTest, exact: true }), { after: 100 });
-const dr = await dryResp;
-if (!dr.ok()) fail(`dry-run ${dr.status()}`);
-await page.getByText("completed").first().waitFor({ timeout: 15000 });
-log("automation test completed");
-await settle(2600);
-if (MOBILE) {
-  const zin = page.locator(".react-flow__controls-zoomin");
-  for (let i = 0; i < 3; i++) await to(zin, { pause: i ? 120 : 260, after: 420 });
-  await settle(1800);
-}
+await settle(1500);
 await endChapter();
 
-/* ---------- 6. Wrap-up ---------- */
-beginChapter("done");
-await goto("crm/leads", listReady);
+/* ---------- 8. Return to the updated card ---------- */
+beginChapter("updated");
 await keep();
-await settle(600);
-await panLeadsTable();
-if (!MOBILE) await to(leadRow().locator("td").nth(4), { click: false, pause: 900 });
-await to(leadRow().locator("td").nth(1), { after: 150 });
+await settle(400);
+await to(card().locator(".crm-close"), { after: 400 });
+await settle(500);
+await revealLeadRow();
+await to(leadRow().locator("td").nth(1), { click: false, pause: 700 });
+await to(leadRow().locator("td").nth(1), { after: 160 });
 await waitOrCut(cardReady, { grace: 120, label: "card3" });
-await settle(900);
-await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 500 });
-await settle(1700);
-await to(page.getByRole("button", { name: L.tasksTab, exact: true }), { after: 500 });
+await settle(800);
+await to(card().getByRole("button", { name: L.meetingsTab, exact: true }), { after: 450 });
+await card().getByText(C.meetingTitle).first().waitFor({ timeout: 10000 });
+await settle(1400);
+await to(card().getByRole("button", { name: L.tasksTab, exact: true }), { after: 450 });
+await card().getByText(C.task.slice(0, 24)).first().waitFor({ timeout: 10000 });
+await settle(1400);
+await to(card().getByRole("button", { name: L.notesTab, exact: true }), { after: 450 });
 await settle(2200);
 await endChapter();
 

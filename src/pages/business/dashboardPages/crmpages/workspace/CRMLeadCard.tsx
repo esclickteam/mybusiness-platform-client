@@ -700,19 +700,23 @@ function TimelineItem({ event, locale }: { event: TimelineEvent; locale: string 
   const when = event.at ? new Date(event.at) : null;
   const valid = when && !Number.isNaN(when.getTime());
   const typeLabels: Record<string, string> = {
-    note: t("crm.common.note"),
-    task: t("crm.common.task"),
-    call: t("crm.workspace.logCall"),
+    note: t("crm.leads.activityTypes.note"),
+    task: t("crm.leads.activityTypes.task"),
+    call: t("crm.leads.activityTypes.call"),
     meeting: t("crm.workspace.meeting"),
+    status: t("crm.leads.activityTypes.status"),
+    created: t("crm.leads.activityTypes.created"),
+    whatsapp: t("crm.leads.activityTypes.whatsapp"),
   };
-  const typeLabel = typeLabels[event.type] || event.type || t("crm.workspace.tabs.activity");
+  const typeLabel = typeLabels[event.type] || t("crm.workspace.tabs.activity");
+  const actor = !event.actor || event.actor === "system" ? t("crm.common.systemUser") : event.actor;
 
   return (
     <li>
       <p className="crm-timeline-meta">
         <span>{typeLabel}</span>
         <time>{valid ? when.toLocaleString(locale) : ""}</time>
-        <span>{event.actor || t("crm.common.systemUser")}</span>
+        <span>{actor}</span>
         {event.callOutcome ? <span>{t(`crm.workspace.callOutcomes.${event.callOutcome}`)}</span> : null}
       </p>
       <p>{event.text}</p>
