@@ -23866,9 +23866,9 @@
   },
   "trackingConsent": {
     "noticeTitle": "A sua privacidade é importante para nós",
-    "noticeIntro": "Usamos cookies para o site funcionar e para lembrar o idioma e esta escolha. Os cookies de publicidade carregam somente se você permitir, e ativam apenas o Meta Pixel.",
+    "noticeIntro": "Usamos cookies para o site funcionar, para melhorar a experiência de navegação e para medir o desempenho. De acordo com a sua escolha, também podemos usar cookies para análise de uso e publicidade personalizada. Você pode alterar suas preferências a qualquer momento.",
     "essentialOnly": "Somente cookies essenciais",
-    "manage": "Gerenciar cookies",
+    "manage": "Gerenciar preferências",
     "manageTitle": "Gerenciar preferências de cookies",
     "back": "Voltar",
     "close": "Fechar",

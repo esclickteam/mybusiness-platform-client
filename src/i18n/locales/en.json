@@ -24910,9 +24910,9 @@
   },
   "trackingConsent": {
     "noticeTitle": "Your privacy matters to us",
-    "noticeIntro": "We use cookies to run the site and to remember your language and this choice. Advertising cookies load only if you allow them, and they turn on the Meta Pixel only.",
+    "noticeIntro": "We use cookies to run the site, improve your browsing, and measure how it performs. Depending on your choice, we may also use cookies for usage analysis and personalized advertising. You can change your preferences at any time.",
     "essentialOnly": "Essential cookies only",
-    "manage": "Manage cookies",
+    "manage": "Manage preferences",
     "manageTitle": "Manage cookie preferences",
     "back": "Back",
     "close": "Close",

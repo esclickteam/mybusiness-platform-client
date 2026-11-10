@@ -3,9 +3,9 @@
 export const COOKIE_BANNER_COPY = {
   en: {
     noticeTitle: "Your privacy matters to us",
-    noticeIntro: "We use cookies to run the site and to remember your language and this choice. Advertising cookies load only if you allow them, and they turn on the Meta Pixel only.",
+    noticeIntro: "We use cookies to run the site, improve your browsing, and measure how it performs. Depending on your choice, we may also use cookies for usage analysis and personalized advertising. You can change your preferences at any time.",
     essentialOnly: "Essential cookies only",
-    manage: "Manage cookies",
+    manage: "Manage preferences",
     manageTitle: "Manage cookie preferences",
     back: "Back",
     close: "Close",
@@ -57,9 +57,9 @@ export const COOKIE_BANNER_COPY = {
   },
   he: {
     noticeTitle: "הפרטיות שלכם חשובה לנו",
-    noticeIntro: "אנחנו משתמשים בעוגיות כדי להפעיל את האתר ולזכור את השפה ואת הבחירה שלכם. עוגיות פרסום נטענות רק אם תאשרו אותן, והן מפעילות את Meta Pixel בלבד.",
+    noticeIntro: "אנחנו משתמשים בעוגיות כדי להפעיל את האתר, לשפר את חוויית הגלישה ולמדוד את ביצועיו. בכפוף לבחירתכם, נוכל להשתמש גם בעוגיות לניתוח שימוש ולפרסום מותאם אישית. תוכלו לשנות את העדפותיכם בכל עת.",
     essentialOnly: "עוגיות חיוניות בלבד",
-    manage: "ניהול עוגיות",
+    manage: "ניהול העדפות",
     manageTitle: "ניהול העדפות העוגיות",
     back: "חזרה",
     close: "סגירה",
@@ -111,9 +111,9 @@ export const COOKIE_BANNER_COPY = {
   },
   es: {
     noticeTitle: "Su privacidad nos importa",
-    noticeIntro: "Usamos cookies para que el sitio funcione y para recordar el idioma y esta elección. Las cookies de publicidad se cargan solo si usted las permite, y activan únicamente el Meta Pixel.",
+    noticeIntro: "Usamos cookies para que el sitio funcione, para mejorar la experiencia de navegación y para medir su rendimiento. Según su elección, también podemos usar cookies para analizar el uso y para publicidad personalizada. Puede cambiar sus preferencias en cualquier momento.",
     essentialOnly: "Solo cookies esenciales",
-    manage: "Gestionar cookies",
+    manage: "Gestionar preferencias",
     manageTitle: "Gestionar las preferencias de cookies",
     back: "Volver",
     close: "Cerrar",
@@ -165,9 +165,9 @@ export const COOKIE_BANNER_COPY = {
   },
   "pt-BR": {
     noticeTitle: "A sua privacidade é importante para nós",
-    noticeIntro: "Usamos cookies para o site funcionar e para lembrar o idioma e esta escolha. Os cookies de publicidade carregam somente se você permitir, e ativam apenas o Meta Pixel.",
+    noticeIntro: "Usamos cookies para o site funcionar, para melhorar a experiência de navegação e para medir o desempenho. De acordo com a sua escolha, também podemos usar cookies para análise de uso e publicidade personalizada. Você pode alterar suas preferências a qualquer momento.",
     essentialOnly: "Somente cookies essenciais",
-    manage: "Gerenciar cookies",
+    manage: "Gerenciar preferências",
     manageTitle: "Gerenciar preferências de cookies",
     back: "Voltar",
     close: "Fechar",
@@ -219,9 +219,9 @@ export const COOKIE_BANNER_COPY = {
   },
   ar: {
     noticeTitle: "خصوصيتكم تهمّنا",
-    noticeIntro: "نستخدم ملفات تعريف الارتباط لتشغيل الموقع وتذكّر اللغة وهذا الاختيار. لا تُحمَّل ملفات الإعلان إلا إذا سمحتم بها، وهي تفعّل Meta Pixel فقط.",
+    noticeIntro: "نستخدم ملفات تعريف الارتباط لتشغيل الموقع وتحسين تجربة التصفح وقياس أدائه. وبحسب اختياركم، قد نستخدمها أيضًا لتحليل الاستخدام وللإعلان المخصّص. يمكنكم تغيير تفضيلاتكم في أي وقت.",
     essentialOnly: "ملفات تعريف الارتباط الضرورية فقط",
-    manage: "إدارة ملفات تعريف الارتباط",
+    manage: "إدارة التفضيلات",
     manageTitle: "إدارة تفضيلات ملفات تعريف الارتباط",
     back: "رجوع",
     close: "إغلاق",
@@ -318,6 +318,11 @@ function legalLinks(copy, locale) {
   return `${escapeText(copy.change)} ${escapeText(copy.more)}<a href="${privacy}">${escapeText(copy.policy)}</a>${escapeText(copy.join)}<a href="${cookies}">${escapeText(copy.cookiePolicy)}</a>${escapeText(copy.termsJoin)}<a href="${terms}">${escapeText(copy.terms)}</a>`;
 }
 
+function noticeLinks(copy, locale) {
+  const { privacy, cookies } = localePaths(locale);
+  return `<a href="${privacy}">${escapeText(copy.policy)}</a><a href="${cookies}">${escapeText(copy.cookiePolicy)}</a>`;
+}
+
 function row(copy, name, provider, purpose, duration) {
   return `<tr><td>${escapeText(name)}</td><td>${escapeText(provider)}</td><td>${escapeText(purpose)}</td><td>${escapeText(duration)}</td></tr>`;
 }
@@ -331,7 +336,7 @@ function category(copy, id, title, detail, control, rows, note) {
 
 export function renderCookieNoticeInner(locale) {
   const copy = cookieCopy(locale);
-  return `<div class="cookie-banner__scroll"><h2 id="bizuply-cookie-paint-title">${escapeText(copy.noticeTitle)}</h2><p>${escapeText(copy.noticeIntro)}</p><p>${legalLinks(copy, locale)}</p></div><div class="cookie-banner__actions"><button type="button" class="cookie-banner__primary" onclick="window.bizuplyChooseCookies('all')">${escapeText(copy.acceptAll)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplyChooseCookies('essential')">${escapeText(copy.essentialOnly)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplyOpenCookieManager()">${escapeText(copy.manage)}</button></div>`;
+  return `<div class="cookie-banner__scroll"><h2 id="bizuply-cookie-paint-title" class="cookie-banner__sr">${escapeText(copy.noticeTitle)}</h2><p class="cookie-banner__message">${escapeText(copy.noticeIntro)}</p><p class="cookie-banner__links">${noticeLinks(copy, locale)}</p></div><div class="cookie-banner__actions"><button type="button" class="cookie-banner__primary" onclick="window.bizuplyChooseCookies('all')">${escapeText(copy.acceptAll)}</button><button type="button" class="cookie-banner__outline" onclick="window.bizuplyChooseCookies('essential')">${escapeText(copy.essentialOnly)}</button><button type="button" class="cookie-banner__secondary" onclick="window.bizuplyOpenCookieManager()">${escapeText(copy.manage)}</button></div>`;
 }
 
 export function renderCookieManagerInner(locale) {
@@ -387,5 +392,5 @@ export function renderCookieBannerPaint(locale) {
   const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
   const notice = renderCookieNoticeInner(locale);
   const manage = renderCookieManagerInner(locale);
-  return `<div id="bizuply-cookie-paint" class="cookie-banner cookie-banner--notice" dir="${dir}" role="dialog" aria-labelledby="bizuply-cookie-paint-title">${notice}</div><script>window.__bizuplyCookieMarketing=false;window.__bizuplyCookieView="notice";window.__bizuplyNoticeHtml=${JSON.stringify(notice)};window.__bizuplyManageHtml=${JSON.stringify(manage)};window.bizuplyChooseCookies=function(choice){var host=String(location.hostname||"").toLowerCase();var domain=(host==="bizuply.com"||host.endsWith(".bizuply.com"))?"; Domain=.bizuply.com":(host==="bizuply.co.il"||host.endsWith(".bizuply.co.il"))?"; Domain=.bizuply.co.il":"";var value=choice==="all"?"v2:ad:2026-11-07":"v2:none:2026-11-07";if(domain)document.cookie="bizuply_tracking=; Path=/; Max-Age=0; SameSite=Lax";document.cookie="bizuply_tracking="+value+"; Path=/; Max-Age=15552000; SameSite=Lax"+domain;var node=document.getElementById("bizuply-cookie-paint");if(node)node.remove();window.dispatchEvent(new CustomEvent("bizuply-tracking-consent",{detail:choice}));};window.bizuplyOpenCookieManager=function(){window.__bizuplyCookieView="manage";var node=document.getElementById("bizuply-cookie-paint");if(!node)return;node.classList.remove("cookie-banner--notice");node.classList.add("cookie-banner--manage");node.setAttribute("aria-labelledby","bizuply-cookie-manage-title");node.innerHTML=window.__bizuplyManageHtml;};window.bizuplyBackToCookieNotice=function(){window.__bizuplyCookieView="notice";window.__bizuplyCookieMarketing=false;var node=document.getElementById("bizuply-cookie-paint");if(!node)return;node.classList.remove("cookie-banner--manage");node.classList.add("cookie-banner--notice");node.setAttribute("aria-labelledby","bizuply-cookie-paint-title");node.innerHTML=window.__bizuplyNoticeHtml;};window.bizuplyToggleCookieDetails=function(button){var open=button.getAttribute("aria-expanded")==="true";button.setAttribute("aria-expanded",open?"false":"true");var details=button.closest("section").querySelector(".cookie-banner__details");if(details)details.hidden=open;};window.bizuplyToggleCookieMarketing=function(){window.__bizuplyCookieMarketing=!window.__bizuplyCookieMarketing;var btn=document.getElementById("bizuply-cookie-advertising");if(!btn)return;btn.setAttribute("aria-checked",window.__bizuplyCookieMarketing?"true":"false");btn.textContent=window.__bizuplyCookieMarketing?${JSON.stringify(copy.on)}:${JSON.stringify(copy.off)};};window.bizuplySaveCookiePreferences=function(){window.bizuplyChooseCookies(window.__bizuplyCookieMarketing?"all":"essential");};</script>`;
+  return `<div id="bizuply-cookie-paint" class="cookie-banner cookie-banner--notice" dir="${dir}" role="dialog" aria-modal="false" aria-labelledby="bizuply-cookie-paint-title">${notice}</div><script>window.__bizuplyCookieMarketing=false;window.__bizuplyCookieView="notice";window.__bizuplyNoticeHtml=${JSON.stringify(notice)};window.__bizuplyManageHtml=${JSON.stringify(manage)};window.bizuplyChooseCookies=function(choice){var host=String(location.hostname||"").toLowerCase();var domain=(host==="bizuply.com"||host.endsWith(".bizuply.com"))?"; Domain=.bizuply.com":(host==="bizuply.co.il"||host.endsWith(".bizuply.co.il"))?"; Domain=.bizuply.co.il":"";var value=choice==="all"?"v2:ad:2026-11-07":"v2:none:2026-11-07";if(domain)document.cookie="bizuply_tracking=; Path=/; Max-Age=0; SameSite=Lax";document.cookie="bizuply_tracking="+value+"; Path=/; Max-Age=15552000; SameSite=Lax"+domain;var node=document.getElementById("bizuply-cookie-paint");if(node)node.remove();window.dispatchEvent(new CustomEvent("bizuply-tracking-consent",{detail:choice}));};window.bizuplyOpenCookieManager=function(){window.__bizuplyCookieView="manage";var node=document.getElementById("bizuply-cookie-paint");if(!node)return;node.classList.remove("cookie-banner--notice");node.classList.add("cookie-banner--manage");node.setAttribute("aria-labelledby","bizuply-cookie-manage-title");node.innerHTML=window.__bizuplyManageHtml;};window.bizuplyBackToCookieNotice=function(){window.__bizuplyCookieView="notice";window.__bizuplyCookieMarketing=false;var node=document.getElementById("bizuply-cookie-paint");if(!node)return;node.classList.remove("cookie-banner--manage");node.classList.add("cookie-banner--notice");node.setAttribute("aria-labelledby","bizuply-cookie-paint-title");node.innerHTML=window.__bizuplyNoticeHtml;};window.bizuplyToggleCookieDetails=function(button){var open=button.getAttribute("aria-expanded")==="true";button.setAttribute("aria-expanded",open?"false":"true");var details=button.closest("section").querySelector(".cookie-banner__details");if(details)details.hidden=open;};window.bizuplyToggleCookieMarketing=function(){window.__bizuplyCookieMarketing=!window.__bizuplyCookieMarketing;var btn=document.getElementById("bizuply-cookie-advertising");if(!btn)return;btn.setAttribute("aria-checked",window.__bizuplyCookieMarketing?"true":"false");btn.textContent=window.__bizuplyCookieMarketing?${JSON.stringify(copy.on)}:${JSON.stringify(copy.off)};};window.bizuplySaveCookiePreferences=function(){window.bizuplyChooseCookies(window.__bizuplyCookieMarketing?"all":"essential");};</script>`;
 }

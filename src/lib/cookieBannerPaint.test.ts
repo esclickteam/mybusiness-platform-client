@@ -18,12 +18,15 @@ describe("cookie banner first paint", () => {
     const hebrew = renderCookieBannerPaint("he");
     const visible = hebrew.split("<script>")[0];
     expect(visible).toContain("הפרטיות שלכם חשובה לנו");
+    expect(visible).toContain("לשפר את חוויית הגלישה ולמדוד את ביצועיו");
     expect(visible).toContain("אישור כל העוגיות");
     expect(visible).toContain("עוגיות חיוניות בלבד");
-    expect(visible).toContain("ניהול עוגיות");
+    expect(visible).toContain("ניהול העדפות");
+    expect(visible).toContain("cookie-banner__outline");
     expect(visible).toContain('href="/he/privacy#section-8"');
     expect(visible).toContain('href="/he/privacy"');
-    expect(visible).toContain('href="/he/terms"');
+    expect(visible).not.toContain('href="/he/terms"');
+    expect(renderCookieManagerInner("he")).toContain('href="/he/terms"');
     expect(visible).not.toContain("cookie-banner__cat");
     expect(visible).not.toContain('role="switch"');
     expect(visible).not.toContain("שמירת העדפות");
@@ -45,10 +48,15 @@ describe("cookie banner first paint", () => {
     const english = renderCookieNoticeInner("en");
     expect(english).toContain("Your privacy matters to us");
     expect(english).toContain('href="/privacy#section-8"');
-    expect(english).toContain('href="/terms"');
+    expect(english).not.toContain('href="/terms"');
+    expect(renderCookieManagerInner("en")).toContain('href="/terms"');
     expect(renderCookieManagerInner("ar")).toContain("إدارة تفضيلات ملفات تعريف الارتباط");
     expect(renderCookieNoticeInner("es")).toContain("Solo cookies esenciales");
+    expect(renderCookieNoticeInner("es")).toContain("Gestionar preferencias");
     expect(renderCookieNoticeInner("pt-BR")).toContain("Somente cookies essenciais");
+    expect(renderCookieNoticeInner("pt-BR")).toContain("Gerenciar preferências");
+    expect(renderCookieNoticeInner("ar")).toContain("إدارة التفضيلات");
+    expect(renderCookieNoticeInner("en")).toContain("Manage preferences");
   });
 
   it("uses the same critical stylesheet on both shells", () => {
