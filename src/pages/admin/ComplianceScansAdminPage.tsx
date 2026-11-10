@@ -301,7 +301,7 @@ export default function ComplianceScansAdminPage() {
       </form>
       {error ? <p className="compliance-admin__error" role="alert">{error}</p> : null}
       {loaded && summary ? (
-        <div className="compliance-admin__stats">
+        <div className="compliance-admin__counts">
           <p><span>סך כל הסריקות</span><b>{summary.total}</b></p>
           <p><span>חינמיות</span><b>{summary.free}</b></p>
           <p><span>בתשלום</span><b>{summary.paid}</b></p>
@@ -433,9 +433,11 @@ export default function ComplianceScansAdminPage() {
         .compliance-admin__usage { display: grid; gap: 12px; border: 1px solid #d7dce8; background: #fff; padding: 16px; }
         .compliance-admin__usage h2 { margin: 0; font-size: 1.15rem; }
         .compliance-admin__usage p { margin: 0; }
+        .compliance-admin__counts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
         .compliance-admin__stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-        .compliance-admin__stats p { display: grid; gap: 4px; }
-        .compliance-admin__stats span { color: #5c6578; font-size: 0.78rem; }
+        .compliance-admin__counts p, .compliance-admin__counts b { margin: 0; }
+        .compliance-admin__counts p, .compliance-admin__stats p { display: grid; gap: 4px; }
+        .compliance-admin__counts span, .compliance-admin__stats span { color: #5c6578; font-size: 0.78rem; }
         .compliance-admin__bar { height: 10px; background: #eceff6; }
         .compliance-admin__bar > span { display: block; height: 100%; background: #5b4bdb; }
         .compliance-admin__history table { min-width: 0; }
@@ -444,7 +446,7 @@ export default function ComplianceScansAdminPage() {
         .compliance-admin__alert--severe { background: #ffe8d6; color: #8a2e00; }
         .compliance-admin__alert--stopped { background: #fde2e6; color: #8d1d32; }
         @media (max-width: 800px) {
-          .compliance-admin__filters, .compliance-admin__stats { grid-template-columns: 1fr; }
+          .compliance-admin__filters, .compliance-admin__counts, .compliance-admin__stats { grid-template-columns: 1fr; }
         }
       `}</style>
     </section>
