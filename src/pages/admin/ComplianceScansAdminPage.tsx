@@ -116,7 +116,7 @@ export default function ComplianceScansAdminPage() {
       if (!response.ok) {
         setLoaded(false);
         setSummary(null);
-        setError(data.error || (response.status === 401 ? "נדרשת התחברות מנהל" : "לא ניתן לטעון את רשימת הסריקות"));
+        setError(data.error || (response.status === 401 ? "נדרשת התחברות מנהל" : `לא ניתן לטעון את רשימת הסריקות (HTTP ${response.status})`));
         return;
       }
       setLoaded(true);
@@ -324,6 +324,8 @@ export default function ComplianceScansAdminPage() {
               <th>סוג סריקה</th>
               <th>תשלום</th>
               <th>הצהרה וחתימה</th>
+              <th>פרטים</th>
+              <th>דוח ראשוני</th>
               <th>דוח מלא</th>
               <th>PDF</th>
             </tr>
@@ -351,6 +353,8 @@ export default function ComplianceScansAdminPage() {
                     <span>סריקה קודמת — לא קיים אישור חתום במערכת</span>
                   )}
                 </td>
+                <td><a href={`/admin/compliance-scans/${row.id}`}>פרטי הסריקה</a></td>
+                <td><a href={`/he/compliance/report/${row.id}?view=summary`}>דוח ראשוני</a></td>
                 <td><a href={`/he/compliance/report/${row.id}`}>דוח מלא</a></td>
                 <td><button type="button" onClick={() => downloadPdf(row.id)}>PDF</button></td>
               </tr>
