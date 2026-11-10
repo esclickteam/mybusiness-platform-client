@@ -842,6 +842,13 @@ export default function PartnersRecruitment() {
     };
   }, [hebrew]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (stickyVisible) root.setAttribute("data-partners-sticky", "1");
+    else root.removeAttribute("data-partners-sticky");
+    return () => root.removeAttribute("data-partners-sticky");
+  }, [stickyVisible]);
+
   const monthly = options.find((row) => row.interval === "monthly") || INTERNATIONAL_BILLING_OPTIONS[0];
   const annual = options.find((row) => row.interval === "annual") || INTERNATIONAL_BILLING_OPTIONS[1];
   const savings = annual.savingsUsd || 988;
