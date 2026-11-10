@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   CalendarDays,
   CheckCircle2,
@@ -93,39 +93,73 @@ export default function CRMLeadCard({
   const [dealAmount, setDealAmount] = useState("");
   const [customValues, setCustomValues] = useState<Record<string, unknown>>({});
   const [status, setStatus] = useState("new");
-
-  const load = async () => {
-    setError("");
-    try {
-      const [{ data }, settings, events, dealRows] = await Promise.all([
-        API.get(`/crm/leads/${leadId}`),
-        fetchWorkspaceSettings(),
-        fetchTimeline(leadId),
-        fetchDeals({ leadId }),
-      ]);
-      setLead(data.lead);
-      setStatus(data.lead?.status || "new");
-      setCustomValues(data.lead?.customValues || {});
-      setFields(settings.leadCustomFields || []);
-      setTimeline(events);
-      setDeals(dealRows);
-    } catch (err) {
-      setError(getApiErrorMessage(err, t("crm.leads.errors.loadFailed")));
-    }
-  };
+  const [reloadToken, setReloadToken] = useState(0);
+  const seenLeadId = useRef("");
+  const recordReady = Boolean(lead && String(lead._id) === String(leadId));
 
   useEffect(() => {
-    void load();
-  }, [leadId]);
+    let cancelled = false;
+    const requestedId = leadId;
+    const switched = seenLeadId.current !== requestedId;
+    seenLeadId.current = requestedId;
+    if (switched) {
+      setLead(null);
+      setError("");
+      setNotice("");
+      setNote("");
+      setTaskText("");
+      setTaskDue("");
+      setCallNote("");
+      setMeetingTitle("");
+      setMeetingAt("");
+      setDocName("");
+      setDocUrl("");
+      setDealName("");
+      setDealAmount("");
+      setCustomValues({});
+      setTimeline([]);
+      setDeals([]);
+    }
+
+    (async () => {
+      try {
+        const [{ data }, settings, events, dealRows] = await Promise.all([
+          API.get(`/crm/leads/${requestedId}`),
+          fetchWorkspaceSettings(),
+          fetchTimeline(requestedId),
+          fetchDeals({ leadId: requestedId }),
+        ]);
+        if (cancelled) return;
+        const next = data?.lead;
+        if (!next || String(next._id) !== String(requestedId)) {
+          setLead(null);
+          setError(t("crm.leads.errors.recordMismatch"));
+          return;
+        }
+        setLead(next);
+        setStatus(next.status || "new");
+        setCustomValues(next.customValues || {});
+        setFields(settings.leadCustomFields || []);
+        setTimeline(events);
+        setDeals(dealRows);
+      } catch (err) {
+        if (!cancelled) setError(getApiErrorMessage(err, t("crm.leads.errors.loadFailed")));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [leadId, reloadToken, t]);
 
   const flash = (message: string) => {
     setNotice(message);
     onChanged();
-    void load();
+    setReloadToken((value) => value + 1);
   };
 
   const saveCustom = async () => {
-    if (!lead) return;
+    if (!recordReady || !lead) return;
     setSaving(true);
     try {
       await patchLead(lead._id, {
@@ -141,7 +175,7 @@ export default function CRMLeadCard({
   };
 
   const changeStatus = async (next: string) => {
-    if (!lead) return;
+    if (!recordReady || !lead) return;
     setStatus(next);
     try {
       await API.patch(`/crm/leads/${lead._id}/status`, { status: next });
@@ -152,7 +186,7 @@ export default function CRMLeadCard({
   };
 
   const addActivity = async (type: string, text: string, extra: Record<string, unknown> = {}) => {
-    if (!lead || !text.trim()) return;
+    if (!recordReady || !lead || !text.trim()) return;
     await API.post(`/crm/leads/${lead._id}/activities`, { type, text, ...extra });
     flash(t("crm.workspace.saved"));
   };
@@ -162,11 +196,14 @@ export default function CRMLeadCard({
     [deals]
   );
 
-  if (!lead) {
+  if (!recordReady || !lead) {
     return (
       <div className="crm-dossier fixed inset-0 z-50 p-3">
-        <div className="crm-dossier-panel mx-auto flex h-full max-w-6xl items-center justify-center">
-          <p className="text-sm font-bold text-slate-500">{t("crm.common.loading")}</p>
+        <div className="crm-dossier-panel mx-auto flex h-full max-w-6xl flex-col items-center justify-center gap-3">
+          <p className="text-sm font-bold text-slate-500">{error || t("crm.common.loading")}</p>
+          <button type="button" className="crm-close" onClick={onClose}>
+            {t("crm.common.close")}
+          </button>
         </div>
       </div>
     );

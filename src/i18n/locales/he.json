@@ -4450,7 +4450,8 @@
         "taskDueRequired": "כדי לשמור משימה, יש לבחור תאריך ושעת יעד.",
         "saveActivityFailed": "שמירת הפעילות נכשלה. בדקו שה-API של הפעילויות מעודכן.",
         "updateTaskFailed": "עדכון המשימה נכשל",
-        "requestFailed": "הבקשה נכשלה"
+        "requestFailed": "הבקשה נכשלה",
+        "recordMismatch": "הנתונים שהתקבלו אינם שייכים לליד שנבחר. השמירה נחסמה."
       },
       "drawer": {
         "dossierBadge": "תיק ליד",
@@ -4977,7 +4978,8 @@
         "phoneRequired": "טלפון הוא שדה חובה",
         "businessIdMissing": "מזהה העסק חסר",
         "createFailed": "יצירת הלקוח נכשלה",
-        "updateFailed": "עדכון הלקוח נכשל"
+        "updateFailed": "עדכון הלקוח נכשל",
+        "recordMismatch": "הנתונים שהתקבלו אינם שייכים ללקוח שנבחר. השמירה נחסמה."
       },
       "customFields": {
         "manageButton": "הגדרת נתונים משתנים",

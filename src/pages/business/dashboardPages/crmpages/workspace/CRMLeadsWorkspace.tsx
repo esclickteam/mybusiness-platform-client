@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Archive,
   Columns3,
@@ -58,6 +59,8 @@ export default function CRMLeadsWorkspace({
 }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language || "he";
+  const [searchParams, setSearchParams] = useSearchParams();
+  const leadIdFromUrl = searchParams.get("leadId") || "";
   const [state, setState] = useState<LeadListState>(() => loadLeadListState(businessId));
   const [leads, setLeads] = useState<WorkspaceLead[]>([]);
   const [total, setTotal] = useState(0);
@@ -164,20 +167,40 @@ export default function CRMLeadsWorkspace({
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const leadId = params.get("leadId");
-    if (leadId) setOpenLeadId(leadId);
+    setOpenLeadId(leadIdFromUrl);
+  }, [leadIdFromUrl]);
+
+  const setLeadInUrl = (id: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (id) next.set("leadId", id);
+      else next.delete("leadId");
+      return next;
+    }, { replace: true });
+  };
+
+  const openLead = (id: string) => {
+    setState((prev) => ({ ...prev, scrollTop: tableRef.current?.scrollTop || 0 }));
+    setLeadInUrl(id);
+  };
+
+  const closeLead = () => {
+    setLeadInUrl("");
+  };
+
+  useEffect(() => {
     const onOpen = (event: Event) => {
       const detail = (event as CustomEvent).detail || {};
-      if (detail.leadId) setOpenLeadId(String(detail.leadId));
+      if (detail.leadId) setLeadInUrl(String(detail.leadId));
     };
+    const onUpdated = () => void load(true);
     window.addEventListener("bizuply:open-lead", onOpen as EventListener);
-    window.addEventListener("bizuply:leads-updated", () => void load(true));
+    window.addEventListener("bizuply:leads-updated", onUpdated);
     return () => {
       window.removeEventListener("bizuply:open-lead", onOpen as EventListener);
-      window.removeEventListener("bizuply:leads-updated", () => void load(true));
+      window.removeEventListener("bizuply:leads-updated", onUpdated);
     };
-  }, [load]);
+  }, [load, setSearchParams]);
 
   useEffect(() => {
     if (tableRef.current) tableRef.current.scrollTop = state.scrollTop;
@@ -542,10 +565,7 @@ export default function CRMLeadsWorkspace({
                       key={lead._id}
                       draggable
                       onDragStart={(event) => event.dataTransfer.setData("text/lead-id", lead._id)}
-                      onClick={() => {
-                        setState((prev) => ({ ...prev, scrollTop: tableRef.current?.scrollTop || 0 }));
-                        setOpenLeadId(lead._id);
-                      }}
+                      onClick={() => openLead(lead._id)}
                       className="crm-kanban-card cursor-pointer text-xs font-bold"
                     >
                       <p className="line-clamp-1">{lead.fullName || lead.name}</p>
@@ -616,10 +636,7 @@ export default function CRMLeadsWorkspace({
                       <td
                         key={column}
                         className="cursor-pointer p-2 font-semibold"
-                        onClick={() => {
-                          setState((prev) => ({ ...prev, scrollTop: tableRef.current?.scrollTop || 0 }));
-                          setOpenLeadId(lead._id);
-                        }}
+                        onClick={() => openLead(lead._id)}
                       >
                         {renderCell(lead, column, locale, t)}
                       </td>
@@ -653,9 +670,10 @@ export default function CRMLeadsWorkspace({
 
       {openLeadId && (
         <CRMLeadCard
+          key={openLeadId}
           leadId={openLeadId}
           agents={agents}
-          onClose={() => setOpenLeadId("")}
+          onClose={closeLead}
           onChanged={() => void load(true)}
         />
       )}
