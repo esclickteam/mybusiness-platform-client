@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { fetchPartnerPlans } from "../../lib/partnerApi";
@@ -13,7 +13,6 @@ import {
 import { marketingPublicUrl } from "../../lib/localePathCore.mjs";
 import { partnerFaqPairs } from "./partners/partnerFaq.mjs";
 import PartnerApplyForm from "./partners/PartnerApplyForm";
-import PartnerPortalVisual from "./partners/PartnerPortalVisual";
 import PartnerProductMedia from "./partners/PartnerProductMedia";
 import {
   ONE_TIME_RATE,
@@ -23,6 +22,12 @@ import {
   tierCount,
 } from "./partners/partnersCommission.mjs";
 import "./partners/partnersPage.css";
+
+type DesignDirection = "a" | "b";
+
+function resolveDesign(raw: string | null): DesignDirection {
+  return raw === "b" ? "b" : "a";
+}
 
 function revealPartnersSections(root: HTMLElement) {
   const reduce =
@@ -259,7 +264,12 @@ const COPY = {
         ["Reseller", "Setup and monthly fees follow the appointed catalog plan", "Markup-share per appointed plan — not the international tier table", "By agreement. Not selected automatically on this page."],
       ],
     },
-    heroMediaCaption: "Live product demo from the authorized workspace — Partner Center illustration beside CRM recording.",
+    heroMediaCaption: "Authorized CRM demo recording from the published Bizuply demo workspace.",
+    designChooserTitle: "Choose a design direction (preview only)",
+    designALabel: "A · Editorial",
+    designAHint: "Asymmetric HubSpot-style layout, large type, open whitespace",
+    designBLabel: "B · Structured",
+    designBHint: "Salesforce-style clarity, chaptered products, crisp comparison",
     tracks: [
       {
         key: "Affiliate",
@@ -580,7 +590,12 @@ const COPY = {
         ["Reseller", "דמי הקמה וחודשי לפי המסלול בקטלוג", "markup-share לפי המסלול שמונה — לא טבלת המדרגות הבינלאומית", "לפי הסכם. לא נבחר אוטומטית בעמוד הזה."],
       ],
     },
-    heroMediaCaption: "הדגמת מוצר מסביבת הדמו המורשית — המחשת מרכז השותפים לצד הקלטת CRM.",
+    heroMediaCaption: "הקלטת CRM מורשית מסביבת הדמו המפורסמת של Bizuply.",
+    designChooserTitle: "בחרו כיוון עיצובי (תצוגה מקדימה בלבד)",
+    designALabel: "A · Editorial",
+    designAHint: "פריסה אסימטרית בסגנון HubSpot, טיפוגרפיה גדולה וריווח פתוח",
+    designBLabel: "B · Structured",
+    designBHint: "בהירות בסגנון Salesforce, מוצרים בפרקים והשוואה חדה",
     tracks: [
       {
         key: "Affiliate",
@@ -762,6 +777,8 @@ function Rich({ text }: { text: string }) {
 
 export default function PartnersRecruitment() {
   const { i18n } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const design = resolveDesign(searchParams.get("design"));
   const hebrew = Boolean(i18n.language?.startsWith("he"));
   const copy = (hebrew ? COPY.he : COPY.en) as Copy;
   const dir = getTextDirection(i18n.language);
@@ -779,6 +796,12 @@ export default function PartnersRecruitment() {
   const [oneTimeDeals, setOneTimeDeals] = useState(2);
   const [oneTimeAverage, setOneTimeAverage] = useState(500);
   const [stickyVisible, setStickyVisible] = useState(false);
+
+  const setDesign = (next: DesignDirection) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("design", next);
+    setSearchParams(params, { replace: true });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -867,7 +890,12 @@ export default function PartnersRecruitment() {
   ];
 
   return (
-    <div className="ipartner" dir={dir} data-testid="partners-recruitment">
+    <div
+      className="ipartner"
+      dir={dir}
+      data-testid="partners-recruitment"
+      data-design={design}
+    >
       <Helmet>
         <title>{copy.seoTitle}</title>
         <meta name="description" content={copy.seoDescription} />
@@ -882,8 +910,33 @@ export default function PartnersRecruitment() {
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 
+      <div className="ip-design-chooser" data-testid="partners-design-chooser" role="region" aria-label={copy.designChooserTitle}>
+        <div className="ip-wrap ip-design-chooser__inner">
+          <p className="ip-design-chooser__title">{copy.designChooserTitle}</p>
+          <div className="ip-design-chooser__actions">
+            <button
+              type="button"
+              className={`ip-design-option${design === "a" ? " is-active" : ""}`}
+              aria-pressed={design === "a"}
+              onClick={() => setDesign("a")}
+            >
+              <strong>{copy.designALabel}</strong>
+              <span>{copy.designAHint}</span>
+            </button>
+            <button
+              type="button"
+              className={`ip-design-option${design === "b" ? " is-active" : ""}`}
+              aria-pressed={design === "b"}
+              onClick={() => setDesign("b")}
+            >
+              <strong>{copy.designBLabel}</strong>
+              <span>{copy.designBHint}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <header className="ip-hero">
-        <div className="ip-hero-glow" aria-hidden="true" />
         <div className="ip-wrap ip-hero-grid">
           <div className="ip-hero-copy">
             <p className="ip-kicker">{copy.kicker}</p>
@@ -899,30 +952,28 @@ export default function PartnersRecruitment() {
             </div>
           </div>
           <div className="ip-hero-media">
-            <div className="ip-hero-stack">
-              <div className="ip-hero-demo">
-                <PartnerProductMedia
-                  hebrew={hebrew}
-                  priority
-                  product={{
-                    image: "/demo-media/crm/poster.jpg",
-                    alt: hebrew ? "הקלטת CRM מסביבת הדמו" : "CRM demo recording",
-                    video: "/demo-media/crm/crm-en.mp4",
-                    videoHe: "/demo-media/crm/crm-he.mp4",
-                    captions: "/demo-media/crm/crm.en.vtt",
-                    captionsHe: "/demo-media/crm/crm.he.vtt",
-                  }}
-                />
-              </div>
-              <div className="ip-hero-portal">
-                <PartnerPortalVisual copy={copy.visual} />
-              </div>
-            </div>
+            <PartnerProductMedia
+              hebrew={hebrew}
+              priority
+              product={{
+                image: "/demo-media/crm/poster.jpg",
+                alt: hebrew ? "הקלטת CRM מסביבת הדמו" : "CRM demo recording",
+                video: "/demo-media/crm/crm-en.mp4",
+                videoHe: "/demo-media/crm/crm-he.mp4",
+                captions: "/demo-media/crm/crm.en.vtt",
+                captionsHe: "/demo-media/crm/crm.he.vtt",
+              }}
+            />
             <p className="ip-hero-media-caption">{copy.heroMediaCaption}</p>
           </div>
         </div>
-        <div className="ip-wrap" data-testid="partner-track-compare">
-          <p className="ip-kicker">{copy.compareTitle}</p>
+      </header>
+
+      <section className="ip-section ip-open-tracks" data-testid="partner-track-compare" aria-labelledby="open-tracks-heading">
+        <div className="ip-wrap">
+          <p className="ip-kicker" id="open-tracks-heading">
+            {copy.compareTitle}
+          </p>
           <div className="ip-compare" aria-label={copy.compareTitle}>
             {copy.compare.map((track) => (
               <article
@@ -937,26 +988,31 @@ export default function PartnersRecruitment() {
             ))}
           </div>
           <p className="ip-compare-note">{copy.compareNote}</p>
+          <div className="ip-facts" aria-label={copy.kicker}>
+            {copy.facts.map(([title, body]) => (
+              <article key={title}>
+                <strong>{title}</strong>
+                <span>{body}</span>
+              </article>
+            ))}
+          </div>
         </div>
-        <div className="ip-wrap ip-facts" aria-label={copy.kicker}>
-          {copy.facts.map(([title, body]) => (
-            <article key={title}>
-              <strong>{title}</strong>
-              <span>{body}</span>
-            </article>
-          ))}
-        </div>
-      </header>
+      </section>
 
       <section className="ip-section ip-reveal" id="benefits">
         <div className="ip-wrap">
           <h2>{copy.whyTitle}</h2>
           <p className="ip-copy">{copy.whyLead}</p>
-          <div className="ip-grid-3">
-            {copy.why.map(([title, body]) => (
-              <article className="ip-card" key={title}>
-                <h3>{title}</h3>
-                <p>{body}</p>
+          <div className="ip-editorial-list">
+            {copy.why.map(([title, body], index) => (
+              <article className="ip-editorial-item" key={title}>
+                <span className="ip-editorial-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </div>
               </article>
             ))}
           </div>
@@ -968,10 +1024,19 @@ export default function PartnersRecruitment() {
           <h2>{copy.productsTitle}</h2>
           <p className="ip-copy">{copy.productsLead}</p>
           <div className="ip-products">
-            {copy.products.map((product) => (
-              <article className="ip-product" key={product.href} data-testid={`product-${product.href.replace(/^\//, "")}`}>
-                <PartnerProductMedia hebrew={hebrew} product={product} />
-                <div>
+            {copy.products.map((product, index) => (
+              <article
+                className="ip-product"
+                key={product.href}
+                data-testid={`product-${product.href.replace(/^\//, "")}`}
+              >
+                <div className="ip-product-media">
+                  <span className="ip-product-chapter" aria-hidden="true">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <PartnerProductMedia hebrew={hebrew} product={product} />
+                </div>
+                <div className="ip-product-copy">
                   <h3>{product.title}</h3>
                   {"sell" in product && product.sell ? <p className="ip-sell">{product.sell}</p> : null}
                   <ul>
