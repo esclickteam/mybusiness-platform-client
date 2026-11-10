@@ -40,6 +40,7 @@ import {
   SeoGeoMatrixPanel,
   WeeklyActionsPanel,
 } from "./DecisionPanels";
+import KeywordResearchPanel from "./KeywordResearchPanel";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
 
@@ -186,6 +187,10 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [monitoringStatus, setMonitoringStatus] = useState<any>(null);
   const [weeklyActions, setWeeklyActions] = useState<any>(null);
   const [gscOpps, setGscOpps] = useState<any>(null);
+  const [keywordResearch, setKeywordResearch] = useState<any>(null);
+  const [keywordLoading, setKeywordLoading] = useState(false);
+  const [keywordError, setKeywordError] = useState("");
+  const [keywordRefreshing, setKeywordRefreshing] = useState(false);
   const [gscFilter, setGscFilter] = useState("all");
   const [aiRadar, setAiRadar] = useState<any>(null);
   const [beforeAfter, setBeforeAfter] = useState<any>(null);
@@ -373,6 +378,43 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     };
   }, [tab]);
 
+  useEffect(() => {
+    if (tab !== "keywordResearch" || !brandId) return;
+    let cancelled = false;
+    setKeywordLoading(true);
+    setKeywordError("");
+    (async () => {
+      try {
+        const data = await geoGet("/keyword-research", { brandId });
+        if (!cancelled) setKeywordResearch(data);
+      } catch (e: any) {
+        if (!cancelled) {
+          setKeywordResearch(null);
+          setKeywordError(e?.response?.data?.error || e.message || "טעינת מחקר המילים נכשלה");
+        }
+      } finally {
+        if (!cancelled) setKeywordLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [tab, brandId]);
+
+  const refreshKeywordResearch = async () => {
+    if (!brandId) return;
+    setKeywordRefreshing(true);
+    setKeywordError("");
+    try {
+      const data = await geoPost("/keyword-research/refresh", {}, { brandId });
+      setKeywordResearch(data);
+    } catch (e: any) {
+      setKeywordError(e?.response?.data?.error || e.message || "רענון Keyword Planner נכשל");
+    } finally {
+      setKeywordRefreshing(false);
+    }
+  };
+
   const nav: Array<{ id: Tab; label: string }> = [
     { id: "overview", label: copy.navOverview },
     { id: "weeklyActions", label: "מה לעשות השבוע" },
@@ -383,6 +425,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "brandProfile", label: "פרופיל מותג" },
     { id: "pageAudit", label: "בדיקת עמוד" },
     { id: "monthlyDecision", label: "דוח חודשי" },
+    { id: "keywordResearch", label: "מחקר מילות מפתח" },
     { id: "visibility", label: "נראות AI" },
     { id: "appeared", label: "שאלות שבהן הופענו" },
     { id: "missing", label: "שאלות שבהן לא הופענו" },
@@ -858,6 +901,19 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
           ) : null}
           {tab === "monthlyDecision" ? (
             <MonthlyReportPanel brandId={brandId} data={monthlyDecision} />
+          ) : null}
+          {tab === "keywordResearch" ? (
+            <KeywordResearchPanel
+              brands={brands}
+              brandId={brandId}
+              onBrand={setBrandId}
+              data={keywordResearch}
+              loading={keywordLoading}
+              error={keywordError}
+              canRefresh={Boolean(status?.canRun)}
+              refreshing={keywordRefreshing}
+              onRefresh={refreshKeywordResearch}
+            />
           ) : null}
           {tab === "pageAudit" ? <PageAuditPanel brandId={brandId} /> : null}
 
