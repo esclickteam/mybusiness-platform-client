@@ -375,6 +375,11 @@
 }
 .scan-product--report .scan-report { padding-bottom: 1.5rem; }
 
+.report-sheet { unicode-bidi: isolate; }
+.report-lang { display: flex; flex-wrap: wrap; gap: 0.35rem; margin: 0.75rem 0 1rem; }
+.report-lang button { background: #fff; color: #1a1033; border: 1px solid #ddd6fe; border-radius: 999px; padding: 0.25rem 0.75rem; font: inherit; cursor: pointer; }
+.report-lang button[aria-pressed="true"] { background: #4c1d95; color: #fff; border-color: #4c1d95; }
+.report-stored { color: #1a1033; font-size: 0.92rem; }
 .report-sheet {
   width: min(980px, 100%);
   margin: 0 auto;

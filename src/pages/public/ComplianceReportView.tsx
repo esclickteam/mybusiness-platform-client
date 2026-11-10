@@ -269,14 +269,24 @@ function bandOf(item: Finding) {
   return "unverified";
 }
 
+const VIEW_LANGUAGES: { id: Locale; label: string }[] = [
+  { id: "he", label: "עברית" },
+  { id: "en", label: "English" },
+  { id: "es", label: "Español" },
+  { id: "pt-BR", label: "Português" },
+  { id: "ar", label: "العربية" },
+];
+
 export function ComplianceReportView({
   locale,
   payload,
   onPdf,
+  onLocale,
   audience = "customer",
 }: {
   locale: Locale;
   payload: any;
+  onLocale?: (locale: Locale) => void;
   onPdf: () => void;
   audience?: "customer" | "admin";
 }) {
@@ -321,7 +331,7 @@ export function ComplianceReportView({
   const technical = findings.filter((item) => item.checkId === "content.not_performed" || item.checkId === "a11y.axe");
   const undecided = findings.filter((item) => bandOf(item) === "unverified" && !technical.includes(item));
   return (
-    <section className="scan-report report-sheet">
+    <section className="scan-report report-sheet" lang={locale} dir={locale === "he" || locale === "ar" ? "rtl" : "ltr"}>
       <header className="report-sheet__mast">
         <div>
           <p className="report-sheet__kicker">{copy.site}</p>
@@ -332,6 +342,13 @@ export function ComplianceReportView({
           {audience === "customer" ? <Link to="/compliance">{copy.newScan}</Link> : null}
         </div>
       </header>
+      {onLocale ? (
+        <div className="report-lang" role="group" aria-label={copy.site}>
+          {VIEW_LANGUAGES.map((item) => (
+            <button key={item.id} type="button" aria-pressed={locale === item.id} onClick={() => onLocale(item.id)}>{item.label}</button>
+          ))}
+        </div>
+      ) : null}
       <dl className="report-sheet__meta">
         <div><dt>{copy.address}</dt><dd dir="ltr">{report.url || "—"}</dd></div>
         <div><dt>{copy.date}</dt><dd>{formatWhen(report.scannedAt, locale)}</dd></div>
@@ -369,6 +386,7 @@ export function ComplianceReportView({
           <p>{report.executive.scoreMeaning}</p>
           <p><strong>{report.executive.score ?? shownScore}/100</strong> · {copy.checksTitle}: {report.executive.checks}</p>
           <p>{["critical", "high", "medium", "low", "info"].map((key) => `${copy[key] || key} ${report.executive.bySeverity?.[key] || 0}`).join(" · ")}</p>
+          {report.executive.storedLabel ? <p className="report-stored">{report.executive.storedLabel}</p> : null}
           {(report.executive.significant || []).length ? <ul>{report.executive.significant.map((title: string) => <li key={title}>{title}</li>)}</ul> : null}
           {(report.executive.soundDomains || []).length ? <p><strong>{copy.soundTitle}. </strong>{report.executive.soundDomains.join(" · ")}</p> : null}
           {(report.executive.openDomains || []).length ? <p><strong>{copy.openTitle}. </strong>{report.executive.openDomains.map((area: { label: string; note: string }) => `${area.label}: ${area.note}`).join(" · ")}</p> : null}
@@ -399,10 +417,12 @@ export function ComplianceReportView({
                 <article key={`${item.checkId}-${index}`} className={`report-finding sev-${item.severity || "info"}`}>
                   <header>
                     <p>{copy.severity}: {brief?.severityLabel || copy[item.severity || "info"] || item.severity} · {copy.certainty}: {brief?.certaintyLabel || "—"}</p>
+                    {brief?.storedLabel ? <p className="report-stored">{brief.storedLabel}</p> : null}
                     <h3>{title}</h3>
                   </header>
                   <h4>{copy.foundTitle}</h4>
                   <p>{brief?.found || item.description}</p>
+                  {brief?.storedFound ? <p>{brief.storedFound}</p> : null}
                   <h4>{copy.whyTitle}</h4>
                   <p>{brief?.why || item.explanation}</p>
                   <h4>{copy.whereTitle}</h4>
@@ -440,8 +460,9 @@ export function ComplianceReportView({
       <section id="report-plan" className="report-sheet__block">
         <h2>{copy.plan}</h2>
         <ol>
-          {(report.workPlan || actions).map((item: Finding & { order?: number; change?: string; verify?: string; who?: string; impact?: string; steps?: string[] }) => (
+          {(report.workPlan || actions).map((item: Finding & { order?: number; change?: string; verify?: string; who?: string; impact?: string; steps?: string[]; storedLabel?: string }) => (
             <li key={`${item.order || ""}-${item.checkId}`}>
+              {item.storedLabel ? <p className="report-stored">{item.storedLabel}</p> : null}
               <strong>{item.title}</strong>
               {item.who ? <p>{copy.whoTitle}: {item.who}</p> : null}
               {item.impact ? <p>{item.impact}</p> : null}

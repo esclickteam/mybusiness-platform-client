@@ -675,7 +675,7 @@ export default function ComplianceScannerPage() {
     if (token) headers["x-tenant-token"] = token;
     if (admin) headers["x-admin-session"] = admin;
     if (platform) headers.Authorization = `Bearer ${platform}`;
-    const response = await fetch(`/compliance/api/scans/${id}/pdf`, { headers });
+    const response = await fetch(`/compliance/api/scans/${id}/pdf?locale=${encodeURIComponent(locale)}`, { headers, cache: "no-store" });
     if (!response.ok) { setError(copy.notice); return; }
     const blob = await response.blob();
     const link = document.createElement("a");
@@ -830,7 +830,7 @@ export default function ComplianceScannerPage() {
             <FreeResult locale={commercialLocale(locale)} summary={payload.summary} status={payload.status} scanId={id} />
           ) : (
             <>
-              <ComplianceReportView locale={locale} payload={payload} onPdf={downloadPdf} />
+              <ComplianceReportView locale={locale} payload={payload} onPdf={downloadPdf} onLocale={(next) => { void i18n.changeLanguage(next); }} />
             </>
           )}
         </section>

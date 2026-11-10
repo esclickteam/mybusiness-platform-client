@@ -65,6 +65,12 @@ export default function ComplianceScanDetailPage() {
   const [error, setError] = useState("");
   const [reportError, setReportError] = useState("");
   const [pdfMessage, setPdfMessage] = useState("");
+  const [viewLocale, setViewLocale] = useState("he");
+
+  useEffect(() => {
+    const saved = sessionStorage.getItem("bizuplyComplianceViewLocale") || "";
+    if (["he", "en", "es", "pt-BR", "ar"].includes(saved)) setViewLocale(saved);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("token") || "";
@@ -74,8 +80,8 @@ export default function ComplianceScanDetailPage() {
       try {
         const [detailResponse, fullResponse, summaryResponse] = await Promise.all([
           fetch(`/compliance/api/admin/scans/${encodeURIComponent(scanId)}`, { headers, credentials: "include" }),
-          fetch(`/compliance/api/scans/${encodeURIComponent(scanId)}?locale=he`, { headers, credentials: "include" }),
-          fetch(`/compliance/api/scans/${encodeURIComponent(scanId)}?locale=he&view=summary`, { headers, credentials: "include" }),
+          fetch(`/compliance/api/scans/${encodeURIComponent(scanId)}?locale=${encodeURIComponent(viewLocale)}`, { headers, credentials: "include", cache: "no-store" }),
+          fetch(`/compliance/api/scans/${encodeURIComponent(scanId)}?locale=${encodeURIComponent(viewLocale)}&view=summary`, { headers, credentials: "include", cache: "no-store" }),
         ]);
         const detailData = await detailResponse.json().catch(() => ({}));
         const fullData = await fullResponse.json().catch(() => ({}));
@@ -94,7 +100,12 @@ export default function ComplianceScanDetailPage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [scanId]);
+  }, [scanId, viewLocale]);
+
+  function chooseLocale(next: "he" | "en" | "es" | "pt-BR" | "ar") {
+    sessionStorage.setItem("bizuplyComplianceViewLocale", next);
+    setViewLocale(next);
+  }
 
   function selectTab(next: Tab) {
     setParams({ tab: QUERY_TAB[next] }, { replace: true });
@@ -121,9 +132,10 @@ export default function ComplianceScanDetailPage() {
       return;
     }
     const token = localStorage.getItem("token") || "";
-    const response = await fetch(`/compliance/api/scans/${detail?.id || scanId}/pdf`, {
+    const response = await fetch(`/compliance/api/scans/${detail?.id || scanId}/pdf?locale=${encodeURIComponent(viewLocale)}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       credentials: "include",
+      cache: "no-store",
     });
     if (!response.ok) {
       const data = await response.json().catch(() => ({}));
@@ -137,10 +149,13 @@ export default function ComplianceScanDetailPage() {
     link.download = "bizuply-website-report.pdf";
     link.click();
     URL.revokeObjectURL(url);
-    setPdfMessage("ה־PDF הופק מהדוח השמור.");
+    const engine = response.headers.get("X-Compliance-Pdf-Engine");
+    setPdfMessage(engine === "chromium"
+      ? "ה־PDF הופק עכשיו מהדוח השמור במנוע החדש. לא נטען קובץ ישן מהמטמון."
+      : "ה־PDF הורד, אבל השרת לא סימן שהוא נוצר במנוע החדש.");
   }
 
-  const locale = commercialLocale(customer?.report?.locale || summaryView?.report?.locale || "he");
+  const locale = commercialLocale(viewLocale);
   const findings = customer?.report?.findings || detail?.report?.findings || [];
   const missingReport = detail ? !detail.reportStored && !customer?.report : false;
 
@@ -176,7 +191,7 @@ export default function ComplianceScanDetailPage() {
           ) : null}
           {tab === "דוח מלא" || tab === "ממצאים וראיות" ? (
             reportError ? <p className="scan-detail__error" role="alert">{reportError}</p> : customer?.access === "full" && customer.report ? (
-              <ComplianceReportView locale={locale} payload={customer} onPdf={downloadPdf} audience="admin" />
+              <ComplianceReportView locale={locale} payload={customer} onPdf={downloadPdf} onLocale={chooseLocale} audience="admin" />
             ) : <p>{missingReport ? "הדוח המלא לא נשמר לסריקה הזו. לא הומצאו ממצאים." : "הדוח המלא לא זמין לחשבון הזה."}</p>
           ) : null}
           {tab === "PDF" ? (
