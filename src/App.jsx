@@ -211,6 +211,9 @@ const AdminGlobalPartners = lazy(() =>
 const GeoStagingPreview = lazy(() =>
   import("./pages/admin/geoIntel/GeoStagingPreview")
 );
+const KeywordResearchDevPreview = import.meta.env.DEV
+  ? lazy(() => import("./pages/admin/geoIntel/KeywordResearchDevPreview"))
+  : null;
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
@@ -1258,6 +1261,16 @@ export default function App() {
                       }}
                     >
                       <Routes location={location}>
+                        {import.meta.env.DEV && KeywordResearchDevPreview ? (
+                          <Route
+                            path="/dev/keyword-research"
+                            element={
+                              <Suspense fallback={null}>
+                                <KeywordResearchDevPreview />
+                              </Suspense>
+                            }
+                          />
+                        ) : null}
                         {isGeoProductionHost ? (
                           <>
                             <Route path="/login" element={<Login />} />

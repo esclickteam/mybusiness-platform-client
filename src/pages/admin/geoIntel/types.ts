@@ -18,6 +18,7 @@ export type Tab =
   | "seoGeoMatrix"
   | "pageAudit"
   | "monthlyDecision"
+  | "keywordResearch"
   | "visibility"
   | "appeared"
   | "missing"
