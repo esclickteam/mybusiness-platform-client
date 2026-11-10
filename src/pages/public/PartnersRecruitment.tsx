@@ -112,8 +112,8 @@ const COPY = {
     explore: "See how the program works",
     stickyJoin: "Ready to apply?",
     stickyCta: "Join as a partner",
-    compareTitle: "Choose your open track",
-    compareNote: "Verified commercial terms. Application is free. Membership fees are collected only after approval.",
+    compareTitle: "Affiliate · Business Partner · Reseller",
+    compareNote: "Verified commercial terms. Application is free. Membership fees are collected only after approval. Reseller is by appointment — not self-serve on this page.",
     compare: [
       {
         key: "Affiliate",
@@ -128,6 +128,13 @@ const COPY = {
         fee: "Membership: $499 / month or $5,000 / year after approval.",
         rate: "Recurring commission: 30% / 35% / 40% tiers · 10% on eligible one-time deals.",
         featured: true,
+      },
+      {
+        key: "Reseller",
+        title: "Reseller",
+        fee: "Setup and monthly fees follow the appointed catalog plan.",
+        rate: "Markup-share per appointed plan — not the international tier table. By agreement only.",
+        featured: false,
       },
     ],
     facts: [
@@ -435,8 +442,8 @@ const COPY = {
     explore: "גלו איך התוכנית עובדת",
     stickyJoin: "מוכנים להגיש מועמדות?",
     stickyCta: "הצטרפות כשותפים",
-    compareTitle: "בחרו מסלול פתוח",
-    compareNote: "תנאים מסחריים מאומתים. הגשת הבקשה ללא תשלום. דמי חברות נגבים רק אחרי אישור.",
+    compareTitle: "Affiliate · Business Partner · Reseller",
+    compareNote: "תנאים מסחריים מאומתים. הגשת הבקשה ללא תשלום. דמי חברות נגבים רק אחרי אישור. Reseller הוא במינוי בלבד — לא בהרשמה עצמית בעמוד זה.",
     compare: [
       {
         key: "Affiliate",
@@ -451,6 +458,13 @@ const COPY = {
         fee: "דמי חברות: 499$ לחודש או 5,000$ לשנה אחרי אישור.",
         rate: "עמלה חוזרת: מדרגות 30% / 35% / 40% · 10% על עסקאות חד־פעמיות זכאיות.",
         featured: true,
+      },
+      {
+        key: "Reseller",
+        title: "Reseller",
+        fee: "דמי הקמה וחודשי לפי המסלול שמונה בקטלוג.",
+        rate: "מודל markup-share לפי המסלול שמונה — לא טבלת המדרגות הבינלאומית. לפי הסכם בלבד.",
+        featured: false,
       },
     ],
     facts: [

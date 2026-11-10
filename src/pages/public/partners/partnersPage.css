@@ -278,16 +278,26 @@
 /* ========== Products — Editorial A ========== */
 .ip-products {
   display: grid;
-  gap: 88px;
+  gap: 112px;
 }
 .ip-product {
   display: grid;
-  gap: 32px;
+  gap: 36px;
   padding: 0;
   background: transparent;
   border: 0;
 }
 .ip-product-media { position: relative; }
+.ip-product-media .ip-shot {
+  border: 1px solid var(--line);
+  border-bottom-width: 1px;
+  box-shadow: none;
+}
+.ip-product-media .ip-shot video,
+.ip-product-media .ip-shot img {
+  aspect-ratio: 16 / 9;
+  min-height: 280px;
+}
 .ip-product-chapter { display: none; }
 .ip-product-copy h3 {
   margin: 0 0 12px;
@@ -558,16 +568,31 @@
 .ip-track dt { font-weight: 800; margin-bottom: 2px; }
 .ip-track dd { margin: 0; }
 
-/* Plans — structured pricing */
-.ip-plans { align-items: stretch; margin-top: 28px; }
+/* Plans — structured pricing (open panel, not card grid) */
+.ip-plans {
+  align-items: stretch;
+  margin-top: 28px;
+  gap: 0;
+  border: 1px solid var(--line);
+  background: #fff;
+}
 .ip-plan {
-  padding: 28px;
+  padding: 28px 26px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-radius: var(--radius);
+  border: 0;
+  border-radius: 0;
+  border-inline-end: 1px solid var(--line);
+  background: #fff;
 }
-.ip-plan-best { border: 2px solid var(--violet); }
+.ip-plan:last-child { border-inline-end: 0; }
+.ip-plan-best {
+  border: 0;
+  border-inline-end: 1px solid var(--line);
+  box-shadow: inset 0 3px 0 var(--violet);
+  background: #faf7ff;
+}
 .ip-badge {
   align-self: flex-start;
   border-radius: var(--radius);
@@ -782,7 +807,8 @@
   .ip-facts { grid-template-columns: 1fr 1fr; gap: 0 28px; }
   .ip-compare { grid-template-columns: 1fr 1fr; }
   .ip-compare-card { border-bottom: 0; border-inline-end: 1px solid var(--line); }
-  .ip-compare-card:last-child { border-inline-end: 0; }
+  .ip-compare-card:nth-child(2n) { border-inline-end: 0; }
+  .ip-compare-card:nth-child(n + 3) { border-top: 1px solid var(--line); }
   .ip-grid-2,
   .ip-plans,
   .ip-results,
@@ -806,6 +832,10 @@
   }
   .ip-hero-copy { max-width: 34rem; }
   .ipartner h1 { max-width: 13ch; }
+  .ip-compare { grid-template-columns: repeat(3, 1fr); }
+  .ip-compare-card { border-top: 0; }
+  .ip-compare-card:nth-child(2n) { border-inline-end: 1px solid var(--line); }
+  .ip-compare-card:last-child { border-inline-end: 0; }
   .ip-facts { grid-template-columns: repeat(4, 1fr); gap: 0 24px; }
   .ip-saas-grid { grid-template-columns: repeat(5, 1fr); }
   .ip-saas { border-bottom: 0; border-inline-end: 1px solid var(--line); }

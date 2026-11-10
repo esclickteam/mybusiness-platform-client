@@ -73,6 +73,7 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("compare-Affiliate")).toBeInTheDocument();
     expect(screen.getByTestId("compare-Business Partner")).toHaveTextContent(/\$499/);
     expect(screen.getByTestId("compare-Affiliate")).toHaveTextContent(/15%/);
+    expect(screen.getByTestId("compare-Reseller")).toHaveTextContent(/agreement/i);
     expect(screen.getByTestId("partner-sticky-join")).toBeInTheDocument();
     expect(screen.getByTestId("product-meta-campaigns")).toBeInTheDocument();
     expect(screen.getByTestId("product-meta-campaigns").querySelector("a")).toHaveAttribute(
