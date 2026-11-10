@@ -143,7 +143,7 @@ const dashboard = (p) => `${BASE}${LANG === "he" ? "/he" : ""}/business/${BIZ}/d
 const AUTO = process.env.AUTO_ID || (LANG === "he" ? "6af1e65d76c39b752eefa9e4" : "6af1ed4e76c39b752eefb2b2");
 
 /** Compile the dashboard routes before the film, so the take does not sit on the loading screen. */
-for (const path of ["crm/leads", "whatsapp/inbox"]) {
+for (const path of ["crm/leads", "whatsapp/inbox", "automations", `automations/${AUTO}`]) {
   await page.goto(dashboard(path), { waitUntil: "domcontentloaded", timeout: 120000 });
   await page.locator("aside, .ht-root, .crm-leads, .react-flow").first().waitFor({ timeout: 90000 }).catch(() => {});
   await page.waitForTimeout(1200);
@@ -341,8 +341,8 @@ async function playDemoForm() {
   await settle(900);
 }
 
-/* ---------- 1. Simulated lead form ---------- */
-beginChapter("form");
+/* ---------- 1. Lead intake: simulated form, then the CRM row ---------- */
+beginChapter("lead");
 await goto("crm/leads", listReady);
 const vp = await page.evaluate(() => [innerWidth, innerHeight]);
 log("viewport", vp);
@@ -352,11 +352,6 @@ C.meetingTitle = C.meetingTitle || (LANG === "he" ? "הדגמה אישית עם 
 await showDemoForm();
 await keep();
 await playDemoForm();
-await endChapter();
-
-/* ---------- 2. The lead is in the CRM list ---------- */
-beginChapter("list");
-await keep();
 await settle(400);
 await revealLeadRow();
 await assertLeadRow();
@@ -365,8 +360,8 @@ await to(leadRow().locator("td").nth(1), { click: false, pause: 800 });
 await settle(700);
 await endChapter();
 
-/* ---------- 3. Open Shira's card ---------- */
-beginChapter("card");
+/* ---------- 2. Customer card ---------- */
+beginChapter("crm");
 await keep();
 await to(leadRow().locator("td").nth(1), { after: 180 });
 await waitOrCut(cardReady, { grace: 120, label: "card" });
@@ -474,11 +469,43 @@ if (!DRY) {
 await settle(1500);
 await endChapter();
 
-/* ---------- 8. Return to the updated card ---------- */
-beginChapter("updated");
+/* ---------- 5. Automation test run. It sends nothing. ---------- */
+beginChapter("automation");
+await goto("automations", async () => {
+  await page.getByText(C.autoName).and(page.locator(":visible")).first().waitFor({ timeout: 60000 });
+});
 await keep();
-await settle(400);
-await to(card().locator(".crm-close"), { after: 400 });
+await settle(700);
+await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { click: false, pause: 400 });
+await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { after: 100 });
+await waitOrCut(() => page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 }).then(() => page.locator(".react-flow__node").first().waitFor()), { grace: 150, label: "editor" });
+await settle(1200);
+if (!MOBILE) {
+  await to(page.locator(".react-flow__node").first(), { click: false, pause: 550 });
+  await to(page.locator(".react-flow__node").nth(1), { click: false, pause: 350 });
+  await to(page.locator(".react-flow__node").nth(2), { click: false, pause: 350 });
+}
+await to(page.getByRole("button", { name: L.test, exact: true }), { after: 700 });
+const dryResp = page.waitForResponse((r) => /\/dry-run$/.test(r.url()), { timeout: 20000 });
+await to(page.getByRole("button", { name: L.runTest, exact: true }), { after: 100 });
+const dr = await dryResp;
+if (!dr.ok()) fail(`dry-run ${dr.status()}`);
+const dryBody = await dr.json().catch(() => ({}));
+if (dryBody.liveDispatch || dryBody.sent) fail("automation dry-run tried to send");
+await page.getByText("completed").first().waitFor({ timeout: 15000 });
+log("automation test completed");
+await settle(2200);
+if (MOBILE) {
+  const zin = page.locator(".react-flow__controls-zoomin");
+  for (let i = 0; i < 3; i++) await to(zin, { pause: i ? 120 : 260, after: 420 });
+  await settle(1400);
+}
+await endChapter();
+
+/* ---------- 6. Updated customer card ---------- */
+beginChapter("done");
+await goto("crm/leads", listReady);
+await keep();
 await settle(500);
 await revealLeadRow();
 await to(leadRow().locator("td").nth(1), { click: false, pause: 700 });
