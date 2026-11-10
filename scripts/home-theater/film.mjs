@@ -71,6 +71,8 @@ const ctx = await browser.newContext({
 });
 await ctx.addInitScript(cursorScript(MOBILE ? "touch" : "desktop"));
 const FILM_CSS = `
+  header.fixed.z-30 { display: none !important; }
+  main[data-testid="business-dashboard-main"] { padding-top: 0 !important; }
   .bizuply-chat-launcher,
   section.fixed.bottom-6.right-6,
   .cookie-banner { display: none !important; }
