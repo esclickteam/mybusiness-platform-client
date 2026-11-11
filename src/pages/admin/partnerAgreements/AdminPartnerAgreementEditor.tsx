@@ -453,12 +453,12 @@ export default function AdminPartnerAgreementEditor() {
         ? {
             licenseFee:
               current.licenseFee == null || current.licenseFee === ""
-                ? prefill.licenseFee ?? 5000
+                ? prefill.licenseFee ?? 2990
                 : current.licenseFee,
             currency: current.currency || prefill.currency || "USD",
             renewalPrice:
               current.renewalPrice == null || current.renewalPrice === ""
-                ? prefill.renewalPrice ?? 5000
+                ? prefill.renewalPrice ?? 2990
                 : current.renewalPrice,
             renewalTerm: current.renewalTerm || prefill.renewalTerm || "12 months",
             licenseTerm: current.licenseTerm || prefill.licenseTerm || "12 months",

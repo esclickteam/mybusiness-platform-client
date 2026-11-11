@@ -59,7 +59,7 @@ const PARTNER_PLAN_OPTIONS = [
   {
     planKey: "partner_international",
     label: "International Partner",
-    details: "$5,000 לשנה · עמלה חוזרת 30%/35%/40% לפי הסכם · 10% חד-פעמי · בלי חיוב חי מטופס זה",
+    details: "$299 לחודש או $2,990 לשנה · עמלה חוזרת 30%/35%/40% לפי הסכם · 10% חד-פעמי · בלי חיוב חי מטופס זה",
   },
 ];
 

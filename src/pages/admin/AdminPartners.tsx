@@ -28,6 +28,15 @@ function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
 }
 
+function internationalMembershipLabel(row: AdminPartnerRow) {
+  const interval = row.openMembershipCharge?.interval || row.billingInterval || "annual";
+  const amount = row.openMembershipCharge?.amountUsd ?? row.expectedMembershipAmountUsd
+    ?? (interval === "monthly" ? row.membershipMonthlyUsd : row.membershipAnnualUsd);
+  if (amount == null) return interval === "monthly" ? "חודשי" : "שנתי";
+  const formatted = `$${Number(amount).toLocaleString("en-US")}`;
+  return interval === "monthly" ? `${formatted} / חודש` : `${formatted} / שנה`;
+}
+
 export default function AdminPartners() {
   const [items, setItems] = useState<AdminPartnerRow[]>([]);
   const [q, setQ] = useState("");
@@ -175,7 +184,7 @@ export default function AdminPartners() {
           <p className="text-xs font-black uppercase tracking-wide text-violet-700">partner_international</p>
           <h2 className="mt-1 text-lg font-black text-slate-900">גבייה ידנית, בלי חיוב באתר</h2>
           <p className="mt-2 max-w-4xl text-sm font-bold text-slate-700">
-            ההרשמה למסלול היא ללא תשלום וממתינה לאישור. אחרי האישור השותף רואה סטטוס payment_due. גביית $499 לחודש או $5,000 לשנה מתבצעת מחוץ למערכת. רק אדמין מתעד תשלום אחרי שהכסף התקבל, כולל סכום, תאריך, אסמכתה ותקופת חיוב. אישור אדמין לבדו אינו אישור תשלום. השותף מופעל ומרכז ההכשרה נפתח רק אחרי תשלום מאומת והסכם פעיל. חידוש נרשם פעם אחת לתקופה. אין חיוב אוטומטי, ומסלולי השותפים הקיימים לא משתנים.
+            ההרשמה למסלול היא ללא תשלום וממתינה לאישור. אחרי האישור השותף רואה סטטוס payment_due. הצטרפות חדשה היא $299 לחודש או $2,990 לשנה. שותף שכבר יש לו מחיר חברות שמור נשאר על המחיר הזה. הגבייה מתבצעת מחוץ למערכת. רק אדמין מתעד תשלום אחרי שהכסף התקבל, כולל סכום, תאריך, אסמכתה ותקופת חיוב. אישור אדמין לבדו אינו אישור תשלום. השותף מופעל ומרכז ההכשרה נפתח רק אחרי תשלום מאומת והסכם פעיל. חידוש נרשם פעם אחת לתקופה. אין חיוב אוטומטי.
           </p>
         </section>
         {manualPayment ? (
@@ -233,7 +242,7 @@ export default function AdminPartners() {
                     {row.planName || row.planKey}
                     {row.planKey === "partner_international" ? (
                       <p className="text-xs font-bold text-slate-500">
-                        {row.billingInterval === "monthly" ? "$499 / חודש" : "$5,000 / שנה"}
+                        {internationalMembershipLabel(row)}
                         {row.pendingBillingInterval ? ` · הבא: ${row.pendingBillingInterval === "monthly" ? "חודשי" : "שנתי"}` : ""}
                       </p>
                     ) : null}
@@ -309,7 +318,7 @@ export default function AdminPartners() {
                                   periodStart: start,
                                   periodEnd: end,
                                   billingInterval: interval === "monthly" ? "monthly" : "annual",
-                                  defaultAmount: row.openMembershipCharge?.amountUsd || row.expectedMembershipAmountUsd || (interval === "monthly" ? 499 : 5000),
+                                  defaultAmount: row.openMembershipCharge?.amountUsd || row.expectedMembershipAmountUsd || (interval === "monthly" ? row.membershipMonthlyUsd || 299 : row.membershipAnnualUsd || 2990),
                                 });
                                 return;
                               }
@@ -348,7 +357,7 @@ export default function AdminPartners() {
                             },
                           },
                           {
-                            label: "מסלול International ($5,000 / שנה)",
+                            label: "מסלול International ($2,990 / שנה)",
                             onClick: async () => {
                               await adminChangePartnerPlan(row.partnerId, "partner_international");
                               await refresh();
@@ -357,14 +366,14 @@ export default function AdminPartners() {
                           ...(row.planKey === "partner_international"
                             ? [
                                 {
-                                  label: "חיוב חודשי מהתקופה הבאה ($499)",
+                                  label: `חיוב חודשי מהתקופה הבאה ($${Number(row.membershipMonthlyUsd || 299).toLocaleString("en-US")})`,
                                   onClick: async () => {
                                     await adminScheduleInternationalBilling(row.partnerId, "monthly");
                                     await refresh();
                                   },
                                 },
                                 {
-                                  label: "חיוב שנתי מהתקופה הבאה ($5,000)",
+                                  label: `חיוב שנתי מהתקופה הבאה ($${Number(row.membershipAnnualUsd || 2990).toLocaleString("en-US")})`,
                                   onClick: async () => {
                                     await adminScheduleInternationalBilling(row.partnerId, "annual");
                                     await refresh();
