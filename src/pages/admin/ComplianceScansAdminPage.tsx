@@ -73,6 +73,105 @@ function resetLabel(value: string) {
   return `${new Intl.DateTimeFormat("he-IL", { dateStyle: "short", timeStyle: "short", timeZone: "UTC" }).format(date)} UTC`;
 }
 
+function OwnerPilot() {
+  const [offer, setOffer] = useState<{ packages: Array<{ id: string; pages: number; usd: number; available: boolean; reason: string }> } | null>(null);
+  const [run, setRun] = useState<{ id: string; status: string; percent: number; unique: number; pagesAllowed: number; reportReady: boolean; error: string; findings: Array<{ title: string; url: string; outcome: string }> } | null>(null);
+  const [url, setUrl] = useState("");
+  const [paths, setPaths] = useState("/account");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [packageId, setPackageId] = useState("pages10");
+  const [locale, setLocale] = useState("he");
+  const [note, setNote] = useState("");
+  const headers = () => {
+    const token = localStorage.getItem("token") || "";
+    return { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+  };
+  useEffect(() => {
+    fetch("/compliance/api/admin/owner-pilot", { headers: headers(), credentials: "include" })
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) setNote(data.error || "הפיילוט סגור");
+        else setOffer(data);
+      })
+      .catch(() => setNote("הפיילוט סגור"));
+  }, []);
+  useEffect(() => {
+    if (!run || run.reportReady || run.status === "failed" || run.status === "cancelled") return undefined;
+    const timer = window.setInterval(() => {
+      fetch(`/compliance/api/admin/owner-pilot/${run.id}`, { headers: headers(), credentials: "include" })
+        .then((response) => response.json())
+        .then((data) => setRun(data))
+        .catch(() => undefined);
+    }, 2000);
+    return () => window.clearInterval(timer);
+  }, [run?.id, run?.reportReady, run?.status]);
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setNote("");
+    const response = await fetch("/compliance/api/admin/owner-pilot", {
+      method: "POST",
+      headers: headers(),
+      credentials: "include",
+      body: JSON.stringify({ url, packageId, paths: paths.split(/\s+/).filter(Boolean), username, password, locale, loginUrl: "" }),
+    });
+    const data = await response.json().catch(() => ({}));
+    setPassword("");
+    if (!response.ok) {
+      setNote(data.error || "הסריקה לא התחילה");
+      return;
+    }
+    setRun(data);
+  }
+  async function download() {
+    if (!run) return;
+    const response = await fetch(`/compliance/api/admin/owner-pilot/${run.id}/pdf`, { headers: headers(), credentials: "include" });
+    if (!response.ok) return;
+    const blob = await response.blob();
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "internal-scan.pdf";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+  return (
+    <form onSubmit={submit} className="compliance-admin__table" autoComplete="off">
+      <h2>סריקת אזורים פנימיים — בדיקת בעלים</h2>
+      <p>פתוח רק לחשבון הבעלים. אין חיוב. שאר הלקוחות נשארים חסומים. הסיסמה לא נשמרת בדפדפן.</p>
+      {note ? <p>{note}</p> : null}
+      <label>כתובת האתר<input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://example.com/account" /></label>
+      <label>נתיבים מורשים<input value={paths} onChange={(event) => setPaths(event.target.value)} /></label>
+      <label>חבילה
+        <select value={packageId} onChange={(event) => setPackageId(event.target.value)}>
+          {(offer?.packages || [{ id: "pages10", pages: 10, usd: 19, available: true, reason: "" }]).map((item) => (
+            <option key={item.id} value={item.id} disabled={!item.available}>{item.pages} עמודים · ${item.usd}{item.available ? "" : " · נעול"}</option>
+          ))}
+        </select>
+      </label>
+      <label>שפה
+        <select value={locale} onChange={(event) => setLocale(event.target.value)}>
+          <option value="he">עברית</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt-BR">Português</option>
+          <option value="ar">العربية</option>
+        </select>
+      </label>
+      <label>משתמש בדיקה<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="off" /></label>
+      <label>סיסמה<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" /></label>
+      <button type="submit">התחלת סריקה</button>
+      {run ? (
+        <div>
+          <p>{run.unique} מתוך {run.pagesAllowed} · {run.percent}% · {run.status}</p>
+          <button type="button" onClick={() => fetch(`/compliance/api/admin/owner-pilot/${run.id}/cancel`, { method: "POST", headers: headers(), credentials: "include" }).then((response) => response.json()).then(setRun)}>עצירה</button>
+          {run.reportReady ? <button type="button" onClick={download}>הורדת PDF</button> : null}
+          <ul>{(run.findings || []).map((item) => <li key={`${item.url}-${item.title}`}>{item.outcome} · {item.title} · {item.url}</li>)}</ul>
+        </div>
+      ) : null}
+    </form>
+  );
+}
+
 function InternalOrders() {
   const [orders, setOrders] = useState<Array<{ id: string; host: string; packageId: string; paymentStatus: string; consent: boolean; pagesAllowed: number; accessStatus: string; scanStatus: string; pagesChecked: number; error: string; reportId: string }>>([]);
   const [note, setNote] = useState("הגבייה סגורה. אין הזמנות פעילות.");
@@ -401,6 +500,7 @@ export default function ComplianceScansAdminPage() {
           </tbody>
         </table>
       </div>
+      <OwnerPilot />
       <h2>סריקה מורחבת — אזורים פנימיים</h2>
       <p>בסיסית $19 עד 10 עמודים, מורחבת $39 עד 30, מתקדמת $79 עד 100. משתמש בדיקה אחד ותפקיד אחד. השירות כבוי והגבייה סגורה. הרשימה מציגה הזמנות בלי סיסמה.</p>
       <InternalOrders />
