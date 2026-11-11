@@ -324,6 +324,19 @@ export function ComplianceAccountPage() {
           </>
         )}
       </div>
+      <InternalExtension />
     </article>
   );
+}
+
+function InternalExtension() {
+  const [enabled, setEnabled] = useState(false);
+  useEffect(() => {
+    fetch("/compliance/api/internal-scan/extension", { credentials: "include" })
+      .then((response) => response.json())
+      .then((data) => setEnabled(data.enabled === true && data.charged === false))
+      .catch(() => setEnabled(false));
+  }, []);
+  if (!enabled) return null;
+  return <p>הוספת סריקה פנימית לדוח קיים אינה גובה שוב את מחיר הדוח הציבורי.</p>;
 }
