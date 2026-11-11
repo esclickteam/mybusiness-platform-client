@@ -98,7 +98,10 @@ describe("bizuply.com/partners recruitment", () => {
     expect(document.querySelectorAll(".ipartner video")).toHaveLength(0);
     expect(screen.getByTestId("partner-tracks-table")).toHaveTextContent(/Reseller/i);
     expect(screen.getAllByText(/Illustration only/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Coming soon/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/Coming soon/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId("saas-catalog")).toHaveTextContent("BeautyFlow");
+    expect(screen.getByTestId("saas-catalog")).toHaveTextContent(/Beauty & wellness/i);
+    expect(screen.getByTestId("saas-catalog").querySelector(".ip-badge")).toBeNull();
   });
 
   it("estimates commission from the published tiers including one-time deals", () => {
@@ -158,6 +161,9 @@ describe("bizuply.com/partners recruitment", () => {
     );
     expect(screen.getByTestId("product-crm").querySelector("img")).toBeNull();
     expect(screen.getByText("עד 40% עמלה חוזרת")).toBeInTheDocument();
+    expect(screen.queryByText("בקרוב")).not.toBeInTheDocument();
+    expect(screen.getByTestId("saas-catalog")).toHaveTextContent("יופי וטיפוח");
+    expect(screen.getByTestId("saas-catalog").querySelector(".ip-badge")).toBeNull();
     expect(screen.getByTestId("partners-recruitment").textContent || "").not.toMatch(/דמו/);
     expect(document.querySelectorAll(".ipartner video")).toHaveLength(0);
     expect(screen.getByTestId("partner-tracks-table")).toHaveTextContent(/Reseller/);

@@ -329,16 +329,32 @@
 .ip-saas-heading { margin: 0 0 8px; font-size: 1.35rem; }
 .ip-saas-grid {
   display: grid;
-  gap: 1px;
-  margin-top: 18px;
-  background: var(--line);
-  border: 1px solid var(--line);
+  gap: 14px;
+  margin-top: 22px;
 }
 .ip-saas {
-  background: #fff;
-  padding: 16px 18px;
+  background:
+    radial-gradient(280px 120px at 100% 0%, rgba(91, 33, 182, 0.08), transparent 70%),
+    #fff;
+  border: 1px solid var(--line-strong);
+  padding: 22px 20px 20px;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
 }
-.ip-saas h3 { margin: 8px 0 0; font-size: 1.02rem; }
+.ip-saas:hover {
+  transform: translateY(-3px);
+  border-color: var(--violet);
+  box-shadow: 0 16px 36px rgba(30, 27, 75, 0.08);
+}
+.ip-saas-field {
+  margin: 0;
+  color: var(--violet);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ip-saas h3 { margin: 10px 0 0; font-size: 1.28rem; }
+.ip-saas p:last-child { margin: 10px 0 0; color: var(--muted); line-height: 1.55; }
 .ip-badge {
   display: inline-flex;
   align-items: center;
@@ -785,7 +801,7 @@
   .ip-levels,
   .ip-tier-move { grid-template-columns: repeat(3, 1fr); }
   .ip-cards { grid-template-columns: 1fr 1fr; }
-  .ip-saas-grid { grid-template-columns: repeat(3, 1fr); }
+  .ip-saas-grid { grid-template-columns: 1fr 1fr; }
   .ip-compare { grid-template-columns: 1fr 1fr; }
   .ip-product { grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.75fr); gap: 36px; }
   .ip-product.is-flip .ip-product-copy { order: 1; }
@@ -810,7 +826,10 @@
   .ipartner .ip-hero h1 { max-width: 11ch; }
   .ip-cards { grid-template-columns: repeat(3, 1fr); }
   .ip-compare { grid-template-columns: repeat(3, 1fr); }
-  .ip-saas-grid { grid-template-columns: repeat(5, 1fr); }
+  .ip-saas-grid { grid-template-columns: repeat(6, 1fr); }
+  .ip-saas:nth-child(1),
+  .ip-saas:nth-child(2) { grid-column: span 3; }
+  .ip-saas:nth-child(n + 3) { grid-column: span 2; }
   .ip-calc { grid-template-columns: 1fr 1fr; padding: 32px; }
   .ip-results { grid-template-columns: repeat(3, 1fr); }
   .ip-results-balance { grid-column: 1 / -1; }
@@ -872,11 +891,13 @@
   .ip-btn,
   .ip-offer,
   .ip-level,
-  .ip-benefit { transition: none; }
+  .ip-benefit,
+  .ip-saas { transition: none; }
   .ip-btn:hover,
   .ip-offer:hover,
   .ip-level:hover,
-  .ip-benefit:hover { transform: none; }
+  .ip-benefit:hover,
+  .ip-saas:hover { transform: none; }
 }
 
 [dir="rtl"] .ipartner h1,

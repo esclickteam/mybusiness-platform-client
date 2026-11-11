@@ -247,7 +247,7 @@ const COPY = {
     ],
     productsTitle: "What partners can sell",
     productsLead:
-      "Solutions that exist in Bizuply today. Each card names the value for the customer and the opportunity for the partner. Industry SaaS resale is not open yet.",
+      "Solutions that exist in Bizuply today. Each card names the value for the customer and the opportunity for the partner.",
     marketTitle: "Marketing & automations",
     marketLead: "Two tools that already sit beside CRM. They are not a separate membership price.",
     offers: [
@@ -302,11 +302,16 @@ const COPY = {
         link: "View websites",
       },
     ],
-    saasTitle: "SaaS platforms",
+    saasTitle: "Industry platforms",
     saasLead:
-      "These products exist in Bizuply. Partner resale is coming soon and is not available for purchase through this program yet. Membership does not include source code, white-label rights or a distribution right.",
-    soon: "Coming soon",
-    saas: ["BeautyFlow", "Global Properties", "Dinevo", "TableFlow", "Cliny"],
+      "Five platforms in the Bizuply catalog, each built for a specific kind of business. A partner introduces a platform only when the signed agreement allows it. Membership does not include source code, white-label rights or a distribution right.",
+    saas: [
+      { name: "BeautyFlow", field: "Beauty & wellness", summary: "Appointments, staff, memberships and online booking for salons and studios." },
+      { name: "Global Properties", field: "Real estate", summary: "A public marketplace for listings, with investor enquiries in the owner CRM." },
+      { name: "Dinevo", field: "Restaurants", summary: "A digital menu and QR ordering, with service, kitchen and managers on the same visit." },
+      { name: "TableFlow", field: "Table service", summary: "Guests scan a table, build an order, call a waiter and ask for the bill." },
+      { name: "Cliny", field: "Cleaning & field service", summary: "Crews, sites, jobs and billing in one workspace." },
+    ],
     levelsTitle: "Partner levels",
     levelsLead:
       "These are commission tiers, not three subscription prices. The rate follows the number of active paying customers on eligible subscription revenue that was actually received. You do not buy a tier.",
@@ -516,7 +521,7 @@ const COPY = {
     ],
     productsTitle: "מה השותפים יכולים למכור",
     productsLead:
-      "פתרונות שקיימים ב־Bizuply היום. בכל כרטיס מופיע הערך ללקוח וההזדמנות לשותף. מכירת מערכות SaaS לפי תחום עדיין אינה פתוחה.",
+      "פתרונות שקיימים ב־Bizuply היום. בכל כרטיס מופיע הערך ללקוח וההזדמנות לשותף.",
     marketTitle: "שיווק ואוטומציות",
     marketLead: "שני כלים שכבר יושבים לצד ה־CRM. הם אינם מחיר חברות נפרד.",
     offers: [
@@ -571,11 +576,16 @@ const COPY = {
         link: "לעמוד האתרים",
       },
     ],
-    saasTitle: "פלטפורמות SaaS",
+    saasTitle: "פלטפורמות לפי תחום",
     saasLead:
-      "המוצרים האלה קיימים ב־Bizuply. מכירת שותפים עדיין בקרוב ואינה זמינה לרכישה דרך התוכנית כעת. החברות אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
-    soon: "בקרוב",
-    saas: ["BeautyFlow", "Global Properties", "Dinevo", "TableFlow", "Cliny"],
+      "חמש פלטפורמות בקטלוג של Bizuply, כל אחת לתחום עסקי משלה. שותף מציג פלטפורמה רק כשההסכם החתום מתיר זאת. החברות אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
+    saas: [
+      { name: "BeautyFlow", field: "יופי וטיפוח", summary: "תורים, צוות, מנויים והזמנה אונליין לסלונים ולסטודיואים." },
+      { name: "Global Properties", field: "נדל״ן", summary: "מרקטפלייס ציבורי לנכסים, עם פניות משקיעים ב־CRM של הבעלים." },
+      { name: "Dinevo", field: "מסעדות", summary: "תפריט דיגיטלי והזמנה ב־QR, כשהשירות, המטבח והניהול עובדים על אותו ביקור." },
+      { name: "TableFlow", field: "שירות לשולחן", summary: "האורח סורק שולחן, בונה הזמנה, קורא למלצר ומבקש חשבון." },
+      { name: "Cliny", field: "ניקיון ושירותי שטח", summary: "צוותים, אתרים, עבודות וחיוב בסביבת עבודה אחת." },
+    ],
     levelsTitle: "מדרגות עמלה",
     levelsLead:
       "אלה מדרגות עמלה, לא שלושה מחירי מנוי. השיעור נקבע לפי מספר הלקוחות המשלמים הפעילים, על הכנסת מנוי זכאית שהתקבלה בפועל. לא רוכשים מדרגה.",
@@ -1008,11 +1018,12 @@ export default function PartnersRecruitment() {
               {copy.saasTitle}
             </h3>
             <p className="ip-copy">{copy.saasLead}</p>
-            <div className="ip-saas-grid">
-              {copy.saas.map((name) => (
-                <article className="ip-saas" key={name}>
-                  <span className="ip-badge">{copy.soon}</span>
-                  <h3>{name}</h3>
+            <div className="ip-saas-grid" data-testid="saas-catalog">
+              {copy.saas.map((item) => (
+                <article className="ip-saas" key={item.name}>
+                  <p className="ip-saas-field">{item.field}</p>
+                  <h3>{item.name}</h3>
+                  <p>{item.summary}</p>
                 </article>
               ))}
             </div>

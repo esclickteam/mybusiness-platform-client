@@ -23,7 +23,7 @@ const en = [
   ],
   [
     "Which products can partners sell?",
-    "When the signed agreement allows it, partners can introduce CRM and lead management, WhatsApp Business API, Meta campaign tools for Facebook and Instagram ads, business automations, and websites available in Bizuply today. Meta campaign tools are included with the Bizuply Business plan after an authorized Meta ad account is connected. Meta bills media spend. Partners earn on eligible Bizuply subscription revenue, not on Meta ad spend. WhatsApp use is subject to Meta policy, approvals and messaging costs. BeautyFlow, Global Properties, Dinevo, TableFlow and Cliny are coming soon for partner resale and are not available for purchase through the program today.",
+    "When the signed agreement allows it, partners can introduce CRM and lead management, WhatsApp Business API, Meta campaign tools for Facebook and Instagram ads, business automations, and websites available in Bizuply today. Meta campaign tools are included with the Bizuply Business plan after an authorized Meta ad account is connected. Meta bills media spend. Partners earn on eligible Bizuply subscription revenue, not on Meta ad spend. WhatsApp use is subject to Meta policy, approvals and messaging costs. BeautyFlow, Global Properties, Dinevo, TableFlow and Cliny are industry platforms in the Bizuply catalog. A partner introduces one only when the signed agreement allows that platform. Membership does not include source code, white-label rights or a distribution right.",
   ],
   [
     "When are commissions paid?",
@@ -82,7 +82,7 @@ const he = [
   ],
   [
     "אילו מוצרים אפשר למכור?",
-    "כשההסכם מתיר זאת, אפשר להציג CRM וניהול לידים, WhatsApp Business API, כלי קמפיין של Meta ל־Facebook ול־Instagram, אוטומציות עסקיות ואתרים שזמינים ב־Bizuply היום. כלי הקמפיין של Meta כלולים בחבילת Business אחרי חיבור חשבון מודעות מורשה. את הוצאת המדיה גובה Meta. העמלה נגזרת מהכנסת מנוי זכאית של Bizuply, לא מהוצאת הפרסום. השימוש ב־WhatsApp כפוף למדיניות Meta, לאישורים ולעלויות ההודעות. BeautyFlow, Global Properties, Dinevo, TableFlow ו־Cliny מסומנים כבקרוב למכירת שותפים ואינם זמינים לרכישה דרך התוכנית היום.",
+    "כשההסכם מתיר זאת, אפשר להציג CRM וניהול לידים, WhatsApp Business API, כלי קמפיין של Meta ל־Facebook ול־Instagram, אוטומציות עסקיות ואתרים שזמינים ב־Bizuply היום. כלי הקמפיין של Meta כלולים בחבילת Business אחרי חיבור חשבון מודעות מורשה. את הוצאת המדיה גובה Meta. העמלה נגזרת מהכנסת מנוי זכאית של Bizuply, לא מהוצאת הפרסום. השימוש ב־WhatsApp כפוף למדיניות Meta, לאישורים ולעלויות ההודעות. BeautyFlow, Global Properties, Dinevo, TableFlow ו־Cliny הן פלטפורמות תחום בקטלוג של Bizuply. שותף מציג אחת מהן רק כשההסכם החתום מתיר את הפלטפורמה. החברות אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
   ],
   [
     "מתי משלמים עמלות?",
