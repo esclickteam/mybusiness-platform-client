@@ -70,6 +70,10 @@ const COPY: Record<Locale, Record<string, string>> = {
     whoTitle: "מי מתאים לבצע",
     evidenceTitle: "ראיה שנשמרה",
     executiveTitle: "סיכום למנהלים",
+    siteState: "מה מצב האתר שלך?",
+    soundNow: "מה נמצא תקין?",
+    needsWork: "מה דורש טיפול?",
+    stillCheck: "מה עדיין צריך לבדוק?",
     checksTitle: "בדיקות שבוצעו",
     soundTitle: "תחומים שנבדקו ונמצאו תקינים בבדיקות שבוצעו",
     openTitle: "תחומים שלא ניתן היה לקבוע לגביהם",
@@ -132,6 +136,10 @@ const COPY: Record<Locale, Record<string, string>> = {
     whoTitle: "Who should do it",
     evidenceTitle: "Stored evidence",
     executiveTitle: "Executive summary",
+    siteState: "What is the state of your site?",
+    soundNow: "What was sound?",
+    needsWork: "What needs action?",
+    stillCheck: "What still needs a look?",
     checksTitle: "Checks performed",
     soundTitle: "Areas checked with no defect in the tests that ran",
     openTitle: "Areas that could not be decided",
@@ -171,7 +179,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     foundTitle: "Qué se encontró exactamente", whyTitle: "Por qué importa", whereTitle: "Dónde se encontró",
     stepsTitle: "Cómo corregirlo", exampleTitle: "Ejemplo de código propuesto", verifyTitle: "Cómo comprobar que la corrección funcionó",
     limitsTitle: "Límites del hallazgo", whoTitle: "Quién conviene que lo haga", evidenceTitle: "Evidencia guardada",
-    executiveTitle: "Resumen para la dirección", checksTitle: "Pruebas realizadas",
+    executiveTitle: "Resumen para la dirección",
+    siteState: "¿Cuál es el estado de su sitio?",
+    soundNow: "¿Qué resultó correcto?",
+    needsWork: "¿Qué requiere acción?",
+    stillCheck: "¿Qué todavía hay que revisar?",
+    checksTitle: "Pruebas realizadas",
     soundTitle: "Áreas revisadas sin defecto en las pruebas realizadas", openTitle: "Áreas que no se pudieron decidir", firstTitle: "Primeras acciones",
     actionChapter: "Hallazgos que requieren acción",
     verifyChapter: "Hallazgos que requieren verificación",
@@ -208,7 +221,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     foundTitle: "O que foi encontrado", whyTitle: "Por que importa", whereTitle: "Onde foi encontrado",
     stepsTitle: "Como corrigir", exampleTitle: "Exemplo de código proposto", verifyTitle: "Como confirmar que a correção funcionou",
     limitsTitle: "Limites do achado", whoTitle: "Quem deve fazer", evidenceTitle: "Evidência salva",
-    executiveTitle: "Resumo para a gestão", checksTitle: "Verificações feitas",
+    executiveTitle: "Resumo para a gestão",
+    siteState: "Qual é o estado do seu site?",
+    soundNow: "O que estava adequado?",
+    needsWork: "O que exige ação?",
+    stillCheck: "O que ainda precisa ser revisado?",
+    checksTitle: "Verificações feitas",
     soundTitle: "Áreas verificadas sem defeito nos testes executados", openTitle: "Áreas que não puderam ser decididas", firstTitle: "Primeiras ações",
     actionChapter: "Achados que exigem ação",
     verifyChapter: "Achados que exigem verificação",
@@ -245,7 +263,12 @@ const COPY: Record<Locale, Record<string, string>> = {
     foundTitle: "ما الذي وُجد تحديدًا", whyTitle: "لماذا هذا مهم", whereTitle: "أين وُجدت النتيجة",
     stepsTitle: "تعليمات الإصلاح", exampleTitle: "مثال شيفرة مقترح", verifyTitle: "كيف يُفحص نجاح الإصلاح",
     limitsTitle: "حدود النتيجة", whoTitle: "من الأنسب أن ينفّذ", evidenceTitle: "دليل محفوظ",
-    executiveTitle: "ملخص للإدارة", checksTitle: "فحوصات نُفذت",
+    executiveTitle: "ملخص للإدارة",
+    siteState: "ما حالة موقعكم؟",
+    soundNow: "ما الذي كان سليمًا؟",
+    needsWork: "ما الذي يتطلب معالجة؟",
+    stillCheck: "ما الذي ما زال يحتاج مراجعة؟",
+    checksTitle: "فحوصات نُفذت",
     soundTitle: "مجالات فُحصت ولم يظهر فيها خلل في الاختبارات المنفذة", openTitle: "مجالات تعذر حسمها", firstTitle: "الإجراءات الأولى",
     actionChapter: "نتائج تتطلب معالجة",
     verifyChapter: "نتائج تتطلب تحققًا",
@@ -465,6 +488,10 @@ export function ComplianceReportView({
       {report.executive ? (
         <section className="report-executive">
           <h2>{copy.executiveTitle}</h2>
+          {report.executive.overview?.state ? <><h3>{copy.siteState}</h3><p>{report.executive.overview.state}</p></> : null}
+          {report.executive.overview?.sound ? <><h3>{copy.soundNow}</h3><p>{report.executive.overview.sound}</p></> : null}
+          {report.executive.overview?.work ? <><h3>{copy.needsWork}</h3><p>{report.executive.overview.work}</p></> : null}
+          {report.executive.overview?.check ? <><h3>{copy.stillCheck}</h3><p>{report.executive.overview.check}</p></> : null}
           <p>{report.executive.scoreMeaning}</p>
           <p><strong>{report.executive.score ?? shownScore}/100</strong> · {copy.checksTitle}: {report.executive.checks}</p>
           {report.executive.scoreSplit ? <p>{report.executive.scoreSplit}</p> : null}
@@ -488,10 +515,11 @@ export function ComplianceReportView({
       {([["action", copy.actionChapter], ["verify", copy.verifyChapter]] as const).map(([id, label]) => {
         const rank = (value?: string) => ({ high: 0, medium: 1, low: 2, info: 3 } as Record<string, number>)[value || "info"] ?? 4;
         const rows = findings.filter((item) => statusOf(item) === id).sort((a, b) => rank(a.severity) - rank(b.severity));
+        if (!rows.length) return null;
         return (
           <section key={id} id={`report-${id}`} className="report-findings">
             <h2 className="report-band">{label}</h2>
-            {rows.length === 0 ? <p className="report-empty">{report.domains?.find((area: { id: string; note?: string }) => area.id === id)?.note || copy.empty}</p> : rows.map((item, index) => {
+            {rows.map((item, index) => {
               const detail = detailOf(item, copy);
               const brief = (item as Finding & { brief?: any }).brief;
               const title = String(brief?.title || item.title || "").trim();
@@ -506,11 +534,9 @@ export function ComplianceReportView({
                     {brief?.storedLabel ? <p className="report-stored">{brief.storedLabel}</p> : null}
                     <h3>{title}</h3>
                   </header>
-                  <h4>{copy.fixQuestion}</h4>
-                  <p>{brief?.answer || brief?.found || item.description}</p>
+                  {brief?.answer ? <><h4>{copy.fixQuestion}</h4><p>{brief.answer}</p></> : null}
                   {(brief?.subjects || []).length ? <ol>{brief.subjects.map((row: { name?: string; label?: string; missing?: string }) => <li key={row.name || row.label}><strong>{row.label || row.name}</strong>{row.missing ? ` — ${row.missing}` : ""}</li>)}</ol> : null}
-                  <h4>{copy.foundTitle}</h4>
-                  <p>{brief?.found || item.description}</p>
+                  {brief?.found && brief.found !== brief?.answer ? <><h4>{copy.foundTitle}</h4><p>{brief.found}</p></> : null}
                   {brief?.storedFound ? <p>{brief.storedFound}</p> : null}
                   <h4>{copy.whereTitle}</h4>
                   <p dir="ltr">{located && pageUrl ? <a href={pageUrl} target="_blank" rel="noopener noreferrer">{pageUrl}</a> : copy.unknownPlace}</p>
@@ -519,7 +545,7 @@ export function ComplianceReportView({
                   <h4>{copy.whyTitle}</h4>
                   <p>{brief?.why || item.explanation}</p>
                   <h4>{copy.stepsTitle}</h4>
-                  {(brief?.steps || []).length ? <ol>{brief.steps.map((step: string) => <li key={step}>{step}</li>)}</ol> : (fix ? <p>{fix}</p> : null)}
+                  {(brief?.steps || []).filter((step: string) => step !== brief?.answer).length ? <ol>{brief.steps.filter((step: string) => step !== brief?.answer).map((step: string) => <li key={step}>{step}</li>)}</ol> : (fix && fix !== brief?.answer && fix !== brief?.found ? <p>{fix}</p> : null)}
                   {brief?.whoLabel ? <p><strong>{copy.whoTitle}. </strong>{brief.whoLabel}</p> : null}
                   {brief?.verify ? <p><strong>{copy.verifyTitle}. </strong>{brief.verify}</p> : null}
                   <h4>{copy.certainQuestion}</h4>
@@ -547,56 +573,60 @@ export function ComplianceReportView({
           <label>{copy.passFilter}<select value={passDomain} onChange={(event) => setPassDomain(event.target.value)}><option value="all">{copy.all}</option>{sections.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
           <label>{copy.passSearch}<input value={passQuery} onChange={(event) => setPassQuery(event.target.value)} /></label>
         </div>
-        {passedRows.length === 0 ? <p>{copy.empty}</p> : passedRows.map((item, index) => {
+        {passedRows.length === 0 ? null : passedRows.map((item, index) => {
           const brief = (item as Finding & { brief?: any }).brief;
+          const evidence = typeof item.evidence === "string" ? item.evidence : "";
           return (
             <details key={`pass-${item.checkId}-${index}`} className="report-open">
               <summary>{brief?.title || item.title}</summary>
-              <p dir="ltr">{item.url || copy.unknownPlace}</p>
-              <p>{brief?.found || item.description}</p>
-              {brief?.limits ? <p>{brief.limits}</p> : null}
+              <p><strong>{copy.whereTitle}. </strong><span dir="ltr">{item.url || copy.unknownPlace}</span></p>
+              <p><strong>{copy.foundTitle}. </strong>{brief?.found || item.description}</p>
+              {evidence ? <p dir="ltr">{evidence.slice(0, 280)}</p> : null}
+              {brief?.limits ? <p><strong>{copy.limitsTitle}. </strong>{brief.limits}</p> : null}
               <p dir="ltr">{item.checkId}</p>
             </details>
           );
         })}
       </section>
       <section id="report-observed" className="report-sheet__block">
-        <h2>{copy.observationChapter}</h2>
-        <p>{copy.observationNote}</p>
+        {findings.some((item) => statusOf(item) === "observation") ? <><h2>{copy.observationChapter}</h2><p>{copy.observationNote}</p></> : null}
         {findings.filter((item) => statusOf(item) === "observation").map((item, index) => {
           const brief = (item as Finding & { brief?: any }).brief;
           return <details key={`obs-${item.checkId}-${index}`} className="report-open"><summary>{brief?.title || item.title}</summary><p dir="ltr">{item.url || copy.unknownPlace}</p><p>{brief?.found || item.description}</p><p>{brief?.limits}</p></details>;
         })}
-        <h2>{copy.partialChapter}</h2>
+        {findings.some((item) => statusOf(item) === "partial") ? <h2>{copy.partialChapter}</h2> : null}
         {findings.filter((item) => statusOf(item) === "partial").map((item, index) => {
           const brief = (item as Finding & { brief?: any }).brief;
           return <article key={`part-${item.checkId}-${index}`} className="report-open"><h3>{brief?.title || item.title}</h3><p>{brief?.found || item.description}</p></article>;
         })}
-        <h2>{copy.readChapter}</h2>
+        {findings.some((item) => statusOf(item) === "read") ? <h2>{copy.readChapter}</h2> : null}
         {findings.filter((item) => statusOf(item) === "read").map((item, index) => {
           const brief = (item as Finding & { brief?: any }).brief;
           return <article key={`read-${item.checkId}-${index}`} className="report-open"><h3>{brief?.title || item.title}</h3><p dir="ltr">{item.url}</p><p>{brief?.limits || item.description}</p></article>;
         })}
       </section>
-      <section className="report-sheet__block">
+      {(report.trackers || []).length ? <section className="report-sheet__block">
         <h2>{copy.tools}</h2>
-        {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
+        {(report.trackers || []).length === 0 ? null : (
           <ul>
             {(report.trackers || []).map((tool: { name?: string; pageUrl?: string; beforeConsent?: string }) => (
               <li key={`${tool.name}-${tool.pageUrl}`}><strong>{tool.name}</strong><p dir="ltr">{tool.pageUrl}</p><p>{copy.purpose}. {tool.beforeConsent || copy.consent}</p></li>
             ))}
           </ul>
         )}
-      </section>
+      </section> : null}
       <section id="report-plan" className="report-sheet__block">
         <h2>{copy.plan}</h2>
         <ol>
-          {(report.workPlan || actions).map((item: Finding & { order?: number; change?: string; verify?: string; who?: string; impact?: string; steps?: string[]; storedLabel?: string }) => (
+          {(report.workPlan || actions).map((item: Finding & { order?: number; change?: string; verify?: string; who?: string; impact?: string; steps?: string[]; storedLabel?: string; priority?: string; component?: string; problem?: string }) => (
             <li key={`${item.order || ""}-${item.checkId}`}>
               {item.storedLabel ? <p className="report-stored">{item.storedLabel}</p> : null}
               <strong>{item.title}</strong>
+              {item.priority ? <p>{copy.severity}: {String(item.priority)}</p> : null}
+              {item.component ? <p>{String(item.component)}</p> : null}
+              {item.problem ? <p>{String(item.problem)}</p> : null}
               {item.who ? <p>{copy.whoTitle}: {item.who}</p> : null}
-              {item.impact ? <p>{item.impact}</p> : null}
+              {item.impact && item.impact !== item.problem ? <p>{item.impact}</p> : null}
               <p dir="ltr">{item.url || copy.unknownPlace}</p>
               {(item.steps || []).length ? <ol>{item.steps.map((step) => <li key={step}>{step}</li>)}</ol> : <p>{String(item.change || item.recommendation || "")}</p>}
               {item.verify ? <p><strong>{copy.verifyTitle}. </strong>{String(item.verify)}</p> : null}
@@ -605,23 +635,23 @@ export function ComplianceReportView({
         </ol>
       </section>
       <section id="report-open" className="report-sheet__block">
-        <h2>{copy.notFoundTitle}</h2>
-        {notFound.length === 0 ? <p>{copy.empty}</p> : notFound.map((item, index) => (
+        {notFound.length ? <h2>{copy.notFoundTitle}</h2> : null}
+        {notFound.map((item, index) => (
           <article key={`gap-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
         ))}
-        <h2>{copy.undecidedTitle}</h2>
-        {undecided.length === 0 ? <p>{copy.empty}</p> : undecided.map((item, index) => (
+        {undecided.length ? <h2>{copy.undecidedTitle}</h2> : null}
+        {undecided.map((item, index) => (
           <article key={`open-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
         ))}
-        <h2>{copy.blockedTitle}</h2>
-        {blocked.length === 0 ? <p>{copy.empty}</p> : blocked.map((item, index) => {
+        {blocked.length ? <h2>{copy.blockedTitle}</h2> : null}
+        {blocked.map((item, index) => {
           const brief = (item as Finding & { brief?: { found?: string; title?: string } }).brief;
           return <article key={`blocked-${item.checkId}-${index}`} className="report-open"><h3>{brief?.title || item.title}</h3><p>{brief?.found || item.explanation || item.description}</p><p dir="ltr">{item.url}</p></article>;
         })}
         <h2>{CONSENT_UI[locale].scopeTitle}</h2>
         <p>{SCOPE[locale]}</p>
-        <h2>{copy.technicalTitle}</h2>
-        {technical.length === 0 ? <p>{copy.empty}</p> : technical.map((item, index) => (
+        {technical.length ? <h2>{copy.technicalTitle}</h2> : null}
+        {technical.map((item, index) => (
           <article key={`tech-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
         ))}
       </section>
