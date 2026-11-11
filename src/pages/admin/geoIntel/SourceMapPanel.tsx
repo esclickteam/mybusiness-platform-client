@@ -22,16 +22,35 @@ type ScoreParts = {
   competitorGap: number;
   absence: number;
   localField: number;
+  realistic?: number;
+};
+type MentionedBrand = {
+  name: string;
+  answers: number;
+  domains: string[];
+  hasSource: boolean;
 };
 export type SourceRow = {
   domain: string;
   citations: number;
+  verifiedCitations?: number;
+  citationVerified?: boolean;
+  verificationNoteHe?: string;
   answerCount: number;
   engines: EngineChip[];
   questions: QuestionRef[];
   questionCount: number;
   competitors: string[];
+  competitorsInAnswers?: string[];
+  competitorsAsSources?: string[];
+  competitorSite?: boolean;
+  competitorName?: string;
+  mentionedInAnswer?: boolean;
   brandMentioned: boolean;
+  appearanceBand?: string;
+  appearanceLabelHe?: string;
+  appearancePct?: number;
+  appearanceText?: string;
   brandAnswerCount: number;
   brandLinkAnswerCount: number;
   brandMentionedInAnswer: boolean;
@@ -62,11 +81,14 @@ export type SourceMapData = {
   summary?: {
     uniqueSources: number;
     sourcesMentioningUs: number;
+    sourcesPartial?: number;
     sourcesCompetitorsNotUs: number;
     highPriorityOutreach: number;
   };
   topCited?: SourceRow[];
   topOutreach?: SourceRow[];
+  outreachCandidates?: SourceRow[];
+  mentionedBrands?: MentionedBrand[];
   sources?: SourceRow[];
 };
 
@@ -76,6 +98,22 @@ function yesNo(value: boolean) {
 
 function ratio(part: number | undefined, whole: number) {
   return `${part || 0}/${whole}`;
+}
+
+function appearanceLine(source: SourceRow) {
+  if (source.appearanceLabelHe && source.appearanceText) {
+    return `${source.appearanceLabelHe} · ${source.appearanceText}`;
+  }
+  return ratio(source.brandAnswerCount, source.answerCount);
+}
+
+function roleLine(source: SourceRow) {
+  if (!source.competitorSite) return "";
+  const name = source.competitorName || source.domain;
+  if (source.mentionedInAnswer) {
+    return `${name} הוא גם הדומיין שצוטט וגם מותג שמוזכר בתשובה.`;
+  }
+  return `${name} צוטט כמקור, והדומיין עצמו הוא אתר מתחרה. השם לא נמצא בטקסט התשובה.`;
 }
 
 function formatWhen(iso: string | null) {
@@ -98,8 +136,15 @@ function engineText(source: SourceRow) {
 }
 
 function competitorText(source: SourceRow) {
-  if (!source.competitors?.length) return "—";
-  return source.competitors.join(" · ");
+  const inAnswers = source.competitorsInAnswers || [];
+  const asSources = source.competitorsAsSources || [];
+  if (!inAnswers.length && !asSources.length) {
+    return source.competitors?.length ? source.competitors.join(" · ") : "—";
+  }
+  const parts = [];
+  if (inAnswers.length) parts.push(`בתשובה: ${inAnswers.join(" · ")}`);
+  if (asSources.length) parts.push(`כדומיין: ${asSources.join(" · ")}`);
+  return parts.join(" · ");
 }
 
 function SourceFacts({ source }: { source: SourceRow }) {
@@ -127,7 +172,9 @@ function SourceFacts({ source }: { source: SourceRow }) {
       </div>
       <div>
         <dt>המותג בתשובות</dt>
-        <dd>{ratio(source.brandAnswerCount, source.answerCount)}</dd>
+        <dd className={`geo-appearance geo-appearance-${source.appearanceBand || "absent"}`}>
+          {appearanceLine(source)}
+        </dd>
       </div>
       <div>
         <dt>קישור אלינו</dt>
@@ -160,10 +207,13 @@ function SourceCard({
           {source.citations} ציטוטים · {engineText(source)}
         </p>
         <p className="geo-source-meta">מתחרים: {competitorText(source)}</p>
-        <p className="geo-source-meta">
-          הופעה בתשובות: {ratio(source.brandAnswerCount, source.answerCount)} · קישור:{" "}
-          {ratio(source.brandLinkAnswerCount, source.answerCount)}
+        <p className={`geo-source-meta geo-appearance geo-appearance-${source.appearanceBand || "absent"}`}>
+          {appearanceLine(source)}
         </p>
+        {source.citationVerified === false ? (
+          <p className="geo-source-warn">{source.verificationNoteHe || "הציטוט לא אומת בכל תשובה."}</p>
+        ) : null}
+        {roleLine(source) ? <p className="geo-source-role">{roleLine(source)}</p> : null}
       </button>
     </article>
   );
@@ -270,11 +320,15 @@ export default function SourceMapPanel({
               <div className="geo-kpi-value">{summary?.uniqueSources ?? 0}</div>
             </div>
             <div className="geo-kpi">
-              <div className="geo-kpi-label">מקורות שמזכירים אותנו</div>
+              <div className="geo-kpi-label">מופיעים באופן עקבי</div>
               <div className="geo-kpi-value">{summary?.sourcesMentioningUs ?? 0}</div>
             </div>
             <div className="geo-kpi">
-              <div className="geo-kpi-label">מתחרים בלי אזכור שלנו</div>
+              <div className="geo-kpi-label">הופעה חלקית</div>
+              <div className="geo-kpi-value">{summary?.sourcesPartial ?? 0}</div>
+            </div>
+            <div className="geo-kpi">
+              <div className="geo-kpi-label">מתחרים בלי הופעה עקבית</div>
               <div className="geo-kpi-value">{summary?.sourcesCompetitorsNotUs ?? 0}</div>
             </div>
             <div className="geo-kpi">
@@ -289,7 +343,7 @@ export default function SourceMapPanel({
           </details>
 
           <div className="geo-source-block">
-            <h3>Top 10 מקורות שכדאי להשיג בהם אזכור</h3>
+            <h3>יעדי פנייה מאומתים</h3>
             {data.topOutreach?.length ? (
               <div className="geo-source-grid">
                 {data.topOutreach.map((source) => (
@@ -298,10 +352,58 @@ export default function SourceMapPanel({
               </div>
             ) : (
               <p className="geo-note">
-                אין עדיין מקור שחזר ביותר מתשובה אחת ועבר את סף העדיפות לפנייה.
+                אין יעד בעדיפות גבוהה. מקור נכנס לכאן רק אם הציטוט אומת בתשובות נפרדות, חזר לפחות פעמיים, והציון הוא 40 ומעלה.
               </p>
             )}
           </div>
+
+          <div className="geo-source-block">
+            <h3>מועמדים לפנייה — הציטוט לא אומת</h3>
+            <p className="geo-note">
+              אלה מקורות שאינם אתר מתחרה, אבל אותה רשימת כתובות חזרה בכמה מדידות בלי שהכתובת מופיעה בטקסט התשובה. לא פונים אליהם כאילו 20 הציטוטים אומתו.
+            </p>
+            {data.outreachCandidates?.length ? (
+              <div className="geo-source-grid">
+                {data.outreachCandidates.map((source) => (
+                  <SourceCard key={`cand-${source.domain}`} source={source} onOpen={setSelected} />
+                ))}
+              </div>
+            ) : (
+              <p className="geo-note">אין מועמד כזה במדידות השמורות.</p>
+            )}
+          </div>
+
+          <div className="geo-source-block">
+            <h3>מתחרים — לניטור בלבד</h3>
+            <p className="geo-note">אתר של עסק מתחרה אינו יעד לפנייה, גם אם הוא צוטט כמקור.</p>
+            <div className="geo-source-grid">
+              {(data.sources || [])
+                .filter((source) => source.action === "competitor_monitor")
+                .map((source) => (
+                  <SourceCard key={`mon-${source.domain}`} source={source} onOpen={setSelected} />
+                ))}
+            </div>
+          </div>
+
+          {data.mentionedBrands?.length ? (
+            <div className="geo-source-block">
+              <h3>מותגים שנמצאו במדידות</h3>
+              <ul className="geo-source-urls">
+                {data.mentionedBrands.map((brand) => (
+                  <li key={brand.name}>
+                    <span>
+                      {brand.name}
+                      {brand.hasSource ? " — גם מקור וגם אזכור בתשובה" : " — הוזכר בתשובה, בלי דומיין מקור"}
+                    </span>
+                    <code>
+                      {brand.answers} תשובות
+                      {brand.domains.length ? ` · ${brand.domains.join(", ")}` : ""}
+                    </code>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           <div className="geo-source-block">
             <h3>10 המקורות המצוטטים ביותר</h3>
@@ -362,7 +464,7 @@ export default function SourceMapPanel({
                           <td>{engineText(source)}</td>
                           <td>{source.questionCount}</td>
                           <td>{competitorText(source)}</td>
-                          <td>{ratio(source.brandAnswerCount, source.answerCount)}</td>
+                          <td>{source.appearanceText || ratio(source.brandAnswerCount, source.answerCount)}</td>
                           <td>{ratio(source.brandLinkAnswerCount, source.answerCount)}</td>
                           <td>{source.answerCount}</td>
                           <td>{source.importanceScore}</td>
@@ -403,7 +505,10 @@ export default function SourceMapPanel({
               <p className="geo-source-headline">{selected.actionHeadlineHe}</p>
               <p className="geo-note">{selected.reasonHe}</p>
               <SourceFacts source={selected} />
-              {selected.scoreCapped ? (
+              {roleLine(selected) ? <p className="geo-source-role">{roleLine(selected)}</p> : null}
+              {selected.citationVerified === false ? (
+                <p className="geo-source-warn">{selected.verificationNoteHe}</p>
+              ) : selected.scoreCapped ? (
                 <p className="geo-note">הציון נחתך כי המקור הופיע רק בתשובה אחת.</p>
               ) : null}
               {selected.scoreBreakdown ? (
@@ -411,7 +516,7 @@ export default function SourceMapPanel({
                   פירוט ציון: ציטוטים {selected.scoreBreakdown.citations}, מנועים{" "}
                   {selected.scoreBreakdown.engines}, שאלות {selected.scoreBreakdown.questions}, מתחרים{" "}
                   {selected.scoreBreakdown.competitorGap}, היעדרות {selected.scoreBreakdown.absence}, מקור
-                  מקומי {selected.scoreBreakdown.localField}.
+                  מקומי {selected.scoreBreakdown.localField}, יעד ריאלי {selected.scoreBreakdown.realistic || 0}.
                 </p>
               ) : null}
               <h3>כתובות שצוטטו</h3>
@@ -438,7 +543,7 @@ export default function SourceMapPanel({
                     {item.engineLabelHe} · {formatWhen(item.checkedAt)}
                   </p>
                   <p className="geo-source-meta">
-                    מתחרים: {item.competitors.length ? item.competitors.join(" · ") : "—"}
+                    מותגים שסווגו במדידה: {item.competitors.length ? item.competitors.join(" · ") : "—"}
                   </p>
                   <p className="geo-source-meta">
                     {brandName || "המותג"} הופיע: {yesNo(item.brandAppeared)} · קישור:{" "}

@@ -1573,6 +1573,7 @@
 }
 .geo-source-kpis {
   margin-bottom: 0;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .geo-formula {
   background: var(--geo-card);
@@ -1644,6 +1645,31 @@
   font-size: 13px;
   line-height: 1.45;
   overflow-wrap: anywhere;
+}
+.geo-appearance-consistent {
+  color: #166534;
+  font-weight: 800;
+}
+.geo-appearance-partial,
+.geo-appearance-rare {
+  color: #9a3412;
+  font-weight: 800;
+}
+.geo-appearance-absent {
+  color: #64748b;
+}
+.geo-source-warn,
+.geo-source-role {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.geo-source-warn {
+  color: #9a3412;
+}
+.geo-source-role {
+  font-weight: 700;
 }
 .geo-source-list-head {
   display: flex;
