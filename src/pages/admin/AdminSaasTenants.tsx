@@ -26,7 +26,9 @@ type TenantRow = {
     accessUntil?: string | null;
     history?: { at?: string; changes?: string[]; note?: string; charged?: boolean; after?: { planId?: string; paymentStatus?: string; dueNow?: number | null } }[];
   };
-  owner?: { name?: string; email?: string } | null;
+  createdAt?: string | null;
+  productLoginUrl?: string;
+  owner?: { name?: string; email?: string; phone?: string } | null;
   steps?: { step: string; ok?: boolean }[];
   failure?: string;
   product?: {
@@ -71,6 +73,7 @@ export default function AdminSaasTenants() {
   const [licenseNote, setLicenseNote] = useState("");
   const [params] = useSearchParams();
   const [query, setQuery] = useState(params.get("system") || "");
+  const [openOwner, setOpenOwner] = useState("");
 
   async function load() {
     const { data } = await API.get("/admin/saas-tenants");
@@ -139,10 +142,32 @@ export default function AdminSaasTenants() {
     const term = query.trim().toLowerCase();
     return rows.filter((row) => {
       const name = systemBySlug(row.templateSlug)?.name || row.templateSlug;
-      const haystack = `${name} ${row.templateSlug} ${row.businessName} ${row.publicSlug} ${row.owner?.email || ""} ${row.owner?.name || ""}`.toLowerCase();
+      const haystack = `${name} ${row.templateSlug} ${row.businessName} ${row.publicSlug} ${row.owner?.email || ""} ${row.owner?.name || ""} ${row.owner?.phone || ""}`.toLowerCase();
       return !term || haystack.includes(term);
     });
   }, [query, rows]);
+
+  const owners = useMemo(() => {
+    const grouped = new Map<string, { key: string; name: string; email: string; phone: string; rows: TenantRow[] }>();
+    for (const row of visible) {
+      const email = row.owner?.email || "";
+      const key = email || row.ownerUserId || row.id;
+      const current = grouped.get(key) || {
+        key,
+        name: row.owner?.name || "",
+        email,
+        phone: row.owner?.phone || "",
+        rows: [],
+      };
+      if (!current.name && row.owner?.name) current.name = row.owner.name;
+      if (!current.phone && row.owner?.phone) current.phone = row.owner.phone;
+      current.rows.push(row);
+      grouped.set(key, current);
+    }
+    return Array.from(grouped.values());
+  }, [visible]);
+
+  const opened = owners.find((owner) => owner.key === openOwner) || null;
 
   return (
     <div dir="rtl">
@@ -175,6 +200,59 @@ export default function AdminSaasTenants() {
             {ops.watch.dependencies ? ` · Mongo ${ops.watch.dependencies.mongo ? "תקין" : "כשל"} · Redis ${ops.watch.dependencies.redis ? "תקין" : "כשל"}` : ""}
           </p>
         ) : null}
+        <section className="mb-4 bg-white shadow-sm">
+          <h2 className="px-3 py-2 font-black">בעלי המערכות</h2>
+          <p className="px-3 pb-2 text-sm">כל העסקים של אותו בעלים מופיעים בתיק אחד. התחברות אחרונה אינה נשמרת בחשבון Bizuply.</p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-start">
+                  {["שם", "אימייל", "טלפון", "מערכות", "מסלול", "הצטרפות", "סטטוס", "מנוי", "חידוש", ""].map((head) => (
+                    <th key={head} className="px-3 py-2 text-start">{head}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {owners.map((owner) => {
+                  const systems = owner.rows.map((row) => systemBySlug(row.templateSlug)?.name || row.templateSlug);
+                  const plans = owner.rows.map((row) => row.hosting?.planId || "—");
+                  const joined = owner.rows.map((row) => row.createdAt).filter(Boolean).sort()[0];
+                  const renewal = owner.rows.map((row) => row.renewalAt).filter(Boolean).sort()[0];
+                  return (
+                    <tr key={owner.key} className="border-b align-top">
+                      <td className="px-3 py-2">{owner.name || "—"}</td>
+                      <td className="px-3 py-2">{owner.email || "—"}</td>
+                      <td className="px-3 py-2">{owner.phone || "לא נשמר"}</td>
+                      <td className="px-3 py-2">{systems.join(" · ")}</td>
+                      <td className="px-3 py-2">{plans.join(" · ")}</td>
+                      <td className="px-3 py-2">{joined ? new Date(joined).toLocaleDateString() : "—"}</td>
+                      <td className="px-3 py-2">{owner.rows.map((row) => row.status).join(" · ")}</td>
+                      <td className="px-3 py-2">{owner.rows.map((row) => (row.paymentStatus === "paid" ? "שולם" : "טרם שולם")).join(" · ")}</td>
+                      <td className="px-3 py-2">{renewal ? new Date(renewal).toLocaleDateString() : "—"}</td>
+                      <td className="px-3 py-2">
+                        <button type="button" className="biz-btn biz-btn-secondary" onClick={() => setOpenOwner(openOwner === owner.key ? "" : owner.key)}>תיק</button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {opened ? (
+            <div className="border-t px-3 py-3 text-sm">
+              <p className="font-black">{opened.name || opened.email || "בעלים"}</p>
+              {opened.rows.map((row) => {
+                const login = row.productLoginUrl && (/^https:\/\//.test(row.productLoginUrl) || row.productLoginUrl.startsWith("/")) ? row.productLoginUrl : "";
+                return (
+                  <p key={row.id}>
+                    {systemBySlug(row.templateSlug)?.name || row.templateSlug} · {row.businessName || row.publicSlug} · {row.status}
+                    {login ? <> · <a href={login}>כניסה למערכת</a></> : null}
+                  </p>
+                );
+              })}
+            </div>
+          ) : null}
+        </section>
         {ops?.failing?.length ? (
           <section className="mb-4 rounded-2xl bg-white p-4 shadow-sm">
             <h2 className="mb-2 font-black">כשלי סנכרון</h2>
