@@ -25,6 +25,7 @@ export type Tab =
   | "discovery"
   | "competitors"
   | "citations"
+  | "sourceMap"
   | "opportunities"
   | "improvementPlan"
   | "content"
