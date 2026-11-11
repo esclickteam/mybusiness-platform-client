@@ -82,8 +82,26 @@ const DISCOVERY_COPY = {
   ar: { title: "فحص المناطق الداخلية — مراجعة المالك", intro: "متاح فقط لحساب المالك. لا توجد رسوم. لا تُحفظ كلمة المرور في المتصفح.", url: "عنوان الموقع", paths: "المسارات المسموحة", language: "اللغة", user: "مستخدم تجريبي", password: "كلمة المرور", consent: "أؤكد أن الموقع ملكنا أو لدينا إذن بفحصه، وأن المستخدم تجريبي.", discover: "اكتشاف صفحات داخلية وعدّها", progress: "الاكتشاف جارٍ", found: "صفحات مكتشفة", unique: "صفحات فريدة", duplicates: "تكرارات", blocked: "غير متاحة", publicPages: "عامة", internalPages: "داخلية", dynamic: "أنواع ديناميكية", note: "العدد هو الصفحات التي اكتُشفت، وليس كل صفحات الموقع. قد لا تُكتشف صفحة بلا رابط.", partial: "توقف الاكتشاف قبل أن يكتمل، والنتيجة جزئية.", extra: "اكتُشف أكثر من 100 صفحة للفحص. تغطي الحزمة الحالية 100. يمكن اختيار حتى 100 أو إجراء فحص آخر.", recommend: "التوصية", start: "بدء الفحص الكامل", stop: "إيقاف", name: "الاسم", address: "العنوان", type: "النوع", status: "الحالة", basic: "أساسية", extended: "موسعة", advanced: "متقدمة" },
 } as const;
 
+const DISCOVERY_OUTCOME = {
+  he: { failed: "הגילוי נכשל.", login_failed: "לא הצלחנו להתחבר באמצעות משתמש הבדיקה.", session: "החיבור לאתר הסתיים. יש להתחבר מחדש.", bad_url: "כתובת האתר אינה תקינה. יש להזין כתובת https מלאה.", https_required: "כתובת האתר אינה תקינה. יש להזין כתובת https מלאה.", path_not_allowed: "הגישה נחסמה. אפשר לבדוק רק את האתר שאושר, בלי אזורים מסוכנים או כתובות שאינן מורשות.", host_not_approved: "הגישה נחסמה. אפשר לבדוק רק את האתר שאושר, בלי אזורים מסוכנים או כתובות שאינן מורשות.", start_unreachable: "כתובת ההתחלה אינה נגישה. בדקו שהכתובת נכונה ושהמשתמש יכול לפתוח אותה.", browser_unavailable: "הגילוי נכשל. הדפדפן לבדיקה אינו זמין.", no_pages: "הגילוי נכשל. לא נמצאו עמודים שאפשר לבדוק.", time: "הגילוי נעצר כי הזמן הסתיים. נמצאו עמודים, והתוצאה חלקית.", limit: "הגילוי נעצר כי הגענו למכסת העמודים. נמצאו עמודים, והתוצאה חלקית.", partial: "הגילוי נעצר לפני שהסתיים, והתוצאה חלקית." },
+  en: { failed: "Discovery failed.", login_failed: "We could not sign in with the test user.", session: "The site connection ended. Sign in again.", bad_url: "The site address is not valid. Enter a full https address.", https_required: "The site address is not valid. Enter a full https address.", path_not_allowed: "Access was blocked. Only the approved site can be checked, without dangerous areas or unapproved addresses.", host_not_approved: "Access was blocked. Only the approved site can be checked, without dangerous areas or unapproved addresses.", start_unreachable: "The starting address is not reachable. Check that it is correct and that the user can open it.", browser_unavailable: "Discovery failed. The check browser is unavailable.", no_pages: "Discovery failed. No pages could be checked.", time: "Discovery stopped because time ran out. Pages were found, and the result is partial.", limit: "Discovery stopped because the page limit was reached. Pages were found, and the result is partial.", partial: "Discovery stopped before it finished, so this result is partial." },
+  es: { failed: "El descubrimiento falló.", login_failed: "No pudimos entrar con el usuario de prueba.", session: "La conexión con el sitio terminó. Hay que entrar de nuevo.", bad_url: "La dirección del sitio no es válida. Introduzca una dirección https completa.", https_required: "La dirección del sitio no es válida. Introduzca una dirección https completa.", path_not_allowed: "El acceso quedó bloqueado. Solo se puede revisar el sitio aprobado, sin zonas peligrosas ni direcciones no autorizadas.", host_not_approved: "El acceso quedó bloqueado. Solo se puede revisar el sitio aprobado, sin zonas peligrosas ni direcciones no autorizadas.", start_unreachable: "La dirección inicial no está disponible. Compruebe que sea correcta y que el usuario pueda abrirla.", browser_unavailable: "El descubrimiento falló. El navegador de la revisión no está disponible.", no_pages: "El descubrimiento falló. No hay páginas que se puedan revisar.", time: "El descubrimiento se detuvo porque se acabó el tiempo. Se encontraron páginas y el resultado es parcial.", limit: "El descubrimiento se detuvo porque se alcanzó el límite de páginas. Se encontraron páginas y el resultado es parcial.", partial: "El descubrimiento se detuvo antes de terminar. El resultado es parcial." },
+  "pt-BR": { failed: "A descoberta falhou.", login_failed: "Não foi possível entrar com o usuário de teste.", session: "A conexão com o site terminou. É preciso entrar de novo.", bad_url: "O endereço do site não é válido. Informe um endereço https completo.", https_required: "O endereço do site não é válido. Informe um endereço https completo.", path_not_allowed: "O acesso foi bloqueado. Só o site aprovado pode ser verificado, sem áreas perigosas ou endereços não autorizados.", host_not_approved: "O acesso foi bloqueado. Só o site aprovado pode ser verificado, sem áreas perigosas ou endereços não autorizados.", start_unreachable: "O endereço inicial não está acessível. Confira se ele está correto e se o usuário consegue abri-lo.", browser_unavailable: "A descoberta falhou. O navegador da verificação não está disponível.", no_pages: "A descoberta falhou. Não há páginas que possam ser verificadas.", time: "A descoberta parou porque o tempo acabou. Páginas foram encontradas e o resultado é parcial.", limit: "A descoberta parou porque o limite de páginas foi atingido. Páginas foram encontradas e o resultado é parcial.", partial: "A descoberta parou antes do fim. O resultado é parcial." },
+  ar: { failed: "فشل الاكتشاف.", login_failed: "تعذر تسجيل الدخول بمستخدم الاختبار.", session: "انتهى الاتصال بالموقع. يجب تسجيل الدخول من جديد.", bad_url: "عنوان الموقع غير صالح. أدخل عنوان https كاملاً.", https_required: "عنوان الموقع غير صالح. أدخل عنوان https كاملاً.", path_not_allowed: "تم منع الوصول. يمكن فحص الموقع الذي تمت الموافقة عليه فقط، دون المناطق الخطرة أو العناوين غير المصرح بها.", host_not_approved: "تم منع الوصول. يمكن فحص الموقع الذي تمت الموافقة عليه فقط، دون المناطق الخطرة أو العناوين غير المصرح بها.", start_unreachable: "عنوان البداية غير متاح. تحقق من صحة العنوان ومن أن المستخدم يستطيع فتحه.", browser_unavailable: "فشل الاكتشاف. متصفح الفحص غير متاح.", no_pages: "فشل الاكتشاف. لم يتم العثور على صفحات يمكن فحصها.", time: "توقف الاكتشاف لأن الوقت انتهى. تم العثور على صفحات والنتيجة جزئية.", limit: "توقف الاكتشاف لأن حد الصفحات اكتمل. تم العثور على صفحات والنتيجة جزئية.", partial: "توقف الاكتشاف قبل أن يكتمل، والنتيجة جزئية." },
+} as const;
+
+function discoveryOutcome(discovery: { status?: string; partial?: boolean; partialReason?: string; error?: string; discovered?: number }, locale: keyof typeof DISCOVERY_OUTCOME) {
+  const copy = DISCOVERY_OUTCOME[locale] || DISCOVERY_OUTCOME.he;
+  const reason = discovery.partialReason || discovery.error || "";
+  const failed = discovery.status === "failed" || ((discovery.discovered || 0) === 0 && discovery.status !== "discovered" && discovery.status !== "running");
+  if (discovery.status === "running") return "";
+  if (failed) return copy[reason as keyof typeof copy] || copy.failed;
+  if (discovery.partial) return copy[reason as keyof typeof copy] || copy.partial;
+  return "";
+}
+
 type DiscoveryPage = { name: string; url: string; type: string; status: string; selectable?: boolean; instances?: number };
-type Discovery = { id: string; kind?: string; status: string; percent: number; partial?: boolean; discovered?: number; unique?: number; duplicates?: number; inaccessible?: number; publicPages?: number; internalPages?: number; dynamicTypes?: number; scanPages?: number; recommended?: { packageId: string; usd: number; pages: number; extra?: boolean; scanPages?: number } | null; pages?: DiscoveryPage[]; error?: string; reportReady?: boolean; pagesAllowed?: number; findings?: Array<{ title: string; url: string; outcome: string }> };
+type Discovery = { id: string; kind?: string; status: string; percent: number; partial?: boolean; partialReason?: string; discovered?: number; unique?: number; duplicates?: number; inaccessible?: number; publicPages?: number; internalPages?: number; dynamicTypes?: number; scanPages?: number; recommended?: { packageId: string; usd: number; pages: number; extra?: boolean; scanPages?: number } | null; pages?: DiscoveryPage[]; error?: string; reportReady?: boolean; pagesAllowed?: number; findings?: Array<{ title: string; url: string; outcome: string }> };
 
 function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
   const [offer, setOffer] = useState<{ packages: Array<{ id: string; pages: number; usd: number; available: boolean; reason: string }> } | null>(null);
@@ -132,7 +150,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
   function applyDiscovery(data: Discovery) {
     setDiscovery(data);
     if (data.status === "running") return;
-    if (data.recommended?.packageId) setPackageId(data.recommended.packageId);
+    if (data.status !== "failed" && data.recommended?.packageId) setPackageId(data.recommended.packageId);
     const cap = data.recommended?.extra ? 100 : data.recommended?.pages || 10;
     if (data.pages) setPicked(data.pages.filter((item) => item.selectable).map((item) => item.url).slice(0, cap));
   }
@@ -149,7 +167,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
     });
     const data = await response.json().catch(() => ({}));
     setPassword("");
-    if (!response.ok) { setNote(data.error || copy.discover); return; }
+    if (!response.ok) { setNote(discoveryOutcome({ status: "failed", error: data.error }, locale)); return; }
     applyDiscovery(data);
   }
   async function submit(event: FormEvent) {
@@ -236,10 +254,10 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
       {discovery?.status === "running" ? <p>{copy.progress} · {discovery.percent}%</p> : null}
       {discovery && discovery.status !== "running" ? (
         <div>
-          {discovery.partial ? <p>{copy.partial}</p> : null}
-          <p>{copy.found}: {discovery.discovered}. {copy.unique}: {discovery.unique}. {copy.duplicates}: {discovery.duplicates}. {copy.blocked}: {discovery.inaccessible}. {copy.publicPages}: {discovery.publicPages}. {copy.internalPages}: {discovery.internalPages}. {copy.dynamic}: {discovery.dynamicTypes}.</p>
-          <p>{copy.note}</p>
-          {discovery.recommended ? <p>{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd} · {discovery.scanPages}</p> : null}
+          {discoveryOutcome(discovery, locale) ? <p>{discoveryOutcome(discovery, locale)}</p> : null}
+          {(discovery.discovered || discovery.unique || discovery.inaccessible) ? <p>{copy.found}: {discovery.discovered}. {copy.unique}: {discovery.unique}. {copy.duplicates}: {discovery.duplicates}. {copy.blocked}: {discovery.inaccessible}. {copy.publicPages}: {discovery.publicPages}. {copy.internalPages}: {discovery.internalPages}. {copy.dynamic}: {discovery.dynamicTypes}.</p> : null}
+          {discovery.status !== "failed" ? <p>{copy.note}</p> : null}
+          {discovery.recommended && discovery.status !== "failed" ? <p>{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd} · {discovery.scanPages}</p> : null}
           {discovery.recommended?.extra ? <p>{copy.extra}</p> : null}
           <p>{picked.length} / {selectable.length}</p>
           <button type="button" onClick={() => setPicked(selectable.map((item) => item.url).slice(0, discovery?.recommended?.extra ? 100 : discovery?.recommended?.pages || 100))}>{locale === "en" ? "Select allowed pages" : "בחירת העמודים המותרים"}</button>
@@ -268,7 +286,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
           ))}
         </select>
       </label>
-      {discovery?.recommended ? <p className="scan-recommend">{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd}</p> : null}
+      {discovery?.recommended && discovery.status !== "failed" ? <p className="scan-recommend">{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd}</p> : null}
       <button type="submit" className="scan-primary" disabled={!discovery || discovery.status === "running" || !picked.length}>{copy.start}</button>
       </> : null}
       {step === 5 ? (
