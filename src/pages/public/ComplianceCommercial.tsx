@@ -296,12 +296,13 @@ export function PriceBoard({ locale, showHeading = true }: { locale: Locale; sho
   );
 }
 
-const INTERNAL: Record<Locale, { title: string; explain: string; steps: string; closed: string; basic: string; extended: string; advanced: string; limit: string }> = {
+const INTERNAL: Record<Locale, { title: string; explain: string; steps: string; closed: string; progress: string; basic: string; extended: string; advanced: string; limit: string }> = {
   he: {
     title: "סריקת אתר מורחבת — כולל אזורים פנימיים",
     explain: "סריקה מורחבת מאפשרת לבדוק גם עמודים באתר שדורשים התחברות, כמו אזור אישי, טפסים ומערכות ניהול. לצורך הסריקה יוצרים משתמש בדיקה זמני עם הרשאות מוגבלות.",
     steps: "ההזמנה כוללת בחירת אתר, בחירת אזורים מורשים, אישור בעלות, חתימה, יצירת משתמש בדיקה והזנת פרטי גישה. הסריקה והדוח באים אחרי בדיקת הגישה.",
     closed: "הגבייה סגורה ולא מתבצע חיוב. בשלב זה אי אפשר למסור סיסמה או להתחיל סריקה.",
+    progress: "כשהסריקה תאושר, יוצגו העמודים שנבדקו מתוך המכסה. 100% מופיע רק אחרי שהדוח מוכן.",
     basic: "בסיסית",
     extended: "מורחבת",
     advanced: "מתקדמת",
@@ -312,6 +313,7 @@ const INTERNAL: Record<Locale, { title: string; explain: string; steps: string; 
     explain: "An extended scan can also check pages that require sign-in, such as a personal area, forms, and admin systems. The scan uses a temporary test user with limited permissions.",
     steps: "The order covers choosing the site, choosing the allowed areas, confirming authority, signing, creating a test user, and entering access details. The scan and the report come after the access check.",
     closed: "Billing is closed and nothing is charged. A password cannot be submitted and a scan cannot be started at this stage.",
+    progress: "When a scan is approved, the pages checked out of the allowance are shown. 100% appears only after the report is ready.",
     basic: "Basic",
     extended: "Extended",
     advanced: "Advanced",
@@ -322,6 +324,7 @@ const INTERNAL: Record<Locale, { title: string; explain: string; steps: string; 
     explain: "Un análisis ampliado también puede revisar páginas que exigen iniciar sesión, como un área personal, formularios y sistemas de gestión. El análisis usa un usuario de prueba temporal con permisos limitados.",
     steps: "El pedido incluye elegir el sitio, elegir las zonas permitidas, confirmar la autorización, firmar, crear un usuario de prueba e introducir el acceso. El análisis y el informe llegan después de comprobar el acceso.",
     closed: "El cobro está cerrado y no se realiza ningún cargo. En esta etapa no se puede entregar una contraseña ni iniciar un análisis.",
+    progress: "Cuando un análisis esté aprobado, se verán las páginas revisadas dentro del cupo. El 100% aparece solo cuando el informe está listo.",
     basic: "Básica",
     extended: "Ampliada",
     advanced: "Avanzada",
@@ -332,6 +335,7 @@ const INTERNAL: Record<Locale, { title: string; explain: string; steps: string; 
     explain: "Uma varredura ampliada também pode verificar páginas que exigem login, como uma área pessoal, formulários e sistemas de gestão. A varredura usa um usuário de teste temporário com permissões limitadas.",
     steps: "O pedido inclui escolher o site, escolher as áreas permitidas, confirmar a autorização, assinar, criar um usuário de teste e informar o acesso. A varredura e o relatório vêm depois da verificação do acesso.",
     closed: "A cobrança está fechada e nada é cobrado. Nesta etapa não é possível enviar uma senha nem iniciar uma varredura.",
+    progress: "Quando uma varredura for aprovada, as páginas verificadas dentro da cota aparecem. 100% só aparece depois que o relatório está pronto.",
     basic: "Básica",
     extended: "Ampliada",
     advanced: "Avançada",
@@ -342,6 +346,7 @@ const INTERNAL: Record<Locale, { title: string; explain: string; steps: string; 
     explain: "يتيح الفحص الموسّع أيضًا فحص صفحات تتطلب تسجيل الدخول، مثل منطقة شخصية ونماذج وأنظمة إدارة. يستخدم الفحص مستخدم اختبار مؤقتًا بصلاحيات محدودة.",
     steps: "يشمل الطلب اختيار الموقع، واختيار المناطق المسموح بها، وتأكيد التفويض، والتوقيع، وإنشاء مستخدم اختبار، وإدخال بيانات الدخول. يأتي الفحص والتقرير بعد التحقق من الدخول.",
     closed: "التحصيل مغلق ولا يتم أي خصم. في هذه المرحلة لا يمكن تسليم كلمة مرور ولا بدء فحص.",
+    progress: "عند اعتماد الفحص، تظهر الصفحات التي فُحصت من أصل الحصة. تظهر 100٪ فقط بعد أن يصبح التقرير جاهزًا.",
     basic: "أساسية",
     extended: "موسّعة",
     advanced: "متقدمة",
@@ -372,6 +377,7 @@ export function InternalPackages({ locale }: { locale: Locale }) {
       <p>{copy.limit}</p>
       <p>{copy.steps}</p>
       <p>{copy.closed}</p>
+      <p>{copy.progress}</p>
     </article>
   );
 }
