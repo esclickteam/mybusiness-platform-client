@@ -41,6 +41,39 @@ function fmtPct(ratio: number | null | undefined) {
   return `${(Number(ratio) * 100).toFixed(2)}%`;
 }
 
+function whyLines(row: any, data: any) {
+  const planner = data?.sources?.keywordPlanner;
+  const consoleSource = data?.sources?.searchConsole;
+  const lines: string[] = [];
+  lines.push(
+    row.volumeVerified
+      ? `נפח: ${row.volumeLabelHe} · Keyword Planner · ${fmtDate(planner?.syncedAt)}`
+      : "נפח לא אומת"
+  );
+  lines.push(
+    `מגמה: ${row.trend?.wordHe || "לא נמדד"}${row.trend?.spanHe ? ` · ${row.trend.spanHe}` : ""}`
+  );
+  if (row.languageFit?.labelHe) lines.push(row.languageFit.labelHe);
+  const range = consoleSource?.startDate
+    ? `${consoleSource.startDate} עד ${consoleSource.endDate}`
+    : null;
+  if (row.gsc && (row.gsc.impressions != null || row.gsc.position != null || row.gsc.ctr != null)) {
+    lines.push(
+      `חשיפות: ${row.gsc.impressions ?? "—"} · מיקום: ${row.gsc.position ?? "—"} · CTR: ${fmtPct(row.gsc.ctr)} · Search Console${range ? ` · ${range}` : ""}`
+    );
+  } else {
+    lines.push(range ? `אין הופעה ב־Search Console · ${range}` : "אין הופעה ב־Search Console");
+  }
+  lines.push(`URL נוכחי: ${row.currentUrl || "—"}`);
+  lines.push(`URL יעד: ${row.targetUrl || "—"}`);
+  if (row.currentUrl && row.targetUrl && row.currentUrl !== row.targetUrl) {
+    lines.push("ה־URL הנוכחי אינו היעד");
+  }
+  if (row.cannibalization) lines.push("קניבליזציה קיימת");
+  lines.push(`פעולה: ${row.actionHe}${row.targetUrl ? ` ${row.targetUrl}` : ""}`);
+  return lines;
+}
+
 function bidLabel(row: any) {
   if (row.lowTopOfPageBid == null && row.highTopOfPageBid == null) {
     return "Google לא החזיר";
@@ -269,7 +302,7 @@ export default function KeywordResearchPanel({
                         <details>
                           <summary>למה זה מומלץ?</summary>
                           <ul>
-                            {(row.opportunity?.whyHe || []).map((line: string) => (
+                            {whyLines(row, data).map((line: string) => (
                               <li key={line}>{line}</li>
                             ))}
                           </ul>
