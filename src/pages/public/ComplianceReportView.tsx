@@ -69,6 +69,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     limitsTitle: "מגבלות הממצא",
     whoTitle: "מי מתאים לבצע",
     evidenceTitle: "ראיה שנשמרה",
+    evidenceOriginal: "ראיה מקורית מהאתר שנבדק",
+    evidenceNote: "הטקסט נשמר כפי שנאסף מהאתר ולא תורגם.",
+    pageFromSite: "כותרת העמוד באתר",
     executiveTitle: "סיכום למנהלים",
     siteState: "מה מצב האתר שלך?",
     soundNow: "מה נמצא תקין?",
@@ -135,6 +138,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     limitsTitle: "Limits of this finding",
     whoTitle: "Who should do it",
     evidenceTitle: "Stored evidence",
+    evidenceOriginal: "Original evidence from the scanned website",
+    evidenceNote: "This text is kept exactly as it was collected and was not translated.",
+    pageFromSite: "Page title on the website",
     executiveTitle: "Executive summary",
     siteState: "What is the state of your site?",
     soundNow: "What was sound?",
@@ -179,6 +185,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     foundTitle: "Qué se encontró exactamente", whyTitle: "Por qué importa", whereTitle: "Dónde se encontró",
     stepsTitle: "Cómo corregirlo", exampleTitle: "Ejemplo de código propuesto", verifyTitle: "Cómo comprobar que la corrección funcionó",
     limitsTitle: "Límites del hallazgo", whoTitle: "Quién conviene que lo haga", evidenceTitle: "Evidencia guardada",
+    evidenceOriginal: "Evidencia original del sitio analizado",
+    evidenceNote: "El texto se guarda tal como se recogió y no se tradujo.",
+    pageFromSite: "Título de la página en el sitio",
     executiveTitle: "Resumen para la dirección",
     siteState: "¿Cuál es el estado de su sitio?",
     soundNow: "¿Qué resultó correcto?",
@@ -221,6 +230,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     foundTitle: "O que foi encontrado", whyTitle: "Por que importa", whereTitle: "Onde foi encontrado",
     stepsTitle: "Como corrigir", exampleTitle: "Exemplo de código proposto", verifyTitle: "Como confirmar que a correção funcionou",
     limitsTitle: "Limites do achado", whoTitle: "Quem deve fazer", evidenceTitle: "Evidência salva",
+    evidenceOriginal: "Evidência original do site analisado",
+    evidenceNote: "O texto fica como foi coletado e não foi traduzido.",
+    pageFromSite: "Título da página no site",
     executiveTitle: "Resumo para a gestão",
     siteState: "Qual é o estado do seu site?",
     soundNow: "O que estava adequado?",
@@ -263,6 +275,9 @@ const COPY: Record<Locale, Record<string, string>> = {
     foundTitle: "ما الذي وُجد تحديدًا", whyTitle: "لماذا هذا مهم", whereTitle: "أين وُجدت النتيجة",
     stepsTitle: "تعليمات الإصلاح", exampleTitle: "مثال شيفرة مقترح", verifyTitle: "كيف يُفحص نجاح الإصلاح",
     limitsTitle: "حدود النتيجة", whoTitle: "من الأنسب أن ينفّذ", evidenceTitle: "دليل محفوظ",
+    evidenceOriginal: "دليل أصلي من الموقع الذي فُحص",
+    evidenceNote: "يبقى النص كما جُمع من الموقع ولم يُترجَم.",
+    pageFromSite: "عنوان الصفحة في الموقع",
     executiveTitle: "ملخص للإدارة",
     siteState: "ما حالة موقعكم؟",
     soundNow: "ما الذي كان سليمًا؟",
@@ -540,10 +555,10 @@ export function ComplianceReportView({
                   {brief?.storedFound ? <p>{brief.storedFound}</p> : null}
                   <h4>{copy.whereTitle}</h4>
                   <p dir="ltr">{located && pageUrl ? <a href={pageUrl} target="_blank" rel="noopener noreferrer">{pageUrl}</a> : copy.unknownPlace}</p>
-                  {brief?.where?.pageTitle ? <p>{brief.where.pageTitle}</p> : null}
+                  {brief?.where?.pageTitle ? <p><strong>{copy.pageFromSite}. </strong>{brief.where.pageTitle}</p> : null}
                   {brief?.where?.countLabel ? <p>{brief.where.countLabel}</p> : null}
                   <h4>{copy.whyTitle}</h4>
-                  <p>{brief?.why || item.explanation}</p>
+                  <p>{brief?.why || ""}</p>
                   <h4>{copy.stepsTitle}</h4>
                   {(brief?.steps || []).filter((step: string) => step !== brief?.answer).length ? <ol>{brief.steps.filter((step: string) => step !== brief?.answer).map((step: string) => <li key={step}>{step}</li>)}</ol> : (fix && fix !== brief?.answer && fix !== brief?.found ? <p>{fix}</p> : null)}
                   {brief?.whoLabel ? <p><strong>{copy.whoTitle}. </strong>{brief.whoLabel}</p> : null}
@@ -555,7 +570,7 @@ export function ComplianceReportView({
                     {brief?.technical ? <p>{brief.technical}</p> : null}
                     {brief?.where?.selector ? <p dir="ltr">{brief.where.selector}</p> : null}
                     {brief?.example?.code ? <div><p>{copy.exampleTitle}. {brief.example.note}</p><pre className="report-code" dir="ltr">{brief.example.code}</pre></div> : null}
-                    {evidence ? <p className="report-finding__evidence" dir="ltr">{evidence}</p> : null}
+                    {evidence ? <><p><strong>{copy.evidenceOriginal}. </strong>{copy.evidenceNote}</p><p className="report-finding__evidence" dir="ltr">{evidence}</p></> : null}
                     {(brief?.sources || []).map((source: { name?: string; url?: string }) => source.url ? <p key={source.url} dir="ltr"><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name || source.url}</a></p> : null)}
                     {brief?.limits ? <p><strong>{copy.limitsTitle}. </strong>{brief.limits}</p> : null}
                   </details>
@@ -581,7 +596,7 @@ export function ComplianceReportView({
               <summary>{brief?.title || item.title}</summary>
               <p><strong>{copy.whereTitle}. </strong><span dir="ltr">{item.url || copy.unknownPlace}</span></p>
               <p><strong>{copy.foundTitle}. </strong>{brief?.found || item.description}</p>
-              {evidence ? <p dir="ltr">{evidence.slice(0, 280)}</p> : null}
+              {evidence ? <><p><strong>{copy.evidenceOriginal}. </strong>{copy.evidenceNote}</p><p dir="ltr">{evidence.slice(0, 280)}</p></> : null}
               {brief?.limits ? <p><strong>{copy.limitsTitle}. </strong>{brief.limits}</p> : null}
               <p dir="ltr">{item.checkId}</p>
             </details>
