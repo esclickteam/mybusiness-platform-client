@@ -54,7 +54,7 @@ describe("marketing crawl files", () => {
       "/partner/register?planKey=partner_international"
     );
     expect(buildMarketingPrerender("/he/partners")?.inner || "").toContain(
-      "בונים עסק. מרחיבים הזדמנויות. מרוויחים יחד."
+      "בנו את העסק שלכם עם Bizuply"
     );
     expect(sitemap).not.toContain("bizuply.com/saas");
     expect(sitemap).not.toContain("bizuply.com/join");

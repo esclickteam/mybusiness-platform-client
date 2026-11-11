@@ -66,7 +66,7 @@ describe("bizuply.com/partners recruitment", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Build businesses. Expand opportunities. Earn together.",
+        name: "Build Your Business with Bizuply",
       })
     ).toBeInTheDocument();
     expect(screen.getByTestId("track-Business Partner")).toBeInTheDocument();
@@ -112,6 +112,14 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("calc-year")).toHaveTextContent("$8,400");
     expect(screen.getByTestId("calc-onetime")).toHaveTextContent("$100");
     expect(screen.getByTestId("calc-total")).toHaveTextContent("$8,500");
+    expect(screen.getByTestId("calc-membership")).toHaveTextContent("$5,000");
+    expect(screen.getByTestId("calc-balance")).toHaveTextContent("$3,400");
+    expect(screen.getByTestId("calc-month")).toHaveTextContent("$700");
+    fireEvent.click(screen.getByTestId("calc-billing-monthly"));
+    expect(screen.getByTestId("calc-membership")).toHaveTextContent("$499");
+    expect(screen.getByTestId("calc-balance")).toHaveTextContent("$2,412");
+    expect(screen.getByTestId("calc-month")).toHaveTextContent("$700");
+    expect(screen.getByTestId("calc-year")).toHaveTextContent("$8,400");
     expect(screen.getAllByText(/Simulation only/i).length).toBeGreaterThan(0);
   });
 
@@ -125,7 +133,7 @@ describe("bizuply.com/partners recruitment", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "בונים עסק. מרחיבים הזדמנויות. מרוויחים יחד.",
+        name: "בנו את העסק שלכם עם Bizuply",
       })
     ).toBeInTheDocument();
     expect(screen.getByTestId("international-monthly-price").textContent).toContain("$499");
@@ -169,7 +177,11 @@ describe("bizuply.com/partners recruitment", () => {
     fireEvent.change(screen.getByLabelText(/Business email/i), { target: { value: "dana@northwind.example" } });
     fireEvent.change(screen.getByLabelText(/^Phone/i), { target: { value: "+972501234567" } });
     fireEvent.change(screen.getByLabelText(/^Country/i), { target: { value: "Israel" } });
-    fireEvent.change(screen.getByLabelText(/Short note/i), {
+    fireEvent.change(screen.getByLabelText(/Field of activity/i), { target: { value: "Marketing" } });
+    fireEvent.change(screen.getByLabelText(/Prior sales or partnership experience/i), {
+      target: { value: "Five years selling CRM." },
+    });
+    fireEvent.change(screen.getByLabelText(/Additional message/i), {
       target: { value: "We sell CRM services to local businesses." },
     });
     fireEvent.click(
@@ -189,5 +201,13 @@ describe("bizuply.com/partners recruitment", () => {
     const body = JSON.parse((fetch as any).mock.calls[0][1].body);
     expect(body.privacyAccepted).toBe(true);
     expect(body.consentKey).toBe("testconsentkey0001");
+    expect(body.phone).toBe("+972501234567");
+    expect(body.partnershipType).toBe("Business Partner");
+    expect(body.message).toContain("We sell CRM services to local businesses.");
+    expect(body.message).toContain("Field of activity: Marketing");
+    expect(body.message).toContain("Prior sales or partnership experience: Five years selling CRM.");
+    expect(body.activity).toBeUndefined();
+    expect(body.experience).toBeUndefined();
+    expect(body.dialCode).toBeUndefined();
   });
 });

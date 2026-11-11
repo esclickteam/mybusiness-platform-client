@@ -98,11 +98,11 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/partners",
-    title: "Bizuply Partner Program | Build recurring revenue with CRM and SaaS",
+    title: "Bizuply Partner Program | Build Your Business with Bizuply",
     description:
-      "Apply to the Bizuply Partner Program. Offer CRM, Meta campaigns for Facebook and Instagram ads, WhatsApp, automation and SaaS. Eligible recurring commission is 30% to 40%. Business Partner membership is $5,000 per year or $499 per month after approval.",
+      "Partner with Bizuply. Introduce CRM, WhatsApp Business API, Meta campaigns, automations and websites. Business Partner membership is $499 per month or $5,000 per year after approval. Eligible recurring commission is 30%, 35% or 40%.",
     crumb: "Partners",
-    lastmod: "2026-11-09",
+    lastmod: "2026-11-11",
     changefreq: "monthly",
     priority: "0.8",
   },
@@ -1225,7 +1225,7 @@ export function buildMarketingPrerender(pathname) {
   const found = findMarketingPage(path);
   if (!found?.page) return null;
   const heading = path === "/partners"
-    ? "Build businesses. Expand opportunities. Earn together."
+    ? "Build Your Business with Bizuply"
     : path === "/crm"
     ? "A CRM for leads, customers, and the sales process"
     : path === "/about"
