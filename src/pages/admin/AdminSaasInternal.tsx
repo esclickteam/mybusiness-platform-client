@@ -33,6 +33,7 @@ type SuccessState = {
   systemName: string;
   email: string;
   tenantId: string;
+  publicSlug: string;
   passwordEmail: MailStatus;
 };
 
@@ -83,6 +84,7 @@ export default function AdminSaasInternal() {
         systemName: selected?.name || draft.templateSlug,
         email: String(data.ownerEmail || draft.email),
         tenantId: String(data.tenantId || ""),
+        publicSlug: String(data.publicSlug || ""),
         passwordEmail: data.passwordEmail || { status: "failed" },
       });
       setStep(3);
@@ -137,7 +139,7 @@ export default function AdminSaasInternal() {
         {step === 0 ? (
           <section className="grid gap-3 sm:grid-cols-2">
             {SAAS_SYSTEMS.map((system) => {
-              const open = system.slug === "cliny";
+              const open = system.slug === "cliny" || system.slug === "beautyflow";
               const active = draft.templateSlug === system.slug;
               return (
                 <button
@@ -214,6 +216,7 @@ export default function AdminSaasInternal() {
             <h2 className="text-lg font-black text-emerald-800">העסק הוקם</h2>
             <p className="mt-2 text-sm">{success.businessName} · {success.systemName}</p>
             <p className="mt-1 text-sm" dir="ltr">{success.email}</p>
+            {success.publicSlug ? <p className="mt-1 text-sm" dir="ltr">מזהה עסק: {success.publicSlug}</p> : null}
             <p className="mt-4 text-sm font-bold">{mailLabel(success.passwordEmail)}</p>
             {success.passwordEmail.status !== "sent" ? (
               <button type="button" className="mt-4 rounded-md bg-sky-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-60" disabled={resending || !success.tenantId} onClick={resend}>
