@@ -7,7 +7,7 @@ import { fetchPartnerPlans } from "../../lib/partnerApi";
 import {
   INTERNATIONAL_BILLING_OPTIONS,
   INTERNATIONAL_PLAN_KEY,
-  internationalBillingOptionsFromPlan,
+  publishedInternationalBillingOptions,
   type InternationalBillingOption,
 } from "../../lib/partnerInternationalPlan";
 import { marketingPublicUrl } from "../../lib/localePathCore.mjs";
@@ -203,7 +203,7 @@ const COPY = {
   en: {
     seoTitle: "Bizuply Partner Program | Build Your Business with Bizuply",
     seoDescription:
-      "Partner with Bizuply. Introduce CRM, WhatsApp Business API, Meta campaigns, automations and websites. Business Partner membership is $499 per month or $5,000 per year after approval. Eligible recurring commission is 30%, 35% or 40%.",
+      "Partner with Bizuply. Introduce CRM, WhatsApp Business API, Meta campaigns, automations and websites. Business Partner membership is $299 per month or $2,990 per year after approval. Eligible recurring commission is 30%, 35% or 40%.",
     kicker: "Bizuply Partner Program",
     h1: "Build Your Business with Bizuply",
     sub: "Partner with Bizuply. Grow Your Revenue.",
@@ -212,7 +212,7 @@ const COPY = {
     become: "Become a Partner",
     explore: "Explore Partner Benefits",
     heroFacts: [
-      "Business Partner: $499 / month or $5,000 / year after approval.",
+      "Business Partner: $299 / month or $2,990 / year after approval.",
       "Recurring commission: 30% / 35% / 40% on eligible subscription revenue.",
       "Affiliate: currently 15% of eligible catalog sales. No membership fee.",
     ],
@@ -344,7 +344,7 @@ const COPY = {
       {
         key: "Business Partner",
         title: "Business Partner",
-        fee: "Membership: $499 / month or $5,000 / year after approval.",
+        fee: "Membership: $299 / month or $2,990 / year after approval.",
         rate: "Recurring commission: 30% / 35% / 40% tiers · 10% on eligible one-time deals.",
         featured: true,
       },
@@ -364,7 +364,7 @@ const COPY = {
       access: "Access",
       rows: [
         ["Affiliate", "None on the percent track", "Currently 15% of eligible sales in the catalog", "Application review. No Partner Center membership fee."],
-        ["Business Partner", "$499 / month or $5,000 / year after approval", "Recurring 30% / 35% / 40% · 10% one-time", "Partner Center after agreement and verified payment."],
+        ["Business Partner", "$299 / month or $2,990 / year after approval", "Recurring 30% / 35% / 40% · 10% one-time", "Partner Center after agreement and verified payment."],
         ["Reseller", "Setup and monthly fees follow the plan named in the agreement", "A share of the catalog markup on that plan. Not the 30%, 35% or 40% tiers", "By written agreement. Not selected automatically on this page."],
       ],
     },
@@ -372,10 +372,10 @@ const COPY = {
     perMonth: "/ month",
     perYear: "/ year",
     best: "Best value",
-    save: "Save $988 a year compared with 12 monthly payments.",
+    save: "Save $598 a year compared with 12 monthly payments.",
     saveMath: "Twelve monthly payments are {monthlyYear}. The annual membership is {annual}.",
     monthlyPoints: [
-      "Monthly billing at $499. No annual payment in advance.",
+      "Monthly billing at $299. No annual payment in advance.",
       "Recurring commission of 30%, 35% or 40% on eligible subscription revenue that was received.",
       "10% on eligible one-time deals.",
       "Partner Center after a signed agreement and verified payment.",
@@ -386,7 +386,7 @@ const COPY = {
       "The same Business Partner benefits: Partner Center, the products the agreement allows, published materials and platform support.",
       "Recurring commission of 30%, 35% or 40% on eligible subscription revenue that was received.",
       "10% on eligible one-time deals.",
-      "Annual billing at $5,000.",
+      "Annual billing at $2,990.",
     ],
     planNotes: ["The application is free", "Payment is required only after approval", "Manual payment outside the website", "No automatic charging", "Subject to the partnership agreement"],
     noCharge: "This page does not start a live charge.",
@@ -479,7 +479,7 @@ const COPY = {
   he: {
     seoTitle: "תוכנית השותפים של Bizuply | בנו את העסק שלכם עם Bizuply",
     seoDescription:
-      "שותפות עם Bizuply. הציעו CRM, WhatsApp Business API, קמפיינים במטא, אוטומציות ואתרים. חברות Business Partner: 499 דולר לחודש או 5,000 דולר לשנה אחרי אישור. עמלה חוזרת זכאית: 30%, 35% או 40%.",
+      "שותפות עם Bizuply. הציעו CRM, WhatsApp Business API, קמפיינים במטא, אוטומציות ואתרים. חברות Business Partner: 299 דולר לחודש או 2,990 דולר לשנה אחרי אישור. עמלה חוזרת זכאית: 30%, 35% או 40%.",
     kicker: "תוכנית השותפים של Bizuply",
     h1: "בנו את העסק שלכם עם Bizuply",
     sub: "שותפות עם Bizuply. הגדילו את ההכנסות.",
@@ -488,7 +488,7 @@ const COPY = {
     become: "הצטרפו כשותפים",
     explore: "גלו את יתרונות השותפות",
     heroFacts: [
-      "Business Partner: 499$ לחודש או 5,000$ לשנה אחרי אישור.",
+      "Business Partner: 299$ לחודש או 2,990$ לשנה אחרי אישור.",
       "עמלה חוזרת: 30% / 35% / 40% על הכנסת מנוי זכאית.",
       "Affiliate: כיום 15% ממכירות זכאיות בקטלוג. בלי דמי חברות.",
     ],
@@ -618,7 +618,7 @@ const COPY = {
       {
         key: "Business Partner",
         title: "Business Partner",
-        fee: "דמי חברות: 499$ לחודש או 5,000$ לשנה אחרי אישור.",
+        fee: "דמי חברות: 299$ לחודש או 2,990$ לשנה אחרי אישור.",
         rate: "עמלה חוזרת: מדרגות 30% / 35% / 40% · 10% על עסקאות חד־פעמיות זכאיות.",
         featured: true,
       },
@@ -638,7 +638,7 @@ const COPY = {
       access: "גישה",
       rows: [
         ["Affiliate", "אין במסלול האחוזים", "כיום 15% ממכירות זכאיות לפי הקטלוג", "בדיקת מועמדות. בלי דמי חברות למרכז השותפים."],
-        ["Business Partner", "499$ לחודש או 5,000$ לשנה אחרי אישור", "מדרגות 30% / 35% / 40% · 10% חד־פעמי", "מרכז השותפים אחרי הסכם ותשלום מאומת."],
+        ["Business Partner", "299$ לחודש או 2,990$ לשנה אחרי אישור", "מדרגות 30% / 35% / 40% · 10% חד־פעמי", "מרכז השותפים אחרי הסכם ותשלום מאומת."],
         ["Reseller", "דמי הקמה ודמי חודש לפי המסלול שנקבע בהסכם", "חלק מהתוספת בקטלוג. לא מדרגות העמלה שלמעלה", "רק בהסכם חתום. לא נבחר אוטומטית בעמוד הזה."],
       ],
     },
@@ -646,10 +646,10 @@ const COPY = {
     perMonth: "לחודש",
     perYear: "לשנה",
     best: "המסלול המשתלם",
-    save: "חיסכון של $988 בשנה לעומת 12 תשלומים חודשיים.",
+    save: "חיסכון של $598 בשנה לעומת 12 תשלומים חודשיים.",
     saveMath: "שנים־עשר תשלומים חודשיים הם {monthlyYear}. החברות השנתית היא {annual}.",
     monthlyPoints: [
-      "חיוב חודשי של 499$. בלי תשלום שנתי מראש.",
+      "חיוב חודשי של 299$. בלי תשלום שנתי מראש.",
       "עמלה חוזרת של 30%, 35% או 40% על הכנסת מנוי זכאית שהתקבלה.",
       "10% על עסקאות חד־פעמיות זכאיות.",
       "מרכז השותפים אחרי הסכם חתום ותשלום שאומת.",
@@ -660,7 +660,7 @@ const COPY = {
       "אותן הטבות של Business Partner: מרכז השותפים, המוצרים שההסכם מתיר, חומרים שפורסמו ותמיכה בפלטפורמה.",
       "עמלה חוזרת של 30%, 35% או 40% על הכנסת מנוי זכאית שהתקבלה.",
       "10% על עסקאות חד־פעמיות זכאיות.",
-      "חיוב שנתי של 5,000$.",
+      "חיוב שנתי של 2,990$.",
     ],
     planNotes: ["הגשת הבקשה ללא תשלום", "התשלום נדרש רק אחרי אישור", "תשלום ידני מחוץ לאתר", "אין חיוב אוטומטי", "כפוף להסכם השותפות"],
     noCharge: "העמוד הזה אינו מתחיל חיוב.",
@@ -784,7 +784,7 @@ export default function PartnersRecruitment() {
       .then((plans) => {
         if (cancelled) return;
         const international = (plans || []).find((plan) => plan.planKey === INTERNATIONAL_PLAN_KEY);
-        if (international) setOptions(internationalBillingOptionsFromPlan(international));
+        if (international) setOptions(publishedInternationalBillingOptions(international));
       })
       .catch(() => {});
     return () => {
@@ -838,7 +838,7 @@ export default function PartnersRecruitment() {
 
   const monthly = options.find((row) => row.interval === "monthly") || INTERNATIONAL_BILLING_OPTIONS[0];
   const annual = options.find((row) => row.interval === "annual") || INTERNATIONAL_BILLING_OPTIONS[1];
-  const savings = annual.savingsUsd || 988;
+  const savings = annual.savingsUsd || 598;
   const annualHref = `/partner/register?planKey=${INTERNATIONAL_PLAN_KEY}&billing=annual`;
   const monthlyHref = `/partner/register?planKey=${INTERNATIONAL_PLAN_KEY}&billing=monthly`;
   const rate = commissionRateForCustomers(customers);
@@ -1142,7 +1142,7 @@ export default function PartnersRecruitment() {
                   {money(annual.amountUsd)} <span>{copy.perYear}</span>
                 </p>
                 <p className="ip-save" data-testid="annual-savings">
-                  {copy.save.replace("$988", money(savings))}
+                  {copy.save.replace("$598", money(savings))}
                 </p>
                 <p className="ip-save-math">
                   {fill(copy.saveMath, {

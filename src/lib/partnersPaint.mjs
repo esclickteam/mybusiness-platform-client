@@ -24,7 +24,7 @@ const EN = {
     ["Global", "Global Partner Program"],
   ],
   facts: [
-    "Business Partner: $499 / month or $5,000 / year after approval.",
+    "Business Partner: $299 / month or $2,990 / year after approval.",
     "Recurring commission: 30% / 35% / 40% on eligible subscription revenue.",
     "Affiliate: currently 15% of eligible catalog sales. No membership fee.",
   ],
@@ -45,7 +45,7 @@ const HE = {
     ["עולם", "תוכנית שותפים בינלאומית"],
   ],
   facts: [
-    "Business Partner: 499$ לחודש או 5,000$ לשנה אחרי אישור.",
+    "Business Partner: 299$ לחודש או 2,990$ לשנה אחרי אישור.",
     "עמלה חוזרת: 30% / 35% / 40% על הכנסת מנוי זכאית.",
     "Affiliate: כיום 15% ממכירות זכאיות בקטלוג. בלי דמי חברות.",
   ],

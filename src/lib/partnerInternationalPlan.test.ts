@@ -16,6 +16,7 @@ import {
   readInternationalBillingInterval,
   rememberInternationalBillingInterval,
   internationalBillingOptionsFromPlan,
+  publishedInternationalBillingOptions,
   defaultManualAmountUsd,
 } from "./partnerInternationalPlan";
 
@@ -35,14 +36,14 @@ const legacyCatalog = LEGACY_PLAN_KEYS.map((planKey) => ({
 })) as any;
 
 describe("partner_international is additive", () => {
-  it("does not reuse a legacy key and keeps $5000 / 30-35-40 / 10% with billing off", () => {
+  it("does not reuse a legacy key and keeps $2990 / 30-35-40 / 10% with billing off", () => {
     expect(LEGACY_PLAN_KEYS.includes(INTERNATIONAL_PLAN_KEY as never)).toBe(false);
-    expect(INTERNATIONAL_PARTNER_PLAN.annualUsd).toBe(5000);
+    expect(INTERNATIONAL_PARTNER_PLAN.annualUsd).toBe(2990);
     expect(INTERNATIONAL_PARTNER_PLAN.oneTimeSaleCommissionRate).toBe(0.1);
     expect(INTERNATIONAL_PARTNER_PLAN.recurringTiers?.map((row) => row.rate)).toEqual([0.3, 0.35, 0.4]);
     expect(INTERNATIONAL_PARTNER_PLAN.liveBillingEnabled).toBe(false);
     expect(internationalAnnualFeeUsd()).toEqual({
-      amountUsd: 5000,
+      amountUsd: 2990,
       chargedLive: false,
       liveBillingEnabled: false,
     });
@@ -180,6 +181,14 @@ describe("partner_international is additive", () => {
     expect(priced[1].savingsUsd).toBe(988);
     expect(defaultManualAmountUsd("monthly", priced)).toBe(499);
     expect(defaultManualAmountUsd("annual", priced)).toBe(5000);
+    const published = publishedInternationalBillingOptions({
+      billingOptions: [
+        { interval: "monthly", amountUsd: 499, labelEn: "Monthly Partner", labelHe: "שותף חודשי" },
+        { interval: "annual", amountUsd: 5000, labelEn: "Annual Partner", labelHe: "שותף שנתי", bestValue: true, savingsUsd: 988 },
+      ],
+    });
+    expect(published.map((row) => row.amountUsd)).toEqual([299, 2990]);
+    expect(published[1].savingsUsd).toBe(598);
     expect(JSON.stringify(priced).includes("549")).toBe(false);
   });
 });

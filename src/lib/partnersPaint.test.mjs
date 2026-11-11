@@ -11,7 +11,7 @@ describe("partners first-paint shell", () => {
     assert.match(html, /#apply/);
     assert.match(html, /Affiliate/);
     assert.match(html, /Business Partner/);
-    assert.match(html, /\$499/);
+    assert.match(html, /\$299/);
     assert.match(html, /15%/);
     assert.equal(html.includes("typewriter"), false);
     assert.equal(html.includes("loader"), false);
@@ -30,7 +30,7 @@ describe("partners first-paint shell", () => {
     assert.match(html, /הצטרפו כשותפים/);
     assert.match(html, /Affiliate/);
     assert.match(html, /Business Partner/);
-    assert.match(html, /499\$/);
+    assert.match(html, /299\$/);
     assert.match(html, /עד 40% עמלה חוזרת/);
     assert.equal(html.includes("demo-media"), false);
   });

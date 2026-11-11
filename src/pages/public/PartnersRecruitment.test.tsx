@@ -49,10 +49,10 @@ describe("bizuply.com/partners recruitment", () => {
       "href",
       "/partner/register?planKey=partner_international&billing=annual"
     );
-    expect(screen.getAllByText(/\$5,000/).length).toBeGreaterThan(0);
-    expect(screen.getByTestId("international-monthly-price").textContent).toContain("$499");
+    expect(screen.getAllByText(/\$2,990/).length).toBeGreaterThan(0);
+    expect(screen.getByTestId("international-monthly-price").textContent).toContain("$299");
     expect(screen.getByTestId("annual-best-value")).toHaveTextContent(/Best value/i);
-    expect(screen.getByTestId("annual-savings").textContent).toContain("$988");
+    expect(screen.getByTestId("annual-savings").textContent).toContain("$598");
     expect(screen.getByTestId("international-monthly-link")).toHaveAttribute("href", "#apply");
     expect(screen.getByTestId("international-monthly-register-link")).toHaveAttribute(
       "href",
@@ -65,7 +65,7 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getAllByText(/not yet active/i).length).toBeGreaterThan(0);
     expect(screen.queryByText(/payment_due/)).not.toBeInTheDocument();
     expect(screen.getByTestId("monthly-price-card")).toHaveTextContent(/Partner Center/);
-    expect(screen.getByTestId("monthly-price-card")).toHaveTextContent(/\$499/);
+    expect(screen.getByTestId("monthly-price-card")).toHaveTextContent(/\$299/);
     expect(screen.getByTestId("tier-move")).toHaveTextContent("1–19 active paying customers");
     expect(screen.getByTestId("tier-move")).toHaveTextContent("30%");
     expect(screen.getByTestId("tier-move")).toHaveTextContent(/drops below a band/);
@@ -77,7 +77,7 @@ describe("bizuply.com/partners recruitment", () => {
     ).toBeInTheDocument();
     expect(screen.getByTestId("track-Business Partner")).toBeInTheDocument();
     expect(screen.getByTestId("compare-Affiliate")).toBeInTheDocument();
-    expect(screen.getByTestId("compare-Business Partner")).toHaveTextContent(/\$499/);
+    expect(screen.getByTestId("compare-Business Partner")).toHaveTextContent(/\$299/);
     expect(screen.getByTestId("compare-Affiliate")).toHaveTextContent(/15%/);
     expect(screen.getByTestId("compare-Reseller")).toHaveTextContent(/agreement/i);
     expect(screen.getByTestId("partner-sticky-join")).toBeInTheDocument();
@@ -119,12 +119,12 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("calc-year")).toHaveTextContent("$8,400");
     expect(screen.getByTestId("calc-onetime")).toHaveTextContent("$100");
     expect(screen.getByTestId("calc-total")).toHaveTextContent("$8,500");
-    expect(screen.getByTestId("calc-membership")).toHaveTextContent("$5,000");
-    expect(screen.getByTestId("calc-balance")).toHaveTextContent("$3,400");
+    expect(screen.getByTestId("calc-membership")).toHaveTextContent("$2,990");
+    expect(screen.getByTestId("calc-balance")).toHaveTextContent("$5,410");
     expect(screen.getByTestId("calc-month")).toHaveTextContent("$700");
     fireEvent.click(screen.getByTestId("calc-billing-monthly"));
-    expect(screen.getByTestId("calc-membership")).toHaveTextContent("$499");
-    expect(screen.getByTestId("calc-balance")).toHaveTextContent("$2,412");
+    expect(screen.getByTestId("calc-membership")).toHaveTextContent("$299");
+    expect(screen.getByTestId("calc-balance")).toHaveTextContent("$4,812");
     expect(screen.getByTestId("calc-month")).toHaveTextContent("$700");
     expect(screen.getByTestId("calc-year")).toHaveTextContent("$8,400");
     expect(screen.getAllByText(/Simulation only/i).length).toBeGreaterThan(0);
@@ -143,9 +143,9 @@ describe("bizuply.com/partners recruitment", () => {
         name: "בנו את העסק שלכם עם Bizuply",
       })
     ).toBeInTheDocument();
-    expect(screen.getByTestId("international-monthly-price").textContent).toContain("$499");
-    expect(screen.getByTestId("international-annual-price").textContent).toContain("$5,000");
-    expect(screen.getByTestId("annual-savings").textContent).toContain("$988");
+    expect(screen.getByTestId("international-monthly-price").textContent).toContain("$299");
+    expect(screen.getByTestId("international-annual-price").textContent).toContain("$2,990");
+    expect(screen.getByTestId("annual-savings").textContent).toContain("$598");
     expect(screen.getAllByText(/הגשת הבקשה ללא תשלום|ההגשה ללא תשלום/).length).toBeGreaterThan(0);
     expect(screen.getByText(/החברות עדיין אינה פעילה/)).toBeInTheDocument();
     expect(screen.queryByText(/payment_due/)).not.toBeInTheDocument();

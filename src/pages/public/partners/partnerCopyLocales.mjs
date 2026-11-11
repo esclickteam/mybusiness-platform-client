@@ -84,7 +84,7 @@ function page(text) {
 
 const es = page({
   seoTitle: "Construya su negocio con BizUply | Programa internacional de partners",
-  seoDescription: "La solicitud al programa internacional de partners de BizUply es gratis. Tras la aprobación se elige 499 dólares al mes o 5.000 al año. La comisión recurrente elegible es del 30% al 40%, y las operaciones únicas elegibles dan un 10%.",
+  seoDescription: "La solicitud al programa internacional de partners de BizUply es gratis. Tras la aprobación se elige 299 dólares al mes o 2.990 al año. La comisión recurrente elegible es del 30% al 40%, y las operaciones únicas elegibles dan un 10%.",
   kicker: "La solicitud es gratis",
   h1: "Construya su negocio con BizUply",
   program: "Programa internacional de partners",
@@ -151,7 +151,7 @@ const es = page({
   perMonth: "/ mes",
   perYear: "/ año",
   best: "Mejor valor",
-  save: "Ahorre 988 dólares frente a la facturación mensual",
+  save: "Ahorre 598 dólares frente a la facturación mensual",
   monthlyPoints: ["Facturación mensual", "Sin prepago anual", "Los mismos beneficios", "Oportunidades de comisión recurrente", "Acceso a recursos elegibles", "Actividad en mercados aprobados"],
   annualPoints: ["Los mismos beneficios de International Partner", "Oportunidades de comisión recurrente", "Acceso a recursos elegibles", "Actividad en mercados aprobados"],
   planNotes: ["La solicitud es gratis", "El pago se exige solo después de la aprobación", "Pago manual fuera del sitio", "Sin cargo automático", "Sujeto al acuerdo de asociación"],
@@ -198,7 +198,7 @@ const es = page({
 
 const ptBR = page({
   seoTitle: "Construa o negócio com a BizUply | Programa internacional de parceiros",
-  seoDescription: "O pedido ao programa internacional de parceiros da BizUply é grátis. Depois da aprovação escolhe-se 499 dólares por mês ou 5.000 por ano. A comissão recorrente elegível vai de 30% a 40%, e as transações únicas elegíveis rendem 10%.",
+  seoDescription: "O pedido ao programa internacional de parceiros da BizUply é grátis. Depois da aprovação escolhe-se 299 dólares por mês ou 2.990 por ano. A comissão recorrente elegível vai de 30% a 40%, e as transações únicas elegíveis rendem 10%.",
   kicker: "O pedido é grátis",
   h1: "Construa o seu negócio com a BizUply",
   program: "Programa internacional de parceiros",
@@ -265,7 +265,7 @@ const ptBR = page({
   perMonth: "/ mês",
   perYear: "/ ano",
   best: "Melhor valor",
-  save: "Economize 988 dólares em relação à cobrança mensal",
+  save: "Economize 598 dólares em relação à cobrança mensal",
   monthlyPoints: ["Cobrança mensal", "Sem pré-pagamento anual", "Os mesmos benefícios", "Oportunidades de comissão recorrente", "Acesso a recursos elegíveis", "Atividade em mercados aprovados"],
   annualPoints: ["Os mesmos benefícios de International Partner", "Oportunidades de comissão recorrente", "Acesso a recursos elegíveis", "Atividade em mercados aprovados"],
   planNotes: ["O pedido é grátis", "O pagamento só é exigido depois da aprovação", "Pagamento manual fora do site", "Sem cobrança automática", "Sujeito ao acordo de parceria"],
@@ -312,7 +312,7 @@ const ptBR = page({
 
 const ar = page({
   seoTitle: "ابنوا عملكم مع BizUply | برنامج الشركاء الدولي",
-  seoDescription: "التقديم لبرنامج الشركاء الدولي في BizUply مجاني. بعد الموافقة يُختار 499 دولاراً شهرياً أو 5,000 سنوياً. العمولة المتكررة المؤهلة من 30% إلى 40%، والمعاملات لمرة واحدة المؤهلة تمنح 10%.",
+  seoDescription: "التقديم لبرنامج الشركاء الدولي في BizUply مجاني. بعد الموافقة يُختار 299 دولاراً شهرياً أو 2,990 سنوياً. العمولة المتكررة المؤهلة من 30% إلى 40%، والمعاملات لمرة واحدة المؤهلة تمنح 10%.",
   kicker: "الطلب مجاني",
   h1: "ابنوا عملكم مع BizUply",
   program: "برنامج الشركاء الدولي",
@@ -379,7 +379,7 @@ const ar = page({
   perMonth: "/ شهر",
   perYear: "/ سنة",
   best: "أفضل قيمة",
-  save: "وفّروا 988 دولاراً مقارنة بالفوترة الشهرية",
+  save: "وفّروا 598 دولاراً مقارنة بالفوترة الشهرية",
   monthlyPoints: ["فوترة شهرية", "من دون دفع سنوي مقدّم", "المزايا نفسها", "فرص عمولة متكررة", "وصول إلى الموارد المؤهلة", "نشاط في الأسواق المعتمدة"],
   annualPoints: ["مزايا الشريك الدولي نفسها", "فرص عمولة متكررة", "وصول إلى الموارد المؤهلة", "نشاط في الأسواق المعتمدة"],
   planNotes: ["الطلب مجاني", "يُطلب الدفع فقط بعد الموافقة", "دفع يدوي خارج الموقع", "من دون تحصيل تلقائي", "خاضع لاتفاق الشراكة"],

@@ -80,11 +80,11 @@ describe("PartnerRegister international lock", () => {
     expect(screen.queryByText(/partner.planNames.partner_percent/)).not.toBeInTheDocument();
     expect(screen.queryByText(/stagingOnly|Stripe/i)).not.toBeInTheDocument();
     expect(screen.getByTestId("international-plan-only")).toBeInTheDocument();
-    expect(screen.getByTestId("international-annual-price").textContent).toContain("5,000");
+    expect(screen.getByTestId("international-annual-price").textContent).toContain("2,990");
     expect(screen.getByText(/partner.register.internationalManual/)).toBeInTheDocument();
     expect(screen.getByText(/partner.register.internationalLocked/)).toBeInTheDocument();
     expect(screen.getByTestId("international-annual-price")).toHaveAttribute("aria-pressed", "true");
-    expect(screen.getByTestId("international-monthly-price").textContent).toContain("499");
+    expect(screen.getByTestId("international-monthly-price").textContent).toContain("299");
   });
 
   it("opens monthly from the link and keeps it across the account step and a refresh", () => {
