@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { CONSENT_UI, SCOPE } from "../../lib/complianceConsentCopy";
 
@@ -73,6 +74,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     soundTitle: "תחומים שנבדקו ונמצאו תקינים בבדיקות שבוצעו",
     openTitle: "תחומים שלא ניתן היה לקבוע לגביהם",
     firstTitle: "הפעולות הראשונות",
+    actionChapter: "ממצאים שדורשים טיפול",
+    verifyChapter: "ממצאים שדורשים אימות",
+    passedChapter: "בדיקות שעברו בהצלחה",
+    passedNote: "כל שורה היא בדיקה שרצה ועברה. ההצלחה מתייחסת למה שנבדק, לא לכל האתר.",
+    passSearch: "חיפוש בבדיקות שעברו",
+    passFilter: "תחום",
+    techTitleDeveloper: "מידע טכני למפתח",
   },
   en: {
     newScan: "New scan", pdf: "Download PDF", site: "Site checked", address: "Address", date: "Date", status: "Status",
@@ -122,6 +130,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     soundTitle: "Areas checked with no defect in the tests that ran",
     openTitle: "Areas that could not be decided",
     firstTitle: "First actions",
+    actionChapter: "Findings that need action",
+    verifyChapter: "Findings that need verification",
+    passedChapter: "Checks that passed",
+    passedNote: "Each row is a check that ran and passed. A pass covers what was checked, not the whole site.",
+    passSearch: "Search passed checks",
+    passFilter: "Area",
+    techTitleDeveloper: "Technical information for the developer",
   },
   es: {
     newScan: "Nuevo análisis", pdf: "Descargar PDF", site: "Sitio revisado", address: "Dirección", date: "Fecha", status: "Estado",
@@ -146,6 +161,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     limitsTitle: "Límites del hallazgo", whoTitle: "Quién conviene que lo haga", evidenceTitle: "Evidencia guardada",
     executiveTitle: "Resumen para la dirección", checksTitle: "Pruebas realizadas",
     soundTitle: "Áreas revisadas sin defecto en las pruebas realizadas", openTitle: "Áreas que no se pudieron decidir", firstTitle: "Primeras acciones",
+    actionChapter: "Hallazgos que requieren acción",
+    verifyChapter: "Hallazgos que requieren verificación",
+    passedChapter: "Pruebas que salieron bien",
+    passedNote: "Cada fila es una prueba que se ejecutó y salió bien. El resultado vale para lo revisado, no para todo el sitio.",
+    passSearch: "Buscar pruebas correctas",
+    passFilter: "Área",
+    techTitleDeveloper: "Información técnica para quien desarrolla",
   },
   "pt-BR": {
     newScan: "Nova varredura", pdf: "Baixar PDF", site: "Site verificado", address: "Endereço", date: "Data", status: "Status",
@@ -170,6 +192,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     limitsTitle: "Limites do achado", whoTitle: "Quem deve fazer", evidenceTitle: "Evidência salva",
     executiveTitle: "Resumo para a gestão", checksTitle: "Verificações feitas",
     soundTitle: "Áreas verificadas sem defeito nos testes executados", openTitle: "Áreas que não puderam ser decididas", firstTitle: "Primeiras ações",
+    actionChapter: "Achados que exigem ação",
+    verifyChapter: "Achados que exigem verificação",
+    passedChapter: "Verificações que passaram",
+    passedNote: "Cada linha é uma verificação que rodou e passou. O resultado vale para o que foi verificado, não para o site inteiro.",
+    passSearch: "Buscar verificações aprovadas",
+    passFilter: "Área",
+    techTitleDeveloper: "Informação técnica para quem desenvolve",
   },
   ar: {
     newScan: "فحص جديد", pdf: "تنزيل PDF", site: "الموقع الذي فُحص", address: "العنوان", date: "التاريخ", status: "الحالة",
@@ -194,6 +223,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     limitsTitle: "حدود النتيجة", whoTitle: "من الأنسب أن ينفّذ", evidenceTitle: "دليل محفوظ",
     executiveTitle: "ملخص للإدارة", checksTitle: "فحوصات نُفذت",
     soundTitle: "مجالات فُحصت ولم يظهر فيها خلل في الاختبارات المنفذة", openTitle: "مجالات تعذر حسمها", firstTitle: "الإجراءات الأولى",
+    actionChapter: "نتائج تتطلب معالجة",
+    verifyChapter: "نتائج تتطلب تحققًا",
+    passedChapter: "فحوصات نجحت",
+    passedNote: "كل سطر فحص نُفّذ ونجح. النتيجة تخص ما فُحص، لا الموقع كله.",
+    passSearch: "بحث في الفحوصات الناجحة",
+    passFilter: "المجال",
+    techTitleDeveloper: "معلومات تقنية للمطوّر",
   },
 };
 
@@ -293,8 +329,9 @@ export function ComplianceReportView({
   const copy = { ...COPY.en, ...(COPY[locale] || {}) };
   const report = payload?.report || {};
   const findings: Finding[] = report.findings || [];
+  const [passQuery, setPassQuery] = useState("");
+  const [passDomain, setPassDomain] = useState("all");
   const unfinished = findings.filter((item) => ["unverified", "gap", "owner"].includes(bandOf(item)));
-  const proven = findings.filter((item) => bandOf(item) === "proven" || bandOf(item) === "missing");
   const counts = {
     pass: findings.filter((item) => bandOf(item) === "pass").length,
     action: findings.filter((item) => bandOf(item) === "proven").length,
@@ -322,6 +359,21 @@ export function ComplianceReportView({
     ["cookies", copy.navCookies || "Cookies"],
     ["widgets", copy.navWidgets || "Widgets"],
   ] as const;
+  const statusOf = (item: Finding & { brief?: { status?: string } }) => item.brief?.status
+    || (item.outcome === "pass" ? "pass" : item.outcome === "finding" ? (item.confidence === "high" ? "action" : "verify") : item.outcome === "gap" ? "missing" : item.outcome === "owner" ? "unread" : "open");
+  const statusCounts = report.executive?.statusCounts || {
+    pass: findings.filter((item) => statusOf(item) === "pass").length,
+    action: findings.filter((item) => statusOf(item) === "action").length,
+    verify: findings.filter((item) => statusOf(item) === "verify").length,
+    open: findings.filter((item) => statusOf(item) === "open").length,
+    missing: findings.filter((item) => statusOf(item) === "missing").length,
+    unread: findings.filter((item) => statusOf(item) === "unread").length,
+  };
+  const passedRows = findings.filter((item) => statusOf(item) === "pass").filter((item) => {
+    if (passDomain !== "all" && groupOf(item) !== passDomain) return false;
+    const haystack = `${item.title || ""} ${(item as Finding & { brief?: { title?: string; found?: string } }).brief?.title || ""} ${(item as Finding & { brief?: { found?: string } }).brief?.found || ""} ${item.url || ""} ${item.checkId || ""}`.toLowerCase();
+    return !passQuery.trim() || haystack.includes(passQuery.trim().toLowerCase());
+  });
 
   const shownScore = (report.scores?.overall?.withheld ? report.scores?.technical?.value : report.scores?.overall?.value) ?? "—";
   const shownCoverage = report.scores?.coverage?.value ?? "—";
@@ -385,6 +437,7 @@ export function ComplianceReportView({
           <h2>{copy.executiveTitle}</h2>
           <p>{report.executive.scoreMeaning}</p>
           <p><strong>{report.executive.score ?? shownScore}/100</strong> · {copy.checksTitle}: {report.executive.checks}</p>
+          <p>{copy.passedChapter}: {statusCounts.pass} · {copy.actionChapter}: {statusCounts.action} · {copy.verifyChapter}: {statusCounts.verify} · {copy.unfinished}: {statusCounts.open} · {copy.notFoundTitle}: {statusCounts.missing} · {copy.blockedTitle}: {statusCounts.unread}</p>
           <p>{["critical", "high", "medium", "low", "info"].map((key) => `${copy[key] || key} ${report.executive.bySeverity?.[key] || 0}`).join(" · ")}</p>
           {report.executive.storedLabel ? <p className="report-stored">{report.executive.storedLabel}</p> : null}
           {(report.executive.significant || []).length ? <ul>{report.executive.significant.map((title: string) => <li key={title}>{title}</li>)}</ul> : null}
@@ -395,13 +448,15 @@ export function ComplianceReportView({
         </section>
       ) : null}
       <nav className="report-nav">
-        {sections.map(([id, label]) => <a key={id} href={`#report-${id}`}>{label}</a>)}
+        <a href="#report-action">{copy.actionChapter}</a>
+        <a href="#report-verify">{copy.verifyChapter}</a>
+        <a href="#report-passed">{copy.passedChapter}</a>
         <a href="#report-plan">{copy.navPlan}</a>
         <a href="#report-open">{copy.navOpen}</a>
       </nav>
-      {sections.map(([id, label]) => {
+      {([["action", copy.actionChapter], ["verify", copy.verifyChapter]] as const).map(([id, label]) => {
         const rank = (value?: string) => ({ high: 0, medium: 1, low: 2, info: 3 } as Record<string, number>)[value || "info"] ?? 4;
-        const rows = proven.filter((item) => groupOf(item) === id).sort((a, b) => rank(a.severity) - rank(b.severity));
+        const rows = findings.filter((item) => statusOf(item) === id).sort((a, b) => rank(a.severity) - rank(b.severity));
         return (
           <section key={id} id={`report-${id}`} className="report-findings">
             <h2 className="report-band">{label}</h2>
@@ -422,6 +477,7 @@ export function ComplianceReportView({
                   </header>
                   <h4>{copy.foundTitle}</h4>
                   <p>{brief?.found || item.description}</p>
+                  {(brief?.subjects || []).length ? <ol>{brief.subjects.map((row: { name?: string; label?: string; missing?: string }) => <li key={row.name || row.label}><strong>{row.label || row.name}</strong>{row.missing ? ` — ${row.missing}` : ""}</li>)}</ol> : null}
                   {brief?.storedFound ? <p>{brief.storedFound}</p> : null}
                   <h4>{copy.whyTitle}</h4>
                   <p>{brief?.why || item.explanation}</p>
@@ -431,8 +487,8 @@ export function ComplianceReportView({
                   {brief?.where?.countLabel ? <p>{brief.where.countLabel}</p> : null}
                   {evidence ? <details className="report-evidence" open={evidence.length < 280}><summary>{copy.evidenceTitle}</summary><p className="report-finding__evidence" dir="ltr">{evidence}</p></details> : null}
                   {fix ? <p><strong>{copy.fix}. </strong>{fix}</p> : null}
-                  <details className="report-tech" open>
-                    <summary>{copy.techTitle}</summary>
+                  <details className="report-tech">
+                    <summary>{copy.techTitleDeveloper || copy.techTitle}</summary>
                     {brief?.technical ? <p>{brief.technical}</p> : null}
                     {brief?.whoLabel ? <p><strong>{copy.whoTitle}. </strong>{brief.whoLabel}</p> : null}
                     {(brief?.steps || []).length ? <ol>{brief.steps.map((step: string) => <li key={step}>{step}</li>)}</ol> : null}
@@ -447,6 +503,27 @@ export function ComplianceReportView({
           </section>
         );
       })}
+      <section id="report-passed" className="report-sheet__block">
+        <h2>{copy.passedChapter}</h2>
+        <p>{copy.passedNote}</p>
+        <p>{sections.map(([id, label]) => `${label}: ${findings.filter((item) => statusOf(item) === "pass" && groupOf(item) === id).length}`).join(" · ")}</p>
+        <div className="report-filter">
+          <label>{copy.passFilter}<select value={passDomain} onChange={(event) => setPassDomain(event.target.value)}><option value="all">{copy.all}</option>{sections.map(([id, label]) => <option key={id} value={id}>{label}</option>)}</select></label>
+          <label>{copy.passSearch}<input value={passQuery} onChange={(event) => setPassQuery(event.target.value)} /></label>
+        </div>
+        {passedRows.length === 0 ? <p>{copy.empty}</p> : passedRows.map((item, index) => {
+          const brief = (item as Finding & { brief?: any }).brief;
+          return (
+            <details key={`pass-${item.checkId}-${index}`} className="report-open">
+              <summary>{brief?.title || item.title}</summary>
+              <p dir="ltr">{item.url || copy.unknownPlace}</p>
+              <p>{brief?.found || item.description}</p>
+              {brief?.limits ? <p>{brief.limits}</p> : null}
+              <p dir="ltr">{item.checkId}</p>
+            </details>
+          );
+        })}
+      </section>
       <section className="report-sheet__block">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
@@ -484,9 +561,10 @@ export function ComplianceReportView({
           <article key={`open-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
         ))}
         <h2>{copy.blockedTitle}</h2>
-        {blocked.length === 0 ? <p>{copy.empty}</p> : blocked.map((item, index) => (
-          <article key={`blocked-${item.checkId}-${index}`} className="report-open"><h3>{item.title}</h3><p>{item.explanation || item.description}</p></article>
-        ))}
+        {blocked.length === 0 ? <p>{copy.empty}</p> : blocked.map((item, index) => {
+          const brief = (item as Finding & { brief?: { found?: string; title?: string } }).brief;
+          return <article key={`blocked-${item.checkId}-${index}`} className="report-open"><h3>{brief?.title || item.title}</h3><p>{brief?.found || item.explanation || item.description}</p><p dir="ltr">{item.url}</p></article>;
+        })}
         <h2>{CONSENT_UI[locale].scopeTitle}</h2>
         <p>{SCOPE[locale]}</p>
         <h2>{copy.technicalTitle}</h2>
