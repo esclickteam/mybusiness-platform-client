@@ -73,16 +73,32 @@ function resetLabel(value: string) {
   return `${new Intl.DateTimeFormat("he-IL", { dateStyle: "short", timeStyle: "short", timeZone: "UTC" }).format(date)} UTC`;
 }
 
+const DISCOVERY_COPY = {
+  he: { title: "סריקת אזורים פנימיים — בדיקת בעלים", intro: "פתוח רק לחשבון הבעלים. אין חיוב. הסיסמה לא נשמרת בדפדפן.", url: "כתובת האתר", paths: "נתיבים מורשים", language: "שפה", user: "משתמש בדיקה", password: "סיסמה", consent: "אני מאשר שזה אתר בבעלותנו או שיש אישור לסרוק אותו, ושהמשתמש הוא משתמש בדיקה.", discover: "גילוי וספירת עמודים פנימיים", progress: "הגילוי רץ", found: "עמודים שהתגלו", unique: "עמודים ייחודיים", duplicates: "כפילויות", blocked: "לא נגישים", publicPages: "ציבוריים", internalPages: "פנימיים", dynamic: "סוגים דינמיים", note: "המספר הוא מספר העמודים שהתגלו, לא כל העמודים באתר. עמוד בלי קישור עשוי שלא להתגלות.", partial: "הגילוי נעצר לפני שהסתיים, והתוצאה חלקית.", extra: "התגלו יותר מ־100 עמודים לסריקה. החבילה הקיימת מכסה עד 100. אפשר לבחור עד 100, או לבצע סריקה נוספת.", recommend: "המלצה", start: "התחלת הסריקה המלאה", stop: "עצירה", name: "שם", address: "כתובת", type: "סוג", status: "סטטוס", basic: "בסיסית", extended: "מורחבת", advanced: "מתקדמת" },
+  en: { title: "Internal area scan — owner check", intro: "Open only to the owner account. Nothing is charged. The password is not kept in the browser.", url: "Site address", paths: "Approved paths", language: "Language", user: "Test user", password: "Password", consent: "I confirm this site is ours or we have permission to scan it, and the user is a test user.", discover: "Discover and count internal pages", progress: "Discovery is running", found: "Pages discovered", unique: "Unique pages", duplicates: "Duplicates", blocked: "Not reachable", publicPages: "Public", internalPages: "Internal", dynamic: "Dynamic types", note: "This is the number of pages discovered, not every page on the site. A page with no link may not be discovered.", partial: "Discovery stopped before it finished, so this result is partial.", extra: "More than 100 pages were found to scan. The current package covers 100. You can choose up to 100, or run another scan.", recommend: "Recommendation", start: "Start the full scan", stop: "Stop", name: "Name", address: "Address", type: "Type", status: "Status", basic: "Basic", extended: "Extended", advanced: "Advanced" },
+  es: { title: "Escaneo interno — revisión del propietario", intro: "Abierto solo para la cuenta del propietario. No hay cobro. La contraseña no se guarda en el navegador.", url: "Dirección del sitio", paths: "Rutas permitidas", language: "Idioma", user: "Usuario de prueba", password: "Contraseña", consent: "Confirmo que el sitio es nuestro o tenemos permiso para escanearlo, y que el usuario es de prueba.", discover: "Descubrir y contar páginas internas", progress: "El descubrimiento está en curso", found: "Páginas descubiertas", unique: "Páginas únicas", duplicates: "Duplicados", blocked: "No accesibles", publicPages: "Públicas", internalPages: "Internas", dynamic: "Tipos dinámicos", note: "El número es el de páginas descubiertas, no todas las del sitio. Una página sin enlace puede no descubrirse.", partial: "El descubrimiento se detuvo antes de terminar. El resultado es parcial.", extra: "Hay más de 100 páginas para escanear. El paquete actual cubre 100. Puede elegir hasta 100 o hacer otro escaneo.", recommend: "Recomendación", start: "Iniciar el escaneo completo", stop: "Detener", name: "Nombre", address: "Dirección", type: "Tipo", status: "Estado", basic: "Básica", extended: "Ampliada", advanced: "Avanzada" },
+  "pt-BR": { title: "Varredura interna — verificação do proprietário", intro: "Aberto só para a conta do proprietário. Não há cobrança. A senha não fica no navegador.", url: "Endereço do site", paths: "Caminhos permitidos", language: "Idioma", user: "Usuário de teste", password: "Senha", consent: "Confirmo que o site é nosso ou temos permissão para varrê-lo, e que o usuário é de teste.", discover: "Descobrir e contar páginas internas", progress: "A descoberta está em andamento", found: "Páginas descobertas", unique: "Páginas únicas", duplicates: "Duplicadas", blocked: "Inacessíveis", publicPages: "Públicas", internalPages: "Internas", dynamic: "Tipos dinâmicos", note: "O número é o de páginas descobertas, não todas as do site. Uma página sem link pode não ser descoberta.", partial: "A descoberta parou antes do fim. O resultado é parcial.", extra: "Há mais de 100 páginas para varrer. O pacote atual cobre 100. É possível escolher até 100 ou fazer outra varredura.", recommend: "Recomendação", start: "Iniciar a varredura completa", stop: "Parar", name: "Nome", address: "Endereço", type: "Tipo", status: "Status", basic: "Básica", extended: "Ampliada", advanced: "Avançada" },
+  ar: { title: "فحص المناطق الداخلية — مراجعة المالك", intro: "متاح فقط لحساب المالك. لا توجد رسوم. لا تُحفظ كلمة المرور في المتصفح.", url: "عنوان الموقع", paths: "المسارات المسموحة", language: "اللغة", user: "مستخدم تجريبي", password: "كلمة المرور", consent: "أؤكد أن الموقع ملكنا أو لدينا إذن بفحصه، وأن المستخدم تجريبي.", discover: "اكتشاف صفحات داخلية وعدّها", progress: "الاكتشاف جارٍ", found: "صفحات مكتشفة", unique: "صفحات فريدة", duplicates: "تكرارات", blocked: "غير متاحة", publicPages: "عامة", internalPages: "داخلية", dynamic: "أنواع ديناميكية", note: "العدد هو الصفحات التي اكتُشفت، وليس كل صفحات الموقع. قد لا تُكتشف صفحة بلا رابط.", partial: "توقف الاكتشاف قبل أن يكتمل، والنتيجة جزئية.", extra: "اكتُشف أكثر من 100 صفحة للفحص. تغطي الحزمة الحالية 100. يمكن اختيار حتى 100 أو إجراء فحص آخر.", recommend: "التوصية", start: "بدء الفحص الكامل", stop: "إيقاف", name: "الاسم", address: "العنوان", type: "النوع", status: "الحالة", basic: "أساسية", extended: "موسعة", advanced: "متقدمة" },
+} as const;
+
+type DiscoveryPage = { name: string; url: string; type: string; status: string; selectable?: boolean; instances?: number };
+type Discovery = { id: string; kind?: string; status: string; percent: number; partial?: boolean; discovered?: number; unique?: number; duplicates?: number; inaccessible?: number; publicPages?: number; internalPages?: number; dynamicTypes?: number; scanPages?: number; recommended?: { packageId: string; usd: number; pages: number; extra?: boolean; scanPages?: number } | null; pages?: DiscoveryPage[]; error?: string; reportReady?: boolean; pagesAllowed?: number; findings?: Array<{ title: string; url: string; outcome: string }> };
+
 function OwnerPilot() {
   const [offer, setOffer] = useState<{ packages: Array<{ id: string; pages: number; usd: number; available: boolean; reason: string }> } | null>(null);
-  const [run, setRun] = useState<{ id: string; status: string; percent: number; unique: number; pagesAllowed: number; reportReady: boolean; error: string; findings: Array<{ title: string; url: string; outcome: string }> } | null>(null);
+  const [run, setRun] = useState<Discovery | null>(null);
+  const [discovery, setDiscovery] = useState<Discovery | null>(null);
+  const [picked, setPicked] = useState<string[]>([]);
   const [url, setUrl] = useState("");
-  const [paths, setPaths] = useState("/account");
+  const [paths, setPaths] = useState("/account /login");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [consent, setConsent] = useState(false);
   const [packageId, setPackageId] = useState("pages10");
-  const [locale, setLocale] = useState("he");
+  const [locale, setLocale] = useState<keyof typeof DISCOVERY_COPY>("he");
   const [note, setNote] = useState("");
+  const copy = DISCOVERY_COPY[locale];
+  const packName = (id: string) => id === "pages30" ? copy.extended : id === "pages100" ? copy.advanced : copy.basic;
   const headers = () => {
     const token = localStorage.getItem("token") || "";
     return { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
@@ -97,15 +113,42 @@ function OwnerPilot() {
       .catch(() => setNote("הפיילוט סגור"));
   }, []);
   useEffect(() => {
-    if (!run || run.reportReady || run.status === "failed" || run.status === "cancelled") return undefined;
+    const current = discovery?.status === "running" ? discovery : run;
+    if (!current || current.status === "failed" || current.status === "cancelled" || current.status === "discovered" || current.reportReady) return undefined;
     const timer = window.setInterval(() => {
-      fetch(`/compliance/api/admin/owner-pilot/${run.id}`, { headers: headers(), credentials: "include" })
+      fetch(`/compliance/api/admin/owner-pilot/${current.id}`, { headers: headers(), credentials: "include" })
         .then((response) => response.json())
-        .then((data) => setRun(data))
+        .then((data) => {
+          if (data.kind === "discovery") applyDiscovery(data);
+          else setRun(data);
+        })
         .catch(() => undefined);
     }, 2000);
     return () => window.clearInterval(timer);
-  }, [run?.id, run?.reportReady, run?.status]);
+  }, [discovery?.id, discovery?.status, run?.id, run?.status, run?.reportReady]);
+  function applyDiscovery(data: Discovery) {
+    setDiscovery(data);
+    if (data.status === "running") return;
+    if (data.recommended?.packageId) setPackageId(data.recommended.packageId);
+    const cap = data.recommended?.extra ? 100 : data.recommended?.pages || 10;
+    if (data.pages) setPicked(data.pages.filter((item) => item.selectable).map((item) => item.url).slice(0, cap));
+  }
+  async function discoverPages() {
+    setNote("");
+    setRun(null);
+    let loginUrl = "";
+    try { loginUrl = `${new URL(url.startsWith("http") ? url : `https://${url}`).origin}/login`; } catch { setNote(copy.url); return; }
+    const response = await fetch("/compliance/api/admin/owner-pilot/discover", {
+      method: "POST",
+      headers: headers(),
+      credentials: "include",
+      body: JSON.stringify({ url, paths: paths.split(/\s+/).filter(Boolean), username, password, locale, consent, loginUrl }),
+    });
+    const data = await response.json().catch(() => ({}));
+    setPassword("");
+    if (!response.ok) { setNote(data.error || copy.discover); return; }
+    applyDiscovery(data);
+  }
   async function submit(event: FormEvent) {
     event.preventDefault();
     setNote("");
@@ -113,12 +156,12 @@ function OwnerPilot() {
       method: "POST",
       headers: headers(),
       credentials: "include",
-      body: JSON.stringify({ url, packageId, paths: paths.split(/\s+/).filter(Boolean), username, password, locale, loginUrl: "" }),
+      body: JSON.stringify({ url, packageId, paths: paths.split(/\s+/).filter(Boolean), username, password, locale, loginUrl: "", discoveryId: discovery?.id, selected: picked }),
     });
     const data = await response.json().catch(() => ({}));
     setPassword("");
     if (!response.ok) {
-      setNote(data.error || "הסריקה לא התחילה");
+      setNote(data.error || copy.start);
       return;
     }
     setRun(data);
@@ -135,21 +178,14 @@ function OwnerPilot() {
     URL.revokeObjectURL(link.href);
   }
   return (
-    <form onSubmit={submit} className="compliance-admin__table" autoComplete="off">
-      <h2>סריקת אזורים פנימיים — בדיקת בעלים</h2>
-      <p>פתוח רק לחשבון הבעלים. אין חיוב. שאר הלקוחות נשארים חסומים. הסיסמה לא נשמרת בדפדפן.</p>
+    <form onSubmit={submit} className="compliance-admin__table" autoComplete="off" dir={locale === "he" || locale === "ar" ? "rtl" : "ltr"}>
+      <h2>{copy.title}</h2>
+      <p>{copy.intro}</p>
       {note ? <p>{note}</p> : null}
-      <label>כתובת האתר<input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://example.com/account" /></label>
-      <label>נתיבים מורשים<input value={paths} onChange={(event) => setPaths(event.target.value)} /></label>
-      <label>חבילה
-        <select value={packageId} onChange={(event) => setPackageId(event.target.value)}>
-          {(offer?.packages || [{ id: "pages10", pages: 10, usd: 19, available: true, reason: "" }]).map((item) => (
-            <option key={item.id} value={item.id} disabled={!item.available}>{item.pages} עמודים · ${item.usd}{item.available ? "" : " · נעול"}</option>
-          ))}
-        </select>
-      </label>
-      <label>שפה
-        <select value={locale} onChange={(event) => setLocale(event.target.value)}>
+      <label>{copy.url}<input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://example.com/account" /></label>
+      <label>{copy.paths}<input value={paths} onChange={(event) => setPaths(event.target.value)} /></label>
+      <label>{copy.language}
+        <select value={locale} onChange={(event) => setLocale(event.target.value as keyof typeof DISCOVERY_COPY)}>
           <option value="he">עברית</option>
           <option value="en">English</option>
           <option value="es">Español</option>
@@ -157,14 +193,47 @@ function OwnerPilot() {
           <option value="ar">العربية</option>
         </select>
       </label>
-      <label>משתמש בדיקה<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="off" /></label>
-      <label>סיסמה<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" /></label>
-      <button type="submit">התחלת סריקה</button>
+      <label>{copy.user}<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="off" /></label>
+      <label>{copy.password}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" /></label>
+      <label><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} /> {copy.consent}</label>
+      <button type="button" disabled={!consent || !url || !username || !password} onClick={discoverPages}>{copy.discover}</button>
+      {discovery?.status === "running" ? <p>{copy.progress} · {discovery.percent}%</p> : null}
+      {discovery && discovery.status !== "running" ? (
+        <div>
+          {discovery.partial ? <p>{copy.partial}</p> : null}
+          <p>{copy.found}: {discovery.discovered}. {copy.unique}: {discovery.unique}. {copy.duplicates}: {discovery.duplicates}. {copy.blocked}: {discovery.inaccessible}. {copy.publicPages}: {discovery.publicPages}. {copy.internalPages}: {discovery.internalPages}. {copy.dynamic}: {discovery.dynamicTypes}.</p>
+          <p>{copy.note}</p>
+          {discovery.recommended ? <p>{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd} · {discovery.scanPages}</p> : null}
+          {discovery.recommended?.extra ? <p>{copy.extra}</p> : null}
+          <table>
+            <thead><tr><th></th><th>{copy.name}</th><th>{copy.address}</th><th>{copy.type}</th><th>{copy.status}</th></tr></thead>
+            <tbody>
+              {(discovery.pages || []).map((item) => (
+                <tr key={item.url}>
+                  <td>{item.selectable ? <input type="checkbox" checked={picked.includes(item.url)} onChange={(event) => setPicked((current) => event.target.checked ? [...current, item.url] : current.filter((value) => value !== item.url))} /> : null}</td>
+                  <td>{item.name}{item.instances && item.instances > 1 ? ` (${item.instances})` : ""}</td>
+                  <td>{item.url}</td>
+                  <td>{item.type}</td>
+                  <td>{item.status}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : null}
+      <label>חבילה
+        <select value={packageId} onChange={(event) => setPackageId(event.target.value)}>
+          {(offer?.packages || [{ id: "pages10", pages: 10, usd: 19, available: true, reason: "" }]).map((item) => (
+            <option key={item.id} value={item.id} disabled={!item.available}>{packName(item.id)} · {item.pages} · ${item.usd}{item.available ? "" : " · —"}</option>
+          ))}
+        </select>
+      </label>
+      <button type="submit" disabled={!discovery || discovery.status === "running" || !picked.length}>{copy.start}</button>
       {run ? (
         <div>
-          <p>{run.unique} מתוך {run.pagesAllowed} · {run.percent}% · {run.status}</p>
-          <button type="button" onClick={() => fetch(`/compliance/api/admin/owner-pilot/${run.id}/cancel`, { method: "POST", headers: headers(), credentials: "include" }).then((response) => response.json()).then(setRun)}>עצירה</button>
-          {run.reportReady ? <button type="button" onClick={download}>הורדת PDF</button> : null}
+          <p>{run.unique} / {run.pagesAllowed} · {run.percent}% · {run.status}</p>
+          <button type="button" onClick={() => fetch(`/compliance/api/admin/owner-pilot/${run.id}/cancel`, { method: "POST", headers: headers(), credentials: "include" }).then((response) => response.json()).then(setRun)}>{copy.stop}</button>
+          {run.reportReady ? <button type="button" onClick={download}>PDF</button> : null}
           <ul>{(run.findings || []).map((item) => <li key={`${item.url}-${item.title}`}>{item.outcome} · {item.title} · {item.url}</li>)}</ul>
         </div>
       ) : null}
