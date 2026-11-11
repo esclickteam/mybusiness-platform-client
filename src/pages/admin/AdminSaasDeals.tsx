@@ -48,7 +48,6 @@ export default function AdminSaasDeals() {
   const [paymentFor, setPaymentFor] = useState<string | null>(null);
   const [paymentRef, setPaymentRef] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
-  const [links, setLinks] = useState<Record<string, string>>({});
   const [languages, setLanguages] = useState<Record<string, string>>({});
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -62,7 +61,7 @@ export default function AdminSaasDeals() {
   ];
 
   function mailStatus(row: DealRow) {
-    if (row.passwordEmail?.status === "sent") return "המייל נשלח";
+    if (row.passwordEmail?.status === "sent") return "המייל נשלח לספק. אין אישור מסירה.";
     if (row.passwordEmail?.status === "pending") return "המייל ממתין";
     if (row.passwordEmail?.status === "failed") return `שליחת המייל נכשלה${row.passwordEmail.reason ? ` (${row.passwordEmail.reason})` : ""}`;
     return "";
@@ -83,7 +82,7 @@ export default function AdminSaasDeals() {
     try {
       await API.post("/admin/saas-deals", draft);
       setNotice("העסקה נקלטה ושויכה למערכת.");
-      setDraft({ ...draft, name: "", email: "", businessName: "", phone: "", publicSlug: "" });
+      setDraft({ ...draft, name: "", email: "", businessName: "", phone: "" });
       await load();
     } catch (err) {
       const message = err && typeof err === "object" && "response" in err
@@ -99,9 +98,8 @@ export default function AdminSaasDeals() {
     try {
       const { data } = await API.post(`/admin/saas-deals/${id}/${path}`, body);
       setNotice(ok);
-      if (data.passwordSetupUrl) setLinks((current) => ({ ...current, [id]: data.passwordSetupUrl }));
-      if (data.passwordEmail?.status === "sent") setNotice(`${ok} המייל נשלח.`);
-      if (data.passwordEmail?.status === "failed") setError("המייל לא נשלח. אפשר להעתיק את הקישור.");
+      if (data.passwordEmail?.status === "sent") setNotice(`${ok} המייל נשלח לספק.`);
+      if (data.passwordEmail?.status === "failed") setError("המייל לא נשלח. אפשר לשלוח שוב.");
       setPaymentFor(null);
       await load();
     } catch (err) {
@@ -143,7 +141,7 @@ export default function AdminSaasDeals() {
                 <option key={system.slug} value={system.slug}>{system.name}</option>
               ))}
             </select>
-            <input className="rounded border px-2 py-1" placeholder="כתובת מערכת" value={draft.publicSlug} onChange={(event) => setDraft({ ...draft, publicSlug: event.target.value })} />
+            <p className="self-center text-xs font-bold text-slate-500">מזהה העסק ייווצר אוטומטית באישור המסירה.</p>
           </div>
           <button type="button" className="biz-btn mt-3" onClick={createDeal}>שמירת ליד</button>
         </section>
@@ -185,10 +183,10 @@ export default function AdminSaasDeals() {
                       </div>
                     ) : null}
                     {row.status === "payment_recorded" ? (
-                      <button type="button" className="biz-btn" onClick={() => act(row.id, "approve-delivery", { publicSlug: row.publicSlug }, "המסירה אושרה")}>אישור מסירה</button>
+                      <button type="button" className="biz-btn" onClick={() => act(row.id, "approve-delivery", {}, "המסירה אושרה")}>אישור מסירה</button>
                     ) : null}
                     {row.status === "delivery_approved" ? (
-                      <button type="button" className="biz-btn" onClick={() => act(row.id, "provision", { publicSlug: row.publicSlug }, "סביבת הלקוח הוקמה.")}>הקמת העסק</button>
+                      <button type="button" className="biz-btn" onClick={() => act(row.id, "provision", {}, "סביבת הלקוח הוקמה.")}>הקמת העסק</button>
                     ) : null}
                     {row.status !== "provisioned" && row.status !== "cancelled" ? (
                       <button type="button" className="mt-1 block font-bold" onClick={() => act(row.id, "cancel", { note: "בוטל" }, "העסקה בוטלה")}>ביטול</button>
@@ -203,10 +201,7 @@ export default function AdminSaasDeals() {
                         >
                           {MAIL_LANGUAGES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
                         </select>
-                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "הקישור הונפק.")}>שליחת קישור במייל</button>
-                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => { if (links[row.id]) navigator.clipboard.writeText(links[row.id]); else setError("אין קישור להעתקה. צרו קישור חדש."); }}>העתקת קישור</button>
-                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "קישור חדש הונפק והקודם בוטל.")}>יצירת קישור חדש</button>
-                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "קישור איפוס הונפק.")}>איפוס סיסמה ושליחת קישור חדש במייל</button>
+                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "המייל נשלח שוב.")}>שליחה חוזרת</button>
                       </div>
                     ) : null}
                     {(row.audit || []).slice(-4).reverse().map((entry) => (
