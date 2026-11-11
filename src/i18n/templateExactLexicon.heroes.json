@@ -839,6 +839,18 @@
     "pt-BR": "Comparação de imóveis · before/after",
     "ar": "مقارنة عقارات · before/after"
   },
+  "השוואת נכסים": {
+    "en": "Property comparison",
+    "es": "Comparación de propiedades",
+    "pt-BR": "Comparação de imóveis",
+    "ar": "مقارنة العقارات"
+  },
+  "Primeview מציגה נכסים לפני ואחרי — כדי שתראו פוטנציאל, לא רק מצב נוכחי.": {
+    "en": "Primeview shows properties before and after — so you see potential, not just the current state.",
+    "es": "Primeview muestra propiedades antes y después — para que vean el potencial, no solo el estado actual.",
+    "pt-BR": "A Primeview apresenta imóveis antes e depois — para vocês verem o potencial, não só o estado atual.",
+    "ar": "تعرض Primeview العقارات قبل وبعد — لتروا الإمكانات، لا الحالة الراهنة فحسب."
+  },
   "השקות, כנסים וערב מותג — חוויה, לוגיסטיקה ותוכן באותו קצב.": {
     "en": "Launches, conferences, and brand evenings — experience, logistics, and content at the same tempo.",
     "es": "Lanzamientos, conferencias y noches de marca — experiencia, logística y contenido al mismo ritmo.",
