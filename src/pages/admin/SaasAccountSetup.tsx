@@ -161,17 +161,7 @@ export default function SaasAccountSetup({
             <option value="USD">USD</option>
           </select>
         </label>
-        <label className="text-sm font-bold">כתובת מערכת *
-          <input
-            className="mt-1 w-full rounded-xl border px-3 py-2"
-            value={draft.subdomain}
-            onChange={(event) => patch({ subdomain: event.target.value })}
-            placeholder="לדוגמה: north-salon"
-            required
-            autoComplete="off"
-          />
-          <span className="mt-1 block text-xs font-bold text-slate-500">חובה, באנגלית, פנויה. טקסט הדוגמה אינו כתובת.</span>
-        </label>
+        <p className="text-sm font-bold text-slate-600">מזהה העסק נוצר אוטומטית משם העסק ונשמר קבוע. אין צורך להקליד כתובת באנגלית.</p>
         <label className="text-sm font-bold">מזהה עסקה מאושרת *
           <input
             className="mt-1 w-full rounded-xl border px-3 py-2"
