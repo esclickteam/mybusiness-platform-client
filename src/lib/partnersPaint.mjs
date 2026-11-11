@@ -18,8 +18,11 @@ const EN = {
   body: "Join the Bizuply Partner Program and turn advanced technology into an ongoing business opportunity. Market CRM, automations, WhatsApp Business API and SaaS systems, and build revenue from paying customers.",
   become: "Become a Partner",
   explore: "Explore Partner Benefits",
-  shot: "/demo-media/partners/crm-en.webp",
-  shotAlt: "CRM screenshot from the authorized Bizuply demo workspace",
+  signals: [
+    ["40%", "Up to 40% Recurring Commission"],
+    ["Recurring", "Build Recurring Revenue"],
+    ["Global", "Global Partner Program"],
+  ],
   facts: [
     "Business Partner: $499 / month or $5,000 / year after approval.",
     "Recurring commission: 30% / 35% / 40% on eligible subscription revenue.",
@@ -36,8 +39,11 @@ const HE = {
   body: "הצטרפו לתוכנית השותפים של Bizuply והפכו פתרונות טכנולוגיים מתקדמים להזדמנות עסקית מתמשכת.",
   become: "הצטרפו כשותפים",
   explore: "גלו את יתרונות השותפות",
-  shot: "/demo-media/partners/crm-he.webp",
-  shotAlt: "צילום מסך CRM מסביבת הדמו המורשית של Bizuply",
+  signals: [
+    ["40%", "עד 40% עמלה חוזרת"],
+    ["חוזר", "בנו הכנסה חוזרת"],
+    ["עולם", "תוכנית שותפים בינלאומית"],
+  ],
   facts: [
     "Business Partner: 499$ לחודש או 5,000$ לשנה אחרי אישור.",
     "עמלה חוזרת: 30% / 35% / 40% על הכנסת מנוי זכאית.",
@@ -64,5 +70,8 @@ export function buildPartnersPaint(language) {
   const applyHref = esc(`${base}#apply`);
   const benefitsHref = esc(`${base}#benefits`);
   const facts = c.facts.map((fact) => `<li>${esc(fact)}</li>`).join("");
-  return `<div class="ipartner" lang="${esc(c.lang)}" dir="${c.dir}" data-partners-paint="1"><header class="ip-hero"><div class="ip-wrap ip-wrap-wide ip-hero-grid"><div class="ip-hero-copy"><p class="ip-kicker">${esc(c.kicker)}</p><h1>${esc(c.h1)}</h1><p class="ip-sub">${esc(c.sub)}</p><p class="ip-lead">${esc(c.body)}</p><div class="ip-actions"><a class="ip-btn ip-btn-primary" href="${applyHref}">${esc(c.become)}</a><a class="ip-btn ip-btn-ghost" href="${benefitsHref}">${esc(c.explore)}</a></div><ul class="ip-hero-facts">${facts}</ul></div><div class="ip-hero-media"><figure class="ip-shot"><img src="${esc(c.shot)}" alt="${esc(c.shotAlt)}" width="1600" height="1000" fetchpriority="high" decoding="async"></figure></div></div></header></div>`;
+  const signals = c.signals
+    .map(([figure, title]) => `<li><strong><bdi>${esc(figure)}</bdi></strong><span>${esc(title)}</span></li>`)
+    .join("");
+  return `<div class="ipartner" lang="${esc(c.lang)}" dir="${c.dir}" data-partners-paint="1"><header class="ip-hero"><div class="ip-wrap ip-wrap-wide ip-hero-grid"><div class="ip-hero-copy"><p class="ip-kicker">${esc(c.kicker)}</p><h1>${esc(c.h1)}</h1><p class="ip-sub">${esc(c.sub)}</p><p class="ip-lead">${esc(c.body)}</p><div class="ip-actions"><a class="ip-btn ip-btn-primary" href="${applyHref}">${esc(c.become)}</a><a class="ip-btn ip-btn-ghost" href="${benefitsHref}">${esc(c.explore)}</a></div><ul class="ip-hero-facts">${facts}</ul></div><ul class="ip-signals">${signals}</ul></div></header></div>`;
 }

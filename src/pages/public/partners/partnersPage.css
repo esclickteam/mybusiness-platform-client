@@ -855,7 +855,11 @@
 
 @media (prefers-reduced-motion: reduce) {
   .ip-hero::before,
+  .ip-hero::after,
+  .ip-geo,
   .ip-tick,
+  .ip-level-progress span,
+  .ip-signal,
   .ipartner.is-reveal-ready .ip-reveal:not(.is-in),
   .ipartner.is-reveal-ready .ip-reveal.is-in,
   .ip-reveal {
@@ -863,11 +867,197 @@
     transition: none;
     transform: none;
   }
+  .ip-level-progress span { width: 100%; }
   .ip-sticky-join,
-  .ip-btn { transition: none; }
-  .ip-btn:hover { transform: none; }
+  .ip-btn,
+  .ip-offer,
+  .ip-level,
+  .ip-benefit { transition: none; }
+  .ip-btn:hover,
+  .ip-offer:hover,
+  .ip-level:hover,
+  .ip-benefit:hover { transform: none; }
 }
 
 [dir="rtl"] .ipartner h1,
 [dir="rtl"] .ip-hero h1 { max-width: none; }
-[dir="rtl"] .ip-shot img { object-position: top center; }
+[dir="rtl"] .ip-level-rail { transform-origin: right center; }
+
+/* Hero stage: light, geometry, signals. No product screenshots. */
+.ip-hero-geo { position: absolute; inset: 0; pointer-events: none; }
+.ip-geo {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), transparent 70%);
+}
+.ip-geo-a {
+  width: 240px;
+  height: 240px;
+  inset-inline-end: -120px;
+  top: -90px;
+  animation: ip-drift 18s ease-in-out infinite;
+}
+.ip-geo-b {
+  width: 160px;
+  height: 160px;
+  inset-inline-start: -90px;
+  bottom: -70px;
+  background: rgba(29, 78, 216, 0.28);
+  animation: ip-drift 14s ease-in-out infinite reverse;
+}
+.ip-geo-c {
+  width: 64px;
+  height: 64px;
+  inset-inline-end: -20px;
+  bottom: 36px;
+  border-color: rgba(196, 181, 253, 0.7);
+}
+@media (max-width: 1079px) {
+  .ip-geo { display: none; }
+}
+.ip-hero-grid { position: relative; z-index: 1; }
+.ip-signals {
+  display: grid;
+  gap: 12px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ip-signals li {
+  margin: 0;
+  padding: 18px 20px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(12, 8, 36, 0.72);
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.ip-signals li:hover { transform: translateY(-3px); background: rgba(12, 8, 36, 0.88); }
+.ip-signals strong {
+  display: block;
+  color: #fff;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+.ip-signals span {
+  display: block;
+  margin-top: 8px;
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+.ip-signals small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+.ip-offers { display: grid; gap: 16px; margin-top: 28px; }
+.ip-offer-top,
+.ip-offer-market { display: grid; gap: 16px; }
+.ip-offer {
+  background: #fff;
+  border: 1px solid var(--line-strong);
+  padding: 28px 24px;
+  transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+}
+.ip-offer:hover {
+  transform: translateY(-3px);
+  border-color: var(--violet);
+  box-shadow: 0 18px 40px rgba(30, 27, 75, 0.08);
+}
+.ip-offer h3 { margin: 14px 0 0; font-size: 1.45rem; }
+.ip-offer p { margin: 8px 0 0; color: var(--muted); line-height: 1.6; }
+.ip-offer-kicker {
+  margin-top: 16px !important;
+  color: var(--violet) !important;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.ip-offer.is-lead {
+  background:
+    radial-gradient(420px 180px at 100% 0%, rgba(91, 33, 182, 0.12), transparent 70%),
+    #fff;
+}
+.ip-offer.is-side { background: var(--indigo); color: #fff; }
+.ip-offer.is-side h3,
+.ip-offer.is-side .ip-product-link { color: #fff; }
+.ip-offer.is-side p { color: rgba(255, 255, 255, 0.82); }
+.ip-offer.is-side .ip-offer-kicker { color: #ddd6fe !important; }
+.ip-offer.is-side .ip-icon {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.35);
+}
+.ip-offer-market {
+  padding: 8px;
+  background: linear-gradient(135deg, #1e1b4b, #4c1d95 70%, #1d4ed8);
+}
+.ip-offer-market-copy { padding: 20px 16px 4px; color: #fff; }
+.ip-offer-market-copy h3 { margin: 0; color: #fff; font-size: 1.6rem; }
+.ip-offer-market-copy p { margin: 8px 0 0; color: rgba(255, 255, 255, 0.82); }
+.ip-offer.is-wide {
+  display: grid;
+  gap: 18px;
+  background: #f8f7ff;
+}
+.ip-product-link { font-weight: 800; color: var(--violet-deep); }
+
+.ip-benefit { position: relative; overflow: hidden; }
+.ip-benefit-figure {
+  margin: 12px 0 0;
+  color: var(--indigo);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.ip-benefit:hover { transform: translateY(-3px); }
+
+.ip-levels { position: relative; }
+.ip-level { position: relative; z-index: 1; transition: transform 0.22s ease; }
+.ip-level:hover { transform: translateY(-4px); }
+.ip-level-progress {
+  height: 6px;
+  margin: 22px 0 18px;
+  background: rgba(76, 29, 149, 0.12);
+  overflow: hidden;
+}
+.ip-level-progress span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #c4b5fd, #5b21b6 46%, #1d4ed8);
+}
+.ip-reveal.is-in .ip-level-progress span { animation: ip-rail 1.15s ease forwards; }
+
+.ip-calc-section {
+  background:
+    radial-gradient(720px 320px at 100% 0%, rgba(91, 33, 182, 0.18), transparent 62%),
+    linear-gradient(180deg, #eef2ff 0%, #f7f5ff 55%, #ffffff 100%);
+}
+.ip-calc-section .ip-calc {
+  border-color: rgba(76, 29, 149, 0.28);
+  box-shadow: 0 24px 60px rgba(30, 27, 75, 0.08);
+}
+.ip-calc-section .ip-results strong { font-size: clamp(1.35rem, 2vw, 1.8rem); }
+
+@media (min-width: 720px) {
+  .ip-offer-top { grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.75fr); }
+  .ip-offer-market { grid-template-columns: 0.8fr 1fr 1fr; align-items: stretch; }
+  .ip-offer-market-copy { grid-column: 1 / -1; }
+  .ip-offer.is-wide { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+}
+@media (min-width: 900px) {
+  .ip-offer-market { grid-template-columns: minmax(180px, 0.7fr) 1fr 1fr; }
+  .ip-offer-market-copy { grid-column: auto; padding: 24px 18px; }
+}
+@media (min-width: 1080px) {
+  .ip-hero-grid { grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.82fr); }
+  .ip-signals { margin-top: 0; }
+}
+
+@keyframes ip-rail { to { width: 100%; } }

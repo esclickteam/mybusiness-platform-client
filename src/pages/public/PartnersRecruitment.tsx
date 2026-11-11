@@ -13,7 +13,6 @@ import {
 import { marketingPublicUrl } from "../../lib/localePathCore.mjs";
 import { partnerFaqPairs } from "./partners/partnerFaq.mjs";
 import PartnerApplyForm from "./partners/PartnerApplyForm";
-import PartnerProductMedia from "./partners/PartnerProductMedia";
 import {
   ONE_TIME_RATE,
   RECURRING_TIERS,
@@ -217,6 +216,11 @@ const COPY = {
       "Recurring commission: 30% / 35% / 40% on eligible subscription revenue.",
       "Affiliate: currently 15% of eligible catalog sales. No membership fee.",
     ],
+    signals: [
+      ["40%", "Up to 40% Recurring Commission", "The top published tier, for 40 or more active paying customers, on eligible subscription revenue that was received."],
+      ["Recurring", "Build Recurring Revenue", "Commission can continue while an eligible customer stays attributed. Income is not guaranteed."],
+      ["Global", "Global Partner Program", "Market inside the territory named in the agreement. Membership does not grant exclusivity."],
+    ],
     stickyJoin: "Ready to apply?",
     stickyCta: "Become a Partner",
     audienceTitle: "Who the program is for",
@@ -234,85 +238,71 @@ const COPY = {
     whyLead:
       "These are rights that already exist in the program. Nothing here adds a service, a payout, or an income promise the agreement does not cover.",
     why: [
-      ["repeat", "Recurring commission on subscriptions", "Commission on eligible subscription revenue that was actually received, while the customer stays attributed and eligible."],
-      ["people", "More than one customer", "You can introduce Bizuply to more than one business. The commission tier follows the count of active paying customers."],
-      ["portal", "Partner Center", "When the partner is active, the agreement is active, and required payment is verified, the Partner Center shows clients, attribution and commissions."],
-      ["box", "Products ready to market", "CRM, WhatsApp Business API, Meta campaign tools, automations and websites that exist in Bizuply today, when the agreement allows them."],
-      ["book", "Published partner resources", "Onboarding, published training and approved materials while the membership is active."],
-      ["life", "Support under the agreement", "Platform support is available at support@bizuply.com. The agreement sets the scope."],
+      ["repeat", "40%", "Recurring commission", "Commission on eligible subscription revenue that was actually received, while the customer stays attributed and eligible."],
+      ["people", "10%", "One-time deals", "Eligible one-time transactions earn 10%. The signed agreement decides what is eligible."],
+      ["portal", "Center", "Partner Center", "When the partner is active, the agreement is active, and required payment is verified, the Partner Center shows clients, attribution and commissions."],
+      ["box", "5", "Solutions to market", "CRM, WhatsApp Business API, Meta campaigns, automations and websites that exist in Bizuply today, when the agreement allows them."],
+      ["book", "Open", "Published resources", "Onboarding, published training and approved materials while the membership is active."],
+      ["life", "Care", "Support under the agreement", "Platform support is available at support@bizuply.com. The agreement sets the scope."],
     ],
     productsTitle: "What partners can sell",
     productsLead:
-      "Product categories available through Bizuply today. Screenshots are from the authorized Bizuply demo workspace — not a customer account and not live Meta spend.",
-    demoCaption: "Authorized demo workspace. No live publishing and no media spend.",
-    products: [
+      "Solutions that exist in Bizuply today. Each card names the value for the customer and the opportunity for the partner. Industry SaaS resale is not open yet.",
+    marketTitle: "Marketing & automations",
+    marketLead: "Two tools that already sit beside CRM. They are not a separate membership price.",
+    offers: [
       {
-        title: "CRM & lead management",
+        id: "crm",
+        layout: "lead",
+        icon: "people",
+        title: "CRM & Lead Management",
         href: "/crm",
-        image: "/demo-media/partners/crm-en.webp",
-        imageHe: "/demo-media/partners/crm-he.webp",
-        imageMobile: "/demo-media/partners/crm-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/crm-he-mobile.webp",
-        feature: true,
-        alt: "Bizuply CRM lead list in the demo workspace",
-        sell: "Sell organized lead and customer management that keeps follow-ups in one place.",
-        points: ["Customer relationship management", "Lead tracking", "Sales pipelines", "Customer records", "Follow-up workflows"],
+        value: "Customers keep leads, pipelines and follow-ups in one place.",
+        partner: "Introduce a CRM that already runs in Bizuply, when the agreement allows it.",
+        link: "View CRM",
       },
       {
+        id: "whatsapp-api",
+        layout: "side",
+        icon: "flow",
         title: "WhatsApp Business API",
         href: "/whatsapp-api",
-        image: "/demo-media/partners/whatsapp-en.webp",
-        imageHe: "/demo-media/partners/whatsapp-he.webp",
-        imageMobile: "/demo-media/partners/whatsapp-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/whatsapp-he-mobile.webp",
-        alt: "Bizuply WhatsApp Business API inbox in the demo workspace",
-        sell: "Sell official WhatsApp Business API connectivity with templates and business messaging.",
-        note: "Use is subject to Meta policy, approvals and messaging costs.",
-        points: ["Official WhatsApp Business API", "Business messaging", "Approved templates", "Campaign-related workflows"],
+        value: "Businesses message customers through the official WhatsApp Business API.",
+        partner: "Offer templates and business messaging. Use stays subject to Meta policy, approvals and messaging costs.",
+        link: "View WhatsApp API",
       },
       {
+        id: "meta-campaigns",
+        layout: "pair",
+        icon: "market",
         title: "Meta campaigns — Facebook & Instagram Ads",
         href: "/meta-campaigns",
-        image: "/demo-media/partners/campaigns-en.webp",
-        imageHe: "/demo-media/partners/campaigns-he.webp",
-        imageMobile: "/demo-media/partners/campaigns-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/campaigns-he-mobile.webp",
-        feature: true,
-        alt: "Bizuply Meta campaign manager in the demo workspace",
-        sell: "Sell Meta campaign tools next to CRM so Lead Ads can continue into follow-up.",
-        note: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Not a separate product in the partner program. Meta bills media spend. Drafts can be prepared without publishing or spending. Partners earn on eligible Bizuply subscription revenue under the signed agreement, not on Meta ad spend.",
-        points: [
-          "Connect the business’s own Meta ad account",
-          "Create and edit campaigns, ad sets and ads",
-          "Set budget on the campaign or the ad set",
-          "Review performance for connected campaigns",
-          "Lead Ads can enter the CRM with source and status for follow-up",
-        ],
+        value: "Lead Ads can enter the CRM with source and status for follow-up.",
+        partner: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Partners earn on eligible Bizuply subscription revenue, not on Meta ad spend.",
+        link: "View Meta campaigns",
       },
       {
+        id: "automations",
+        layout: "pair",
+        icon: "repeat",
         title: "Business automations",
         href: "/automations",
-        image: "/demo-media/partners/automations-en.webp",
-        imageHe: "/demo-media/partners/automations-he.webp",
-        imageMobile: "/demo-media/partners/automations-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/automations-he-mobile.webp",
-        alt: "Bizuply automations workspace",
-        sell: "Sell workflow automation that routes leads and creates follow-up tasks.",
-        points: ["Automated follow-ups", "Lead routing", "Workflow automation", "Supported integrations"],
+        value: "Follow-ups and lead routing can run as defined workflows.",
+        partner: "Market automation that already exists in Bizuply, when the agreement allows it.",
+        link: "View automations",
       },
       {
-        title: "Websites & digital tools",
+        id: "website-builder",
+        layout: "wide",
+        icon: "build",
+        title: "Websites & digital solutions",
         href: "/website-builder",
-        image: "/demo-media/partners/websites-en.webp",
-        imageHe: "/demo-media/partners/websites-he.webp",
-        imageMobile: "/demo-media/partners/websites-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/websites-he-mobile.webp",
-        alt: "Bizuply website template gallery in the demo workspace",
-        sell: "Sell business websites and landing pages that capture leads into CRM.",
-        points: ["Business websites", "Landing pages", "Lead capture forms", "Appointment booking"],
+        value: "A business site or landing page can capture leads into CRM.",
+        partner: "Offer websites, landing pages and booking that the agreement allows.",
+        link: "View websites",
       },
     ],
-    saasTitle: "Industry SaaS systems",
+    saasTitle: "SaaS platforms",
     saasLead:
       "These products exist in Bizuply. Partner resale is coming soon and is not available for purchase through this program yet. Membership does not include source code, white-label rights or a distribution right.",
     soon: "Coming soon",
@@ -405,7 +395,6 @@ const COPY = {
       ["Non-exclusive appointment", "Bizuply may appoint other partners in the same territory."],
       ["Exclusive territory", "Granted only when the signed agreement says exclusive, the territory is available, both parties have signed, and required payment is complete."],
     ],
-    heroMediaCaption: "CRM screenshot from the authorized Bizuply demo workspace.",
     calcTitle: "Revenue calculator",
     calcSimBadge: "Illustration only",
     calcCustomers: "Active paying customers",
@@ -498,6 +487,11 @@ const COPY = {
       "עמלה חוזרת: 30% / 35% / 40% על הכנסת מנוי זכאית.",
       "Affiliate: כיום 15% ממכירות זכאיות בקטלוג. בלי דמי חברות.",
     ],
+    signals: [
+      ["40%", "עד 40% עמלה חוזרת", "המדרגה העליונה שפורסמה, מ־40 לקוחות משלמים פעילים, על הכנסת מנוי זכאית שהתקבלה."],
+      ["חוזר", "בנו הכנסה חוזרת", "העמלה יכולה להמשיך כל עוד לקוח זכאי נשאר משויך. אין הבטחת הכנסה."],
+      ["עולם", "תוכנית שותפים בינלאומית", "השיווק בתוך הטריטוריה שבהסכם. החברות אינה מעניקה בלעדיות."],
+    ],
     stickyJoin: "מוכנים להגיש מועמדות?",
     stickyCta: "הצטרפו כשותפים",
     audienceTitle: "למי התוכנית מתאימה",
@@ -513,85 +507,71 @@ const COPY = {
     whyTitle: "יתרונות לשותפים",
     whyLead: "אלה זכויות שכבר קיימות בתוכנית. אין כאן שירות, תשלום או הבטחת הכנסה שההסכם אינו מכסה.",
     why: [
-      ["repeat", "עמלה חוזרת על מנויים", "עמלה על הכנסת מנוי זכאית שהתקבלה בפועל, כל עוד הלקוח משויך וזכאי."],
-      ["people", "יותר מלקוח אחד", "אפשר להציג את Bizuply ליותר מעסק אחד. מדרגת העמלה נקבעת לפי מספר הלקוחות המשלמים הפעילים."],
-      ["portal", "מרכז השותפים", "כשהשותף פעיל, ההסכם פעיל, והתשלום הנדרש אומת, מרכז השותפים מציג לקוחות, שיוך ועמלות."],
-      ["box", "מוצרים מוכנים לשיווק", "CRM, WhatsApp Business API, כלי קמפיין של Meta, אוטומציות ואתרים שקיימים ב־Bizuply היום, כשההסכם מתיר אותם."],
-      ["book", "חומרים שפורסמו לשותפים", "קליטה, הדרכה שפורסמה וחומרים מאושרים, כל עוד החברות פעילה."],
-      ["life", "תמיכה לפי ההסכם", "תמיכה בפלטפורמה זמינה ב־support@bizuply.com. ההיקף נקבע בהסכם."],
+      ["repeat", "40%", "עמלה חוזרת", "עמלה על הכנסת מנוי זכאית שהתקבלה בפועל, כל עוד הלקוח משויך וזכאי."],
+      ["people", "10%", "עסקאות חד־פעמיות", "עסקאות חד־פעמיות זכאיות מזכות ב־10%. ההסכם החתום קובע מה זכאי."],
+      ["portal", "מרכז", "מרכז השותפים", "כשהשותף פעיל, ההסכם פעיל, והתשלום הנדרש אומת, מרכז השותפים מציג לקוחות, שיוך ועמלות."],
+      ["box", "5", "פתרונות לשיווק", "CRM, WhatsApp Business API, קמפיינים במטא, אוטומציות ואתרים שקיימים ב־Bizuply היום, כשההסכם מתיר."],
+      ["book", "חומר", "משאבים שפורסמו", "קליטה, הדרכה שפורסמה וחומרים מאושרים, כל עוד החברות פעילה."],
+      ["life", "תמיכה", "תמיכה לפי ההסכם", "תמיכה בפלטפורמה זמינה ב־support@bizuply.com. ההיקף נקבע בהסכם."],
     ],
     productsTitle: "מה השותפים יכולים למכור",
     productsLead:
-      "קטגוריות מוצרים שזמינות ב־Bizuply היום. הצילומים מסביבת הדמו המורשית של Bizuply — לא חשבון לקוח ולא הוצאת פרסום חיה.",
-    demoCaption: "סביבת דמו מורשית. בלי פרסום בפועל ובלי תקציב פרסום.",
-    products: [
+      "פתרונות שקיימים ב־Bizuply היום. בכל כרטיס מופיע הערך ללקוח וההזדמנות לשותף. מכירת מערכות SaaS לפי תחום עדיין אינה פתוחה.",
+    marketTitle: "שיווק ואוטומציות",
+    marketLead: "שני כלים שכבר יושבים לצד ה־CRM. הם אינם מחיר חברות נפרד.",
+    offers: [
       {
+        id: "crm",
+        layout: "lead",
+        icon: "people",
         title: "CRM וניהול לידים",
         href: "/crm",
-        image: "/demo-media/partners/crm-en.webp",
-        imageHe: "/demo-media/partners/crm-he.webp",
-        imageMobile: "/demo-media/partners/crm-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/crm-he-mobile.webp",
-        feature: true,
-        alt: "רשימת לידים ב־CRM בסביבת הדמו של Bizuply",
-        sell: "מכרו ניהול לידים ולקוחות שמרכז את המעקב והטיפול במקום אחד.",
-        points: ["ניהול קשרי לקוחות", "מעקב לידים", "צינורות מכירה", "כרטיסי לקוח", "תהליכי המשך טיפול"],
+        value: "הלקוח מרכז לידים, צינורות מכירה והמשך טיפול במקום אחד.",
+        partner: "הציגו CRM שכבר פועל ב־Bizuply, כשההסכם מתיר.",
+        link: "לעמוד ה־CRM",
       },
       {
+        id: "whatsapp-api",
+        layout: "side",
+        icon: "flow",
         title: "WhatsApp Business API",
         href: "/whatsapp-api",
-        image: "/demo-media/partners/whatsapp-en.webp",
-        imageHe: "/demo-media/partners/whatsapp-he.webp",
-        imageMobile: "/demo-media/partners/whatsapp-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/whatsapp-he-mobile.webp",
-        alt: "תיבת דואר WhatsApp Business API בסביבת הדמו",
-        sell: "מכרו חיבור WhatsApp Business API רשמי עם תבניות ומסרים עסקיים.",
-        note: "השימוש כפוף למדיניות Meta, לאישורים ולעלויות ההודעות.",
-        points: ["WhatsApp Business API רשמי", "מסרים עסקיים", "תבניות מאושרות", "תהליכים לקמפיינים"],
+        value: "העסק שולח מסרים ללקוחות דרך WhatsApp Business API הרשמי.",
+        partner: "הציעו תבניות ומסרים עסקיים. השימוש כפוף למדיניות Meta, לאישורים ולעלויות ההודעות.",
+        link: "לעמוד ה־WhatsApp API",
       },
       {
+        id: "meta-campaigns",
+        layout: "pair",
+        icon: "market",
         title: "קמפיינים במטא — Facebook & Instagram Ads",
         href: "/meta-campaigns",
-        image: "/demo-media/partners/campaigns-en.webp",
-        imageHe: "/demo-media/partners/campaigns-he.webp",
-        imageMobile: "/demo-media/partners/campaigns-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/campaigns-he-mobile.webp",
-        feature: true,
-        alt: "מנהל קמפיינים של Meta בסביבת הדמו של Bizuply",
-        sell: "מכרו כלי קמפיין של Meta לצד ה־CRM, כדי שפניות ממודעות יוכלו להמשיך לטיפול.",
-        note: "כלול בחבילת Business של Bizuply אחרי חיבור חשבון מודעות מורשה של Meta. זה אינו מוצר נפרד בתוכנית השותפים. את תקציב הפרסום גובה Meta. אפשר להכין טיוטות בלי לפרסם ובלי להוציא תקציב. עמלה לשותף נגזרת מהכנסת מנוי זכאית של Bizuply לפי ההסכם, לא מתקציב הפרסום ב־Meta.",
-        points: [
-          "חיבור חשבון המודעות של העסק ב־Meta",
-          "יצירה ועריכה של קמפיינים, קבוצות מודעות ומודעות",
-          "תקציב ברמת הקמפיין או קבוצת המודעות",
-          "הצגת ביצועים של קמפיינים מחוברים",
-          "Lead Ads יכולים להיכנס ל־CRM עם מקור וסטטוס להמשך טיפול",
-        ],
+        value: "Lead Ads יכולים להיכנס ל־CRM עם מקור וסטטוס להמשך טיפול.",
+        partner: "כלול בחבילת Business אחרי חיבור חשבון מודעות מורשה. העמלה נגזרת מהכנסת מנוי זכאית של Bizuply, לא מתקציב הפרסום ב־Meta.",
+        link: "לעמוד הקמפיינים",
       },
       {
+        id: "automations",
+        layout: "pair",
+        icon: "repeat",
         title: "אוטומציות עסקיות",
         href: "/automations",
-        image: "/demo-media/partners/automations-en.webp",
-        imageHe: "/demo-media/partners/automations-he.webp",
-        imageMobile: "/demo-media/partners/automations-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/automations-he-mobile.webp",
-        alt: "סביבת האוטומציות של Bizuply",
-        sell: "מכרו אוטומציות שמנתבות לידים ויוצרות משימות המשך.",
-        points: ["המשך טיפול אוטומטי", "ניתוב לידים", "אוטומציית תהליכים", "חיבורים נתמכים"],
+        value: "המשך טיפול וניתוב לידים יכולים לרוץ כתהליך מוגדר.",
+        partner: "שווקו אוטומציה שכבר קיימת ב־Bizuply, כשההסכם מתיר.",
+        link: "לעמוד האוטומציות",
       },
       {
+        id: "website-builder",
+        layout: "wide",
+        icon: "build",
         title: "אתרים ופתרונות דיגיטליים",
         href: "/website-builder",
-        image: "/demo-media/partners/websites-en.webp",
-        imageHe: "/demo-media/partners/websites-he.webp",
-        imageMobile: "/demo-media/partners/websites-en-mobile.webp",
-        imageMobileHe: "/demo-media/partners/websites-he-mobile.webp",
-        alt: "גלריית תבניות אתרים בסביבת הדמו של Bizuply",
-        sell: "מכרו אתרים ודפי נחיתה שקולטים לידים ל־CRM.",
-        points: ["אתרים עסקיים", "דפי נחיתה", "טפסי לידים", "זימון תורים"],
+        value: "אתר עסקי או דף נחיתה יכול לקלוט לידים ל־CRM.",
+        partner: "הציעו אתרים, דפי נחיתה וזימון תורים שההסכם מתיר.",
+        link: "לעמוד האתרים",
       },
     ],
-    saasTitle: "מערכות SaaS לפי תחום",
+    saasTitle: "פלטפורמות SaaS",
     saasLead:
       "המוצרים האלה קיימים ב־Bizuply. מכירת שותפים עדיין בקרוב ואינה זמינה לרכישה דרך התוכנית כעת. החברות אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
     soon: "בקרוב",
@@ -684,7 +664,6 @@ const COPY = {
       ["מינוי לא בלעדי", "Bizuply רשאית למנות שותפים נוספים באותה טריטוריה."],
       ["טריטוריה בלעדית", "ניתנת רק כשההסכם החתום קובע בלעדיות, הטריטוריה פנויה, שני הצדדים חתמו, והתשלום הנדרש הושלם."],
     ],
-    heroMediaCaption: "צילום מסך CRM מסביבת הדמו המורשית של Bizuply.",
     calcTitle: "מחשבון הכנסות",
     calcSimBadge: "המחשה בלבד",
     calcCustomers: "לקוחות משלמים פעילים",
@@ -915,6 +894,11 @@ export default function PartnersRecruitment() {
       </Helmet>
 
       <header className="ip-hero">
+        <div className="ip-hero-geo" aria-hidden="true">
+          <span className="ip-geo ip-geo-a" />
+          <span className="ip-geo ip-geo-b" />
+          <span className="ip-geo ip-geo-c" />
+        </div>
         <div className="ip-wrap ip-wrap-wide ip-hero-grid">
           <div className="ip-hero-copy">
             <p className="ip-kicker">{copy.kicker}</p>
@@ -935,20 +919,15 @@ export default function PartnersRecruitment() {
               ))}
             </ul>
           </div>
-          <div className="ip-hero-media">
-            <PartnerProductMedia
-              hebrew={hebrew}
-              priority
-              product={{
-                image: "/demo-media/partners/crm-en.webp",
-                imageHe: "/demo-media/partners/crm-he.webp",
-                imageMobile: "/demo-media/partners/crm-en-mobile.webp",
-                imageMobileHe: "/demo-media/partners/crm-he-mobile.webp",
-                alt: hebrew ? "צילום מסך CRM מסביבת הדמו" : "CRM screenshot from the demo workspace",
-              }}
-            />
-            <p className="ip-hero-media-caption">{copy.heroMediaCaption}</p>
-          </div>
+          <ul className="ip-signals">
+            {copy.signals.map(([figure, title, note]) => (
+              <li key={title}>
+                <strong><bdi>{figure}</bdi></strong>
+                <span>{title}</span>
+                <small>{note}</small>
+              </li>
+            ))}
+          </ul>
         </div>
       </header>
 
@@ -973,36 +952,56 @@ export default function PartnersRecruitment() {
         <div className="ip-wrap ip-wrap-wide">
           <h2>{copy.productsTitle}</h2>
           <p className="ip-copy">{copy.productsLead}</p>
-          <div className="ip-products">
-            {copy.products.map((product, index) => {
-              const featured = "feature" in product && product.feature;
-              const flip = !featured && index % 2 === 1;
-              return (
-                <article
-                  className={`ip-product${featured ? " is-feature" : ""}${flip ? " is-flip" : ""}`}
-                  key={product.href}
-                  data-testid={`product-${product.href.replace(/^\//, "")}`}
-                >
-                  <div className="ip-product-media">
-                    <PartnerProductMedia hebrew={hebrew} product={product} />
-                  </div>
-                  <div className="ip-product-copy">
-                    <h3>{product.title}</h3>
-                    {"sell" in product && product.sell ? <p className="ip-sell">{product.sell}</p> : null}
-                    <ul>
-                      {product.points.slice(0, 4).map((point) => (
-                        <li key={point}>{point}</li>
-                      ))}
-                    </ul>
-                    {"note" in product && product.note ? <p className="ip-note">{product.note}</p> : null}
-                    <p className="ip-demo-caption">{copy.demoCaption}</p>
-                    <Link className="ip-product-link" to={product.href}>
-                      {product.title}
-                    </Link>
+          <div className="ip-offers">
+            <div className="ip-offer-top">
+              {copy.offers
+                .filter((offer) => offer.layout === "lead" || offer.layout === "side")
+                .map((offer) => (
+                  <article className={`ip-offer is-${offer.layout}`} key={offer.id} data-testid={`product-${offer.id}`}>
+                    <Mark name={offer.icon} />
+                    <h3>{offer.title}</h3>
+                    <p className="ip-offer-kicker">{hebrew ? "ללקוח" : "For the customer"}</p>
+                    <p>{offer.value}</p>
+                    <p className="ip-offer-kicker">{hebrew ? "לשותף" : "For the partner"}</p>
+                    <p>{offer.partner}</p>
+                    <Link className="ip-product-link" to={offer.href}>{offer.link}</Link>
+                  </article>
+                ))}
+            </div>
+            <div className="ip-offer-market">
+              <div className="ip-offer-market-copy">
+                <h3>{copy.marketTitle}</h3>
+                <p>{copy.marketLead}</p>
+              </div>
+              {copy.offers
+                .filter((offer) => offer.layout === "pair")
+                .map((offer) => (
+                  <article className="ip-offer is-pair" key={offer.id} data-testid={`product-${offer.id}`}>
+                    <Mark name={offer.icon} />
+                    <h3>{offer.title}</h3>
+                    <p className="ip-offer-kicker">{hebrew ? "ללקוח" : "For the customer"}</p>
+                    <p>{offer.value}</p>
+                    <p className="ip-offer-kicker">{hebrew ? "לשותף" : "For the partner"}</p>
+                    <p>{offer.partner}</p>
+                    <Link className="ip-product-link" to={offer.href}>{offer.link}</Link>
+                  </article>
+                ))}
+            </div>
+            {copy.offers
+              .filter((offer) => offer.layout === "wide")
+              .map((offer) => (
+                <article className="ip-offer is-wide" key={offer.id} data-testid={`product-${offer.id}`}>
+                  <Mark name={offer.icon} />
+                  <div>
+                    <h3>{offer.title}</h3>
+                    <p className="ip-offer-kicker">{hebrew ? "ללקוח" : "For the customer"}</p>
+                    <p>{offer.value}</p>
+                    <p className="ip-offer-kicker">{hebrew ? "לשותף" : "For the partner"}</p>
+                    <p>{offer.partner}</p>
+                    <Link className="ip-product-link" to={offer.href}>{offer.link}</Link>
                   </div>
                 </article>
-              );
-            })}
+              ))}
           </div>
           <aside className="ip-saas-block" aria-labelledby="saas-heading">
             <h3 className="ip-saas-heading" id="saas-heading">
@@ -1026,9 +1025,10 @@ export default function PartnersRecruitment() {
           <h2>{copy.whyTitle}</h2>
           <p className="ip-copy">{copy.whyLead}</p>
           <div className="ip-cards">
-            {copy.why.map(([icon, title, body]) => (
-              <article className="ip-card" key={title}>
+            {copy.why.map(([icon, figure, title, body]) => (
+              <article className="ip-card ip-benefit" key={title}>
                 <Mark name={icon} />
+                <p className="ip-benefit-figure" dir="ltr">{figure}</p>
                 <h3>{title}</h3>
                 <p>{body}</p>
               </article>
@@ -1041,6 +1041,9 @@ export default function PartnersRecruitment() {
         <div className="ip-wrap">
           <h2>{copy.levelsTitle}</h2>
           <p className="ip-copy">{copy.levelsLead}</p>
+          <div className="ip-level-progress" aria-hidden="true">
+            <span />
+          </div>
           <div className="ip-levels">
             {RECURRING_TIERS.map((tier) => (
               <article className={`ip-level${tier.rate === 0.4 ? " is-top" : ""}`} key={tier.label}>
@@ -1186,7 +1189,7 @@ export default function PartnersRecruitment() {
         </div>
       </section>
 
-      <section className="ip-section ip-band ip-reveal" id="calculator">
+      <section className="ip-section ip-calc-section ip-reveal" id="calculator">
         <div className="ip-wrap">
           <div className="ip-calc-heading-row">
             <h2>{copy.calcTitle}</h2>

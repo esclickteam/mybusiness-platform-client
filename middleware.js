@@ -1004,14 +1004,9 @@ async function handleMarketingDocument(request) {
           /<link\s+rel=["']stylesheet["']\s+href=["']\/home-critical\.css["']\s*\/>\s*/i,
           '<link rel="stylesheet" href="/partners-critical.css" />',
         );
-        const partnerShot =
-          locale.locale === "he"
-            ? "/demo-media/partners/crm-he.webp"
-            : "/demo-media/partners/crm-en.webp";
         documentHtml = documentHtml.replace(
           "</head>",
           [
-            `<link rel="preload" as="image" href="${partnerShot}" fetchpriority="high">`,
             '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
             '<script src="/home-css-promote.js" defer></script>',
             "</head>",

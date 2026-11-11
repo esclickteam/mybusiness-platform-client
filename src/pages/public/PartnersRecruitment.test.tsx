@@ -89,14 +89,12 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/Lead Ads/i);
     expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/not on Meta ad spend/i);
     expect(screen.getByTestId("product-meta-campaigns").querySelector("video")).toBeNull();
-    expect(screen.getByTestId("product-crm").querySelector("img")?.getAttribute("src")).toContain(
-      "/demo-media/partners/crm-en.webp"
-    );
-    expect(screen.getByTestId("product-whatsapp-api").querySelector("img")?.getAttribute("src")).toContain(
-      "/demo-media/partners/whatsapp-en.webp"
-    );
-    expect(screen.getByTestId("product-automations").querySelector("img")).toBeTruthy();
-    expect(screen.getByTestId("product-website-builder").querySelector("img")).toBeTruthy();
+    expect(screen.getByTestId("product-crm").querySelector("img")).toBeNull();
+    expect(screen.getByTestId("product-whatsapp-api").querySelector("a")).toHaveAttribute("href", "/whatsapp-api");
+    expect(screen.getByTestId("product-automations").querySelector("a")).toHaveAttribute("href", "/automations");
+    expect(screen.getByTestId("product-website-builder").querySelector("a")).toHaveAttribute("href", "/website-builder");
+    expect(screen.getByTestId("partners-recruitment").innerHTML).not.toContain("demo-media");
+    expect(screen.getByText("Up to 40% Recurring Commission")).toBeInTheDocument();
     expect(document.querySelectorAll(".ipartner video")).toHaveLength(0);
     expect(screen.getByTestId("partner-tracks-table")).toHaveTextContent(/Reseller/i);
     expect(screen.getAllByText(/Illustration only/i).length).toBeGreaterThan(0);
@@ -158,9 +156,9 @@ describe("bizuply.com/partners recruitment", () => {
       "href",
       "/meta-campaigns"
     );
-    expect(screen.getByTestId("product-crm").querySelector("img")?.getAttribute("src")).toContain(
-      "/demo-media/partners/crm-he.webp"
-    );
+    expect(screen.getByTestId("product-crm").querySelector("img")).toBeNull();
+    expect(screen.getByText("עד 40% עמלה חוזרת")).toBeInTheDocument();
+    expect(screen.getByTestId("partners-recruitment").textContent || "").not.toMatch(/דמו/);
     expect(document.querySelectorAll(".ipartner video")).toHaveLength(0);
     expect(screen.getByTestId("partner-tracks-table")).toHaveTextContent(/Reseller/);
     expect(screen.getAllByText(/המחשה בלבד/).length).toBeGreaterThan(0);

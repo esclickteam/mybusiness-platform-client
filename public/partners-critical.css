@@ -124,18 +124,30 @@ html.bizuply-partners *::after {
   line-height: 1.45;
 }
 
-.ip-shot {
+.ip-signals {
+  display: grid;
+  gap: 12px;
   margin: 28px 0 0;
-  overflow: hidden;
-  background: #fff;
-  border: 0;
-  box-shadow: 0 28px 60px rgba(15, 10, 40, 0.35);
+  padding: 0;
+  list-style: none;
 }
-
-.ip-shot img {
+.ip-signals li {
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+}
+.ip-signals strong {
   display: block;
-  width: 100%;
-  height: auto;
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.ip-signals span {
+  display: block;
+  margin-top: 8px;
+  color: #fff;
+  font-weight: 800;
 }
 
 [dir="rtl"] .ip-hero h1 { max-width: none; }
@@ -147,7 +159,7 @@ html.bizuply-partners *::after {
     gap: 48px;
     align-items: center;
   }
-  .ip-shot { margin-top: 0; }
+  .ip-signals { margin-top: 0; }
 }
 
 @media (max-width: 719px) {
