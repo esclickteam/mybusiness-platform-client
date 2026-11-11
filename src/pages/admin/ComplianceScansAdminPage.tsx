@@ -73,6 +73,62 @@ function resetLabel(value: string) {
   return `${new Intl.DateTimeFormat("he-IL", { dateStyle: "short", timeStyle: "short", timeZone: "UTC" }).format(date)} UTC`;
 }
 
+function InternalOrders() {
+  const [orders, setOrders] = useState<Array<{ id: string; host: string; packageId: string; paymentStatus: string; consent: boolean; pagesAllowed: number; accessStatus: string; scanStatus: string; pagesChecked: number; error: string; reportId: string }>>([]);
+  const [note, setNote] = useState("הגבייה סגורה. אין הזמנות פעילות.");
+  useEffect(() => {
+    const token = localStorage.getItem("token") || "";
+    fetch("/compliance/api/admin/internal-scans", { headers: token ? { Authorization: `Bearer ${token}` } : {}, credentials: "include" })
+      .then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setNote(data.error || "לא ניתן לטעון את הזמנות הסריקה המורחבת");
+          return;
+        }
+        setOrders(data.orders || []);
+        setNote(data.enabled ? "השירות פתוח" : "השירות כבוי והגבייה סגורה");
+      })
+      .catch(() => setNote("לא ניתן לטעון את הזמנות הסריקה המורחבת"));
+  }, []);
+  return (
+    <div className="compliance-admin__table">
+      <p>{note}</p>
+      <table>
+        <thead>
+          <tr>
+            <th>לקוח ואתר</th>
+            <th>חבילה</th>
+            <th>תשלום</th>
+            <th>אישור</th>
+            <th>עמודים שאושרו</th>
+            <th>פרטי גישה</th>
+            <th>מצב</th>
+            <th>עמודים שנבדקו</th>
+            <th>תקלה</th>
+            <th>דוח</th>
+          </tr>
+        </thead>
+        <tbody>
+          {orders.map((order) => (
+            <tr key={order.id}>
+              <td>{order.host}</td>
+              <td>{order.packageId}</td>
+              <td>{order.paymentStatus === "not_charged" ? "לא בוצע תשלום" : order.paymentStatus}</td>
+              <td>{order.consent ? "נחתם" : "חסר"}</td>
+              <td>{order.pagesAllowed}</td>
+              <td>{order.accessStatus === "stored" ? "נשמרו מוצפנים" : "לא נמסרו"}</td>
+              <td>{order.scanStatus}</td>
+              <td>{order.pagesChecked}</td>
+              <td>{order.error || "—"}</td>
+              <td>{order.reportId || "—"}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 export default function ComplianceScansAdminPage() {
   const [rows, setRows] = useState<Row[]>([]);
   const [total, setTotal] = useState(0);
@@ -345,6 +401,9 @@ export default function ComplianceScansAdminPage() {
           </tbody>
         </table>
       </div>
+      <h2>סריקה מורחבת — אזורים פנימיים</h2>
+      <p>השירות כבוי והגבייה סגורה. הרשימה מציגה הזמנות בלי סיסמה, בלי אסימון ובלי ערך עוגייה.</p>
+      <InternalOrders />
       <h2>מנויים</h2>
       <div className="compliance-admin__table">
         <table>
