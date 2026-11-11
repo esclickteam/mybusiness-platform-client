@@ -70,6 +70,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     whoTitle: "מי מתאים לבצע",
     evidenceTitle: "ראיה שנשמרה",
     evidenceOriginal: "ראיה מקורית מהאתר שנבדק",
+    internalOffer: "יש באתר אזורים שדורשים התחברות? אפשר להרחיב את הסריקה גם לאזור האישי ולמערכת הפנימית, באמצעות משתמש בדיקה ייעודי. ההרחבה אינה מחליפה את הסריקה הציבורית, והגבייה סגורה.",
     evidenceNote: "הטקסט נשמר כפי שנאסף מהאתר ולא תורגם.",
     pageFromSite: "כותרת העמוד באתר",
     executiveTitle: "סיכום למנהלים",
@@ -139,6 +140,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     whoTitle: "Who should do it",
     evidenceTitle: "Stored evidence",
     evidenceOriginal: "Original evidence from the scanned website",
+    internalOffer: "Does the site have areas that require sign-in? The scan can be extended to a personal area and an internal system with a dedicated test user. The extension does not replace the public scan, and billing is closed.",
     evidenceNote: "This text is kept exactly as it was collected and was not translated.",
     pageFromSite: "Page title on the website",
     executiveTitle: "Executive summary",
@@ -186,6 +188,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     stepsTitle: "Cómo corregirlo", exampleTitle: "Ejemplo de código propuesto", verifyTitle: "Cómo comprobar que la corrección funcionó",
     limitsTitle: "Límites del hallazgo", whoTitle: "Quién conviene que lo haga", evidenceTitle: "Evidencia guardada",
     evidenceOriginal: "Evidencia original del sitio analizado",
+    internalOffer: "¿El sitio tiene zonas que exigen iniciar sesión? El análisis puede ampliarse al área personal y al sistema interno con un usuario de prueba. La ampliación no sustituye el análisis público, y el cobro está cerrado.",
     evidenceNote: "El texto se guarda tal como se recogió y no se tradujo.",
     pageFromSite: "Título de la página en el sitio",
     executiveTitle: "Resumen para la dirección",
@@ -231,6 +234,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     stepsTitle: "Como corrigir", exampleTitle: "Exemplo de código proposto", verifyTitle: "Como confirmar que a correção funcionou",
     limitsTitle: "Limites do achado", whoTitle: "Quem deve fazer", evidenceTitle: "Evidência salva",
     evidenceOriginal: "Evidência original do site analisado",
+    internalOffer: "O site tem áreas que exigem login? A varredura pode ser ampliada à área pessoal e ao sistema interno com um usuário de teste. A ampliação não substitui a varredura pública, e a cobrança está fechada.",
     evidenceNote: "O texto fica como foi coletado e não foi traduzido.",
     pageFromSite: "Título da página no site",
     executiveTitle: "Resumo para a gestão",
@@ -276,6 +280,7 @@ const COPY: Record<Locale, Record<string, string>> = {
     stepsTitle: "تعليمات الإصلاح", exampleTitle: "مثال شيفرة مقترح", verifyTitle: "كيف يُفحص نجاح الإصلاح",
     limitsTitle: "حدود النتيجة", whoTitle: "من الأنسب أن ينفّذ", evidenceTitle: "دليل محفوظ",
     evidenceOriginal: "دليل أصلي من الموقع الذي فُحص",
+    internalOffer: "هل في الموقع مناطق تتطلب تسجيل الدخول؟ يمكن توسيع الفحص إلى المنطقة الشخصية والنظام الداخلي بمستخدم اختبار. التوسعة لا تستبدل الفحص العام، والتحصيل مغلق.",
     evidenceNote: "يبقى النص كما جُمع من الموقع ولم يُترجَم.",
     pageFromSite: "عنوان الصفحة في الموقع",
     executiveTitle: "ملخص للإدارة",
@@ -511,6 +516,7 @@ export function ComplianceReportView({
           <p><strong>{report.executive.score ?? shownScore}/100</strong> · {copy.checksTitle}: {report.executive.checks}</p>
           {report.executive.scoreSplit ? <p>{report.executive.scoreSplit}</p> : null}
           <p>{copy.passedChapter}: {statusCounts.pass} · {copy.actionChapter}: {statusCounts.action} · {copy.verifyChapter}: {statusCounts.verify} · {copy.unfinished}: {statusCounts.open} · {copy.notFoundTitle}: {statusCounts.missing} · {copy.blockedTitle}: {statusCounts.unread}</p>
+          {statusCounts.unread > 0 ? <p>{copy.internalOffer}</p> : null}
           <p>{["critical", "high", "medium", "low", "info"].map((key) => `${copy[key] || key} ${report.executive.bySeverity?.[key] || 0}`).join(" · ")}</p>
           {report.executive.storedLabel ? <p className="report-stored">{report.executive.storedLabel}</p> : null}
           {(report.executive.significant || []).length ? <ul>{report.executive.significant.map((title: string) => <li key={title}>{title}</li>)}</ul> : null}

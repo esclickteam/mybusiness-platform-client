@@ -291,6 +291,11 @@ export function PriceBoard({ locale, showHeading = true }: { locale: Locale; sho
         ))}
       </div>
       <p className="scan-price__note">{copy.note}</p>
+      <article>
+        <h2>{locale === "he" ? "סריקת אתר מורחבת — כולל אזורים פנימיים" : locale === "es" ? "Análisis ampliado del sitio, incluidas las zonas internas" : locale === "pt-BR" ? "Varredura ampliada do site, incluindo áreas internas" : locale === "ar" ? "فحص موقع موسّع يشمل المناطق الداخلية" : "Extended website scan, including internal areas"}</h2>
+        <p>{locale === "he" ? "יש באתר אזורים שדורשים התחברות? אפשר להרחיב את הסריקה גם לאזור האישי ולמערכת הפנימית, באמצעות משתמש בדיקה ייעודי. ההרחבה אינה מחליפה את הסריקה הציבורית." : locale === "es" ? "¿Hay zonas que exigen iniciar sesión? El análisis puede ampliarse al área personal y al sistema interno con un usuario de prueba. No sustituye el análisis público." : locale === "pt-BR" ? "Há áreas que exigem login? A varredura pode incluir a área pessoal e o sistema interno com um usuário de teste. Ela não substitui a varredura pública." : locale === "ar" ? "هل توجد مناطق تتطلب تسجيل الدخول؟ يمكن أن يشمل الفحص المنطقة الشخصية والنظام الداخلي بمستخدم اختبار. لا يستبدل هذا الفحص العام." : "Are there areas that require sign-in? The scan can include a personal area and an internal system with a dedicated test user. It does not replace the public scan."}</p>
+        <p>{locale === "he" ? "הצעת מחיר בלבד: עד 10 עמודים $49, עד 30 עמודים $99, עד 100 עמודים $199. הגבייה סגורה ולא מתבצע חיוב." : locale === "es" ? "Precios solo como propuesta: hasta 10 páginas $49, hasta 30 páginas $99, hasta 100 páginas $199. El cobro está cerrado y no se realiza ningún cargo." : locale === "pt-BR" ? "Preços só como proposta: até 10 páginas $49, até 30 páginas $99, até 100 páginas $199. A cobrança está fechada e nada é cobrado." : locale === "ar" ? "الأسعار مقترحة فقط: حتى 10 صفحات 49$، حتى 30 صفحة 99$، حتى 100 صفحة 199$. التحصيل مغلق ولا يتم أي خصم." : "Proposed prices only: up to 10 pages $49, up to 30 pages $99, up to 100 pages $199. Billing is closed and nothing is charged."}</p>
+      </article>
     </section>
   );
 }
