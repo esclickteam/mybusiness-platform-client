@@ -14,6 +14,12 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../../../../i18n/localeUtils";
+import {
+  displayLeadSource,
+  filterHomepageDemoStoryLeads,
+  homepageDemoLeadLanguage,
+  isHomepageDemoBusiness,
+} from "../../../../../components/dashboard/overview/dashboardOverviewUtils";
 import ExcelJS from "exceljs";
 import {
   assignLead,
@@ -61,7 +67,21 @@ export default function CRMLeadsWorkspace({
   const locale = i18n.language || "he";
   const [searchParams, setSearchParams] = useSearchParams();
   const leadIdFromUrl = searchParams.get("leadId") || "";
-  const [state, setState] = useState<LeadListState>(() => loadLeadListState(businessId));
+  const demoStory = mode === "active" && isHomepageDemoBusiness(businessId);
+  const [state, setState] = useState<LeadListState>(() => {
+    const loaded = loadLeadListState(businessId);
+    if (!isHomepageDemoBusiness(businessId) || mode !== "active") return loaded;
+    return {
+      ...loaded,
+      q: "",
+      status: "all",
+      stage: "all",
+      source: "meta",
+      campaign: "",
+      formId: "",
+      page: 1,
+    };
+  });
   const [leads, setLeads] = useState<WorkspaceLead[]>([]);
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(false);
@@ -87,21 +107,21 @@ export default function CRMLeadsWorkspace({
   const query = useMemo(
     () => ({
       businessId,
-      page: state.page,
+      page: demoStory ? 1 : state.page,
       limit: PAGE_SIZE,
-      q: state.q,
-      status: mode === "old" ? "old" : state.status,
-      stage: state.stage,
-      source: state.source,
-      campaign: state.campaign,
-      formId: state.formId,
+      q: demoStory ? "" : state.q,
+      status: mode === "old" ? "old" : demoStory ? "all" : state.status,
+      stage: demoStory ? "all" : state.stage,
+      source: demoStory ? "meta" : state.source,
+      campaign: demoStory ? "" : state.campaign,
+      formId: demoStory ? "" : state.formId,
       assignedTo: state.assignedTo === "all" ? undefined : state.assignedTo,
-      dateFrom: state.dateFrom,
-      dateTo: state.dateTo,
+      dateFrom: demoStory ? "" : state.dateFrom,
+      dateTo: demoStory ? "" : state.dateTo,
       sort: state.sort,
       dir: state.dir,
     }),
-    [businessId, mode, state]
+    [businessId, demoStory, mode, state]
   );
 
   const load = useCallback(
@@ -237,6 +257,18 @@ export default function CRMLeadsWorkspace({
   };
 
   const visibleColumns = state.columnOrder.filter((column) => state.visibleColumns.includes(column));
+  const storyOptions = { demoBusiness: demoStory };
+  const storyLeads = demoStory && leads.some((lead) => homepageDemoLeadLanguage(lead, storyOptions));
+  const languageLeads = storyLeads ? filterHomepageDemoStoryLeads(leads, i18n.language, storyOptions) : leads;
+  const storyQuery = storyLeads ? state.q.trim().toLowerCase() : "";
+  const shownLeads = storyQuery
+    ? languageLeads.filter((lead) =>
+        `${lead.fullName || ""} ${lead.name || ""} ${lead.phone || ""} ${lead.email || ""}`
+          .toLowerCase()
+          .includes(storyQuery)
+      )
+    : languageLeads;
+  const shownTotal = storyLeads ? languageLeads.length : total;
 
   const onImport = async (file: File) => {
     const rows: Array<Record<string, string>> = [];
@@ -558,7 +590,7 @@ export default function CRMLeadsWorkspace({
                   if (leadId) void moveCard(leadId, column.key);
                 }}
               >
-                {leads
+                {shownLeads
                   .filter((lead) => (lead.stageKey || lead.status) === column.key)
                   .map((lead) => (
                     <article
@@ -571,7 +603,7 @@ export default function CRMLeadsWorkspace({
                       <p className="line-clamp-1">{lead.fullName || lead.name}</p>
                       <p className="text-slate-400" dir="ltr">{lead.phone}</p>
                       <p className="mt-1 text-[10px] font-semibold text-slate-400">
-                        {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source || "—"}
+                        {lead.assignedToName || t("crm.leads.unassignedAgent")} · {lead.source ? displayLeadSource(lead.source, lead, storyOptions) : "—"}
                       </p>
                     </article>
                   ))}
@@ -602,8 +634,8 @@ export default function CRMLeadsWorkspace({
                 <th className="p-2">
                   <input
                     type="checkbox"
-                    checked={selected.length > 0 && selected.length === leads.length}
-                    onChange={(event) => setSelected(event.target.checked ? leads.map((lead) => lead._id) : [])}
+                    checked={selected.length > 0 && selected.length === shownLeads.length}
+                    onChange={(event) => setSelected(event.target.checked ? shownLeads.map((lead) => lead._id) : [])}
                   />
                 </th>
                 {visibleColumns.map((column) => (
@@ -620,14 +652,14 @@ export default function CRMLeadsWorkspace({
               </tr>
             </thead>
             <tbody>
-              {loading && !leads.length ? (
+              {loading && !shownLeads.length ? (
                 <tr>
                   <td className="p-4 font-bold text-slate-500" colSpan={visibleColumns.length + 1}>
                     <div className="h-8 animate-pulse rounded bg-slate-100" />
                   </td>
                 </tr>
-              ) : leads.length ? (
-                leads.map((lead) => (
+              ) : shownLeads.length ? (
+                shownLeads.map((lead) => (
                   <tr key={lead._id} className="border-t border-slate-100 hover:bg-slate-50">
                     <td className="p-2">
                       <input type="checkbox" checked={selected.includes(lead._id)} onChange={() => toggleSelect(lead._id)} />
@@ -638,7 +670,7 @@ export default function CRMLeadsWorkspace({
                         className="cursor-pointer p-2 font-semibold"
                         onClick={() => openLead(lead._id)}
                       >
-                        {renderCell(lead, column, locale, t)}
+                        {renderCell(lead, column, locale, t, storyOptions)}
                       </td>
                     ))}
                   </tr>
@@ -656,13 +688,13 @@ export default function CRMLeadsWorkspace({
       )}
 
       <div className="crm-pager">
-        <span>{t("crm.workspace.showing", { count: leads.length, total })}</span>
+        <span>{t("crm.workspace.showing", { count: shownLeads.length, total: shownTotal })}</span>
         <div className="flex gap-2">
           <button type="button" className="crm-tool" disabled={state.page <= 1} onClick={() => setState((prev) => ({ ...prev, page: prev.page - 1 }))}>
             {t("crm.common.back")}
           </button>
           <span>{state.page}</span>
-          <button type="button" className="crm-tool" disabled={!hasMore} onClick={() => setState((prev) => ({ ...prev, page: prev.page + 1 }))}>
+          <button type="button" className="crm-tool" disabled={storyLeads || !hasMore} onClick={() => setState((prev) => ({ ...prev, page: prev.page + 1 }))}>
             {t("crm.workspace.next")}
           </button>
         </div>
@@ -718,7 +750,13 @@ export default function CRMLeadsWorkspace({
   );
 }
 
-function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key: string, opts?: any) => string) {
+function renderCell(
+  lead: WorkspaceLead,
+  column: string,
+  locale: string,
+  t: (key: string, opts?: any) => string,
+  sourceOptions?: { demoBusiness?: boolean }
+) {
   switch (column) {
     case "name":
       return <span className="crm-lead-name">{lead.fullName || lead.name || ""}</span>;
@@ -733,7 +771,7 @@ function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key
         </span>
       );
     case "source":
-      return lead.source ? <span className="crm-source">{lead.source}</span> : "";
+      return lead.source ? <span className="crm-source">{displayLeadSource(lead.source, lead, sourceOptions)}</span> : "";
     case "campaign":
       return lead.campaignName || lead.campaignId || "";
     case "form":

@@ -1,7 +1,7 @@
 /**
  * Records the six-step BizUply process film on the staging demo workspace.
- *   LEADS_WEBHOOK_URL=... LANG_UI=he|en MOBILE=0|1 [DRY=1] [CLEAN_PHONES=972...,972...] node scripts/home-theater/film.mjs
- * Each take creates one new demo lead, so give every take a new customer file.
+ *   LANG_UI=he|en MOBILE=0|1 [DRY=1] [FILM_BASE=...] node scripts/home-theater/film.mjs
+ * Opens the marked demo lead that is already in the account. It does not call Meta or a webhook.
  * Every step asserts its real server response / UI result; nothing is faked.
  */
 import { chromium } from "playwright";
@@ -9,7 +9,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { cursorScript, createRecorder, segmentsToMp4, joinChapters, glide, run, login } from "./recorder.mjs";
 
-function fail0(msg) { console.error(msg); process.exit(2); }
 const LANG = process.env.LANG_UI || "he";
 const MOBILE = process.env.MOBILE === "1";
 const DRY = process.env.DRY === "1";
@@ -17,14 +16,13 @@ const BASE = process.env.FILM_BASE || "https://mybusiness-platform-client-stagin
 const API = "https://server-staging-15bb.up.railway.app/api";
 const BIZ = "6ab62f565ba1a92f3046b5ad";
 const AUTO_ID = process.env.AUTO_ID || "6af1e65d76c39b752eefa9e4";
-const WEBHOOK = process.env.LEADS_WEBHOOK_URL || (process.env.DRY === "1" ? "" : fail0("Set LEADS_WEBHOOK_URL to the demo business Make/Facebook leads webhook (GET /integrations/facebook-leads/webhook-url)."));
 const TAG = `${LANG}-${MOBILE ? "mobile" : "desktop"}`;
 const OUT = `${process.env.CAPTURE_DIR || "/tmp/home-theater"}/film-${TAG}`;
 fs.mkdirSync(OUT, { recursive: true });
 fs.mkdirSync(process.env.CAPTURE_DIR || "/tmp/home-theater", { recursive: true });
 
 const CSS_W = MOBILE ? 390 : 1680;
-const CSS_H = MOBILE ? 844 : 945;
+const CSS_H = MOBILE ? 844 : 1000;
 const DPR = MOBILE ? 3 : 1;
 const PX_W = Math.round(CSS_W * DPR);
 const PX_H = Math.round(CSS_H * DPR);
@@ -32,17 +30,22 @@ const PX_H = Math.round(CSS_H * DPR);
 const C = JSON.parse(fs.readFileSync(process.env.CUSTOMER || new URL(`./customers/customer-${TAG}.json`, import.meta.url), "utf8"));
 const L = {
   he: {
-    notesTab: "הערות ופעילות", tasksTab: "משימות", taskQuick: "משימה", noteSave: "שמור הערה", addTask: "הוספת משימה",
+    notesTab: "הערות ופעילות", tasksTab: "משימות", meetingsTab: "פגישות", meetingTitle: "כותרת פגישה", addMeeting: "הוספת פגישה", taskQuick: "משימה", noteSave: "שמור הערה", addTask: "הוספת משימה",
     reply: "תשובה", test: "בדיקה", runTest: "הרצת בדיקה", close: "סגירה",
   },
   en: {
-    notesTab: "Notes and activity", tasksTab: "Tasks", taskQuick: "Task", noteSave: "Save note", addTask: "Add task",
+    notesTab: "Notes and activity", tasksTab: "Tasks", meetingsTab: "Meetings", meetingTitle: "Meeting title", addMeeting: "Add meeting", taskQuick: "Task", noteSave: "Save note", addTask: "Add task",
     reply: "Reply", test: "Test", runTest: "Run a test", close: "Close",
   },
 }[LANG];
 if (process.env.LABELS) Object.assign(L, JSON.parse(process.env.LABELS));
 
 const log = (...a) => console.log(`[${TAG}]`, ...a);
+const conversationPhone = (phone) => {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (digits.startsWith("972") || digits.startsWith("1")) return digits;
+  return "972" + digits.replace(/^0/, "");
+};
 const fail = (msg) => { throw new Error(`[${TAG}] ${msg}`); };
 
 const browser = await chromium.launch({
@@ -69,10 +72,10 @@ const ctx = await browser.newContext({
 await ctx.addInitScript(cursorScript(MOBILE ? "touch" : "desktop"));
 const FILM_CSS = `
   header.fixed.z-30 { display: none !important; }
+  main[data-testid="business-dashboard-main"] { padding-top: 0 !important; }
   .bizuply-chat-launcher,
   section.fixed.bottom-6.right-6,
   .cookie-banner { display: none !important; }
-  main[data-testid="business-dashboard-main"] { padding-top: 0 !important; }
 `;
 await ctx.addInitScript((css) => {
   const install = () => {
@@ -101,7 +104,7 @@ await ctx.storageState({ path: (process.env.CAPTURE_DIR || "/tmp/home-theater") 
 {
   const token = await page.evaluate(() => localStorage.getItem("token"));
   const H = { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "x-business-id": BIZ, Origin: BASE };
-  const own = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+  const own = conversationPhone(C.phone);
   for (const ph of (process.env.CLEAN_PHONES || "").split(",").filter(Boolean)) {
     if (ph === own) continue;
     const r = await fetch(`${API}/whatsapp/conversations/${ph}`, { method: "DELETE", headers: H });
@@ -244,103 +247,150 @@ async function typeText(text, delay = 15) {
   await page.keyboard.type(text, { delay });
 }
 
-const leadRow = () => page.locator("table tbody tr").filter({ hasText: C.name }).first();
+const leadRow = () => page.locator("table tbody tr").filter({ hasText: C.phone }).first();
 const listReady = async () => { await page.locator("table").first().waitFor({ timeout: 60000 }); };
 const cardReady = async () => { await page.getByRole("button", { name: L.notesTab, exact: true }).waitFor({ timeout: 60000 }); };
+const card = () => page.locator(".crm-dossier");
 
-/* ---------- 1. Lead intake ---------- */
+async function revealLeadRow() {
+  await leadRow().evaluate((row) => row.scrollIntoView({ behavior: "smooth", block: "center" }));
+  await settle(1100);
+}
+
+async function assertLeadRow() {
+  await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 400, label: "row" });
+  const rowText = await leadRow().innerText();
+  if (!rowText.includes(C.name) || !rowText.includes(C.campaignName) || !rowText.includes(C.formName) || !rowText.includes("Meta Lead Ads")) {
+    fail(`demo row mismatch ${rowText.slice(0, 240)}`);
+  }
+  log("demo lead row", C.phone);
+}
+
+/** A product-tour form. It never posts to Meta or to a webhook. */
+async function showDemoForm() {
+  await page.evaluate((copy) => {
+    document.getElementById("demo-form-sim")?.remove();
+    const wrap = document.createElement("div");
+    wrap.id = "demo-form-sim";
+    wrap.setAttribute("dir", copy.dir);
+    const aside = document.querySelector("aside");
+    const box = aside ? aside.getBoundingClientRect() : null;
+    const overlap = box ? Math.min(box.right, innerWidth) - Math.max(box.left, 0) : 0;
+    const visible = overlap > 40;
+    const onRight = visible && box.left > innerWidth / 2;
+    const gap = visible ? Math.ceil(overlap) : 0;
+    const narrow = innerWidth < 520;
+    wrap.style.cssText = `position:fixed;top:0;bottom:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(33,23,47,.46);padding:${narrow ? 12 : 24}px;${onRight ? `left:0;right:${gap}px;` : `right:0;left:${gap}px;`}`;
+    wrap.innerHTML = `
+      <form id="demo-form-card" style="width:min(540px,100%);max-height:calc(100vh - 24px);overflow:auto;background:#fff;border-radius:${narrow ? 18 : 24}px;padding:${narrow ? "18px 16px 16px" : "28px 28px 22px"};box-shadow:0 24px 70px rgba(33,23,47,.28);color:#21172f;font-family:Assistant,Arial,sans-serif;">
+        <p style="margin:0;color:#6d28d9;font-size:13px;font-weight:800;letter-spacing:.02em;">${copy.kicker}</p>
+        <h2 style="margin:8px 0 6px;font-size:28px;line-height:1.2;">${copy.title}</h2>
+        <p style="margin:0 0 14px;color:#5b5568;font-size:14px;line-height:1.5;">${copy.note}</p>
+        <p style="margin:0 0 16px;padding:8px 12px;border-radius:12px;background:#f6f3ff;color:#5b21b6;font-size:13px;font-weight:700;">${copy.campaign}</p>
+        <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:800;">${copy.name}<input id="demo-lead-name" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;"></label>
+        <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:800;">${copy.phone}<input id="demo-lead-phone" dir="ltr" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;text-align:left;"></label>
+        <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:800;">${copy.email}<input id="demo-lead-email" dir="ltr" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;text-align:left;"></label>
+        <label style="display:block;margin-bottom:16px;font-size:13px;font-weight:800;">${copy.message}<textarea id="demo-lead-message" rows="2" style="display:block;width:100%;margin-top:4px;padding:10px 12px;border:1px solid #e7e3f5;border-radius:12px;font:inherit;font-weight:600;resize:none;"></textarea></label>
+        <button id="demo-lead-submit" type="button" style="border:0;border-radius:14px;background:#6d28d9;color:#fff;font:inherit;font-weight:800;padding:12px 18px;cursor:pointer;">${copy.submit}</button>
+      </form>`;
+    wrap.querySelector("#demo-lead-submit").addEventListener("click", (event) => {
+      event.preventDefault();
+      wrap.remove();
+    });
+    document.body.appendChild(wrap);
+  }, LANG === "he" ? {
+    dir: "rtl",
+    kicker: "הדמיית טופס לידים",
+    title: C.formName,
+    note: "סיור במוצר בלבד. הטופס לא נשלח לפייסבוק ולא נוצרת פנייה אמיתית.",
+    campaign: `קמפיין: ${C.campaignName}`,
+    name: "שם",
+    phone: "טלפון",
+    email: "אימייל",
+    message: "הודעה",
+    submit: "שליחה להדגמה",
+  } : {
+    dir: "ltr",
+    kicker: "Lead form simulation",
+    title: C.formName,
+    note: "Product tour only. This form is not sent to Facebook and no real enquiry is created.",
+    campaign: `Campaign: ${C.campaignName}`,
+    name: "Name",
+    phone: "Phone",
+    email: "Email",
+    message: "Message",
+    submit: "Submit demo",
+  });
+}
+
+async function playDemoForm() {
+  await settle(800);
+  for (const [sel, value] of [
+    ["#demo-lead-name", C.name],
+    ["#demo-lead-phone", C.phone],
+    ["#demo-lead-email", C.email],
+    ["#demo-lead-message", C.message],
+  ]) {
+    await to(page.locator(sel), { after: 160 });
+    await typeText(value, 34);
+    await settle(240);
+  }
+  await settle(500);
+  await to(page.locator("#demo-lead-submit"), { after: 250 });
+  await page.locator("#demo-form-sim").waitFor({ state: "detached", timeout: 5000 });
+  await settle(900);
+}
+
+/* ---------- 1. Lead intake: simulated form, then the CRM row ---------- */
 beginChapter("lead");
 await goto("crm/leads", listReady);
 const vp = await page.evaluate(() => [innerWidth, innerHeight]);
 log("viewport", vp);
 if (vp[0] !== CSS_W) fail(`viewport width ${vp[0]}`);
 if (DRY) C.name = process.env.DRY_NAME || "Dana Israeli";
-else if ((await leadRow().count()) > 0) fail(`customer ${C.name} already exists — pick a new customer`);
+C.meetingTitle = C.meetingTitle || (LANG === "he" ? "הדגמה אישית עם שירה מזרחי" : "Personal demo with Olivia Parker");
+await showDemoForm();
 await keep();
-await settle(900);
-cut();
-let hook = null;
-for (let attempt = 0; attempt < 3 && !hook; attempt++) {
-  try {
-    hook = DRY
-      ? { status: 201, json: async () => ({ lead: { _id: "dry", source: "dry" } }) }
-      : await fetch(WEBHOOK, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: C.name, phone: C.phone, email: C.email, message: C.message, form_name: C.formName }),
-          signal: AbortSignal.timeout(20000),
-        });
-  } catch (error) {
-    log("webhook retry", attempt + 1, error.message);
-    if (attempt === 2) throw error;
-    await page.waitForTimeout(1500);
-  }
-}
-await keep();
-const hookJson = await hook.json();
-if (hook.status !== 201 || !hookJson?.lead?._id) fail(`webhook ${hook.status} ${JSON.stringify(hookJson).slice(0, 300)}`);
-C.leadId = hookJson.lead._id;
-log("lead created", C.leadId, hookJson.lead.source);
-await settle(1600);
-const refresh = page.locator("button.crm-tool").filter({ has: page.locator("svg.lucide-refresh-cw") }).first();
-await to(refresh, { after: 200 });
-await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 200, label: "row" });
-await settle(700);
+await playDemoForm();
+await settle(400);
+await revealLeadRow();
+await assertLeadRow();
 await panLeadsTable();
-await to(leadRow().locator("td").nth(1), { click: false, pause: 500 });
-await to(leadRow().locator("td").nth(1), { after: 150 });
-await waitOrCut(cardReady, { grace: 120, label: "card" });
-await settle(1400);
+await to(leadRow().locator("td").nth(1), { click: false, pause: 800 });
+await settle(700);
 await endChapter();
 
-/* ---------- 2. Customer management ---------- */
+/* ---------- 2. Customer card ---------- */
 beginChapter("crm");
 await keep();
-await settle(500);
-const statusSelect = page.locator("select").filter({ has: page.locator('option[value="interested"]') }).first();
-await to(statusSelect, { after: 250 });
-if (!DRY) {
-const statusResp = page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/status/.test(r.url()) && r.request().method() !== "GET", { timeout: 20000 });
-await statusSelect.selectOption("interested");
-const sr = await statusResp;
-if (!sr.ok()) fail(`status ${sr.status()}`);
-log("status saved", sr.status());
-}
-await settle(1100);
-await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 600 });
-const note = page.locator("textarea").first();
-await to(note, { after: 200 });
-await typeText(C.note);
-await settle(350);
-const noteResp = DRY ? null : page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/activities/.test(r.url()) && r.request().method() === "POST", { timeout: 20000 });
-await to(page.getByRole("button", { name: L.noteSave, exact: true }), { click: !DRY, after: 100 });
-if (!DRY) {
-const nr = await noteResp;
-if (!nr.ok()) fail(`note ${nr.status()}`);
-await page.getByText(C.note.slice(0, 30)).first().waitFor({ timeout: 15000 });
-log("note saved");
-}
-await settle(1500);
+await to(leadRow().locator("td").nth(1), { after: 180 });
+await waitOrCut(cardReady, { grace: 120, label: "card" });
+await settle(1600);
 await endChapter();
 
 /* ---------- 3. WhatsApp ---------- */
 beginChapter("whatsapp");
-const waPhone = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+const waPhone = conversationPhone(C.phone);
 await goto(`whatsapp/inbox?phone=${waPhone}`, async () => {
   await page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first().waitFor({ timeout: 60000 });
   await page.getByText(waPhone).first().waitFor({ timeout: 30000 });
-  await page.waitForTimeout(1500);
+  await page.getByText(LANG === "he" ? "טוען את וואטסאפ" : "Loading WhatsApp").first().waitFor({ state: "hidden", timeout: 20000 }).catch(() => {});
+  await page.waitForTimeout(800);
 });
 await keep();
 await settle(900);
 const composer = page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first();
 await to(composer, { after: 200 });
-await typeText(C.reply);
+await typeText(C.reply, 28);
 await settle(300);
 await to(page.getByRole("button", { name: L.reply, exact: true }), { click: !DRY, after: 200 });
 if (!DRY) {
 await page.getByText(C.reply.slice(0, 24)).first().waitFor({ timeout: 15000 });
-await settle(1800);
+const demoNote = LANG === "he"
+  ? "הודעת הדמו נשמרה. היא לא נשלחה ללקוח אמיתי."
+  : "Demo message saved. It was not sent to a real customer.";
+await page.getByText(demoNote).first().waitFor({ timeout: 8000 });
+await settle(2400);
 const rj = replies[replies.length - 1];
 if (!rj?.demoSafe) fail(`reply not demo-safe: ${JSON.stringify(rj).slice(0, 300)}`);
 log("whatsapp reply demoSafe", rj.providerMessageId);
@@ -355,7 +405,29 @@ await settle(500);
 await to(leadRow().locator("td").nth(1), { after: 150 });
 await waitOrCut(cardReady, { grace: 120, label: "card2" });
 await settle(700);
+await to(page.getByRole("button", { name: L.meetingsTab, exact: true }), { after: 500 });
+if (await page.getByText(C.meetingTitle).count()) {
+  log("meeting already on the card");
+} else {
+const meetingInput = page.getByPlaceholder(L.meetingTitle).first();
+await to(meetingInput, { after: 150 });
+await typeText(C.meetingTitle);
+await page.locator(".crm-dossier input[type='datetime-local']").first().fill(C.taskValue);
+await settle(300);
+const meetingResp = DRY ? null : page.waitForResponse((r) => /\/crm\/workspace\/leads\/[^/]+\/meetings$/.test(r.url()) && r.request().method() === "POST", { timeout: 20000 });
+await to(page.getByRole("button", { name: L.addMeeting, exact: true }), { click: !DRY, after: 100 });
+if (!DRY) {
+  const mr = await meetingResp;
+  if (!mr.ok()) fail(`meeting ${mr.status()}`);
+  await page.getByText(C.meetingTitle).first().waitFor({ timeout: 15000 });
+  log("meeting saved");
+}
+}
+await settle(900);
 await to(page.getByRole("button", { name: L.taskQuick, exact: true }), { after: 600 });
+if (await page.getByText(C.task).count()) {
+  log("task already on the card");
+} else {
 const taskInput = page.locator(`input[placeholder^="${C.taskPlaceholder}"]`).first();
 await to(taskInput, { after: 150 });
 await typeText(C.task);
@@ -383,10 +455,21 @@ await savedTask.waitFor({ state: "attached", timeout: 15000 });
 await savedTask.scrollIntoViewIfNeeded();
 log("task saved", tr.url());
 }
-await settle(1900);
+}
+await settle(700);
+const statusSelect = card().locator("select").filter({ has: page.locator('option[value="interested"]') }).first();
+await to(statusSelect, { after: 280 });
+if (!DRY) {
+  const statusResp = page.waitForResponse((r) => /\/crm\/leads\/[^/]+\/status/.test(r.url()) && r.request().method() !== "GET", { timeout: 20000 });
+  await statusSelect.selectOption("interested");
+  const sr = await statusResp;
+  if (!sr.ok()) fail(`status ${sr.status()}`);
+  log("status saved", sr.status());
+}
+await settle(1500);
 await endChapter();
 
-/* ---------- 5. Automation ---------- */
+/* ---------- 5. Automation test run. It sends nothing. ---------- */
 beginChapter("automation");
 await goto("automations", async () => {
   await page.getByText(C.autoName).and(page.locator(":visible")).first().waitFor({ timeout: 60000 });
@@ -398,38 +481,44 @@ await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { aft
 await waitOrCut(() => page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 }).then(() => page.locator(".react-flow__node").first().waitFor()), { grace: 150, label: "editor" });
 await settle(1200);
 if (!MOBILE) {
-await to(page.locator(".react-flow__node").first(), { click: false, pause: 550 });
-await to(page.locator(".react-flow__node").nth(1), { click: false, pause: 350 });
-await to(page.locator(".react-flow__node").nth(2), { click: false, pause: 350 });
+  await to(page.locator(".react-flow__node").first(), { click: false, pause: 550 });
+  await to(page.locator(".react-flow__node").nth(1), { click: false, pause: 350 });
+  await to(page.locator(".react-flow__node").nth(2), { click: false, pause: 350 });
 }
 await to(page.getByRole("button", { name: L.test, exact: true }), { after: 700 });
 const dryResp = page.waitForResponse((r) => /\/dry-run$/.test(r.url()), { timeout: 20000 });
 await to(page.getByRole("button", { name: L.runTest, exact: true }), { after: 100 });
 const dr = await dryResp;
 if (!dr.ok()) fail(`dry-run ${dr.status()}`);
+const dryBody = await dr.json().catch(() => ({}));
+if (dryBody.liveDispatch || dryBody.sent) fail("automation dry-run tried to send");
 await page.getByText("completed").first().waitFor({ timeout: 15000 });
 log("automation test completed");
-await settle(2600);
+await settle(2200);
 if (MOBILE) {
   const zin = page.locator(".react-flow__controls-zoomin");
   for (let i = 0; i < 3; i++) await to(zin, { pause: i ? 120 : 260, after: 420 });
-  await settle(1800);
+  await settle(1400);
 }
 await endChapter();
 
-/* ---------- 6. Wrap-up ---------- */
+/* ---------- 6. Updated customer card ---------- */
 beginChapter("done");
 await goto("crm/leads", listReady);
 await keep();
-await settle(600);
-await panLeadsTable();
-if (!MOBILE) await to(leadRow().locator("td").nth(4), { click: false, pause: 900 });
-await to(leadRow().locator("td").nth(1), { after: 150 });
+await settle(500);
+await revealLeadRow();
+await to(leadRow().locator("td").nth(1), { click: false, pause: 700 });
+await to(leadRow().locator("td").nth(1), { after: 160 });
 await waitOrCut(cardReady, { grace: 120, label: "card3" });
-await settle(900);
-await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 500 });
-await settle(1700);
-await to(page.getByRole("button", { name: L.tasksTab, exact: true }), { after: 500 });
+await settle(800);
+await to(card().getByRole("button", { name: L.meetingsTab, exact: true }), { after: 450 });
+await card().getByText(C.meetingTitle).first().waitFor({ timeout: 10000 });
+await settle(1400);
+await to(card().getByRole("button", { name: L.tasksTab, exact: true }), { after: 450 });
+await card().getByText(C.task.slice(0, 24)).first().waitFor({ timeout: 10000 });
+await settle(1400);
+await to(card().getByRole("button", { name: L.notesTab, exact: true }), { after: 450 });
 await settle(2200);
 await endChapter();
 

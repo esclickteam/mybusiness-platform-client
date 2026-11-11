@@ -165,6 +165,82 @@ export function formatLeadSource(source?: string): string {
   return map[key] || source || String(i18n.t("overview.leadSourceOther", "Other"));
 }
 
+type DemoSourceLead = {
+  testData?: boolean;
+  tags?: string[];
+  externalLeadId?: string;
+  facebook?: { leadId?: string };
+};
+
+/** Synthetic homepage demo rows are marked on the server. Real leads are not. */
+export function isHomepageDemoLead(lead?: DemoSourceLead | null): boolean {
+  if (!lead?.testData) return false;
+  const tags = Array.isArray(lead.tags) ? lead.tags : [];
+  if (!tags.includes("homepage-demo")) return false;
+  const external = String(lead.externalLeadId || lead.facebook?.leadId || "");
+  return external.startsWith("demo-");
+}
+
+/** Isolated staging account used by the homepage films. */
+export const HOMEPAGE_DEMO_BUSINESS_ID = "6ab62f565ba1a92f3046b5ad";
+
+export function isHomepageDemoBusiness(businessId?: string | null): boolean {
+  return String(businessId || "") === HOMEPAGE_DEMO_BUSINESS_ID;
+}
+
+type DemoStoryLead = DemoSourceLead & {
+  name?: string;
+  fullName?: string;
+  phone?: string;
+};
+
+function isMetaLeadAdsSource(lead?: { source?: string } | null): boolean {
+  const source = String(lead?.source || "").toLowerCase();
+  return source === "meta_lead_ads" || source === "facebook_lead_ads";
+}
+
+/** Hebrew story rows use a Hebrew name and +972. English rows use a Latin name and +1. */
+export function homepageDemoLeadLanguage(
+  lead?: DemoStoryLead | null,
+  options?: { demoBusiness?: boolean }
+): "he" | "en" | "" {
+  const marked = isHomepageDemoLead(lead) || Boolean(options?.demoBusiness && isMetaLeadAdsSource(lead));
+  if (!marked) return "";
+  const name = String(lead?.fullName || lead?.name || "");
+  const phone = String(lead?.phone || "");
+  if (/[\u0590-\u05FF]/.test(name) && !/[A-Za-z]/.test(name) && phone.startsWith("+972")) return "he";
+  if (/^[A-Za-z .'-]+$/.test(name) && phone.startsWith("+1")) return "en";
+  return "";
+}
+
+export function filterHomepageDemoStoryLeads<T extends DemoStoryLead>(
+  leads: T[],
+  language?: string,
+  options?: { demoBusiness?: boolean }
+): T[] {
+  const want = String(language || "").toLowerCase().startsWith("he") ? "he" : "en";
+  return leads.filter((lead) => homepageDemoLeadLanguage(lead, options) === want);
+}
+
+/**
+ * The words "Meta Lead Ads" are a label for a marked demo record.
+ * Every other lead keeps the stored source text.
+ */
+export function displayLeadSource(
+  source?: string,
+  lead?: DemoSourceLead | null,
+  options?: { demoBusiness?: boolean }
+): string {
+  const key = String(source || lead?.source || "").toLowerCase();
+  if (
+    (isHomepageDemoLead(lead) || options?.demoBusiness) &&
+    (key === "meta_lead_ads" || key === "facebook_lead_ads")
+  ) {
+    return "Meta Lead Ads";
+  }
+  return source || "";
+}
+
 export function formatLeadStatus(status?: string): string {
   const key = String(status || "new").toLowerCase();
   const known = ["new", "contacted", "interested", "converted", "lost", "old"];

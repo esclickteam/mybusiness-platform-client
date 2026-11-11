@@ -128,26 +128,8 @@ export default function WhatsAppInboxTab() {
       }
       setReply("");
       if ((result?.demoSafe || result?.dryRun) && result.log) {
-        const optimistic = { ...result.log, status: "sending" };
+        const optimistic = { ...result.log, status: "demo" };
         setMessages((prev) => [...prev, optimistic]);
-        const id = optimistic._id;
-        window.setTimeout(() => {
-          setMessages((prev) =>
-            prev.map((row) => (row._id === id ? { ...row, status: "sent" } : row))
-          );
-        }, 450);
-        window.setTimeout(() => {
-          setMessages((prev) =>
-            prev.map((row) =>
-              row._id === id ? { ...row, status: "delivered" } : row
-            )
-          );
-        }, 1000);
-        window.setTimeout(() => {
-          setMessages((prev) =>
-            prev.map((row) => (row._id === id ? { ...row, status: "read" } : row))
-          );
-        }, 1600);
       }
       const rows = await listWhatsAppConversationMessages(
         businessId,

@@ -218,6 +218,92 @@ describe("CRMLeadsWorkspace isolated UI", () => {
     });
   });
 
+  it("shows only the Hebrew homepage demo rows on the demo business", async () => {
+    const shira = {
+      ...sampleLead,
+      _id: "64f0000000000000000000c1",
+      fullName: "שירה מזרחי",
+      name: "שירה מזרחי",
+      phone: "+972505550101",
+      source: "meta_lead_ads",
+      testData: true,
+      tags: ["homepage-demo"],
+      externalLeadId: "demo-lead-shira-mizrahi",
+    };
+    const olivia = {
+      ...sampleLead,
+      _id: "64f0000000000000000000c2",
+      fullName: "Olivia Parker",
+      name: "Olivia Parker",
+      phone: "+12125550101",
+      source: "meta_lead_ads",
+      testData: true,
+      tags: ["homepage-demo"],
+      externalLeadId: "demo-lead-olivia-parker",
+    };
+    const oldMake = {
+      ...sampleLead,
+      _id: "64f0000000000000000000c3",
+      fullName: "Miles Carter",
+      name: "Miles Carter",
+      phone: "0525552215",
+      source: "make",
+      testData: false,
+      tags: [],
+      externalLeadId: "",
+    };
+    fetchWorkspaceLeads.mockResolvedValue({
+      leads: [shira, olivia, oldMake],
+      total: 3,
+      hasMore: false,
+      page: 1,
+      limit: 50,
+    });
+    render(
+      <MemoryRouter>
+        <CRMLeadsWorkspace businessId="6ab62f565ba1a92f3046b5ad" />
+      </MemoryRouter>
+    );
+    expect(await screen.findByText("שירה מזרחי")).toBeInTheDocument();
+    expect(screen.queryByText("Olivia Parker")).not.toBeInTheDocument();
+    expect(screen.queryByText("Miles Carter")).not.toBeInTheDocument();
+    expect(fetchWorkspaceLeads).toHaveBeenCalledWith(expect.objectContaining({ source: "meta", q: "" }));
+  });
+
+  it("keeps the Hebrew demo rows when the list payload omits the demo flags", async () => {
+    const shira = {
+      ...sampleLead,
+      _id: "64f0000000000000000000c4",
+      fullName: "נועה לוי",
+      name: "נועה לוי",
+      phone: "+972505550102",
+      source: "meta_lead_ads",
+    };
+    const olivia = {
+      ...sampleLead,
+      _id: "64f0000000000000000000c5",
+      fullName: "James Anderson",
+      name: "James Anderson",
+      phone: "+12125550102",
+      source: "meta_lead_ads",
+    };
+    fetchWorkspaceLeads.mockResolvedValue({
+      leads: [shira, olivia],
+      total: 2,
+      hasMore: false,
+      page: 1,
+      limit: 50,
+    });
+    render(
+      <MemoryRouter>
+        <CRMLeadsWorkspace businessId="6ab62f565ba1a92f3046b5ad" />
+      </MemoryRouter>
+    );
+    expect(await screen.findByText("נועה לוי")).toBeInTheDocument();
+    expect(screen.queryByText("James Anderson")).not.toBeInTheDocument();
+    expect(screen.getAllByText("Meta Lead Ads").length).toBeGreaterThan(0);
+  });
+
   it("switches between list, compact table and kanban", async () => {
     renderWorkspace();
     await screen.findByText("Ada Lovelace");
