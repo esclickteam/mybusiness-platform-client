@@ -22,6 +22,9 @@ import {
 import { canShowMeasurementActions } from "./runActionVisibility";
 import { findingKindHe } from "./improvementWork";
 import ImprovementWorkList from "./ImprovementWorkList";
+import SeoChangeTrackingPanel, {
+  type SeoChangeTracking,
+} from "./SeoChangeTrackingPanel";
 import {
   collectionMethodHe,
   dataClassHe,
@@ -182,6 +185,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [prompts, setPrompts] = useState<any[]>([]);
   const [csvText, setCsvText] = useState("");
   const [gscImports, setGscImports] = useState<any[]>([]);
+  const [seoTracking, setSeoTracking] = useState<SeoChangeTracking | null>(null);
   const [catalogDraft, setCatalogDraft] = useState<any>(null);
   const [costMatrix, setCostMatrix] = useState<any>(null);
   const [monitoringStatus, setMonitoringStatus] = useState<any>(null);
@@ -246,6 +250,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         ch,
         pr,
         gsc,
+        tracking,
         weekly,
         gscOppData,
         radar,
@@ -268,6 +273,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         geoGet("/checks", { brandId, limit: 100 }),
         geoGet("/prompts", { brandId, active: "1" }),
         geoGet("/gsc/imports", { brandId }),
+        geoGet("/seo-change-tracking", { brandId }).catch(() => null),
         geoGet("/weekly-actions", filterParams),
         geoGet("/gsc-opportunities", { brandId, filter: gscFilter }),
         geoGet("/ai-radar", filterParams),
@@ -290,6 +296,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
       setChecks(ch.checks || []);
       setPrompts(pr.prompts || []);
       setGscImports(gsc.imports || []);
+      setSeoTracking(tracking);
       setWeeklyActions(weekly);
       setGscOpps(gscOppData);
       setAiRadar(radar);
@@ -891,7 +898,10 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
           ) : null}
           {tab === "aiRadar" ? <AiRadarPanel data={aiRadar} /> : null}
           {tab === "beforeAfter" ? (
-            <BeforeAfterPanel data={beforeAfter} />
+            <>
+              <SeoChangeTrackingPanel data={seoTracking} />
+              <BeforeAfterPanel data={beforeAfter} />
+            </>
           ) : null}
           {tab === "brandProfile" ? (
             <BrandProfilePanel data={brandProfile} />
