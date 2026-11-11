@@ -1536,6 +1536,11 @@
   margin: 0;
   font-size: 13px;
 }
+.geo-keyword-card p:last-of-type {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 .geo-keyword-plan {
   display: grid;
   gap: 6px;
