@@ -387,6 +387,31 @@
   font-weight: 800;
   line-height: 1.5;
 }
+.ip-tier-move {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ip-tier-move li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  font-weight: 750;
+  line-height: 1.45;
+}
+.ip-tier-rate {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
 .ip-eligibility {
   display: grid;
   gap: 14px;
@@ -504,8 +529,6 @@
 }
 .ip-plan-notes li { margin-top: 6px; }
 .ip-territory-note { margin-top: 18px; }
-.ip-token { white-space: nowrap; }
-
 /* ========== Calculator ========== */
 .ip-calc-heading-row {
   display: flex;
@@ -759,7 +782,8 @@
   .ip-billing-grid,
   .ip-results,
   .ip-apply-grid { grid-template-columns: 1fr 1fr; }
-  .ip-levels { grid-template-columns: repeat(3, 1fr); }
+  .ip-levels,
+  .ip-tier-move { grid-template-columns: repeat(3, 1fr); }
   .ip-cards { grid-template-columns: 1fr 1fr; }
   .ip-saas-grid { grid-template-columns: repeat(3, 1fr); }
   .ip-compare { grid-template-columns: 1fr 1fr; }

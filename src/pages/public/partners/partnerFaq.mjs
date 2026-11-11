@@ -7,7 +7,7 @@ const en = [
   ],
   [
     "How much does it cost to join?",
-    "The application is free. Business Partner is $499 per month or $5,000 per year after approval. Twelve monthly payments are $5,988, so the annual membership is $988 less. Affiliate has no membership fee on the percent track. Reseller, White Label, Exclusive Territory and Strategic Partner follow the appointed plan or the signed agreement. When a fee applies, it is collected manually outside this website, and only after approval. The page does not charge a card.",
+    "The application is free. Business Partner is $499 per month or $5,000 per year after approval. Twelve monthly payments are $5,988, so the annual membership is $988 less. Affiliate has no membership fee on the percent track. Reseller, White Label, Exclusive Territory and Strategic Partner follow the plan named in the signed agreement. When a fee applies, it is collected manually outside this website, and only after approval. The page does not charge a card.",
   ],
   [
     "How are commissions calculated?",
@@ -19,7 +19,7 @@ const en = [
   ],
   [
     "How do partners move between commission tiers?",
-    "The tier follows the number of active paying customers under the signed agreement: 30% for 1–19, 35% for 20–39, and 40% for 40 or more. You do not purchase a tier. These are commission rates, not three subscription prices.",
+    "The rate follows the current number of active paying customers under the signed agreement. 1–19 customers: 30%. 20–39 customers: 35%. 40 or more: 40%. Crossing into the next band uses the higher rate. Dropping below a band uses the lower rate. You do not purchase a tier. These are commission rates, not three subscription prices. Only eligible subscription revenue that was actually received is counted.",
   ],
   [
     "Which products can partners sell?",
@@ -66,7 +66,7 @@ const he = [
   ],
   [
     "כמה עולה להצטרף?",
-    "הגשת הבקשה ללא תשלום. Business Partner עולה 499 דולר לחודש או 5,000 דולר לשנה אחרי אישור. שנים־עשר תשלומים חודשיים הם 5,988 דולר, ולכן המסלול השנתי זול ב־988 דולר. במסלול Affiliate אין דמי חברות. Reseller, White Label, Exclusive Territory ו־Strategic Partner לפי המסלול שמונה או לפי ההסכם. כשיש דמי חברות, הם נגבים ידנית מחוץ לאתר ורק אחרי אישור. העמוד הזה אינו מתחיל חיוב.",
+    "הגשת הבקשה ללא תשלום. Business Partner עולה 499 דולר לחודש או 5,000 דולר לשנה אחרי אישור. שנים־עשר תשלומים חודשיים הם 5,988 דולר, ולכן המסלול השנתי זול ב־988 דולר. במסלול Affiliate אין דמי חברות. Reseller, White Label, Exclusive Territory ו־Strategic Partner לפי המסלול שנקבע בהסכם החתום. כשיש דמי חברות, הם נגבים ידנית מחוץ לאתר ורק אחרי אישור. העמוד הזה אינו מתחיל חיוב.",
   ],
   [
     "איך מחושבות העמלות?",
@@ -78,7 +78,7 @@ const he = [
   ],
   [
     "איך עוברים בין המדרגות?",
-    "המדרגה נקבעת לפי מספר הלקוחות המשלמים הפעילים, לפי ההסכם: 30% עבור 1 עד 19, 35% עבור 20 עד 39, ו־40% עבור 40 או יותר. לא רוכשים מדרגה. אלה שיעורי עמלה, לא שלושה מחירי מנוי.",
+    "השיעור עוקב אחרי המספר העדכני של לקוחות משלמים פעילים, לפי ההסכם החתום. עד 19 לקוחות השיעור הוא 30 אחוז. מ־20 ועד 39 השיעור הוא 35 אחוז. מ־40 לקוחות השיעור הוא 40 אחוז. מעבר לטווח הבא מעלה את השיעור, וירידה מתחת לטווח מורידה אותו. לא רוכשים מדרגה. אלה שיעורי עמלה, לא שלושה מחירי מנוי. נספרת רק הכנסת מנוי זכאית שהתקבלה בפועל.",
   ],
   [
     "אילו מוצרים אפשר למכור?",

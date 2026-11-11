@@ -280,7 +280,7 @@ const COPY = {
         feature: true,
         alt: "Bizuply Meta campaign manager in the demo workspace",
         sell: "Sell Meta campaign tools next to CRM so Lead Ads can continue into follow-up.",
-        note: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Not a separate partner SKU. Meta bills media spend. Drafts can be prepared without publishing or spending. Partners earn on eligible Bizuply subscription revenue under the signed agreement — not on Meta ad spend.",
+        note: "Included with the Bizuply Business plan after an authorized Meta ad account is connected. Not a separate product in the partner program. Meta bills media spend. Drafts can be prepared without publishing or spending. Partners earn on eligible Bizuply subscription revenue under the signed agreement, not on Meta ad spend.",
         points: [
           "Connect the business’s own Meta ad account",
           "Create and edit campaigns, ad sets and ads",
@@ -320,6 +320,13 @@ const COPY = {
     levelsTitle: "Partner levels",
     levelsLead:
       "These are commission tiers, not three subscription prices. The rate follows the number of active paying customers on eligible subscription revenue that was actually received. You do not buy a tier.",
+    tierBands: [
+      { range: "1–19 active paying customers", rate: "30%" },
+      { range: "20–39 active paying customers", rate: "35%" },
+      { range: "40 or more active paying customers", rate: "40%" },
+    ],
+    tierMove:
+      "The rate follows that current count. It rises when the count enters the next band, and it falls when the count drops below a band. Only eligible subscription revenue that was actually received is counted, under the signed agreement.",
     customers: "Active paying customers",
     oneTime: "10% commission on eligible one-time transactions",
     eligibility: [
@@ -349,20 +356,21 @@ const COPY = {
       {
         key: "Reseller",
         title: "Reseller",
-        fee: "Setup and monthly fees follow the appointed catalog plan.",
-        rate: "Markup-share per appointed plan — not the international tier table. By agreement only.",
+        fee: "Setup and monthly fees follow the plan named in the agreement.",
+        rate: "A share of the catalog markup on that plan. Not the 30%, 35% or 40% tiers. By written agreement only.",
         featured: false,
       },
     ],
     tracksTableTitle: "Affiliate · Business Partner · Reseller at a glance",
     tracksTable: {
+      name: "Track",
       fee: "Membership fee",
       reward: "Reward model",
       access: "Access",
       rows: [
         ["Affiliate", "None on the percent track", "Currently 15% of eligible sales in the catalog", "Application review. No Partner Center membership fee."],
         ["Business Partner", "$499 / month or $5,000 / year after approval", "Recurring 30% / 35% / 40% · 10% one-time", "Partner Center after agreement and verified payment."],
-        ["Reseller", "Setup and monthly fees follow the appointed catalog plan", "Markup-share per appointed plan — not the international tier table", "By agreement. Not selected automatically on this page."],
+        ["Reseller", "Setup and monthly fees follow the plan named in the agreement", "A share of the catalog markup on that plan. Not the 30%, 35% or 40% tiers", "By written agreement. Not selected automatically on this page."],
       ],
     },
     plansTitle: "Partner membership",
@@ -371,11 +379,23 @@ const COPY = {
     best: "Best value",
     save: "Save $988 a year compared with 12 monthly payments.",
     saveMath: "Twelve monthly payments are {monthlyYear}. The annual membership is {annual}.",
-    monthlyPoints: ["Monthly billing", "No annual prepayment", "Same International Partner benefits", "Recurring commission on eligible received revenue", "Access to eligible partner resources while active"],
-    annualPoints: ["Same International Partner benefits", "Recurring commission on eligible received revenue", "Access to eligible partner resources while active", "Annual billing at the published yearly price"],
-    planNotes: ["Application is free", "Payment is required only after approval", "Manual payment outside the website", "No automatic charging", "Subject to the partnership agreement"],
+    monthlyPoints: [
+      "Monthly billing at $499. No annual payment in advance.",
+      "Recurring commission of 30%, 35% or 40% on eligible subscription revenue that was received.",
+      "10% on eligible one-time deals.",
+      "Partner Center after a signed agreement and verified payment.",
+      "CRM, WhatsApp Business API, Meta campaigns, automations and websites, when the agreement allows them.",
+      "Published partner materials, and platform support at support@bizuply.com, while the membership is active.",
+    ],
+    annualPoints: [
+      "The same Business Partner benefits: Partner Center, the products the agreement allows, published materials and platform support.",
+      "Recurring commission of 30%, 35% or 40% on eligible subscription revenue that was received.",
+      "10% on eligible one-time deals.",
+      "Annual billing at $5,000.",
+    ],
+    planNotes: ["The application is free", "Payment is required only after approval", "Manual payment outside the website", "No automatic charging", "Subject to the partnership agreement"],
     noCharge: "This page does not start a live charge.",
-    due: "After approval, and until the manual payment is recorded, the membership stays payment_due.",
+    due: "After approval, and until the manual payment is recorded, the membership is not yet active.",
     applyMonthly: "Apply for monthly membership",
     applyAnnual: "Apply for annual membership",
     registerAfterApproval: "Full registration (after approval)",
@@ -503,7 +523,7 @@ const COPY = {
     productsTitle: "מה השותפים יכולים למכור",
     productsLead:
       "קטגוריות מוצרים שזמינות ב־Bizuply היום. הצילומים מסביבת הדמו המורשית של Bizuply — לא חשבון לקוח ולא הוצאת פרסום חיה.",
-    demoCaption: "סביבת דמו מורשית. ללא פרסום חי וללא הוצאת מדיה.",
+    demoCaption: "סביבת דמו מורשית. בלי פרסום בפועל ובלי תקציב פרסום.",
     products: [
       {
         title: "CRM וניהול לידים",
@@ -514,7 +534,7 @@ const COPY = {
         imageMobileHe: "/demo-media/partners/crm-he-mobile.webp",
         feature: true,
         alt: "רשימת לידים ב־CRM בסביבת הדמו של Bizuply",
-        sell: "מכרו ניהול לידים ולקוחות שמחזיק את ההמשך במקום אחד.",
+        sell: "מכרו ניהול לידים ולקוחות שמרכז את המעקב והטיפול במקום אחד.",
         points: ["ניהול קשרי לקוחות", "מעקב לידים", "צינורות מכירה", "כרטיסי לקוח", "תהליכי המשך טיפול"],
       },
       {
@@ -538,8 +558,8 @@ const COPY = {
         imageMobileHe: "/demo-media/partners/campaigns-he-mobile.webp",
         feature: true,
         alt: "מנהל קמפיינים של Meta בסביבת הדמו של Bizuply",
-        sell: "מכרו כלי קמפיין של Meta ליד ה־CRM, כדי ש־Lead Ads ימשיכו לטיפול.",
-        note: "כלול בחבילת Business של Bizuply אחרי חיבור חשבון מודעות מורשה של Meta. אינו SKU שותפים נפרד. את הוצאת המדיה גובה Meta. אפשר להכין טיוטות בלי לפרסם ובלי להוציא תקציב. עמלה לשותף נגזרת מהכנסת מנוי זכאית של Bizuply לפי ההסכם — לא מהוצאת הפרסום ב־Meta.",
+        sell: "מכרו כלי קמפיין של Meta לצד ה־CRM, כדי שפניות ממודעות יוכלו להמשיך לטיפול.",
+        note: "כלול בחבילת Business של Bizuply אחרי חיבור חשבון מודעות מורשה של Meta. זה אינו מוצר נפרד בתוכנית השותפים. את תקציב הפרסום גובה Meta. אפשר להכין טיוטות בלי לפרסם ובלי להוציא תקציב. עמלה לשותף נגזרת מהכנסת מנוי זכאית של Bizuply לפי ההסכם, לא מתקציב הפרסום ב־Meta.",
         points: [
           "חיבור חשבון המודעות של העסק ב־Meta",
           "יצירה ועריכה של קמפיינים, קבוצות מודעות ומודעות",
@@ -576,9 +596,16 @@ const COPY = {
       "המוצרים האלה קיימים ב־Bizuply. מכירת שותפים עדיין בקרוב ואינה זמינה לרכישה דרך התוכנית כעת. החברות אינה כוללת קוד מקור, זכויות White Label או זכות הפצה.",
     soon: "בקרוב",
     saas: ["BeautyFlow", "Global Properties", "Dinevo", "TableFlow", "Cliny"],
-    levelsTitle: "מדרגות שותפים",
+    levelsTitle: "מדרגות עמלה",
     levelsLead:
       "אלה מדרגות עמלה, לא שלושה מחירי מנוי. השיעור נקבע לפי מספר הלקוחות המשלמים הפעילים, על הכנסת מנוי זכאית שהתקבלה בפועל. לא רוכשים מדרגה.",
+    tierBands: [
+      { range: "עד 19 לקוחות משלמים פעילים", rate: "30%" },
+      { range: "מ־20 ועד 39 לקוחות משלמים פעילים", rate: "35%" },
+      { range: "מ־40 לקוחות משלמים פעילים", rate: "40%" },
+    ],
+    tierMove:
+      "השיעור עוקב אחרי המספר העדכני. הוא עולה במעבר לטווח הבא, ויורד כשהמספר יורד מתחת לטווח. נספרת רק הכנסת מנוי זכאית שהתקבלה בפועל, לפי ההסכם החתום.",
     customers: "לקוחות משלמים פעילים",
     oneTime: "10% עמלה על עסקאות חד־פעמיות זכאיות",
     eligibility: [
@@ -608,20 +635,21 @@ const COPY = {
       {
         key: "Reseller",
         title: "Reseller",
-        fee: "דמי הקמה וחודשי לפי המסלול שמונה בקטלוג.",
-        rate: "מודל markup-share לפי המסלול שמונה — לא טבלת המדרגות הבינלאומית. לפי הסכם בלבד.",
+        fee: "דמי הקמה ודמי חודש לפי המסלול שנקבע בהסכם.",
+        rate: "חלק מהתוספת בקטלוג, לפי המסלול שנקבע בהסכם. לא מדרגות העמלה שלמעלה. רק בהסכם חתום.",
         featured: false,
       },
     ],
     tracksTableTitle: "Affiliate · Business Partner · Reseller במבט אחד",
     tracksTable: {
+      name: "מסלול",
       fee: "דמי חברות",
       reward: "מודל תגמול",
       access: "גישה",
       rows: [
         ["Affiliate", "אין במסלול האחוזים", "כיום 15% ממכירות זכאיות לפי הקטלוג", "בדיקת מועמדות. בלי דמי חברות למרכז השותפים."],
         ["Business Partner", "499$ לחודש או 5,000$ לשנה אחרי אישור", "מדרגות 30% / 35% / 40% · 10% חד־פעמי", "מרכז השותפים אחרי הסכם ותשלום מאומת."],
-        ["Reseller", "דמי הקמה וחודשי לפי המסלול בקטלוג", "markup-share לפי המסלול שמונה — לא טבלת המדרגות הבינלאומית", "לפי הסכם. לא נבחר אוטומטית בעמוד הזה."],
+        ["Reseller", "דמי הקמה ודמי חודש לפי המסלול שנקבע בהסכם", "חלק מהתוספת בקטלוג. לא מדרגות העמלה שלמעלה", "רק בהסכם חתום. לא נבחר אוטומטית בעמוד הזה."],
       ],
     },
     plansTitle: "חברות בתוכנית",
@@ -630,11 +658,23 @@ const COPY = {
     best: "המסלול המשתלם",
     save: "חיסכון של $988 בשנה לעומת 12 תשלומים חודשיים.",
     saveMath: "שנים־עשר תשלומים חודשיים הם {monthlyYear}. החברות השנתית היא {annual}.",
-    monthlyPoints: ["חיוב חודשי", "בלי תשלום שנתי מראש", "אותן זכויות של שותף בינלאומי", "עמלה חוזרת על הכנסה זכאית שהתקבלה", "גישה למשאבי שותף זכאים כל עוד החברות פעילה"],
-    annualPoints: ["אותן זכויות של שותף בינלאומי", "עמלה חוזרת על הכנסה זכאית שהתקבלה", "גישה למשאבי שותף זכאים כל עוד החברות פעילה", "חיוב שנתי במחיר השנתי שפורסם"],
-    planNotes: ["הגשת הבקשה ללא תשלום", "תשלום נדרש רק אחרי אישור", "תשלום ידני מחוץ לאתר", "אין חיוב אוטומטי", "כפוף להסכם השותפות"],
-    noCharge: "העמוד הזה לא מתחיל חיוב.",
-    due: "אחרי האישור, ועד לתיעוד התשלום הידני, החברות נשארת payment_due.",
+    monthlyPoints: [
+      "חיוב חודשי של 499$. בלי תשלום שנתי מראש.",
+      "עמלה חוזרת של 30%, 35% או 40% על הכנסת מנוי זכאית שהתקבלה.",
+      "10% על עסקאות חד־פעמיות זכאיות.",
+      "מרכז השותפים אחרי הסכם חתום ותשלום שאומת.",
+      "CRM, WhatsApp Business API, קמפיינים במטא, אוטומציות ואתרים, כשההסכם מתיר.",
+      "חומרים שפורסמו לשותפים, ותמיכה בפלטפורמה ב־support@bizuply.com, כל עוד החברות פעילה.",
+    ],
+    annualPoints: [
+      "אותן הטבות של Business Partner: מרכז השותפים, המוצרים שההסכם מתיר, חומרים שפורסמו ותמיכה בפלטפורמה.",
+      "עמלה חוזרת של 30%, 35% או 40% על הכנסת מנוי זכאית שהתקבלה.",
+      "10% על עסקאות חד־פעמיות זכאיות.",
+      "חיוב שנתי של 5,000$.",
+    ],
+    planNotes: ["הגשת הבקשה ללא תשלום", "התשלום נדרש רק אחרי אישור", "תשלום ידני מחוץ לאתר", "אין חיוב אוטומטי", "כפוף להסכם השותפות"],
+    noCharge: "העמוד הזה אינו מתחיל חיוב.",
+    due: "אחרי האישור, ועד שהתשלום הידני מתועד, החברות עדיין אינה פעילה.",
     applyMonthly: "הגישו מועמדות לחברות חודשית",
     applyAnnual: "הגישו מועמדות לחברות שנתית",
     registerAfterApproval: "הרשמה מלאה (אחרי אישור)",
@@ -647,13 +687,13 @@ const COPY = {
     heroMediaCaption: "צילום מסך CRM מסביבת הדמו המורשית של Bizuply.",
     calcTitle: "מחשבון הכנסות",
     calcSimBadge: "המחשה בלבד",
-    calcCustomers: "מספר לקוחות פעילים",
+    calcCustomers: "לקוחות משלמים פעילים",
     calcPrice: "הכנסה חודשית ממוצעת ללקוח (דולר)",
     calcTier: "מדרגת עמלה",
     calcTierNote: "המדרגה נגזרת ממספר הלקוחות. בחירת מדרגה קובעת את מספר הלקוחות המתאים. היא אינה משנה את נוסחת החישוב.",
     calcOneTimeCount: "מספר עסקאות חד־פעמיות",
     calcOneTimeAvg: "סכום עסקה חד־פעמית ממוצעת (דולר)",
-    calcBilling: "החברות שנכללת ביתרה",
+    calcBilling: "מסלול החברות בחישוב היתרה",
     calcBillingMonthly: "חברות חודשית",
     calcBillingAnnual: "חברות שנתית",
     revenue: "הערכת הכנסת מנוי חודשית זכאית",
@@ -677,7 +717,7 @@ const COPY = {
     ],
     form: {
       title: "בקשת הצטרפות",
-      lead: "הגשה ללא תשלום. הבקשה נשמרת לבדיקה ב־Bizuply. זו לא אשרה ולא חיוב.",
+      lead: "ההגשה ללא תשלום. הבקשה נשמרת לבדיקה ב־Bizuply. היא אינה מאשרת את השותפות ואינה חיוב.",
       name: "שם מלא",
       company: "שם החברה",
       email: "אימייל עסקי",
@@ -723,20 +763,6 @@ const COPY = {
 } as const;
 
 type Copy = (typeof COPY)["en"];
-
-function Rich({ text }: { text: string }) {
-  const parts = text.split("payment_due");
-  return (
-    <>
-      {parts.map((part, index) => (
-        <span key={index}>
-          {index > 0 ? <span className="ip-token">payment_due</span> : null}
-          {part}
-        </span>
-      ))}
-    </>
-  );
-}
 
 function fill(template: string, values: Record<string, string>) {
   return Object.entries(values).reduce((text, [key, value]) => text.replace(`{${key}}`, value), template);
@@ -1025,6 +1051,17 @@ export default function PartnersRecruitment() {
             ))}
           </div>
           <p className="ip-onetime">{copy.oneTime}</p>
+          <div data-testid="tier-move">
+            <ul className="ip-tier-move">
+              {copy.tierBands.map((band) => (
+                <li key={band.range}>
+                  <span>{band.range}</span>
+                  <span className="ip-tier-rate" dir="ltr">{band.rate}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="ip-copy">{copy.tierMove}</p>
+          </div>
           <div className="ip-eligibility">
             {copy.eligibility.map(([title, body]) => (
               <div key={title}>
@@ -1054,7 +1091,7 @@ export default function PartnersRecruitment() {
               <caption className="ip-sr-only">{copy.tracksTableTitle}</caption>
               <thead>
                 <tr>
-                  <th scope="col">{copy.tracksTableTitle}</th>
+                  <th scope="col">{copy.tracksTable.name}</th>
                   <th scope="col">{copy.tracksTable.fee}</th>
                   <th scope="col">{copy.tracksTable.reward}</th>
                   <th scope="col">{copy.tracksTable.access}</th>
@@ -1141,9 +1178,7 @@ export default function PartnersRecruitment() {
               <li key={note}>{note}</li>
             ))}
             <li>{copy.noCharge}</li>
-            <li>
-              <Rich text={copy.due} />
-            </li>
+            <li>{copy.due}</li>
           </ul>
           <p className="ip-copy ip-territory-note">
             <strong>{copy.territoryTitle}.</strong> {copy.territoryLead} {copy.territories[0][1]} {copy.territories[1][1]}
@@ -1321,9 +1356,7 @@ export default function PartnersRecruitment() {
           {faq.map(([question, answer]) => (
             <details key={question}>
               <summary>{question}</summary>
-              <p>
-                <Rich text={answer} />
-              </p>
+              <p>{answer}</p>
             </details>
           ))}
         </div>

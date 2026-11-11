@@ -61,8 +61,14 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getAllByText(/30%/).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/10%/).length).toBeGreaterThan(0);
     expect(screen.getByText(/does not start a live charge/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Application is free/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/payment_due/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/The application is free/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/not yet active/i).length).toBeGreaterThan(0);
+    expect(screen.queryByText(/payment_due/)).not.toBeInTheDocument();
+    expect(screen.getByTestId("monthly-price-card")).toHaveTextContent(/Partner Center/);
+    expect(screen.getByTestId("monthly-price-card")).toHaveTextContent(/\$499/);
+    expect(screen.getByTestId("tier-move")).toHaveTextContent("1–19 active paying customers");
+    expect(screen.getByTestId("tier-move")).toHaveTextContent("30%");
+    expect(screen.getByTestId("tier-move")).toHaveTextContent(/drops below a band/);
     expect(
       screen.getByRole("heading", {
         level: 1,
@@ -139,7 +145,13 @@ describe("bizuply.com/partners recruitment", () => {
     expect(screen.getByTestId("international-monthly-price").textContent).toContain("$499");
     expect(screen.getByTestId("international-annual-price").textContent).toContain("$5,000");
     expect(screen.getByTestId("annual-savings").textContent).toContain("$988");
-    expect(screen.getAllByText(/הגשת הבקשה ללא תשלום|הגשת הבקשה היא ללא תשלום/).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/הגשת הבקשה ללא תשלום|ההגשה ללא תשלום/).length).toBeGreaterThan(0);
+    expect(screen.getByText(/החברות עדיין אינה פעילה/)).toBeInTheDocument();
+    expect(screen.queryByText(/payment_due/)).not.toBeInTheDocument();
+    expect(screen.getByTestId("monthly-price-card")).toHaveTextContent(/מרכז השותפים/);
+    expect(screen.getByTestId("tier-move")).toHaveTextContent("עד 19 לקוחות משלמים פעילים");
+    expect(screen.getByTestId("tier-move")).toHaveTextContent("30%");
+    expect(screen.getByTestId("compare-Reseller")).toHaveTextContent(/לא מדרגות העמלה שלמעלה/);
     expect(screen.getByTestId("compare-Affiliate")).toHaveTextContent(/15%/);
     expect(screen.getByTestId("product-meta-campaigns")).toHaveTextContent(/קמפיינים במטא/);
     expect(screen.getByTestId("product-meta-campaigns").querySelector("a")).toHaveAttribute(
