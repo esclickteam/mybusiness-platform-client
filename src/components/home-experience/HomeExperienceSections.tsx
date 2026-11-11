@@ -10,7 +10,7 @@ import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductThe
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t5";
+const FILM_VERSION = "t6";
 
 type FilmKey = keyof typeof films;
 

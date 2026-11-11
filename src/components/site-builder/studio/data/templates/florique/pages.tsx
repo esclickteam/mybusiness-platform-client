@@ -105,9 +105,9 @@ function Hero({ data }: { data: Record<string, any> }) {
         <span className="florique-petal absolute bottom-[18%] right-[38%] h-20 w-14 rounded-full bg-white/60 blur-sm" />
       </div>
       <div className="relative z-10 mx-auto grid min-h-[94svh] max-w-7xl items-center gap-10 px-5 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
-        <Reveal variant="right">
+        <Reveal variant="right" className="min-w-0 [container-type:inline-size]">
           <p className="inline-flex border border-[var(--line)] bg-white/62 px-5 py-2 text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{getValue(data, "heroEyebrow")}</p>
-          <h1 className="florique-script mt-7 text-[7.5rem] leading-[0.72] text-[var(--p)] md:text-[11rem] lg:text-[13rem]">
+          <h1 className="florique-script florique-hero-name mt-7 text-[var(--p)]">
             {getValue(data, "heroTitle")}
           </h1>
           <p className="mt-7 max-w-2xl text-2xl font-semibold leading-10 text-[var(--text)] md:text-4xl">{getValue(data, "heroSubtitle")}</p>

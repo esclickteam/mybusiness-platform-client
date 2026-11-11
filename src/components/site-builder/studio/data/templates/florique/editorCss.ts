@@ -25,6 +25,14 @@ export const floriqueEditorCss = `
   font-family: "Great Vibes", cursive;
   letter-spacing: 0;
 }
+[data-template-id="florique"] .florique-hero-name,
+[data-template-id="florique"] .florique-hero-name {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  line-height: 1.15;
+  font-size: clamp(3.05rem, 15cqi, 6.4rem);
+}
 [data-template-id="florique"] .florique-petal,
 [data-template-id="florique"] .florique-petal {
   animation: floriquePetal 10s ease-in-out infinite;

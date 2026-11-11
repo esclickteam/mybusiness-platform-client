@@ -79,6 +79,7 @@ const FILM_CSS = `
   .cookie-banner { display: none !important; }
   main[data-testid="business-dashboard-main"] { padding-top: 0 !important; }
   ${LANG === "en" ? `.af-builder::before { content: "Editing automations works best on a computer" !important; color: #92400e !important; }` : ""}
+  [data-testid="whatsapp-module-inbox"] .border-amber-200 { display: none !important; }
 `;
 await ctx.addInitScript((css) => {
   const install = () => {
@@ -92,7 +93,7 @@ await ctx.addInitScript((css) => {
   install();
   document.addEventListener("DOMContentLoaded", install);
 }, FILM_CSS);
-await ctx.addInitScript((lang) => {
+await ctx.addInitScript(({ lang, phone, name }) => {
   localStorage.setItem("i18nextLng", lang);
   localStorage.setItem("bizuply.lang", lang);
   localStorage.setItem("bizuply_lang_preference", lang);
@@ -180,15 +181,39 @@ await ctx.addInitScript((lang) => {
         if (next !== el.value) el.value = next;
       });
     }
-    document.querySelectorAll('[data-testid="whatsapp-module-inbox"] button').forEach((button) => {
+    const focusDigits = String(phone || "").replace(/\D/g, "");
+    const localDigits = focusDigits.startsWith("972") ? `0${focusDigits.slice(3)}` : "";
+    const list = document.querySelector('[data-testid="whatsapp-module-inbox"] > section');
+    list?.querySelectorAll("button").forEach((button) => {
       const text = button.innerText || "";
+      const digits = text.replace(/\D/g, "");
+      const mine = (focusDigits && digits.includes(focusDigits)) || (localDigits && digits.includes(localDigits)) || (name && text.includes(name));
       const { hebrew, latin } = counts(text);
-      const named = lang === "en" && (window.__filmHideNames || []).some((name) => name && text.includes(name));
-      const hide = lang === "en"
-        ? (counts(text).hebrew >= 2) || israeli(text) || /\bdemo\b/i.test(text) || named
-        : latin >= 12 && latin > hebrew;
+      const named = lang === "en" && (window.__filmHideNames || []).some((item) => item && text.includes(item));
+      const demoThread = /הדגמה|\bdemo\b/i.test(text);
+      const hide = !mine || (lang === "en"
+        ? (hebrew >= 2) || israeli(text) || demoThread || named
+        : demoThread || (latin >= 12 && latin > hebrew));
       paint(button, hide);
     });
+    if (lang === "he") {
+      document.querySelectorAll(".react-flow__node").forEach((node) => {
+        const flow = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+        while (flow.nextNode()) {
+          const value = flow.currentNode.nodeValue || "";
+          const next = value.replace(/\binterested\b/g, "מתעניין");
+          if (next !== value) flow.currentNode.nodeValue = next;
+        }
+      });
+      if (/\/automations\/?$/.test(location.pathname)) {
+        document.querySelectorAll("a, button, article, li").forEach((el) => {
+          const text = (el.innerText || "").trim();
+          if (!text || text.length > 220) return;
+          const { hebrew, latin } = counts(text);
+          if (latin >= 10 && latin > hebrew && /lead|appointment|reply|follow|elena|hours|tag|note/i.test(text)) paint(el, true);
+        });
+      }
+    }
   };
   const schedule = () => {
     if (queued) return;
@@ -201,7 +226,7 @@ await ctx.addInitScript((lang) => {
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
-}, LANG);
+}, { lang: LANG, phone: intlPhone(C.phone), name: C.name });
 await ctx.addCookies([{ name: "bizuply_tracking", value: "v2:none:2026-11-07", url: BASE }]);
 const page = await ctx.newPage();
 page.setDefaultTimeout(30000);
@@ -285,13 +310,13 @@ async function settle(ms = 600) { await page.waitForTimeout(ms); }
 async function goto(p, ready) {
   cut();
   await page.goto(dashboard(p), { waitUntil: "domcontentloaded", timeout: 90000 });
-  await rec.restart();
   await ready();
+  await rec.restart();
   await page.addStyleTag({ content: FILM_CSS }).catch(() => {});
   await hideAssistant();
   await page.getByRole("button", { name: /חיוניות בלבד|Essential cookies only|Solo cookies esenciales|Somente cookies essenciais|الضرورية רק|الضرورية فقط/ }).click({ timeout: 800 }).catch(() => {});
   await page.mouse.move(cur.x, cur.y);
-  await settle(700);
+  await settle(500);
 }
 
 /** Wait for a condition; if it takes longer than `grace` ms, the wait is cut from the film. */
@@ -389,9 +414,6 @@ log("viewport", vp);
 if (vp[0] !== CSS_W) fail(`viewport width ${vp[0]}`);
 if (DRY) C.name = process.env.DRY_NAME || "Dana Israeli";
 else if ((await leadRow().count()) > 0) fail(`customer ${C.name} already exists — pick a new customer`);
-await keep();
-await settle(900);
-cut();
 let hook = null;
 for (let attempt = 0; attempt < 3 && !hook; attempt++) {
   try {
@@ -409,21 +431,30 @@ for (let attempt = 0; attempt < 3 && !hook; attempt++) {
     await page.waitForTimeout(1500);
   }
 }
-await keep();
 const hookJson = await hook.json();
 if (hook.status !== 201 || !hookJson?.lead?._id) fail(`webhook ${hook.status} ${JSON.stringify(hookJson).slice(0, 300)}`);
 C.leadId = hookJson.lead._id;
 log("lead created", C.leadId, hookJson.lead.source);
-await settle(1600);
+await settle(800);
 const refresh = page.locator("button.crm-tool").filter({ has: page.locator("svg.lucide-refresh-cw") }).first();
 await to(refresh, { after: 200 });
-await waitOrCut(() => leadRow().waitFor({ timeout: 30000 }), { grace: 200, label: "row" });
-await settle(700);
+await leadRow().waitFor({ state: "visible", timeout: 30000 });
+await leadRow().locator("td").nth(1).evaluate((el) => {
+  const scroller = el.closest(".crm-leads-table");
+  if (!scroller) return;
+  const anchor = el.parentElement?.querySelector("td") || el;
+  const row = scroller.getBoundingClientRect();
+  const cell = anchor.getBoundingClientRect();
+  scroller.scrollLeft += cell.left - row.left - 4;
+});
+await settle(250);
+await keep();
+await settle(1100);
 await panLeadsTable();
 await to(leadRow().locator("td").nth(1), { click: false, pause: 500 });
 await to(leadRow().locator("td").nth(1), { after: 150 });
 await waitOrCut(cardReady, { grace: 120, label: "card" });
-await settle(1400);
+await settle(1100);
 await endChapter();
 
 /* ---------- 2. Customer management ---------- */
@@ -459,37 +490,85 @@ await endChapter();
 /* ---------- 3. WhatsApp ---------- */
 beginChapter("whatsapp");
 const waPhone = intlPhone(C.phone);
+const loadingLabel = LANG === "en" ? "Loading WhatsApp" : "טוען את וואטסאפ";
 await goto(`whatsapp/inbox?phone=${waPhone}`, async () => {
-  await page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first().waitFor({ timeout: 60000 });
+  const composer = page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first();
+  await composer.waitFor({ timeout: 60000 });
   await page.getByText(waPhone).first().waitFor({ timeout: 30000 });
-  await page.waitForTimeout(1500);
+  await page.waitForFunction((label) => !document.body.innerText.includes(label), loadingLabel, { timeout: 25000 });
+  await page.waitForTimeout(400);
 });
-await keep();
-await settle(900);
 const composer = page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first();
 await to(composer, { after: 200 });
 await typeText(C.reply);
-await settle(300);
+await settle(200);
 await to(page.getByRole("button", { name: L.reply, exact: true }), { click: !DRY, after: 200 });
 if (!DRY) {
-await page.getByText(C.reply.slice(0, 24)).first().waitFor({ timeout: 15000 });
-await settle(1800);
-const rj = replies[replies.length - 1];
-if (!rj?.demoSafe) fail(`reply not demo-safe: ${JSON.stringify(rj).slice(0, 300)}`);
-log("whatsapp reply demoSafe", rj.providerMessageId);
+  for (let i = 0; i < 40 && !replies.at(-1)?.demoSafe; i++) await page.waitForTimeout(100);
+  const rj = replies[replies.length - 1];
+  if (!rj?.demoSafe) fail(`reply not demo-safe: ${JSON.stringify(rj).slice(0, 300)}`);
+  log("whatsapp reply demoSafe", rj.providerMessageId);
 }
+const snippet = C.reply.slice(0, 24);
+await page.waitForFunction(({ label, text }) => {
+  const body = document.body.innerText || "";
+  if (body.includes(label)) return false;
+  const thread = document.querySelector("[data-testid='whatsapp-module-inbox']");
+  return Boolean(thread && thread.innerText.includes(text) && !thread.innerText.includes(label));
+}, { label: loadingLabel, text: snippet }, { timeout: 25000 });
+await page.waitForFunction(({ phone, text }) => {
+  const list = document.querySelector('[data-testid="whatsapp-module-inbox"] > section');
+  if (!list) return false;
+  return [...list.querySelectorAll("button")].some((button) => {
+    if (button.offsetParent === null) return false;
+    const body = button.innerText || "";
+    return body.replace(/\D/g, "").includes(phone) || body.includes(text);
+  });
+}, { phone: waPhone, text: snippet }, { timeout: 25000 });
+await page.evaluate(({ phone, text }) => {
+  const list = document.querySelector('[data-testid="whatsapp-module-inbox"] > section');
+  const button = [...(list?.querySelectorAll("button") || [])].find((el) => {
+    const body = el.innerText || "";
+    return body.replace(/\D/g, "").includes(phone) || body.includes(text);
+  });
+  button?.scrollIntoView({ block: "nearest" });
+}, { phone: waPhone, text: snippet });
+await page.evaluate((mobile) => {
+  const inbox = document.querySelector("[data-testid='whatsapp-module-inbox']");
+  if (!inbox) return;
+  if (mobile) {
+    let node = inbox;
+    while (node.parentElement && node.parentElement !== document.body) {
+      const parent = node.parentElement;
+      for (const child of [...parent.children]) {
+        if (child === node) break;
+        if (child.tagName === "STYLE" || child.tagName === "SCRIPT") continue;
+        child.style.setProperty("display", "none", "important");
+      }
+      node = parent;
+    }
+  }
+  inbox.scrollIntoView({ block: "start" });
+}, MOBILE);
+await page.getByText(snippet).last().evaluate((el) => el.scrollIntoView({ block: "center" }));
+await settle(500);
+await keep();
+await settle(2600);
 await endChapter();
 
 /* ---------- 4. Task & meeting ---------- */
 beginChapter("task");
-await goto("crm/leads", listReady);
-await keep();
-await settle(500);
+await goto("crm/leads", async () => {
+  await listReady();
+  await leadRow().waitFor({ state: "visible", timeout: 30000 });
+});
 await to(leadRow().locator("td").nth(1), { after: 150 });
-await waitOrCut(cardReady, { grace: 120, label: "card2" });
-await settle(700);
-await to(page.getByRole("button", { name: L.taskQuick, exact: true }), { after: 600 });
+await cardReady();
+await to(page.getByRole("button", { name: L.taskQuick, exact: true }), { after: 500 });
 const taskInput = page.locator(`input[placeholder^="${C.taskPlaceholder}"]`).first();
+await taskInput.waitFor({ state: "visible", timeout: 20000 });
+await settle(300);
+await keep();
 await to(taskInput, { after: 150 });
 await typeText(C.task);
 await settle(300);
@@ -521,15 +600,17 @@ await endChapter();
 
 /* ---------- 5. Automation ---------- */
 beginChapter("automation");
+const autoTitle = page.getByText(C.autoName).and(page.locator(":visible")).first();
 await goto("automations", async () => {
-  await page.getByText(C.autoName).and(page.locator(":visible")).first().waitFor({ timeout: 60000 });
+  await autoTitle.waitFor({ timeout: 60000 });
 });
+await to(autoTitle, { click: false, pause: 250 });
+await to(autoTitle, { after: 100 });
+await page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 });
+await page.locator(".react-flow__node").first().waitFor({ timeout: 30000 });
+await settle(500);
 await keep();
-await settle(700);
-await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { click: false, pause: 400 });
-await to(page.getByText(C.autoName).and(page.locator(":visible")).first(), { after: 100 });
-await waitOrCut(() => page.getByRole("button", { name: L.test, exact: true }).waitFor({ timeout: 60000 }).then(() => page.locator(".react-flow__node").first().waitFor()), { grace: 150, label: "editor" });
-await settle(1200);
+await settle(400);
 if (!MOBILE) {
 await to(page.locator(".react-flow__node").first(), { click: false, pause: 550 });
 await to(page.locator(".react-flow__node").nth(1), { click: false, pause: 350 });
@@ -552,14 +633,15 @@ await endChapter();
 
 /* ---------- 6. Wrap-up ---------- */
 beginChapter("done");
-await goto("crm/leads", listReady);
-await keep();
-await settle(600);
-await panLeadsTable();
-if (!MOBILE) await to(leadRow().locator("td").nth(4), { click: false, pause: 900 });
+await goto("crm/leads", async () => {
+  await listReady();
+  await leadRow().waitFor({ state: "visible", timeout: 30000 });
+});
 await to(leadRow().locator("td").nth(1), { after: 150 });
-await waitOrCut(cardReady, { grace: 120, label: "card3" });
-await settle(900);
+await cardReady();
+await settle(400);
+await keep();
+await settle(500);
 await to(page.getByRole("button", { name: L.notesTab, exact: true }), { after: 500 });
 await settle(1700);
 await to(page.getByRole("button", { name: L.tasksTab, exact: true }), { after: 500 });
