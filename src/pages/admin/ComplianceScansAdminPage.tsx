@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 type Alert = { level: "warning" | "severe" | "stopped"; message: string };
 
@@ -84,13 +85,15 @@ const DISCOVERY_COPY = {
 type DiscoveryPage = { name: string; url: string; type: string; status: string; selectable?: boolean; instances?: number };
 type Discovery = { id: string; kind?: string; status: string; percent: number; partial?: boolean; discovered?: number; unique?: number; duplicates?: number; inaccessible?: number; publicPages?: number; internalPages?: number; dynamicTypes?: number; scanPages?: number; recommended?: { packageId: string; usd: number; pages: number; extra?: boolean; scanPages?: number } | null; pages?: DiscoveryPage[]; error?: string; reportReady?: boolean; pagesAllowed?: number; findings?: Array<{ title: string; url: string; outcome: string }> };
 
-function OwnerPilot() {
+function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
   const [offer, setOffer] = useState<{ packages: Array<{ id: string; pages: number; usd: number; available: boolean; reason: string }> } | null>(null);
   const [run, setRun] = useState<Discovery | null>(null);
   const [discovery, setDiscovery] = useState<Discovery | null>(null);
   const [picked, setPicked] = useState<string[]>([]);
   const [url, setUrl] = useState("");
-  const [paths, setPaths] = useState("/account /login");
+  const [exclude, setExclude] = useState("");
+  const [step, setStep] = useState(1);
+  const [extension, setExtension] = useState<{ eligible?: boolean; reason?: string; charged?: boolean; combined?: { publicScore?: number | null } } | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [consent, setConsent] = useState(false);
@@ -142,7 +145,7 @@ function OwnerPilot() {
       method: "POST",
       headers: headers(),
       credentials: "include",
-      body: JSON.stringify({ url, paths: paths.split(/\s+/).filter(Boolean), username, password, locale, consent, loginUrl }),
+      body: JSON.stringify({ url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), username, password, locale, consent, loginUrl }),
     });
     const data = await response.json().catch(() => ({}));
     setPassword("");
@@ -152,11 +155,13 @@ function OwnerPilot() {
   async function submit(event: FormEvent) {
     event.preventDefault();
     setNote("");
+    let loginUrl = "";
+    try { loginUrl = `${new URL(url.startsWith("http") ? url : `https://${url}`).origin}/login`; } catch { setNote(copy.url); return; }
     const response = await fetch("/compliance/api/admin/owner-pilot", {
       method: "POST",
       headers: headers(),
       credentials: "include",
-      body: JSON.stringify({ url, packageId, paths: paths.split(/\s+/).filter(Boolean), username, password, locale, loginUrl: "", discoveryId: discovery?.id, selected: picked }),
+      body: JSON.stringify({ url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), packageId, username, password, locale, loginUrl, discoveryId: discovery?.id, selected: picked }),
     });
     const data = await response.json().catch(() => ({}));
     setPassword("");
@@ -177,26 +182,57 @@ function OwnerPilot() {
     link.click();
     URL.revokeObjectURL(link.href);
   }
+  const steps = locale === "en" ? ["Site", "Access", "Discovery", "Package", "Report"] : locale === "es" ? ["Sitio", "Acceso", "Descubrimiento", "Paquete", "Informe"] : locale === "pt-BR" ? ["Site", "Acesso", "Descoberta", "Pacote", "Relatório"] : locale === "ar" ? ["الموقع", "الدخول", "الاكتشاف", "الحزمة", "التقرير"] : ["אתר", "גישה", "גילוי", "חבילה", "דוח"];
+  const excludeLabel = locale === "en" ? "Areas to skip (optional)" : locale === "es" ? "Zonas que no se escanean (opcional)" : locale === "pt-BR" ? "Áreas para não varrer (opcional)" : locale === "ar" ? "مناطق لا تُفحص (اختياري)" : "אזורים שלא לסרוק (אופציונלי)";
+  const excludeNote = {
+    he: "ברירת המחדל היא סריקת כל העמודים הנגישים למשתמש הבדיקה באתר שאישרת. אם יש אזורים שאינך רוצה שנבדוק, אפשר לציין אותם כאן. אזורים מסוכנים, פעולות שמשנות מידע וכתובות שאינן מורשות יישארו חסומים תמיד.",
+    en: "By default every page the test user can open on the approved site is included. List areas to skip. Dangerous actions, data changes and unapproved addresses stay blocked.",
+    es: "De forma predeterminada se incluyen las páginas que el usuario de prueba puede abrir en el sitio aprobado. Se pueden excluir zonas. Las acciones peligrosas y las direcciones no autorizadas siguen bloqueadas.",
+    "pt-BR": "Por padrão, entram as páginas que o usuário de teste pode abrir no site aprovado. Dá para excluir áreas. Ações perigosas e endereços não autorizados continuam bloqueados.",
+    ar: "الافتراضي هو فحص كل الصفحات المتاحة لمستخدم الاختبار في الموقع الذي وافقت عليه. يمكن استثناء مناطق. تبقى الإجراءات الخطرة والعناوين غير المصرح بها ممنوعة.",
+  }[locale];
+  const selectable = (discovery?.pages || []).filter((item) => item.selectable);
   return (
-    <form onSubmit={submit} className="compliance-admin__table" autoComplete="off" dir={locale === "he" || locale === "ar" ? "rtl" : "ltr"}>
+    <form onSubmit={submit} className="scan-wizard" autoComplete="off" dir={locale === "he" || locale === "ar" ? "rtl" : "ltr"}>
       <h2>{copy.title}</h2>
       <p>{copy.intro}</p>
-      {note ? <p>{note}</p> : null}
-      <label>{copy.url}<input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://example.com/account" /></label>
-      <label>{copy.paths}<input value={paths} onChange={(event) => setPaths(event.target.value)} /></label>
-      <label>{copy.language}
-        <select value={locale} onChange={(event) => setLocale(event.target.value as keyof typeof DISCOVERY_COPY)}>
-          <option value="he">עברית</option>
-          <option value="en">English</option>
-          <option value="es">Español</option>
-          <option value="pt-BR">Português</option>
-          <option value="ar">العربية</option>
-        </select>
-      </label>
-      <label>{copy.user}<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="off" /></label>
-      <label>{copy.password}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" /></label>
-      <label><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} /> {copy.consent}</label>
-      <button type="button" disabled={!consent || !url || !username || !password} onClick={discoverPages}>{copy.discover}</button>
+      <ol className="scan-steps">
+        {steps.map((label, index) => <li key={label}><button type="button" aria-current={step === index + 1 ? "step" : undefined} onClick={() => setStep(index + 1)}>{index + 1}. {label}</button></li>)}
+      </ol>
+      {note ? <p className="compliance-admin__error">{note}</p> : null}
+      {step === 1 ? <>
+        <label>{copy.url}<input value={url} onChange={(event) => setUrl(event.target.value)} placeholder="https://example.com/account" /></label>
+        <label>{locale === "en" ? "Existing report" : "דוח קיים"}
+          <select value="" onChange={(event) => {
+            const row = scans.find((item) => item.id === event.target.value);
+            if (!row) return;
+            setUrl(row.url);
+            fetch(`/compliance/api/admin/owner-pilot/extensions/${row.id}`, { headers: headers(), credentials: "include" }).then((response) => response.json()).then(setExtension).catch(() => setExtension(null));
+          }}>
+            <option value="">{locale === "en" ? "New site" : "אתר חדש"}</option>
+            {scans.filter((item) => item.status === "completed").slice(0, 20).map((item) => <option key={item.id} value={item.id}>{item.host}</option>)}
+          </select>
+        </label>
+        {extension ? <p>{extension.eligible ? (locale === "en" ? "This report can add an internal scan. The public report is not charged again." : "אפשר להוסיף סריקה פנימית לדוח זה בלי לשלם שוב על הסריקה הציבורית.") : extension.reason} · {extension.charged === false ? "$0" : ""}</p> : null}
+        <label>{copy.language}
+          <select value={locale} onChange={(event) => setLocale(event.target.value as keyof typeof DISCOVERY_COPY)}>
+            <option value="he">עברית</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="pt-BR">Português</option>
+            <option value="ar">العربية</option>
+          </select>
+        </label>
+      </> : null}
+      {step === 2 ? <>
+        <label>{copy.user}<input value={username} onChange={(event) => setUsername(event.target.value)} autoComplete="off" /></label>
+        <label>{copy.password}<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} autoComplete="new-password" /></label>
+        <label className="scan-check"><input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} /><span>{copy.consent}</span></label>
+        <label>{excludeLabel}<input value={exclude} onChange={(event) => setExclude(event.target.value)} placeholder="/billing /private" /></label>
+        <p>{excludeNote}</p>
+      </> : null}
+      {step === 3 ? <>
+      <button type="button" className="scan-primary" disabled={!consent || !url || !username || !password || discovery?.status === "running"} onClick={discoverPages}>{discovery?.status === "running" ? copy.progress : copy.discover}</button>
       {discovery?.status === "running" ? <p>{copy.progress} · {discovery.percent}%</p> : null}
       {discovery && discovery.status !== "running" ? (
         <div>
@@ -205,7 +241,9 @@ function OwnerPilot() {
           <p>{copy.note}</p>
           {discovery.recommended ? <p>{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd} · {discovery.scanPages}</p> : null}
           {discovery.recommended?.extra ? <p>{copy.extra}</p> : null}
-          <table>
+          <p>{picked.length} / {selectable.length}</p>
+          <button type="button" onClick={() => setPicked(selectable.map((item) => item.url).slice(0, discovery?.recommended?.extra ? 100 : discovery?.recommended?.pages || 100))}>{locale === "en" ? "Select allowed pages" : "בחירת העמודים המותרים"}</button>
+          <table className="scan-pages">
             <thead><tr><th></th><th>{copy.name}</th><th>{copy.address}</th><th>{copy.type}</th><th>{copy.status}</th></tr></thead>
             <tbody>
               {(discovery.pages || []).map((item) => (
@@ -221,15 +259,26 @@ function OwnerPilot() {
           </table>
         </div>
       ) : null}
-      <label>חבילה
+      </> : null}
+      {step === 4 ? <>
+      <label>{copy.recommend}
         <select value={packageId} onChange={(event) => setPackageId(event.target.value)}>
           {(offer?.packages || [{ id: "pages10", pages: 10, usd: 19, available: true, reason: "" }]).map((item) => (
             <option key={item.id} value={item.id} disabled={!item.available}>{packName(item.id)} · {item.pages} · ${item.usd}{item.available ? "" : " · —"}</option>
           ))}
         </select>
       </label>
-      <button type="submit" disabled={!discovery || discovery.status === "running" || !picked.length}>{copy.start}</button>
-      {run ? (
+      {discovery?.recommended ? <p className="scan-recommend">{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd}</p> : null}
+      <button type="submit" className="scan-primary" disabled={!discovery || discovery.status === "running" || !picked.length}>{copy.start}</button>
+      </> : null}
+      {step === 5 ? (
+        <section className="scan-recommend">
+          <h3>{locale === "en" ? "Compliance report" : "דוח תאימות"}</h3>
+          <p>{locale === "en" ? "Public score stays as stored." : "הציון הציבורי נשאר כפי שנשמר."} {extension?.combined?.publicScore ?? "—"}</p>
+          <p>{locale === "en" ? "The internal score is separate. Public, internal and combined PDFs stay separate." : "הציון הפנימי נפרד. אפשר להוריד PDF ציבורי, PDF פנימי ו־PDF משולב."}</p>
+        </section>
+      ) : null}
+      {step === 5 && run ? (
         <div>
           <p>{run.unique} / {run.pagesAllowed} · {run.percent}% · {run.status}</p>
           <button type="button" onClick={() => fetch(`/compliance/api/admin/owner-pilot/${run.id}/cancel`, { method: "POST", headers: headers(), credentials: "include" }).then((response) => response.json()).then(setRun)}>{copy.stop}</button>
@@ -237,6 +286,10 @@ function OwnerPilot() {
           <ul>{(run.findings || []).map((item) => <li key={`${item.url}-${item.title}`}>{item.outcome} · {item.title} · {item.url}</li>)}</ul>
         </div>
       ) : null}
+      <div className="scan-nav">
+        <button type="button" disabled={step === 1} onClick={() => setStep((current) => Math.max(1, current - 1))}>{locale === "en" ? "Back" : "חזרה"}</button>
+        {step < 5 ? <button type="button" onClick={() => setStep((current) => Math.min(5, current + 1))}>{locale === "en" ? "Next" : "המשך"}</button> : null}
+      </div>
     </form>
   );
 }
@@ -316,6 +369,8 @@ export default function ComplianceScansAdminPage() {
   const [summary, setSummary] = useState<{ total: number; free: number; paid: number; completed: number; failed: number } | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [history, setHistory] = useState<HistoryRow[]>([]);
+  const [params, setParams] = useSearchParams();
+  const section = params.get("section") === "internal" || params.get("section") === "orders" ? params.get("section") : "scans";
   const pageSize = 25;
 
   async function load(nextPage = page, event?: FormEvent) {
@@ -407,7 +462,12 @@ export default function ComplianceScansAdminPage() {
         <h1>סריקות ודוחות</h1>
         <p>הצפייה כאן שמורה לבעלת המערכת ולמנהלים עם הרשאת compliance.reports. פתיחת דוח אינה רושמת רכישה.</p>
       </header>
-      {usage ? (
+      <nav className="scan-tabs" aria-label="סריקות">
+        <button type="button" aria-current={section === "scans" ? "page" : undefined} onClick={() => setParams({})}>כל הסריקות</button>
+        <button type="button" aria-current={section === "internal" ? "page" : undefined} onClick={() => setParams({ section: "internal" })}>סריקות פנימיות</button>
+        <button type="button" aria-current={section === "orders" ? "page" : undefined} onClick={() => setParams({ section: "orders" })}>ניהול הזמנות</button>
+      </nav>
+      {section === "scans" && usage ? (
         <section className="compliance-admin__usage" aria-label="צריכת AI היום">
           <div>
             <h2>צריכת AI היום</h2>
@@ -457,7 +517,13 @@ export default function ComplianceScansAdminPage() {
           ) : null}
         </section>
       ) : null}
-      <form className="compliance-admin__filters" onSubmit={(event) => load(1, event)}>
+      {section === "internal" ? <OwnerPilot scans={rows} /> : null}
+      {section === "orders" ? <>
+      <h2>סריקה מורחבת — אזורים פנימיים</h2>
+      <p>בסיסית $19 עד 10 עמודים, מורחבת $39 עד 30, מתקדמת $79 עד 100. משתמש בדיקה אחד ותפקיד אחד. השירות כבוי והגבייה סגורה. הרשימה מציגה הזמנות בלי סיסמה. הרחבה לדוח ששולם אינה גובה שוב את מחיר הדוח הציבורי.</p>
+      <InternalOrders />
+      </> : null}
+      {section === "scans" ? <form className="compliance-admin__filters" onSubmit={(event) => load(1, event)}>
         <label>
           <span>שם, אימייל או דומיין</span>
           <input value={q} onChange={(event) => setQ(event.target.value)} />
@@ -505,9 +571,9 @@ export default function ComplianceScansAdminPage() {
           </select>
         </label>
         <button type="submit">חיפוש</button>
-      </form>
-      {error ? <p className="compliance-admin__error" role="alert">{error}</p> : null}
-      {loaded && summary ? (
+      </form> : null}
+      {section === "scans" && error ? <p className="compliance-admin__error" role="alert">{error}</p> : null}
+      {section === "scans" && loaded && summary ? (
         <div className="compliance-admin__counts">
           <p><span>סך כל הסריקות</span><b>{summary.total}</b></p>
           <p><span>חינמיות</span><b>{summary.free}</b></p>
@@ -516,8 +582,8 @@ export default function ComplianceScansAdminPage() {
           <p><span>נכשלו</span><b>{summary.failed}</b></p>
         </div>
       ) : null}
-      <p className="compliance-admin__meta">{loading ? "טוען…" : loaded ? `${total} סריקות בסינון הנוכחי` : "הרשימה לא נטענה"}</p>
-      <div className="compliance-admin__table">
+      {section === "scans" ? <p className="compliance-admin__meta">{loading ? "טוען…" : loaded ? `${total} סריקות בסינון הנוכחי` : "הרשימה לא נטענה"}</p> : null}
+      {section === "scans" ? <div className="compliance-admin__table">
         <table>
           <thead>
             <tr>
@@ -568,13 +634,9 @@ export default function ComplianceScansAdminPage() {
             ))}
           </tbody>
         </table>
-      </div>
-      <OwnerPilot />
-      <h2>סריקה מורחבת — אזורים פנימיים</h2>
-      <p>בסיסית $19 עד 10 עמודים, מורחבת $39 עד 30, מתקדמת $79 עד 100. משתמש בדיקה אחד ותפקיד אחד. השירות כבוי והגבייה סגורה. הרשימה מציגה הזמנות בלי סיסמה.</p>
-      <InternalOrders />
-      <h2>מנויים</h2>
-      <div className="compliance-admin__table">
+      </div> : null}
+      {section === "orders" ? <h2>מנויים</h2> : null}
+      {section === "orders" ? <div className="compliance-admin__table">
         <table>
           <thead>
             <tr>
@@ -598,12 +660,12 @@ export default function ComplianceScansAdminPage() {
             ))}
           </tbody>
         </table>
-      </div>
-      <div className="compliance-admin__pager">
+      </div> : null}
+      {section === "scans" ? <div className="compliance-admin__pager">
         <button type="button" disabled={page <= 1} onClick={() => load(page - 1)}>הקודם</button>
         <span>{page} / {pages}</span>
         <button type="button" disabled={page >= pages} onClick={() => load(page + 1)}>הבא</button>
-      </div>
+      </div> : null}
       {consent && (
         <div className="compliance-admin__dialog" role="dialog" aria-modal="true">
           <article>
@@ -660,8 +722,23 @@ export default function ComplianceScansAdminPage() {
         .compliance-admin__alert--warning { background: #fff6d8; color: #6a4b00; }
         .compliance-admin__alert--severe { background: #ffe8d6; color: #8a2e00; }
         .compliance-admin__alert--stopped { background: #fde2e6; color: #8d1d32; }
+        .scan-tabs, .scan-steps, .scan-nav { display: flex; flex-wrap: wrap; gap: 8px; }
+        .scan-tabs button, .scan-steps button { background: #fff; color: #24315c; }
+        .scan-tabs button[aria-current="page"], .scan-steps button[aria-current="step"] { background: #24315c; color: #fff; }
+        .scan-wizard { display: grid; gap: 14px; max-width: 720px; background: #fff; border: 1px solid #d7dce8; padding: 20px; }
+        .scan-wizard h2 { margin: 0; color: #24315c; }
+        .scan-wizard label { max-width: 460px; }
+        .scan-wizard input, .scan-wizard select { width: 100%; padding: 0 12px; }
+        .scan-check { display: flex !important; grid-template-columns: none; align-items: flex-start; gap: 8px; max-width: 520px; }
+        .scan-check input { width: 18px; min-width: 18px; min-height: 18px; margin-top: 3px; }
+        .scan-primary { background: #5b4bdb; color: #fff; min-height: 44px; padding: 0 18px; }
+        .scan-recommend { background: #eef2ff; padding: 12px; margin: 0; }
+        .scan-pages { min-width: 0; }
+        .scan-pages input { width: 18px; min-height: 18px; }
         @media (max-width: 800px) {
           .compliance-admin__filters, .compliance-admin__counts, .compliance-admin__stats { grid-template-columns: 1fr; }
+          .scan-wizard { max-width: none; padding: 14px; }
+          .scan-tabs { overflow-x: auto; }
         }
       `}</style>
     </section>
