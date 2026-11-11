@@ -6,25 +6,10 @@ import { HOME_FAQ, HOME_FAQ_TITLE } from "../../lib/homeFaq.mjs";
 import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
-import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import films from "./theaterFilms.json";
+import ProductScene, { type SceneId } from "./ProductScenes";
+import ProductTheater, { type TheaterStep } from "./ProductTheater";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t6";
-
-type FilmKey = keyof typeof films;
-
-function filmFor(key: FilmKey): TheaterFilm {
-  const spec = films[key];
-  return {
-    src: `${MEDIA}/theater/${key}.mp4?v=${FILM_VERSION}`,
-    poster: `${MEDIA}/theater/${key}.webp?v=${FILM_VERSION}`,
-    width: spec.width,
-    height: spec.height,
-    duration: spec.duration,
-    chapters: spec.chapters,
-  };
-}
 
 function faqLocale(language: string) {
   const value = language.toLowerCase();
@@ -168,32 +153,10 @@ function Waves({ className = "" }: { className?: string }) {
   );
 }
 
-function Shot({
-  name,
-  alt,
-  caption,
-  priority = false,
-}: {
-  name: string;
-  alt: string;
-  caption?: string;
-  priority?: boolean;
-}) {
-  const { language } = useCopy();
-  const lang = language.startsWith("he") ? "he" : "en";
+function SceneFrame({ scene, caption }: { scene: SceneId; caption?: string }) {
   return (
-    <figure className="ht-shot" data-reveal>
-      <picture>
-        <source media="(max-width: 760px)" srcSet={`${MEDIA}/screens/${lang}-mobile-${name}.webp`} width={900} height={1948} />
-        <img
-          src={`${MEDIA}/screens/${lang}-desktop-${name}.webp`}
-          alt={alt}
-          width={2400}
-          height={1500}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-        />
-      </picture>
+    <figure className="ps-figure" data-reveal>
+      <ProductScene scene={scene} />
       {caption ? <figcaption>{caption}</figcaption> : null}
     </figure>
   );
@@ -262,6 +225,7 @@ export default function HomeExperienceSections() {
         <WhatsApp />
         <Automations />
         <Campaigns />
+        <Appointments />
         <AiTools />
         <Websites />
         <Benefits />
@@ -288,9 +252,8 @@ function useSteps(): TheaterStep[] {
 }
 
 function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
-  const { cine, language } = useCopy();
+  const { cine } = useCopy();
   const hero = cine.hero;
-  const lang = language.startsWith("he") ? "he" : "en";
   const hot = Math.max(0, String(hero.lineTwo).trim().split(/\s+/).length - 1);
   const steps = useSteps();
   return (
@@ -335,8 +298,6 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
       <div className="hx-hero-stage" id="product-theater">
         <div className="hx-hero-stage-inner">
           <ProductTheater
-            desktop={filmFor(`${lang}-desktop` as FilmKey)}
-            mobile={filmFor(`${lang}-mobile` as FilmKey)}
             steps={steps}
             seekRequest={seek}
             labels={{
@@ -356,6 +317,8 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
 
 function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
   const { text } = useCopy();
+  const [active, setActive] = useState(0);
+  const scenes = ["lead", "crm", "whatsapp", "task", "automation"] as const;
   const stages = [
     [text("הפנייה נכנסת", "The enquiry arrives"), text("מטופס באתר, מקמפיין Meta או מחיבור לידים — עם המקור שלה.", "From a site form, a Meta campaign or a lead connection — with its source."), 0],
     [text("מסדרים ב־CRM", "Organize it in the CRM"), text("כרטיס לקוח, סטטוס, הערות והיסטוריה במקום אחד.", "A customer record, status, notes and history in one place."), 1],
@@ -376,18 +339,30 @@ function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
             )}
           </p>
         </div>
-        <ol className="ht-flow">
-          {stages.map(([title, body, chapter], index) => (
-            <li key={title} data-reveal style={{ transitionDelay: `${index * 70}ms` }}>
-              <span className="ht-flow-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <button type="button" className="ht-link-btn" onClick={() => onWatch(chapter)}>
-                {text("לצפות בשלב הזה", "Watch this step")}
-              </button>
-            </li>
-          ))}
-        </ol>
+        <div className="ht-how-layout">
+          <div className="ht-how-stage" data-reveal>
+            <ProductScene scene={scenes[active]} />
+          </div>
+          <ol className="ht-flow ht-flow-rail">
+            {stages.map(([title, body, chapter], index) => (
+              <li
+                key={title}
+                className={index === active ? "is-active" : undefined}
+                data-reveal
+                style={{ transitionDelay: `${index * 70}ms` }}
+                onMouseEnter={() => setActive(index)}
+                onFocus={() => setActive(index)}
+              >
+                <span className="ht-flow-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+                <button type="button" className="ht-link-btn" onClick={() => onWatch(chapter)}>
+                  {text("לצפות בשלב הזה", "Watch this step")}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );
@@ -411,7 +386,7 @@ function Crm() {
         text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
       ]}
       link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
-      shot={<Shot name="crm-card" alt={text("כרטיס לקוח בתוך BizUply עם סטטוס, משימות ופעילות", "A customer record in BizUply with status, tasks and activity")} />}
+      shot={<SceneFrame scene="crm" />}
     />
   );
 }
@@ -438,7 +413,7 @@ function WhatsApp() {
         "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
       )}
       link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
-      shot={<Shot name="whatsapp" alt={text("תיבת השיחות של WhatsApp בתוך BizUply", "The WhatsApp conversation inbox in BizUply")} />}
+      shot={<SceneFrame scene="inbox" />}
     />
   );
 }
@@ -461,7 +436,7 @@ function Automations() {
       ]}
       note={text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}
       link={["/automations", text("להכיר את האוטומציות", "Explore automations")]}
-      shot={<Shot name="automation" alt={text("עורך האוטומציות עם תוצאות הרצת בדיקה", "The automation editor with test-run results")} caption={text("הרצת בדיקה אמיתית בעורך האוטומציות", "A real test run in the automation editor")} />}
+      shot={<SceneFrame scene="automation" caption={text("הרצת בדיקה אמיתית בעורך האוטומציות", "A real test run in the automation editor")} />}
     />
   );
 }
@@ -485,14 +460,36 @@ function Campaigns() {
       ]}
       note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
       link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
-      shot={<Shot name="campaigns" alt={text("סקירת קמפיינים של Meta בתוך BizUply", "Meta campaign overview in BizUply")} />}
+      shot={<SceneFrame scene="meta" />}
+    />
+  );
+}
+
+function Appointments() {
+  const { text } = useCopy();
+  return (
+    <Feature
+      id="appointments"
+      eyebrow={text("יומן פגישות", "Appointments")}
+      title={text("הפגישות של היום, ביומן אחד.", "The day's bookings, on one calendar.")}
+      lead={text(
+        "מגדירים שעות לכל יום, מוסיפים שירות עם משך ומחיר, ופותחים מועדים של 15 דקות שהלקוח יכול לקבוע בעמוד ציבורי. הפגישה נשמרת על כרטיס הלקוח.",
+        "Set hours for each weekday, add services with a duration and a price, and open 15-minute slots a customer can book on a public page. The appointment stays on the customer record.",
+      )}
+      points={[
+        text("שעות הפעילות קובעות את המועדים הפנויים", "Business hours shape the open slots"),
+        text("כל תור שומר את השירות, המחיר, סטטוס התשלום והערה", "Each booking keeps the service, price, payment status and a note"),
+        text("הפגישה מחוברת לכרטיס הלקוח", "The appointment is tied to the customer"),
+      ]}
+      note={text("קביעת תורים ללקוחות היא חלק ממסלול העסק.", "Customer booking is part of the business plan.")}
+      link={["/appointments", text("להכיר את היומן", "Explore appointments")]}
+      shot={<SceneFrame scene="calendar" />}
     />
   );
 }
 
 function AiTools() {
-  const { text, language } = useCopy();
-  const lang = language.startsWith("he") ? "he" : "en";
+  const { text } = useCopy();
   const tools = [
     {
       title: text("היועץ העסקי", "Business Advisor"),
@@ -502,9 +499,6 @@ function AiTools() {
       ),
       to: "/register",
       cta: text("לנסות בחשבון חינמי", "Try it on a free account"),
-      image: `${MEDIA}/screens/${lang}-desktop-ai.webp`,
-      mobile: `${MEDIA}/screens/${lang}-mobile-ai.webp`,
-      alt: text("היועץ העסקי בתוך BizUply", "The Business Advisor in BizUply"),
     },
     {
       title: text("אוטומציות AI", "AI automations"),
@@ -514,9 +508,6 @@ function AiTools() {
       ),
       to: "/automations",
       cta: text("להכיר את האוטומציות", "Explore automations"),
-      image: `${MEDIA}/screens/${lang}-desktop-ai-auto.webp`,
-      mobile: `${MEDIA}/screens/${lang}-mobile-ai-auto.webp`,
-      alt: text("תבניות אוטומציות AI בתוך BizUply", "AI automation templates in BizUply"),
     },
   ];
   return (
@@ -532,15 +523,12 @@ function AiTools() {
             )}
           </p>
         </div>
+        <div className="ht-ai-stage" data-reveal>
+          <ProductScene scene="advisor" />
+        </div>
         <div className="ht-ai-grid">
           {tools.map((tool) => (
             <article className="ht-card ht-ai-card" key={tool.title} data-reveal>
-              <figure className="ht-shot ht-shot-flat">
-                <picture>
-                  <source media="(max-width: 760px)" srcSet={tool.mobile} width={900} height={1948} />
-                  <img src={tool.image} alt={tool.alt} width={2400} height={1500} loading="lazy" decoding="async" />
-                </picture>
-              </figure>
               <div className="ht-card-body">
                 <h3>{tool.title}</h3>
                 <p>{tool.body}</p>

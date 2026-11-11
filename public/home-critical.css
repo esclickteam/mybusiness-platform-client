@@ -624,7 +624,7 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
 .ht-stage {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 5 / 2;
   background: #f5f6fa;
 }
 .ht-stage picture {

@@ -1,13 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
-
-export type TheaterFilm = {
-  src: string;
-  poster: string;
-  width: number;
-  height: number;
-  duration: number;
-  chapters: { id: string; at: number; seek: number }[];
-};
+import { useTranslation } from "react-i18next";
+import ProductScene, { type SceneId } from "./ProductScenes";
 
 export type TheaterStep = { id: string; label: string; title: string; body: string };
 
@@ -20,7 +13,15 @@ type Labels = {
   step: string;
 };
 
-const MOBILE_QUERY = "(max-width: 760px)";
+const STEP_MS = 5600;
+const SCENE: Record<string, SceneId> = {
+  lead: "lead",
+  crm: "crm",
+  whatsapp: "whatsapp",
+  task: "task",
+  automation: "automation",
+  done: "done",
+};
 
 function useMedia(query: string) {
   const [match, setMatch] = useState(() =>
@@ -36,175 +37,91 @@ function useMedia(query: string) {
   return match;
 }
 
-function chapterAt(film: TheaterFilm, time: number) {
-  let index = 0;
-  film.chapters.forEach((chapter, i) => {
-    if (time + 0.05 >= chapter.at) index = i;
-  });
-  return index;
-}
-
 export default function ProductTheater({
-  desktop,
-  mobile,
   steps,
   labels,
   seekRequest,
 }: {
-  desktop: TheaterFilm;
-  mobile: TheaterFilm;
   steps: TheaterStep[];
   labels: Labels;
   /** Bumped by "watch this step" links elsewhere on the page. */
   seekRequest?: { index: number; nonce: number } | null;
 }) {
-  const narrow = useMedia(MOBILE_QUERY);
+  const { i18n } = useTranslation();
+  const narrow = useMedia("(max-width: 760px)");
   const reduced = useMedia("(prefers-reduced-motion: reduce)");
-  const film = narrow ? mobile : desktop;
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const tabsRef = useRef<HTMLDivElement | null>(null);
   const userPaused = useRef(false);
   const inView = useRef(false);
+  const activeRef = useRef(0);
+  const startedAt = useRef(0);
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [ready, setReady] = useState(false);
-  const activeRef = useRef(0);
+  const lang = (i18n.language || "en").toLowerCase().startsWith("he") ? "he" : "en";
+  const poster = `/demo-media/home/theater/${lang}-${narrow ? "mobile" : "desktop"}.webp?v=t6`;
 
-  const paintProgress = useCallback(() => {
-    const video = videoRef.current;
+  const paint = useCallback((index: number, local: number) => {
     const tabs = tabsRef.current;
-    if (!video || !tabs) return;
-    const time = video.currentTime;
-    const index = chapterAt(film, time);
-    const start = film.chapters[index].at;
-    const end = film.chapters[index + 1]?.at ?? film.duration;
-    const local = Math.min(1, Math.max(0, (time - start) / Math.max(0.1, end - start)));
+    if (!tabs) return;
     tabs.querySelectorAll<HTMLElement>("[data-step]").forEach((node, i) => {
-      node.style.setProperty("--fill", i < index ? "1" : i === index ? local.toFixed(4) : "0");
+      const fill = i < index ? 1 : i === index ? local : 0;
+      node.style.setProperty("--fill", fill.toFixed(4));
     });
-    if (index !== activeRef.current) {
-      activeRef.current = index;
-      setActive(index);
-    }
-  }, [film]);
-
-  useEffect(() => {
-    if (!playing) return undefined;
-    let frame = 0;
-    const loop = () => {
-      paintProgress();
-      frame = requestAnimationFrame(loop);
-    };
-    frame = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(frame);
-  }, [paintProgress, playing]);
-
-  const play = useCallback(() => {
-    const video = videoRef.current;
-    if (!video) return;
-    void video.play().catch(() => setPlaying(false));
-  }, []);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return undefined;
-    setReady(false);
-    activeRef.current = 0;
-    setActive(0);
-    video.load();
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
-    const onLoaded = () => {
-      setReady(true);
-      paintProgress();
-      if (inView.current && !userPaused.current && !reduced) play();
-    };
-    const onEnded = () => {
-      video.currentTime = 0;
-      if (!userPaused.current) play();
-    };
-    video.addEventListener("play", onPlay);
-    video.addEventListener("pause", onPause);
-    video.addEventListener("loadeddata", onLoaded);
-    video.addEventListener("ended", onEnded);
-    video.addEventListener("timeupdate", paintProgress);
-    return () => {
-      video.removeEventListener("play", onPlay);
-      video.removeEventListener("pause", onPause);
-      video.removeEventListener("loadeddata", onLoaded);
-      video.removeEventListener("ended", onEnded);
-      video.removeEventListener("timeupdate", paintProgress);
-    };
-  }, [film.src, paintProgress, play, reduced]);
-
-  useEffect(() => {
-    const node = rootRef.current;
-    const video = videoRef.current;
-    if (!node || !video) return undefined;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        inView.current = Boolean(entry?.isIntersecting);
-        if (!inView.current) video.pause();
-        else if (!userPaused.current && !reduced && video.readyState >= 2) play();
-      },
-      { threshold: 0.4 },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [play, reduced]);
-
-  const freezeFrame = useCallback(() => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    if (!video || !canvas || video.readyState < 2) return false;
-    const rect = video.getBoundingClientRect();
-    const scale = Math.min(2, window.devicePixelRatio || 1);
-    canvas.width = Math.max(1, Math.round(rect.width * scale));
-    canvas.height = Math.max(1, Math.round(rect.height * scale));
-    const context = canvas.getContext("2d");
-    if (!context) return false;
-    try {
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
-    } catch {
-      return false;
-    }
-    canvas.classList.remove("is-fading");
-    canvas.classList.add("is-on");
-    return true;
   }, []);
 
   const goTo = useCallback(
     (index: number, { resume = true }: { resume?: boolean } = {}) => {
-      const video = videoRef.current;
-      if (!video) return;
-      const count = film.chapters.length;
+      const count = steps.length || 1;
       const next = ((index % count) + count) % count;
-      const frozen = freezeFrame();
-      const release = () => {
-        const canvas = canvasRef.current;
-        if (!canvas || !frozen) return;
-        requestAnimationFrame(() => {
-          canvas.classList.add("is-fading");
-          canvas.classList.remove("is-on");
-        });
-      };
-      video.addEventListener("seeked", release, { once: true });
-      video.currentTime = film.chapters[next].seek;
       activeRef.current = next;
       setActive(next);
-      paintProgress();
-      if (resume) {
-        userPaused.current = false;
-        play();
-      }
+      startedAt.current = performance.now();
+      paint(next, 0);
+      if (resume && !reduced && inView.current && !userPaused.current) setPlaying(true);
     },
-    [film, freezeFrame, paintProgress, play],
+    [paint, reduced, steps.length],
   );
 
   useEffect(() => {
+    if (!playing || reduced) return undefined;
+    startedAt.current = performance.now();
+    let frame = 0;
+    const loop = (now: number) => {
+      const local = Math.min(1, (now - startedAt.current) / STEP_MS);
+      const index = activeRef.current;
+      paint(index, local);
+      if (local >= 1) {
+        const next = (index + 1) % (steps.length || 1);
+        activeRef.current = next;
+        setActive(next);
+        startedAt.current = now;
+        paint(next, 0);
+      }
+      frame = requestAnimationFrame(loop);
+    };
+    frame = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(frame);
+  }, [paint, playing, reduced, steps.length]);
+
+  useEffect(() => {
+    const node = rootRef.current;
+    if (!node) return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inView.current = Boolean(entry?.isIntersecting);
+        if (!inView.current) setPlaying(false);
+        else if (!userPaused.current && !reduced) setPlaying(true);
+      },
+      { threshold: 0.45 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [reduced]);
+
+  useEffect(() => {
     if (!seekRequest) return;
+    userPaused.current = false;
     goTo(seekRequest.index);
   }, [goTo, seekRequest]);
 
@@ -217,15 +134,13 @@ export default function ProductTheater({
   }, [active, reduced]);
 
   const toggle = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (video.paused) {
-      userPaused.current = false;
-      play();
-    } else {
+    if (playing) {
       userPaused.current = true;
-      video.pause();
+      setPlaying(false);
+      return;
     }
+    userPaused.current = false;
+    setPlaying(true);
   };
 
   const onTabKey = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -239,11 +154,13 @@ export default function ProductTheater({
     else if (event.key === "End") target = steps.length - 1;
     if (target < 0) return;
     event.preventDefault();
+    userPaused.current = false;
     goTo(target);
     tabsRef.current?.querySelector<HTMLButtonElement>(`[data-step="${target}"]`)?.focus();
   };
 
   const step = steps[active] || steps[0];
+  const scene = SCENE[step?.id || "lead"] || "lead";
 
   return (
     <div className="ht-theater" ref={rootRef} role="region" aria-label={labels.region}>
@@ -260,7 +177,10 @@ export default function ProductTheater({
               tabIndex={index === active ? 0 : -1}
               className={`ht-tab${index === active ? " is-active" : ""}${index < active ? " is-done" : ""}`}
               data-step={index}
-              onClick={() => goTo(index)}
+              onClick={() => {
+                userPaused.current = false;
+                goTo(index);
+              }}
               onKeyDown={(event) => onTabKey(event, index)}
             >
               <span className="ht-tab-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
@@ -291,48 +211,16 @@ export default function ProductTheater({
           </button>
         </div>
       </div>
-      <div
-        className={`ht-stage${ready ? " is-ready" : ""}`}
-        id="ht-stage"
-        role="tabpanel"
-        aria-labelledby={`ht-tab-${step.id}`}
-      >
-        <img
-          className="ht-poster"
-          src={film.poster}
-          alt=""
-          width={film.width}
-          height={film.height}
-          fetchPriority="high"
-          decoding="async"
-        />
-        <video
-          ref={videoRef}
-          className="ht-video"
-          muted
-          playsInline
-          preload="auto"
-          poster={film.poster}
-          width={film.width}
-          height={film.height}
-          aria-label={labels.region}
-          onClick={toggle}
-        >
-          <source src={film.src} type="video/mp4" />
-        </video>
-        <canvas ref={canvasRef} className="ht-freeze" aria-hidden="true" />
-        {!playing && ready ? (
-          <button type="button" className="ht-big-play" onClick={toggle} aria-label={labels.play}>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path className="ht-fill" d="M8 5l11 7-11 7z" /></svg>
-          </button>
-        ) : null}
+      <div className="ht-stage is-ready" id="ht-stage" role="tabpanel" aria-labelledby={step ? `ht-tab-${step.id}` : undefined}>
+        <img className="ps-hold" src={poster} alt="" width={16} height={16} decoding="async" />
+        <ProductScene scene={scene} fit />
       </div>
       <div className="ht-caption" aria-live="polite">
         <p className="ht-caption-step">
           {labels.step.replace("{n}", String(active + 1)).replace("{total}", String(steps.length))}
         </p>
-        <h3>{step.title}</h3>
-        <p>{step.body}</p>
+        <h3>{step?.title}</h3>
+        <p>{step?.body}</p>
       </div>
     </div>
   );
