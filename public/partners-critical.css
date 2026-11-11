@@ -1,16 +1,13 @@
-/* First paint for /partners — white enterprise canvas before Vite CSS. */
+/* First paint for /partners — indigo hero before the app stylesheet. */
 html.bizuply-partners,
-html.bizuply-partners body {
-  margin: 0;
-  min-height: 100%;
-  background: #ffffff;
-  color: #0b1220;
-  font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
-}
-
+html.bizuply-partners body,
 html.bizuply-partners #root,
 html.bizuply-partners #initial-bg {
-  background: #ffffff !important;
+  margin: 0;
+  min-height: 100%;
+  background: #1e1b4b;
+  color: #0b1220;
+  font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
 }
 
 html.bizuply-partners *,
@@ -19,146 +16,152 @@ html.bizuply-partners *::after {
   box-sizing: border-box;
 }
 
-.ip-paint {
+.ipartner {
   min-height: 100vh;
-  color: #0b1220;
   background: #ffffff;
+  color: #0b1220;
+  font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
 }
 
-.ip-paint__hero {
-  width: min(1180px, calc(100% - 2.5rem));
-  margin: 0 auto;
-  padding: 56px 0 36px;
+.ip-wrap,
+.ip-wrap-wide {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin-inline: auto;
 }
 
-.ip-paint__kicker {
+.ip-hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  padding: 56px 0 80px;
+  background:
+    radial-gradient(820px 460px at 100% -8%, rgba(96, 165, 250, 0.42), transparent 62%),
+    radial-gradient(640px 420px at -12% 110%, rgba(196, 181, 253, 0.38), transparent 58%),
+    linear-gradient(148deg, #1e1b4b 0%, #312e81 46%, #4c1d95 82%, #1e40af 140%);
+}
+
+.ip-kicker {
   margin: 0;
-  color: #5b21b6;
-  font-size: 0.84rem;
+  color: #ddd6fe;
+  font-size: 0.78rem;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.ip-paint__hero h1 {
-  margin: 18px 0 0;
-  font-size: clamp(2.4rem, 5.5vw, 4.2rem);
-  line-height: 1.05;
-  letter-spacing: -0.04em;
-  max-width: 14ch;
+.ip-hero h1 {
+  margin: 14px 0 0;
+  color: #fff;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
   font-weight: 800;
+  max-width: 12ch;
 }
 
-.ip-paint__sub {
-  margin: 20px 0 0;
-  max-width: 40rem;
-  font-size: clamp(1.05rem, 2vw, 1.25rem);
-  line-height: 1.55;
-  color: #526072;
-  font-weight: 600;
+.ip-sub {
+  margin: 16px 0 0;
+  color: #fff;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 750;
+  line-height: 1.35;
 }
 
-.ip-paint__actions {
+.ip-lead {
+  margin: 14px 0 0;
+  max-width: 38rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.ip-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 24px;
 }
 
-.ip-paint__btn {
+.ip-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 50px;
-  padding: 0 24px;
-  border-radius: 2px;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 0;
   font-weight: 800;
   text-decoration: none;
   border: 1px solid transparent;
 }
 
-.ip-paint__btn-primary {
-  background: #4c1d95;
+.ip-hero .ip-btn-primary {
+  background: #fff;
+  color: #1e1b4b;
+}
+
+.ip-hero .ip-btn-ghost {
+  background: transparent;
   color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
 }
 
-.ip-paint__btn-ghost {
-  background: #fff;
-  color: #0b1220;
-  border-color: rgba(15, 23, 42, 0.16);
-}
-
-[dir="rtl"] .ip-paint__hero h1 {
-  max-width: none;
-}
-
-.ip-paint__compare-title {
-  margin: 36px 0 0;
-  color: #5b21b6;
-  font-size: 0.84rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.ip-paint__compare {
+.ip-hero-facts {
   display: grid;
-  gap: 0;
-  margin-top: 14px;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  gap: 10px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.ip-paint__compare-card {
-  background: #fff;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.1);
-  border-radius: 0;
-  padding: 20px 18px;
-}
-
-.ip-paint__compare-card:last-child {
-  border-bottom: 0;
-}
-
-.ip-paint__compare-card h2 {
-  margin: 0 0 8px;
-  font-size: 1.15rem;
-  max-width: none;
-  letter-spacing: -0.02em;
-}
-
-.ip-paint__compare-card p {
-  margin: 6px 0 0;
-  color: #526072;
-  line-height: 1.55;
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.ip-paint__compare-card--featured {
-  background: #faf7ff;
-  box-shadow: inset 4px 0 0 #5b21b6;
-}
-
-[dir="rtl"] .ip-paint__compare-card--featured {
-  box-shadow: inset -4px 0 0 #5b21b6;
-}
-
-.ip-paint__compare-note {
-  margin: 14px 0 0;
-  color: #526072;
+.ip-hero-facts li {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
   font-size: 0.92rem;
-  line-height: 1.55;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
-@media (min-width: 720px) {
-  .ip-paint__compare {
-    grid-template-columns: 1fr 1fr;
+.ip-signals {
+  display: grid;
+  gap: 12px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ip-signals li {
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+}
+.ip-signals strong {
+  display: block;
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.ip-signals span {
+  display: block;
+  margin-top: 8px;
+  color: #fff;
+  font-weight: 800;
+}
+
+[dir="rtl"] .ip-hero h1 { max-width: none; }
+
+@media (min-width: 1080px) {
+  .ip-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+    gap: 48px;
+    align-items: center;
   }
-  .ip-paint__compare-card {
-    border-bottom: 0;
-    border-inline-end: 1px solid rgba(15, 23, 42, 0.1);
-  }
-  .ip-paint__compare-card:last-child {
-    border-inline-end: 0;
-  }
+  .ip-signals { margin-top: 0; }
+}
+
+@media (max-width: 719px) {
+  .ip-btn { width: 100%; }
 }

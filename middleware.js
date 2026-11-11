@@ -949,7 +949,7 @@ async function handleMarketingDocument(request) {
       const htmlClass = isHome
         ? ' class="bizuply-home hx-preview" style="background:#ffffff"'
         : isPartners
-          ? ' class="bizuply-partners" style="background:#f7f5fd"'
+          ? ' class="bizuply-partners" style="background:#1e1b4b"'
           : "";
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,

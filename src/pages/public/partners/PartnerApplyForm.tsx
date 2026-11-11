@@ -15,14 +15,42 @@ export const PARTNER_TRACK_OPTIONS = [
 
 export type PartnerTrackOption = (typeof PARTNER_TRACK_OPTIONS)[number];
 
+const DIAL_CODES = [
+  "+1",
+  "+44",
+  "+61",
+  "+49",
+  "+33",
+  "+34",
+  "+39",
+  "+31",
+  "+971",
+  "+966",
+  "+972",
+  "+91",
+  "+55",
+  "+52",
+  "+27",
+  "+65",
+  "+81",
+  "+82",
+  "+86",
+  "+90",
+  "+7",
+];
+
 type FormState = {
   name: string;
   company: string;
   email: string;
+  dialCode: string;
   phone: string;
   country: string;
   website: string;
   partnershipType: PartnerTrackOption | "";
+  activity: string;
+  experience: string;
+  customers: string;
   message: string;
   privacyAccepted: boolean;
   marketingOptIn: boolean;
@@ -35,10 +63,15 @@ type FormCopy = {
   company: string;
   email: string;
   phone: string;
+  dialCode: string;
   country: string;
   website: string;
   websiteOptional: string;
   track: string;
+  activity: string;
+  experience: string;
+  customersLabel: string;
+  customersOptional: string;
   about: string;
   submit: string;
   sending: string;
@@ -61,14 +94,36 @@ const EMPTY: FormState = {
   name: "",
   company: "",
   email: "",
+  dialCode: "",
   phone: "",
   country: "",
   website: "",
   partnershipType: "Business Partner",
+  activity: "",
+  experience: "",
+  customers: "",
   message: "",
   privacyAccepted: false,
   marketingOptIn: false,
 };
+
+/** Extra answers stay inside the existing message field. The payload keys do not change. */
+function composedMessage(form: FormState) {
+  const lines = [form.message.trim()];
+  if (form.activity.trim()) lines.push(`Field of activity: ${form.activity.trim()}`);
+  if (form.experience.trim()) lines.push(`Prior sales or partnership experience: ${form.experience.trim()}`);
+  if (form.customers.trim()) lines.push(`Existing business customers: ${form.customers.trim()}`);
+  return lines.filter(Boolean).join("\n\n").slice(0, 4000);
+}
+
+function composedPhone(dialCode: string, phone: string) {
+  const trimmed = phone.trim();
+  if (!trimmed) return "";
+  if (trimmed.startsWith("+")) return trimmed.slice(0, 40);
+  const code = dialCode.trim();
+  if (!code) return trimmed.slice(0, 40);
+  return `${code}${trimmed.replace(/^0+/, "")}`.slice(0, 40);
+}
 
 function validate(form: FormState, copy: FormCopy): Errors {
   const errors: Errors = {};
@@ -84,6 +139,8 @@ function validate(form: FormState, copy: FormCopy): Errors {
   if (!form.partnershipType || !PARTNER_TRACK_OPTIONS.includes(form.partnershipType)) {
     errors.partnershipType = copy.requiredHint;
   }
+  if (!form.activity.trim()) errors.activity = copy.requiredHint;
+  if (!form.experience.trim()) errors.experience = copy.requiredHint;
   if (!form.message.trim()) errors.message = copy.requiredHint;
   if (!form.privacyAccepted) errors.privacyAccepted = copy.requiredHint;
   return errors;
@@ -159,11 +216,11 @@ export default function PartnerApplyForm({
         name: form.name.trim(),
         company: form.company.trim(),
         email: form.email.trim(),
-        phone: form.phone.trim(),
+        phone: composedPhone(form.dialCode, form.phone),
         country: form.country.trim(),
         website: form.website.trim(),
         partnershipType: form.partnershipType,
-        message: form.message.trim(),
+        message: composedMessage(form),
         pageUrl,
         locale,
         privacyAccepted: true,
@@ -273,25 +330,6 @@ export default function PartnerApplyForm({
           ) : null}
         </label>
         <label>
-          {copy.phone}
-          <input
-            id={`${id}-phone`}
-            name="phone"
-            type="tel"
-            autoComplete="tel"
-            inputMode="tel"
-            value={form.phone}
-            aria-invalid={errors.phone ? true : undefined}
-            aria-describedby={errors.phone ? `${id}-phone-error` : undefined}
-            onChange={(e) => update("phone", e.target.value)}
-          />
-          {errors.phone ? (
-            <span className="ip-field-error" id={`${id}-phone-error`} role="alert">
-              {errors.phone}
-            </span>
-          ) : null}
-        </label>
-        <label>
           {copy.country}
           <input
             id={`${id}-country`}
@@ -308,7 +346,45 @@ export default function PartnerApplyForm({
             </span>
           ) : null}
         </label>
-        <label>
+        <div className="ip-phone-row">
+          <label>
+            {copy.dialCode}
+            <select
+              id={`${id}-dialCode`}
+              name="dialCode"
+              value={form.dialCode}
+              onChange={(e) => update("dialCode", e.target.value)}
+            >
+              <option value="">{copy.dialCode}</option>
+              {DIAL_CODES.map((code) => (
+                <option key={code} value={code}>
+                  {code}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            {copy.phone}
+            <input
+              id={`${id}-phone`}
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
+              dir="ltr"
+              value={form.phone}
+              aria-invalid={errors.phone ? true : undefined}
+              aria-describedby={errors.phone ? `${id}-phone-error` : undefined}
+              onChange={(e) => update("phone", e.target.value)}
+            />
+            {errors.phone ? (
+              <span className="ip-field-error" id={`${id}-phone-error`} role="alert">
+                {errors.phone}
+              </span>
+            ) : null}
+          </label>
+        </div>
+        <label className="ip-apply-span">
           {copy.website} <span className="ip-optional">{copy.websiteOptional}</span>
           <input
             id={`${id}-website`}
@@ -317,6 +393,7 @@ export default function PartnerApplyForm({
             inputMode="url"
             autoComplete="url"
             placeholder="https://"
+            dir="ltr"
             value={form.website}
             onChange={(e) => update("website", e.target.value)}
           />
@@ -340,6 +417,49 @@ export default function PartnerApplyForm({
           {errors.partnershipType ? (
             <span className="ip-field-error" id={`${id}-partnershipType-error`} role="alert">
               {errors.partnershipType}
+            </span>
+          ) : null}
+        </label>
+        <label>
+          {copy.activity}
+          <input
+            id={`${id}-activity`}
+            name="activity"
+            value={form.activity}
+            aria-invalid={errors.activity ? true : undefined}
+            aria-describedby={errors.activity ? `${id}-activity-error` : undefined}
+            onChange={(e) => update("activity", e.target.value)}
+          />
+          {errors.activity ? (
+            <span className="ip-field-error" id={`${id}-activity-error`} role="alert">
+              {errors.activity}
+            </span>
+          ) : null}
+        </label>
+        <label>
+          {copy.customersLabel} <span className="ip-optional">{copy.customersOptional}</span>
+          <input
+            id={`${id}-customers`}
+            name="customers"
+            inputMode="numeric"
+            value={form.customers}
+            onChange={(e) => update("customers", e.target.value)}
+          />
+        </label>
+        <label className="ip-apply-span">
+          {copy.experience}
+          <textarea
+            id={`${id}-experience`}
+            name="experience"
+            rows={3}
+            value={form.experience}
+            aria-invalid={errors.experience ? true : undefined}
+            aria-describedby={errors.experience ? `${id}-experience-error` : undefined}
+            onChange={(e) => update("experience", e.target.value)}
+          />
+          {errors.experience ? (
+            <span className="ip-field-error" id={`${id}-experience-error`} role="alert">
+              {errors.experience}
             </span>
           ) : null}
         </label>

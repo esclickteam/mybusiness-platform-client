@@ -431,6 +431,8 @@ export type AdminPartnerRow = {
   billingInterval?: "monthly" | "annual";
   pendingBillingInterval?: "monthly" | "annual" | null;
   expectedMembershipAmountUsd?: number;
+  membershipMonthlyUsd?: number;
+  membershipAnnualUsd?: number;
   openMembershipCharge?: {
     amountUsd: number;
     interval?: "monthly" | "annual";
