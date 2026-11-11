@@ -41,6 +41,39 @@ function fmtPct(ratio: number | null | undefined) {
   return `${(Number(ratio) * 100).toFixed(2)}%`;
 }
 
+function whyLines(row: any, data: any) {
+  const planner = data?.sources?.keywordPlanner;
+  const consoleSource = data?.sources?.searchConsole;
+  const lines: string[] = [];
+  lines.push(
+    row.volumeVerified
+      ? `נפח: ${row.volumeLabelHe} · Keyword Planner · ${fmtDate(planner?.syncedAt)}`
+      : "נפח לא אומת"
+  );
+  lines.push(
+    `מגמה: ${row.trend?.wordHe || "לא נמדד"}${row.trend?.spanHe ? ` · ${row.trend.spanHe}` : ""}`
+  );
+  if (row.languageFit?.labelHe) lines.push(row.languageFit.labelHe);
+  const range = consoleSource?.startDate
+    ? `${consoleSource.startDate} עד ${consoleSource.endDate}`
+    : null;
+  if (row.gsc && (row.gsc.impressions != null || row.gsc.position != null || row.gsc.ctr != null)) {
+    lines.push(
+      `חשיפות: ${row.gsc.impressions ?? "—"} · מיקום: ${row.gsc.position ?? "—"} · CTR: ${fmtPct(row.gsc.ctr)} · Search Console${range ? ` · ${range}` : ""}`
+    );
+  } else {
+    lines.push(range ? `אין הופעה ב־Search Console · ${range}` : "אין הופעה ב־Search Console");
+  }
+  lines.push(`URL נוכחי: ${row.currentUrl || "—"}`);
+  lines.push(`URL יעד: ${row.targetUrl || "—"}`);
+  if (row.currentUrl && row.targetUrl && row.currentUrl !== row.targetUrl) {
+    lines.push("ה־URL הנוכחי אינו היעד");
+  }
+  if (row.cannibalization) lines.push("קניבליזציה קיימת");
+  lines.push(`פעולה: ${row.actionHe}${row.targetUrl ? ` ${row.targetUrl}` : ""}`);
+  return lines;
+}
+
 function bidLabel(row: any) {
   if (row.lowTopOfPageBid == null && row.highTopOfPageBid == null) {
     return "Google לא החזיר";
@@ -188,35 +221,102 @@ export default function KeywordResearchPanel({
         </div>
       </div>
 
-      <div className="geo-card">
-        <h3>10 מילות המפתח המבוקשות ביותר</h3>
-        <ol className="geo-keyword-top">
-          {(data?.top10 || []).map((row: any, index: number) => (
-            <li key={row.rawKeyword}>
-              <span>{index + 1}. {row.keyword}</span>
-              <strong>{row.volumeLabelHe}</strong>
-              {row.action === "competitor_skip" ? (
-                <em>מותג מתחרה</em>
-              ) : null}
-            </li>
-          ))}
-        </ol>
-        {!data?.top10?.length && !loading ? <p className="geo-note">אין עדיין נפח מאומת.</p> : null}
+      <div className="geo-keyword-legend">
+        <p>
+          <strong>נפח חיפוש</strong>
+          כמה פעמים הביטוי מחופש בישראל לפי Google Keyword Planner.
+        </p>
+        <p>
+          <strong>הזדמנות</strong>
+          כמה כדאי ל{data?.brand?.name || "מותג"} להשקיע בביטוי, לפי נפח, מיקום, התאמה וכוונה. רשימת הנפח אינה רשימת הביצוע.
+        </p>
       </div>
 
-      <div className="geo-card">
-        <h3>Top 10 הזדמנויות למותג</h3>
-        <p className="geo-note">הדירוג פנימי: נפח, מיקום, התאמה, כוונה, תחרות, עמוד קיים וקניבליזציה. הוא אינו נפח חיפוש.</p>
-        <ol className="geo-keyword-opps">
-          {(data?.opportunities || []).map((row: any) => (
-            <li key={row.rawKeyword}>
-              <strong>{row.keyword}</strong>
-              <span>נפח {row.volumeLabelHe}</span>
-              <span>{row.actionHe}</span>
-              <span>{row.targetUrl || "אין עמוד יעד"}</span>
-            </li>
-          ))}
-        </ol>
+      <div className="geo-keyword-highlights">
+        <section className="geo-card geo-keyword-panel">
+          <h3>10 מילות המפתח המבוקשות ביותר</h3>
+          <p className="geo-keyword-caption">לפי נפח Keyword Planner. לא לפי הזדמנות.</p>
+          {data?.top10?.length ? (
+            <div className="geo-table-wrap geo-keyword-compact-wrap">
+              <table className="geo-table geo-keyword-compact">
+                <thead>
+                  <tr>
+                    <th>מיקום</th>
+                    <th>מילת מפתח</th>
+                    <th>נפח חודשי</th>
+                    <th>תחרות</th>
+                    <th>מגמה</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {(data.top10 || []).map((row: any, index: number) => (
+                    <tr key={row.rawKeyword} className={row.action === "competitor_skip" ? "is-competitor" : ""}>
+                      <td className="geo-num">{index + 1}</td>
+                      <td>
+                        {row.keyword}
+                        {row.action === "competitor_skip" ? (
+                          <span className="geo-badge geo-badge-competitor_skip">מותג מתחרה</span>
+                        ) : null}
+                      </td>
+                      <td className="geo-num geo-volume">{row.volumeLabelHe}</td>
+                      <td>{row.competitionHe || "—"}</td>
+                      <td>{row.action === "competitor_skip" ? "מותג מתחרה" : row.trend?.wordHe || "—"}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : loading ? null : (
+            <p className="geo-note">אין עדיין נפח מאומת.</p>
+          )}
+        </section>
+
+        <section className="geo-card geo-keyword-panel">
+          <h3>Top 10 הזדמנויות למותג</h3>
+          <p className="geo-keyword-caption">לפי ציון הזדמנות, לא לפי נפח.</p>
+          {data?.opportunities?.length ? (
+            <div className="geo-table-wrap geo-keyword-compact-wrap">
+              <table className="geo-table geo-keyword-compact geo-keyword-opps">
+                <thead>
+                  <tr>
+                    <th>מילת מפתח</th>
+                    <th>נפח</th>
+                    <th>מצב נוכחי</th>
+                    <th>URL יעד</th>
+                    <th>פעולה</th>
+                    <th>ציון</th>
+                  </tr>
+                </thead>
+                {(data.opportunities || []).map((row: any) => (
+                  <tbody key={row.rawKeyword}>
+                    <tr>
+                      <td>{row.keyword}</td>
+                      <td className="geo-num geo-volume">{row.volumeLabelHe}</td>
+                      <td>{row.currentStateHe}</td>
+                      <td className="geo-url">{row.targetUrl || "—"}</td>
+                      <td><span className={`geo-badge geo-badge-${row.action}`}>{row.actionHe}</span></td>
+                      <td className="geo-num geo-score">{row.opportunity?.score}</td>
+                    </tr>
+                    <tr className="geo-keyword-why-row">
+                      <td colSpan={6}>
+                        <details>
+                          <summary>למה זה מומלץ?</summary>
+                          <ul>
+                            {whyLines(row, data).map((line: string) => (
+                              <li key={line}>{line}</li>
+                            ))}
+                          </ul>
+                        </details>
+                      </td>
+                    </tr>
+                  </tbody>
+                ))}
+              </table>
+            </div>
+          ) : loading ? null : (
+            <p className="geo-note">אין עדיין הזדמנויות עם נפח מאומת.</p>
+          )}
+        </section>
       </div>
 
       <div className="geo-keyword-filters">
@@ -310,7 +410,7 @@ export default function KeywordResearchPanel({
         </label>
       </div>
 
-      <div className="geo-table-wrap">
+      <div className="geo-table-wrap geo-keyword-table-desktop">
         <table className="geo-table geo-keyword-table">
           <thead>
             <tr>
@@ -337,21 +437,25 @@ export default function KeywordResearchPanel({
             {visible.map((row: any) => (
               <tr key={row.rawKeyword} className={row.action === "competitor_skip" ? "is-competitor" : ""}>
                 <td>{row.keyword}</td>
-                <td>{row.volumeLabelHe}</td>
+                <td className="geo-num geo-volume">{row.volumeLabelHe}</td>
                 <td>{row.competitionHe || "—"}</td>
-                <td>{row.competitionIndex ?? "—"}</td>
-                <td>{row.trend?.labelHe || "—"}</td>
-                <td>{bidLabel(row)}</td>
+                <td className="geo-num">{row.competitionIndex ?? "—"}</td>
+                <td>{row.trend?.wordHe || "—"}</td>
+                <td className="geo-num geo-bid">{bidLabel(row)}</td>
                 <td>{row.intentHe}</td>
                 <td>{row.appearsInGoogle ? "כן" : "לא"}</td>
-                <td>{row.gsc?.impressions ?? "—"}</td>
-                <td>{row.gsc?.clicks ?? "—"}</td>
-                <td>{fmtPct(row.gsc?.ctr)}</td>
-                <td>{row.gsc?.position ?? "—"}</td>
-                <td>{row.currentUrl || "—"}</td>
-                <td>{row.targetUrl || "—"}</td>
-                <td>{row.cannibalization ? "כן" : "לא"}</td>
-                <td>{row.actionHe}</td>
+                <td className="geo-num">{row.gsc?.impressions ?? "—"}</td>
+                <td className="geo-num">{row.gsc?.clicks ?? "—"}</td>
+                <td className="geo-num">{fmtPct(row.gsc?.ctr)}</td>
+                <td className="geo-num">{row.gsc?.position ?? "—"}</td>
+                <td className="geo-url">{row.currentUrl || "—"}</td>
+                <td className="geo-url">{row.targetUrl || "—"}</td>
+                <td>
+                  <span className={`geo-badge ${row.cannibalization ? "geo-badge-yes" : "geo-badge-no"}`}>
+                    {row.cannibalization ? "כן" : "לא"}
+                  </span>
+                </td>
+                <td><span className={`geo-badge geo-badge-${row.action}`}>{row.actionHe}</span></td>
                 <td>
                   <button type="button" className="geo-btn geo-btn-ghost" onClick={() => setPlan(row)} disabled={!row.contentPlan}>
                     תוכנית תוכן
@@ -361,6 +465,26 @@ export default function KeywordResearchPanel({
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="geo-keyword-cards">
+        {visible.map((row: any) => (
+          <article key={row.rawKeyword} className="geo-keyword-card">
+            <header>
+              <strong>{row.keyword}</strong>
+              <span className="geo-volume">{row.volumeLabelHe}</span>
+            </header>
+            <p>{row.competitionHe || "תחרות לא נמדדה"} · {row.trend?.wordHe || "מגמה לא נמדדה"}</p>
+            <p>מיקום {row.gsc?.position ?? "—"} · CTR {fmtPct(row.gsc?.ctr)} · חשיפות {row.gsc?.impressions ?? "—"}</p>
+            <p className="geo-url">נוכחי {row.currentUrl || "—"}</p>
+            <p className="geo-url">יעד {row.targetUrl || "—"}</p>
+            <p>
+              <span className={`geo-badge ${row.cannibalization ? "geo-badge-yes" : "geo-badge-no"}`}>
+                קניבליזציה: {row.cannibalization ? "כן" : "לא"}
+              </span>
+              <span className={`geo-badge geo-badge-${row.action}`}>{row.actionHe}</span>
+            </p>
+          </article>
+        ))}
       </div>
       {!visible.length && !loading ? <p className="geo-note">אין שורות לסינון הזה.</p> : null}
 
