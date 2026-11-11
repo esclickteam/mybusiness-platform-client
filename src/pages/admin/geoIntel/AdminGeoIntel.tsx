@@ -21,6 +21,9 @@ import {
 import { canShowMeasurementActions } from "./runActionVisibility";
 import { findingKindHe } from "./improvementWork";
 import ImprovementWorkList from "./ImprovementWorkList";
+import SeoChangeTrackingPanel, {
+  type SeoChangeTracking,
+} from "./SeoChangeTrackingPanel";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
 
@@ -138,6 +141,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
   const [prompts, setPrompts] = useState<any[]>([]);
   const [csvText, setCsvText] = useState("");
   const [gscImports, setGscImports] = useState<any[]>([]);
+  const [seoTracking, setSeoTracking] = useState<SeoChangeTracking | null>(null);
 
   const activeBrand = useMemo(
     () => brands.find((b) => b._id === brandId) || null,
@@ -187,6 +191,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         ch,
         pr,
         gsc,
+        tracking,
       ] = await Promise.all([
         geoGet("/dashboard", filterParams),
         geoGet("/visibility", filterParams),
@@ -202,6 +207,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
         geoGet("/checks", { brandId, limit: 100 }),
         geoGet("/prompts", { brandId, active: "1" }),
         geoGet("/gsc/imports", { brandId }),
+        geoGet("/seo-change-tracking", { brandId }).catch(() => null),
       ]);
       setOverview(dash);
       setVisibility(vis);
@@ -217,6 +223,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
       setChecks(ch.checks || []);
       setPrompts(pr.prompts || []);
       setGscImports(gsc.imports || []);
+      setSeoTracking(tracking);
       setManualForm((prev) => ({
         ...prev,
         promptId: prev.promptId || pr.prompts?.[0]?._id || "",
@@ -265,6 +272,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "tech", label: "ביקורת טכנית" },
     { id: "trends", label: "מגמות" },
     { id: "reports", label: "דוחות" },
+    { id: "beforeAfter", label: "לפני / אחרי" },
     { id: "measurements", label: "ניהול מדידות" },
     { id: "alerts", label: copy.navAlerts },
     { id: "settings", label: copy.navSettings },
@@ -1226,6 +1234,8 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               </pre>
             </section>
           ) : null}
+
+          {tab === "beforeAfter" ? <SeoChangeTrackingPanel data={seoTracking} /> : null}
 
           {tab === "measurements" ? (
             <section>

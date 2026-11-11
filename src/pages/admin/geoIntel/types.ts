@@ -22,6 +22,7 @@ export type Tab =
   | "tech"
   | "trends"
   | "reports"
+  | "beforeAfter"
   | "measurements"
   | "alerts"
   | "settings";
