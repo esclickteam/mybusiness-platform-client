@@ -10,7 +10,7 @@ import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductThe
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t4";
+const FILM_VERSION = "t5";
 
 type FilmKey = keyof typeof films;
 
@@ -263,7 +263,7 @@ export default function HomeExperienceSections() {
         <Automations />
         <Campaigns />
         <AiTools />
-        <Products />
+        <Websites />
         <Benefits />
         <Pricing />
         <Faq />
@@ -411,7 +411,7 @@ function Crm() {
         text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
       ]}
       link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
-      shot={<Shot name="crm-card" alt={text("כרטיס לקוח בתוך BizUply עם הערות ופעילות", "A customer record in BizUply with notes and activity")} caption={text("מסך אמיתי מחשבון הדמו של BizUply", "A real screen from the BizUply demo account")} />}
+      shot={<Shot name="crm-card" alt={text("כרטיס לקוח בתוך BizUply עם סטטוס, משימות ופעילות", "A customer record in BizUply with status, tasks and activity")} />}
     />
   );
 }
@@ -438,7 +438,7 @@ function WhatsApp() {
         "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
       )}
       link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
-      shot={<Shot name="whatsapp" alt={text("תיבת WhatsApp בתוך BizUply", "The WhatsApp inbox in BizUply")} caption={text("מסך אמיתי מחשבון הדמו — ההודעה לא נשלחה ללקוח אמיתי", "A real demo-account screen — the message was not sent to a real person")} />}
+      shot={<Shot name="whatsapp" alt={text("תיבת השיחות של WhatsApp בתוך BizUply", "The WhatsApp conversation inbox in BizUply")} />}
     />
   );
 }
@@ -483,9 +483,9 @@ function Campaigns() {
         text("סקירת ביצועים לפי טווח תאריכים", "Performance overview by date range"),
         text("לידים מטפסי Meta נכנסים ל־CRM", "Meta form leads flow into the CRM"),
       ]}
-      note={text("דורש חיבור חשבון מודעות של Meta. הנתונים במסך הם של חשבון הדמו.", "Requires a connected Meta ad account. The figures shown belong to the demo account.")}
+      note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
       link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
-      shot={<Shot name="campaigns" alt={text("סקירת קמפיינים של Meta בתוך BizUply", "Meta campaign overview in BizUply")} caption={text("מסך אמיתי מחשבון הדמו", "A real screen from the demo account")} />}
+      shot={<Shot name="campaigns" alt={text("סקירת קמפיינים של Meta בתוך BizUply", "Meta campaign overview in BizUply")} />}
     />
   );
 }
@@ -564,75 +564,169 @@ function AiTools() {
   );
 }
 
-function Products() {
-  const { text } = useCopy();
-  const saas = [
-    ["beautyflow", "BeautyFlow", text("תורים, לקוחות ואתר הזמנות לסלונים ולמכוני יופי, תחת המותג שלכם.", "Appointments, clients and a booking site for salons and beauty studios, under your own brand.")],
-    ["global-properties", "Global Properties", text("נכסים, בעלים ופניות במוצר נדל״ן שאפשר למתג לשוק שלכם.", "Listings, owners and enquiries in a property product you can brand for your market.")],
-    ["dinevo", "Dinevo", text("תפריט דיגיטלי, הזמנה מהשולחן ב־QR, מטבח וחשבונות למסעדות.", "Digital menus, QR table ordering, kitchen and bills for restaurants.")],
-    ["tableflow", "TableFlow", text("הזמנה מהשולחן בסריקת QR, בלי להוריד אפליקציה.", "QR table ordering guests can scan, with no app download.")],
-    ["cliny", "Cliny", text("צוותים, אתרים, עבודות וחיוב לחברות ניקיון ושירותי שטח.", "Crews, sites, jobs and billing for cleaning and field-service teams.")],
-  ] as const;
-  const platform = [
-    ["/website-builder", text("בניית אתרים", "Website builder"), text("עורך ויזואלי ותבניות מוכנות, עם טופס לידים שמחובר ל־CRM.", "A visual editor and ready templates, with a lead form connected to the CRM.")],
-    ["/appointments", text("תורים ופגישות", "Appointments"), text("יומן, שירותים וזימון תורים מתוך אותה סביבת עבודה.", "A calendar, services and booking inside the same workspace.")],
-    ["/collaborations", text("שיתופי פעולה", "Collaborations"), text("רשת עסקית לשיתופי פעולה והפניות בין עסקים.", "A business network for partnerships and referrals.")],
-  ] as const;
-  const templates = ["studiora", "vitalcare", "wantravel"];
+const SITE_SHOWCASE = [
+  { key: "studiora", name: "Studiora", he: "עסק", en: "Business" },
+  { key: "noodlix", name: "Noodlix", he: "מסעדה", en: "Restaurant" },
+  { key: "primeview", name: "Primeview", he: "נדל״ן", en: "Real estate" },
+  { key: "lashora", name: "Lashora", he: "יופי", en: "Beauty" },
+  { key: "advisora", name: "Advisora", he: "שירותים", en: "Services" },
+  { key: "florique", name: "Florique", he: "דף נחיתה", en: "Landing page" },
+] as const;
+
+function Websites() {
+  const { text, language, dir } = useCopy();
+  const reduced = useReduced();
+  const lang = language.startsWith("he") ? "he" : "en";
+  const sites = SITE_SHOWCASE.map((site) => ({ ...site, kind: text(site.he, site.en) }));
+  const count = sites.length;
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [onscreen, setOnscreen] = useState(false);
+  const root = useRef<HTMLElement | null>(null);
+  const reasons = useRef(new Set<string>());
+  const drag = useRef({ x: 0, id: -1 });
+
+  const hold = (reason: string, on: boolean) => {
+    if (on) reasons.current.add(reason);
+    else reasons.current.delete(reason);
+    setPaused(reasons.current.size > 0);
+  };
+
+  useEffect(() => {
+    const node = root.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      setOnscreen(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => setOnscreen(entry.isIntersecting),
+      { threshold: 0.35 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (reduced || paused || !onscreen) return undefined;
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % count);
+    }, 5600);
+    return () => window.clearInterval(timer);
+  }, [reduced, paused, onscreen, count]);
+
+  const go = (delta: number) => setIndex((current) => (current + delta + count) % count);
+  const shift = `${dir === "rtl" ? index * 100 : -index * 100}%`;
+
   return (
-    <section className="ht-products" id="products" aria-labelledby="ht-products-title">
+    <section
+      className="ht-products"
+      id="websites"
+      aria-labelledby="ht-sites-title"
+      ref={root}
+      onMouseEnter={() => hold("hover", true)}
+      onMouseLeave={() => hold("hover", false)}
+      onFocus={() => hold("focus", true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) hold("focus", false);
+      }}
+    >
       <div className="ht-wrap">
         <div className="ht-head" data-reveal>
-          <p className="ht-eyebrow">{text("מערכות SaaS ומוצרים", "SaaS systems and products")}</p>
-          <h2 id="ht-products-title">{text("מערכות מוכנות שזמינות היום.", "Ready systems you can use today.")}</h2>
+          <p className="ht-eyebrow">{text("בניית אתרים", "Website builder")}</p>
+          <h2 id="ht-sites-title">{text("האתר הבא שלכם מתחיל כאן", "Your Next Website Starts Here")}</h2>
           <p className="ht-lead">
             {text(
-              "חמש מערכות SaaS פעילות בקטלוג של BizUply, שאפשר לראות בהדגמה ולהשיק תחת מותג משלכם — ולצידן הכלים שבפלטפורמה העסקית.",
-              "Five SaaS systems are active in the BizUply catalog. You can open their demos and launch them under your own brand — alongside the tools in the business platform.",
+              "אתרי תדמית, דפי נחיתה ואתרים עסקיים בעיצוב מקצועי — נבנים ומותאמים לעסק שלכם באמצעות Bizuply.",
+              "Create professional business websites, landing pages and beautifully designed digital experiences with Bizuply.",
             )}
           </p>
         </div>
-        <ul className="ht-saas">
-          {saas.map(([slug, name, body], index) => (
-            <li key={slug} data-reveal style={{ transitionDelay: `${index * 60}ms` }}>
-              <Link to={`/saas/${slug}`} className="ht-saas-card">
-                <span className="ht-saas-shot">
-                  <img src={`${MEDIA}/saas/${slug}.webp`} alt={`${name} — ${text("מסך הניהול", "Admin dashboard")}`} width={1600} height={1000} loading="lazy" decoding="async" />
-                </span>
-                <span className="ht-saas-body">
-                  <strong>{name}</strong>
-                  <span>{body}</span>
-                  <em>{text("למערכת ולהדגמה", "View the system and demo")}</em>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <div className="ht-platform">
-          <article className="ht-card ht-sites" data-reveal>
-            <div className="ht-sites-strip" aria-hidden="true">
-              {templates.map((name) => (
-                <img key={name} src={`/template-screenshots/${name}.webp`} alt="" width={960} height={1200} loading="lazy" decoding="async" />
+        <div
+          className="ht-gallery"
+          data-reveal
+          role="region"
+          aria-roledescription={text("גלריה", "gallery")}
+          aria-label={text("אתרים שנבנו באמצעות Bizuply", "Websites built with Bizuply")}
+        >
+          <button type="button" className="ht-gallery-arrow ht-gallery-prev" onClick={() => go(-1)} aria-label={text("האתר הקודם", "Previous website")}>
+            <i aria-hidden="true" />
+          </button>
+          <div
+            className="ht-gallery-view"
+            onPointerDown={(event) => {
+              if (event.pointerType === "mouse" && event.button !== 0) return;
+              event.preventDefault();
+              drag.current = { x: event.clientX, id: event.pointerId };
+              event.currentTarget.setPointerCapture(event.pointerId);
+              hold("pointer", true);
+            }}
+            onPointerUp={(event) => {
+              if (drag.current.id !== event.pointerId) return;
+              const dx = event.clientX - drag.current.x;
+              drag.current.id = -1;
+              if (Math.abs(dx) > 48) go(dir === "rtl" ? (dx > 0 ? 1 : -1) : (dx < 0 ? 1 : -1));
+              hold("pointer", false);
+              hold("settle", true);
+              window.setTimeout(() => hold("settle", false), 7000);
+            }}
+            onPointerCancel={() => {
+              drag.current.id = -1;
+              hold("pointer", false);
+            }}
+          >
+            <div className="ht-gallery-track" style={{ transform: `translate3d(${shift}, 0, 0)` }}>
+              {sites.map((site, siteIndex) => (
+                <article className="ht-gallery-slide" key={site.key} aria-hidden={siteIndex !== index}>
+                  <div className="ht-gallery-stage">
+                    <div className="ht-device ht-device-desk">
+                      <div className="ht-device-bar" aria-hidden="true"><i /><i /><i /></div>
+                      <div className="ht-device-screen">
+                        <img
+                          src={`${MEDIA}/sites/${site.key}-${lang}-desk.webp`}
+                          alt={siteIndex === index ? `${site.name} — ${site.kind}` : ""}
+                          width={1440}
+                          height={900}
+                          loading={Math.abs(siteIndex - index) <= 1 ? "eager" : "lazy"}
+                          decoding="async"
+                        />
+                      </div>
+                    </div>
+                    <div className="ht-device ht-device-phone" aria-hidden="true">
+                      <div className="ht-device-screen">
+                        <img
+                          src={`${MEDIA}/sites/${site.key}-${lang}-phone.webp`}
+                          alt=""
+                          width={390}
+                          height={844}
+                          loading={siteIndex === index ? "eager" : "lazy"}
+                          decoding="async"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p className="ht-gallery-caption"><span>{site.kind}</span><strong>{site.name}</strong></p>
+                </article>
               ))}
             </div>
-            <div className="ht-card-body">
-              <h3>{platform[0][1]}</h3>
-              <p>{platform[0][2]}</p>
-              <Link className="ht-link" to={platform[0][0]}>{text("לבניית אתר", "Build a website")}</Link>
-            </div>
-          </article>
-          {platform.slice(1).map(([to, title, body]) => (
-            <article className="ht-card ht-platform-card" key={to} data-reveal>
-              <div className="ht-card-body">
-                <h3>{title}</h3>
-                <p>{body}</p>
-                <Link className="ht-link" to={to}>{text("לפרטים", "Learn more")}</Link>
-              </div>
-            </article>
-          ))}
+          </div>
+          <button type="button" className="ht-gallery-arrow ht-gallery-next" onClick={() => go(1)} aria-label={text("האתר הבא", "Next website")}>
+            <i aria-hidden="true" />
+          </button>
+          <div className="ht-gallery-dots">
+            {sites.map((site, siteIndex) => (
+              <button
+                key={site.key}
+                type="button"
+                className={siteIndex === index ? "is-on" : undefined}
+                aria-label={site.name}
+                aria-current={siteIndex === index ? "true" : undefined}
+                onClick={() => setIndex(siteIndex)}
+              />
+            ))}
+          </div>
         </div>
         <div className="hx-actions ht-center">
-          <Cta to="/saas">{text("לקטלוג מערכות ה־SaaS", "Browse the SaaS catalog")}</Cta>
+          <Cta to="/website-builder">{text("בואו לבנות אתר", "Start Building")}</Cta>
         </div>
       </div>
     </section>

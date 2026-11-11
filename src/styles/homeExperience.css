@@ -1097,111 +1097,173 @@ html.hx-preview body {
   flex: 1 1 20rem;
 }
 
-/* Products */
+/* Website gallery */
 .ht-products {
-  background: linear-gradient(180deg, #fff 0%, #f7f3ff 100%);
-}
-.ht-saas {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.ht-saas li {
-  grid-column: span 2;
-  display: flex;
-}
-.ht-saas li:nth-child(n + 4) {
-  grid-column: span 3;
-}
-.ht-saas-card {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  border: 1px solid rgba(91, 33, 182, 0.16);
-  background: #fff;
-  color: inherit;
-  text-decoration: none;
-  transition:
-    border-color 0.25s ease,
-    box-shadow 0.3s ease,
-    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-}
-.ht-saas-card:hover {
-  border-color: rgba(91, 33, 182, 0.36);
-  box-shadow: 0 30px 70px -40px rgba(67, 56, 202, 0.55);
-  transform: translateY(-4px);
-}
-.ht-saas-shot {
-  display: block;
+  background: linear-gradient(180deg, #fff 0%, #f7f3ff 55%, #fff 100%);
   overflow: hidden;
-  aspect-ratio: 16 / 10;
-  border-bottom: 1px solid rgba(91, 33, 182, 0.12);
-  background: #f5f6fa;
 }
-.ht-saas-shot img {
+.ht-gallery {
+  position: relative;
+}
+.ht-gallery-view {
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+}
+.ht-gallery-view:active {
+  cursor: grabbing;
+}
+.ht-gallery-track {
+  display: flex;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.ht-gallery-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  padding: 0.4rem 3.4rem 0;
+}
+.ht-gallery-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(7.5rem, 18vw, 13.5rem);
+  align-items: end;
+  gap: clamp(0.8rem, 2vw, 1.6rem);
+}
+.ht-device {
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 36px 80px -40px rgba(49, 46, 129, 0.55);
+}
+.ht-device-desk {
+  border: 1px solid rgba(91, 33, 182, 0.18);
+}
+.ht-device-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  height: 2.15rem;
+  padding: 0 0.9rem;
+  border-bottom: 1px solid rgba(91, 33, 182, 0.12);
+  background: linear-gradient(90deg, #f5f3ff, #fff 55%, #eff6ff);
+}
+.ht-device-bar i {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 50%;
+  background: #c4b5fd;
+}
+.ht-device-bar i:nth-child(2) {
+  background: #93c5fd;
+}
+.ht-device-bar i:nth-child(3) {
+  background: #ddd6fe;
+}
+.ht-device-screen {
+  overflow: hidden;
+  background: #f8f7fc;
+}
+.ht-device-desk .ht-device-screen {
+  aspect-ratio: 16 / 10;
+}
+.ht-device-screen img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: top center;
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
 }
-.ht-saas-card:hover .ht-saas-shot img {
-  transform: scale(1.02);
+.ht-device-phone {
+  border: 0.45rem solid #1a0b33;
+  border-radius: 1.6rem;
+  background: #1a0b33;
+  box-shadow: 0 28px 50px -28px rgba(26, 11, 51, 0.7);
 }
-.ht-saas-body {
+.ht-device-phone .ht-device-screen {
+  aspect-ratio: 9 / 19.2;
+  border-radius: 1.15rem;
+}
+.ht-gallery-caption {
   display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 1.2rem 1.3rem 1.35rem;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin: 1.1rem 0 0;
 }
-.ht-saas-body strong {
-  color: #1a0b33;
-  font-size: 1.15rem;
-  font-weight: 800;
-}
-.ht-saas-body span {
-  flex: 1 1 auto;
-  color: #4b4560;
-  line-height: 1.55;
-}
-.ht-saas-body em {
+.ht-gallery-caption span {
   color: #5b21b6;
-  font-style: normal;
+  font-size: 0.82rem;
   font-weight: 800;
 }
-.ht-platform {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 0.8fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
-  margin-top: clamp(1rem, 2vw, 1.5rem);
+[dir="ltr"] .ht-gallery-caption span {
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
-.ht-sites-strip {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1px;
-  border-bottom: 1px solid rgba(91, 33, 182, 0.12);
-  background: rgba(91, 33, 182, 0.12);
+.ht-gallery-caption strong {
+  color: #1a0b33;
+  font-size: 1.35rem;
+  font-weight: 800;
 }
-.ht-sites-strip img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  object-position: top center;
+.ht-gallery-arrow {
+  position: absolute;
+  top: 38%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.7rem;
+  height: 2.7rem;
+  border: 1.5px solid #5b21b6;
+  border-radius: 0;
   background: #fff;
+  color: #5b21b6;
+  cursor: pointer;
 }
-.ht-platform-card {
-  background:
-    linear-gradient(160deg, rgba(237, 233, 254, 0.7), rgba(255, 255, 255, 0) 60%),
-    #fff;
+.ht-gallery-prev {
+  inset-inline-start: 0;
+}
+.ht-gallery-next {
+  inset-inline-end: 0;
+}
+.ht-gallery-arrow i {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-top: 2px solid currentColor;
+  border-inline-end: 2px solid currentColor;
+}
+.ht-gallery-prev i {
+  transform: rotate(-135deg);
+  margin-inline-start: 0.15rem;
+}
+.ht-gallery-next i {
+  transform: rotate(45deg);
+  margin-inline-end: 0.15rem;
+}
+.ht-gallery-arrow:hover {
+  background: #5b21b6;
+  color: #fff;
+}
+.ht-gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1.2rem;
+}
+.ht-gallery-dots button {
+  width: 1.6rem;
+  height: 0.28rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: #ddd6fe;
+  cursor: pointer;
+}
+.ht-gallery-dots button.is-on {
+  background: #5b21b6;
 }
 .ht-products .hx-actions {
-  margin-top: clamp(2rem, 4vw, 3rem);
+  margin-top: clamp(1.6rem, 3vw, 2.4rem);
 }
 
 /* Benefits */
@@ -1492,22 +1554,6 @@ html.ht-motion [data-reveal].is-in {
   .ht-feature.is-flip .ht-feature-copy {
     order: 0;
   }
-  .ht-saas {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .ht-saas li,
-  .ht-saas li:nth-child(n + 4) {
-    grid-column: span 1;
-  }
-  .ht-saas li:last-child {
-    grid-column: 1 / -1;
-  }
-  .ht-platform {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .ht-sites {
-    grid-column: 1 / -1;
-  }
   .ht-plans {
     grid-template-columns: 1fr;
     max-width: 34rem;
@@ -1554,20 +1600,22 @@ html.ht-motion [data-reveal].is-in {
     margin-inline: auto;
   }
   .ht-ai-grid,
-  .ht-saas,
-  .ht-platform,
   .ht-benefit-grid {
     grid-template-columns: 1fr;
+  }
+  .ht-gallery-slide {
+    padding-inline: 2.6rem;
+  }
+  .ht-gallery-stage {
+    grid-template-columns: minmax(0, 1fr) 5.6rem;
+    gap: 0.55rem;
+  }
+  .ht-gallery-caption strong {
+    font-size: 1.1rem;
   }
   .ht-ai-card .ht-shot-flat {
     max-height: 32rem;
     overflow: hidden;
-  }
-  .ht-saas li:last-child {
-    grid-column: auto;
-  }
-  .ht-sites {
-    grid-column: auto;
   }
   .ht-benefit-grid li {
     padding: 1.5rem 0;
@@ -1586,14 +1634,12 @@ html.ht-motion [data-reveal].is-in {
   .hx-btn,
   .hx-btn i,
   .ht-card,
-  .ht-saas-card,
-  .ht-saas-shot img,
+  .ht-gallery-track,
   .ht-freeze.is-fading,
   .ht-flow li::before {
     transition: none;
   }
-  .hx-btn:hover,
-  .ht-saas-card:hover {
+  .hx-btn:hover {
     transform: none;
   }
 }
