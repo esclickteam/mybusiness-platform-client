@@ -205,7 +205,7 @@ export default function SaasOwnerConsole() {
   };
   const contact = asRecord(content.site.contact);
   const social = asRecord(content.site.social);
-  const sections = asList(content.site.sections) as { id?: string; title?: string; body?: string; hidden?: boolean }[];
+  const sections = asList(content.site.sections) as { id?: string; key?: string; title?: string; body?: string; imageUrl?: string; hidden?: boolean }[];
   const nav = asList(content.site.nav) as { label?: string; href?: string; hidden?: boolean }[];
   const staff = (meta?.staff || []) as StaffMember[];
   const versions = (meta?.versions || []) as VersionRow[];
@@ -286,6 +286,11 @@ export default function SaasOwnerConsole() {
                 next[index] = { ...section, body: event.target.value };
                 setSite("sections", next);
               }} />
+              <input className="mt-1 w-full rounded border px-2 py-1 text-xs" dir="ltr" value={section.imageUrl || ""} placeholder="כתובת תמונה" onChange={(event) => {
+                const next = sections.slice();
+                next[index] = { ...section, imageUrl: event.target.value };
+                setSite("sections", next);
+              }} />
               <label className="mt-1 flex items-center gap-2 text-xs">
                 <input type="checkbox" checked={Boolean(section.hidden)} onChange={(event) => {
                   const next = sections.slice();
@@ -303,7 +308,10 @@ export default function SaasOwnerConsole() {
               }}>למעלה</button>
             </div>
           ))}
-          <button type="button" className="mt-2 text-xs font-black" onClick={() => setSite("sections", [...sections, { id: `s-${Date.now()}`, title: "", body: "", hidden: false }])}>הוספת מקטע</button>
+          <button type="button" className="mt-2 text-xs font-black" onClick={() => {
+            const key = `s-${Date.now()}`;
+            setSite("sections", [...sections, { id: key, key, title: "", body: "", imageUrl: "", hidden: false }]);
+          }}>הוספת מקטע</button>
           <h3 className="mt-3 text-xs font-black">תפריט ניווט</h3>
           {nav.map((item, index) => (
             <div key={`${item.label}-${index}`} className="mt-2 grid grid-cols-2 gap-1">
