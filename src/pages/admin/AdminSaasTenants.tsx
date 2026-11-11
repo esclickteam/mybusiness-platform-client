@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
 import AdminPageHeader from "./shell/AdminPageHeader";
-import { systemBySlug } from "./saas/saasSystems";
+import { ownerCoverage, systemBySlug } from "./saas/saasSystems";
 
 type TenantRow = {
   id: string;
@@ -168,6 +168,13 @@ export default function AdminSaasTenants() {
   }, [visible]);
 
   const opened = owners.find((owner) => owner.key === openOwner) || null;
+  const coverage = useMemo(
+    () => ownerCoverage(rows.map((row) => ({
+      templateSlug: row.templateSlug,
+      ownerKey: row.owner?.email || row.ownerUserId || row.id,
+    }))),
+    [rows],
+  );
 
   return (
     <div dir="rtl">
@@ -200,6 +207,40 @@ export default function AdminSaasTenants() {
             {ops.watch.dependencies ? ` · Mongo ${ops.watch.dependencies.mongo ? "תקין" : "כשל"} · Redis ${ops.watch.dependencies.redis ? "תקין" : "כשל"}` : ""}
           </p>
         ) : null}
+        <section className="mb-4 bg-white shadow-sm">
+          <h2 className="px-3 py-2 font-black">כיסוי עשר המערכות</h2>
+          <p className="px-3 pb-2 text-sm">המספרים מגיעים מהעסקים הרשומים ב-Bizuply. מערכת בלי עסק רשום לא מקבלת נתון משוער.</p>
+          {rows.length >= 200 ? <p className="px-3 pb-2 text-sm">מוצגים 200 העסקים האחרונים בלבד.</p> : null}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b text-start">
+                  {["מערכת", "עסקים", "בעלים", "מקור"].map((head) => (
+                    <th key={head} className="px-3 py-2 text-start">{head}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {coverage.systems.map((system) => (
+                  <tr key={system.slug} className="border-b">
+                    <td className="px-3 py-2">{system.name}</td>
+                    <td className="px-3 py-2">{system.businesses}</td>
+                    <td className="px-3 py-2">{system.owners}</td>
+                    <td className="px-3 py-2">{system.detail}</td>
+                  </tr>
+                ))}
+                {coverage.unknown.map((system) => (
+                  <tr key={system.slug} className="border-b">
+                    <td className="px-3 py-2">{system.slug}</td>
+                    <td className="px-3 py-2">{system.businesses}</td>
+                    <td className="px-3 py-2">—</td>
+                    <td className="px-3 py-2">מערכת שאינה ברשימת המכירה</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
         <section className="mb-4 bg-white shadow-sm">
           <h2 className="px-3 py-2 font-black">בעלי המערכות</h2>
           <p className="px-3 pb-2 text-sm">כל העסקים של אותו בעלים מופיעים בתיק אחד. התחברות אחרונה אינה נשמרת בחשבון Bizuply.</p>
