@@ -516,6 +516,23 @@ await page.waitForFunction(({ label, text }) => {
   const thread = document.querySelector("[data-testid='whatsapp-module-inbox']");
   return Boolean(thread && thread.innerText.includes(text) && !thread.innerText.includes(label));
 }, { label: loadingLabel, text: snippet }, { timeout: 25000 });
+await page.waitForFunction(({ phone, text }) => {
+  const list = document.querySelector('[data-testid="whatsapp-module-inbox"] > section');
+  if (!list) return false;
+  return [...list.querySelectorAll("button")].some((button) => {
+    if (button.offsetParent === null) return false;
+    const body = button.innerText || "";
+    return body.replace(/\D/g, "").includes(phone) || body.includes(text);
+  });
+}, { phone: waPhone, text: snippet }, { timeout: 25000 });
+await page.evaluate(({ phone, text }) => {
+  const list = document.querySelector('[data-testid="whatsapp-module-inbox"] > section');
+  const button = [...(list?.querySelectorAll("button") || [])].find((el) => {
+    const body = el.innerText || "";
+    return body.replace(/\D/g, "").includes(phone) || body.includes(text);
+  });
+  button?.scrollIntoView({ block: "nearest" });
+}, { phone: waPhone, text: snippet });
 await page.evaluate((mobile) => {
   const inbox = document.querySelector("[data-testid='whatsapp-module-inbox']");
   if (!inbox) return;
