@@ -48,7 +48,8 @@ function loginPath(templateSlug: string, publicSlug: string) {
   const key = String(templateSlug || "").trim().toLowerCase();
   if (key === "beautyflow") return `/login?tenant=${encodeURIComponent(publicSlug || "")}`;
   if (key === "global-properties") return "/en/auth/sign-in";
-  if (key === "dinevo" || key === "cliny") return "/login";
+  if (key === "cliny") return `/login?site=${encodeURIComponent(publicSlug || "")}`;
+  if (key === "dinevo") return "/login";
   return "/login";
 }
 

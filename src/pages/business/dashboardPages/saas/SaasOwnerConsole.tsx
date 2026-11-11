@@ -50,6 +50,7 @@ export default function SaasOwnerConsole() {
   const [params] = useSearchParams();
   const [content, setContent] = useState<Content | null>(null);
   const [meta, setMeta] = useState<Record<string, unknown> | null>(null);
+  const [canvas, setCanvas] = useState<"site" | "login">("site");
   const [width, setWidth] = useState<"100%" | "768px" | "375px">("100%");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -214,22 +215,54 @@ export default function SaasOwnerConsole() {
     <div dir="rtl" className="flex w-full min-w-0 flex-col gap-4 p-4">
       <section className="min-w-0 w-full">
         <div className="mb-3 flex flex-wrap gap-2">
+          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setCanvas("site")}>האתר</button>
+          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setCanvas("login")}>עמוד התחברות</button>
           <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("100%")}>Desktop</button>
           <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("768px")}>Tablet</button>
           <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("375px")}>Mobile</button>
         </div>
         <div className="mx-auto w-full overflow-x-auto rounded-2xl border bg-white" style={{ width, maxWidth: "100%" }}>
-          {isHostedShellProduct(templateSlug) ? (
+          {canvas === "login" ? (
+            <div className="grid min-h-[420px] md:grid-cols-2">
+              <div className="p-8 text-white" style={{ background: content.branding.primaryColor || "#0f766e", fontFamily: content.branding.font || undefined }}>
+                {content.branding.logo ? <img src={content.branding.logo} alt="" className="mb-6 h-12" /> : null}
+                <input className="w-full bg-transparent text-3xl font-black text-white outline-none" value={content.branding.businessName || ""} onChange={(event) => setBrand("businessName", event.target.value)} />
+                <textarea className="mt-4 w-full bg-transparent text-sm leading-7 text-white outline-none" rows={3} value={sections[0]?.title || ""} onChange={(event) => {
+                  const next = sections.slice();
+                  next[0] = { ...(next[0] || { key: "login", id: "login" }), title: event.target.value };
+                  setSite("sections", next);
+                }} />
+              </div>
+              <div className="p-8">
+                <p className="text-sm font-semibold" style={{ color: content.branding.primaryColor }}>{content.branding.businessName}</p>
+                <div className="mt-6 h-10 rounded border bg-slate-50" />
+                <div className="mt-3 h-10 rounded border bg-slate-50" />
+                <div className="mt-4 h-10" style={{ background: content.branding.primaryColor || "#0f766e" }} />
+              </div>
+            </div>
+          ) : isHostedShellProduct(templateSlug) ? (
             <TableflowGuest content={preview as never} />
           ) : (
-            <div className="p-6" style={{ background: content.branding.background || "#fff", color: content.branding.primaryColor }}>
-              {content.branding.logo ? <img src={content.branding.logo} alt="" style={{ height: 48 }} /> : null}
-              <h2 className="text-2xl font-black">{content.branding.businessName}</h2>
-              <p>{String(content.site.homeBody || content.branding.tagline || "")}</p>
-              {sections.filter((section) => !section.hidden).map((section) => (
-                <article key={section.id || section.title}>
-                  <h3 className="font-black">{section.title}</h3>
-                  <p>{section.body}</p>
+            <div className="p-6" style={{ background: content.branding.background || "#fff", color: "#143f39", fontFamily: content.branding.font || undefined }}>
+              <div className="mb-6 flex items-center gap-3">
+                {content.branding.logo ? <img src={content.branding.logo} alt="" style={{ height: 48 }} /> : null}
+                <input className="w-full bg-transparent text-3xl font-black outline-none" style={{ color: content.branding.primaryColor }} value={content.branding.businessName || ""} onChange={(event) => setBrand("businessName", event.target.value)} />
+              </div>
+              {sections.filter((section) => !section.hidden).map((section, index) => (
+                <article key={section.key || section.id || index} className="mb-8">
+                  {section.imageUrl ? <img src={section.imageUrl} alt="" className="mb-3 max-h-64 w-full object-cover" /> : null}
+                  <input className="w-full bg-transparent text-2xl font-black outline-none" value={section.title || ""} onChange={(event) => {
+                    const next = sections.slice();
+                    const at = sections.indexOf(section);
+                    next[at] = { ...section, title: event.target.value };
+                    setSite("sections", next);
+                  }} />
+                  <textarea className="mt-2 w-full bg-transparent text-base leading-7 outline-none" rows={3} value={section.body || ""} onChange={(event) => {
+                    const next = sections.slice();
+                    const at = sections.indexOf(section);
+                    next[at] = { ...section, body: event.target.value };
+                    setSite("sections", next);
+                  }} />
                 </article>
               ))}
             </div>
