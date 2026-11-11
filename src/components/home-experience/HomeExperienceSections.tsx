@@ -172,6 +172,7 @@ function Feature({
   shot,
   flip = false,
   note,
+  layout,
 }: {
   id: string;
   eyebrow: string;
@@ -182,9 +183,10 @@ function Feature({
   shot: ReactNode;
   flip?: boolean;
   note?: string;
+  layout?: "stage" | "ink" | "flow" | "board";
 }) {
   return (
-    <section className={`ht-feature${flip ? " is-flip" : ""}`} id={id} aria-labelledby={`${id}-title`}>
+    <section className={`ht-feature${flip ? " is-flip" : ""}${layout ? ` is-${layout}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
       <div className="ht-wrap ht-feature-grid">
         <div className="ht-feature-copy" data-reveal>
           <p className="ht-eyebrow">{eyebrow}</p>
@@ -341,17 +343,22 @@ function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
         </div>
         <div className="ht-how-layout">
           <div className="ht-how-stage" data-reveal>
-            <ProductScene scene={scenes[active]} />
+            {scenes.map((scene, index) => (
+              <div className={`ht-how-scene${index === active ? " is-on" : ""}`} key={scene}>
+                <ProductScene scene={scene} />
+              </div>
+            ))}
           </div>
           <ol className="ht-flow ht-flow-rail">
             {stages.map(([title, body, chapter], index) => (
               <li
                 key={title}
-                className={index === active ? "is-active" : undefined}
+                className={index === active ? "is-active is-in" : index < active ? "is-in" : undefined}
                 data-reveal
                 style={{ transitionDelay: `${index * 70}ms` }}
                 onMouseEnter={() => setActive(index)}
                 onFocus={() => setActive(index)}
+                onClick={() => setActive(index)}
               >
                 <span className="ht-flow-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                 <h3>{title}</h3>
@@ -386,6 +393,7 @@ function Crm() {
         text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
       ]}
       link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
+      layout="stage"
       shot={<SceneFrame scene="crm" />}
     />
   );
@@ -413,6 +421,7 @@ function WhatsApp() {
         "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
       )}
       link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
+      layout="ink"
       shot={<SceneFrame scene="inbox" />}
     />
   );
@@ -436,6 +445,7 @@ function Automations() {
       ]}
       note={text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}
       link={["/automations", text("להכיר את האוטומציות", "Explore automations")]}
+      layout="flow"
       shot={<SceneFrame scene="automation" caption={text("הרצת בדיקה אמיתית בעורך האוטומציות", "A real test run in the automation editor")} />}
     />
   );
@@ -446,7 +456,6 @@ function Campaigns() {
   return (
     <Feature
       id="campaigns"
-      flip
       eyebrow={text("קמפיינים ושיווק", "Campaigns and marketing")}
       title={text("הקמפיין, הלידים והתוצאות — באותו מקום.", "The campaign, the leads and the results — in one place.")}
       lead={text(
@@ -460,6 +469,7 @@ function Campaigns() {
       ]}
       note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
       link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
+      layout="board"
       shot={<SceneFrame scene="meta" />}
     />
   );
@@ -470,6 +480,7 @@ function Appointments() {
   return (
     <Feature
       id="appointments"
+      flip
       eyebrow={text("יומן פגישות", "Appointments")}
       title={text("הפגישות של היום, ביומן אחד.", "The day's bookings, on one calendar.")}
       lead={text(
@@ -483,6 +494,7 @@ function Appointments() {
       ]}
       note={text("קביעת תורים ללקוחות היא חלק ממסלול העסק.", "Customer booking is part of the business plan.")}
       link={["/appointments", text("להכיר את היומן", "Explore appointments")]}
+      layout="board"
       shot={<SceneFrame scene="calendar" />}
     />
   );

@@ -2327,11 +2327,253 @@ html.ht-motion .ps-flow li:not(:last-child)::after {
   .ps-bars i,
   .ps-flow li:not(:last-child)::after,
   .ht-flow.ht-flow-rail li::before,
-  .ht-gallery-track {
+  .ht-gallery-track,
+  .ht-how-scene {
     animation: none;
     transition: none;
   }
   .ht-plans > li.is-featured {
     transform: none;
+  }
+}
+
+/* Premium finish — product scenes, rhythm, and section variety.
+   The hero background above is unchanged. */
+
+.ht-how,
+.ht-feature,
+.ht-ai,
+.ht-products,
+.ht-benefits,
+.ht-pricing,
+.ht-faq {
+  padding-block: clamp(3.25rem, 6.5vw, 5.75rem);
+}
+.ht-head {
+  margin-bottom: clamp(1.6rem, 3vw, 2.6rem);
+}
+.ht-feature-copy h2 {
+  max-width: 14ch;
+}
+.ht-feature-grid {
+  gap: clamp(1.6rem, 4vw, 3.6rem);
+  align-items: center;
+}
+
+.ht-how-stage {
+  display: grid;
+}
+.ht-how-scene {
+  grid-area: 1 / 1;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+.ht-how-scene.is-on {
+  opacity: 1;
+  pointer-events: auto;
+}
+.ht-how-scene .ps-stage {
+  height: 100%;
+}
+.ht-how-scene .ps-canvas {
+  margin-block: auto;
+}
+.ps-check li {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+}
+.ps-check i {
+  grid-row: 1 / span 2;
+  align-self: center;
+}
+.ps-check strong {
+  grid-column: 2;
+  text-align: start;
+}
+.ht-flow.ht-flow-rail li {
+  cursor: pointer;
+}
+.ht-flow.ht-flow-rail li.is-active {
+  background: linear-gradient(90deg, rgba(91, 33, 182, 0.06), transparent 72%);
+}
+[dir="rtl"] .ht-flow.ht-flow-rail li.is-active {
+  background: linear-gradient(270deg, rgba(91, 33, 182, 0.06), transparent 72%);
+}
+.ht-flow.ht-flow-rail li:not(.is-active) p,
+.ht-flow.ht-flow-rail li:not(.is-active) .ht-link-btn {
+  opacity: 0.72;
+}
+
+.ht-feature.is-ink {
+  background:
+    radial-gradient(ellipse 42% 55% at 18% 42%, rgba(196, 181, 253, 0.45), transparent 68%),
+    linear-gradient(180deg, #f7f4ff 0%, #efe9ff 48%, #f7f4ff 100%);
+}
+.ht-feature.is-flow .ht-feature-grid {
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+.ht-feature.is-flow .ht-feature-copy {
+  max-width: 44rem;
+}
+.ht-feature.is-flow .ht-feature-copy h2 {
+  max-width: 22ch;
+}
+.ht-feature.is-flow .ps-stage.is-feature {
+  min-height: 0;
+}
+.ht-feature.is-flow.is-flip .ht-feature-copy {
+  order: 0;
+}
+.ht-feature.is-stage .ht-feature-grid,
+.ht-feature.is-board .ht-feature-grid {
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+}
+.ht-feature.is-flip.is-board .ht-feature-grid,
+.ht-feature.is-flip.is-ink .ht-feature-grid {
+  grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+}
+
+.ps-stage.is-feature {
+  padding: clamp(0.85rem, 1.6vw, 1.35rem);
+  background:
+    radial-gradient(ellipse 80% 55% at 50% 0%, rgba(196, 181, 253, 0.34), transparent 70%),
+    linear-gradient(180deg, #fcfbff 0%, #f3edff 100%);
+  border: 1px solid rgba(91, 33, 182, 0.1);
+  box-shadow: 0 30px 70px -46px rgba(49, 46, 129, 0.55);
+}
+.ht-feature.is-ink .ps-stage.is-feature {
+  background:
+    radial-gradient(ellipse 70% 60% at 70% 20%, rgba(255, 255, 255, 0.55), transparent 60%),
+    linear-gradient(180deg, #f8f5ff, #ebe4ff);
+}
+.ps-window,
+.ps-phone,
+.ps-chip-card,
+.ps-result,
+.ps-flow li,
+.ps-advice {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 22px 44px -32px rgba(49, 46, 129, 0.65);
+}
+.ps-window-bar {
+  background: linear-gradient(90deg, #f7f4ff, #fff 42%, #eef4ff);
+}
+.ps-phone-bar {
+  background: #5b21b6;
+  color: #fff;
+}
+.ps-row em {
+  padding: 0.18rem 0.42rem;
+  background: #f4f0ff;
+  border: 1px solid rgba(91, 33, 182, 0.16);
+}
+.ps-row.is-hot em {
+  background: #5b21b6;
+  border-color: #5b21b6;
+  color: #fff;
+}
+.ps-pipe {
+  gap: 0.45rem;
+}
+.ps-pipe li {
+  min-height: 2.4rem;
+  background: #f6f3ff;
+  border-top: 3px solid #ddd6fe;
+  text-align: center;
+}
+.ps-pipe li.is-on {
+  background: #1a0b33;
+  color: #fff;
+  border-top-color: #7c3aed;
+}
+.ps-note,
+.ps-advice,
+.ps-slot {
+  box-shadow: none;
+  border-inline-start: 3px solid #7c3aed;
+}
+.ps-stats li {
+  background: #faf8ff;
+  border: 1px solid rgba(91, 33, 182, 0.1);
+}
+.ps-stats strong {
+  font-size: clamp(1.6rem, 2vw, 2rem);
+  letter-spacing: -0.04em;
+}
+.ps-phone {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), transparent 22%),
+    #f3eefe;
+  box-shadow:
+    0 28px 60px -34px rgba(49, 46, 129, 0.8),
+    0 0 0 1px rgba(76, 29, 149, 0.14);
+}
+.ps-bubble {
+  box-shadow: 0 10px 18px -16px rgba(26, 11, 51, 0.7);
+}
+.ps-bubble.is-out {
+  background: linear-gradient(180deg, #6d28d9, #4c1d95);
+}
+.ps-bars i {
+  height: 0.55rem;
+  background: linear-gradient(90deg, #6d28d9, #3b82f6);
+}
+[dir="rtl"] .ps-bars i {
+  background: linear-gradient(270deg, #6d28d9, #3b82f6);
+}
+.ps-flow li {
+  background: #fff;
+}
+.ps-flow li span {
+  color: #6d28d9;
+}
+.ps-result {
+  background: #1a0b33;
+}
+.ps-week li {
+  background: #faf8ff;
+}
+.ps-week .is-on {
+  box-shadow: 0 12px 24px -16px rgba(91, 33, 182, 0.9);
+}
+.ht-gallery-slide {
+  padding-inline: clamp(2.4rem, 4vw, 3.2rem);
+}
+.ht-gallery-stage {
+  grid-template-columns: minmax(0, 1fr) clamp(8.5rem, 20vw, 15.5rem);
+}
+.ht-device-desk {
+  box-shadow: 0 40px 80px -42px rgba(49, 46, 129, 0.62);
+}
+html.ht-motion .ht-gallery-track {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+html.ht-motion .ps-window,
+html.ht-motion .ps-phone {
+  transition: transform 0.35s ease;
+}
+html.ht-motion .ht-feature-media:hover .ps-float {
+  transform: translateY(-4px);
+}
+
+@media (max-width: 900px) {
+  .ht-how-stage { display: block; }
+  .ht-how-scene { display: none; height: auto; }
+  .ht-how-scene.is-on { display: block; opacity: 1; }
+  .ht-feature.is-stage .ht-feature-grid,
+  .ht-feature.is-board .ht-feature-grid,
+  .ht-feature.is-flip.is-board .ht-feature-grid,
+  .ht-feature.is-flip.is-ink .ht-feature-grid,
+  .ht-feature.is-flow .ht-feature-grid {
+    grid-template-columns: 1fr;
+  }
+  .ht-feature-copy h2 {
+    max-width: 18ch;
+  }
+  .ht-gallery-stage {
+    grid-template-columns: minmax(0, 1fr) clamp(5.5rem, 24vw, 8rem);
   }
 }
