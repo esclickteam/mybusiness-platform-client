@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import API from "../api";
+import "./accountDesign.css";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 import { getTextDirection } from "../i18n/localeUtils";
@@ -292,7 +293,7 @@ export default function BusinessProfilePage({
   return (
     <main
       dir={pageDir}
-      className="min-h-screen bg-slate-50/70 px-4 py-6 sm:px-6 lg:px-8"
+      className="acct-app min-h-screen px-4 py-6 sm:px-6 lg:px-8"
     >
       <div className="mx-auto w-full max-w-7xl space-y-6">
         {isOwnerViewingOther && (
@@ -306,13 +307,10 @@ export default function BusinessProfilePage({
           </button>
         )}
 
-        <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
-          <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
-
-          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+        <section className="border border-[rgba(91,33,182,0.16)] border-s-4 border-s-[#5B21B6] bg-white p-5 sm:p-6">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-[2rem] border border-white bg-white/80 shadow-[0_18px_50px_rgba(15,23,42,0.10)] backdrop-blur">
+              <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden border border-[rgba(91,33,182,0.16)] bg-[#F4F1FA]">
                 {business.logo ? (
                   <img
                     src={business.logo}
@@ -325,12 +323,12 @@ export default function BusinessProfilePage({
               </div>
 
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
+                <div className="acct-kicker inline-flex items-center gap-2 px-4 py-2 text-xs font-black">
                   <Sparkles className="h-4 w-4" />
                   {t("collab.businessPage.badge")}
                 </div>
 
-                <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
+                <h1 className="mt-3 text-3xl font-black text-[#21172F]">
                   {business.businessName || t("collab.businessPage.unnamed")}
                 </h1>
 
@@ -347,7 +345,7 @@ export default function BusinessProfilePage({
                   type="button"
                   onClick={openProposalModal}
                   disabled={!currentUserBusinessName}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-12 items-center justify-center gap-2 border border-[#5B21B6] bg-[#5B21B6] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <FileSignature className="h-5 w-5" />
                   {t("collab.businessPage.sendProposal")}
@@ -356,7 +354,7 @@ export default function BusinessProfilePage({
                 <button
                   type="button"
                   onClick={openChatModal}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
+                  className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-white px-5 text-sm font-black text-[#21172F]"
                 >
                   <MessageCircle className="h-5 w-5" />
                   {t("collab.businessPage.startChat")}
@@ -484,7 +482,7 @@ export default function BusinessProfilePage({
 
       {isProposalModalOpen && (
         <AppModal onClose={() => setIsProposalModalOpen(false)}>
-          <div className="mx-auto max-h-[92vh] w-full max-w-6xl overflow-y-auto rounded-[2rem] bg-white p-4 shadow-2xl sm:p-6">
+          <div className="biz-doc mx-auto max-h-[92vh] w-full max-w-6xl overflow-y-auto border border-[rgba(91,33,182,0.16)] bg-white p-4 sm:p-6">
             <ProposalForm
               fromBusinessName={currentUserBusinessName}
               toBusiness={business}
@@ -780,7 +778,7 @@ function ErrorState({ text }: { text: string }) {
   return (
     <div
       dir={pageDir}
-      className="flex min-h-screen items-center justify-center bg-slate-50 p-4"
+      className="acct-app flex min-h-screen items-center justify-center p-4"
     >
       <div className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center shadow-sm">
         <p className="text-lg font-black text-rose-700">{text}</p>

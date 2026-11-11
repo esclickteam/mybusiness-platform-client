@@ -5,8 +5,6 @@ import { fetchMarketplace } from "../../saas/api";
 import {
   buildWhatsappLink,
   MixedText,
-  SaasFooter,
-  SaasHeader,
   SaasSeo,
   StickyActions,
   useSaasLocale,
@@ -98,7 +96,6 @@ export default function SaasMarketplacePage() {
   return (
     <div className="saas-market min-h-screen pb-24 lg:pb-0" dir={dir} lang={htmlLang}>
       <SaasSeo title={t("saasMarket.seoTitle")} description={t("saasMarket.seoDescription")} />
-      <SaasHeader tone="dark" onTalk={() => openLead({ ctaSource: "talk_to_us" })} />
       <main>
         <section
           id="top"
@@ -199,7 +196,6 @@ export default function SaasMarketplacePage() {
 
       </main>
       <SectionRail />
-      <SaasFooter tone="dark" />
       <WhatsAppDock href={wa} />
       <StickyActions
         items={[

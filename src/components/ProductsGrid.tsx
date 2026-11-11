@@ -10,6 +10,7 @@ import {
   Megaphone,
   MessageCircle,
   Users,
+  ShieldCheck,
   Zap,
 } from "lucide-react";
 
@@ -18,6 +19,7 @@ import "../styles/homeWow.css";
 
 const MODULES = [
   { id: "crm", to: "/crm", Icon: Users, tone: "from-indigo-600 to-violet-600", image: "/demo-media/home/crm.jpg" },
+  { id: "scan", to: "/website-scan", Icon: ShieldCheck, tone: "from-violet-600 to-blue-600", image: "" },
   { id: "appointments", to: "/appointments", Icon: CalendarClock, tone: "from-blue-600 to-cyan-500", image: "/demo-media/home/appointments.jpg" },
   { id: "automations", to: "/automations", Icon: Zap, tone: "from-violet-600 to-fuchsia-500", image: "/demo-media/home/automations.jpg" },
   { id: "site", to: "/website-builder", Icon: Globe, tone: "from-sky-600 to-indigo-600", image: "/demo-media/home/websites.jpg" },
@@ -72,7 +74,7 @@ export default function ProductsGrid() {
                 style={{ "--gold-i": index } as CSSProperties}
               >
                 <span className="home-wow-card__inner">
-                  <img src={image} alt="" width={640} height={400} className="mb-4 h-36 w-full rounded-xl object-contain bg-slate-950" />
+                  {image ? <img src={image} alt="" width={640} height={400} className="mb-4 h-36 w-full rounded-xl object-contain bg-slate-950" /> : null}
                   <span
                     className={`mx-auto mb-3 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${tone} text-white shadow-lg shadow-indigo-100 transition duration-300 group-hover:scale-110 sm:mb-4 sm:h-12 sm:w-12`}
                   >

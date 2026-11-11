@@ -41,8 +41,10 @@ import {
   isUnknownMarketingPath,
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
-import { marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
+import { renderCookieBannerPaint, trackingChoiceFromCookie } from "./src/lib/cookieBannerPaint.mjs";
+import { lastLanguageCookie, localeFromLanguageTag, marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
+import { buildPartnersPaint } from "./src/lib/partnersPaint.mjs";
 import {
   buildHomeSessionRedirectResponse,
   fetchHomeSessionRedirectUrl,
@@ -844,6 +846,16 @@ async function maybeRedirectAuthenticatedHome(request) {
   return buildHomeSessionRedirectResponse(request, redirectPath);
 }
 
+function withHostLanguageCookieCleared(headers) {
+  const next = new Headers();
+  for (const [key, value] of Object.entries(headers)) {
+    if (key.toLowerCase() === "set-cookie") next.append("set-cookie", value);
+    else next.set(key, value);
+  }
+  next.append("set-cookie", "bizuply_lang=; Path=/; Max-Age=0; SameSite=Lax");
+  return next;
+}
+
 async function handleMarketingDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   const pathname = getPathname(request);
@@ -852,16 +864,23 @@ async function handleMarketingDocument(request) {
   const sessionRedirect = await maybeRedirectAuthenticatedHome(request);
   if (sessionRedirect) return sessionRedirect;
 
-  const headHtml = buildMarketingDocumentHead(pathname);
+  let headHtml = buildMarketingDocumentHead(pathname);
+  const marketingPath = splitMarketingLocale(pathname).path;
+  const searchParams = new URL(request.url).searchParams;
+  const filteredSearch = marketingPath === "/search" && Boolean(
+    searchParams.get("name") ||
+    searchParams.get("category") ||
+    searchParams.get("city") ||
+    Number(searchParams.get("page") || "1") > 1
+  );
+  if (filteredSearch && headHtml) {
+    headHtml = headHtml.replace(
+      '<meta name="robots" content="index, follow" />',
+      '<meta name="robots" content="noindex, follow" />',
+    );
+  }
   if (headHtml) {
-    const cookie = request.headers.get("cookie") || "";
-    const saved = cookie.split(";").map((part) => part.trim()).find((part) => part.startsWith("bizuply_lang="));
-    let savedValue = saved ? saved.slice("bizuply_lang=".length) : "";
-    try {
-      savedValue = decodeURIComponent(savedValue);
-    } catch {
-      /* Keep the raw cookie value. */
-    }
+    const savedValue = lastLanguageCookie(request.headers.get("cookie") || "");
     const target = marketingLanguageRedirectPath(pathname, {
       cookie: savedValue,
       acceptLanguage: request.headers.get("accept-language") || "",
@@ -884,7 +903,7 @@ async function handleMarketingDocument(request) {
             : "";
         headers["set-cookie"] = `bizuply_lang=${encodeURIComponent(locale)}; Path=/; Max-Age=31536000; SameSite=Lax${domain}`;
       }
-      return new Response(null, { status: 302, headers });
+      return new Response(null, { status: 302, headers: withHostLanguageCookieCleared(headers) });
     }
   }
   if (!headHtml) {
@@ -922,21 +941,24 @@ async function handleMarketingDocument(request) {
     const prerender = buildMarketingPrerender(pathname);
     const locale = splitMarketingLocale(pathname);
     const isHome = locale.path === "/";
-    if (locale.locale !== "en" || isHome) {
+    const isPartners = locale.path === "/partners";
+    if (locale.locale !== "en" || isHome || isPartners) {
       const meta = prerender || {};
       const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale === "en" ? "en" : locale.locale);
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
+      const htmlClass = isHome
+        ? ' class="bizuply-home hx-preview" style="background:#ffffff"'
+        : isPartners
+          ? ' class="bizuply-partners" style="background:#1e1b4b"'
+          : "";
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,
-        `<html lang="${lang}" dir="${dir}"${
-          isHome ? ' class="bizuply-home hx-preview" style="background:#5b21b6"' : ""
-        }>`,
+        `<html lang="${lang}" dir="${dir}"${htmlClass}>`,
       );
     }
-    if (isHome) {
-      // Inlined home-critical paints the purple hero immediately. The Vite app CSS
-      // (~0.9MB) must NOT be render-blocking — that left a white browser canvas until
-      // the bundle downloaded. Defer only /assets/*.css; keep critical CSS inlined.
+    if (isHome || isPartners) {
+      // Inlined critical CSS paints immediately. Vite app CSS (~0.9MB) must NOT be
+      // render-blocking — that left a white browser canvas until the bundle downloaded.
       documentHtml = documentHtml.replace(/<link\b[^>]*>/gi, (tag) => {
         if (!/\brel=["']stylesheet["']/i.test(tag)) return tag;
         const hrefMatch = tag.match(/href=["'](\/assets\/[^"']+\.css)["']/i);
@@ -946,38 +968,78 @@ async function handleMarketingDocument(request) {
         const deferred = tag.replace(/>$/, ' media="print">');
         return `${deferred}<noscript><link rel="stylesheet" href="${hrefMatch[1]}"></noscript>`;
       });
-      documentHtml = documentHtml.replace(
-        "</head>",
-        [
-          '<link rel="preload" as="image" href="/demo-media/home/crm.jpg" fetchpriority="high">',
-          '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
-          '<script src="/home-css-promote.js" defer></script>',
+      if (isHome) {
+        const theaterLang = locale.locale === "he" ? "he" : "en";
+        documentHtml = documentHtml.replace(
           "</head>",
-        ].join(""),
-      );
-      try {
-        const criticalRes = await fetch(new URL("/home-critical.css", request.url), {
-          headers: shellDocumentHeaders(),
-        });
-        if (criticalRes.ok) {
-          const criticalCss = await criticalRes.text();
-          if (criticalCss && !criticalCss.includes("<html")) {
-            documentHtml = documentHtml.replace(
-              '<link rel="stylesheet" href="/home-critical.css" />',
-              `<style id="home-critical">${criticalCss}</style>`,
-            );
+          [
+            `<link rel="preload" as="image" href="/demo-media/home/theater/${theaterLang}-desktop.webp?v=t6" media="(min-width: 761px)" fetchpriority="high">`,
+            `<link rel="preload" as="image" href="/demo-media/home/theater/${theaterLang}-mobile.webp?v=t6" media="(max-width: 760px)" fetchpriority="high">`,
+            '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
+            '<script src="/home-css-promote.js" defer></script>',
+            "</head>",
+          ].join(""),
+        );
+        try {
+          const criticalRes = await fetch(new URL("/home-critical.css", request.url), {
+            headers: shellDocumentHeaders(),
+          });
+          if (criticalRes.ok) {
+            const criticalCss = await criticalRes.text();
+            if (criticalCss && !criticalCss.includes("<html")) {
+              documentHtml = documentHtml.replace(
+                '<link rel="stylesheet" href="/home-critical.css" />',
+                `<style id="home-critical">${criticalCss}</style>`,
+              );
+            }
           }
+        } catch {
+          /* The linked stylesheet remains. */
         }
-      } catch {
-        /* The linked stylesheet remains. */
+        if (prerender?.crawl) documentHtml = injectCrawlableDocument(documentHtml, prerender.crawl);
+        if (prerender) documentHtml = injectRootInner(documentHtml, prerender.inner);
+      } else {
+        // Partners: replace homepage critical link with partners-critical, then inline.
+        documentHtml = documentHtml.replace(
+          /<link\s+rel=["']stylesheet["']\s+href=["']\/home-critical\.css["']\s*\/>\s*/i,
+          '<link rel="stylesheet" href="/partners-critical.css" />',
+        );
+        documentHtml = documentHtml.replace(
+          "</head>",
+          [
+            '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
+            '<script src="/home-css-promote.js" defer></script>',
+            "</head>",
+          ].join(""),
+        );
+        try {
+          const criticalRes = await fetch(new URL("/partners-critical.css", request.url), {
+            headers: shellDocumentHeaders(),
+          });
+          if (criticalRes.ok) {
+            const criticalCss = await criticalRes.text();
+            if (criticalCss && !criticalCss.includes("<html")) {
+              documentHtml = documentHtml.replace(
+                '<link rel="stylesheet" href="/partners-critical.css" />',
+                `<style id="partners-critical">${criticalCss}</style>`,
+              );
+            }
+          }
+        } catch {
+          /* The linked stylesheet remains. */
+        }
+        if (prerender) documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
+        documentHtml = injectRootInner(documentHtml, buildPartnersPaint(locale.locale));
       }
-      if (prerender) documentHtml = injectRootInner(documentHtml, prerender.inner);
     } else {
-      // Never ship homepage critical CSS to login/dashboard/CRM shells.
-      documentHtml = documentHtml.replace(
-        /<link\s+rel=["']stylesheet["']\s+href=["']\/home-critical\.css["']\s*\/>\s*/i,
-        "",
-      );
+      // Never ship homepage critical CSS to login or dashboard shells.
+      // /crm keeps it so the real header is painted before React, not the old bar.
+      if (locale.path !== "/crm") {
+        documentHtml = documentHtml.replace(
+          /<link\s+rel=["']stylesheet["']\s+href=["']\/home-critical\.css["']\s*\/>\s*/i,
+          "",
+        );
+      }
       if (locale.path === "/crm") {
         if (prerender) documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
         documentHtml = injectRootInner(documentHtml, buildCrmHeaderPaint(locale.locale));
@@ -985,16 +1047,33 @@ async function handleMarketingDocument(request) {
         documentHtml = injectCrawlableDocument(documentHtml, prerender.inner);
       }
     }
+    const headers = {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "x-bizuply-seo-edge": "marketing",
+      ...(noindex || isUnindexedPreviewHost(getHost(request))
+        ? { "x-robots-tag": "noindex, nofollow" }
+        : {}),
+    };
+    if (locale.locale !== "en") {
+      const savedValue = lastLanguageCookie(request.headers.get("cookie") || "");
+      if (localeFromLanguageTag(savedValue) !== locale.locale) {
+        const host = getHost(request);
+        const domain = host === "bizuply.com" || host.endsWith(".bizuply.com")
+          ? "; Domain=.bizuply.com"
+          : host === "bizuply.co.il" || host.endsWith(".bizuply.co.il")
+            ? "; Domain=.bizuply.co.il"
+            : "";
+        headers["set-cookie"] = `bizuply_lang=${encodeURIComponent(locale.locale)}; Path=/; Max-Age=31536000; SameSite=Lax${domain}`;
+      }
+    }
+    if (filteredSearch) headers["x-robots-tag"] = "noindex, follow";
+    if (trackingChoiceFromCookie(request.headers.get("cookie") || "") === "unknown") {
+      documentHtml = documentHtml.replace("</body>", `${renderCookieBannerPaint(locale.locale)}</body>`);
+    }
     return new Response(documentHtml, {
       status: 200,
-      headers: {
-        "content-type": "text/html; charset=utf-8",
-        "cache-control": "public, max-age=0, must-revalidate",
-        "x-bizuply-seo-edge": "marketing",
-        ...(noindex || isUnindexedPreviewHost(getHost(request))
-          ? { "x-robots-tag": "noindex, nofollow" }
-          : {}),
-      },
+      headers: withHostLanguageCookieCleared(headers),
     });
   } catch {
     return passThrough();

@@ -23,7 +23,8 @@ describe("international manual payment form", () => {
     );
     expect(screen.getByText(/גבייה ידנית/)).toBeInTheDocument();
     expect(screen.getByText(/לא מחייב כרטיס/)).toBeInTheDocument();
-    expect(screen.getByTestId("manual-payment-amount")).toHaveValue("5000");
+    expect(screen.getByTestId("manual-payment-amount")).toHaveValue("2990");
+    expect(screen.getByText(/\$2,990 לשנה/)).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "תיעוד תשלום מאומת" }));
     expect(await screen.findByText(/Payment date is required/)).toBeInTheDocument();
     expect(onSaved).not.toHaveBeenCalled();

@@ -11,6 +11,7 @@ import { crmFaqPairs, getCrmCopy, renderCrmPrerender } from "./crmMarketingCopy.
 import { collaborationsPrerender, collaborationsSchemas } from "./collaborationsSeo.mjs";
 import { getCollaborationsCopy } from "../pages/product/collaborations/runtime.js";
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
+import { WEBSITE_SCAN } from "./websiteScanStory.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { HOME_SHELL } from "./homeShell.mjs";
 import { STORY } from "./homepageStory.mjs";
@@ -19,6 +20,8 @@ import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
+import { getCoreProductStory } from "./coreProductStories.mjs";
+import { legalCrawl } from "./legalCrawl.mjs";
 import {
   MARKETING_LOCALE_PREFIXES,
   hasLocalizedMarketingPage,
@@ -57,13 +60,22 @@ const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";
 export const MARKETING_PAGES = [
   {
     path: "/",
-    title: "Bizuply | CRM, lead management, WhatsApp Business API and business tools",
+    title: "BizUply | CRM, lead management, WhatsApp Business API and business tools",
     description:
       "Meet Bizuply: a platform for customer and lead management, WhatsApp Business API, paid campaigns, website building and business automations in one place.",
     crumb: "Bizuply",
     lastmod: "2025-07-09",
     changefreq: "weekly",
     priority: "1.0",
+  },
+  {
+    path: "/website-scan",
+    title: WEBSITE_SCAN.en.title,
+    description: WEBSITE_SCAN.en.description,
+    crumb: WEBSITE_SCAN.en.crumb,
+    lastmod: "2026-11-09",
+    changefreq: "monthly",
+    priority: "0.8",
   },
   {
     path: "/about",
@@ -86,13 +98,13 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/partners",
-    title: "Build Your Business with Bizuply | International Partner Program",
+    title: "Bizuply Partner Program | Build Your Business with Bizuply",
     description:
-      "Apply free to the Bizuply International Partner Program. After approval, choose $499 per month or $5,000 per year. Eligible recurring commission is 30% to 40%, and eligible one-time deals earn 10%.",
+      "Partner with Bizuply. Introduce CRM, WhatsApp Business API, Meta campaigns, automations and websites. Business Partner membership is $299 per month or $2,990 per year after approval. Eligible recurring commission is 30%, 35% or 40%.",
     crumb: "Partners",
-    lastmod: "2026-10-30",
+    lastmod: "2026-11-11",
     changefreq: "monthly",
-    priority: "0.7",
+    priority: "0.8",
   },
   {
     path: "/terms",
@@ -146,9 +158,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/pricing",
-    title: "Service Packages | Bizuply",
+    title: "Plans and prices for the business | BizUply",
     description:
-      "Bizuply service packages — lead response, appointment booking, CRM, automations, campaigns, and content. Pick services and request a tailored quote.",
+      "Choose the BizUply tools and plan that fit how the business works. Published prices stay on this page, including monthly and yearly billing where a plan offers both.",
     crumb: "Pricing",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -176,9 +188,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/crm",
-    title: "CRM Software for Small Businesses & Lead Management | Bizuply",
+    title: "CRM for leads and customers | BizUply",
     description:
-      "Organize leads, manage customers, track follow-ups, and connect supported Meta, Google Ads, and website inquiries with Bizuply CRM. Plans start at $49/month.",
+      "BizUply CRM keeps leads, customers, statuses, notes and follow-up tasks in one place. The published CRM plan is $49 per month.",
     crumb: "CRM",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -186,9 +198,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/collaborations",
-    title: "Business Collaboration Platform & Partnership Opportunities | Bizuply",
+    title: "Business collaborations and opportunities | BizUply",
     description:
-      "Find complementary businesses, explore partnership opportunities, manage collaboration proposals, and connect through business chat with Bizuply.",
+      "BizUply gives businesses a place to find other businesses, post an opportunity and exchange a proposal. Statuses are pending, approved or declined. BizUply does not guarantee a partner, a customer or revenue, and it does not set the commercial terms between the two businesses.",
     crumb: "Collaborations",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -196,9 +208,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/website-builder",
-    title: "Professional Website Builder | Bizuply",
+    title: "Business websites and stores | BizUply",
     description:
-      "Build a website, store, or booking site in a visual editor and publish it to your own domain — with every inquiry from the site flowing straight into your CRM.",
+      "Build a site in the BizUply visual editor and publish it to your address. A supported form on that site can create a lead in the CRM. The site has its own price on the pricing page.",
     crumb: "Website builder",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -206,9 +218,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/automations",
-    title: "Automations for Your Business | Bizuply",
+    title: "Business automations for customers and processes | BizUply",
     description:
-      "Reminders, follow-ups, tasks, and alerts that run in the background and stay connected to your CRM — so fewer leads slip through the cracks.",
+      "BizUply automations run on the business plan. A supported event, such as a new lead, can create a follow-up task. The business plan is $99 per month or $990 per year.",
     crumb: "Automations",
     lastmod: "2026-10-23",
     changefreq: "monthly",
@@ -216,9 +228,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/meta-campaigns",
-    title: "Meta Campaign Management | Bizuply",
+    title: "Meta Campaign Management for the work after the click | BizUply",
     description:
-      "Create and edit Meta campaigns, ad sets, and ads from the Bizuply dashboard, and send Lead Ads into the CRM. Meta bills the ad spend.",
+      "Edit Meta campaigns, ad sets and ads from the BizUply dashboard after the business connects its own ad account. Lead Ads can enter the CRM. Meta bills the spend. BizUply does not replace Ads Manager.",
     crumb: "Meta campaigns",
     lastmod: "2026-10-23",
     changefreq: "monthly",
@@ -236,9 +248,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/agents",
-    title: "Human Agents for Your Business | Bizuply",
+    title: "Human agents for leads and follow-up | BizUply",
     description:
-      "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your Bizuply CRM.",
+      "BizUply agents on this page are people, not a chatbot. They handle defined follow-up on leads according to the service that was purchased. No reply rate or sales rate is promised.",
     crumb: "Agents",
     lastmod: "2026-08-01",
     changefreq: "monthly",
@@ -246,9 +258,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/appointments",
-    title: "Appointment Scheduling | Bizuply",
+    title: "Appointments and bookings for businesses | BizUply",
     description:
-      "Manage your appointment calendar, reminders, and client follow-up with Bizuply Appointments.",
+      "BizUply appointments set business hours, a service catalog with duration and price, and 15-minute openings. Appointments belong to the business plan, not to CRM only.",
     crumb: "Appointments",
     lastmod: "2026-10-22",
     changefreq: "monthly",
@@ -305,6 +317,10 @@ const NOINDEX_PREFIXES = [
   "/store",
   "/whatsapp-api/login",
   "/home-preview",
+  "/compliance/report",
+  "/compliance/account",
+  "/compliance/demo",
+  "/compliance/review",
 ];
 
 export function isSeoDiscoveryPath(pathname) {
@@ -366,21 +382,21 @@ function organizationSchema() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "@id": `${MARKETING_ORIGIN}/#organization`,
-    name: "Bizuply",
+    name: "Bizuply LLC",
     legalName: "Bizuply LLC",
-    alternateName: ["ביזאפלי", "BizUply"],
+    alternateName: ["BizUply", "Bizuply", "ביזאפלי"],
     url: `${MARKETING_ORIGIN}/`,
     logo: ORGANIZATION_LOGO,
     brand: {
       "@type": "Brand",
-      name: "Bizuply",
-      alternateName: "ביזאפלי",
+      name: "BizUply",
+      alternateName: ["Bizuply", "ביזאפלי"],
       url: `${MARKETING_ORIGIN}/`,
       logo: ORGANIZATION_LOGO,
     },
     image: OG_IMAGE,
     description:
-      "Bizuply is a business platform for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
+      "BizUply is the business platform of Bizuply LLC, for CRM, leads, appointments, websites, automations, and WhatsApp. In Hebrew, the brand name is ביזאפלי.",
     contactPoint: {
       "@type": "ContactPoint",
       contactType: "customer support",
@@ -596,6 +612,7 @@ const ABOUT_FAQ = {
 };
 
 function faqItems(path, language) {
+  if (path === "/website-scan") return WEBSITE_SCAN[language]?.faq || WEBSITE_SCAN.en.faq;
   if (path === "/partners") return partnerFaqPairs(language);
   if (path === "/crm") return crmFaqPairs(language);
   if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
@@ -671,7 +688,7 @@ function breadcrumbSchema(page, canonical, language = "en") {
     {
       "@type": "ListItem",
       position: 1,
-      name: language === "he" ? "ביזאפלי" : "Bizuply",
+      name: language === "he" ? "ביזאפלי" : "BizUply",
       item: `${MARKETING_ORIGIN}/`,
     },
   ];
@@ -700,7 +717,7 @@ function sharedSocialTags(title, description, canonical, language = "en", image 
     `<meta property="og:title" content="${safeTitle}" />`,
     `<meta property="og:description" content="${safeDescription}" />`,
     `<meta property="og:type" content="website" />`,
-    `<meta property="og:site_name" content="Bizuply" />`,
+    `<meta property="og:site_name" content="BizUply" />`,
     `<meta property="og:url" content="${escapeHtml(canonical)}" />`,
     `<meta property="og:image" content="${safeImage}" />`,
     `<meta property="og:locale" content="${ogLocale}" />`,
@@ -759,7 +776,7 @@ function crmDocumentHead(locale) {
   const application = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Bizuply CRM",
+    name: "BizUply CRM",
     alternateName: ["ביזאפלי CRM", "ביזאפלי"],
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
@@ -789,15 +806,21 @@ function crmDocumentHead(locale) {
 function collaborationsDocumentHead(locale) {
   const copy = getCollaborationsCopy(locale);
   const lang = ["he", "es", "pt-BR", "ar"].includes(locale) ? locale : "en";
+  const story = getCoreProductStory("/collaborations", lang);
   const canonical = marketingPublicUrl("/collaborations", lang);
-  const page = { path: "/collaborations", title: copy.seo.title, description: copy.seo.description, crumb: copy.crumb };
+  const page = {
+    path: "/collaborations",
+    title: story?.title || copy.seo.title,
+    description: story?.description || copy.seo.description,
+    crumb: story?.crumb || copy.crumb,
+  };
   return [
-    `<title>${escapeHtml(copy.seo.title)}</title>`,
-    `<meta name="description" content="${escapeHtml(copy.seo.description)}" />`,
+    `<title>${escapeHtml(page.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(page.description)}" />`,
     `<meta name="robots" content="index, follow" />`,
     `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
     hreflangTags("/collaborations"),
-    ...sharedSocialTags(copy.seo.title, copy.seo.description, canonical, lang),
+    ...sharedSocialTags(page.title, page.description, canonical, lang),
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, lang))}</script>`,
     `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, lang))}</script>`,
@@ -843,6 +866,8 @@ export function buildMarketingDocumentHead(pathname) {
       `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
       `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, locale))}</script>`,
       path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
+      path === "/website-scan" ? `<script type="application/ld+json">${jsonLd(scanServiceSchema(locale, canonical))}</script>` : "",
+      path === "/website-scan" ? `<script type="application/ld+json">${jsonLd(scanVideoSchema(locale))}</script>` : "",
       faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
   }
@@ -974,6 +999,7 @@ const APP_PREFIXES = [
   "/proposal",
   "/website-invite",
   "/quick-jobs",
+  "/compliance",
   "/invistimo",
   "/whatsapp-api",
   "/checkout",
@@ -1012,6 +1038,10 @@ function renderSection(section) {
   }
   const parts = [`<h2>${escapeText(section.heading)}</h2>`];
   for (const paragraph of section.paragraphs || []) parts.push(`<p>${escapeText(paragraph)}</p>`);
+  for (const sub of section.subsections || []) {
+    parts.push(`<h3>${escapeText(sub.heading)}</h3>`);
+    for (const paragraph of sub.paragraphs || []) parts.push(`<p>${escapeText(paragraph)}</p>`);
+  }
   if (section.steps?.length) parts.push(`<ol>${section.steps.map((step) => `<li>${escapeText(step)}</li>`).join("")}</ol>`);
   if (section.example?.body) parts.push(`<p><strong>${escapeText(section.example.title || "")}</strong> ${escapeText(section.example.body)}</p>`);
   for (const item of section.mistakes || []) parts.push(`<p><strong>${escapeText(item.problem)}</strong> ${escapeText(item.fix)}</p>`);
@@ -1085,13 +1115,48 @@ function websiteSchema() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "@id": `${MARKETING_ORIGIN}/#website`,
-    name: "Bizuply",
-    alternateName: ["ביזאפלי", "BizUply"],
+    name: "BizUply",
+    alternateName: ["Bizuply", "bizuply.com", "ביזאפלי"],
     url: `${MARKETING_ORIGIN}/`,
     description:
-      "Bizuply (ביזאפלי) is the business platform at https://bizuply.com, published by Bizuply LLC.",
+      "BizUply (ביזאפלי) is the business platform at https://bizuply.com, published by Bizuply LLC.",
     inLanguage: ["en", "he", "es", "pt-BR", "ar"],
     publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
+  };
+}
+
+function scanServiceSchema(locale, canonical) {
+  const copy = WEBSITE_SCAN[locale] || WEBSITE_SCAN.en;
+  return {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Bizuply Compliance AI",
+    serviceType: "Website scan",
+    provider: { "@id": `${MARKETING_ORIGIN}/#organization` },
+    areaServed: "Worldwide",
+    url: canonical,
+    description: copy.description,
+    inLanguage: locale,
+    offers: [
+      { "@type": "Offer", name: "Free scan", price: "0", priceCurrency: "USD", description: "First scan with a score and a finding summary. No checkout." },
+      { "@type": "Offer", name: "One-time full report", price: "35", priceCurrency: "USD", description: "One full scan with findings, evidence, recommendations and a PDF. Checkout is not open." },
+      { "@type": "Offer", name: "Quarterly monitoring", price: "119", priceCurrency: "USD", description: "Four full scans a year, billed once a year in advance. Checkout is not open." },
+      { "@type": "Offer", name: "Monthly monitoring", price: "300", priceCurrency: "USD", description: "Twelve full scans a year, billed once a year in advance. Checkout is not open." },
+    ],
+  };
+}
+
+function scanVideoSchema(locale) {
+  const copy = WEBSITE_SCAN[locale] || WEBSITE_SCAN.en;
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: copy.videoTitle,
+    description: copy.transcript,
+    thumbnailUrl: `${MARKETING_ORIGIN}/media/compliance-demo/poster-${locale === "pt-BR" ? "pt" : locale}.jpg`,
+    uploadDate: "2026-11-09",
+    contentUrl: `${MARKETING_ORIGIN}/media/compliance-demo/${locale === "pt-BR" ? "pt" : locale}.mp4`,
+    inLanguage: locale,
   };
 }
 
@@ -1099,8 +1164,8 @@ function softwareSchema(description, canonical) {
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Bizuply",
-    alternateName: ["ביזאפלי", "BizUply"],
+    name: "BizUply",
+    alternateName: ["Bizuply", "bizuply.com", "ביזאפלי"],
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web",
     description,
@@ -1119,13 +1184,28 @@ function renderHomePrerender(locale) {
   return renderPurpleHomePrerender(locale);
 }
 
+function legalPrerender(path) {
+  const doc = path === "/terms" ? legalCrawl.terms : legalCrawl.privacy;
+  const body = doc.paragraphs.map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("");
+  return {
+    lang: "en",
+    dir: "ltr",
+    inner: `<article lang="en" dir="ltr"><h1>${escapeText(doc.title)}</h1>${body}</article>`,
+  };
+}
+
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (locale === "en" && (path === "/privacy" || path === "/privacy-policy" || path === "/terms")) return legalPrerender(path);
   if (path === "/crm") {
     const copy = getCrmCopy(locale);
     return { lang: copy.lang, dir: copy.dir, inner: renderCrmPrerender(locale) };
   }
-  if (path === "/collaborations") return collaborationsPrerender(locale);
+  if (path === "/collaborations") {
+    const collaborationStory = getCoreProductStory(path, locale);
+    if (collaborationStory?.h1) return renderLocalized(collaborationStory, locale, path);
+    return collaborationsPrerender(locale);
+  }
   if (path === "/") return renderHomePrerender(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
     const article = getGuide(path.slice("/guides/".length), locale);
@@ -1139,20 +1219,23 @@ export function buildMarketingPrerender(pathname) {
     if (!localized?.h1) return null;
     return renderLocalized(localized, locale, path);
   }
+  if (path === "/website-scan") return renderLocalized(WEBSITE_SCAN.en, "en", path);
+  const englishStory = getCoreProductStory(path, "en");
+  if (englishStory?.h1) return renderLocalized(englishStory, "en", path);
   const found = findMarketingPage(path);
   if (!found?.page) return null;
   const heading = path === "/partners"
     ? "Build Your Business with Bizuply"
     : path === "/crm"
-    ? "Every lead, every client, every appointment in one place"
+    ? "A CRM for leads, customers, and the sales process"
     : path === "/about"
-      ? "Built for businesses that want their work connected"
+      ? "Meet BizUply"
       : (found.page.title.split("|")[0].trim() || found.page.crumb || "Bizuply");
   const crmFaqs = path === "/crm" ? faqItems("/crm", "en") : null;
   const aboutFaqs = path === "/about" ? faqItems("/about", "en") : null;
   const partnerFaqs = path === "/partners" ? faqItems("/partners", "en") : null;
   const extra = path === "/partners"
-    ? `<p>Submitting an application is free and waits for admin approval. This page does not start a live charge. Payment happens only after approval.</p><p>Monthly Partner is $499 per month and Annual Partner is $5,000 per year, a saving of $988 a year. Both intervals include the same rights. Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%.</p><h2>Questions partners ask</h2>${faqBodyHtml(partnerFaqs)}<p><a href="/partner/register?planKey=partner_international&billing=annual">Apply to Become a Partner</a> <a href="/crm">CRM</a> <a href="/whatsapp-api">WhatsApp Business API</a> <a href="/meta-campaigns">Meta campaigns</a> <a href="/website-builder">Websites</a> <a href="/automations">Automations</a></p>`
+    ? `<p>Submitting an application is free and waits for admin approval. This page does not start a live charge. Payment happens only after approval.</p><h2>Affiliate</h2><p>No membership fee on the percent track. Commission is currently 15% of eligible sales in the catalog.</p><h2>Business Partner</h2><p>Membership is $299 per month or $2,990 per year after approval. Recurring commission follows the partner agreement: 30% for 1–19 active paying customers, 35% for 20–39, and 40% for 40 or more. Eligible one-time deals earn 10%.</p><h2>What partners can sell</h2><p>Partners can introduce CRM, Meta campaigns for Facebook and Instagram ads, WhatsApp Business API, automations and websites available in Bizuply today. Meta campaign tools are included with the Bizuply Business plan after an authorized Meta ad account is connected. Meta bills media spend. Partners earn on eligible Bizuply subscription revenue under the signed agreement, not on Meta ad spend. BeautyFlow, Global Properties, Dinevo, TableFlow and Cliny are industry platforms in the Bizuply catalog. A partner introduces one only when the signed agreement allows that platform.</p><h2>Questions partners ask</h2>${faqBodyHtml(partnerFaqs)}<p><a href="/partners#apply">Apply for partnership</a> <a href="/partner/register?planKey=partner_international&billing=annual">Full registration (after approval)</a> <a href="/crm">CRM</a> <a href="/meta-campaigns">Meta campaigns</a> <a href="/whatsapp-api">WhatsApp Business API</a> <a href="/website-builder">Websites</a> <a href="/automations">Automations</a></p>`
     : path === "/crm"
     ? `<h2>Who it is for</h2><p>Service businesses, teams running lead ads, and businesses whose Bizuply website form should enter the same pipeline.</p><h2>Pricing</h2><p>CRM only is $49 per month and renews monthly. The business plan, which includes CRM together with appointments, collaborations and automations, is $99 per month or $990 per year.</p><h2>FAQ</h2>${faqBodyHtml(crmFaqs)}`
     : path === "/about" && aboutFaqs

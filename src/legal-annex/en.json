@@ -1,0 +1,70 @@
+{
+  "docs": {
+    "partner": {
+      "title": "International Partner Terms",
+      "paragraphs": [
+        "These terms are the public international partner terms of Bizuply LLC, formed in Delaware, United States. They do not replace an agreement that Bizuply and that partner have signed. If the signed agreement states a different price, commission, territory, or term, the signed agreement controls. Delaware law, applicable United States federal law, and the Delaware courts in the terms of service apply, and they do not remove a mandatory right.",
+        "Where that is the actual relationship, the partner is an independent business, not an employee, and not an agent who can bind Bizuply. The partner is responsible for the partner's own taxes. These terms do not promise income, profit, or a number of customers.",
+        "The international plan in the product catalog is 499 US dollars a month or 5,000 US dollars a year. Live card billing for that catalog row is off. A manual payment record requires an amount, a payment date, a reference, and a billing period. A reference is not itself proof that money was received. Opening a checkout page is not described as the start of a license.",
+        "For that international plan, an eligible one-time sale is commissioned at 10 percent. Recurring commission on eligible subscription totals is 30 percent for 1 to 19 eligible customers, 35 percent for 20 to 39, and 40 percent for 40 or more. The product code marks these calculations as not charged live. Legacy partner plans are not repriced here. The 10, 30, 35, and 40 percent rates apply to eligible customer sales. A separate referral record can pay for introducing another partner: the referral service stores a reward amount of 500, and the commission ledger records that row in USD. For this international plan that row is recalculated with the agreement-percent method. Legacy markup plans keep the share already on that referral row. This page does not change either path.",
+        "A refund, failed payment, or chargeback reduces the amount on which commission is calculated. Fraud and self-dealing are grounds to withhold the related commission and to suspend the license. A single payout date, payout threshold, transfer fee, and conversion rate are not stated because the catalog does not contain one figure for them.",
+        "The partner may use the Bizuply name and logo only as Bizuply allows, and may not present itself as Bizuply. The partner may not promise income, send unsolicited marketing, or use leads without a lawful basis. Bizuply may withdraw permission to use the brand.",
+        "The customer-sale rates do not by themselves decide whether a business-opportunity, franchise, or multi-level-marketing law applies where the program is offered. The referral reward above is a separate record. No such classification is made in these terms."
+      ]
+    },
+    "dpa": {
+      "title": "Data Processing Terms",
+      "paragraphs": [
+        "When Bizuply keeps account, billing, and support records for its own service, Bizuply decides the purposes of that information. When a business customer stores its own customers' information in the CRM or another SaaS tool, Bizuply processes that information for the customer.",
+        "The purposes are the subscribed features the customer uses, including CRM, messaging, scheduling, and AI features when they are used. The information is what the customer submits and the technical logs needed to run the service. This page does not list every field.",
+        "Access follows the accounts the product provides. The public site uses HTTPS. Encryption at rest, a fixed deletion period, and a fixed breach-notice period are not stated because they were not verified.",
+        "The providers are listed on the subprocessor page. Storage regions were not found in the product repository. Standard contractual clauses, a UK transfer addendum, an EU or UK representative, and a data-protection officer are not claimed.",
+        "A privacy request can be recorded on the privacy page or sent to support@bizuply.com. The form can confirm an email code. It does not confirm identity, it does not disclose information, and it does not delete records. A request about a business customer's database is routed to that customer. Self-service export and deletion of every record were not verified.",
+        "When the subscription ends, access ends under the terms of service. This page does not promise that every record is deleted or returned within a stated number of days.",
+        "When a business customer connects Meta, the processing for that customer covers the lead records stored on the customer record, CRM entries, campaign and ad identifiers the connection returns, WhatsApp business communication when that connection is on, and automations that use those records. The customer decides the purposes of that information. Bizuply processes it for the connected service, may use the subprocessors on the subprocessor page, and handles a privacy request as the privacy page describes. Deletion or return follows the agreement and the applicable law. No automatic deletion was verified."
+      ]
+    },
+    "subprocessors": {
+      "title": "Subprocessors",
+      "paragraphs": [
+        "This list names providers found in the product. It does not say a data-processing agreement with each provider was signed, and it does not state a storage country.",
+        "Lemon Squeezy handles platform subscription checkout. MongoDB holds the application database. Redis is used for cache and queues. Railway hosts the application. Vercel hosts the site. Cloudinary stores media. Resend sends email.",
+        "OpenAI is used for AI features when a key is configured. This list does not state whether that provider trains on the content. Meta provides WhatsApp Business when a customer connects it, lead-form and ads connections the product stores, and the advertising pixel after measurement consent. Custom-audience membership lists and a Conversions API pipeline were not identified as stored products. Twilio is used for phone calls when it is enabled.",
+        "Stripe is used for some merchant storefront payments and is not the platform subscription processor. PayPal is used for some store order confirmations. Google Fonts serves fonts on platform pages. Cloudflare Turnstile loads only when a site key is configured.",
+        "Public processing terms were read on 7 November 2026. Reading a page is not a signed acceptance and is not a storage region. The register on this page is that reading. MongoDB's DPA is incorporated into its cloud agreement. Railway's DPA is executed through a separate request, and no executed copy was found. Vercel's addendum says it applies to Enterprise and Pro plans, and this account's plan was not read. The Redis host is not named, so the Redis Cloud addendum is not treated as the contract. Lemon Squeezy's buyer terms describe a merchant of record, and the signed store agreement was not found, so that role is not adopted here."
+      ]
+    },
+    "transfers": {
+      "title": "International Transfers",
+      "paragraphs": [
+        "The product repository does not record the country where MongoDB, Redis, or Railway stores information. This page does not say that information stays only in the United States.",
+        "A provider on the subprocessor list may process information where that provider operates. Standard contractual clauses, a UK transfer addendum, a transfer assessment, an EU or UK representative, and a data-protection officer were not found in the repository and are not claimed.",
+        "A mandatory privacy law that covers a person still applies. Delaware law in the terms of service does not remove that law."
+      ]
+    },
+    "use": {
+      "title": "Acceptable Use",
+      "paragraphs": [
+        "The rules for accounts, credentials, prohibited content, suspension, and termination are sections 4, 6, and 12 of the terms of service. This page does not remove those protections or add a conflicting rule.",
+        "A customer or partner may not use the service to send unsolicited marketing, to break the law, or to submit content the person has no right to submit. The customer is responsible for the contact lists and messages the customer sends.",
+        "Service messages about an account or a subscription are separate from marketing messages. Marketing measurement loads only after the visitor chooses it, as the privacy policy describes."
+      ]
+    },
+    "ai": {
+      "title": "AI Features",
+      "paragraphs": [
+        "AI features run when they are configured. When OpenAI is the configured provider, the content needed for the feature is sent to that provider. This page does not say that the provider trains on that content, and it does not say that the provider does not.",
+        "The customer is responsible for having a right to submit the content. AI output is not legal, financial, or tax advice. The limitation of liability in the terms of service remains in force."
+      ]
+    },
+    "subscriptions": {
+      "title": "Subscriptions, Cancellation, and Refunds",
+      "paragraphs": [
+        "The platform billing catalog prices these plans in US dollars: Business Monthly 99 a month, Business Yearly 990 a year, CRM Only 49 a month, and Website Only 129 a year. Some internal SKU names still contain the letters ILS. Those names are not a second price.",
+        "Lemon Squeezy is the checkout for these platform subscriptions. The notice shown before checkout says the subscription renews until it is cancelled in billing, cancellation stops the next charge, and access lasts until the end of the paid period. Refunds follow the terms of service, including the limit that a mandatory consumer law controls where it applies.",
+        "Whether Lemon Squeezy is the merchant of record and the tax collector for this store was not verified from a signed agreement. Bank account numbers for a transfer are not in the catalog. The yearly plans above use a yearly billing interval. This page does not say that every separate license renews without a new charge.",
+        "The international partner plan is stated on the partner terms page. Its catalog row does not turn on live card billing."
+      ]
+    }
+  }
+}

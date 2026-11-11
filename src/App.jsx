@@ -13,16 +13,22 @@ import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
 const PreLoginBot = lazy(() => import("./components/PreLoginBot"));
 const SupportChatWidget = lazy(() => import("./components/SupportChatWidget"));
 const AccessibilityWidget = lazy(() => import("./components/site-plugins/accessibility/AccessibilityWidget"));
+import PlatformConsentBanner from "./components/tracking/PlatformConsentBanner";
 const AdminSoftphoneHost = lazy(() => import("./components/AdminSoftphoneHost"));
 const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
 const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+const ComplianceScannerPage = lazy(() => import("./pages/public/ComplianceScannerPage"));
+const ComplianceDemoPage = lazy(() => import("./pages/public/ComplianceDemoPage"));
+const WebsiteScanPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.WebsiteScanPage })));
+const ComplianceAccountPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.ComplianceAccountPage })));
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
 import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
 import { isBizuplyTravelHost } from "./lib/travelHost.mjs";
 import { isGeoIntelHost } from "./lib/geoHost.mjs";
+import { isGlobalPartnersHost } from "./lib/partnersHost.mjs";
 import { shouldRenderWhatsAppLanding } from "./lib/whatsappHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
@@ -133,6 +139,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
 const Terms = lazy(() => import("./pages/Terms"));
+const LegalAnnex = lazy(() => import("./pages/LegalAnnex"));
 const Contact = lazy(() => import("./pages/Contact"));
 const BusinessSupport = lazy(() => import("./pages/BusinessSupport"));
 const BusinessOverview = lazy(() => import("./pages/business/Business"));
@@ -186,17 +193,27 @@ const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminClubPage = lazy(() => import("./pages/admin/AdminClubPage"));
 const AdminEarlyAccess = lazy(() => import("./pages/admin/AdminEarlyAccess"));
+const AdminSaasHome = lazy(() => import("./pages/admin/saas/AdminSaasHome"));
+const AdminSaasSystems = lazy(() => import("./pages/admin/saas/AdminSaasSystems"));
 const AdminSaasMarketplace = lazy(() => import("./pages/admin/AdminSaasMarketplace"));
 const AdminSaasControlCenter = lazy(() => import("./pages/admin/AdminSaasControlCenter"));
 const AdminManagedWhatsApp = lazy(
   () => import("./pages/admin/AdminManagedWhatsApp")
 );
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
+const ComplianceScansAdminPage = lazy(() => import("./pages/admin/ComplianceScansAdminPage"));
+const ComplianceScanDetailPage = lazy(() => import("./pages/admin/ComplianceScanDetailPage"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
+const AdminGlobalPartners = lazy(() =>
+  import("./pages/admin/globalPartners/AdminGlobalPartners")
+);
 const GeoStagingPreview = lazy(() =>
   import("./pages/admin/geoIntel/GeoStagingPreview")
 );
+const KeywordResearchDevPreview = import.meta.env.DEV
+  ? lazy(() => import("./pages/admin/geoIntel/KeywordResearchDevPreview"))
+  : null;
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminLegalProfile = lazy(() => import("./pages/admin/AdminLegalProfile"));
@@ -206,6 +223,7 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminSaasTenants = lazy(() => import("./pages/admin/AdminSaasTenants"));
 const AdminSaasDeals = lazy(() => import("./pages/admin/AdminSaasDeals"));
+const AdminSaasInternal = lazy(() => import("./pages/admin/AdminSaasInternal"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const AdminCrmLayout = lazy(() => import("./pages/admin/crm/AdminCrmLayout"));
@@ -241,6 +259,7 @@ const PartnerCenterPage = lazy(() => import("./pages/partner/PartnerCenterPage")
 const PublicPartnerMaterial = lazy(() => import("./pages/public/PublicPartnerMaterial"));
 const AdminPartnerDossier = lazy(() => import("./pages/admin/AdminPartnerDossier"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
+const AdminPrivacyRequests = lazy(() => import("./pages/admin/AdminPrivacyRequests"));
 const MarketerDashboardPage = lazy(() =>
   import("./pages/marketer/MarketerDashboardPage")
 );
@@ -284,6 +303,7 @@ const CollabLegacyRedirect = lazy(
 const Features = lazy(() => import("./pages/Features"));
 const Solutions = lazy(() => import("./pages/Solutions"));
 const ActivityPage = lazy(() => import("./pages/public/ActivityPage"));
+const PlatformExperience = lazy(() => import("./pages/public/PlatformExperience"));
 const Support = lazy(() => import("./pages/Support"));
 const TrialEnded = lazy(() => import("./pages/TrialEnded"));
 const MetaCallbackPage = lazy(() =>
@@ -824,8 +844,39 @@ function ScrollToTop() {
   const { pathname, search, hash, key } = useLocation();
 
   useEffect(() => {
-    // Footer / nav links should always open at the top of the destination page.
-    if (hash) return;
+    // A link with a hash opens that section. Other footer and nav links open at the top.
+    if (hash) {
+      let stopped = false;
+      const scrollToSection = () => {
+        if (stopped) return;
+        const id = decodeURIComponent(hash.slice(1));
+        const target = id ? document.getElementById(id) : null;
+        if (!target) return;
+        const top = target.getBoundingClientRect().top;
+        if (Math.abs(top) <= 80) return;
+        let node = target.parentElement;
+        while (node && node !== document.documentElement) {
+          const style = window.getComputedStyle(node);
+          if (node.scrollHeight > node.clientHeight + 20 && /(auto|scroll)/.test(style.overflowY)) {
+            node.scrollTop += top - 12;
+            return;
+          }
+          node = node.parentElement;
+        }
+        window.scrollTo(0, window.scrollY + top - 12);
+      };
+      scrollToSection();
+      const timer = window.setInterval(scrollToSection, 100);
+      const stop = window.setTimeout(() => {
+        stopped = true;
+        window.clearInterval(timer);
+      }, 4000);
+      return () => {
+        stopped = true;
+        window.clearInterval(timer);
+        window.clearTimeout(stop);
+      };
+    }
 
     const scrollAllToTop = () => {
       const scroller = document.querySelector(".app-scroll-area");
@@ -911,21 +962,25 @@ export default function App() {
   const isHomePreview = location.pathname === "/home-preview";
   // Production GEO host (geo.bizuply.com) — admin-only internal shell, Hebrew RTL.
   const isGeoProductionHost = isGeoIntelHost(hostname);
+  // Global Partners host (partners.bizuply.com) — owner-only internal shell, Hebrew RTL.
+  const isPartnersProductionHost = isGlobalPartnersHost(hostname);
+  const isPrivateOwnerHost = isGeoProductionHost || isPartnersProductionHost;
 
   useEffect(() => {
-    if (!isGeoProductionHost) return;
+    if (!isPrivateOwnerHost) return;
     if (i18n.language !== "he") {
       void i18n.changeLanguage("he");
     }
     document.documentElement.lang = "he";
     document.documentElement.dir = "rtl";
-  }, [isGeoProductionHost, i18n]);
+  }, [isPrivateOwnerHost, i18n]);
 
-  const appDir = isGeoProductionHost ? "rtl" : getTextDirection(i18n.language);
-  const appLang = isGeoProductionHost ? "he" : getHtmlLang(i18n.language);
+  const appDir = isPrivateOwnerHost ? "rtl" : getTextDirection(i18n.language);
+  const appLang = isPrivateOwnerHost ? "he" : getHtmlLang(i18n.language);
   const isCinematicHome =
-    !isGeoProductionHost &&
+    !isPrivateOwnerHost &&
     (location.pathname === "/" || isHomePreview);
+  const shareSiteHeader = isCinematicHome || /\/website-scan\/?$/.test(location.pathname);
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -938,6 +993,10 @@ export default function App() {
   // Isolated GEO staging surface — no public Header / language switcher / Get Started.
   const isGeoStagingRoute = location.pathname.startsWith("/geo-staging");
   const isGeoSurface = isGeoStagingRoute || isGeoProductionHost;
+  const isGlobalPartnersStagingRoute = location.pathname.startsWith("/global-partners-staging");
+  const isGlobalPartnersSurface =
+    isGlobalPartnersStagingRoute || isPartnersProductionHost;
+  const isPrivateOwnerSurface = isGeoSurface || isGlobalPartnersSurface;
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
   // The WhatsApp API product login is a standalone page with its own branding.
@@ -1109,24 +1168,25 @@ export default function App() {
     !isSaasMarketplaceRoute &&
     !isSaasPublicSite &&
     !isDevVisualRoute &&
-    !isGeoSurface &&
+    !isPrivateOwnerSurface &&
     !isMiniSiteHost &&
     !isPublicProposalRoute &&
     !isPartnerSignRoute &&
     !isPublicPartnerDeal &&
     !isPublicPartnerSales &&
     !isBizuplyPublicBookingRoute;
+  const scanFilm = /\/compliance\/demo\/?$/.test(location.pathname) && new URLSearchParams(location.search).get("film") === "1";
 
   return (
     <NotificationsProvider>
-      <div className={`app-layout${isCinematicHome ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
+      <div className={`app-layout${shareSiteHeader ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
-          !isSaasMarketplaceRoute && !isSaasPublicSite &&
+          !isSaasPublicSite &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isAdminRoute &&
-          !isGeoSurface &&
+          !isPrivateOwnerSurface &&
           !isStaffRoute &&
           !isPublicPartnerDeal &&
           !isPublicPartnerSales &&
@@ -1135,7 +1195,8 @@ export default function App() {
           !isPartnerSignRoute &&
           !isWhatsAppApiLogin &&
           (!isAuthShellRoute || isLoginRoute) &&
-          !isBizuplyPublicBookingRoute && <Header />}
+          !isBizuplyPublicBookingRoute &&
+          !scanFilm && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
         {isStaffRoute ? <Suspense fallback={null}><StaffSoftphoneHost /></Suspense> : null}
@@ -1201,6 +1262,16 @@ export default function App() {
                       }}
                     >
                       <Routes location={location}>
+                        {import.meta.env.DEV && KeywordResearchDevPreview ? (
+                          <Route
+                            path="/dev/keyword-research"
+                            element={
+                              <Suspense fallback={null}>
+                                <KeywordResearchDevPreview />
+                              </Suspense>
+                            }
+                          />
+                        ) : null}
                         {isGeoProductionHost ? (
                           <>
                             <Route path="/login" element={<Login />} />
@@ -1220,6 +1291,31 @@ export default function App() {
                                 <ProtectedRoute roles={["admin"]}>
                                   <Suspense fallback={null}>
                                     <AdminGeoIntel />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route path="*" element={<Navigate to="/" replace />} />
+                          </>
+                        ) : isPartnersProductionHost ? (
+                          <>
+                            <Route path="/login" element={<Login />} />
+                            <Route
+                              path="/"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGlobalPartners />
+                                  </Suspense>
+                                </ProtectedRoute>
+                              }
+                            />
+                            <Route
+                              path="/admin/global-partners"
+                              element={
+                                <ProtectedRoute roles={["admin"]}>
+                                  <Suspense fallback={null}>
+                                    <AdminGlobalPartners />
                                   </Suspense>
                                 </ProtectedRoute>
                               }
@@ -1268,6 +1364,12 @@ export default function App() {
 
                         <Route path="/about" element={<About />} />
                         <Route path="/crm" element={<CrmProductPage />} />
+                        <Route path="/compliance/account" element={<ComplianceAccountPage />} />
+                        <Route path="/compliance/demo" element={<ComplianceDemoPage />} />
+                        <Route path="/website-scan" element={<WebsiteScanPage />} />
+                        <Route path="/compliance/review" element={<ComplianceScannerPage />} />
+                        <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
+                        <Route path="/compliance" element={<ComplianceScannerPage />} />
                         <Route
                           path="/collaborations"
                           element={<CollaborationsProductPage />}
@@ -1348,6 +1450,7 @@ export default function App() {
                         <Route path="/faq" element={<FAQ />} />
                         <Route path="/accessibility" element={<Accessibility />} />
                         <Route path="/terms" element={<Terms />} />
+                        <Route path="/legal/:doc" element={<LegalAnnex />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/partners" element={<PartnersRecruitment />} />
 
@@ -1446,7 +1549,7 @@ export default function App() {
                         <Route path="/support" element={<Support />} />
                         <Route path="/features" element={<Features />} />
                         <Route path="/solutions" element={<Solutions />} />
-                        <Route path="/platform" element={<ActivityPage />} />
+                        <Route path="/platform" element={<PlatformExperience />} />
                         <Route path="/services" element={<ActivityPage />} />
                         <Route path="/services/:slug" element={<ActivityPage />} />
                         <Route path="/solutions/:slug" element={<ActivityPage />} />
@@ -1627,6 +1730,18 @@ export default function App() {
                             }
                           />
                         ) : null}
+                        {import.meta.env.VITE_GLOBAL_PARTNERS_STAGING === "1" ? (
+                          <Route
+                            path="/global-partners-staging"
+                            element={
+                              <ProtectedRoute roles={["admin"]}>
+                                <Suspense fallback={null}>
+                                  <AdminGlobalPartners />
+                                </Suspense>
+                              </ProtectedRoute>
+                            }
+                          />
+                        ) : null}
                         <Route
                           path="/admin"
                           element={
@@ -1639,6 +1754,8 @@ export default function App() {
                         <Route path="dashboard" element={<AdminDashboard />} />
                         <Route path="club" element={<AdminClubPage />} />
                         <Route path="early-access" element={<AdminEarlyAccess />} />
+                        <Route path="saas" element={<AdminSaasHome />} />
+                        <Route path="saas-systems" element={<AdminSaasSystems />} />
                         <Route path="saas-marketplace" element={<AdminSaasMarketplace />} />
                         <Route path="saas-control-center" element={<AdminSaasControlCenter />} />
                         <Route path="managed-whatsapp" element={<AdminManagedWhatsApp />} />
@@ -1647,8 +1764,11 @@ export default function App() {
                         <Route path="system" element={<AdminSystemHub />} />
                         <Route path="withdrawals" element={<AdminWithdrawalsPage />} />
                         <Route path="logs" element={<AdminLogs />} />
+                        <Route path="compliance-scans/:scanId" element={<ComplianceScanDetailPage />} />
+                        <Route path="compliance-scans" element={<ComplianceScansAdminPage />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
                         <Route path="geo-intel" element={<AdminGeoIntel />} />
+                        <Route path="global-partners" element={<AdminGlobalPartners />} />
                         <Route path="plans" element={<AdminPlans />} />
                         <Route path="settings/legal" element={<AdminLegalProfile />} />
                         <Route path="settings/partner-program" element={<AdminSubPartnerPricing />} />
@@ -1656,6 +1776,7 @@ export default function App() {
                         <Route path="users" element={<AdminUsers />} />
                         <Route path="create-user" element={<AdminCreateUser />} />
                         <Route path="saas-deals" element={<AdminSaasDeals />} />
+                        <Route path="saas-internal" element={<AdminSaasInternal />} />
                         <Route path="saas-tenants" element={<AdminSaasTenants />} />
                         <Route path="businesses" element={<AdminBusinesses />} />
                         <Route path="customers" element={<AdminCustomers />} />
@@ -1686,6 +1807,7 @@ export default function App() {
                         <Route path="partners/:partnerId" element={<AdminPartnerDossier />} />
                         <Route path="partners" element={<AdminPartners />} />
                         <Route path="support-chat" element={<AdminSupportChat />} />
+                        <Route path="privacy-requests" element={<AdminPrivacyRequests />} />
                         <Route path="affiliate-payouts" element={<AdminPayoutPage />} />
                         </Route>
 
@@ -1758,7 +1880,7 @@ export default function App() {
           !isPublicBusinessProfile &&
           !isCinematicHome &&
           !isEarlyAccessLanding &&
-          !isSaasMarketplaceRoute && !isSaasPublicSite &&
+          !isSaasPublicSite &&
           !isDevVisualRoute &&
           !isHiddenOffer &&
           !isGuidedDemoRoute &&
@@ -1768,13 +1890,14 @@ export default function App() {
           !isPublicPartnerSales &&
           !isWhatsAppApiLogin &&
           !isAuthShellRoute &&
-          !isGeoSurface &&
-          !isBizuplyPublicBookingRoute && <Footer />}
+          !isPrivateOwnerSurface &&
+          !isBizuplyPublicBookingRoute &&
+          !scanFilm && <Footer />}
       </div>
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isGeoSurface && (
+      {!scanFilm && !user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isPrivateOwnerSurface && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
@@ -1802,10 +1925,11 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute &&
-        !isGeoSurface &&
+        !isPrivateOwnerSurface &&
         !isWhatsAppApiLogin &&
         !location.pathname.startsWith("/embed/") &&
-        !isMiniSiteHost && (
+        !isMiniSiteHost &&
+        !scanFilm && (
           <Suspense fallback={null}><SupportChatWidget /></Suspense>
         )}
 
@@ -1815,16 +1939,21 @@ export default function App() {
         !isEarlyAccessLanding &&
         !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
-        !isGeoSurface &&
+        !isPrivateOwnerSurface &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
         !isPartnerSignRoute &&
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isCinematicHome &&
-        !isBizuplyPublicBookingRoute && (
+        !isBizuplyPublicBookingRoute &&
+        !scanFilm && (
           <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
         )}
+
+      {!isSaasPublicSite && !isMiniSiteHost && !location.pathname.startsWith("/embed/") && (
+        <PlatformConsentBanner />
+      )}
 
       {showPublicWidgets && (
         <div

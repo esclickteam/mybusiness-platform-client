@@ -174,7 +174,7 @@ export default function MetaAdsDateRangePicker({ now }: { now?: Date }) {
       </button>
       {open && draft
         ? createPortal(
-            <div dir={dir} className="fixed inset-0 z-[80] bg-slate-900/20 p-2 sm:p-6" onMouseDown={closePanel}>
+            <div dir={dir} className="biz-module fixed inset-0 z-[80] bg-slate-900/20 p-2 sm:p-6" onMouseDown={closePanel}>
               <div
                 role="dialog"
                 dir={dir}

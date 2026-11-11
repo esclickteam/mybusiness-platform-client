@@ -10,6 +10,15 @@ export type Brand = {
 
 export type Tab =
   | "overview"
+  | "weeklyActions"
+  | "gscOpportunities"
+  | "aiRadar"
+  | "beforeAfter"
+  | "brandProfile"
+  | "seoGeoMatrix"
+  | "pageAudit"
+  | "monthlyDecision"
+  | "keywordResearch"
   | "visibility"
   | "appeared"
   | "missing"
@@ -22,9 +31,10 @@ export type Tab =
   | "tech"
   | "trends"
   | "reports"
-  | "beforeAfter"
   | "measurements"
   | "alerts"
+  | "catalogDraft"
+  | "costs"
   | "settings";
 
 export type Engine = {

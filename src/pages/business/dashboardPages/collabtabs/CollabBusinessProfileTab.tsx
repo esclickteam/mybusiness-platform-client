@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 import API from "../../../../api";
+import "../../../accountDesign.css";
 import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 import CollabChat from "./CollabChat";
 import { useAi } from "../../../../context/AiContext";
@@ -298,7 +299,11 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
   }, [profileData]);
 
   if (loading || !profileData) {
-    return <BizuplyLoadingState label={t("leftover.collab.profile.loading")} />;
+    return (
+      <div className="acct-app min-h-[40vh]">
+        <BizuplyLoadingState label={t("leftover.collab.profile.loading")} />
+      </div>
+    );
   }
 
   const safeProfile: SafeProfile = {
@@ -315,9 +320,9 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
   const token = (API as any).token || localStorage.getItem("token") || "";
 
   return (
-    <>
+    <div className="acct-app">
       <section dir={dir} className="space-y-6 text-start">
-        <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
+        <section className="acct-hero relative overflow-hidden p-5 sm:p-7">
           <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
 
@@ -351,7 +356,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
               </label>
 
               <div className="min-w-0">
-                <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
+                <div className="acct-kicker inline-flex items-center gap-2 px-4 py-2 text-xs font-black">
                   <Sparkles className="h-4 w-4" />
                   {t("collab.profile.badge")}
                 </div>
@@ -777,7 +782,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
         rejectSuggestion={rejectSuggestion}
         closeModal={closeModal}
       />
-    </>
+    </div>
   );
 }
 

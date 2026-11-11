@@ -35,31 +35,35 @@ export default function useAiInsights(businessId) {
   const language = String(i18n.language || "en").split("-")[0];
   const debounceTimerRef = useRef(null);
   const businessIdRef = useRef(businessId);
+  const insightsRef = useRef([]);
   businessIdRef.current = businessId;
 
   const fetchInsights = useCallback(async () => {
     const id = businessIdRef.current;
     if (!id || typeof id !== "string" || id.length !== 24) {
+      insightsRef.current = [];
       setInsights([]);
       return;
     }
 
-    setLoading(true);
-    setError(null);
+    const firstLoad = insightsRef.current.length === 0;
+    if (firstLoad) setLoading(true);
 
     try {
       const res = await API.post("/ai/insights", { businessId: id, language });
-
-      if (Array.isArray(res.data)) {
-        setInsights(res.data);
-      } else if (Array.isArray(res.data?.insights)) {
-        setInsights(res.data.insights);
-      } else {
-        setInsights([]);
-      }
+      const next = Array.isArray(res.data)
+        ? res.data
+        : Array.isArray(res.data?.insights)
+          ? res.data.insights
+          : [];
+      insightsRef.current = next;
+      setInsights((current) =>
+        JSON.stringify(current) === JSON.stringify(next) ? current : next
+      );
+      setError(null);
     } catch {
       setError(t("aiInsights.loadError"));
-      setInsights([]);
+      if (insightsRef.current.length === 0) setInsights([]);
     } finally {
       setLoading(false);
     }
@@ -72,7 +76,7 @@ export default function useAiInsights(businessId) {
     debounceTimerRef.current = setTimeout(() => {
       debounceTimerRef.current = null;
       void fetchInsights();
-    }, 350);
+    }, 1600);
   }, [fetchInsights]);
 
   useEffect(() => {

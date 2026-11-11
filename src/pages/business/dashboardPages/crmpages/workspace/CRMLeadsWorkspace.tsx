@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   Archive,
   Columns3,
@@ -35,6 +36,7 @@ import {
   type WorkspaceLead,
 } from "./crmWorkspaceApi";
 import CRMLeadCard from "./CRMLeadCard";
+import "../crmDesign.css";
 import {
   DEFAULT_COLUMNS,
   EMPTY_LEAD_LIST_STATE,
@@ -57,6 +59,8 @@ export default function CRMLeadsWorkspace({
 }) {
   const { t, i18n } = useTranslation();
   const locale = i18n.language || "he";
+  const [searchParams, setSearchParams] = useSearchParams();
+  const leadIdFromUrl = searchParams.get("leadId") || "";
   const [state, setState] = useState<LeadListState>(() => loadLeadListState(businessId));
   const [leads, setLeads] = useState<WorkspaceLead[]>([]);
   const [total, setTotal] = useState(0);
@@ -146,20 +150,57 @@ export default function CRMLeadsWorkspace({
   }, []);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const leadId = params.get("leadId");
-    if (leadId) setOpenLeadId(leadId);
+    const status = new URLSearchParams(window.location.search).get("status");
+    const allowedStatus = new Set([
+      "new",
+      "contacted",
+      "in_progress",
+      "interested",
+      "quote",
+      "negotiation",
+      "converted",
+      "lost",
+      "old",
+    ]);
+    if (!status || !allowedStatus.has(status)) return;
+    setState((prev) => (prev.status === status ? prev : { ...prev, status, page: 1 }));
+  }, []);
+
+  useEffect(() => {
+    setOpenLeadId(leadIdFromUrl);
+  }, [leadIdFromUrl]);
+
+  const setLeadInUrl = (id: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (id) next.set("leadId", id);
+      else next.delete("leadId");
+      return next;
+    }, { replace: true });
+  };
+
+  const openLead = (id: string) => {
+    setState((prev) => ({ ...prev, scrollTop: tableRef.current?.scrollTop || 0 }));
+    setLeadInUrl(id);
+  };
+
+  const closeLead = () => {
+    setLeadInUrl("");
+  };
+
+  useEffect(() => {
     const onOpen = (event: Event) => {
       const detail = (event as CustomEvent).detail || {};
-      if (detail.leadId) setOpenLeadId(String(detail.leadId));
+      if (detail.leadId) setLeadInUrl(String(detail.leadId));
     };
+    const onUpdated = () => void load(true);
     window.addEventListener("bizuply:open-lead", onOpen as EventListener);
-    window.addEventListener("bizuply:leads-updated", () => void load(true));
+    window.addEventListener("bizuply:leads-updated", onUpdated);
     return () => {
       window.removeEventListener("bizuply:open-lead", onOpen as EventListener);
-      window.removeEventListener("bizuply:leads-updated", () => void load(true));
+      window.removeEventListener("bizuply:leads-updated", onUpdated);
     };
-  }, [load]);
+  }, [load, setSearchParams]);
 
   useEffect(() => {
     if (tableRef.current) tableRef.current.scrollTop = state.scrollTop;
@@ -259,71 +300,98 @@ export default function CRMLeadsWorkspace({
     setFunnel(nextFunnel.funnel || []);
   };
 
-  return (
-    <div className="space-y-3" dir={getTextDirection(i18n.language)}>
-      {error && <div className="rounded-xl border border-rose-200 bg-rose-50 p-3 text-sm font-bold text-rose-700">{error}</div>}
-      {notice && <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm font-bold text-emerald-700">{notice}</div>}
+  const activeFilters = [
+    state.status !== "all",
+    state.stage !== "all",
+    state.source !== "all",
+    Boolean(state.campaign),
+    Boolean(state.formId),
+    state.assignedTo !== "all",
+    Boolean(state.dateFrom),
+    Boolean(state.dateTo),
+  ].filter(Boolean).length;
 
-      <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-3">
-        <div className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3">
-          <Search className="h-4 w-4 text-slate-400" />
+  return (
+    <div className="crm-leads" dir={getTextDirection(i18n.language)}>
+      {error && <div className="crm-notice is-error">{error}</div>}
+      {notice && <div className="crm-notice is-ok">{notice}</div>}
+
+      <div className="crm-leads-bar">
+        <div className="crm-search">
+          <Search className="h-4 w-4 text-[#5B21B6]" />
           <input
             value={state.q}
             onChange={(event) => updateState({ q: event.target.value })}
             placeholder={t("crm.workspace.searchPlaceholder")}
-            className="h-10 w-full bg-transparent text-sm font-semibold outline-none"
           />
         </div>
-        <button type="button" className="icon-btn" onClick={() => setShowFilters((value) => !value)}>
+        <button
+          type="button"
+          className={`crm-tool${showFilters || activeFilters ? " is-on" : ""}`}
+          onClick={() => setShowFilters((value) => !value)}
+        >
           <Filter className="h-4 w-4" /> {t("crm.common.filter")}
+          {activeFilters > 0 && <span className="crm-count">{activeFilters}</span>}
         </button>
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label={t("crm.leads.listView")}
-          onClick={() => setState((prev) => ({ ...prev, viewMode: "table" }))}
-        >
-          <LayoutList className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label={t("crm.workspace.compactView")}
-          onClick={() => setState((prev) => ({ ...prev, viewMode: "compact" }))}
-        >
-          <Columns3 className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          className="icon-btn"
-          aria-label={t("crm.leads.boardView")}
-          onClick={() => setState((prev) => ({ ...prev, viewMode: "kanban" }))}
-        >
-          <LayoutGrid className="h-4 w-4" />
-        </button>
-        <button type="button" className="icon-btn" onClick={() => setShowColumns((value) => !value)}>
+        <div className="crm-view-switch" role="group" aria-label={t("crm.clients.toolbar.view")}>
+          <button
+            type="button"
+            className={`crm-tool${state.viewMode === "table" ? " is-on" : ""}`}
+            aria-label={t("crm.leads.listView")}
+            onClick={() => setState((prev) => ({ ...prev, viewMode: "table" }))}
+          >
+            <LayoutList className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            className={`crm-tool${state.viewMode === "compact" ? " is-on" : ""}`}
+            aria-label={t("crm.workspace.compactView")}
+            onClick={() => setState((prev) => ({ ...prev, viewMode: "compact" }))}
+          >
+            <Columns3 className="h-4 w-4" />
+          </button>
+          <button
+            type="button"
+            className={`crm-tool${state.viewMode === "kanban" ? " is-on" : ""}`}
+            aria-label={t("crm.leads.boardView")}
+            onClick={() => setState((prev) => ({ ...prev, viewMode: "kanban" }))}
+          >
+            <LayoutGrid className="h-4 w-4" />
+          </button>
+        </div>
+        <button type="button" className={`crm-tool${showColumns ? " is-on" : ""}`} onClick={() => setShowColumns((value) => !value)}>
           {t("crm.workspace.columns")}
         </button>
-        <button type="button" className="icon-btn" onClick={() => void load()}>
+        <button type="button" className="crm-tool" onClick={() => void load()}>
           <RefreshCw className="h-4 w-4" />
         </button>
-        <button
-          type="button"
-          className="icon-btn"
-          onClick={() => void exportLeadsCsv(query).then((blob) => {
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = "leads.csv";
-            link.click();
-          })}
-        >
-          <Download className="h-4 w-4" /> CSV
-        </button>
-        <button type="button" className="icon-btn" onClick={() => void onExportExcel()}>
-          <Download className="h-4 w-4" /> Excel
-        </button>
-        <button type="button" className="icon-btn" onClick={() => fileRef.current?.click()}>
+        <details className="crm-menu">
+          <summary>{t("crm.clients.toolbar.export")}</summary>
+          <div className="crm-menu-panel">
+            <button
+              type="button"
+              className="crm-tool"
+              onClick={() => void exportLeadsCsv(query).then((blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "leads.csv";
+                link.click();
+              })}
+            >
+              <Download className="h-4 w-4" /> CSV
+            </button>
+            <button type="button" className="crm-tool" onClick={() => void onExportExcel()}>
+              <Download className="h-4 w-4" /> Excel
+            </button>
+            {onConnectAds && (
+              <button type="button" className="crm-tool" onClick={onConnectAds}>
+                {t("crm.leads.connectAdNetwork")}
+              </button>
+            )}
+          </div>
+        </details>
+        <button type="button" className="crm-primary" onClick={() => fileRef.current?.click()}>
           <Upload className="h-4 w-4" /> {t("crm.leads.importLeads")}
         </button>
         <input
@@ -336,15 +404,10 @@ export default function CRMLeadsWorkspace({
             if (file) void onImport(file);
           }}
         />
-        {onConnectAds && (
-          <button type="button" className="icon-btn" onClick={onConnectAds}>
-            {t("crm.leads.connectAdNetwork")}
-          </button>
-        )}
       </div>
 
       {showFilters && (
-        <div className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="crm-filter-panel">
           <select className="field" value={state.status} onChange={(event) => updateState({ status: event.target.value })}>
             <option value="all">{t("crm.common.all")}</option>
             {["new", "contacted", "in_progress", "interested", "quote", "negotiation", "converted", "lost"].map((status) => (
@@ -375,14 +438,14 @@ export default function CRMLeadsWorkspace({
           </select>
           <input className="field" type="date" value={state.dateFrom} onChange={(event) => updateState({ dateFrom: event.target.value })} />
           <input className="field" type="date" value={state.dateTo} onChange={(event) => updateState({ dateTo: event.target.value })} />
-          <button type="button" className="icon-btn" onClick={() => setState({ ...EMPTY_LEAD_LIST_STATE })}>
+          <button type="button" className="crm-tool" onClick={() => setState({ ...EMPTY_LEAD_LIST_STATE })}>
             {t("crm.workspace.clearFilters")}
           </button>
         </div>
       )}
 
       {showColumns && (
-        <div className="flex flex-wrap gap-2 rounded-2xl border bg-white p-3">
+        <div className="crm-columns">
           {DEFAULT_COLUMNS.map((column) => (
             <label key={column} className="text-xs font-bold">
               <input
@@ -403,7 +466,7 @@ export default function CRMLeadsWorkspace({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="crm-views">
         <input
           className="field max-w-[180px]"
           placeholder={t("crm.workspace.saveView")}
@@ -420,7 +483,7 @@ export default function CRMLeadsWorkspace({
           <button
             key={view._id}
             type="button"
-            className="icon-btn"
+            className="crm-tool"
             onClick={() => setState({ ...EMPTY_LEAD_LIST_STATE, ...(view.state as LeadListState) })}
             onDoubleClick={() => void deleteView(view._id).then(() => setViews((prev) => prev.filter((item) => item._id !== view._id)))}
           >
@@ -429,7 +492,7 @@ export default function CRMLeadsWorkspace({
         ))}
         <button
           type="button"
-          className="icon-btn"
+          className="crm-tool"
           onClick={() =>
             void fetchDuplicates().then((data) => {
               setDuplicates(data.groups || []);
@@ -442,14 +505,14 @@ export default function CRMLeadsWorkspace({
       </div>
 
       {selected.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 p-3 text-xs font-black">
+        <div className="crm-bulk">
           <span>{t("crm.workspace.selected", { count: selected.length })}</span>
           <select className="field" value={bulkStatus} onChange={(event) => setBulkStatus(event.target.value)}>
             {["new", "contacted", "in_progress", "interested", "quote", "negotiation", "converted", "lost"].map((status) => (
               <option key={status} value={status}>{t(`crm.leads.statuses.${status}`, { defaultValue: status })}</option>
             ))}
           </select>
-          <button type="button" className="icon-btn" onClick={() => void confirmBulk("status", { status: bulkStatus })}>
+          <button type="button" className="crm-tool" onClick={() => void confirmBulk("status", { status: bulkStatus })}>
             {t("crm.workspace.applyStatus")}
           </button>
           <select className="field" value={bulkAgent} onChange={(event) => setBulkAgent(event.target.value)}>
@@ -460,7 +523,7 @@ export default function CRMLeadsWorkspace({
           </select>
           <button
             type="button"
-            className="icon-btn"
+            className="crm-tool"
             onClick={() =>
               void confirmBulk("assign", {
                 assignedToUserId: bulkAgent,
@@ -470,10 +533,10 @@ export default function CRMLeadsWorkspace({
           >
             {t("crm.workspace.applyAgent")}
           </button>
-          <button type="button" className="icon-btn" onClick={() => void confirmBulk("archive")}>
+          <button type="button" className="crm-tool" onClick={() => void confirmBulk("archive")}>
             <Archive className="h-4 w-4" /> {t("crm.workspace.archive")}
           </button>
-          <button type="button" className="icon-btn text-rose-700" onClick={() => void confirmBulk("delete")}>
+          <button type="button" className="crm-tool text-rose-700" onClick={() => void confirmBulk("delete")}>
             <Trash2 className="h-4 w-4" /> {t("crm.common.delete")}
           </button>
         </div>
@@ -482,7 +545,7 @@ export default function CRMLeadsWorkspace({
       {state.viewMode === "kanban" ? (
         <div className="grid gap-3 overflow-x-auto md:grid-cols-4 xl:grid-cols-8">
           {(funnel.length ? funnel : stages.map((stage) => ({ ...stage, count: 0, amount: 0 }))).map((column) => (
-            <section key={column.key} className="min-w-[180px] rounded-xl border border-slate-200/80 bg-slate-50 p-2">
+            <section key={column.key} className="min-w-[180px] bg-white p-2 shadow-[0_14px_36px_rgba(50,16,100,0.08)]">
               <header className="mb-2 text-xs font-black">
                 {column.label} · {column.count}
                 {column.amount ? ` · ${column.amount}` : ""}
@@ -502,10 +565,7 @@ export default function CRMLeadsWorkspace({
                       key={lead._id}
                       draggable
                       onDragStart={(event) => event.dataTransfer.setData("text/lead-id", lead._id)}
-                      onClick={() => {
-                        setState((prev) => ({ ...prev, scrollTop: tableRef.current?.scrollTop || 0 }));
-                        setOpenLeadId(lead._id);
-                      }}
+                      onClick={() => openLead(lead._id)}
                       className="crm-kanban-card cursor-pointer text-xs font-bold"
                     >
                       <p className="line-clamp-1">{lead.fullName || lead.name}</p>
@@ -522,7 +582,7 @@ export default function CRMLeadsWorkspace({
       ) : (
         <div
           ref={tableRef}
-          className="overflow-auto rounded-2xl border border-slate-200 bg-white"
+          className="crm-leads-table"
           onScroll={(event) => {
             const node = event.currentTarget;
             if (
@@ -576,10 +636,7 @@ export default function CRMLeadsWorkspace({
                       <td
                         key={column}
                         className="cursor-pointer p-2 font-semibold"
-                        onClick={() => {
-                          setState((prev) => ({ ...prev, scrollTop: tableRef.current?.scrollTop || 0 }));
-                          setOpenLeadId(lead._id);
-                        }}
+                        onClick={() => openLead(lead._id)}
                       >
                         {renderCell(lead, column, locale, t)}
                       </td>
@@ -598,14 +655,14 @@ export default function CRMLeadsWorkspace({
         </div>
       )}
 
-      <div className="flex items-center justify-between text-xs font-bold text-slate-500">
+      <div className="crm-pager">
         <span>{t("crm.workspace.showing", { count: leads.length, total })}</span>
         <div className="flex gap-2">
-          <button type="button" className="icon-btn" disabled={state.page <= 1} onClick={() => setState((prev) => ({ ...prev, page: prev.page - 1 }))}>
+          <button type="button" className="crm-tool" disabled={state.page <= 1} onClick={() => setState((prev) => ({ ...prev, page: prev.page - 1 }))}>
             {t("crm.common.back")}
           </button>
           <span>{state.page}</span>
-          <button type="button" className="icon-btn" disabled={!hasMore} onClick={() => setState((prev) => ({ ...prev, page: prev.page + 1 }))}>
+          <button type="button" className="crm-tool" disabled={!hasMore} onClick={() => setState((prev) => ({ ...prev, page: prev.page + 1 }))}>
             {t("crm.workspace.next")}
           </button>
         </div>
@@ -613,16 +670,17 @@ export default function CRMLeadsWorkspace({
 
       {openLeadId && (
         <CRMLeadCard
+          key={openLeadId}
           leadId={openLeadId}
           agents={agents}
-          onClose={() => setOpenLeadId("")}
+          onClose={closeLead}
           onChanged={() => void load(true)}
         />
       )}
 
       {showDuplicates && (
-        <div className="fixed inset-0 z-40 bg-slate-900/40 p-4">
-          <div className="mx-auto max-h-full max-w-3xl overflow-auto rounded-2xl bg-white p-4">
+        <div className="crm-dossier fixed inset-0 z-40 p-4">
+          <div className="crm-dossier-panel mx-auto max-h-full max-w-3xl overflow-auto p-4">
             <div className="mb-3 flex justify-between">
               <h3 className="text-lg font-black">{t("crm.workspace.duplicates")}</h3>
               <button type="button" onClick={() => setShowDuplicates(false)}>{t("crm.common.close")}</button>
@@ -638,7 +696,7 @@ export default function CRMLeadsWorkspace({
                 {(group.leadIds || []).length >= 2 && (
                   <button
                     type="button"
-                    className="icon-btn mt-2"
+                    className="crm-tool mt-2"
                     onClick={() => {
                       if (!window.confirm(t("crm.workspace.confirmMerge"))) return;
                       void mergeLeads(group.leadIds[0], group.leadIds[1]).then(() => {
@@ -656,10 +714,6 @@ export default function CRMLeadsWorkspace({
         </div>
       )}
 
-      <style>{`
-        .icon-btn{display:inline-flex;align-items:center;gap:6px;height:36px;border-radius:12px;border:1px solid #e2e8f0;background:#fff;padding:0 10px;font-size:12px;font-weight:800}
-        .field{height:40px;border-radius:12px;border:1px solid #e2e8f0;padding:0 10px;font-size:12px;font-weight:700;background:#fff}
-      `}</style>
     </div>
   );
 }
@@ -667,15 +721,19 @@ export default function CRMLeadsWorkspace({
 function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key: string, opts?: any) => string) {
   switch (column) {
     case "name":
-      return lead.fullName || lead.name || "";
+      return <span className="crm-lead-name">{lead.fullName || lead.name || ""}</span>;
     case "phone":
       return lead.phone ? <span dir="ltr">{lead.phone}</span> : "";
     case "email":
       return lead.email ? <span dir="ltr">{lead.email}</span> : "";
     case "status":
-      return t(`crm.leads.statuses.${lead.status || "new"}`, { defaultValue: lead.status });
+      return (
+        <span className={`crm-status is-${lead.status || "new"}`}>
+          {t(`crm.leads.statuses.${lead.status || "new"}`, { defaultValue: lead.status })}
+        </span>
+      );
     case "source":
-      return lead.source || "";
+      return lead.source ? <span className="crm-source">{lead.source}</span> : "";
     case "campaign":
       return lead.campaignName || lead.campaignId || "";
     case "form":
@@ -683,9 +741,9 @@ function renderCell(lead: WorkspaceLead, column: string, locale: string, t: (key
     case "assignedToName":
       return lead.assignedToName || t("crm.leads.unassignedAgent");
     case "createdAt":
-      return lead.createdAt ? new Date(lead.createdAt).toLocaleString(locale) : "";
+      return lead.createdAt ? <span className="crm-date">{new Date(lead.createdAt).toLocaleString(locale)}</span> : "";
     case "updatedAt":
-      return lead.updatedAt ? new Date(lead.updatedAt).toLocaleString(locale) : "";
+      return lead.updatedAt ? <span className="crm-date">{new Date(lead.updatedAt).toLocaleString(locale)}</span> : "";
     default:
       return "";
   }

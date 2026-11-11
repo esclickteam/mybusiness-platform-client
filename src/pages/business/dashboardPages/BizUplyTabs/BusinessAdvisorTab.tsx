@@ -708,20 +708,18 @@ export default function BusinessAdvisorTab({
     <section
       dir={dir}
       data-demo-target="advisor-panel"
-      className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-start text-slate-800 sm:p-5"
+      className="advisor-studio h-[calc(100vh-88px)] max-h-[calc(100vh-88px)] overflow-hidden bg-[#F4F1FA] p-3 text-start text-[#21172F] sm:p-4"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] flex-col gap-4">
-        <header className="shrink-0 rounded-[28px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-lg shadow-violet-200">
-                <BrainCircuit className="h-6 w-6" />
-              </div>
+        <header className="advisor-bar shrink-0 border border-[rgba(91,33,182,0.14)] bg-white px-4 py-3">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <BrainCircuit className="h-5 w-5 shrink-0 text-[#5B21B6]" />
 
-              <div>
+              <div className="min-w-0">
               <div data-demo-target="advisor-header">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-black tracking-tight text-slate-800 sm:text-3xl">
+                  <h1 className="text-lg font-black text-[#21172F]">
                     {t("advisor.title")}
                   </h1>
 
@@ -770,7 +768,7 @@ export default function BusinessAdvisorTab({
               <button
                 type="button"
                 onClick={startNewConversation}
-                className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+                className="inline-flex h-11 items-center gap-2 border border-[#5B21B6] bg-[#5B21B6] px-4 text-sm font-black text-white"
               >
                 <Plus className="h-5 w-5" />
                 {t("advisor.newChat")}
@@ -779,8 +777,8 @@ export default function BusinessAdvisorTab({
           </div>
         </header>
 
-        <main className="grid min-h-0 min-w-0 flex-1 gap-4 xl:grid-cols-[260px_minmax(0,1fr)_340px] 2xl:grid-cols-[300px_minmax(0,1fr)_360px]">
-          <aside className="order-2 min-h-0 min-w-0 overflow-hidden rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm xl:order-1">
+        <main className="advisor-layout min-h-0 min-w-0 flex-1">
+          <aside className="advisor-history min-h-0 min-w-0 overflow-hidden border border-[rgba(91,33,182,0.14)] bg-white p-3">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-black text-slate-800">
@@ -854,7 +852,7 @@ export default function BusinessAdvisorTab({
             </div>
           </aside>
 
-          <section className="order-1 flex min-h-0 min-w-0 flex-col overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-2">
+          <section className="advisor-chat flex min-h-0 min-w-0 flex-col overflow-hidden border border-[rgba(91,33,182,0.14)] bg-white">
             <div className="shrink-0 border-b border-slate-100 bg-gradient-to-l from-white via-violet-50/70 to-sky-50/70 px-5 py-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
@@ -916,14 +914,8 @@ export default function BusinessAdvisorTab({
                       )}
 
                       <div
-                        className={`${
-                          isAssistant
-                            ? "max-w-[min(100%,720px)]"
-                            : "max-w-[min(92%,520px)]"
-                        } break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
-                          isAssistant
-                            ? "border border-slate-200 bg-white text-slate-800"
-                            : "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
+                        className={`advisor-bubble break-words px-4 py-3 text-[15px] leading-7 ${
+                          isAssistant ? "advisor-bubble--ai" : "advisor-bubble--user"
                         }`}
                       >
                         {isAssistant ? (
@@ -999,7 +991,7 @@ export default function BusinessAdvisorTab({
               </div>
             </div>
 
-            <div className="sticky bottom-0 z-30 shrink-0 border-t border-slate-100 bg-white/95 p-3 shadow-[0_-18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
+            <div className="advisor-composer sticky bottom-0 z-30 shrink-0 border-t border-[rgba(91,33,182,0.14)] bg-white p-3">
               {isLimitReached && (
                 <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
                   {t("advisor.limitReached")}
@@ -1050,7 +1042,7 @@ export default function BusinessAdvisorTab({
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading || !userInput.trim() || isLimitReached}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#5B21B6] bg-[#5B21B6] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 >
                   {loading ? t("advisor.thinking") : t("advisor.send")}
                   <ArrowUp className="h-5 w-5" />
@@ -1059,7 +1051,7 @@ export default function BusinessAdvisorTab({
             </div>
           </section>
 
-          <aside className="order-3 min-h-0 min-w-0 overflow-y-auto rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
+          <aside className="advisor-quick min-h-0 min-w-0 overflow-y-auto border border-[rgba(91,33,182,0.14)] bg-white p-3">
             <div className="mb-4">
               <h2 className="text-sm font-black text-slate-800">
                 {t("advisor.quickActionsTitle")}
@@ -1081,7 +1073,7 @@ export default function BusinessAdvisorTab({
                       submitPrompt(command.prompt, command.id, command.label)
                     }
                     disabled={loading || isLimitReached}
-                    className={`group flex min-h-[92px] w-full items-center justify-between gap-3 rounded-[24px] border p-4 text-start transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                    className={`advisor-command group flex w-full items-center justify-between gap-3 border p-3 text-start transition disabled:cursor-not-allowed disabled:opacity-50 ${
                       command.highlighted
                         ? "border-violet-200 bg-violet-50 hover:bg-violet-100"
                         : "border-slate-200 bg-white hover:border-violet-200 hover:bg-violet-50"

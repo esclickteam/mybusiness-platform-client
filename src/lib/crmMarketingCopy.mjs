@@ -4,6 +4,7 @@
  * ad-account connections belong to the Business plan, not CRM Only.
  */
 import { marketingPublicUrl } from "./localePathCore.mjs";
+import { renderMarketingHeader } from "./homePurplePaint.mjs";
 
 export function crmPublicUrl(language) {
   return marketingPublicUrl("/crm", language);
@@ -36,15 +37,15 @@ export const CRM_MEDIA = {
 const en = {
   lang: "en",
   dir: "ltr",
-  title: "CRM Software for Small Businesses & Lead Management | Bizuply",
+  title: "CRM for leads and customers | BizUply",
   description:
-    "Organize leads, manage customers, track follow-ups, and connect supported Meta, Google Ads, and website inquiries with Bizuply CRM. Plans start at $49/month.",
+    "BizUply CRM keeps leads, customers, statuses, notes and follow-up tasks in one place. The published CRM plan is $49 per month.",
   crumb: "CRM",
   hero: {
-    eyebrow: "Bizuply CRM",
-    h1: "Manage every lead and customer relationship in one place",
+    eyebrow: "BizUply CRM",
+    h1: "A CRM that connects leads, customers and everyday work",
     description:
-      "Organize leads, manage customer information, track follow-ups, and keep your sales opportunities moving with Bizuply CRM. Connect inquiries from your marketing channels and website to one practical customer management workspace.",
+      "From the first enquiry to the ongoing customer relationship, BizUply CRM keeps the important record in one place: status, notes, tasks and follow-up.",
     primary: "Get Started with CRM",
     secondary: "See How It Works",
     points: [
@@ -252,12 +253,12 @@ function pack(lang, dir, title, description, hero, rest) {
 const he = pack(
   "he",
   "rtl",
-  "תוכנת CRM לעסקים קטנים וניהול לידים | ביזאפלי",
-  "ארגנו לידים, נהלו לקוחות, עקבו אחרי משימות המשך, וחברו פניות נתמכות מ־Meta, מ־Google Ads ומהאתר עם ביזאפלי (Bizuply) CRM. המסלולים מתחילים ב־49 דולר לחודש.",
+  "מערכת CRM לניהול לידים ולקוחות | BizUply",
+  "מערכת CRM של BizUply לניהול לידים, לקוחות, סטטוסים, משימות ומעקבים. רכזו את המידע העסקי ושמרו על תהליך עבודה מסודר. המחיר המפורסם של CRM בלבד הוא 49 דולר לחודש.",
   {
-    eyebrow: "ביזאפלי CRM",
-    h1: "נהלו כל ליד וכל קשר עם הלקוח במקום אחד",
-    description: "ארגנו לידים, נהלו את פרטי הלקוחות, עקבו אחרי המשך הטיפול, ושמרו על ההזדמנויות בתנועה עם ביזאפלי (Bizuply) CRM. חברו פניות מערוצי השיווק ומהאתר לסביבת עבודה אחת לניהול לקוחות.",
+    eyebrow: "BizUply CRM",
+    h1: "מערכת CRM שמחברת בין הלידים, הלקוחות והעבודה היומיומית",
+    description: "מהפנייה הראשונה ועד לניהול הקשר השוטף עם הלקוח, BizUply CRM מרכזת את המידע החשוב במקום אחד ומאפשרת לנהל סטטוסים, תיעוד, משימות ומעקבים בצורה מסודרת.",
     primary: "מתחילים עם CRM",
     secondary: "כך זה עובד",
     points: ["ניהול לידים במקום אחד", "פרופיל לקוח והיסטוריית פעילות", "משימות המשך ותזכורות", "מקורות לידים מחוברים"],
@@ -265,8 +266,8 @@ const he = pack(
   {
     crumb: "CRM",
     what: {
-      h2: "מהי תוכנת CRM?",
-      p1: "תוכנת ניהול קשרי לקוחות (CRM) עוזרת לעסקים לארגן מידע על לידים ולקוחות, לתעד אינטראקציות, לנהל המשך טיפול, ולעקוב אחרי הזדמנויות לאורך זמן.",
+      h2: "כל ליד הוא הזדמנות שצריך לנהל",
+      p1: "פנייה של לקוח פוטנציאלי היא תחילתו של תהליך. כדי לטפל בה נכון, צריך לדעת מי פנה, מאיפה הגיע, מה ביקש, מי מטפל בו ומה השלב הבא. מערכת ה־CRM של BizUply מרכזת את פרטי הלידים ומסייעת לשמור על רצף טיפול מסודר.",
       p2: "במקום לפזר פרטי לקוחות בין גיליונות, הודעות ופתקים נפרדים, CRM נותן מקום מסודר להבין מי פנה לעסק, מה הוא צריך, ומה הצעד הבא.",
       h3: "איך Bizuply CRM עוזר לעסקים?",
       p3: "Bizuply מרכז פרטי ליד, רשומות לקוח, היסטוריית פעילות ומשימות המשך בסביבה אחת. הצוות יכול לעבור על פניות חדשות, לעדכן שלב, לתעד שיחה, ולהשאיר את המידע זמין לאורך הקשר.",
@@ -416,7 +417,7 @@ const es = pack(
   "Software CRM para pequeñas empresas y gestión de leads | Bizuply",
   "Organice leads, gestione clientes, haga seguimiento y conecte consultas compatibles de Meta, Google Ads y su sitio con Bizuply CRM. Los planes empiezan en 49 dólares al mes.",
   {
-    h1: "Gestione cada lead y cada relación con el cliente en un solo lugar",
+    h1: "Un CRM que conecta los leads, los clientes y el trabajo de cada día",
     description: "Organice leads, gestione la información de clientes, haga seguimiento y mantenga las oportunidades en movimiento con Bizuply CRM. Conecte las consultas de sus canales y de su sitio a un espacio práctico de gestión de clientes.",
     primary: "Empezar con CRM",
     secondary: "Ver cómo funciona",
@@ -575,7 +576,7 @@ const ptBR = pack(
   "Software de CRM para pequenas empresas e gestão de leads | Bizuply",
   "Organize leads, gerencie clientes, acompanhe retornos e conecte consultas compatíveis de Meta, Google Ads e do site com o Bizuply CRM. Os planos começam em US$ 49 por mês.",
   {
-    h1: "Gerencie cada lead e cada relação com o cliente em um só lugar",
+    h1: "Um CRM que liga os leads, os clientes e o trabalho de cada dia",
     description: "Organize leads, gerencie as informações dos clientes, acompanhe os retornos e mantenha as oportunidades em movimento com o Bizuply CRM. Conecte as consultas dos seus canais e do site a um espaço prático de gestão de clientes.",
     primary: "Começar com o CRM",
     secondary: "Ver como funciona",
@@ -733,7 +734,7 @@ const ar = pack(
   "برنامج CRM للشركات الصغيرة وإدارة العملاء المحتملين | Bizuply",
   "نظّموا العملاء المحتملين، وأديروا العملاء، وتابعوا خطوات المتابعة، واربطوا الاستفسارات المدعومة من Meta وGoogle Ads والموقع مع Bizuply CRM. تبدأ الخطط من 49 دولارًا في الشهر.",
   {
-    h1: "أديروا كل عميل محتمل وكل علاقة مع العميل في مكان واحد",
+    h1: "نظام CRM يربط العملاء المحتملين والعملاء والعمل اليومي",
     description: "نظّموا العملاء المحتملين، وأديروا معلومات العملاء، وتابعوا خطوات المتابعة، وأبقوا الفرص تتحرك مع Bizuply CRM. اربطوا الاستفسارات من قنوات التسويق والموقع بمساحة عملية لإدارة العملاء.",
     primary: "ابدأوا مع CRM",
     secondary: "شاهدوا كيف يعمل",
@@ -946,28 +947,5 @@ export function renderCrmPrerender(language) {
 }
 
 export function buildCrmHeaderPaint(language) {
-  const c = getCrmCopy(language);
-  const href = (path) => esc(marketingPublicUrl(path, c.lang).replace("https://bizuply.com", "") || "/");
-  const logoAlt = c.lang === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
-  const links = [
-    [c.chrome.about, "/about"],
-    [c.chrome.website, "/website-builder"],
-    [c.chrome.crm, "/crm"],
-    [c.chrome.automations, "/automations"],
-    [c.chrome.appointments, "/appointments"],
-    [c.chrome.pricing, "/pricing"],
-  ].map(([label, path]) => `<a class="crm-paint__link" href="${href(path)}">${esc(label)}</a>`).join("");
-  return `<div class="crm-paint" lang="${esc(c.lang)}" dir="${c.dir}"><style>
-.crm-paint{background:#fff;color:#0b1b33}
-.crm-paint__header{position:sticky;top:0;z-index:40;background:rgba(255,255,255,.96);border-bottom:1px solid #e2e8f0}
-.crm-paint__bar{display:flex;align-items:center;justify-content:space-between;gap:.75rem;width:100%;max-width:1180px;height:4.5rem;margin-inline:auto;padding-inline:clamp(.85rem,2.5vw,1.5rem);box-sizing:border-box}
-.crm-paint__logo{display:inline-flex;align-items:center;gap:.55rem;color:#0b1b33;font-weight:800;text-decoration:none}
-.crm-paint__logo img{width:2.2rem;height:2.2rem}
-.crm-paint__nav,.crm-paint__actions{display:none;align-items:center;gap:.35rem}
-.crm-paint__link{color:#1e293b;font-weight:700;font-size:.9rem;text-decoration:none;padding:.35rem .5rem;white-space:nowrap}
-.crm-paint__login{color:#0b1b33;font-weight:700;text-decoration:none}
-.crm-paint__cta{background:#0b1b33;color:#fff;font-weight:800;text-decoration:none;border-radius:.7rem;padding:.55rem .9rem}
-.crm-paint__mobile{display:inline-flex;align-items:center;gap:.7rem;color:#0b1b33;font-weight:800}
-@media(min-width:1100px){.crm-paint__nav,.crm-paint__actions{display:flex}.crm-paint__mobile{display:none}}
-</style><header class="crm-paint__header"><nav class="crm-paint__bar" aria-label="${esc(c.chrome.navAria)}"><a class="crm-paint__logo" href="${href("/")}"><img src="/android-chrome-192x192.png" width="36" height="36" alt="${logoAlt}" /><span>Bizuply</span></a><div class="crm-paint__nav">${links}</div><div class="crm-paint__actions"><span>${esc(c.chrome.langCode)}</span><a class="crm-paint__login" href="${href("/login")}">${esc(c.chrome.login)}</a><a class="crm-paint__cta" href="${href("/pricing")}">${esc(c.chrome.cta)}</a></div><div class="crm-paint__mobile"><span>${esc(c.chrome.langCode)}</span></div></nav></header></div>`;
+  return renderMarketingHeader(language);
 }

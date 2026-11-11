@@ -1,16 +1,15 @@
 import React, { useMemo, useState } from "react";
+import "./crmDesign.css";
 import {
   ArrowLeft,
   CalendarDays,
   CheckSquare,
   ClipboardList,
-  CreditCard,
   Edit3,
   FileText,
   Layers3,
   LockKeyhole,
   Mail,
-  MapPin,
   MessageCircle,
   MessagesSquare,
   Phone,
@@ -117,7 +116,11 @@ type CRMClientDossierProps = {
 
 function formatPhone(phone: string) {
   if (!phone) return "";
-  return phone.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) {
+    return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6)}`;
+  }
+  return phone;
 }
 
 function getInitials(name: string) {
@@ -310,9 +313,9 @@ export default function CRMClientDossier({
   return (
     <div
       dir={dir}
-      className="fixed inset-0 z-[90] flex flex-col bg-[#F4F5F8] text-start"
+      className="client-file fixed inset-0 z-[90] flex flex-col bg-[#F4F1FA] text-start"
     >
-      <header className="shrink-0 border-b border-slate-200 bg-white">
+      <header className="client-file-head shrink-0 border-b border-slate-200 bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-5">
           <div className="flex min-w-0 flex-1 items-center gap-3">
             <button
@@ -336,20 +339,18 @@ export default function CRMClientDossier({
               <p className="text-[11px] font-black uppercase tracking-[0.14em] text-violet-700">
                 {t("crm.clients.details.dossierBadge")}
               </p>
-              <h1 className="truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+              <h1 className="truncate text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
                 {client.fullName || t("crm.common.unnamedClient")}
               </h1>
-              <p className="mt-0.5 truncate text-xs font-bold text-slate-500 sm:text-sm">
-                {t("crm.clients.details.clientFile", {
-                  phone: formatPhone(client.phone) || t("crm.common.noPhone"),
-                  email: client.email || t("crm.common.noEmail"),
-                })}
-              </p>
+              <div className="mt-1 flex flex-wrap gap-2">
+                <span className="crm-chip" dir="ltr">{formatPhone(client.phone) || t("crm.common.noPhone")}</span>
+                <span className="crm-chip">{client.email || t("crm.common.noEmail")}</span>
+              </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex h-9 items-center rounded-full bg-emerald-50 px-3 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+          <div className="client-file-actions flex min-w-0 flex-wrap items-center gap-2">
+            <span className="inline-flex h-9 items-center bg-emerald-50 px-3 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
               {statusLabel}
             </span>
 
@@ -395,7 +396,7 @@ export default function CRMClientDossier({
           </div>
         </div>
 
-        <div className="grid gap-2 border-t border-slate-100 bg-slate-50/80 px-3 py-3 sm:grid-cols-2 sm:px-5 xl:grid-cols-4">
+        <div className="client-metrics border-t border-slate-100 bg-[#f7f5fb] px-3 py-2 sm:px-5">
           <FinanceMetric
             label={t("crm.clients.details.appointments")}
             value={String(
@@ -426,7 +427,10 @@ export default function CRMClientDossier({
           />
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-1 border-t border-slate-100 px-2 sm:px-3">
+        </header>
+
+        <div className="client-file-frame">
+        <div className="client-file-tabs flex flex-wrap items-center justify-center gap-1 border-t border-slate-100 px-2 sm:px-3">
           <TabButton
             active={resolvedTab === "profile"}
             icon={UserRound}
@@ -487,78 +491,13 @@ export default function CRMClientDossier({
             />
           )}
         </div>
-      </header>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="mx-auto grid max-w-[1400px] gap-4 p-3 sm:p-5 lg:grid-cols-[260px_minmax(0,1fr)] xl:grid-cols-[260px_minmax(0,1fr)_260px]">
-          <aside className="space-y-3 lg:sticky lg:top-0 lg:self-start">
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <div className="mb-3 flex flex-col items-center text-center">
-                <div className="grid h-16 w-16 place-items-center rounded-2xl bg-violet-100 text-xl font-black text-[#6D28D9] shadow-sm">
-                  {getInitials(client.fullName)}
-                </div>
-                <h2 className="mt-3 max-w-full truncate text-lg font-black text-slate-800">
-                  {client.fullName || t("crm.common.unnamedClient")}
-                </h2>
-                <p className="mt-1 text-xs font-bold text-slate-400">
-                  {statusLabel}
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <DetailRow
-                  icon={Phone}
-                  label={t("crm.common.phone")}
-                  value={formatPhone(client.phone) || emDash}
-                />
-                <DetailRow
-                  icon={Mail}
-                  label={t("crm.common.email")}
-                  value={client.email || emDash}
-                />
-                <DetailRow
-                  icon={MapPin}
-                  label={t("crm.clients.profile.address")}
-                  value={client.address || emDash}
-                />
-                <DetailRow
-                  icon={CalendarDays}
-                  label={t("crm.clients.profile.created")}
-                  value={formatShortDate(client.createdAt, locale, emDash)}
-                />
-              </div>
-            </section>
-
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="mb-3 text-sm font-black text-slate-800">
-                {t("crm.clients.payments.sidebarTitle")}
-              </h3>
-              <div className="space-y-2">
-                <DetailRow
-                  icon={CreditCard}
-                  label={t("crm.clients.payments.totalPaid")}
-                  value={formatCrmMoney(finance.totalPaid)}
-                />
-                <DetailRow
-                  icon={Wallet}
-                  label={t("crm.clients.payments.unpaidBalance")}
-                  value={formatCrmMoney(finance.unpaidBalance)}
-                />
-              </div>
-              <button
-                type="button"
-                onClick={() => setActiveTab("payments")}
-                className="mt-3 inline-flex h-10 w-full items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-xs font-black text-slate-700 transition hover:bg-slate-100"
-              >
-                {t("crm.clients.payments.openPayments")}
-              </button>
-            </section>
-          </aside>
-
-          <main className="min-w-0 space-y-4">
+      <div className="client-file-main min-h-0 flex-1 overflow-y-auto">
+        <div className="client-file-stage">
+          <main className="min-w-0 space-y-4 p-4">
             {resolvedTab === "profile" && (
               <>
-                <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+                <section className="client-sheet">
                   <div className="mb-4">
                     <h3 className="text-lg font-black text-slate-800">
                       {t("crm.clients.profile.title")}
@@ -575,7 +514,7 @@ export default function CRMClientDossier({
                     />
                     <InfoCard
                       label={t("crm.clients.profile.phone")}
-                      value={formatPhone(client.phone) || emDash}
+                      value={<span dir="ltr">{formatPhone(client.phone) || emDash}</span>}
                     />
                     <InfoCard
                       label={t("crm.clients.profile.email")}
@@ -696,38 +635,8 @@ export default function CRMClientDossier({
               resolvedTab === "portal-access" &&
               portalAccessPanel}
           </main>
-
-          <aside className="hidden space-y-3 xl:block xl:sticky xl:top-0 xl:self-start">
-            <section className="rounded-2xl border border-pink-100 bg-pink-50/50 p-4">
-              <h3 className="text-sm font-black text-slate-800">
-                {t("crm.clients.details.profileSummaryTitle")}
-              </h3>
-              <p className="mt-2 text-xs font-semibold leading-5 text-slate-500">
-                {t("crm.clients.details.profileSummaryText")}
-              </p>
-            </section>
-
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="mb-3 text-sm font-black text-slate-800">
-                {t("crm.clients.details.quickFacts")}
-              </h3>
-              <div className="space-y-2">
-                <DetailRow
-                  label={t("crm.clients.details.status")}
-                  value={statusLabel}
-                />
-                <DetailRow
-                  label={t("crm.clients.payments.paidVisits")}
-                  value={String(finance.paidCount)}
-                />
-                <DetailRow
-                  label={t("crm.clients.payments.openInvoices")}
-                  value={String(finance.unpaidCount)}
-                />
-              </div>
-            </section>
-          </aside>
         </div>
+      </div>
       </div>
     </div>
   );
@@ -870,7 +779,7 @@ function AppointmentsPanel({
   const { t } = useTranslation();
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-4">
         <h3 className="text-lg font-black text-slate-800">
           {t("crm.clients.appointmentsPanel.title")}
@@ -987,7 +896,7 @@ function PaymentsPanel({
   );
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-4">
         <h3 className="text-lg font-black text-slate-800">
           {t("crm.clients.payments.title")}
@@ -1146,7 +1055,7 @@ function TagsPanel({
   };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex items-center gap-2">
         <Tag className="h-4 w-4 text-violet-700" />
         <h3 className="text-lg font-black text-slate-800">
@@ -1226,7 +1135,7 @@ function JourneyPanel({
   );
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex items-center gap-2">
         <Route className="h-4 w-4 text-sky-700" />
         <h3 className="text-lg font-black text-slate-800">
@@ -1295,7 +1204,7 @@ function CommunicationPanel({
   const { t } = useTranslation();
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-lg font-black text-slate-800">
@@ -1399,7 +1308,7 @@ function TasksPanel({
   const { t } = useTranslation();
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-lg font-black text-slate-800">
@@ -1500,7 +1409,7 @@ function FilesPanel({
   };
 
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+    <section className="client-sheet">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h3 className="text-xl font-black text-slate-800">

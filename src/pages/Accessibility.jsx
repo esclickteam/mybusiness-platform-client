@@ -1,21 +1,25 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 
 export default function Accessibility() {
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const sectionBase =
-    "rounded-[2rem] border border-white/80 bg-white/75 p-6 shadow-xl shadow-slate-900/5 backdrop-blur sm:p-8";
+    "rounded-sm border border-violet-100 bg-white p-5 text-slate-800 shadow-sm sm:p-8";
 
   const h2Base =
-    "mb-4 text-2xl font-black tracking-[-0.03em] text-slate-800 sm:text-3xl";
+    "mb-4 text-2xl font-semibold leading-tight tracking-[-0.02em] text-slate-950 sm:text-3xl";
 
-  const pBase = "text-base font-medium leading-8 text-slate-600";
+  const pBase = "max-w-3xl text-base leading-8 text-slate-700";
 
   const ulBase =
-    "mt-5 space-y-3 text-base font-medium leading-8 text-slate-600";
+    "mt-5 max-w-3xl space-y-3 text-base leading-8 text-slate-700";
 
   const chips = t("accessibilityPage.chips", { returnObjects: true });
   const chipItems = Array.isArray(chips) ? chips : [];
@@ -32,7 +36,7 @@ export default function Accessibility() {
       <Helmet>
         <title>{t("accessibilityPage.seoTitle")}</title>
         <meta name="description" content={t("accessibilityPage.seoDesc")} />
-        <link rel="canonical" href="https://bizuply.com/accessibility" />
+        <link rel="canonical" href={marketingPublicUrl("/accessibility", locale)} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
@@ -53,6 +57,10 @@ export default function Accessibility() {
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("accessibilityPage.intro")}
         </p>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-slate-700">
+          <Link to="/website-scan">{locale === "he" ? "בדיקת נגישות אתר" : locale === "es" ? "Revisión de accesibilidad del sitio" : locale === "pt-BR" ? "Verificação de acessibilidade do site" : locale === "ar" ? "فحص إتاحة الموقع" : "Website accessibility check"}</Link>
+        </p>
+        <LegalDocumentLinks current="/accessibility" />
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("accessibilityPage.lastUpdatedChip")}

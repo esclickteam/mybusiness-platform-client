@@ -27,6 +27,7 @@ ehthumbs.db
 dist/
 e2e-results/
 e2e-report/
+qa-artifacts/
 test-results/
 playwright-report/
 scripts/__pycache__/

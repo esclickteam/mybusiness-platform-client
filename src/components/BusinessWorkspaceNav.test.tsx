@@ -266,7 +266,7 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(whatsappLink(OTHER_BUSINESS_ID)).not.toBeNull();
     expect(metaCampaignsLink(OTHER_BUSINESS_ID)).not.toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
-    expect(whatsappLink(OTHER_BUSINESS_ID)).toHaveTextContent("WhatsApp Messages");
+    expect(whatsappLink(OTHER_BUSINESS_ID)).toHaveTextContent("WhatsApp API");
     expect(metaCampaignsLink(OTHER_BUSINESS_ID)).toHaveTextContent("Meta Campaigns");
   });
 
@@ -299,7 +299,7 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     });
 
     expect(whatsappLink(OTHER_BUSINESS_ID)).toBeNull();
-    expect(navLink(OTHER_BUSINESS_ID, "global-club")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "global-club")).toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "help-center")).not.toBeNull();
   });
@@ -344,7 +344,7 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
 
     expect(metaCampaignsLink(OTHER_BUSINESS_ID)).not.toBeNull();
     expect(whatsappLink(OTHER_BUSINESS_ID)).toBeNull();
-    expect(navLink(OTHER_BUSINESS_ID, "global-club")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "global-club")).toBeNull();
   });
 
   it("uses the same WhatsApp and Campaigns labels as a regular allowlisted business", async () => {
@@ -353,7 +353,7 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
       urlBusinessId: ALLOWED_BUSINESS_ID,
     });
 
-    expect(whatsappLink(ALLOWED_BUSINESS_ID)).toHaveTextContent("WhatsApp Messages");
+    expect(whatsappLink(ALLOWED_BUSINESS_ID)).toHaveTextContent("WhatsApp API");
     expect(metaCampaignsLink(ALLOWED_BUSINESS_ID)).toHaveTextContent("Meta Campaigns");
   });
 });
@@ -381,12 +381,14 @@ describe("BusinessWorkspaceNav WhatsApp API portal", () => {
       `${wa}/templates`,
       `${wa}/performance`,
       `${wa}/billing`,
+      `/business/${OTHER_BUSINESS_ID}/dashboard/help-center`,
       "https://whatsapp.bizuply.com/docs",
       "https://whatsapp.bizuply.com/help",
     ]);
-    for (const hidden of ["dashboard", "crm", "automations", "collab", "website", "global-club", "help-center"]) {
+    for (const hidden of ["dashboard", "crm", "automations", "collab", "website", "global-club"]) {
       expect(navLink(OTHER_BUSINESS_ID, hidden)).toBeNull();
     }
+    expect(navLink(OTHER_BUSINESS_ID, "help-center")).not.toBeNull();
     const docs = document.querySelector('a[href="https://whatsapp.bizuply.com/docs"]');
     expect(docs).toHaveAttribute("target", "_blank");
     expect(docs).toHaveAttribute("rel", "noopener noreferrer");

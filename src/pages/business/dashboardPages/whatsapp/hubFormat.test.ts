@@ -2,6 +2,7 @@ import {
   formatMessagingLimit,
   formatNameStatus,
   formatQualityRating,
+  isUnsetQualityRating,
   connectionReadyLabel,
 } from "./hubFormat";
 
@@ -10,6 +11,10 @@ describe("whatsapp hubFormat", () => {
     expect(formatQualityRating("GREEN")).toBe("High");
     expect(formatQualityRating("YELLOW")).toBe("Medium");
     expect(formatQualityRating("RED")).toBe("Low");
+    expect(formatQualityRating("UNKNOWN")).toBe("UNKNOWN");
+    expect(isUnsetQualityRating("UNKNOWN")).toBe(true);
+    expect(isUnsetQualityRating("GREEN")).toBe(false);
+    expect(isUnsetQualityRating("")).toBe(true);
   });
 
   it("maps name status", () => {

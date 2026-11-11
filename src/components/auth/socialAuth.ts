@@ -37,6 +37,7 @@ export type BizuplySocialStart = {
   referralCode?: string | null;
   redirect?: string | null;
   purchaseIntent?: boolean;
+  consentKey?: string | null;
 };
 
 /** Full-page navigation to the API; the server redirects to the provider. */
@@ -52,6 +53,7 @@ export function startBizuplySocialAuth(provider: SocialProvider, opts: BizuplySo
   if (opts.referralCode) params.set("ref", opts.referralCode);
   if (opts.redirect) params.set("redirect", opts.redirect);
   if (opts.purchaseIntent) params.set("purchaseIntent", "1");
+  if (opts.consentKey) params.set("consentKey", opts.consentKey);
   if (typeof window !== "undefined" && window.location?.origin) {
     params.set("clientOrigin", window.location.origin);
   }
@@ -83,6 +85,7 @@ const ERROR_KEYS: Record<string, string> = {
   otp_cooldown: "login.oauth.errors.otp_cooldown",
   otp_send_limited: "login.oauth.errors.otp_send_limited",
   otp_send_failed: "login.oauth.errors.otp_send_failed",
+  consent_required: "login.oauth.errors.consent_required",
   link_session: "login.oauth.errors.link_session",
   link_failed: "login.oauth.errors.link_failed",
 };

@@ -59,7 +59,7 @@ const PARTNER_PLAN_OPTIONS = [
   {
     planKey: "partner_international",
     label: "International Partner",
-    details: "$5,000 לשנה · עמלה חוזרת 30%/35%/40% לפי הסכם · 10% חד-פעמי · בלי חיוב חי מטופס זה",
+    details: "$299 לחודש או $2,990 לשנה · עמלה חוזרת 30%/35%/40% לפי הסכם · 10% חד-פעמי · בלי חיוב חי מטופס זה",
   },
 ];
 
@@ -328,15 +328,6 @@ export default function AdminCreateUser() {
     });
   };
 
-  const saasAddressError = (subdomain) => {
-    const value = String(subdomain || "").trim().toLowerCase();
-    if (!value) return { message: "כתובת המערכת חובה", code: "saas_address_missing" };
-    if (value === "my-restaurant" || value === "my-business" || value === "example") {
-      return { message: "כתובת המערכת אינה תקינה", code: "saas_address_invalid" };
-    }
-    return null;
-  };
-
   const messageForSaasError = (data) => {
     const code = data?.code || "";
     if (code === "saas_address_missing") return "כתובת המערכת חובה";
@@ -362,9 +353,9 @@ export default function AdminCreateUser() {
       setResult((prev) => ({
         ...prev,
         temporaryPassword: undefined,
-        passwordSetupUrl: data.passwordSetupUrl,
-        credentialsReady: Boolean(data.passwordSetupUrl && (prev?.tenant?.status === "active" || prev?.setupStatus === "active")),
-        passwordResetRequired: !data.passwordSetupUrl,
+        passwordEmail: data.passwordEmail,
+        credentialsReady: data.passwordEmail?.status === "sent",
+        passwordResetRequired: data.passwordEmail?.status !== "sent",
         mustChangePassword: false,
       }));
     } catch (err) {
@@ -426,19 +417,10 @@ export default function AdminCreateUser() {
             setSubmitting(false);
             return;
           }
-          const addressError = saasAddressError(form.saas.subdomain);
-          if (addressError) {
-            setError(addressError.message);
-            setErrorCode(addressError.code);
-            setCanRetry(false);
-            setSetupStatus("");
-            setSubmitting(false);
-            return;
-          }
           const idempotencyKey = [
             form.email.trim().toLowerCase(),
             form.saas.templateSlug,
-            form.saas.subdomain.trim().toLowerCase(),
+            form.businessName.trim().toLowerCase(),
           ].join("|");
           payload.dealId = String(form.saas.dealId || "").trim();
           payload.saas = {
@@ -600,8 +582,7 @@ export default function AdminCreateUser() {
           <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
             <p>{error}</p>
             {setupStatus ? <p className="mt-1">סטטוס הקמה: {setupStatus}</p> : null}
-            {errorCode === "saas_address_missing" ? <p className="mt-1">יש למלא כתובת מערכת אמיתית לפני יצירת המשתמש.</p> : null}
-            {errorCode === "saas_address_taken" ? <p className="mt-1">בחרו כתובת פנויה או המשיכו הקמה קיימת של אותו לקוח.</p> : null}
+            {errorCode === "saas_address_taken" ? <p className="mt-1">המזהה שנוצר כבר תפוס. אפשר לנסות שוב והשרת יבחר מזהה אחר.</p> : null}
             {canRetry ? <p className="mt-1">אפשר ללחוץ שוב כדי להמשיך את ההקמה שנכשלה, בלי ליצור משתמש כפול.</p> : null}
           </div>
         ) : null}
@@ -628,48 +609,22 @@ export default function AdminCreateUser() {
             {result.accountKind === "saas_only" || result.accountKind === "bizuply_saas" ? (
               <div className="mt-3 space-y-1 font-bold">
                 <p>סטטוס הקמה: {result.setupStatus || result.tenant?.status || "pending"}</p>
-                {result.tenant?.status === "active" && result.credentialsReady && result.passwordSetupUrl ? (
+                {result.tenant?.status === "active" && result.credentialsReady ? (
                   <>
-                    <p>מסירה מאובטחת — שלחו קישור להגדרת סיסמה. אין סיסמה זמנית גלויה.</p>
-                    <p>כניסה ל־Bizuply: <code dir="ltr">{result.loginUrl || "https://bizuply.com/login"}</code></p>
+                    <p>המייל להגדרת סיסמה נשלח לספק. אין אישור שההודעה נמסרה לתיבה, ואין כאן קישור או סיסמה.</p>
                     {result.user?.email ? <p>אימייל: {result.user.email}</p> : null}
-                    <p>
-                      קישור הגדרת סיסמה: <code dir="ltr">{result.passwordSetupUrl}</code>
-                      <button
-                        type="button"
-                        className="ms-2 underline"
-                        onClick={() => {
-                          const text = [
-                            `כניסה: ${result.loginUrl || "https://bizuply.com/login"}`,
-                            `אימייל: ${result.user?.email || ""}`,
-                            `הגדרת סיסמה: ${result.passwordSetupUrl}`,
-                            "הקישור חד-פעמי. אין סיסמה זמנית.",
-                            "לאחר מכן: לוגו, צבעים, פרטי העסק, ואז פתיחת המערכת ללקוחות.",
-                          ].join("\n");
-                          navigator.clipboard?.writeText(text);
-                        }}
-                      >
-                        העתקת קישור הגדרה
-                      </button>
-                    </p>
-                    {result.tenant?.accessPath || result.tenant?.product?.loginUrl ? (
-                      <p>
-                        כתובת המערכת:{" "}
-                        <code dir="ltr">{result.tenant.product?.loginUrl || result.tenant.accessPath}</code>
-                      </p>
-                    ) : null}
-                    <p>הלקוח מחליף סיסמה בכניסה הראשונה, נכנס ל־«המערכות שלי», ומעדכן מיתוג ותוכן.</p>
+                    <p>הלקוח בוחר סיסמה מהקישור שבמייל, ואז נכנס למערכת שרכש.</p>
                   </>
                 ) : result.tenant?.status === "active" && result.passwordResetRequired ? (
                   <>
-                    <p>החשבון והמערכת מוכנים. ניתן להנפיק קישור מאובטח להגדרת סיסמה.</p>
+                    <p>החשבון והמערכת מוכנים. שליחת המייל נכשלה, ואפשר לשלוח שוב בלי להציג קישור.</p>
                     <button
                       type="button"
-                      className="mt-2 rounded-lg bg-slate-900 px-3 py-2 text-white"
+                      className="mt-2 rounded-md bg-slate-900 px-3 py-2 text-white"
                       disabled={resettingPassword}
                       onClick={handleDeliveryReset}
                     >
-                      {resettingPassword ? "מנפיק קישור..." : "הנפקת קישור הגדרת סיסמה"}
+                      {resettingPassword ? "שולח..." : "שליחה חוזרת"}
                     </button>
                   </>
                 ) : (

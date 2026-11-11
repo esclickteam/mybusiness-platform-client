@@ -15,6 +15,12 @@ export function formatQualityRating(raw?: string | null, t?: Translate): string 
   return raw || "";
 }
 
+/** Meta sends UNKNOWN/NA when a phone has no quality score yet. */
+export function isUnsetQualityRating(raw?: string | null): boolean {
+  const q = String(raw || "").trim().toUpperCase();
+  return !q || q === "UNKNOWN" || q === "NA" || q === "N/A" || q === "NONE";
+}
+
 export function qualityBadgeClass(raw?: string | null): string {
   const q = String(raw || "").trim().toUpperCase();
   if (q === "GREEN" || q === "HIGH") return "bg-emerald-50 text-emerald-700 border-emerald-100";

@@ -3,8 +3,6 @@ import { Link } from "react-router-dom";
 import {
   buildWhatsappLink,
   MixedText,
-  SaasFooter,
-  SaasHeader,
   SaasSeo,
   useSaasLocale,
   WhatsAppDock,
@@ -58,7 +56,6 @@ export default function SaasTemplateProductPage({
   return (
     <div className="saas-market saas-template-page min-h-screen pb-24" dir={dir} lang={htmlLang}>
       <SaasSeo title={story.seoTitle} description={story.seoDescription} />
-      <SaasHeader onTalk={() => openLead({ ctaSource: "talk_to_us" })} />
       <main>
         <section className="saas-template-hero">
           <div className="saas-wrap saas-template-hero-grid">
@@ -304,7 +301,6 @@ export default function SaasTemplateProductPage({
           </div>
         </section>
       </main>
-      <SaasFooter />
       <div className="saas-sticky-cta">
         {demoLinks.length ? (
           <>

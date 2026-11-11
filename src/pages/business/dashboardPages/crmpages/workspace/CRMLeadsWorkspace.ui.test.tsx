@@ -1,6 +1,7 @@
 import React from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 const apiGet = vi.fn();
 vi.mock("@api", () => ({
@@ -84,6 +85,14 @@ vi.mock("exceljs", () => {
 
 import CRMLeadsWorkspace from "./CRMLeadsWorkspace";
 
+function renderWorkspace(entry = "/") {
+  return render(
+    <MemoryRouter initialEntries={[entry]}>
+      <CRMLeadsWorkspace businessId="biz-1" />
+    </MemoryRouter>
+  );
+}
+
 const sampleLead = {
   _id: "64f0000000000000000000aa",
   fullName: "Ada Lovelace",
@@ -134,7 +143,7 @@ describe("CRMLeadsWorkspace isolated UI", () => {
   });
 
   it("renders searchable sortable table and opens the lead card tabs", async () => {
-    render(<CRMLeadsWorkspace businessId="biz-1" />);
+    renderWorkspace();
     expect(await screen.findByText("Ada Lovelace")).toBeInTheDocument();
     fireEvent.change(screen.getByPlaceholderText("crm.workspace.searchPlaceholder"), {
       target: { value: "Ada" },
@@ -150,8 +159,53 @@ describe("CRMLeadsWorkspace isolated UI", () => {
     expect(screen.getByText("crm.workspace.logCall")).toBeInTheDocument();
   });
 
+  it("opens only the lead in the direct link, then switches and stays on the clicked lead", async () => {
+    const bella = {
+      ...sampleLead,
+      _id: "64f0000000000000000000bb",
+      fullName: "Bella Bartok",
+      phone: "0502222222",
+      email: "bella@example.com",
+    };
+    fetchWorkspaceLeads.mockResolvedValue({
+      leads: [sampleLead, bella],
+      total: 2,
+      hasMore: false,
+      page: 1,
+      limit: 50,
+    });
+    apiGet.mockImplementation((url: string) => {
+      const id = String(url).includes(bella._id) ? bella._id : sampleLead._id;
+      const lead = id === bella._id ? bella : sampleLead;
+      const delay = id === sampleLead._id ? 60 : 0;
+      return new Promise((resolve) => {
+        setTimeout(() => resolve({ data: { lead: { ...lead, details: [], activities: [] } } }), delay);
+      });
+    });
+
+    renderWorkspace(`/?leadId=${sampleLead._id}`);
+    expect(await screen.findByRole("heading", { name: "Ada Lovelace" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Bella Bartok" })).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("Bella Bartok"));
+    expect(await screen.findByRole("heading", { name: "Bella Bartok" })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { name: "Ada Lovelace" })).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "crm.common.close" }));
+    await waitFor(() => {
+      expect(screen.queryByRole("heading", { name: "Bella Bartok" })).not.toBeInTheDocument();
+    });
+    fireEvent.change(screen.getByPlaceholderText("crm.workspace.searchPlaceholder"), {
+      target: { value: "no-match" },
+    });
+    expect(screen.queryByRole("heading", { name: "Ada Lovelace" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Bella Bartok" })).not.toBeInTheDocument();
+  });
+
   it("requires confirmation before bulk archive", async () => {
-    render(<CRMLeadsWorkspace businessId="biz-1" />);
+    renderWorkspace();
     await screen.findByText("Ada Lovelace");
     const checkboxes = screen.getAllByRole("checkbox");
     fireEvent.click(checkboxes[1]);
@@ -165,7 +219,7 @@ describe("CRMLeadsWorkspace isolated UI", () => {
   });
 
   it("switches between list, compact table and kanban", async () => {
-    render(<CRMLeadsWorkspace businessId="biz-1" />);
+    renderWorkspace();
     await screen.findByText("Ada Lovelace");
     fireEvent.click(screen.getByRole("button", { name: "crm.leads.boardView" }));
     expect(await screen.findByText(/חדש · 1/)).toBeInTheDocument();

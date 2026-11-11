@@ -16,6 +16,8 @@ import ReviewCard from "@/components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { REVIEW_RATING_PARAMETER_DEFINITIONS } from "@/utils/reviewDisplay";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
+import "../../../interiorDesign.css";
+import { bizAlert, bizConfirm } from "@/components/ui/bizDialog";
 
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
@@ -601,7 +603,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת הלוגו:", err);
-      alert(t("buildPage.alerts.uploadLogoFailed"));
+      void bizAlert(t("buildPage.alerts.uploadLogoFailed"));
     } finally {
       setTimeout(() => URL.revokeObjectURL(previewUrl), 500);
       setLockAutosave(false);
@@ -611,7 +613,7 @@ export default function Build() {
   const handleDeleteLogo = async () => {
     if (isSaving || isDeletingLogo) return;
 
-    const approved = window.confirm(t("buildPage.alerts.deleteLogoConfirm"));
+    const approved = await bizConfirm(t("buildPage.alerts.deleteLogoConfirm"));
     if (!approved) return;
 
     try {
@@ -627,7 +629,7 @@ export default function Build() {
 
       if (!response.ok) {
         const error = await response.json().catch(() => null);
-        alert(t("buildPage.alerts.deleteLogoFailedWith", { detail: error?.error || response.statusText }));
+        void bizAlert(t("buildPage.alerts.deleteLogoFailedWith", { detail: error?.error || response.statusText }));
         return;
       }
 
@@ -640,7 +642,7 @@ export default function Build() {
       window.dispatchEvent(new Event("business-profile-updated"));
     } catch (err) {
       console.error(err);
-      alert(t("buildPage.alerts.deleteLogoFailed"));
+      void bizAlert(t("buildPage.alerts.deleteLogoFailed"));
     } finally {
       setIsDeletingLogo(false);
     }
@@ -686,7 +688,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת התמונות הראשיות:", err);
-      alert(t("buildPage.alerts.uploadMainImagesFailed"));
+      void bizAlert(t("buildPage.alerts.uploadMainImagesFailed"));
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -719,11 +721,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert(t("buildPage.alerts.deleteImageFailed"));
+        void bizAlert(t("buildPage.alerts.deleteImageFailed"));
       }
     } catch (err) {
       console.error("שגיאה במחיקת תמונה ראשית:", err);
-      alert(t("buildPage.alerts.deleteImageFailed"));
+      void bizAlert(t("buildPage.alerts.deleteImageFailed"));
     }
   };
 
@@ -771,7 +773,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת גלריה:", err);
-      alert(t("buildPage.alerts.uploadGalleryFailed"));
+      void bizAlert(t("buildPage.alerts.uploadGalleryFailed"));
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -805,11 +807,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert(t("buildPage.alerts.deleteGalleryImageFailed"));
+        void bizAlert(t("buildPage.alerts.deleteGalleryImageFailed"));
       }
     } catch (err) {
       console.error("שגיאה במחיקת תמונה מהגלריה:", err);
-      alert(t("buildPage.alerts.deleteGalleryImageFailed"));
+      void bizAlert(t("buildPage.alerts.deleteGalleryImageFailed"));
     }
   };
 
@@ -888,13 +890,13 @@ export default function Build() {
 
         setShowViewProfile(true);
         window.dispatchEvent(new Event("business-profile-updated"));
-        alert(t("buildPage.alerts.saved"));
+        void bizAlert(t("buildPage.alerts.saved"));
       } else {
-        alert(t("buildPage.alerts.saveFailedWith", { detail: res.statusText }));
+        void bizAlert(t("buildPage.alerts.saveFailedWith", { detail: res.statusText }));
       }
     } catch (err) {
       console.error("שגיאת שמירה:", err);
-      alert(t("buildPage.alerts.saveFailed"));
+      void bizAlert(t("buildPage.alerts.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -924,12 +926,12 @@ export default function Build() {
       setNewFaq({ question: "", answer: "" });
     } catch (err) {
       console.error("שגיאה בהוספת שאלה:", err);
-      alert(t("buildPage.alerts.addFaqFailed"));
+      void bizAlert(t("buildPage.alerts.addFaqFailed"));
     }
   };
 
   const handleDeleteFaq = async (id: string) => {
-    const approved = window.confirm(t("buildPage.alerts.deleteFaqConfirm"));
+    const approved = await bizConfirm(t("buildPage.alerts.deleteFaqConfirm"));
     if (!approved) return;
 
     try {
@@ -941,7 +943,7 @@ export default function Build() {
       }));
     } catch (err) {
       console.error("שגיאה במחיקת שאלה:", err);
-      alert(t("buildPage.alerts.deleteFaqFailed"));
+      void bizAlert(t("buildPage.alerts.deleteFaqFailed"));
     }
   };
 
@@ -970,7 +972,7 @@ export default function Build() {
       setEditedFaq({ question: "", answer: "" });
     } catch (err) {
       console.error("שגיאה בעדכון שאלה:", err);
-      alert(t("buildPage.alerts.updateFaqFailed"));
+      void bizAlert(t("buildPage.alerts.updateFaqFailed"));
     }
   };
 
@@ -1857,7 +1859,7 @@ export default function Build() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
+      className="biz-interior min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
     >
       <input
         type="file"
@@ -1888,7 +1890,7 @@ export default function Build() {
       <div className="mx-auto flex max-w-7xl flex-col gap-7 xl:flex-row">
         <section
           data-demo-target="business-page-editor"
-          className="order-1 w-full overflow-hidden rounded-[2rem] border border-white/90 bg-white/95 shadow-[0_34px_110px_rgba(79,70,229,0.16)] backdrop-blur-xl xl:w-[52%]"
+          className="order-1 w-full overflow-hidden border border-[rgba(91,33,182,0.16)] bg-white xl:w-[52%]"
         >
           <div className="relative overflow-hidden border-b border-violet-100 bg-gradient-to-br from-white via-violet-50 to-blue-50 px-6 py-8 sm:px-8">
             <div className="absolute -left-20 -top-20 h-56 w-56 rounded-full bg-violet-300/35 blur-3xl" />
@@ -1948,7 +1950,7 @@ export default function Build() {
         </section>
 
         <aside data-demo-target="business-page-preview" className="order-2 w-full xl:w-[48%]">
-          <div className="sticky top-6 overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-start shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
+          <div className="sticky top-4 overflow-hidden border border-[rgba(91,33,182,0.16)] bg-white text-start">
             <div className="relative p-5 sm:p-7">
               <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
               <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
@@ -1989,7 +1991,7 @@ export default function Build() {
                 </div>
               )}
 
-              <div className="-mt-16 relative mx-auto max-w-5xl rounded-[2rem] border border-white/90 bg-white/95 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7">
+              <div className="border-t border-[rgba(91,33,182,0.12)] bg-white p-5 text-start sm:p-6">
                 <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
                   {logoPreview ? (
                     <ImageLoader
@@ -2081,7 +2083,7 @@ export default function Build() {
                   </div>
                 </div>
 
-                <div className="mx-auto mt-8 max-w-6xl rounded-[2rem] border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(245,243,255,0.78)_48%,rgba(239,246,255,0.82)_100%)] p-5 text-center shadow-[0_20px_70px_rgba(79,70,229,0.12)] backdrop-blur-xl sm:p-8">
+                <div className="mt-6 border border-[rgba(91,33,182,0.12)] bg-[#F4F1FA] p-4 text-start sm:p-6">
                   {renderPreviewContent()}
                 </div>
               </div>

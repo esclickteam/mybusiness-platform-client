@@ -78,30 +78,32 @@ describe("first paint document shell", () => {
     const page = await documentFor("https://bizuply.com/", "bizuply.com");
     expect(page.status).toBe(200);
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("marketing");
-    expect(page.body).toContain("<title>Bizuply | CRM, lead management, WhatsApp Business API and business tools</title>");
+    expect(page.body).toContain("<title>BizUply | CRM, lead management, WhatsApp Business API and business tools</title>");
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"@type":"Organization"');
-    expect(page.body).toContain('"alternateName":["ביזאפלי","BizUply"]');
+    expect(page.body).toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
+    expect(page.body).toContain('"name":"BizUply"');
     expect(page.body).toContain("In Hebrew, the brand name is ביזאפלי.");
     expect(page.body).toContain('class="hx-hero"');
-    expect(page.body).toContain('data-home-design="purple"');
+    expect(page.body).toContain('data-home-design="sketch"');
     expect(page.body).toContain('class="hx-display"');
-    expect(page.body).toContain(">Everything</span>");
-    expect(page.body).toContain(">platform.</span>");
+    expect(page.body).toContain(">Your</span>");
+    expect(page.body).toContain(">smarter.</span>");
     expect(page.body).not.toContain('class="home-hero"');
     expect(page.body).not.toContain("home-hero__title");
     expect(page.body).not.toContain("#070b18");
     expect(visibleH1Count(page.body)).toBe(1);
-    expect(noscriptCrawl(page.body)).toBe("");
+    expect(noscriptCrawl(page.body)).toContain('class="home-crawl"');
+    expect(rootInner(page.body)).not.toContain('class="home-crawl"');
     expect(rootInner(page.body)).toContain("hx-display");
-    expect(rootInner(page.body)).toContain(">Everything</span>");
-    expect(rootInner(page.body)).toContain(">platform.</span>");
+    expect(rootInner(page.body)).toContain(">Your</span>");
+    expect(rootInner(page.body)).toContain(">smarter.</span>");
     expect(rootInner(page.body)).not.toContain("The official website is bizuply.com");
     expect(rootInner(page.body)).not.toContain("<h1>Bizuply</h1>");
     expect(page.body).not.toContain("position:absolute;width:1px;height:1px");
   });
 
-  it("defers Vite app CSS on home so purple critical CSS can first-paint immediately", async () => {
+  it("defers Vite app CSS on home so white critical CSS can first-paint immediately", async () => {
     const withAssets = marketingHtml.replace(
       "</head>",
       '<script type="module" crossorigin src="/assets/index-TEST.js"></script><link rel="stylesheet" crossorigin href="/assets/index-TEST.css"></head>',
@@ -127,7 +129,7 @@ describe("first paint document shell", () => {
     );
     const body = await response.text();
     expect(body).toContain('class="bizuply-home hx-preview"');
-    expect(body).toContain('style="background:#5b21b6"');
+    expect(body).toContain('style="background:#ffffff"');
     expect(body).toContain('id="home-critical"');
     expect(body).toMatch(/href="\/assets\/index-TEST\.css"[^>]*media="print"/);
     expect(body).not.toContain("onload=\"this.media='all'\"");
@@ -168,27 +170,29 @@ describe("first paint document shell", () => {
     expect(body).not.toContain("/home-css-promote.js");
     expect(body).not.toContain('media="print"');
     expect(body).not.toContain('class="bizuply-home');
-    expect(body).not.toContain("/home-critical.css");
+    expect(body).toContain("/home-critical.css");
+    expect(body).toContain('class="site-header"');
     expect(body).not.toContain('id="home-critical"');
-    expect(body).toContain("CRM Software for Small Businesses");
+    expect(body).toContain("CRM for leads and customers | BizUply");
   });
 
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
     const hebrew = await documentFor("https://bizuply.com/he/", "bizuply.com");
     expect(hebrew.body).toContain('lang="he" dir="rtl"');
-    expect(hebrew.body).toContain(">צריך.</span>");
-    expect(hebrew.body).toContain(">חזקה.</span>");
+    expect(hebrew.body).toContain(">שלכם.</span>");
+    expect(hebrew.body).toContain(">יותר.</span>");
     expect(hebrew.body).toContain("ביזאפלי");
     expect(visibleH1Count(hebrew.body)).toBe(1);
-    expect(noscriptCrawl(hebrew.body)).toBe("");
+    expect(noscriptCrawl(hebrew.body)).toContain('class="home-crawl"');
+    expect(rootInner(hebrew.body)).not.toContain('class="home-crawl"');
     expect(rootInner(hebrew.body)).toContain("hx-display");
-    expect(rootInner(hebrew.body)).toContain('data-home-design="purple"');
+    expect(rootInner(hebrew.body)).toContain('data-home-design="sketch"');
     expect(rootInner(hebrew.body)).not.toContain("home-hero__title");
     expect(rootInner(hebrew.body)).not.toContain("<h1>Bizuply</h1>");
 
     const crm = await documentFor("https://bizuply.com/crm", "bizuply.com");
-    expect(crm.body).toContain("<title>CRM Software for Small Businesses &amp; Lead Management | Bizuply</title>");
-    expect(crm.body).toContain("<h1>Manage every lead and customer relationship in one place</h1>");
+    expect(crm.body).toContain("<title>CRM for leads and customers | BizUply</title>");
+    expect(crm.body).toContain("<h1>A CRM that connects leads, customers and everyday work</h1>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
     expect(visibleH1Count(crm.body)).toBe(0);
@@ -197,7 +201,7 @@ describe("first paint document shell", () => {
     expect(noscriptCrawl(crm.body)).toContain("CRM only is $49 per month");
 
     const hebrewCrm = await documentFor("https://bizuply.com/he/crm", "bizuply.com");
-    expect(hebrewCrm.body).toContain("<h1>נהלו כל ליד וכל קשר עם הלקוח במקום אחד</h1>");
+    expect(hebrewCrm.body).toContain("<h1>מערכת CRM שמחברת בין הלידים, הלקוחות והעבודה היומיומית</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
     expect(visibleH1Count(hebrewCrm.body)).toBe(0);
     expect(rootInner(hebrewCrm.body)).not.toContain("כל ליד");

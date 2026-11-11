@@ -15,24 +15,25 @@ export type InternationalBillingOption = {
 };
 
 /**
- * Display fallback only. Ledger amounts are calculated on the server.
- * These figures match the approved catalog: $499 / month and $5,000 / year.
+ * Published Business Partner membership prices.
+ * The public page shows these amounts. The server ledger is separate and does
+ * not rewrite stored partners or signed agreements.
  */
 export const INTERNATIONAL_BILLING_OPTIONS: InternationalBillingOption[] = [
   {
     interval: "monthly",
-    amountUsd: 499,
+    amountUsd: 299,
     labelEn: "Monthly Partner",
     labelHe: "שותף חודשי",
     bestValue: false,
   },
   {
     interval: "annual",
-    amountUsd: 5000,
+    amountUsd: 2990,
     labelEn: "Annual Partner",
     labelHe: "שותף שנתי",
     bestValue: true,
-    savingsUsd: 988,
+    savingsUsd: 598,
   },
 ];
 
@@ -58,7 +59,7 @@ export const INTERNATIONAL_PARTNER_PLAN: PartnerPlan = {
   currency: "usd",
   setupIls: 0,
   monthlyIls: 0,
-  annualUsd: 5000,
+  annualUsd: 2990,
   softwareDiscountCap: 0,
   humanServiceDiscountCap: 0,
   aiDiscountCap: 0,
@@ -119,6 +120,17 @@ export function internationalBillingOptionsFromPlan(plan?: {
   return INTERNATIONAL_BILLING_OPTIONS.map((row) => ({ ...row }));
 }
 
+/** Show the published prices until the server catalog lists the same amounts. */
+export function publishedInternationalBillingOptions(plan?: Parameters<typeof internationalBillingOptionsFromPlan>[0]) {
+  const next = internationalBillingOptionsFromPlan(plan);
+  const monthly = next.find((row) => row.interval === "monthly");
+  const annual = next.find((row) => row.interval === "annual");
+  const publishedMonthly = INTERNATIONAL_BILLING_OPTIONS[0].amountUsd;
+  const publishedAnnual = INTERNATIONAL_BILLING_OPTIONS[1].amountUsd;
+  if (monthly?.amountUsd === publishedMonthly && annual?.amountUsd === publishedAnnual) return next;
+  return INTERNATIONAL_BILLING_OPTIONS.map((row) => ({ ...row }));
+}
+
 export function readInternationalBillingInterval(search: string): InternationalBillingInterval {
   const params = new URLSearchParams(String(search || "").replace(/^\?/, ""));
   const fromUrl = normalizeInternationalBillingInterval(
@@ -162,7 +174,7 @@ export function rememberInternationalRegisterStep(step: "plan" | "account") {
 }
 
 export function defaultManualAmountUsd(interval: InternationalBillingInterval, options = INTERNATIONAL_BILLING_OPTIONS) {
-  return options.find((row) => row.interval === interval)?.amountUsd || (interval === "monthly" ? 499 : 5000);
+  return options.find((row) => row.interval === interval)?.amountUsd || (interval === "monthly" ? 299 : 2990);
 }
 
 export function isKnownPartnerPlanKey(value: string): value is PartnerPlanKey {
@@ -281,7 +293,7 @@ export function validateManualInternationalPayment(input: ManualInternationalPay
 
 export function internationalAnnualFeeUsd() {
   return {
-    amountUsd: INTERNATIONAL_PARTNER_PLAN.annualUsd || 5000,
+    amountUsd: INTERNATIONAL_PARTNER_PLAN.annualUsd || 2990,
     chargedLive: false as const,
     liveBillingEnabled: false as const,
   };
@@ -310,7 +322,7 @@ export function canOpenPartnerCenter(input: {
       };
     }
     if (input.feeReady !== true) {
-      return { ok: false as const, reason: "A $5,000 ledger entry is not proof of payment." };
+      return { ok: false as const, reason: "A ledger entry is not proof of payment." };
     }
     if (input.agreementReady !== true) {
       return {

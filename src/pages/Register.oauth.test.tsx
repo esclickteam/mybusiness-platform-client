@@ -45,7 +45,12 @@ import Register from "./Register";
 beforeEach(() => {
   resetBizuplyAuthProvidersForTests();
   apiGet.mockResolvedValue({ data: { providers: ["google", "microsoft"] } });
-  apiPost.mockResolvedValue({ data: { success: true, emailMasked: "a***@bizuply.test", cooldownSeconds: 60 } });
+  apiPost.mockImplementation((url: string) => {
+    if (url === "/privacy/consent") {
+      return Promise.resolve({ data: { success: true, stored: true, id: "consent-1" } });
+    }
+    return Promise.resolve({ data: { success: true, emailMasked: "a***@bizuply.test", cooldownSeconds: 60 } });
+  });
   Object.defineProperty(window, "location", {
     value: { ...window.location, assign, origin: "https://app.test" },
     writable: true,
@@ -72,11 +77,18 @@ describe("BizUply identity-first register", () => {
     expect(screen.queryByLabelText("register.name")).not.toBeInTheDocument();
     expect(screen.queryByLabelText("register.password")).not.toBeInTheDocument();
     expect(screen.getByText("register.identity.continueEmail")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("checkbox", { name: "register.termsConsent" }));
     fireEvent.click(google);
-    expect(assign).toHaveBeenCalledWith(
-      expect.stringMatching(
-        /\/auth\/oauth\/google\/start\?.*intent=signup.*product=bizuply.*plan=monthly.*websiteAddon=1.*ref=aff1.*clientOrigin=/
+    await waitFor(() =>
+      expect(assign).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /\/auth\/oauth\/google\/start\?.*intent=signup.*product=bizuply.*plan=monthly.*websiteAddon=1.*ref=aff1.*consentKey=.*clientOrigin=/
+        )
       )
+    );
+    expect(apiPost).toHaveBeenCalledWith(
+      "/privacy/consent",
+      expect.objectContaining({ source: "register", termsAccepted: true, marketingOptIn: false })
     );
   });
 
@@ -92,15 +104,72 @@ describe("BizUply identity-first register", () => {
     fireEvent.change(screen.getByPlaceholderText("name@company.com"), {
       target: { value: "new@bizuply.test" },
     });
+    fireEvent.click(screen.getByRole("checkbox", { name: "register.termsConsent" }));
     fireEvent.click(screen.getByRole("button", { name: "register.identity.sendCode" }));
     await waitFor(() =>
       expect(apiPost).toHaveBeenCalledWith(
         "/auth/signup/email/start",
-        expect.objectContaining({ email: "new@bizuply.test", plan: "yearly" })
+        expect.objectContaining({
+          email: "new@bizuply.test",
+          plan: "yearly",
+          termsAccepted: true,
+          marketingOptIn: false,
+          consentKey: expect.any(String),
+        })
       )
     );
+    const consentOrder = apiPost.mock.calls.findIndex((call) => call[0] === "/privacy/consent");
+    const startOrder = apiPost.mock.calls.findIndex((call) => call[0] === "/auth/signup/email/start");
+    expect(consentOrder).toBeGreaterThanOrEqual(0);
+    expect(startOrder).toBeGreaterThan(consentOrder);
     expect(await screen.findByText(/register.identity.otpHint/)).toBeInTheDocument();
     expect(screen.queryByPlaceholderText("register.passwordPlaceholder")).not.toBeInTheDocument();
+  });
+
+  it("does not start signup when the consent record is not stored", async () => {
+    apiPost.mockImplementation((url: string) => {
+      if (url === "/privacy/consent") return Promise.reject(new Error("consent_not_stored"));
+      return Promise.resolve({ data: { success: true } });
+    });
+    render(
+      <MemoryRouter initialEntries={["/register?plan=yearly"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    await screen.findByText("register.identity.continueEmail");
+    fireEvent.change(screen.getByPlaceholderText("name@company.com"), {
+      target: { value: "new@bizuply.test" },
+    });
+    fireEvent.click(screen.getByRole("checkbox", { name: "register.termsConsent" }));
+    fireEvent.click(screen.getByRole("button", { name: "register.identity.sendCode" }));
+    expect(await screen.findByRole("alert")).toHaveTextContent("register.consentSaveFailed");
+    expect(apiPost).not.toHaveBeenCalledWith("/auth/signup/email/start", expect.anything());
+    expect(screen.queryByText(/register.identity.otpHint/)).not.toBeInTheDocument();
+  });
+
+  it("continues registration when the previous server has no consent route", async () => {
+    apiPost.mockImplementation((url: string, body?: { consentKey?: string }) => {
+      if (url === "/privacy/consent") return Promise.reject({ response: { status: 404 } });
+      expect(body?.consentKey).toBeUndefined();
+      return Promise.resolve({ data: { success: true, emailMasked: "a***@bizuply.test", cooldownSeconds: 60 } });
+    });
+    render(
+      <MemoryRouter initialEntries={["/register?plan=yearly"]}>
+        <Routes>
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    await screen.findByText("register.identity.continueEmail");
+    fireEvent.change(screen.getByPlaceholderText("name@company.com"), {
+      target: { value: "legacy@bizuply.test" },
+    });
+    fireEvent.click(screen.getByRole("checkbox", { name: "register.termsConsent" }));
+    fireEvent.click(screen.getByRole("button", { name: "register.identity.sendCode" }));
+    expect(await screen.findByText(/register.identity.otpHint/)).toBeInTheDocument();
+    expect(screen.queryByText("register.consentSaveFailed")).not.toBeInTheDocument();
   });
 
   it("shows oauth errors from a cancelled provider return", async () => {

@@ -9,7 +9,7 @@ import { partnerPlanDisplayName } from "../../i18n/partnerCatalogCopy";
 import {
   INTERNATIONAL_BILLING_OPTIONS,
   INTERNATIONAL_PLAN_KEY,
-  internationalBillingOptionsFromPlan,
+  publishedInternationalBillingOptions,
   isInternationalPlanKey,
   isInternationalRegisterLock,
   plansForRegisterForm,
@@ -24,7 +24,7 @@ import {
 function planSummary(t: (key: string, opts?: Record<string, unknown>) => string, plan: PartnerPlan) {
   if (isInternationalPlanKey(plan.planKey) || plan.commissionModel === "agreement_percent") {
     return t("partner.register.internationalPlan", {
-      annual: plan.annualUsd || 5000,
+      annual: INTERNATIONAL_BILLING_OPTIONS.find((row) => row.interval === "annual")?.amountUsd || 2990,
       recurring: "30 / 35 / 40",
       oneTime: Math.round((plan.oneTimeSaleCommissionRate || 0.1) * 100),
     });
@@ -86,7 +86,7 @@ export default function PartnerRegister() {
     if (requested) rememberInternationalBillingInterval(billingInterval);
   }, [lockedToInternational, billingInterval, params]);
 
-  const billingOptions = internationalBillingOptionsFromPlan(
+  const billingOptions = publishedInternationalBillingOptions(
     plans.find((plan) => isInternationalPlanKey(plan.planKey))
   );
 
@@ -182,7 +182,7 @@ export default function PartnerRegister() {
                       </span>
                       {option.interval === "annual" ? (
                         <span className="mt-1 block text-xs font-black text-emerald-700" data-testid="register-annual-savings">
-                          {t("partner.register.annualSavings", { amount: (option.savingsUsd || 988).toLocaleString("en-US") })}
+                          {t("partner.register.annualSavings", { amount: (option.savingsUsd || 598).toLocaleString("en-US") })}
                         </span>
                       ) : null}
                     </button>

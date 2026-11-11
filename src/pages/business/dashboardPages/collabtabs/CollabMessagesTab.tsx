@@ -10,7 +10,7 @@ import {
   Trash2,
   XCircle,
 } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import API from "../../../../api";
 import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
@@ -167,6 +167,7 @@ export default function CollabMessagesTab({
   });
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   const navigationState = location.state as NavigationState;
   const conversationIdFromNav = navigationState?.conversationId || null;
@@ -540,7 +541,16 @@ export default function CollabMessagesTab({
             </p>
           </div>
 
-          <div className="rounded-[1.5rem] border border-white/80 bg-white/75 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur">
+          <div className="flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => navigate("../find-partner")}
+              className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-[#5B21B6] px-5 text-sm font-black text-white"
+            >
+              <Send className="h-4 w-4" />
+              {t("leftover.collab.activeTab.createProposal")}
+            </button>
+          <div className="border border-[rgba(91,33,182,0.14)] bg-white p-4">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
               {t("collab.messages.shownLabel")}
             </p>
@@ -548,6 +558,7 @@ export default function CollabMessagesTab({
             <p className="mt-2 text-3xl font-black text-violet-700">
               {messagesToShow.length}
             </p>
+          </div>
           </div>
         </div>
       </section>
@@ -655,7 +666,7 @@ export default function CollabMessagesTab({
 
       {modalOpen && selectedAgreementId && (
         <AppModal onClose={closeModal}>
-          <div className="mx-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto rounded-[2rem] bg-white p-5 shadow-2xl">
+          <div className="biz-doc mx-auto max-h-[92vh] w-full max-w-5xl overflow-y-auto border border-[rgba(91,33,182,0.16)] bg-white p-5">
             <TypedPartnershipAgreementView
               agreementId={selectedAgreementId}
               currentBusinessId={userBusinessId || ""}

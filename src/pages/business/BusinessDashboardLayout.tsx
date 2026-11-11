@@ -24,6 +24,7 @@ import {
   rewriteDashboardTargetForBusiness,
 } from "../../utils/notificationNavigation";
 import { useDashboardBusinessId } from "../../hooks/useDashboardBusinessId";
+import { BizDialogHost } from "../../components/ui/bizDialog";
 import {
   clearAdminActiveBusinessId,
   setAdminActiveBusinessId,
@@ -539,8 +540,9 @@ export default function BusinessDashboardLayout() {
       <AiProvider>
         <div
           dir={layoutDir}
-          className="min-h-screen w-full bg-[#f5f6fb] text-slate-800"
+          className="bx-shell min-h-screen w-full bg-[#F4F1FA] text-[#21172F]"
         >
+          <BizDialogHost />
           {showTopBanner ? (
             <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
               <div className="text-start">
@@ -592,7 +594,7 @@ export default function BusinessDashboardLayout() {
                 type="button"
                 disabled={exitingImpersonation}
                 onClick={handleExitImpersonation}
-                className="rounded-md border border-amber-200/80 bg-gradient-to-l from-amber-100 via-orange-50 to-white px-4 py-2.5 text-xs font-black text-black transition hover:from-amber-200/80 hover:via-orange-50 hover:to-white disabled:opacity-60"
+                className="rounded-none border border-amber-200/80 bg-gradient-to-l from-amber-100 via-orange-50 to-white px-4 py-2.5 text-xs font-black text-black transition hover:from-amber-200/80 hover:via-orange-50 hover:to-white disabled:opacity-60"
               >
                 {exitingImpersonation
                   ? t("layout.returning")
@@ -620,10 +622,10 @@ export default function BusinessDashboardLayout() {
               ref={sidebarRef}
               className={`
                 fixed z-50 flex flex-col overflow-hidden
-                bg-gradient-to-b from-[#faf7ff] via-[#f3f8ff] to-[#eefcff]
-                shadow-[4px_0_28px_rgba(99,102,241,0.07)]
+                bg-[#48218B]
+                shadow-[8px_0_30px_rgba(26,11,51,0.12)]
                 transition-[width,transform] duration-300 ease-in-out
-                ${isRtl ? "right-0 border-l border-violet-100/80" : "left-0 border-r border-violet-100/80"}
+                ${isRtl ? "right-0 border-l border-[#48218B]" : "left-0 border-r border-[#48218B]"}
                 ${
                   isMobile
                     ? showSidebar
@@ -642,12 +644,12 @@ export default function BusinessDashboardLayout() {
             >
               <div
                 className={`
-                  relative flex shrink-0 items-center border-b border-violet-100/70
-                  bg-white/35 backdrop-blur-sm
+                  relative flex shrink-0 items-center border-b border-[#e7e3f5]
+                  bg-white
                   ${
                     sidebarCollapsed && !isMobile
                       ? "h-[76px] flex-col justify-center gap-1.5 px-2"
-                      : "h-[80px] justify-between gap-2 px-3"
+                      : "h-[72px] justify-between gap-2 px-3"
                   }
                 `}
               >
@@ -662,11 +664,11 @@ export default function BusinessDashboardLayout() {
                       src={partnerLogo}
                       alt={partnerName || ""}
                       className={`
-                      object-contain transition-transform duration-300
+                      object-contain
                       ${
                         sidebarCollapsed && !isMobile
                           ? "h-10 w-10"
-                          : "h-10 w-auto max-w-full origin-center scale-[2]"
+                          : "h-11 w-auto max-w-full"
                       }
                     `}
                     />
@@ -689,11 +691,11 @@ export default function BusinessDashboardLayout() {
                       src="/bizuply logo.png"
                       alt="BizUply Logo"
                       className={`
-                      object-contain transition-transform duration-300
+                      object-contain
                       ${
                         sidebarCollapsed && !isMobile
                           ? "h-10 w-10"
-                          : "h-10 w-auto max-w-full origin-center scale-[2]"
+                          : "h-14 w-auto max-w-[210px]"
                       }
                     `}
                     />
@@ -710,8 +712,8 @@ export default function BusinessDashboardLayout() {
                         : t("businessNav.collapseSidebar", "Collapse sidebar")
                     }
                     className="
-                      flex h-7 w-7 shrink-0 items-center justify-center rounded-md
-                      border border-violet-200/70 bg-white/75 text-slate-500
+                      flex h-7 w-7 shrink-0 items-center justify-center rounded-none
+                      border border-[#e7e3f5] bg-white text-[#21172F]
                       shadow-[0_2px_8px_rgba(99,102,241,0.06)]
                       transition hover:border-sky-200 hover:bg-white
                       hover:text-sky-600
@@ -744,7 +746,7 @@ export default function BusinessDashboardLayout() {
               </div>
 
               {isMobile && (
-                <div className="border-t border-violet-100/70 bg-white/30 p-4 backdrop-blur-sm">
+                <div className="border-t border-[#e7e3f5] bg-white p-4">
                   <div className="mb-3 truncate text-sm font-semibold text-slate-800">
                     {workspaceLabel || user?.businessName || user?.name}
                   </div>
@@ -753,7 +755,7 @@ export default function BusinessDashboardLayout() {
                     type="button"
                     onClick={handleLogout}
                     className="
-                      w-full rounded-md border border-violet-200/70 bg-white/80
+                      w-full rounded-none border border-[#e7e3f5] bg-white
                       px-4 py-3 text-sm font-semibold text-slate-700
                       transition hover:border-sky-200 hover:bg-white
                     "
@@ -783,7 +785,7 @@ export default function BusinessDashboardLayout() {
                 type="button"
                 onClick={handleBackToAdmin}
                 className="
-                  shrink-0 rounded-lg bg-white/15 px-3 py-1 text-xs font-bold
+                  shrink-0 rounded-none bg-white/15 px-3 py-1 text-xs font-bold
                   transition hover:bg-white/25
                 "
               >
@@ -795,10 +797,10 @@ export default function BusinessDashboardLayout() {
           {!isWebsiteFullScreen && (
             <header
               className="
-                fixed z-30 flex h-16 items-center justify-between
-                border-b border-white/70 bg-white/80 px-4
-                shadow-[0_10px_30px_rgba(79,70,229,0.06)]
-                backdrop-blur-xl transition-all duration-300 lg:px-6
+                fixed z-30 flex h-[4.5rem] items-center justify-between
+                border-b border-[#e7e3f5] bg-white px-4
+                shadow-[0_10px_30px_rgba(50,16,100,0.04)]
+                transition-all duration-300 lg:px-6
               "
               style={{
                 top: showTopBanner ? 56 : isAdmin ? 40 : 0,
@@ -813,8 +815,8 @@ export default function BusinessDashboardLayout() {
                     aria-label={t("common.openMenu")}
                     onClick={() => setShowSidebar((value) => !value)}
                     className="
-                      flex h-10 w-10 items-center justify-center rounded-2xl
-                      border border-slate-200 bg-white text-slate-700
+                      flex h-10 w-10 items-center justify-center rounded-none
+                      border border-[#e7e3f5] bg-white text-[#21172F]
                       shadow-sm transition hover:bg-slate-50
                     "
                   >
@@ -823,22 +825,22 @@ export default function BusinessDashboardLayout() {
                 )}
 
                 {isGuidedDemoActive() ? (
-                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-violet-700">
+                    <span className="rounded-none bg-[#F7F6FC] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#5B21B6]">
                     {t("leftover.guided.demoBadge", "DEMO")}
                   </span>
                 ) : null}
                 <GuidedDemoResetControl />
                 {apiPortal ? (
                   <span
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-black text-emerald-800"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-none border border-[#e7e3f5] bg-[#F7F6FC] px-2.5 py-1 text-xs font-black text-[#5B21B6]"
                     data-testid="wa-api-portal-badge"
                   >
                     <MessageCircle size={14} aria-hidden />
                     {t("whatsappApiPortal.productName")}
                   </span>
                 ) : null}
-                <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
-                  <span className="font-black text-slate-800">
+                <div className="hidden min-w-0 sm:block">
+                  <span className="block truncate text-lg font-black tracking-[-0.03em] text-[#21172F]">
                     {isInvistimoAdmin
                       ? INVISTIMO_ADMIN_LABEL
                       : t("common.hello", {
@@ -846,7 +848,7 @@ export default function BusinessDashboardLayout() {
                         })}
                   </span>
                   {isAdmin && (
-                    <span className="ms-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
+                    <span className="ms-2 rounded-none bg-[#F7F6FC] px-2 py-0.5 text-xs font-bold text-[#5B21B6]">
                       {t("common.admin")}
                     </span>
                   )}
@@ -864,9 +866,9 @@ export default function BusinessDashboardLayout() {
                     type="button"
                     onClick={handleLogout}
                     className="
-                      rounded-2xl border border-slate-200 bg-white px-4 py-2.5
-                      text-sm font-bold text-slate-700 shadow-sm transition
-                      hover:bg-slate-50
+                      rounded-none border border-[#5B21B6] bg-[#5B21B6] px-4 py-2.5
+                      text-sm font-bold text-white transition
+                      hover:bg-[#48218B]
                     "
                   >
                     {t("common.logOut")}
@@ -878,16 +880,16 @@ export default function BusinessDashboardLayout() {
 
           <main
             className={[
-              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb] transition-[padding] duration-300",
+              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#F4F1FA] transition-[padding] duration-300",
               isWebsiteFullScreen
                 ? showTopBanner
                   ? "pt-14"
                   : "pt-0"
                 : isAdmin
-                  ? "pt-[104px]"
+                  ? "pt-[112px]"
                   : showTopBanner
                     ? "pt-[120px]"
-                    : "pt-16",
+                    : "pt-[4.5rem]",
               // Lets the last portal actions scroll clear of the floating assistant launcher.
               apiPortal && !isWebsiteFullScreen ? "pb-28" : "",
             ].join(" ")}

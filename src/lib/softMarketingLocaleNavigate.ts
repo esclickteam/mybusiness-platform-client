@@ -2,8 +2,8 @@
  * Soft locale navigation for marketing pages (home and localized cousins).
  *
  * Full `location.assign` between `/` and `/he` (etc.) remounts the document
- * against `html.bizuply-home { background:#5b21b6 }`, so users see a purple
- * frame before the hero product image paints. Soft navigation keeps the SPA
+ * against `html.bizuply-home { background:#ffffff }`, so users can see a blank
+ * white frame before the hero product media paints. Soft navigation keeps the SPA
  * alive, only remounts the locale basename router, and holds a visual clone
  * of the current hero until the next hero (with media) is ready.
  */
@@ -52,12 +52,12 @@ export function captureLocalePaintHold(doc: Document = document): HTMLElement | 
     zIndex: "2147483000",
     pointerEvents: "none",
     overflow: "hidden",
-    background: "#5b21b6",
+    background: "#ffffff",
   });
 
   const wrap = doc.createElement("div");
   wrap.style.minHeight = "100%";
-  wrap.style.background = "#5b21b6";
+  wrap.style.background = "#ffffff";
 
   const header =
     doc.querySelector("#root .site-header") ||
@@ -97,7 +97,9 @@ export function heroMediaReady(doc: Document = document): boolean {
   if (!isUsableHero(hero)) return false;
   const shot =
     doc.querySelector<HTMLImageElement>("#root .hx-hero-shot-1") ||
+    doc.querySelector<HTMLImageElement>("#root .hx-hero-stage-inner img") ||
     doc.querySelector<HTMLImageElement>("#root .hx-hero-frame img") ||
+    doc.querySelector<HTMLVideoElement>("#root .hx-theater-video") ||
     doc.querySelector<HTMLVideoElement>("#root .hx-hero-frame video");
   if (!shot) return false;
   if (shot instanceof HTMLImageElement) {

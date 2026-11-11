@@ -17,6 +17,36 @@ describe("resolveApiBaseUrl", () => {
     ).toBe(RAILWAY_STAGING_API);
   });
 
+  it("keeps an explicit Railway Staging API when baked into the build", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://server-staging-15bb.up.railway.app/api",
+        mode: "production",
+        hostname: "geo-decision-staging-preview.vercel.app",
+      })
+    ).toBe(RAILWAY_STAGING_API);
+  });
+
+  it("forces the dedicated staging client host to Railway Staging", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "mybusiness-platform-client-staging.vercel.app",
+      })
+    ).toBe(RAILWAY_STAGING_API);
+  });
+
+  it("uses same-origin /api on Cloudflare Staging tunnels (proxied to Railway Staging)", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "screens-continuing-thesaurus-farming.trycloudflare.com",
+      })
+    ).toBe("/api");
+  });
+
   it("uses the same-origin /api proxy on production hosts so the session cookie is sent", () => {
     expect(
       resolveApiBaseUrl({
@@ -39,6 +69,13 @@ describe("resolveApiBaseUrl", () => {
         hostname: "geo.bizuply.com",
       })
     ).toBe("/api");
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "partners.bizuply.com",
+      })
+    ).toBe("/api");
   });
 
   it("does not treat unrelated vercel.app hosts as this project's preview", () => {
@@ -52,7 +89,18 @@ describe("resolveApiBaseUrl", () => {
     ).toBe(PRODUCTION_API);
   });
 
-  it("uses /api in local development when env is empty", () => {
+  
+  it("uses same-origin /api on localhost even if Production env is baked", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "127.0.0.1",
+      })
+    ).toBe("/api");
+  });
+
+it("uses /api in local development when env is empty", () => {
     expect(resolveApiBaseUrl({ envApiUrl: "", mode: "development", hostname: "localhost" })).toBe(
       "/api"
     );

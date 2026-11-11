@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api"; // Make sure this is the correct path based on file location
 import "./CollabContractView.css";
+import { bizAlert } from "../../../components/ui/bizDialog";
 
 const CollabContractView = ({ contract, onApprove, currentUser }) => {
   const { t, i18n } = useTranslation();
@@ -98,14 +99,14 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       onApprove(updatedContract);
     } catch (err) {
       console.error("❌ Error sending contract approval to server:", err);
-      alert(t("leftover.agreements.approvalSendError"));
+      void bizAlert(t("leftover.agreements.approvalSendError"));
     } finally {
       setIsApproving(false);
     }
   };
 
   return (
-    <div className="contract-view-container">
+    <div className="contract-view-container biz-doc">
       <h2 className="contract-title">📄 {t("leftover.contractChrome.viewTitle")}</h2>
 
       <div className="static-field"><strong>{t("leftover.contractChrome.senderBusiness")}</strong> {sender?.businessName}</div>

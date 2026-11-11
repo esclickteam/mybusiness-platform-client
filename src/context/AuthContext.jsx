@@ -1087,7 +1087,10 @@ export function AuthProvider({ children }) {
           if (freshUser.hasAccess) {
             // Already inside the business app (including after a CTA navigate) —
             // never snap back to the generic dashboard.
-            if (location.pathname.startsWith("/business/")) {
+            if (
+              location.pathname.startsWith("/business/") ||
+              location.pathname.startsWith("/business-profile/")
+            ) {
               return;
             }
 

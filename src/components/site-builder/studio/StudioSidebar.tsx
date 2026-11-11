@@ -398,7 +398,7 @@ export default function StudioSidebar({
   return (
     <aside
       className={[
-        "grid min-h-0 overflow-hidden border-l border-slate-200 bg-white shadow-[0_18px_70px_rgba(15,23,42,0.06)] transition-[grid-template-columns] duration-300",
+        "studio-sidebar grid min-h-0 overflow-hidden border-l border-slate-200 bg-white transition-[grid-template-columns] duration-300",
         isPanelOpen ? "grid-cols-[96px_minmax(390px,430px)]" : "grid-cols-[96px_0px]",
       ].join(" ")}
     >

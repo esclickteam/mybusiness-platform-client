@@ -8,7 +8,7 @@ export default function InternationalFeeNotice({ me }: { me: PartnerMe }) {
   if (!isInternationalPlanKey(planKey)) return null;
   const status = me.internationalActivation?.status || me.status;
   const interval = me.internationalActivation?.manualCollection?.interval || me.internationalActivation?.billingInterval;
-  const amount = me.internationalActivation?.manualCollection?.amountUsd || (interval === "monthly" ? 499 : me.plan?.annualUsd || 5000);
+  const amount = me.internationalActivation?.manualCollection?.amountUsd || (interval === "monthly" ? 299 : me.plan?.annualUsd || 2990);
   const cadence = t(interval === "monthly" ? "partner.internationalFee.perMonth" : "partner.internationalFee.perYear");
   if (status === "pending_setup") {
     return (

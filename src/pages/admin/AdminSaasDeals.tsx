@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
+import AdminPageHeader from "./shell/AdminPageHeader";
+import { SAAS_SYSTEMS } from "./saas/saasSystems";
 
 type DealRow = {
   id: string;
@@ -16,7 +18,8 @@ type DealRow = {
   payment?: { recorded?: boolean; reference?: string; amount?: number | null };
   delivery?: { approved?: boolean };
   tenantId?: string;
-  passwordSetupUrl?: string;
+  language?: string;
+  passwordEmail?: { status?: string; language?: string; reason?: string };
   audit?: { at?: string; action?: string; note?: string; actorEmail?: string }[];
 };
 
@@ -45,6 +48,24 @@ export default function AdminSaasDeals() {
   const [paymentFor, setPaymentFor] = useState<string | null>(null);
   const [paymentRef, setPaymentRef] = useState("");
   const [paymentAmount, setPaymentAmount] = useState("");
+  const [languages, setLanguages] = useState<Record<string, string>>({});
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  const MAIL_LANGUAGES = [
+    ["he", "עברית"],
+    ["en", "English"],
+    ["es", "Español"],
+    ["pt-BR", "Português"],
+    ["ar", "العربية"],
+  ];
+
+  function mailStatus(row: DealRow) {
+    if (row.passwordEmail?.status === "sent") return "המייל נשלח לספק. אין אישור מסירה.";
+    if (row.passwordEmail?.status === "pending") return "המייל ממתין";
+    if (row.passwordEmail?.status === "failed") return `שליחת המייל נכשלה${row.passwordEmail.reason ? ` (${row.passwordEmail.reason})` : ""}`;
+    return "";
+  }
 
   async function load() {
     const { data } = await API.get("/admin/saas-deals");
@@ -61,7 +82,7 @@ export default function AdminSaasDeals() {
     try {
       await API.post("/admin/saas-deals", draft);
       setNotice("העסקה נקלטה ושויכה למערכת.");
-      setDraft({ ...draft, name: "", email: "", businessName: "", phone: "", publicSlug: "" });
+      setDraft({ ...draft, name: "", email: "", businessName: "", phone: "" });
       await load();
     } catch (err) {
       const message = err && typeof err === "object" && "response" in err
@@ -77,7 +98,8 @@ export default function AdminSaasDeals() {
     try {
       const { data } = await API.post(`/admin/saas-deals/${id}/${path}`, body);
       setNotice(ok);
-      if (data.passwordSetupUrl) setNotice(`${ok} קישור הגדרת סיסמה הונפק.`);
+      if (data.passwordEmail?.status === "sent") setNotice(`${ok} המייל נשלח לספק.`);
+      if (data.passwordEmail?.status === "failed") setError("המייל לא נשלח. אפשר לשלוח שוב.");
       setPaymentFor(null);
       await load();
     } catch (err) {
@@ -88,12 +110,23 @@ export default function AdminSaasDeals() {
     }
   }
 
+  const visible = useMemo(() => {
+    const term = query.trim().toLowerCase();
+    return rows.filter((row) => {
+      if (statusFilter !== "all" && row.status !== statusFilter) return false;
+      const haystack = `${row.customerName} ${row.email} ${row.businessName} ${row.templateSlug} ${row.publicSlug || ""}`.toLowerCase();
+      return !term || haystack.includes(term);
+    });
+  }, [query, rows, statusFilter]);
+
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f5f6fb]">
+    <div dir="rtl">
       <AdminHeader />
-      <main className="mx-auto max-w-6xl px-4 py-8">
-        <h1 className="mb-2 text-2xl font-black">עסקאות ומסירת SaaS</h1>
-        <p className="mb-4 text-sm">תשלום מחוץ למערכת מול Bizuply. הקצאה רק אחרי אישור תשלום ואישור מסירה.</p>
+      <main>
+        <AdminPageHeader
+          title="עסקאות והקמה"
+          description="תשלום מחוץ למערכת מול Bizuply. הקמה רק אחרי אישור תשלום ואישור מסירה. Delivera אינה ניתנת לבחירה."
+        />
         {error ? <p className="text-rose-700">{error}</p> : null}
         {notice ? <p className="text-emerald-800">{notice}</p> : null}
         <section className="mb-6 rounded-2xl bg-white p-4 shadow-sm">
@@ -104,14 +137,21 @@ export default function AdminSaasDeals() {
             <input className="rounded border px-2 py-1" placeholder="שם עסק" value={draft.businessName} onChange={(event) => setDraft({ ...draft, businessName: event.target.value })} />
             <input className="rounded border px-2 py-1" placeholder="טלפון" value={draft.phone} onChange={(event) => setDraft({ ...draft, phone: event.target.value })} />
             <select className="rounded border px-2 py-1" value={draft.templateSlug} onChange={(event) => setDraft({ ...draft, templateSlug: event.target.value })}>
-              {["beautyflow", "global-properties", "dinevo", "cliny", "tableflow"].map((slug) => (
-                <option key={slug} value={slug}>{slug}</option>
+              {SAAS_SYSTEMS.map((system) => (
+                <option key={system.slug} value={system.slug}>{system.name}</option>
               ))}
             </select>
-            <input className="rounded border px-2 py-1" placeholder="כתובת מערכת" value={draft.publicSlug} onChange={(event) => setDraft({ ...draft, publicSlug: event.target.value })} />
+            <p className="self-center text-xs font-bold text-slate-500">מזהה העסק ייווצר אוטומטית באישור המסירה.</p>
           </div>
-          <button type="button" className="mt-3 font-bold" onClick={createDeal}>שמירת ליד</button>
+          <button type="button" className="biz-btn mt-3" onClick={createDeal}>שמירת ליד</button>
         </section>
+        <div className="biz-table-toolbar">
+          <input className="biz-table-search" type="search" value={query} placeholder="חיפוש לקוח, עסק או מערכת" onChange={(event) => setQuery(event.target.value)} />
+          <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+            <option value="all">כל הסטטוסים</option>
+            {Object.entries(STATUS_LABEL).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
+        </div>
         <div className="overflow-x-auto rounded-2xl bg-white shadow-sm">
           <table className="w-full text-sm">
             <thead>
@@ -122,7 +162,7 @@ export default function AdminSaasDeals() {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
+              {visible.map((row) => (
                 <tr key={row.id} className="border-b align-top">
                   <td className="px-3 py-2">{row.customerName}<br />{row.email}<br />{row.businessName}</td>
                   <td className="px-3 py-2">{row.templateSlug}<br />{row.productName}</td>
@@ -131,30 +171,38 @@ export default function AdminSaasDeals() {
                   <td className="px-3 py-2">{row.payment?.recorded ? `אושר · ${row.payment.reference || ""}` : "טרם אושר"}</td>
                   <td className="px-3 py-2">{row.delivery?.approved ? "אושרה" : "ממתינה"}{row.tenantId ? <><br />tenant {row.tenantId}</> : null}</td>
                   <td className="px-3 py-2">
-                    {row.status === "lead" ? <button type="button" className="block font-bold" onClick={() => act(row.id, "review", {}, "העסקה בטיפול")}>טיפול</button> : null}
+                    {row.status === "lead" ? <button type="button" className="biz-btn biz-btn-secondary" onClick={() => act(row.id, "review", {}, "העסקה בטיפול")}>טיפול</button> : null}
                     {row.status === "lead" || row.status === "in_review" ? (
-                      <button type="button" className="block font-bold" onClick={() => setPaymentFor(row.id)}>אישור תשלום ידני</button>
+                      <button type="button" className="biz-btn" onClick={() => setPaymentFor(row.id)}>אישור תשלום ידני</button>
                     ) : null}
                     {paymentFor === row.id ? (
                       <div className="mt-1 space-y-1">
                         <input className="w-full rounded border px-2 py-1" placeholder="אסמכתא" value={paymentRef} onChange={(event) => setPaymentRef(event.target.value)} />
                         <input className="w-full rounded border px-2 py-1" placeholder="סכום" value={paymentAmount} onChange={(event) => setPaymentAmount(event.target.value)} />
-                        <button type="button" className="font-bold" onClick={() => act(row.id, "record-payment", { reference: paymentRef, amount: Number(paymentAmount) || null }, "התשלום אושר ידנית")}>אישור מנהל</button>
+                        <button type="button" className="biz-btn" onClick={() => act(row.id, "record-payment", { reference: paymentRef, amount: Number(paymentAmount) || null }, "התשלום אושר ידנית")}>אישור מנהל</button>
                       </div>
                     ) : null}
                     {row.status === "payment_recorded" ? (
-                      <button type="button" className="block font-bold" onClick={() => act(row.id, "approve-delivery", { publicSlug: row.publicSlug }, "המסירה אושרה")}>אישור מסירה</button>
+                      <button type="button" className="biz-btn" onClick={() => act(row.id, "approve-delivery", {}, "המסירה אושרה")}>אישור מסירה</button>
                     ) : null}
                     {row.status === "delivery_approved" ? (
-                      <button type="button" className="block font-bold" onClick={() => act(row.id, "provision", { publicSlug: row.publicSlug }, "סביבת הלקוח הוקמה.")}>הקצאת סביבה</button>
+                      <button type="button" className="biz-btn" onClick={() => act(row.id, "provision", {}, "סביבת הלקוח הוקמה.")}>הקמת העסק</button>
                     ) : null}
                     {row.status !== "provisioned" && row.status !== "cancelled" ? (
                       <button type="button" className="mt-1 block font-bold" onClick={() => act(row.id, "cancel", { note: "בוטל" }, "העסקה בוטלה")}>ביטול</button>
                     ) : null}
-                    {row.passwordSetupUrl ? (
-                      <a className="mt-1 block text-xs font-bold underline" href={row.passwordSetupUrl} target="_blank" rel="noreferrer">
-                        קישור הגדרת סיסמה
-                      </a>
+                    {row.status === "provisioned" ? (
+                      <div className="mt-2 space-y-1">
+                        <p className="text-xs">{mailStatus(row)}</p>
+                        <select
+                          className="w-full rounded border px-2 py-1"
+                          value={languages[row.id] || row.passwordEmail?.language || row.language || "he"}
+                          onChange={(event) => setLanguages((current) => ({ ...current, [row.id]: event.target.value }))}
+                        >
+                          {MAIL_LANGUAGES.map(([code, label]) => <option key={code} value={code}>{label}</option>)}
+                        </select>
+                        <button type="button" className="block rounded border px-2 py-1 font-bold" onClick={() => act(row.id, "password-link", { language: languages[row.id] || row.language || "he" }, "המייל נשלח שוב.")}>שליחה חוזרת</button>
+                      </div>
                     ) : null}
                     {(row.audit || []).slice(-4).reverse().map((entry) => (
                       <p key={`${entry.at}-${entry.action}`} className="text-xs">{entry.action} · {entry.note || ""}</p>

@@ -2,13 +2,13 @@
 
 export function installRemainingGuides(add, t) {
   add("what-is-a-crm", {
-    title: t("What is a CRM for a small business? | Bizuply", "מהו CRM לעסק קטן? | ביזאפלי", "Qué es un CRM para un negocio pequeño | Bizuply", "O que é um CRM para um pequeno negócio | Bizuply", "ما هو CRM لنشاط صغير؟ | Bizuply"),
+    title: t("What is a CRM for a small business? | BizUply", "מהו CRM לעסק קטן? | ביזאפלי", "Qué es un CRM para un negocio pequeño | BizUply", "O que é um CRM para um pequeno negócio | BizUply", "ما هو CRM لنشاط صغير؟ | BizUply"),
     description: t(
-      "A CRM is the record of people who might buy and people who already did. In Bizuply, CRM only is $49 a month.",
+      "A CRM is the record of people who might buy and people who already did. In BizUply, CRM only is $49 a month.",
       "CRM הוא הרשומה של מי שעשוי לקנות ושל מי שכבר קנה. בביזאפלי, CRM בלבד עולה 49 דולר לחודש.",
-      "Un CRM es el registro de quien podría comprar y de quien ya compró. En Bizuply, el CRM solo cuesta 49 dólares al mes.",
-      "Um CRM é o registro de quem pode comprar e de quem já comprou. Na Bizuply, o CRM sozinho custa US$ 49 por mês.",
-      "CRM هو سجل من قد يشتري ومن اشترى فعلاً. في Bizuply، CRM وحده 49 دولاراً في الشهر.",
+      "Un CRM es el registro de quien podría comprar y de quien ya compró. En BizUply, el CRM solo cuesta 49 dólares al mes.",
+      "Um CRM é o registro de quem pode comprar e de quem já comprou. Na BizUply, o CRM sozinho custa US$ 49 por mês.",
+      "CRM هو سجل من قد يشتري ومن اشترى فعلاً. في BizUply، CRM وحده 49 دولاراً في الشهر.",
     ),
     h1: t("What is a CRM for a small business?", "מהו CRM לעסק קטן?", "Qué es un CRM para un negocio pequeño", "O que é um CRM para um pequeno negócio", "ما هو CRM لنشاط صغير؟"),
     lede: t(
@@ -59,11 +59,11 @@ export function installRemainingGuides(add, t) {
         heading: t("Where a lead is allowed to come from", "מאיפה ליד יכול להגיע", "De dónde puede llegar un lead", "De onde um lead pode chegar", "من أين يمكن أن يصل العميل المحتمل"),
         paragraphs: [
           t(
-            "Three automated sources enter the same pipeline: Meta Lead Ads after the business connects its own Facebook page, Google Ads lead forms, and a form on a site built in Bizuply. Each lead keeps that source next to the contact details. The first status is New.",
+            "Three automated sources enter the same pipeline: Meta Lead Ads after the business connects its own Facebook page, Google Ads lead forms, and a form on a site built in BizUply. Each lead keeps that source next to the contact details. The first status is New.",
             "שלושה מקורות אוטומטיים נכנסים לאותו צינור: לידים ממודעות Meta אחרי שהעסק מחבר את דף הפייסבוק שלו, טפסי לידים של Google Ads, וטופס באתר שנבנה בביזאפלי. כל ליד שומר את המקור ליד פרטי הקשר. הסטטוס הראשון הוא חדש.",
-            "Tres orígenes automáticos entran en el mismo pipeline: Lead Ads de Meta después de que el negocio conecta su propia página de Facebook, formularios de Google Ads y un formulario en un sitio construido en Bizuply. Cada lead conserva ese origen. El primer estado es Nuevo.",
-            "Três origens automáticas entram no mesmo pipeline: Lead Ads da Meta depois que o negócio conecta a própria página do Facebook, formulários do Google Ads e um formulário em um site feito na Bizuply. Cada lead guarda essa origem. O primeiro status é Novo.",
-            "ثلاثة مصادر آلية تدخل المسار نفسه: إعلانات العملاء من Meta بعد أن يربط النشاط صفحة فيسبوك الخاصة به، ونماذج Google Ads، ونموذج في موقع بُني في Bizuply. يحتفظ كل عميل بمصدره. الحالة الأولى هي جديد.",
+            "Tres orígenes automáticos entran en el mismo pipeline: Lead Ads de Meta después de que el negocio conecta su propia página de Facebook, formularios de Google Ads y un formulario en un sitio construido en BizUply. Cada lead conserva ese origen. El primer estado es Nuevo.",
+            "Três origens automáticas entram no mesmo pipeline: Lead Ads da Meta depois que o negócio conecta a própria página do Facebook, formulários do Google Ads e um formulário em um site feito na BizUply. Cada lead guarda essa origem. O primeiro status é Novo.",
+            "ثلاثة مصادر آلية تدخل المسار نفسه: إعلانات العملاء من Meta بعد أن يربط النشاط صفحة فيسبوك الخاصة به، ونماذج Google Ads، ونموذج في موقع بُني في BizUply. يحتفظ كل عميل بمصدره. الحالة الأولى هي جديد.",
           ),
         ],
         example: {

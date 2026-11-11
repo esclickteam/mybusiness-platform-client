@@ -369,3 +369,21 @@ a.cta-soft {
     height: 2.85rem !important;
   }
 }
+
+/* Keep the assistant and accessibility buttons above the cookie bar. */
+body:has(.cookie-banner--notice) .bizuply-chat-launcher,
+body:has(.cookie-banner--notice) .bizuply-a11y-trigger {
+  bottom: 8.25rem !important;
+}
+
+body:has(.cookie-banner--manage) .bizuply-chat-launcher,
+body:has(.cookie-banner--manage) .bizuply-a11y-trigger {
+  bottom: calc(min(70dvh, 36rem) + 0.75rem) !important;
+}
+
+@media (max-width: 960px) {
+  body:has(.cookie-banner--notice) .bizuply-chat-launcher,
+  body:has(.cookie-banner--notice) .bizuply-a11y-trigger {
+    bottom: calc(18rem + env(safe-area-inset-bottom)) !important;
+  }
+}

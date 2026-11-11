@@ -13,11 +13,11 @@ import CreateCampaignButton from "./CreateCampaignButton";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
-import LanguageSwitcher from "../../../../components/LanguageSwitcher";
 import { applyLanguageFromUrl, normalizeLanguage } from "../../../../i18n/localeUtils";
 import { isMetaCampaignsKnownChildPath } from "./campaignCreationMode";
 import MetaAdsDateRangeBar from "./MetaAdsDateRangeBar";
 import { MetaAdsTimeZoneProvider } from "./metaAdsTimeZone";
+import "../bizModuleDesign.css";
 
 type MetaCampaignsTab = {
   path: string;
@@ -103,16 +103,11 @@ export default function MetaCampaignsMain() {
     <MetaAdsTimeZoneProvider>
     <section
       dir={dir}
-      className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
+      className="biz-module biz-campaigns min-h-[calc(100vh-72px)] px-3 py-3 text-start sm:px-5 sm:py-4 lg:px-6"
     >
       <div className="mx-auto w-full max-w-[1920px]">
-        <header className="mb-4 overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
-          <div className="relative overflow-hidden">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 bg-gradient-to-l from-blue-50/80 via-violet-50/50 to-sky-50/40"
-            />
-            <div className="relative flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <header className="biz-shell">
+          <div className="biz-shell-top">
               <div className="min-w-0">
                 <p className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-violet-700">
                   <Sparkles className="h-3.5 w-3.5" />
@@ -133,19 +128,17 @@ export default function MetaCampaignsMain() {
                     basePath={`/business/${businessId}/dashboard/meta-campaigns`}
                   />
                 ) : null}
-                <LanguageSwitcher />
               </div>
             </div>
-          </div>
 
           <nav
             aria-label={t("metaCampaigns.shell.title")}
-            className="border-t border-slate-100 px-2 sm:px-3"
+            className="biz-tabs"
           >
             <label className="block px-2 py-2 md:hidden">
               <span className="sr-only">{t("metaCampaigns.shell.title")}</span>
               <select
-                className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-black text-slate-800"
+                className="h-11 w-full border border-slate-200 bg-white px-3 text-sm font-black text-slate-800"
                 value={tabs.some((tab) => tab.path === currentTab) ? currentTab : "overview"}
                 onChange={(event) =>
                   navigate({ pathname: event.target.value, search: searchParams.toString() })
@@ -158,7 +151,7 @@ export default function MetaCampaignsMain() {
                 ))}
               </select>
             </label>
-            <div className="hidden items-stretch gap-0.5 overflow-x-auto md:flex">
+            <div className="biz-tabs-row hidden md:flex">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -166,38 +159,11 @@ export default function MetaCampaignsMain() {
                     key={tab.path}
                     to={{ pathname: tab.path, search: searchParams.toString() }}
                     className={({ isActive }) =>
-                      [
-                        "group relative flex shrink-0 items-center gap-2 px-3 py-3 text-sm font-black transition-colors",
-                        "focus:outline-none focus-visible:bg-violet-50",
-                        isActive
-                          ? "text-violet-700"
-                          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
-                      ].join(" ")
+                      `biz-tab${isActive ? " is-active" : ""}`
                     }
                   >
-                    {({ isActive }) => (
-                      <>
-                        <Icon
-                          className={[
-                            "h-4 w-4 shrink-0",
-                            isActive
-                              ? "text-violet-600"
-                              : "text-slate-400 group-hover:text-slate-600",
-                          ].join(" ")}
-                        />
-                        <span className="whitespace-nowrap">
-                          {t(tab.labelKey)}
-                        </span>
-                        <span
-                          className={[
-                            "absolute inset-x-2 bottom-0 h-0.5 rounded-full transition-opacity",
-                            isActive
-                              ? "bg-violet-500 opacity-100"
-                              : "opacity-0",
-                          ].join(" ")}
-                        />
-                      </>
-                    )}
+                    <Icon />
+                    <span className="whitespace-nowrap">{t(tab.labelKey)}</span>
                   </NavLink>
                 );
               })}

@@ -52,6 +52,7 @@ import {
   formatMessagingLimit,
   formatNameStatus,
   formatQualityRating,
+  isUnsetQualityRating,
   nameStatusBadgeClass,
   qualityBadgeClass,
   toneBadgeClass,
@@ -66,6 +67,7 @@ import WhatsAppTabSuspenseFallback from "./WhatsAppTabSuspenseFallback";
 import { isWhatsAppApiPortalUser } from "../../../../utils/whatsappApiPortal";
 import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
 import { useWhatsAppVisualQaOverride } from "../../../dev/whatsappVisualQaContext";
+import "../bizModuleDesign.css";
 
 type WhatsAppTab = {
   path: string;
@@ -158,6 +160,13 @@ export type WhatsAppHubOutletContext = {
   syncWithMeta: () => Promise<void>;
   syncing: boolean;
 };
+
+function chipTone(className: string) {
+  if (className.includes("emerald")) return "is-ok";
+  if (className.includes("rose")) return "is-bad";
+  if (className.includes("amber")) return "is-warn";
+  return "is-neutral";
+}
 
 export default function WhatsAppMain() {
   const { t, i18n } = useTranslation();
@@ -326,16 +335,27 @@ export default function WhatsAppMain() {
     connection?.readiness,
     t
   );
-  const qualityLabel = formatQualityRating(connection?.qualityRating, t);
+  const rawQuality = String(connection?.qualityRating || "").trim();
+  const qualityUnset =
+    isUnsetQualityRating(rawQuality) &&
+    (Boolean(rawQuality) || Boolean(connection?.connected));
+  const qualityLabel = qualityUnset
+    ? ""
+    : formatQualityRating(connection?.qualityRating, t);
+  const nameTone = nameStatusBadgeClass(
+    connection?.nameStatusDisplay || connection?.nameStatus
+  );
+  const qualityTone = qualityBadgeClass(connection?.qualityRating);
   const nameStatusLabel = formatNameStatus(
     connection?.nameStatusDisplay || connection?.nameStatus,
     t
   );
   const limitLabel = formatMessagingLimit(connection?.messagingLimitTier, t);
-  const displayName =
-    connection?.verifiedName ||
+  const accountName =
     connection?.wabaName ||
+    connection?.verifiedName ||
     t("whatsapp.hub.unnamed");
+  const verifiedDisplayName = connection?.verifiedName || "";
   const lastSync = connection?.lastMetaSyncAt
     ? new Date(connection.lastMetaSyncAt).toLocaleString(locale)
     : null;
@@ -363,96 +383,29 @@ export default function WhatsAppMain() {
   return (
     <section
       dir={getTextDirection(i18n.language)}
-      className="min-h-[calc(100vh-72px)] bg-[#F5F7FB] px-3 py-3 text-start text-slate-900 sm:px-4 sm:py-4 lg:px-5"
+      className="biz-module min-h-[calc(100vh-72px)] px-3 py-3 text-start sm:px-4 sm:py-4 lg:px-5"
     >
       <div className="mx-auto w-full max-w-[1600px]">
-        <header className="mb-3 overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-[0_4px_16px_rgba(15,23,42,0.04)]">
-          <div className="flex flex-col gap-2.5 border-b border-slate-100 px-3 py-2.5 sm:px-4 sm:py-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 items-center gap-2.5">
-              <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-emerald-50 text-emerald-700">
-                <MessageCircle className="h-4.5 w-4.5" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                  <h1 className="truncate text-base font-black tracking-tight text-slate-900 sm:text-lg">
-                    {showConnectionPlaceholder
-                      ? "…"
-                      : connection?.connected
-                        ? displayName
-                        : t("whatsapp.viaMeta.title")}
-                  </h1>
-                  <span
-                    className="truncate text-sm font-semibold text-slate-500"
-                    dir="ltr"
-                  >
-                    {showConnectionPlaceholder
-                      ? ""
-                      : connection?.displayPhoneNumber ||
-                        t("whatsapp.hub.noPhone")}
-                  </span>
-                  <span
-                    className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold ${toneBadgeClass(
-                      connection?.connected ? "ok" : "neutral"
-                    )}`}
-                  >
-                    {connection?.connected
-                      ? t("whatsapp.hub.connected")
-                      : t("whatsapp.hub.disconnected")}
-                  </span>
-                  {connection?.connected ? (
-                    <span
-                      className={`inline-flex items-center rounded-md border px-2 py-0.5 text-[10px] font-bold ${toneBadgeClass(
-                        ready.tone
-                      )}`}
-                    >
-                      {ready.tone === "ok"
-                        ? t("whatsapp.hub.ready")
-                        : t("whatsapp.hub.issue")}
-                    </span>
-                  ) : null}
+        <header className="biz-shell">
+          <div className="biz-shell-top">
+            <div className="wa-account">
+              <div className="wa-account-top">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="biz-mark">
+                    <MessageCircle className="h-5 w-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="wa-kicker">WhatsApp API</p>
+                    <h1 className="wa-title">
+                      {showConnectionPlaceholder
+                        ? "…"
+                        : connection?.connected
+                          ? accountName
+                          : t("whatsapp.viaMeta.title")}
+                    </h1>
+                  </div>
                 </div>
-                <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px] font-semibold text-slate-500">
-                  {qualityLabel ? (
-                    <span className="inline-flex items-center gap-1">
-                      {t("whatsapp.hub.quality")}:
-                      <span
-                        className={`rounded border px-1.5 py-0 text-[10px] font-bold ${qualityBadgeClass(
-                          connection?.qualityRating
-                        )}`}
-                      >
-                        {qualityLabel}
-                      </span>
-                    </span>
-                  ) : null}
-                  {limitLabel ? (
-                    <span>
-                      {t("whatsapp.hub.messagingLimit")}:{" "}
-                      <span className="text-slate-700">{limitLabel}</span>
-                    </span>
-                  ) : null}
-                  {nameStatusLabel ? (
-                    <span className="inline-flex items-center gap-1">
-                      {t("whatsapp.hub.displayName")}:
-                      <span
-                        className={`rounded border px-1.5 py-0 text-[10px] font-bold ${nameStatusBadgeClass(
-                          connection?.nameStatusDisplay || connection?.nameStatus
-                        )}`}
-                      >
-                        {nameStatusLabel}
-                      </span>
-                    </span>
-                  ) : null}
-                  <span>
-                    {t("whatsapp.hub.cards.lastSync")}:{" "}
-                    <span className="text-slate-700">
-                      {lastSync || t("whatsapp.hub.neverSynced")}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-1.5 lg:justify-end">
+                <div className="wa-actions">
               <GuidedDemoSandboxButton
                 target="whatsapp-demo-send"
                 className="rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-[11px] font-black text-amber-900"
@@ -489,12 +442,103 @@ export default function WhatsAppMain() {
                 )}
                 {t("whatsapp.hub.syncWithMeta")}
               </button>
+                </div>
+              </div>
+
+              <div className="wa-facts">
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.accountName")}</p>
+                  <p className="wa-fact-value">
+                    {showConnectionPlaceholder ? "…" : accountName}
+                  </p>
+                </div>
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.phone")}</p>
+                  <p className="wa-fact-value" dir="ltr">
+                    {showConnectionPlaceholder
+                      ? "…"
+                      : connection?.displayPhoneNumber || t("whatsapp.hub.noPhone")}
+                  </p>
+                </div>
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.connectionStatus")}</p>
+                  <p className="wa-fact-value">
+                    <span className={`wa-badge ${connection?.connected ? "is-ok" : "is-neutral"}`}>
+                      {connection?.connected
+                        ? t("whatsapp.hub.connected")
+                        : t("whatsapp.hub.disconnected")}
+                    </span>
+                  </p>
+                </div>
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.readinessStatus")}</p>
+                  <p className="wa-fact-value">
+                    {connection?.connected ? (
+                      <span className={`wa-badge ${ready.tone === "ok" ? "is-ok" : ready.tone === "bad" ? "is-bad" : "is-warn"}`}>
+                        {ready.status}
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div className="wa-facts">
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.displayName")}</p>
+                  <p className="wa-fact-value">
+                    {showConnectionPlaceholder ? "…" : verifiedDisplayName || "—"}
+                  </p>
+                  {nameStatusLabel ? (
+                    <p className="wa-fact-meta">
+                      <span>{t("whatsapp.hub.displayNameStatus")}</span>
+                      <span className={`wa-badge ${chipTone(nameTone)}`}>
+                        {nameStatusLabel}
+                      </span>
+                    </p>
+                  ) : null}
+                </div>
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.numberQuality")}</p>
+                  <p className="wa-fact-value">
+                    {showConnectionPlaceholder ? (
+                      "…"
+                    ) : qualityUnset ? (
+                      t("whatsapp.hub.qualityUnset")
+                    ) : qualityLabel ? (
+                      <span className={`wa-badge ${chipTone(qualityTone)}`}>
+                        {qualityLabel}
+                      </span>
+                    ) : (
+                      "—"
+                    )}
+                  </p>
+                  {qualityUnset && !showConnectionPlaceholder ? (
+                    <p className="wa-fact-hint">{t("whatsapp.hub.qualityUnsetHint")}</p>
+                  ) : null}
+                </div>
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.sendLimit24")}</p>
+                  <p className="wa-fact-value" dir="ltr">
+                    {showConnectionPlaceholder ? "…" : limitLabel || "—"}
+                  </p>
+                </div>
+                <div className="wa-fact">
+                  <p className="wa-fact-label">{t("whatsapp.hub.cards.lastSync")}</p>
+                  <p className="wa-fact-value">
+                    {showConnectionPlaceholder
+                      ? "…"
+                      : lastSync || t("whatsapp.hub.neverSynced")}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
           {apiPortal ? null : (
-          <nav aria-label={t("whatsapp.hub.title")} className="px-1.5 sm:px-2">
-            <div className="flex flex-wrap items-stretch gap-0.5">
+          <nav aria-label={t("whatsapp.hub.title")} className="biz-tabs">
+            <div className="biz-tabs-row">
               {visibleTabs.map((tab) => {
                 const Icon = tab.icon;
                 const active =
@@ -505,26 +549,10 @@ export default function WhatsAppMain() {
                   <NavLink
                     key={tab.path}
                     to={tab.to}
-                    className={[
-                      "group relative flex shrink-0 items-center gap-1.5 px-2.5 py-2.5 text-[13px] font-bold transition-colors",
-                      active
-                        ? "text-emerald-700"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
-                    ].join(" ")}
+                    className={["biz-tab", active ? "is-active" : ""].join(" ")}
                   >
-                    <Icon
-                      className={[
-                        "h-3.5 w-3.5 shrink-0",
-                        active ? "text-emerald-600" : "text-slate-400",
-                      ].join(" ")}
-                    />
+                    <Icon />
                     <span className="whitespace-nowrap">{t(tab.labelKey)}</span>
-                    <span
-                      className={[
-                        "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
-                        active ? "bg-emerald-500 opacity-100" : "opacity-0",
-                      ].join(" ")}
-                    />
                   </NavLink>
                 );
               })}

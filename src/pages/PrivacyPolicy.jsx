@@ -1,24 +1,32 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import { useTranslation, Trans } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
+import PrivacyRequestForm from "../components/privacy/PrivacyRequestForm";
+import PrivacyFacts from "../components/privacy/PrivacyFacts";
+import { openCookieSettings } from "../lib/trackingConsent";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import { SCOPE, TERMS_CHAPTER } from "../lib/complianceConsentCopy";
 
 function PrivacyPolicy() {
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
 
   const sectionBase =
-    "scroll-mt-28 rounded-[2rem] border border-white/80 bg-white/75 p-6 shadow-xl shadow-slate-900/5 backdrop-blur sm:p-8";
+    "scroll-mt-28 rounded-sm border border-violet-100 bg-white p-5 text-slate-800 shadow-sm sm:p-8";
 
   const h2Base =
-    "mb-5 text-2xl font-black tracking-[-0.03em] text-slate-800 sm:text-3xl";
+    "mb-5 text-2xl font-semibold leading-tight tracking-[-0.02em] text-slate-950 sm:text-3xl";
 
   const h3Base =
-    "mb-3 mt-7 text-xl font-black tracking-[-0.02em] text-slate-900";
+    "mb-3 mt-7 text-xl font-semibold leading-snug tracking-[-0.02em] text-slate-950";
 
-  const pBase = "mb-4 text-base font-medium leading-8 text-slate-600";
+  const pBase = "mb-4 max-w-3xl text-base leading-8 text-slate-700";
 
   const ulBase =
-    "mb-5 ms-5 list-disc space-y-2 text-base font-medium leading-8 text-slate-600";
+    "mb-5 ms-5 max-w-3xl list-disc space-y-2 text-base leading-8 text-slate-700";
 
   const sections = t("privacyPage.sections", { returnObjects: true });
 
@@ -30,7 +38,7 @@ function PrivacyPolicy() {
       <Helmet>
         <title>{t("privacyPage.metaTitle")}</title>
         <meta name="description" content={t("privacyPage.metaDescription")} />
-        <link rel="canonical" href="https://bizuply.com/privacy" />
+        <link rel="canonical" href={marketingPublicUrl("/privacy", locale)} />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
@@ -53,10 +61,21 @@ function PrivacyPolicy() {
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
           {t("privacyPage.intro")}
         </p>
+        <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-slate-700">
+          <Link to="/website-scan">{locale === "he" ? "בדיקת פרטיות ואבטחה לאתר" : locale === "es" ? "Revisión de privacidad y seguridad del sitio" : locale === "pt-BR" ? "Verificação de privacidade e segurança do site" : locale === "ar" ? "فحص خصوصية وأمن الموقع" : "Website privacy and security check"}</Link>
+        </p>
+        <LegalDocumentLinks current="/privacy" />
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
           {t("privacyPage.lastUpdatedLabel")} {t("privacyPage.lastUpdatedDate")}
         </div>
+        <button
+          type="button"
+          className="mt-4 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-900"
+          onClick={openCookieSettings}
+        >
+          {t("footer.cookieSettings")}
+        </button>
       </section>
 
       <section className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.34fr_0.66fr] lg:px-10">
@@ -90,17 +109,24 @@ function PrivacyPolicy() {
           </nav>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-            <p className="text-sm font-black text-amber-300">
+            <p className="text-sm font-black text-slate-900">
               {t("privacyPage.contactPrivacy")}
             </p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
-              privacy@bizuply.com
+              support@bizuply.com
             </p>
           </div>
         </aside>
 
         {/* Content */}
         <div className="space-y-6">
+          <section id="compliance-ai" className={sectionBase}>
+            <h2 className={h2Base}>Bizuply Compliance AI</h2>
+            <p className="mb-4 max-w-3xl text-base leading-8 text-slate-800">{SCOPE[locale]}</p>
+            {TERMS_CHAPTER[locale].blocks[10].p.map((paragraph) => (
+              <p className="mb-4 max-w-3xl text-base leading-8 text-slate-800" key={paragraph.slice(0, 24)}>{paragraph}</p>
+            ))}
+          </section>
           <section id="section-1" className={sectionBase}>
             <h2 className={h2Base}>{t("privacyPage.s1.h")}</h2>
 
@@ -223,30 +249,10 @@ function PrivacyPolicy() {
           </section>
 
           <section id="section-7" className={sectionBase}>
-            <h2 className={h2Base} dir="ltr" style={{ textAlign: "left" }}>
-              7. Google Workspace API Data
-            </h2>
-
-            <div dir="ltr" style={{ textAlign: "left" }}>
-              <p className={pBase}>
-                Bizuply&apos;s use and transfer of information received from
-                Google APIs to any other app will adhere to the Google API
-                Services User Data Policy, including the Limited Use
-                requirements.
-              </p>
-
-              <p className={pBase}>
-                Bizuply does not use Google Workspace API user data to develop,
-                improve, or train generalized artificial intelligence or
-                machine learning models.
-              </p>
-
-              <p className={pBase}>
-                Google Workspace API user data is not transferred to
-                third-party AI or machine learning providers for the purpose of
-                training or improving generalized AI/ML models.
-              </p>
-            </div>
+            <h2 className={h2Base}>{t("privacyPage.google.h")}</h2>
+            <p className={pBase}>{t("privacyPage.google.p1")}</p>
+            <p className={pBase}>{t("privacyPage.google.p2")}</p>
+            <p className={pBase}>{t("privacyPage.google.p3")}</p>
           </section>
 
           <section id="section-8" className={sectionBase}>
@@ -381,6 +387,10 @@ function PrivacyPolicy() {
             <p className={pBase}>{t("privacyPage.s17.p3")}</p>
           </section>
 
+          <PrivacyFacts className={sectionBase} />
+
+          <PrivacyRequestForm />
+
           <section id="section-18" className={sectionBase}>
             <h2 className={h2Base}>{t("privacyPage.s18.h")}</h2>
 
@@ -421,7 +431,7 @@ function PrivacyPolicy() {
             <p className={pBase}>{t("privacyPage.s19.p3")}</p>
 
             <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-              <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
+              <p className="text-sm font-black uppercase tracking-[0.18em] text-slate-900">
                 {t("privacyPage.lastUpdatedBoxLabel")}
               </p>
               <p className="mt-2 text-xl font-black">

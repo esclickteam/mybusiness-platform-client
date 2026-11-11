@@ -78,22 +78,26 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
 
 function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
   return (
-      <section className="relative min-h-[88vh] overflow-hidden">
-        <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-2">
+      <section className="relative isolate overflow-hidden" style={{ minHeight: "calc(100svh - 4.5rem)" }}>
+        <div className="absolute inset-0 grid grid-cols-2">
           <img src={v(data, "item3Image")} alt="" className="h-full w-full object-cover" />
           <img src={v(data, "heroImage")} alt="" className="h-full w-full object-cover" />
         </div>
-        <div className="tpl-compare-handle absolute inset-y-0 z-10 w-1" style={{ background: "#059669" }}>
-          <div className="absolute top-1/2 -mr-4 h-10 w-10 -translate-y-1/2 rounded-full border-4" style={{ borderColor: "#059669", background: "#f8fafc" }} />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[62%] bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/92 to-transparent sm:h-[52%]" />
+        <div className="tpl-compare-handle absolute top-0 z-10 h-[46%] w-1 sm:h-[58%]" style={{ background: "#059669" }}>
+          <div className="absolute top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full border-4" style={{ borderColor: "#059669", background: "#f8fafc" }} />
         </div>
-        <div className="relative z-20 mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end px-5 pb-16 pt-28 lg:px-8">
-          <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#059669" }}>{v(data, "heroEyebrow")}</p>
-          <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
-          <p className="tpl-rise-3 mt-6 max-w-xl text-lg leading-8" style={{ color: "#64748b" }}>{v(data, "heroSubtitle")}</p>
-          <div className="tpl-rise-3 mt-8 flex flex-wrap gap-3">
-            <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#059669", color: "#ffffff" }}>{v(data, "heroPrimary")}</button>
-            <button type="button" onClick={() => goTo("compare")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(15,23,42,0.1)" }}>{v(data, "heroSecondary")}</button>
-          </div></div>
+        <div className="relative z-20 mx-auto flex max-w-7xl flex-col justify-end px-4 pb-8 pt-16 sm:px-5 sm:pb-14 lg:px-8" style={{ minHeight: "calc(100svh - 4.5rem)" }}>
+          <div className="max-w-3xl">
+            <p className="text-[11px] font-semibold tracking-[0.16em] sm:text-xs sm:tracking-[0.28em]" style={{ color: "#047857" }}>{v(data, "heroEyebrow")}</p>
+            <h1 className="tpl-display mt-3 max-w-4xl text-4xl font-bold leading-tight text-[#0f172a] sm:text-6xl md:text-7xl lg:text-8xl">{v(data, "heroTitle")}</h1>
+            <p className="mt-4 max-w-xl text-base leading-7 text-[#1e293b] sm:mt-5 sm:text-lg sm:leading-8">{v(data, "heroSubtitle")}</p>
+            <div className="mt-6 flex flex-wrap gap-3 sm:mt-8">
+              <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#059669", color: "#ffffff" }}>{v(data, "heroPrimary")}</button>
+              <button type="button" onClick={() => goTo("compare")} className="border bg-white/80 px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(15,23,42,0.16)", color: "#0f172a" }}>{v(data, "heroSecondary")}</button>
+            </div>
+          </div>
+        </div>
       </section>
   );
 }

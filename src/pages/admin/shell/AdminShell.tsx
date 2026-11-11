@@ -9,6 +9,7 @@ import {
   HeartHandshake,
   Layers,
   LayoutDashboard,
+  LifeBuoy,
   Megaphone,
   Menu,
   MessageSquare,
@@ -37,7 +38,12 @@ import "./admin-system.css";
 
 const GROUP_ICONS = {
   dashboard: LayoutDashboard,
-  platform: Layers,
+  saasOverview: LayoutDashboard,
+  saasSystems: Layers,
+  saasCustomers: Building2,
+  saasSales: CreditCard,
+  saasOps: LifeBuoy,
+  saasTools: Settings,
   businesses: Building2,
   crm: Users,
   whatsapp: MessageSquare,
@@ -55,11 +61,11 @@ const OPEN_GROUPS_KEY = "bizuply-admin-nav-groups";
 function readOpenGroups() {
   try {
     const raw = localStorage.getItem(OPEN_GROUPS_KEY);
-    if (!raw) return { dashboard: true } as Record<string, boolean>;
+    if (!raw) return { dashboard: true, saasOverview: true } as Record<string, boolean>;
     const parsed = JSON.parse(raw);
-    return parsed && typeof parsed === "object" ? parsed : { dashboard: true };
+    return parsed && typeof parsed === "object" ? parsed : { dashboard: true, saasOverview: true };
   } catch {
-    return { dashboard: true };
+    return { dashboard: true, saasOverview: true };
   }
 }
 

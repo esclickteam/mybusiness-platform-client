@@ -1,0 +1,167 @@
+/* First paint for /partners — indigo hero before the app stylesheet. */
+html.bizuply-partners,
+html.bizuply-partners body,
+html.bizuply-partners #root,
+html.bizuply-partners #initial-bg {
+  margin: 0;
+  min-height: 100%;
+  background: #1e1b4b;
+  color: #0b1220;
+  font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
+}
+
+html.bizuply-partners *,
+html.bizuply-partners *::before,
+html.bizuply-partners *::after {
+  box-sizing: border-box;
+}
+
+.ipartner {
+  min-height: 100vh;
+  background: #ffffff;
+  color: #0b1220;
+  font-family: "Assistant", "Heebo", "Segoe UI", system-ui, sans-serif;
+}
+
+.ip-wrap,
+.ip-wrap-wide {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+.ip-hero {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  padding: 56px 0 80px;
+  background:
+    radial-gradient(820px 460px at 100% -8%, rgba(96, 165, 250, 0.42), transparent 62%),
+    radial-gradient(640px 420px at -12% 110%, rgba(196, 181, 253, 0.38), transparent 58%),
+    linear-gradient(148deg, #1e1b4b 0%, #312e81 46%, #4c1d95 82%, #1e40af 140%);
+}
+
+.ip-kicker {
+  margin: 0;
+  color: #ddd6fe;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.ip-hero h1 {
+  margin: 14px 0 0;
+  color: #fff;
+  font-size: clamp(2.4rem, 6vw, 4.4rem);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  font-weight: 800;
+  max-width: 12ch;
+}
+
+.ip-sub {
+  margin: 16px 0 0;
+  color: #fff;
+  font-size: clamp(1.15rem, 2vw, 1.45rem);
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.ip-lead {
+  margin: 14px 0 0;
+  max-width: 38rem;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 1.02rem;
+  line-height: 1.65;
+}
+
+.ip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ip-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 22px;
+  border-radius: 0;
+  font-weight: 800;
+  text-decoration: none;
+  border: 1px solid transparent;
+}
+
+.ip-hero .ip-btn-primary {
+  background: #fff;
+  color: #1e1b4b;
+}
+
+.ip-hero .ip-btn-ghost {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.55);
+}
+
+.ip-hero-facts {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ip-hero-facts li {
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.ip-signals {
+  display: grid;
+  gap: 12px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ip-signals li {
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+}
+.ip-signals strong {
+  display: block;
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.ip-signals span {
+  display: block;
+  margin-top: 8px;
+  color: #fff;
+  font-weight: 800;
+}
+
+[dir="rtl"] .ip-hero h1 { max-width: none; }
+
+@media (min-width: 1080px) {
+  .ip-hero-grid {
+    display: grid;
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+    gap: 48px;
+    align-items: center;
+  }
+  .ip-signals { margin-top: 0; }
+}
+
+@media (max-width: 719px) {
+  .ip-btn { width: 100%; }
+}

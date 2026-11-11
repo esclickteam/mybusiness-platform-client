@@ -28,6 +28,9 @@ describe("admin nav active state", () => {
     expect(findNavMatch("/admin/crm/whatsapp")?.group.id).toBe("whatsapp");
     expect(findNavMatch("/admin/plans")?.group.id).toBe("billing");
     expect(findNavMatch("/admin/saas-deals")?.item.path).toBe("/admin/saas-deals");
+    expect(findNavMatch("/admin/saas-deals")?.group.id).toBe("saasSales");
+    expect(findNavMatch("/admin/saas")?.item.path).toBe("/admin/saas");
+    expect(isNavItemActive("/admin/saas", "/admin/saas-deals")).toBe(false);
   });
 
   it("translates every admin menu label in Hebrew and English", () => {

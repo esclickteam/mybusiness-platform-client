@@ -193,9 +193,9 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3.05rem;
+  min-height: 48px;
   padding: 0.8rem 1.6rem;
-  border-radius: 1rem;
+  border-radius: 2px;
   font-size: 0.98rem;
   font-weight: 900;
   text-decoration: none;
@@ -206,6 +206,11 @@
 
 .pm-cta:hover {
   transform: translateY(-2px);
+}
+
+.pm-cta:focus-visible {
+  outline: 2px solid #321064;
+  outline-offset: 3px;
 }
 
 .pm-cta--primary {

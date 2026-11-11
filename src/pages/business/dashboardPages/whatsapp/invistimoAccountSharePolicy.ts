@@ -8,6 +8,7 @@ export const STALE_INVISTIMO_SHARE_PHONE_NUMBER_ID = "976924655507470";
 export const PRODUCTION_EMBEDDED_SIGNUP_CONFIG_ID = "1057504196895353";
 /** Account-share config diagnosed for the existing INVISTIMO number. Not used by other customers. */
 export const INVISTIMO_SHARE_EMBEDDED_SIGNUP_CONFIG_ID = "1873773577318198";
+export const BIZUPLY_CRM_META_APP_ID = "1737199444319263";
 export const INVISTIMO_SHARE_E164 = "+972515953390";
 export const INVISTIMO_SHARE_CONFIRM_PHRASE =
   "SHARE_INVISTIMO_WHATSAPP_ACCOUNT_WITH_BIZUPLY";
@@ -97,23 +98,32 @@ export function selectInvistimoShareConfigId(serverConfigId?: string | null):
 }
 
 export function planInvistimoShareLaunch(signup: {
+  appId?: string | null;
   configId?: string | null;
   extras?: unknown;
   invistimoAccountShare?: { extras?: unknown } | null;
 } | null | undefined):
-  | { ok: true; configId: string; extras: ServerShareExtras }
+  | { ok: true; appId: string; configId: string; extras: ServerShareExtras }
   | {
       ok: false;
-      reason: "server_extras_missing" | "server_extras_mismatch" | "config_unrecognized";
+      reason:
+        | "server_extras_missing"
+        | "server_extras_mismatch"
+        | "config_unrecognized"
+        | "app_mismatch";
     } {
   const extras = serverShareExtrasFromSignup(signup);
   if (!extras) return { ok: false, reason: "server_extras_missing" };
   if (!serverShareExtrasMatchInvistimo(extras)) {
     return { ok: false, reason: "server_extras_mismatch" };
   }
+  const appId = String(signup?.appId || "").trim();
+  if (appId !== BIZUPLY_CRM_META_APP_ID) {
+    return { ok: false, reason: "app_mismatch" };
+  }
   const config = selectInvistimoShareConfigId(signup?.configId);
   if (!config.ok) return config;
-  return { ok: true, configId: config.configId, extras };
+  return { ok: true, appId, configId: config.configId, extras };
 }
 
 export function evaluateInvistimoShareEvent(event?: string | null): {

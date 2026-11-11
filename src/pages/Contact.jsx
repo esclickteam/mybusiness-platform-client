@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import "../styles/publicStage.css";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
   detectPhoneCountry,
   detectPhoneCountrySync,
 } from "../utils/detectPhoneCountry";
+import API from "../api";
+import { NOTICE_VERSION } from "../lib/trackingConsent";
+import { createConsentKey, storePrivacyConsent } from "../lib/privacyConsentClient";
 
 function Contact() {
   const { t, i18n } = useTranslation();
+  const locale = normalizeMarketingLocale(i18n.language);
   const location = useLocation();
   const prefillMessage =
     typeof location.state?.prefillMessage === "string"
@@ -25,7 +31,8 @@ function Contact() {
     message: prefillMessage,
   });
 
-  const [status, setStatus] = useState(null);
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
+  const consentKeyRef = useRef(createConsentKey());
   const [loading, setLoading] = useState(false);
   const [phoneCountry, setPhoneCountry] = useState(detectPhoneCountrySync);
 
@@ -77,23 +84,36 @@ function Contact() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/support", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name,
-          phone,
+      let saved;
+      try {
+        saved = await storePrivacyConsent({
+          consentKey: consentKeyRef.current,
+          source: "contact",
           email,
-          issueDescription: message,
-        }),
-      });
-
-      await res.json();
-
-      if (!res.ok) {
-        throw new Error("Failed to send");
+          termsAccepted: false,
+          marketingOptIn,
+          locale: i18n.language,
+        });
+      } catch (error) {
+        error.message = error?.message || "consent_not_stored";
+        throw error;
+      }
+      const payload = {
+        name,
+        phone,
+        email,
+        issueDescription: message,
+        locale: i18n.language,
+      };
+      if (saved.status === "stored") {
+        payload.marketingOptIn = marketingOptIn;
+        payload.noticeVersion = NOTICE_VERSION;
+        payload.consentKey = consentKeyRef.current;
+      }
+      const { data } = await API.post("/support", payload);
+      if (data?.success !== true) throw new Error("support_failed");
+      if (saved.status === "stored" && data?.consentStored !== true) {
+        throw new Error("consent_not_stored");
       }
 
       setStatus({
@@ -108,9 +128,12 @@ function Contact() {
         message: "",
       });
     } catch (error) {
+      const failedBeforeSave = ["consent_not_stored", "consent_key_required", "email_invalid"].includes(
+        error?.message
+      );
       setStatus({
         type: "error",
-        messageKey: "error",
+        messageKey: failedBeforeSave ? "consentSaveFailed" : "error",
       });
     } finally {
       setLoading(false);
@@ -119,28 +142,23 @@ function Contact() {
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
+      className="co-page contact-stage relative min-h-screen overflow-hidden text-slate-800"
       dir={getTextDirection(i18n.language)}
     >
       <Helmet>
         <title>{t("contact.seoTitle")}</title>
         <meta name="description" content={t("contact.seoDescription")} />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://bizuply.com/contact" />
+        <link rel="canonical" href={marketingPublicUrl("/contact", locale)} />
 
         <meta property="og:title" content={t("contact.ogTitle")} />
         <meta property="og:description" content={t("contact.ogDescription")} />
-        <meta property="og:url" content="https://bizuply.com/contact" />
+        <meta property="og:url" content={marketingPublicUrl("/contact", locale)} />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* Background */}
-      <div className="pointer-events-none absolute left-[-12%] top-[-12%] h-[460px] w-[460px] rounded-full bg-amber-200/55 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-10%] top-[18%] h-[540px] w-[540px] rounded-full bg-emerald-100/75 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-18%] left-[28%] h-[520px] w-[520px] rounded-full bg-white/85 blur-3xl" />
-
-      <section className="relative mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24">
+      <section className="stage-hero relative mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24">
         {/* Left side */}
         <div className="flex flex-col justify-center">
           <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
@@ -185,7 +203,7 @@ function Contact() {
         <div className="relative">
           <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-amber-200/70 via-white to-emerald-100/80 blur-2xl" />
 
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-xl sm:p-7">
+          <div className="stage-panel relative overflow-hidden p-5 sm:p-7">
             <div className="mb-7">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-amber-700">
                 {t("contact.formLabel")}
@@ -200,10 +218,11 @@ function Contact() {
 
             <form className="space-y-5" onSubmit={onSubmit}>
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label htmlFor="contact-name" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.nameLabel")}
                 </label>
                 <input
+                  id="contact-name"
                   type="text"
                   name="name"
                   value={formData.name}
@@ -216,7 +235,7 @@ function Contact() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label id="contact-phone-label" htmlFor="contact-phone" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.phoneLabel")}
                 </label>
 
@@ -232,10 +251,12 @@ function Contact() {
                       setFormData((prev) => ({ ...prev, phone }))
                     }
                     inputProps={{
+                      id: "contact-phone",
                       name: "phone",
                       required: true,
                       disabled: loading,
                       autoComplete: "tel",
+                      "aria-labelledby": "contact-phone-label",
                     }}
                     containerClass="!w-full"
                     inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-800 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"
@@ -247,10 +268,11 @@ function Contact() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label htmlFor="contact-email" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.emailLabel")}
                 </label>
                 <input
+                  id="contact-email"
                   type="email"
                   name="email"
                   value={formData.email}
@@ -263,10 +285,11 @@ function Contact() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-black text-slate-800">
+                <label htmlFor="contact-message" className="mb-2 block text-sm font-black text-slate-800">
                   {t("contact.messageLabel")}
                 </label>
                 <textarea
+                  id="contact-message"
                   name="message"
                   value={formData.message}
                   onChange={handleChange}
@@ -277,6 +300,19 @@ function Contact() {
                   className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100/80 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
+
+              <p className="text-sm font-medium leading-6 text-slate-600">
+                {t("contact.privacyNotice")}
+              </p>
+              <label className="flex items-start gap-3 text-sm font-semibold leading-6 text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={marketingOptIn}
+                  onChange={(event) => setMarketingOptIn(event.target.checked)}
+                />
+                <span>{t("contact.marketingConsent")}</span>
+              </label>
 
               <button
                 type="submit"

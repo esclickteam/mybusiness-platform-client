@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
@@ -25,6 +25,7 @@ import {
 
 import { useAuth } from "../context/AuthContext";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import "./helpHub.css";
 
 type AuthUser = {
   businessId?: string | number;
@@ -112,8 +113,9 @@ function asStringArray(value: unknown): string[] {
 export default function HelpCenter() {
   const { t } = useTranslation();
   const { user } = useAuth() as AuthContextValue;
+  const { businessId: routeBusinessId } = useParams();
   const dir = useLocaleDir();
-  const businessId = user?.businessId;
+  const businessId = user?.businessId || routeBusinessId;
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -424,55 +426,18 @@ export default function HelpCenter() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[#f7f8fc] px-4 py-5 text-start text-slate-800 sm:px-6 lg:px-8"
+      className="help-hub min-h-screen bg-[#f4f1fa] px-4 py-5 text-start text-[#21172f] sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-[1440px]">
         {/* HERO */}
-        <section className="relative overflow-visible rounded-[30px] border border-violet-100/80 bg-[linear-gradient(135deg,#f6f1ff_0%,#fbf9ff_46%,#eee1ff_100%)] px-5 py-7 shadow-[0_22px_70px_rgba(109,40,217,0.10)] sm:px-8 sm:py-9 lg:px-10 lg:py-10">
-          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[30px]">
-            <div className="absolute -left-20 -top-24 h-80 w-80 rounded-full bg-white/80 blur-3xl" />
-            <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-violet-200/40 blur-3xl" />
-            <div className="absolute bottom-[-120px] right-[12%] h-72 w-72 rounded-full bg-fuchsia-100/60 blur-3xl" />
-            <div className="absolute -right-10 top-10 h-[430px] w-[430px] rounded-full border border-white/80" />
-            <div className="absolute -right-2 top-14 h-[370px] w-[370px] rounded-full border border-violet-200/60" />
-            <div className="absolute bottom-7 right-10 grid grid-cols-8 gap-2 opacity-25">
-              {Array.from({ length: 48 }).map((_, index) => (
-                <span key={index} className="h-1.5 w-1.5 rounded-full bg-violet-500" />
-              ))}
-            </div>
-          </div>
-
-          <div className="relative grid items-center gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[330px_minmax(0,1fr)]">
-            <div className="hidden min-h-[330px] items-center justify-center lg:flex">
-              <div className="relative h-[285px] w-[260px]">
-                <div className="absolute left-4 top-6 h-56 w-56 rounded-full border border-violet-200/80" />
-                <span className="absolute left-7 top-12 h-2.5 w-2.5 rounded-full bg-violet-500/70" />
-                <span className="absolute right-7 top-16 h-2 w-2 rounded-full bg-fuchsia-400/70" />
-                <span className="absolute right-14 bottom-24 h-2.5 w-2.5 rounded-full bg-violet-300" />
-
-                <div className="absolute bottom-7 left-1/2 h-7 w-44 -translate-x-1/2 rounded-full bg-violet-300/25 blur-xl" />
-                <div className="absolute bottom-8 left-1/2 h-11 w-40 -translate-x-1/2 rounded-[50%] border border-violet-200/80 bg-white/80 shadow-lg" />
-
-                <div className="absolute bottom-[54px] left-1/2 flex h-44 w-32 -translate-x-1/2 items-center justify-center rounded-[28px] border border-white bg-gradient-to-br from-white to-violet-50 shadow-[0_26px_60px_rgba(109,40,217,0.16)]">
-                  <div className="absolute -right-3 -top-3 -z-10 h-full w-full rounded-[28px] border border-violet-100 bg-white/50" />
-                  <span className="text-[86px] font-black leading-none text-violet-700">?</span>
-                </div>
-
-                <div className="absolute bottom-8 left-1 h-16 w-16 rounded-2xl border border-slate-100 bg-white shadow-lg" />
-                <div className="absolute bottom-[66px] left-[27px] h-9 w-2 rounded-full bg-emerald-500/70" />
-                <div className="absolute bottom-[89px] left-[17px] h-6 w-5 rotate-[-24deg] rounded-full bg-emerald-400/80" />
-                <div className="absolute bottom-[82px] left-[30px] h-6 w-5 rotate-[24deg] rounded-full bg-emerald-300/80" />
-                <div className="absolute bottom-[105px] left-[27px] h-6 w-5 rounded-full bg-emerald-500/70" />
-              </div>
-            </div>
-
-            <div className="relative z-10 mx-auto w-full max-w-4xl text-center">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/70 px-4 py-2 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
+        <section className="relative overflow-visible border border-[rgba(91,33,182,0.16)] border-s-4 border-s-[#5B21B6] bg-white px-5 py-6 sm:px-7">
+            <div className="relative z-10 w-full text-start">
+              <div className="inline-flex items-center gap-2 border border-[rgba(91,33,182,0.16)] bg-[#f4f1fa] px-3 py-1.5 text-xs font-black text-[#5B21B6]">
                 <BookOpen size={15} />
                 {t("helpCenter.badge")}
               </div>
 
-              <h1 className="mt-5 text-4xl font-black tracking-[-0.04em] text-[#1f1b55] sm:text-5xl lg:text-[62px] lg:leading-[1.02]">
+              <h1 className="mt-4 text-3xl font-black text-[#21172f] sm:text-4xl">
                 {t("helpCenter.title")}
               </h1>
 
@@ -482,7 +447,7 @@ export default function HelpCenter() {
 
               <div className="relative mx-auto mt-7 max-w-3xl">
                 <div
-                  className={`relative flex items-center overflow-hidden rounded-[20px] border bg-white transition-all duration-200 ${
+                  className={`help-search relative flex items-center overflow-hidden border bg-white transition-all duration-200 ${
                     searchFocused
                       ? "border-violet-300 shadow-[0_0_0_5px_rgba(139,92,246,0.12),0_22px_45px_rgba(109,40,217,0.12)]"
                       : "border-white shadow-[0_14px_34px_rgba(76,29,149,0.10)]"
@@ -533,10 +498,10 @@ export default function HelpCenter() {
                                 <Icon size={17} />
                               </div>
                               <div className="min-w-0 text-start">
-                                <p className="truncate text-sm font-black text-slate-900">
+                                <p className="break-words text-sm font-black text-slate-900">
                                   {article.title}
                                 </p>
-                                <p className="truncate text-xs text-slate-500">
+                                <p className="break-words text-xs text-slate-500">
                                   {article.description}
                                 </p>
                               </div>
@@ -564,10 +529,10 @@ export default function HelpCenter() {
                                 <Icon size={17} />
                               </div>
                               <div className="min-w-0 text-start">
-                                <p className="truncate text-sm font-black text-slate-900">
+                                <p className="break-words text-sm font-black text-slate-900">
                                   {cat.title}
                                 </p>
-                                <p className="truncate text-xs text-slate-500">
+                                <p className="break-words text-xs text-slate-500">
                                   {cat.description}
                                 </p>
                               </div>
@@ -600,7 +565,7 @@ export default function HelpCenter() {
               </div>
 
               {!isSearching && (
-                <div className="mx-auto mt-6 grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="mt-6 flex flex-wrap gap-2">
                   {suggestedQueries.map((sq) => {
                     const Icon = sq.icon;
                     return (
@@ -608,7 +573,7 @@ export default function HelpCenter() {
                         key={sq.query}
                         type="button"
                         onClick={() => handleSuggestionClick(sq.query)}
-                        className="inline-flex items-center gap-2 rounded-2xl border border-white/90 bg-white/80 px-4 py-2.5 text-xs font-bold text-slate-700 shadow-[0_7px_18px_rgba(76,29,149,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md sm:text-sm"
+                        className="inline-flex min-h-11 max-w-full items-center gap-2 border border-[rgba(91,33,182,0.22)] bg-[#f4f1fa] px-3 py-2 text-start text-sm font-bold text-[#21172f]"
                       >
                         {Icon ? <Icon size={17} className="text-violet-600" /> : null}
                         {sq.label}
@@ -625,7 +590,6 @@ export default function HelpCenter() {
                 </kbd>
               </p>
             </div>
-          </div>
         </section>
 
         {isSearching && (
@@ -659,7 +623,7 @@ export default function HelpCenter() {
                           <Link
                             key={article.id}
                             to={article.url}
-                            className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg"
+                            className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-violet-200 hover:shadow-lg"
                           >
                             <div
                               className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${popularCardStyles[index % popularCardStyles.length]}`}
@@ -696,7 +660,7 @@ export default function HelpCenter() {
                             key={cat.id}
                             type="button"
                             onClick={() => navigate(cat.path)}
-                            className="group flex items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg"
+                            className="group flex items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-start shadow-sm transition hover:border-violet-200 hover:shadow-lg"
                           >
                             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
                               <Icon size={19} />
@@ -758,38 +722,36 @@ export default function HelpCenter() {
                 </div>
               </div>
 
-              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              <div className="mt-6 grid gap-3">
                 {popularArticles.slice(0, 5).map((article, index) => {
                   const Icon = article.icon;
                   return (
                     <Link
                       key={article.id}
                       to={article.url}
-                      className="group flex min-h-[270px] flex-col rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(15,23,42,0.04)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_20px_45px_rgba(109,40,217,0.09)]"
+                      className="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-4 border border-[rgba(91,33,182,0.16)] border-s-4 border-s-[#5B21B6] bg-white p-4"
                     >
                       <div
                         className={`flex h-13 w-13 items-center justify-center rounded-2xl ${popularCardStyles[index % popularCardStyles.length]}`}
                       >
                         <Icon size={23} />
                       </div>
-                      <h3 className="mt-5 text-base font-black leading-7 text-slate-900">
-                        {article.title}
-                      </h3>
-                      <p className="mt-2 text-sm leading-7 text-slate-500">
-                        {article.description}
-                      </p>
-                      <div className="mt-auto pt-5">
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-violet-100 text-violet-600 transition group-hover:bg-violet-50">
-                          <ChevronLeft size={17} />
-                        </span>
+                      <div className="min-w-0">
+                        <h3 className="text-base font-black leading-6 text-[#21172f]">
+                          {article.title}
+                        </h3>
+                        <p className="mt-1 text-sm leading-6 text-slate-500">
+                          {article.description}
+                        </p>
                       </div>
+                      <ChevronLeft size={17} className="text-[#5B21B6]" />
                     </Link>
                   );
                 })}
               </div>
             </section>
 
-            <section className="mt-14 rounded-[30px] border border-violet-100 bg-white p-5 shadow-[0_14px_40px_rgba(15,23,42,0.04)] sm:p-7">
+            <section className="mt-10 border border-[rgba(91,33,182,0.16)] bg-white p-5 sm:p-6">
               <h2 className="text-2xl font-black text-slate-900">
                 {t("helpCenter.browseByTopic")}
               </h2>
@@ -804,20 +766,20 @@ export default function HelpCenter() {
                       key={cat.id}
                       type="button"
                       onClick={() => navigate(cat.path)}
-                      className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-[#fbfaff] p-4 text-start transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md"
+                      className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-[#fbfaff] p-4 text-start transition hover:border-violet-200 hover:bg-white hover:shadow-md"
                     >
                       <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm ring-1 ring-violet-100">
                         <Icon size={19} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="font-black text-slate-900">{cat.title}</p>
-                        <p className="mt-0.5 truncate text-xs text-slate-500">
+                        <p className="mt-0.5 break-words text-xs text-slate-500">
                           {cat.description}
                         </p>
                       </div>
                       <ChevronLeft
                         size={16}
-                        className="shrink-0 text-slate-300 transition group-hover:-translate-x-1 group-hover:text-violet-600"
+                        className="shrink-0 text-slate-300 transition group-hover:text-violet-600"
                       />
                     </button>
                   );
@@ -833,7 +795,7 @@ export default function HelpCenter() {
                 <button
                   type="button"
                   onClick={() => navigate("/business-support")}
-                  className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
+                  className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-start shadow-sm transition hover:border-violet-200 hover:shadow-md"
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                     <Mail size={22} />
@@ -852,7 +814,7 @@ export default function HelpCenter() {
                 </button>
                 <Link
                   to={`${basePath}/faq/troubleshooting`}
-                  className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
+                  className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-start shadow-sm transition hover:border-violet-200 hover:shadow-md"
                 >
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
                     <Wrench size={22} />

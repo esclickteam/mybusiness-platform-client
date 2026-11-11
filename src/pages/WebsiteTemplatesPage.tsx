@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import "./interiorDesign.css";
+import { bizAlert } from "../components/ui/bizDialog";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -671,7 +673,7 @@ export default function WebsiteTemplatesPage() {
   );
 
   if (!selectedTemplate) {
-    alert(t("websiteTemplates.alerts.templateNotFound"));
+    void bizAlert(t("websiteTemplates.alerts.templateNotFound"));
     return;
   }
 
@@ -792,12 +794,12 @@ export default function WebsiteTemplatesPage() {
       /limit|quota|מכס|חבילה|plan|upgrade|אתר נוסף/i.test(apiMessage);
 
     if (looksLikeLimit) {
-      alert(apiMessage || t("mySites.createLimitError"));
+      void bizAlert(apiMessage || t("mySites.createLimitError"));
       return;
     }
 
     if (apiMessage) {
-      alert(apiMessage);
+      void bizAlert(apiMessage);
       return;
     }
     // fallback לזרימה הישנה אם יצירת האתר נכשלה בלי הודעה ברורה
@@ -819,7 +821,7 @@ export default function WebsiteTemplatesPage() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-white text-start text-[#111827]"
+      className="tpl-picker min-h-screen text-start"
     >
       <div className="flex min-h-[calc(100vh-64px)]">
         <aside className="hidden w-[310px] shrink-0 border-e border-[#e5e7eb] bg-white lg:block">

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import "./interiorDesign.css";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowRight,
@@ -351,7 +352,7 @@ export default function AiSiteWizardPage() {
   return (
     <div
       dir={dir}
-      className="min-h-screen bg-[#f5f6fb] px-4 py-8 sm:px-6 lg:px-8"
+      className="biz-interior min-h-screen px-4 py-6 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-2xl">
         <button

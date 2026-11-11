@@ -21,6 +21,15 @@ export function isVercelPreviewHost(hostname) {
   );
 }
 
+/** Ephemeral Staging preview tunnels used by agents — never Production API. */
+export function isStagingTunnelHost(hostname) {
+  const host = String(hostname || "")
+    .toLowerCase()
+    .trim()
+    .split(":")[0];
+  return host.endsWith(".trycloudflare.com");
+}
+
 export function browserHostname() {
   if (typeof window === "undefined" || !window.location) return "";
   return String(window.location.hostname || "");
@@ -35,27 +44,42 @@ export function resolveApiBaseUrl({
   mode = "development",
   hostname = "",
 } = {}) {
-  if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
   const host = String(hostname || "")
     .toLowerCase()
     .trim()
     .split(":")[0];
+  const trimmed = trimApiUrl(envApiUrl);
+
+  // Local Staging proxy / Vite same-origin /api (never cross-origin Production).
+  if (host === "localhost" || host === "127.0.0.1") return "/api";
+  // Staging Preview / temporary Vercel hosts must never silently use Production.
+  if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
+  // Cloudflare Staging tunnels are served with a same-origin /api proxy to Railway Staging.
+  if (isStagingTunnelHost(hostname)) return "/api";
+  if (host === "mybusiness-platform-client-staging.vercel.app") {
+    return RAILWAY_STAGING_API;
+  }
+  // Explicit Staging API baked into the build wins over Production defaults.
+  if (/server-staging-15bb\.up\.railway\.app/i.test(trimmed)) {
+    return trimmed.endsWith("/api") ? trimmed : `${trimmed}/api`;
+  }
+
   // Login and refresh must stay on the site host. A cross-site POST to
   // api.bizuply.com does not send a SameSite=Lax session cookie, so the
   // access token expires and the user looks logged out. Vercel proxies /api.
+  // NOTE: geo.bizuply.com is Production and must keep Production /api proxy.
   if (
     host === "bizuply.com" ||
     host === "www.bizuply.com" ||
     host === "bizuply.co.il" ||
     host === "www.bizuply.co.il" ||
-    // Private GEO Intelligence host — same-origin /api proxy so login cookies work
-    // (avoids cross-site SameSite=Lax session loss vs api.bizuply.com).
     host === "geo.bizuply.com" ||
-    host === "www.geo.bizuply.com"
+    host === "www.geo.bizuply.com" ||
+    host === "partners.bizuply.com" ||
+    host === "www.partners.bizuply.com"
   ) {
     return "/api";
   }
-  const trimmed = trimApiUrl(envApiUrl);
   if (trimmed) return trimmed;
   if (mode === "production") return PRODUCTION_API;
   return "/api";

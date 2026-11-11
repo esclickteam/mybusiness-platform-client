@@ -14,6 +14,7 @@ import {
   FALLBACK_LANGUAGE,
   applyDocumentLocale,
   applyLanguageFromUrl,
+  explicitLanguageFromUrl,
   getManualLanguageChoice,
   resolvePreferredLanguage,
 } from "./localeUtils";
@@ -203,8 +204,11 @@ export async function bootstrapI18n() {
   } else {
     await ensureLocale(initialLanguage);
   }
+  // Explicit /he|/es|/ar|/pt-br path wins over a stale manual preference so
+  // marketing pages like /he/partners do not hydrate as English.
+  const fromUrl = typeof window === "undefined" ? null : explicitLanguageFromUrl();
   const manual = typeof window === "undefined" ? null : getManualLanguageChoice();
-  const target = manual || initialLanguage;
+  const target = fromUrl || manual || initialLanguage;
   if (i18n.language !== target) await i18n.changeLanguage(target);
 }
 

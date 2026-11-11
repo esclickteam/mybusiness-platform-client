@@ -16,7 +16,7 @@ const palette: ReadyWebsitePalette = {
 export const primeviewSeed = {
   id: "primeview", key: "primeview", name: "Primeview", title: "Primeview",
   description: "תבנית compare slider: הירo מפוצל עם ידית CSS, תצוגת before/after ופסי value proposition.",
-  category: "real-estate", categoryLabel: "נדל״ן", niche: "השוואת נכסים · before/after", layout: "full",
+  category: "real-estate", categoryLabel: "נדל״ן", niche: "השוואת נכסים", layout: "full",
   image: (primeviewDefaultData as any).heroImage,
   heroTitle: (primeviewDefaultData as any).heroTitle,
   heroSubtitle: (primeviewDefaultData as any).heroSubtitle,

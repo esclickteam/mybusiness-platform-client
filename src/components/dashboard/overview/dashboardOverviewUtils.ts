@@ -77,14 +77,51 @@ export function formatPercent(value: number): string {
   return `${sign}${Number(value || 0).toFixed(1)}%`;
 }
 
-/** Lead created-at label for the overview table — calendar date (DD/MM/YYYY). */
+const PLACEHOLDER_LEAD_NAMES = new Set([
+  "",
+  "unknown",
+  "unknown lead",
+  "unassigned",
+  "n/a",
+  "na",
+  "null",
+  "undefined",
+  "-",
+]);
+
+/** Real CRM name. Empty and server placeholders stay unnamed — never invented. */
+export function displayLeadName(name?: string | null): string {
+  const clean = String(name || "").replace(/\s+/g, " ").trim();
+  if (PLACEHOLDER_LEAD_NAMES.has(clean.toLowerCase())) {
+    return String(i18n.t("overview.unnamedLead", "ליד ללא שם"));
+  }
+  return clean;
+}
+
+/** Lead created-at label — calendar date only. Missing createdAt stays blank. */
 export function formatLeadDate(value?: string | Date | null): string {
-  if (!value) return "—";
+  if (!value) return "";
 
   const date = dayjs(value);
-  if (!date.isValid()) return "—";
+  if (!date.isValid()) return "";
 
-  return date.format("DD/MM/YYYY");
+  return date.format("DD.MM.YYYY");
+}
+
+/** Israeli entry stamp from createdAt. Does not fall back to updatedAt. */
+export function formatLeadEntered(value?: string | Date | null): string {
+  if (!value) return "";
+
+  const date = dayjs(value);
+  if (!date.isValid()) return "";
+
+  return String(
+    i18n.t("overview.leadEntered", {
+      date: date.format("DD.MM.YYYY"),
+      time: date.format("HH:mm"),
+      defaultValue: "נכנס: {{date}} בשעה {{time}}",
+    })
+  );
 }
 
 export function formatNextAppointmentLabel(

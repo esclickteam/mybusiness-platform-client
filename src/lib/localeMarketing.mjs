@@ -3,6 +3,8 @@
  * English stays in marketingSeo.mjs. Hebrew stays in hebrewMarketing.mjs.
  * Prices and product limits match the shipped English and Hebrew pages.
  */
+import { getCoreProductStory } from "./coreProductStories.mjs";
+import { WEBSITE_SCAN } from "./websiteScanStory.mjs";
 
 function page(title, description, crumb, h1, paragraphs, faq) {
   return { title, description, crumb, h1, paragraphs, faq: faq || null };
@@ -199,6 +201,7 @@ const PAGES = {
       "Empiece con su negocio",
       ["El alta del negocio es el camino para usar el panel. Los precios públicos están en la página de precios y en las páginas de CRM y WhatsApp."],
     ),
+    "/website-scan": WEBSITE_SCAN.es,
     "/whatsapp-api": page(
       "WhatsApp API para empresas | Bizuply",
       "Conecte WhatsApp Cloud API de Meta con Bizuply. 29 dólares al mes por número conectado. Los cargos de mensajería de Meta se aplican aparte, según el uso y la categoría del mensaje.",
@@ -317,6 +320,7 @@ cloneShape("pt-BR", {
   "/collaborations": page("Plataforma de colaboração empresarial e oportunidades de parceria | Bizuply", "Encontre negócios complementares, explore oportunidades de parceria, gerencie propostas de colaboração e converse pelo chat empresarial da Bizuply.", "Colaborações", "Descubra parceiros de negócio. Crie oportunidades. Cresçam juntos.", ["A Bizuply reúne a descoberta de negócios, as oportunidades, as propostas e o chat de texto. Ela não garante um parceiro nem aprova condições comerciais."]),
   "/agents": page("Agentes do negócio | Bizuply", "Atribua o trabalho do negócio a agentes humanos. Esta página não descreve um chatbot.", "Agentes", "Agentes do negócio", ["Os agentes desta página são pessoas da equipe, não um chatbot. O acesso fica na conta do negócio."]),
   "/business": page("Para negócios | Bizuply", "Abra um negócio na Bizuply para usar CRM, agenda, site, automações e WhatsApp.", "Negócios", "Comece com o seu negócio", ["O cadastro do negócio é o caminho para o painel. Os preços públicos estão na página de preços e nas páginas de CRM e WhatsApp."]),
+  "/website-scan": WEBSITE_SCAN["pt-BR"],
   "/whatsapp-api": page(
     "API do WhatsApp para empresas | Bizuply",
     "Conecte a WhatsApp Cloud API da Meta com a Bizuply. 29 dólares por mês por número conectado. As cobranças de mensagens da Meta são à parte, conforme o uso e a categoria da mensagem.",
@@ -430,6 +434,7 @@ cloneShape("ar", {
   "/collaborations": page("منصة للتعاون بين الأعمال وفرص الشراكة | Bizuply", "اعثروا على أعمال مكمّلة، واستكشفوا فرص الشراكة، وأديروا مقترحات التعاون، وتواصلوا عبر دردشة الأعمال في Bizuply.", "التعاون", "اكتشفوا شركاء أعمال. أنشئوا فرصاً. انموا معاً.", ["تجمع Bizuply اكتشاف الأعمال والفرص والمقترحات ودردشة النص. لا تضمن شريكاً ولا توافق على الشروط التجارية."]),
   "/agents": page("وكلاء بشريون | Bizuply", "أسندوا عمل النشاط إلى وكلاء بشريين. هذه الصفحة لا تصف روبوت دردشة.", "الوكلاء", "وكلاء النشاط", ["الوكلاء هنا أشخاص من الفريق وليسوا روبوت دردشة. تُدار الصلاحيات من حساب النشاط."]),
   "/business": page("للأنشطة | Bizuply", "افتحوا نشاطاً في Bizuply لاستخدام CRM والمواعيد والموقع والأتمتة وواتساب.", "النشاط", "ابدأوا بنشاطكم", ["تسجيل النشاط هو الطريق إلى اللوحة. الأسعار العامة في صفحة الأسعار وفي صفحتي CRM وواتساب."]),
+  "/website-scan": WEBSITE_SCAN.ar,
   "/whatsapp-api": page(
     "واتساب API للأعمال | Bizuply",
     "اربطوا WhatsApp Cloud API من Meta عبر Bizuply. 29 دولاراً شهرياً لكل رقم متصل. رسوم Meta منفصلة تُحسب رسوم رسائل Meta بشكل منفصل.",
@@ -465,7 +470,7 @@ cloneShape("ar", {
 });
 
 export function getLocaleMarketingPage(path, locale) {
-  return PAGES[locale]?.[path] || null;
+  return getCoreProductStory(path, locale) || PAGES[locale]?.[path] || null;
 }
 
 export function localizedMarketingLocales() {
