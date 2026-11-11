@@ -77,7 +77,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     actionChapter: "ממצאים שדורשים טיפול",
     verifyChapter: "ממצאים שדורשים אימות",
     passedChapter: "בדיקות שעברו בהצלחה",
-    passedNote: "כל שורה היא בדיקה שרצה ועברה. ההצלחה מתייחסת למה שנבדק, לא לכל האתר.",
+    passedNote: "כל שורה היא בדיקה שהכלל שלה התקיים במה שנבדק. אין כאן קביעה שכל האתר תקין.",
+    fixQuestion: "מה בדיוק צריך לבדוק או לתקן באתר שלך?",
+    certainQuestion: "האם זו בעיה ודאית?",
+    observationChapter: "תצפיות שאינן הצלחה",
+    observationNote: "אלה דברים שהסריקה ראתה או לא ראתה. היעדר ממצא כאן אינו אומר שהנושא תקין.",
+    partialChapter: "בדיקות שלא הושלמו במלואן",
+    readChapter: "מסמכים שנפתחו ונקראו",
     passSearch: "חיפוש בבדיקות שעברו",
     passFilter: "תחום",
     techTitleDeveloper: "מידע טכני למפתח",
@@ -133,7 +139,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     actionChapter: "Findings that need action",
     verifyChapter: "Findings that need verification",
     passedChapter: "Checks that passed",
-    passedNote: "Each row is a check that ran and passed. A pass covers what was checked, not the whole site.",
+    passedNote: "Each row is a check whose rule succeeded for what was checked. A pass does not cover the whole site.",
+    fixQuestion: "What exactly should be checked or fixed on your site?",
+    certainQuestion: "Is this a confirmed problem?",
+    observationChapter: "Observations that are not a success",
+    observationNote: "These are things the scan saw or did not see. Not finding a problem here does not mean the topic is sound.",
+    partialChapter: "Checks that were not completed in full",
+    readChapter: "Documents that were opened and read",
     passSearch: "Search passed checks",
     passFilter: "Area",
     techTitleDeveloper: "Technical information for the developer",
@@ -164,7 +176,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     actionChapter: "Hallazgos que requieren acción",
     verifyChapter: "Hallazgos que requieren verificación",
     passedChapter: "Pruebas que salieron bien",
-    passedNote: "Cada fila es una prueba que se ejecutó y salió bien. El resultado vale para lo revisado, no para todo el sitio.",
+    passedNote: "Cada fila es una prueba cuya regla se cumplió en lo revisado. No cubre todo el sitio.",
+    fixQuestion: "¿Qué hay que revisar o corregir exactamente en su sitio?",
+    certainQuestion: "¿Es un problema confirmado?",
+    observationChapter: "Observaciones que no son un éxito",
+    observationNote: "Son cosas que el análisis vio o no vio. No encontrar un problema aquí no significa que el tema esté correcto.",
+    partialChapter: "Pruebas que no se completaron del todo",
+    readChapter: "Documentos que se abrieron y se leyeron",
     passSearch: "Buscar pruebas correctas",
     passFilter: "Área",
     techTitleDeveloper: "Información técnica para quien desarrolla",
@@ -195,7 +213,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     actionChapter: "Achados que exigem ação",
     verifyChapter: "Achados que exigem verificação",
     passedChapter: "Verificações que passaram",
-    passedNote: "Cada linha é uma verificação que rodou e passou. O resultado vale para o que foi verificado, não para o site inteiro.",
+    passedNote: "Cada linha é uma verificação cuja regra se cumpriu no que foi verificado. Não cobre o site inteiro.",
+    fixQuestion: "O que exatamente precisa ser verificado ou corrigido no seu site?",
+    certainQuestion: "Este problema está confirmado?",
+    observationChapter: "Observações que não são um sucesso",
+    observationNote: "São coisas que a varredura viu ou não viu. Não achar um problema aqui não significa que o assunto esteja adequado.",
+    partialChapter: "Verificações que não foram concluídas por completo",
+    readChapter: "Documentos que foram abertos e lidos",
     passSearch: "Buscar verificações aprovadas",
     passFilter: "Área",
     techTitleDeveloper: "Informação técnica para quem desenvolve",
@@ -226,7 +250,13 @@ const COPY: Record<Locale, Record<string, string>> = {
     actionChapter: "نتائج تتطلب معالجة",
     verifyChapter: "نتائج تتطلب تحققًا",
     passedChapter: "فحوصات نجحت",
-    passedNote: "كل سطر فحص نُفّذ ونجح. النتيجة تخص ما فُحص، لا الموقع كله.",
+    passedNote: "كل سطر فحص تحققت قاعدته فيما فُحص. لا يغطي الموقع كله.",
+    fixQuestion: "ما الذي يجب فحصه أو إصلاحه تحديدًا في موقعكم؟",
+    certainQuestion: "هل هذه مشكلة مؤكدة؟",
+    observationChapter: "ملاحظات ليست نجاحًا",
+    observationNote: "هذه أشياء رآها الفحص أو لم يرها. عدم العثور على مشكلة هنا لا يعني أن الموضوع سليم.",
+    partialChapter: "فحوصات لم تكتمل",
+    readChapter: "مستندات فُتحت وقُرئت",
     passSearch: "بحث في الفحوصات الناجحة",
     passFilter: "المجال",
     techTitleDeveloper: "معلومات تقنية للمطوّر",
@@ -437,6 +467,7 @@ export function ComplianceReportView({
           <h2>{copy.executiveTitle}</h2>
           <p>{report.executive.scoreMeaning}</p>
           <p><strong>{report.executive.score ?? shownScore}/100</strong> · {copy.checksTitle}: {report.executive.checks}</p>
+          {report.executive.scoreSplit ? <p>{report.executive.scoreSplit}</p> : null}
           <p>{copy.passedChapter}: {statusCounts.pass} · {copy.actionChapter}: {statusCounts.action} · {copy.verifyChapter}: {statusCounts.verify} · {copy.unfinished}: {statusCounts.open} · {copy.notFoundTitle}: {statusCounts.missing} · {copy.blockedTitle}: {statusCounts.unread}</p>
           <p>{["critical", "high", "medium", "low", "info"].map((key) => `${copy[key] || key} ${report.executive.bySeverity?.[key] || 0}`).join(" · ")}</p>
           {report.executive.storedLabel ? <p className="report-stored">{report.executive.storedLabel}</p> : null}
@@ -475,25 +506,30 @@ export function ComplianceReportView({
                     {brief?.storedLabel ? <p className="report-stored">{brief.storedLabel}</p> : null}
                     <h3>{title}</h3>
                   </header>
+                  <h4>{copy.fixQuestion}</h4>
+                  <p>{brief?.answer || brief?.found || item.description}</p>
+                  {(brief?.subjects || []).length ? <ol>{brief.subjects.map((row: { name?: string; label?: string; missing?: string }) => <li key={row.name || row.label}><strong>{row.label || row.name}</strong>{row.missing ? ` — ${row.missing}` : ""}</li>)}</ol> : null}
                   <h4>{copy.foundTitle}</h4>
                   <p>{brief?.found || item.description}</p>
-                  {(brief?.subjects || []).length ? <ol>{brief.subjects.map((row: { name?: string; label?: string; missing?: string }) => <li key={row.name || row.label}><strong>{row.label || row.name}</strong>{row.missing ? ` — ${row.missing}` : ""}</li>)}</ol> : null}
                   {brief?.storedFound ? <p>{brief.storedFound}</p> : null}
-                  <h4>{copy.whyTitle}</h4>
-                  <p>{brief?.why || item.explanation}</p>
                   <h4>{copy.whereTitle}</h4>
                   <p dir="ltr">{located && pageUrl ? <a href={pageUrl} target="_blank" rel="noopener noreferrer">{pageUrl}</a> : copy.unknownPlace}</p>
-                  {brief?.where?.selector ? <p dir="ltr">{brief.where.selector}</p> : null}
+                  {brief?.where?.pageTitle ? <p>{brief.where.pageTitle}</p> : null}
                   {brief?.where?.countLabel ? <p>{brief.where.countLabel}</p> : null}
-                  {evidence ? <details className="report-evidence" open={evidence.length < 280}><summary>{copy.evidenceTitle}</summary><p className="report-finding__evidence" dir="ltr">{evidence}</p></details> : null}
-                  {fix ? <p><strong>{copy.fix}. </strong>{fix}</p> : null}
+                  <h4>{copy.whyTitle}</h4>
+                  <p>{brief?.why || item.explanation}</p>
+                  <h4>{copy.stepsTitle}</h4>
+                  {(brief?.steps || []).length ? <ol>{brief.steps.map((step: string) => <li key={step}>{step}</li>)}</ol> : (fix ? <p>{fix}</p> : null)}
+                  {brief?.whoLabel ? <p><strong>{copy.whoTitle}. </strong>{brief.whoLabel}</p> : null}
+                  {brief?.verify ? <p><strong>{copy.verifyTitle}. </strong>{brief.verify}</p> : null}
+                  <h4>{copy.certainQuestion}</h4>
+                  <p>{brief?.certaintyLabel || "—"}</p>
                   <details className="report-tech">
                     <summary>{copy.techTitleDeveloper || copy.techTitle}</summary>
                     {brief?.technical ? <p>{brief.technical}</p> : null}
-                    {brief?.whoLabel ? <p><strong>{copy.whoTitle}. </strong>{brief.whoLabel}</p> : null}
-                    {(brief?.steps || []).length ? <ol>{brief.steps.map((step: string) => <li key={step}>{step}</li>)}</ol> : null}
+                    {brief?.where?.selector ? <p dir="ltr">{brief.where.selector}</p> : null}
                     {brief?.example?.code ? <div><p>{copy.exampleTitle}. {brief.example.note}</p><pre className="report-code" dir="ltr">{brief.example.code}</pre></div> : null}
-                    {brief?.verify ? <p><strong>{copy.verifyTitle}. </strong>{brief.verify}</p> : null}
+                    {evidence ? <p className="report-finding__evidence" dir="ltr">{evidence}</p> : null}
                     {(brief?.sources || []).map((source: { name?: string; url?: string }) => source.url ? <p key={source.url} dir="ltr"><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name || source.url}</a></p> : null)}
                     {brief?.limits ? <p><strong>{copy.limitsTitle}. </strong>{brief.limits}</p> : null}
                   </details>
@@ -524,6 +560,24 @@ export function ComplianceReportView({
           );
         })}
       </section>
+      <section id="report-observed" className="report-sheet__block">
+        <h2>{copy.observationChapter}</h2>
+        <p>{copy.observationNote}</p>
+        {findings.filter((item) => statusOf(item) === "observation").map((item, index) => {
+          const brief = (item as Finding & { brief?: any }).brief;
+          return <details key={`obs-${item.checkId}-${index}`} className="report-open"><summary>{brief?.title || item.title}</summary><p dir="ltr">{item.url || copy.unknownPlace}</p><p>{brief?.found || item.description}</p><p>{brief?.limits}</p></details>;
+        })}
+        <h2>{copy.partialChapter}</h2>
+        {findings.filter((item) => statusOf(item) === "partial").map((item, index) => {
+          const brief = (item as Finding & { brief?: any }).brief;
+          return <article key={`part-${item.checkId}-${index}`} className="report-open"><h3>{brief?.title || item.title}</h3><p>{brief?.found || item.description}</p></article>;
+        })}
+        <h2>{copy.readChapter}</h2>
+        {findings.filter((item) => statusOf(item) === "read").map((item, index) => {
+          const brief = (item as Finding & { brief?: any }).brief;
+          return <article key={`read-${item.checkId}-${index}`} className="report-open"><h3>{brief?.title || item.title}</h3><p dir="ltr">{item.url}</p><p>{brief?.limits || item.description}</p></article>;
+        })}
+      </section>
       <section className="report-sheet__block">
         <h2>{copy.tools}</h2>
         {(report.trackers || []).length === 0 ? <p>{copy.noTools}</p> : (
@@ -544,8 +598,7 @@ export function ComplianceReportView({
               {item.who ? <p>{copy.whoTitle}: {item.who}</p> : null}
               {item.impact ? <p>{item.impact}</p> : null}
               <p dir="ltr">{item.url || copy.unknownPlace}</p>
-              {(item.steps || []).map((step) => <p key={step}>{step}</p>)}
-              <p>{String(item.change || item.recommendation || "")}</p>
+              {(item.steps || []).length ? <ol>{item.steps.map((step) => <li key={step}>{step}</li>)}</ol> : <p>{String(item.change || item.recommendation || "")}</p>}
               {item.verify ? <p><strong>{copy.verifyTitle}. </strong>{String(item.verify)}</p> : null}
             </li>
           ))}
