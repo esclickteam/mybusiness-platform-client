@@ -223,6 +223,7 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminSaasTenants = lazy(() => import("./pages/admin/AdminSaasTenants"));
 const AdminSaasDeals = lazy(() => import("./pages/admin/AdminSaasDeals"));
+const AdminSaasInternal = lazy(() => import("./pages/admin/AdminSaasInternal"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const AdminCrmLayout = lazy(() => import("./pages/admin/crm/AdminCrmLayout"));
@@ -1775,6 +1776,7 @@ export default function App() {
                         <Route path="users" element={<AdminUsers />} />
                         <Route path="create-user" element={<AdminCreateUser />} />
                         <Route path="saas-deals" element={<AdminSaasDeals />} />
+                        <Route path="saas-internal" element={<AdminSaasInternal />} />
                         <Route path="saas-tenants" element={<AdminSaasTenants />} />
                         <Route path="businesses" element={<AdminBusinesses />} />
                         <Route path="customers" element={<AdminCustomers />} />

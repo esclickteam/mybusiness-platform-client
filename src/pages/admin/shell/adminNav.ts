@@ -46,7 +46,10 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     id: "saasSales",
     label: "מכירות ותשלומים",
-    items: [{ path: "/admin/saas-deals", label: "עסקאות והקמה" }],
+    items: [
+      { path: "/admin/saas-deals", label: "עסקאות והקמה" },
+      { path: "/admin/saas-internal", label: "הקמת מערכת פנימית" },
+    ],
   },
   {
     id: "saasOps",
