@@ -291,12 +291,88 @@ export function PriceBoard({ locale, showHeading = true }: { locale: Locale; sho
         ))}
       </div>
       <p className="scan-price__note">{copy.note}</p>
-      <article>
-        <h2>{locale === "he" ? "סריקת אתר מורחבת — כולל אזורים פנימיים" : locale === "es" ? "Análisis ampliado del sitio, incluidas las zonas internas" : locale === "pt-BR" ? "Varredura ampliada do site, incluindo áreas internas" : locale === "ar" ? "فحص موقع موسّع يشمل المناطق الداخلية" : "Extended website scan, including internal areas"}</h2>
-        <p>{locale === "he" ? "יש באתר אזורים שדורשים התחברות? אפשר להרחיב את הסריקה גם לאזור האישי ולמערכת הפנימית, באמצעות משתמש בדיקה ייעודי. ההרחבה אינה מחליפה את הסריקה הציבורית." : locale === "es" ? "¿Hay zonas que exigen iniciar sesión? El análisis puede ampliarse al área personal y al sistema interno con un usuario de prueba. No sustituye el análisis público." : locale === "pt-BR" ? "Há áreas que exigem login? A varredura pode incluir a área pessoal e o sistema interno com um usuário de teste. Ela não substitui a varredura pública." : locale === "ar" ? "هل توجد مناطق تتطلب تسجيل الدخول؟ يمكن أن يشمل الفحص المنطقة الشخصية والنظام الداخلي بمستخدم اختبار. لا يستبدل هذا الفحص العام." : "Are there areas that require sign-in? The scan can include a personal area and an internal system with a dedicated test user. It does not replace the public scan."}</p>
-        <p>{locale === "he" ? "הצעת מחיר בלבד: עד 10 עמודים $49, עד 30 עמודים $99, עד 100 עמודים $199. הגבייה סגורה ולא מתבצע חיוב." : locale === "es" ? "Precios solo como propuesta: hasta 10 páginas $49, hasta 30 páginas $99, hasta 100 páginas $199. El cobro está cerrado y no se realiza ningún cargo." : locale === "pt-BR" ? "Preços só como proposta: até 10 páginas $49, até 30 páginas $99, até 100 páginas $199. A cobrança está fechada e nada é cobrado." : locale === "ar" ? "الأسعار مقترحة فقط: حتى 10 صفحات 49$، حتى 30 صفحة 99$، حتى 100 صفحة 199$. التحصيل مغلق ولا يتم أي خصم." : "Proposed prices only: up to 10 pages $49, up to 30 pages $99, up to 100 pages $199. Billing is closed and nothing is charged."}</p>
-      </article>
+      <InternalPackages locale={locale} />
     </section>
+  );
+}
+
+const INTERNAL: Record<Locale, { title: string; explain: string; steps: string; closed: string; basic: string; extended: string; advanced: string; limit: string }> = {
+  he: {
+    title: "סריקת אתר מורחבת — כולל אזורים פנימיים",
+    explain: "סריקה מורחבת מאפשרת לבדוק גם עמודים באתר שדורשים התחברות, כמו אזור אישי, טפסים ומערכות ניהול. לצורך הסריקה יוצרים משתמש בדיקה זמני עם הרשאות מוגבלות.",
+    steps: "ההזמנה כוללת בחירת אתר, בחירת אזורים מורשים, אישור בעלות, חתימה, יצירת משתמש בדיקה והזנת פרטי גישה. הסריקה והדוח באים אחרי בדיקת הגישה.",
+    closed: "הגבייה סגורה ולא מתבצע חיוב. בשלב זה אי אפשר למסור סיסמה או להתחיל סריקה.",
+    basic: "בסיסית",
+    extended: "מורחבת",
+    advanced: "מתקדמת",
+    limit: "משתמש בדיקה אחד ותפקיד אחד. עמודים או תפקידים נוספים דורשים הזמנה נפרדת.",
+  },
+  en: {
+    title: "Extended website scan, including internal areas",
+    explain: "An extended scan can also check pages that require sign-in, such as a personal area, forms, and admin systems. The scan uses a temporary test user with limited permissions.",
+    steps: "The order covers choosing the site, choosing the allowed areas, confirming authority, signing, creating a test user, and entering access details. The scan and the report come after the access check.",
+    closed: "Billing is closed and nothing is charged. A password cannot be submitted and a scan cannot be started at this stage.",
+    basic: "Basic",
+    extended: "Extended",
+    advanced: "Advanced",
+    limit: "One test user and one role. More pages or roles need a separate order.",
+  },
+  es: {
+    title: "Análisis ampliado del sitio, incluidas las zonas internas",
+    explain: "Un análisis ampliado también puede revisar páginas que exigen iniciar sesión, como un área personal, formularios y sistemas de gestión. El análisis usa un usuario de prueba temporal con permisos limitados.",
+    steps: "El pedido incluye elegir el sitio, elegir las zonas permitidas, confirmar la autorización, firmar, crear un usuario de prueba e introducir el acceso. El análisis y el informe llegan después de comprobar el acceso.",
+    closed: "El cobro está cerrado y no se realiza ningún cargo. En esta etapa no se puede entregar una contraseña ni iniciar un análisis.",
+    basic: "Básica",
+    extended: "Ampliada",
+    advanced: "Avanzada",
+    limit: "Un usuario de prueba y un rol. Más páginas o roles requieren un pedido aparte.",
+  },
+  "pt-BR": {
+    title: "Varredura ampliada do site, incluindo áreas internas",
+    explain: "Uma varredura ampliada também pode verificar páginas que exigem login, como uma área pessoal, formulários e sistemas de gestão. A varredura usa um usuário de teste temporário com permissões limitadas.",
+    steps: "O pedido inclui escolher o site, escolher as áreas permitidas, confirmar a autorização, assinar, criar um usuário de teste e informar o acesso. A varredura e o relatório vêm depois da verificação do acesso.",
+    closed: "A cobrança está fechada e nada é cobrado. Nesta etapa não é possível enviar uma senha nem iniciar uma varredura.",
+    basic: "Básica",
+    extended: "Ampliada",
+    advanced: "Avançada",
+    limit: "Um usuário de teste e um papel. Mais páginas ou papéis exigem um pedido separado.",
+  },
+  ar: {
+    title: "فحص موقع موسّع يشمل المناطق الداخلية",
+    explain: "يتيح الفحص الموسّع أيضًا فحص صفحات تتطلب تسجيل الدخول، مثل منطقة شخصية ونماذج وأنظمة إدارة. يستخدم الفحص مستخدم اختبار مؤقتًا بصلاحيات محدودة.",
+    steps: "يشمل الطلب اختيار الموقع، واختيار المناطق المسموح بها، وتأكيد التفويض، والتوقيع، وإنشاء مستخدم اختبار، وإدخال بيانات الدخول. يأتي الفحص والتقرير بعد التحقق من الدخول.",
+    closed: "التحصيل مغلق ولا يتم أي خصم. في هذه المرحلة لا يمكن تسليم كلمة مرور ولا بدء فحص.",
+    basic: "أساسية",
+    extended: "موسّعة",
+    advanced: "متقدمة",
+    limit: "مستخدم اختبار واحد ودور واحد. الصفحات أو الأدوار الإضافية تحتاج طلبًا منفصلًا.",
+  },
+};
+
+export function InternalPackages({ locale }: { locale: Locale }) {
+  const copy = INTERNAL[locale] || INTERNAL.en;
+  const cards = [
+    { name: copy.basic, price: "$19", pages: "10" },
+    { name: copy.extended, price: "$39", pages: "30" },
+    { name: copy.advanced, price: "$79", pages: "100" },
+  ];
+  return (
+    <article id="internal-scan">
+      <h2>{copy.title}</h2>
+      <p>{copy.explain}</p>
+      <div className="scan-plans__grid scan-prices">
+        {cards.map((card) => (
+          <article key={card.price}>
+            <b>{card.name}</b>
+            <strong>{card.price}</strong>
+            <p>{card.pages}</p>
+          </article>
+        ))}
+      </div>
+      <p>{copy.limit}</p>
+      <p>{copy.steps}</p>
+      <p>{copy.closed}</p>
+    </article>
   );
 }
 
@@ -602,6 +678,7 @@ export function MonitorBoard({ locale }: { locale: Locale }) {
     <section className="scan-monitor">
       <h2>{copy.dashboard}</h2>
       <p>{copy.inactive}</p>
+      <InternalPackages locale={locale} />
     </section>
   );
 }
