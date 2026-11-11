@@ -10,6 +10,11 @@ import path from "node:path";
 import { cursorScript, createRecorder, segmentsToMp4, joinChapters, glide, run, login } from "./recorder.mjs";
 
 function fail0(msg) { console.error(msg); process.exit(2); }
+function intlPhone(phone) {
+  const digits = String(phone || "").replace(/\D/g, "");
+  if (digits.startsWith("0")) return "972" + digits.slice(1);
+  return digits;
+}
 const LANG = process.env.LANG_UI || "he";
 const MOBILE = process.env.MOBILE === "1";
 const DRY = process.env.DRY === "1";
@@ -17,7 +22,7 @@ const BASE = process.env.FILM_BASE || "https://mybusiness-platform-client-stagin
 const API = "https://server-staging-15bb.up.railway.app/api";
 const BIZ = "6ab62f565ba1a92f3046b5ad";
 const AUTO_ID = process.env.AUTO_ID || "6af1e65d76c39b752eefa9e4";
-const WEBHOOK = process.env.LEADS_WEBHOOK_URL || (process.env.DRY === "1" ? "" : fail0("Set LEADS_WEBHOOK_URL to the demo business Make/Facebook leads webhook (GET /integrations/facebook-leads/webhook-url)."));
+let WEBHOOK = process.env.LEADS_WEBHOOK_URL || "";
 const TAG = `${LANG}-${MOBILE ? "mobile" : "desktop"}`;
 const OUT = `${process.env.CAPTURE_DIR || "/tmp/home-theater"}/film-${TAG}`;
 fs.mkdirSync(OUT, { recursive: true });
@@ -73,6 +78,7 @@ const FILM_CSS = `
   section.fixed.bottom-6.right-6,
   .cookie-banner { display: none !important; }
   main[data-testid="business-dashboard-main"] { padding-top: 0 !important; }
+  ${LANG === "en" ? `.af-builder::before { content: "Editing automations works best on a computer" !important; color: #92400e !important; }` : ""}
 `;
 await ctx.addInitScript((css) => {
   const install = () => {
@@ -91,6 +97,110 @@ await ctx.addInitScript((lang) => {
   localStorage.setItem("bizuply.lang", lang);
   localStorage.setItem("bizuply_lang_preference", lang);
   localStorage.setItem("bizuply_lang_resolved", lang);
+  const valueDesc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+  if (valueDesc && !HTMLInputElement.prototype.__filmValue) {
+    Object.defineProperty(HTMLInputElement.prototype, "value", {
+      configurable: true,
+      get() { return valueDesc.get.call(this); },
+      set(next) {
+        const clean = String(next == null ? "" : next).replace(/\[demo\]\s*/ig, "").replace(/\[דמו\]\s*/g, "");
+        valueDesc.set.call(this, clean);
+      },
+    });
+    HTMLInputElement.prototype.__filmValue = true;
+  }
+  let queued = false;
+  const scan = () => {
+    queued = false;
+    const replacements = [
+      [/free demo customer/gi, ""],
+      [/demo customer studio/gi, ""],
+      [/\[demo\]\s*/gi, ""],
+      [/\[דמו\]\s*/g, ""],
+    ];
+    if (lang === "en") {
+      replacements.push(
+        [/הליד נוצר/g, "Lead created"],
+        [/סטטוס הליד עודכן ל:\s*/g, "Status updated: "],
+        [/מתעניין/g, "Interested"],
+        [/נוצר קשר/g, "Contacted"],
+        [/בתהליך/g, "In progress"],
+      );
+    }
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    while (walker.nextNode()) {
+      const value = walker.currentNode.nodeValue || "";
+      let next = value;
+      for (const [pattern, to] of replacements) next = next.replace(pattern, to);
+      if (next !== value) walker.currentNode.nodeValue = next.replace(/[ \t]{2,}/g, " ");
+    }
+    const counts = (text) => ({
+      hebrew: (String(text).match(/[\u0590-\u05FF]/g) || []).length,
+      latin: (String(text).match(/[A-Za-z]/g) || []).length,
+    });
+    const hebrewish = (text) => {
+      const { hebrew, latin } = counts(text);
+      return hebrew >= 2 && hebrew > latin;
+    };
+    const israeli = (text) => {
+      const digits = String(text || "").replace(/\D/g, "");
+      if (digits.startsWith("972") && digits.length >= 11) return true;
+      return digits.startsWith("0") && digits.length >= 9 && digits.length <= 10;
+    };
+    const paint = (el, hide) => {
+      if (hide) el.style.setProperty("display", "none", "important");
+      else el.style.removeProperty("display");
+    };
+    document.querySelectorAll("tr").forEach((row) => {
+      const cells = [...row.querySelectorAll("td")];
+      if (!cells.length) return;
+      const name = cells[1]?.innerText || "";
+      const nameCounts = counts(name);
+      const noisy = /בדיקה|הדגמה|\bdemo\b|test form/i.test(row.innerText || "");
+      const hide = noisy || (lang === "en"
+        ? cells.some((cell) => hebrewish(cell.innerText || "") || israeli(cell.innerText || ""))
+        : nameCounts.latin >= 2 && nameCounts.hebrew === 0);
+      paint(row, hide);
+    });
+    if (lang === "en") {
+      document.querySelectorAll("p, span, h1, h2, h3, li, a, div").forEach((el) => {
+        if (el.closest("tr, [data-testid='whatsapp-module-inbox']")) return;
+        if (el.children.length > 2) return;
+        const text = (el.innerText || "").trim();
+        if (!text || text.length > 160) return;
+        if (hebrewish(text)) paint(el, true);
+      });
+      document.querySelectorAll("p, span, dd, div").forEach((el) => {
+        if (el.children.length) return;
+        const compact = (el.textContent || "").replace(/[\s-]/g, "");
+        if (/^\+?972\d{8,}$/.test(compact)) el.textContent = "";
+      });
+      document.querySelectorAll("input, textarea").forEach((el) => {
+        const next = el.value.replace(/\[demo\]\s*/ig, "");
+        if (next !== el.value) el.value = next;
+      });
+    }
+    document.querySelectorAll('[data-testid="whatsapp-module-inbox"] button').forEach((button) => {
+      const text = button.innerText || "";
+      const { hebrew, latin } = counts(text);
+      const named = lang === "en" && (window.__filmHideNames || []).some((name) => name && text.includes(name));
+      const hide = lang === "en"
+        ? (counts(text).hebrew >= 2) || israeli(text) || /\bdemo\b/i.test(text) || named
+        : latin >= 12 && latin > hebrew;
+      paint(button, hide);
+    });
+  };
+  const schedule = () => {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(scan);
+  };
+  const start = () => {
+    scan();
+    new MutationObserver(schedule).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+  };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
 }, LANG);
 await ctx.addCookies([{ name: "bizuply_tracking", value: "v2:none:2026-11-07", url: BASE }]);
 const page = await ctx.newPage();
@@ -100,8 +210,31 @@ await page.getByRole("button", { name: /חיוניות בלבד|Essential cookie
 await ctx.storageState({ path: (process.env.CAPTURE_DIR || "/tmp/home-theater") + "/auth.json" });
 {
   const token = await page.evaluate(() => localStorage.getItem("token"));
+  if (!WEBHOOK && !DRY) {
+    const hook = await fetch(`${API}/integrations/facebook-leads/webhook-url`, { headers: { Authorization: `Bearer ${token}`, "x-business-id": BIZ } });
+    const body = await hook.json().catch(() => ({}));
+    if (!hook.ok || !body.webhookUrl) fail(`webhook lookup ${hook.status}`);
+    WEBHOOK = body.webhookUrl;
+    log("webhook ready");
+  }
+  if (LANG === "en" && token) {
+    const listed = await fetch(`${API}/whatsapp/conversations?businessId=${BIZ}`, { headers: { Authorization: `Bearer ${token}`, "x-business-id": BIZ } });
+    const payload = await listed.json().catch(() => ({}));
+    const hideNames = [];
+    for (const conv of payload.conversations || []) {
+      const digits = String(conv.phone || "").replace(/\D/g, "");
+      const israeli = (digits.startsWith("972") && digits.length >= 11) || (digits.startsWith("0") && digits.length >= 9 && digits.length <= 10);
+      if (!israeli) continue;
+      if (conv.recipientName) hideNames.push(String(conv.recipientName));
+      if (digits) hideNames.push(digits);
+      const preview = String(conv.lastBody || "").trim();
+      if (preview.length >= 12) hideNames.push(preview.slice(0, 36));
+    }
+    await ctx.addInitScript((names) => { window.__filmHideNames = names; }, hideNames);
+    log("hide inbox names", hideNames.length);
+  }
   const H = { Authorization: `Bearer ${token}`, "Content-Type": "application/json", "x-business-id": BIZ, Origin: BASE };
-  const own = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+  const own = intlPhone(C.phone);
   for (const ph of (process.env.CLEAN_PHONES || "").split(",").filter(Boolean)) {
     if (ph === own) continue;
     const r = await fetch(`${API}/whatsapp/conversations/${ph}`, { method: "DELETE", headers: H });
@@ -325,7 +458,7 @@ await endChapter();
 
 /* ---------- 3. WhatsApp ---------- */
 beginChapter("whatsapp");
-const waPhone = "972" + C.phone.replace(/\D/g, "").replace(/^0/, "");
+const waPhone = intlPhone(C.phone);
 await goto(`whatsapp/inbox?phone=${waPhone}`, async () => {
   await page.locator(`[placeholder^="${C.replyPlaceholder}"]`).first().waitFor({ timeout: 60000 });
   await page.getByText(waPhone).first().waitFor({ timeout: 30000 });
