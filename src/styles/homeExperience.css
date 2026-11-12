@@ -1646,6 +1646,7 @@ html.ht-motion [data-reveal].is-in {
 
 .hx-hero,
 .ht-how,
+.ht-ad,
 .ht-feature,
 .ht-ai,
 .ht-products,
@@ -2575,5 +2576,271 @@ html.ht-motion .ht-feature-media:hover .ps-float {
   }
   .ht-gallery-stage {
     grid-template-columns: minmax(0, 1fr) clamp(5.5rem, 24vw, 8rem);
+  }
+}
+
+/* CRM and WhatsApp art direction. The website gallery and the hero background stay as they are. */
+.ht-ad {
+  position: relative;
+  padding-block: clamp(3.5rem, 7vw, 6rem);
+  overflow: hidden;
+}
+.ht-ad-crm {
+  background:
+    radial-gradient(ellipse 42% 50% at 78% 18%, rgba(96, 165, 250, 0.28), transparent 62%),
+    radial-gradient(ellipse 36% 40% at 12% 90%, rgba(167, 139, 250, 0.22), transparent 70%),
+    #12081f;
+  color: #fff;
+}
+.ht-ad-crm-stage,
+.ht-ad-wa-stage {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3.5rem);
+  align-items: center;
+}
+.ht-ad-crm-stage {
+  grid-template-columns: minmax(16rem, 0.7fr) minmax(0, 1.35fr);
+}
+.ht-ad-crm .ht-eyebrow { color: #c4b5fd; }
+.ht-ad-crm h2,
+.ht-ad-crm .ht-lead,
+.ht-ad-crm .ht-points li { color: #fff; }
+.ht-ad-crm .ht-lead { color: rgba(255, 255, 255, 0.78); }
+.ht-ad-crm .ht-points li::before { background: #93c5fd; }
+.ht-ad-copy h2 { max-width: 14ch; }
+.ht-ad-board {
+  position: relative;
+  min-height: 34rem;
+  padding: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 28%),
+    #1b0d33;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.16) inset,
+    0 50px 90px -40px rgba(0, 0, 0, 0.65);
+}
+.ht-ad-lanes {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.7rem;
+  min-height: 22rem;
+}
+.ht-ad-lanes section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 2px solid rgba(196, 181, 253, 0.45);
+}
+.ht-ad-lanes header {
+  color: #ddd6fe;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+[dir="rtl"] .ht-ad-lanes header { letter-spacing: 0; text-transform: none; font-size: 0.86rem; }
+.ht-ad-lanes article {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.07);
+}
+.ht-ad-lanes article strong { font-size: 0.92rem; }
+.ht-ad-lanes article small { color: rgba(255, 255, 255, 0.68); font-size: 0.75rem; }
+.ht-ad-lanes .is-hot {
+  background: rgba(255, 255, 255, 0.08);
+  border-top-color: #93c5fd;
+}
+.ht-ad-lanes .is-hot article {
+  background: #fff;
+  color: #14082a;
+}
+.ht-ad-lanes .is-hot article small { color: #5b21b6; }
+.ht-ad-record {
+  position: absolute;
+  z-index: 2;
+  inset-inline-end: 1.3rem;
+  bottom: 1.2rem;
+  width: min(19rem, 48%);
+  padding: 1.15rem 1.2rem 1.25rem;
+  background: #fff;
+  color: #14082a;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 36px 70px -28px rgba(0, 0, 0, 0.7);
+}
+.ht-ad-record p { margin: 0; }
+.ht-ad-record p:first-child {
+  color: #6d28d9;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.ht-ad-record h3 {
+  margin: 0.3rem 0 0.4rem;
+  font-size: 1.7rem;
+}
+.ht-ad-record dl { display: grid; gap: 0.65rem; margin: 0.9rem 0 0; }
+.ht-ad-record div { display: grid; gap: 0.1rem; }
+.ht-ad-record dt {
+  color: #6d28d9;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+.ht-ad-record dd { margin: 0; font-size: 0.92rem; font-weight: 700; }
+
+.ht-ad-wa {
+  background:
+    radial-gradient(ellipse 36% 48% at 22% 42%, rgba(196, 181, 253, 0.55), transparent 70%),
+    linear-gradient(180deg, #fbfaff 0%, #eef2ff 55%, #fff 100%);
+}
+.ht-ad-wa-stage {
+  grid-template-columns: minmax(18rem, 24rem) minmax(0, 1fr);
+}
+.ht-ad-handset { position: relative; }
+.ht-ad-phone {
+  display: flex;
+  flex-direction: column;
+  min-height: 36rem;
+  border: 0.7rem solid #14082a;
+  border-radius: 1.6rem;
+  background: #efe9ff;
+  box-shadow:
+    0 50px 90px -36px rgba(20, 8, 42, 0.55),
+    0 0 0 1px rgba(20, 8, 42, 0.2);
+  overflow: hidden;
+}
+.ht-ad-phone header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 3.4rem;
+  padding: 0 1rem;
+  background: #5b21b6;
+  color: #fff;
+}
+.ht-ad-phone header small { color: rgba(255, 255, 255, 0.82); }
+.ht-ad-thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  padding: 1.2rem;
+}
+.ht-ad-thread p {
+  max-width: 86%;
+  margin: 0;
+  padding: 0.8rem 0.9rem;
+  line-height: 1.45;
+}
+.ht-ad-thread .is-in {
+  margin-inline-end: auto;
+  background: #fff;
+  box-shadow: 0 12px 24px -18px rgba(20, 8, 42, 0.6);
+}
+.ht-ad-thread .is-out {
+  margin-inline-start: auto;
+  background: linear-gradient(180deg, #6d28d9, #4c1d95);
+  color: #fff;
+}
+.ht-ad-phone footer {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  padding: 0 1rem 1rem;
+}
+.ht-ad-phone footer span {
+  padding: 0.35rem 0.5rem;
+  background: rgba(255, 255, 255, 0.72);
+  color: #5b21b6;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.ht-ad-linkback {
+  position: absolute;
+  inset-inline-start: 1.5rem;
+  top: 5.2rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.05rem 0.55rem;
+  width: 13rem;
+  margin: 0;
+  padding: 0.75rem 0.8rem;
+  background: #14082a;
+  color: #fff;
+  box-shadow: 0 22px 40px -24px rgba(20, 8, 42, 0.8);
+}
+.ht-ad-linkback span {
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  background: #6d28d9;
+  font-weight: 800;
+}
+.ht-ad-linkback small { color: #c4b5fd; }
+.ht-ad-signals {
+  display: grid;
+  gap: 0;
+  margin: 1.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.ht-ad-signals li {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.95rem 0 0.95rem 1rem;
+  padding-inline-start: 1rem;
+  border-inline-start: 2px solid #ddd6fe;
+}
+.ht-ad-signals li:first-child { border-inline-start-color: #6d28d9; }
+.ht-ad-signals span {
+  color: #6d28d9;
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.ht-ad-signals strong { font-size: 1.05rem; }
+.ht-ad-wa .ht-note { margin-top: 1rem; }
+
+html.ht-motion .ht-ad-record {
+  animation: ht-ad-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html.ht-motion .ht-ad-thread .is-out {
+  animation: ht-ad-rise 0.7s 0.25s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+html.ht-motion .ht-ad-lanes .is-hot article {
+  animation: ht-ad-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ht-ad-rise {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 980px) {
+  .ht-ad-crm-stage,
+  .ht-ad-wa-stage { grid-template-columns: 1fr; }
+  .ht-ad-board { min-height: 0; }
+  .ht-ad-record {
+    position: relative;
+    inset: auto;
+    width: auto;
+    margin-top: 0.8rem;
+  }
+  .ht-ad-lanes { min-height: 0; }
+  .ht-ad-phone { min-height: 30rem; margin-inline: auto; }
+  .ht-ad-linkback { inset-inline-start: 0.6rem; }
+  .ht-ad-copy h2 { max-width: 16ch; }
+}
+@media (max-width: 640px) {
+  .ht-ad-lanes { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ht-ad-record,
+  .ht-ad-thread .is-out,
+  .ht-ad-lanes .is-hot article {
+    animation: none;
   }
 }

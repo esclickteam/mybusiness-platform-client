@@ -376,54 +376,152 @@ function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
 }
 
 function Crm() {
-  const { text } = useCopy();
+  const { text, cine } = useCopy();
+  const name = cine.hero.leadName || "Dana Levi";
+  const lanes = [
+    {
+      status: text("חדש", "New"),
+      items: [
+        [text("טופס באתר", "Website form"), text("מקור נוסף ברשימה", "Another source on the list")],
+        [text("טופס Meta", "Meta form"), text("נכנס לרשימת הלידים", "Arrives on the lead list")],
+      ],
+    },
+    {
+      status: text("מתעניין", "Interested"),
+      hot: true,
+      items: [[name, text("מקור בדיקה", "Test source")]],
+    },
+    {
+      status: text("פגישה", "Meeting"),
+      items: [[text("שיחת המשך", "Follow-up call"), text("יום חמישי, 10:00", "Thursday, 10:00")]],
+    },
+  ];
   return (
-    <Feature
-      id="crm"
-      eyebrow={text("CRM וניהול לידים", "CRM and lead management")}
-      title={text("כל ליד, כל שיחה, כל משימה — בכרטיס אחד.", "Every lead, conversation and task — on one record.")}
-      lead={text(
-        "רשימת לידים שאפשר לסנן, כרטיס לקוח עם סטטוס, מקור, הערות, משימות ופגישות, והיסטוריית פעילות שנשמרת אוטומטית.",
-        "A lead list you can filter, a customer record with status, source, notes, tasks and meetings, and an activity history that saves itself.",
-      )}
-      points={[
-        text("סטטוסים מותאמים לתהליך המכירה", "Statuses that match your sales process"),
-        text("מקור הליד נשמר על כל רשומה", "The lead source is kept on every record"),
-        text("הערות, תיעוד שיחות ומשימות עם מועד", "Notes, call logs and dated tasks"),
-        text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
-      ]}
-      link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
-      layout="stage"
-      shot={<SceneFrame scene="crm" />}
-    />
+    <section className="ht-ad ht-ad-crm" id="crm" aria-labelledby="crm-title">
+      <div className="ht-wrap ht-ad-crm-stage">
+        <div className="ht-ad-copy" data-reveal>
+          <p className="ht-eyebrow">{text("CRM וניהול לידים", "CRM and lead management")}</p>
+          <h2 id="crm-title">{text("כל ליד, כל שיחה, כל משימה — בכרטיס אחד.", "Every lead, conversation and task — on one record.")}</h2>
+          <p className="ht-lead">
+            {text(
+              "רשימת לידים שאפשר לסנן, כרטיס לקוח עם סטטוס, מקור, הערות, משימות ופגישות, והיסטוריית פעילות שנשמרת אוטומטית.",
+              "A lead list you can filter, a customer record with status, source, notes, tasks and meetings, and an activity history that saves itself.",
+            )}
+          </p>
+          <ul className="ht-points">
+            {[
+              text("סטטוסים מותאמים לתהליך המכירה", "Statuses that match your sales process"),
+              text("מקור הליד נשמר על כל רשומה", "The lead source is kept on every record"),
+              text("הערות, תיעוד שיחות ומשימות עם מועד", "Notes, call logs and dated tasks"),
+              text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
+            ].map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+          <div className="hx-actions">
+            <Cta to="/crm" tone="light">{text("להכיר את ה־CRM", "Explore the CRM")}</Cta>
+          </div>
+        </div>
+        <div className="ht-ad-board" data-reveal aria-hidden="true">
+          <div className="ht-ad-lanes">
+            {lanes.map((lane) => (
+              <section key={lane.status} className={lane.hot ? "is-hot" : undefined}>
+                <header>{lane.status}</header>
+                {lane.items.map(([title, detail]) => (
+                  <article key={title}>
+                    <strong>{title}</strong>
+                    <small>{detail}</small>
+                  </article>
+                ))}
+              </section>
+            ))}
+          </div>
+          <article className="ht-ad-record">
+            <p>{cine.hero.leadStatus}</p>
+            <h3>{name}</h3>
+            <p>{cine.hero.leadBody}</p>
+            <dl>
+              <div>
+                <dt>{text("מקור", "Source")}</dt>
+                <dd>{text("המקור נשמר על הרשומה", "The source stays on the record")}</dd>
+              </div>
+              <div>
+                <dt>{text("הערת שיחה", "Call note")}</dt>
+                <dd>{text("שיחה. מתעניינת בשירות.", "Called. Interested in the service.")}</dd>
+              </div>
+              <div>
+                <dt>{text("כרטיס", "Record")}</dt>
+                <dd>{text("נשמר בהיסטוריית הלקוח", "Saved to the customer history")}</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </div>
+    </section>
   );
 }
 
 function WhatsApp() {
-  const { text } = useCopy();
+  const { text, cine } = useCopy();
+  const name = cine.hero.leadName || "Dana Levi";
+  const signals = [
+    [text("תיבה", "Inbox"), text("תיבת דואר נכנס לכל הצוות", "One inbox for the whole team")],
+    [text("תבנית מעקב", "Follow-up template"), text("תבניות הודעה מאושרות לשליחה יזומה", "Approved templates for outbound messages")],
+    [text("נתוני שליחה", "Delivery data"), text("נתוני שליחה, קריאה ותגובה", "Sent, read and reply data")],
+  ];
   return (
-    <Feature
-      id="whatsapp"
-      flip
-      eyebrow="WhatsApp Business API"
-      title={text("השיחות עם הלקוחות, מחוברות לעסק.", "Customer conversations, connected to the business.")}
-      lead={text(
-        "חיבור רשמי ל־WhatsApp Business API דרך Meta: תיבת שיחות משותפת, תבניות הודעה, נתוני ביצועים וחיבור לכרטיס הלקוח.",
-        "An official WhatsApp Business API connection through Meta: a shared inbox, message templates, performance data and a link to the customer record.",
-      )}
-      points={[
-        text("תיבת דואר נכנס לכל הצוות", "One inbox for the whole team"),
-        text("תבניות הודעה מאושרות לשליחה יזומה", "Approved templates for outbound messages"),
-        text("נתוני שליחה, קריאה ותגובה", "Sent, read and reply data"),
-      ]}
-      note={text(
-        "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
-        "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
-      )}
-      link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
-      layout="ink"
-      shot={<SceneFrame scene="inbox" />}
-    />
+    <section className="ht-ad ht-ad-wa" id="whatsapp" aria-labelledby="whatsapp-title">
+      <div className="ht-wrap ht-ad-wa-stage">
+        <div className="ht-ad-handset" data-reveal aria-hidden="true">
+          <div className="ht-ad-phone">
+            <header>
+              <strong>WhatsApp</strong>
+              <small>{name}</small>
+            </header>
+            <div className="ht-ad-thread">
+              <p className="is-in">{text("שלום, שלחתי פנייה לגבי השירות.", "Hi, I sent an enquiry about the service.")}</p>
+              <p className="is-out">{text("תודה. אפשר להציע זמן להמשך.", "Thanks. I can suggest a time to continue.")}</p>
+            </div>
+            <footer>
+              <span>{text("נשמר בשיחה", "Saved in this thread")}</span>
+              <span>{text("חלון 24 שעות", "24-hour window")}</span>
+            </footer>
+          </div>
+          <p className="ht-ad-linkback">
+            <span>{name.slice(0, 1)}</span>
+            <strong>{name}</strong>
+            <small>{text("מחובר לכרטיס הלקוח", "Linked to the customer record")}</small>
+          </p>
+        </div>
+        <div className="ht-ad-copy" data-reveal>
+          <p className="ht-eyebrow">WhatsApp Business API</p>
+          <h2 id="whatsapp-title">{text("השיחות עם הלקוחות, מחוברות לעסק.", "Customer conversations, connected to the business.")}</h2>
+          <p className="ht-lead">
+            {text(
+              "חיבור רשמי ל־WhatsApp Business API דרך Meta: תיבת שיחות משותפת, תבניות הודעה, נתוני ביצועים וחיבור לכרטיס הלקוח.",
+              "An official WhatsApp Business API connection through Meta: a shared inbox, message templates, performance data and a link to the customer record.",
+            )}
+          </p>
+          <ol className="ht-ad-signals">
+            {signals.map(([kicker, line]) => (
+              <li key={kicker}>
+                <span>{kicker}</span>
+                <strong>{line}</strong>
+              </li>
+            ))}
+          </ol>
+          <p className="ht-note">
+            {text(
+              "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
+              "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
+            )}
+          </p>
+          <div className="hx-actions">
+            <Cta to="/whatsapp-api">{text("להכיר את WhatsApp API", "Explore the WhatsApp API")}</Cta>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
