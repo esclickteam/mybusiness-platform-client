@@ -13,6 +13,9 @@ type Occurrence = {
   competitors: string[];
   brandAppeared: boolean;
   brandLinked: boolean;
+  inconsistent?: boolean;
+  reliability?: string;
+  seedKey?: string;
   urls: SourceUrl[];
 };
 type ScoreParts = {
@@ -32,10 +35,18 @@ type MentionedBrand = {
 };
 export type SourceRow = {
   domain: string;
+  reliability?: "verified_citation" | "unverified_source" | "fixture_or_synthetic";
+  reliabilityLabelHe?: string;
+  roles?: string[];
   citations: number;
+  storedRecords?: number;
   verifiedCitations?: number;
   citationVerified?: boolean;
   verificationNoteHe?: string;
+  inconsistent?: boolean;
+  inconsistentLabelHe?: string;
+  inconsistentDetailHe?: string;
+  storedEngines?: EngineChip[];
   answerCount: number;
   engines: EngineChip[];
   questions: QuestionRef[];
@@ -80,6 +91,10 @@ export type SourceMapData = {
   sampleSize?: number;
   summary?: {
     uniqueSources: number;
+    verifiedCitations?: number;
+    verifiedSources?: number;
+    unverifiedSources?: number;
+    fixtureSources?: number;
     sourcesMentioningUs: number;
     sourcesPartial?: number;
     sourcesCompetitorsNotUs: number;
@@ -87,8 +102,11 @@ export type SourceMapData = {
   };
   topCited?: SourceRow[];
   topOutreach?: SourceRow[];
-  outreachCandidates?: SourceRow[];
+  verifiedSources?: SourceRow[];
+  unverifiedSources?: SourceRow[];
+  fixtureSources?: SourceRow[];
   mentionedBrands?: MentionedBrand[];
+  inconsistencies?: { checkId: string; seedKey: string; labelHe: string; detailHe: string }[];
   sources?: SourceRow[];
 };
 
@@ -131,8 +149,24 @@ function formatWhen(iso: string | null) {
 }
 
 function engineText(source: SourceRow) {
-  if (!source.engines?.length) return "—";
-  return source.engines.map((engine) => engine.labelHe).join(" · ");
+  if (source.reliability === "verified_citation" && source.engines?.length) {
+    return source.engines.map((engine) => engine.labelHe).join(" · ");
+  }
+  if (source.storedEngines?.length) {
+    return `נשמר תחת ${source.storedEngines.map((engine) => engine.labelHe).join(" · ")} · לא ציטוט מאומת`;
+  }
+  return "—";
+}
+
+function recordLine(source: SourceRow) {
+  if (source.reliability === "fixture_or_synthetic") {
+    return `${source.storedRecords || 0} רשומות שמורות · 0 ציטוטים מאומתים`;
+  }
+  if (source.reliability === "unverified_source") {
+    return `${source.storedRecords || 0} רשומות · לא אומת`;
+  }
+  const count = source.verifiedCitations ?? source.citations;
+  return count === 1 ? "ציטוט מאומת אחד" : `${count} ציטוטים מאומתים`;
 }
 
 function competitorText(source: SourceRow) {
@@ -151,8 +185,8 @@ function SourceFacts({ source }: { source: SourceRow }) {
   return (
     <dl className="geo-source-facts">
       <div>
-        <dt>ציטוטים</dt>
-        <dd>{source.citations}</dd>
+        <dt>ציטוטים מאומתים</dt>
+        <dd>{source.reliability === "verified_citation" ? source.verifiedCitations ?? source.citations : 0}</dd>
       </div>
       <div>
         <dt>חזרות בתשובות</dt>
@@ -203,9 +237,13 @@ function SourceCard({
           <span className="geo-source-score">{source.importanceScore}</span>
         </div>
         <p className="geo-source-headline">{source.actionHeadlineHe}</p>
+        {source.roles?.includes("platform_source") ? (
+          <p className="geo-source-meta">פלטפורמה כללית</p>
+        ) : null}
         <p className="geo-source-meta">
-          {source.citations} ציטוטים · {engineText(source)}
+          {recordLine(source)} · {engineText(source)}
         </p>
+        {source.inconsistent ? <p className="geo-source-warn">נתון לא עקבי</p> : null}
         <p className="geo-source-meta">מתחרים: {competitorText(source)}</p>
         <p className={`geo-source-meta geo-appearance geo-appearance-${source.appearanceBand || "absent"}`}>
           {appearanceLine(source)}
@@ -269,7 +307,7 @@ export default function SourceMapPanel({
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    const rows = data?.sources || [];
+    const rows = data?.verifiedSources || [];
     if (!q) return rows;
     return rows.filter((source) => {
       const blob = [
@@ -314,22 +352,33 @@ export default function SourceMapPanel({
 
       {data && !data.awaitingData ? (
         <>
+          {data.inconsistencies?.length ? (
+            <div className="geo-intel-banner" role="status">
+              <strong>נתון לא עקבי. </strong>
+              {data.inconsistencies.map((item) => (
+                <span key={item.checkId}>
+                  {item.seedKey || item.checkId}: {item.detailHe}{" "}
+                </span>
+              ))}
+            </div>
+          ) : null}
+
           <div className="geo-kpi-grid geo-source-kpis">
             <div className="geo-kpi">
-              <div className="geo-kpi-label">מקורות ייחודיים</div>
-              <div className="geo-kpi-value">{summary?.uniqueSources ?? 0}</div>
+              <div className="geo-kpi-label">ציטוטים מאומתים</div>
+              <div className="geo-kpi-value">{summary?.verifiedCitations ?? 0}</div>
             </div>
             <div className="geo-kpi">
-              <div className="geo-kpi-label">מופיעים באופן עקבי</div>
-              <div className="geo-kpi-value">{summary?.sourcesMentioningUs ?? 0}</div>
+              <div className="geo-kpi-label">מקורות מאומתים</div>
+              <div className="geo-kpi-value">{summary?.verifiedSources ?? 0}</div>
             </div>
             <div className="geo-kpi">
-              <div className="geo-kpi-label">הופעה חלקית</div>
-              <div className="geo-kpi-value">{summary?.sourcesPartial ?? 0}</div>
+              <div className="geo-kpi-label">מקורות לא מאומתים</div>
+              <div className="geo-kpi-value">{summary?.unverifiedSources ?? 0}</div>
             </div>
             <div className="geo-kpi">
-              <div className="geo-kpi-label">מתחרים בלי הופעה עקבית</div>
-              <div className="geo-kpi-value">{summary?.sourcesCompetitorsNotUs ?? 0}</div>
+              <div className="geo-kpi-label">נתוני בדיקה</div>
+              <div className="geo-kpi-value">{summary?.fixtureSources ?? 0}</div>
             </div>
             <div className="geo-kpi">
               <div className="geo-kpi-label">עדיפות גבוהה לפנייה</div>
@@ -352,42 +401,28 @@ export default function SourceMapPanel({
               </div>
             ) : (
               <p className="geo-note">
-                אין יעד בעדיפות גבוהה. מקור נכנס לכאן רק אם הציטוט אומת בתשובות נפרדות, חזר לפחות פעמיים, והציון הוא 40 ומעלה.
+                אין יעד פנייה. רק ציטוט מאומת, שחזר לפחות פעמיים ואינו אתר מתחרה, יכול להיכנס לכאן.
               </p>
             )}
           </div>
 
           <div className="geo-source-block">
-            <h3>מועמדים לפנייה — הציטוט לא אומת</h3>
-            <p className="geo-note">
-              אלה מקורות שאינם אתר מתחרה, אבל אותה רשימת כתובות חזרה בכמה מדידות בלי שהכתובת מופיעה בטקסט התשובה. לא פונים אליהם כאילו 20 הציטוטים אומתו.
-            </p>
-            {data.outreachCandidates?.length ? (
+            <h3>מקורות מאומתים</h3>
+            <p className="geo-note">יש הוכחה שהכתובת נשמרה על תשובה אמיתית, לא על רשימת fixture.</p>
+            {(data.verifiedSources || data.topCited || []).length ? (
               <div className="geo-source-grid">
-                {data.outreachCandidates.map((source) => (
-                  <SourceCard key={`cand-${source.domain}`} source={source} onOpen={setSelected} />
+                {(data.verifiedSources || data.topCited || []).map((source) => (
+                  <SourceCard key={`ver-${source.domain}`} source={source} onOpen={setSelected} />
                 ))}
               </div>
             ) : (
-              <p className="geo-note">אין מועמד כזה במדידות השמורות.</p>
+              <p className="geo-note">אין עדיין ציטוט מאומת.</p>
             )}
-          </div>
-
-          <div className="geo-source-block">
-            <h3>מתחרים — לניטור בלבד</h3>
-            <p className="geo-note">אתר של עסק מתחרה אינו יעד לפנייה, גם אם הוא צוטט כמקור.</p>
-            <div className="geo-source-grid">
-              {(data.sources || [])
-                .filter((source) => source.action === "competitor_monitor")
-                .map((source) => (
-                  <SourceCard key={`mon-${source.domain}`} source={source} onOpen={setSelected} />
-                ))}
-            </div>
           </div>
 
           {data.mentionedBrands?.length ? (
             <div className="geo-source-block">
-              <h3>מותגים שנמצאו במדידות</h3>
+              <h3>מותגים בטקסט של תשובה מאומתת</h3>
               <ul className="geo-source-urls">
                 {data.mentionedBrands.map((brand) => (
                   <li key={brand.name}>
@@ -406,17 +441,34 @@ export default function SourceMapPanel({
           ) : null}
 
           <div className="geo-source-block">
-            <h3>10 המקורות המצוטטים ביותר</h3>
+            <h3>מקורות לא מאומתים</h3>
+            <p className="geo-note">נשמרו בלי הוכחת citation מלאה. הם לא נספרים כציטוט ולא נכנסים ל־Top Sources.</p>
+            {(data.unverifiedSources || []).length ? (
+              <div className="geo-source-grid">
+                {data.unverifiedSources.map((source) => (
+                  <SourceCard key={`unv-${source.domain}`} source={source} onOpen={setSelected} />
+                ))}
+              </div>
+            ) : (
+              <p className="geo-note">אין מקור לא מאומת מחוץ לנתוני הבדיקה.</p>
+            )}
+          </div>
+
+          <div className="geo-source-block geo-source-fixture">
+            <h3>נתוני בדיקה / fixture</h3>
+            <p className="geo-note">
+              wave fixture או תקציר קטלוג. לא ציטוט של ChatGPT, Perplexity או Gemini, ולא בסיס להחלטת פנייה.
+            </p>
             <div className="geo-source-grid">
-              {(data.topCited || []).map((source) => (
-                <SourceCard key={`cited-${source.domain}`} source={source} onOpen={setSelected} />
+              {(data.fixtureSources || []).map((source) => (
+                <SourceCard key={`fix-${source.domain}`} source={source} onOpen={setSelected} />
               ))}
             </div>
           </div>
 
           <div className="geo-source-block">
             <div className="geo-source-list-head">
-              <h3>כל המקורות</h3>
+              <h3>פירוט המקורות המאומתים</h3>
               <input
                 className="geo-source-search"
                 value={query}
@@ -505,6 +557,11 @@ export default function SourceMapPanel({
               <p className="geo-source-headline">{selected.actionHeadlineHe}</p>
               <p className="geo-note">{selected.reasonHe}</p>
               <SourceFacts source={selected} />
+              {selected.inconsistent ? (
+                <p className="geo-source-warn">
+                  נתון לא עקבי. {selected.inconsistentDetailHe}
+                </p>
+              ) : null}
               {roleLine(selected) ? <p className="geo-source-role">{roleLine(selected)}</p> : null}
               {selected.citationVerified === false ? (
                 <p className="geo-source-warn">{selected.verificationNoteHe}</p>
@@ -532,7 +589,7 @@ export default function SourceMapPanel({
                   ))
                 )}
               </ul>
-              <h3>שאלות שבהן המקור צוטט</h3>
+              <h3>מדידות שבהן הדומיין נשמר</h3>
               {selected.occurrences.map((item, index) => (
                 <article
                   key={`${item.checkId}-${index}`}
@@ -546,8 +603,10 @@ export default function SourceMapPanel({
                     מותגים שסווגו במדידה: {item.competitors.length ? item.competitors.join(" · ") : "—"}
                   </p>
                   <p className="geo-source-meta">
-                    {brandName || "המותג"} הופיע: {yesNo(item.brandAppeared)} · קישור:{" "}
-                    {yesNo(item.brandLinked)}
+                    {item.inconsistent ? "נתון לא עקבי" : `${brandName || "המותג"} הופיע: ${yesNo(item.brandAppeared)}`}
+                    {" · "}קישור: {yesNo(item.brandLinked)}
+                    {item.reliability ? ` · ${item.reliability}` : ""}
+                    {item.seedKey ? ` · ${item.seedKey}` : ""}
                   </p>
                   <ul className="geo-source-urls">
                     {item.urls.map((page) => (

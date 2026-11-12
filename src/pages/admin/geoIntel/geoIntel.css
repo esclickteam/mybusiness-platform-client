@@ -1571,6 +1571,12 @@
 .geo-source-block h3 {
   margin: 0 0 10px;
 }
+.geo-source-fixture {
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 16px;
+  padding: 12px;
+}
 .geo-source-kpis {
   margin-bottom: 0;
   grid-template-columns: repeat(5, minmax(0, 1fr));
