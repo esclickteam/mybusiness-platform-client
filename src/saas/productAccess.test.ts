@@ -10,7 +10,7 @@ describe("product enter-system URLs", () => {
       "https://globalproperties.bizuply.com/en/auth/sign-in"
     );
     expect(productLoginUrl("dinevo", "qadnvtrialc9e3")).toBe("https://dinevo.bizuply.com/login");
-    expect(productLoginUrl("cliny", "qaclntrialc9e3")).toBe("https://cliny.bizuply.com/login");
+    expect(productLoginUrl("cliny", "qaclntrialc9e3")).toBe("https://cliny.bizuply.com/login?site=qaclntrialc9e3");
     expect(productLoginUrl("tableflow", "levant-room")).toBe("/s/levant-room");
   });
 

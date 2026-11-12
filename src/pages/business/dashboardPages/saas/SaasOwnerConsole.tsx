@@ -21,6 +21,10 @@ const STAFF_PERMISSIONS = [
   ["content.publish", "פרסום"],
   ["staff.manage", "ניהול עובדים"],
 ] as const;
+const FONTS = ["Heebo", "Assistant", "Rubik", "Arial", "Georgia"];
+type Section = { id?: string; key?: string; title?: string; body?: string; imageUrl?: string; buttonLabel?: string; buttonHref?: string; hidden?: boolean };
+type NavItem = { label?: string; href?: string; hidden?: boolean };
+
 const PRODUCT_HOSTS: Record<string, string> = {
   beautyflow: productHost("beautyflow"),
   "global-properties": productHost("global-properties"),
@@ -50,6 +54,7 @@ export default function SaasOwnerConsole() {
   const [params] = useSearchParams();
   const [content, setContent] = useState<Content | null>(null);
   const [meta, setMeta] = useState<Record<string, unknown> | null>(null);
+  const [canvas, setCanvas] = useState<"site" | "login">("site");
   const [width, setWidth] = useState<"100%" | "768px" | "375px">("100%");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -205,33 +210,124 @@ export default function SaasOwnerConsole() {
   };
   const contact = asRecord(content.site.contact);
   const social = asRecord(content.site.social);
-  const sections = asList(content.site.sections) as { id?: string; title?: string; body?: string; hidden?: boolean }[];
-  const nav = asList(content.site.nav) as { label?: string; href?: string; hidden?: boolean }[];
+  const sections = asList(content.site.sections) as Section[];
+  const nav = asList(content.site.nav) as NavItem[];
+  const shown = historyPreview || content;
+  const shownSections = asList(shown.site.sections) as Section[];
+  const shownNav = asList(shown.site.nav) as NavItem[];
+  const editing = !historyPreview;
+  function patchSection(section: Section, patch: Partial<Section>) {
+    const next = sections.slice();
+    const at = sections.indexOf(section);
+    if (at < 0) return;
+    next[at] = { ...section, ...patch };
+    setSite("sections", next);
+  }
   const staff = (meta?.staff || []) as StaffMember[];
   const versions = (meta?.versions || []) as VersionRow[];
 
   return (
     <div dir="rtl" className="flex w-full min-w-0 flex-col gap-4 p-4">
       <section className="min-w-0 w-full">
-        <div className="mb-3 flex flex-wrap gap-2">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setCanvas("site")}>האתר</button>
+          <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setCanvas("login")}>עמוד התחברות</button>
           <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("100%")}>Desktop</button>
           <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("768px")}>Tablet</button>
           <button type="button" className="rounded-full border px-3 py-1 text-sm" onClick={() => setWidth("375px")}>Mobile</button>
+          <label className="flex items-center gap-1 text-xs font-bold">צבע<input disabled={!editing} type="color" value={shown.branding.primaryColor || "#0f766e"} onChange={(event) => setBrand("primaryColor", event.target.value)} /></label>
+          <label className="flex items-center gap-1 text-xs font-bold">גופן
+            <select disabled={!editing} className="rounded border px-1 py-1" value={FONTS.includes(shown.branding.font) ? shown.branding.font : "Heebo"} onChange={(event) => setBrand("font", event.target.value)}>
+              {FONTS.map((font) => <option key={font} value={font}>{font}</option>)}
+            </select>
+          </label>
+          <label className="text-xs font-bold">לוגו<input disabled={!editing} className="block text-xs" type="file" accept="image/*" onChange={(event) => uploadImage("logo", event.target.files?.[0])} /></label>
+          {historyPreview ? <button type="button" className="text-xs font-bold underline" onClick={() => setHistoryPreview(null)}>חזרה לטיוטה</button> : null}
         </div>
         <div className="mx-auto w-full overflow-x-auto rounded-2xl border bg-white" style={{ width, maxWidth: "100%" }}>
-          {isHostedShellProduct(templateSlug) ? (
-            <TableflowGuest content={preview as never} />
+          {canvas === "login" ? (
+            <div className="grid min-h-[420px] md:grid-cols-2">
+              <div className="p-8 text-white" style={{ background: shown.branding.primaryColor || "#0f766e", fontFamily: shown.branding.font || undefined }}>
+                {shown.branding.logo ? <img src={shown.branding.logo} alt="" className="mb-6 h-12" /> : null}
+                <input readOnly={!editing} className="w-full bg-transparent text-3xl font-black text-white outline-none" value={shown.branding.businessName || ""} onChange={(event) => setBrand("businessName", event.target.value)} />
+                <textarea readOnly={!editing} className="mt-4 w-full bg-transparent text-sm leading-7 text-white outline-none" rows={3} value={shownSections[0]?.title || ""} onChange={(event) => {
+                  if (!sections[0]) setSite("sections", [{ key: "login", id: "login", title: event.target.value, body: "" }]);
+                  else patchSection(sections[0], { title: event.target.value });
+                }} />
+                <textarea readOnly={!editing} className="mt-2 w-full bg-transparent text-sm leading-7 text-white outline-none" rows={3} value={shownSections[0]?.body || ""} onChange={(event) => {
+                  if (!sections[0]) setSite("sections", [{ key: "login", id: "login", title: "", body: event.target.value }]);
+                  else patchSection(sections[0], { body: event.target.value });
+                }} />
+              </div>
+              <div className="p-8" style={{ fontFamily: shown.branding.font || undefined }}>
+                <p className="text-sm font-semibold" style={{ color: shown.branding.primaryColor }}>{shown.branding.businessName}</p>
+                <div className="mt-6 h-10 rounded border bg-slate-50" />
+                <div className="mt-3 h-10 rounded border bg-slate-50" />
+                <input readOnly={!editing} className="mt-4 w-full py-2 text-center text-sm font-bold text-white outline-none" style={{ background: shown.branding.primaryColor || "#0f766e" }} value={shownSections[0]?.buttonLabel || ""} placeholder="כניסה" onChange={(event) => {
+                  if (!sections[0]) setSite("sections", [{ key: "login", id: "login", buttonLabel: event.target.value, buttonHref: "/login" }]);
+                  else patchSection(sections[0], { buttonLabel: event.target.value, buttonHref: sections[0].buttonHref || "/login" });
+                }} />
+              </div>
+            </div>
+          ) : isHostedShellProduct(templateSlug) ? (
+            <TableflowGuest content={(shown || preview) as never} />
           ) : (
-            <div className="p-6" style={{ background: content.branding.background || "#fff", color: content.branding.primaryColor }}>
-              {content.branding.logo ? <img src={content.branding.logo} alt="" style={{ height: 48 }} /> : null}
-              <h2 className="text-2xl font-black">{content.branding.businessName}</h2>
-              <p>{String(content.site.homeBody || content.branding.tagline || "")}</p>
-              {sections.filter((section) => !section.hidden).map((section) => (
-                <article key={section.id || section.title}>
-                  <h3 className="font-black">{section.title}</h3>
-                  <p>{section.body}</p>
+            <div className="p-6" style={{ background: shown.branding.background || "#fff", color: "#143f39", fontFamily: shown.branding.font || undefined }}>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  {shown.branding.logo ? <img src={shown.branding.logo} alt="" style={{ height: 48 }} /> : null}
+                  <input readOnly={!editing} className="w-full bg-transparent text-3xl font-black outline-none" style={{ color: shown.branding.primaryColor }} value={shown.branding.businessName || ""} onChange={(event) => setBrand("businessName", event.target.value)} />
+                </div>
+                <nav className="flex flex-wrap gap-2">
+                  {(editing ? nav : shownNav).filter((item) => editing || !item.hidden).map((item, index) => (
+                    <span key={`${item.label}-${index}`} className="flex gap-1">
+                      <input readOnly={!editing} className="w-20 bg-transparent text-sm outline-none" value={item.label || ""} placeholder="קישור" onChange={(event) => {
+                        const next = nav.slice();
+                        next[index] = { ...item, label: event.target.value };
+                        setSite("nav", next);
+                      }} />
+                    </span>
+                  ))}
+                  {editing ? <button type="button" className="text-xs font-bold" onClick={() => setSite("nav", [...nav, { label: "קישור", href: "/" }])}>קישור</button> : null}
+                </nav>
+              </div>
+              {shownSections.filter((section) => !section.hidden).map((section, index) => (
+                <article key={section.key || section.id || index} className="mb-8">
+                  {section.imageUrl ? <img src={section.imageUrl} alt="" className="mb-3 max-h-64 w-full object-cover" /> : null}
+                  {editing ? <input className="mb-2 w-full text-xs" dir="ltr" placeholder="כתובת תמונה" value={section.imageUrl || ""} onChange={(event) => patchSection(section, { imageUrl: event.target.value })} /> : null}
+                  <input readOnly={!editing} className="w-full bg-transparent text-2xl font-black outline-none" value={section.title || ""} onChange={(event) => patchSection(section, { title: event.target.value })} />
+                  <textarea readOnly={!editing} className="mt-2 w-full bg-transparent text-base leading-7 outline-none" rows={3} value={section.body || ""} onChange={(event) => patchSection(section, { body: event.target.value })} />
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <input readOnly={!editing} className="rounded px-3 py-2 text-sm font-bold text-white outline-none" style={{ background: shown.branding.primaryColor || "#0f766e" }} placeholder="כפתור" value={section.buttonLabel || ""} onChange={(event) => patchSection(section, { buttonLabel: event.target.value })} />
+                    {editing ? <input className="w-36 text-xs" dir="ltr" placeholder="/ או https://" value={section.buttonHref || ""} onChange={(event) => patchSection(section, { buttonHref: event.target.value })} /> : null}
+                    {editing ? (
+                      <>
+                        <button type="button" className="text-xs font-bold" onClick={() => {
+                          const at = sections.indexOf(section);
+                          if (at <= 0) return;
+                          const next = sections.slice();
+                          const [item] = next.splice(at, 1);
+                          next.splice(at - 1, 0, item);
+                          setSite("sections", next);
+                        }}>למעלה</button>
+                        <button type="button" className="text-xs font-bold" onClick={() => {
+                          const at = sections.indexOf(section);
+                          if (at < 0 || at >= sections.length - 1) return;
+                          const next = sections.slice();
+                          const [item] = next.splice(at, 1);
+                          next.splice(at + 1, 0, item);
+                          setSite("sections", next);
+                        }}>למטה</button>
+                        <button type="button" className="text-xs font-bold" onClick={() => setSite("sections", sections.filter((item) => item !== section))}>הסרה</button>
+                      </>
+                    ) : null}
+                  </div>
                 </article>
               ))}
+              {editing ? <button type="button" className="text-sm font-black" onClick={() => {
+                const key = `s-${Date.now()}`;
+                setSite("sections", [...sections, { id: key, key, title: "מקטע חדש", body: "", imageUrl: "", buttonLabel: "", buttonHref: "", hidden: false }]);
+              }}>הוספת מקטע</button> : null}
             </div>
           )}
         </div>
@@ -286,6 +382,11 @@ export default function SaasOwnerConsole() {
                 next[index] = { ...section, body: event.target.value };
                 setSite("sections", next);
               }} />
+              <input className="mt-1 w-full rounded border px-2 py-1 text-xs" dir="ltr" value={section.imageUrl || ""} placeholder="כתובת תמונה" onChange={(event) => {
+                const next = sections.slice();
+                next[index] = { ...section, imageUrl: event.target.value };
+                setSite("sections", next);
+              }} />
               <label className="mt-1 flex items-center gap-2 text-xs">
                 <input type="checkbox" checked={Boolean(section.hidden)} onChange={(event) => {
                   const next = sections.slice();
@@ -303,7 +404,10 @@ export default function SaasOwnerConsole() {
               }}>למעלה</button>
             </div>
           ))}
-          <button type="button" className="mt-2 text-xs font-black" onClick={() => setSite("sections", [...sections, { id: `s-${Date.now()}`, title: "", body: "", hidden: false }])}>הוספת מקטע</button>
+          <button type="button" className="mt-2 text-xs font-black" onClick={() => {
+            const key = `s-${Date.now()}`;
+            setSite("sections", [...sections, { id: key, key, title: "", body: "", imageUrl: "", hidden: false }]);
+          }}>הוספת מקטע</button>
           <h3 className="mt-3 text-xs font-black">תפריט ניווט</h3>
           {nav.map((item, index) => (
             <div key={`${item.label}-${index}`} className="mt-2 grid grid-cols-2 gap-1">
@@ -360,6 +464,14 @@ export default function SaasOwnerConsole() {
             <a href={enterSystemHref(tenant)} target="_blank" rel="noreferrer" dir="ltr">
               {enterSystemHref(tenant)}
             </a>
+            {templateSlug === "cliny" && tenant.publicSlug ? (
+              <>
+                {" · "}
+                <a href={`https://cliny.bizuply.com/site/${tenant.publicSlug}`} target="_blank" rel="noreferrer" dir="ltr">
+                  {`https://cliny.bizuply.com/site/${tenant.publicSlug}`}
+                </a>
+              </>
+            ) : null}
           </p>
           {tenant.domain?.status === "pending_connection" ? (
             <div className="mt-2 rounded-lg border border-amber-300 bg-amber-50 p-2 text-xs">
