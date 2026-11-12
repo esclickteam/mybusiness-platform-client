@@ -399,7 +399,7 @@ function Crm() {
   return (
     <section className="ht-ad ht-ad-crm" id="crm" aria-labelledby="crm-title">
       <div className="ht-wrap ht-ad-crm-stage">
-        <div className="ht-ad-copy" data-reveal>
+        <div className="ht-ad-copy">
           <p className="ht-eyebrow">{text("CRM וניהול לידים", "CRM and lead management")}</p>
           <h2 id="crm-title">{text("כל ליד, כל שיחה, כל משימה — בכרטיס אחד.", "Every lead, conversation and task — on one record.")}</h2>
           <p className="ht-lead">
@@ -422,7 +422,7 @@ function Crm() {
             <Cta to="/crm" tone="light">{text("להכיר את ה־CRM", "Explore the CRM")}</Cta>
           </div>
         </div>
-        <div className="ht-ad-board" data-reveal aria-hidden="true">
+        <div className="ht-ad-board" aria-hidden="true">
           <div className="ht-ad-lanes">
             {lanes.map((lane) => (
               <section key={lane.status} className={lane.hot ? "is-hot" : undefined}>
@@ -472,7 +472,7 @@ function WhatsApp() {
   return (
     <section className="ht-ad ht-ad-wa" id="whatsapp" aria-labelledby="whatsapp-title">
       <div className="ht-wrap ht-ad-wa-stage">
-        <div className="ht-ad-handset" data-reveal aria-hidden="true">
+        <div className="ht-ad-handset" aria-hidden="true">
           <div className="ht-ad-phone">
             <header>
               <strong>WhatsApp</strong>
@@ -493,7 +493,7 @@ function WhatsApp() {
             <small>{text("מחובר לכרטיס הלקוח", "Linked to the customer record")}</small>
           </p>
         </div>
-        <div className="ht-ad-copy" data-reveal>
+        <div className="ht-ad-copy">
           <p className="ht-eyebrow">WhatsApp Business API</p>
           <h2 id="whatsapp-title">{text("השיחות עם הלקוחות, מחוברות לעסק.", "Customer conversations, connected to the business.")}</h2>
           <p className="ht-lead">
