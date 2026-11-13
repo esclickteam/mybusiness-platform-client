@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import API from "../api";
+import API from "../../api";
 
 export default function SaasStudioEntry() {
   const { templateSlug = "", publicSlug = "" } = useParams();
