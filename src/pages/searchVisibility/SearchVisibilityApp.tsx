@@ -58,6 +58,9 @@ export default function SearchVisibilityApp() {
   const [pageDetail, setPageDetail] = useState<any>(null);
   const [busy, setBusy] = useState(false);
   const [compareNote, setCompareNote] = useState("");
+  const [visibility, setVisibility] = useState<any>(null);
+  const [question, setQuestion] = useState("");
+  const [competitor, setCompetitor] = useState("");
 
   async function loadJob(id: string) {
     const response = await API.get(`/search-visibility/scans/${id}`);
@@ -229,7 +232,7 @@ export default function SearchVisibilityApp() {
             </div>
             <p className="sv-meta">{job.scores?.disclaimer || t.disclaimer}</p>
             <div className="sv-tabs">
-              {["overview", "findings", "fixes", "history"].map((id) => (
+              {["overview", "findings", "fixes", "visibility", "competitors", "history"].map((id) => (
                 <button key={id} className="sv-button secondary" type="button" aria-selected={tab === id} onClick={() => setTab(id)}>
                   {t[id as "overview"]}
                 </button>
@@ -331,6 +334,57 @@ export default function SearchVisibilityApp() {
                     <p>{pick(task, i18n.language, "instructionsHe", "instructionsEn")}</p>
                   </article>
                 ))}
+              </section>
+            ) : null}
+
+            {tab === "visibility" ? (
+              <section className="sv-panel">
+                <h2>{t.visibility}</h2>
+                <p>{visibility?.metrics?.note || (t.dir === "rtl" ? "אין מדידות. אחוז אזכור לא מחושב." : "No measurements. Mention rate is not calculated.")}</p>
+                <p>{t.dir === "rtl" ? "ספקי AI כבויים. השאלות נשמרות כטיוטה עד אישור, והמדידה לא שולחת בקשה בתשלום." : "AI providers are off. Questions stay as drafts until approved, and measurement sends no paid request."}</p>
+                <form onSubmit={async (event) => {
+                  event.preventDefault();
+                  await API.post("/search-visibility/visibility/questions", { text: question });
+                  const response = await API.get("/search-visibility/visibility");
+                  setVisibility(response.data);
+                  setQuestion("");
+                }}>
+                  <label className="sv-field">
+                    <span>{t.dir === "rtl" ? "שאלת מדידה" : "Measurement question"}</span>
+                    <input value={question} onChange={(event) => setQuestion(event.target.value)} />
+                  </label>
+                  <button className="sv-button secondary" type="submit">{t.dir === "rtl" ? "שמירת טיוטה" : "Save draft"}</button>
+                </form>
+                <button className="sv-button secondary" type="button" onClick={async () => {
+                  const response = await API.get("/search-visibility/visibility");
+                  setVisibility(response.data);
+                }}>{t.dir === "rtl" ? "רענון" : "Refresh"}</button>
+                <ul>
+                  {(visibility?.questions || []).map((item: any) => <li key={item._id}>{item.status}: {item.text}</li>)}
+                </ul>
+              </section>
+            ) : null}
+
+            {tab === "competitors" ? (
+              <section className="sv-panel">
+                <h2>{t.competitors}</h2>
+                <p>{t.dir === "rtl" ? "מתחרה נוסף רק ידנית, או מתוך מדידה אמיתית. אין רשימה משוערת." : "A competitor is added manually, or from a real measurement. There is no guessed list."}</p>
+                <form onSubmit={async (event) => {
+                  event.preventDefault();
+                  await API.post("/search-visibility/visibility/competitors", { name: competitor });
+                  const response = await API.get("/search-visibility/visibility");
+                  setVisibility(response.data);
+                  setCompetitor("");
+                }}>
+                  <label className="sv-field">
+                    <span>{t.dir === "rtl" ? "שם" : "Name"}</span>
+                    <input value={competitor} onChange={(event) => setCompetitor(event.target.value)} />
+                  </label>
+                  <button className="sv-button secondary" type="submit">{t.dir === "rtl" ? "הוספה" : "Add"}</button>
+                </form>
+                <ul>
+                  {(visibility?.competitors || []).map((item: any) => <li key={item._id}>{item.name}{item.domain ? ` — ${item.domain}` : ""}</li>)}
+                </ul>
               </section>
             ) : null}
 
