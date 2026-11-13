@@ -114,6 +114,10 @@
     document.addEventListener("click", (event) => {
       const node = event.target instanceof Element ? event.target.closest("[data-saas-node]") : null;
       if (!(node instanceof HTMLElement)) return;
+      if (node.dataset.saasOpen === "1") {
+        delete node.dataset.saasOpen;
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
       document.querySelectorAll("[data-saas-selected]").forEach((item) => item.removeAttribute("data-saas-selected"));
@@ -134,6 +138,19 @@
       if (data.type === "hello") {
         studioOrigin = event.origin;
         post({ type: "ready" });
+        return;
+      }
+      if (data.type === "open" && data.id) {
+        const node = document.querySelector(`[data-saas-node="${CSS.escape(String(data.id))}"]`);
+        if (!(node instanceof HTMLElement)) return;
+        if (node instanceof HTMLAnchorElement && node.href) {
+          const target = new URL(node.href, location.href);
+          target.searchParams.set("saasDesign", "1");
+          location.assign(target.pathname + target.search);
+          return;
+        }
+        node.dataset.saasOpen = "1";
+        node.click();
         return;
       }
       if (data.type !== "apply" || data.screen !== screen || event.origin !== studioOrigin) return;

@@ -147,6 +147,16 @@ export default function SaasLiveCanvas({
                 />
               </label>
             ))}
+            <button
+              type="button"
+              className="rounded bg-violet-700 px-3 py-2 text-xs font-bold text-white"
+              onClick={() => {
+                const frame = document.getElementById("saas-live-frame") as HTMLIFrameElement | null;
+                frame?.contentWindow?.postMessage({ source: "saas-studio", type: "open", id: selected.id }, "*");
+              }}
+            >
+              פתיחת טאב, טופס או חלונית
+            </button>
             {!selected.locked && (
               <button
                 type="button"
@@ -155,6 +165,19 @@ export default function SaasLiveCanvas({
               >
                 {visual.hidden[selected.id] ? "הצג רכיב" : "הסתר רכיב"}
               </button>
+            )}
+            {!selected.locked && (
+              <label className="block text-xs font-bold text-slate-600">
+                סדר בתוך שורה או רשת
+                <input
+                  className="mt-1 w-full rounded border px-2 py-1 text-sm"
+                  type="number"
+                  min={-20}
+                  max={20}
+                  value={visual.order[selected.id] || 0}
+                  onChange={(event) => send({ ...visual, order: { ...visual.order, [selected.id]: Number(event.target.value) || 0 } })}
+                />
+              </label>
             )}
             {selected.locked && <p className="text-xs leading-5 text-slate-500">הרכיב מוגן: אפשר לשנות את העיצוב, בלי להסתיר או להזיז אותו.</p>}
           </div>
