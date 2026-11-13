@@ -22,6 +22,7 @@ import {
 import { canShowMeasurementActions } from "./runActionVisibility";
 import { findingKindHe } from "./improvementWork";
 import ImprovementWorkList from "./ImprovementWorkList";
+import GeminiQuotaStatus from "./GeminiQuotaStatus";
 import SeoChangeTrackingPanel, {
   type SeoChangeTracking,
 } from "./SeoChangeTrackingPanel";
@@ -1664,6 +1665,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
               <div className="geo-card">
                 <h3>{copy.costsTitle}</h3>
                 <p className="geo-note">{copy.costsHint}</p>
+                <GeminiQuotaStatus error={status?.gemini?.budget?.lastProviderError} />
                 <div className="geo-intel-banner muted">{copy.aioDisclaimer}</div>
                 <div className="geo-intel-banner">{copy.perplexityReadyHint}</div>
                 <div className="geo-intel-banner muted">

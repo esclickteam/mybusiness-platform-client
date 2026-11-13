@@ -918,6 +918,11 @@
     -webkit-overflow-scrolling: touch;
   }
 
+  .geo-quota-details {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
   .geo-drawer {
     width: 100%;
   }
@@ -928,6 +933,21 @@
   opacity: 0.75;
   margin-top: 0.15rem;
 }
+.geo-quota-details {
+  display: grid;
+  grid-template-columns: minmax(140px, 220px) 1fr;
+  gap: 8px 16px;
+  margin: 12px 0 0;
+}
+.geo-quota-details dt {
+  color: var(--geo-muted);
+  font-weight: 700;
+}
+.geo-quota-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
 .geo-note {
   font-size: 0.9rem;
   opacity: 0.85;
