@@ -7,7 +7,7 @@ import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import { CrmMoment, WhatsAppMoment } from "./ProductMoments";
+import { AdviceMoment, CrmMoment, DayMoment, FlowMoment, MetaMoment, ScoreMoment, WhatsAppMoment } from "./ProductMoments";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -264,6 +264,7 @@ export default function HomeExperienceSections() {
         <Automations />
         <Campaigns />
         <AiTools />
+        <Meetings />
         <Websites />
         <Benefits />
         <Pricing />
@@ -462,7 +463,7 @@ function Automations() {
       ]}
       note={text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}
       link={["/automations", text("להכיר את האוטומציות", "Explore automations")]}
-      shot={<Shot name="automation" alt={text("עורך האוטומציות עם תוצאות הרצת בדיקה", "The automation editor with test-run results")} caption={text("הרצת בדיקה אמיתית בעורך האוטומציות", "A real test run in the automation editor")} />}
+      shot={<FlowMoment />}
     />
   );
 }
@@ -486,14 +487,13 @@ function Campaigns() {
       ]}
       note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
       link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
-      shot={<Shot name="campaigns" alt={text("סקירת קמפיינים של Meta בתוך BizUply", "Meta campaign overview in BizUply")} />}
+      shot={<MetaMoment />}
     />
   );
 }
 
 function AiTools() {
-  const { text, language } = useCopy();
-  const lang = language.startsWith("he") ? "he" : "en";
+  const { text } = useCopy();
   const tools = [
     {
       title: text("היועץ העסקי", "Business Advisor"),
@@ -503,9 +503,7 @@ function AiTools() {
       ),
       to: "/register",
       cta: text("לנסות בחשבון חינמי", "Try it on a free account"),
-      image: `${MEDIA}/screens/${lang}-desktop-ai.webp`,
-      mobile: `${MEDIA}/screens/${lang}-mobile-ai.webp`,
-      alt: text("היועץ העסקי בתוך BizUply", "The Business Advisor in BizUply"),
+      shot: <AdviceMoment />,
     },
     {
       title: text("אוטומציות AI", "AI automations"),
@@ -515,9 +513,7 @@ function AiTools() {
       ),
       to: "/automations",
       cta: text("להכיר את האוטומציות", "Explore automations"),
-      image: `${MEDIA}/screens/${lang}-desktop-ai-auto.webp`,
-      mobile: `${MEDIA}/screens/${lang}-mobile-ai-auto.webp`,
-      alt: text("תבניות אוטומציות AI בתוך BizUply", "AI automation templates in BizUply"),
+      shot: <ScoreMoment />,
     },
   ];
   return (
@@ -536,12 +532,7 @@ function AiTools() {
         <div className="ht-ai-grid">
           {tools.map((tool) => (
             <article className="ht-card ht-ai-card" key={tool.title} data-reveal>
-              <figure className="ht-shot ht-shot-flat">
-                <picture>
-                  <source media="(max-width: 760px)" srcSet={tool.mobile} width={900} height={1948} />
-                  <img src={tool.image} alt={tool.alt} width={2400} height={1500} loading="lazy" decoding="async" />
-                </picture>
-              </figure>
+              {tool.shot}
               <div className="ht-card-body">
                 <h3>{tool.title}</h3>
                 <p>{tool.body}</p>
@@ -573,6 +564,28 @@ const SITE_SHOWCASE = [
   { key: "advisora", name: "Advisora", he: "שירותים", en: "Services" },
   { key: "florique", name: "Florique", he: "דף נחיתה", en: "Landing page" },
 ] as const;
+
+function Meetings() {
+  const { text } = useCopy();
+  return (
+    <Feature
+      id="meetings"
+      eyebrow={text("יומן פגישות", "Meeting calendar")}
+      title={text("שיחת ההיכרות כבר ביומן.", "The intro call is already on the calendar.")}
+      lead={text(
+        "פגישה עם תאריך ושעה נשמרת על כרטיס הלקוח, ונראית ביומן של אותו היום.",
+        "A meeting with a date and time stays on the customer record and shows on that day's calendar.",
+      )}
+      points={[
+        text("פגישה עם תאריך ושעה", "A meeting with a date and time"),
+        text("מחוברת לכרטיס הלקוח", "Linked to the customer record"),
+        text("נראית ביומן של אותו היום", "Shown on that day's calendar"),
+      ]}
+      link={["/appointments", text("להכיר את היומן", "Explore the calendar")]}
+      shot={<DayMoment />}
+    />
+  );
+}
 
 function Websites() {
   const { text, language, dir } = useCopy();
