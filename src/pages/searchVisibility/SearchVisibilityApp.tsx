@@ -286,6 +286,7 @@ export default function SearchVisibilityApp() {
                     <option value="warning">warning</option>
                     <option value="pass">pass</option>
                     <option value="not_checked">not_checked</option>
+                    <option value="render_required">render_required</option>
                   </select>
                 </div>
                 <table className="sv-table">
@@ -301,7 +302,7 @@ export default function SearchVisibilityApp() {
                         <td>{row.category}</td>
                         <td><span className={`sv-pill ${row.severity}`}>{row.severity}</span></td>
                         <td>{(row.affectedUrls || []).length}</td>
-                        <td>{row.status === "not_checked" ? t.unavailable : row.status}</td>
+                        <td>{row.status === "not_checked" ? t.unavailable : row.status === "render_required" ? t.renderRequired : row.status}</td>
                       </tr>
                     ))}
                   </tbody>
