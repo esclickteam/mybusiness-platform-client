@@ -7,7 +7,7 @@ import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import { AdviceMoment, CrmMoment, DayMoment, FlowMoment, MetaMoment, ScoreMoment, WhatsAppMoment } from "./ProductMoments";
+import { AiMoment, CrmMoment, DayMoment, FlowMoment, MetaMoment, WhatsAppMoment } from "./ProductMoments";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -503,7 +503,6 @@ function AiTools() {
       ),
       to: "/register",
       cta: text("לנסות בחשבון חינמי", "Try it on a free account"),
-      shot: <AdviceMoment />,
     },
     {
       title: text("אוטומציות AI", "AI automations"),
@@ -513,7 +512,6 @@ function AiTools() {
       ),
       to: "/automations",
       cta: text("להכיר את האוטומציות", "Explore automations"),
-      shot: <ScoreMoment />,
     },
   ];
   return (
@@ -529,10 +527,10 @@ function AiTools() {
             )}
           </p>
         </div>
+        <AiMoment />
         <div className="ht-ai-grid">
           {tools.map((tool) => (
             <article className="ht-card ht-ai-card" key={tool.title} data-reveal>
-              {tool.shot}
               <div className="ht-card-body">
                 <h3>{tool.title}</h3>
                 <p>{tool.body}</p>

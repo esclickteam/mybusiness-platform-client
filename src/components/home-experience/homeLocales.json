@@ -410,7 +410,16 @@
     "A meeting with a date and time": "Una reunión con fecha y hora",
     "Linked to the customer record": "Vinculada a la ficha del cliente",
     "Shown on that day's calendar": "Visible en el calendario de ese día",
-    "Explore the calendar": "Conocer el calendario"
+    "Explore the calendar": "Conocer el calendario",
+    "Insight": "Lectura",
+    "Confirm with Noa": "Confirmen con Noa",
+    "Sun": "Dom",
+    "Mon": "Lun",
+    "Tue": "Mar",
+    "Wed": "Mié",
+    "Thu": "Jue",
+    "Demo: a summary of Noa Barak, an insight to confirm 10:30, and a recommendation only. The advisor takes no action. Not real customer data.": "Demostración: un resumen de Noa Barak, una lectura para confirmar las 10:30 y solo una recomendación. El asesor no realiza acciones. No son datos reales de un cliente.",
+    "Demo: a work week, with Thursday marked and Noa Barak's intro call at 10:30. Not real customer data.": "Demostración: una semana laboral, con el jueves marcado y la llamada de presentación de Noa Barak a las 10:30. No son datos reales de un cliente."
   },
   "pt": {
     "Skip to content": "Pular para o conteúdo",
@@ -823,7 +832,16 @@
     "A meeting with a date and time": "Uma reunião com data e hora",
     "Linked to the customer record": "Vinculada à ficha do cliente",
     "Shown on that day's calendar": "Visível no calendário daquele dia",
-    "Explore the calendar": "Conhecer o calendário"
+    "Explore the calendar": "Conhecer o calendário",
+    "Insight": "Leitura",
+    "Confirm with Noa": "Confirmem com a Noa",
+    "Sun": "Dom",
+    "Mon": "Seg",
+    "Tue": "Ter",
+    "Wed": "Qua",
+    "Thu": "Qui",
+    "Demo: a summary of Noa Barak, an insight to confirm 10:30, and a recommendation only. The advisor takes no action. Not real customer data.": "Demonstração: um resumo de Noa Barak, uma leitura para confirmar 10:30 e apenas uma recomendação. O consultor não executa ações. Não são dados reais de um cliente.",
+    "Demo: a work week, with Thursday marked and Noa Barak's intro call at 10:30. Not real customer data.": "Demonstração: uma semana de trabalho, com a quinta marcada e a ligação de apresentação de Noa Barak às 10:30. Não são dados reais de um cliente."
   },
   "ar": {
     "Skip to content": "تخطي إلى المحتوى",
@@ -1236,6 +1254,15 @@
     "A meeting with a date and time": "اجتماع بتاريخ ووقت",
     "Linked to the customer record": "مرتبط ببطاقة العميل",
     "Shown on that day's calendar": "يظهر في تقويم ذلك اليوم",
-    "Explore the calendar": "تعرّفوا على التقويم"
+    "Explore the calendar": "تعرّفوا على التقويم",
+    "Insight": "الخلاصة",
+    "Confirm with Noa": "أكّدوا مع نوعا",
+    "Sun": "أحد",
+    "Mon": "إثن",
+    "Tue": "ثلا",
+    "Wed": "أرب",
+    "Thu": "خمي",
+    "Demo: a summary of Noa Barak, an insight to confirm 10:30, and a recommendation only. The advisor takes no action. Not real customer data.": "عرض تجريبي: ملخص لنوعا باراك، وخلاصة لتأكيد 10:30، وتوصية فقط. المستشار لا ينفّذ إجراءً. ليست بيانات عميل حقيقية.",
+    "Demo: a work week, with Thursday marked and Noa Barak's intro call at 10:30. Not real customer data.": "عرض تجريبي: أسبوع عمل، والخميس مميز، ومكالمة التعارف مع نوعا باراك الساعة 10:30. ليست بيانات عميل حقيقية."
   }
 }

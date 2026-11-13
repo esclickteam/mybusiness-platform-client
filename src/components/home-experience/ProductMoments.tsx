@@ -153,6 +153,7 @@ export function MetaMoment() {
         <h3>{text("צילום לחמישי הקרוב", "A shoot this Thursday")}</h3>
         <small>{text("מודעת לידים · פייסבוק ואינסטגרם", "Lead ad · Facebook and Instagram")}</small>
       </div>
+      <div className="pm-meta__pass" aria-hidden="true"><i /></div>
       <div className="pm-meta__who">
         <div>
           <strong>{text("נועה ברק", "Noa Barak")}</strong>
@@ -161,8 +162,8 @@ export function MetaMoment() {
         <em>{text("בטיפול", "In progress")}</em>
       </div>
       <footer className="pm-meta__stats">
-        {stats.map(([label, value]) => (
-          <div key={label}><span>{label}</span><b>{value}</b></div>
+        {stats.map(([label, value], index) => (
+          <div key={label} className={index === 1 ? "is-lead" : undefined}><span>{label}</span><b>{value}</b></div>
         ))}
       </footer>
     </figure>
@@ -172,10 +173,10 @@ export function MetaMoment() {
 export function FlowMoment() {
   const text = useLabels();
   const steps = [
-    [text("טריגר", "Trigger"), text("תשובת WhatsApp נשמרה בכרטיס", "WhatsApp reply saved on the record"), false],
-    [text("פעולה", "Action"), text("נוצרה משימת המשך", "Follow-up task created"), true],
-    [text("על הכרטיס", "On the record"), text("חמישי · שיחת היכרות", "Thursday · intro call") + " · 10:30", false],
-  ] as const;
+    { kind: text("טריגר", "Trigger"), label: text("תשובת WhatsApp נשמרה בכרטיס", "WhatsApp reply saved on the record"), tone: "" },
+    { kind: text("פעולה", "Action"), label: text("נוצרה משימת המשך", "Follow-up task created"), tone: "is-on" },
+    { kind: text("על הכרטיס", "On the record"), label: text("חמישי · שיחת היכרות", "Thursday · intro call"), tone: "is-result", time: "10:30" },
+  ];
   return (
     <figure className="pm-flow" data-reveal aria-label={text(
       "הדגמה: הרצת אוטומציה אחת לנועה ברק. הרצת בדיקה לא שולחת הודעה ולא משנה נתונים.",
@@ -185,11 +186,14 @@ export function FlowMoment() {
         <span>{text("ההרצה הזו", "This run")}</span>
         <span>{text(DEMO_HE, DEMO_EN)}</span>
       </header>
-      <ol className="pm-flow__steps">
-        {steps.map(([kind, label, on]) => (
-          <li key={kind} className={on ? "is-on" : undefined}>
-            <small>{kind}</small>
-            <strong>{label}</strong>
+      <ol className="pm-flow__rail">
+        <i className="pm-flow__track" aria-hidden="true"><b /></i>
+        {steps.map((step) => (
+          <li key={step.kind} className={step.tone || undefined}>
+            <span className="pm-flow__node" />
+            <small>{step.kind}</small>
+            {step.time ? <b>{step.time}</b> : null}
+            <strong>{step.label}</strong>
           </li>
         ))}
       </ol>
@@ -198,73 +202,80 @@ export function FlowMoment() {
   );
 }
 
-export function AdviceMoment() {
+export function AiMoment() {
   const text = useLabels();
   return (
-    <figure className="pm-advice" aria-label={text(
-      "הדגמה: המלצה של היועץ העסקי לפני השיחה עם נועה ברק. הוא מייעץ ולא מבצע פעולה. לא נתוני לקוח אמיתיים.",
-      "Demo: a Business Advisor recommendation before the call with Noa Barak. It advises and takes no action. Not real customer data.",
+    <figure className="pm-ai" data-reveal aria-label={text(
+      "הדגמה: סיכום של נועה ברק, תובנה לאשר את 10:30, והמלצה בלבד. היועץ לא מבצע פעולה. לא נתוני לקוח אמיתיים.",
+      "Demo: a summary of Noa Barak, an insight to confirm 10:30, and a recommendation only. The advisor takes no action. Not real customer data.",
     )}>
-      <p className="pm-advice__kicker">{text(DEMO_HE, DEMO_EN)}</p>
-      <p className="pm-advice__kicker">{text("המלצה", "Recommendation")}</p>
-      <h3>{text("לפני השיחה בחמישי, לאשר עם נועה את 10:30.", "Before Thursday's call, confirm 10:30 with Noa.")}</h3>
-      <p className="pm-advice__body">{text(
-        "היא שאלה על צילום. התשובה כבר שמורה בכרטיס.",
-        "She asked about a shoot. The reply is already on her record.",
-      )}</p>
-      <p className="pm-advice__limit">{text("מייעץ בלבד · לא מבצע פעולה", "Advises only · takes no action")}</p>
-    </figure>
-  );
-}
-
-export function ScoreMoment() {
-  const text = useLabels();
-  const lines = [
-    text("מודעת לידים ב־Meta", "Meta lead ad"),
-    text("שאלה על צילום לחמישי הקרוב.", "Asked about a shoot this Thursday."),
-    text("חמישי · שיחת היכרות", "Thursday · intro call") + " · 10:30",
-  ];
-  return (
-    <figure className="pm-score" aria-label={text(
-      "הדגמה: סיכום לפני השיחה עם נועה ברק, וסיווג כליד חם. לא נתוני לקוח אמיתיים.",
-      "Demo: a summary before the call with Noa Barak, classified as a hot lead. Not real customer data.",
-    )}>
-      <header className="pm-score__bar">
-        <span>{text("סיכום לפני השיחה", "Summary before the call")}</span>
+      <div className="pm-ai__summary">
         <span>{text(DEMO_HE, DEMO_EN)}</span>
-      </header>
-      <div className="pm-score__main">
-        <h3>{text("נועה ברק", "Noa Barak")}</h3>
-        <em className="pm-score__mark">{text("ליד חם", "Hot lead")}</em>
+        <strong>{text("נועה ברק", "Noa Barak")}</strong>
+        <em>{text("ליד חם", "Hot lead")}</em>
+        <small>Meta</small>
       </div>
-      <ul>
-        {lines.map((line) => <li key={line}>{line}</li>)}
-      </ul>
+      <div className="pm-ai__insight">
+        <span>{text("תובנה", "Insight")}</span>
+        <b>10:30</b>
+        <p>{text("לאשר עם נועה", "Confirm with Noa")}</p>
+      </div>
+      <p className="pm-ai__limit">{text("מייעץ בלבד · לא מבצע פעולה", "Advises only · takes no action")}</p>
     </figure>
   );
 }
 
 export function DayMoment() {
   const text = useLabels();
+  const days = [
+    [text("א׳", "Sun"), false],
+    [text("ב׳", "Mon"), false],
+    [text("ג׳", "Tue"), false],
+    [text("ד׳", "Wed"), false],
+    [text("ה׳", "Thu"), true],
+  ] as const;
+  const hours = ["10:00", "10:30", "11:00"];
+  const event = () => (
+    <i className="pm-week__event">
+      <b>{text("נועה ברק", "Noa Barak")}</b>
+      <small>{text("שיחת היכרות", "Intro call")}</small>
+    </i>
+  );
   return (
     <figure className="pm-day" data-reveal aria-label={text(
-      "הדגמה: יום חמישי ביומן, ובו שיחת היכרות עם נועה ברק ב־10:30. לא נתוני לקוח אמיתיים.",
-      "Demo: Thursday on the calendar, with Noa Barak's intro call at 10:30. Not real customer data.",
+      "הדגמה: שבוע עבודה, ובו יום חמישי מסומן ושיחת היכרות עם נועה ברק ב־10:30. לא נתוני לקוח אמיתיים.",
+      "Demo: a work week, with Thursday marked and Noa Barak's intro call at 10:30. Not real customer data.",
     )}>
       <header className="pm-day__bar">
-        <span>{text("חמישי", "Thursday")}</span>
+        <span>{text("חמישי", "Thursday")} · 10:30</span>
         <span>{text(DEMO_HE, DEMO_EN)}</span>
       </header>
-      <div className="pm-day__grid">
-        <span>10:00</span>
-        <span />
-        <span className="is-now">10:30</span>
-        <div className="pm-day__event">
-          <strong>{text("שיחת היכרות", "Intro call")}</strong>
-          <small>{text("נועה ברק", "Noa Barak")} · {text("סטודיו נורה", "Nora Studio")}</small>
+      <div className="pm-week__board">
+        <div className="pm-week__row is-head">
+          <span />
+          {days.map(([label, on]) => <span key={label} className={on ? "is-day" : undefined}>{label}</span>)}
         </div>
-        <span>11:00</span>
-        <span />
+        {hours.map((hour) => (
+          <div className="pm-week__row" key={hour}>
+            <span className={hour === "10:30" ? "is-now" : undefined}>{hour}</span>
+            {days.map(([label, on]) => (
+              <span key={label} className={on ? "is-day" : undefined}>{on && hour === "10:30" ? event() : null}</span>
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="pm-week__phone">
+        <div className="pm-week__days">
+          {days.map(([label, on]) => <span key={label} className={on ? "is-on" : undefined}>{label}</span>)}
+        </div>
+        <div className="pm-week__agenda">
+          <span>10:00</span>
+          <span />
+          <span className="is-now">10:30</span>
+          {event()}
+          <span>11:00</span>
+          <span />
+        </div>
       </div>
       <p className="pm-day__foot">{text("פתוחה על הכרטיס שלה", "Open on her record")}</p>
     </figure>
