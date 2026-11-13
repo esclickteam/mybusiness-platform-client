@@ -38,6 +38,7 @@ import PartnerHostHome from "./pages/public/PartnerHostHome";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
+const SaasStudioEntry = lazy(() => import("./pages/saas/SaasStudioEntry"));
 const BusinessChatPage = lazy(() => import("./components/BusinessChatPage"));
 const PublicVisualSiteRenderer = lazyWithPreload(() =>
   import("./components/site-builder/public/PublicVisualSiteRenderer")
@@ -1469,6 +1470,14 @@ export default function App() {
                         <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
                         <Route path="/login" element={<Login />} />
+                        <Route
+                          path="/saas-studio/:templateSlug/:publicSlug"
+                          element={
+                            <ProtectedRoute roles={["business", "admin"]}>
+                              <SaasStudioEntry />
+                            </ProtectedRoute>
+                          }
+                        />
                         <Route path={WHATSAPP_API_LOGIN_PATH} element={<WhatsAppApiLoginPage />} />
                         {import.meta.env.DEV && AiAutomationTemplatesVisualPage ? (
                           <Route
