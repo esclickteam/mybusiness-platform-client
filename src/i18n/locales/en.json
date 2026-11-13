@@ -3507,6 +3507,10 @@
         "name": "Agents",
         "text": "Human agents who handle leads and book the next step inside the CRM."
       },
+      "security": {
+        "name": "Website Security Scanner",
+        "text": "A defensive scan, a findings report and fix recommendations. The scan does not prove the site is fully secure."
+      },
       "saas": {
         "name": "Ready-Made SaaS",
         "text": "Industry systems for a workflow that wants its own software."

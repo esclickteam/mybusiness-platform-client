@@ -12,6 +12,7 @@ import { collaborationsPrerender, collaborationsSchemas } from "./collaborations
 import { getCollaborationsCopy } from "../pages/product/collaborations/runtime.js";
 import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { WEBSITE_SCAN } from "./websiteScanStory.mjs";
+import { SECURITY_SCANNER } from "./securityScannerStory.mjs";
 import { HOME_FAQ, HOME_FAQ_TITLE } from "./homeFaq.mjs";
 import { HOME_SHELL } from "./homeShell.mjs";
 import { STORY } from "./homepageStory.mjs";
@@ -74,6 +75,15 @@ export const MARKETING_PAGES = [
     description: WEBSITE_SCAN.en.description,
     crumb: WEBSITE_SCAN.en.crumb,
     lastmod: "2026-11-09",
+    changefreq: "monthly",
+    priority: "0.8",
+  },
+  {
+    path: "/security-scanner",
+    title: SECURITY_SCANNER.en.title,
+    description: SECURITY_SCANNER.en.description,
+    crumb: SECURITY_SCANNER.en.crumb,
+    lastmod: "2026-11-13",
     changefreq: "monthly",
     priority: "0.8",
   },
@@ -613,6 +623,7 @@ const ABOUT_FAQ = {
 
 function faqItems(path, language) {
   if (path === "/website-scan") return WEBSITE_SCAN[language]?.faq || WEBSITE_SCAN.en.faq;
+  if (path === "/security-scanner") return SECURITY_SCANNER[language]?.faq || SECURITY_SCANNER.en.faq;
   if (path === "/partners") return partnerFaqPairs(language);
   if (path === "/crm") return crmFaqPairs(language);
   if (path === "/about" && ABOUT_FAQ[language]) return ABOUT_FAQ[language];
@@ -868,6 +879,14 @@ export function buildMarketingDocumentHead(pathname) {
       path === "/" ? `<script type="application/ld+json">${jsonLd(softwareSchema(page.description, canonical))}</script>` : "",
       path === "/website-scan" ? `<script type="application/ld+json">${jsonLd(scanServiceSchema(locale, canonical))}</script>` : "",
       path === "/website-scan" ? `<script type="application/ld+json">${jsonLd(scanVideoSchema(locale))}</script>` : "",
+      path === "/security-scanner" ? `<script type="application/ld+json">${jsonLd({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        name: locale === "he" ? SECURITY_SCANNER.he.h1 : SECURITY_SCANNER.en.h1,
+        description: locale === "he" ? SECURITY_SCANNER.he.description : SECURITY_SCANNER.en.description,
+        url: canonical,
+        provider: { "@type": "Organization", name: "Bizuply", url: "https://bizuply.com" },
+      })}</script>` : "",
       faqSchemaTag(path, locale),
     ].filter(Boolean).join("\n");
   }
@@ -1220,6 +1239,7 @@ export function buildMarketingPrerender(pathname) {
     return renderLocalized(localized, locale, path);
   }
   if (path === "/website-scan") return renderLocalized(WEBSITE_SCAN.en, "en", path);
+  if (path === "/security-scanner") return renderLocalized(SECURITY_SCANNER.en, "en", path);
   const englishStory = getCoreProductStory(path, "en");
   if (englishStory?.h1) return renderLocalized(englishStory, "en", path);
   const found = findMarketingPage(path);

@@ -70,6 +70,11 @@
           }
 
           var parts = String(location.pathname || "/").split("/");
+          if (parts[1] === "en") {
+            document.documentElement.lang = "en";
+            document.documentElement.dir = "ltr";
+            return;
+          }
           var pathLocale = normalize(parts[1] || "");
           var current = pathLocale && pathLocale !== "en" ? pathLocale : "en";
           var bare = current === "en" ? (location.pathname || "/") : "/" + parts.slice(2).join("/");

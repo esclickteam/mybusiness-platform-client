@@ -4,6 +4,7 @@
  */
 import { getCoreProductStory } from "./coreProductStories.mjs";
 import { WEBSITE_SCAN } from "./websiteScanStory.mjs";
+import { SECURITY_SCANNER } from "./securityScannerStory.mjs";
 
 export const HEBREW_MARKETING_PAGES = {
   "/": {
@@ -180,6 +181,7 @@ export const HEBREW_MARKETING_PAGES = {
     ],
   },
   "/website-scan": WEBSITE_SCAN.he,
+  "/security-scanner": SECURITY_SCANNER.he,
   "/partners": {
     title: "תוכנית השותפים של Bizuply | בנו את העסק שלכם עם Bizuply",
     description:

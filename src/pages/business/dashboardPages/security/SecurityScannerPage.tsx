@@ -8,7 +8,7 @@ type Site = { id: string; domain: string; ownership: { status: string; token: st
 type Scan = { id: string; siteId: string; domain: string; status: string; mode: string; planId: string; progress: Progress; error?: string; report?: { score: { value: number; methodology: string[]; disclaimer: string }; findings: Finding[]; businessSummary: string; disclaimer: string; usage: { requests: number; durationMs: number; estimatedComputeNis: number; externalAiNis: number }; limitations: string[]; comparison?: { added: Finding[]; resolved: Finding[]; remaining: Finding[] } | null } };
 type Plan = { id: string; name: string; priceIls: number; unit: string; sellable: boolean };
 type Alert = { id: string; title: string; body: string; severity: string };
-type Usage = { requests: number; durationMs: number; estimatedComputeNis: number; externalAiNis: number; billingActivated: boolean; entitlement?: { status: string; credits?: Record<string, number>; introUsed?: number } };
+type Usage = { requests: number; durationMs: number; estimatedComputeNis: number; externalAiNis: number; billingActivated: boolean; entitlement?: { status: string; credits?: Record<string, number>; introUsed?: number }; orders?: { id: string; packageId: string; amountIls: number; status: string; billingActivated: boolean }[] };
 
 const PHASES: Record<string, string> = {
   queued: "ממתינה בתור",
@@ -364,6 +364,13 @@ export default function SecurityScannerPage() {
             <h2>שימוש</h2>
             <p>סטטוס יתרה: {usage?.entitlement?.status}</p>
             <p className="security-scanner__muted">חיוב פעיל: {usage?.billingActivated ? "כן" : "לא"}</p>
+          </article>
+          <article className="security-scanner__card">
+            <h2>היסטוריית הזמנות</h2>
+            {(usage?.orders || []).length === 0 ? <p>אין הזמנות שמורות.</p> : null}
+            {(usage?.orders || []).map((order) => (
+              <p key={order.id}>{order.packageId} · {order.amountIls} ש״ח · {order.status} · חיוב {order.billingActivated ? "פעיל" : "כבוי"}</p>
+            ))}
           </article>
         </div>
       ) : null}

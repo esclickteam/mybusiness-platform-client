@@ -22,6 +22,7 @@ import Footer from "./components/Footer";
 const ComplianceScannerPage = lazy(() => import("./pages/public/ComplianceScannerPage"));
 const ComplianceDemoPage = lazy(() => import("./pages/public/ComplianceDemoPage"));
 const WebsiteScanPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.WebsiteScanPage })));
+const SecurityScannerMarketing = lazy(() => import("./pages/public/SecurityScannerMarketing"));
 const ComplianceAccountPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.ComplianceAccountPage })));
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
@@ -1371,6 +1372,8 @@ export default function App() {
                         <Route path="/compliance/account" element={<ComplianceAccountPage />} />
                         <Route path="/compliance/demo" element={<ComplianceDemoPage />} />
                         <Route path="/website-scan" element={<WebsiteScanPage />} />
+                        <Route path="/security-scanner" element={<SecurityScannerMarketing />} />
+                        <Route path="/en/security-scanner" element={<SecurityScannerMarketing />} />
                         <Route path="/compliance/review" element={<ComplianceScannerPage />} />
                         <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
                         <Route path="/compliance" element={<ComplianceScannerPage />} />
