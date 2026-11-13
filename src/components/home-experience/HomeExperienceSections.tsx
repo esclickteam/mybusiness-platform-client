@@ -747,12 +747,12 @@ function Websites() {
 
 function BenefitIcon({ kind }: { kind: "system" | "phone" | "official" | "test" | "start" }) {
   const pen = {
-    width: 28,
-    height: 28,
+    width: 40,
+    height: 40,
     viewBox: "0 0 32 32",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.6,
+    strokeWidth: 1.75,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
     "aria-hidden": true as const,
@@ -813,7 +813,7 @@ function Benefits() {
       <div className="ht-wrap">
         <div className="ht-head" data-reveal>
           <p className="ht-eyebrow">{text("יתרונות מרכזיים", "Key benefits")}</p>
-          <h2 id="ht-benefits-title">{text("נבנה לעסקים שרוצים סדר — ולא עוד מערכת.", "Built for businesses that want order, not another tool.")}</h2>
+          <h2 id="ht-benefits-title">{text("כל מה שהעסק צריך. במקום אחד.", "Everything the business needs. In one place.")}</h2>
         </div>
         <ul className="ht-benefit-grid">
           {items.map(([kind, title, body]) => (
