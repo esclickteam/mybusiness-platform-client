@@ -30,6 +30,7 @@ import type { ReadyWebsiteTemplateSeed } from "./data/readyWebsiteTypes";
 import StudioTopbar from "./StudioTopbar";
 import "../../../pages/interiorDesign.css";
 import StudioSidebar from "./StudioSidebar";
+import { SaasVisualRestore } from "./SaasVisualRestore";
 import StudioCanvas from "./StudioCanvas";
 import SaasLiveCanvas from "./SaasLiveCanvas";
 import BizuplyLoader from "../../ui/BizuplyLoader";
@@ -9461,6 +9462,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   </div>
 
                   <div className="min-h-0 flex-1 overflow-hidden">
+                    <SaasVisualRestore siteId={siteId} businessId={businessId} />
                     <StudioSidebar
                       activePanel={activePanel}
                       setActivePanel={setActivePanel}
