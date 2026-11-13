@@ -22,6 +22,7 @@ import {
 import { canShowMeasurementActions } from "./runActionVisibility";
 import { findingKindHe } from "./improvementWork";
 import ImprovementWorkList from "./ImprovementWorkList";
+import ActiveRoundCard, { type ActiveRound } from "./ActiveRoundCard";
 import SeoChangeTrackingPanel, {
   type SeoChangeTracking,
 } from "./SeoChangeTrackingPanel";
@@ -161,6 +162,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
 
   const [overview, setOverview] = useState<any>(null);
   const [visibility, setVisibility] = useState<any>(null);
+  const [activeRound, setActiveRound] = useState<ActiveRound | null>(null);
   const [promptIntel, setPromptIntel] = useState<any>(null);
   const [competitors, setCompetitors] = useState<any>(null);
   const [citations, setCitations] = useState<any>(null);
@@ -239,6 +241,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
       const [
         dash,
         vis,
+        round,
         pi,
         comp,
         cit,
@@ -262,6 +265,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
       ] = await Promise.all([
         geoGet("/dashboard", filterParams),
         geoGet("/visibility", filterParams),
+        geoGet("/active-round", { brandId }).catch(() => null),
         geoGet("/prompt-intel", filterParams),
         geoGet("/competitor-intel", filterParams),
         geoGet("/citations", filterParams),
@@ -285,6 +289,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
       ]);
       setOverview(dash);
       setVisibility(vis);
+      setActiveRound(round);
       setPromptIntel(pi);
       setCompetitors(comp);
       setCitations(cit);
@@ -931,6 +936,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
 
           {tab === "visibility" ? (
             <section>
+              <ActiveRoundCard round={activeRound} onOpen={openCheck} />
               {visibility?.awaitingData ? (
                 <AwaitBox message={visibility.messageHe} />
               ) : (
