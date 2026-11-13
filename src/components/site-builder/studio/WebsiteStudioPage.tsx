@@ -31,6 +31,7 @@ import StudioTopbar from "./StudioTopbar";
 import "../../../pages/interiorDesign.css";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
+import SaasLiveCanvas from "./SaasLiveCanvas";
 import BizuplyLoader from "../../ui/BizuplyLoader";
 import { bizAlert, bizConfirm, bizPrompt } from "../../ui/bizDialog";
 import TemplateVisualEditor from "./TemplateVisualEditor";
@@ -497,6 +498,9 @@ function snapshotPages(
 ): StudioSitePageWithPortal[] {
   return pages.map((page) => {
     if (page.id !== activePageId) return page;
+    if ((page as { editMode?: string }).editMode === "saas-live") {
+      return { ...page, updatedAt: new Date().toISOString() };
+    }
 
     return {
       ...page,
@@ -5725,7 +5729,7 @@ export default function WebsiteStudioPage({
           serverPages.find((page) => page.id === nextActivePageId) ||
           serverPages[0];
 
-        if (pageToLoad && editorRef.current) {
+        if (pageToLoad && editorRef.current && (pageToLoad as { editMode?: string }).editMode !== "saas-live") {
           loadPageIntoEditor(editorRef.current, pageToLoad);
           syncSections(editorRef.current);
         }
@@ -6378,7 +6382,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       setActivePanel("pages");
 
       window.setTimeout(() => {
-        if (!pageToLoad) return;
+        if (!pageToLoad || (pageToLoad as { editMode?: string }).editMode === "saas-live") return;
         loadPageIntoEditor(editor, pageToLoad);
         syncSections(editor);
       }, 0);
@@ -9503,11 +9507,30 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           )}
 
 
-          <StudioCanvas
-            editorRefContainer={editorContainerRef}
-            publicUrl={publicUrl}
-            layersRef={layersRef}
-          />
+          <div className={(activePage as { editMode?: string } | undefined)?.editMode === "saas-live" ? "hidden" : "h-full min-h-0"}>
+            <StudioCanvas
+              editorRefContainer={editorContainerRef}
+              publicUrl={publicUrl}
+              layersRef={layersRef}
+            />
+          </div>
+          {(activePage as { editMode?: string; id?: string; data?: { saasVisual?: any } } | undefined)?.editMode === "saas-live" && siteId ? (
+            <SaasLiveCanvas
+              siteId={siteId}
+              businessId={businessId}
+              pageId={String((activePage as { id?: string }).id || "")}
+              device={device === "Mobile" ? "mobile" : device === "Tablet" ? "tablet" : "desktop"}
+              visual={(activePage as { data?: { saasVisual?: any } }).data?.saasVisual || { styles: {}, text: {}, hidden: {}, order: {} }}
+              onVisual={(next) => {
+                const pageId = String((activePage as { id?: string }).id || "");
+                setPages((current) => current.map((page) => (
+                  page.id === pageId
+                    ? { ...page, data: { ...((page as { data?: Record<string, unknown> }).data || {}), saasVisual: next } }
+                    : page
+                )));
+              }}
+            />
+          ) : null}
         </div>
       </div>
 
