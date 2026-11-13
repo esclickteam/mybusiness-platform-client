@@ -195,6 +195,25 @@ export default function SearchVisibilityApp() {
         ) : null}
         {error ? <p className="sv-note">{error}</p> : null}
 
+        {!job && history.length ? (
+          <section className="sv-panel">
+            <h2>{t.history}</h2>
+            <table className="sv-table">
+              <tbody>
+                {history.map((item) => (
+                  <tr key={item.id}>
+                    <td><button type="button" onClick={() => loadJob(item.id)}>{item.domain || item.url}</button></td>
+                    <td>{item.status}</td>
+                    <td>SEO {scoreText(item.scores?.seo?.score, t.unavailable)}</td>
+                    <td>GEO {scoreText(item.scores?.geo?.score, t.unavailable)}</td>
+                    <td>AEO {scoreText(item.scores?.aeo?.score, t.unavailable)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </section>
+        ) : null}
+
         {job ? (
           <>
             <div className="sv-steps" aria-live="polite">

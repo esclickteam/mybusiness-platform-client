@@ -1089,7 +1089,9 @@ export function AuthProvider({ children }) {
             // never snap back to the generic dashboard.
             if (
               location.pathname.startsWith("/business/") ||
-              location.pathname.startsWith("/business-profile/")
+              location.pathname.startsWith("/business-profile/") ||
+              location.pathname.includes("/search-visibility") ||
+              location.pathname.includes("/seo-scanner")
             ) {
               return;
             }
