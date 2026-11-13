@@ -1159,3 +1159,202 @@
   .pv-scene,
   .pv-flow-cards button.is-on { animation: none; transform: none; }
 }
+
+/* Focused density for CRM, WhatsApp and the automation diagram. */
+.pv-split:has(.pv-crm),
+.pv-split:has(.pv-wa) {
+  align-items: start;
+}
+
+.pv-crm.pv-app,
+.pv-wa.pv-app,
+.pv-flow.pv-app {
+  flex: 0 1 auto;
+}
+
+.pv-crm .pv-crm-shell,
+.pv-crm .pv-board {
+  align-items: start;
+  height: auto;
+}
+
+.pv-crm .pv-board section {
+  min-height: 0;
+  background: #f7f5fb;
+}
+
+.pv-crm .pv-board header {
+  align-items: center;
+  padding: 0.4rem 0.45rem;
+  background: #fff;
+  font-size: 0.92rem;
+}
+
+.pv-crm .pv-board header b {
+  display: grid;
+  place-items: center;
+  min-width: 1.4rem;
+  height: 1.4rem;
+  padding: 0 0.3rem;
+  background: #efe9ff;
+  color: #5b21b6;
+  font-size: 0.78rem;
+}
+
+.pv-crm .pv-board section.is-current {
+  background: #f3eeff;
+  box-shadow: inset 0 0 0 2px #5b21b6;
+}
+
+.pv-crm .pv-board section.is-current header {
+  background: #5b21b6;
+  color: #fff;
+}
+
+.pv-crm .pv-board section.is-current header b {
+  background: #fff;
+  color: #5b21b6;
+}
+
+.pv-crm .pv-board button {
+  min-height: 4.4rem;
+  padding: 0.7rem 0.6rem;
+  border: 1px solid rgba(91, 33, 182, 0.14);
+  box-shadow: 0 8px 16px rgba(76, 29, 149, 0.06);
+}
+
+.pv-crm .pv-board button strong {
+  font-size: 1.02rem;
+}
+
+.pv-crm .pv-board button.is-on {
+  border: 2px solid #5b21b6;
+  background: #f6f1ff;
+  box-shadow: 0 10px 22px rgba(91, 33, 182, 0.18);
+}
+
+.pv-crm .pv-person {
+  align-self: start;
+  gap: 0.45rem;
+}
+
+.pv-crm .pv-person h3 {
+  font-size: 1.55rem;
+}
+
+.pv-crm .pv-person em {
+  font-size: 0.95rem;
+}
+
+.pv-wa-shell {
+  align-items: start;
+}
+
+.pv-wa .pv-chat {
+  flex: 0 1 auto;
+  min-height: 0;
+}
+
+.pv-wa .pv-log {
+  flex: 0 1 auto;
+  align-content: start;
+  gap: 0.7rem;
+  padding: 1rem;
+}
+
+.pv-log .is-status {
+  justify-self: center;
+  max-width: none;
+  padding: 0.35rem 0.7rem;
+  border: 0;
+  background: transparent;
+  color: #5b21b6;
+  font-size: 0.82rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.pv-log .is-status span,
+.pv-log .is-status small {
+  display: inline;
+}
+
+.pv-log .is-status small {
+  margin-inline-start: 0.35rem;
+  color: #6d28d9;
+}
+
+.pv-log .is-in {
+  justify-self: start;
+  border-color: #e4e0ee;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(26, 11, 51, 0.04);
+}
+
+.pv-log .is-out {
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.08);
+}
+
+.pv-log .is-draft {
+  box-shadow: 0 6px 16px rgba(91, 33, 182, 0.1);
+}
+
+.pv-flow .pv-flow-row {
+  align-items: start;
+  grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.72fr);
+}
+
+.pv-flow .pv-flow-cards {
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+.pv-flow .pv-flow-cards li:not(:last-child)::before {
+  top: 2.4rem;
+  bottom: -0.7rem;
+  left: 1.25rem;
+  right: auto;
+  width: 3px;
+  height: auto;
+  background: #c4b5fd;
+}
+
+.pv-flow.is-ran .pv-flow-cards li:not(:last-child)::before {
+  background: #6d28d9;
+}
+
+.pv-flow .pv-flow-cards li:not(:last-child)::after {
+  top: auto;
+  bottom: -0.48rem;
+  left: 1.02rem;
+  right: auto;
+  transform: rotate(135deg);
+}
+
+.pv-flow .pv-flow-cards button {
+  min-height: 0;
+  padding: 0.85rem 0.9rem 0.85rem 2.4rem;
+  border-width: 1.5px;
+}
+
+.pv-flow .pv-flow-cards button.is-on {
+  border-color: #5b21b6;
+  background: #f4efff;
+  transform: none;
+  box-shadow: 0 0 0 3px rgba(91, 33, 182, 0.28);
+}
+
+.pv-flow.is-ran .pv-flow-cards button.is-reached {
+  border-color: #7c3aed;
+  background: #f3e8ff;
+}
+
+.pv-flow.is-ran .pv-flow-cards button.is-on {
+  border-color: #4c1d95;
+  background: #efe9ff;
+  box-shadow: 0 0 0 3px #5b21b6;
+}
+
+@media (max-width: 980px) {
+  .pv-flow .pv-flow-cards { grid-template-columns: 1fr; }
+}

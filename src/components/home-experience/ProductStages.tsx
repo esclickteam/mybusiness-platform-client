@@ -476,7 +476,8 @@ export function WhatsAppStage() {
             <em>{statusLabel(text, statuses[id])}</em>
           </header>
           <div className="pv-log">
-            <p>{thread.incoming}<small>{thread.time}</small></p>
+            <p className="is-status"><span>{statusLabel(text, statuses[id])}</span><small>{thread.source}</small></p>
+            <p className="is-in">{thread.incoming}<small>{thread.time}</small></p>
             {thread.outgoing ? <p className="is-out">{thread.outgoing}<small>{thread.outgoingMeta}</small></p> : null}
             {drafts[id] ? <p className="is-out is-draft">{text("תשובת הדגמה נשמרת על הכרטיס. היא לא נשלחה ללקוח.", "The demo reply is saved on the record. It was not sent to the customer.")}<small>{text("לא נשלח", "Not sent")}</small></p> : null}
           </div>
