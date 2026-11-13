@@ -116,6 +116,7 @@ const MiniSaaSManager = lazy(() =>
 );
 
 const HelpCenter = lazy(() => import("../HelpCenter"));
+const SecurityScannerPage = lazy(() => import("./dashboardPages/security/SecurityScannerPage"));
 
 /* Automations — nested routes (home / templates / runs / connections / editor) */
 const AutomationsLayout = lazy(() =>
@@ -787,6 +788,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="*" element={<Navigate to="appointments" replace />} />
           </Route>
 
+          <Route path="security" element={<SecurityScannerPage />} />
           <Route path="help-center" element={<HelpCenter />} />
 
           <Route
