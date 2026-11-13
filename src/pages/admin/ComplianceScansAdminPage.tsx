@@ -102,7 +102,7 @@ function discoveryOutcome(discovery: { status?: string; partial?: boolean; parti
 
 type DiscoveryPage = { name: string; url: string; parent?: string; type: string; status: string; selectable?: boolean; instances?: number };
 type NavTrace = { label: string; kind: string; path?: string; source?: string; attempted?: boolean; opened?: boolean; screen?: boolean; reason?: string };
-type Discovery = { id: string; kind?: string; status: string; percent: number; partial?: boolean; partialReason?: string; discovered?: number; unique?: number; duplicates?: number; inaccessible?: number; publicPages?: number; internalPages?: number; dynamicTypes?: number; scanPages?: number; screens?: number; tabsChecked?: number; menusOpened?: number; menusFound?: number; navFound?: number; navChecked?: number; navOpened?: number; navUnopened?: number; navItems?: NavTrace[]; needsSelection?: number; certainty?: string; loginConfirmed?: boolean; recommended?: { packageId: string; usd: number; pages: number; extra?: boolean; scanPages?: number } | null; pages?: DiscoveryPage[]; error?: string; reportReady?: boolean; pagesAllowed?: number; findings?: Array<{ title: string; url: string; outcome: string }> };
+type Discovery = { id: string; kind?: string; status: string; percent: number; partial?: boolean; partialReason?: string; discovered?: number; unique?: number; duplicates?: number; inaccessible?: number; publicPages?: number; internalPages?: number; dynamicTypes?: number; scanPages?: number; screens?: number; tabsChecked?: number; menusOpened?: number; menusFound?: number; navFound?: number; navChecked?: number; navOpened?: number; navUnopened?: number; navItems?: NavTrace[]; modals?: number; drawers?: number; wizards?: number; resumable?: boolean; needsSelection?: number; certainty?: string; loginConfirmed?: boolean; recommended?: { packageId: string; usd: number; pages: number; extra?: boolean; scanPages?: number } | null; pages?: DiscoveryPage[]; error?: string; reportReady?: boolean; pagesAllowed?: number; findings?: Array<{ title: string; url: string; outcome: string }> };
 
 function screenStatus(status: string, locale: string) {
   const he = locale !== "en" && locale !== "es" && locale !== "pt-BR" && locale !== "ar";
@@ -112,17 +112,41 @@ function screenStatus(status: string, locale: string) {
   return he ? "נגיש" : locale === "en" ? "Open" : status;
 }
 
-function ScreenTree({ pages, locale }: { pages: DiscoveryPage[]; locale: string }) {
+function navReason(reason: string | undefined, locale: string) {
+  const he = locale === "he";
+  const copy: Record<string, [string, string]> = {
+    needs_record: ["נדרשת רשומת בדיקה שאושרה", "Needs an approved test record"],
+    off_host: ["מחוץ לאתר שאושר", "Outside the approved site"],
+    missing: ["לא נמצא רכיב לחיץ", "No clickable control was found"],
+    missing_name: ["לרכיב אין שם נגיש", "The control has no accessible name"],
+    blocked_mutation: ["הפעולה חסומה כי היא עלולה לשנות נתונים", "Blocked because it could change data"],
+    permission: ["אין הרשאה", "No permission"],
+    content_not_loaded: ["התוכן לא נטען", "The content did not load"],
+    navigation_failed: ["הניווט נכשל", "Navigation failed"],
+    dialog_not_opened: ["החלונית לא נפתחה", "The dialog did not open"],
+    no_effect: ["הלחיצה לא פתחה מסך", "The click did not open a screen"],
+    time: ["מגבלת הזמן", "Time limit"],
+    limit: ["מגבלת המשאבים", "Resource limit"],
+  };
+  const row = copy[reason || ""] || copy.no_effect;
+  return he ? row[0] : row[1];
+}
+
+function ScreenTree({ pages, locale, picked }: { pages: DiscoveryPage[]; locale: string; picked: string[] }) {
   const names = new Set(pages.map((page) => page.name));
   const childrenOf = (parent: string) => pages.filter((page) => page.parent === parent);
   const roots = pages.filter((page) => !page.parent || !names.has(page.parent));
   const renderNodes = (nodes: DiscoveryPage[], depth: number): JSX.Element => (
     <ul>
-      {depth > 6 ? null : nodes.map((node, index) => {
+      {depth > 8 ? null : nodes.map((node, index) => {
         const children = childrenOf(node.name).filter((child) => child !== node);
+        let path = "";
+        try { path = new URL(node.url).pathname; } catch { path = node.url; }
+        const selected = node.selectable && picked.includes(node.url);
+        const choice = !node.selectable ? (locale === "en" ? "Not a scan unit" : "לא נספר") : selected ? (locale === "en" ? "Selected" : "נבחר לסריקה") : (locale === "en" ? "Not selected" : "לא נבחר");
         return (
           <li key={`${node.url}|${node.type}|${node.name}|${depth}|${index}`}>
-            {node.name} · {screenStatus(node.status, locale)}
+            {node.name} · {node.type} · {path} · {screenStatus(node.status, locale)} · {choice}
             {children.length ? renderNodes(children, depth + 1) : null}
           </li>
         );
@@ -183,7 +207,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
     const cap = data.recommended?.extra ? 100 : data.recommended?.pages || 10;
     if (data.pages) setPicked(data.pages.filter((item) => item.selectable).map((item) => item.url).slice(0, cap));
   }
-  async function discoverPages() {
+  async function discoverPages(resumeId = "") {
     setNote("");
     setRun(null);
     let loginUrl = "";
@@ -192,7 +216,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
       method: "POST",
       headers: headers(),
       credentials: "include",
-      body: JSON.stringify({ url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), username, password, locale, consent, loginUrl }),
+      body: JSON.stringify({ url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), username, password, locale, consent, loginUrl, ...(resumeId ? { resumeId } : {}) }),
     });
     const data = await response.json().catch(() => ({}));
     setPassword("");
@@ -285,13 +309,14 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
         <div>
           {discoveryOutcome(discovery, locale) ? <p>{discoveryOutcome(discovery, locale)}</p> : null}
           {(discovery.discovered || discovery.unique || discovery.inaccessible || discovery.needsSelection) ? <p>{copy.found}: {discovery.discovered}. {copy.unique}: {discovery.unique}. {copy.duplicates}: {discovery.duplicates}. {copy.blocked}: {discovery.inaccessible}. {copy.publicPages}: {discovery.publicPages}. {copy.internalPages}: {discovery.internalPages}. {copy.dynamic}: {discovery.dynamicTypes}.</p> : null}
-          {(discovery.screens || discovery.tabsChecked || discovery.menusOpened || discovery.menusFound || discovery.navFound || discovery.needsSelection || discovery.partial) ? <p>{locale === "en" ? "Screens" : locale === "es" ? "Pantallas" : locale === "pt-BR" ? "Telas" : locale === "ar" ? "شاشات" : "מסכים"}: {discovery.screens || 0}. {locale === "en" ? "Tabs" : locale === "es" ? "Pestañas" : locale === "pt-BR" ? "Abas" : locale === "ar" ? "علامات" : "לשוניות"}: {discovery.tabsChecked || 0}. {locale === "en" ? "Menus found" : locale === "es" ? "Menús hallados" : locale === "pt-BR" ? "Menus encontrados" : locale === "ar" ? "قوائم مكتشفة" : "תפריטים שזוהו"}: {discovery.menusFound || 0}. {locale === "en" ? "Menus opened" : locale === "es" ? "Menús abiertos" : locale === "pt-BR" ? "Menus abertos" : locale === "ar" ? "قوائم فُتحت" : "תפריטים שנפתחו"}: {discovery.menusOpened || 0}. {locale === "en" ? "Navigation items" : locale === "es" ? "Elementos de navegación" : locale === "pt-BR" ? "Itens de navegação" : locale === "ar" ? "عناصر التنقل" : "פריטי ניווט"}: {discovery.navFound || 0}. {locale === "en" ? "Checked" : locale === "es" ? "Revisados" : locale === "pt-BR" ? "Verificados" : locale === "ar" ? "فُحصت" : "נבדקו"}: {discovery.navChecked || 0}. {locale === "en" ? "Opened" : locale === "es" ? "Abiertos" : locale === "pt-BR" ? "Abertos" : locale === "ar" ? "فُتحت" : "נפתחו"}: {discovery.navOpened || 0}. {locale === "en" ? "Unopened" : locale === "es" ? "Sin abrir" : locale === "pt-BR" ? "Não abertos" : locale === "ar" ? "لم تُفتح" : "לא נפתחו"}: {discovery.navUnopened || 0}. {locale === "en" ? "Needs a record" : locale === "es" ? "Requiere un registro" : locale === "pt-BR" ? "Precisa de um registro" : locale === "ar" ? "يتطلب سجلاً" : "דורש בחירת רשומה"}: {discovery.needsSelection || 0}.</p> : null}
+          {(discovery.screens || discovery.tabsChecked || discovery.menusOpened || discovery.menusFound || discovery.navFound || discovery.needsSelection || discovery.modals || discovery.drawers || discovery.wizards || discovery.partial) ? <p>{locale === "he" ? "מסכים" : "Screens"}: {discovery.screens || 0}. {locale === "he" ? "לשוניות" : "Tabs"}: {discovery.tabsChecked || 0}. {locale === "he" ? "חלוניות" : "Dialogs"}: {discovery.modals || 0}. {locale === "he" ? "מגירות" : "Drawers"}: {discovery.drawers || 0}. {locale === "he" ? "שלבי אשף" : "Wizard steps"}: {discovery.wizards || 0}. {locale === "he" ? "תפריטים שזוהו" : "Menus found"}: {discovery.menusFound || 0}. {locale === "he" ? "תפריטים שנפתחו" : "Menus opened"}: {discovery.menusOpened || 0}. {locale === "he" ? "פריטי ניווט" : "Navigation items"}: {discovery.navFound || 0}. {locale === "he" ? "נפתחו" : "Opened"}: {discovery.navOpened || 0}. {locale === "he" ? "לא נפתחו" : "Unopened"}: {discovery.navUnopened || 0}. {locale === "he" ? "דורש בחירת רשומה" : "Needs a record"}: {discovery.needsSelection || 0}.</p> : null}
           {discovery.navUnopened ? <p>{locale === "en" ? "More navigation areas were found and have not been opened. The screen count may be higher." : "התגלו אזורי ניווט נוספים שטרם נפתחו. מספר המסכים עשוי להיות גבוה יותר."}</p> : null}
-          <ScreenTree pages={discovery.pages || []} locale={locale} />
-          {(discovery.navItems || []).filter((item) => item.attempted && !item.opened).length ? (
+          {discovery.resumable ? <button type="button" onClick={() => discoverPages(discovery.id)} disabled={!password || discovery.status === "running"}>{locale === "en" ? "Continue discovery" : "המשך גילוי"}</button> : null}
+          <ScreenTree pages={discovery.pages || []} locale={locale} picked={picked} />
+          {(discovery.navItems || []).filter((item) => !item.opened && item.reason !== "skipped_collapse" && item.reason !== "current_screen").length ? (
             <ul>
-              {(discovery.navItems || []).filter((item) => item.attempted && !item.opened).slice(0, 20).map((item, index) => (
-                <li key={`${item.label}|${item.path}|${index}`}>{item.source ? `${item.source} / ` : ""}{item.label}{item.path ? ` · ${item.path}` : ""} · {item.reason === "needs_record" ? (locale === "en" ? "Needs an approved record" : "נדרשת רשומה מאושרת") : item.reason === "off_host" ? (locale === "en" ? "Outside the approved site" : "מחוץ לאתר שאושר") : item.reason === "missing" ? (locale === "en" ? "The control was gone before the click" : "הרכיב נעלם לפני הלחיצה") : (locale === "en" ? "The click did not open a screen" : "הלחיצה לא פתחה מסך")}</li>
+              {(discovery.navItems || []).filter((item) => !item.opened && item.reason !== "skipped_collapse" && item.reason !== "current_screen").slice(0, 40).map((item, index) => (
+                <li key={`${item.label}|${item.path}|${index}`}>{item.source ? `${item.source} / ` : ""}{item.label}{item.path ? ` · ${item.path}` : ""} · {navReason(item.reason, locale)}</li>
               ))}
             </ul>
           ) : null}
