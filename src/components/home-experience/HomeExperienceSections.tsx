@@ -7,6 +7,7 @@ import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
+import { CrmMoment, WhatsAppMoment } from "./ProductMoments";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -411,7 +412,7 @@ function Crm() {
         text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
       ]}
       link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
-      shot={<Shot name="crm-card" alt={text("כרטיס לקוח בתוך BizUply עם סטטוס, משימות ופעילות", "A customer record in BizUply with status, tasks and activity")} />}
+      shot={<CrmMoment />}
     />
   );
 }
@@ -438,7 +439,7 @@ function WhatsApp() {
         "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
       )}
       link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
-      shot={<Shot name="whatsapp" alt={text("תיבת השיחות של WhatsApp בתוך BizUply", "The WhatsApp conversation inbox in BizUply")} />}
+      shot={<WhatsAppMoment />}
     />
   );
 }

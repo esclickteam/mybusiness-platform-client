@@ -6,6 +6,7 @@ import locales from "./homeLocales.json";
 const source = [
   "src/components/home-experience/HomeExperienceSections.tsx",
   "src/components/home-experience/HomeExperienceFooter.tsx",
+  "src/components/home-experience/ProductMoments.tsx",
 ]
   .map((file) => readFileSync(file, "utf8"))
   .join("\n");
@@ -37,6 +38,10 @@ const PROPER = new Set([
   "Sophia Mitchell",
   "Olivia Bennett",
   "Northwind Studio",
+  "Noa Barak",
+  "Nora Studio",
+  "Tamar Levi",
+  "Yael Dahan",
 ]);
 
 describe("homepage copy", () => {
