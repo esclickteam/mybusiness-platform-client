@@ -7,7 +7,8 @@ import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import { AiStage, CalendarStage, CrmStage, FlowStage, MetaStage, WhatsAppStage } from "./ProductStages";
+import "../../styles/homeProductVisual.css";
+import { AiStage, CalendarStage, CrmStage, FlowStage, JourneyStage, MetaStage, WhatsAppStage } from "./ProductStages";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -210,6 +211,9 @@ function Stage({
   children,
   variant = "",
   links,
+  bullets,
+  secondary,
+  layout = "showcase",
 }: {
   id: string;
   eyebrow: string;
@@ -220,23 +224,42 @@ function Stage({
   children: ReactNode;
   variant?: string;
   links?: ReactNode;
+  bullets?: string[];
+  secondary?: [string, string];
+  layout?: "showcase" | "banner";
 }) {
+  const copy = (
+    <div className="pv-copy" data-reveal>
+      <p className="pv-kicker">{eyebrow}</p>
+      <h2 id={`${id}-title`}>{title}</h2>
+      <p className="pv-lead">{lead}</p>
+      {bullets?.length ? (
+        <ul className="pv-points">
+          {bullets.map((item) => <li key={item}>{item}</li>)}
+        </ul>
+      ) : null}
+      <div className="pv-actions">
+        <Cta to={link[0]}>{link[1]}</Cta>
+        {secondary ? <Cta to={secondary[0]} tone="line">{secondary[1]}</Cta> : null}
+      </div>
+      {note ? <p className="pv-note">{note}</p> : null}
+      {links}
+    </div>
+  );
   return (
-    <section className={`ht-stage${variant ? ` ${variant}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
+    <section className={`ht-stage ht-showcase ht-${layout}${variant ? ` ${variant}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
       <div className="ht-wrap">
-        <div className="ht-stage-head" data-reveal>
-          <div>
-            <p className="ht-eyebrow">{eyebrow}</p>
-            <h2 id={`${id}-title`}>{title}</h2>
-            <p className="ht-stage-lead">{lead}</p>
+        {layout === "banner" ? (
+          <>
+            {copy}
+            <div className="pv-stage" data-reveal>{children}</div>
+          </>
+        ) : (
+          <div className={`pv-split${id === "meetings" ? " is-flip" : ""}`}>
+            {copy}
+            <div className="pv-stage" data-reveal>{children}</div>
           </div>
-          <div className="hx-actions">
-            <Cta to={link[0]} tone="line">{link[1]}</Cta>
-          </div>
-        </div>
-        {note ? <p className="ht-stage-note" data-reveal>{note}</p> : null}
-        <div className="ht-stage-frame" data-reveal>{children}</div>
-        {links}
+        )}
       </div>
     </section>
   );
@@ -355,39 +378,10 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
 }
 
 function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
-  const { text } = useCopy();
-  const stages = [
-    [text("הפנייה נכנסת", "The enquiry arrives"), text("מטופס באתר, מקמפיין Meta או מחיבור לידים — עם המקור שלה.", "From a site form, a Meta campaign or a lead connection — with its source."), 0],
-    [text("מסדרים ב־CRM", "Organize it in the CRM"), text("כרטיס לקוח, סטטוס, הערות והיסטוריה במקום אחד.", "A customer record, status, notes and history in one place."), 1],
-    [text("מדברים ב־WhatsApp", "Talk on WhatsApp"), text("ממשיכים את השיחה בערוץ שהלקוחות כבר משתמשים בו.", "Continue the conversation on the channel customers already use."), 2],
-    [text("קובעים את הצעד הבא", "Set the next step"), text("משימה או פגישה עם תאריך ושעה, כדי ששום פנייה לא תיפול.", "A task or meeting with a date and time, so no enquiry slips."), 3],
-    [text("אוטומציה ממשיכה", "Automation follows up"), text("טריגרים ופעולות שחוסכים עבודה ידנית חוזרת.", "Triggers and actions that save repeated manual work."), 4],
-  ] as const;
   return (
-    <section className="ht-how" id="how" aria-labelledby="ht-how-title">
+    <section className="ht-how ht-journey" id="how" aria-labelledby="ht-how-title">
       <div className="ht-wrap">
-        <div className="ht-head" data-reveal>
-          <p className="ht-eyebrow">{text("כך BizUply עובדת", "How BizUply works")}</p>
-          <h2 id="ht-how-title">{text("מהליד הראשון ועד המכירה.", "From the first lead to the sale.")}</h2>
-          <p className="ht-lead">
-            {text(
-              "כל שלב בתהליך קורה באותה מערכת, על אותו לקוח. כך הצוות רואה מי פנה, מה נאמר, ומה הצעד הבא.",
-              "Every step happens in the same system, on the same customer. The team sees who reached out, what was said, and what comes next.",
-            )}
-          </p>
-        </div>
-        <ol className="ht-flow">
-          {stages.map(([title, body, chapter], index) => (
-            <li key={title} data-reveal style={{ transitionDelay: `${index * 70}ms` }}>
-              <span className="ht-flow-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <button type="button" className="ht-link-btn" onClick={() => onWatch(chapter)}>
-                {text("לצפות בשלב הזה", "Watch this step")}
-              </button>
-            </li>
-          ))}
-        </ol>
+        <JourneyStage onWatch={onWatch} />
       </div>
     </section>
   );
@@ -398,10 +392,17 @@ function Crm() {
   return (
     <Stage
       id="crm"
-      eyebrow={text("CRM וניהול לידים", "CRM and lead management")}
-      title={text("הליד נפתח לכרטיס", "The lead opens into a record")}
-      lead={text("בוחרים לקוח ורואים סטטוס, מקור ופעילות.", "Choose a customer and see status, source and activity.")}
-      link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
+      eyebrow={text("CRM חכם לניהול לקוחות", "A CRM for customer management")}
+      title={text("כל ליד הופך ללקוח עם CRM שמקדם מכירות", "Every lead becomes a customer record that moves the sale")}
+      lead={text("רכזו את כל הלידים, נהלו את התקשורת, עקבו אחרי שלבי המכירה והפכו יותר פניות לעסקאות — במקום אחד.", "Keep every lead, the conversation and the sale stages together, and move more enquiries forward — in one place.")}
+      bullets={[
+        text("קליטת לידים מכל הערוצים", "Lead intake from every channel"),
+        text("ניהול התהליך לפי שלבים", "A stage-by-stage process"),
+        text("תקשורת מלאה עם הלקוח", "The customer conversation on the record"),
+        text("מעבר מהיר לשלב הבא", "A fast move to the next stage"),
+      ]}
+      link={["/crm", text("צפו ב־CRM בפעולה", "See the CRM in action")]}
+      secondary={["#product-theater", text("צפו בהדגמה", "Watch the demo")]}
     >
       <CrmStage />
     </Stage>
@@ -414,8 +415,15 @@ function WhatsApp() {
     <Stage
       id="whatsapp"
       eyebrow="WhatsApp Business API"
-      title={text("השיחה והכרטיס, יחד", "The thread and the record, together")}
-      lead={text("עוברים בין שיחות. פרטי הלקוח נשארים מחוברים.", "Switch conversations. The customer details stay attached.")}
+      title={text("תקשורת חכמה עם הלקוחות שלכם", "Smart conversations with your customers")}
+      lead={text("נהלו את כל השיחות, השיבו מתוך הכרטיס, ועדכנו סטטוס בהדגמה — ישירות מ־Bizuply.", "Manage every conversation, reply from the record, and update the demo status — directly in Bizuply.")}
+      bullets={[
+        text("כל השיחות במקום אחד", "Every conversation in one place"),
+        text("התגובה נשמרת על הכרטיס", "The reply is saved on the record"),
+        text("ניהול סטטוס לקוח בהדגמה", "Customer status in the demo"),
+        text("חיבור ל־CRM לפי אישור Meta", "A CRM connection that follows Meta approval"),
+      ]}
+      secondary={["#product-theater", text("צפו בהדגמה", "Watch the demo")]}
       note={text(
         "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
         "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
@@ -432,9 +440,10 @@ function Automations() {
   return (
     <Stage
       id="automations"
+      layout="banner"
       eyebrow={text("אוטומציות חכמות", "Smart automations")}
-      title={text("תהליך שאפשר לעבור עליו", "A flow you can step through")}
-      lead={text("טריגר, תנאי ופעולות — כמו בעורך.", "A trigger, a condition and actions — as in the editor.")}
+      title={text("אוטומציות שממשיכות את הצעד הבא", "Automations that carry the next step")}
+      lead={text("בונים תהליך עם טריגר, תנאי ופעולות. הרצת הבדיקה לא שולחת הודעה ולא משנה נתונים.", "Build a flow with a trigger, a condition and actions. The test run sends no message and changes no data.")}
       note={text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}
       link={["/automations", text("להכיר את האוטומציות", "Explore automations")]}
     >
@@ -448,9 +457,14 @@ function Campaigns() {
   return (
     <Stage
       id="campaigns"
-      eyebrow={text("קמפיינים ושיווק", "Campaigns and marketing")}
-      title={text("הקמפיין, ואז הליד ב־CRM", "The campaign, then the lead in the CRM")}
-      lead={text("עוברים בין קמפיינים ורואים מדדים וליד שנכנס.", "Switch campaigns and see the metrics and the lead that arrived.")}
+      eyebrow={text("חיבור ל־Meta", "Meta connection")}
+      title={text("ניהול קמפיינים שמחבר מודעה לליד", "Campaign management that connects an ad to a lead")}
+      lead={text("הדשבורד מציג נתוני הדגמה בלבד: הוצאה, לידים, עלות לליד והליד שנכנס ל־CRM. אלה לא הישגים אמיתיים של BizUply.", "The dashboard shows demo figures only: spend, leads, cost per lead and the lead that entered the CRM. These are not real BizUply results.")}
+      bullets={[
+        text("מדדי קמפיין מסומנים כהדגמה", "Campaign metrics marked as a demo"),
+        text("גרף לידים לפי יום", "A leads-by-day chart"),
+        text("הליד עובר לכרטיס ב־CRM", "The lead passes into a CRM record"),
+      ]}
       note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
       link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
     >
@@ -465,9 +479,14 @@ function AiTools() {
     <Stage
       id="ai"
       variant="ht-stage-ai"
-      eyebrow={text("כלי AI זמינים", "AI tools available today")}
-      title={text("המלצה ברורה. הפעולה נשארת אצלכם", "A clear recommendation. The action stays with you")}
-      lead={text("בוחרים תובנה. היועץ מנסח, ולא שולח.", "Choose an insight. The advisor drafts, and does not send.")}
+      eyebrow={text("מבוסס בינה מלאכותית", "Built with AI")}
+      title={text("תובנות חכמות שמובילות להמלצה", "Insights that lead to a recommendation")}
+      lead={text("ה־AI של Bizuply מנתח את הנתונים שבהדגמה, מציג תובנה ומכין טיוטה. הוא לא שולח, לא קובע ולא משנה תקציב.", "Bizuply AI reads the demo figures, shows an insight and prepares a draft. It does not send, book or change a budget.")}
+      bullets={[
+        text("נתון, תובנה וטיוטה", "A figure, an insight and a draft"),
+        text("המלצה בלי פעולה אוטומטית", "A recommendation without an automatic action"),
+        text("השליחה נשארת אצלכם", "Sending stays with you"),
+      ]}
       note={text(
         "כלים שפעילים היום בפלטפורמה. פעולת AI נספרת כפעולת אוטומציה במסגרת החבילה.",
         "Tools that are live on the platform today. An AI action counts as an automation action in your plan.",
@@ -503,9 +522,14 @@ function Meetings() {
   return (
     <Stage
       id="meetings"
-      eyebrow={text("יומן פגישות", "Meeting calendar")}
-      title={text("השבוע, הפגישה, והכרטיס", "The week, the meeting, and the record")}
-      lead={text("בוחרים יום ופותחים פגישה.", "Pick a day and open a meeting.")}
+      eyebrow={text("יומן ותיאומים", "Calendar and scheduling")}
+      title={text("כל הפגישות, במקום אחד", "Every meeting, in one place")}
+      lead={text("נהלו פגישות, תזכורות ותיאומים עם לקוחות. בוחרים יום, פותחים פגישה ועוברים בין שבועות ההדגמה.", "Manage meetings on the customer record. Pick a day, open a meeting and move between the demo weeks.")}
+      bullets={[
+        text("יומן שבועי עם פגישות", "A week calendar with meetings"),
+        text("פתיחת פרטי פגישה", "Open the meeting details"),
+        text("מעבר בין שבועות", "Move between weeks"),
+      ]}
       link={["/appointments", text("להכיר את היומן", "Explore the calendar")]}
     >
       <CalendarStage />
