@@ -745,15 +745,68 @@ function Websites() {
   );
 }
 
+function BenefitIcon({ kind }: { kind: "system" | "phone" | "official" | "test" | "start" }) {
+  const pen = {
+    width: 28,
+    height: 28,
+    viewBox: "0 0 32 32",
+    fill: "none",
+    stroke: "currentColor",
+    strokeWidth: 1.6,
+    strokeLinecap: "round" as const,
+    strokeLinejoin: "round" as const,
+    "aria-hidden": true as const,
+  };
+  if (kind === "system") {
+    return (
+      <svg {...pen}>
+        <circle cx="16" cy="8" r="2.2" />
+        <circle cx="8" cy="23" r="2.2" />
+        <circle cx="24" cy="23" r="2.2" />
+        <path d="M16 10.2 9.1 20.8M16 10.2 22.9 20.8M10.2 23h11.6" />
+      </svg>
+    );
+  }
+  if (kind === "phone") {
+    return (
+      <svg {...pen}>
+        <rect x="11" y="4.5" width="10" height="23" rx="2" />
+        <path d="M14 8.5h4M15.2 24h1.6" />
+      </svg>
+    );
+  }
+  if (kind === "official") {
+    return (
+      <svg {...pen}>
+        <path d="M16 4.5 26 8.5v7.2c0 5.2-3.8 8.6-10 10.8-6.2-2.2-10-5.6-10-10.8V8.5z" />
+        <path d="m12.2 15.4 2.5 2.5 5.1-5.4" />
+      </svg>
+    );
+  }
+  if (kind === "test") {
+    return (
+      <svg {...pen}>
+        <circle cx="16" cy="16" r="9" strokeDasharray="3 2.4" />
+        <path d="m13.5 12.2 7 3.8-7 3.8z" fill="currentColor" stroke="none" />
+      </svg>
+    );
+  }
+  return (
+    <svg {...pen}>
+      <circle cx="8" cy="16" r="2" fill="currentColor" stroke="none" />
+      <path d="M10.5 16H24M19 11l5 5-5 5" />
+    </svg>
+  );
+}
+
 function Benefits() {
   const { text } = useCopy();
   const items = [
-    [text("מערכת אחת במקום כלים מפוזרים", "One system instead of scattered tools"), text("לידים, שיחות, משימות, אוטומציות וקמפיינים חולקים את אותו כרטיס לקוח.", "Leads, conversations, tasks, automations and campaigns share the same customer record.")],
-    [text("עברית ואנגלית מהיסוד", "Hebrew and English from the ground up"), text("ממשק מלא מימין לשמאל ומשמאל לימין, ותמיכה בשפות נוספות.", "A full right-to-left and left-to-right interface, with more languages supported.")],
-    [text("עובד גם מהטלפון", "Works from your phone"), text("אותה מערכת בדסקטופ ובמובייל — לענות לליד גם מחוץ למשרד.", "The same system on desktop and mobile, so you can answer a lead away from the office.")],
-    [text("חיבורים רשמיים", "Official connections"), text("WhatsApp Business API ו־Meta דרך החיבורים הרשמיים, בהתאם לאישורים.", "WhatsApp Business API and Meta through their official connections, subject to approval.")],
-    [text("בודקים לפני שמפעילים", "Test before you go live"), text("הרצת בדיקה לאוטומציות, בלי לשלוח הודעות ובלי לשנות נתונים.", "Test runs for automations that send nothing and change no data.")],
-    [text("מתחילים בחינם", "Start for free"), text("פותחים חשבון, בודקים את המערכת, ובוחרים חבילה כשמוכנים.", "Open an account, try the system, and pick a plan when you are ready.")],
+    ["system", text("מערכת אחת במקום כלים מפוזרים", "One system instead of scattered tools"), text("לידים, שיחות, משימות, אוטומציות וקמפיינים חולקים את אותו כרטיס לקוח.", "Leads, conversations, tasks, automations and campaigns share the same customer record.")],
+    ["phone", text("עובד גם מהטלפון", "Works from your phone"), text("אותה מערכת בדסקטופ ובמובייל — לענות לליד גם מחוץ למשרד.", "The same system on desktop and mobile, so you can answer a lead away from the office.")],
+    ["official", text("חיבורים רשמיים", "Official connections"), text("WhatsApp Business API ו־Meta דרך החיבורים הרשמיים, בהתאם לאישורים.", "WhatsApp Business API and Meta through their official connections, subject to approval.")],
+    ["test", text("בודקים לפני שמפעילים", "Test before you go live"), text("הרצת בדיקה לאוטומציות, בלי לשלוח הודעות ובלי לשנות נתונים.", "Test runs for automations that send nothing and change no data.")],
+    ["start", text("מתחילים בחינם", "Start for free"), text("פותחים חשבון, בודקים את המערכת, ובוחרים חבילה כשמוכנים.", "Open an account, try the system, and pick a plan when you are ready.")],
   ] as const;
   return (
     <section className="ht-benefits" id="benefits" aria-labelledby="ht-benefits-title">
@@ -763,9 +816,9 @@ function Benefits() {
           <h2 id="ht-benefits-title">{text("נבנה לעסקים שרוצים סדר — ולא עוד מערכת.", "Built for businesses that want order, not another tool.")}</h2>
         </div>
         <ul className="ht-benefit-grid">
-          {items.map(([title, body], index) => (
-            <li key={title} data-reveal style={{ transitionDelay: `${(index % 3) * 70}ms` }}>
-              <span className="ht-benefit-mark" aria-hidden="true" />
+          {items.map(([kind, title, body]) => (
+            <li key={title} data-reveal>
+              <span className="ht-benefit-icon"><BenefitIcon kind={kind} /></span>
               <h3>{title}</h3>
               <p>{body}</p>
             </li>
