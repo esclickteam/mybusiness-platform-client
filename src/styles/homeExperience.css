@@ -2073,8 +2073,8 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   to { opacity: 1; transform: none; }
 }
 @keyframes pm-drop {
-  from { top: 0; }
-  to { top: calc(100% - 8px); }
+  from { transform: translateY(calc(-2.15rem + 8px)); }
+  to { transform: none; }
 }
 @keyframes pm-draw {
   from { transform: scaleX(0); }
@@ -2085,20 +2085,20 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   to { transform: scaleY(1); }
 }
 @keyframes pm-bead {
-  from { left: 0; }
-  to { left: calc(100% - 9px); }
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100cqi - 9px)); }
 }
 @keyframes pm-bead-rtl {
-  from { right: 0; }
-  to { right: calc(100% - 9px); }
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100cqi + 9px)); }
 }
 @keyframes pm-nudge {
   from { transform: translateY(8px); }
   to { transform: none; }
 }
 @keyframes pm-bead-y {
-  from { top: 0.4rem; }
-  to { top: calc(100% - 1.1rem); }
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(100cqb - 9px)); }
 }
 
 .pm-meta,
@@ -2214,6 +2214,7 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   inset-inline: 12%;
   height: 3px;
   background: transparent;
+  container-type: inline-size;
   transform-origin: left center;
 }
 [dir="rtl"] .pm-flow__track { transform-origin: right center; }
@@ -2324,7 +2325,16 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   font-size: 0.9rem;
   font-weight: 800;
 }
-.ht-ai-card .ht-card-body { flex: 0 0 auto; }
+.ht-ai-grid { gap: 0.7rem; }
+.ht-ai-card { border-color: rgba(91, 33, 182, 0.1); background: #fbfaff; }
+.ht-ai-card:hover { transform: none; box-shadow: none; }
+.ht-ai-card .ht-card-body {
+  flex: 0 0 auto;
+  gap: 0.3rem;
+  padding: 0.7rem 0.9rem;
+}
+.ht-ai-card h3 { font-size: 0.98rem; }
+.ht-ai-card p { color: #6b6580; font-size: 0.9rem; line-height: 1.4; }
 
 .pm-week__phone { display: none; }
 .pm-week__row {
@@ -2344,8 +2354,9 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
 }
 .pm-week__row > span:first-child { justify-content: flex-start; padding-inline-start: 0.7rem; }
 .pm-week__row.is-head { min-height: 2.3rem; color: #1a0b33; }
-.pm-week__row .is-day { background: #f4f0fb; color: #5b21b6; }
-.pm-week__row .is-now { color: #5b21b6; }
+.pm-week__row .is-day { background: #efe8ff; color: #5b21b6; }
+.pm-week__row.is-head .is-day { background: #5b21b6; color: #fff; }
+.pm-week__row .is-now { color: #5b21b6; font-weight: 800; }
 .pm-week__row > span.is-day { padding: 0.18rem; }
 .pm-week__event {
   display: flex;
@@ -2358,6 +2369,7 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   background: #5b21b6;
   color: #fff;
   font-style: normal;
+  box-shadow: 0 8px 16px -10px rgba(91, 33, 182, 0.95);
 }
 .pm-week__event b,
 .pm-week__event small {
@@ -2410,6 +2422,7 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
     width: 2px;
     inset-inline: auto;
     inset-inline-start: 1.55rem;
+    container-type: size;
     transform-origin: center top;
   }
   .pm-flow__track b {
@@ -2432,7 +2445,7 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
     font-weight: 800;
     text-align: center;
   }
-  .pm-week__days .is-on { background: #f4f0fb; color: #5b21b6; }
+  .pm-week__days .is-on { background: #5b21b6; color: #fff; }
   .pm-week__agenda {
     display: grid;
     grid-template-columns: 4.2rem minmax(0, 1fr);
