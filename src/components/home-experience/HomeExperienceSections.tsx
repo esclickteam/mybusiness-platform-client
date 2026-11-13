@@ -855,7 +855,7 @@ function Faq() {
           {items.map(([question, answer], index) => {
             const on = open === index;
             return (
-              <div className={on ? "ht-faq-item is-open" : "ht-faq-item"} key={question} data-reveal>
+              <div className={on ? "ht-faq-item is-open" : "ht-faq-item"} key={question}>
                 <h3>
                   <button type="button" aria-expanded={on} onClick={() => setOpen(on ? null : index)}>
                     <span>{question}</span>

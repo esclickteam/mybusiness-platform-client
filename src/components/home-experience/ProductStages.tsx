@@ -322,8 +322,8 @@ const LEADS: {
   noteEn: string;
 }[] = [
   { id: "tamar", he: "תמר לוי", en: "Tamar Levi", placeHe: "פנייה מהאתר", placeEn: "Website enquiry", sourceHe: "טופס באתר", sourceEn: "Website form", noteHe: "ביקשה לשמוע על חבילת צילום.", noteEn: "Asked to hear about a photo package." },
-  { id: "noa", he: "נועה ברק", en: "Noa Barak", placeHe: "סטודיו נורה", placeEn: "Nora Studio", sourceHe: "מודעת לידים ב־Meta", sourceEn: "Meta lead ad", noteHe: "שאלה על צילום אחרי שראתה את המודעה.", noteEn: "Asked about a shoot after seeing the ad." },
-  { id: "yael", he: "יעל דהן", en: "Yael Dahan", placeHe: "מודעת לידים ב־Meta", placeEn: "Meta lead ad", sourceHe: "מודעת לידים ב־Meta", sourceEn: "Meta lead ad", noteHe: "שוחחנו, וממתינים לתשובה שלה.", noteEn: "We spoke, and are waiting on her reply." },
+  { id: "noa", he: "נועה ברק", en: "Noa Barak", placeHe: "סטודיו נורה", placeEn: "Nora Studio", sourceHe: "Meta", sourceEn: "Meta", noteHe: "שאלה על צילום אחרי שראתה את המודעה.", noteEn: "Asked about a shoot after seeing the ad." },
+  { id: "yael", he: "יעל דהן", en: "Yael Dahan", placeHe: "מודעת לידים ב־Meta", placeEn: "Meta lead ad", sourceHe: "Meta", sourceEn: "Meta", noteHe: "שוחחנו, וממתינים לתשובה שלה.", noteEn: "We spoke, and are waiting on her reply." },
 ];
 
 export function CrmStage() {

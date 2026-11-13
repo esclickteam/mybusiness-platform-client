@@ -3114,17 +3114,17 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
 .ht-faq-item.is-open button i::after { transform: rotate(0deg); }
 .ht-faq-item button:hover { color: #5b21b6; }
 .ht-faq-a {
-  display: grid;
-  grid-template-rows: 0fr;
-  transition: grid-template-rows 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  display: none;
+  background: #f6f4fb;
 }
-.ht-faq-item.is-open .ht-faq-a { grid-template-rows: 1fr; }
-.ht-faq-a > div { overflow: hidden; }
+.ht-faq-item.is-open .ht-faq-a { display: block; }
+.ht-faq-a > div { overflow: visible; }
 .ht-faq-a p {
   max-width: none;
   margin: 0;
-  padding: 0 1rem 1rem;
-  color: #4b4560;
+  padding: 0.85rem 1rem 1rem;
+  background: transparent;
+  color: #3f3a52;
   line-height: 1.65;
 }
 .ht-faq-more {
