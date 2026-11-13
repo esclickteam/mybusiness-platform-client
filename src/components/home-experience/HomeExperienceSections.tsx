@@ -813,7 +813,13 @@ function Benefits() {
       <div className="ht-wrap">
         <div className="ht-head" data-reveal>
           <p className="ht-eyebrow">{text("יתרונות מרכזיים", "Key benefits")}</p>
-          <h2 id="ht-benefits-title">{text("כל מה שהעסק צריך. במקום אחד.", "Everything the business needs. In one place.")}</h2>
+          <h2 id="ht-benefits-title">
+            {text("כל מה שהעסק צריך", "Everything the business needs")}
+            <span className="ht-stop">.</span>
+            {" "}
+            {text("במקום אחד", "In one place")}
+            <span className="ht-stop">.</span>
+          </h2>
         </div>
         <ul className="ht-benefit-grid">
           {items.map(([kind, title, body]) => (

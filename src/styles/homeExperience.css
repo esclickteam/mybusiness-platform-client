@@ -856,6 +856,9 @@ html.hx-preview body {
   line-height: 1.12;
   letter-spacing: -0.025em;
 }
+[dir="rtl"] #ht-benefits-title .ht-stop {
+  margin-inline-start: -0.22em;
+}
 .ht-root h3 {
   margin: 0;
   color: #1a0b33;
