@@ -6,25 +6,10 @@ import { HOME_FAQ, HOME_FAQ_TITLE } from "../../lib/homeFaq.mjs";
 import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
-import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import films from "./theaterFilms.json";
+import ProductScene, { type SceneId } from "./ProductScenes";
+import ProductTheater, { type TheaterStep } from "./ProductTheater";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t6";
-
-type FilmKey = keyof typeof films;
-
-function filmFor(key: FilmKey): TheaterFilm {
-  const spec = films[key];
-  return {
-    src: `${MEDIA}/theater/${key}.mp4?v=${FILM_VERSION}`,
-    poster: `${MEDIA}/theater/${key}.webp?v=${FILM_VERSION}`,
-    width: spec.width,
-    height: spec.height,
-    duration: spec.duration,
-    chapters: spec.chapters,
-  };
-}
 
 function faqLocale(language: string) {
   const value = language.toLowerCase();
@@ -168,32 +153,10 @@ function Waves({ className = "" }: { className?: string }) {
   );
 }
 
-function Shot({
-  name,
-  alt,
-  caption,
-  priority = false,
-}: {
-  name: string;
-  alt: string;
-  caption?: string;
-  priority?: boolean;
-}) {
-  const { language } = useCopy();
-  const lang = language.startsWith("he") ? "he" : "en";
+function SceneFrame({ scene, caption }: { scene: SceneId; caption?: string }) {
   return (
-    <figure className="ht-shot" data-reveal>
-      <picture>
-        <source media="(max-width: 760px)" srcSet={`${MEDIA}/screens/${lang}-mobile-${name}.webp`} width={900} height={1948} />
-        <img
-          src={`${MEDIA}/screens/${lang}-desktop-${name}.webp`}
-          alt={alt}
-          width={2400}
-          height={1500}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-        />
-      </picture>
+    <figure className="ps-figure" data-reveal>
+      <ProductScene scene={scene} />
       {caption ? <figcaption>{caption}</figcaption> : null}
     </figure>
   );
@@ -209,6 +172,7 @@ function Feature({
   shot,
   flip = false,
   note,
+  layout,
 }: {
   id: string;
   eyebrow: string;
@@ -219,9 +183,10 @@ function Feature({
   shot: ReactNode;
   flip?: boolean;
   note?: string;
+  layout?: "stage" | "ink" | "flow" | "board";
 }) {
   return (
-    <section className={`ht-feature${flip ? " is-flip" : ""}`} id={id} aria-labelledby={`${id}-title`}>
+    <section className={`ht-feature${flip ? " is-flip" : ""}${layout ? ` is-${layout}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
       <div className="ht-wrap ht-feature-grid">
         <div className="ht-feature-copy" data-reveal>
           <p className="ht-eyebrow">{eyebrow}</p>
@@ -262,6 +227,7 @@ export default function HomeExperienceSections() {
         <WhatsApp />
         <Automations />
         <Campaigns />
+        <Appointments />
         <AiTools />
         <Websites />
         <Benefits />
@@ -288,9 +254,8 @@ function useSteps(): TheaterStep[] {
 }
 
 function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
-  const { cine, language } = useCopy();
+  const { cine } = useCopy();
   const hero = cine.hero;
-  const lang = language.startsWith("he") ? "he" : "en";
   const hot = Math.max(0, String(hero.lineTwo).trim().split(/\s+/).length - 1);
   const steps = useSteps();
   return (
@@ -335,8 +300,6 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
       <div className="hx-hero-stage" id="product-theater">
         <div className="hx-hero-stage-inner">
           <ProductTheater
-            desktop={filmFor(`${lang}-desktop` as FilmKey)}
-            mobile={filmFor(`${lang}-mobile` as FilmKey)}
             steps={steps}
             seekRequest={seek}
             labels={{
@@ -356,6 +319,8 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
 
 function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
   const { text } = useCopy();
+  const [active, setActive] = useState(0);
+  const scenes = ["lead", "crm", "whatsapp", "task", "automation"] as const;
   const stages = [
     [text("הפנייה נכנסת", "The enquiry arrives"), text("מטופס באתר, מקמפיין Meta או מחיבור לידים — עם המקור שלה.", "From a site form, a Meta campaign or a lead connection — with its source."), 0],
     [text("מסדרים ב־CRM", "Organize it in the CRM"), text("כרטיס לקוח, סטטוס, הערות והיסטוריה במקום אחד.", "A customer record, status, notes and history in one place."), 1],
@@ -376,70 +341,187 @@ function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
             )}
           </p>
         </div>
-        <ol className="ht-flow">
-          {stages.map(([title, body, chapter], index) => (
-            <li key={title} data-reveal style={{ transitionDelay: `${index * 70}ms` }}>
-              <span className="ht-flow-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <h3>{title}</h3>
-              <p>{body}</p>
-              <button type="button" className="ht-link-btn" onClick={() => onWatch(chapter)}>
-                {text("לצפות בשלב הזה", "Watch this step")}
-              </button>
-            </li>
-          ))}
-        </ol>
+        <div className="ht-how-layout">
+          <div className="ht-how-stage" data-reveal>
+            {scenes.map((scene, index) => (
+              <div className={`ht-how-scene${index === active ? " is-on" : ""}`} key={scene}>
+                <ProductScene scene={scene} />
+              </div>
+            ))}
+          </div>
+          <ol className="ht-flow ht-flow-rail">
+            {stages.map(([title, body, chapter], index) => (
+              <li
+                key={title}
+                className={index === active ? "is-active is-in" : index < active ? "is-in" : undefined}
+                data-reveal
+                style={{ transitionDelay: `${index * 70}ms` }}
+                onMouseEnter={() => setActive(index)}
+                onFocus={() => setActive(index)}
+                onClick={() => setActive(index)}
+              >
+                <span className="ht-flow-num" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+                <button type="button" className="ht-link-btn" onClick={() => onWatch(chapter)}>
+                  {text("לצפות בשלב הזה", "Watch this step")}
+                </button>
+              </li>
+            ))}
+          </ol>
+        </div>
       </div>
     </section>
   );
 }
 
 function Crm() {
-  const { text } = useCopy();
+  const { text, cine } = useCopy();
+  const name = cine.hero.leadName || "Dana Levi";
+  const lanes = [
+    {
+      status: text("חדש", "New"),
+      items: [
+        [text("טופס באתר", "Website form"), text("מקור נוסף ברשימה", "Another source on the list")],
+        [text("טופס Meta", "Meta form"), text("נכנס לרשימת הלידים", "Arrives on the lead list")],
+      ],
+    },
+    {
+      status: text("מתעניין", "Interested"),
+      hot: true,
+      items: [[name, text("מקור בדיקה", "Test source")]],
+    },
+    {
+      status: text("פגישה", "Meeting"),
+      items: [[text("שיחת המשך", "Follow-up call"), text("יום חמישי, 10:00", "Thursday, 10:00")]],
+    },
+  ];
   return (
-    <Feature
-      id="crm"
-      eyebrow={text("CRM וניהול לידים", "CRM and lead management")}
-      title={text("כל ליד, כל שיחה, כל משימה — בכרטיס אחד.", "Every lead, conversation and task — on one record.")}
-      lead={text(
-        "רשימת לידים שאפשר לסנן, כרטיס לקוח עם סטטוס, מקור, הערות, משימות ופגישות, והיסטוריית פעילות שנשמרת אוטומטית.",
-        "A lead list you can filter, a customer record with status, source, notes, tasks and meetings, and an activity history that saves itself.",
-      )}
-      points={[
-        text("סטטוסים מותאמים לתהליך המכירה", "Statuses that match your sales process"),
-        text("מקור הליד נשמר על כל רשומה", "The lead source is kept on every record"),
-        text("הערות, תיעוד שיחות ומשימות עם מועד", "Notes, call logs and dated tasks"),
-        text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
-      ]}
-      link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
-      shot={<Shot name="crm-card" alt={text("כרטיס לקוח בתוך BizUply עם סטטוס, משימות ופעילות", "A customer record in BizUply with status, tasks and activity")} />}
-    />
+    <section className="ht-ad ht-ad-crm" id="crm" aria-labelledby="crm-title">
+      <div className="ht-wrap ht-ad-crm-stage">
+        <div className="ht-ad-copy">
+          <p className="ht-eyebrow">{text("CRM וניהול לידים", "CRM and lead management")}</p>
+          <h2 id="crm-title">{text("כל ליד, כל שיחה, כל משימה — בכרטיס אחד.", "Every lead, conversation and task — on one record.")}</h2>
+          <p className="ht-lead">
+            {text(
+              "רשימת לידים שאפשר לסנן, כרטיס לקוח עם סטטוס, מקור, הערות, משימות ופגישות, והיסטוריית פעילות שנשמרת אוטומטית.",
+              "A lead list you can filter, a customer record with status, source, notes, tasks and meetings, and an activity history that saves itself.",
+            )}
+          </p>
+          <ul className="ht-points">
+            {[
+              text("סטטוסים מותאמים לתהליך המכירה", "Statuses that match your sales process"),
+              text("מקור הליד נשמר על כל רשומה", "The lead source is kept on every record"),
+              text("הערות, תיעוד שיחות ומשימות עם מועד", "Notes, call logs and dated tasks"),
+              text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
+            ].map((point) => (
+              <li key={point}>{point}</li>
+            ))}
+          </ul>
+          <div className="hx-actions">
+            <Cta to="/crm" tone="light">{text("להכיר את ה־CRM", "Explore the CRM")}</Cta>
+          </div>
+        </div>
+        <div className="ht-ad-board" aria-hidden="true">
+          <div className="ht-ad-lanes">
+            {lanes.map((lane) => (
+              <section key={lane.status} className={lane.hot ? "is-hot" : undefined}>
+                <header>{lane.status}</header>
+                {lane.items.map(([title, detail]) => (
+                  <article key={title}>
+                    <strong>{title}</strong>
+                    <small>{detail}</small>
+                  </article>
+                ))}
+              </section>
+            ))}
+          </div>
+          <article className="ht-ad-record">
+            <p>{cine.hero.leadStatus}</p>
+            <h3>{name}</h3>
+            <p>{cine.hero.leadBody}</p>
+            <dl>
+              <div>
+                <dt>{text("מקור", "Source")}</dt>
+                <dd>{text("המקור נשמר על הרשומה", "The source stays on the record")}</dd>
+              </div>
+              <div>
+                <dt>{text("הערת שיחה", "Call note")}</dt>
+                <dd>{text("שיחה. מתעניינת בשירות.", "Called. Interested in the service.")}</dd>
+              </div>
+              <div>
+                <dt>{text("כרטיס", "Record")}</dt>
+                <dd>{text("נשמר בהיסטוריית הלקוח", "Saved to the customer history")}</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </div>
+    </section>
   );
 }
 
 function WhatsApp() {
-  const { text } = useCopy();
+  const { text, cine } = useCopy();
+  const name = cine.hero.leadName || "Dana Levi";
+  const signals = [
+    [text("תיבה", "Inbox"), text("תיבת דואר נכנס לכל הצוות", "One inbox for the whole team")],
+    [text("תבנית מעקב", "Follow-up template"), text("תבניות הודעה מאושרות לשליחה יזומה", "Approved templates for outbound messages")],
+    [text("נתוני שליחה", "Delivery data"), text("נתוני שליחה, קריאה ותגובה", "Sent, read and reply data")],
+  ];
   return (
-    <Feature
-      id="whatsapp"
-      flip
-      eyebrow="WhatsApp Business API"
-      title={text("השיחות עם הלקוחות, מחוברות לעסק.", "Customer conversations, connected to the business.")}
-      lead={text(
-        "חיבור רשמי ל־WhatsApp Business API דרך Meta: תיבת שיחות משותפת, תבניות הודעה, נתוני ביצועים וחיבור לכרטיס הלקוח.",
-        "An official WhatsApp Business API connection through Meta: a shared inbox, message templates, performance data and a link to the customer record.",
-      )}
-      points={[
-        text("תיבת דואר נכנס לכל הצוות", "One inbox for the whole team"),
-        text("תבניות הודעה מאושרות לשליחה יזומה", "Approved templates for outbound messages"),
-        text("נתוני שליחה, קריאה ותגובה", "Sent, read and reply data"),
-      ]}
-      note={text(
-        "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
-        "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
-      )}
-      link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
-      shot={<Shot name="whatsapp" alt={text("תיבת השיחות של WhatsApp בתוך BizUply", "The WhatsApp conversation inbox in BizUply")} />}
-    />
+    <section className="ht-ad ht-ad-wa" id="whatsapp" aria-labelledby="whatsapp-title">
+      <div className="ht-wrap ht-ad-wa-stage">
+        <div className="ht-ad-handset" aria-hidden="true">
+          <div className="ht-ad-phone">
+            <header>
+              <strong>WhatsApp</strong>
+              <small>{name}</small>
+            </header>
+            <div className="ht-ad-thread">
+              <p className="is-in">{text("שלום, שלחתי פנייה לגבי השירות.", "Hi, I sent an enquiry about the service.")}</p>
+              <p className="is-out">{text("תודה. אפשר להציע זמן להמשך.", "Thanks. I can suggest a time to continue.")}</p>
+            </div>
+            <footer>
+              <span>{text("נשמר בשיחה", "Saved in this thread")}</span>
+              <span>{text("חלון 24 שעות", "24-hour window")}</span>
+            </footer>
+          </div>
+          <p className="ht-ad-linkback">
+            <span>{name.slice(0, 1)}</span>
+            <strong>{name}</strong>
+            <small>{text("מחובר לכרטיס הלקוח", "Linked to the customer record")}</small>
+          </p>
+        </div>
+        <div className="ht-ad-copy">
+          <p className="ht-eyebrow">WhatsApp Business API</p>
+          <h2 id="whatsapp-title">{text("השיחות עם הלקוחות, מחוברות לעסק.", "Customer conversations, connected to the business.")}</h2>
+          <p className="ht-lead">
+            {text(
+              "חיבור רשמי ל־WhatsApp Business API דרך Meta: תיבת שיחות משותפת, תבניות הודעה, נתוני ביצועים וחיבור לכרטיס הלקוח.",
+              "An official WhatsApp Business API connection through Meta: a shared inbox, message templates, performance data and a link to the customer record.",
+            )}
+          </p>
+          <ol className="ht-ad-signals">
+            {signals.map(([kicker, line]) => (
+              <li key={kicker}>
+                <span>{kicker}</span>
+                <strong>{line}</strong>
+              </li>
+            ))}
+          </ol>
+          <p className="ht-note">
+            {text(
+              "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
+              "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
+            )}
+          </p>
+          <div className="hx-actions">
+            <Cta to="/whatsapp-api">{text("להכיר את WhatsApp API", "Explore the WhatsApp API")}</Cta>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -461,7 +543,8 @@ function Automations() {
       ]}
       note={text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}
       link={["/automations", text("להכיר את האוטומציות", "Explore automations")]}
-      shot={<Shot name="automation" alt={text("עורך האוטומציות עם תוצאות הרצת בדיקה", "The automation editor with test-run results")} caption={text("הרצת בדיקה אמיתית בעורך האוטומציות", "A real test run in the automation editor")} />}
+      layout="flow"
+      shot={<SceneFrame scene="automation" caption={text("הרצת בדיקה אמיתית בעורך האוטומציות", "A real test run in the automation editor")} />}
     />
   );
 }
@@ -471,7 +554,6 @@ function Campaigns() {
   return (
     <Feature
       id="campaigns"
-      flip
       eyebrow={text("קמפיינים ושיווק", "Campaigns and marketing")}
       title={text("הקמפיין, הלידים והתוצאות — באותו מקום.", "The campaign, the leads and the results — in one place.")}
       lead={text(
@@ -485,14 +567,39 @@ function Campaigns() {
       ]}
       note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
       link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
-      shot={<Shot name="campaigns" alt={text("סקירת קמפיינים של Meta בתוך BizUply", "Meta campaign overview in BizUply")} />}
+      layout="board"
+      shot={<SceneFrame scene="meta" />}
+    />
+  );
+}
+
+function Appointments() {
+  const { text } = useCopy();
+  return (
+    <Feature
+      id="appointments"
+      flip
+      eyebrow={text("יומן פגישות", "Appointments")}
+      title={text("הפגישות של היום, ביומן אחד.", "The day's bookings, on one calendar.")}
+      lead={text(
+        "מגדירים שעות לכל יום, מוסיפים שירות עם משך ומחיר, ופותחים מועדים של 15 דקות שהלקוח יכול לקבוע בעמוד ציבורי. הפגישה נשמרת על כרטיס הלקוח.",
+        "Set hours for each weekday, add services with a duration and a price, and open 15-minute slots a customer can book on a public page. The appointment stays on the customer record.",
+      )}
+      points={[
+        text("שעות הפעילות קובעות את המועדים הפנויים", "Business hours shape the open slots"),
+        text("כל תור שומר את השירות, המחיר, סטטוס התשלום והערה", "Each booking keeps the service, price, payment status and a note"),
+        text("הפגישה מחוברת לכרטיס הלקוח", "The appointment is tied to the customer"),
+      ]}
+      note={text("קביעת תורים ללקוחות היא חלק ממסלול העסק.", "Customer booking is part of the business plan.")}
+      link={["/appointments", text("להכיר את היומן", "Explore appointments")]}
+      layout="board"
+      shot={<SceneFrame scene="calendar" />}
     />
   );
 }
 
 function AiTools() {
-  const { text, language } = useCopy();
-  const lang = language.startsWith("he") ? "he" : "en";
+  const { text } = useCopy();
   const tools = [
     {
       title: text("היועץ העסקי", "Business Advisor"),
@@ -502,9 +609,6 @@ function AiTools() {
       ),
       to: "/register",
       cta: text("לנסות בחשבון חינמי", "Try it on a free account"),
-      image: `${MEDIA}/screens/${lang}-desktop-ai.webp`,
-      mobile: `${MEDIA}/screens/${lang}-mobile-ai.webp`,
-      alt: text("היועץ העסקי בתוך BizUply", "The Business Advisor in BizUply"),
     },
     {
       title: text("אוטומציות AI", "AI automations"),
@@ -514,9 +618,6 @@ function AiTools() {
       ),
       to: "/automations",
       cta: text("להכיר את האוטומציות", "Explore automations"),
-      image: `${MEDIA}/screens/${lang}-desktop-ai-auto.webp`,
-      mobile: `${MEDIA}/screens/${lang}-mobile-ai-auto.webp`,
-      alt: text("תבניות אוטומציות AI בתוך BizUply", "AI automation templates in BizUply"),
     },
   ];
   return (
@@ -532,15 +633,12 @@ function AiTools() {
             )}
           </p>
         </div>
+        <div className="ht-ai-stage" data-reveal>
+          <ProductScene scene="advisor" />
+        </div>
         <div className="ht-ai-grid">
           {tools.map((tool) => (
             <article className="ht-card ht-ai-card" key={tool.title} data-reveal>
-              <figure className="ht-shot ht-shot-flat">
-                <picture>
-                  <source media="(max-width: 760px)" srcSet={tool.mobile} width={900} height={1948} />
-                  <img src={tool.image} alt={tool.alt} width={2400} height={1500} loading="lazy" decoding="async" />
-                </picture>
-              </figure>
               <div className="ht-card-body">
                 <h3>{tool.title}</h3>
                 <p>{tool.body}</p>
