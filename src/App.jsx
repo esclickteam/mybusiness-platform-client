@@ -22,6 +22,9 @@ import Footer from "./components/Footer";
 const ComplianceScannerPage = lazy(() => import("./pages/public/ComplianceScannerPage"));
 const ComplianceDemoPage = lazy(() => import("./pages/public/ComplianceDemoPage"));
 const WebsiteScanPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.WebsiteScanPage })));
+const SearchVisibilityMarketing = lazy(() => import("./pages/searchVisibility/SearchVisibilityMarketing"));
+const SearchVisibilityApp = lazy(() => import("./pages/searchVisibility/SearchVisibilityApp"));
+const SearchVisibilityAdminPage = lazy(() => import("./pages/admin/SearchVisibilityAdminPage"));
 const ComplianceAccountPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.ComplianceAccountPage })));
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
@@ -983,7 +986,7 @@ export default function App() {
   const isCinematicHome =
     !isPrivateOwnerHost &&
     (location.pathname === "/" || isHomePreview);
-  const shareSiteHeader = isCinematicHome || /\/website-scan\/?$/.test(location.pathname);
+  const shareSiteHeader = isCinematicHome || /\/website-scan\/?$/.test(location.pathname) || /\/seo-scanner\/?$/.test(location.pathname);
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -1370,6 +1373,15 @@ export default function App() {
                         <Route path="/compliance/account" element={<ComplianceAccountPage />} />
                         <Route path="/compliance/demo" element={<ComplianceDemoPage />} />
                         <Route path="/website-scan" element={<WebsiteScanPage />} />
+                        <Route path="/seo-scanner" element={<SearchVisibilityMarketing />} />
+                        <Route
+                          path="/search-visibility"
+                          element={
+                            <ProtectedRoute roles={["admin", "business", "manager"]}>
+                              <SearchVisibilityApp />
+                            </ProtectedRoute>
+                          }
+                        />
                         <Route path="/compliance/review" element={<ComplianceScannerPage />} />
                         <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
                         <Route path="/compliance" element={<ComplianceScannerPage />} />
@@ -1775,6 +1787,7 @@ export default function App() {
                         <Route path="logs" element={<AdminLogs />} />
                         <Route path="compliance-scans/:scanId" element={<ComplianceScanDetailPage />} />
                         <Route path="compliance-scans" element={<ComplianceScansAdminPage />} />
+                        <Route path="search-visibility" element={<SearchVisibilityAdminPage />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
                         <Route path="geo-intel" element={<AdminGeoIntel />} />
                         <Route path="global-partners" element={<AdminGlobalPartners />} />
