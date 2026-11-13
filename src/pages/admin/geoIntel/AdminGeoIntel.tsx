@@ -44,6 +44,7 @@ import {
   WeeklyActionsPanel,
 } from "./DecisionPanels";
 import KeywordResearchPanel from "./KeywordResearchPanel";
+import SourceMapPanel from "./SourceMapPanel";
 import type { Brand, Engine, Tab } from "./types";
 import "./geoIntel.css";
 
@@ -439,6 +440,7 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
     { id: "discovery", label: "גילוי שאלות" },
     { id: "competitors", label: copy.navCompetitors },
     { id: "citations", label: "מקורות וציטוטים" },
+    { id: "sourceMap", label: "מפת מקורות AI" },
     { id: "opportunities", label: "הזדמנויות" },
     { id: "improvementPlan", label: copy.navImprovementPlan },
     { id: "content", label: "ניתוח תוכן" },
@@ -1148,6 +1150,14 @@ export default function AdminGeoIntel({ stagingInfo = null }: Props) {
                 </>
               )}
             </section>
+          ) : null}
+
+          {tab === "sourceMap" ? (
+            <SourceMapPanel
+              brandId={brandId}
+              brandName={activeBrand?.name || ""}
+              params={filterParams}
+            />
           ) : null}
 
           {tab === "citations" ? (
