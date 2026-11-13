@@ -12,7 +12,7 @@ import { AiStage, CalendarStage, CrmStage, FlowStage, JourneyStage, MetaStage, W
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t6";
+const FILM_VERSION = "t7";
 
 type FilmKey = keyof typeof films;
 

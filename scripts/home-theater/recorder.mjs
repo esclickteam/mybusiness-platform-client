@@ -24,39 +24,59 @@ export function cursorScript(mode = "desktop") {
     style.textContent = \`
       #bz-cursor{position:fixed;left:0;top:0;z-index:2147483647;pointer-events:none;will-change:transform;
         transform:translate(-200px,-200px)}
-      #bz-cursor.is-arrow{width:26px;height:26px;filter:drop-shadow(0 2px 3px rgba(20,10,60,.35))}
-      #bz-cursor.is-arrow svg{width:26px;height:26px;transition:transform .12s ease;transform-origin:4px 2px}
-      #bz-cursor.is-arrow.is-down svg{transform:scale(.85)}
+      #bz-cursor.is-arrow{width:58px;height:58px;filter:drop-shadow(0 4px 6px rgba(20,10,40,.38))}
+      #bz-cursor.is-arrow svg{width:58px;height:58px;transition:transform .12s ease;transform-origin:20px 7px}
+      #bz-cursor.is-arrow.is-rtl svg{transform:scaleX(-1)}
+      #bz-cursor.is-arrow.is-down svg{transform:scale(.86)}
+      #bz-cursor.is-arrow.is-rtl.is-down svg{transform:scaleX(-1) scale(.86)}
+      .bz-hot{outline:3px solid #5b21b6 !important;outline-offset:2px !important;box-shadow:0 0 0 6px rgba(91,33,182,.16) !important}
       #bz-cursor.is-touch{width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;
         background:rgba(108,60,240,.22);border:2px solid rgba(108,60,240,.85);box-shadow:0 2px 8px rgba(40,20,120,.25);
         transition:transform .12s ease, background .12s ease}
       #bz-cursor.is-touch.is-down{background:rgba(108,60,240,.45)}
       .bz-ripple{position:fixed;z-index:2147483646;pointer-events:none;width:16px;height:16px;margin:-8px 0 0 -8px;
         border-radius:50%;border:2.5px solid rgba(108,60,240,.95);background:rgba(108,60,240,.16);
-        animation:bz-rip .62s cubic-bezier(.2,.7,.3,1) forwards}
+        animation:bz-rip .38s cubic-bezier(.2,.7,.3,1) forwards}
       @keyframes bz-rip{to{transform:scale(4);opacity:0}}
     \`;
     document.head.appendChild(style);
     const el = document.createElement('div');
     el.id = 'bz-cursor';
     el.className = touch ? 'is-touch' : 'is-arrow';
-    if (!touch) el.innerHTML = '<svg viewBox="0 0 24 24"><path d="M4 2.5 L4 19.5 L8.6 15.3 L11.6 22 L14.7 20.6 L11.8 14 L18 14 Z" fill="#fff" stroke="#17123a" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+    if (!touch) el.innerHTML = '<svg viewBox="0 0 64 64"><path d="M20 5.5c-1.7 0-3 1.5-3 3.3V28c-2.6.2-5.2 1.6-6.4 4.2l-3.6 7.6c-.9 1.9-.1 4.2 1.8 5.1 1.1.5 2.2.4 3.1-.2l3.1-3.4v8.2c0 2.4 1.9 4.3 4.3 4.3h16.4c2.4 0 4.3-1.9 4.3-4.3V36.2c2.2-.3 3.8-2.2 3.8-4.4v-5.2c0-2.2-1.8-4-4-4h-.4V18.2c0-2.1-1.7-3.8-3.8-3.8h-.5v-5.6c0-2-1.6-3.3-3.6-3.3H20z" fill="#fff" stroke="#111" stroke-width="2.6" stroke-linejoin="round"/><path d="M23.2 8.2v16.4M30.4 12.4v12.2M37.2 16.2v8.4" fill="none" stroke="#111" stroke-width="1.6" stroke-linecap="round"/></svg>';
     document.documentElement.appendChild(el);
+    const tipX = 20, tipY = 7;
     const place = (x, y) => {
-      el.style.transform = touch ? 'translate(' + x + 'px,' + y + 'px)' : 'translate(' + (x - 4) + 'px,' + (y - 2) + 'px)';
+      const rtl = document.documentElement.dir === 'rtl' || getComputedStyle(document.documentElement).direction === 'rtl';
+      el.classList.toggle('is-rtl', rtl && !touch);
+      el.style.transform = touch ? 'translate(' + x + 'px,' + y + 'px)' : 'translate(' + (x - tipX) + 'px,' + (y - tipY) + 'px)';
+    };
+    let hot = null;
+    const mark = (x, y, on) => {
+      const node = document.elementFromPoint(x, y);
+      const next = node && node.closest ? node.closest('button, a, select, [role="option"], [role="tab"], summary') : null;
+      if (hot && hot !== next) hot.classList.remove('bz-hot');
+      hot = on ? next : hot;
+      if (on && next) next.classList.add('bz-hot');
+      if (!on && hot) {
+        const leave = hot;
+        setTimeout(() => leave.classList.remove('bz-hot'), 160);
+        hot = null;
+      }
     };
     const last = JSON.parse(sessionStorage.getItem('__bzCur') || 'null');
     if (last) place(last[0], last[1]);
     addEventListener('mousemove', (e) => { place(e.clientX, e.clientY); sessionStorage.setItem('__bzCur', JSON.stringify([e.clientX, e.clientY])); }, true);
     addEventListener('mousedown', (e) => {
       el.classList.add('is-down');
+      mark(e.clientX, e.clientY, true);
       const r = document.createElement('div');
       r.className = 'bz-ripple';
       r.style.left = e.clientX + 'px'; r.style.top = e.clientY + 'px';
       document.documentElement.appendChild(r);
-      setTimeout(() => r.remove(), 700);
+      setTimeout(() => r.remove(), 420);
     }, true);
-    addEventListener('mouseup', () => el.classList.remove('is-down'), true);
+    addEventListener('mouseup', (e) => { el.classList.remove('is-down'); mark(e.clientX, e.clientY, false); }, true);
   };
   mount();
 })();
