@@ -171,6 +171,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
   const [packageId, setPackageId] = useState("pages10");
   const [locale, setLocale] = useState<keyof typeof DISCOVERY_COPY>("he");
   const [note, setNote] = useState("");
+  const [busy, setBusy] = useState("");
   const copy = DISCOVERY_COPY[locale];
   const packName = (id: string) => id === "pages30" ? copy.extended : id === "pages100" ? copy.advanced : copy.basic;
   const headers = () => {
@@ -207,51 +208,78 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
     const cap = data.recommended?.extra ? 100 : data.recommended?.pages || 10;
     if (data.pages) setPicked(data.pages.filter((item) => item.selectable).map((item) => item.url).slice(0, cap));
   }
-  async function discoverPages(resumeId = "") {
+  async function discoverPages(resumeId?: string) {
+    if (busy) return;
+    const resume = typeof resumeId === "string" ? resumeId : "";
     setNote("");
     setRun(null);
     let loginUrl = "";
     try { loginUrl = `${new URL(url.startsWith("http") ? url : `https://${url}`).origin}/login`; } catch { setNote(copy.url); return; }
-    const response = await fetch("/compliance/api/admin/owner-pilot/discover", {
-      method: "POST",
-      headers: headers(),
-      credentials: "include",
-      body: JSON.stringify({ url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), username, password, locale, consent, loginUrl, ...(resumeId ? { resumeId } : {}) }),
-    });
-    const data = await response.json().catch(() => ({}));
-    setPassword("");
-    if (!response.ok) { setNote(discoveryOutcome({ status: "failed", error: data.error }, locale)); return; }
-    applyDiscovery(data);
+    const payload = { url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), username, password, locale, consent, loginUrl, ...(resume ? { resumeId: resume } : {}) };
+    setBusy("discover");
+    try {
+      const response = await fetch("/compliance/api/admin/owner-pilot/discover", {
+        method: "POST",
+        headers: headers(),
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      setPassword("");
+      if (!response.ok) { setNote(discoveryOutcome({ status: "failed", error: data.error }, locale) || copy.start); return; }
+      applyDiscovery(data);
+    } catch {
+      setNote(locale === "en" ? "The request failed. Try again." : "הבקשה נכשלה. נסו שוב.");
+    } finally {
+      setBusy("");
+    }
   }
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (busy) return;
     setNote("");
     let loginUrl = "";
     try { loginUrl = `${new URL(url.startsWith("http") ? url : `https://${url}`).origin}/login`; } catch { setNote(copy.url); return; }
-    const response = await fetch("/compliance/api/admin/owner-pilot", {
-      method: "POST",
-      headers: headers(),
-      credentials: "include",
-      body: JSON.stringify({ url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), packageId, username, password, locale, loginUrl, discoveryId: discovery?.id, selected: picked }),
-    });
-    const data = await response.json().catch(() => ({}));
-    setPassword("");
-    if (!response.ok) {
-      setNote(data.error || copy.start);
-      return;
+    const payload = { url, scope: "host", exclude: exclude.split(/\s+/).filter(Boolean), packageId, username, password, locale, loginUrl, discoveryId: discovery?.id || "", selected: picked };
+    setBusy("scan");
+    try {
+      const response = await fetch("/compliance/api/admin/owner-pilot", {
+        method: "POST",
+        headers: headers(),
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      const data = await response.json().catch(() => ({}));
+      setPassword("");
+      if (!response.ok) {
+        setNote(data.error || copy.start);
+        return;
+      }
+      setRun(data);
+      setStep(5);
+    } catch {
+      setNote(locale === "en" ? "The request failed. Try again." : "הבקשה נכשלה. נסו שוב.");
+    } finally {
+      setBusy("");
     }
-    setRun(data);
   }
   async function download() {
-    if (!run) return;
+    if (!run || busy) return;
+    setBusy("pdf");
+    try {
     const response = await fetch(`/compliance/api/admin/owner-pilot/${run.id}/pdf`, { headers: headers(), credentials: "include" });
-    if (!response.ok) return;
+    if (!response.ok) { setNote(locale === "en" ? "The report could not be downloaded." : "לא ניתן להוריד את הדוח."); return; }
     const blob = await response.blob();
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
     link.download = "internal-scan.pdf";
     link.click();
     URL.revokeObjectURL(link.href);
+    } catch {
+      setNote(locale === "en" ? "The report could not be downloaded." : "לא ניתן להוריד את הדוח.");
+    } finally {
+      setBusy("");
+    }
   }
   const steps = locale === "en" ? ["Site", "Access", "Discovery", "Package", "Report"] : locale === "es" ? ["Sitio", "Acceso", "Descubrimiento", "Paquete", "Informe"] : locale === "pt-BR" ? ["Site", "Acesso", "Descoberta", "Pacote", "Relatório"] : locale === "ar" ? ["الموقع", "الدخول", "الاكتشاف", "الحزمة", "التقرير"] : ["אתר", "גישה", "גילוי", "חבילה", "דוח"];
   const excludeLabel = locale === "en" ? "Areas to skip (optional)" : locale === "es" ? "Zonas que no se escanean (opcional)" : locale === "pt-BR" ? "Áreas para não varrer (opcional)" : locale === "ar" ? "مناطق لا تُفحص (اختياري)" : "אזורים שלא לסרוק (אופציונלי)";
@@ -303,7 +331,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
         <p>{excludeNote}</p>
       </> : null}
       {step === 3 ? <>
-      <button type="button" className="scan-primary" disabled={!consent || !url || !username || !password || discovery?.status === "running"} onClick={discoverPages}>{discovery?.status === "running" ? copy.progress : copy.discover}</button>
+      <button type="button" className="scan-primary" disabled={Boolean(busy) || !consent || !url || !username || !password || discovery?.status === "running"} onClick={() => { void discoverPages(); }}>{busy === "discover" || discovery?.status === "running" ? copy.progress : copy.discover}</button>
       {discovery?.status === "running" ? <p>{copy.progress} · {discovery.percent}%</p> : null}
       {discovery && discovery.status !== "running" ? (
         <div>
@@ -311,7 +339,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
           {(discovery.discovered || discovery.unique || discovery.inaccessible || discovery.needsSelection) ? <p>{copy.found}: {discovery.discovered}. {copy.unique}: {discovery.unique}. {copy.duplicates}: {discovery.duplicates}. {copy.blocked}: {discovery.inaccessible}. {copy.publicPages}: {discovery.publicPages}. {copy.internalPages}: {discovery.internalPages}. {copy.dynamic}: {discovery.dynamicTypes}.</p> : null}
           {(discovery.screens || discovery.tabsChecked || discovery.menusOpened || discovery.menusFound || discovery.navFound || discovery.needsSelection || discovery.modals || discovery.drawers || discovery.wizards || discovery.partial) ? <p>{locale === "he" ? "מסכים" : "Screens"}: {discovery.screens || 0}. {locale === "he" ? "לשוניות" : "Tabs"}: {discovery.tabsChecked || 0}. {locale === "he" ? "חלוניות" : "Dialogs"}: {discovery.modals || 0}. {locale === "he" ? "מגירות" : "Drawers"}: {discovery.drawers || 0}. {locale === "he" ? "שלבי אשף" : "Wizard steps"}: {discovery.wizards || 0}. {locale === "he" ? "תפריטים שזוהו" : "Menus found"}: {discovery.menusFound || 0}. {locale === "he" ? "תפריטים שנפתחו" : "Menus opened"}: {discovery.menusOpened || 0}. {locale === "he" ? "פריטי ניווט" : "Navigation items"}: {discovery.navFound || 0}. {locale === "he" ? "נפתחו" : "Opened"}: {discovery.navOpened || 0}. {locale === "he" ? "לא נפתחו" : "Unopened"}: {discovery.navUnopened || 0}. {locale === "he" ? "דורש בחירת רשומה" : "Needs a record"}: {discovery.needsSelection || 0}.</p> : null}
           {discovery.navUnopened ? <p>{locale === "en" ? "More navigation areas were found and have not been opened. The screen count may be higher." : "התגלו אזורי ניווט נוספים שטרם נפתחו. מספר המסכים עשוי להיות גבוה יותר."}</p> : null}
-          {discovery.resumable ? <button type="button" onClick={() => discoverPages(discovery.id)} disabled={!password || discovery.status === "running"}>{locale === "en" ? "Continue discovery" : "המשך גילוי"}</button> : null}
+          {discovery.resumable ? <button type="button" onClick={() => { void discoverPages(discovery.id); }} disabled={Boolean(busy) || !password || discovery.status === "running"}>{locale === "en" ? "Continue discovery" : "המשך גילוי"}</button> : null}
           <ScreenTree pages={discovery.pages || []} locale={locale} picked={picked} />
           {(discovery.navItems || []).filter((item) => !item.opened && item.reason !== "skipped_collapse" && item.reason !== "current_screen").length ? (
             <ul>
@@ -351,7 +379,7 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
         </select>
       </label>
       {discovery?.recommended && discovery.status !== "failed" ? <p className="scan-recommend">{copy.recommend}: {packName(discovery.recommended.packageId)} · ${discovery.recommended.usd}</p> : null}
-      <button type="submit" className="scan-primary" disabled={!discovery || discovery.status === "running" || !picked.length}>{copy.start}</button>
+      <button type="submit" className="scan-primary" disabled={Boolean(busy) || !discovery || discovery.status === "running" || !picked.length}>{busy === "scan" ? copy.progress : copy.start}</button>
       </> : null}
       {step === 5 ? (
         <section className="scan-recommend">
@@ -363,8 +391,8 @@ function OwnerPilot({ scans = [] }: { scans?: Row[] }) {
       {step === 5 && run ? (
         <div>
           <p>{run.unique} / {run.pagesAllowed} · {run.percent}% · {run.status}</p>
-          <button type="button" onClick={() => fetch(`/compliance/api/admin/owner-pilot/${run.id}/cancel`, { method: "POST", headers: headers(), credentials: "include" }).then((response) => response.json()).then(setRun)}>{copy.stop}</button>
-          {run.reportReady ? <button type="button" onClick={download}>PDF</button> : null}
+          <button type="button" disabled={Boolean(busy)} onClick={() => { void fetch(`/compliance/api/admin/owner-pilot/${run.id}/cancel`, { method: "POST", headers: headers(), credentials: "include" }).then(async (response) => { const data = await response.json().catch(() => ({})); if (!response.ok) { setNote(locale === "en" ? "The scan could not be stopped." : "לא ניתן לעצור את הסריקה."); return; } setRun(data); }).catch(() => setNote(locale === "en" ? "The scan could not be stopped." : "לא ניתן לעצור את הסריקה.")); }}>{copy.stop}</button>
+          {run.reportReady ? <button type="button" disabled={Boolean(busy)} onClick={() => { void download(); }}>PDF</button> : null}
           <ul>{(run.findings || []).map((item) => <li key={`${item.url}-${item.title}`}>{item.outcome} · {item.title} · {item.url}</li>)}</ul>
         </div>
       ) : null}
