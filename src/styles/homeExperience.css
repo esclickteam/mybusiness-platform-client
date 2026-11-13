@@ -2507,3 +2507,709 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   .pm-week__agenda .pm-week__event small { font-size: 0.8rem; }
 }
 
+/* Product stages */
+.ht-stage {
+  position: relative;
+  padding-block: clamp(3.4rem, 6.5vw, 5.6rem);
+}
+.ht-stage-head {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  margin-bottom: 0.85rem;
+}
+.ht-root .ht-stage-head h2 {
+  max-width: 14ch;
+  font-size: clamp(1.85rem, 3.2vw, 2.7rem);
+}
+.ht-stage-lead {
+  max-width: 34rem;
+  margin: 0.7rem 0 0;
+  color: #3f3a52;
+  font-size: 1.05rem;
+  line-height: 1.5;
+}
+.ht-stage-head .hx-actions {
+  margin-top: 0;
+}
+.ht-stage-note,
+.ht-stage-links {
+  margin: 0 0 0.9rem;
+  color: #5c5670;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.ht-stage-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.2rem;
+  margin: 0.9rem 0 0;
+}
+.ht-stage-ai {
+  background:
+    radial-gradient(ellipse 42% 50% at 100% 0%, rgba(96, 165, 250, 0.16), transparent 70%),
+    linear-gradient(180deg, #fff, #f7f5ff 70%, #fff);
+}
+.ht-stage,
+.ht-stage-frame,
+.ps-crm,
+.ps-wa,
+.ps-flow,
+.ps-meta,
+.ps-ai,
+.ps-cal,
+.ps-crm-body,
+.ps-wa-body,
+.ps-flow-body,
+.ps-meta-body,
+.ps-ai-body,
+.ps-cal-body {
+  max-width: 100%;
+  min-width: 0;
+}
+.ht-stage-frame {
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  border-radius: 0.15rem;
+  background:
+    linear-gradient(165deg, rgba(255, 255, 255, 0.4), transparent 28%),
+    linear-gradient(180deg, #fbf9ff 0%, #eef3ff 100%);
+  box-shadow: 0 28px 60px -40px rgba(49, 22, 110, 0.55);
+  overflow: hidden;
+}
+.ps-crm button,
+.ps-wa button,
+.ps-flow button,
+.ps-meta button,
+.ps-ai button,
+.ps-cal button {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.ps-bar,
+.ps-crm button,
+.ps-wa button,
+.ps-flow button,
+.ps-meta button,
+.ps-ai button,
+.ps-cal button {
+  font: inherit;
+  color: inherit;
+}
+.ps-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  padding: 0.55rem 0.9rem;
+  background: linear-gradient(90deg, #3b0764, #4c1d95 42%, #1e3a8a);
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.ps-crm-body,
+.ps-wa-body,
+.ps-flow-body,
+.ps-meta-body,
+.ps-ai-body,
+.ps-cal-body {
+  align-items: start;
+  background: #fff;
+}
+.ps-crm-body {
+  display: grid;
+  grid-template-columns: minmax(0, 16.5rem) minmax(0, 1fr);
+}
+.ps-crm-list,
+.ps-wa-list,
+.ps-ai-list,
+.ps-flow-canvas,
+.ps-metrics {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ps-crm-list button,
+.ps-wa-list button,
+.ps-ai-list button,
+.ps-flow-canvas button,
+.ps-meta-switch button,
+.ps-cal-week button {
+  width: 100%;
+  border: 0;
+  border-radius: 0.15rem;
+  background: transparent;
+  text-align: start;
+  cursor: pointer;
+}
+.ps-crm-list {
+  grid-row: 1 / span 2;
+  padding: 0.7rem;
+  border-inline-end: 1px solid rgba(91, 33, 182, 0.1);
+}
+.ps-crm-list button,
+.ps-wa-list button,
+.ps-ai-list button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.7rem;
+  padding: 0.75rem 0.7rem;
+}
+.ps-crm-list button.is-on,
+.ps-wa-list button.is-on,
+.ps-ai-list button.is-on,
+.ps-flow-canvas button.is-on,
+.ps-meta-switch button.is-on,
+.ps-cal-week button.is-on {
+  background: #f4f0ff;
+  box-shadow: inset 0 0 0 1px rgba(91, 33, 182, 0.28);
+}
+.ps-crm-list strong,
+.ps-wa-list strong,
+.ps-ai-list strong,
+.ps-flow-canvas strong,
+.ps-crm-card h3,
+.ps-wa-record h3,
+.ps-flow-side h3,
+.ps-ai-rec h3,
+.ps-cal-detail h3 {
+  display: block;
+  font-size: 1rem;
+}
+.ps-crm-list small,
+.ps-wa-list small,
+.ps-ai-list small,
+.ps-flow-canvas small {
+  display: block;
+  margin-top: 0.15rem;
+  color: #6b657c;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+.ps-crm-list em,
+.ps-wa-record em,
+.ps-crm-card em,
+.ps-pass em,
+.ps-ai-yours em,
+.ps-cal-detail em {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0 0.4rem;
+  border-radius: 0.12rem;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 0.72rem;
+  font-style: normal;
+  font-weight: 800;
+}
+.ps-crm em.is-new { background: #dbeafe; color: #1d4ed8; }
+.ps-crm em.is-contact { background: #f3e8ff; color: #6d28d9; }
+.ps-crm-card,
+.ps-wa-record,
+.ps-flow-side,
+.ps-meta-side,
+.ps-cal-detail {
+  padding: 1.15rem 1.2rem 1.25rem;
+}
+.ps-crm-card > p,
+.ps-wa-record > p,
+.ps-flow-side > p:first-child,
+.ps-ai-rec > p,
+.ps-ai-yours > p,
+.ps-cal-detail > p:first-child,
+.ps-pass > span,
+.ps-meta-chart header span {
+  margin: 0;
+  color: #6d28d9;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ps-crm-card h3,
+.ps-wa-record h3,
+.ps-cal-detail h3 {
+  margin-top: 0.35rem;
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+}
+.ps-crm-card dl,
+.ps-wa-record dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+}
+.ps-crm-card dt,
+.ps-wa-record dt,
+.ps-metrics span {
+  color: #6b657c;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.ps-crm-card dd,
+.ps-wa-record dd {
+  margin: 0.15rem 0 0;
+  font-weight: 700;
+}
+.ps-crm-activity {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0 1.15rem 1.1rem;
+  list-style: none;
+  background: #fff;
+}
+.ps-crm-activity li {
+  margin: 0;
+  padding: 0.7rem 0.75rem;
+  background: #f4f0ff;
+  color: #241b38;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.ps-wa-body {
+  display: grid;
+  grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+}
+.ps-wa-list { grid-row: 1 / span 2; padding: 0.65rem; border-inline-end: 1px solid rgba(91, 33, 182, 0.1); }
+.ps-wa-list button { align-items: flex-start; }
+.ps-wa-list b {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  background: #ede9fe;
+  color: #5b21b6;
+  font-size: 0.85rem;
+}
+.ps-wa-thread {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background:
+    linear-gradient(180deg, rgba(237, 233, 254, 0.35), transparent 5rem),
+    #f8f7fb;
+}
+.ps-wa-thread header,
+.ps-wa-thread footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.75rem 0.9rem;
+}
+.ps-wa-thread header { border-bottom: 1px solid rgba(91, 33, 182, 0.08); }
+.ps-wa-thread header span,
+.ps-wa-thread footer,
+.ps-wa-thread small {
+  color: #6b657c;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.ps-wa-log {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  min-height: 11rem;
+  padding: 0.9rem;
+}
+.ps-wa-log p {
+  max-width: 88%;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  border-radius: 0.15rem;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(91, 33, 182, 0.1);
+  line-height: 1.45;
+}
+.ps-wa-log p.is-out {
+  align-self: flex-end;
+  background: linear-gradient(180deg, #6d28d9, #4338ca);
+  color: #fff;
+  box-shadow: none;
+}
+.ps-wa-log p.is-out small { color: rgba(255, 255, 255, 0.82); }
+.ps-wa-log small { display: block; margin-top: 0.35rem; }
+.ps-wa-thread footer {
+  border-top: 1px solid rgba(91, 33, 182, 0.08);
+  background: #fff;
+}
+.ps-wa-thread footer em {
+  color: #1d4ed8;
+  font-style: normal;
+  font-weight: 800;
+}
+.ps-wa-record {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.85rem;
+  border-top: 1px solid rgba(91, 33, 182, 0.1);
+  background: #fcfbff;
+  color: #3f3a52;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+.ps-wa-record strong { color: #1a0b33; font-size: 1rem; }
+.ps-wa-record span:first-child { color: #6d28d9; font-size: 0.75rem; font-weight: 800; }
+.ps-flow-body,
+.ps-ai-body,
+.ps-cal-body,
+.ps-meta-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+}
+.ps-flow-canvas {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.7rem;
+  align-items: center;
+  min-height: 12.5rem;
+  padding: 1.3rem 1rem;
+  background-image: radial-gradient(rgba(91, 33, 182, 0.22) 0.7px, transparent 0.8px);
+  background-size: 16px 16px;
+}
+.ps-flow-rail {
+  position: absolute;
+  top: 50%;
+  inset-inline: 8% 8%;
+  height: 2px;
+  background: rgba(91, 33, 182, 0.2);
+}
+.ps-flow-rail b {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 0.45rem;
+  height: 0.45rem;
+  background: #5b21b6;
+  transform: translate(-50%, -50%);
+  animation: ps-bead 7s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes ps-bead {
+  0%, 14% { left: 0%; }
+  32%, 46% { left: 33%; }
+  64%, 78% { left: 66%; }
+  92%, 100% { left: 100%; }
+}
+.ps-flow-canvas li { position: relative; z-index: 1; }
+.ps-flow-canvas button {
+  min-height: 6.4rem;
+  padding: 0.8rem;
+  background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(91, 33, 182, 0.16), 0 10px 24px -18px rgba(76, 29, 149, 0.8);
+}
+.ps-flow-side {
+  border-inline-start: 1px solid rgba(91, 33, 182, 0.1);
+  background: #fcfbff;
+}
+.ps-flow-side h3 { margin-top: 0.3rem; font-size: 1.35rem; }
+.ps-flow-side p { margin: 0.7rem 0 0; line-height: 1.45; }
+.ps-flow-sample { color: #3f3a52; }
+.ps-flow-test {
+  margin-top: 1rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid rgba(91, 33, 182, 0.12);
+  color: #5b21b6;
+  font-weight: 800;
+}
+.ps-meta-switch {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.7rem 0.8rem 0;
+  background: #fff;
+}
+.ps-meta-switch button {
+  width: auto;
+  padding: 0.55rem 0.75rem;
+  color: #3f3a52;
+  font-weight: 800;
+}
+.ps-meta-chart { padding: 0.4rem 1.1rem 1.1rem; }
+.ps-meta-chart header strong { display: block; font-size: 1.25rem; }
+.ps-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.45rem;
+  height: 11rem;
+  margin-top: 1rem;
+  padding: 0.4rem;
+  background:
+    linear-gradient(180deg, transparent 0 24%, rgba(91, 33, 182, 0.06) 25% 25%, transparent 26% 49%, rgba(91, 33, 182, 0.06) 50% 50%, transparent 51% 74%, rgba(91, 33, 182, 0.06) 75% 75%, transparent 76%),
+    #f8f7fb;
+}
+.ps-bars i {
+  flex: 1;
+  background: linear-gradient(180deg, #7c3aed, #2563eb);
+  transition: height 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ps-meta-chart > p,
+.ps-metrics span { margin: 0.55rem 0 0; color: #6b657c; font-size: 0.78rem; font-weight: 700; }
+.ps-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+.ps-metrics li {
+  padding: 0.7rem 0.75rem;
+  background: #f6f4fb;
+}
+.ps-metrics strong { display: block; margin-top: 0.2rem; font-size: 1.25rem; }
+.ps-pass {
+  display: grid;
+  justify-items: start;
+  gap: 0.25rem;
+  margin-top: 0.7rem;
+  padding: 0.85rem 0.8rem;
+  background: linear-gradient(180deg, #f5f3ff, #eef4ff);
+  box-shadow: inset 0 0 0 1px rgba(91, 33, 182, 0.14);
+}
+.ps-pass strong { font-size: 1.15rem; }
+.ps-ai-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  padding: 0.7rem;
+  border-inline-end: 1px solid rgba(91, 33, 182, 0.1);
+}
+.ps-ai-list li,
+.ps-ai-list button { flex: 0 0 auto; height: auto; }
+.ps-ai-list button { flex-direction: column; align-items: flex-start; }
+.ps-ai-stage {
+  display: grid;
+  grid-template-rows: 1.3fr 0.7fr;
+}
+.ps-ai-rec,
+.ps-ai-yours { padding: 1.1rem 1.2rem; }
+.ps-ai-rec h3 { margin: 0.25rem 0; font-size: 1.6rem; }
+.ps-ai-rec > span { color: #6b657c; font-size: 0.85rem; font-weight: 700; }
+.ps-ai-rec blockquote {
+  margin: 0.9rem 0 0;
+  padding: 0.8rem 0.85rem;
+  background: #f6f4fb;
+  border-inline-start: 3px solid #5b21b6;
+  line-height: 1.45;
+}
+.ps-ai-rec blockquote small {
+  display: block;
+  margin-bottom: 0.35rem;
+  color: #6d28d9;
+  font-weight: 800;
+}
+.ps-ai-yours {
+  background: #1e1b4b;
+  color: #fff;
+}
+.ps-ai-yours p { color: #c4b5fd; }
+.ps-ai-yours strong { display: block; margin-top: 0.35rem; font-size: 1.05rem; line-height: 1.4; }
+.ps-ai-yours em { margin-top: 0.7rem; background: rgba(255, 255, 255, 0.1); color: #fff; }
+.ps-cal-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+  padding: 0.8rem;
+}
+.ps-cal-week button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-height: 6.4rem;
+  padding: 0.65rem 0.5rem;
+  background: #f8f7fb;
+}
+.ps-cal-week span { color: #6b657c; font-size: 0.78rem; font-weight: 800; }
+.ps-cal-week strong,
+.ps-cal-week em {
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.ps-cal-week small { display: block; margin-top: 0.2rem; color: #5c5670; font-size: 0.72rem; }
+.ps-cal-week em { color: #9a93a8; font-weight: 700; }
+.ps-cal-detail {
+  border-inline-start: 1px solid rgba(91, 33, 182, 0.1);
+  background:
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(96, 165, 250, 0.18), transparent 70%),
+    #fff;
+}
+.ps-cal-detail strong { display: block; margin-top: 0.35rem; color: #5b21b6; }
+.ps-cal-detail > span { display: block; margin-top: 0.2rem; color: #6b657c; font-weight: 700; }
+.ps-cal-detail > p:last-of-type { margin-top: 0.8rem; line-height: 1.45; }
+.ps-crm button:focus-visible,
+.ps-wa button:focus-visible,
+.ps-flow button:focus-visible,
+.ps-meta button:focus-visible,
+.ps-ai button:focus-visible,
+.ps-cal button:focus-visible,
+.ht-faq-item button:focus-visible {
+  outline: 2px solid #5b21b6;
+  outline-offset: 2px;
+}
+
+/* FAQ */
+.ht-faq-center {
+  max-width: 56.25rem;
+  text-align: center;
+}
+.ht-root .ht-faq-center h2 {
+  max-width: none;
+}
+.ht-faq-list {
+  display: grid;
+  gap: 0.55rem;
+  margin-top: 1.6rem;
+  border: 0;
+}
+.ht-faq-item {
+  border: 1px solid rgba(91, 33, 182, 0.2);
+  border-radius: 0.15rem;
+  background: #fff;
+  text-align: start;
+}
+.ht-faq-item h3 { font-size: 1.02rem; }
+.ht-faq-item button {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.95rem 1rem;
+  border: 0;
+  border-radius: 0.15rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 800;
+  text-align: start;
+  cursor: pointer;
+}
+.ht-faq-item button i {
+  position: relative;
+  flex: 0 0 auto;
+  width: 0.85rem;
+  height: 0.85rem;
+  margin-inline-start: auto;
+}
+.ht-faq-item button i::before,
+.ht-faq-item button i::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: #5b21b6;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ht-faq-item button i::after { transform: rotate(90deg); }
+.ht-faq-item.is-open button i::after { transform: rotate(0deg); }
+.ht-faq-item button:hover { color: #5b21b6; }
+.ht-faq-a {
+  display: none;
+  background: #f6f4fb;
+}
+.ht-faq-item.is-open .ht-faq-a { display: block; }
+.ht-faq-a > div { overflow: visible; }
+.ht-faq-a p {
+  max-width: none;
+  margin: 0;
+  padding: 0.85rem 1rem 1rem;
+  background: transparent;
+  color: #3f3a52;
+  line-height: 1.65;
+}
+.ht-faq-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.3rem;
+}
+.ht-faq-more .hx-actions { margin-top: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-flow-rail b,
+  .ps-bars i,
+  .ht-faq-a { animation: none; transition: none; }
+}
+
+@media (max-width: 980px) {
+  .ps-crm-body,
+  .ps-wa-body {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
+  .ps-crm-list,
+  .ps-wa-list { grid-row: auto; }
+  .ps-crm-activity,
+  .ps-wa-record {
+    grid-column: 1 / -1;
+    border-inline-start: 0;
+  }
+  .ps-flow-body,
+  .ps-ai-body,
+  .ps-cal-body,
+  .ps-meta-body { grid-template-columns: 1fr; }
+  .ps-flow-side,
+  .ps-cal-detail { border-inline-start: 0; border-top: 1px solid rgba(91, 33, 182, 0.1); }
+  .ps-cal-week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ps-cal-week button { min-height: 4.6rem; }
+  .ps-cal-week small { display: none; }
+}
+
+@media (max-width: 760px) {
+  .ht-stage { padding-block: 3.2rem; }
+  .ht-stage-head h2 { max-width: 18ch; }
+  .ht-stage-head .hx-btn { min-height: 2.8rem; }
+  .ps-crm-body,
+  .ps-wa-body,
+  .ps-flow-body,
+  .ps-ai-body,
+  .ps-cal-body,
+  .ps-meta-body { grid-template-columns: minmax(0, 1fr); }
+  .ps-crm-activity,
+  .ps-wa-thread,
+  .ps-wa-record,
+  .ps-flow-side,
+  .ps-meta-side,
+  .ps-ai-stage,
+  .ps-cal-detail { grid-column: 1; }
+  .ps-crm-list,
+  .ps-wa-list { border-inline-end: 0; }
+  .ps-crm-activity { grid-template-columns: 1fr; }
+  .ps-flow-canvas {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    padding-inline-start: 1.6rem;
+  }
+  .ps-flow-rail {
+    top: 0.6rem;
+    bottom: 0.6rem;
+    inset-inline-start: 0.85rem;
+    width: 2px;
+    height: auto;
+  }
+  .ps-flow-rail b {
+    left: 50%;
+    animation-name: ps-bead-y;
+  }
+  .ps-flow-canvas button { min-height: 0; }
+  .ps-bars { height: 8rem; }
+  .ps-ai-stage { grid-template-rows: auto auto; }
+  .ps-cal-week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .ht-faq-center { width: min(100%, calc(100% - 0px)); }
+}
+
+@keyframes ps-bead-y {
+  0%, 14% { top: 0%; }
+  32%, 46% { top: 33%; }
+  64%, 78% { top: 66%; }
+  92%, 100% { top: 100%; }
+}
+
