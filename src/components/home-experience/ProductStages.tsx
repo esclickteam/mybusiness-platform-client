@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { homeText } from "./homeCopy";
+import { JourneyStage } from "./ProductStory";
+
+export { JourneyStage };
 
 function useLabels() {
   const { i18n } = useTranslation();
@@ -30,283 +33,6 @@ function DemoBar({ text }: { text: TextFn }) {
       <span>BizUply</span>
       <span>{text(DEMO_HE, DEMO_EN)}</span>
     </p>
-  );
-}
-
-function Mark() {
-  return (
-    <svg viewBox="0 0 16 16" aria-hidden="true">
-      <path d="M3 8.2 6.2 11.4 13 4.6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function JourneyStage({ onWatch }: { onWatch: (index: number) => void }) {
-  const text = useLabels();
-  const steps = [
-    {
-      id: "leads",
-      watch: 0,
-      label: text("קבלת לידים", "Lead intake"),
-      kicker: text("שלב 1 מתוך 6", "Step 1 of 6"),
-      title: text("קבלת לידים וניהול ב־CRM", "Lead intake and CRM management"),
-      body: text("כל פנייה, מליד חדש ועד לקוח קבוע, מתועדת ומנוהלת במקום אחד — עם תמונה מלאה, סטטוס ברור והמשך טיפול מהיר.", "Every enquiry, from a new lead to a returning customer, is recorded and managed in one place — with the full picture, a clear status and a fast next step."),
-      points: [
-        text("קליטת לידים מכל הערוצים", "Lead intake from every channel"),
-        text("כרטיס לקוח מלא ומסודר", "A complete customer record"),
-        text("מעבר מהיר לשלב הבא", "A fast move to the next stage"),
-      ],
-    },
-    {
-      id: "whatsapp",
-      watch: 2,
-      label: text("תקשורת ויחסים", "Conversations"),
-      kicker: text("שלב 2 מתוך 6", "Step 2 of 6"),
-      title: text("השיחה נשארת על אותו כרטיס", "The conversation stays on the same record"),
-      body: text("ממשיכים ב־WhatsApp מתוך הכרטיס. התשובה נשמרת שם, בחלון הזמן שמדיניות Meta מאפשרת.", "Continue on WhatsApp from the record. The reply is saved there, inside the window Meta's policy allows."),
-      points: [
-        text("תיבת שיחות מחוברת לכרטיס", "An inbox linked to the record"),
-        text("הודעות נכנסות ויוצאות", "Incoming and outgoing messages"),
-        text("הסטטוס נשאר ליד השיחה", "The status stays next to the thread"),
-      ],
-    },
-    {
-      id: "flow",
-      watch: 4,
-      label: text("אוטומציות חכמות", "Automations"),
-      kicker: text("שלב 3 מתוך 6", "Step 3 of 6"),
-      title: text("טריגר, תנאי, ואז פעולה", "A trigger, a condition, then an action"),
-      body: text("ליד חדש שמקורו Meta יכול לקבל תגית ומשימת המשך. הרצת הבדיקה לא שולחת הודעה ולא משנה נתונים.", "A new lead whose source is Meta can get a tag and a follow-up task. The test run sends nothing and changes no data."),
-      points: [
-        text("טריגר של ליד חדש", "A new-lead trigger"),
-        text("תנאי לפי מקור", "A condition on the source"),
-        text("משימה ב־CRM, בלי שליחה", "A CRM task, with nothing sent"),
-      ],
-    },
-    {
-      id: "meta",
-      watch: 1,
-      label: text("שיווק ותוצאות", "Campaigns"),
-      kicker: text("שלב 4 מתוך 6", "Step 4 of 6"),
-      title: text("מהקמפיין אל הליד ב־CRM", "From the campaign to the lead in the CRM"),
-      body: text("עוברים בין קמפיינים ורואים את מדדי ההדגמה, ואת הליד שנכנס לכרטיס. אלה לא תוצאות אמיתיות של BizUply.", "Switch campaigns and see the demo metrics, and the lead that entered a record. These are not real BizUply results."),
-      points: [
-        text("הוצאה, לידים ועלות לליד", "Spend, leads and cost per lead"),
-        text("גרף לידים לפי יום", "A leads-by-day chart"),
-        text("הליד מסומן כהדגמה", "The lead is marked as a demo"),
-      ],
-    },
-    {
-      id: "ai",
-      watch: 5,
-      label: text("תובנות AI", "AI insights"),
-      kicker: text("שלב 5 מתוך 6", "Step 5 of 6"),
-      title: text("המלצה ברורה. השליחה נשארת אצלכם", "A clear recommendation. Sending stays with you"),
-      body: text("היועץ העסקי מציג נתון, תובנה וטיוטה. הוא לא שולח הודעה, לא קובע פגישה ולא משנה תקציב.", "Business Advisor shows a figure, an insight and a draft. It does not send a message, book a meeting or change a budget."),
-      points: [
-        text("תובנה על ליד או קמפיין", "An insight on a lead or a campaign"),
-        text("טיוטה שלא נשלחת", "A draft that is not sent"),
-        text("הפעולה נשארת אצל הצוות", "The action stays with the team"),
-      ],
-    },
-    {
-      id: "calendar",
-      watch: 3,
-      label: text("פגישות ויומן", "Meetings"),
-      kicker: text("שלב 6 מתוך 6", "Step 6 of 6"),
-      title: text("הפגישה נפתחת מתוך השבוע", "The meeting opens from the week"),
-      body: text("בוחרים יום ורואים את הפגישה שעל הכרטיס. מעבר שבוע בהדגמה מציג שבוע בלי פגישות.", "Pick a day and see the meeting on the record. Moving the demo week shows a week with no meetings."),
-      points: [
-        text("שבוע עם פגישות צבעוניות", "A week with colored meetings"),
-        text("פרטי פגישה בלחיצה", "Meeting details on click"),
-        text("חלון פנוי לפי שעות העסק", "An open window from business hours"),
-      ],
-    },
-  ];
-  const [step, setStep] = useState(0);
-  const current = steps[step];
-  const next = () => setStep((value) => (value + 1) % steps.length);
-  return (
-    <div className="pv-journey">
-      <header className="pv-journey-head">
-        <h2 id="ht-how-title">{text("איך Bizuply עובדת?", "How does Bizuply work?")}</h2>
-        <p>{text("תהליך פשוט שמרכז את כל ניהול העסק, השיווק והלקוחות במקום אחד.", "A clear process that keeps the business, the marketing and the customers in one place.")}</p>
-      </header>
-      <ol className="pv-steps">
-        {steps.map((item, index) => (
-          <li key={item.id}>
-            <button type="button" className={index === step ? "is-on" : undefined} aria-current={index === step ? "step" : undefined} onClick={() => setStep(index)}>
-              <i aria-hidden="true">{index + 1}</i>
-              <span>{item.label}</span>
-            </button>
-          </li>
-        ))}
-      </ol>
-      <div className="pv-split">
-        <div className="pv-copy">
-          <p className="pv-kicker">{current.kicker}</p>
-          <h3>{current.title}</h3>
-          <p>{current.body}</p>
-          <ul className="pv-points">
-            {current.points.map((point) => (
-              <li key={point}><Mark />{point}</li>
-            ))}
-          </ul>
-          <div className="pv-actions">
-            <button type="button" className="pv-btn" onClick={next}>{text("המשך לשלב הבא", "Continue to the next step")}</button>
-            <button type="button" className="pv-btn pv-btn-line" onClick={() => onWatch(current.watch)}>{text("לצפות בשלב הזה", "Watch this step")}</button>
-          </div>
-        </div>
-        <div className="pv-scene" key={current.id} aria-live="polite">
-          <JourneyScene id={current.id} text={text} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function JourneyScene({ id, text }: { id: string; text: TextFn }) {
-  if (id === "whatsapp") return <MiniChat text={text} />;
-  if (id === "flow") return <MiniFlow text={text} />;
-  if (id === "meta") return <MiniMeta text={text} />;
-  if (id === "ai") return <MiniAi text={text} />;
-  if (id === "calendar") return <MiniWeek text={text} />;
-  return <MiniCrm text={text} />;
-}
-
-function MiniCrm({ text }: { text: TextFn }) {
-  const leads = [
-    { id: "tamar", name: text("תמר לוי", "Tamar Levi"), source: text("טופס באתר", "Website form") },
-    { id: "noa", name: text("נועה ברק", "Noa Barak"), source: text("Meta", "Meta") },
-    { id: "yael", name: text("יעל דהן", "Yael Dahan"), source: text("Meta", "Meta") },
-  ];
-  const [id, setId] = useState("tamar");
-  const lead = leads.find((item) => item.id === id) || leads[0];
-  return (
-    <div className="pv-mini pv-mini-crm">
-      <aside>
-        <strong>BizUply</strong>
-        <span className="is-on">CRM</span>
-        <span>WhatsApp</span>
-        <span>{text("יומן", "Calendar")}</span>
-      </aside>
-      <div className="pv-mini-main">
-        <p className="pv-pop">{text("ליד חדש נכנס ומוכן לטיפול", "A new lead arrived and is ready")}</p>
-        <ul>
-          {leads.map((item) => (
-            <li key={item.id}>
-              <button type="button" className={item.id === id ? "is-on" : undefined} aria-pressed={item.id === id} onClick={() => setId(item.id)}>
-                <b>{item.name.trim().charAt(0)}</b>
-                <span><strong>{item.name}</strong><small>{item.source}</small></span>
-              </button>
-            </li>
-          ))}
-        </ul>
-        <article>
-          <b>{lead.name.trim().charAt(0)}</b>
-          <strong>{lead.name}</strong>
-          <em>{id === "tamar" ? text("חדש", "New") : text("בכרטיס", "On the record")}</em>
-          <span>{lead.source}</span>
-          <small>{text("הלחיצה מחליפה את הכרטיס בהדגמה", "The click switches the demo record")}</small>
-        </article>
-      </div>
-    </div>
-  );
-}
-
-function MiniChat({ text }: { text: TextFn }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="pv-mini pv-mini-chat">
-      <header>
-        <strong>{text("נועה ברק", "Noa Barak")}</strong>
-        <span>{text("סטודיו נורה", "Nora Studio")}</span>
-      </header>
-      <p>{text("היי, ראיתי את המודעה. אפשר לשמוע על הצילום?", "Hi, I saw the ad. Can I hear more about the shoot?")}</p>
-      <p className="is-out">{text("היי נועה, נשלח פרטים על הצילום עוד היום.", "Hi Noa, we'll send the shoot details later today.")}<small>{text("נקראה · 09:18", "Read · 09:18")}</small></p>
-      {open ? <p className="is-out is-draft">{text("טיוטת המשך · לא נשלחה", "Follow-up draft · not sent")}</p> : null}
-      <button type="button" onClick={() => setOpen(true)}>{text("הצגת תשובה בהדגמה", "Show a demo reply")}</button>
-    </div>
-  );
-}
-
-function MiniFlow({ text }: { text: TextFn }) {
-  const nodes = [
-    text("ליד חדש", "New lead"),
-    text("המקור הוא Meta", "Source is Meta"),
-    text("משימה ב־CRM", "CRM task"),
-  ];
-  const [id, setId] = useState(0);
-  return (
-    <div className="pv-mini pv-mini-flow">
-      {nodes.map((label, index) => (
-        <button key={label} type="button" className={index === id ? "is-on" : undefined} aria-pressed={index === id} onClick={() => setId(index)}>
-          <small>{index === 0 ? text("טריגר", "Trigger") : index === 1 ? text("תנאי", "Condition") : text("תוצאה", "Result")}</small>
-          <strong>{label}</strong>
-        </button>
-      ))}
-      <i aria-hidden="true" />
-    </div>
-  );
-}
-
-function MiniMeta({ text }: { text: TextFn }) {
-  const [on, setOn] = useState(0);
-  const campaigns = [
-    [text("צילום לחמישי", "Thursday shoot"), "$186", "8"],
-    [text("חבילות סטודיו", "Studio packages"), "$96", "3"],
-  ];
-  const current = campaigns[on];
-  return (
-    <div className="pv-mini pv-mini-meta">
-      <div>
-        {campaigns.map((item, index) => (
-          <button key={item[0]} type="button" className={index === on ? "is-on" : undefined} aria-pressed={index === on} onClick={() => setOn(index)}>{item[0]}</button>
-        ))}
-      </div>
-      <strong>{current[2]}</strong>
-      <span>{text("לידים · הדגמה", "Leads · demo")}</span>
-      <em>{current[1]}</em>
-    </div>
-  );
-}
-
-function MiniAi({ text }: { text: TextFn }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="pv-mini pv-mini-ai">
-      <p>{text("תובנה", "Insight")}</p>
-      <strong>{text("נועה ברק ממתינה להמשך", "Noa Barak is waiting on a next step")}</strong>
-      <blockquote>{open ? text("היי נועה, נשמח לקבוע שיחה קצרה. הטיוטה לא נשלחה.", "Hi Noa, we'd like to set a short call. The draft was not sent.") : text("היועץ מציע טיוטה. הוא לא שולח אותה.", "The advisor suggests a draft. It does not send it.")}</blockquote>
-      <button type="button" onClick={() => setOpen(true)}>{text("הצגת הטיוטה", "Show the draft")}</button>
-    </div>
-  );
-}
-
-function MiniWeek({ text }: { text: TextFn }) {
-  const days = [
-    [text("ג׳", "Tue"), "14:00", text("יעל דהן", "Yael Dahan")],
-    [text("ה׳", "Thu"), "10:30", text("נועה ברק", "Noa Barak")],
-    [text("ו׳", "Fri"), "16:15", text("תמר לוי", "Tamar Levi")],
-  ];
-  const [id, setId] = useState(1);
-  const day = days[id];
-  return (
-    <div className="pv-mini pv-mini-week">
-      <div>
-        {days.map((item, index) => (
-          <button key={item[0]} type="button" className={index === id ? "is-on" : undefined} aria-pressed={index === id} onClick={() => setId(index)}>
-            <span>{item[0]}</span>
-            <strong>{item[1]}</strong>
-          </button>
-        ))}
-      </div>
-      <article>
-        <p>{day[1]}</p>
-        <strong>{day[2]}</strong>
-        <span>{text("פתוחה על הכרטיס", "Open on the record")}</span>
-      </article>
-    </div>
   );
 }
 
@@ -343,35 +69,36 @@ export function CrmStage() {
   return (
     <div className="pv-app pv-crm" aria-label={text("הדגמה של לוח לידים וכרטיס לקוח. לא נתוני לקוח אמיתיים.", "A demo of the lead board and a customer record. Not real customer data.")}>
       <DemoBar text={text} />
-      <div className="pv-crm-shell">
-        <aside className="pv-rail">
-          <strong>BizUply</strong>
-          <span className="is-on">CRM</span>
-        </aside>
-        <div className="pv-board" role="list" aria-label={text("שלבי הצינור", "Pipeline stages")}>
-          {STATUS_ORDER.map((column) => (
-            <section key={column} className={status === column ? "is-current" : undefined} aria-label={statusLabel(text, column)}>
-              <header>
-                <span>{statusLabel(text, column)}</span>
-                <b>{LEADS.filter((item) => statuses[item.id] === column).length}</b>
-              </header>
-              {LEADS.filter((item) => statuses[item.id] === column).map((item) => (
-                <button key={item.id} type="button" className={item.id === id ? "is-on" : undefined} aria-pressed={item.id === id} onClick={() => { setId(item.id); setMoved(""); }}>
-                  <b>{text(item.he, item.en).trim().charAt(0)}</b>
-                  <span>
-                    <strong>{text(item.he, item.en)}</strong>
-                    <small>{text(item.sourceHe, item.sourceEn)}</small>
-                  </span>
-                </button>
-              ))}
-            </section>
+      <div className="pv-crm-shell hc-dossier">
+        <div className="hc-people" role="list" aria-label={text("שלבי הצינור", "Pipeline stages")}>
+          {LEADS.map((item) => (
+            <button key={item.id} type="button" className={item.id === id ? "is-on" : undefined} aria-pressed={item.id === id} onClick={() => { setId(item.id); setMoved(""); }}>
+              <b>{text(item.he, item.en).trim().charAt(0)}</b>
+              <span>
+                <strong>{text(item.he, item.en)}</strong>
+                <small>{text(item.sourceHe, item.sourceEn)}</small>
+              </span>
+              <em>{statusLabel(text, statuses[item.id])}</em>
+            </button>
           ))}
         </div>
         <article className={moved ? "pv-person is-moved" : "pv-person"} aria-live="polite">
+          <p className="hc-arrive">{status === "new" ? text("ליד חדש נכנס ומוכן לטיפול", "A new lead arrived and is ready") : text(lead.placeHe, lead.placeEn)}</p>
           <b>{text(lead.he, lead.en).trim().charAt(0)}</b>
-          <p>{text(lead.placeHe, lead.placeEn)}</p>
           <h3>{text(lead.he, lead.en)}</h3>
           <em>{statusLabel(text, status)}</em>
+          <ol className="hc-status" aria-label={text("שלבי הצינור", "Pipeline stages")}>
+            {STATUS_ORDER.map((column, index) => {
+              const current = STATUS_ORDER.indexOf(status);
+              const state = index < current ? "is-done" : index === current ? "is-on" : undefined;
+              return (
+                <li key={column} className={state}>
+                  <i>{index + 1}</i>
+                  <span>{statusLabel(text, column)}</span>
+                </li>
+              );
+            })}
+          </ol>
           <dl>
             <div><dt>{text("מקור", "Source")}</dt><dd>{text(lead.sourceHe, lead.sourceEn)}</dd></div>
             <div><dt>{text("הערה", "Note")}</dt><dd>{text(lead.noteHe, lead.noteEn)}</dd></div>
@@ -514,7 +241,7 @@ export function FlowStage() {
   return (
     <div className={ran ? "pv-app pv-flow is-ran" : "pv-app pv-flow"} aria-label={text("הדגמה של עורך תהליך: טריגר, תנאי ופעולות. הרצת בדיקה לא שולחת הודעה ולא משנה נתונים.", "A demo of the flow editor: a trigger, a condition and actions. A test run sends nothing and changes no data.")}>
       <DemoBar text={text} />
-      <div className="pv-flow-row" style={{ direction: "ltr" }}>
+      <div className="pv-flow-row">
         <ol className="pv-flow-cards">
           {nodes.map((item, index) => (
             <li key={item.id}>
@@ -700,36 +427,36 @@ export function AiStage() {
   return (
     <div className="pv-app pv-ai" aria-label={text("הדגמה של תובנות היועץ העסקי. הוא ממליץ ואינו מבצע פעולה. לא נתוני לקוח אמיתיים.", "A demo of Business Advisor insights. It recommends and takes no action. Not real customer data.")}>
       <DemoBar text={text} />
-      <div className="pv-ai-shell">
-        <ul aria-label={text("תובנות", "Insights")}>
+      <div className="pv-ai-shell hc-advisor">
+        <div className="hc-advisor-tabs" role="tablist" aria-label={text("תובנות", "Insights")}>
           {insights.map((item) => (
-            <li key={item.id}>
-              <button type="button" className={item.id === id ? "is-on" : undefined} aria-pressed={item.id === id} onClick={() => { setId(item.id); setShown(false); }}>
-                <small>{item.kicker}</small>
-                <strong>{item.title}</strong>
-              </button>
-            </li>
+            <button key={item.id} type="button" role="tab" aria-selected={item.id === id} className={item.id === id ? "is-on" : undefined} onClick={() => { setId(item.id); setShown(false); }}>
+              <small>{item.kicker}</small>
+              <strong>{item.title}</strong>
+            </button>
           ))}
-        </ul>
-        <article aria-live="polite">
-          <p>{text("תובנה", "Insight")}</p>
-          <h3>{insight.title}</h3>
-          <span>{insight.who}</span>
-          <div className="pv-figure">
+        </div>
+        <ol className="hc-advisor-seq" aria-live="polite">
+          <li>
+            <small>{insight.figureLabel}</small>
             <strong>{insight.figure}</strong>
-            <span>{insight.figureLabel}</span>
-          </div>
-          <div className="pv-spark" aria-hidden="true"><Spark values={insight.id === "cost" ? [40, 36, 48, 44, 52, 46, 58] : [22, 28, 26, 40, 36, 48, 44]} /></div>
-          <blockquote className="pv-rec">
+            <span>{insight.who}</span>
+          </li>
+          <li>
+            <small>{text("תובנה", "Insight")}</small>
+            <strong>{insight.title}</strong>
+            <div className="pv-spark" aria-hidden="true"><Spark values={insight.id === "cost" ? [40, 36, 48, 44, 52, 46, 58] : [22, 28, 26, 40, 36, 48, 44]} /></div>
+          </li>
+          <li>
             <small>{text("המלצה", "Recommendation")}</small>
-            {insight.move}
-          </blockquote>
-          <blockquote className={shown ? "pv-draft is-open" : "pv-draft"}>
+            <p>{insight.move}</p>
+          </li>
+          <li className={shown ? "is-open" : undefined}>
             <small>{shown ? text("טיוטה מוצגת · לא נשלח", "Draft shown · not sent") : text("טיוטה · לא נשלח", "Draft · not sent")}</small>
-            {shown ? insight.draft : text("היועץ מציע טיוטה. הוא לא שולח אותה.", "The advisor suggests a draft. It does not send it.")}
-          </blockquote>
-          <button type="button" className="pv-btn" onClick={() => setShown(true)}>{text("הצגת הטיוטה", "Show the draft")}</button>
-        </article>
+            <p>{shown ? insight.draft : text("היועץ מציע טיוטה. הוא לא שולח אותה.", "The advisor suggests a draft. It does not send it.")}</p>
+          </li>
+        </ol>
+        <button type="button" className="pv-btn" onClick={() => setShown(true)}>{text("הצגת הטיוטה", "Show the draft")}</button>
       </div>
     </div>
   );
@@ -776,7 +503,7 @@ export function CalendarStage() {
               <button key={item.id} type="button" role="option" aria-selected={item.id === day} className={item.id === day ? "is-on" : undefined} onClick={() => setDay(item.id)}>
                 <span>{item.label}</span>
                 <b>{item.date}</b>
-                {booked ? <em className={booked.tone}>{booked.time}<small>{booked.name}</small></em> : <i>{text("פנוי", "Open")}</i>}
+                {booked ? <em className={booked.tone} style={{ ["--slot" as string]: `${Math.min(72, Math.max(8, ((Number(booked.time.slice(0, 2)) * 60 + Number(booked.time.slice(3)) - 9 * 60) / (9 * 60)) * 72))}%` }}>{booked.time}<small>{booked.name}</small></em> : <i>{text("פנוי", "Open")}</i>}
               </button>
             );
           })}
@@ -804,4 +531,3 @@ export function CalendarStage() {
   );
 }
 
-export { JourneyStage };
