@@ -19,7 +19,7 @@ const LANG = process.env.LANG_UI || "he";
 const MOBILE = process.env.MOBILE === "1";
 const DRY = process.env.DRY === "1";
 const BASE = process.env.FILM_BASE || "https://mybusiness-platform-client-staging.vercel.app";
-const API = "https://server-staging-15bb.up.railway.app/api";
+const API = process.env.FILM_API || "https://server-staging-15bb.up.railway.app/api";
 const BIZ = "6ab62f565ba1a92f3046b5ad";
 const AUTO_ID = process.env.AUTO_ID || "6af1e65d76c39b752eefa9e4";
 let WEBHOOK = process.env.LEADS_WEBHOOK_URL || "";
@@ -93,7 +93,7 @@ await ctx.addInitScript((css) => {
   install();
   document.addEventListener("DOMContentLoaded", install);
 }, FILM_CSS);
-await ctx.addInitScript(({ lang, phone, name }) => {
+await ctx.addInitScript(({ lang, phone, name, keep }) => {
   localStorage.setItem("i18nextLng", lang);
   localStorage.setItem("bizuply.lang", lang);
   localStorage.setItem("bizuply_lang_preference", lang);
@@ -155,12 +155,13 @@ await ctx.addInitScript(({ lang, phone, name }) => {
     document.querySelectorAll("tr").forEach((row) => {
       const cells = [...row.querySelectorAll("td")];
       if (!cells.length) return;
-      const name = cells[1]?.innerText || "";
-      const nameCounts = counts(name);
+      const cellName = cells[1]?.innerText || "";
+      const nameCounts = counts(cellName);
       const noisy = /בדיקה|הדגמה|\bdemo\b|test form/i.test(row.innerText || "");
-      const hide = noisy || (lang === "en"
+      const focused = (name && (row.innerText || "").includes(name)) || (keep && (row.innerText || "").includes(keep));
+      const hide = !focused && (noisy || (lang === "en"
         ? cells.some((cell) => hebrewish(cell.innerText || "") || israeli(cell.innerText || ""))
-        : nameCounts.latin >= 2 && nameCounts.hebrew === 0);
+        : nameCounts.latin >= 2 && nameCounts.hebrew === 0));
       paint(row, hide);
     });
     if (lang === "en") {
@@ -209,6 +210,7 @@ await ctx.addInitScript(({ lang, phone, name }) => {
         document.querySelectorAll("a, button, article, li").forEach((el) => {
           const text = (el.innerText || "").trim();
           if (!text || text.length > 220) return;
+          if (keep && text.includes(keep)) return;
           const { hebrew, latin } = counts(text);
           if (latin >= 10 && latin > hebrew && /lead|appointment|reply|follow|elena|hours|tag|note/i.test(text)) paint(el, true);
         });
@@ -226,7 +228,7 @@ await ctx.addInitScript(({ lang, phone, name }) => {
   };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
   else start();
-}, { lang: LANG, phone: intlPhone(C.phone), name: C.name });
+}, { lang: LANG, phone: intlPhone(C.phone), name: C.name, keep: C.autoName });
 await ctx.addCookies([{ name: "bizuply_tracking", value: "v2:none:2026-11-07", url: BASE }]);
 const page = await ctx.newPage();
 page.setDefaultTimeout(30000);
@@ -481,7 +483,9 @@ await to(page.getByRole("button", { name: L.noteSave, exact: true }), { click: !
 if (!DRY) {
 const nr = await noteResp;
 if (!nr.ok()) fail(`note ${nr.status()}`);
-await page.getByText(C.note.slice(0, 30)).first().waitFor({ timeout: 15000 });
+const savedNote = page.getByText(C.note.slice(0, 30)).first();
+await savedNote.waitFor({ state: "attached", timeout: 20000 });
+await savedNote.scrollIntoViewIfNeeded();
 log("note saved");
 }
 await settle(1500);
@@ -600,9 +604,10 @@ await endChapter();
 
 /* ---------- 5. Automation ---------- */
 beginChapter("automation");
-const autoTitle = page.getByText(C.autoName).and(page.locator(":visible")).first();
+const visibleAuto = C.autoName.replace(/\[demo\]\s*/ig, "").replace(/\[דמו\]\s*/g, "").trim();
+const autoTitle = page.getByText(visibleAuto).and(page.locator(":visible")).first();
 await goto("automations", async () => {
-  await autoTitle.waitFor({ timeout: 60000 });
+  await autoTitle.waitFor({ timeout: 120000 });
 });
 await to(autoTitle, { click: false, pause: 250 });
 await to(autoTitle, { after: 100 });
