@@ -218,6 +218,42 @@ describe("CRMLeadsWorkspace isolated UI", () => {
     });
   });
 
+  it("shows Meta only for Meta lead ads and for Make leads that came from Meta", async () => {
+    const rows = [
+      { ...sampleLead, _id: "64f0000000000000000000a1", fullName: "נועה ברק", source: "meta_lead_ads" },
+      {
+        ...sampleLead,
+        _id: "64f0000000000000000000a2",
+        fullName: "יעל דהן",
+        source: "make",
+        provider: "facebook_lead_ads",
+        facebook: { leadId: "fb-1", formId: "form-1" },
+      },
+      { ...sampleLead, _id: "64f0000000000000000000a3", fullName: "דנה לוי", source: "make", provider: "manual" },
+      { ...sampleLead, _id: "64f0000000000000000000a4", fullName: "תמר לוי", source: "website" },
+    ];
+    fetchWorkspaceLeads.mockResolvedValue({ leads: rows, total: 4, hasMore: false, page: 1, limit: 50 });
+    apiGet.mockImplementation((url: string) => {
+      const lead = rows.find((item) => String(url).includes(item._id)) || rows[0];
+      return Promise.resolve({ data: { lead: { ...lead, details: [], activities: [] } } });
+    });
+    renderWorkspace();
+    expect(await screen.findByText("נועה ברק")).toBeInTheDocument();
+    expect(screen.getAllByText("Meta")).toHaveLength(2);
+    expect(screen.getByText("make")).toBeInTheDocument();
+    expect(screen.getByText("website")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByText("יעל דהן"));
+    expect(await screen.findByRole("heading", { name: "יעל דהן" })).toBeInTheDocument();
+    expect(screen.getAllByText("Meta").length).toBeGreaterThanOrEqual(2);
+
+    fireEvent.click(screen.getByRole("button", { name: "crm.common.close" }));
+    fireEvent.click(await screen.findByText("דנה לוי"));
+    expect(await screen.findByRole("heading", { name: "דנה לוי" })).toBeInTheDocument();
+    expect(screen.getAllByText("make").length).toBeGreaterThanOrEqual(1);
+    expect(screen.queryByText("meta_lead_ads")).not.toBeInTheDocument();
+  });
+
   it("switches between list, compact table and kanban", async () => {
     renderWorkspace();
     await screen.findByText("Ada Lovelace");
