@@ -350,7 +350,7 @@ export function CrmStage() {
         </aside>
         <div className="pv-board" role="list" aria-label={text("שלבי הצינור", "Pipeline stages")}>
           {STATUS_ORDER.map((column) => (
-            <section key={column} aria-label={statusLabel(text, column)}>
+            <section key={column} className={status === column ? "is-current" : undefined} aria-label={statusLabel(text, column)}>
               <header>
                 <span>{statusLabel(text, column)}</span>
                 <b>{LEADS.filter((item) => statuses[item.id] === column).length}</b>
@@ -367,7 +367,7 @@ export function CrmStage() {
             </section>
           ))}
         </div>
-        <article className="pv-person" aria-live="polite">
+        <article className={moved ? "pv-person is-moved" : "pv-person"} aria-live="polite">
           <b>{text(lead.he, lead.en).trim().charAt(0)}</b>
           <p>{text(lead.placeHe, lead.placeEn)}</p>
           <h3>{text(lead.he, lead.en)}</h3>
@@ -466,7 +466,7 @@ export function WhatsAppStage() {
             ))}
           </ul>
         </aside>
-        <div className="pv-chat" aria-live="polite">
+        <div className={drafts[id] ? "pv-chat is-after" : "pv-chat is-before"} aria-live="polite">
           <header>
             <b>{thread.name.trim().charAt(0)}</b>
             <span>
@@ -481,7 +481,9 @@ export function WhatsAppStage() {
             {drafts[id] ? <p className="is-out is-draft">{text("תשובת הדגמה נשמרת על הכרטיס. היא לא נשלחה ללקוח.", "The demo reply is saved on the record. It was not sent to the customer.")}<small>{text("לא נשלח", "Not sent")}</small></p> : null}
           </div>
           <footer>
-            <span>{text("חלון 24 השעות פתוח בהדגמה", "The 24-hour window is open in the demo")}</span>
+            {drafts[id]
+              ? <em>{text("טיוטה מוצגת · לא נשלח", "Draft shown · not sent")}</em>
+              : <span>{text("חלון 24 השעות פתוח בהדגמה", "The 24-hour window is open in the demo")}</span>}
             <button type="button" className="pv-btn" onClick={() => {
               setDrafts((current) => ({ ...current, [id]: true }));
               setStatuses((current) => ({ ...current, [id]: current[id] === "new" ? "contacted" : current[id] }));
@@ -506,16 +508,17 @@ export function FlowStage() {
   ];
   const [id, setId] = useState("trigger");
   const [ran, setRan] = useState(false);
-  const node = nodes.find((item) => item.id === id) || nodes[0];
+  const active = Math.max(0, nodes.findIndex((item) => item.id === id));
+  const node = nodes[active];
   return (
-    <div className="pv-app pv-flow" aria-label={text("הדגמה של עורך תהליך: טריגר, תנאי ופעולות. הרצת בדיקה לא שולחת הודעה ולא משנה נתונים.", "A demo of the flow editor: a trigger, a condition and actions. A test run sends nothing and changes no data.")}>
+    <div className={ran ? "pv-app pv-flow is-ran" : "pv-app pv-flow"} aria-label={text("הדגמה של עורך תהליך: טריגר, תנאי ופעולות. הרצת בדיקה לא שולחת הודעה ולא משנה נתונים.", "A demo of the flow editor: a trigger, a condition and actions. A test run sends nothing and changes no data.")}>
       <DemoBar text={text} />
       <div className="pv-flow-row" style={{ direction: "ltr" }}>
         <ol className="pv-flow-cards">
-          {nodes.map((item) => (
+          {nodes.map((item, index) => (
             <li key={item.id}>
-              <button type="button" className={`${item.tone}${item.id === id ? " is-on" : ""}`} aria-pressed={item.id === id} onClick={() => setId(item.id)}>
-                <small>{item.kind}</small>
+              <button type="button" className={`${item.tone}${item.id === id ? " is-on" : ""}${ran && (index <= active || item.id === "task") ? " is-reached" : ""}`} aria-pressed={item.id === id} onClick={() => setId(item.id)}>
+                <small>{index + 1} · {item.kind}</small>
                 <strong>{item.label}</strong>
                 <span>{item.body}</span>
               </button>
@@ -528,13 +531,13 @@ export function FlowStage() {
             <span>{text("ליד חדש · Meta", "New lead · Meta")}</span>
           </header>
           <ol>
-            {nodes.map((item) => (
-              <li key={item.id} className={item.id === id ? "is-on" : undefined}>{item.label}</li>
+            {nodes.map((item, index) => (
+              <li key={item.id} className={item.id === id ? "is-on" : ran && index <= active ? "is-reached" : undefined}>{index + 1}. {item.label}</li>
             ))}
           </ol>
           <p>{node.body}</p>
           <p>{text("הדוגמה רצה על הכרטיס של נועה ברק, בלי לשנות אותו.", "The sample runs on Noa Barak's record without changing it.")}</p>
-          <button type="button" className="pv-btn" onClick={() => setRan(true)}>{text("הרצת בדיקה", "Run a test")}</button>
+          <button type="button" className="pv-btn" onClick={() => { setRan(true); setId("task"); }}>{text("הרצת בדיקה", "Run a test")}</button>
           {ran ? <em>{text("הרצת בדיקה · לא נשלחה הודעה ולא שונו נתונים", "Test run · no message sent and no data changed")}</em> : null}
         </aside>
       </div>
@@ -716,9 +719,13 @@ export function AiStage() {
             <span>{insight.figureLabel}</span>
           </div>
           <div className="pv-spark" aria-hidden="true"><Spark values={insight.id === "cost" ? [40, 36, 48, 44, 52, 46, 58] : [22, 28, 26, 40, 36, 48, 44]} /></div>
-          <blockquote>
-            <small>{shown ? text("טיוטה מוצגת · לא נשלח", "Draft shown · not sent") : text("המלצה", "Recommendation")}</small>
-            {shown ? insight.draft : insight.move}
+          <blockquote className="pv-rec">
+            <small>{text("המלצה", "Recommendation")}</small>
+            {insight.move}
+          </blockquote>
+          <blockquote className={shown ? "pv-draft is-open" : "pv-draft"}>
+            <small>{shown ? text("טיוטה מוצגת · לא נשלח", "Draft shown · not sent") : text("טיוטה · לא נשלח", "Draft · not sent")}</small>
+            {shown ? insight.draft : text("היועץ מציע טיוטה. הוא לא שולח אותה.", "The advisor suggests a draft. It does not send it.")}
           </blockquote>
           <button type="button" className="pv-btn" onClick={() => setShown(true)}>{text("הצגת הטיוטה", "Show the draft")}</button>
         </article>
