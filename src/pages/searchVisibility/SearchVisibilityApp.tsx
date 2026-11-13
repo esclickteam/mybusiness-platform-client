@@ -394,6 +394,12 @@ export default function SearchVisibilityApp() {
                 <h2>{t.history}</h2>
                 {compareNote ? <p>{t.engineNote}: {compareNote}</p> : null}
                 {history.length === 0 ? <p>{t.empty}</p> : null}
+                {history.filter((item) => typeof item.scores?.seo?.score === "number").map((item) => (
+                  <div key={`bar-${item.id}`} className="sv-bar" title={`SEO ${item.scores.seo.score}`}>
+                    <span>{item.domain}</span>
+                    <span className="sv-bar-fill" style={{ width: `${item.scores.seo.score}%` }} />
+                  </div>
+                ))}
                 <table className="sv-table">
                   <tbody>
                     {history.map((item) => (
