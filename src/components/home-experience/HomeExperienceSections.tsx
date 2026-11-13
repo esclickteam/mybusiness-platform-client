@@ -2,12 +2,12 @@ import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { HOME_FAQ, HOME_FAQ_TITLE } from "../../lib/homeFaq.mjs";
+import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import { AiMoment, CrmMoment, DayMoment, FlowMoment, MetaMoment, WhatsAppMoment } from "./ProductMoments";
+import { AiStage, CalendarStage, CrmStage, FlowStage, MetaStage, WhatsAppStage } from "./ProductStages";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -200,45 +200,43 @@ function Shot({
   );
 }
 
-function Feature({
+function Stage({
   id,
   eyebrow,
   title,
   lead,
-  points,
   link,
-  shot,
-  flip = false,
   note,
+  children,
+  variant = "",
+  links,
 }: {
   id: string;
   eyebrow: string;
   title: string;
   lead: string;
-  points: string[];
   link: [string, string];
-  shot: ReactNode;
-  flip?: boolean;
   note?: string;
+  children: ReactNode;
+  variant?: string;
+  links?: ReactNode;
 }) {
   return (
-    <section className={`ht-feature${flip ? " is-flip" : ""}`} id={id} aria-labelledby={`${id}-title`}>
-      <div className="ht-wrap ht-feature-grid">
-        <div className="ht-feature-copy" data-reveal>
-          <p className="ht-eyebrow">{eyebrow}</p>
-          <h2 id={`${id}-title`}>{title}</h2>
-          <p className="ht-lead">{lead}</p>
-          <ul className="ht-points">
-            {points.map((point) => (
-              <li key={point}>{point}</li>
-            ))}
-          </ul>
-          {note ? <p className="ht-note">{note}</p> : null}
+    <section className={`ht-stage${variant ? ` ${variant}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
+      <div className="ht-wrap">
+        <div className="ht-stage-head" data-reveal>
+          <div>
+            <p className="ht-eyebrow">{eyebrow}</p>
+            <h2 id={`${id}-title`}>{title}</h2>
+            <p className="ht-stage-lead">{lead}</p>
+          </div>
           <div className="hx-actions">
             <Cta to={link[0]} tone="line">{link[1]}</Cta>
           </div>
         </div>
-        <div className="ht-feature-media">{shot}</div>
+        {note ? <p className="ht-stage-note" data-reveal>{note}</p> : null}
+        <div className="ht-stage-frame" data-reveal>{children}</div>
+        {links}
       </div>
     </section>
   );
@@ -398,159 +396,96 @@ function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
 function Crm() {
   const { text } = useCopy();
   return (
-    <Feature
+    <Stage
       id="crm"
       eyebrow={text("CRM וניהול לידים", "CRM and lead management")}
-      title={text("כל ליד, כל שיחה, כל משימה — בכרטיס אחד.", "Every lead, conversation and task — on one record.")}
-      lead={text(
-        "רשימת לידים שאפשר לסנן, כרטיס לקוח עם סטטוס, מקור, הערות, משימות ופגישות, והיסטוריית פעילות שנשמרת אוטומטית.",
-        "A lead list you can filter, a customer record with status, source, notes, tasks and meetings, and an activity history that saves itself.",
-      )}
-      points={[
-        text("סטטוסים מותאמים לתהליך המכירה", "Statuses that match your sales process"),
-        text("מקור הליד נשמר על כל רשומה", "The lead source is kept on every record"),
-        text("הערות, תיעוד שיחות ומשימות עם מועד", "Notes, call logs and dated tasks"),
-        text("ייבוא וייצוא ל־CSV ו־Excel", "Import and export with CSV and Excel"),
-      ]}
+      title={text("הליד נפתח לכרטיס", "The lead opens into a record")}
+      lead={text("בוחרים לקוח ורואים סטטוס, מקור ופעילות.", "Choose a customer and see status, source and activity.")}
       link={["/crm", text("להכיר את ה־CRM", "Explore the CRM")]}
-      shot={<CrmMoment />}
-    />
+    >
+      <CrmStage />
+    </Stage>
   );
 }
 
 function WhatsApp() {
   const { text } = useCopy();
   return (
-    <Feature
+    <Stage
       id="whatsapp"
-      flip
       eyebrow="WhatsApp Business API"
-      title={text("השיחות עם הלקוחות, מחוברות לעסק.", "Customer conversations, connected to the business.")}
-      lead={text(
-        "חיבור רשמי ל־WhatsApp Business API דרך Meta: תיבת שיחות משותפת, תבניות הודעה, נתוני ביצועים וחיבור לכרטיס הלקוח.",
-        "An official WhatsApp Business API connection through Meta: a shared inbox, message templates, performance data and a link to the customer record.",
-      )}
-      points={[
-        text("תיבת דואר נכנס לכל הצוות", "One inbox for the whole team"),
-        text("תבניות הודעה מאושרות לשליחה יזומה", "Approved templates for outbound messages"),
-        text("נתוני שליחה, קריאה ותגובה", "Sent, read and reply data"),
-      ]}
+      title={text("השיחה והכרטיס, יחד", "The thread and the record, together")}
+      lead={text("עוברים בין שיחות. פרטי הלקוח נשארים מחוברים.", "Switch conversations. The customer details stay attached.")}
       note={text(
         "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
         "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
       )}
       link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
-      shot={<WhatsAppMoment />}
-    />
+    >
+      <WhatsAppStage />
+    </Stage>
   );
 }
 
 function Automations() {
   const { text } = useCopy();
   return (
-    <Feature
+    <Stage
       id="automations"
       eyebrow={text("אוטומציות חכמות", "Smart automations")}
-      title={text("פחות עבודה ידנית. יותר מעקב עקבי.", "Less manual work. More consistent follow-up.")}
-      lead={text(
-        "בונים תהליך מטריגר ופעולות בעורך ויזואלי: ליד חדש, שינוי סטטוס או פגישה — ואחריהם תגית, הערה, משימה או הודעה.",
-        "Build a flow from a trigger and actions in a visual editor: a new lead, a status change or a meeting — followed by a tag, a note, a task or a message.",
-      )}
-      points={[
-        text("עורך תהליכים ויזואלי עם תבניות", "A visual flow editor with templates"),
-        text("הרצת בדיקה שלא שולחת הודעות ולא משנה נתונים", "Test runs that send nothing and change no data"),
-        text("היסטוריית הרצות לכל תהליך", "A run history for every flow"),
-      ]}
+      title={text("תהליך שאפשר לעבור עליו", "A flow you can step through")}
+      lead={text("טריגר, תנאי ופעולות — כמו בעורך.", "A trigger, a condition and actions — as in the editor.")}
       note={text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}
       link={["/automations", text("להכיר את האוטומציות", "Explore automations")]}
-      shot={<FlowMoment />}
-    />
+    >
+      <FlowStage />
+    </Stage>
   );
 }
 
 function Campaigns() {
   const { text } = useCopy();
   return (
-    <Feature
+    <Stage
       id="campaigns"
-      flip
       eyebrow={text("קמפיינים ושיווק", "Campaigns and marketing")}
-      title={text("הקמפיין, הלידים והתוצאות — באותו מקום.", "The campaign, the leads and the results — in one place.")}
-      lead={text(
-        "ניהול קמפיינים של Meta לפייסבוק ולאינסטגרם מתוך BizUply: הוצאה, לידים, עלות לליד וחשיפות, ולידים שנכנסים ישירות ל־CRM.",
-        "Manage Meta campaigns for Facebook and Instagram from inside BizUply: spend, leads, cost per lead and reach, with leads going straight into the CRM.",
-      )}
-      points={[
-        text("יצירת קמפיין חדש מתוך המערכת", "Create a new campaign from the platform"),
-        text("סקירת ביצועים לפי טווח תאריכים", "Performance overview by date range"),
-        text("לידים מטפסי Meta נכנסים ל־CRM", "Meta form leads flow into the CRM"),
-      ]}
+      title={text("הקמפיין, ואז הליד ב־CRM", "The campaign, then the lead in the CRM")}
+      lead={text("עוברים בין קמפיינים ורואים מדדים וליד שנכנס.", "Switch campaigns and see the metrics and the lead that arrived.")}
       note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
       link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
-      shot={<MetaMoment />}
-    />
+    >
+      <MetaStage />
+    </Stage>
   );
 }
 
 function AiTools() {
   const { text } = useCopy();
-  const tools = [
-    {
-      title: text("היועץ העסקי", "Business Advisor"),
-      body: text(
-        "מנתח את הפעילות בחשבון וממליץ מה כדאי לעשות: אילו לידים דורשים טיפול, נוסחי הודעות מעקב והמלצות לקמפיינים. הוא מייעץ ואינו מבצע פעולות.",
-        "Reads the activity in your account and recommends what to do: which leads need attention, follow-up message drafts and campaign suggestions. It advises and does not take actions.",
-      ),
-      to: "/register",
-      cta: text("לנסות בחשבון חינמי", "Try it on a free account"),
-    },
-    {
-      title: text("אוטומציות AI", "AI automations"),
-      body: text(
-        "תבניות מוכנות שמוסיפות פעולת AI לתהליך: דירוג וסיווג לידים, זיהוי לידים חמים, סיכום ליד לפני שיחה וניסוח הודעות מעקב. בודקים כל תבנית לפני שמפעילים.",
-        "Ready templates that add an AI step to a flow: lead scoring and classification, hot-lead detection, a lead summary before a call, and follow-up drafts. Review each template before turning it on.",
-      ),
-      to: "/automations",
-      cta: text("להכיר את האוטומציות", "Explore automations"),
-    },
-  ];
   return (
-    <section className="ht-ai" id="ai" aria-labelledby="ht-ai-title">
-      <div className="ht-wrap">
-        <div className="ht-head" data-reveal>
-          <p className="ht-eyebrow">{text("כלי AI זמינים", "AI tools available today")}</p>
-          <h2 id="ht-ai-title">{text("AI שעוזר להחליט, לא רק לדבר.", "AI that helps you decide, not just chat.")}</h2>
-          <p className="ht-lead">
-            {text(
-              "כלים שפעילים היום בפלטפורמה. פעולת AI נספרת כפעולת אוטומציה במסגרת החבילה.",
-              "Tools that are live on the platform today. An AI action counts as an automation action in your plan.",
-            )}
-          </p>
-        </div>
-        <AiMoment />
-        <div className="ht-ai-grid">
-          {tools.map((tool) => (
-            <article className="ht-card ht-ai-card" key={tool.title} data-reveal>
-              <div className="ht-card-body">
-                <h3>{tool.title}</h3>
-                <p>{tool.body}</p>
-                <Link className="ht-link" to={tool.to}>{tool.cta}</Link>
-              </div>
-            </article>
-          ))}
-        </div>
-        <p className="ht-ai-more" data-reveal>
-          <strong>{text("סריקת אתר חכמה", "AI website scan")}</strong>
+    <Stage
+      id="ai"
+      variant="ht-stage-ai"
+      eyebrow={text("כלי AI זמינים", "AI tools available today")}
+      title={text("המלצה ברורה. הפעולה נשארת אצלכם", "A clear recommendation. The action stays with you")}
+      lead={text("בוחרים תובנה. היועץ מנסח, ולא שולח.", "Choose an insight. The advisor drafts, and does not send.")}
+      note={text(
+        "כלים שפעילים היום בפלטפורמה. פעולת AI נספרת כפעולת אוטומציה במסגרת החבילה.",
+        "Tools that are live on the platform today. An AI action counts as an automation action in your plan.",
+      )}
+      link={["/register", text("לנסות בחשבון חינמי", "Try it on a free account")]}
+      links={(
+        <p className="ht-stage-links" data-reveal>
+          <Link className="ht-link" to="/automations">{text("להכיר את האוטומציות", "Explore automations")}</Link>
           <span>
-            {text(
-              "בדיקה של אתר ציבורי בנושאי פרטיות, אבטחה, נגישות ומסמכים ציבוריים.",
-              "A check of a public website for privacy, security, accessibility and public documents.",
-            )}
+            <strong>{text("סריקת אתר חכמה", "AI website scan")}</strong>
+            {" "}
+            <Link className="ht-link" to="/website-scan">{text("לסרוק אתר", "Scan a website")}</Link>
           </span>
-          <Link className="ht-link" to="/website-scan">{text("לסרוק אתר", "Scan a website")}</Link>
         </p>
-      </div>
-    </section>
+      )}
+    >
+      <AiStage />
+    </Stage>
   );
 }
 
@@ -566,22 +501,15 @@ const SITE_SHOWCASE = [
 function Meetings() {
   const { text } = useCopy();
   return (
-    <Feature
+    <Stage
       id="meetings"
       eyebrow={text("יומן פגישות", "Meeting calendar")}
-      title={text("שיחת ההיכרות כבר ביומן.", "The intro call is already on the calendar.")}
-      lead={text(
-        "פגישה עם תאריך ושעה נשמרת על כרטיס הלקוח, ונראית ביומן של אותו היום.",
-        "A meeting with a date and time stays on the customer record and shows on that day's calendar.",
-      )}
-      points={[
-        text("פגישה עם תאריך ושעה", "A meeting with a date and time"),
-        text("מחוברת לכרטיס הלקוח", "Linked to the customer record"),
-        text("נראית ביומן של אותו היום", "Shown on that day's calendar"),
-      ]}
+      title={text("השבוע, הפגישה, והכרטיס", "The week, the meeting, and the record")}
+      lead={text("בוחרים יום ופותחים פגישה.", "Pick a day and open a meeting.")}
       link={["/appointments", text("להכיר את היומן", "Explore the calendar")]}
-      shot={<DayMoment />}
-    />
+    >
+      <CalendarStage />
+    </Stage>
   );
 }
 
@@ -894,27 +822,35 @@ function Faq() {
   const { text, language } = useCopy();
   const locale = faqLocale(language);
   const items = (HOME_FAQ as Record<string, [string, string][]>)[locale] || HOME_FAQ.en;
-  const title = (HOME_FAQ_TITLE as Record<string, string>)[locale] || HOME_FAQ_TITLE.en;
+  const [open, setOpen] = useState<number | null>(null);
   return (
     <section className="ht-faq" id="faq" aria-labelledby="ht-faq-title">
-      <div className="ht-wrap ht-faq-grid">
-        <div className="ht-faq-intro" data-reveal>
-          <p className="ht-eyebrow">{text("שאלות נפוצות", "FAQ")}</p>
-          <h2 id="ht-faq-title">{title}</h2>
-          <div className="hx-actions">
-            <Cta to="/faq" tone="line">{text("לכל השאלות", "All questions")}</Cta>
-          </div>
-        </div>
+      <div className="ht-wrap ht-faq-center">
+        <h2 id="ht-faq-title" data-reveal>{text("שאלות נפוצות", "Frequently Asked Questions")}</h2>
         <div className="ht-faq-list">
-          {items.map(([question, answer]) => (
-            <details key={question} data-reveal>
-              <summary>
-                <h3>{question}</h3>
-                <i aria-hidden="true" />
-              </summary>
-              <p>{answer}</p>
-            </details>
-          ))}
+          {items.map(([question, answer], index) => {
+            const on = open === index;
+            return (
+              <div className={on ? "ht-faq-item is-open" : "ht-faq-item"} key={question} data-reveal>
+                <h3>
+                  <button type="button" aria-expanded={on} onClick={() => setOpen(on ? null : index)}>
+                    <span>{question}</span>
+                    <i aria-hidden="true" />
+                  </button>
+                </h3>
+                <div className="ht-faq-a">
+                  <div>
+                    <p>{answer}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="ht-faq-more" data-reveal>
+          <div className="hx-actions">
+            <Cta to="/faq" tone="line">{text("כל השאלות", "All questions")}</Cta>
+          </div>
         </div>
       </div>
     </section>
