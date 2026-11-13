@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState, type ReactNode } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
@@ -170,101 +170,6 @@ function Waves({ className = "" }: { className?: string }) {
   );
 }
 
-function Shot({
-  name,
-  alt,
-  caption,
-  priority = false,
-}: {
-  name: string;
-  alt: string;
-  caption?: string;
-  priority?: boolean;
-}) {
-  const { language } = useCopy();
-  const lang = language.startsWith("he") ? "he" : "en";
-  return (
-    <figure className="ht-shot" data-reveal>
-      <picture>
-        <source media="(max-width: 760px)" srcSet={`${MEDIA}/screens/${lang}-mobile-${name}.webp`} width={900} height={1948} />
-        <img
-          src={`${MEDIA}/screens/${lang}-desktop-${name}.webp`}
-          alt={alt}
-          width={2400}
-          height={1500}
-          loading={priority ? "eager" : "lazy"}
-          decoding="async"
-        />
-      </picture>
-      {caption ? <figcaption>{caption}</figcaption> : null}
-    </figure>
-  );
-}
-
-function Stage({
-  id,
-  eyebrow,
-  title,
-  lead,
-  link,
-  note,
-  children,
-  variant = "",
-  links,
-  bullets,
-  secondary,
-  layout = "showcase",
-}: {
-  id: string;
-  eyebrow: string;
-  title: string;
-  lead: string;
-  link: [string, string];
-  note?: string;
-  children: ReactNode;
-  variant?: string;
-  links?: ReactNode;
-  bullets?: string[];
-  secondary?: [string, string];
-  layout?: "showcase" | "banner";
-}) {
-  const copy = (
-    <div className="pv-copy" data-reveal>
-      <p className="pv-kicker">{eyebrow}</p>
-      <h2 id={`${id}-title`}>{title}</h2>
-      <p className="pv-lead">{lead}</p>
-      {bullets?.length ? (
-        <ul className="pv-points">
-          {bullets.map((item) => <li key={item}>{item}</li>)}
-        </ul>
-      ) : null}
-      <div className="pv-actions">
-        <Cta to={link[0]}>{link[1]}</Cta>
-        {secondary ? <Cta to={secondary[0]} tone="line">{secondary[1]}</Cta> : null}
-      </div>
-      {note ? <p className="pv-note">{note}</p> : null}
-      {links}
-    </div>
-  );
-  return (
-    <section className={`ht-stage ht-showcase ht-${layout}${variant ? ` ${variant}` : ""}`} id={id} aria-labelledby={`${id}-title`}>
-      <div className="ht-wrap">
-        {layout === "banner" ? (
-          <>
-            {copy}
-            <div className="pv-stage" data-reveal>{children}</div>
-          </>
-        ) : (
-          <div className={`pv-split${id === "meetings" ? " is-flip" : ""}`}>
-            {copy}
-            <div className="pv-stage" data-reveal>{children}</div>
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
 export default function HomeExperienceSections() {
   const { text } = useCopy();
   const ref = useRef<HTMLDivElement | null>(null);
@@ -280,12 +185,9 @@ export default function HomeExperienceSections() {
       <div className="ht-root" ref={ref}>
         <Hero seek={seek} />
         <HowItWorks onWatch={watch} />
-        <Crm />
-        <WhatsApp />
-        <Automations />
-        <Campaigns />
-        <AiTools />
-        <Meetings />
+        <Customers />
+        <Operations />
+        <Activity />
         <Websites />
         <Benefits />
         <Pricing />
@@ -387,124 +289,102 @@ function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
   );
 }
 
-function Crm() {
+function Customers() {
   const { text } = useCopy();
   return (
-    <Stage
-      id="crm"
-      eyebrow={text("CRM חכם לניהול לקוחות", "A CRM for customer management")}
-      title={text("כל ליד הופך ללקוח עם CRM שמקדם מכירות", "Every lead becomes a customer record that moves the sale")}
-      lead={text("רכזו את כל הלידים, נהלו את התקשורת, עקבו אחרי שלבי המכירה והפכו יותר פניות לעסקאות — במקום אחד.", "Keep every lead, the conversation and the sale stages together, and move more enquiries forward — in one place.")}
-      bullets={[
-        text("קליטת לידים מכל הערוצים", "Lead intake from every channel"),
-        text("ניהול התהליך לפי שלבים", "A stage-by-stage process"),
-        text("תקשורת מלאה עם הלקוח", "The customer conversation on the record"),
-        text("מעבר מהיר לשלב הבא", "A fast move to the next stage"),
-      ]}
-      link={["/crm", text("צפו ב־CRM בפעולה", "See the CRM in action")]}
-      secondary={["#product-theater", text("צפו בהדגמה", "Watch the demo")]}
-    >
-      <CrmStage />
-    </Stage>
+    <section className="ht-editorial" id="crm" aria-labelledby="crm-title">
+      <div className="ht-wrap">
+        <header className="ht-editorial-head" data-reveal>
+          <div>
+            <p className="ht-eyebrow">{text("CRM חכם לניהול לקוחות", "A CRM for customer management")}</p>
+            <h2 id="crm-title">{text("כל ליד הופך ללקוח עם CRM שמקדם מכירות", "Every lead becomes a customer record that moves the sale")}</h2>
+          </div>
+          <div>
+            <p className="ht-lead">{text("רכזו את כל הלידים, נהלו את התקשורת, עקבו אחרי שלבי המכירה והפכו יותר פניות לעסקאות — במקום אחד.", "Keep every lead, the conversation and the sale stages together, and move more enquiries forward — in one place.")}</p>
+            <Cta to="/crm">{text("צפו ב־CRM בפעולה", "See the CRM in action")}</Cta>
+          </div>
+        </header>
+        <div className="ht-wide-demo" data-reveal>
+          <CrmStage />
+        </div>
+        <article className="ht-follow" id="whatsapp" aria-labelledby="whatsapp-title">
+          <div className="ht-follow-copy">
+            <p className="ht-eyebrow">WhatsApp Business API</p>
+            <h3 id="whatsapp-title">{text("תקשורת חכמה עם הלקוחות שלכם", "Smart conversations with your customers")}</h3>
+            <p>{text("נהלו את כל השיחות, השיבו מתוך הכרטיס, ועדכנו סטטוס בהדגמה — ישירות מ־Bizuply.", "Manage every conversation, reply from the record, and update the demo status — directly in Bizuply.")}</p>
+            <p className="pv-note">{text(
+              "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
+              "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
+            )}</p>
+            <Link className="ht-link" to="/whatsapp-api">{text("להכיר את WhatsApp API", "Explore the WhatsApp API")}</Link>
+          </div>
+          <WhatsAppStage />
+        </article>
+      </div>
+    </section>
   );
 }
 
-function WhatsApp() {
+function Operations() {
   const { text } = useCopy();
   return (
-    <Stage
-      id="whatsapp"
-      eyebrow="WhatsApp Business API"
-      title={text("תקשורת חכמה עם הלקוחות שלכם", "Smart conversations with your customers")}
-      lead={text("נהלו את כל השיחות, השיבו מתוך הכרטיס, ועדכנו סטטוס בהדגמה — ישירות מ־Bizuply.", "Manage every conversation, reply from the record, and update the demo status — directly in Bizuply.")}
-      bullets={[
-        text("כל השיחות במקום אחד", "Every conversation in one place"),
-        text("התגובה נשמרת על הכרטיס", "The reply is saved on the record"),
-        text("ניהול סטטוס לקוח בהדגמה", "Customer status in the demo"),
-        text("חיבור ל־CRM לפי אישור Meta", "A CRM connection that follows Meta approval"),
-      ]}
-      secondary={["#product-theater", text("צפו בהדגמה", "Watch the demo")]}
-      note={text(
-        "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
-        "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
-      )}
-      link={["/whatsapp-api", text("להכיר את WhatsApp API", "Explore the WhatsApp API")]}
-    >
-      <WhatsAppStage />
-    </Stage>
+    <section className="ht-editorial is-mist" id="automations" aria-labelledby="automations-title">
+      <div className="ht-wrap">
+        <header className="ht-editorial-head" data-reveal>
+          <div>
+            <p className="ht-eyebrow">{text("אוטומציות חכמות", "Smart automations")}</p>
+            <h2 id="automations-title">{text("אוטומציות שממשיכות את הצעד הבא", "Automations that carry the next step")}</h2>
+          </div>
+          <div>
+            <p className="ht-lead">{text("בונים תהליך עם טריגר, תנאי ופעולות. הרצת הבדיקה לא שולחת הודעה ולא משנה נתונים.", "Build a flow with a trigger, a condition and actions. The test run sends no message and changes no data.")}</p>
+            <Cta to="/automations">{text("להכיר את האוטומציות", "Explore automations")}</Cta>
+          </div>
+        </header>
+        <div className="ht-pair">
+          <article className="ht-pane" data-reveal>
+            <p className="pv-note">{text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}</p>
+            <FlowStage />
+          </article>
+          <article className="ht-pane" id="ai" aria-labelledby="ai-title" data-reveal>
+            <h3 id="ai-title">{text("תובנות חכמות שמובילות להמלצה", "Insights that lead to a recommendation")}</h3>
+            <p>{text("ה־AI של Bizuply מנתח את הנתונים שבהדגמה, מציג תובנה ומכין טיוטה. הוא לא שולח, לא קובע ולא משנה תקציב.", "Bizuply AI reads the demo figures, shows an insight and prepares a draft. It does not send, book or change a budget.")}</p>
+            <AiStage />
+            <p className="ht-pane-links">
+              <Link className="ht-link" to="/website-scan">{text("לסרוק אתר", "Scan a website")}</Link>
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
   );
 }
 
-function Automations() {
+function Activity() {
   const { text } = useCopy();
   return (
-    <Stage
-      id="automations"
-      layout="banner"
-      eyebrow={text("אוטומציות חכמות", "Smart automations")}
-      title={text("אוטומציות שממשיכות את הצעד הבא", "Automations that carry the next step")}
-      lead={text("בונים תהליך עם טריגר, תנאי ופעולות. הרצת הבדיקה לא שולחת הודעה ולא משנה נתונים.", "Build a flow with a trigger, a condition and actions. The test run sends no message and changes no data.")}
-      note={text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}
-      link={["/automations", text("להכיר את האוטומציות", "Explore automations")]}
-    >
-      <FlowStage />
-    </Stage>
-  );
-}
-
-function Campaigns() {
-  const { text } = useCopy();
-  return (
-    <Stage
-      id="campaigns"
-      eyebrow={text("חיבור ל־Meta", "Meta connection")}
-      title={text("ניהול קמפיינים שמחבר מודעה לליד", "Campaign management that connects an ad to a lead")}
-      lead={text("הדשבורד מציג נתוני הדגמה בלבד: הוצאה, לידים, עלות לליד והליד שנכנס ל־CRM. אלה לא הישגים אמיתיים של BizUply.", "The dashboard shows demo figures only: spend, leads, cost per lead and the lead that entered the CRM. These are not real BizUply results.")}
-      bullets={[
-        text("מדדי קמפיין מסומנים כהדגמה", "Campaign metrics marked as a demo"),
-        text("גרף לידים לפי יום", "A leads-by-day chart"),
-        text("הליד עובר לכרטיס ב־CRM", "The lead passes into a CRM record"),
-      ]}
-      note={text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}
-      link={["/meta-campaigns", text("להכיר את הקמפיינים", "Explore campaigns")]}
-    >
-      <MetaStage />
-    </Stage>
-  );
-}
-
-function AiTools() {
-  const { text } = useCopy();
-  return (
-    <Stage
-      id="ai"
-      variant="ht-stage-ai"
-      eyebrow={text("מבוסס בינה מלאכותית", "Built with AI")}
-      title={text("תובנות חכמות שמובילות להמלצה", "Insights that lead to a recommendation")}
-      lead={text("ה־AI של Bizuply מנתח את הנתונים שבהדגמה, מציג תובנה ומכין טיוטה. הוא לא שולח, לא קובע ולא משנה תקציב.", "Bizuply AI reads the demo figures, shows an insight and prepares a draft. It does not send, book or change a budget.")}
-      bullets={[
-        text("נתון, תובנה וטיוטה", "A figure, an insight and a draft"),
-        text("המלצה בלי פעולה אוטומטית", "A recommendation without an automatic action"),
-        text("השליחה נשארת אצלכם", "Sending stays with you"),
-      ]}
-      note={text(
-        "כלים שפעילים היום בפלטפורמה. פעולת AI נספרת כפעולת אוטומציה במסגרת החבילה.",
-        "Tools that are live on the platform today. An AI action counts as an automation action in your plan.",
-      )}
-      link={["/register", text("לנסות בחשבון חינמי", "Try it on a free account")]}
-      links={(
-        <p className="ht-stage-links" data-reveal>
-          <Link className="ht-link" to="/automations">{text("להכיר את האוטומציות", "Explore automations")}</Link>
-          <span>
-            <strong>{text("סריקת אתר חכמה", "AI website scan")}</strong>
-            {" "}
-            <Link className="ht-link" to="/website-scan">{text("לסרוק אתר", "Scan a website")}</Link>
-          </span>
-        </p>
-      )}
-    >
-      <AiStage />
-    </Stage>
+    <section className="ht-editorial" id="meetings" aria-labelledby="meetings-title">
+      <div className="ht-wrap">
+        <article className="ht-follow is-flip">
+          <div className="ht-follow-copy">
+            <p className="ht-eyebrow">{text("יומן ותיאומים", "Calendar and scheduling")}</p>
+            <h2 id="meetings-title">{text("כל הפגישות, במקום אחד", "Every meeting, in one place")}</h2>
+            <p>{text("נהלו פגישות, תזכורות ותיאומים עם לקוחות. בוחרים יום, פותחים פגישה ועוברים בין שבועות ההדגמה.", "Manage meetings on the customer record. Pick a day, open a meeting and move between the demo weeks.")}</p>
+            <Cta to="/appointments">{text("להכיר את היומן", "Explore the calendar")}</Cta>
+          </div>
+          <CalendarStage />
+        </article>
+        <article className="ht-follow" id="campaigns" aria-labelledby="campaigns-title">
+          <div className="ht-follow-copy">
+            <p className="ht-eyebrow">{text("חיבור ל־Meta", "Meta connection")}</p>
+            <h3 id="campaigns-title">{text("ניהול קמפיינים שמחבר מודעה לליד", "Campaign management that connects an ad to a lead")}</h3>
+            <p>{text("הדשבורד מציג נתוני הדגמה בלבד: הוצאה, לידים, עלות לליד והליד שנכנס ל־CRM. אלה לא הישגים אמיתיים של BizUply.", "The dashboard shows demo figures only: spend, leads, cost per lead and the lead that entered the CRM. These are not real BizUply results.")}</p>
+            <p className="pv-note">{text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}</p>
+            <Link className="ht-link" to="/meta-campaigns">{text("להכיר את הקמפיינים", "Explore campaigns")}</Link>
+          </div>
+          <MetaStage />
+        </article>
+      </div>
+    </section>
   );
 }
 
@@ -516,26 +396,6 @@ const SITE_SHOWCASE = [
   { key: "advisora", name: "Advisora", he: "שירותים", en: "Services" },
   { key: "florique", name: "Florique", he: "דף נחיתה", en: "Landing page" },
 ] as const;
-
-function Meetings() {
-  const { text } = useCopy();
-  return (
-    <Stage
-      id="meetings"
-      eyebrow={text("יומן ותיאומים", "Calendar and scheduling")}
-      title={text("כל הפגישות, במקום אחד", "Every meeting, in one place")}
-      lead={text("נהלו פגישות, תזכורות ותיאומים עם לקוחות. בוחרים יום, פותחים פגישה ועוברים בין שבועות ההדגמה.", "Manage meetings on the customer record. Pick a day, open a meeting and move between the demo weeks.")}
-      bullets={[
-        text("יומן שבועי עם פגישות", "A week calendar with meetings"),
-        text("פתיחת פרטי פגישה", "Open the meeting details"),
-        text("מעבר בין שבועות", "Move between weeks"),
-      ]}
-      link={["/appointments", text("להכיר את היומן", "Explore the calendar")]}
-    >
-      <CalendarStage />
-    </Stage>
-  );
-}
 
 function Websites() {
   const { text, language, dir } = useCopy();
@@ -642,31 +502,14 @@ function Websites() {
               {sites.map((site, siteIndex) => (
                 <article className="ht-gallery-slide" key={site.key} aria-hidden={siteIndex !== index}>
                   <div className="ht-gallery-stage">
-                    <div className="ht-device ht-device-desk">
-                      <div className="ht-device-bar" aria-hidden="true"><i /><i /><i /></div>
-                      <div className="ht-device-screen">
-                        <img
-                          src={`${MEDIA}/sites/${site.key}-${lang}-desk.webp`}
-                          alt={siteIndex === index ? `${site.name} — ${site.kind}` : ""}
-                          width={1440}
-                          height={900}
-                          loading={Math.abs(siteIndex - index) <= 1 ? "eager" : "lazy"}
-                          decoding="async"
-                        />
-                      </div>
-                    </div>
-                    <div className="ht-device ht-device-phone" aria-hidden="true">
-                      <div className="ht-device-screen">
-                        <img
-                          src={`${MEDIA}/sites/${site.key}-${lang}-phone.webp`}
-                          alt=""
-                          width={390}
-                          height={844}
-                          loading={siteIndex === index ? "eager" : "lazy"}
-                          decoding="async"
-                        />
-                      </div>
-                    </div>
+                    <img
+                      src={`${MEDIA}/sites/${site.key}-${lang}-desk.webp`}
+                      alt={siteIndex === index ? `${site.name} — ${site.kind}` : ""}
+                      width={1440}
+                      height={900}
+                      loading={Math.abs(siteIndex - index) <= 1 ? "eager" : "lazy"}
+                      decoding="async"
+                    />
                   </div>
                   <p className="ht-gallery-caption"><span>{site.kind}</span><strong>{site.name}</strong></p>
                 </article>
@@ -758,7 +601,6 @@ function Benefits() {
     ["phone", text("עובד גם מהטלפון", "Works from your phone"), text("אותה מערכת בדסקטופ ובמובייל — לענות לליד גם מחוץ למשרד.", "The same system on desktop and mobile, so you can answer a lead away from the office.")],
     ["official", text("חיבורים רשמיים", "Official connections"), text("WhatsApp Business API ו־Meta דרך החיבורים הרשמיים, בהתאם לאישורים.", "WhatsApp Business API and Meta through their official connections, subject to approval.")],
     ["test", text("בודקים לפני שמפעילים", "Test before you go live"), text("הרצת בדיקה לאוטומציות, בלי לשלוח הודעות ובלי לשנות נתונים.", "Test runs for automations that send nothing and change no data.")],
-    ["start", text("מתחילים בחינם", "Start for free"), text("פותחים חשבון, בודקים את המערכת, ובוחרים חבילה כשמוכנים.", "Open an account, try the system, and pick a plan when you are ready.")],
   ] as const;
   return (
     <section className="ht-benefits" id="benefits" aria-labelledby="ht-benefits-title">

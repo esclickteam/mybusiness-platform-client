@@ -3213,3 +3213,129 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   92%, 100% { top: 100%; }
 }
 
+/* Editorial product sections */
+.ht-editorial {
+  padding-block: clamp(7.5rem, 10vw, 10rem);
+  background: #fff;
+}
+.ht-editorial.is-mist {
+  background: #f6f5f8;
+}
+.ht-editorial .ht-wrap,
+.ht-how .ht-wrap,
+.ht-products .ht-wrap,
+.ht-benefits .ht-wrap,
+.ht-pricing .ht-wrap,
+.ht-faq .ht-wrap {
+  width: min(1280px, calc(100% - 4rem));
+}
+.ht-editorial-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.75fr);
+  gap: 2rem 4rem;
+  align-items: end;
+  margin-bottom: clamp(2.5rem, 4vw, 3.5rem);
+}
+.ht-root .ht-editorial-head h2 {
+  max-width: 14ch;
+  font-size: clamp(2.6rem, 4.6vw, 4.25rem);
+}
+.ht-editorial-head .ht-lead {
+  margin: 0 0 1.25rem;
+}
+.ht-wide-demo,
+.ht-pane .pv-app,
+.ht-follow .pv-app {
+  width: 100%;
+  min-width: 0;
+}
+.ht-follow {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.62fr) minmax(0, 1.5fr);
+  gap: clamp(1.5rem, 3vw, 3rem);
+  align-items: center;
+  margin-top: clamp(4rem, 7vw, 6.5rem);
+}
+.ht-follow.is-flip {
+  grid-template-columns: minmax(0, 1.5fr) minmax(16rem, 0.62fr);
+}
+.ht-follow.is-flip .ht-follow-copy { order: 2; }
+.ht-follow-copy h3,
+.ht-pane h3 {
+  max-width: 18ch;
+  margin: 0.35rem 0 0.7rem;
+  font-size: clamp(1.45rem, 2vw, 1.85rem);
+}
+.ht-follow-copy p,
+.ht-pane > p {
+  margin: 0 0 0.85rem;
+  color: #3f3a52;
+  line-height: 1.6;
+}
+.ht-follow-copy .ht-link,
+.ht-pane-links {
+  margin-top: 0.8rem;
+}
+.ht-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+  align-items: start;
+}
+.ht-root .ht-benefit-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2.5rem 2rem;
+}
+.ht-root .ht-benefit-grid li,
+.ht-root .ht-benefit-grid li:nth-child(-n + 2),
+.ht-root .ht-benefit-grid li:first-child {
+  grid-column: auto;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.ht-root .ht-benefit-grid li:hover {
+  background: transparent;
+  box-shadow: none;
+}
+.ht-gallery-stage {
+  display: block;
+}
+.ht-gallery-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1440 / 900;
+  object-fit: contain;
+  object-position: center;
+  background: #f6f5f8;
+}
+@media (max-width: 900px) {
+  .ht-editorial,
+  .ht-how,
+  .ht-products,
+  .ht-benefits,
+  .ht-pricing,
+  .ht-faq {
+    padding-block: 4.25rem;
+  }
+  .ht-editorial .ht-wrap,
+  .ht-how .ht-wrap,
+  .ht-products .ht-wrap,
+  .ht-benefits .ht-wrap,
+  .ht-pricing .ht-wrap,
+  .ht-faq .ht-wrap {
+    width: min(1280px, calc(100% - 1.5rem));
+  }
+  .ht-editorial-head,
+  .ht-follow,
+  .ht-follow.is-flip,
+  .ht-pair,
+  .ht-root .ht-benefit-grid {
+    grid-template-columns: 1fr;
+  }
+  .ht-follow.is-flip .ht-follow-copy { order: 0; }
+  .ht-follow { margin-top: 3rem; }
+  .ht-root .ht-editorial-head h2 { max-width: none; }
+}
+
