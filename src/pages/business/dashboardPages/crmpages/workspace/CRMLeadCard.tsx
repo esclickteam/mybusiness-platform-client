@@ -382,7 +382,7 @@ export default function CRMLeadCard({
           {tab === "source" && (
             <div className="crm-pane">
             <div className="crm-facts">
-              <Fact label={t("crm.workspace.adPlatform")} value={lead.provider || lead.source} />
+              <Fact label={t("crm.workspace.adPlatform")} value={leadSourceLabel({ source: lead.provider || lead.source })} />
               <Fact label={t("crm.leads.drawer.campaign")} value={lead.facebook?.campaignName || lead.google?.campaignName || lead.campaignName} />
               <Fact label={t("crm.leads.drawer.campaignId")} value={lead.facebook?.campaignId || lead.google?.campaignId} />
               <Fact label={t("crm.workspace.adset")} value={lead.facebook?.adsetName} />

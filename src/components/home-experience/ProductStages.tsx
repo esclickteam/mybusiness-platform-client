@@ -177,8 +177,8 @@ function JourneyScene({ id, text }: { id: string; text: TextFn }) {
 function MiniCrm({ text }: { text: TextFn }) {
   const leads = [
     { id: "tamar", name: text("תמר לוי", "Tamar Levi"), source: text("טופס באתר", "Website form") },
-    { id: "noa", name: text("נועה ברק", "Noa Barak"), source: text("מודעת לידים ב־Meta", "Meta lead ad") },
-    { id: "yael", name: text("יעל דהן", "Yael Dahan"), source: text("מודעת לידים ב־Meta", "Meta lead ad") },
+    { id: "noa", name: text("נועה ברק", "Noa Barak"), source: text("Meta", "Meta") },
+    { id: "yael", name: text("יעל דהן", "Yael Dahan"), source: text("Meta", "Meta") },
   ];
   const [id, setId] = useState("tamar");
   const lead = leads.find((item) => item.id === id) || leads[0];
