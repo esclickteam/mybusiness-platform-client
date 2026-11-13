@@ -1091,7 +1091,8 @@ export function AuthProvider({ children }) {
               location.pathname.startsWith("/business/") ||
               location.pathname.startsWith("/business-profile/") ||
               location.pathname.includes("/search-visibility") ||
-              location.pathname.includes("/seo-scanner")
+              location.pathname.includes("/seo-scanner") ||
+              location.pathname.includes("/products/ai-visibility-scanner")
             ) {
               return;
             }

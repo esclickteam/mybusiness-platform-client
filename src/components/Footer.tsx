@@ -77,8 +77,8 @@ export default function Footer() {
         { label: t("footer.crm"), to: "/crm" },
         { label: SCAN_LABEL[region] || SCAN_LABEL.en, to: "/website-scan" },
         {
-          label: region === "he" ? "סורק SEO, GEO ו־AEO" : region === "ar" ? "فاحص SEO וGEO וAEO" : region === "es" ? "Escáner SEO, GEO y AEO" : region === "pt-BR" ? "Scanner SEO, GEO e AEO" : "SEO, GEO & AEO Scanner",
-          to: "/seo-scanner",
+          label: region === "he" ? "סורק נראות AI" : region === "ar" ? "فاحص ظهور AI" : "AI Visibility Scanner",
+          to: "/products/ai-visibility-scanner",
         },
         { label: t("footer.appointments"), to: "/appointments" },
         { label: t("footer.whatsapp"), to: "/whatsapp-api" },

@@ -23,6 +23,7 @@ const ComplianceScannerPage = lazy(() => import("./pages/public/ComplianceScanne
 const ComplianceDemoPage = lazy(() => import("./pages/public/ComplianceDemoPage"));
 const WebsiteScanPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.WebsiteScanPage })));
 const SearchVisibilityMarketing = lazy(() => import("./pages/searchVisibility/SearchVisibilityMarketing"));
+const AiVisibilityProductPage = lazy(() => import("./pages/product/AiVisibilityProductPage"));
 const SearchVisibilityApp = lazy(() => import("./pages/searchVisibility/SearchVisibilityApp"));
 const SearchVisibilityAdminPage = lazy(() => import("./pages/admin/SearchVisibilityAdminPage"));
 const ComplianceAccountPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.ComplianceAccountPage })));
@@ -1374,6 +1375,7 @@ export default function App() {
                         <Route path="/compliance/demo" element={<ComplianceDemoPage />} />
                         <Route path="/website-scan" element={<WebsiteScanPage />} />
                         <Route path="/seo-scanner" element={<SearchVisibilityMarketing />} />
+                        <Route path="/products/ai-visibility-scanner" element={<AiVisibilityProductPage />} />
                         <Route
                           path="/search-visibility"
                           element={
