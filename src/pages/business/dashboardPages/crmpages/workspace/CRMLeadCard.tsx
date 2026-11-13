@@ -28,6 +28,7 @@ import {
   type TimelineEvent,
   type WorkspaceLead,
 } from "./crmWorkspaceApi";
+import { leadSourceLabel } from "./leadSourceLabel";
 
 type TabKey =
   | "overview"
@@ -235,7 +236,7 @@ export default function CRMLeadCard({
           <div className="crm-record-facts">
             <span className="crm-chip" dir="ltr">{lead.phone || t("crm.common.noPhone")}</span>
             <span className="crm-chip">{lead.email || t("crm.common.noEmail")}</span>
-            <span className="crm-chip">{lead.source || "—"}</span>
+            <span className="crm-chip">{leadSourceLabel(lead) || "—"}</span>
             <span className={`crm-status-pill is-${lead.status || "new"}`}>{statusLabel}</span>
           </div>
           <div className="crm-file-actions">
@@ -309,7 +310,7 @@ export default function CRMLeadCard({
                 <Fact label={t("crm.common.email")} value={lead.email} />
                 <Fact label={t("crm.common.status")} value={statusLabel} />
                 <Fact label={t("crm.leads.table.agent")} value={lead.assignedToName || t("crm.leads.unassignedAgent")} />
-                <Fact label={t("crm.leads.table.source")} value={lead.source} />
+                <Fact label={t("crm.leads.table.source")} value={leadSourceLabel(lead)} />
               </div>
               <label className="crm-field">
                 <span>{t("crm.leads.table.agent")}</span>
