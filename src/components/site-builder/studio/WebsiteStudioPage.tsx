@@ -492,6 +492,20 @@ function collectStudioPageIds(
   );
 }
 
+const LIVE_SCREEN_ORDER = ["dashboard", "login", "customers", "workers", "jobs", "reports", "settings"];
+
+function orderedLiveScreens<T extends { id?: string; editMode?: string; title?: string }>(pages: T[]) {
+  return pages
+    .filter((page) => page.editMode === "saas-live" && page.id)
+    .sort((left, right) => {
+      const leftOrder = LIVE_SCREEN_ORDER.indexOf(String(left.id));
+      const rightOrder = LIVE_SCREEN_ORDER.indexOf(String(right.id));
+      const byPriority = (leftOrder === -1 ? 99 : leftOrder) - (rightOrder === -1 ? 99 : rightOrder);
+      if (byPriority) return byPriority;
+      return String(left.title || left.id).localeCompare(String(right.title || right.id), "he");
+    });
+}
+
 function snapshotPages(
   pages: StudioSitePageWithPortal[],
   editor: Editor,
@@ -4915,6 +4929,7 @@ export default function WebsiteStudioPage({
     pageId: "",
     tab: "seo",
   });
+  const saasScreenChosen = useRef(false);
   const [activePageId, setActivePageId] = useState(() => {
     if (selectedTemplateSeed) {
       return createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
@@ -4924,6 +4939,15 @@ export default function WebsiteStudioPage({
 
     return "home";
   });
+  useEffect(() => {
+    if (saasScreenChosen.current) return;
+    const live = orderedLiveScreens(pages);
+    if (!live.length) return;
+    saasScreenChosen.current = true;
+    const current = pages.find((page) => page.id === activePageId) as { editMode?: string } | undefined;
+    if (current?.editMode === "saas-live") return;
+    setActivePageId(String(live[0].id));
+  }, [pages, activePageId]);
   /** Shared template visual edits kept while switching between non-library pages */
   const [visualSessionData, setVisualSessionData] = useState<Record<string, any>>(
     {},
@@ -9399,7 +9423,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           <div ref={traitsRef} />
         </div>
 
-        <div className={editorStageClass}>
+        <div className={`${editorStageClass} flex flex-col`}>
+          {orderedLiveScreens(pages).length ? (
+            <div className="z-30 flex shrink-0 gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2">
+              {orderedLiveScreens(pages).map((page) => (
+                <button
+                  key={page.id}
+                  type="button"
+                  onClick={() => {
+                    setActivePageId(String(page.id));
+                    setActivePanel(null);
+                  }}
+                  className={[
+                    "shrink-0 rounded-full px-3 py-1 text-xs font-black",
+                    page.id === activePageId
+                      ? "bg-violet-700 text-white"
+                      : "bg-slate-100 text-slate-700",
+                  ].join(" ")}
+                >
+                  {page.title || page.id}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <StudioWixRail
             activePanel={activePanel}
             activePageTitle={activePage?.title || t("studio.page")}
@@ -9509,7 +9555,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           )}
 
 
-          <div className={(activePage as { editMode?: string } | undefined)?.editMode === "saas-live" ? "hidden" : "h-full min-h-0"}>
+          <div className={(activePage as { editMode?: string } | undefined)?.editMode === "saas-live" ? "hidden" : "min-h-0 flex-1"}>
             <StudioCanvas
               editorRefContainer={editorContainerRef}
               publicUrl={publicUrl}
@@ -9517,6 +9563,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             />
           </div>
           {(activePage as { editMode?: string; id?: string; data?: { saasVisual?: any } } | undefined)?.editMode === "saas-live" && siteId ? (
+            <div className="min-h-0 flex-1">
             <SaasLiveCanvas
               siteId={siteId}
               businessId={businessId}
@@ -9532,6 +9579,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 )));
               }}
             />
+            </div>
           ) : null}
         </div>
       </div>
