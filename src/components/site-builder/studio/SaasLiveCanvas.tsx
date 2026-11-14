@@ -53,7 +53,11 @@ export default function SaasLiveCanvas({
     setFrameUrl("");
     setMessage("טוען את המסך החי…");
     const params = new URLSearchParams({ siteId, businessId, screen: pageId });
-    fetch(`/api/site-builder/design-frame?${params.toString()}`, { credentials: "include" })
+    const token = window.localStorage.getItem("token") || window.localStorage.getItem("authToken") || "";
+    fetch(`/api/site-builder/design-frame?${params.toString()}`, {
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
       .then(async (response) => {
         const body = await response.json().catch(() => ({}));
         if (!alive) return;
