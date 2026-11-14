@@ -30,7 +30,9 @@ import type { ReadyWebsiteTemplateSeed } from "./data/readyWebsiteTypes";
 import StudioTopbar from "./StudioTopbar";
 import "../../../pages/interiorDesign.css";
 import StudioSidebar from "./StudioSidebar";
+import { SaasVisualRestore } from "./SaasVisualRestore";
 import StudioCanvas from "./StudioCanvas";
+import SaasLiveCanvas from "./SaasLiveCanvas";
 import BizuplyLoader from "../../ui/BizuplyLoader";
 import { bizAlert, bizConfirm, bizPrompt } from "../../ui/bizDialog";
 import TemplateVisualEditor from "./TemplateVisualEditor";
@@ -490,6 +492,26 @@ function collectStudioPageIds(
   );
 }
 
+const LIVE_SCREEN_ORDER = ["dashboard", "login", "customers", "workers", "jobs", "reports", "settings"];
+
+function orderedLiveScreens<T extends { id?: string; editMode?: string; title?: string }>(pages: T[]) {
+  const seen = new Set<string>();
+  return pages
+    .filter((page) => {
+      const id = String(page.id || "");
+      if (page.editMode !== "saas-live" || !id || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    })
+    .sort((left, right) => {
+      const leftOrder = LIVE_SCREEN_ORDER.indexOf(String(left.id));
+      const rightOrder = LIVE_SCREEN_ORDER.indexOf(String(right.id));
+      const byPriority = (leftOrder === -1 ? 99 : leftOrder) - (rightOrder === -1 ? 99 : rightOrder);
+      if (byPriority) return byPriority;
+      return String(left.title || left.id).localeCompare(String(right.title || right.id), "he");
+    });
+}
+
 function snapshotPages(
   pages: StudioSitePageWithPortal[],
   editor: Editor,
@@ -497,6 +519,9 @@ function snapshotPages(
 ): StudioSitePageWithPortal[] {
   return pages.map((page) => {
     if (page.id !== activePageId) return page;
+    if ((page as { editMode?: string }).editMode === "saas-live") {
+      return { ...page, updatedAt: new Date().toISOString() };
+    }
 
     return {
       ...page,
@@ -4910,6 +4935,7 @@ export default function WebsiteStudioPage({
     pageId: "",
     tab: "seo",
   });
+  const saasScreenChosen = useRef(false);
   const [activePageId, setActivePageId] = useState(() => {
     if (selectedTemplateSeed) {
       return createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
@@ -4919,6 +4945,15 @@ export default function WebsiteStudioPage({
 
     return "home";
   });
+  useEffect(() => {
+    if (saasScreenChosen.current) return;
+    const live = orderedLiveScreens(pages);
+    if (!live.length) return;
+    saasScreenChosen.current = true;
+    const current = pages.find((page) => page.id === activePageId) as { editMode?: string } | undefined;
+    if (current?.editMode === "saas-live") return;
+    setActivePageId(String(live[0].id));
+  }, [pages, activePageId]);
   /** Shared template visual edits kept while switching between non-library pages */
   const [visualSessionData, setVisualSessionData] = useState<Record<string, any>>(
     {},
@@ -5725,7 +5760,7 @@ export default function WebsiteStudioPage({
           serverPages.find((page) => page.id === nextActivePageId) ||
           serverPages[0];
 
-        if (pageToLoad && editorRef.current) {
+        if (pageToLoad && editorRef.current && (pageToLoad as { editMode?: string }).editMode !== "saas-live") {
           loadPageIntoEditor(editorRef.current, pageToLoad);
           syncSections(editorRef.current);
         }
@@ -6378,7 +6413,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       setActivePanel("pages");
 
       window.setTimeout(() => {
-        if (!pageToLoad) return;
+        if (!pageToLoad || (pageToLoad as { editMode?: string }).editMode === "saas-live") return;
         loadPageIntoEditor(editor, pageToLoad);
         syncSections(editor);
       }, 0);
@@ -9394,7 +9429,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           <div ref={traitsRef} />
         </div>
 
-        <div className={editorStageClass}>
+        <div className={`${editorStageClass} flex flex-col`}>
+          {orderedLiveScreens(pages).length ? (
+            <div className="z-30 flex shrink-0 gap-2 overflow-x-auto border-b border-slate-200 bg-white px-3 py-2">
+              {orderedLiveScreens(pages).map((page) => (
+                <button
+                  key={page.id}
+                  type="button"
+                  onClick={() => {
+                    setActivePageId(String(page.id));
+                    setActivePanel(null);
+                  }}
+                  className={[
+                    "shrink-0 rounded-full px-3 py-1 text-xs font-black",
+                    page.id === activePageId
+                      ? "bg-violet-700 text-white"
+                      : "bg-slate-100 text-slate-700",
+                  ].join(" ")}
+                >
+                  {page.title || page.id}
+                </button>
+              ))}
+            </div>
+          ) : null}
           <StudioWixRail
             activePanel={activePanel}
             activePageTitle={activePage?.title || t("studio.page")}
@@ -9457,6 +9514,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   </div>
 
                   <div className="min-h-0 flex-1 overflow-hidden">
+                    <SaasVisualRestore siteId={siteId} businessId={businessId} />
                     <StudioSidebar
                       activePanel={activePanel}
                       setActivePanel={setActivePanel}
@@ -9503,11 +9561,32 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           )}
 
 
-          <StudioCanvas
-            editorRefContainer={editorContainerRef}
-            publicUrl={publicUrl}
-            layersRef={layersRef}
-          />
+          <div className={(activePage as { editMode?: string } | undefined)?.editMode === "saas-live" ? "hidden" : "min-h-0 flex-1"}>
+            <StudioCanvas
+              editorRefContainer={editorContainerRef}
+              publicUrl={publicUrl}
+              layersRef={layersRef}
+            />
+          </div>
+          {(activePage as { editMode?: string; id?: string; data?: { saasVisual?: any } } | undefined)?.editMode === "saas-live" && siteId ? (
+            <div className="min-h-0 flex-1">
+            <SaasLiveCanvas
+              siteId={siteId}
+              businessId={businessId}
+              pageId={String((activePage as { id?: string }).id || "")}
+              device={device === "Mobile" ? "mobile" : device === "Tablet" ? "tablet" : "desktop"}
+              visual={(activePage as { data?: { saasVisual?: any } }).data?.saasVisual || { styles: {}, text: {}, hidden: {}, order: {} }}
+              onVisual={(next) => {
+                const pageId = String((activePage as { id?: string }).id || "");
+                setPages((current) => current.map((page) => (
+                  page.id === pageId
+                    ? { ...page, data: { ...((page as { data?: Record<string, unknown> }).data || {}), saasVisual: next } }
+                    : page
+                )));
+              }}
+            />
+            </div>
+          ) : null}
         </div>
       </div>
 

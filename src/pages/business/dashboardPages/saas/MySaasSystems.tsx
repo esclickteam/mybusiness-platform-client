@@ -72,6 +72,9 @@ export default function MySaasSystems() {
               <a className="rounded-full bg-[#24124d] px-3 py-2 text-sm font-bold text-white" href={enterSystemHref(tenant)} target="_blank" rel="noreferrer">
                 כניסה למערכת
               </a>
+              <Link className="rounded-full border px-3 py-2 text-sm font-bold" to={`/business/${businessId}/dashboard/saas/${tenant.id}/design`}>
+                עיצוב המערכת
+              </Link>
               <Link className="rounded-full border px-3 py-2 text-sm font-bold" to={`/business/${businessId}/dashboard/saas/${tenant.id}`}>
                 עריכת מערכת
               </Link>

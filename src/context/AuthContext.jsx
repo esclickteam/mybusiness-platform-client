@@ -636,30 +636,10 @@ export function AuthProvider({ children }) {
   /* ===========================
      🤝 Affiliate login
   =========================== */
-  const affiliateLogin = async (publicToken) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const { data } = await API.get(`/affiliate/login/${publicToken}`, {
-        withCredentials: true,
-      });
-
-      const normalized = normalizeUser(data);
-      setUser(normalized);
-      localStorage.setItem("businessDetails", JSON.stringify(normalized));
-      syncLanguageOnLogin(normalized);
-
-      setToken(null);
-      refreshUser(true).catch(() => {});
-
-      setLoading(false);
-      return normalized;
-    } catch (err) {
-      setError(getApiErrorMessage(err, i18n.t("login.errors.generic")));
-      setLoading(false);
-      throw err;
-    }
+  const affiliateLogin = async () => {
+    const error = new Error("Affiliate access requires the account password.");
+    setError(error.message);
+    throw error;
   };
 
   /* ===========================

@@ -69,6 +69,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { path: "/admin/geo-intel", label: "נראות במנועי מענה" },
       { path: "/admin/compliance-scans", label: "סריקות ודוחות" },
       { path: "/admin/search-visibility", label: "סורק SEO, GEO ו־AEO" },
+      { path: "/admin/security-scans", label: "סורק אבטחה" },
     ],
   },
   {

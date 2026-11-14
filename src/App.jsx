@@ -26,6 +26,7 @@ const SearchVisibilityMarketing = lazy(() => import("./pages/searchVisibility/Se
 const AiVisibilityProductPage = lazy(() => import("./pages/product/AiVisibilityProductPage"));
 const SearchVisibilityApp = lazy(() => import("./pages/searchVisibility/SearchVisibilityApp"));
 const SearchVisibilityAdminPage = lazy(() => import("./pages/admin/SearchVisibilityAdminPage"));
+const SecurityScannerMarketing = lazy(() => import("./pages/public/SecurityScannerMarketing"));
 const ComplianceAccountPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.ComplianceAccountPage })));
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
@@ -42,6 +43,7 @@ import PartnerHostHome from "./pages/public/PartnerHostHome";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
+const SaasStudioEntry = lazy(() => import("./pages/saas/SaasStudioEntry"));
 const BusinessChatPage = lazy(() => import("./components/BusinessChatPage"));
 const PublicVisualSiteRenderer = lazyWithPreload(() =>
   import("./components/site-builder/public/PublicVisualSiteRenderer")
@@ -210,6 +212,7 @@ const AdminManagedWhatsApp = lazy(
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const ComplianceScansAdminPage = lazy(() => import("./pages/admin/ComplianceScansAdminPage"));
 const ComplianceScanDetailPage = lazy(() => import("./pages/admin/ComplianceScanDetailPage"));
+const SecurityScannerAdminPage = lazy(() => import("./pages/admin/SecurityScannerAdminPage"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
 const AdminGlobalPartners = lazy(() =>
@@ -1384,6 +1387,8 @@ export default function App() {
                             </ProtectedRoute>
                           }
                         />
+                        <Route path="/security-scanner" element={<SecurityScannerMarketing />} />
+                        <Route path="/en/security-scanner" element={<SecurityScannerMarketing />} />
                         <Route path="/compliance/review" element={<ComplianceScannerPage />} />
                         <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
                         <Route path="/compliance" element={<ComplianceScannerPage />} />
@@ -1483,6 +1488,14 @@ export default function App() {
                         <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
                         <Route path="/login" element={<Login />} />
+                        <Route
+                          path="/saas-studio/:templateSlug/:publicSlug"
+                          element={
+                            <ProtectedRoute roles={["business", "admin"]}>
+                              <SaasStudioEntry />
+                            </ProtectedRoute>
+                          }
+                        />
                         <Route path={WHATSAPP_API_LOGIN_PATH} element={<WhatsAppApiLoginPage />} />
                         {import.meta.env.DEV && AiAutomationTemplatesVisualPage ? (
                           <Route
@@ -1790,6 +1803,7 @@ export default function App() {
                         <Route path="compliance-scans/:scanId" element={<ComplianceScanDetailPage />} />
                         <Route path="compliance-scans" element={<ComplianceScansAdminPage />} />
                         <Route path="search-visibility" element={<SearchVisibilityAdminPage />} />
+                        <Route path="security-scans" element={<SecurityScannerAdminPage />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
                         <Route path="geo-intel" element={<AdminGeoIntel />} />
                         <Route path="global-partners" element={<AdminGlobalPartners />} />

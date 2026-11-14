@@ -28,6 +28,7 @@ const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
 const MySaasSystems = lazy(() => import("./dashboardPages/saas/MySaasSystems"));
 const SaasOwnerConsole = lazy(() => import("./dashboardPages/saas/SaasOwnerConsole"));
 const SaasSystemBuilder = lazy(() => import("./dashboardPages/saas/SaasSystemBuilder"));
+const SaasVisualStudio = lazy(() => import("./dashboardPages/saas/SaasVisualStudio"));
 
 /* OLD Website Builder - keep only for compatibility routes */
 const BusinessMiniSiteBuilder = lazy(() =>
@@ -116,6 +117,7 @@ const MiniSaaSManager = lazy(() =>
 );
 
 const HelpCenter = lazy(() => import("../HelpCenter"));
+const SecurityScannerPage = lazy(() => import("./dashboardPages/security/SecurityScannerPage"));
 
 /* Automations — nested routes (home / templates / runs / connections / editor) */
 const AutomationsLayout = lazy(() =>
@@ -483,6 +485,7 @@ const BusinessDashboardRoutes = () => {
 
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="saas" element={<MySaasSystems />} />
+          <Route path="saas/:tenantId/design" element={<SaasVisualStudio />} />
           <Route path="saas/:tenantId" element={<SaasOwnerConsole />} />
           <Route path="saas/:tenantId/builder" element={<SaasSystemBuilder />} />
           <Route path="dashboard/profile" element={<BusinessProfilePage />} />
@@ -787,6 +790,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="*" element={<Navigate to="appointments" replace />} />
           </Route>
 
+          <Route path="security" element={<SecurityScannerPage />} />
           <Route path="help-center" element={<HelpCenter />} />
 
           <Route

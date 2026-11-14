@@ -1,40 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import BizuplyLoader from "./ui/BizuplyLoader";
 
 export default function AffiliateAutoLogin() {
-  const { publicToken } = useParams();
   const navigate = useNavigate();
-  const { affiliateLogin } = useAuth();
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function doLogin() {
-      if (!publicToken) {
-        navigate("/login");
-        return;
-      }
-
-      try {
-        await affiliateLogin(publicToken);
-        navigate("/affiliate/dashboard");
-      } catch (err) {
-        setError(err.message || "Error logging in as affiliate");
-        // You can also redirect to the login page after a second, if desired:
-        // setTimeout(() => navigate("/login"), 2000);
-      }
-    }
-    doLogin();
-  }, [publicToken, navigate, affiliateLogin]);
-
-  if (error) {
-    return (
-      <div style={{ padding: 20, textAlign: "center", color: "red" }}>
-        <h2>{error}</h2>
-      </div>
-    );
-  }
+    navigate("/login", { replace: true, state: { reason: "affiliate-password" } });
+  }, [navigate]);
 
   return <BizuplyLoader fullScreen label="Loading affiliate page..." />;
 }

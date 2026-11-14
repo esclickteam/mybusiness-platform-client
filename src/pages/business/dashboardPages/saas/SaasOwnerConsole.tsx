@@ -335,6 +335,7 @@ export default function SaasOwnerConsole() {
       <aside className="w-full min-w-0 space-y-4 rounded-2xl border bg-white p-4">
         <h1 className="text-lg font-black">עריכת המערכת</h1>
         <p className="text-xs text-slate-600">התחלה קצרה: מיתוג → תוכן עסקי → פרסום. אל תחברו WhatsApp, SMS או תשלומים אמיתיים לפני בדיקה.</p>
+        <Link className="inline-block text-sm font-bold underline" to={`/business/${businessId}/dashboard/saas/${tenantId}/design`}>עיצוב המערכת</Link>
         <Link className="inline-block text-sm font-bold underline" to={`/business/${businessId}/dashboard/saas/${tenantId}/builder`}>בונה נתונים, מסכים ותהליכים</Link>
         {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
         {message ? <p className="text-sm font-bold text-emerald-700">{message}</p> : null}

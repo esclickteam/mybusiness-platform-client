@@ -7,6 +7,7 @@ const source = [
   "src/components/home-experience/HomeExperienceSections.tsx",
   "src/components/home-experience/HomeExperienceFooter.tsx",
   "src/components/home-experience/ProductMoments.tsx",
+  "src/components/home-experience/ProductStages.tsx",
   "src/components/home-experience/MomentAlternatives.tsx",
   "src/pages/dev/HomeMomentLab.tsx",
 ]

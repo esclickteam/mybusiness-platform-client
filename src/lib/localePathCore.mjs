@@ -133,7 +133,9 @@ export function lastLanguageCookie(cookieHeader = "") {
 }
 
 export function marketingLanguageRedirectPath(pathname, { cookie = "", acceptLanguage = "" } = {}) {
-  const { locale } = splitMarketingLocale(pathname);
+  const path = String(pathname || "/");
+  if (path === "/en" || path.startsWith("/en/")) return null;
+  const { locale } = splitMarketingLocale(path);
   // An explicit /he, /es, /pt-br, or /ar link is the visitor's choice.
   // A saved cookie must not send that address to another language.
   if (locale !== "en") return null;

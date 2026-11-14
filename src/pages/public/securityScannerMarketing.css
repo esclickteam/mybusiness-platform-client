@@ -1,0 +1,131 @@
+.scanner-product {
+  background: #f7f5ff;
+  color: #17141f;
+  font-family: "Heebo", "Segoe UI", sans-serif;
+}
+
+.scanner-product__wrap {
+  width: min(1080px, calc(100% - 40px));
+  margin: 0 auto;
+}
+
+.scanner-product__hero {
+  padding: 88px 0 64px;
+  background: linear-gradient(160deg, #ffffff 0%, #eef2ff 48%, #f3e8ff 100%);
+}
+
+.scanner-product__kicker {
+  margin: 0 0 12px;
+  color: #5b21b6;
+  font-weight: 700;
+}
+
+.scanner-product h1,
+.scanner-product h2 {
+  margin: 0 0 16px;
+  letter-spacing: 0;
+}
+
+.scanner-product h1 {
+  max-width: 16ch;
+  font-size: clamp(36px, 6vw, 64px);
+  line-height: 1.05;
+}
+
+.scanner-product__hero p {
+  max-width: 62ch;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.scanner-product__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.scanner-product__actions a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 48px;
+  padding: 0 18px;
+  border: 1px solid #312e81;
+  border-radius: 0;
+  background: #312e81;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.scanner-product__actions a:last-child {
+  background: #ffffff;
+  color: #312e81;
+}
+
+.scanner-product__section {
+  padding: 72px 0;
+}
+
+.scanner-product__section--white {
+  background: #ffffff;
+}
+
+.scanner-product__board,
+.scanner-product__cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scanner-product__board div,
+.scanner-product__cards li,
+.scanner-product__sheet,
+.scanner-product details {
+  padding: 20px;
+  border: 1px solid #ddd6fe;
+  background: #ffffff;
+}
+
+.scanner-product__board strong {
+  display: block;
+  margin-top: 8px;
+  color: #4c1d95;
+  font-size: 32px;
+}
+
+.scanner-product__cards li {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scanner-product__steps {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding-inline-start: 20px;
+  line-height: 1.6;
+}
+
+.scanner-product details {
+  margin-top: 12px;
+}
+
+.scanner-product summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+@media (max-width: 800px) {
+  .scanner-product__board,
+  .scanner-product__cards {
+    grid-template-columns: 1fr;
+  }
+
+  .scanner-product__hero {
+    padding-top: 48px;
+  }
+}

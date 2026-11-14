@@ -36,6 +36,7 @@ const PRODUCTS = [
   ["appointments", "/appointments"],
   ["collaborations", "/collaborations"],
   ["agents", "/agents"],
+  ["security", "/security-scanner"],
   ["saas", "/saas"],
   ["templates", "/website-builder"],
 ];

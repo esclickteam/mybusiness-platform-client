@@ -84,6 +84,12 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                 <summary>{group.label}</summary>
                 {group.links.map(([to, label, blurb]) => (
                   <Link key={to} to={to} onClick={onClose} className="site-mobile__sub">
+                    {to === "/security-scanner" ? (
+                      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                        <path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 8.4 8 9.5 4.6-1.1 8-4.5 8-9.5V5l-8-3Z" />
+                        <path fill="#ffffff" d="m8.2 11.2 2.2 2.2 5-5 1.2 1.2-6.2 6.2-3.4-3.4 1.2-1.2Z" />
+                      </svg>
+                    ) : null}
                     <span>{label}</span>
                     {blurb ? <small>{blurb}</small> : null}
                   </Link>
