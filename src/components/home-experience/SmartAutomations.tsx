@@ -186,6 +186,7 @@ export default function SmartAutomations() {
   const [flowId, setFlowId] = useState(FLOWS[0].id);
   const [selected, setSelected] = useState(1);
   const [cursor, setCursor] = useState(-1);
+  const [active, setActive] = useState<number | null>(null);
   const [running, setRunning] = useState(false);
   const flow = FLOWS.find((item) => item.id === flowId) || FLOWS[0];
   const done = cursor >= 3 && !running;
@@ -202,6 +203,7 @@ export default function SmartAutomations() {
   const reset = () => {
     clearTimers();
     setCursor(-1);
+    setActive(null);
     setRunning(false);
     setSelected(1);
   };
@@ -210,6 +212,7 @@ export default function SmartAutomations() {
     clearTimers();
     setFlowId(id);
     setCursor(-1);
+    setActive(null);
     setRunning(false);
     setSelected(1);
   };
@@ -217,11 +220,13 @@ export default function SmartAutomations() {
   const run = () => {
     clearTimers();
     setCursor(-1);
+    setActive(0);
     setSelected(0);
     setRunning(true);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduced) {
       setCursor(3);
+      setActive(null);
       setSelected(3);
       setRunning(false);
       return;
@@ -229,9 +234,15 @@ export default function SmartAutomations() {
     [0, 1, 2, 3].forEach((step) => {
       const timer = window.setTimeout(() => {
         setCursor(step);
-        setSelected(step);
-        if (step === 3) setRunning(false);
-      }, 720 * (step + 1));
+        if (step < 3) {
+          setActive(step + 1);
+          setSelected(step + 1);
+        } else {
+          setActive(null);
+          setSelected(3);
+          setRunning(false);
+        }
+      }, 900 * (step + 1));
       timers.current.push(timer);
     });
   };
@@ -246,8 +257,11 @@ export default function SmartAutomations() {
     return text(labels[kind][0], labels[kind][1]);
   };
 
-  const progress = cursor < 0 ? 0 : ((cursor + 1) / 4) * 100;
+  const completed = cursor + 1;
+  const partial = running && active === completed ? 0.45 : 0;
+  const progress = (Math.min(4, Math.max(completed, 0) + partial) / 4) * 100;
   const step = flow.steps[selected] || flow.steps[0];
+  const stepState = cursor >= selected ? "done" : active === selected ? "now" : "wait";
 
   return (
     <section className="au-section" id="automations" dir={dir} aria-labelledby="au-title">
@@ -296,20 +310,22 @@ export default function SmartAutomations() {
               <ol className="au-flow">
                 {flow.steps.map((item, index) => {
                   const reached = cursor >= index;
+                  const live = active === index && !reached;
                   return (
                     <li key={item.kind}>
                       <button
                         type="button"
-                        className={`is-${item.kind}${reached ? " is-done" : ""}${running && cursor === index ? " is-now" : ""}${selected === index ? " is-on" : ""}`}
+                        className={`is-${item.kind}${reached ? " is-done" : ""}${live ? " is-now" : ""}${selected === index ? " is-on" : ""}`}
                         aria-current={selected === index ? "step" : undefined}
                         onClick={() => setSelected(index)}
                       >
                         {reached ? <i className="au-check" aria-hidden="true">✓</i> : null}
-                        <Icon name={item.kind} />
+                        <span className="au-glyph"><Icon name={item.kind} /></span>
                         <strong>{text(item.titleHe, item.titleEn)}</strong>
                         <small>{text(item.bodyHe, item.bodyEn)}</small>
                         <em>{kindLabel(item.kind)}</em>
                       </button>
+                      {index < 3 ? <span className={`au-link${reached ? " is-done" : ""}${live ? " is-now" : ""}`} aria-hidden="true" /> : null}
                     </li>
                   );
                 })}
@@ -323,7 +339,7 @@ export default function SmartAutomations() {
                       : text("הסימולציה מוכנה", "Simulation is ready")}
                 </span>
                 <div className="au-meter"><i style={{ width: `${progress}%` }} /></div>
-                <b>{Math.max(cursor + 1, 0)} / 4</b>
+                <b><bdi dir="ltr">{Math.max(completed, 0)} / 4</bdi></b>
               </div>
               {done ? <p className="au-result" role="status">{text(flow.resultHe, flow.resultEn)}</p> : null}
             </div>
@@ -331,12 +347,28 @@ export default function SmartAutomations() {
             <aside className="au-inspector">
               <h3>{text("הגדרות הבלוק", "Block settings")}</h3>
               <p className={`au-kind is-${step.kind}`}><Icon name={step.kind} />{kindLabel(step.kind)}</p>
-              <h4>{text(step.titleHe, step.titleEn)}</h4>
-              <p>{text(step.bodyHe, step.bodyEn)}</p>
               <dl>
                 <div>
-                  <dt>{text("מה בודקים", "What it checks")}</dt>
+                  <dt>{text("שם הבלוק", "Block name")}</dt>
+                  <dd>{text(step.titleHe, step.titleEn)}</dd>
+                </div>
+                <div>
+                  <dt>{text("מה הבדיקה", "What it checks")}</dt>
+                  <dd>{text(step.bodyHe, step.bodyEn)}</dd>
+                </div>
+                <div>
+                  <dt>{text("דוגמה בהדגמה", "Demo example")}</dt>
                   <dd>{text(step.sampleHe, step.sampleEn)}</dd>
+                </div>
+                <div>
+                  <dt>{text("מצב השלב", "Step status")}</dt>
+                  <dd>
+                    {stepState === "done"
+                      ? text("הושלם בהדגמה", "Completed in the demo")
+                      : stepState === "now"
+                        ? text("פעיל עכשיו", "Active now")
+                        : text("ממתין לסימולציה", "Waiting for the simulation")}
+                  </dd>
                 </div>
               </dl>
               <p className="au-note">{text("הדגמה מקומית. לא נשלחת הודעה ולא נכתב למסד הנתונים.", "Local demo. No message is sent and nothing is written to the database.")}</p>
