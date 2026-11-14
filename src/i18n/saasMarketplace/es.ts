@@ -83,6 +83,8 @@ export const es: SaasMarketCopy = {
     exploreNamed: "Explorar {{name}}",
     entryLabel: "Desde {{amount}} de entrada",
     entryNote: "50% de entrada con reparto de ingresos. Las condiciones se cierran con Bizuply.",
+    priceNotSet: "Precio no definido",
+    saleClosed: "No está a la venta",
     demoBadge: "Demo disponible",
     whiteLabelBadge: "White label",
     partnerBadge: "Modelo partner disponible",

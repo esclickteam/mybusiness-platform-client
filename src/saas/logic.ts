@@ -26,7 +26,8 @@ export type SaasProduct = {
   subtitle: string;
   shortDescription: string;
   fullDescription: string;
-  priceUsd: number;
+  priceUsd: number | null;
+  priceDefined?: boolean;
   estimatedDevCostLabel: string;
   mainImageUrl?: string;
   coverImage?: string;
@@ -231,7 +232,13 @@ export function illustrativeMrr(customers: number, monthlyPrice: number) {
 export const SAAS_MODELS = ["partner", "white_label", "exclusive_country"] as const;
 export type SaasModelId = (typeof SAAS_MODELS)[number];
 
-export function partnerEntryUsd(priceUsd: number) {
+export function catalogPriceDefined(product: { priceUsd?: number | null; priceDefined?: boolean; purchasable?: boolean }) {
+  if (product.priceDefined === false) return false;
+  if (product.priceDefined === true) return Number(product.priceUsd) > 0;
+  return product.purchasable === true && Number(product.priceUsd) > 0;
+}
+
+export function partnerEntryUsd(priceUsd: number | null) {
   const price = Number(priceUsd) || 0;
   return Math.round(price / 2);
 }

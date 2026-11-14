@@ -9,6 +9,7 @@ import {
   formatUsd,
   isPublicDemoUrl,
   isSaasModel,
+  catalogPriceDefined,
   partnerEntryUsd,
   SAAS_MODELS,
   templateDemoLinks,
@@ -84,7 +85,8 @@ export function PlatformCard({
 }) {
   const { t } = useSaasLocale();
   const story = useStory(product);
-  const entry = formatUsd(partnerEntryUsd(product.priceUsd));
+  const priced = catalogPriceDefined(product);
+  const entry = priced ? formatUsd(partnerEntryUsd(product.priceUsd)) : "";
   const live = demoTarget(product);
   return (
     <article className="saas-card saas-glass flex flex-col overflow-hidden rounded-[32px]">
@@ -113,10 +115,19 @@ export function PlatformCard({
           <Pill>{t("saasMarket.platforms.partnerBadge")}</Pill>
           <Pill>{t("saasMarket.platforms.countryBadge")}</Pill>
         </div>
-        <p className="mt-5 text-lg font-black text-slate-950">
-          {t("saasMarket.platforms.entryLabel", { amount: entry })}
-        </p>
-        <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{t("saasMarket.platforms.entryNote")}</p>
+        {priced ? (
+          <>
+            <p className="mt-5 text-lg font-black text-slate-950">
+              {t("saasMarket.platforms.entryLabel", { amount: entry })}
+            </p>
+            <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{t("saasMarket.platforms.entryNote")}</p>
+          </>
+        ) : (
+          <>
+            <p className="mt-5 text-lg font-black text-slate-950">{t("saasMarket.platforms.priceNotSet")}</p>
+            <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{t("saasMarket.platforms.saleClosed")}</p>
+          </>
+        )}
         <div className="mt-5 flex flex-wrap gap-2">
           <Link to={`/saas/${product.slug}`} className="rounded-full bg-[#24124d] px-4 py-2 text-sm font-black text-white">
             {t("saasMarket.platforms.viewDetails")}
