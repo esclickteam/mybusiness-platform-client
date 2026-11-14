@@ -13,7 +13,9 @@ export function SaasVisualRestore({ siteId, businessId }: { siteId?: string; bus
   useEffect(() => {
     if (!siteId || !businessId) return;
     const query = `businessId=${encodeURIComponent(businessId)}`;
-    fetch(`/api/site-builder/sites/${siteId}/visual-versions?${query}`, { credentials: "include" })
+    const token = window.localStorage.getItem("token") || window.localStorage.getItem("authToken") || "";
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+    fetch(`/api/site-builder/sites/${siteId}/visual-versions?${query}`, { credentials: "include", headers })
       .then((response) => response.json())
       .then((body) => setVersions(Array.isArray(body.versions) ? body.versions : []))
       .catch(() => setVersions([]));
@@ -23,7 +25,11 @@ export function SaasVisualRestore({ siteId, businessId }: { siteId?: string; bus
 
   async function showPreview() {
     if (!revision) return;
-    const response = await fetch(`/api/site-builder/sites/${siteId}/visual-versions/${revision}?businessId=${encodeURIComponent(businessId || "")}`, { credentials: "include" });
+    const token = window.localStorage.getItem("token") || window.localStorage.getItem("authToken") || "";
+    const response = await fetch(`/api/site-builder/sites/${siteId}/visual-versions/${revision}?businessId=${encodeURIComponent(businessId || "")}`, {
+      credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    });
     const body = await response.json();
     const titles = Array.isArray(body.pages) ? body.pages.map((page: { title?: string }) => page.title).filter(Boolean).slice(0, 8) : [];
     setPreview(titles.join(" · ") || "אין כותרות בגרסה");
@@ -33,9 +39,11 @@ export function SaasVisualRestore({ siteId, businessId }: { siteId?: string; bus
   async function restore() {
     if (!revision) return;
     setMessage("");
+    const token = window.localStorage.getItem("token") || window.localStorage.getItem("authToken") || "";
     const response = await fetch(`/api/site-builder/sites/${siteId}/visual-versions/${revision}/restore?businessId=${encodeURIComponent(businessId || "")}`, {
       method: "POST",
       credentials: "include",
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     const body = await response.json().catch(() => ({}));
     setMessage(response.ok && body.productSync?.status === "published" ? "הגרסה פורסמה מחדש לעותק החי" : body.error || "השחזור לא עודכן במערכת החיה");

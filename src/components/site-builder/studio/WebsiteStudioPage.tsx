@@ -495,8 +495,14 @@ function collectStudioPageIds(
 const LIVE_SCREEN_ORDER = ["dashboard", "login", "customers", "workers", "jobs", "reports", "settings"];
 
 function orderedLiveScreens<T extends { id?: string; editMode?: string; title?: string }>(pages: T[]) {
+  const seen = new Set<string>();
   return pages
-    .filter((page) => page.editMode === "saas-live" && page.id)
+    .filter((page) => {
+      const id = String(page.id || "");
+      if (page.editMode !== "saas-live" || !id || seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    })
     .sort((left, right) => {
       const leftOrder = LIVE_SCREEN_ORDER.indexOf(String(left.id));
       const rightOrder = LIVE_SCREEN_ORDER.indexOf(String(right.id));
