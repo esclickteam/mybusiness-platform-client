@@ -14,6 +14,7 @@ import {
   isSeoDiscoveryPath,
   isUnknownMarketingPath,
   marketingLegacyRedirectPath,
+  marketingPublicRedirect,
 } from "./marketingSeo.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
@@ -85,6 +86,9 @@ describe("marketing crawl files", () => {
     expect(marketingLegacyRedirectPath("/join")).toBe("/business");
     expect(marketingLegacyRedirectPath("/Pricing/")).toBe("/pricing");
     expect(marketingLegacyRedirectPath("/pricing")).toBe("");
+    expect(marketingLegacyRedirectPath("/en/security-scanner")).toBe("/security-scanner");
+    expect(marketingPublicRedirect("/en/security-scanner")).toBe("/security-scanner");
+    expect(isUnknownMarketingPath("/en/security-scanner")).toBe(false);
   });
 
   it("marks private app routes noindex and leaves dynamic public routes untouched", () => {
