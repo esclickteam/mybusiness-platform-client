@@ -42,13 +42,29 @@ export default function WebsiteGallery() {
   const businessId = user?.businessId || user?.managedBusinessId || "";
 
   const [filter, setFilter] = useState<GalleryFilter>("all");
-  const [selectedKey, setSelectedKey] = useState(GALLERY_SITES[0].key);
+  const [selectedKey, setSelectedKey] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("bizuply-gallery-site") || "";
+      if (GALLERY_SITES.some((site) => site.key === saved)) return saved;
+    } catch {
+      /* private mode */
+    }
+    return GALLERY_SITES[0].key;
+  });
   const [underKey, setUnderKey] = useState<string | null>(null);
   const thumbs = useRef<HTMLDivElement | null>(null);
   const reduced = useRef(false);
 
   const visible = sitesForFilter(filter);
   const selected = visible.find((site) => site.key === selectedKey) || visible[0];
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem("bizuply-gallery-site", selectedKey);
+    } catch {
+      /* private mode */
+    }
+  }, [selectedKey]);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -128,14 +144,14 @@ export default function WebsiteGallery() {
             <p className="wg-cat">{text(selected.heCategory, selected.enCategory)}</p>
             <p className="wg-blurb">{text(selected.heText, selected.enText)}</p>
             <div className="wg-actions">
-              <Link
+              <a
                 className="wg-btn"
-                to={galleryDemoPath(selected.key, language)}
+                href={galleryDemoPath(selected.key, language)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 {text("צפייה בדמו", "View demo")}
-              </Link>
+              </a>
               <Link className="wg-btn wg-btn-line" to={galleryBuildPath(selected.key, user?.role, businessId)}>
                 {text("בניית אתר בסגנון הזה", "Build a site in this style")}
               </Link>
@@ -144,12 +160,12 @@ export default function WebsiteGallery() {
 
           <div className="wg-stage" aria-hidden="true">
             {underKey ? (
-              <img className="wg-stage-photo is-under" src={galleryStageSrc(underKey)} alt="" width={960} height={600} />
+              <img className="wg-stage-photo is-under" src={galleryStageSrc(underKey, language)} alt="" width={960} height={600} />
             ) : null}
             <img
               key={selected.key}
               className={underKey ? "wg-stage-photo is-current" : "wg-stage-photo"}
-              src={galleryStageSrc(selected.key)}
+              src={galleryStageSrc(selected.key, language)}
               alt=""
               width={960}
               height={600}
@@ -186,7 +202,7 @@ export default function WebsiteGallery() {
                   onClick={() => choose(site)}
                 >
                   <img
-                    src={galleryThumbSrc(site.key)}
+                    src={galleryThumbSrc(site.key, language)}
                     alt=""
                     width={420}
                     height={262}

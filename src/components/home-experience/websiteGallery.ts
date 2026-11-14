@@ -10,7 +10,7 @@ export type GallerySite = {
   enText: string;
 };
 
-/** Real studio templates. Images are crops of public/template-screenshots. */
+/** Real studio templates. Images are live captures of each template in that language. */
 export const GALLERY_SITES: readonly GallerySite[] = [
   {
     key: "virello",
@@ -121,10 +121,15 @@ export function galleryBuildPath(key: string, role?: string, businessId?: string
   return "/website-builder";
 }
 
-export function galleryStageSrc(key: string): string {
-  return `/demo-media/home/gallery/${key}-stage.webp`;
+export function galleryAssetLang(language: string): "he" | "en" {
+  const value = language.toLowerCase();
+  return value.startsWith("he") || value.startsWith("iw") ? "he" : "en";
 }
 
-export function galleryThumbSrc(key: string): string {
-  return `/demo-media/home/gallery/${key}-thumb.webp`;
+export function galleryStageSrc(key: string, language: string): string {
+  return `/demo-media/home/gallery/${key}-${galleryAssetLang(language)}-stage.webp`;
+}
+
+export function galleryThumbSrc(key: string, language: string): string {
+  return `/demo-media/home/gallery/${key}-${galleryAssetLang(language)}-thumb.webp`;
 }

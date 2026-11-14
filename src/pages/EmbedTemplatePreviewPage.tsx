@@ -32,9 +32,15 @@ export default function EmbedTemplatePreviewPage() {
 
   const Component = renderer.Component as React.ComponentType<Record<string, unknown>>;
   const key = String(renderer.key || templateKey).toLowerCase();
+  const localized = localizeBuiltInTemplateSeed(
+    (renderer.defaultData || {}) as Record<string, unknown>,
+    language,
+  );
   const data = withGuidedDemoSiteContent(
     key,
-    localizeBuiltInTemplateSeed((renderer.defaultData || {}) as Record<string, unknown>, language),
+    getTextDirection(language) === "ltr" && localized && typeof localized === "object"
+      ? { ...localized, direction: "ltr" }
+      : localized,
   );
   const homePage = renderer.pages?.[0];
   const pageId = homePage?.id || "home";

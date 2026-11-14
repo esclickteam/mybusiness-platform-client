@@ -114,6 +114,7 @@ import unique99ExactLexicon from "./templateExactLexicon.unique99.json";
 import unique100ExactLexicon from "./templateExactLexicon.unique100.json";
 import unique101ExactLexicon from "./templateExactLexicon.unique101.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
+import { GALLERY_ENGLISH_LINES } from "./galleryEnglishLines";
 
 type PhraseTranslation = {
   en?: string;
@@ -1484,6 +1485,11 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   if (!text) return text;
   if (locale === "he") return text;
   if (!HE.test(text)) return adaptBuiltInDirectionalCss(text, locale);
+
+  const galleryLine = GALLERY_ENGLISH_LINES[text] || "";
+  if (isUsableTranslation(text, galleryLine, locale)) {
+    return adaptBuiltInDirectionalCss(galleryLine, locale);
+  }
 
   const exact = pickLocaleCopy(EXACT_LEXICON[text], locale);
   if (isUsableTranslation(text, exact, locale)) {

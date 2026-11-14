@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { localizeBuiltInText } from "../../i18n/templateCopy";
 import {
+  galleryAssetLang,
   galleryBuildPath,
   galleryDemoPath,
+  galleryStageSrc,
+  galleryThumbSrc,
   selectedAfterFilter,
   sitesForFilter,
 } from "./websiteGallery";
@@ -32,5 +36,20 @@ describe("website gallery", () => {
     expect(galleryBuildPath("virello")).toBe("/website-builder");
     expect(galleryBuildPath("virello", "customer", "biz_1")).toBe("/website-builder");
     expect(galleryBuildPath("virello", "business", "")).toBe("/website-builder");
+  });
+
+  it("uses a screenshot in the same language as the demo", () => {
+    expect(galleryAssetLang("he")).toBe("he");
+    expect(galleryAssetLang("en-US")).toBe("en");
+    expect(galleryStageSrc("virello", "en")).toBe("/demo-media/home/gallery/virello-en-stage.webp");
+    expect(galleryThumbSrc("virello", "he")).toBe("/demo-media/home/gallery/virello-he-thumb.webp");
+    expect(galleryDemoPath("virello", "en")).toContain("lang=en");
+    expect(galleryDemoPath("virello", "he")).toContain("lang=he");
+  });
+
+  it("translates leftover gallery lines without changing the Hebrew source", () => {
+    const source = "אנחנו בונים. המותגים שלכם עפים.";
+    expect(localizeBuiltInText(source, "en")).toBe("We build. Your brands take off.");
+    expect(localizeBuiltInText(source, "he")).toBe(source);
   });
 });
