@@ -110,47 +110,33 @@ export function renderMarketingHeader(locale) {
 
 const HERO_WAVES = `<svg class="ht-waves ht-hero-waves" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ht-wave-a" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#6d28d9" stop-opacity="0.55"></stop><stop offset="0.55" stop-color="#4f46e5" stop-opacity="0.4"></stop><stop offset="1" stop-color="#3b82f6" stop-opacity="0.35"></stop></linearGradient><linearGradient id="ht-wave-b" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#a78bfa" stop-opacity="0.4"></stop><stop offset="1" stop-color="#93c5fd" stop-opacity="0.32"></stop></linearGradient></defs><g class="ht-wave ht-wave-1"><path d="M0 210 C 240 140 420 280 720 214 S 1180 120 1440 190 V320 H0Z" fill="url(#ht-wave-b)"></path><path d="M1440 210 C 1680 140 1860 280 2160 214 S 2620 120 2880 190 V320 H1440Z" fill="url(#ht-wave-b)"></path></g><g class="ht-wave ht-wave-2"><path d="M0 250 C 260 196 470 300 760 252 S 1210 176 1440 236 V320 H0Z" fill="url(#ht-wave-a)"></path><path d="M1440 250 C 1700 196 1910 300 2200 252 S 2650 176 2880 236 V320 H1440Z" fill="url(#ht-wave-a)"></path></g><path class="ht-wave-line" d="M0 176 C 300 120 520 236 820 186 S 1250 110 1440 160" fill="none"></path></svg>`;
 
-const THEATER_MEDIA = "/demo-media/home/theater";
-const THEATER_VERSION = "t7";
-
-function heroSideHtml(hx) {
-  const steps = (hx.processSteps || [])
-    .map(
-      (step, index) =>
-        `<li><span>${String(index + 1).padStart(2, "0")}</span>${escapeText(step[1])}</li>`,
-    )
-    .join("");
-  return `<aside class="ht-hero-side" aria-label="${escapeHtml(hx.demoEyebrow)}"><p class="ht-eyebrow">${escapeText(
-    hx.demoEyebrow,
-  )}</p><p class="ht-hero-side-lead">${escapeText(hx.demoLead)}</p><ol class="ht-hero-steps">${steps}</ol></aside>`;
-}
-
-/** Static frame of ProductTheater: same bar, stage and caption, so the swap to React does not move anything. */
-function theaterShellHtml(hx, lang) {
-  const steps = hx.processSteps || [];
-  const tabs = steps
-    .map(
-      (step, index) =>
-        `<span class="ht-tab${index === 0 ? " is-active" : ""}"><span class="ht-tab-num">${String(index + 1).padStart(
-          2,
-          "0",
-        )}</span><span class="ht-tab-label">${escapeText(step[1])}</span><span class="ht-tab-fill"></span></span>`,
-    )
-    .join("");
-  const controls = `<span class="ht-ctl"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"></path></svg></span><span class="ht-ctl ht-ctl-main"><svg viewBox="0 0 24 24"><path class="ht-fill" d="M8 5l11 7-11 7z"></path></svg></span><span class="ht-ctl"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"></path></svg></span>`;
-  const first = (hx.processCopy || [])[0] || ["", ""];
-  const stepOf = String(hx.stepOf || "")
-    .replace("{n}", "1")
-    .replace("{total}", String(steps.length));
-  const poster = (kind) => `${THEATER_MEDIA}/${lang}-${kind}.webp?v=${THEATER_VERSION}`;
-  return `<div class="ht-theater" aria-hidden="true"><div class="ht-bar"><div class="ht-tabs">${tabs}</div><div class="ht-controls">${controls}</div></div><div class="ht-stage"><picture><source media="(max-width: 760px)" srcset="${poster(
-    "mobile",
-  )}" width="1170" height="2532"><img class="ht-poster" src="${poster("desktop")}" alt="${escapeHtml(
-    hx.processLabel || hx.stageAlt,
-  )}" width="1920" height="1080" fetchpriority="high" decoding="async"></picture></div><div class="ht-caption"><p class="ht-caption-step">${escapeText(
-    stepOf,
-  )}</p><h3>${escapeText(first[0])}</h3><p>${escapeText(first[1])}</p></div></div>`;
-}
+const JOURNEY_COPY = {
+  en: {
+    lineOne: "How does Bizuply work?",
+    lineTwo: "From Meta to a meeting.",
+    lead: "One continuous journey, from the lead on a campaign to a meeting on the calendar — in one place.",
+  },
+  he: {
+    lineOne: "איך Bizuply עובדת?",
+    lineTwo: "מ-Meta ועד פגישה.",
+    lead: "מסע אחד רציף, מהקליטה של הליד בקמפיין ועד לתיאום פגישה ביומן — במקום אחד.",
+  },
+  es: {
+    lineOne: "¿Cómo funciona Bizuply?",
+    lineTwo: "From Meta to a meeting.",
+    lead: "One continuous journey, from the lead on a campaign to a meeting on the calendar — in one place.",
+  },
+  "pt-BR": {
+    lineOne: "Como funciona o Bizuply?",
+    lineTwo: "From Meta to a meeting.",
+    lead: "One continuous journey, from the lead on a campaign to a meeting on the calendar — in one place.",
+  },
+  ar: {
+    lineOne: "كيف يعمل Bizuply؟",
+    lineTwo: "From Meta to a meeting.",
+    lead: "One continuous journey, from the lead on a campaign to a meeting on the calendar — in one place.",
+  },
+};
 
 function faqBodyHtml(items) {
   return (items || [])
@@ -164,34 +150,17 @@ function faqBodyHtml(items) {
  */
 export function renderPurpleHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
-  const hx = HX_HERO_COPY[locale] || HX_HERO_COPY.en;
-  const lineTwoHot = Math.max(0, String(hx.lineTwo).trim().split(/\s+/).length - 1);
+  const journey = JOURNEY_COPY[locale] || JOURNEY_COPY.en;
   const faqs = HOME_FAQ[locale] || HOME_FAQ.en;
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
-  const headline = `${hx.lineOne} ${hx.lineTwo}`;
+  const headline = `${journey.lineOne} ${journey.lineTwo}`;
 
   const header = renderMarketingHeader(locale);
-  const href = (path) => localeHref(locale === "pt-BR" || locale === "he" || locale === "es" || locale === "ar" ? locale : "en", path);
-
-  const kicker = hx.kicker
-    ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
-    : `<p class="hx-hero-brand">BizUply</p>`;
-  const trust = Array.isArray(hx.trust) && hx.trust.length
-    ? `<ul class="hx-hero-trust">${hx.trust.map((item) => `<li>${escapeText(item)}</li>`).join("")}</ul>`
-    : "";
-  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="hx-hero-pin"><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
-    hx.lineOne,
-  )}</span><span class="hx-line">${heroWords(
-    hx.lineTwo,
-    lineTwoHot,
-  )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
-    hx.start,
-  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
-    hx.see,
-  )}</span><i aria-hidden="true"></i></a></div>${trust}</div>${heroSideHtml(hx)}</div><div class="hx-hero-stage" id="product-theater"><div class="hx-hero-stage-inner">${theaterShellHtml(
-    hx,
-    locale === "he" ? "he" : "en",
-  )}</div></div></section>`;
+  const hero = `<section class="hx-hero bj-journey" id="how" data-hx-first-paint="true" aria-labelledby="ht-how-title"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="bj-wrap"><header class="bj-head"><div><p class="bj-kicker">THE BIZUPLY JOURNEY</p><h1 class="bj-title hx-display" id="ht-how-title"><span class="hx-line">${heroWords(
+    journey.lineOne,
+  )}</span><span class="hx-line bj-title-soft">${heroWords(
+    journey.lineTwo,
+  )}</span></h1></div><p class="bj-lead">${escapeText(journey.lead)}</p></header></div></section>`;
 
   const crawl = `<div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,

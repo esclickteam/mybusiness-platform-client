@@ -110,9 +110,7 @@ async function probeHero(page: Page): Promise<HeroProbe> {
       const r = (el as HTMLElement).getBoundingClientRect();
       return { x: r.x, y: r.y, w: r.width, h: r.height };
     };
-    const media = document.querySelectorAll<HTMLImageElement | HTMLVideoElement>(
-      ".hx-hero-frame img, .hx-hero-frame video",
-    );
+    const media = document.querySelectorAll<HTMLElement>(".ht-hero-waves, .bj-title");
     let mediaVisible = false;
     let mediaSrc: string | null = null;
     media.forEach((node) => {
@@ -122,9 +120,7 @@ async function probeHero(page: Page): Promise<HeroProbe> {
       const shown = style.visibility !== "hidden" && style.display !== "none" && r.width > 8 && r.height > 8;
       if (opaque && shown) {
         mediaVisible = true;
-        mediaSrc =
-          (node instanceof HTMLImageElement ? node.currentSrc || node.src : node.getAttribute("poster") || node.currentSrc || node.src) ||
-          mediaSrc;
+        mediaSrc = node.className?.toString() || mediaSrc;
       }
     });
     return {
@@ -134,8 +130,8 @@ async function probeHero(page: Page): Promise<HeroProbe> {
       mediaVisible,
       mediaCount: media.length,
       mediaSrc,
-      frame: rect(document.querySelector(".hx-hero-frame")),
-      copy: rect(document.querySelector(".hx-hero-copy")),
+      frame: rect(document.querySelector(".ht-hero-waves")),
+      copy: rect(document.querySelector(".bj-title, .hx-display")),
       hero: rect(document.querySelector(".hx-hero")),
       bg: getComputedStyle(document.body).backgroundColor,
     };
@@ -258,7 +254,7 @@ test.describe("homepage hero stays geometrically stable", () => {
 
     try {
       await page.goto(server.origin + "/", { waitUntil: "domcontentloaded" });
-      await page.waitForSelector(".hx-hero-frame img");
+      await page.waitForSelector(".ht-hero-waves");
       const before = await probeHero(page);
       await page.screenshot({ path: path.join(artifacts, "en-desktop-01-ssr.png"), fullPage: false });
       expect(before.legacy).toBe(false);
@@ -275,7 +271,7 @@ test.describe("homepage hero stays geometrically stable", () => {
         root.innerHTML = `<div class="app-layout"><main class="app-main"></main></div>`;
         root.removeAttribute("hidden");
         shell?.remove();
-        const media = document.querySelector(".hx-hero-frame img, .hx-hero-frame video");
+        const media = document.querySelector(".ht-hero-waves");
         return { mediaVisible: Boolean(media) };
       });
       expect(gap.mediaVisible, "releasing on .app-main alone must leave no hero media").toBe(false);
@@ -283,7 +279,7 @@ test.describe("homepage hero stays geometrically stable", () => {
 
       // Restore SSR document and perform the correct swap.
       await page.goto(server.origin + "/", { waitUntil: "domcontentloaded" });
-      await page.waitForSelector(".hx-hero-frame img");
+      await page.waitForSelector(".ht-hero-waves");
       const ssr = await probeHero(page);
       const during = await sampleStable(page, 10, 30);
       expect(during.every((f) => f.mediaVisible && f.purple && !f.legacy)).toBe(true);
@@ -292,7 +288,7 @@ test.describe("homepage hero stays geometrically stable", () => {
         (window as unknown as { __hxCls: number }).__hxCls = 0;
       });
       await mountReactHeroKeepingParity(page);
-      await page.waitForSelector("#root .hx-hero-frame img");
+      await page.waitForSelector("#root .ht-hero-waves");
       const after = await probeHero(page);
       await page.screenshot({ path: path.join(artifacts, "en-desktop-03-after-hydration.png"), fullPage: false });
 
@@ -335,12 +331,12 @@ test.describe("homepage hero stays geometrically stable", () => {
 
     try {
       await page.goto(server.origin + "/he", { waitUntil: "domcontentloaded" });
-      await page.waitForSelector(".hx-hero-frame img");
+      await page.waitForSelector(".ht-hero-waves");
       const before = await probeHero(page);
       await page.screenshot({ path: path.join(artifacts, "he-mobile-01-ssr.png"), fullPage: false });
       expect(before.mediaVisible).toBe(true);
       expect(before.purple).toBe(true);
-      expect(await page.locator(".hx-display").innerText()).toContain("צריך");
+      expect(await page.locator(".hx-display").innerText()).toContain("עובדת");
 
       const frames = await sampleStable(page, 12, 50);
       expect(frames.every((f) => f.mediaVisible && !f.legacy)).toBe(true);

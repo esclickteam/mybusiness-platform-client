@@ -1,31 +1,13 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
-import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
-import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import CustomerJourney from "./CustomerJourney";
-import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t7";
-
-type FilmKey = keyof typeof films;
-
-function filmFor(key: FilmKey): TheaterFilm {
-  const spec = films[key];
-  return {
-    src: `${MEDIA}/theater/${key}.mp4?v=${FILM_VERSION}`,
-    poster: `${MEDIA}/theater/${key}.webp?v=${FILM_VERSION}`,
-    width: spec.width,
-    height: spec.height,
-    duration: spec.duration,
-    chapters: spec.chapters,
-  };
-}
 
 function faqLocale(language: string) {
   const value = language.toLowerCase();
@@ -41,8 +23,7 @@ function useCopy() {
   const language = i18n.language || "en";
   const he = language.startsWith("he");
   const text = (hebrew: string, english: string) => homeText(language, hebrew, english);
-  const cine = cinematicFor(language);
-  return { text, he, t, cine, language, dir: getTextDirection(language) };
+  return { text, he, t, language, dir: getTextDirection(language) };
 }
 
 function useReduced() {
@@ -87,45 +68,6 @@ function useReveal(root: { current: HTMLElement | null }) {
     });
     return () => observer.disconnect();
   }, [reduced, root]);
-}
-
-function Words({ text, hot = -1, delay = 0 }: { text: string; hot?: number; delay?: number }) {
-  const words = text.split(" ");
-  const reduced = useReduced();
-  // First paint must show the full headline. Enable motion only after that frame.
-  const [motionReady, setMotionReady] = useState(false);
-  useEffect(() => {
-    if (reduced) {
-      setMotionReady(false);
-      return undefined;
-    }
-    let inner = 0;
-    const outer = window.requestAnimationFrame(() => {
-      inner = window.requestAnimationFrame(() => setMotionReady(true));
-    });
-    return () => {
-      window.cancelAnimationFrame(outer);
-      window.cancelAnimationFrame(inner);
-    };
-  }, [reduced, text]);
-
-  return (
-    <span className="hx-line">
-      {words.map((word, index) => (
-        <Fragment key={`${word}-${index}`}>
-          <span className={index === hot ? "hx-word is-hot" : "hx-word"}>
-            <span
-              className={motionReady ? "hx-word__in" : undefined}
-              style={motionReady ? { animationDelay: `${delay + index * 75}ms` } : undefined}
-            >
-              {word}
-            </span>
-          </span>
-          {index < words.length - 1 ? " " : null}
-        </Fragment>
-      ))}
-    </span>
-  );
 }
 
 function Cta({ to, children, tone = "solid" }: { to: string; children: string; tone?: "solid" | "line" | "light" }) {
@@ -177,7 +119,6 @@ export default function HomeExperienceSections() {
     <>
       <a className="hx-skip" href="#how">{text("דילוג לתוכן", "Skip to content")}</a>
       <div className="ht-root" ref={ref}>
-        <Hero seek={null} />
         <CustomerJourney />
         <Websites />
         <Benefits />
@@ -186,87 +127,6 @@ export default function HomeExperienceSections() {
         <Close />
       </div>
     </>
-  );
-}
-
-const STEP_IDS = ["lead", "crm", "whatsapp", "task", "automation", "done"] as const;
-
-function useSteps(): TheaterStep[] {
-  const { cine } = useCopy();
-  const labels = (cine.hero.processSteps || []) as [string, string][];
-  const copy = (cine.hero.processCopy || []) as [string, string][];
-  return STEP_IDS.map((id, index) => ({
-    id,
-    label: labels[index]?.[1] || id,
-    title: copy[index]?.[0] || "",
-    body: copy[index]?.[1] || "",
-  }));
-}
-
-function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
-  const { cine, language } = useCopy();
-  const hero = cine.hero;
-  const lang = language.startsWith("he") ? "he" : "en";
-  const hot = Math.max(0, String(hero.lineTwo).trim().split(/\s+/).length - 1);
-  const steps = useSteps();
-  return (
-    <section className="hx-hero" aria-labelledby="hx-hero-title">
-      <div className="hx-geo hx-geo-a" aria-hidden="true" />
-      <div className="hx-geo hx-geo-b" aria-hidden="true" />
-      <div className="hx-geo hx-geo-c" aria-hidden="true" />
-      <Waves className="ht-hero-waves" />
-      <div className="hx-hero-pin">
-        <div className="hx-hero-copy">
-          <p className="hx-hero-kicker">{hero.kicker || "BizUply"}</p>
-          <h1 className="hx-display" id="hx-hero-title">
-            <Words text={hero.lineOne} />
-            <Words text={hero.lineTwo} hot={hot} delay={220} />
-          </h1>
-          <p className="hx-lead">{hero.lead1}</p>
-          <div className="hx-actions">
-            <Cta to="/register">{hero.start}</Cta>
-            <Cta to="/contact" tone="line">{hero.see}</Cta>
-          </div>
-          {Array.isArray(hero.trust) && hero.trust.length ? (
-            <ul className="hx-hero-trust">
-              {hero.trust.map((item: string) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-        <aside className="ht-hero-side" aria-label={hero.demoEyebrow}>
-          <p className="ht-eyebrow">{hero.demoEyebrow}</p>
-          <p className="ht-hero-side-lead">{hero.demoLead}</p>
-          <ol className="ht-hero-steps">
-            {steps.map((step, index) => (
-              <li key={step.id}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                {step.label}
-              </li>
-            ))}
-          </ol>
-        </aside>
-      </div>
-      <div className="hx-hero-stage" id="product-theater">
-        <div className="hx-hero-stage-inner">
-          <ProductTheater
-            desktop={filmFor(`${lang}-desktop` as FilmKey)}
-            mobile={filmFor(`${lang}-mobile` as FilmKey)}
-            steps={steps}
-            seekRequest={seek}
-            labels={{
-              region: hero.processLabel || hero.stageAlt,
-              play: hero.play,
-              pause: hero.pause,
-              prev: hero.prev,
-              next: hero.next,
-              step: hero.stepOf,
-            }}
-          />
-        </div>
-      </div>
-    </section>
   );
 }
 

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { HX_HERO_COPY, renderPurpleHomePrerender } from "./homePurplePaint.mjs";
+import { renderPurpleHomePrerender } from "./homePurplePaint.mjs";
 
 const criticalCss = readFileSync(path.resolve(process.cwd(), "public/home-critical.css"), "utf8");
 
@@ -9,18 +9,15 @@ describe("sketch home first paint", () => {
   it("emits the sketch white shell with the product theater poster", () => {
     const en = renderPurpleHomePrerender("en");
     expect(en.inner).toContain('data-home-design="sketch"');
-    expect(en.inner).toContain('class="hx-hero"');
-    expect(en.inner).toContain('class="hx-display"');
-    expect(en.inner).toContain(">Your</span>");
-    expect(en.inner).toContain(">smarter.</span>");
-    expect(en.inner).toContain(HX_HERO_COPY.en.start);
-    expect(en.inner).toContain("/demo-media/home/theater/en-desktop.webp");
-    expect(en.inner).toContain("/demo-media/home/theater/en-mobile.webp");
-    expect(en.inner).toContain('class="ht-theater"');
-    for (const [, label] of HX_HERO_COPY.en.processSteps) {
-      expect(en.inner).toContain(`<span class="ht-tab-label">${label.replace(/&/g, "&amp;")}</span>`);
-    }
-    expect(en.inner).toContain(HX_HERO_COPY.en.processCopy[0][0]);
+    expect(en.inner).toContain('class="hx-hero bj-journey"');
+    expect(en.inner).toContain('class="bj-title hx-display"');
+    expect(en.inner).toContain(">How</span>");
+    expect(en.inner).toContain(">meeting.</span>");
+    expect(en.inner).toContain("THE BIZUPLY JOURNEY");
+    expect(en.inner).toContain("ht-hero-waves");
+    expect(en.inner).not.toContain('class="ht-theater"');
+    expect(en.inner).not.toContain("/demo-media/home/theater/");
+    expect(en.inner).not.toContain("Your business");
     expect(en.inner).toContain('class="site-header__end"');
     expect(en.inner).not.toContain('class="home-crawl"');
     expect(en.crawl).toContain('class="home-crawl"');
@@ -32,13 +29,13 @@ describe("sketch home first paint", () => {
   it("keeps Hebrew hero copy aligned with the React sketch home", () => {
     const he = renderPurpleHomePrerender("he");
     expect(he.dir).toBe("rtl");
-    expect(he.inner).toContain(">העסק</span>");
-    expect(he.inner).toContain(">יותר.</span>");
-    expect(he.inner).toContain("BizUply");
-    expect(he.inner).toContain(HX_HERO_COPY.he.start);
-    expect(he.inner).toContain("/demo-media/home/theater/he-desktop.webp");
-    expect(he.inner).toContain("שלב 1 מתוך 6");
-    expect(he.headline).toBe(`${HX_HERO_COPY.he.lineOne} ${HX_HERO_COPY.he.lineTwo}`);
+    expect(he.inner).toContain(">איך</span>");
+    expect(he.inner).toContain(">עובדת?</span>");
+    expect(he.inner).toContain(">פגישה.</span>");
+    expect(he.inner).toContain("Bizuply");
+    expect(he.inner).not.toContain("העסק שלכם");
+    expect(he.inner).not.toContain('class="ht-theater"');
+    expect(he.headline).toBe("איך Bizuply עובדת? מ-Meta ועד פגישה.");
   });
 
   it("critical CSS paints white canvas, never the legacy dark hero gradient", () => {

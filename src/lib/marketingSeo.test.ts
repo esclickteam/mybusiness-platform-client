@@ -203,27 +203,31 @@ describe("marketing crawl files", () => {
       expect(head.match(/"@type":"Question"/g)?.length).toBe(HOME_FAQ[locale].length);
       expect(head).toContain(home.faq1q);
       expect(head).toContain(home.faq10a);
-      expect(body).toContain('class="hx-hero"');
+      expect(body).toContain('class="hx-hero bj-journey"');
       expect(body).toContain('data-home-design="sketch"');
-      expect(body).toContain('class="hx-display"');
+      expect(body).toContain("hx-display");
+      expect(body).toContain("bj-journey");
+      expect(body).not.toContain('class="ht-theater"');
       expect(body).not.toContain('class="home-hero"');
       expect(body).not.toContain("home-hero__title");
       if (locale === "he") {
-        expect(body).toContain(">העסק</span>");
-        expect(body).toContain(">שלכם.</span>");
-        expect(body).toContain(">יותר.</span>");
-        expect(body).toContain("BizUply");
+        expect(body).toContain(">איך</span>");
+        expect(body).toContain(">עובדת?</span>");
+        expect(body).toContain(">פגישה.</span>");
+        expect(body).toContain("Bizuply");
       } else if (locale === "es") {
-        expect(body).toContain(">Su</span>");
-        expect(body).toContain(">negocio.</span>");
+        expect(body).toContain(">¿Cómo</span>");
+        expect(body).toContain(">Bizuply?</span>");
       } else if (locale === "pt-BR") {
-        expect(body).toContain(">negócio.</span>");
+        expect(body).toContain(">Como</span>");
+        expect(body).toContain(">Bizuply?</span>");
       } else if (locale === "ar") {
-        expect(body).toContain(">عملكم.</span>");
+        expect(body).toContain(">كيف</span>");
+        expect(body).toContain(">Bizuply؟</span>");
       } else {
-        expect(body).toContain(">Your</span>");
-        expect(body).toContain(">business.</span>");
-        expect(body).toContain(">smarter.</span>");
+        expect(body).toContain(">How</span>");
+        expect(body).toContain(">work?</span>");
+        expect(body).toContain(">meeting.</span>");
       }
       const crawl = buildMarketingPrerender(route)?.crawl || "";
       expect(crawl).toContain(home.faqTitle);

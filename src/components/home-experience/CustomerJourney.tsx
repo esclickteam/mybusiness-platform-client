@@ -60,6 +60,33 @@ function customerName(text: TextFn) {
   return text("נועה לוי", "Noa Levi");
 }
 
+function HeroWaves() {
+  return (
+    <svg className="ht-waves ht-hero-waves" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="ht-wave-a" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#6d28d9" stopOpacity="0.55" />
+          <stop offset="0.55" stopColor="#4f46e5" stopOpacity="0.4" />
+          <stop offset="1" stopColor="#3b82f6" stopOpacity="0.35" />
+        </linearGradient>
+        <linearGradient id="ht-wave-b" x1="0" x2="1" y1="0" y2="0">
+          <stop offset="0" stopColor="#a78bfa" stopOpacity="0.4" />
+          <stop offset="1" stopColor="#93c5fd" stopOpacity="0.32" />
+        </linearGradient>
+      </defs>
+      <g className="ht-wave ht-wave-1">
+        <path d="M0 210 C 240 140 420 280 720 214 S 1180 120 1440 190 V320 H0Z" fill="url(#ht-wave-b)" />
+        <path d="M1440 210 C 1680 140 1860 280 2160 214 S 2620 120 2880 190 V320 H1440Z" fill="url(#ht-wave-b)" />
+      </g>
+      <g className="ht-wave ht-wave-2">
+        <path d="M0 250 C 260 196 470 300 760 252 S 1210 176 1440 236 V320 H0Z" fill="url(#ht-wave-a)" />
+        <path d="M1440 250 C 1700 196 1910 300 2200 252 S 2650 176 2880 236 V320 H1440Z" fill="url(#ht-wave-a)" />
+      </g>
+      <path className="ht-wave-line" d="M0 176 C 300 120 520 236 820 186 S 1250 110 1440 160" fill="none" />
+    </svg>
+  );
+}
+
 function Arrow() {
   return <i className="bj-arrow" aria-hidden="true" />;
 }
@@ -557,15 +584,19 @@ export default function CustomerJourney() {
   );
 
   return (
-    <section className="bj-journey" id="how" dir={dir} aria-labelledby="ht-how-title">
+    <section className="hx-hero bj-journey" id="how" dir={dir} aria-labelledby="ht-how-title">
+      <div className="hx-geo hx-geo-a" aria-hidden="true" />
+      <div className="hx-geo hx-geo-b" aria-hidden="true" />
+      <div className="hx-geo hx-geo-c" aria-hidden="true" />
+      <HeroWaves />
       <div className="bj-wrap">
         <header className="bj-head">
           <div>
             <p className="bj-kicker">THE BIZUPLY JOURNEY</p>
-            <h2 className="bj-title" id="ht-how-title">
+            <h1 className="bj-title hx-display" id="ht-how-title">
               <span>{text("איך Bizuply עובדת?", "How does Bizuply work?")}</span>
               <span className="bj-title-soft">{text("מ-Meta ועד פגישה.", "From Meta to a meeting.")}</span>
-            </h2>
+            </h1>
           </div>
           <p className="bj-lead">
             {text(

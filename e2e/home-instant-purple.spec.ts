@@ -120,7 +120,7 @@ async function paintProbe(page: Page) {
     const bg = getComputedStyle(document.body).backgroundColor;
     const rootBg = getComputedStyle(document.getElementById("root") || document.body).backgroundColor;
     const htmlBg = getComputedStyle(document.documentElement).backgroundColor;
-    const media = document.querySelector(".hx-hero-frame img, .hx-hero-frame video");
+    const media = document.querySelector(".ht-hero-waves");
     const mr = media?.getBoundingClientRect();
     const paints = performance.getEntriesByType("paint").map((e) => ({
       name: e.name,
@@ -244,7 +244,7 @@ test.describe("homepage paints purple before Vite CSS arrives", () => {
     expect(early.legacy).toBe(false);
     expect(early.purple).toBe(true);
     expect(early.whiteish).toBe(false);
-    expect(early.h1).toContain("צריך");
+    expect(early.h1).toContain("עובדת");
     expect(isPurple(early.bg) || isPurple(early.htmlBg)).toBe(true);
     await server.close();
   });

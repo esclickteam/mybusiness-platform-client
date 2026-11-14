@@ -131,7 +131,7 @@ test.describe("homepage first paint stays purple only", () => {
   test("EN cold load never shows the legacy dark hero", async ({ page, context }, testInfo) => {
     const en = await edgeHtml("/");
     const he = await edgeHtml("/he");
-    expect(he).toContain(">צריך.</span>");
+    expect(he).toContain(">עובדת?</span>");
     const server = await startPaintServer({ "/": en, "/he": he, "/he/": he });
     testInfo.annotations.push({ type: "server", description: server.origin });
 
@@ -170,7 +170,7 @@ test.describe("homepage first paint stays purple only", () => {
   test("HE + hard refresh + Slow 4G stay on purple", async ({ page, context }, testInfo) => {
     const en = await edgeHtml("/");
     const he = await edgeHtml("/he");
-    expect(he).toContain(">צריך.</span>");
+    expect(he).toContain(">עובדת?</span>");
     const server = await startPaintServer({ "/": en, "/he": he, "/he/": he });
     testInfo.annotations.push({ type: "server", description: server.origin });
 
@@ -190,14 +190,14 @@ test.describe("homepage first paint stays purple only", () => {
 
       await page.goto(server.origin + "/he", { waitUntil: "domcontentloaded" });
       await assertPurpleOnly(page);
-      await expect(page.locator(".hx-display")).toContainText("צריך");
-      await expect(page.locator(".hx-display")).toContainText("אחת");
+      await expect(page.locator(".hx-display")).toContainText("עובדת");
+      await expect(page.locator(".hx-display")).toContainText("פגישה");
 
       await page.reload({ waitUntil: "domcontentloaded" });
       const frames = await sampleDuringLoad(page);
       expect(frames.every((frame) => !frame.legacy)).toBe(true);
       await assertPurpleOnly(page);
-      await expect(page.locator(".hx-display")).toContainText("צריך");
+      await expect(page.locator(".hx-display")).toContainText("עובדת");
     } finally {
       await server.close();
     }
