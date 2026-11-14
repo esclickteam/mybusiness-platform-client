@@ -7,6 +7,7 @@ import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
+import CustomerCommandCenter from "./CustomerCommandCenter";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -177,6 +178,7 @@ export default function HomeExperienceSections() {
       <a className="hx-skip" href="#how">{text("דילוג לתוכן", "Skip to content")}</a>
       <div className="ht-root" ref={ref}>
         <Hero seek={null} />
+        <CustomerCommandCenter />
         <Websites />
         <Benefits />
         <Pricing />
