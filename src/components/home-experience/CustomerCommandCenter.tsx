@@ -331,6 +331,7 @@ export default function CustomerCommandCenter() {
             </div>
 
             <article className="cc-card" aria-live="polite">
+              <div className="cc-identity">
               <header className="cc-person">
                 <b aria-hidden="true">{mark}</b>
                 <div className="cc-person-main">
@@ -358,6 +359,7 @@ export default function CustomerCommandCenter() {
                 <button type="button" onClick={() => logLocal("call")}><Icon name="phone" /><bdi dir="ltr">{customer.phone}</bdi></button>
                 <button type="button" className="is-whatsapp" onClick={() => logLocal("whatsapp")}><Icon name="chat" />WhatsApp</button>
                 <span><bdi dir="ltr">{customer.email}</bdi></span>
+              </div>
               </div>
 
               <ol className="cc-pipeline" aria-label={text("התקדמות בצינור המכירות", "Sales pipeline progress")}>
