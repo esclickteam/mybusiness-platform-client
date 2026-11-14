@@ -20,10 +20,14 @@ type Customer = {
   id: string;
   nameHe: string;
   nameEn: string;
+  cardHe: string;
+  markHe: string;
   sourceHe: string;
   sourceEn: string;
-  phone: string;
-  email: string;
+  phoneHe: string;
+  phoneEn: string;
+  emailHe: string;
+  emailEn: string;
   status: StatusId;
   arrived: string;
   activities: Activity[];
@@ -35,16 +39,20 @@ const SEED: Customer[] = [
   {
     id: "noa",
     nameHe: "נועה לוי",
-    nameEn: "Noa Levi",
+    nameEn: "Emily Johnson",
+    cardHe: "נועה לוי / Noa Levi",
+    markHe: "NL",
     sourceHe: "Meta",
     sourceEn: "Meta",
-    phone: "+972 54-789-1234",
-    email: "noa.levi@gmail.com",
+    phoneHe: "+972 54-789-1234",
+    phoneEn: "+1 (415) 555-0142",
+    emailHe: "noa.levi@gmail.com",
+    emailEn: "emily.johnson@example.com",
     status: "contacted",
     arrived: "10:24",
     activities: [
       { id: "n1", kind: "whatsapp", textHe: "תשובה לליד: נשלחו פרטים נוספים.", textEn: "Reply to the lead: sent more details.", whenHe: "היום, 10:24", whenEn: "Today, 10:24" },
-      { id: "n2", kind: "call", textHe: "שיחה עם נועה, סקירת האפשרויות. ביקשה פרטים נוספים עד מחר.", textEn: "Spoke with Noa, reviewed the options. She asked to get more info by tomorrow.", whenHe: "היום, 10:02", whenEn: "Today, 10:02" },
+      { id: "n2", kind: "call", textHe: "שיחה עם נועה, סקירת האפשרויות. ביקשה פרטים נוספים עד מחר.", textEn: "Spoke with Emily, reviewed the options. She asked to get more info by tomorrow.", whenHe: "היום, 10:02", whenEn: "Today, 10:02" },
       { id: "n3", kind: "note", textHe: "מעוניינת להתקדם. מעדיפה המשך ב־WhatsApp.", textEn: "Interested in moving forward. Prefer contact by WhatsApp.", whenHe: "היום, 09:48", whenEn: "Today, 09:48" },
       { id: "n4", kind: "task", textHe: "לשלוח פירוט ולחזור אליה.", textEn: "Send detailed information and follow up.", whenHe: "יעד: מחר", whenEn: "Due: Tomorrow" },
     ],
@@ -52,11 +60,15 @@ const SEED: Customer[] = [
   {
     id: "daniel",
     nameHe: "דניאל כהן",
-    nameEn: "Daniel Cohen",
+    nameEn: "Michael Anderson",
+    cardHe: "דניאל כהן / Daniel Cohen",
+    markHe: "DC",
     sourceHe: "האתר",
     sourceEn: "Website",
-    phone: "050-000-1002",
-    email: "daniel.cohen@demo.bizuply.com",
+    phoneHe: "050-000-1002",
+    phoneEn: "+1 (212) 555-0196",
+    emailHe: "daniel.cohen@demo.bizuply.com",
+    emailEn: "michael.anderson@example.com",
     status: "new",
     arrived: "10:08",
     activities: [
@@ -66,11 +78,15 @@ const SEED: Customer[] = [
   {
     id: "maya",
     nameHe: "מאיה בר",
-    nameEn: "Maya Bar",
+    nameEn: "Jessica Miller",
+    cardHe: "מאיה בר / Maya Bar",
+    markHe: "MB",
     sourceHe: "Google",
     sourceEn: "Google",
-    phone: "050-000-1003",
-    email: "maya.bar@demo.bizuply.com",
+    phoneHe: "050-000-1003",
+    phoneEn: "+1 (310) 555-0173",
+    emailHe: "maya.bar@demo.bizuply.com",
+    emailEn: "jessica.miller@example.com",
     status: "interested",
     arrived: "09:56",
     activities: [
@@ -80,11 +96,15 @@ const SEED: Customer[] = [
   {
     id: "ori",
     nameHe: "אורי חזן",
-    nameEn: "Ori Hazan",
+    nameEn: "David Wilson",
+    cardHe: "אורי חזן / Ori Hazan",
+    markHe: "OH",
     sourceHe: "Meta",
     sourceEn: "Meta",
-    phone: "050-000-1004",
-    email: "ori.hazan@demo.bizuply.com",
+    phoneHe: "050-000-1004",
+    phoneEn: "+1 (617) 555-0118",
+    emailHe: "ori.hazan@demo.bizuply.com",
+    emailEn: "david.wilson@example.com",
     status: "quote",
     arrived: "09:42",
     activities: [
@@ -94,11 +114,15 @@ const SEED: Customer[] = [
   {
     id: "tal",
     nameHe: "טל שחר",
-    nameEn: "Tal Shahar",
+    nameEn: "Sarah Thompson",
+    cardHe: "טל שחר / Tal Shahar",
+    markHe: "TS",
     sourceHe: "ידני",
     sourceEn: "Manual",
-    phone: "050-000-1005",
-    email: "tal.shahar@demo.bizuply.com",
+    phoneHe: "050-000-1005",
+    phoneEn: "+1 (312) 555-0164",
+    emailHe: "tal.shahar@demo.bizuply.com",
+    emailEn: "sarah.thompson@example.com",
     status: "new",
     arrived: "09:20",
     activities: [
@@ -108,11 +132,15 @@ const SEED: Customer[] = [
   {
     id: "roni",
     nameHe: "רוני אלמוג",
-    nameEn: "Roni Almog",
+    nameEn: "James Parker",
+    cardHe: "רוני אלמוג / Roni Almog",
+    markHe: "RA",
     sourceHe: "האתר",
     sourceEn: "Website",
-    phone: "050-000-1006",
-    email: "roni.almog@demo.bizuply.com",
+    phoneHe: "050-000-1006",
+    phoneEn: "+1 (206) 555-0137",
+    emailHe: "roni.almog@demo.bizuply.com",
+    emailEn: "james.parker@example.com",
     status: "contacted",
     arrived: "09:11",
     activities: [
@@ -254,8 +282,10 @@ export default function CustomerCommandCenter() {
   };
 
   const source = text(customer.sourceHe, customer.sourceEn);
-  const displayName = text(`${customer.nameHe} / ${customer.nameEn}`, customer.nameEn);
-  const mark = customer.nameEn.split(" ").map((part) => part[0] || "").join("").slice(0, 2);
+  const displayName = text(customer.cardHe, customer.nameEn);
+  const mark = text(customer.markHe, customer.nameEn.split(" ").map((part) => part[0] || "").join("").slice(0, 2));
+  const phone = text(customer.phoneHe, customer.phoneEn);
+  const email = text(customer.emailHe, customer.emailEn);
   const stageIndex = STATUSES.indexOf(customer.status);
   const newCount = customers.filter((item) => item.status === "new").length;
   const attention = customers.filter((item) => item.status === "new" || item.status === "contacted").length;
@@ -356,9 +386,9 @@ export default function CustomerCommandCenter() {
               </header>
 
               <div className="cc-contact">
-                <button type="button" onClick={() => logLocal("call")}><Icon name="phone" /><bdi dir="ltr">{customer.phone}</bdi></button>
+                <button type="button" onClick={() => logLocal("call")}><Icon name="phone" /><bdi dir="ltr">{phone}</bdi></button>
                 <button type="button" className="is-whatsapp" onClick={() => logLocal("whatsapp")}><Icon name="chat" />WhatsApp</button>
-                <span><bdi dir="ltr">{customer.email}</bdi></span>
+                <span><bdi dir="ltr">{email}</bdi></span>
               </div>
               </div>
 
@@ -431,8 +461,8 @@ export default function CustomerCommandCenter() {
                 <p><Icon name="user" /><span>{displayName}</span></p>
                 <p><Icon name="source" /><span>{text("מקור", "Source")}: {source}</span></p>
                 <p><Icon name="check" /><span>{text("סטטוס", "Status")}</span><b className={`cc-status is-${customer.status}`}>{statusLabel(customer.status)}</b></p>
-                <p><Icon name="phone" /><bdi dir="ltr">{customer.phone}</bdi></p>
-                <p><Icon name="chat" /><bdi dir="ltr">{customer.email}</bdi></p>
+                <p><Icon name="phone" /><bdi dir="ltr">{phone}</bdi></p>
+                <p><Icon name="chat" /><bdi dir="ltr">{email}</bdi></p>
               </div>
           </div>
         </div>
