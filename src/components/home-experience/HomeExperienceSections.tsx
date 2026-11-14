@@ -13,6 +13,7 @@ import SmartAutomations from "./SmartAutomations";
 import MetaCampaigns from "./MetaCampaigns";
 import AiActionFlow from "./AiActionFlow";
 import MeetingBooking from "./MeetingBooking";
+import WebsiteGallery from "./WebsiteGallery";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -189,7 +190,7 @@ export default function HomeExperienceSections() {
         <MetaCampaigns />
         <AiActionFlow />
         <MeetingBooking />
-        <Websites />
+        <WebsiteGallery />
         <Benefits />
         <Pricing />
         <Faq />
@@ -280,157 +281,6 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
   );
 }
 
-const SITE_SHOWCASE = [
-  { key: "studiora", name: "Studiora", he: "עסק", en: "Business" },
-  { key: "noodlix", name: "Noodlix", he: "מסעדה", en: "Restaurant" },
-  { key: "primeview", name: "Primeview", he: "נדל״ן", en: "Real estate" },
-  { key: "lashora", name: "Lashora", he: "יופי", en: "Beauty" },
-  { key: "advisora", name: "Advisora", he: "שירותים", en: "Services" },
-  { key: "florique", name: "Florique", he: "דף נחיתה", en: "Landing page" },
-] as const;
-
-function Websites() {
-  const { text, language, dir } = useCopy();
-  const reduced = useReduced();
-  const lang = language.startsWith("he") ? "he" : "en";
-  const sites = SITE_SHOWCASE.map((site) => ({ ...site, kind: text(site.he, site.en) }));
-  const count = sites.length;
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const [onscreen, setOnscreen] = useState(false);
-  const root = useRef<HTMLElement | null>(null);
-  const reasons = useRef(new Set<string>());
-  const drag = useRef({ x: 0, id: -1 });
-
-  const hold = (reason: string, on: boolean) => {
-    if (on) reasons.current.add(reason);
-    else reasons.current.delete(reason);
-    setPaused(reasons.current.size > 0);
-  };
-
-  useEffect(() => {
-    const node = root.current;
-    if (!node || typeof IntersectionObserver === "undefined") {
-      setOnscreen(true);
-      return undefined;
-    }
-    const observer = new IntersectionObserver(
-      ([entry]) => setOnscreen(entry.isIntersecting),
-      { threshold: 0.35 },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (reduced || paused || !onscreen) return undefined;
-    const timer = window.setInterval(() => {
-      setIndex((current) => (current + 1) % count);
-    }, 5600);
-    return () => window.clearInterval(timer);
-  }, [reduced, paused, onscreen, count]);
-
-  const go = (delta: number) => setIndex((current) => (current + delta + count) % count);
-  const shift = `${dir === "rtl" ? index * 100 : -index * 100}%`;
-
-  return (
-    <section
-      className="ht-products"
-      id="websites"
-      aria-labelledby="ht-sites-title"
-      ref={root}
-      onMouseEnter={() => hold("hover", true)}
-      onMouseLeave={() => hold("hover", false)}
-      onFocus={() => hold("focus", true)}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) hold("focus", false);
-      }}
-    >
-      <div className="ht-wrap">
-        <div className="ht-head" data-reveal>
-          <p className="ht-eyebrow">{text("בניית אתרים", "Website builder")}</p>
-          <h2 id="ht-sites-title">{text("האתר הבא שלכם מתחיל כאן", "Your Next Website Starts Here")}</h2>
-          <p className="ht-lead">
-            {text(
-              "אתרי תדמית, דפי נחיתה ואתרים עסקיים בעיצוב מקצועי — נבנים ומותאמים לעסק שלכם באמצעות Bizuply.",
-              "Create professional business websites, landing pages and beautifully designed digital experiences with Bizuply.",
-            )}
-          </p>
-        </div>
-        <div
-          className="ht-gallery"
-          data-reveal
-          role="region"
-          aria-roledescription={text("גלריה", "gallery")}
-          aria-label={text("אתרים שנבנו באמצעות Bizuply", "Websites built with Bizuply")}
-        >
-          <button type="button" className="ht-gallery-arrow ht-gallery-prev" onClick={() => go(-1)} aria-label={text("האתר הקודם", "Previous website")}>
-            <i aria-hidden="true" />
-          </button>
-          <div
-            className="ht-gallery-view"
-            onPointerDown={(event) => {
-              if (event.pointerType === "mouse" && event.button !== 0) return;
-              event.preventDefault();
-              drag.current = { x: event.clientX, id: event.pointerId };
-              event.currentTarget.setPointerCapture(event.pointerId);
-              hold("pointer", true);
-            }}
-            onPointerUp={(event) => {
-              if (drag.current.id !== event.pointerId) return;
-              const dx = event.clientX - drag.current.x;
-              drag.current.id = -1;
-              if (Math.abs(dx) > 48) go(dir === "rtl" ? (dx > 0 ? 1 : -1) : (dx < 0 ? 1 : -1));
-              hold("pointer", false);
-              hold("settle", true);
-              window.setTimeout(() => hold("settle", false), 7000);
-            }}
-            onPointerCancel={() => {
-              drag.current.id = -1;
-              hold("pointer", false);
-            }}
-          >
-            <div className="ht-gallery-track" style={{ transform: `translate3d(${shift}, 0, 0)` }}>
-              {sites.map((site, siteIndex) => (
-                <article className="ht-gallery-slide" key={site.key} aria-hidden={siteIndex !== index}>
-                  <div className="ht-gallery-stage">
-                    <img
-                      src={`${MEDIA}/sites/${site.key}-${lang}-desk.webp`}
-                      alt={siteIndex === index ? `${site.name} — ${site.kind}` : ""}
-                      width={1440}
-                      height={900}
-                      loading={Math.abs(siteIndex - index) <= 1 ? "eager" : "lazy"}
-                      decoding="async"
-                    />
-                  </div>
-                  <p className="ht-gallery-caption"><span>{site.kind}</span><strong>{site.name}</strong></p>
-                </article>
-              ))}
-            </div>
-          </div>
-          <button type="button" className="ht-gallery-arrow ht-gallery-next" onClick={() => go(1)} aria-label={text("האתר הבא", "Next website")}>
-            <i aria-hidden="true" />
-          </button>
-          <div className="ht-gallery-dots">
-            {sites.map((site, siteIndex) => (
-              <button
-                key={site.key}
-                type="button"
-                className={siteIndex === index ? "is-on" : undefined}
-                aria-label={site.name}
-                aria-current={siteIndex === index ? "true" : undefined}
-                onClick={() => setIndex(siteIndex)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className="hx-actions ht-center">
-          <Cta to="/website-builder">{text("בואו לבנות אתר", "Start Building")}</Cta>
-        </div>
-      </div>
-    </section>
-  );
-}
 
 function BenefitIcon({ kind }: { kind: "system" | "phone" | "official" | "test" | "start" }) {
   const pen = {

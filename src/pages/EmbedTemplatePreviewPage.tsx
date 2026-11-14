@@ -20,6 +20,7 @@ export default function EmbedTemplatePreviewPage() {
   const [searchParams] = useSearchParams();
   const modeParam = String(searchParams.get("mode") || "preview").toLowerCase();
   const mode = modeParam === "edit" ? "edit" : "preview";
+  const fullPage = String(searchParams.get("presentation") || "").toLowerCase() === "page";
   const language = readGuidedDemoLocaleLock() || searchParams.get("lang") || i18n.language;
   setTemplateLanguageOverride(searchParams.get("lang"));
 
@@ -47,15 +48,15 @@ export default function EmbedTemplatePreviewPage() {
       style={{
         minHeight: "100vh",
         background: "#fff",
-        overflow: "hidden",
+        overflow: fullPage ? "visible" : "hidden",
       }}
     >
       {renderer.editorCss ? (
         <style dangerouslySetInnerHTML={{ __html: String(renderer.editorCss) }} />
       ) : null}
 
-      {/* Force entrance/reveal states open so the card never shows a blank hero */}
-      <style>{`
+      {/* Card iframes must not stay blank. A full-page demo keeps the template's own motion. */}
+      {fullPage ? null : <style>{`
         [data-template-card-embed="true"] [data-reveal],
         [data-template-card-embed="true"] [data-animate],
         [data-template-card-embed="true"] [data-motion],
@@ -74,7 +75,7 @@ export default function EmbedTemplatePreviewPage() {
           animation-iteration-count: 1 !important;
           animation-fill-mode: both !important;
         }
-      `}</style>
+      `}</style>}
 
       <div data-template-id={key} dir={getTextDirection(language)}>
         <Component
