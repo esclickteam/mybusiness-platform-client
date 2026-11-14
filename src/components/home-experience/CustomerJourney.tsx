@@ -146,6 +146,7 @@ function MetaScene({ text, demo, onCapture }: { text: TextFn; demo: DemoState; o
           </div>
           <p className="bj-field"><bdi dir="ltr">{PHONE}</bdi></p>
           <p className="bj-field"><bdi dir="ltr">{EMAIL}</bdi></p>
+          <p className="bj-focus">{text("הפעולה: קליטת הליד למערכת", "Action: capture the lead")}</p>
           <button type="button" className="bj-action" onClick={onCapture} disabled={demo.leadCaptured}>
             {demo.leadCaptured ? text("הפרטים נקלטו", "Details captured") : text("שליחת פרטים", "Send details")}
             <Mark />
@@ -180,7 +181,10 @@ function CrmScene({ text, demo, onOpen, onStatus }: { text: TextFn; demo: DemoSt
         <p className="bj-muted">{demo.leadCaptured ? text("מקור · Meta Lead Ads", "Source · Meta Lead Ads") : text("ממתין לקליטה מהקמפיין", "Waiting for campaign intake")}</p>
         <h3>{customerName(text)}</h3>
         {!demo.crmOpen ? (
-          <button type="button" className="bj-action" onClick={onOpen}>{text("פתיחת כרטיס", "Open the record")}</button>
+          <>
+            <p className="bj-focus">{text("הפעולה: פתיחת הכרטיס", "Action: open the record")}</p>
+            <button type="button" className="bj-action" onClick={onOpen}>{text("פתיחת כרטיס", "Open the record")}</button>
+          </>
         ) : (
           <>
             <dl className="bj-facts">
@@ -189,6 +193,7 @@ function CrmScene({ text, demo, onOpen, onStatus }: { text: TextFn; demo: DemoSt
               <div><dt>{text("סטטוס", "Status")}</dt><dd>{statusLabel(text, demo.status, null)}</dd></div>
               {demo.meeting ? <div><dt>{text("פגישה", "Meeting")}</dt><dd>{SLOTS.find((item) => item.id === demo.meeting) ? text(SLOTS.find((item) => item.id === demo.meeting)!.he, SLOTS.find((item) => item.id === demo.meeting)!.en) : ""}</dd></div> : null}
             </dl>
+            <p className="bj-focus">{text("הפעולה: עדכון הסטטוס", "Action: update the status")}</p>
             <div className="bj-status-row" role="group" aria-label={text("עדכון סטטוס", "Update status")}>
               {statuses.map((status) => (
                 <button key={status} type="button" className={demo.status === status ? "bj-choice is-on" : "bj-choice"} aria-pressed={demo.status === status} onClick={() => onStatus(status)}>
@@ -221,6 +226,7 @@ function WhatsAppScene({ text, demo, onReply }: { text: TextFn; demo: DemoState;
             </p>
           ) : null}
         </div>
+        <p className="bj-focus">{text("הפעולה: תשובה על הכרטיס", "Action: reply on the record")}</p>
         <button type="button" className="bj-action" onClick={onReply} disabled={demo.replied}>
           {demo.replied ? text("התשובה נשמרה", "Reply saved") : text("שליחת תשובה", "Send a reply")}
         </button>
@@ -246,6 +252,7 @@ function AutomationScene({ text, demo, onRun }: { text: TextFn; demo: DemoState;
           </article>
         ))}
       </div>
+      <p className="bj-focus">{text("הפעולה: הרצה מקומית", "Action: run it locally")}</p>
       <button type="button" className="bj-action" onClick={onRun} disabled={demo.automation}>
         {demo.automation ? text("האוטומציה רצה", "Automation ran") : text("הרצת אוטומציה", "Run automation")}
       </button>
@@ -266,6 +273,7 @@ function AiScene({ text, demo, onDraft, onSave }: { text: TextFn; demo: DemoStat
         <p className="bj-muted">{text("תובנה", "Insight")}</p>
         <h3>{text("נועה ממתינה לשיחת היכרות", "Noa is waiting for an intro call")}</h3>
         <p className={demo.draftReady ? "bj-draft" : "bj-draft"}>{demo.draftReady ? draft : text("היועץ מכין טיוטה. הוא לא שולח אותה.", "The advisor prepares a draft. It does not send it.")}</p>
+        <p className="bj-focus">{text("הפעולה: טיוטה ואז שמירה", "Action: draft, then save")}</p>
         <div className="bj-actions-row">
           <button type="button" className="bj-action" onClick={onDraft} disabled={demo.draftReady}>{text("יצירת טיוטה", "Create a draft")}</button>
           <button type="button" className="bj-action is-line" onClick={onSave} disabled={!demo.draftReady || demo.draftSaved}>
@@ -291,6 +299,7 @@ function CalendarScene({ text, demo, onPick, onBook }: { text: TextFn; demo: Dem
             </button>
           ))}
         </div>
+        <p className="bj-focus">{text("הפעולה: קביעת הפגישה", "Action: book the meeting")}</p>
         <button type="button" className="bj-action" onClick={onBook}>
           {demo.meeting ? text("עדכון הפגישה", "Update the meeting") : text("קביעת פגישה", "Book a meeting")}
         </button>
