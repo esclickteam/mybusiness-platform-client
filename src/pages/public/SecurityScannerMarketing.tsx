@@ -8,6 +8,12 @@ import "./securityScannerMarketing.css";
 
 type Plan = { id: string; name: string; priceIls: number; unit: string; sellable: boolean; billing?: string };
 
+const ENGLISH_PLAN: Record<string, { name: string; unit: string }> = {
+  basic: { name: "Basic", unit: "scan" },
+  professional: { name: "Professional", unit: "scan" },
+  monitoring: { name: "Monitoring", unit: "month" },
+};
+
 const CHECKS = {
   he: [
     ["הצפנה ותעודה", "HTTPS, תוקף תעודה וגרסת TLS."],
@@ -195,9 +201,12 @@ export default function SecurityScannerMarketing() {
           <h2>{he ? "חבילות ומחירים" : "Packages and prices"}</h2>
           <p>{planState}</p>
           <ul className="scanner-product__cards">
-            {plans.map((plan) => (
-              <li key={plan.id}><strong>{plan.name}</strong><span>{plan.priceIls} ₪ / {plan.unit}</span></li>
-            ))}
+            {plans.map((plan) => {
+              const english = ENGLISH_PLAN[plan.id];
+              const name = he || !english ? plan.name : english.name;
+              const unit = he || !english ? plan.unit : english.unit;
+              return <li key={plan.id}><strong>{name}</strong><span>{plan.priceIls} ₪ / {unit}</span></li>;
+            })}
           </ul>
           <p>{he ? "הזמנה נרשמת בלי להפעיל סריקה בתשלום. קישור הסליקה נפתח רק כשספק מאושר והגדרת ארגז חול פעילים." : "An order is recorded without unlocking a paid scan. A checkout link opens only when an approved provider and the sandbox setting are both active."}</p>
         </div>

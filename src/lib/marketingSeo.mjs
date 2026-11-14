@@ -1040,6 +1040,8 @@ export function isUnknownMarketingPath(pathname) {
 }
 
 export function marketingPublicRedirect(pathname) {
+  const bare = String(pathname || "").split("?")[0].replace(/\/+$/, "") || "/";
+  if (bare === "/en/security-scanner") return "/security-scanner";
   const { locale, path } = splitMarketingLocale(pathname);
   if (locale === "en" && path === "/whatsapp-api") return "https://whatsapp.bizuply.com/";
   const legacy = marketingLegacyRedirectPath(path);

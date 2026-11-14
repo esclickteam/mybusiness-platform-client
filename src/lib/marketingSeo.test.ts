@@ -14,6 +14,7 @@ import {
   isSeoDiscoveryPath,
   isUnknownMarketingPath,
   marketingLegacyRedirectPath,
+  marketingPublicRedirect,
 } from "./marketingSeo.mjs";
 
 const root = path.resolve(import.meta.dirname, "../..");
@@ -113,6 +114,9 @@ describe("marketing crawl files", () => {
       expect(page.description).not.toContain("Bizamply");
       expect(page.description).not.toContain("Bizimply");
     }
+    expect(marketingPublicRedirect("/en/security-scanner")).toBe("/security-scanner");
+    expect(marketingPublicRedirect("/en/security-scanner/")).toBe("/security-scanner");
+    expect(marketingPublicRedirect("/security-scanner")).toBe("");
     expect(isUnknownMarketingPath("/this-page-does-not-exist-xyz")).toBe(true);
     expect(isUnknownMarketingPath("/crm")).toBe(false);
     expect(isUnknownMarketingPath("/login")).toBe(false);
