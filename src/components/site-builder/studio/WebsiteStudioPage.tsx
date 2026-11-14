@@ -7964,7 +7964,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
               normalizedTargetPageId === "home" &&
               (page.isHome || page.id === "home" || index === 0));
 
-          if (!shouldReplace) return page;
+          if (!shouldReplace || (page as { editMode?: string }).editMode === "saas-live") return page;
 
           return {
             ...page,
@@ -8046,6 +8046,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (activeDirtyId) dirtyPageIds.add(activeDirtyId);
 
       const pagesForSave = publishedPages.map((page) => {
+        if ((page as { editMode?: string }).editMode === "saas-live") {
+          return {
+            id: page.id,
+            title: page.title,
+            slug: page.slug,
+            type: page.type,
+            isHome: false,
+            hiddenFromMenu: true,
+            editMode: "saas-live",
+            data: (page as { data?: Record<string, unknown> }).data || {},
+            html: " ",
+            css: " ",
+            updatedAt: visualPayload.updatedAt || new Date().toISOString(),
+          };
+        }
         const isCanonicalHome = page.id === canonicalHomeId;
         const isActivePage =
           page.id === activeVisualPageId ||
