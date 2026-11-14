@@ -200,7 +200,14 @@ export default function ProtectedRoute({
     search: location.search,
   });
 
-  if (isBusiness && !user.hasAccess && !isImpersonating && !isBillingReturn && location.pathname !== "/change-password") {
+  if (
+    isBusiness &&
+    !user.hasAccess &&
+    !isImpersonating &&
+    !isBillingReturn &&
+    location.pathname !== "/change-password" &&
+    !location.pathname.includes("/search-visibility")
+  ) {
     const lapsedPortalScreen =
       isWhatsAppApiPortalUser(user) && isWhatsAppApiPortalDashboardPath(location.pathname);
     const saasConsole =

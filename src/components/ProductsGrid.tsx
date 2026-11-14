@@ -10,6 +10,7 @@ import {
   Megaphone,
   MessageCircle,
   Users,
+  Search,
   ShieldCheck,
   Zap,
 } from "lucide-react";
@@ -20,6 +21,7 @@ import "../styles/homeWow.css";
 const MODULES = [
   { id: "crm", to: "/crm", Icon: Users, tone: "from-indigo-600 to-violet-600", image: "/demo-media/home/crm.jpg" },
   { id: "scan", to: "/website-scan", Icon: ShieldCheck, tone: "from-violet-600 to-blue-600", image: "" },
+  { id: "visibility", to: "/products/ai-visibility-scanner", Icon: Search, tone: "from-indigo-600 to-blue-600", image: "" },
   { id: "appointments", to: "/appointments", Icon: CalendarClock, tone: "from-blue-600 to-cyan-500", image: "/demo-media/home/appointments.jpg" },
   { id: "automations", to: "/automations", Icon: Zap, tone: "from-violet-600 to-fuchsia-500", image: "/demo-media/home/automations.jpg" },
   { id: "site", to: "/website-builder", Icon: Globe, tone: "from-sky-600 to-indigo-600", image: "/demo-media/home/websites.jpg" },

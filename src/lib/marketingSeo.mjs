@@ -197,6 +197,16 @@ export const MARKETING_PAGES = [
     priority: "0.7",
   },
   {
+    path: "/products/ai-visibility-scanner",
+    title: "AI Visibility Scanner | BizUply",
+    description:
+      "Scan any public website for SEO, GEO and AEO readiness. A limited public scan does not need an account. Live AI measurement and paid plans are not active until a price list is approved.",
+    crumb: "AI Visibility Scanner",
+    lastmod: "2026-11-13",
+    changefreq: "monthly",
+    priority: "0.7",
+  },
+  {
     path: "/crm",
     title: "CRM for leads and customers | BizUply",
     description:
