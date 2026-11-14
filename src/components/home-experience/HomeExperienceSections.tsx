@@ -1,32 +1,13 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
-import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
-import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import "../../styles/homeProductVisual.css";
-import { AiStage, CalendarStage, CrmStage, FlowStage, JourneyStage, MetaStage, WhatsAppStage } from "./ProductStages";
-import films from "./theaterFilms.json";
+import CustomerJourney from "./CustomerJourney";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t7";
-
-type FilmKey = keyof typeof films;
-
-function filmFor(key: FilmKey): TheaterFilm {
-  const spec = films[key];
-  return {
-    src: `${MEDIA}/theater/${key}.mp4?v=${FILM_VERSION}`,
-    poster: `${MEDIA}/theater/${key}.webp?v=${FILM_VERSION}`,
-    width: spec.width,
-    height: spec.height,
-    duration: spec.duration,
-    chapters: spec.chapters,
-  };
-}
 
 function faqLocale(language: string) {
   const value = language.toLowerCase();
@@ -42,8 +23,7 @@ function useCopy() {
   const language = i18n.language || "en";
   const he = language.startsWith("he");
   const text = (hebrew: string, english: string) => homeText(language, hebrew, english);
-  const cine = cinematicFor(language);
-  return { text, he, t, cine, language, dir: getTextDirection(language) };
+  return { text, he, t, language, dir: getTextDirection(language) };
 }
 
 function useReduced() {
@@ -90,45 +70,6 @@ function useReveal(root: { current: HTMLElement | null }) {
   }, [reduced, root]);
 }
 
-function Words({ text, hot = -1, delay = 0 }: { text: string; hot?: number; delay?: number }) {
-  const words = text.split(" ");
-  const reduced = useReduced();
-  // First paint must show the full headline. Enable motion only after that frame.
-  const [motionReady, setMotionReady] = useState(false);
-  useEffect(() => {
-    if (reduced) {
-      setMotionReady(false);
-      return undefined;
-    }
-    let inner = 0;
-    const outer = window.requestAnimationFrame(() => {
-      inner = window.requestAnimationFrame(() => setMotionReady(true));
-    });
-    return () => {
-      window.cancelAnimationFrame(outer);
-      window.cancelAnimationFrame(inner);
-    };
-  }, [reduced, text]);
-
-  return (
-    <span className="hx-line">
-      {words.map((word, index) => (
-        <Fragment key={`${word}-${index}`}>
-          <span className={index === hot ? "hx-word is-hot" : "hx-word"}>
-            <span
-              className={motionReady ? "hx-word__in" : undefined}
-              style={motionReady ? { animationDelay: `${delay + index * 75}ms` } : undefined}
-            >
-              {word}
-            </span>
-          </span>
-          {index < words.length - 1 ? " " : null}
-        </Fragment>
-      ))}
-    </span>
-  );
-}
-
 function Cta({ to, children, tone = "solid" }: { to: string; children: string; tone?: "solid" | "line" | "light" }) {
   const className = `hx-btn text-inherit${tone === "line" ? " hx-btn-line" : ""}${tone === "light" ? " hx-btn-light" : ""}`;
   const inner = (
@@ -173,21 +114,12 @@ function Waves({ className = "" }: { className?: string }) {
 export default function HomeExperienceSections() {
   const { text } = useCopy();
   const ref = useRef<HTMLDivElement | null>(null);
-  const [seek, setSeek] = useState<{ index: number; nonce: number } | null>(null);
   useReveal(ref);
-  const watch = (index: number) => {
-    document.getElementById("product-theater")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    setSeek({ index, nonce: Date.now() });
-  };
   return (
     <>
       <a className="hx-skip" href="#how">{text("דילוג לתוכן", "Skip to content")}</a>
       <div className="ht-root" ref={ref}>
-        <Hero seek={seek} />
-        <HowItWorks onWatch={watch} />
-        <Customers />
-        <Operations />
-        <Activity />
+        <CustomerJourney />
         <Websites />
         <Benefits />
         <Pricing />
@@ -195,196 +127,6 @@ export default function HomeExperienceSections() {
         <Close />
       </div>
     </>
-  );
-}
-
-const STEP_IDS = ["lead", "crm", "whatsapp", "task", "automation", "done"] as const;
-
-function useSteps(): TheaterStep[] {
-  const { cine } = useCopy();
-  const labels = (cine.hero.processSteps || []) as [string, string][];
-  const copy = (cine.hero.processCopy || []) as [string, string][];
-  return STEP_IDS.map((id, index) => ({
-    id,
-    label: labels[index]?.[1] || id,
-    title: copy[index]?.[0] || "",
-    body: copy[index]?.[1] || "",
-  }));
-}
-
-function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
-  const { cine, language } = useCopy();
-  const hero = cine.hero;
-  const lang = language.startsWith("he") ? "he" : "en";
-  const hot = Math.max(0, String(hero.lineTwo).trim().split(/\s+/).length - 1);
-  const steps = useSteps();
-  return (
-    <section className="hx-hero" aria-labelledby="hx-hero-title">
-      <div className="hx-geo hx-geo-a" aria-hidden="true" />
-      <div className="hx-geo hx-geo-b" aria-hidden="true" />
-      <div className="hx-geo hx-geo-c" aria-hidden="true" />
-      <Waves className="ht-hero-waves" />
-      <div className="hx-hero-pin">
-        <div className="hx-hero-copy">
-          <p className="hx-hero-kicker">{hero.kicker || "BizUply"}</p>
-          <h1 className="hx-display" id="hx-hero-title">
-            <Words text={hero.lineOne} />
-            <Words text={hero.lineTwo} hot={hot} delay={220} />
-          </h1>
-          <p className="hx-lead">{hero.lead1}</p>
-          <div className="hx-actions">
-            <Cta to="/register">{hero.start}</Cta>
-            <Cta to="/contact" tone="line">{hero.see}</Cta>
-          </div>
-          {Array.isArray(hero.trust) && hero.trust.length ? (
-            <ul className="hx-hero-trust">
-              {hero.trust.map((item: string) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-        <aside className="ht-hero-side" aria-label={hero.demoEyebrow}>
-          <p className="ht-eyebrow">{hero.demoEyebrow}</p>
-          <p className="ht-hero-side-lead">{hero.demoLead}</p>
-          <ol className="ht-hero-steps">
-            {steps.map((step, index) => (
-              <li key={step.id}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                {step.label}
-              </li>
-            ))}
-          </ol>
-        </aside>
-      </div>
-      <div className="hx-hero-stage" id="product-theater">
-        <div className="hx-hero-stage-inner">
-          <ProductTheater
-            desktop={filmFor(`${lang}-desktop` as FilmKey)}
-            mobile={filmFor(`${lang}-mobile` as FilmKey)}
-            steps={steps}
-            seekRequest={seek}
-            labels={{
-              region: hero.processLabel || hero.stageAlt,
-              play: hero.play,
-              pause: hero.pause,
-              prev: hero.prev,
-              next: hero.next,
-              step: hero.stepOf,
-            }}
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
-  return (
-    <section className="ht-how ht-journey" id="how" aria-labelledby="ht-how-title">
-      <div className="ht-wrap">
-        <JourneyStage onWatch={onWatch} />
-      </div>
-    </section>
-  );
-}
-
-function Customers() {
-  const { text } = useCopy();
-  return (
-    <section className="ht-editorial" id="crm" aria-labelledby="crm-title">
-      <div className="ht-wrap">
-        <header className="ht-editorial-head" data-reveal>
-          <div>
-            <p className="ht-eyebrow">{text("CRM חכם לניהול לקוחות", "A CRM for customer management")}</p>
-            <h2 id="crm-title">{text("כל ליד הופך ללקוח עם CRM שמקדם מכירות", "Every lead becomes a customer record that moves the sale")}</h2>
-          </div>
-          <div>
-            <p className="ht-lead">{text("רכזו את כל הלידים, נהלו את התקשורת, עקבו אחרי שלבי המכירה והפכו יותר פניות לעסקאות — במקום אחד.", "Keep every lead, the conversation and the sale stages together, and move more enquiries forward — in one place.")}</p>
-            <Cta to="/crm">{text("צפו ב־CRM בפעולה", "See the CRM in action")}</Cta>
-          </div>
-        </header>
-        <div className="ht-wide-demo" data-reveal>
-          <CrmStage />
-        </div>
-        <article className="ht-follow" id="whatsapp" aria-labelledby="whatsapp-title">
-          <div className="ht-follow-copy">
-            <p className="ht-eyebrow">WhatsApp Business API</p>
-            <h3 id="whatsapp-title">{text("תקשורת חכמה עם הלקוחות שלכם", "Smart conversations with your customers")}</h3>
-            <p>{text("נהלו את כל השיחות, השיבו מתוך הכרטיס, ועדכנו סטטוס בהדגמה — ישירות מ־Bizuply.", "Manage every conversation, reply from the record, and update the demo status — directly in Bizuply.")}</p>
-            <p className="pv-note">{text(
-              "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
-              "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
-            )}</p>
-            <Link className="ht-link" to="/whatsapp-api">{text("להכיר את WhatsApp API", "Explore the WhatsApp API")}</Link>
-          </div>
-          <WhatsAppStage />
-        </article>
-      </div>
-    </section>
-  );
-}
-
-function Operations() {
-  const { text } = useCopy();
-  return (
-    <section className="ht-editorial is-mist" id="automations" aria-labelledby="automations-title">
-      <div className="ht-wrap">
-        <header className="ht-editorial-head" data-reveal>
-          <div>
-            <p className="ht-eyebrow">{text("אוטומציות חכמות", "Smart automations")}</p>
-            <h2 id="automations-title">{text("אוטומציות שממשיכות את הצעד הבא", "Automations that carry the next step")}</h2>
-          </div>
-          <div>
-            <p className="ht-lead">{text("בונים תהליך עם טריגר, תנאי ופעולות. הרצת הבדיקה לא שולחת הודעה ולא משנה נתונים.", "Build a flow with a trigger, a condition and actions. The test run sends no message and changes no data.")}</p>
-            <Cta to="/automations">{text("להכיר את האוטומציות", "Explore automations")}</Cta>
-          </div>
-        </header>
-        <div className="ht-pair">
-          <article className="ht-pane" data-reveal>
-            <p className="pv-note">{text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}</p>
-            <FlowStage />
-          </article>
-          <article className="ht-pane" id="ai" aria-labelledby="ai-title" data-reveal>
-            <h3 id="ai-title">{text("תובנות חכמות שמובילות להמלצה", "Insights that lead to a recommendation")}</h3>
-            <p>{text("ה־AI של Bizuply מנתח את הנתונים שבהדגמה, מציג תובנה ומכין טיוטה. הוא לא שולח, לא קובע ולא משנה תקציב.", "Bizuply AI reads the demo figures, shows an insight and prepares a draft. It does not send, book or change a budget.")}</p>
-            <AiStage />
-            <p className="ht-pane-links">
-              <Link className="ht-link" to="/website-scan">{text("לסרוק אתר", "Scan a website")}</Link>
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Activity() {
-  const { text } = useCopy();
-  return (
-    <section className="ht-editorial" id="meetings" aria-labelledby="meetings-title">
-      <div className="ht-wrap">
-        <article className="ht-follow is-flip">
-          <div className="ht-follow-copy">
-            <p className="ht-eyebrow">{text("יומן ותיאומים", "Calendar and scheduling")}</p>
-            <h2 id="meetings-title">{text("כל הפגישות, במקום אחד", "Every meeting, in one place")}</h2>
-            <p>{text("נהלו פגישות, תזכורות ותיאומים עם לקוחות. בוחרים יום, פותחים פגישה ועוברים בין שבועות ההדגמה.", "Manage meetings on the customer record. Pick a day, open a meeting and move between the demo weeks.")}</p>
-            <Cta to="/appointments">{text("להכיר את היומן", "Explore the calendar")}</Cta>
-          </div>
-          <CalendarStage />
-        </article>
-        <article className="ht-follow" id="campaigns" aria-labelledby="campaigns-title">
-          <div className="ht-follow-copy">
-            <p className="ht-eyebrow">{text("חיבור ל־Meta", "Meta connection")}</p>
-            <h3 id="campaigns-title">{text("ניהול קמפיינים שמחבר מודעה לליד", "Campaign management that connects an ad to a lead")}</h3>
-            <p>{text("הדשבורד מציג נתוני הדגמה בלבד: הוצאה, לידים, עלות לליד והליד שנכנס ל־CRM. אלה לא הישגים אמיתיים של BizUply.", "The dashboard shows demo figures only: spend, leads, cost per lead and the lead that entered the CRM. These are not real BizUply results.")}</p>
-            <p className="pv-note">{text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}</p>
-            <Link className="ht-link" to="/meta-campaigns">{text("להכיר את הקמפיינים", "Explore campaigns")}</Link>
-          </div>
-          <MetaStage />
-        </article>
-      </div>
-    </section>
   );
 }
 

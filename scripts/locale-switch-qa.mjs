@@ -139,6 +139,8 @@ async function waitHomeReady(page, expectedPath) {
       const pathOk = location.pathname === p || (p === "/" && location.pathname === "/");
       const hero = document.querySelector("#root .hx-hero");
       const shot =
+        document.querySelector("#root .bj-window") ||
+        document.querySelector("#root .bj-title") ||
         document.querySelector("#root .hx-hero-shot-1") ||
         document.querySelector("#root .hx-hero-frame img");
       const hold = document.getElementById("bizuply-locale-hold");

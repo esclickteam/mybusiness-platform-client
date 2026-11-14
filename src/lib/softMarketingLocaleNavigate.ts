@@ -95,6 +95,7 @@ export function releaseLocalePaintHold(doc: Document = document): void {
 export function heroMediaReady(doc: Document = document): boolean {
   const hero = doc.querySelector<HTMLElement>("#root .hx-hero");
   if (!isUsableHero(hero)) return false;
+  if (hero.querySelector(".bj-window, .bj-title")) return true;
   const shot =
     doc.querySelector<HTMLImageElement>("#root .hx-hero-shot-1") ||
     doc.querySelector<HTMLImageElement>("#root .hx-hero-stage-inner img") ||
