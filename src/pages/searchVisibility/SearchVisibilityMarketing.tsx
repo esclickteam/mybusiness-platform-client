@@ -2,7 +2,7 @@ import { useState, type FormEvent } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import API from "../../api";
+import { runPublicPreview } from "./publicPreview";
 import { svCopy } from "./copy";
 import "./searchVisibility.css";
 
@@ -28,8 +28,8 @@ export default function SearchVisibilityMarketing() {
     setError("");
     setPreview(null);
     try {
-      const response = await API.post("/search-visibility/preview", { url });
-      setPreview(response.data);
+      const row = await runPublicPreview(url);
+      setPreview(row);
     } catch (err) {
       setError(err instanceof Error ? err.message : "הסריקה לא הושלמה");
     } finally {

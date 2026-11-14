@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import API from "../../api";
+import { runPublicPreview } from "../searchVisibility/publicPreview";
 import { marketingPublicUrl } from "../../lib/localePathCore.mjs";
 import "./aiVisibilityProduct.css";
 
@@ -14,11 +14,13 @@ const COPY = {
     crumb: "סורק נראות AI",
     hero: "גלו איך האתר שלכם נראה בגוגל ובמנועי AI",
     lead: "סורקים את האתר, מזהים בעיות SEO, GEO ו־AEO, ובודקים את הנראות של המותג במנועי AI באמצעות מדידות זמינות.",
-    scan: "סרקו אתר בחינם",
+    scan: "סריקה בחינם",
     plans: "צפייה בחבילות",
     example: "המחשה. לא נתוני לקוח.",
     url: "כתובת האתר",
-    scanning: "סורק",
+    scanning: "הסריקה רצה",
+    upgrade: "סריקה מלאה בחשבון",
+    upgradeNote: "הסריקה החינמית מוגבלת לשלושה עמודים. חבילות רחבות יותר אינן נמכרות עד לאישור מחירון.",
     areas: [
       ["SEO", "בדיקות טכניות ונראות בחיפוש."],
       ["GEO", "מוכנות האתר למנועי AI. לא ציטוט בפועל."],
@@ -50,11 +52,13 @@ const COPY = {
     crumb: "AI Visibility Scanner",
     hero: "See how your site reads in Google and in AI engines",
     lead: "Scan the site, find SEO, GEO and AEO issues, and check brand visibility in AI engines when a measurement provider is available.",
-    scan: "Scan a site for free",
+    scan: "Free scan",
     plans: "View plans",
     example: "Illustration. Not a customer result.",
     url: "Website URL",
-    scanning: "Scanning",
+    scanning: "Scan in progress",
+    upgrade: "Full scan in an account",
+    upgradeNote: "The free scan checks up to three pages. Wider plans are not for sale until a price list is approved.",
     areas: [
       ["SEO", "Technical checks and search readiness."],
       ["GEO", "Readiness for AI engines. Not a live citation."],
@@ -89,6 +93,7 @@ export default function AiVisibilityProductPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [preview, setPreview] = useState(null);
+  const [progress, setProgress] = useState("");
   const canonical = marketingPublicUrl("/products/ai-visibility-scanner", he ? "he" : "en");
   const schema = useMemo(() => ({
     "@context": "https://schema.org",
@@ -106,11 +111,19 @@ export default function AiVisibilityProductPage() {
     setBusy(true);
     setError("");
     setPreview(null);
+    setProgress(he ? "מתחברים לאתר" : "Connecting to the site");
     try {
-      const response = await API.post("/search-visibility/preview", { url });
-      setPreview(response.data);
+      const row = await runPublicPreview(url, (update) => {
+        const pages = update.pages || 0;
+        setProgress(he
+          ? (pages ? `נבדקו ${pages} עמודים` : "מתחברים לאתר")
+          : (pages ? `${pages} pages checked` : "Connecting to the site"));
+      });
+      setPreview(row);
+      setProgress("");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "הסריקה לא הושלמה");
+      setError(err instanceof Error ? err.message : (he ? "הסריקה לא הושלמה" : "The scan did not finish"));
+      setProgress("");
     } finally {
       setBusy(false);
     }
@@ -154,13 +167,25 @@ export default function AiVisibilityProductPage() {
           </label>
           <button className="aiv-button" type="submit" disabled={busy || url.trim().length < 8}>{busy ? t.scanning : t.scan}</button>
         </form>
+        {progress ? <p className="aiv-progress">{progress}</p> : null}
         {error ? <p className="aiv-error">{error}</p> : null}
-        {preview ? (
+        {preview?.status === "completed" ? (
           <div className="aiv-result">
             <p>{preview.host} · {preview.pages ?? 0}</p>
             <p>SEO {preview.scores?.seo?.score ?? "—"} · GEO {preview.scores?.geo?.score ?? "—"} · AEO {preview.scores?.aeo?.score ?? "—"}</p>
+            <p>{he ? preview.scores?.disclaimer : preview.scores?.disclaimerEn}</p>
+            <ul>
+              {(preview.findings || []).map((row) => (
+                <li key={row.ruleId}>
+                  <strong>{he ? row.titleHe : row.titleEn}</strong>
+                  <span>{he ? row.recommendationHe : row.recommendationEn}</span>
+                </li>
+              ))}
+            </ul>
             <p>{preview.note}</p>
-            <Link to="/search-visibility">{he ? "סריקה מלאה בחשבון" : "Full scan in an account"}</Link>
+            <p>{t.upgradeNote}</p>
+            <a className="aiv-button" href="#plans">{t.plans}</a>
+            <Link to="/search-visibility">{t.upgrade}</Link>
           </div>
         ) : null}
       </section>
