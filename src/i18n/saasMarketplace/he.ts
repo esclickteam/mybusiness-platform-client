@@ -91,6 +91,8 @@ export const he: SaasMarketCopy = {
     exploreNamed: "ל־{{name}}",
     entryLabel: "כניסה מ־{{amount}}",
     entryNote: "50% דמי כניסה עם חלוקת הכנסות. התנאים נסגרים מול Bizuply.",
+    priceNotSet: "המחיר לא הוגדר",
+    saleClosed: "לא למכירה",
     demoBadge: "יש דמו",
     whiteLabelBadge: "White Label",
     partnerBadge: "מודל שותפות זמין",

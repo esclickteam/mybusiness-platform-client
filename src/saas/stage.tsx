@@ -17,10 +17,12 @@ import { checkCountryAvailability } from "./api";
 import { MixedText, useSaasLocale } from "./chrome";
 import {
   cardFilm,
+  catalogPriceDefined,
   demoTarget,
   formatUsd,
   illustrativeMrr,
   isSaasTemplate,
+  partnerEntryUsd,
   templateDemoLinks,
   type SaasModelId,
   type SaasProduct,
@@ -315,6 +317,7 @@ export function ProductRow({
   const reduce = useReducedMotion();
   const story = useStory(product);
   const live = demoTarget(product);
+  const priced = catalogPriceDefined(product);
   const template = isSaasTemplate(product);
   const film = template ? cardFilm(product) : [];
   const demoLinks = template ? templateDemoLinks(product, lang) : [];
@@ -363,6 +366,14 @@ export function ProductRow({
             </span>
           ))}
         </div>
+        <p className="mt-3 text-sm font-black text-slate-950">
+          {priced
+            ? t("saasMarket.platforms.entryLabel", { amount: formatUsd(partnerEntryUsd(product.priceUsd)) })
+            : t("saasMarket.platforms.priceNotSet")}
+        </p>
+        <p className="text-xs font-semibold text-slate-500">
+          {priced ? t("saasMarket.platforms.entryNote") : t("saasMarket.platforms.saleClosed")}
+        </p>
         <div className="saas-row-actions">
           {template && demoLinks.length ? (
             <button type="button" className="is-primary" onClick={() => onDemo(product)}>
