@@ -16,6 +16,7 @@ import {
   Megaphone,
   MessageCircle,
   Workflow,
+  Shield,
   PlugZap,
   Code2,
   LineChart,
@@ -418,6 +419,13 @@ export default function BusinessWorkspaceNav({
       demoTarget: "nav-website",
     },
     {
+      labelKey: "businessNav.securityScanner",
+      fallback: "סורק אבטחה",
+      to: `${basePath}/dashboard/security`,
+      icon: Shield,
+      moduleKey: null,
+    },
+    {
       labelKey: "businessNav.billing",
       fallback: "Billing & Subscription",
       to: `${basePath}/dashboard/billing`,
@@ -504,7 +512,7 @@ export default function BusinessWorkspaceNav({
 
   const visibleItems = isWhatsAppApiPortalUser(user) ? apiPortalItems : items.filter((item) => {
     if (accountKind === "saas_only") {
-      return item.moduleKey === "saas" || item.labelKey === "businessNav.helpCenter";
+      return item.moduleKey === "saas" || item.labelKey === "businessNav.helpCenter" || item.labelKey === "businessNav.securityScanner";
     }
     if (item.moduleKey === "saas") {
       return accountKind === "bizuply_saas";

@@ -15,6 +15,7 @@ export const SUPPORT_DASHBOARD_SEGMENTS = new Set([
   "help-center",
   "articles",
   "faq",
+  "security",
 ]);
 
 export const MODULE_ROUTE_PREFIXES = {

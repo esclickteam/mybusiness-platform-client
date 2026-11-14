@@ -12,6 +12,14 @@ type FooterLink = {
   to: string;
 };
 
+const SECURITY_LABEL: Record<string, string> = {
+  en: "Website Security Scanner",
+  he: "סורק אבטחת אתרים",
+  es: "Escáner de seguridad web",
+  "pt-BR": "Scanner de segurança do site",
+  ar: "فاحص أمان المواقع",
+};
+
 const SCAN_LABEL: Record<string, string> = {
   en: "AI website scan",
   he: "סריקת אתר חכמה AI",
@@ -76,6 +84,7 @@ export default function Footer() {
         { label: t("footer.platform"), to: "/platform" },
         { label: t("footer.crm"), to: "/crm" },
         { label: SCAN_LABEL[region] || SCAN_LABEL.en, to: "/website-scan" },
+        { label: SECURITY_LABEL[region] || SECURITY_LABEL.en, to: "/security-scanner" },
         { label: t("footer.appointments"), to: "/appointments" },
         { label: t("footer.whatsapp"), to: "/whatsapp-api" },
         { label: t("footer.meta"), to: "/meta-campaigns" },

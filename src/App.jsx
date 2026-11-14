@@ -22,6 +22,7 @@ import Footer from "./components/Footer";
 const ComplianceScannerPage = lazy(() => import("./pages/public/ComplianceScannerPage"));
 const ComplianceDemoPage = lazy(() => import("./pages/public/ComplianceDemoPage"));
 const WebsiteScanPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.WebsiteScanPage })));
+const SecurityScannerMarketing = lazy(() => import("./pages/public/SecurityScannerMarketing"));
 const ComplianceAccountPage = lazy(() => import("./pages/public/WebsiteScanPage").then((mod) => ({ default: mod.ComplianceAccountPage })));
 import ProtectedRoute from "./components/ProtectedRoute";
 import InvistimoAdminRedirect from "./components/InvistimoAdminRedirect";
@@ -207,6 +208,7 @@ const AdminManagedWhatsApp = lazy(
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const ComplianceScansAdminPage = lazy(() => import("./pages/admin/ComplianceScansAdminPage"));
 const ComplianceScanDetailPage = lazy(() => import("./pages/admin/ComplianceScanDetailPage"));
+const SecurityScannerAdminPage = lazy(() => import("./pages/admin/SecurityScannerAdminPage"));
 const AdminAiUsage = lazy(() => import("./pages/admin/AdminAiUsage"));
 const AdminGeoIntel = lazy(() => import("./pages/admin/geoIntel/AdminGeoIntel"));
 const AdminGlobalPartners = lazy(() =>
@@ -1371,6 +1373,8 @@ export default function App() {
                         <Route path="/compliance/account" element={<ComplianceAccountPage />} />
                         <Route path="/compliance/demo" element={<ComplianceDemoPage />} />
                         <Route path="/website-scan" element={<WebsiteScanPage />} />
+                        <Route path="/security-scanner" element={<SecurityScannerMarketing />} />
+                        <Route path="/en/security-scanner" element={<SecurityScannerMarketing />} />
                         <Route path="/compliance/review" element={<ComplianceScannerPage />} />
                         <Route path="/compliance/report/:id" element={<ComplianceScannerPage />} />
                         <Route path="/compliance" element={<ComplianceScannerPage />} />
@@ -1784,6 +1788,7 @@ export default function App() {
                         <Route path="logs" element={<AdminLogs />} />
                         <Route path="compliance-scans/:scanId" element={<ComplianceScanDetailPage />} />
                         <Route path="compliance-scans" element={<ComplianceScansAdminPage />} />
+                        <Route path="security-scans" element={<SecurityScannerAdminPage />} />
                         <Route path="ai-usage" element={<AdminAiUsage />} />
                         <Route path="geo-intel" element={<AdminGeoIntel />} />
                         <Route path="global-partners" element={<AdminGlobalPartners />} />

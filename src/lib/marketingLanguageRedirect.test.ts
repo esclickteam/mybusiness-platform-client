@@ -35,6 +35,10 @@ describe("marketing language redirect", () => {
     expect(marketingLanguageRedirectPath("/crm", { cookie: "he", acceptLanguage: "en" })).toBe("/he/crm");
   });
 
+  it("keeps an explicit English alias even when Hebrew is saved", () => {
+    expect(marketingLanguageRedirectPath("/en/security-scanner", { cookie: "he", acceptLanguage: "he-IL" })).toBeNull();
+  });
+
   it("maps Portuguese and leaves Italian on English", () => {
     expect(marketingLanguageRedirectPath("/pricing", { acceptLanguage: "pt-BR,pt;q=0.8" })).toBe("/pt-br/pricing");
     expect(marketingLanguageRedirectPath("/", { acceptLanguage: "it-IT,it;q=0.9" })).toBeNull();
