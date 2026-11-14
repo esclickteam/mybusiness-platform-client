@@ -7,8 +7,7 @@ import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
-import "../../styles/homeProductVisual.css";
-import { AiStage, CalendarStage, CrmStage, FlowStage, JourneyStage, MetaStage, WhatsAppStage } from "./ProductStages";
+import CustomerJourney from "./CustomerJourney";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -173,21 +172,13 @@ function Waves({ className = "" }: { className?: string }) {
 export default function HomeExperienceSections() {
   const { text } = useCopy();
   const ref = useRef<HTMLDivElement | null>(null);
-  const [seek, setSeek] = useState<{ index: number; nonce: number } | null>(null);
   useReveal(ref);
-  const watch = (index: number) => {
-    document.getElementById("product-theater")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    setSeek({ index, nonce: Date.now() });
-  };
   return (
     <>
       <a className="hx-skip" href="#how">{text("דילוג לתוכן", "Skip to content")}</a>
       <div className="ht-root" ref={ref}>
-        <Hero seek={seek} />
-        <HowItWorks onWatch={watch} />
-        <Customers />
-        <Operations />
-        <Activity />
+        <Hero seek={null} />
+        <CustomerJourney />
         <Websites />
         <Benefits />
         <Pricing />
@@ -274,115 +265,6 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
             }}
           />
         </div>
-      </div>
-    </section>
-  );
-}
-
-function HowItWorks({ onWatch }: { onWatch: (index: number) => void }) {
-  return (
-    <section className="ht-how ht-journey" id="how" aria-labelledby="ht-how-title">
-      <div className="ht-wrap">
-        <JourneyStage onWatch={onWatch} />
-      </div>
-    </section>
-  );
-}
-
-function Customers() {
-  const { text } = useCopy();
-  return (
-    <section className="ht-editorial" id="crm" aria-labelledby="crm-title">
-      <div className="ht-wrap">
-        <header className="ht-editorial-head" data-reveal>
-          <div>
-            <p className="ht-eyebrow">{text("CRM חכם לניהול לקוחות", "A CRM for customer management")}</p>
-            <h2 id="crm-title">{text("כל ליד הופך ללקוח עם CRM שמקדם מכירות", "Every lead becomes a customer record that moves the sale")}</h2>
-          </div>
-          <div>
-            <p className="ht-lead">{text("רכזו את כל הלידים, נהלו את התקשורת, עקבו אחרי שלבי המכירה והפכו יותר פניות לעסקאות — במקום אחד.", "Keep every lead, the conversation and the sale stages together, and move more enquiries forward — in one place.")}</p>
-            <Cta to="/crm">{text("צפו ב־CRM בפעולה", "See the CRM in action")}</Cta>
-          </div>
-        </header>
-        <div className="ht-wide-demo" data-reveal>
-          <CrmStage />
-        </div>
-        <article className="ht-follow" id="whatsapp" aria-labelledby="whatsapp-title">
-          <div className="ht-follow-copy">
-            <p className="ht-eyebrow">WhatsApp Business API</p>
-            <h3 id="whatsapp-title">{text("תקשורת חכמה עם הלקוחות שלכם", "Smart conversations with your customers")}</h3>
-            <p>{text("נהלו את כל השיחות, השיבו מתוך הכרטיס, ועדכנו סטטוס בהדגמה — ישירות מ־Bizuply.", "Manage every conversation, reply from the record, and update the demo status — directly in Bizuply.")}</p>
-            <p className="pv-note">{text(
-              "החיבור כפוף לתהליך האישור ולמדיניות של Meta. תשובות חופשיות אפשריות בחלון 24 השעות שאחרי הודעת הלקוח.",
-              "The connection follows Meta's approval process and policies. Free-form replies are possible within 24 hours of the customer's last message.",
-            )}</p>
-            <Link className="ht-link" to="/whatsapp-api">{text("להכיר את WhatsApp API", "Explore the WhatsApp API")}</Link>
-          </div>
-          <WhatsAppStage />
-        </article>
-      </div>
-    </section>
-  );
-}
-
-function Operations() {
-  const { text } = useCopy();
-  return (
-    <section className="ht-editorial is-mist" id="automations" aria-labelledby="automations-title">
-      <div className="ht-wrap">
-        <header className="ht-editorial-head" data-reveal>
-          <div>
-            <p className="ht-eyebrow">{text("אוטומציות חכמות", "Smart automations")}</p>
-            <h2 id="automations-title">{text("אוטומציות שממשיכות את הצעד הבא", "Automations that carry the next step")}</h2>
-          </div>
-          <div>
-            <p className="ht-lead">{text("בונים תהליך עם טריגר, תנאי ופעולות. הרצת הבדיקה לא שולחת הודעה ולא משנה נתונים.", "Build a flow with a trigger, a condition and actions. The test run sends no message and changes no data.")}</p>
-            <Cta to="/automations">{text("להכיר את האוטומציות", "Explore automations")}</Cta>
-          </div>
-        </header>
-        <div className="ht-pair">
-          <article className="ht-pane" data-reveal>
-            <p className="pv-note">{text("הפעלת אוטומציות בחשבון חי דורשת חבילה פעילה.", "Running automations on a live account requires an active plan.")}</p>
-            <FlowStage />
-          </article>
-          <article className="ht-pane" id="ai" aria-labelledby="ai-title" data-reveal>
-            <h3 id="ai-title">{text("תובנות חכמות שמובילות להמלצה", "Insights that lead to a recommendation")}</h3>
-            <p>{text("ה־AI של Bizuply מנתח את הנתונים שבהדגמה, מציג תובנה ומכין טיוטה. הוא לא שולח, לא קובע ולא משנה תקציב.", "Bizuply AI reads the demo figures, shows an insight and prepares a draft. It does not send, book or change a budget.")}</p>
-            <AiStage />
-            <p className="ht-pane-links">
-              <Link className="ht-link" to="/website-scan">{text("לסרוק אתר", "Scan a website")}</Link>
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Activity() {
-  const { text } = useCopy();
-  return (
-    <section className="ht-editorial" id="meetings" aria-labelledby="meetings-title">
-      <div className="ht-wrap">
-        <article className="ht-follow is-flip">
-          <div className="ht-follow-copy">
-            <p className="ht-eyebrow">{text("יומן ותיאומים", "Calendar and scheduling")}</p>
-            <h2 id="meetings-title">{text("כל הפגישות, במקום אחד", "Every meeting, in one place")}</h2>
-            <p>{text("נהלו פגישות, תזכורות ותיאומים עם לקוחות. בוחרים יום, פותחים פגישה ועוברים בין שבועות ההדגמה.", "Manage meetings on the customer record. Pick a day, open a meeting and move between the demo weeks.")}</p>
-            <Cta to="/appointments">{text("להכיר את היומן", "Explore the calendar")}</Cta>
-          </div>
-          <CalendarStage />
-        </article>
-        <article className="ht-follow" id="campaigns" aria-labelledby="campaigns-title">
-          <div className="ht-follow-copy">
-            <p className="ht-eyebrow">{text("חיבור ל־Meta", "Meta connection")}</p>
-            <h3 id="campaigns-title">{text("ניהול קמפיינים שמחבר מודעה לליד", "Campaign management that connects an ad to a lead")}</h3>
-            <p>{text("הדשבורד מציג נתוני הדגמה בלבד: הוצאה, לידים, עלות לליד והליד שנכנס ל־CRM. אלה לא הישגים אמיתיים של BizUply.", "The dashboard shows demo figures only: spend, leads, cost per lead and the lead that entered the CRM. These are not real BizUply results.")}</p>
-            <p className="pv-note">{text("דורש חיבור חשבון מודעות של Meta.", "Requires a connected Meta ad account.")}</p>
-            <Link className="ht-link" to="/meta-campaigns">{text("להכיר את הקמפיינים", "Explore campaigns")}</Link>
-          </div>
-          <MetaStage />
-        </article>
       </div>
     </section>
   );
