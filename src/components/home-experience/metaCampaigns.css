@@ -11,7 +11,7 @@
   grid-template-columns: minmax(15rem, 0.7fr) minmax(0, 1.4fr);
   gap: clamp(1.2rem, 3vw, 2.6rem);
   align-items: center;
-  width: min(1180px, calc(100% - 2rem));
+  width: min(1220px, calc(100% - 2rem));
   margin-inline: auto;
 }
 .cs-kicker {
@@ -73,7 +73,7 @@
   flex-direction: column;
   gap: 0.35rem;
   width: 100%;
-  min-height: 5.7rem;
+  min-height: 6.5rem;
   padding: 0.85rem 0.9rem;
   border: 1px solid #ece7f6;
   border-radius: 16px;
@@ -162,7 +162,7 @@
 .cs-arrow.is-winter svg { inset-inline-start: 74%; }
 .cs-body {
   display: grid;
-  grid-template-columns: minmax(8.5rem, 0.72fr) minmax(0, 1.45fr);
+  grid-template-columns: minmax(9.2rem, 0.58fr) minmax(0, 1.7fr);
   gap: 0.75rem;
   align-items: stretch;
   animation: cs-in 0.45s ease;
@@ -203,7 +203,7 @@
   stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-dasharray: 560;
+  stroke-dasharray: 720;
   stroke-dashoffset: 560;
   animation: cs-draw 0.85s ease forwards;
 }
@@ -230,7 +230,7 @@
   display: block;
   margin-top: 0.2rem;
   color: #1e1b4b;
-  font-size: clamp(1.7rem, 2vw, 2.15rem);
+  font-size: clamp(1.85rem, 2.3vw, 2.45rem);
   letter-spacing: -0.03em;
 }
 .cs-people {

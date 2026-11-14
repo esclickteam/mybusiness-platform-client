@@ -47,7 +47,7 @@ function smoothLine(points: Array<readonly [number, number]>) {
 
 function chart(values: number[]) {
   const width = 380;
-  const height = 196;
+  const height = 228;
   const padLeft = 32;
   const padRight = 14;
   const padTop = 14;

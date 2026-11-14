@@ -152,6 +152,7 @@ export default function MeetingBooking() {
                   <p>{text("הסיכום מוצג על כרטיס הלקוח בהדגמה בלבד. שום דבר לא נשמר.", "The summary is shown on the customer card in the demo only. Nothing was saved.")}</p>
                 </div>
               </div>
+              <p className="mt-crm">{text("כרטיס הלקוח בהדגמה", "Customer card in the demo")}</p>
               <div className="mt-summary">
                 <div>
                   <PersonIcon />
