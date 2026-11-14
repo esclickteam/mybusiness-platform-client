@@ -8,6 +8,7 @@ import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import CustomerCommandCenter from "./CustomerCommandCenter";
+import WhatsAppOperations from "./WhatsAppOperations";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -179,6 +180,7 @@ export default function HomeExperienceSections() {
       <div className="ht-root" ref={ref}>
         <Hero seek={null} />
         <CustomerCommandCenter />
+        <WhatsAppOperations />
         <Websites />
         <Benefits />
         <Pricing />
