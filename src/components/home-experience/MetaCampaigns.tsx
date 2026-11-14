@@ -119,7 +119,7 @@ export default function MetaCampaigns() {
   const name = text(current.nameHe, current.nameEn);
   const insight = gap.leadGap > 0
     ? text(`תובנה: ${name} מביא ${gap.leadGap}% יותר לידים, בעלות נמוכה ב־${gap.costGap}%.`, `Insight: ${name} — ${gap.leadGap}% more leads, at a ${gap.costGap}% lower cost.`)
-    : text(`תובנה: ${name} מביא פחות לידים, ועלות הליד גבוהה יותר.`, `Insight: ${name} — fewer leads, and a higher cost per lead.`);
+    : text(`תובנה: ${name} מביא ${Math.abs(gap.leadGap)}% פחות לידים, ועלות הליד גבוהה ב־${Math.abs(gap.costGap)}%.`, `Insight: ${name} — ${Math.abs(gap.leadGap)}% fewer leads, and the cost per lead is ${Math.abs(gap.costGap)}% higher.`);
 
   return (
     <section className="cs-section" id="meta" dir={dir} aria-labelledby="cs-title">

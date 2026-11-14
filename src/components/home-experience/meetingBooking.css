@@ -108,7 +108,7 @@
 .mt-days button b,
 .mt-days button span { display: block; }
 .mt-days button b { font-size: 0.78rem; font-weight: 750; }
-.mt-days button span { font-size: 0.95rem; }
+.mt-days button span { font-size: 1.05rem; }
 .mt-nav {
   display: grid;
   place-items: center;
@@ -174,9 +174,12 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.4rem;
-  margin-top: 0.55rem;
-  padding: 0.85rem 0.4rem;
+  margin-top: 0.4rem;
+  padding: 1rem 0.5rem;
+  border: 2px solid #ddd6fe;
+  box-shadow: 0 16px 36px rgba(91, 33, 182, 0.12);
 }
+.mt-summary strong { font-size: 1.05rem; }
 .mt-summary div { min-width: 0; padding: 0.35rem 0.7rem; text-align: center; }
 .mt-summary div + div { border-inline-start: 1px solid #ece7f6; }
 .mt-summary svg { width: 1.2rem; height: 1.2rem; color: #7c3aed; }

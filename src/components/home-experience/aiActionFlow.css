@@ -128,13 +128,13 @@
   color: #16a34a;
   font-weight: 800;
 }
-.ai-signal strong {
-  display: block;
-  margin-top: 0.7rem;
-  color: #14532d;
-  font-size: 1.35rem;
-  line-height: 1.2;
+.ai-signal {
+  border-color: #bbf7d0;
+  background: linear-gradient(180deg, #f3fdf6, #fff 55%);
 }
+.ai-figure { display: flex; align-items: baseline; gap: 0.4rem; margin: 0.75rem 0 0; }
+.ai-figure b { color: #15803d; font-size: 2rem; letter-spacing: -0.04em; line-height: 1; }
+.ai-figure span { color: #14532d; font-size: 1rem; font-weight: 800; }
 .ai-signal p,
 .ai-signal li { color: #3f3a52; font-size: 0.82rem; font-weight: 650; line-height: 1.4; }
 .ai-signal p { margin: 0.4rem 0 0; }
@@ -159,9 +159,9 @@
   cursor: pointer;
 }
 .ai-board label.is-on {
-  border-color: #a78bfa;
-  background: #f6f1ff;
-  box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.45);
+  border-color: #7c3aed;
+  background: #f4edff;
+  box-shadow: 0 0 0 2px #c4b5fd;
 }
 .ai-board input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .ai-board label i {
@@ -176,7 +176,7 @@
   font-size: 0.68rem;
 }
 .ai-board label.is-on i { border-color: #6d28d9; background: #6d28d9; color: #fff; }
-.ai-editor { margin-top: 0.5rem; overflow: hidden; border: 1px solid #ece7f6; border-radius: 12px; background: #fff; }
+.ai-editor { margin-top: 0.55rem; overflow: hidden; border: 1px solid #ddd6fe; border-radius: 12px; background: #fff; box-shadow: inset 0 0 0 1px #f5f3ff; }
 .ai-tools { display: flex; gap: 0.2rem; padding: 0.3rem; border-bottom: 1px solid #efeaf8; }
 .ai-tools button,
 .ai-approve { font: inherit; font-weight: 800; cursor: pointer; }
@@ -191,7 +191,7 @@
 }
 .ai-editor textarea {
   width: 100%;
-  min-height: 8.4rem;
+  min-height: 9.2rem;
   padding: 0.65rem;
   border: 0;
   font: inherit;

@@ -93,7 +93,7 @@ export default function AiActionFlow() {
                 <h4>{text("אות מהעסק", "Business signal")}</h4>
                 <span aria-hidden="true">↗</span>
               </header>
-              <strong>{text("עלייה של 42% במעורבות", "Engagement up 42%")}</strong>
+              <p className="ai-figure"><b>42%</b><span>{text("עלייה במעורבות", "engagement rise")}</span></p>
               <p>{text("אצל לקוח לדוגמה. זה נתון להמחשה, לא מדידה חיה.", "For a sample customer. This is an illustration, not a live measurement.")}</p>
               <ul>
                 <li>{text("3 שימושים חדשים בצוות", "3 new uses by the team")}</li>
