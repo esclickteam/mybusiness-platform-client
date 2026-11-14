@@ -21,6 +21,7 @@ const COPY = {
     scanning: "הסריקה רצה",
     upgrade: "סריקה מלאה בחשבון",
     upgradeNote: "הסריקה החינמית מוגבלת לשלושה עמודים. חבילות רחבות יותר אינן נמכרות עד לאישור מחירון.",
+    limits: "עד שלושה עמודים גלויים. בלי רינדור JavaScript ובלי מדידת אזכורים חיה.",
     areas: [
       ["SEO", "בדיקות טכניות ונראות בחיפוש."],
       ["GEO", "מוכנות האתר למנועי AI. לא ציטוט בפועל."],
@@ -59,6 +60,7 @@ const COPY = {
     scanning: "Scan in progress",
     upgrade: "Full scan in an account",
     upgradeNote: "The free scan checks up to three pages. Wider plans are not for sale until a price list is approved.",
+    limits: "Up to three visible pages. No JavaScript rendering and no live AI mention check.",
     areas: [
       ["SEO", "Technical checks and search readiness."],
       ["GEO", "Readiness for AI engines. Not a live citation."],
@@ -167,6 +169,7 @@ export default function AiVisibilityProductPage() {
           </label>
           <button className="aiv-button" type="submit" disabled={busy || url.trim().length < 8}>{busy ? t.scanning : t.scan}</button>
         </form>
+        <p>{t.limits}</p>
         {progress ? <p className="aiv-progress">{progress}</p> : null}
         {error ? <p className="aiv-error">{error}</p> : null}
         {preview?.status === "completed" ? (
@@ -183,6 +186,9 @@ export default function AiVisibilityProductPage() {
               ))}
             </ul>
             <p>{preview.note}</p>
+            <ul>
+              {(preview.limitations || []).map((item) => <li key={item}>{item}</li>)}
+            </ul>
             <p>{t.upgradeNote}</p>
             <a className="aiv-button" href="#plans">{t.plans}</a>
             <Link to="/search-visibility">{t.upgrade}</Link>
