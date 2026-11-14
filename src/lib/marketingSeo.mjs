@@ -985,6 +985,7 @@ const APP_PREFIXES = [
   "/p",
   "/s",
   "/saas",
+  "/saas-studio",
   "/partner",
   "/partner-materials",
   "/affiliate",

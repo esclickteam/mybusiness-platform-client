@@ -120,6 +120,8 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/compliance")).toBe(false);
     expect(isUnknownMarketingPath("/compliance/report/1")).toBe(false);
     expect(isUnknownMarketingPath("/business/123/dashboard")).toBe(false);
+    expect(isUnknownMarketingPath("/saas-studio/cliny/example")).toBe(false);
+    expect(isUnknownMarketingPath("/he/saas-studio/cliny/example")).toBe(false);
     expect(isMarketingNoindexPath("/home-preview")).toBe(true);
     expect(isUnknownMarketingPath("/home-preview")).toBe(false);
     expect(buildMarketingDocumentHead("/home-preview") || "").toContain("noindex, nofollow");
