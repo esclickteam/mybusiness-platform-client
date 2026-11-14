@@ -113,6 +113,11 @@ export default function SecurityScannerMarketing() {
           <p className="scanner-product__kicker">Bizuply</p>
           <h1>{copy.h1}</h1>
           <p>{copy.lede}</p>
+          <p className="scanner-product__notice">
+            {he
+              ? "חשוב לדעת: הסריקה היא בדיקה אוטומטית ראשונית ואינה מהווה בדיקת חדירה, ביקורת אבטחת מידע מקצועית, חוות דעת של מומחה אבטחה או אישור לכך שהאתר מוגן מפני כל איום. התוצאות מבוססות על המידע שניתן לזהות בזמן הסריקה, וייתכנו ממצאים שגויים או סיכונים שלא יתגלו."
+              : "Important: the scan is an initial automated check. It is not a penetration test, a professional information-security audit, an opinion from a security expert, or confirmation that the site is protected against every threat. Results are based on what could be identified during the scan. Findings can be wrong, and some risks may not be found."}
+          </p>
           <div className="scanner-product__actions">
             <Link to="/login">{he ? "התחלת סריקה" : "Start a scan"}</Link>
             <a href="#sample-report">{he ? "צפייה בדוח לדוגמה" : "View a sample report"}</a>
@@ -187,6 +192,17 @@ export default function SecurityScannerMarketing() {
           <h2>{he ? "ניטור מתמשך והתראות" : "Monitoring and alerts"}</h2>
           <p>{he ? "חבילת הניטור שומרת תזמון לסריקה חוזרת, והמערכת רושמת התראה על סריקה שהושלמה ועל ממצא חמור." : "The monitoring package stores a schedule for a repeat scan, and the system records an alert when a scan finishes and when a severe finding appears."}</p>
           <p>{he ? "התזמון רץ רק כשיש יתרה פעילה. בפרודקשן העובד כבוי עד אישור נפרד." : "The schedule runs only when an active credit exists. In production the worker stays off until a separate approval."}</p>
+        </div>
+      </section>
+
+      <section className="scanner-product__section" id="limits">
+        <div className="scanner-product__wrap">
+          <h2>{he ? "לפני הרכישה" : "Before you buy"}</h2>
+          <p className="scanner-product__notice">
+            {he
+              ? "חשוב לדעת: הסריקה היא בדיקה אוטומטית ראשונית ואינה מהווה בדיקת חדירה, ביקורת אבטחת מידע מקצועית, חוות דעת של מומחה אבטחה או אישור לכך שהאתר מוגן מפני כל איום. התוצאות מבוססות על המידע שניתן לזהות בזמן הסריקה, וייתכנו ממצאים שגויים או סיכונים שלא יתגלו."
+              : "Important: the scan is an initial automated check. It is not a penetration test, a professional information-security audit, an opinion from a security expert, or confirmation that the site is protected against every threat. Results are based on what could be identified during the scan. Findings can be wrong, and some risks may not be found."}
+          </p>
         </div>
       </section>
 

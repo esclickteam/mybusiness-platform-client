@@ -1,10 +1,10 @@
 export const SECURITY_SCANNER = {
   en: {
     title: "Website Security Scanner | Bizuply",
-    description: "A defensive website security scan for exposed settings, known component versions and a clear report. It does not prove a site is fully secure.",
+    description: "An automated security check for your website. Technical rules look for signs of weaknesses, unsafe settings and possible risks, then return a report with findings and recommendations. It does not use an AI model.",
     crumb: "Website Security Scanner",
     h1: "How secure is your website, really?",
-    lede: "A focused security scan that looks for exposure, unsafe settings and known weaknesses, then returns a professional report with clear fixes.",
+    lede: "An automated security check for your website. It uses technical rules to look for signs of security weaknesses, unsafe settings and possible risks. The finished check returns a report with findings and recommendations. This scanner does not use an AI model.",
     faq: [
       ["Does the scan prove the site is fully secure?", "No. The report states the checks that ran and the findings they produced. It is not a penetration test and it does not prove the site is fully secure."],
       ["When does an active scan run?", "An active scan runs only after ownership is verified, or after an administrator approves a written authorization, and only inside the approved host scope."],
@@ -14,10 +14,10 @@ export const SECURITY_SCANNER = {
   },
   he: {
     title: "סורק אבטחת אתרים | ביזאפלי",
-    description: "סריקת אבטחה הגנתית שמזהה חשיפות, הגדרות לא בטוחות וחולשות מוכרות, עם דוח מקצועי והמלצות תיקון. הסריקה אינה מוכיחה שהאתר מאובטח במלואו.",
+    description: "בדיקת אבטחה אוטומטית לאתר שלכם. כללים טכניים מזהים סימנים לחולשות, הגדרות לא מומלצות וסיכונים אפשריים, ובסיום מתקבל דוח עם ממצאים והמלצות. אין כאן ניתוח של מודל בינה מלאכותית.",
     crumb: "סורק אבטחת אתרים",
     h1: "עד כמה האתר שלך באמת מאובטח?",
-    lede: "סריקת אבטחה חכמה שמזהה חשיפות, הגדרות לא בטוחות וחולשות מוכרות — עם דוח מקצועי והמלצות ברורות לתיקון.",
+    lede: "בדיקת אבטחה אוטומטית לאתר שלכם, המשלבת בדיקות טכניות לזיהוי סימנים לחולשות אבטחה, הגדרות לא מומלצות וסיכונים אפשריים. בסיום הבדיקה מתקבל דוח עם ממצאים והמלצות לשיפור. הניתוח מבוצע באמצעות כללים אוטומטיים, ולא באמצעות מודל בינה מלאכותית.",
     faq: [
       ["האם הסריקה מוכיחה שהאתר מאובטח במלואו?", "לא. הדוח מציג את הבדיקות שרצו ואת הממצאים שהן יצרו. זו אינה בדיקת חדירה, והיא אינה מוכיחה שהאתר מאובטח במלואו."],
       ["מתי רצה סריקה אקטיבית?", "סריקה אקטיבית רצה רק אחרי אימות בעלות, או אחרי אישור מנהל להרשאה כתובה, ורק בתוך רשימת המארחים שאושרה."],

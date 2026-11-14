@@ -445,6 +445,19 @@ function Terms() {
             ))}
           </section>
 
+          <section id="security-scanner" className={sectionBase}>
+            <h2 className={h2Base}>{locale === "he" ? "סורק אבטחת אתרים" : "Website Security Scanner"}</h2>
+            <p className={pBase}>{locale === "he"
+              ? "סורק אבטחת האתרים הוא בדיקה אוטומטית המבוססת על כללים טכניים. אין בו כיום ניתוח של מודל בינה מלאכותית. הוא מיועד לאיתור ראשוני של סיכונים והמלצות לשיפור, ואינו בדיקת חדירה, ביקורת אבטחה או חוות דעת של מומחה מוסמך."
+              : "The Website Security Scanner is an automated check based on technical rules. It does not currently use an AI model. It is meant to identify potential risks and suggest improvements. It is not a penetration test, a security audit, or an opinion from a qualified professional."}</p>
+            <p className={pBase}>{locale === "he"
+              ? "אפשר להפעיל סריקה רק למשתמש מחובר שמורשה לפעול בשם העסק, אחרי אימות בעלות על האתר ואחרי הסכמה מפורשת חדשה לכל סריקה. סריקה פסיבית שולחת בקשות קריאה מוגבלות. היא אינה מנסה לחדור, לנצל חולשה או לשנות מידע. היעדר ממצא אינו מעיד שאין חולשות."
+              : "A scan can start only for a signed-in user who may act for the business, after ownership of the site is verified and after a fresh explicit consent for that scan. A passive scan sends limited read requests. It does not attempt intrusion, exploitation, or changes to the site. The absence of a finding does not mean that no weakness exists."}</p>
+            <p className={pBase}>{locale === "he"
+              ? "נשמרים פרטי האתר, הסכמת הסריקה, הממצאים והדוח בחשבון העסק. הם נמחקים לפי בקשת מחיקה או מחיקת חשבון, כפי שמתואר במדיניות הפרטיות. הסריקה פונה לאתר שנבדק ולשירותי DNS פומביים. אין ספק בינה מלאכותית בסורק הזה. רכישה וחיוב אינם פעילים עד אישור נפרד, ואין התחייבות לאיתור כל חולשה."
+              : "The site details, the scan consent, the findings and the report are stored in the business account. They are deleted when deletion is requested or the account is deleted, as described in the Privacy Policy. The scan contacts the checked site and public DNS. This scanner has no AI provider. Purchase and charges stay off until a separate approval, and there is no promise to find every weakness."}</p>
+          </section>
+
           <section id="section-15" className={sectionBase}>
             <h2 className={h2Base}>{t("termsPage.s15.h")}</h2>
 

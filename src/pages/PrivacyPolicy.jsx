@@ -127,6 +127,12 @@ function PrivacyPolicy() {
               <p className="mb-4 max-w-3xl text-base leading-8 text-slate-800" key={paragraph.slice(0, 24)}>{paragraph}</p>
             ))}
           </section>
+          <section id="security-scanner" className={sectionBase}>
+            <h2 className={h2Base}>{locale === "he" ? "סורק אבטחת אתרים" : "Website Security Scanner"}</h2>
+            <p className={pBase}>{locale === "he"
+              ? "כשמפעילים סריקת אבטחה נשמרים מזהה העסק והמשתמש, כתובת האתר, סוג הסריקה, נוסח ההסכמה, מועד האישור, הממצאים והדוח. הסריקה עצמה מבוססת על כללים טכניים ואינה שולחת את תוכן האתר למודל בינה מלאכותית. הנתונים נשמרים בחשבון העסק ונמחקים עם בקשת מחיקה או מחיקת החשבון."
+              : "When a security scan is started, Bizuply stores the business and user identifiers, the site address, the scan type, the consent wording, the approval time, the findings and the report. The scan uses technical rules and does not send the site content to an AI model. The data stays in the business account and is deleted when deletion is requested or the account is deleted."}</p>
+          </section>
           <section id="section-1" className={sectionBase}>
             <h2 className={h2Base}>{t("privacyPage.s1.h")}</h2>
 

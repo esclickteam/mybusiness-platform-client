@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "../../../../api";
 import "./securityScanner.css";
 
@@ -54,6 +55,12 @@ export default function SecurityScannerPage() {
   const [evidenceNote, setEvidenceNote] = useState("");
   const [compareWith, setCompareWith] = useState("");
   const [comparison, setComparison] = useState<{ added: Finding[]; resolved: Finding[]; remaining: Finding[] } | null>(null);
+  const [pendingScan, setPendingScan] = useState<{ site: Site; mode: "passive" | "active" } | null>(null);
+  const [consentChecked, setConsentChecked] = useState(false);
+  const [consentVersion, setConsentVersion] = useState("");
+  const [activeEnabled, setActiveEnabled] = useState(false);
+  const { i18n } = useTranslation();
+  const he = !i18n.language || i18n.language.startsWith("he");
 
   async function load() {
     const [siteRes, scanRes, planRes, alertRes, usageRes] = await Promise.all([
@@ -66,6 +73,8 @@ export default function SecurityScannerPage() {
     setSites(siteRes.data.sites || []);
     setScans(scanRes.data.scans || []);
     setPlans(planRes.data.plans || []);
+    setConsentVersion(planRes.data.consentVersion || "");
+    setActiveEnabled(planRes.data.activeEnabled === true);
     setAlerts(alertRes.data.alerts || []);
     setUsage(usageRes.data);
   }
@@ -113,13 +122,27 @@ export default function SecurityScannerPage() {
     }
   }
 
+  function askScan(site: Site, mode: "passive" | "active") {
+    setError("");
+    setConsentChecked(false);
+    setPendingScan({ site, mode });
+  }
+
   async function scan(site: Site, mode: "passive" | "active") {
     setError("");
+    if (!consentChecked || !consentVersion) {
+      setError(he ? "הסריקה לא התחילה. נדרשת הסכמה לנוסח הנוכחי." : "The scan did not start. Consent to the current wording is required.");
+      return;
+    }
     try {
       const response = await API.post(`/security-scanner/sites/${site.id}/scans`, {
         mode,
         planId: mode === "active" ? planId : "intro",
+        consentAccepted: true,
+        consentVersion,
       });
+      setPendingScan(null);
+      setConsentChecked(false);
       setSelected(response.data.scan);
       setView("סריקות");
       await load();
@@ -188,11 +211,13 @@ export default function SecurityScannerPage() {
   const percent = progress?.checksTotal ? Math.round((progress.checksDone / progress.checksTotal) * 100) : 0;
 
   return (
-    <section className="security-scanner" dir="rtl" lang="he">
+    <section className={`security-scanner${he ? "" : " security-scanner--ltr"}`} dir={he ? "rtl" : "ltr"} lang={he ? "he" : "en"}>
       <header className="security-scanner__hero">
         <p className="security-scanner__kicker">Bizuply Security Scanner</p>
-        <h1>מרכז אבטחה</h1>
-        <p>סריקה של אתר שבבעלותכם או שיש לכם הרשאה מתועדת לבדוק. הסריקה אינה מאשרת שהאתר מאובטח לחלוטין.</p>
+        <h1>{he ? "מרכז אבטחה" : "Security center"}</h1>
+        <p>{he
+          ? "בדיקת אבטחה אוטומטית המבוססת על כללים טכניים, המיועדת לאיתור ראשוני של סיכונים והמלצות לשיפור. אינה מחליפה בדיקת חדירה או ביקורת אבטחה של מומחה מוסמך. בסורק זה אין ניתוח של מודל בינה מלאכותית."
+          : "An automated website security assessment based on technical rules, designed to identify potential risks and provide recommendations for improvement. It does not replace penetration testing or a security audit conducted by a qualified professional. This scanner does not use an AI model."}</p>
       </header>
       <nav className="security-scanner__tabs" aria-label="מסכי הסורק">
         {VIEWS.map((item) => (
@@ -257,8 +282,8 @@ export default function SecurityScannerPage() {
               <div className="security-scanner__actions">
                 <button type="button" onClick={() => verify(site, "dns")}>אימות DNS</button>
                 <button type="button" onClick={() => verify(site, "file")}>אימות קובץ</button>
-                <button type="button" onClick={() => scan(site, "passive")}>סריקה פסיבית</button>
-                <button className="security-scanner__primary" type="button" onClick={() => scan(site, "active")}>סריקה אקטיבית</button>
+                <button type="button" onClick={() => askScan(site, "passive")}>{he ? "סריקה פסיבית" : "Passive scan"}</button>
+                <button className="security-scanner__primary" type="button" onClick={() => askScan(site, "active")}>{he ? "סריקה אקטיבית" : "Active scan"}</button>
               </div>
             </article>
           ))}
@@ -377,6 +402,33 @@ export default function SecurityScannerPage() {
               <p key={order.id}>{order.packageId} · {order.amountIls} ש״ח · {order.status} · חיוב {order.billingActivated ? "פעיל" : "כבוי"}</p>
             ))}
           </article>
+        </div>
+      ) : null}
+      {pendingScan ? (
+        <div className="security-scanner__dialog" role="dialog" aria-modal="true" aria-labelledby="scan-consent-title">
+          <form className="security-scanner__card" onSubmit={(event) => { event.preventDefault(); scan(pendingScan.site, pendingScan.mode).catch((reason) => setError(message(reason))); }}>
+            <h2 id="scan-consent-title">{he ? "אישור והסכמה לביצוע סריקת אבטחה" : "Approval and consent for a security scan"}</h2>
+            <p>{he
+              ? `אני מבקש/ת להפעיל סריקת אבטחה אוטומטית באתר ${pendingScan.site.domain}, ומאשר/ת שהבדיקה מתבצעת באמצעות מערכת אוטומטית המבוססת על כללים טכניים. אין בסורק זה ניתוח של מודל בינה מלאכותית, והבדיקה אינה מחליפה מומחה אנושי. היא מאתרת סימנים לסיכונים ואינה מבטיחה שהאתר מאובטח. ייתכנו תוצאות שגויות. אני מאשר/ת בדיקות קריאה מוגבלות בהיקף שהוצג, בלי ניסיונות חדירה, ניצול או שינוי מידע. ידוע לי שהבקשות עשויות להופיע ביומני האתר, ושממצאי הסריקה יישמרו בחשבון העסק לפי מדיניות הפרטיות.`
+              : `I ask to run an automated security scan of ${pendingScan.site.domain}. The check uses technical rules and does not use an AI model. It does not replace a human expert, it cannot find every weakness, and it does not mean the site is secure. Results can be wrong. I approve limited read requests in the scope shown to me, without intrusion, exploitation, or changes to the site. Those requests may appear in the site logs, and the findings will be stored in the business account under the privacy policy.`}</p>
+            <p className="security-scanner__muted">{pendingScan.site.ownership.status === "verified"
+              ? (he ? "אימות הבעלות תקף." : "Ownership is verified.")
+              : (he ? "אימות הבעלות עדיין אינו תקף, ולכן אי אפשר להתחיל." : "Ownership is not verified, so the scan cannot start.")}
+              {pendingScan.mode === "active" && !activeEnabled ? (he ? " סריקה אקטיבית כבויה בשרת." : " Active scans are off on the server.") : ""}
+            </p>
+            <label className="security-scanner__check">
+              <input type="checkbox" checked={consentChecked} onChange={(event) => setConsentChecked(event.target.checked)} />
+              <span>{he
+                ? "קראתי והבנתי את תנאי הסריקה, אני מורשה לאשר את בדיקת האתר ואני מסכים/ה לביצועה."
+                : "I have read and understood the scan terms, I am authorized to approve this website check, and I agree to it."}</span>
+            </label>
+            <div className="security-scanner__actions">
+              <button className="security-scanner__primary" type="submit" disabled={!consentChecked || pendingScan.site.ownership.status !== "verified" || (pendingScan.mode === "active" && !activeEnabled)}>
+                {he ? "אני מאשר/ת — התחלת סריקה" : "I agree — start the scan"}
+              </button>
+              <button type="button" onClick={() => { setPendingScan(null); setConsentChecked(false); }}>{he ? "ביטול" : "Cancel"}</button>
+            </div>
+          </form>
         </div>
       ) : null}
     </section>
