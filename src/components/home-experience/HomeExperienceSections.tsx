@@ -10,6 +10,9 @@ import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductThe
 import CustomerCommandCenter from "./CustomerCommandCenter";
 import WhatsAppOperations from "./WhatsAppOperations";
 import SmartAutomations from "./SmartAutomations";
+import MetaCampaigns from "./MetaCampaigns";
+import AiActionFlow from "./AiActionFlow";
+import MeetingBooking from "./MeetingBooking";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -183,6 +186,9 @@ export default function HomeExperienceSections() {
         <CustomerCommandCenter />
         <WhatsAppOperations />
         <SmartAutomations />
+        <MetaCampaigns />
+        <AiActionFlow />
+        <MeetingBooking />
         <Websites />
         <Benefits />
         <Pricing />
