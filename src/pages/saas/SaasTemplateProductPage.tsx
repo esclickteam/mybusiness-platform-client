@@ -7,7 +7,7 @@ import {
   useSaasLocale,
   WhatsAppDock,
 } from "../../saas/chrome";
-import { isPublicDemoUrl, templateDemoLinks, templateExperienceHref, templateShots, type SaasModelId, type SaasProduct } from "../../saas/logic";
+import { catalogPriceDefined, isPublicDemoUrl, templateDemoLinks, templateExperienceHref, templateShots, type SaasModelId, type SaasProduct } from "../../saas/logic";
 import {
   LeadDialog,
   messageFor,
@@ -77,6 +77,15 @@ export default function SaasTemplateProductPage({
                   </span>
                 ))}
               </div>
+              {catalogPriceDefined(product) ? null : (
+                <div className="mt-4">
+                  <p className="text-sm font-black text-slate-950">{t("saasMarket.platforms.priceNotSet")}</p>
+                  {product.status === "preparing" ? (
+                    <p className="text-xs font-semibold text-slate-500">{t("saasMarket.platforms.inPreparation")}</p>
+                  ) : null}
+                  <p className="text-xs font-semibold text-slate-500">{t("saasMarket.platforms.saleClosed")}</p>
+                </div>
+              )}
               <div className="saas-hero-actions">
                 {demoLinks.length ? (
                   <button type="button" className="saas-btn" onClick={() => setDemoOpen(true)}>

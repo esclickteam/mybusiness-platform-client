@@ -85,6 +85,7 @@ export const ar: SaasMarketCopy = {
     entryNote: "دخول بنسبة 50% مع تقاسم الإيراد. الشروط تُغلق مع Bizuply.",
     priceNotSet: "السعر غير محدد",
     saleClosed: "غير معروض للبيع",
+    inPreparation: "قيد الإعداد",
     demoBadge: "عرض متاح",
     whiteLabelBadge: "White Label",
     partnerBadge: "نموذج الشراكة متاح",
