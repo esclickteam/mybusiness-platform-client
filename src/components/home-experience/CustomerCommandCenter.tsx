@@ -126,6 +126,22 @@ function initials(name: string) {
   return (parts[0]?.[0] || "") + (parts[1]?.[0] || "");
 }
 
+function Icon({ name }: { name: "phone" | "chat" | "task" | "note" | "user" | "source" | "alert" | "calendar" | "check" }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      {name === "phone" ? <path d="M7 3.5h2.2l1.2 3.2-1.7.8a12.2 12.2 0 0 0 5.8 5.8l.8-1.7 3.2 1.2V15a2.5 2.5 0 0 1-2.5 2.5A13.5 13.5 0 0 1 4.5 6 2.5 2.5 0 0 1 7 3.5Z" /> : null}
+      {name === "chat" ? <path d="M5 6.5h14v9H9l-4 3v-3H5v-9Z" /> : null}
+      {name === "task" ? <path d="M8 4.5h8v3H8v-3Zm-2 3h12v12H6v-12Zm3.2 6.2 1.6 1.6 3.2-3.4" /> : null}
+      {name === "note" ? <path d="M7 3.5h7l4 4V20H7V3.5Zm7 0v4h4" /> : null}
+      {name === "user" ? <path d="M12 12a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Zm-6 7.2a6 6 0 0 1 12 0" /> : null}
+      {name === "source" ? <path d="M8 8.5a3.2 3.2 0 1 0 0 7h1.2M16 8.5a3.2 3.2 0 1 1 0 7h-1.2M9 12h6" /> : null}
+      {name === "alert" ? <path d="M12 4.5 20 19H4L12 4.5Zm0 5.2v4.2M12 17.2h.1" /> : null}
+      {name === "calendar" ? <path d="M7 5.5V3.8M17 5.5V3.8M4.5 9h15M6 5.5h12v13H6v-13Z" /> : null}
+      {name === "check" ? <path d="M6 12.5 10 16l8-8" /> : null}
+    </svg>
+  );
+}
+
 export default function CustomerCommandCenter() {
   const { i18n } = useTranslation();
   const language = i18n.language || "en";
@@ -136,6 +152,8 @@ export default function CustomerCommandCenter() {
   const [note, setNote] = useState("");
   const [task, setTask] = useState("");
   const [notice, setNotice] = useState("");
+  const [composer, setComposer] = useState<ActivityKind | "">("");
+  const [feed, setFeed] = useState<"all" | "note" | "task" | "call">("all");
   const customer = customers.find((item) => item.id === selectedId) || customers[0];
 
   const statusLabel = (status: StatusId) => {
@@ -244,6 +262,11 @@ export default function CustomerCommandCenter() {
   const newCount = customers.filter((item) => item.status === "new").length;
   const attention = customers.filter((item) => item.status === "new" || item.status === "contacted").length;
   const tasks = customers.reduce((sum, item) => sum + item.activities.filter((activity) => activity.kind === "task").length, 0);
+  const visible = customer.activities.filter((activity) => feed === "all" || activity.kind === feed);
+  const openComposer = (kind: "task" | "note") => {
+    setComposer(kind);
+    window.setTimeout(() => document.getElementById(kind === "task" ? "cc-task" : "cc-note")?.focus(), 0);
+  };
 
   return (
     <section className="cc-section" id="crm" dir={dir} aria-labelledby="cc-title">
@@ -256,9 +279,9 @@ export default function CustomerCommandCenter() {
 
         <div className="cc-stage">
           <div className="cc-metrics" aria-label={text("סיכום הדגמה", "Demo summary")}>
-            <p><b>{newCount}</b><span>{text("לידים חדשים", "New leads")}</span></p>
-            <p><b>{attention}</b><span>{text("דורשים טיפול", "Need attention")}</span></p>
-            <p><b>{tasks}</b><span>{text("משימות בכרטיסים", "Tasks on cards")}</span></p>
+            <p><Icon name="user" /><span><small>{text("לידים חדשים", "New leads")}</small><b>{newCount}</b></span></p>
+            <p><Icon name="alert" /><span><small>{text("דורשים טיפול", "Needs attention")}</small><b>{attention}</b></span></p>
+            <p><Icon name="calendar" /><span><small>{text("מעקבים להיום", "Follow-ups today")}</small><b>{tasks}</b></span></p>
           </div>
 
           <div className="cc-layout">
@@ -270,6 +293,7 @@ export default function CustomerCommandCenter() {
                   return (
                     <li key={item.id}>
                       <button type="button" className={on ? "is-on" : undefined} aria-current={on ? "true" : undefined} onClick={() => { setSelectedId(item.id); setNotice(""); }}>
+                        <i />
                         <span>
                           <strong>{text(item.nameHe, item.nameEn)}</strong>
                           <small>{text(item.sourceHe, item.sourceEn)}</small>
@@ -285,12 +309,18 @@ export default function CustomerCommandCenter() {
             <article className="cc-card" aria-live="polite">
               <header className="cc-person">
                 <b aria-hidden="true">{initials(name)}</b>
-                <div>
-                  <h3>{name}</h3>
-                  <p>{text("מקור", "Source")}: {source}</p>
+                <h3>{name}</h3>
+                <div className="cc-person-meta">
+                  <span className="cc-source"><Icon name="source" />{source}</span>
+                  <span className={`cc-status is-${customer.status}`}>{statusLabel(customer.status)}</span>
                 </div>
-                <span className={`cc-status is-${customer.status}`}>{statusLabel(customer.status)}</span>
               </header>
+
+              <div className="cc-contact">
+                <button type="button" onClick={() => logLocal("call")}><Icon name="phone" /><bdi dir="ltr">{customer.phone}</bdi></button>
+                <button type="button" className="is-whatsapp" onClick={() => logLocal("whatsapp")}><Icon name="chat" />WhatsApp</button>
+                <span><bdi dir="ltr">{customer.email}</bdi></span>
+              </div>
 
               <ol className="cc-pipeline" aria-label={text("התקדמות בצינור המכירות", "Sales pipeline progress")}>
                 {STATUSES.map((status, index) => (
@@ -303,40 +333,67 @@ export default function CustomerCommandCenter() {
                 ))}
               </ol>
 
-              <dl className="cc-facts">
-                <div><dt>{text("טלפון", "Phone")}</dt><dd><bdi dir="ltr">{customer.phone}</bdi></dd></div>
-                <div><dt>{text("אימייל", "Email")}</dt><dd><bdi dir="ltr">{customer.email}</bdi></dd></div>
-                <div><dt>{text("מקור הליד", "Lead source")}</dt><dd>{source}</dd></div>
-              </dl>
+              <div className="cc-tabs" role="tablist" aria-label={text("היסטוריית פעילות", "Activity history")}>
+                {([
+                  ["all", text("פעילות", "Activity")],
+                  ["note", text("הערות", "Notes")],
+                  ["task", text("משימות", "Tasks")],
+                  ["call", text("שיחות", "Calls")],
+                ] as const).map(([id, label]) => (
+                  <button key={id} type="button" role="tab" aria-selected={feed === id} className={feed === id ? "is-on" : undefined} onClick={() => setFeed(id)}>{label}</button>
+                ))}
+              </div>
+            </article>
 
-              <h4>{text("היסטוריית פעילות", "Activity history")}</h4>
-              <ol className="cc-activity">
-                {customer.activities.map((activity) => (
+            <div className="cc-feed">
+              <ol className="cc-timeline">
+                {visible.map((activity) => (
                   <li key={activity.id} className={`is-${activity.kind}`}>
-                    <b>{kindLabel(activity.kind)}</b>
-                    <span>{text(activity.textHe, activity.textEn)}</span>
-                    <em>{text(activity.whenHe, activity.whenEn)}</em>
+                    <i><Icon name={activity.kind === "whatsapp" ? "chat" : activity.kind === "call" ? "phone" : activity.kind === "task" ? "check" : "note"} /></i>
+                    <div>
+                      <strong>{kindLabel(activity.kind)}</strong>
+                      <p>{text(activity.textHe, activity.textEn)}</p>
+                    </div>
+                    <time>{text(activity.whenHe, activity.whenEn)}</time>
                   </li>
                 ))}
               </ol>
+              {visible.length === 0 ? <p className="cc-empty">{text("אין פריטים בתצוגה הזו.", "Nothing in this view.")}</p> : null}
               {notice ? <p className="cc-notice" role="status">{notice}</p> : null}
-            </article>
+              <button type="button" className="cc-follow" onClick={() => (task.trim() ? addActivity("task", task) : openComposer("task"))}>
+                <Icon name="check" />
+                {text("יצירת משימת מעקב", "Create follow-up task")}
+              </button>
+            </div>
 
             <aside className="cc-actions">
-              <h4>{text("פעולות על הכרטיס", "Actions on the card")}</h4>
-              <button type="button" onClick={() => logLocal("call")}>{text("סימון שיחה", "Log a call")}</button>
-              <button type="button" onClick={() => logLocal("whatsapp")}>{text("שמירת הודעה", "Save a message")}</button>
-              <form onSubmit={(event) => { event.preventDefault(); addActivity("task", task); }}>
-                <label htmlFor="cc-task">{text("משימה חדשה", "New task")}</label>
-                <input id="cc-task" value={task} onChange={(event) => setTask(event.target.value)} placeholder={text("מה צריך לעשות?", "What needs to be done?")} />
-                <button type="submit">{text("יצירת משימה", "Create task")}</button>
-              </form>
-              <form onSubmit={(event) => { event.preventDefault(); addActivity("note", note); }}>
-                <label htmlFor="cc-note">{text("הערה לכרטיס", "Note on the card")}</label>
-                <textarea id="cc-note" value={note} onChange={(event) => setNote(event.target.value)} placeholder={text("הערה קצרה לצוות", "A short note for the team")} />
-                <button type="submit">{text("הוספת הערה", "Add note")}</button>
-              </form>
+              <h4>{text("פעולות", "Actions")}</h4>
+              <button type="button" onClick={() => logLocal("call")}><Icon name="phone" />{text("שיחה", "Call")}</button>
+              <button type="button" onClick={() => logLocal("whatsapp")}><Icon name="chat" />WhatsApp</button>
+              <button type="button" onClick={() => openComposer("task")}><Icon name="task" />{text("יצירת משימה", "Create task")}</button>
+              <button type="button" onClick={() => openComposer("note")}><Icon name="note" />{text("הוספת הערה", "Add note")}</button>
+              {composer === "task" || composer === "note" ? (
+                <form onSubmit={(event) => { event.preventDefault(); addActivity(composer, composer === "task" ? task : note); }}>
+                  <label htmlFor={composer === "task" ? "cc-task" : "cc-note"}>
+                    {composer === "task" ? text("משימה חדשה", "New task") : text("הערה לכרטיס", "Note on the card")}
+                  </label>
+                  {composer === "task" ? (
+                    <input id="cc-task" value={task} onChange={(event) => setTask(event.target.value)} placeholder={text("מה צריך לעשות?", "What needs to be done?")} />
+                  ) : (
+                    <textarea id="cc-note" value={note} onChange={(event) => setNote(event.target.value)} placeholder={text("הערה קצרה לצוות", "A short note for the team")} />
+                  )}
+                  <button type="submit">{composer === "task" ? text("שמירת משימה", "Save task") : text("שמירת הערה", "Save note")}</button>
+                </form>
+              ) : null}
             </aside>
+            <div className="cc-details">
+                <h4>{text("פרטי לקוח", "Customer details")}</h4>
+                <p><Icon name="user" /><span>{name}</span></p>
+                <p><Icon name="source" /><span>{text("מקור", "Source")}: {source}</span></p>
+                <p><Icon name="check" /><span>{text("סטטוס", "Status")}</span><b className={`cc-status is-${customer.status}`}>{statusLabel(customer.status)}</b></p>
+                <p><Icon name="phone" /><bdi dir="ltr">{customer.phone}</bdi></p>
+                <p><Icon name="chat" /><bdi dir="ltr">{customer.email}</bdi></p>
+              </div>
           </div>
         </div>
       </div>
