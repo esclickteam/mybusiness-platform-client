@@ -110,6 +110,16 @@
   line-height: 1.6;
 }
 
+.scanner-product__notice {
+  margin-top: 16px;
+  padding: 14px 16px;
+  background: #fff;
+  color: #1e1b4b;
+  border: 1px solid #ddd6fe;
+  border-radius: 0;
+  line-height: 1.7;
+}
+
 .scanner-product details {
   margin-top: 12px;
 }

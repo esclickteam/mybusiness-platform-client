@@ -102,6 +102,44 @@
   color: #991b1b !important;
 }
 
+.security-scanner--ltr {
+  direction: ltr;
+}
+
+.security-scanner__dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(30, 27, 75, 0.45);
+}
+
+.security-scanner__dialog .security-scanner__card {
+  width: min(640px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+  display: grid;
+  gap: 12px;
+}
+
+.security-scanner__check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.security-scanner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.security-scanner__actions button {
+  border-radius: 0;
+}
+
 .security-scanner__meter {
   height: 10px;
   background: #ede9fe;
