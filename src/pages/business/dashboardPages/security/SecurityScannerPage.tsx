@@ -171,8 +171,13 @@ export default function SecurityScannerPage() {
   async function order(planId: string) {
     setError("");
     try {
-      const response = await API.post("/security-scanner/packages/orders", { packageId: planId });
-      setNotice(`ההזמנה נרשמה על סך ${response.data.amountIls} ש״ח. לא בוצע חיוב.`);
+      const response = await API.post("/security-scanner/packages/checkout", { packageId: planId });
+      const row = response.data || {};
+      if (row.checkoutUrl && row.liveCharges === true && row.status === "checkout_created") {
+        window.location.assign(row.checkoutUrl);
+        return;
+      }
+      setNotice(`ההזמנה נשמרה על סך ${row.amountIls} ש״ח. לא נפתח תשלום ולא בוצע חיוב.`);
       await load();
     } catch (reason) {
       setError(message(reason));
