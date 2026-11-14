@@ -85,6 +85,7 @@ export const ptBR: SaasMarketCopy = {
     entryNote: "50% de entrada com divisão de receita. As condições são fechadas com a Bizuply.",
     priceNotSet: "Preço não definido",
     saleClosed: "Não está à venda",
+    inPreparation: "Em preparação",
     demoBadge: "Demo disponível",
     whiteLabelBadge: "White label",
     partnerBadge: "Modelo de parceria disponível",

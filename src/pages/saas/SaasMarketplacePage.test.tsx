@@ -101,6 +101,34 @@ const products = [
     exclusiveCountry: true,
   },
   {
+    id: "5",
+    name: "Oven Lane",
+    slug: "oven-lane",
+    category: "other",
+    categoryLabel: "Other",
+    headline: "Oven Lane",
+    subtitle: "Bakery operations.",
+    shortDescription: "A bakery system being prepared.",
+    fullDescription: "A bakery system being prepared.",
+    priceUsd: null,
+    priceDefined: false,
+    estimatedDevCostLabel: "",
+    accent: "#9A3412",
+    accentSecondary: "#FDBA74",
+    screenshots: [],
+    features: [],
+    included: [],
+    demoUrl: "",
+    status: "preparing",
+    badge: "",
+    seoTitle: "Oven Lane",
+    seoDescription: "Bakery operations.",
+    whatsappBlurb: "",
+    whatsappMessage: "Hi",
+    purchasable: false,
+    kind: "template",
+  },
+  {
     id: "4",
     name: "ServiceFlow",
     slug: "serviceflow",
@@ -191,7 +219,16 @@ describe("SaaS marketplace page", () => {
     expect(card.getByRole("link", { name: "More info" }).getAttribute("href")).toBe("/saas/northwind-desk");
     expect(card.getByText(named("Price not set"))).toBeTruthy();
     expect(card.getByText(named("Not for sale"))).toBeTruthy();
+    expect(card.queryByText("ACTIVE")).toBeNull();
+    expect(card.queryByText("PREPARED")).toBeNull();
     expect(card.queryByText(/\$0/)).toBeNull();
+    const preparing = screen.getByRole("heading", { name: "Oven Lane" }).closest("article");
+    expect(preparing).toBeTruthy();
+    const preparingCard = within(preparing as HTMLElement);
+    expect(preparingCard.getByText(named("In preparation"))).toBeTruthy();
+    expect(preparingCard.getByText(named("Not for sale"))).toBeTruthy();
+    expect(preparingCard.queryByText("PREPARED")).toBeNull();
+    expect(preparingCard.queryByText("ACTIVE")).toBeNull();
     expect(card.getByText(named("Interactive Demo"))).toBeTruthy();
     expect(card.getByText(named("White Label"))).toBeTruthy();
     expect(card.queryByText(named("Partner Model Available"))).toBeNull();

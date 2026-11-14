@@ -125,6 +125,9 @@ export function PlatformCard({
         ) : (
           <>
             <p className="mt-5 text-lg font-black text-slate-950">{t("saasMarket.platforms.priceNotSet")}</p>
+            {product.status === "preparing" ? (
+              <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{t("saasMarket.platforms.inPreparation")}</p>
+            ) : null}
             <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{t("saasMarket.platforms.saleClosed")}</p>
           </>
         )}

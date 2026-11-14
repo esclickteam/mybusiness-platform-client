@@ -95,6 +95,7 @@ export type SaasMarketCopy = {
     entryNote: string;
     priceNotSet: string;
     saleClosed: string;
+    inPreparation: string;
     demoBadge: string;
     whiteLabelBadge: string;
     partnerBadge: string;

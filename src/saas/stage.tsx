@@ -371,6 +371,9 @@ export function ProductRow({
             ? t("saasMarket.platforms.entryLabel", { amount: formatUsd(partnerEntryUsd(product.priceUsd)) })
             : t("saasMarket.platforms.priceNotSet")}
         </p>
+        {product.status === "preparing" ? (
+          <p className="text-xs font-semibold text-slate-500">{t("saasMarket.platforms.inPreparation")}</p>
+        ) : null}
         <p className="text-xs font-semibold text-slate-500">
           {priced ? t("saasMarket.platforms.entryNote") : t("saasMarket.platforms.saleClosed")}
         </p>
