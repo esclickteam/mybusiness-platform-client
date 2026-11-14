@@ -9,6 +9,7 @@ import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import CustomerCommandCenter from "./CustomerCommandCenter";
 import WhatsAppOperations from "./WhatsAppOperations";
+import SmartAutomations from "./SmartAutomations";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
@@ -181,6 +182,7 @@ export default function HomeExperienceSections() {
         <Hero seek={null} />
         <CustomerCommandCenter />
         <WhatsAppOperations />
+        <SmartAutomations />
         <Websites />
         <Benefits />
         <Pricing />
