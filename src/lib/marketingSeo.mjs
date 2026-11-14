@@ -347,6 +347,7 @@ export function marketingLegacyRedirectPath(pathname) {
   const path = normalizeMarketingPath(pathname);
   if (path === "/join") return "/business";
   if (path === "/Pricing") return "/pricing";
+  if (path === "/en/security-scanner") return "/security-scanner";
   return "";
 }
 
