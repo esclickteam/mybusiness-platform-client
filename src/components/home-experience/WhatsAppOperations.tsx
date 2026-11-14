@@ -223,7 +223,7 @@ function cloneThreads() {
   }));
 }
 
-function Icon({ name }: { name: "search" | "send" | "task" | "file" | "check" | "plus" | "reset" }) {
+function Icon({ name }: { name: "search" | "send" | "task" | "file" | "check" | "plus" | "reset" | "phone" | "mail" | "box" | "calendar" | "reply" }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       {name === "search" ? <path d="M10.5 5.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm5.2 8.8 3.3 3.2" /> : null}
@@ -233,6 +233,11 @@ function Icon({ name }: { name: "search" | "send" | "task" | "file" | "check" | 
       {name === "check" ? <path d="M6 12.5 10 16l8-8" /> : null}
       {name === "plus" ? <path d="M12 6v12M6 12h12" /> : null}
       {name === "reset" ? <path d="M7 8.5A6.5 6.5 0 1 1 6.2 14M7 5.5v3.2h3.2" /> : null}
+      {name === "phone" ? <path d="M7 3.5h2.2l1.2 3.2-1.7.8a12.2 12.2 0 0 0 5.8 5.8l.8-1.7 3.2 1.2V15a2.5 2.5 0 0 1-2.5 2.5A13.5 13.5 0 0 1 4.5 6 2.5 2.5 0 0 1 7 3.5Z" /> : null}
+      {name === "mail" ? <path d="M4.5 7.5h15v10h-15v-10Zm0 0 7.5 5.5 7.5-5.5" /> : null}
+      {name === "box" ? <path d="M4 8.5 12 4.5l8 4v9l-8 4-8-4v-9Zm8 0v9M4 8.5l8 4 8-4" /> : null}
+      {name === "calendar" ? <path d="M7 5.5V3.8M17 5.5V3.8M4.5 9h15M6 5.5h12v13H6v-13Z" /> : null}
+      {name === "reply" ? <path d="M8 8.5H5.5L9 5l3.5 3.5H10a5 5 0 0 1 5 5V16" /> : null}
     </svg>
   );
 }
@@ -474,7 +479,7 @@ export default function WhatsAppOperations() {
                 <b aria-hidden="true">{markOf(thread)}</b>
                 <div>
                   <h3>{nameOf(thread)}</h3>
-                  <p>{text(thread.sourceHe, thread.sourceEn)} · {text(thread.statusHe, thread.statusEn)}</p>
+                  <p><span className="wa-status">{text(thread.statusHe, thread.statusEn)}</span> {text(thread.sourceHe, thread.sourceEn)}</p>
                 </div>
               </header>
               <ol className="wa-thread">
@@ -491,8 +496,11 @@ export default function WhatsAppOperations() {
               {notice ? <p className="wa-notice" role="status">{notice}</p> : null}
               <div className="wa-composer">
                 <div className="wa-template-row">
-                  <button type="button" aria-expanded={templatesOpen} onClick={() => setTemplatesOpen((open) => !open)}>
-                    {text("בחירת תבנית", "Choose a template")}
+                  <button type="button" className={templateId ? "is-set" : undefined} aria-expanded={templatesOpen} onClick={() => setTemplatesOpen((open) => !open)}>
+                    <Icon name={templateId === "order" ? "box" : templateId === "meeting" ? "calendar" : templateId === "follow" ? "reply" : "file"} />
+                    {templateId
+                      ? text(TEMPLATES.find((item) => item.id === templateId)?.he || "", TEMPLATES.find((item) => item.id === templateId)?.en || "")
+                      : text("בחירת תבנית", "Choose a template")}
                   </button>
                   {templatesOpen ? (
                     <ul className="wa-template-menu">
@@ -507,18 +515,22 @@ export default function WhatsAppOperations() {
                               setTemplatesOpen(false);
                             }}
                           >
-                            <strong>{text(template.he, template.en)}</strong>
-                            <small>{text(template.bodyHe, template.bodyEn)}</small>
+                            <Icon name={template.id === "order" ? "box" : template.id === "meeting" ? "calendar" : "reply"} />
+                            <span>
+                              <strong>{text(template.he, template.en)}</strong>
+                              <small>{text(template.bodyHe, template.bodyEn)}</small>
+                            </span>
                           </button>
                         </li>
                       ))}
                     </ul>
                   ) : null}
                 </div>
-                <p className="wa-preview" aria-live="polite">
+                <p className={`wa-preview${preview ? " is-set" : ""}`} aria-live="polite">
+                  <span>{text("תצוגה מקדימה", "Preview")}</span>
                   {preview
                     ? preview
-                    : text("תצוגה מקדימה של תבנית מאושרת תופיע כאן.", "A preview of an approved template will appear here.")}
+                    : text("בחרו תבנית מאושרת כדי לראות את הנוסח לפני השליחה בהדגמה.", "Choose an approved template to see the wording before the demo send.")}
                 </p>
                 <button type="button" className="wa-send" onClick={sendPreview}>
                   <Icon name="send" />
@@ -533,22 +545,26 @@ export default function WhatsAppOperations() {
                 <b aria-hidden="true">{markOf(thread)}</b>
                 <div>
                   <strong>{nameOf(thread)}</strong>
-                  <small>{text(thread.statusHe, thread.statusEn)}</small>
+                  <small className="wa-status">{text(thread.statusHe, thread.statusEn)}</small>
                 </div>
               </div>
-              <p><bdi dir="ltr">{text(thread.phoneHe, thread.phoneEn)}</bdi></p>
-              <p><bdi dir="ltr">{text(thread.emailHe, thread.emailEn)}</bdi></p>
+              <p className="wa-contact"><Icon name="phone" /><bdi dir="ltr">{text(thread.phoneHe, thread.phoneEn)}</bdi></p>
+              <p className="wa-contact"><Icon name="mail" /><bdi dir="ltr">{text(thread.emailHe, thread.emailEn)}</bdi></p>
               <p className="wa-source">{text("מקור", "Source")}: {text(thread.sourceHe, thread.sourceEn)}</p>
               <h4>{text("תגיות", "Tags")}</h4>
               <div className="wa-tags">{text(thread.tagsHe.join("|"), thread.tagsEn.join("|")).split("|").map((tag) => <span key={tag}>{tag}</span>)}</div>
               <h4>{text("פעילות", "Activity")}</h4>
               <ul className="wa-activity">
-                {thread.activities.map((activity) => (
-                  <li key={activity.id}>
-                    <strong>{text(activity.textHe, activity.textEn)}</strong>
-                    <time>{activity.time}</time>
-                  </li>
-                ))}
+                {thread.activities.map((activity) => {
+                  const savedTask = activity.id.startsWith("task-");
+                  return (
+                    <li key={activity.id} className={savedTask ? "is-task" : undefined}>
+                      {savedTask ? <em>{text("משימה נשמרה בהדגמה", "Task saved in the demo")}</em> : null}
+                      <strong>{text(activity.textHe, activity.textEn)}</strong>
+                      <time>{activity.time}</time>
+                    </li>
+                  );
+                })}
               </ul>
               {taskOpen ? (
                 <form className="wa-task-form" onSubmit={(event) => { event.preventDefault(); saveTask(); }}>
