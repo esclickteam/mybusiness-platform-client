@@ -38,15 +38,15 @@ const SEED: Customer[] = [
     nameEn: "Noa Levi",
     sourceHe: "Meta",
     sourceEn: "Meta",
-    phone: "050-000-1001",
-    email: "noa.levi@demo.bizuply.com",
+    phone: "+972 54-789-1234",
+    email: "noa.levi@gmail.com",
     status: "contacted",
     arrived: "10:24",
     activities: [
-      { id: "n1", kind: "whatsapp", textHe: "הלקוחה ביקשה פרטים נוספים. ההודעה נשמרה בהדגמה.", textEn: "The customer asked for more details. The message stayed in the demo.", whenHe: "10:24", whenEn: "10:24" },
-      { id: "n2", kind: "call", textHe: "שיחה קצרה: עברה על האפשרויות וביקשה לחזור מחר.", textEn: "A short call: she reviewed the options and asked for a follow-up tomorrow.", whenHe: "10:02", whenEn: "10:02" },
-      { id: "n3", kind: "note", textHe: "מעוניינת להתקדם. מעדיפה המשך ב־WhatsApp.", textEn: "Interested in moving forward. Prefers WhatsApp.", whenHe: "09:48", whenEn: "09:48" },
-      { id: "n4", kind: "task", textHe: "לשלוח פירוט ולחזור אליה.", textEn: "Send the details and follow up.", whenHe: "מחר", whenEn: "Tomorrow" },
+      { id: "n1", kind: "whatsapp", textHe: "תשובה לליד: נשלחו פרטים נוספים.", textEn: "Reply to the lead: sent more details.", whenHe: "היום, 10:24", whenEn: "Today, 10:24" },
+      { id: "n2", kind: "call", textHe: "שיחה עם נועה, סקירת האפשרויות. ביקשה פרטים נוספים עד מחר.", textEn: "Spoke with Noa, reviewed the options. She asked to get more info by tomorrow.", whenHe: "היום, 10:02", whenEn: "Today, 10:02" },
+      { id: "n3", kind: "note", textHe: "מעוניינת להתקדם. מעדיפה המשך ב־WhatsApp.", textEn: "Interested in moving forward. Prefer contact by WhatsApp.", whenHe: "היום, 09:48", whenEn: "Today, 09:48" },
+      { id: "n4", kind: "task", textHe: "לשלוח פירוט ולחזור אליה.", textEn: "Send detailed information and follow up.", whenHe: "יעד: מחר", whenEn: "Due: Tomorrow" },
     ],
   },
   {
@@ -121,11 +121,6 @@ const SEED: Customer[] = [
   },
 ];
 
-function initials(name: string) {
-  const parts = name.split(" ").filter(Boolean);
-  return (parts[0]?.[0] || "") + (parts[1]?.[0] || "");
-}
-
 function Icon({ name }: { name: "phone" | "chat" | "task" | "note" | "user" | "source" | "alert" | "calendar" | "check" }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -153,7 +148,9 @@ export default function CustomerCommandCenter() {
   const [task, setTask] = useState("");
   const [notice, setNotice] = useState("");
   const [composer, setComposer] = useState<ActivityKind | "">("");
-  const [feed, setFeed] = useState<"all" | "note" | "task" | "call">("all");
+  const [feed, setFeed] = useState<"all" | "note" | "task" | "call" | "whatsapp">("all");
+  const [nav, setNav] = useState<"customers" | "inbox" | "tasks" | "calls" | "whatsapp" | "notes">("customers");
+  const [statusOpen, setStatusOpen] = useState(false);
   const customer = customers.find((item) => item.id === selectedId) || customers[0];
 
   const statusLabel = (status: StatusId) => {
@@ -256,37 +253,64 @@ export default function CustomerCommandCenter() {
     );
   };
 
-  const name = text(customer.nameHe, customer.nameEn);
   const source = text(customer.sourceHe, customer.sourceEn);
+  const displayName = text(`${customer.nameHe} / ${customer.nameEn}`, customer.nameEn);
+  const mark = customer.nameEn.split(" ").map((part) => part[0] || "").join("").slice(0, 2);
   const stageIndex = STATUSES.indexOf(customer.status);
   const newCount = customers.filter((item) => item.status === "new").length;
   const attention = customers.filter((item) => item.status === "new" || item.status === "contacted").length;
   const tasks = customers.reduce((sum, item) => sum + item.activities.filter((activity) => activity.kind === "task").length, 0);
+  const shownNew = 22 + newCount;
+  const shownAttention = 3 + attention;
+  const shownFollow = 10 + tasks;
   const visible = customer.activities.filter((activity) => feed === "all" || activity.kind === feed);
+  const chooseNav = (id: "customers" | "inbox" | "tasks" | "calls" | "whatsapp" | "notes", next: typeof feed) => {
+    setNav(id);
+    setFeed(next);
+  };
   const openComposer = (kind: "task" | "note") => {
     setComposer(kind);
     window.setTimeout(() => document.getElementById(kind === "task" ? "cc-task" : "cc-note")?.focus(), 0);
   };
 
+  const tabs = [
+    ["all", text("פעילות", "Activity"), "customers"],
+    ["note", text("הערות", "Notes"), "notes"],
+    ["task", text("משימות", "Tasks"), "tasks"],
+    ["call", text("שיחות", "Calls"), "calls"],
+  ] as const;
+
   return (
     <section className="cc-section" id="crm" dir={dir} aria-labelledby="cc-title">
-      <div className="cc-wrap">
-        <header className="cc-head">
-          <p className="cc-kicker">{text("CRM וניהול לידים", "CRM and lead management")}</p>
-          <h2 id="cc-title">{text("כרטיס הלקוח, מוכן לפעולה.", "The customer card, ready for action.")}</h2>
-          <p>{text("רואים את פרטי הקשר, המקור, הסטטוס וההיסטוריה בכרטיס אחד. כל פעולה כאן נשארת בהדגמה המקומית.", "Contact details, source, status and history sit on one card. Every action here stays in the local demo.")}</p>
-        </header>
+      <h2 id="cc-title" className="cc-sr">{text("כרטיס הלקוח", "Customer card")}</h2>
+      <div className="cc-app">
+        <div className="cc-side" aria-label={text("הדגמת המוצר", "Product demo")}>
+          <p className="cc-brand"><span />Bizuply CRM</p>
+          {([
+            ["customers", "all", text("לקוחות", "Customers"), "user"],
+            ["inbox", "all", text("תיבת לידים", "Leads Inbox"), "alert"],
+            ["tasks", "task", text("משימות", "Tasks"), "task"],
+            ["calls", "call", text("שיחות", "Calls"), "phone"],
+            ["whatsapp", "whatsapp", "WhatsApp", "chat"],
+            ["notes", "note", text("הערות", "Notes"), "note"],
+          ] as const).map(([id, next, label, icon]) => (
+            <button key={id} type="button" className={nav === id ? "is-on" : undefined} onClick={() => chooseNav(id, next)}>
+              <Icon name={icon} />{label}
+            </button>
+          ))}
+        </div>
+        <div className="cc-body">
 
         <div className="cc-stage">
           <div className="cc-metrics" aria-label={text("סיכום הדגמה", "Demo summary")}>
-            <p><Icon name="user" /><span><small>{text("לידים חדשים", "New leads")}</small><b>{newCount}</b></span></p>
-            <p><Icon name="alert" /><span><small>{text("דורשים טיפול", "Needs attention")}</small><b>{attention}</b></span></p>
-            <p><Icon name="calendar" /><span><small>{text("מעקבים להיום", "Follow-ups today")}</small><b>{tasks}</b></span></p>
+            <p><Icon name="user" /><span><small>{text("לידים חדשים", "New leads")}</small><b>{shownNew}</b></span></p>
+            <p><Icon name="alert" /><span><small>{text("דורשים טיפול", "Needs attention")}</small><b>{shownAttention}</b></span></p>
+            <p><Icon name="calendar" /><span><small>{text("מעקבים להיום", "Follow-ups today")}</small><b>{shownFollow}</b></span></p>
           </div>
 
           <div className="cc-layout">
             <div className="cc-list">
-              <p className="cc-list-title">{text("לידים נכנסים", "Incoming leads")}<b>{customers.length}</b></p>
+              <p className="cc-list-title">{text("לידים נכנסים", "Incoming leads")}<b>{shownNew}</b></p>
               <ul>
                 {customers.map((item) => {
                   const on = item.id === customer.id;
@@ -308,11 +332,25 @@ export default function CustomerCommandCenter() {
 
             <article className="cc-card" aria-live="polite">
               <header className="cc-person">
-                <b aria-hidden="true">{initials(name)}</b>
-                <h3>{name}</h3>
-                <div className="cc-person-meta">
-                  <span className="cc-source"><Icon name="source" />{source}</span>
-                  <span className={`cc-status is-${customer.status}`}>{statusLabel(customer.status)}</span>
+                <b aria-hidden="true">{mark}</b>
+                <div className="cc-person-main">
+                  <h3>{displayName}</h3>
+                  <div className="cc-person-meta">
+                    <span className="cc-source"><Icon name="source" />{source}</span>
+                    <span className="cc-status-wrap">
+                      <button type="button" className={`cc-status is-${customer.status}`} aria-expanded={statusOpen} onClick={() => setStatusOpen((open) => !open)}>
+                        {statusLabel(customer.status)}
+                        <i />
+                      </button>
+                      {statusOpen ? (
+                        <span className="cc-status-menu">
+                          {STATUSES.map((status) => (
+                            <button key={status} type="button" onClick={() => { setStatus(status); setStatusOpen(false); }}>{statusLabel(status)}</button>
+                          ))}
+                        </span>
+                      ) : null}
+                    </span>
+                  </div>
                 </div>
               </header>
 
@@ -333,14 +371,14 @@ export default function CustomerCommandCenter() {
                 ))}
               </ol>
 
+              <div className="cc-phone-actions">
+                <button type="button" onClick={() => logLocal("call")}><Icon name="phone" />{text("שיחה", "Call")}</button>
+                <button type="button" onClick={() => logLocal("whatsapp")}><Icon name="chat" />WhatsApp</button>
+                <button type="button" onClick={() => openComposer("task")}><Icon name="task" />{text("משימה", "Task")}</button>
+              </div>
               <div className="cc-tabs" role="tablist" aria-label={text("היסטוריית פעילות", "Activity history")}>
-                {([
-                  ["all", text("פעילות", "Activity")],
-                  ["note", text("הערות", "Notes")],
-                  ["task", text("משימות", "Tasks")],
-                  ["call", text("שיחות", "Calls")],
-                ] as const).map(([id, label]) => (
-                  <button key={id} type="button" role="tab" aria-selected={feed === id} className={feed === id ? "is-on" : undefined} onClick={() => setFeed(id)}>{label}</button>
+                {tabs.map(([id, label, nextNav]) => (
+                  <button key={id} type="button" role="tab" aria-selected={feed === id} className={feed === id ? "is-on" : undefined} onClick={() => chooseNav(nextNav, id)}>{label}</button>
                 ))}
               </div>
             </article>
@@ -388,13 +426,14 @@ export default function CustomerCommandCenter() {
             </aside>
             <div className="cc-details">
                 <h4>{text("פרטי לקוח", "Customer details")}</h4>
-                <p><Icon name="user" /><span>{name}</span></p>
+                <p><Icon name="user" /><span>{displayName}</span></p>
                 <p><Icon name="source" /><span>{text("מקור", "Source")}: {source}</span></p>
                 <p><Icon name="check" /><span>{text("סטטוס", "Status")}</span><b className={`cc-status is-${customer.status}`}>{statusLabel(customer.status)}</b></p>
                 <p><Icon name="phone" /><bdi dir="ltr">{customer.phone}</bdi></p>
                 <p><Icon name="chat" /><bdi dir="ltr">{customer.email}</bdi></p>
               </div>
           </div>
+        </div>
         </div>
       </div>
     </section>
