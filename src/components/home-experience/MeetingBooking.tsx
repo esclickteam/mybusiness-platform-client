@@ -11,7 +11,13 @@ const DAYS = [
   { id: "22", he: "ד׳", en: "Wed" },
   { id: "23", he: "ה׳", en: "Thu" },
 ];
-const TIMES = ["10:00", "11:30", "14:00", "15:00", "16:00"];
+const HOURS: Record<string, string[]> = {
+  "19": ["09:00", "10:30", "13:00", "16:30", "18:00"],
+  "20": ["10:00", "12:00", "14:30", "15:30", "17:00"],
+  "21": ["10:00", "11:30", "14:00", "15:00", "16:00"],
+  "22": ["09:30", "11:00", "13:30", "15:00", "17:30"],
+  "23": ["10:00", "12:30", "14:00", "16:00", "18:30"],
+};
 
 function CalendarIcon() {
   return (
@@ -69,9 +75,12 @@ export default function MeetingBooking() {
   const customer = text("נועה לוי", "Emily Johnson");
   const dayLabel = `${text(day.he, day.en)} ${day.id}`;
 
+  const hours = HOURS[day.id] || HOURS["21"];
   const chooseDay = (id: string) => {
+    const nextHours = HOURS[id] || HOURS["21"];
     setDayId(id);
     setBooked(false);
+    setTime((current) => (nextHours.includes(current) ? current : nextHours[0]));
   };
   const shiftDay = (delta: number) => {
     const next = DAYS[(dayIndex + delta + DAYS.length) % DAYS.length];
@@ -134,7 +143,7 @@ export default function MeetingBooking() {
               <span className="mt-ico"><ClockIcon /></span>
             </header>
             <div className="mt-times">
-              {TIMES.map((item) => (
+              {hours.map((item) => (
                 <button key={item} type="button" className={item === time ? "is-on" : undefined} onClick={() => { setTime(item); setBooked(false); }}>
                   <bdi dir="ltr">{item}</bdi>
                   {item === time ? <i aria-hidden="true">✓</i> : null}
