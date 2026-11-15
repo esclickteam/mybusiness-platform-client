@@ -154,6 +154,7 @@ const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
 const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
 const Login = lazy(() => import("./pages/Login"));
 const LoginSketches = lazy(() => import("./pages/login-sketches/LoginSketches"));
+const LeadCardSketch = lazy(() => import("./pages/lead-card-sketch/LeadCardSketch"));
 const WhatsAppApiLoginPage = lazy(() => import("./pages/whatsappApi/WhatsAppApiLoginPage"));
 const AiAutomationTemplatesVisualPage = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/AiAutomationTemplatesVisualPage"))
@@ -1016,6 +1017,7 @@ export default function App() {
   const isAuthShellRoute =
     location.pathname === "/login" || location.pathname === "/register";
   const isLoginSketch = /(?:^|\/)login-sketches(?:\/|$)/.test(location.pathname);
+  const isLeadCardSketch = /(?:^|\/)lead-card-sketch(?:\/|$)/.test(location.pathname);
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -1207,6 +1209,7 @@ export default function App() {
           !isWhatsAppApiLogin &&
           !isAuthShellRoute &&
           !isLoginSketch &&
+          !isLeadCardSketch &&
           !isBizuplyPublicBookingRoute &&
           !scanFilm && <Header />}
 
@@ -1491,6 +1494,7 @@ export default function App() {
 
                         <Route path="/login" element={<Login />} />
                         <Route path="/login-sketches/:variant" element={<LoginSketches />} />
+                        <Route path="/lead-card-sketch" element={<LeadCardSketch />} />
                         <Route
                           path="/saas-studio/:templateSlug/:publicSlug"
                           element={
@@ -1931,6 +1935,7 @@ export default function App() {
           !isPublicPartnerSales &&
           !isWhatsAppApiLogin &&
           !isAuthShellRoute &&
+          !isLeadCardSketch &&
           !isPrivateOwnerSurface &&
           !isBizuplyPublicBookingRoute &&
           !scanFilm && <Footer />}
@@ -1938,7 +1943,7 @@ export default function App() {
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!scanFilm && !user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isLoginSketch && !isPrivateOwnerSurface && (
+      {!scanFilm && !user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isLoginSketch && !isLeadCardSketch && !isPrivateOwnerSurface && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
@@ -1968,6 +1973,7 @@ export default function App() {
         !isBizuplyPublicBookingRoute &&
         !isPrivateOwnerSurface &&
         !isWhatsAppApiLogin &&
+        !isLeadCardSketch &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost &&
         !scanFilm && (
@@ -1987,6 +1993,7 @@ export default function App() {
         !isPublicPartnerDeal &&
         !isPublicPartnerSales &&
         !isCinematicHome &&
+        !isLeadCardSketch &&
         !isBizuplyPublicBookingRoute &&
         !scanFilm && (
           <Suspense fallback={null}><AccessibilityWidget siteKey="bizuply-platform" mode="live" /></Suspense>
