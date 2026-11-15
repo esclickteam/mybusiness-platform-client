@@ -14,6 +14,7 @@ import {
   startBizuplySocialAuth,
   type SocialProvider,
 } from "../../components/auth/socialAuth";
+import LoginCompare from "./LoginCompare";
 import "./loginSketches.css";
 
 type Variant = "clean" | "premium";
@@ -43,6 +44,7 @@ function MicrosoftIcon() {
 
 export default function LoginSketches() {
   const { variant } = useParams();
+  if (variant === "compare") return <LoginCompare />;
   if (variant !== "clean" && variant !== "premium") return <Navigate to="/login-sketches/clean" replace />;
   return <LoginSketch variant={variant} />;
 }
