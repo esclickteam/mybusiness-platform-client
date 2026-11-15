@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import API from "../../api";
+import { KNOWLEDGE_DRAFTS } from "../../lib/knowledgeDrafts.mjs";
 import "./adminKnowledge.css";
 
 const EMPTY = {
@@ -38,6 +39,8 @@ export default function AdminKnowledge() {
   const [confirmFacts, setConfirmFacts] = useState(false);
   const [redirectTo, setRedirectTo] = useState("/resources");
   const [message, setMessage] = useState("");
+  const [previewSlug, setPreviewSlug] = useState(KNOWLEDGE_DRAFTS[0]?.slug || "");
+  const [previewLocale, setPreviewLocale] = useState("he");
 
   async function reload() {
     const res = await API.get("/admin/knowledge/articles");
@@ -132,6 +135,44 @@ export default function AdminKnowledge() {
         <p><Link to="/resources">למרכז הידע הציבורי</Link></p>
       </header>
       {message ? <p className="admin-knowledge__error">{message}</p> : null}
+      <section className="admin-knowledge__drafts">
+        <h2>טיוטות שממתינות לאישור</h2>
+        <p>עשר הטיוטות האלה לא באתר, לא במפת האתר, ואין כאן כפתור פרסום. אישור עובדות נדרש לפני שמי מהן עוברת למערכת המאמרים.</p>
+        <label>טיוטה
+          <select value={previewSlug} onChange={(event) => setPreviewSlug(event.target.value)}>
+            {KNOWLEDGE_DRAFTS.map((item) => <option key={item.slug} value={item.slug}>{item.locales.he.h1}</option>)}
+          </select>
+        </label>
+        <label>שפת קריאה
+          <select value={previewLocale} onChange={(event) => setPreviewLocale(event.target.value)}>
+            <option value="he">עברית</option>
+            <option value="en">English</option>
+            <option value="es">Español</option>
+            <option value="pt-BR">Português</option>
+            <option value="ar">العربية</option>
+          </select>
+        </label>
+        {(() => {
+          const pack = KNOWLEDGE_DRAFTS.find((item) => item.slug === previewSlug);
+          const copy = pack?.locales[previewLocale];
+          if (!pack || !copy) return null;
+          return (
+            <article>
+              <p>סטטוס: {pack.status}. נושא: {pack.cluster}.</p>
+              <p>{pack.adds[previewLocale] || pack.adds.en}</p>
+              <h3>{copy.h1}</h3>
+              <p>{copy.lede}</p>
+              {copy.sections.map((section) => (
+                <section key={section.id}>
+                  <h4>{section.heading}</h4>
+                  {section.paragraphs.map((paragraph) => <p key={paragraph.slice(0, 48)}>{paragraph}</p>)}
+                  {section.steps?.length ? <ol>{section.steps.map((step) => <li key={step}>{step}</li>)}</ol> : null}
+                </section>
+              ))}
+            </article>
+          );
+        })()}
+      </section>
       <div className="admin-knowledge__grid">
         <aside>
           <button type="button" onClick={() => { setCurrent(null); setDraft(EMPTY); setAudit([]); }}>מאמר חדש</button>

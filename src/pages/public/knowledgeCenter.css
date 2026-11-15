@@ -179,6 +179,29 @@
   font-size: 1.05rem;
 }
 
+.knowledge-path {
+  margin: 0.8rem 0 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #e4dff5;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.knowledge-path h3,
+.knowledge-path p {
+  margin: 0 0 0.4rem;
+}
+
+.knowledge-path ol {
+  margin: 0;
+  padding-inline-start: 1.2rem;
+}
+
+.knowledge-prose {
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
 .knowledge-links {
   display: grid;
   gap: 0.55rem;

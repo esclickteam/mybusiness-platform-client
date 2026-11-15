@@ -90,8 +90,8 @@ const COPY = {
     realEstateBlurb: "מעקב אחרי פניית נכס בלי גיליון נפרד",
     restaurantsBlurb: "פניות ב־CRM, מערכות הזמנה במרקטפלייס",
     serviceBlurb: "מהפנייה הראשונה ועד הביקור",
-    agenciesBlurb: "הצינור של הסוכנות עצמה, לא תיבת הדואר של כל לקוח",
-    leadBlurb: "צינור אחד לכל מקום שבו ליד מתחיל",
+    agenciesBlurb: "מהלך הלידים של הסוכנות עצמה, לא תיבת הדואר של כל לקוח",
+    leadBlurb: "מהלך לידים אחד לכל מקום שבו ליד מתחיל",
   },
   es: {
     platform: "Plataforma",
@@ -136,8 +136,8 @@ const COPY = {
     realEstateBlurb: "Seguir una consulta de inmueble sin una hoja aparte",
     restaurantsBlurb: "Consultas en el CRM, pedidos en el marketplace",
     serviceBlurb: "De la primera consulta a la visita",
-    agenciesBlurb: "El pipeline de la agencia, no la bandeja de cada cliente",
-    leadBlurb: "Un pipeline para cada lugar donde nace un lead",
+    agenciesBlurb: "El seguimiento de la agencia, no la bandeja de cada cliente",
+    leadBlurb: "Un seguimiento para cada lugar donde nace un lead",
   },
   "pt-BR": {
     platform: "Plataforma",
@@ -182,8 +182,8 @@ const COPY = {
     realEstateBlurb: "Acompanhar um pedido de imóvel sem uma planilha à parte",
     restaurantsBlurb: "Contatos no CRM, pedidos no marketplace",
     serviceBlurb: "Do primeiro contato à visita",
-    agenciesBlurb: "O pipeline da agência, não a caixa de cada cliente",
-    leadBlurb: "Um pipeline para cada lugar onde um lead nasce",
+    agenciesBlurb: "O acompanhamento da agência, não a caixa de cada cliente",
+    leadBlurb: "Um acompanhamento para cada lugar onde um lead nasce",
   },
   ar: {
     platform: "المنصة",

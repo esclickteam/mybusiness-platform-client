@@ -39,11 +39,11 @@ function sectionHeading(section) {
 }
 
 const UI = {
-  en: { all: "All guides", updated: "Updated", faq: "Common questions", pricing: "See pricing", crm: "Open the CRM", auto: "Automations", site: "Website builder", meta: "Meta campaigns", capture: "A lead record in Bizuply", zoom: "Enlarge", plan: "Plan", price: "Price", includes: "Includes", crmOnly: "CRM only", business: "Business plan", whatsapp: "WhatsApp number", crmIncludes: "Pipeline and client file", businessIncludes: "CRM, appointments, collaborations, automations", waIncludes: "One connected number. Meta messaging fees are separate.", read: "Read the guide", onPage: "On this page", example: "Example", related: "Continue with" },
-  he: { all: "כל המדריכים", updated: "עודכן", faq: "שאלות נפוצות", pricing: "למחירון", crm: "לעמוד ה־CRM", auto: "אוטומציות", site: "בניית אתרים", meta: "קמפיינים של Meta", capture: "רשומת ליד בביזאפלי", zoom: "הגדלה", plan: "מסלול", price: "מחיר", includes: "כולל", crmOnly: "CRM בלבד", business: "חבילה עסקית", whatsapp: "מספר WhatsApp", crmIncludes: "צינור ותיק לקוח", businessIncludes: "CRM, תורים, שיתופים ואוטומציות", waIncludes: "מספר מחובר אחד. חיובי Meta נפרדים.", read: "למדריך", onPage: "בעמוד", example: "דוגמה", related: "המשיכו אל" },
-  es: { all: "Todas las guías", updated: "Actualizado", faq: "Preguntas frecuentes", pricing: "Ver precios", crm: "Abrir el CRM", auto: "Automatizaciones", site: "Constructor de sitios", meta: "Campañas de Meta", capture: "Un registro de lead en Bizuply", zoom: "Ampliar", plan: "Plan", price: "Precio", includes: "Incluye", crmOnly: "CRM solo", business: "Plan de negocio", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline y expediente", businessIncludes: "CRM, citas, colaboraciones y automatizaciones", waIncludes: "Un número conectado. Las tarifas de Meta van aparte.", read: "Leer la guía", onPage: "En esta página", example: "Ejemplo", related: "Siga con" },
-  "pt-BR": { all: "Todos os guias", updated: "Atualizado", faq: "Perguntas frequentes", pricing: "Ver preços", crm: "Abrir o CRM", auto: "Automações", site: "Construtor de sites", meta: "Campanhas da Meta", capture: "Um registro de lead na Bizuply", zoom: "Ampliar", plan: "Plano", price: "Preço", includes: "Inclui", crmOnly: "CRM sozinho", business: "Plano de negócios", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline e arquivo do cliente", businessIncludes: "CRM, agenda, colaborações e automações", waIncludes: "Um número conectado. As tarifas da Meta são à parte.", read: "Ler o guia", onPage: "Nesta página", example: "Exemplo", related: "Continue com" },
-  ar: { all: "كل الأدلة", updated: "آخر تحديث", faq: "أسئلة شائعة", pricing: "الأسعار", crm: "صفحة CRM", auto: "الأتمتة", site: "منشئ المواقع", meta: "حملات Meta", capture: "سجل عميل في Bizuply", zoom: "تكبير", plan: "المسار", price: "السعر", includes: "يشمل", crmOnly: "CRM وحده", business: "الخطة التجارية", whatsapp: "رقم واتساب", crmIncludes: "المسار وملف العميل", businessIncludes: "CRM والمواعيد والتعاون والأتمتة", waIncludes: "رقم واحد متصل. رسوم Meta منفصلة.", read: "اقرأ الدليل", onPage: "في هذه الصفحة", example: "مثال", related: "تابع مع" },
+  en: { all: "All guides", updated: "Updated", faq: "Common questions", pricing: "See pricing", crm: "Open the CRM", auto: "Automations", site: "Website builder", meta: "Meta campaigns", capture: "A lead record in Bizuply", zoom: "Enlarge", plan: "Plan", price: "Price", includes: "Includes", crmOnly: "CRM only", business: "Business plan", whatsapp: "WhatsApp number", crmIncludes: "Pipeline and client file", businessIncludes: "CRM, appointments, collaborations, automations", waIncludes: "One connected number. Meta messaging fees are separate.", read: "Read the guide", onPage: "On this page", example: "Example", related: "Continue with", sources: "Sources", products: "In the product" },
+  he: { all: "כל המדריכים", updated: "עודכן", faq: "שאלות נפוצות", pricing: "למחירון", crm: "לעמוד ה־CRM", auto: "אוטומציות", site: "בניית אתרים", meta: "קמפיינים של Meta", capture: "רשומת ליד בביזאפלי", zoom: "הגדלה", plan: "מסלול", price: "מחיר", includes: "כולל", crmOnly: "CRM בלבד", business: "חבילה עסקית", whatsapp: "מספר WhatsApp", crmIncludes: "צינור ותיק לקוח", businessIncludes: "CRM, תורים, שיתופים ואוטומציות", waIncludes: "מספר מחובר אחד. חיובי Meta נפרדים.", read: "למדריך", onPage: "בעמוד", example: "דוגמה", related: "המשיכו אל", sources: "מקורות", products: "במוצר" },
+  es: { all: "Todas las guías", updated: "Actualizado", faq: "Preguntas frecuentes", pricing: "Ver precios", crm: "Abrir el CRM", auto: "Automatizaciones", site: "Constructor de sitios", meta: "Campañas de Meta", capture: "Un registro de lead en Bizuply", zoom: "Ampliar", plan: "Plan", price: "Precio", includes: "Incluye", crmOnly: "CRM solo", business: "Plan de negocio", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline y expediente", businessIncludes: "CRM, citas, colaboraciones y automatizaciones", waIncludes: "Un número conectado. Las tarifas de Meta van aparte.", read: "Leer la guía", onPage: "En esta página", example: "Ejemplo", related: "Siga con", sources: "Fuentes", products: "En el producto" },
+  "pt-BR": { all: "Todos os guias", updated: "Atualizado", faq: "Perguntas frequentes", pricing: "Ver preços", crm: "Abrir o CRM", auto: "Automações", site: "Construtor de sites", meta: "Campanhas da Meta", capture: "Um registro de lead na Bizuply", zoom: "Ampliar", plan: "Plano", price: "Preço", includes: "Inclui", crmOnly: "CRM sozinho", business: "Plano de negócios", whatsapp: "Número de WhatsApp", crmIncludes: "Pipeline e arquivo do cliente", businessIncludes: "CRM, agenda, colaborações e automações", waIncludes: "Um número conectado. As tarifas da Meta são à parte.", read: "Ler o guia", onPage: "Nesta página", example: "Exemplo", related: "Continue com", sources: "Fontes", products: "No produto" },
+  ar: { all: "كل الأدلة", updated: "آخر تحديث", faq: "أسئلة شائعة", pricing: "الأسعار", crm: "صفحة CRM", auto: "الأتمتة", site: "منشئ المواقع", meta: "حملات Meta", capture: "سجل عميل في Bizuply", zoom: "تكبير", plan: "المسار", price: "السعر", includes: "يشمل", crmOnly: "CRM وحده", business: "الخطة التجارية", whatsapp: "رقم واتساب", crmIncludes: "المسار وملف العميل", businessIncludes: "CRM والمواعيد والتعاون والأتمتة", waIncludes: "رقم واحد متصل. رسوم Meta منفصلة.", read: "اقرأ الدليل", onPage: "في هذه الصفحة", example: "مثال", related: "تابع مع", sources: "المصادر", products: "في المنتج" },
 };
 
 function uiFor(locale) {
@@ -128,18 +128,20 @@ function GuideSection({ section, locale }) {
         </div>
       ) : null}
       {section.table?.rows?.length ? (
+        <div className="guide-table-wrap">
         <table className="guide-table">
           {section.table.columns?.length ? (
             <thead>
-              <tr>{section.table.columns.map((column) => <th key={column}>{column}</th>)}</tr>
+              <tr>{section.table.columns.map((column, index) => <th key={`${index}-${column}`}>{column}</th>)}</tr>
             </thead>
           ) : null}
           <tbody>
             {section.table.rows.map((row) => (
-              <tr key={row.join("|")}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>
+              <tr key={row.join("|")}>{row.map((cell, index) => <td key={`${index}-${cell}`}>{cell}</td>)}</tr>
             ))}
           </tbody>
         </table>
+        </div>
       ) : null}
       {section.links?.length ? (
         <ul className="guide-links">
@@ -210,6 +212,7 @@ export function GuideArticlePage() {
           </ol>
         </nav>
         <div className="guide-body">
+          {article.review ? <p className="guide-review">{article.review}</p> : null}
           {article.sections.map((section) => (
             <GuideSection key={section.id || sectionHeading(section)} section={section} locale={locale} />
           ))}
@@ -222,6 +225,23 @@ export function GuideArticlePage() {
               </details>
             ))}
           </section>
+          {article.sources?.length ? (
+            <section className="guide-block" id="references">
+              <h2>{copy.sources}</h2>
+              <ul className="guide-source-list">
+                {article.sources.map((source) => (
+                  <li key={source.href}>
+                    {source.external ? <a href={source.href} rel="noopener noreferrer">{source.label}</a> : <Link to={source.href}>{source.label}</Link>}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
+          {article.products?.length ? (
+            <p className="guide-products">
+              {article.products.map((item) => <Link className="guide-cta" key={item.href} to={item.href}>{item.label}</Link>)}
+            </p>
+          ) : null}
           {article.serviceLink ? (
             <p className="guide-service">
               <Link to={article.serviceLink.href}>{article.serviceLink.label}</Link>

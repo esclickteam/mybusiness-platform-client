@@ -108,7 +108,7 @@ const EN = {
 const ES = {
   "what-is-a-crm": guide(
     "¿Qué es un CRM para un negocio pequeño? | BizUply",
-    "Un CRM guarda leads, clientes, tareas y citas en un pipeline. CRM solo de BizUply cuesta 49 dólares al mes.",
+    "Un CRM guarda leads, clientes, tareas y citas en un seguimiento. CRM solo de BizUply cuesta 49 dólares al mes.",
     "¿Qué es un CRM para un negocio pequeño?",
     [
       ["La respuesta directa", ["Un CRM es el registro de quienes podrían comprar y de quienes ya compraron. En BizUply ese registro es un lead con uno de seis estados: nuevo, contactado, interesado, convertido, perdido o lead antiguo, más un expediente y un calendario."]],
@@ -174,7 +174,7 @@ const ES = {
   ),
   "crm-and-business-platform": guide(
     "¿Qué diferencia hay entre un CRM y una plataforma de negocio? | BizUply",
-    "CRM solo es el pipeline y el expediente por 49 dólares. El plan de negocio añade citas, colaboraciones y automatizaciones por 99 o 990 al año.",
+    "CRM solo es el seguimiento de los clientes y el expediente por 49 dólares. El plan de negocio añade citas, colaboraciones y automatizaciones por 99 o 990 al año.",
     "CRM solo y el plan de negocio",
     [
       ["La respuesta directa", ["Un CRM sigue la relación. Una plataforma también hace el trabajo de alrededor. CRM solo cuesta 49 dólares al mes. El plan de negocio cuesta 99 al mes o 990 al año e incluye CRM, citas, colaboraciones y automatizaciones."]],
@@ -199,7 +199,7 @@ const ES = {
 const PT = {
   "what-is-a-crm": guide(
     "O que é um CRM para uma pequena empresa? | BizUply",
-    "Um CRM guarda leads, clientes, tarefas e compromissos em um pipeline. O CRM sozinho da BizUply custa 49 dólares por mês.",
+    "Um CRM guarda leads, clientes, tarefas e compromissos em um acompanhamento. O CRM sozinho da BizUply custa 49 dólares por mês.",
     "O que é um CRM para uma pequena empresa?",
     [
       ["A resposta direta", ["Um CRM é o registro de quem pode comprar e de quem já comprou. Na BizUply esse registro é um lead com um de seis status: novo, contatado, interessado, convertido, perdido ou lead antigo, além de um arquivo e uma agenda."]],
@@ -265,7 +265,7 @@ const PT = {
   ),
   "crm-and-business-platform": guide(
     "Qual é a diferença entre um CRM e uma plataforma de negócios? | BizUply",
-    "CRM sozinho é o pipeline e o arquivo por 49 dólares. O plano de negócios acrescenta agenda, colaborações e automações por 99 ou 990 por ano.",
+    "CRM sozinho é o acompanhamento dos clientes e o arquivo por 49 dólares. O plano de negócios acrescenta agenda, colaborações e automações por 99 ou 990 por ano.",
     "CRM sozinho e o plano de negócios",
     [
       ["A resposta direta", ["Um CRM acompanha o relacionamento. Uma plataforma também executa o trabalho ao redor. CRM sozinho custa 49 dólares por mês. O plano de negócios custa 99 por mês ou 990 por ano e inclui CRM, agenda, colaborações e automações."]],
@@ -381,7 +381,7 @@ const AR = {
 const HE = {
   "what-is-a-crm": guide(
     "מהי מערכת CRM לעסק קטן? | ביזאפלי",
-    "CRM שומר לידים, לקוחות, משימות ותורים בצינור אחד. CRM בלבד בביזאפלי עולה 49 דולר לחודש.",
+    "CRM שומר לידים, לקוחות, משימות ותורים במהלך אחד. CRM בלבד בביזאפלי עולה 49 דולר לחודש.",
     "מהי מערכת CRM לעסק קטן?",
     [
       ["התשובה הקצרה", ["CRM הוא הרשומה של מי שעשוי לקנות ושל מי שכבר קנה. בביזאפלי הרשומה היא ליד עם אחד משישה סטטוסים: חדש, נוצר קשר, מעוניין, הומר, אבוד או ליד ישן, יחד עם תיק לקוח ויומן תורים."]],
@@ -447,7 +447,7 @@ const HE = {
   ),
   "crm-and-business-platform": guide(
     "מה ההבדל בין CRM למערכת לניהול עסק? | ביזאפלי",
-    "CRM בלבד הוא הצינור והתיק ב־49 דולר. החבילה העסקית מוסיפה תורים, שיתופים ואוטומציות ב־99 או 990 לשנה.",
+    "CRM בלבד הוא מהלך הלידים והתיק ב־49 דולר. החבילה העסקית מוסיפה תורים, שיתופים ואוטומציות ב־99 או 990 לשנה.",
     "CRM בלבד והחבילה העסקית",
     [
       ["התשובה הקצרה", ["CRM עוקב אחרי הקשר. מערכת לניהול עסק מריצה גם את העבודה מסביב. CRM בלבד עולה 49 דולר לחודש. החבילה העסקית עולה 99 לחודש או 990 לשנה וכוללת CRM יחד עם תורים, שיתופים ואוטומציות."]],

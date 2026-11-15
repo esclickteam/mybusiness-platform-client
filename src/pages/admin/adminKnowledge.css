@@ -9,6 +9,18 @@
   margin-bottom: 0.4rem;
 }
 
+.admin-knowledge__drafts {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem;
+  border: 1px solid #e4dff5;
+  background: #fff;
+}
+
+.admin-knowledge__drafts article {
+  margin-top: 0.8rem;
+  line-height: 1.65;
+}
+
 .admin-knowledge__grid {
   display: grid;
   grid-template-columns: minmax(180px, 260px) 1fr;
