@@ -1015,7 +1015,6 @@ export default function App() {
   // AuthShell pages own their chrome (incl. language switcher) — hide public Header/Footer.
   const isAuthShellRoute =
     location.pathname === "/login" || location.pathname === "/register";
-  const isLoginRoute = location.pathname === "/login";
   const isLoginSketch = /(?:^|\/)login-sketches(?:\/|$)/.test(location.pathname);
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
@@ -1206,7 +1205,7 @@ export default function App() {
           !isPublicProposalRoute &&
           !isPartnerSignRoute &&
           !isWhatsAppApiLogin &&
-          (!isAuthShellRoute || isLoginRoute) &&
+          !isAuthShellRoute &&
           !isLoginSketch &&
           !isBizuplyPublicBookingRoute &&
           !scanFilm && <Header />}

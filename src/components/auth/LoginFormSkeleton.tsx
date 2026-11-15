@@ -17,10 +17,11 @@ import AuthShell, { AuthCard } from "./AuthShell";
 export function LoginFormSkeleton() {
   const { t } = useTranslation();
   return (
-    <AuthShell>
+    <AuthShell centered withSiteHeader={false}>
       <AuthCard
-        title={t("login.cardTitle")}
-        subtitle={t("login.cardSubtitle")}
+        productLogo
+        title={t("login.welcomeTitle")}
+        subtitle={t("login.welcomeLead")}
       >
         <div
           className="space-y-4"

@@ -30,8 +30,6 @@ const COPY = {
     sub: "Sign in to your Bizuply workspace.",
     email: "Email",
     password: "Password",
-    codeLink: "Use email code instead",
-    passwordLink: "Use password instead",
     remember: "Remember me",
     forgot: "Forgot password?",
     signIn: "Sign in",
@@ -48,14 +46,12 @@ const COPY = {
     sub: "התחברו לסביבת העבודה של Bizuply.",
     email: "אימייל",
     password: "סיסמה",
-    codeLink: "התחברות באמצעות קוד למייל",
-    passwordLink: "התחברות עם סיסמה",
     remember: "זכור אותי",
     forgot: "שכחתם סיסמה?",
     signIn: "התחברות",
     noAccount: "אין לכם חשבון?",
     signUp: "הרשמה",
-    or: "or",
+    or: "או",
     google: "המשך עם Google",
     microsoft: "המשך עם Microsoft",
     show: "הצג סיסמה",
@@ -90,7 +86,6 @@ function ApprovedCard({ lang, compact }: { lang: Lang; compact: boolean }) {
   const dir = lang === "he" ? "rtl" : "ltr";
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(true);
-  const [codeMode, setCodeMode] = useState(false);
 
   return (
     <form className={compact ? "lcm-card is-compact" : "lcm-card"} dir={dir} onSubmit={(event) => event.preventDefault()}>
@@ -109,39 +104,26 @@ function ApprovedCard({ lang, compact }: { lang: Lang; compact: boolean }) {
           defaultValue="jane@company.com"
         />
       </div>
-      {codeMode ? (
-        <p className="lcm-sub" style={{ textAlign: "start", marginTop: 0 }}>
-          {lang === "he"
-            ? "נשלח קוד בן 6 ספרות אל jane@company.com."
-            : "We'll send a 6-digit code to jane@company.com."}
-        </p>
-      ) : (
-        <>
-          <label className="lcm-label" htmlFor={`${lang}-${compact}-password`}>{copy.password}</label>
-          <div className="lcm-field">
-            <Lock className="lcm-ico" size={16} aria-hidden="true" />
-            <input
-              id={`${lang}-${compact}-password`}
-              name="password"
-              type={showPassword ? "text" : "password"}
-              autoComplete="current-password"
-              dir="ltr"
-              defaultValue="password12"
-            />
-            <button
-              type="button"
-              className="lcm-eye"
-              aria-label={showPassword ? copy.hide : copy.show}
-              onClick={() => setShowPassword((value) => !value)}
-            >
-              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-            </button>
-          </div>
-        </>
-      )}
-      <button type="button" className="lcm-code" onClick={() => setCodeMode((value) => !value)}>
-        {codeMode ? copy.passwordLink : copy.codeLink}
-      </button>
+      <label className="lcm-label" htmlFor={`${lang}-${compact}-password`}>{copy.password}</label>
+      <div className="lcm-field">
+        <Lock className="lcm-ico" size={16} aria-hidden="true" />
+        <input
+          id={`${lang}-${compact}-password`}
+          name="password"
+          type={showPassword ? "text" : "password"}
+          autoComplete="current-password"
+          dir="ltr"
+          defaultValue="password12"
+        />
+        <button
+          type="button"
+          className="lcm-eye"
+          aria-label={showPassword ? copy.hide : copy.show}
+          onClick={() => setShowPassword((value) => !value)}
+        >
+          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+        </button>
+      </div>
       <div className="lcm-row">
         <label className="lcm-check">
           <input type="checkbox" checked={remember} onChange={(event) => setRemember(event.target.checked)} />
@@ -206,7 +188,9 @@ export default function LoginCompare() {
           <li>הסקיצה מציגה את המילה Bizuply בלבד. כאן מופיע לוגו המוצר האמיתי, סימן ומילה, כי זה הלוגו שקיים בפרויקט.</li>
           <li>הפונט הוא Assistant, הפונט שנטען באתר. הסקיצה צוירה בגופן גיאומטרי דומה, לא בקובץ הפונט של המוצר.</li>
           <li>כפתור ההתחברות שומר על הגרדיאנט הסגול של הסקיצה, לא על הכפתור השטוח של דף ההתחברות החי.</li>
-          <li>המילה or נשארה באנגלית גם בכרטיס העברי, כמו בתמונה. בממשק החי המחרוזת היא «או».</li>
+          <li>המילה or בעברית הוחלפה ב«או», כדי שלא יהיה ערבוב שפות.</li>
+          <li>קישור הקוד למייל הוסר, בלי להשאיר רווח. השדות והכפתורים קיבלו עיגול פינות עדין, לא צורת גלולה.</li>
+          <li>רוחב דף ההתחברות עצמו הוא 500px. כאן הכרטיס נשאר ברוחב הפריים המקורי כדי שאפשר יהיה להשוות אותו לתמונה.</li>
           <li>הכותרת היא Welcome back / ברוכים הבאים כמו בסקיצה, ולא Login / התחברות מהממשק החי.</li>
           <li>«זכור אותי» ו«המשך עם Google» הם ניסוח הסקיצה. בממשק החי: «זכרו אותי» ו«המשיכו עם Google».</li>
           <li>במובייל אין שורת השעה ומסגרת המכשיר שמופיעות בתמונה. לכן הכרטיס קצר בכ־40 פיקסלים מהפריים, אבל רוחבו זהה.</li>

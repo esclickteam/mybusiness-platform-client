@@ -129,7 +129,7 @@ body:has(.lcm) .bizuply-a11y-trigger {
   height: 2.85rem;
   padding-inline: 2.5rem 2.6rem;
   border: 1px solid #e3def0;
-  border-radius: 999px;
+  border-radius: 10px;
   background: #fff;
   color: #1e1b4b;
   font: inherit;
@@ -223,7 +223,7 @@ body:has(.lcm) .bizuply-a11y-trigger {
   gap: 0.45rem;
   height: 2.95rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: 10px;
   background: linear-gradient(90deg, #7b3ff3 0%, #5b16cd 100%);
   color: #fff;
   font: inherit;
@@ -281,7 +281,7 @@ body:has(.lcm) .bizuply-a11y-trigger {
   min-height: 2.7rem;
   padding: 0.35rem 0.45rem;
   border: 1px solid #e4dff0;
-  border-radius: 999px;
+  border-radius: 10px;
   background: #fff;
   color: #1e1b4b;
   font: inherit;

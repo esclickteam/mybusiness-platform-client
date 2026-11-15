@@ -57,7 +57,7 @@ describe("Login", () => {
     rememberLoginProduct({ role: "business", subscriptionPlan: "whatsapp_api" });
     for (const url of ["/login", "/login?lang=he", "/login?redirect=/pricing", "/login?product=business"]) {
       renderAt(url);
-      await waitFor(() => expect(screen.getByText("login.cardTitle")).toBeInTheDocument());
+      await waitFor(() => expect(screen.getByText("login.welcomeTitle")).toBeInTheDocument());
       expect(screen.queryByTestId("where")).not.toBeInTheDocument();
       cleanup();
     }
@@ -73,31 +73,24 @@ describe("Login", () => {
 
   it("default /login is password-only: no Email code / Password tabs", async () => {
     renderAt("/login");
-    await waitFor(() => expect(screen.getByText("login.cardTitle")).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByText("login.welcomeTitle")).toBeInTheDocument());
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "login.methodOtp" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("tab", { name: "login.methodPassword" })).not.toBeInTheDocument();
+    expect(screen.queryByText("login.useCodeInstead")).not.toBeInTheDocument();
     expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
     expect(screen.getByLabelText("login.passwordLabel")).toBeInTheDocument();
-    expect(screen.getByText("login.forgotPassword")).toBeInTheDocument();
-    expect(screen.getByText("login.rememberMe")).toBeInTheDocument();
+    expect(screen.getByText("login.forgotShort")).toBeInTheDocument();
+    expect(screen.getByText("login.rememberShort")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "login.signIn" })).toBeInTheDocument();
-    expect(screen.getByText("login.useCodeInstead")).toHaveAttribute(
-      "href",
-      "/login?method=email-code"
-    );
+    const google = screen.getByRole("button", { name: "login.continueGoogle" });
+    const signIn = screen.getByRole("button", { name: "login.signIn" });
+    expect(signIn.compareDocumentPosition(google) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
-  it("dedicated ?method=email-code keeps passwordless OTP without tabs", async () => {
+  it("?method=email-code no longer shows a passwordless form", async () => {
     renderAt("/login?method=email-code&redirect=/pricing");
-    await waitFor(() => expect(screen.getByText("login.cardTitle")).toBeInTheDocument());
-    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
-    expect(screen.queryByLabelText("login.passwordLabel")).not.toBeInTheDocument();
-    expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "login.otpSend" })).toBeInTheDocument();
-    expect(screen.getByText("login.usePasswordInstead")).toHaveAttribute(
-      "href",
-      "/login?redirect=%2Fpricing"
-    );
+    await waitFor(() => expect(screen.getByText("login.welcomeTitle")).toBeInTheDocument());
+    expect(screen.queryByRole("button", { name: "login.otpSend" })).not.toBeInTheDocument();
+    expect(screen.queryByText("login.useCodeInstead")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("login.passwordLabel")).toBeInTheDocument();
   });
 });

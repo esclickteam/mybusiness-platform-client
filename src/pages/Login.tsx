@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
@@ -94,6 +94,7 @@ function BusinessLogin() {
   const [loading, setLoading] = useState<boolean>(false);
   const [dashPreloadDone, setDashPreloadDone] = useState<boolean>(false);
   const [loginError, setLoginError] = useState<string>("");
+  const [fieldError, setFieldError] = useState<{ email?: string; password?: string }>({});
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
   const [socialProviders, setSocialProviders] = useState<SocialProvider[]>(DEFAULT_BIZUPLY_AUTH_PROVIDERS);
@@ -106,15 +107,6 @@ function BusinessLogin() {
   const [linkOtp, setLinkOtp] = useState<string>("");
   const [otpSent, setOtpSent] = useState<boolean>(false);
   const [otpCooldown, setOtpCooldown] = useState<number>(0);
-  /**
-   * Main /login is password-only (plus Google/Microsoft).
-   * Passwordless email OTP stays on the dedicated link `?method=email-code`
-   * so signup-via-code accounts are not locked out. Server OTP routes unchanged.
-   */
-  const [loginOtp, setLoginOtp] = useState<string>("");
-  const [loginOtpSent, setLoginOtpSent] = useState<boolean>(false);
-  const [loginEmailMasked, setLoginEmailMasked] = useState<string>("");
-
   useEffect(() => {
     DashboardPage.preload().finally(() => {
       setDashPreloadDone(true);
@@ -156,13 +148,6 @@ function BusinessLogin() {
   const linkRequired = searchParams.get("oauth") === "link_required";
   const oauthProvider = searchParams.get("provider");
   const checkoutEmail = searchParams.get("email") || "";
-  const methodParam = String(searchParams.get("method") || "")
-    .trim()
-    .toLowerCase();
-  /** Dedicated passwordless path — not shown on the default login surface. */
-  const emailCodeLogin =
-    methodParam === "email-code" || methodParam === "otp";
-  const loginMethod: "otp" | "password" = emailCodeLogin ? "otp" : "password";
   const stateFrom = useMemo(() => {
     const fromState = (location.state as { from?: string } | null)?.from;
     return sanitizeInternalRedirect(fromState);
@@ -172,22 +157,6 @@ function BusinessLogin() {
       sanitizeInternalRedirect(searchParams.get("redirect")) || stateFrom,
     [searchParams, stateFrom]
   );
-
-  const loginHref = (opts: { emailCode?: boolean } = {}) => {
-    const next = new URLSearchParams(searchParams);
-    if (opts.emailCode) next.set("method", "email-code");
-    else next.delete("method");
-    const q = next.toString();
-    return q ? `/login?${q}` : "/login";
-  };
-
-  // Leaving the email-code route clears in-progress OTP state.
-  useEffect(() => {
-    if (emailCodeLogin) return;
-    setLoginOtp("");
-    setLoginOtpSent(false);
-    setLoginEmailMasked("");
-  }, [emailCodeLogin]);
 
   useEffect(() => {
     if (queryRedirect && queryRedirect !== "/") {
@@ -323,6 +292,9 @@ function BusinessLogin() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (name === "email" || name === "password") {
+      setFieldError((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const finishPasswordOrOtpLogin = async (
@@ -380,66 +352,6 @@ function BusinessLogin() {
     }, 1000);
   };
 
-  const handleSendLoginOtp = async (emailOverride?: string) => {
-    setLoginError("");
-    const cleanEmail = String(emailOverride || form.email || "")
-      .trim()
-      .toLowerCase();
-    if (!cleanEmail || !cleanEmail.includes("@")) {
-      setLoginError(t("login.errors.enterEmail"));
-      return;
-    }
-    setSocialBusy("otp");
-    try {
-      if (rememberMe) {
-        localStorage.setItem("bizuply_remember_email", cleanEmail);
-      } else {
-        localStorage.removeItem("bizuply_remember_email");
-      }
-      const { data } = await API.post("/auth/login/email/start", {
-        email: cleanEmail,
-        language: normalizeLanguage(i18n.language) || "en",
-      });
-      setLoginOtpSent(true);
-      setLoginEmailMasked(String(data?.emailMasked || cleanEmail));
-      setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);
-      setForm((prev) => ({ ...prev, email: cleanEmail }));
-    } catch (err) {
-      const apiErr = err as {
-        response?: { data?: { code?: string; cooldownSeconds?: number } };
-      };
-      const code = apiErr.response?.data?.code || "otp_send_failed";
-      if (code === "otp_cooldown") {
-        setOtpCooldown(Number(apiErr.response?.data?.cooldownSeconds || 60) || 60);
-      }
-      setLoginError(t(`login.errors.${code}`, { defaultValue: t("login.errors.otp_send_failed") }));
-    } finally {
-      setSocialBusy(null);
-    }
-  };
-
-  const handleResendLoginOtp = async () => {
-    setLoginError("");
-    setSocialBusy("otp");
-    try {
-      const { data } = await API.post("/auth/login/email/send", {});
-      setLoginOtpSent(true);
-      if (data?.emailMasked) setLoginEmailMasked(String(data.emailMasked));
-      setOtpCooldown(Number(data?.cooldownSeconds || 60) || 60);
-    } catch (err) {
-      const apiErr = err as {
-        response?: { data?: { code?: string; cooldownSeconds?: number } };
-      };
-      const code = apiErr.response?.data?.code || "otp_send_failed";
-      if (code === "otp_cooldown") {
-        setOtpCooldown(Number(apiErr.response?.data?.cooldownSeconds || 60) || 60);
-      }
-      setLoginError(t(`login.errors.${code}`, { defaultValue: t("login.errors.otp_send_failed") }));
-    } finally {
-      setSocialBusy(null);
-    }
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoginError("");
@@ -448,48 +360,17 @@ function BusinessLogin() {
     // a React onChange) still submits email/password correctly.
     const formData = new FormData(e.currentTarget);
     const emailValue = String(formData.get("email") || form.email || "");
-
-    if (loginMethod === "otp") {
-      const code = String(formData.get("loginOtp") || loginOtp || "").replace(/\D/g, "");
-      if (!loginOtpSent) {
-        await handleSendLoginOtp(emailValue);
-        return;
-      }
-      if (code.length !== 6) {
-        setLoginError(t("login.errors.otp_invalid"));
-        return;
-      }
-      setLoading(true);
-      try {
-        const { data } = await API.post<LoginResponse & { accessToken?: string }>(
-          "/auth/login/email/verify",
-          { code, rememberMe }
-        );
-        if (!data?.accessToken || !data?.user) {
-          setLoginError(t("login.errors.otp_invalid"));
-          return;
-        }
-        clearRefreshDead();
-        loginWithToken(data.user, data.accessToken, { skipRedirect: true, rememberMe });
-        await finishPasswordOrOtpLogin(data, { viaOtp: true });
-      } catch (err) {
-        const apiErr = err as { response?: { data?: { code?: string } } };
-        const codeKey = apiErr.response?.data?.code || "otp_invalid";
-        setLoginError(
-          t(`login.errors.${codeKey}`, { defaultValue: t("login.errors.otp_invalid") })
-        );
-      } finally {
-        setLoading(false);
-      }
-      return;
-    }
-
     const passwordValue = String(formData.get("password") || form.password || "");
 
-    if (!emailValue.trim() || !passwordValue) {
-      setLoginError(t("login.errors.enterCredentials"));
+    const nextFieldError: { email?: string; password?: string } = {};
+    if (!emailValue.trim()) nextFieldError.email = t("login.errors.enterEmail");
+    if (!passwordValue) nextFieldError.password = t("login.errors.enterCredentials");
+    if (nextFieldError.email || nextFieldError.password) {
+      setFieldError(nextFieldError);
+      setLoginError("");
       return;
     }
+    setFieldError({});
 
     setLoading(true);
 
@@ -509,7 +390,9 @@ function BusinessLogin() {
 
       await finishPasswordOrOtpLogin(loginResult);
     } catch (err) {
-      setLoginError(messageForLoginFailure(err, t));
+      const message = messageForLoginFailure(err, t);
+      setFieldError({ password: message });
+      setLoginError("");
     } finally {
       setLoading(false);
     }
@@ -604,19 +487,20 @@ function BusinessLogin() {
   }
 
   return (
-    <AuthShell withSiteHeader={!geoHost}>
+    <AuthShell centered withSiteHeader={false}>
       <AuthCard
-        title={geoHost ? "נראות במנועי מענה" : t("login.cardTitle")}
+        productLogo={!geoHost}
+        title={geoHost ? "נראות במנועי מענה" : t("login.welcomeTitle")}
         subtitle={
           geoHost
             ? "התחברות למערכת ניטור GEO — בעלים בלבד"
-            : t("login.cardSubtitle")
+            : t("login.welcomeLead")
         }
       >
         <form
           onSubmit={linkRequired ? handleLinkSubmit : handleSubmit}
           noValidate
-          className="auth-stagger space-y-4"
+          className="auth-login auth-stagger space-y-4"
         >
           {checkoutSuccess ? (
             <p
@@ -775,178 +659,75 @@ function BusinessLogin() {
             </>
           ) : (
             <>
-              <SocialAuthButtons
-                providers={socialProviders}
-                labels={{
-                  google: t("login.continueGoogle"),
-                  microsoft: t("login.continueMicrosoft"),
-                }}
-                orLabel={t("login.or")}
-                redirectingLabel={t("login.redirecting")}
-                busy={socialBusy}
-                onStart={handleSocialStart}
-              />
               <div className="text-start">
-                <label
-                  htmlFor="email"
-                  className="mb-2 block text-sm font-bold text-slate-700"
-                >
+                <label htmlFor="email" className="auth-login__label">
                   {t("login.emailLabel")}
                 </label>
-                <div className="relative">
-                  <Mail className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <div className="auth-login__field">
+                  <Mail className="auth-login__icon" size={16} aria-hidden="true" />
                   <input
                     type="email"
                     id="email"
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    disabled={loading || (emailCodeLogin && loginOtpSent)}
-                    required
+                    disabled={loading}
                     autoComplete="email"
-                    placeholder="name@company.com"
+                    inputMode="email"
                     dir="ltr"
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-11 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                    aria-invalid={fieldError.email ? true : undefined}
+                    aria-describedby={fieldError.email ? "email-error" : undefined}
+                    className="auth-login__input"
                   />
                 </div>
+                {fieldError.email ? (
+                  <p id="email-error" className="auth-login__error" role="alert">{fieldError.email}</p>
+                ) : null}
               </div>
 
-              {emailCodeLogin ? (
-                <div className="space-y-3 text-start">
-                  <p className="text-sm font-semibold leading-6 text-slate-600">
-                    {t("login.otpHint", {
-                      email: loginEmailMasked || form.email || t("login.emailLabel"),
-                    })}
-                  </p>
-                  {loginOtpSent ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => void handleResendLoginOtp()}
-                        disabled={socialBusy !== null || otpCooldown > 0}
-                        className="inline-flex h-11 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-bold text-slate-800 transition hover:border-violet-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
-                      >
-                        {socialBusy === "otp"
-                          ? t("login.otpSending")
-                          : otpCooldown > 0
-                            ? t("login.otpResendIn", { seconds: String(otpCooldown) })
-                            : t("login.otpResend")}
-                      </button>
-                      <div>
-                        <label
-                          htmlFor="loginOtp"
-                          className="mb-2 block text-sm font-bold text-slate-700"
-                        >
-                          {t("login.otpLabel")}
-                        </label>
-                        <input
-                          type="text"
-                          inputMode="numeric"
-                          autoComplete="one-time-code"
-                          id="loginOtp"
-                          name="loginOtp"
-                          value={loginOtp}
-                          onChange={(e) =>
-                            setLoginOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                          }
-                          disabled={loading}
-                          required
-                          maxLength={6}
-                          placeholder="••••••"
-                          dir="ltr"
-                          className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-center text-lg font-bold tracking-[0.35em] text-slate-900 outline-none transition placeholder:tracking-[0.35em] placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLoginOtpSent(false);
-                          setLoginOtp("");
-                          setLoginError("");
-                        }}
-                        className="text-sm font-semibold text-slate-500 transition hover:text-violet-700"
-                      >
-                        {t("register.identity.changeEmail")}
-                      </button>
-                    </>
-                  ) : null}
-                  <p className="pt-1 text-sm font-semibold">
-                    <Link
-                      to={loginHref()}
-                      onClick={() => setLoginError("")}
-                      className="text-slate-500 transition hover:text-violet-700"
-                    >
-                      {t("login.usePasswordInstead")}
-                    </Link>
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3 text-start">
-                  <div>
-                    <label
-                      htmlFor="password"
-                      className="mb-2 block text-sm font-bold text-slate-700"
-                    >
-                      {t("login.passwordLabel")}
-                    </label>
-                    <div className="relative">
-                      <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        id="password"
-                        name="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        disabled={loading}
-                        required
-                        autoComplete="current-password"
-                        placeholder="••••••••"
-                        dir="ltr"
-                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-12 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
-                        className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
-                      >
-                        {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                      </button>
-                    </div>
-                  </div>
-                  <p className="text-sm font-semibold">
-                    <Link
-                      to={loginHref({ emailCode: true })}
-                      onClick={() => setLoginError("")}
-                      className="text-slate-500 transition hover:text-violet-700"
-                    >
-                      {t("login.useCodeInstead")}
-                    </Link>
-                  </p>
-                </div>
-              )}
-
-              <div className="flex items-center justify-between gap-3 pt-1 text-sm font-semibold">
-                {!emailCodeLogin ? (
-                  <Link
-                    to="/forgot-password"
-                    className="text-slate-500 transition hover:text-violet-700"
+              <div className="text-start">
+                <label htmlFor="password" className="auth-login__label">
+                  {t("login.passwordLabel")}
+                </label>
+                <div className="auth-login__field">
+                  <Lock className="auth-login__icon" size={16} aria-hidden="true" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    disabled={loading}
+                    autoComplete="current-password"
+                    dir="ltr"
+                    aria-invalid={fieldError.password ? true : undefined}
+                    aria-describedby={fieldError.password ? "password-error" : undefined}
+                    className="auth-login__input auth-login__input--secret"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
+                    className="auth-login__eye"
                   >
-                    {t("login.forgotPassword")}
-                  </Link>
-                ) : (
-                  <span />
-                )}
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {fieldError.password ? (
+                  <p id="password-error" className="auth-login__error" role="alert">{fieldError.password}</p>
+                ) : null}
+              </div>
 
-                <label className="inline-flex cursor-pointer items-center gap-2 text-slate-600">
+              <div className="auth-login__row">
+                <label className="auth-login__check">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
                   />
-                  {t("login.rememberMe")}
+                  {t("login.rememberShort")}
                 </label>
+                <Link to="/forgot-password">{t("login.forgotShort")}</Link>
               </div>
             </>
           )}
@@ -963,27 +744,21 @@ function BusinessLogin() {
           <button
             type="submit"
             disabled={loading || socialBusy !== null}
-            className="auth-primary-btn mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-700 via-indigo-600 to-violet-700 text-base font-black text-white transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+            aria-busy={loading || undefined}
+            className="auth-login__submit"
           >
-            {linkRequired
-              ? socialBusy === "link"
-                ? t("login.oauth.linking")
-                : t("login.oauth.linkSubmit")
-              : emailCodeLogin && !loginOtpSent
-                ? socialBusy === "otp"
-                  ? t("login.otpSending")
-                  : t("login.otpSend")
-                : emailCodeLogin && loading
-                  ? t("login.otpVerifying")
-                  : loading
-                    ? t("login.loggingIn")
-                    : emailCodeLogin
-                      ? t("login.otpVerify")
-                      : t("login.signIn")}
-            {!loading && socialBusy !== "link" && socialBusy !== "otp" ? (
-              <span aria-hidden className="rtl-flip">
-                ←
-              </span>
+            {loading || socialBusy === "link" ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : null}
+            <span>
+              {linkRequired
+                ? socialBusy === "link"
+                  ? t("login.oauth.linking")
+                  : t("login.oauth.linkSubmit")
+                : loading
+                  ? t("login.loggingIn")
+                  : t("login.signIn")}
+            </span>
+            {!loading && socialBusy !== "link" ? (
+              <ArrowRight size={16} aria-hidden="true" className="auth-login__arrow" />
             ) : null}
           </button>
 
@@ -992,16 +767,31 @@ function BusinessLogin() {
               {t("login.oauth.linkKeepData")}
             </p>
           ) : geoHost ? null : (
-            <p className="pt-2 text-center text-sm font-semibold text-slate-600">
-              {t("login.noAccount")}{" "}
-              <Link
-                to={whiteLabelEnabled ? "/plans" : "/pricing"}
-                className="font-black text-violet-700 transition hover:text-indigo-700"
-              >
-                {t("login.registerCta")}
+            <p className="auth-login__foot">
+              {t("login.accountPrompt")}{" "}
+              <Link to={whiteLabelEnabled ? "/plans" : "/pricing"}>
+                {t("login.registerShort")}
               </Link>
             </p>
           )}
+          {!linkRequired ? (
+            <>
+              <p className="auth-login__or">{t("login.orSoft")}</p>
+              <SocialAuthButtons
+                providers={socialProviders}
+                labels={{
+                  google: t("login.continueGoogle"),
+                  microsoft: t("login.continueMicrosoft"),
+                }}
+                orLabel={t("login.orSoft")}
+                redirectingLabel={t("login.redirecting")}
+                busy={socialBusy}
+                onStart={handleSocialStart}
+                layout="pair"
+                divider="none"
+              />
+            </>
+          ) : null}
         </form>
       </AuthCard>
     </AuthShell>

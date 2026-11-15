@@ -54,6 +54,8 @@ type AuthShellProps = {
   headline?: ReactNode;
   cardMaxWidthClassName?: string;
   withSiteHeader?: boolean;
+  /** Login only: one centered card, no product showcase. */
+  centered?: boolean;
 };
 
 export default function AuthShell({
@@ -61,6 +63,7 @@ export default function AuthShell({
   headline,
   cardMaxWidthClassName = "max-w-[440px]",
   withSiteHeader = false,
+  centered = false,
 }: AuthShellProps) {
   const { i18n } = useTranslation();
   const dir = i18n.dir();
@@ -88,7 +91,7 @@ export default function AuthShell({
 
   return (
     <LoginBrandingContext.Provider value={branding}>
-      <div dir={privateOwnerHost ? "rtl" : dir} className={`auth-stage${withSiteHeader ? " auth-stage--under-header" : ""}`}>
+      <div dir={privateOwnerHost ? "rtl" : dir} className={`auth-stage${withSiteHeader ? " auth-stage--under-header" : ""}${centered ? " auth-stage--centered" : ""}`}>
         <div className="auth-stage__bg" aria-hidden="true">
           <div className="auth-stage__gradient" />
           <div className="auth-stage__grid" />
@@ -101,11 +104,11 @@ export default function AuthShell({
             <LanguageSwitcher />
           </div>
         )}
-        <main className={`auth-stage__main${privateOwnerHost ? " auth-stage__main--geo" : ""}`}>
-          <section className={`auth-stage__panel ${cardMaxWidthClassName}`}>
+        <main className={`auth-stage__main${privateOwnerHost || centered ? " auth-stage__main--geo" : ""}`}>
+          <section className={`auth-stage__panel ${centered ? "max-w-[500px]" : cardMaxWidthClassName}`}>
             {children}
           </section>
-          {privateOwnerHost ? null : whiteLabel ? (
+          {privateOwnerHost || centered ? null : whiteLabel ? (
             <section className="auth-showcase">
               <div className="auth-showcase__brand">
                 <BrandMark />
@@ -125,17 +128,23 @@ export function AuthCard({
   title,
   subtitle,
   children,
+  productLogo = false,
 }: {
   title: string;
   subtitle?: string;
   children: ReactNode;
+  productLogo?: boolean;
 }) {
   const branding = useLoginBranding();
   const whiteLabel = Boolean(branding?.whiteLabelEnabled);
   return (
     <div className="auth-card">
       <div className="auth-card__mark">
-        <BrandMark size="sm" />
+        {productLogo && !whiteLabel ? (
+          <img className="auth-card__logo" src="/logo-mark.svg" alt="BizUply" />
+        ) : (
+          <BrandMark size="sm" />
+        )}
         <h1 className="auth-card__title">
           {whiteLabel && branding?.brandName ? branding.brandName : title}
         </h1>

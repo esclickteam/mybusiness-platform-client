@@ -38,6 +38,9 @@ type Props = {
   redirectingLabel: string;
   busy: SocialProvider | "email" | "link" | "oauth" | "otp" | null; // email = continue-with-email path
   onStart: (provider: SocialProvider) => void;
+  /** Login places the pair under its own divider. Register keeps the stacked default. */
+  layout?: "stack" | "pair";
+  divider?: "above" | "below" | "none";
 };
 
 /** Configured providers plus the OR divider; renders nothing when none are configured. */
@@ -48,12 +51,25 @@ export default function SocialAuthButtons({
   redirectingLabel,
   busy,
   onStart,
+  layout = "stack",
+  divider = "below",
 }: Props) {
   const shown = ORDER.filter((p) => providers.includes(p));
   if (!shown.length) return null;
+  const dividerNode = divider === "none" ? null : (
+    <div className="flex items-center gap-3" role="separator">
+      <span className="h-px flex-1 bg-slate-200" />
+      <span className="text-xs font-black tracking-[0.18em] text-slate-400">{orLabel}</span>
+      <span className="h-px flex-1 bg-slate-200" />
+    </div>
+  );
+  const buttonClass = layout === "pair"
+    ? "auth-social-btn inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] border border-[#e4dff0] bg-white px-3 text-[0.95rem] font-extrabold text-[#1e1b4b] transition hover:border-[#c4b5fd] hover:bg-[#faf8ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5b21b6] disabled:cursor-not-allowed disabled:opacity-60"
+    : "inline-flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-violet-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70";
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3">
+      {divider === "above" ? dividerNode : null}
+      <div className={layout === "pair" ? "auth-social-pair" : "flex flex-col gap-3"}>
         {shown.map((provider) => {
           const Icon = ICONS[provider];
           const isBusy = busy === provider;
@@ -65,7 +81,7 @@ export default function SocialAuthButtons({
               disabled={busy !== null}
               aria-busy={isBusy || undefined}
               onClick={() => onStart(provider)}
-              className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-violet-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70"
+              className={buttonClass}
             >
               {isBusy ? (
                 <Loader2 size={18} className="animate-spin" aria-hidden="true" />
@@ -77,11 +93,7 @@ export default function SocialAuthButtons({
           );
         })}
       </div>
-      <div className="flex items-center gap-3" role="separator">
-        <span className="h-px flex-1 bg-slate-200" />
-        <span className="text-xs font-black tracking-[0.18em] text-slate-400">{orLabel}</span>
-        <span className="h-px flex-1 bg-slate-200" />
-      </div>
+      {divider === "below" ? dividerNode : null}
     </div>
   );
 }

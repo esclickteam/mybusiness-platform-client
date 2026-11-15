@@ -117,15 +117,16 @@ describe("BizUply social login", () => {
     expect(screen.getByRole("button", { name: "login.continueMicrosoft" })).toBeInTheDocument();
   });
 
-  it("shows Google and Microsoft buttons above email/password with an OR divider", async () => {
+  it("shows Google and Microsoft under the form with an or divider", async () => {
     renderAt("/login");
     const google = await screen.findByRole("button", { name: "login.continueGoogle" });
     const microsoft = screen.getByRole("button", { name: "login.continueMicrosoft" });
+    const email = screen.getByLabelText("login.emailLabel");
     expect(apiGet).toHaveBeenCalledWith("/auth/oauth/providers", {
       params: { product: "bizuply" },
     });
-    expect(screen.getByText("login.or")).toBeInTheDocument();
-    expect(screen.getByLabelText("login.emailLabel")).toBeInTheDocument();
+    expect(screen.getByText("login.orSoft")).toBeInTheDocument();
+    expect(email.compareDocumentPosition(google) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(microsoft).toBeEnabled();
     fireEvent.click(google);
     expect(assign).toHaveBeenCalledWith(
