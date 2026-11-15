@@ -153,6 +153,7 @@ const BusinessesList = lazy(() => import("./pages/BusinessesList"));
 const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
 const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
 const Login = lazy(() => import("./pages/Login"));
+const LoginSketches = lazy(() => import("./pages/login-sketches/LoginSketches"));
 const WhatsAppApiLoginPage = lazy(() => import("./pages/whatsappApi/WhatsAppApiLoginPage"));
 const AiAutomationTemplatesVisualPage = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/AiAutomationTemplatesVisualPage"))
@@ -1015,6 +1016,7 @@ export default function App() {
   const isAuthShellRoute =
     location.pathname === "/login" || location.pathname === "/register";
   const isLoginRoute = location.pathname === "/login";
+  const isLoginSketch = /(?:^|\/)login-sketches(?:\/|$)/.test(location.pathname);
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -1205,6 +1207,7 @@ export default function App() {
           !isPartnerSignRoute &&
           !isWhatsAppApiLogin &&
           (!isAuthShellRoute || isLoginRoute) &&
+          !isLoginSketch &&
           !isBizuplyPublicBookingRoute &&
           !scanFilm && <Header />}
 
@@ -1488,6 +1491,7 @@ export default function App() {
                         <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
                         <Route path="/login" element={<Login />} />
+                        <Route path="/login-sketches/:variant" element={<LoginSketches />} />
                         <Route
                           path="/saas-studio/:templateSlug/:publicSlug"
                           element={
@@ -1935,7 +1939,7 @@ export default function App() {
 
       <Suspense fallback={null}><GuidedDemoHost /></Suspense>
 
-      {!scanFilm && !user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isPrivateOwnerSurface && (
+      {!scanFilm && !user && !isCinematicHome && !isEarlyAccessLanding && !isSaasMarketplaceRoute && !isSaasPublicSite && !isDevVisualRoute && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPartnerSignRoute && !isPublicPartnerDeal && !isPublicPartnerSales && !isWhatsAppApiLogin && !isAuthShellRoute && !isLoginSketch && !isPrivateOwnerSurface && (
         <Suspense fallback={null}><PreLoginBot /></Suspense>
       )}
 
