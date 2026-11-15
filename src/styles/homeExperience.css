@@ -690,6 +690,12 @@ html.hx-preview body {
   .ht-ctl:first-child {
     border-inline-start: 0;
   }
+  .ht-theater {
+    display: none;
+  }
+  .hx-mlead {
+    display: block;
+  }
   .ht-stage {
     aspect-ratio: 1170 / 2532;
   }
@@ -700,6 +706,194 @@ html.hx-preview body {
   .ht-caption-step {
     grid-row: auto;
     margin-bottom: 0.4rem;
+  }
+}
+.hx-mlead {
+  padding: 0 0 0.25rem;
+}
+.hx-mlead-title {
+  margin: 0 0 0.9rem;
+  color: #1a0b33;
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+.hx-mlead-title span {
+  display: block;
+}
+.hx-mlead-title span:last-child {
+  color: transparent;
+  background: linear-gradient(100deg, #6d28d9 10%, #4f46e5 58%, #2563eb 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+.hx-mlead-card {
+  padding: 1rem 0.95rem 0.75rem;
+  border: 1px solid rgba(91, 33, 182, 0.16);
+  background: #fff;
+  box-shadow: 0 22px 50px -30px rgba(67, 56, 202, 0.55);
+}
+.hx-mlead-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+.hx-mlead-crm {
+  color: #5b21b6;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+[dir="rtl"] .hx-mlead-crm {
+  letter-spacing: 0.04em;
+}
+.hx-mlead-source {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.7rem;
+  padding: 0 0.55rem;
+  border: 1px solid rgba(37, 99, 235, 0.28);
+  background: #f3f7ff;
+  color: #1d4ed8;
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+.hx-mlead-name {
+  margin: 0.7rem 0 0;
+  color: #1a0b33;
+  font-size: 1.85rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.hx-mlead-status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.85rem;
+  margin: 0.7rem 0 0;
+  padding: 0 0.65rem;
+  background: #f3e8ff;
+  color: #5b21b6;
+  font-size: 0.92rem;
+  font-weight: 800;
+}
+.hx-mlead-status.is-contact {
+  background: #e8f0ff;
+  color: #1d4ed8;
+}
+.hx-mlead-actions {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.95rem;
+}
+.hx-mlead-action,
+.hx-mlead-restart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  border-radius: 0;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+.hx-mlead-action {
+  gap: 0.55rem;
+  min-height: 3rem;
+  padding: 0.55rem 0.8rem;
+  border: 1.5px solid #5b21b6;
+  background: #fff;
+  color: #5b21b6;
+  font-size: 1.02rem;
+  line-height: 1.2;
+}
+.hx-mlead-action svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: square;
+}
+.hx-mlead-action[aria-pressed="true"] {
+  background: #5b21b6;
+  color: #fff;
+}
+.hx-mlead-result {
+  margin-top: 0.8rem;
+  padding: 0.8rem 0.85rem;
+  border: 1px solid rgba(91, 33, 182, 0.12);
+  background: #f6f5fb;
+}
+.hx-mlead-result.is-set {
+  border-color: rgba(91, 33, 182, 0.22);
+  background: linear-gradient(180deg, #f7f4ff 0%, #f3f7ff 100%);
+}
+.hx-mlead-kicker {
+  margin: 0 0 0.2rem;
+  color: #6d28d9;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+[dir="rtl"] .hx-mlead-kicker {
+  letter-spacing: 0.01em;
+  text-transform: none;
+  font-size: 0.82rem;
+}
+.hx-mlead-result-title {
+  margin: 0;
+  color: #1a0b33;
+  font-size: 1.05rem;
+  font-weight: 800;
+  line-height: 1.3;
+}
+.hx-mlead-result-body {
+  margin: 0.28rem 0 0;
+  color: #3f3a52;
+  font-size: 0.98rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.hx-mlead-restart {
+  min-height: 2.6rem;
+  margin-top: 0.65rem;
+  padding: 0 0.8rem;
+  border: 1px solid rgba(91, 33, 182, 0.28);
+  background: #fff;
+  color: #4c1d95;
+  font-size: 0.95rem;
+}
+.hx-mlead-restart:disabled {
+  color: #8b849c;
+  border-color: rgba(91, 33, 182, 0.12);
+  cursor: default;
+}
+.hx-mlead-local {
+  margin: 0.55rem 0 0;
+  color: #6b657c;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+@media (max-width: 360px) {
+  .hx-mlead-title,
+  .hx-mlead-name {
+    font-size: 1.6rem;
+  }
+  .hx-mlead-action {
+    font-size: 0.98rem;
+  }
+}
+@media (min-width: 761px) {
+  .hx-mlead {
+    display: none;
   }
 }
 /* hero:end */

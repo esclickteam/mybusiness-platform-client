@@ -5,6 +5,7 @@ import { getTextDirection } from "../../i18n/localeUtils";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
+import MobileLeadCard from "./MobileLeadCard";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import CustomerCommandCenter from "./CustomerCommandCenter";
 import WhatsAppOperations from "./WhatsAppOperations";
@@ -215,10 +216,26 @@ function useSteps(): TheaterStep[] {
   }));
 }
 
+function useNarrowHero() {
+  const query = "(max-width: 760px)";
+  const [match, setMatch] = useState(() =>
+    typeof window !== "undefined" ? window.matchMedia(query).matches : false,
+  );
+  useEffect(() => {
+    const list = window.matchMedia(query);
+    const apply = () => setMatch(list.matches);
+    apply();
+    list.addEventListener("change", apply);
+    return () => list.removeEventListener("change", apply);
+  }, []);
+  return match;
+}
+
 function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
   const { cine, language } = useCopy();
   const hero = cine.hero;
   const lang = language.startsWith("he") ? "he" : "en";
+  const narrow = useNarrowHero();
   const hot = Math.max(0, String(hero.lineTwo).trim().split(/\s+/).length - 1);
   const steps = useSteps();
   return (
@@ -242,20 +259,24 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
       </div>
       <div className="hx-hero-stage" id="product-theater">
         <div className="hx-hero-stage-inner">
-          <ProductTheater
-            desktop={filmFor(`${lang}-desktop` as FilmKey)}
-            mobile={filmFor(`${lang}-mobile` as FilmKey)}
-            steps={steps}
-            seekRequest={seek}
-            labels={{
-              region: hero.processLabel || hero.stageAlt,
-              play: hero.play,
-              pause: hero.pause,
-              prev: hero.prev,
-              next: hero.next,
-              step: hero.stepOf,
-            }}
-          />
+          {narrow ? (
+            <MobileLeadCard language={language} />
+          ) : (
+            <ProductTheater
+              desktop={filmFor(`${lang}-desktop` as FilmKey)}
+              mobile={filmFor(`${lang}-mobile` as FilmKey)}
+              steps={steps}
+              seekRequest={seek}
+              labels={{
+                region: hero.processLabel || hero.stageAlt,
+                play: hero.play,
+                pause: hero.pause,
+                prev: hero.prev,
+                next: hero.next,
+                step: hero.stepOf,
+              }}
+            />
+          )}
         </div>
       </div>
     </section>

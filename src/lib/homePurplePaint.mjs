@@ -130,14 +130,31 @@ function theaterShellHtml(hx, lang) {
   const stepOf = String(hx.stepOf || "")
     .replace("{n}", "1")
     .replace("{total}", String(steps.length));
-  const poster = (kind) => `${THEATER_MEDIA}/${lang}-${kind}.webp?v=${THEATER_VERSION}`;
-  return `<div class="ht-theater" aria-hidden="true"><div class="ht-bar"><div class="ht-tabs">${tabs}</div><div class="ht-controls">${controls}</div></div><div class="ht-stage"><picture><source media="(max-width: 760px)" srcset="${poster(
-    "mobile",
-  )}" width="1170" height="2532"><img class="ht-poster" src="${poster("desktop")}" alt="${escapeHtml(
+  const poster = `${THEATER_MEDIA}/${lang}-desktop.webp?v=${THEATER_VERSION}`;
+  const he = lang === "he";
+  const cardTitle = he ? ["ליד חדש.", "הזדמנות חדשה."] : ["A new lead.", "A new opportunity."];
+  const cardName = he ? "נועה לוי" : "Claire Bennett";
+  const cardStatus = he ? "ליד חדש" : "New lead";
+  const cardActions = he ? ["WhatsApp", "יצירת משימה", "קביעת פגישה"] : ["WhatsApp", "Create task", "Schedule meeting"];
+  const cardEmpty = he ? ["בחרו פעולה", "התוצאה תופיע כאן."] : ["Choose an action", "The result appears here."];
+  const cardRestart = he ? "התחלה מחדש" : "Start over";
+  const cardLocal = he ? "הדגמה מקומית בלבד. לא נשלח דבר." : "Local demo only. Nothing is sent.";
+  const card = `<div class="hx-mlead"><h2 class="hx-mlead-title"><span>${escapeText(cardTitle[0])}</span><span>${escapeText(
+    cardTitle[1],
+  )}</span></h2><article class="hx-mlead-card"><div class="hx-mlead-top"><span class="hx-mlead-crm">CRM</span><span class="hx-mlead-source">Meta</span></div><h3 class="hx-mlead-name">${escapeText(
+    cardName,
+  )}</h3><p class="hx-mlead-status">${escapeText(cardStatus)}</p><div class="hx-mlead-actions">${cardActions
+    .map((label) => `<span class="hx-mlead-action">${escapeText(label)}</span>`)
+    .join("")}</div><div class="hx-mlead-result"><p class="hx-mlead-result-title">${escapeText(
+    cardEmpty[0],
+  )}</p><p class="hx-mlead-result-body">${escapeText(cardEmpty[1])}</p></div><span class="hx-mlead-restart">${escapeText(
+    cardRestart,
+  )}</span><p class="hx-mlead-local">${escapeText(cardLocal)}</p></article></div>`;
+  return `<div class="ht-theater" aria-hidden="true"><div class="ht-bar"><div class="ht-tabs">${tabs}</div><div class="ht-controls">${controls}</div></div><div class="ht-stage"><picture><source media="(min-width: 761px)" srcset="${poster}" width="1920" height="1080"><img class="ht-poster" alt="${escapeHtml(
     hx.processLabel || hx.stageAlt,
-  )}" width="1920" height="1080" fetchpriority="high" decoding="async"></picture></div><div class="ht-caption"><p class="ht-caption-step">${escapeText(
+  )}" width="1920" height="1080" decoding="async"></picture></div><div class="ht-caption"><p class="ht-caption-step">${escapeText(
     stepOf,
-  )}</p><h3>${escapeText(first[0])}</h3><p>${escapeText(first[1])}</p></div></div>`;
+  )}</p><h3>${escapeText(first[0])}</h3><p>${escapeText(first[1])}</p></div></div>${card}`;
 }
 
 function faqBodyHtml(items) {

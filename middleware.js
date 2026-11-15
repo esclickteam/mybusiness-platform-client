@@ -974,7 +974,6 @@ async function handleMarketingDocument(request) {
           "</head>",
           [
             `<link rel="preload" as="image" href="/demo-media/home/theater/${theaterLang}-desktop.webp?v=t7" media="(min-width: 761px)" fetchpriority="high">`,
-            `<link rel="preload" as="image" href="/demo-media/home/theater/${theaterLang}-mobile.webp?v=t7" media="(max-width: 760px)" fetchpriority="high">`,
             '<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&amp;display=swap">',
             '<script src="/home-css-promote.js" defer></script>',
             "</head>",
