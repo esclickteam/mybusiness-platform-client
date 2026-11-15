@@ -2,7 +2,7 @@
   position: relative;
   padding: clamp(2.6rem, 4.5vw, 4rem) 0;
   color: #172033;
-  background: transparent;
+  background: #4c1d95;
 }
 
 .cc-section svg {
@@ -30,7 +30,7 @@
   width: min(1320px, calc(100% - 2.4rem));
   margin-inline: auto;
   overflow: hidden;
-  border: 1px solid rgba(91, 33, 182, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 26px;
   background: #fff;
   box-shadow: 0 42px 90px rgba(24, 8, 58, 0.34);

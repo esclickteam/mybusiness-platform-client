@@ -1,5 +1,7 @@
 .ht-products.wg-section {
-  background: transparent;
+  background:
+    radial-gradient(ellipse 36% 42% at 100% 0%, rgba(196, 181, 253, 0.28), transparent 58%),
+    linear-gradient(180deg, #fbfaff 0%, #f6f5fb 48%, #fff 100%);
 }
 
 .wg-head {

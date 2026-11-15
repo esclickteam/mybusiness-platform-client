@@ -2,7 +2,7 @@
   position: relative;
   padding: clamp(2.4rem, 4.5vw, 3.8rem) 0;
   color: #172033;
-  background: transparent;
+  background: #4c1d95;
 }
 
 .wa-section svg {
@@ -18,17 +18,16 @@
 
 .wa-wrap { width: min(1240px, calc(100% - 2.4rem)); margin-inline: auto; }
 
-.wa-head { max-width: 46rem; margin: 0 auto 1.15rem; color: #1a0b33; text-align: center; }
+.wa-head { max-width: 46rem; margin: 0 auto 1.15rem; color: #fff; text-align: center; }
 .wa-kicker {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   margin: 0 0 0.55rem;
   padding: 0.28rem 0.7rem;
-  border: 1px solid rgba(91, 33, 182, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
-  background: #efe9ff;
-  color: #5b21b6;
+  background: rgba(255, 255, 255, 0.12);
   font-size: 0.82rem;
   font-weight: 800;
 }
@@ -36,7 +35,7 @@
 .ht-root .wa-section h2 {
   max-width: 22em;
   margin: 0 auto;
-  color: #1a0b33;
+  color: #fff;
   font-size: clamp(1.7rem, 3vw, 2.45rem);
   line-height: 1.15;
   letter-spacing: -0.03em;
@@ -46,7 +45,7 @@
   font-size: 1rem;
   line-height: 1.25;
 }
-.wa-head p { margin: 0.55rem auto 0; max-width: 38rem; color: #4b4563; font-weight: 650; }
+.wa-head p { margin: 0.55rem auto 0; max-width: 38rem; color: rgba(255, 255, 255, 0.86); font-weight: 650; }
 .wa-points {
   display: flex;
   flex-wrap: wrap;
@@ -58,17 +57,16 @@
 }
 .wa-points li {
   padding: 0.35rem 0.7rem;
-  border: 1px solid rgba(91, 33, 182, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.72);
-  color: #3f2d6b;
+  background: rgba(255, 255, 255, 0.1);
   font-size: 0.82rem;
   font-weight: 800;
 }
 
 .wa-app {
   overflow: hidden;
-  border: 1px solid rgba(91, 33, 182, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 26px;
   background: #fff;
   box-shadow: 0 36px 80px rgba(17, 8, 48, 0.34);

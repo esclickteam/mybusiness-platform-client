@@ -828,22 +828,6 @@ html.hx-preview body {
 /* Sections */
 .ht-root {
   position: relative;
-  background: #fff;
-}
-
-/* One field under every section after the hero. The hero keeps its own background. */
-.ht-canvas {
-  position: relative;
-  background-color: #f4f0ff;
-  background-image:
-    radial-gradient(ellipse 68% 16% at 100% 5%, rgba(96, 165, 250, 0.32), transparent 58%),
-    radial-gradient(ellipse 46% 14% at 0% 16%, rgba(124, 58, 237, 0.18), transparent 62%),
-    radial-gradient(ellipse 58% 13% at 96% 34%, rgba(129, 140, 248, 0.2), transparent 64%),
-    radial-gradient(ellipse 42% 12% at 0% 50%, rgba(167, 139, 250, 0.24), transparent 62%),
-    radial-gradient(ellipse 60% 14% at 100% 68%, rgba(59, 130, 246, 0.15), transparent 64%),
-    radial-gradient(ellipse 44% 12% at 4% 86%, rgba(91, 33, 182, 0.13), transparent 64%),
-    linear-gradient(180deg, #ffffff 0%, #f7f4ff 16%, #efe8ff 34%, #e8e4f8 52%, #f3f0ff 70%, #eef2ff 86%, #f7f5ff 100%);
-  background-repeat: no-repeat;
 }
 .ht-wrap {
   width: min(1240px, calc(100% - 3rem));
@@ -857,7 +841,7 @@ html.hx-preview body {
 .ht-pricing,
 .ht-faq {
   position: relative;
-  padding-block: clamp(3.2rem, 5.5vw, 5rem);
+  padding-block: clamp(4.5rem, 9vw, 8rem);
 }
 .ht-root h2 {
   max-width: 20ch;
@@ -1118,7 +1102,7 @@ html.hx-preview body {
 
 /* Website gallery */
 .ht-products {
-  background: transparent;
+  background: linear-gradient(180deg, #fff 0%, #f7f3ff 55%, #fff 100%);
   overflow: hidden;
 }
 .ht-gallery {
@@ -1339,7 +1323,9 @@ html.hx-preview body {
 
 /* Pricing */
 .ht-pricing {
-  background: transparent;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(196, 181, 253, 0.3), transparent 70%),
+    #fff;
 }
 .ht-pricing .ht-head {
   text-align: center;
@@ -1511,9 +1497,12 @@ html.hx-preview body {
   position: relative;
   isolation: isolate;
   overflow: clip;
-  padding-block: clamp(3.4rem, 6vw, 5.2rem);
-  background: transparent;
-  color: #1a0b33;
+  padding-block: clamp(5rem, 10vw, 9rem) clamp(7rem, 13vw, 11rem);
+  background:
+    radial-gradient(ellipse 50% 70% at 85% 10%, rgba(96, 165, 250, 0.45), transparent 65%),
+    radial-gradient(ellipse 55% 70% at 10% 90%, rgba(167, 139, 250, 0.5), transparent 65%),
+    linear-gradient(120deg, #3b0f86 0%, #5b21b6 45%, #3730a3 100%);
+  color: #fff;
   text-align: center;
 }
 .ht-close-waves {
@@ -1532,13 +1521,13 @@ html.hx-preview body {
 }
 .ht-root .ht-close h2 {
   max-width: none;
-  color: #1a0b33;
+  color: #fff;
   font-size: clamp(2.3rem, 5.4vw, 4.6rem);
 }
 .ht-close p {
   max-width: 38rem;
   margin: 1.3rem auto 0;
-  color: #3f3a52;
+  color: rgba(255, 255, 255, 0.86);
   font-size: clamp(1.05rem, 1.4vw, 1.22rem);
   line-height: 1.6;
 }
@@ -1547,14 +1536,14 @@ html.hx-preview body {
   margin-top: 2.3rem;
 }
 .ht-close .hx-btn-line {
-  border-color: #5b21b6;
+  border-color: rgba(255, 255, 255, 0.75);
   background: transparent;
-  color: #5b21b6;
+  color: #fff;
 }
 .ht-close .hx-btn-line:hover {
-  border-color: #4c1d95;
-  background: rgba(91, 33, 182, 0.06);
-  color: #4c1d95;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
 }
 
 /* Scroll reveal. Only armed once JS confirms motion is allowed, so content is never hidden without it. */
@@ -1620,7 +1609,7 @@ html.ht-motion .ht-benefit-grid li:nth-child(5) { transition-delay: 0.18s; }
   .ht-benefits,
   .ht-pricing,
   .ht-faq {
-    padding-block: 3.4rem;
+    padding-block: 4rem;
   }
   .ht-head {
     margin-bottom: 2rem;
@@ -3328,7 +3317,7 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   .ht-benefits,
   .ht-pricing,
   .ht-faq {
-    padding-block: 3.4rem;
+    padding-block: 4.25rem;
   }
   .ht-editorial .ht-wrap,
   .ht-how .ht-wrap,
