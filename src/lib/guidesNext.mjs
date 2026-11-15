@@ -19,21 +19,21 @@ const pricing = link("/pricing", text("Pricing", "מחירים", "Precios", "Pre
 const NEXT = {
   "what-is-a-crm": {
     body: text(
-      "This page explains the record and the six statuses. It does not score a lead, import a spreadsheet in one click, or include appointments. Those appointments, collaborations and automations are on the business plan. The comparison with a spreadsheet, and a workbook you can use before you buy anything, are separate.",
-      "העמוד הזה מסביר את הרשומה ואת ששת הסטטוסים. הוא לא נותן ציון לליד, לא מייבא גיליון בלחיצה, ולא כולל תורים. תורים, שיתופים ואוטומציות נמצאים בחבילה העסקית. ההשוואה לגיליון, וחוברת שאפשר להשתמש בה לפני שקונים משהו, נמצאות בנפרד.",
-      "Esta página explica el registro y los seis estados. No puntúa un lead, no importa una hoja en un clic y no incluye citas. Esas citas, colaboraciones y automatizaciones están en el plan de negocio. La comparación con una hoja y un libro que se puede usar antes de comprar nada van aparte.",
-      "Esta página explica o registro e os seis status. Ela não dá nota a um lead, não importa uma planilha num clique e não inclui agenda. Agenda, colaborações e automações ficam no plano de negócios. A comparação com uma planilha e uma pasta que dá para usar antes de comprar ficam à parte.",
-      "تشرح هذه الصفحة السجل والحالات الست. لا تمنح درجة للعميل، ولا تستورد جدولاً بنقرة، ولا تشمل المواعيد. المواعيد والتعاون والأتمتة في الخطة التجارية. المقارنة مع جدول ودفتر يمكن استخدامه قبل الشراء منفصلان.",
+      "Keep each inquiry in one record, with one of six statuses: New, Contacted, Interested, Converted, Lost, or Old lead. Appointments, collaborations, and automations are on the business plan. There is no lead score and no one-click spreadsheet import. A spreadsheet comparison and a workbook are linked below.",
+      "שומרים כל פנייה ברשומה אחת, עם אחד משישה סטטוסים: חדש, נוצר קשר, מעוניין, הומר, אבוד, או ליד ישן. תורים, שיתופי פעולה ואוטומציות נמצאים בחבילה העסקית. אין ציון לליד ואין ייבוא גיליון בלחיצה. ההשוואה לגיליון וחוברת עבודה מקושרות למטה.",
+      "Guarde cada consulta en un registro, con uno de seis estados: Nuevo, Contactado, Interesado, Convertido, Perdido o Lead antiguo. Las citas, las colaboraciones y las automatizaciones están en el plan de negocio. No hay puntuación de lead ni importación de una hoja en un clic. Abajo hay una comparación con una hoja y un libro de trabajo.",
+      "Guarde cada pedido num registro, com um de seis status: Novo, Contato feito, Interessado, Convertido, Perdido ou Lead antigo. Agenda, colaborações e automações ficam no plano de negócios. Não há nota de lead nem importação de planilha num clique. Abaixo há uma comparação com uma planilha e uma pasta de trabalho.",
+      "احتفظوا بكل استفسار في سجل واحد، بإحدى ست حالات: جديد، تم التواصل، مهتم، تم التحويل، ضائع، أو عميل قديم. المواعيد والتعاون والأتمتة في الخطة التجارية. لا توجد درجة للعميل ولا استيراد جدول بنقرة. في الأسفل مقارنة مع جدول ودفتر عمل.",
     ),
     links: [sheet, templates, glossary, pricing],
   },
   "follow-up-on-leads": {
     body: text(
-      "A note and a dated task are the follow-up. The page does not send the message for you, and it does not change New to Contacted because a task exists. Contacted means someone actually reached the person. WhatsApp can carry that message later, on its own subscription, after a template is approved when the send is outside the customer-service window.",
-      "הערה ומשימה עם תאריך הן המעקב. העמוד לא שולח את ההודעה במקומכם, והוא לא משנה את הסטטוס מחדש ל־נוצר קשר רק כי יש משימה. נוצר קשר אומר שמישהו באמת הגיע אל האדם. וואטסאפ יכול לשאת את ההודעה אחר כך, במנוי נפרד, אחרי שתבנית מאושרת כשהשליחה מחוץ לחלון שירות הלקוחות.",
-      "Una nota y una tarea con fecha son el seguimiento. La página no envía el mensaje y no cambia Nuevo a Contactado solo porque existe una tarea. Contactado significa que alguien llegó de verdad a la persona.",
-      "Uma nota e uma tarefa com data são o acompanhamento. A página não envia a mensagem e não muda Novo para Contato feito só porque existe uma tarefa. Contato feito significa que alguém alcançou a pessoa de verdade.",
-      "ملاحظة ومهمة بتاريخ هما المتابعة. الصفحة لا ترسل الرسالة، ولا تغيّر جديداً إلى تم التواصل لمجرد وجود مهمة. تم التواصل يعني أن أحداً وصل فعلاً إلى الشخص.",
+      "Write a note and a dated task so the next step has an owner. Contacted means someone reached the person, not that a task exists. The message itself is still yours to send. WhatsApp can carry it later, on its own subscription, after a template is approved when the send is outside the customer-service window.",
+      "כותבים הערה ומשימה עם תאריך, כדי שלצעד הבא יהיה אחראי. נוצר קשר אומר שמישהו באמת הגיע אל האדם, לא שקיימת משימה. את ההודעה עצמה שולחים בעצמכם. וואטסאפ יכול לשאת אותה אחר כך, במנוי נפרד, אחרי שתבנית מאושרת כשהשליחה מחוץ לחלון שירות הלקוחות.",
+      "Escriba una nota y una tarea con fecha para que el siguiente paso tenga dueño. Contactado significa que alguien llegó a la persona, no que exista una tarea. El mensaje lo envía usted. WhatsApp puede llevarlo después, en su propia suscripción, cuando una plantilla esté aprobada y el envío quede fuera de la ventana de atención.",
+      "Escreva uma nota e uma tarefa com data para o próximo passo ter um responsável. Contato feito significa que alguém alcançou a pessoa, não que exista uma tarefa. A mensagem é você quem envia. O WhatsApp pode levá-la depois, na própria assinatura, quando um modelo estiver aprovado e o envio ficar fora da janela de atendimento.",
+      "اكتبوا ملاحظة ومهمة بتاريخ حتى تكون للخطوة التالية جهة مسؤولة. تم التواصل يعني أن أحداً وصل إلى الشخص، لا أن المهمة موجودة. الرسالة ترسلونها أنتم. يمكن لواتساب أن يحملها لاحقاً، في اشتراكه، بعد الموافقة على قالب حين يكون الإرسال خارج نافذة الخدمة.",
     ),
     links: [
       link("/guides/whatsapp-message-templates", text("Message templates", "תבניות הודעה", "Plantillas de mensajes", "Modelos de mensagem", "قوالب الرسائل")),
@@ -70,11 +70,11 @@ const NEXT = {
   },
   "manage-meta-campaigns": {
     body: text(
-      "Use this page to read what a campaign is reporting. A result in that report is not yet a followed-up lead. The lead exists when a row is in the CRM. Meta bills the media. Bizuply does not mark a campaign as profitable from the report alone.",
-      "משתמשים בעמוד הזה כדי לקרוא מה קמפיין מדווח. תוצאה בדוח הזה עדיין אינה ליד שטופל. הליד קיים כשיש שורה ב־CRM. Meta מחייבת את המדיה. ביזאפלי לא מסמנת קמפיין כרווחי מהדוח לבדו.",
-      "Use esta página para leer lo que informa una campaña. Un resultado en ese informe todavía no es un lead con seguimiento. El lead existe cuando hay una fila en el CRM. Meta cobra los medios.",
-      "Use esta página para ler o que uma campanha informa. Um resultado nesse relatório ainda não é um lead com acompanhamento. O lead existe quando há uma linha no CRM. A Meta cobra a mídia.",
-      "استخدموا هذه الصفحة لقراءة ما تبلغ عنه الحملة. نتيجة في ذلك التقرير ليست بعد عميلاً تمت متابعته. العميل موجود حين يكون هناك صف في CRM. تحصّل Meta الوسائط.",
+      "Read the campaign report, then follow the person in the CRM. A result in the report is not yet a followed-up lead. Meta bills the media. The report alone does not show whether the campaign made money.",
+      "קוראים את דוח הקמפיין, ואז עוקבים אחרי האדם ב־CRM. תוצאה בדוח אינה ליד שטופל. Meta מחייבת את המדיה. הדוח לבדו לא מראה אם הקמפיין הרוויח.",
+      "Lea el informe de la campaña y luego siga a la persona en el CRM. Un resultado del informe todavía no es un lead con seguimiento. Meta cobra los medios. El informe solo no muestra si la campaña dio ganancia.",
+      "Leia o relatório da campanha e depois acompanhe a pessoa no CRM. Um resultado do relatório ainda não é um lead com acompanhamento. A Meta cobra a mídia. O relatório sozinho não mostra se a campanha deu lucro.",
+      "اقرأوا تقرير الحملة، ثم تابعوا الشخص في CRM. نتيجة في التقرير ليست عميلاً تمت متابعته. تحصّل Meta الوسائط. التقرير وحده لا يُظهر إن كانت الحملة رابحة.",
     ),
     links: [
       link("/guides/from-ad-to-follow-up", text("From the ad to the follow-up", "מהמודעה אל המעקב", "Del anuncio al seguimiento", "Do anúncio ao acompanhamento", "من الإعلان إلى المتابعة")),
@@ -83,11 +83,11 @@ const NEXT = {
   },
   "from-ad-to-follow-up": {
     body: text(
-      "The path is ad, form, row, task. Google Ads lead forms and a form on a Bizuply site can also create that row. The page does not promise a lead score, and it does not treat the ad platform's result count as the pipeline.",
-      "הדרך היא מודעה, טופס, שורה, משימה. גם טפסי לידים של Google Ads וטופס באתר של ביזאפלי יכולים ליצור את השורה. העמוד לא מבטיח ציון ליד, והוא לא מתייחס למספר התוצאות של פלטפורמת המודעות כאל הצינור.",
-      "El camino es anuncio, formulario, fila, tarea. Los formularios de Google Ads y un formulario en un sitio de Bizuply también pueden crear esa fila. La página no promete una puntuación de lead.",
-      "O caminho é anúncio, formulário, linha, tarefa. Formulários do Google Ads e um formulário num site da Bizuply também podem criar essa linha. A página não promete uma nota de lead.",
-      "المسار هو إعلان، نموذج، صف، مهمة. يمكن لنماذج Google Ads ولنموذج في موقع Bizuply أن ينشئا ذلك الصف أيضاً. الصفحة لا تعد بدرجة للعميل.",
+      "Follow the path from the ad to a form, a CRM row, and a task. Google Ads lead forms and a form on a Bizuply site can create that row too. There is no lead score, and the ad platform's result count is not the lead list.",
+      "עוקבים אחרי הדרך מהמודעה אל טופס, שורה ב־CRM ומשימה. גם טפסי לידים של Google Ads וטופס באתר של ביזאפלי יכולים ליצור את השורה. אין ציון לליד, ומספר התוצאות בפלטפורמת המודעות אינו רשימת הלידים.",
+      "Siga el camino del anuncio al formulario, a la fila del CRM y a la tarea. Los formularios de Google Ads y un formulario en un sitio de Bizuply también pueden crear esa fila. No hay puntuación de lead, y el recuento de resultados no es la lista de leads.",
+      "Siga o caminho do anúncio ao formulário, à linha do CRM e à tarefa. Formulários do Google Ads e um formulário num site da Bizuply também podem criar essa linha. Não há nota de lead, e a contagem de resultados não é a lista de leads.",
+      "اتبعوا المسار من الإعلان إلى النموذج، ثم صف في CRM، ثم مهمة. يمكن لنماذج Google Ads ولنموذج في موقع Bizuply أن ينشئا ذلك الصف أيضاً. لا توجد درجة للعميل، وعدد النتائج ليس قائمة العملاء.",
     ),
     links: [
       link("/guides/follow-up-on-leads", text("Follow up on the lead", "מעקב אחרי הליד", "Seguimiento del lead", "Acompanhar o lead", "متابعة العميل")),
@@ -97,31 +97,31 @@ const NEXT = {
   },
   "whatsapp-cloud-api-cost": {
     body: text(
-      "Bizuply charges $29 a month for one connected number. There is no free trial. Meta charges delivered business-to-user messages separately, by category and by the recipient's country, and that table changes. This page does not copy Meta's rate card. Read the pricing page Meta updated on 30 September 2026 before you budget a send.",
-      "ביזאפלי גובה 29 דולר לחודש למספר מחובר אחד. אין ניסיון חינם. Meta מחייבת בנפרד על הודעות מהעסק אל המשתמש שנמסרו, לפי קטגוריה ולפי מדינת הנמען, והטבלה משתנה. העמוד הזה לא מעתיק את מחירון Meta. קוראים את דף המחירים ש־Meta עדכנה ב־30 בספטמבר 2026 לפני שקובעים תקציב לשליחה.",
-      "Bizuply cobra 29 dólares al mes por un número conectado. No hay prueba gratis. Meta cobra aparte los mensajes entregados del negocio al usuario, por categoría y por el país del destinatario, y esa tabla cambia. Esta página no copia la tarifa de Meta.",
-      "A Bizuply cobra US$ 29 por mês por um número conectado. Não há teste grátis. A Meta cobra à parte as mensagens entregues da empresa ao usuário, por categoria e pelo país do destinatário, e essa tabela muda. Esta página não copia a tabela da Meta.",
-      "تحصّل Bizuply 29 دولاراً في الشهر لرقم متصل واحد. لا توجد تجربة مجانية. تحصّل Meta بشكل منفصل الرسائل المسلّمة من النشاط إلى المستخدم، حسب الفئة وبلد المستلم، وهذا الجدول يتغير. هذه الصفحة لا تنسخ جدول Meta.",
+      "Budget two charges. Bizuply is $29 a month for one connected number, with no free trial. Meta charges delivered business-to-user messages separately, by category and by the recipient's country. Read the pricing page Meta updated on 30 September 2026 before you budget a send.",
+      "מתכננים שני חיובים. ביזאפלי היא 29 דולר לחודש למספר מחובר אחד, בלי ניסיון חינם. Meta מחייבת בנפרד על הודעות מהעסק אל המשתמש שנמסרו, לפי קטגוריה ולפי מדינת הנמען. קוראים את דף המחירים ש־Meta עדכנה ב־30 בספטמבר 2026 לפני שקובעים תקציב לשליחה.",
+      "Presupueste dos cargos. Bizuply son 29 dólares al mes por un número conectado, sin prueba gratis. Meta cobra aparte los mensajes entregados del negocio al usuario, por categoría y por el país del destinatario. Lea la página de precios que Meta actualizó el 30 de septiembre de 2026 antes de presupuestar un envío.",
+      "Separe dois custos. A Bizuply cobra US$ 29 por mês por um número conectado, sem teste grátis. A Meta cobra à parte as mensagens entregues da empresa ao usuário, por categoria e pelo país do destinatário. Leia a página de preços que a Meta atualizou em 30 de setembro de 2026 antes de orçar um envio.",
+      "خططوا لتكلفتين. Bizuply بـ 29 دولاراً في الشهر لرقم متصل واحد، بلا تجربة مجانية. تحصّل Meta بشكل منفصل الرسائل المسلّمة من النشاط إلى المستخدم، حسب الفئة وبلد المستلم. اقرأوا صفحة الأسعار التي حدّثتها Meta في 30 سبتمبر 2026 قبل وضع ميزانية للإرسال.",
     ),
     links: [wa, link("/guides/whatsapp-message-templates", text("Message templates", "תבניות הודעה", "Plantillas de mensajes", "Modelos de mensagem", "قوالب الرسائل")), pricing],
   },
   "whatsapp-message-templates": {
     body: text(
-      "Meta approves the template and the number. There is no second approval queue at Bizuply. A template is what can be delivered outside the 24-hour customer-service window. A reply inside that window is not the same send. Managing several client numbers from one agency screen is not available.",
-      "Meta מאשרת את התבנית ואת המספר. אין תור אישור שני בביזאפלי. תבנית היא מה שאפשר למסור מחוץ לחלון שירות הלקוחות של 24 שעות. תשובה בתוך החלון אינה אותה שליחה. ניהול כמה מספרי לקוחות ממסך סוכנות אחד אינו זמין.",
-      "Meta aprueba la plantilla y el número. No hay una segunda cola en Bizuply. Una plantilla es lo que se puede entregar fuera de la ventana de 24 horas. Una respuesta dentro de esa ventana no es el mismo envío. Gestionar varios números de clientes desde una pantalla de agencia no está disponible.",
-      "A Meta aprova o modelo e o número. Não há uma segunda fila na Bizuply. Um modelo é o que pode ser entregue fora da janela de 24 horas. Uma resposta dentro dessa janela não é o mesmo envio. Gerir vários números de clientes numa tela de agência não está disponível.",
-      "توافق Meta على القالب والرقم. لا يوجد طابور موافقة ثانٍ في Bizuply. القالب هو ما يمكن تسليمه خارج نافذة 24 ساعة. الرد داخل النافذة ليس الإرسال نفسه. إدارة أرقام عملاء عدة من شاشة وكالة واحدة غير متاحة.",
+      "Submit the template to Meta, then send it once the template and the number are approved. A template is what can be delivered outside the 24-hour customer-service window. A reply inside that window is a different send. Each client number has its own subscription. There is no single screen for several clients' numbers.",
+      "שולחים את התבנית ל־Meta, ואז שולחים הודעה אחרי שהתבנית והמספר מאושרים. תבנית היא מה שאפשר למסור מחוץ לחלון שירות הלקוחות של 24 שעות. תשובה בתוך החלון היא שליחה אחרת. לכל מספר של לקוח יש מנוי משלו. אין מסך אחד לכמה מספרי לקוחות.",
+      "Envíe la plantilla a Meta y úsela cuando la plantilla y el número estén aprobados. Una plantilla es lo que se puede entregar fuera de la ventana de 24 horas. Una respuesta dentro de esa ventana es otro envío. Cada número de cliente tiene su propia suscripción. No hay una sola pantalla para varios números de clientes.",
+      "Envie o modelo à Meta e use-o quando o modelo e o número estiverem aprovados. Um modelo é o que pode ser entregue fora da janela de 24 horas. Uma resposta dentro dessa janela é outro envio. Cada número de cliente tem a própria assinatura. Não há uma única tela para vários números de clientes.",
+      "أرسلوا القالب إلى Meta، ثم أرسلوا بعد موافقة القالب والرقم. القالب هو ما يمكن تسليمه خارج نافذة 24 ساعة. الرد داخل النافذة إرسال مختلف. لكل رقم عميل اشتراكه. لا توجد شاشة واحدة لأرقام عملاء عدة.",
     ),
     links: [wa, link("/guides/whatsapp-cloud-api-cost", text("What the WhatsApp subscription costs", "כמה עולה מנוי הוואטסאפ", "Cuánto cuesta la suscripción de WhatsApp", "Quanto custa a assinatura do WhatsApp", "كم يكلف اشتراك واتساب"))],
   },
   "business-automation": {
     body: text(
-      "An automation here is a trigger, a condition and an action on a lead that is already in Bizuply, such as creating the next task when a status changes. It does not send a WhatsApp message unless a template is approved and the subscription exists. Automations are on the business plan, not on the $49 CRM plan.",
-      "אוטומציה כאן היא טריגר, תנאי ופעולה על ליד שכבר נמצא בביזאפלי, למשל יצירת המשימה הבאה כשסטטוס משתנה. היא לא שולחת הודעת וואטסאפ אלא אם תבנית מאושרת והמנוי קיים. אוטומציות נמצאות בחבילה העסקית, לא במסלול ה־CRM של 49 דולר.",
-      "Una automatización aquí es un disparador, una condición y una acción sobre un lead que ya está en Bizuply, como crear la siguiente tarea cuando cambia un estado. No envía un WhatsApp salvo que haya una plantilla aprobada y la suscripción. Las automatizaciones están en el plan de negocio, no en el CRM de 49 dólares.",
-      "Uma automação aqui é um gatilho, uma condição e uma ação sobre um lead que já está na Bizuply, como criar a próxima tarefa quando um status muda. Ela não envia um WhatsApp a menos que haja um modelo aprovado e a assinatura. Automações ficam no plano de negócios, não no CRM de US$ 49.",
-      "الأتمتة هنا مشغّل وشرط وإجراء على عميل موجود أصلاً في Bizuply، مثل إنشاء المهمة التالية حين تتغير حالة. لا ترسل واتساب إلا إذا كان هناك قالب موافق عليه والاشتراك. الأتمتة في الخطة التجارية، لا في CRM بـ 49 دولاراً.",
+      "Set a trigger, a condition, and an action, such as creating the next task when a status changes. A WhatsApp message goes out only when a template is approved and the WhatsApp subscription is active. Automations are on the business plan, not on the $49 CRM plan.",
+      "מגדירים טריגר, תנאי ופעולה, למשל יצירת המשימה הבאה כשסטטוס משתנה. הודעת וואטסאפ יוצאת רק כשתבנית מאושרת ומנוי הוואטסאפ פעיל. אוטומציות נמצאות בחבילה העסקית, לא במסלול ה־CRM של 49 דולר.",
+      "Defina un disparador, una condición y una acción, como crear la siguiente tarea cuando cambia un estado. Un WhatsApp sale solo cuando hay una plantilla aprobada y la suscripción de WhatsApp está activa. Las automatizaciones están en el plan de negocio, no en el CRM de 49 dólares.",
+      "Defina um gatilho, uma condição e uma ação, como criar a próxima tarefa quando um status muda. Um WhatsApp sai só quando há um modelo aprovado e a assinatura do WhatsApp está ativa. Automações ficam no plano de negócios, não no CRM de US$ 49.",
+      "حدّدوا مشغّلاً وشرطاً وإجراءً، مثل إنشاء المهمة التالية حين تتغير حالة. تخرج رسالة واتساب فقط حين يكون القالب موافقاً عليه واشتراك واتساب فعّالاً. الأتمتة في الخطة التجارية، لا في CRM بـ 49 دولاراً.",
     ),
     links: [
       link("/guides/follow-up-on-leads", text("Follow up on the lead", "מעקב אחרי הליד", "Seguimiento del lead", "Acompanhar o lead", "متابعة العميل")),
@@ -131,11 +131,11 @@ const NEXT = {
   },
   "build-a-website-without-code": {
     body: text(
-      "The builder publishes pages on a Bizuply site. It is not a promise that a visitor becomes a lead. That happens when a form on the site creates a CRM row. An expert build of up to five pages, when it is offered, is a separate one-time price on the pricing page. Do not treat a number from an older guide as the current quote.",
-      "הבנאי מפרסם עמודים באתר של ביזאפלי. הוא לא הבטחה שמבקר הופך לליד. זה קורה כשטופס באתר יוצר שורה ב־CRM. בנייה בידי מומחה של עד חמישה עמודים, כשהיא מוצעת, היא מחיר חד־פעמי נפרד בעמוד המחירים. אין להתייחס למספר ממדריך ישן כאל הצעת המחיר העדכנית.",
-      "El constructor publica páginas en un sitio de Bizuply. No promete que un visitante se vuelva un lead. Eso ocurre cuando un formulario del sitio crea una fila en el CRM. Una construcción de experto de hasta cinco páginas, cuando se ofrece, es un precio único aparte en la página de precios.",
-      "O construtor publica páginas num site da Bizuply. Ele não promete que um visitante vire um lead. Isso acontece quando um formulário do site cria uma linha no CRM. Uma construção por especialista de até cinco páginas, quando é oferecida, é um preço único à parte na página de preços.",
-      "يبني المنشئ صفحات على موقع Bizuply. لا يعد بأن يصبح الزائر عميلاً. يحدث ذلك حين ينشئ نموذج في الموقع صفاً في CRM. بناء خبير حتى خمس صفحات، حين يُعرض، سعر لمرة واحدة منفصل في صفحة الأسعار.",
+      "Publish the page, then add a form if you want a visitor to become a CRM lead. An expert build of up to five pages, when it is offered, has its own one-time price on the pricing page.",
+      "מפרסמים את העמוד, ואז מוסיפים טופס אם רוצים שמבקר יהפוך לליד ב־CRM. בנייה בידי מומחה של עד חמישה עמודים, כשהיא מוצעת, היא מחיר חד־פעמי משלה בעמוד המחירים.",
+      "Publique la página y añada un formulario si quiere que un visitante se vuelva un lead del CRM. Una construcción de experto de hasta cinco páginas, cuando se ofrece, tiene su propio precio único en la página de precios.",
+      "Publique a página e acrescente um formulário se quiser que um visitante vire um lead do CRM. Uma construção por especialista de até cinco páginas, quando é oferecida, tem o próprio preço único na página de preços.",
+      "انشروا الصفحة، ثم أضيفوا نموذجاً إذا أردتم أن يصبح الزائر عميلاً في CRM. بناء خبير حتى خمس صفحات، حين يُعرض، له سعره لمرة واحدة في صفحة الأسعار.",
     ),
     links: [
       link("/guides/website-form-to-crm", text("A website form into the CRM", "טופס אתר אל ה־CRM", "Un formulario del sitio al CRM", "Um formulário do site no CRM", "نموذج موقع إلى CRM")),
@@ -145,11 +145,11 @@ const NEXT = {
   },
   "website-form-to-crm": {
     body: text(
-      "The form on a Bizuply site can create a lead whose source is the website and whose first status is New. A form on a site that is not built in Bizuply is not one of the automatic sources. There is no one-click spreadsheet import on this path.",
-      "טופס באתר של ביזאפלי יכול ליצור ליד שהמקור שלו הוא האתר והסטטוס הראשון שלו הוא חדש. טופס באתר שלא נבנה בביזאפלי אינו אחד מהמקורות האוטומטיים. אין בדרך הזו ייבוא גיליון בלחיצה.",
-      "El formulario de un sitio de Bizuply puede crear un lead cuyo origen es el sitio y cuyo primer estado es Nuevo. Un formulario en un sitio que no está hecho en Bizuply no es una de las fuentes automáticas. No hay una importación de hoja en un clic en este camino.",
-      "O formulário de um site da Bizuply pode criar um lead cuja origem é o site e cujo primeiro status é Novo. Um formulário num site que não foi feito na Bizuply não é uma das origens automáticas. Não há importação de planilha num clique neste caminho.",
-      "يمكن لنموذج في موقع Bizuply أن ينشئ عميلاً مصدره الموقع وحالته الأولى جديد. نموذج في موقع لم يُبنَ في Bizuply ليس من المصادر الآلية. لا يوجد في هذا المسار استيراد جدول بنقرة.",
+      "A form on a Bizuply site creates a lead with the website as the source and New as the first status. The automatic sources are that form, Meta Lead Ads, and Google Ads lead forms. There is no one-click spreadsheet import.",
+      "טופס באתר של ביזאפלי יוצר ליד שהמקור שלו הוא האתר והסטטוס הראשון שלו הוא חדש. המקורות האוטומטיים הם הטופס הזה, Meta Lead Ads, וטפסי לידים של Google Ads. אין ייבוא גיליון בלחיצה.",
+      "Un formulario en un sitio de Bizuply crea un lead cuyo origen es el sitio y cuyo primer estado es Nuevo. Las fuentes automáticas son ese formulario, Meta Lead Ads y los formularios de Google Ads. No hay una importación de hoja en un clic.",
+      "Um formulário num site da Bizuply cria um lead cuja origem é o site e cujo primeiro status é Novo. As origens automáticas são esse formulário, Meta Lead Ads e os formulários do Google Ads. Não há importação de planilha num clique.",
+      "ينشئ نموذج في موقع Bizuply عميلاً مصدره الموقع وحالته الأولى جديد. المصادر الآلية هي هذا النموذج وإعلانات العملاء في Meta ونماذج Google Ads. لا يوجد استيراد جدول بنقرة.",
     ),
     links: [
       link("/guides/what-is-a-crm", text("What a CRM record is", "מהי רשומת CRM", "Qué es un registro de CRM", "O que é um registro de CRM", "ما هو سجل CRM")),
@@ -159,11 +159,11 @@ const NEXT = {
   },
   "appointments-for-a-service-business": {
     body: text(
-      "Appointments are for a service business that already keeps the person in the CRM. They are part of the business plan, not of the $49 CRM plan. The page does not turn a lead into a booking by itself, and it does not replace the follow-up task on the file.",
-      "תורים מיועדים לעסק שירות שכבר שומר את האדם ב־CRM. הם חלק מהחבילה העסקית, לא ממסלול ה־CRM של 49 דולר. העמוד לא הופך ליד לתור לבד, והוא לא מחליף את משימת המעקב על התיק.",
-      "Las citas son para un negocio de servicios que ya guarda a la persona en el CRM. Forman parte del plan de negocio, no del CRM de 49 dólares. La página no convierte un lead en una reserva sola y no sustituye la tarea de seguimiento.",
-      "A agenda é para um negócio de serviços que já guarda a pessoa no CRM. Ela faz parte do plano de negócios, não do CRM de US$ 49. A página não transforma um lead em reserva sozinha e não substitui a tarefa de acompanhamento.",
-      "المواعيد لنشاط خدمات يحتفظ أصلاً بالشخص في CRM. هي جزء من الخطة التجارية، لا من CRM بـ 49 دولاراً. الصفحة لا تحوّل العميل إلى حجز وحدها ولا تستبدل مهمة المتابعة.",
+      "Set hours and services, then let a client book a 15-minute opening. Appointments are on the business plan, not on the $49 CRM plan. A booking sits next to the follow-up task. It does not replace it.",
+      "מגדירים שעות ושירותים, ואז הלקוח יכול לקבוע חלון של 15 דקות. תורים נמצאים בחבילה העסקית, לא במסלול ה־CRM של 49 דולר. הזימון יושב ליד משימת המעקב. הוא לא מחליף אותה.",
+      "Defina el horario y los servicios, y deje que el cliente reserve un hueco de 15 minutos. Las citas están en el plan de negocio, no en el CRM de 49 dólares. La reserva queda junto a la tarea de seguimiento. No la sustituye.",
+      "Defina o horário e os serviços e deixe o cliente marcar uma vaga de 15 minutos. A agenda fica no plano de negócios, não no CRM de US$ 49. A reserva fica ao lado da tarefa de acompanhamento. Ela não a substitui.",
+      "حدّدوا الساعات والخدمات، ثم اتركوا الزبون يحجز فتحة من 15 دقيقة. المواعيد في الخطة التجارية، لا في CRM بـ 49 دولاراً. الحجز يبقى بجانب مهمة المتابعة. لا يستبدلها.",
     ),
     links: [
       link("/appointments", text("Appointments", "תורים", "Citas", "Agenda", "المواعيد")),
@@ -173,11 +173,11 @@ const NEXT = {
   },
   "crm-and-business-platform": {
     body: text(
-      "CRM only, at $49 a month, is the pipeline and the client file. The business plan, at $99 a month or $990 a year, adds appointments, collaborations and automations. WhatsApp stays separate at $29 a month per connected number. This page does not say that one plan includes the others.",
-      "CRM בלבד, ב־49 דולר לחודש, הוא הצינור ותיק הלקוח. החבילה העסקית, ב־99 דולר לחודש או 990 לשנה, מוסיפה תורים, שיתופים ואוטומציות. וואטסאפ נשאר נפרד ב־29 דולר לחודש למספר מחובר. העמוד הזה לא אומר שמסלול אחד כולל את האחרים.",
-      "El CRM solo, a 49 dólares al mes, es el pipeline y el expediente. El plan de negocio, a 99 dólares al mes o 990 al año, añade citas, colaboraciones y automatizaciones. WhatsApp sigue aparte a 29 dólares al mes por número conectado. Esta página no dice que un plan incluya a los otros.",
-      "O CRM sozinho, a US$ 49 por mês, é o pipeline e o arquivo do cliente. O plano de negócios, a US$ 99 por mês ou US$ 990 por ano, acrescenta agenda, colaborações e automações. O WhatsApp continua à parte a US$ 29 por mês por número conectado. Esta página não diz que um plano inclui os outros.",
-      "CRM وحده، بـ 49 دولاراً في الشهر، هو المسار وملف العميل. الخطة التجارية، بـ 99 دولاراً في الشهر أو 990 في السنة، تضيف المواعيد والتعاون والأتمتة. يبقى واتساب منفصلاً بـ 29 دولاراً في الشهر لكل رقم متصل. هذه الصفحة لا تقول إن خطة واحدة تشمل الأخريات.",
+      "Choose CRM only at $49 a month for the lead list and the client file. Choose the business plan at $99 a month or $990 a year when you also want appointments, collaborations, and automations. WhatsApp is $29 a month per connected number, on its own subscription.",
+      "בוחרים CRM בלבד ב־49 דולר לחודש לרשימת הלידים ולתיק הלקוח. בוחרים את החבילה העסקית ב־99 דולר לחודש או 990 לשנה כשרוצים גם תורים, שיתופי פעולה ואוטומציות. וואטסאפ הוא 29 דולר לחודש למספר מחובר, במנוי משלו.",
+      "Elija el CRM solo a 49 dólares al mes para la lista de leads y el expediente. Elija el plan de negocio a 99 dólares al mes o 990 al año cuando también quiera citas, colaboraciones y automatizaciones. WhatsApp cuesta 29 dólares al mes por número conectado, en su propia suscripción.",
+      "Escolha o CRM sozinho a US$ 49 por mês para a lista de leads e o arquivo do cliente. Escolha o plano de negócios a US$ 99 por mês ou US$ 990 por ano quando também quiser agenda, colaborações e automações. O WhatsApp custa US$ 29 por mês por número conectado, na própria assinatura.",
+      "اختاروا CRM وحده بـ 49 دولاراً في الشهر لقائمة العملاء وملف العميل. اختاروا الخطة التجارية بـ 99 دولاراً في الشهر أو 990 في السنة حين تريدون أيضاً المواعيد والتعاون والأتمتة. واتساب بـ 29 دولاراً في الشهر لكل رقم متصل، في اشتراكه.",
     ),
     links: [sheet, pricing, link("/platform", text("The platform", "הפלטפורמה", "La plataforma", "A plataforma", "المنصة"))],
   },
@@ -192,11 +192,11 @@ export function applyGuideNext(articles) {
       page.sections.push({
         id: "boundary",
         heading: text(
-          "Where this page stops",
-          "איפה העמוד הזה נעצר",
-          "Dónde se detiene esta página",
-          "Onde esta página para",
-          "أين تتوقف هذه الصفحة",
+          "What to do next",
+          "מה עושים אחר כך",
+          "Qué hacer después",
+          "O que fazer depois",
+          "ماذا بعد",
         )[locale],
         paragraphs: [section.body[locale]],
         links: section.links.map((item) => ({ href: item.href, label: item.label[locale] })),
