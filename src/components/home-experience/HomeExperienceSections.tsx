@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
-import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
@@ -192,7 +191,6 @@ export default function HomeExperienceSections() {
         <MeetingBooking />
         <WebsiteGallery />
         <Benefits />
-        <Pricing />
         <Faq />
         <Close />
       </div>
@@ -371,82 +369,35 @@ function Benefits() {
   );
 }
 
-function Pricing() {
-  const { text, t, he, language } = useCopy();
-  const money = (value: number) =>
-    new Intl.NumberFormat(he ? "he-IL" : language, { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(value);
-  const plans = PRICING_PACKAGES.map((pkg) => {
-    const tx = (suffix: string, hebrew: string, english: string) =>
-      he ? hebrew : t(`pricing.packages.${pkg.type}.${suffix}`, { defaultValue: english });
-    return {
-      key: pkg.type,
-      highlighted: pkg.highlighted,
-      name: tx("name", pkg.nameHe, pkg.nameEn),
-      badge: tx("badge", pkg.badgeHe, pkg.badgeEn),
-      description: tx("description", pkg.descriptionHe, pkg.descriptionEn),
-      period: tx("pricePeriod", pkg.pricePeriodHe, pkg.pricePeriodEn),
-      price: money(pkg.price),
-      features: (he ? pkg.featuresHe : pkg.featuresEn.map((item, index) => t(`pricing.packages.${pkg.type}.features.${index}`, { defaultValue: item }))).slice(0, 5),
-    };
-  });
-  return (
-    <section className="ht-pricing" id="pricing" aria-labelledby="ht-pricing-title">
-      <div className="ht-wrap">
-        <div className="ht-head" data-reveal>
-          <p className="ht-eyebrow">{text("מחירים ומסלולים", "Pricing and plans")}</p>
-          <h2 id="ht-pricing-title">{text("מסלול ברור לכל שלב של העסק.", "A clear plan for every stage of the business.")}</h2>
-          <p className="ht-lead">
-            {text(
-              "המחירים בדולר ארה״ב. אפשר להתחיל בחשבון חינמי ולבחור מסלול בעמוד המחירים.",
-              "Prices are in US dollars. You can start on a free account and choose a plan on the pricing page.",
-            )}
-          </p>
-        </div>
-        <ul className="ht-plans">
-          {plans.map((plan, index) => (
-            <li key={plan.key} className={plan.highlighted ? "is-featured" : undefined} data-reveal style={{ transitionDelay: `${index * 80}ms` }}>
-              <p className="ht-plan-badge">{plan.badge}</p>
-              <h3>{plan.name}</h3>
-              <p className="ht-plan-price">
-                <strong>{plan.price}</strong>
-                <span>{plan.period}</span>
-              </p>
-              <p className="ht-plan-desc">{plan.description}</p>
-              <ul>
-                {plan.features.map((feature) => (
-                  <li key={feature}>{feature}</li>
-                ))}
-              </ul>
-              <Cta to="/pricing" tone={plan.highlighted ? "solid" : "line"}>{text("לפרטי המסלול", "See plan details")}</Cta>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-  );
-}
-
 function Faq() {
   const { text, language } = useCopy();
   const locale = faqLocale(language);
   const items = (HOME_FAQ as Record<string, [string, string][]>)[locale] || HOME_FAQ.en;
+  const shown = locale === "he" || locale === "en" ? items.slice(0, 8) : items;
   const [open, setOpen] = useState<number | null>(null);
   return (
     <section className="ht-faq" id="faq" aria-labelledby="ht-faq-title">
       <div className="ht-wrap ht-faq-center">
         <h2 id="ht-faq-title" data-reveal>{text("שאלות נפוצות", "Frequently Asked Questions")}</h2>
         <div className="ht-faq-list">
-          {items.map(([question, answer], index) => {
+          {shown.map(([question, answer], index) => {
             const on = open === index;
+            const panelId = `ht-faq-panel-${index}`;
             return (
               <div className={on ? "ht-faq-item is-open" : "ht-faq-item"} key={question}>
                 <h3>
-                  <button type="button" aria-expanded={on} onClick={() => setOpen(on ? null : index)}>
+                  <button
+                    type="button"
+                    id={`${panelId}-button`}
+                    aria-expanded={on}
+                    aria-controls={panelId}
+                    onClick={() => setOpen(on ? null : index)}
+                  >
                     <span>{question}</span>
                     <i aria-hidden="true" />
                   </button>
                 </h3>
-                <div className="ht-faq-a">
+                <div className="ht-faq-a" id={panelId} role="region" aria-labelledby={`${panelId}-button`} aria-hidden={!on}>
                   <div>
                     <p>{answer}</p>
                   </div>
@@ -457,7 +408,7 @@ function Faq() {
         </div>
         <div className="ht-faq-more" data-reveal>
           <div className="hx-actions">
-            <Cta to="/faq" tone="line">{text("כל השאלות", "All questions")}</Cta>
+            <Cta to="/faq" tone="line">{text("לכל השאלות הנפוצות", "View all FAQs")}</Cta>
           </div>
         </div>
       </div>
