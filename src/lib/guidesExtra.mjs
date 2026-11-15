@@ -87,7 +87,7 @@ const HE = {
   ),
   "website-form-to-crm": guide(
     "איך טופס באתר הופך לליד | ביזאפלי",
-    "טופס באתר שנבנה בביזאפלי יכול ליצור ליד שהמקור שלו הוא האתר. לאותו צינור נכנסים גם לידים מ־Meta ומטפסי Google Ads.",
+    "טופס באתר שנבנה בביזאפלי יכול ליצור ליד שהמקור שלו הוא האתר. לאותו מהלך לידים נכנסים גם לידים מ־Meta ומטפסי Google Ads.",
     "מפרסמים את העמוד, וקוראים את הליד איפה שהצוות כבר עובד",
     [
       ["המסלול לבד", ["בוחרים תבנית בעורך, שמים טופס ומפרסמים. הפנייה נשמרת כליד עם מקור אתר וסטטוס חדש."]],
@@ -103,7 +103,7 @@ const HE = {
     [
       ["מה מגדירים", ["שעות לכל יום, ושירותים עם משך ומחיר. היומן מציע פתיחות בקפיצות של 15 דקות. זימון שומר שירות, מחיר, סטטוס תשלום והערה."]],
       ["מי קובע", ["הצוות קובע מהיומן. לקוח יכול לקבוע בעמוד הזימון הציבורי כשהוא פעיל, והלקוח והעסק יכולים לקבל אישור במייל."]],
-      ["גבול המסלול", ["CRM בלבד ב־49 דולר לחודש הוא הצינור ותיק הלקוח. תורים, שיתופים ואוטומציות נמצאים בחבילה העסקית ב־99 לחודש או 990 לשנה."]],
+      ["גבול המסלול", ["CRM בלבד ב־49 דולר לחודש הוא מהלך הלידים ותיק הלקוח. תורים, שיתופים ואוטומציות נמצאים בחבילה העסקית ב־99 לחודש או 990 לשנה."]],
     ],
     [["זה רשומה רפואית?", "לא. זה יומן ותיק לקוח. תיק רפואי נשאר במערכת שנבנתה בשבילו."]],
   ),
@@ -145,7 +145,7 @@ const ES = {
   ),
   "website-form-to-crm": guide(
     "Cómo un formulario del sitio se vuelve un lead | BizUply",
-    "Un formulario en un sitio de BizUply puede crear un lead con origen Sitio. Al mismo pipeline entran Lead Ads y formularios de Google Ads.",
+    "Un formulario en un sitio de BizUply puede crear un lead con origen Sitio. Al mismo seguimiento entran Lead Ads y formularios de Google Ads.",
     "Publique la página y lea el lead donde el equipo ya trabaja",
     [
       ["El camino propio", ["Elija una plantilla, coloque un formulario y publique. La consulta se guarda como lead con origen Sitio y estado nuevo."]],
@@ -161,7 +161,7 @@ const ES = {
     [
       ["Qué se configura", ["Horas por día y servicios con duración y precio. La agenda ofrece huecos de 15 minutos. La reserva guarda servicio, precio, estado de pago y nota."]],
       ["Quién reserva", ["El equipo reserva en el calendario. El cliente puede reservar en la página pública cuando está activa."]],
-      ["El límite del plan", ["CRM solo a 49 dólares es el pipeline y el expediente. Citas, colaboraciones y automatizaciones están en el plan de 99 al mes o 990 al año."]],
+      ["El límite del plan", ["CRM solo a 49 dólares es el seguimiento de los clientes y el expediente. Citas, colaboraciones y automatizaciones están en el plan de 99 al mes o 990 al año."]],
     ],
     [["¿Es una historia clínica?", "No. Es agenda y expediente. La historia clínica se queda en su sistema."]],
   ),
@@ -203,7 +203,7 @@ const PT = {
   ),
   "website-form-to-crm": guide(
     "Como um formulário do site vira um lead | BizUply",
-    "Um formulário num site da BizUply pode criar um lead com origem Site. O mesmo pipeline recebe Lead Ads e formulários do Google Ads.",
+    "Um formulário num site da BizUply pode criar um lead com origem Site. O mesmo acompanhamento recebe Lead Ads e formulários do Google Ads.",
     "Publique a página e leia o lead onde a equipe já trabalha",
     [
       ["O caminho próprio", ["Escolha um modelo, coloque um formulário e publique. O contato vira lead com origem Site e status novo."]],
@@ -219,7 +219,7 @@ const PT = {
     [
       ["O que se configura", ["Horas por dia e serviços com duração e preço. A agenda oferece vagas de 15 minutos. A reserva guarda serviço, preço, status de pagamento e nota."]],
       ["Quem marca", ["A equipe marca no calendário. O cliente pode marcar na página pública quando ela está ativa."]],
-      ["O limite do plano", ["CRM sozinho a 49 dólares é o pipeline e o arquivo. Agenda, colaborações e automações ficam no plano de 99 por mês ou 990 por ano."]],
+      ["O limite do plano", ["CRM sozinho a 49 dólares é o acompanhamento dos clientes e o arquivo. Agenda, colaborações e automações ficam no plano de 99 por mês ou 990 por ano."]],
     ],
     [["É um prontuário?", "Não. É agenda e arquivo. O prontuário fica no sistema feito para isso."]],
   ),

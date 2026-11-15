@@ -60,14 +60,14 @@ export function installRemainingGuides(add, t) {
         paragraphs: [
           t(
             "Three automated sources enter the same pipeline: Meta Lead Ads after the business connects its own Facebook page, Google Ads lead forms, and a form on a site built in BizUply. Each lead keeps that source next to the contact details. The first status is New.",
-            "שלושה מקורות אוטומטיים נכנסים לאותו צינור: לידים ממודעות Meta אחרי שהעסק מחבר את דף הפייסבוק שלו, טפסי לידים של Google Ads, וטופס באתר שנבנה בביזאפלי. כל ליד שומר את המקור ליד פרטי הקשר. הסטטוס הראשון הוא חדש.",
-            "Tres orígenes automáticos entran en el mismo pipeline: Lead Ads de Meta después de que el negocio conecta su propia página de Facebook, formularios de Google Ads y un formulario en un sitio construido en BizUply. Cada lead conserva ese origen. El primer estado es Nuevo.",
-            "Três origens automáticas entram no mesmo pipeline: Lead Ads da Meta depois que o negócio conecta a própria página do Facebook, formulários do Google Ads e um formulário em um site feito na BizUply. Cada lead guarda essa origem. O primeiro status é Novo.",
+            "שלושה מקורות אוטומטיים נכנסים לאותו מהלך לידים: לידים ממודעות Meta אחרי שהעסק מחבר את דף הפייסבוק שלו, טפסי לידים של Google Ads, וטופס באתר שנבנה בביזאפלי. כל ליד שומר את המקור ליד פרטי הקשר. הסטטוס הראשון הוא חדש.",
+            "Tres orígenes automáticos entran en el mismo seguimiento: Lead Ads de Meta después de que el negocio conecta su propia página de Facebook, formularios de Google Ads y un formulario en un sitio construido en BizUply. Cada lead conserva ese origen. El primer estado es Nuevo.",
+            "Três origens automáticas entram no mesmo acompanhamento: Lead Ads da Meta depois que o negócio conecta a própria página do Facebook, formulários do Google Ads e um formulário em um site feito na BizUply. Cada lead guarda essa origem. O primeiro status é Novo.",
             "ثلاثة مصادر آلية تدخل المسار نفسه: إعلانات العملاء من Meta بعد أن يربط النشاط صفحة فيسبوك الخاصة به، ونماذج Google Ads، ونموذج في موقع بُني في BizUply. يحتفظ كل عميل بمصدره. الحالة الأولى هي جديد.",
           ),
         ],
         example: {
-          title: t("A studio, three doors, one pipeline", "סטודיו, שלוש דלתות, צינור אחד", "Un estudio, tres puertas, un pipeline", "Um estúdio, três portas, um pipeline", "استوديو، ثلاثة أبواب، مسار واحد"),
+          title: t("A studio, three doors, one pipeline", "סטודיו, שלוש דלתות, מהלך אחד", "Un estudio, tres puertas, un seguimiento", "Um estúdio, três portas, um acompanhamento", "استوديو، ثلاثة أبواب، مسار واحد"),
           body: t(
             "A beauty studio might receive a Meta lead on Monday, a website form on Tuesday and a Google Ads form on Wednesday. All three open as New, with different sources. The person who calls does not have to remember which ad it was.",
             "סטודיו לטיפוח יכול לקבל ליד מ־Meta ביום שני, טופס מהאתר ביום שלישי וטופס מגוגל ביום רביעי. שלושתם נפתחים כחדשים, עם מקורות שונים. מי שמתקשר לא צריך לזכור איזו מודעה זו הייתה.",
@@ -83,9 +83,9 @@ export function installRemainingGuides(add, t) {
         paragraphs: [
           t(
             "CRM only is $49 a month and renews monthly. It is the pipeline and the client file. The business plan is $99 a month or $990 a year and adds appointments, collaborations and automations. WhatsApp is not included in either plan: a connected number is $29 a month, and Meta bills messages separately. Meta messaging charges apply separately, based on usage and message category.",
-            "CRM בלבד עולה 49 דולר לחודש ומתחדש מדי חודש. זה הצינור ותיק הלקוח. החבילה העסקית עולה 99 דולר לחודש או 990 דולר לשנה ומוסיפה תורים, שיתופים ואוטומציות. וואטסאפ לא כלול באף מסלול: מספר מחובר עולה 29 דולר לחודש, ו־Meta מחייבת הודעות בנפרד. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
-            "El CRM solo cuesta 49 dólares al mes y se renueva cada mes. Es el pipeline y el expediente. El plan de negocio cuesta 99 dólares al mes o 990 al año y añade citas, colaboraciones y automatizaciones. WhatsApp no entra en ninguno: un número conectado cuesta 29 dólares al mes, y Meta cobra los mensajes aparte. Los cargos de mensajería de Meta se aplican aparte, según el uso y la categoría del mensaje.",
-            "O CRM sozinho custa US$ 49 por mês e renova todo mês. É o pipeline e o arquivo do cliente. O plano de negócios custa US$ 99 por mês ou US$ 990 por ano e acrescenta agenda, colaborações e automações. O WhatsApp não entra em nenhum: um número conectado custa US$ 29 por mês, e a Meta cobra as mensagens à parte. As cobranças de mensagens da Meta são à parte, conforme o uso e a categoria da mensagem.",
+            "CRM בלבד עולה 49 דולר לחודש ומתחדש מדי חודש. זה מהלך הלידים ותיק הלקוח. החבילה העסקית עולה 99 דולר לחודש או 990 דולר לשנה ומוסיפה תורים, שיתופים ואוטומציות. וואטסאפ לא כלול באף מסלול: מספר מחובר עולה 29 דולר לחודש, ו־Meta מחייבת הודעות בנפרד. חיובי ההודעות של Meta מחושבים בנפרד, לפי השימוש וקטגוריית ההודעה.",
+            "El CRM solo cuesta 49 dólares al mes y se renueva cada mes. Es el seguimiento de los clientes y el expediente. El plan de negocio cuesta 99 dólares al mes o 990 al año y añade citas, colaboraciones y automatizaciones. WhatsApp no entra en ninguno: un número conectado cuesta 29 dólares al mes, y Meta cobra los mensajes aparte. Los cargos de mensajería de Meta se aplican aparte, según el uso y la categoría del mensaje.",
+            "O CRM sozinho custa US$ 49 por mês e renova todo mês. É o acompanhamento e o arquivo do cliente. O plano de negócios custa US$ 99 por mês ou US$ 990 por ano e acrescenta agenda, colaborações e automações. O WhatsApp não entra em nenhum: um número conectado custa US$ 29 por mês, e a Meta cobra as mensagens à parte. As cobranças de mensagens da Meta são à parte, conforme o uso e a categoria da mensagem.",
             "CRM وحده 49 دولاراً في الشهر ويتجدد شهرياً. هو المسار وملف العميل. الخطة التجارية 99 دولاراً في الشهر أو 990 دولاراً في السنة وتضيف المواعيد والتعاون والأتمتة. واتساب ليس في أي خطة: الرقم المتصل 29 دولاراً في الشهر، وMeta تحصّل الرسائل بشكل منفصل. تُحسب رسوم رسائل Meta بشكل منفصل، حسب الاستخدام وفئة الرسالة.",
           ),
         ],

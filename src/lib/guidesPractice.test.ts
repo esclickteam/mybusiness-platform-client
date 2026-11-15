@@ -20,6 +20,9 @@ describe("guide practice", () => {
       }
       expect(pages[1].sections.length).toBe(pages[0].sections.length);
       expect(pages[1].faq.length).toBe(pages[0].faq.length);
+      for (const locale of ["he", "es", "pt-BR", "ar"]) {
+        expect(JSON.stringify(getGuide(slug, locale))).not.toMatch(/\bpipeline\b/i);
+      }
     }
   });
 
@@ -46,6 +49,9 @@ describe("editorial drafts", () => {
       expect(sitemap).not.toContain(draft.slug);
       expect(blob).not.toContain(draft.locales.en.h1);
       expect(draft.locales.he.sections.length).toBe(draft.locales.en.sections.length);
+      for (const locale of ["he", "es", "pt-BR", "ar"]) {
+        expect(JSON.stringify(draft.locales[locale])).not.toMatch(/\bpipeline\b/i);
+      }
     }
     const records = cmsDraftRecords();
     expect(records).toHaveLength(50);

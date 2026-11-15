@@ -109,7 +109,7 @@ const PRACTICE = {
         t("Write one sentence for each status: New, Contacted, Interested, Converted, Lost and Old lead.", "כתבו משפט אחד לכל סטטוס: חדש, נוצר קשר, מעוניין, הומר, אבוד וליד ישן.", "Escriba una frase para cada estado: Nuevo, Contactado, Interesado, Convertido, Perdido y Lead antiguo.", "Escreva uma frase para cada status: Novo, Contato feito, Interessado, Convertido, Perdido e Lead antigo.", "اكتبوا جملة لكل حالة: جديد، وتم التواصل، ومهتم، وتم التحويل، وضائع، وعميل قديم."),
         t("Name one person who owns every lead still marked New at the end of the day.", "קבעו אדם אחד שאחראי על כל ליד שעדיין מסומן כחדש בסוף היום.", "Nombre a una persona dueña de cada lead que siga en Nuevo al final del día.", "Nomeie uma pessoa dona de cada lead que continue Novo no fim do dia.", "سمّوا شخصاً واحداً يملك كل عميل ما زال جديداً في نهاية اليوم."),
         t("Agree that Contacted means a person was reached, not that a task exists.", "הסכימו ש־נוצר קשר אומר שהגעתם אל האדם, לא שקיימת משימה.", "Acuerden que Contactado significa que se llegó a la persona, no que exista una tarea.", "Combinem que Contato feito significa que a pessoa foi alcançada, não que exista uma tarefa.", "اتفقوا أن تم التواصل يعني أن الشخص تم الوصول إليه، لا أن هناك مهمة."),
-        t("Keep a spreadsheet as an export if you need one. Do not let it become a second pipeline.", "השאירו גיליון כייצוא אם צריך. אל תנו לו להפוך לצינור שני.", "Conserve una hoja como exportación si la necesita. No deje que sea un segundo pipeline.", "Mantenha uma planilha como exportação se precisar. Não deixe que ela vire um segundo pipeline.", "أبقوا الجدول تصديراً إذا احتجتم. لا تجعلوه مساراً ثانياً."),
+        t("Keep a spreadsheet as an export if you need one. Do not let it become a second pipeline.", "השאירו גיליון כייצוא אם צריך. אל תתנו לו להפוך למעקב נפרד.", "Conserve una hoja como exportación si la necesita. No deje que sea un segundo seguimiento.", "Mantenha uma planilha como exportação se precisar. Não deixe que ela vire um segundo acompanhamento.", "أبقوا الجدول تصديراً إذا احتجتم. لا تجعلوه مساراً ثانياً."),
       ],
       example: {
         title: t("Two electricians, one price", "שני חשמלאים, מחיר אחד", "Dos electricistas, un precio", "Dois eletricistas, um preço", "كهربائيان، سعر واحد"),
@@ -229,9 +229,9 @@ const PRACTICE = {
       paragraphs: [
         t(
           "Choose from the work, not from the label. CRM only at $49 a month is the pipeline and the client file. The business plan at $99 a month or $990 a year adds appointments, collaborations and automations. The website has its own price on the pricing page.",
-          "בוחרים לפי העבודה, לא לפי השם. CRM בלבד ב־49 דולר לחודש הוא הצינור ותיק הלקוח. החבילה העסקית ב־99 דולר לחודש או 990 לשנה מוסיפה תורים, שיתופים ואוטומציות. לאתר יש מחיר משלו בעמוד המחירים.",
-          "Elija por el trabajo, no por el nombre. El CRM solo a 49 dólares al mes es el pipeline y el expediente. El plan de negocio a 99 dólares al mes o 990 al año añade citas, colaboraciones y automatizaciones. El sitio tiene su propio precio en la página de precios.",
-          "Escolha pelo trabalho, não pelo nome. O CRM sozinho a US$ 49 por mês é o pipeline e o arquivo. O plano de negócios a US$ 99 por mês ou US$ 990 por ano acrescenta agenda, colaborações e automações. O site tem o próprio preço na página de preços.",
+          "בוחרים לפי העבודה, לא לפי השם. CRM בלבד ב־49 דולר לחודש הוא מהלך הלידים ותיק הלקוח. החבילה העסקית ב־99 דולר לחודש או 990 לשנה מוסיפה תורים, שיתופים ואוטומציות. לאתר יש מחיר משלו בעמוד המחירים.",
+          "Elija por el trabajo, no por el nombre. El CRM solo a 49 dólares al mes es el seguimiento de los clientes y el expediente. El plan de negocio a 99 dólares al mes o 990 al año añade citas, colaboraciones y automatizaciones. El sitio tiene su propio precio en la página de precios.",
+          "Escolha pelo trabalho, não pelo nome. O CRM sozinho a US$ 49 por mês é o acompanhamento dos clientes e o arquivo. O plano de negócios a US$ 99 por mês ou US$ 990 por ano acrescenta agenda, colaborações e automações. O site tem o próprio preço na página de preços.",
           "اختاروا حسب العمل، لا حسب الاسم. CRM وحده بـ 49 دولاراً في الشهر هو المسار وملف العميل. الخطة التجارية بـ 99 دولاراً في الشهر أو 990 في السنة تضيف المواعيد والتعاون والأتمتة. للموقع سعره في صفحة الأسعار.",
         ),
       ],
@@ -243,7 +243,7 @@ const PRACTICE = {
         ],
         rows: [
           [
-            t("Pipeline and client file", "צינור ותיק לקוח", "Pipeline y expediente", "Pipeline e arquivo", "المسار وملف العميل"),
+            t("Pipeline and client file", "מהלך הלידים ותיק לקוח", "Seguimiento y expediente", "Acompanhamento e arquivo", "المسار وملف العميل"),
             t("Included", "כלול", "Incluido", "Incluído", "مشمول"),
             t("Included", "כלול", "Incluido", "Incluído", "مشمول"),
           ],

@@ -84,7 +84,7 @@ const NEXT = {
   "from-ad-to-follow-up": {
     body: text(
       "The path is ad, form, row, task. Google Ads lead forms and a form on a Bizuply site can also create that row. The page does not promise a lead score, and it does not treat the ad platform's result count as the pipeline.",
-      "הדרך היא מודעה, טופס, שורה, משימה. גם טפסי לידים של Google Ads וטופס באתר של ביזאפלי יכולים ליצור את השורה. העמוד לא מבטיח ציון ליד, והוא לא מתייחס למספר התוצאות של פלטפורמת המודעות כאל הצינור.",
+      "הדרך היא מודעה, טופס, שורה, משימה. גם טפסי לידים של Google Ads וטופס באתר של ביזאפלי יכולים ליצור את השורה. העמוד לא מבטיח ציון ליד, והוא לא מתייחס למספר התוצאות של פלטפורמת המודעות כאל מהלך הלידים.",
       "El camino es anuncio, formulario, fila, tarea. Los formularios de Google Ads y un formulario en un sitio de Bizuply también pueden crear esa fila. La página no promete una puntuación de lead.",
       "O caminho é anúncio, formulário, linha, tarefa. Formulários do Google Ads e um formulário num site da Bizuply também podem criar essa linha. A página não promete uma nota de lead.",
       "المسار هو إعلان، نموذج، صف، مهمة. يمكن لنماذج Google Ads ولنموذج في موقع Bizuply أن ينشئا ذلك الصف أيضاً. الصفحة لا تعد بدرجة للعميل.",
@@ -174,9 +174,9 @@ const NEXT = {
   "crm-and-business-platform": {
     body: text(
       "CRM only, at $49 a month, is the pipeline and the client file. The business plan, at $99 a month or $990 a year, adds appointments, collaborations and automations. WhatsApp stays separate at $29 a month per connected number. This page does not say that one plan includes the others.",
-      "CRM בלבד, ב־49 דולר לחודש, הוא הצינור ותיק הלקוח. החבילה העסקית, ב־99 דולר לחודש או 990 לשנה, מוסיפה תורים, שיתופים ואוטומציות. וואטסאפ נשאר נפרד ב־29 דולר לחודש למספר מחובר. העמוד הזה לא אומר שמסלול אחד כולל את האחרים.",
-      "El CRM solo, a 49 dólares al mes, es el pipeline y el expediente. El plan de negocio, a 99 dólares al mes o 990 al año, añade citas, colaboraciones y automatizaciones. WhatsApp sigue aparte a 29 dólares al mes por número conectado. Esta página no dice que un plan incluya a los otros.",
-      "O CRM sozinho, a US$ 49 por mês, é o pipeline e o arquivo do cliente. O plano de negócios, a US$ 99 por mês ou US$ 990 por ano, acrescenta agenda, colaborações e automações. O WhatsApp continua à parte a US$ 29 por mês por número conectado. Esta página não diz que um plano inclui os outros.",
+      "CRM בלבד, ב־49 דולר לחודש, הוא מהלך הלידים ותיק הלקוח. החבילה העסקית, ב־99 דולר לחודש או 990 לשנה, מוסיפה תורים, שיתופים ואוטומציות. וואטסאפ נשאר נפרד ב־29 דולר לחודש למספר מחובר. העמוד הזה לא אומר שמסלול אחד כולל את האחרים.",
+      "El CRM solo, a 49 dólares al mes, es el seguimiento de los clientes y el expediente. El plan de negocio, a 99 dólares al mes o 990 al año, añade citas, colaboraciones y automatizaciones. WhatsApp sigue aparte a 29 dólares al mes por número conectado. Esta página no dice que un plan incluya a los otros.",
+      "O CRM sozinho, a US$ 49 por mês, é o acompanhamento dos clientes e o arquivo do cliente. O plano de negócios, a US$ 99 por mês ou US$ 990 por ano, acrescenta agenda, colaborações e automações. O WhatsApp continua à parte a US$ 29 por mês por número conectado. Esta página não diz que um plano inclui os outros.",
       "CRM وحده، بـ 49 دولاراً في الشهر، هو المسار وملف العميل. الخطة التجارية، بـ 99 دولاراً في الشهر أو 990 في السنة، تضيف المواعيد والتعاون والأتمتة. يبقى واتساب منفصلاً بـ 29 دولاراً في الشهر لكل رقم متصل. هذه الصفحة لا تقول إن خطة واحدة تشمل الأخريات.",
     ),
     links: [

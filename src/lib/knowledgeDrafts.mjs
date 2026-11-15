@@ -129,9 +129,9 @@ export const KNOWLEDGE_DRAFTS = [
         heading: t("Where Bizuply fits that list", "איפה ביזאפלי יושבת ברשימה הזאת", "Dónde encaja Bizuply en esa lista", "Onde a Bizuply cabe nessa lista", "أين تناسب Bizuply هذه القائمة"),
         paragraphs: [t(
           "CRM only is $49 a month: the pipeline and the client file. Automated sources today are Meta Lead Ads, Google Ads lead forms, and a form on a Bizuply site. There is no one-click spreadsheet import on this path. Appointments, collaborations and automations are the business plan at $99 a month or $990 a year. WhatsApp is neither of those prices.",
-          "CRM בלבד הוא 49 דולר לחודש: הצינור ותיק הלקוח. המקורות האוטומטיים היום הם Lead Ads של Meta, טפסי Google Ads, וטופס באתר ביזאפלי. אין ייבוא גיליון בלחיצה במסלול הזה. תורים, שיתופים ואוטומציות הם החבילה העסקית ב־99 לחודש או 990 לשנה. וואטסאפ אינו אף אחד מהמחירים האלה.",
-          "El CRM solo cuesta 49 dólares al mes: el pipeline y el expediente. Los orígenes automáticos de hoy son Lead Ads de Meta, formularios de Google Ads y un formulario en un sitio de Bizuply. No hay importación de hoja en un clic en este camino. Citas, colaboraciones y automatizaciones son el plan de negocio a 99 al mes o 990 al año. WhatsApp no es ninguno de esos precios.",
-          "O CRM sozinho custa US$ 49 por mês: o pipeline e o arquivo. As origens automáticas de hoje são Lead Ads da Meta, formulários do Google Ads e um formulário num site da Bizuply. Não há importação de planilha num clique neste caminho. Agenda, colaborações e automações são o plano de negócios a US$ 99 por mês ou US$ 990 por ano. O WhatsApp não é nenhum desses preços.",
+          "CRM בלבד הוא 49 דולר לחודש: מהלך הלידים ותיק הלקוח. המקורות האוטומטיים היום הם Lead Ads של Meta, טפסי Google Ads, וטופס באתר ביזאפלי. אין ייבוא גיליון בלחיצה במסלול הזה. תורים, שיתופים ואוטומציות הם החבילה העסקית ב־99 לחודש או 990 לשנה. וואטסאפ אינו אף אחד מהמחירים האלה.",
+          "El CRM solo cuesta 49 dólares al mes: el seguimiento de los clientes y el expediente. Los orígenes automáticos de hoy son Lead Ads de Meta, formularios de Google Ads y un formulario en un sitio de Bizuply. No hay importación de hoja en un clic en este camino. Citas, colaboraciones y automatizaciones son el plan de negocio a 99 al mes o 990 al año. WhatsApp no es ninguno de esos precios.",
+          "O CRM sozinho custa US$ 49 por mês: o acompanhamento dos clientes e o arquivo. As origens automáticas de hoje são Lead Ads da Meta, formulários do Google Ads e um formulário num site da Bizuply. Não há importação de planilha num clique neste caminho. Agenda, colaborações e automações são o plano de negócios a US$ 99 por mês ou US$ 990 por ano. O WhatsApp não é nenhum desses preços.",
           "CRM وحده 49 دولاراً في الشهر: المسار وملف العميل. المصادر الآلية اليوم هي Lead Ads من Meta ونماذج Google Ads ونموذج في موقع Bizuply. لا يوجد استيراد جدول بنقرة في هذا المسار. المواعيد والتعاون والأتمتة هي الخطة التجارية بـ 99 في الشهر أو 990 في السنة. واتساب ليس أياً من هذه الأسعار.",
         )],
       },
@@ -647,7 +647,7 @@ export const KNOWLEDGE_DRAFTS = [
   article({
     slug: "choose-a-business-system",
     cluster: "crm",
-    intent: t("Someone choosing a system for the whole business, not only a pipeline.", "מישהו שבוחר מערכת לכל העסק, לא רק לצינור.", "Alguien que elige un sistema para todo el negocio, no solo un pipeline.", "Alguém que escolhe um sistema para o negócio todo, não só um pipeline.", "شخص يختار نظاماً للنشاط كله، لا للمسار فقط."),
+    intent: t("Someone choosing a system for the whole business, not only a pipeline.", "מישהו שבוחר מערכת לכל העסק, לא רק למהלך הלידים.", "Alguien que elige un sistema para todo el negocio, no solo un embudo de ventas.", "Alguém que escolhe um sistema para o negócio todo, não só um funil de vendas.", "شخص يختار نظاماً للنشاط كله، لا للمسار فقط."),
     adds: t(
       "The public comparison is CRM only versus the business plan. This draft is the buying list across CRM, appointments, automations, the website and WhatsApp, including when the split is a poor fit.",
       "ההשוואה הציבורית היא CRM בלבד מול החבילה העסקית. הטיוטה הזו היא רשימת הקנייה על פני CRM, תורים, אוטומציות, האתר ווואטסאפ, כולל מתי הפיצול הוא התאמה גרועה.",
@@ -677,9 +677,9 @@ export const KNOWLEDGE_DRAFTS = [
         heading: t("Match a job to a price", "מתאימים עבודה למחיר", "Haga coincidir un trabajo con un precio", "Combine um trabalho com um preço", "طابقوا عملاً مع سعر"),
         paragraphs: [t(
           "Pipeline and client file: CRM only, $49 a month. Appointments, collaborations and automations: the business plan, $99 a month or $990 a year, which includes the CRM. A public site: its own price on the pricing page. A connected WhatsApp number: $29 a month, plus Meta's message charges, with no free trial. Meta ad spend is billed by Meta. If your list of jobs is only one of these, do not buy the others because a bundle sounds complete.",
-          "צינור ותיק לקוח: CRM בלבד, 49 דולר לחודש. תורים, שיתופים ואוטומציות: החבילה העסקית, 99 לחודש או 990 לשנה, שכוללת את ה־CRM. אתר ציבורי: מחיר משלו בעמוד המחירים. מספר וואטסאפ מחובר: 29 דולר לחודש, ועוד חיובי ההודעות של Meta, בלי ניסיון חינם. הוצאת מודעות של Meta מחויבת על ידי Meta. אם רשימת העבודות שלכם היא רק אחת מאלה, אל תקנו את האחרות כי חבילה נשמעת שלמה.",
-          "Pipeline y expediente: CRM solo, 49 dólares al mes. Citas, colaboraciones y automatizaciones: el plan de negocio, 99 al mes o 990 al año, que incluye el CRM. Un sitio público: su propio precio en la página de precios. Un número de WhatsApp conectado: 29 dólares al mes, más los cargos de mensaje de Meta, sin prueba gratis. El gasto en anuncios de Meta lo cobra Meta. Si su lista de trabajos es solo uno de estos, no compre los otros porque un paquete suena completo.",
-          "Pipeline e arquivo: CRM sozinho, US$ 49 por mês. Agenda, colaborações e automações: o plano de negócios, US$ 99 por mês ou US$ 990 por ano, que inclui o CRM. Um site público: o próprio preço na página de preços. Um número de WhatsApp conectado: US$ 29 por mês, mais as cobranças de mensagem da Meta, sem teste grátis. O gasto em anúncios da Meta é cobrado pela Meta. Se a sua lista de trabalhos é só um destes, não compre os outros porque um pacote parece completo.",
+          "מהלך הלידים ותיק לקוח: CRM בלבד, 49 דולר לחודש. תורים, שיתופים ואוטומציות: החבילה העסקית, 99 לחודש או 990 לשנה, שכוללת את ה־CRM. אתר ציבורי: מחיר משלו בעמוד המחירים. מספר וואטסאפ מחובר: 29 דולר לחודש, ועוד חיובי ההודעות של Meta, בלי ניסיון חינם. הוצאת מודעות של Meta מחויבת על ידי Meta. אם רשימת העבודות שלכם היא רק אחת מאלה, אל תקנו את האחרות כי חבילה נשמעת שלמה.",
+          "Seguimiento y expediente: CRM solo, 49 dólares al mes. Citas, colaboraciones y automatizaciones: el plan de negocio, 99 al mes o 990 al año, que incluye el CRM. Un sitio público: su propio precio en la página de precios. Un número de WhatsApp conectado: 29 dólares al mes, más los cargos de mensaje de Meta, sin prueba gratis. El gasto en anuncios de Meta lo cobra Meta. Si su lista de trabajos es solo uno de estos, no compre los otros porque un paquete suena completo.",
+          "Acompanhamento e arquivo: CRM sozinho, US$ 49 por mês. Agenda, colaborações e automações: o plano de negócios, US$ 99 por mês ou US$ 990 por ano, que inclui o CRM. Um site público: o próprio preço na página de preços. Um número de WhatsApp conectado: US$ 29 por mês, mais as cobranças de mensagem da Meta, sem teste grátis. O gasto em anúncios da Meta é cobrado pela Meta. Se a sua lista de trabalhos é só um destes, não compre os outros porque um pacote parece completo.",
           "المسار وملف العميل: CRM وحده، 49 دولاراً في الشهر. المواعيد والتعاون والأتمتة: الخطة التجارية، 99 في الشهر أو 990 في السنة، وتشمل CRM. موقع عام: سعره في صفحة الأسعار. رقم واتساب متصل: 29 دولاراً في الشهر، إضافة إلى رسوم رسائل Meta، بلا تجربة مجانية. إنفاق إعلانات Meta تحصّله Meta. إذا كانت قائمة أعمالكم واحدة فقط من هذه، لا تشتروا الأخريات لأن الحزمة تبدو كاملة.",
         )],
       },
@@ -774,7 +774,7 @@ export function cmsDraftRecords() {
         h1: clip(page.h1, 180),
         lede: clip(page.lede, 600),
         category: CATEGORY[draft.cluster] || "Guides",
-        tags: [draft.cluster, "fact-check"],
+        tags: [draft.cluster, "fact-check", "import-draft"],
         heroImage: HERO[draft.cluster] || "",
         relatedPaths,
         sections,

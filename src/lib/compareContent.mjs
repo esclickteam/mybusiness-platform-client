@@ -26,9 +26,9 @@ const CRM_SHEET = {
   ),
   description: row(
     "When a spreadsheet is enough for leads, and when a shared pipeline is worth it. A practical comparison, including where Bizuply fits and where it does not.",
-    "מתי גיליון מספיק ללידים, ומתי צינור משותף שווה את המעבר. השוואה מעשית, כולל איפה ביזאפלי מתאימה ואיפה לא.",
-    "Cuándo basta una hoja para los leads y cuándo merece la pena un pipeline compartido. Una comparación práctica, también de dónde encaja Bizuply y dónde no.",
-    "Quando uma planilha basta para os leads e quando um pipeline compartilhado vale a pena. Uma comparação prática, inclusive de onde a Bizuply cabe e onde não cabe.",
+    "מתי גיליון מספיק ללידים, ומתי משפך משותף שווה את המעבר. השוואה מעשית, כולל איפה ביזאפלי מתאימה ואיפה לא.",
+    "Cuándo basta una hoja para los leads y cuándo merece la pena un embudo compartido. Una comparación práctica, también de dónde encaja Bizuply y dónde no.",
+    "Quando uma planilha basta para os leads e quando um funil compartilhado vale a pena. Uma comparação prática, inclusive de onde a Bizuply cabe e onde não cabe.",
     "متى يكفي جدول للعملاء المحتملين ومتى يستحق مسار مشترك الانتقال. مقارنة عملية، بما في ذلك أين تناسب Bizuply وأين لا.",
   ),
   crumb: row("CRM or a spreadsheet", "CRM או גיליון", "CRM o una hoja", "CRM ou planilha", "CRM أو جدول"),

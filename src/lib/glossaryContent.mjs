@@ -68,12 +68,12 @@ const ENTRIES = [
   ),
   entry(
     "sales-pipeline",
-    row("Sales pipeline", "משפך מכירות וצינור", "Pipeline de ventas", "Pipeline de vendas", "مسار المبيعات"),
+    row("Sales pipeline", "משפך מכירות", "Embudo de ventas", "Funil de vendas", "مسار المبيعات"),
     row(
       "A sales pipeline is the set of stages a deal moves through, from the first inquiry to a won or lost decision. Each stage should mean one observable event, not a feeling. A pipeline shows how many deals sit in each stage and where they stall.",
-      "צינור מכירות הוא סדרת השלבים שעסקה עוברת, מהפנייה הראשונה ועד החלטה של זכייה או הפסד. כל שלב צריך לתאר אירוע שאפשר לראות, לא תחושה. הצינור מראה כמה עסקאות יושבות בכל שלב ואיפה הן נתקעות.",
-      "Un pipeline es el conjunto de etapas que recorre un trato, desde la primera consulta hasta una decisión ganada o perdida. Cada etapa debe ser un hecho observable, no una sensación.",
-      "Um pipeline é o conjunto de etapas de um negócio, da primeira consulta até uma decisão ganha ou perdida. Cada etapa deve ser um fato observável, não uma sensação.",
+      "משפך מכירות הוא סדרת השלבים שעסקה עוברת, מהפנייה הראשונה ועד החלטה של זכייה או הפסד. באנגלית קוראים לזה pipeline. כל שלב צריך לתאר אירוע שאפשר לראות, לא תחושה. המשפך מראה כמה עסקאות יושבות בכל שלב ואיפה הן נתקעות.",
+      "Un embudo de ventas es el conjunto de etapas que recorre un trato, desde la primera consulta hasta una decisión ganada o perdida. En inglés se llama pipeline. Cada etapa debe ser un hecho observable, no una sensación.",
+      "Um funil de vendas é o conjunto de etapas de um negócio, da primeira consulta até uma decisão ganha ou perdida. Em inglês, chama-se pipeline. Cada etapa deve ser um fato observável, não uma sensação.",
       "مسار المبيعات هو مراحل الصفقة، من أول استفسار حتى قرار الربح أو الخسارة. كل مرحلة يجب أن تصف حدثاً يمكن رؤيته، لا شعوراً.",
     ),
     row(
@@ -97,9 +97,9 @@ const ENTRIES = [
     row("Customer journey", "מסע לקוח", "Recorrido del cliente", "Jornada do cliente", "رحلة العميل"),
     row(
       "The customer journey is the whole path a person takes, from the first time they notice the business to the work after they buy. The pipeline is only the sales part of that path. A journey includes the ad, the page, the message, the appointment and the invoice.",
-      "מסע הלקוח הוא כל הדרך שאדם עובר, מהפעם הראשונה ששם לב לעסק ועד העבודה שאחרי הקנייה. הצינור הוא רק חלק המכירה בדרך הזו. המסע כולל את המודעה, העמוד, ההודעה, התור והחשבונית.",
-      "El recorrido es todo el camino de una persona, desde que nota el negocio hasta el trabajo después de comprar. El pipeline es solo la parte de venta. El recorrido incluye el anuncio, la página, el mensaje, la cita y la factura.",
-      "A jornada é o caminho inteiro de uma pessoa, de quando nota o negócio até o trabalho depois da compra. O pipeline é só a parte da venda. A jornada inclui o anúncio, a página, a mensagem, o horário e a fatura.",
+      "מסע הלקוח הוא כל הדרך שאדם עובר, מהפעם הראשונה ששם לב לעסק ועד העבודה שאחרי הקנייה. המשפך הוא רק חלק המכירה בדרך הזו. המסע כולל את המודעה, העמוד, ההודעה, התור והחשבונית.",
+      "El recorrido es todo el camino de una persona, desde que nota el negocio hasta el trabajo después de comprar. El embudo es solo la parte de venta. El recorrido incluye el anuncio, la página, el mensaje, la cita y la factura.",
+      "A jornada é o caminho inteiro de uma pessoa, de quando nota o negócio até o trabalho depois da compra. O funil é só a parte da venda. A jornada inclui o anúncio, a página, a mensagem, o horário e a fatura.",
       "رحلة العميل هي الطريق كاملاً، من أول ملاحظة للنشاط حتى العمل بعد الشراء. المسار هو جزء البيع فقط. الرحلة تشمل الإعلان والصفحة والرسالة والموعد والفاتورة.",
     ),
     row(
@@ -340,21 +340,21 @@ export function glossaryPage(locale) {
     },
     he: {
       title: "מילון מושגים לניהול עסק | ביזאפלי",
-      description: "הגדרות ברורות ל־CRM, לידים, צינור, שיעור המרה, תבניות WhatsApp, CAC, LTV ומושגים שצוותים מערבבים.",
+      description: "הגדרות ברורות ל־CRM, לידים, משפך מכירות, שיעור המרה, תבניות WhatsApp, CAC, LTV ומושגים שצוותים מערבבים.",
       crumb: "מילון",
       h1: "מילון לעבודה עצמה",
       lede: "הגדרות קצרות שאפשר להשתמש בהן בישיבה. בכל ערך: מה המילה אומרת, איך משתמשים בה, ודוגמה עסקית אחת. רעיונות קרובים חולקים ערך.",
     },
     es: {
       title: "Glosario de términos de negocio | BizUply",
-      description: "Definiciones claras de CRM, leads, pipeline, tasa de conversión, plantillas de WhatsApp, CAC, LTV y otros términos que los equipos confunden.",
+      description: "Definiciones claras de CRM, leads, embudo de ventas, tasa de conversión, plantillas de WhatsApp, CAC, LTV y otros términos que los equipos confunden.",
       crumb: "Glosario",
       h1: "Un glosario para el trabajo",
       lede: "Definiciones cortas para una reunión. Cada entrada dice qué significa la palabra, cómo usarla y un ejemplo. Las ideas cercanas comparten entrada.",
     },
     "pt-BR": {
       title: "Glossário de termos de negócio | BizUply",
-      description: "Definições claras de CRM, leads, pipeline, taxa de conversão, modelos de WhatsApp, CAC, LTV e outros termos que as equipes misturam.",
+      description: "Definições claras de CRM, leads, funil de vendas, taxa de conversão, modelos de WhatsApp, CAC, LTV e outros termos que as equipes misturam.",
       crumb: "Glossário",
       h1: "Um glossário para o trabalho",
       lede: "Definições curtas para uma reunião. Cada verbete diz o que a palavra significa, como usá-la e um exemplo. Ideias próximas dividem o mesmo verbete.",
