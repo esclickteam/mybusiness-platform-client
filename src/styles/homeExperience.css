@@ -691,7 +691,7 @@ html.hx-preview body {
     border-inline-start: 0;
   }
   .ht-stage {
-    aspect-ratio: 1170 / 2532;
+    aspect-ratio: 9 / 16;
   }
   .ht-caption {
     grid-template-columns: 1fr;

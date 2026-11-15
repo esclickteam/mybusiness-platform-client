@@ -52,7 +52,7 @@ describe("sketch home first paint", () => {
 
   it("critical CSS matches sketch hero geometry", () => {
     expect(criticalCss).toContain("aspect-ratio: 16 / 9");
-    expect(criticalCss).toContain("aspect-ratio: 1170 / 2532");
+    expect(criticalCss).toContain("aspect-ratio: 9 / 16");
     expect(criticalCss).toContain("@media (max-width: 760px)");
     expect(criticalCss).toContain("--hp: 0");
     expect(criticalCss).not.toContain("min-width: 1024px");

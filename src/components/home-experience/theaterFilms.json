@@ -74,8 +74,8 @@
     ]
   },
   "he-mobile": {
-    "width": 1170,
-    "height": 2532,
+    "width": 720,
+    "height": 1280,
     "duration": 67.33,
     "chapters": [
       {
@@ -111,8 +111,8 @@
     ]
   },
   "en-mobile": {
-    "width": 1170,
-    "height": 2532,
+    "width": 720,
+    "height": 1280,
     "duration": 69.13,
     "chapters": [
       {
