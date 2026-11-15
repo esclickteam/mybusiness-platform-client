@@ -69,6 +69,7 @@ export function GuidesIndexPage() {
         <p className="guide-kicker">BizUply</p>
         <h1>{page.h1}</h1>
         <p>{page.description}</p>
+        <p><Link to="/resources">{locale === "he" ? "מרכז הידע" : locale === "es" ? "Biblioteca" : locale === "pt-BR" ? "Biblioteca" : locale === "ar" ? "المكتبة" : "Resource library"}</Link></p>
       </header>
       <article className="guide-feature">
         <div>
@@ -139,6 +140,11 @@ function GuideSection({ section, locale }) {
             ))}
           </tbody>
         </table>
+      ) : null}
+      {section.links?.length ? (
+        <ul className="guide-links">
+          {section.links.map((link) => <li key={link.href}><Link to={link.href}>{link.label}</Link></li>)}
+        </ul>
       ) : null}
       {section.shots?.length ? (
         <div className="guide-shots">

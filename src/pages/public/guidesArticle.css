@@ -35,6 +35,12 @@
   line-height: 1.7;
 }
 
+.guide-mast a {
+  color: #fff;
+  font-weight: 700;
+  text-underline-offset: 0.18em;
+}
+
 .guide-page h2 {
   margin-top: 0;
   font-size: 1.35rem;

@@ -1,0 +1,85 @@
+.admin-knowledge {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+  color: #17152b;
+}
+
+.admin-knowledge h1 {
+  margin-bottom: 0.4rem;
+}
+
+.admin-knowledge__grid {
+  display: grid;
+  grid-template-columns: minmax(180px, 260px) 1fr;
+  gap: 1rem;
+}
+
+.admin-knowledge label {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0.7rem 0;
+  font-weight: 700;
+}
+
+.admin-knowledge input,
+.admin-knowledge textarea,
+.admin-knowledge select {
+  min-height: 44px;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid #d9d3ee;
+  border-radius: 2px;
+  font: inherit;
+  font-weight: 500;
+}
+
+.admin-knowledge__check {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-knowledge__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-knowledge button {
+  min-height: 42px;
+  padding: 0 0.8rem;
+  border: 0;
+  border-radius: 2px;
+  background: #321064;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.admin-knowledge aside button {
+  width: 100%;
+  margin-bottom: 0.4rem;
+  background: #fff;
+  color: #321064;
+  border: 1px solid #d9d3ee;
+  text-align: start;
+}
+
+.admin-knowledge__error {
+  color: #8a1c32;
+  font-weight: 700;
+}
+
+.admin-knowledge ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 800px) {
+  .admin-knowledge__grid {
+    grid-template-columns: 1fr;
+  }
+}

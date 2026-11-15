@@ -131,6 +131,28 @@ const GuidesIndexPage = lazy(() =>
 const GuideArticlePage = lazy(() =>
   import("./pages/public/GuidesPage").then((mod) => ({ default: mod.GuideArticlePage }))
 );
+const ResourceHubPage = lazy(() =>
+  import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.ResourceHubPage }))
+);
+const GlossaryPage = lazy(() =>
+  import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.GlossaryPage }))
+);
+const TemplatesPage = lazy(() =>
+  import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.TemplatesPage }))
+);
+const CompareIndexPage = lazy(() =>
+  import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.CompareIndexPage }))
+);
+const CompareArticlePage = lazy(() =>
+  import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.CompareArticlePage }))
+);
+const LearningPathsPage = lazy(() =>
+  import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.LearningPathsPage }))
+);
+const PublishedArticlePage = lazy(() =>
+  import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.PublishedArticlePage }))
+);
+const AdminKnowledgePage = lazy(() => import("./pages/admin/AdminKnowledge"));
 const AgentsProductPage = lazy(() =>
   import("./pages/product/AgentsProductPage")
 );
@@ -1416,6 +1438,13 @@ export default function App() {
                         />
                         <Route path="/guides" element={<GuidesIndexPage />} />
                         <Route path="/guides/:slug" element={<GuideArticlePage />} />
+                        <Route path="/resources" element={<ResourceHubPage />} />
+                        <Route path="/glossary" element={<GlossaryPage />} />
+                        <Route path="/templates" element={<TemplatesPage />} />
+                        <Route path="/compare" element={<CompareIndexPage />} />
+                        <Route path="/compare/:slug" element={<CompareArticlePage />} />
+                        <Route path="/academy" element={<LearningPathsPage />} />
+                        <Route path="/resources/a/:slug" element={<PublishedArticlePage />} />
                         <Route path="/agents" element={<AgentsProductPage />} />
                         <Route path="/whatsapp-api" element={<WhatsAppApiProductPage />} />
                         <Route path="/privacy" element={<PrivacyPolicy />} />
@@ -1834,6 +1863,7 @@ export default function App() {
                         <Route path="guided-demos" element={<AdminGuidedDemos />} />
                         <Route path="guided-demos/:id" element={<AdminGuidedDemoDetail />} />
                         <Route path="site-edit" element={<EditSiteContent />} />
+                        <Route path="knowledge" element={<AdminKnowledgePage />} />
                         <Route path="roles" element={<ManageRoles />} />
                         <Route path="affiliates" element={<AdminAffiliates />} />
                         <Route path="marketers" element={<AdminMarketers />} />
