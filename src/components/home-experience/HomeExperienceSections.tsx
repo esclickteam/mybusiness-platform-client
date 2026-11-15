@@ -16,14 +16,16 @@ import WebsiteGallery from "./WebsiteGallery";
 import films from "./theaterFilms.json";
 
 const MEDIA = "/demo-media/home";
-const FILM_VERSION = "t7";
+const FILM_VERSION = "t8";
 
 type FilmKey = keyof typeof films;
 
 function filmFor(key: FilmKey): TheaterFilm {
   const spec = films[key];
+  // Mobile plays a 9:16 cut of the same recording. Desktop keeps the original file.
+  const file = key.endsWith("-mobile") ? `${key}-focus` : key;
   return {
-    src: `${MEDIA}/theater/${key}.mp4?v=${FILM_VERSION}`,
+    src: `${MEDIA}/theater/${file}.mp4?v=${FILM_VERSION}`,
     poster: `${MEDIA}/theater/${key}.webp?v=${FILM_VERSION}`,
     width: spec.width,
     height: spec.height,
