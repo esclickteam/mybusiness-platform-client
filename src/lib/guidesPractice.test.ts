@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { GUIDE_SLUGS, getGuide } from "./guidesMarketing.mjs";
 import { buildMarketingSitemapXml } from "./marketingSeo.mjs";
 import { knowledgePublicBlob } from "./knowledgeHub.mjs";
-import { KNOWLEDGE_DRAFTS } from "./knowledgeDrafts.mjs";
+import { KNOWLEDGE_DRAFTS, cmsDraftRecords } from "./knowledgeDrafts.mjs";
 
 const LOCALES = ["en", "he", "es", "pt-BR", "ar"];
 
@@ -46,6 +46,17 @@ describe("editorial drafts", () => {
       expect(sitemap).not.toContain(draft.slug);
       expect(blob).not.toContain(draft.locales.en.h1);
       expect(draft.locales.he.sections.length).toBe(draft.locales.en.sections.length);
+    }
+    const records = cmsDraftRecords();
+    expect(records).toHaveLength(50);
+    for (const record of records) {
+      expect(record.status).toBe("draft");
+      expect(record.editorialApproved).toBe(false);
+      expect(record.aiAssisted).toBe(true);
+      expect(record.heroImage.startsWith("/demo-media/")).toBe(true);
+      expect(record.sections.every((section) => section.heading && section.paragraphs.length)).toBe(true);
+      expect(record.relatedPaths.every((path) => path.startsWith("/") && !path.startsWith("//"))).toBe(true);
+      expect(JSON.stringify(record)).not.toMatch(/\bSEO\b|\bGEO\b|\bAEO\b|\$0\.\d+/);
     }
   });
 });

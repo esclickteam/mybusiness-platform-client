@@ -179,7 +179,13 @@ const NEXT = {
       "O CRM sozinho, a US$ 49 por mês, é o pipeline e o arquivo do cliente. O plano de negócios, a US$ 99 por mês ou US$ 990 por ano, acrescenta agenda, colaborações e automações. O WhatsApp continua à parte a US$ 29 por mês por número conectado. Esta página não diz que um plano inclui os outros.",
       "CRM وحده، بـ 49 دولاراً في الشهر، هو المسار وملف العميل. الخطة التجارية، بـ 99 دولاراً في الشهر أو 990 في السنة، تضيف المواعيد والتعاون والأتمتة. يبقى واتساب منفصلاً بـ 29 دولاراً في الشهر لكل رقم متصل. هذه الصفحة لا تقول إن خطة واحدة تشمل الأخريات.",
     ),
-    links: [sheet, pricing, link("/platform", text("The platform", "הפלטפורמה", "La plataforma", "A plataforma", "المنصة"))],
+    links: [
+      sheet,
+      pricing,
+      link("/platform", text("The platform", "הפלטפורמה", "La plataforma", "A plataforma", "المنصة")),
+      link("/solutions", text("Solutions", "פתרונות", "Soluciones", "Soluções", "الحلول")),
+      link("/contact", text("Contact", "יצירת קשר", "Contacto", "Contato", "اتصلوا بنا")),
+    ],
   },
 };
 

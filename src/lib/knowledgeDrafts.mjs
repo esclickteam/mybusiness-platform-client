@@ -708,6 +708,84 @@ export const KNOWLEDGE_DRAFTS = [
   }),
 ];
 
+const HERO = {
+  crm: "/demo-media/home/screens/en-desktop-crm-list.webp",
+  whatsapp: "/demo-media/home/screens/en-desktop-whatsapp.webp",
+  automations: "/demo-media/home/screens/en-desktop-automation.webp",
+  websites: "/demo-media/websites/still-8.jpg",
+};
+
+const CATEGORY = {
+  crm: "CRM",
+  whatsapp: "WhatsApp",
+  automations: "Automations",
+  websites: "Websites",
+};
+
+const SOURCE_HEADING = {
+  en: "Sources",
+  he: "מקורות",
+  es: "Fuentes",
+  "pt-BR": "Fontes",
+  ar: "المصادر",
+};
+
+function clip(value, max) {
+  return String(value ?? "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/[<>]/g, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
+}
+
+/** Records shaped for the knowledge store. Every row stays an unapproved draft. */
+export function cmsDraftRecords() {
+  const records = [];
+  for (const draft of KNOWLEDGE_DRAFTS) {
+    for (const locale of LOCALES) {
+      const page = draft.locales[locale];
+      const sections = page.sections.map((section) => {
+        const paragraphs = [...(section.paragraphs || [])];
+        (section.steps || []).forEach((step, index) => paragraphs.push(`${index + 1}. ${step}`));
+        return {
+          heading: clip(section.heading, 200),
+          paragraphs: paragraphs.map((paragraph) => clip(paragraph, 8000)).filter(Boolean),
+        };
+      });
+      const sourceLines = (draft.sources || []).map(
+        (source) => `${clip(pick(source.label, locale), 240)} — ${source.href}`,
+      );
+      if (sourceLines.length) sections.push({ heading: SOURCE_HEADING[locale], paragraphs: sourceLines });
+      const relatedPaths = [...new Set(
+        (page.related || [])
+          .map((item) => item.href)
+          .filter((href) => href.startsWith("/") && !href.startsWith("//") && !href.includes("://")),
+      )];
+      records.push({
+        slug: draft.slug,
+        locale,
+        translationGroup: draft.slug,
+        status: "draft",
+        editorialApproved: false,
+        aiAssisted: true,
+        title: clip(page.title, 180),
+        description: clip(page.description, 300),
+        h1: clip(page.h1, 180),
+        lede: clip(page.lede, 600),
+        category: CATEGORY[draft.cluster] || "Guides",
+        tags: [draft.cluster, "fact-check"],
+        heroImage: HERO[draft.cluster] || "",
+        relatedPaths,
+        sections,
+        faq: page.faq.map(([question, answer]) => [clip(question, 300), clip(answer, 8000)]),
+        updated: draft.updated,
+      });
+    }
+  }
+  return records;
+}
+
 export const DRAFT_SLUGS = KNOWLEDGE_DRAFTS.map((item) => item.slug);
 
 export function draftBySlug(slug) {
