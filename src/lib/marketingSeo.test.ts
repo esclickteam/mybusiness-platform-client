@@ -130,6 +130,10 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/home-preview")).toBe(false);
     expect(buildMarketingDocumentHead("/home-preview") || "").toContain("noindex, nofollow");
     expect(buildMarketingSitemapXml()).not.toContain("/home-preview");
+    expect(isMarketingNoindexPath("/mobile-demo-sketch")).toBe(true);
+    expect(isUnknownMarketingPath("/mobile-demo-sketch")).toBe(false);
+    expect(buildMarketingDocumentHead("/mobile-demo-sketch") || "").toContain("noindex, nofollow");
+    expect(buildMarketingSitemapXml()).not.toContain("/mobile-demo-sketch");
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
     expect(hebrew).toContain("<title>מערכת CRM לניהול לידים ולקוחות | BizUply</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
