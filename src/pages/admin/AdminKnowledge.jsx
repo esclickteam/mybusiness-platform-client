@@ -34,6 +34,7 @@ export default function AdminKnowledge() {
   const [draft, setDraft] = useState(EMPTY);
   const [current, setCurrent] = useState(null);
   const [audit, setAudit] = useState([]);
+  const [revisions, setRevisions] = useState([]);
   const [confirmFacts, setConfirmFacts] = useState(false);
   const [redirectTo, setRedirectTo] = useState("/resources");
   const [message, setMessage] = useState("");
@@ -87,6 +88,15 @@ export default function AdminKnowledge() {
     setConfirmFacts(false);
     const log = await API.get(`/admin/knowledge/articles/${article._id}/audit`);
     setAudit(log.data.entries || []);
+    const history = await API.get(`/admin/knowledge/articles/${article._id}/revisions`);
+    setRevisions(history.data.revisions || []);
+  }
+
+  async function restoreRevision(revisionId) {
+    const res = await API.post(`/admin/knowledge/articles/${current._id}/restore`, { revisionId });
+    await openArticle(res.data.article);
+    await reload();
+    setMessage("הגרסה שוחזרה לטיוטה. צריך לאשר אותה מחדש לפני פרסום.");
   }
 
   async function createArticle() {
@@ -197,6 +207,21 @@ export default function AdminKnowledge() {
             ) : null}
           </div>
           {current?.status === "published" ? <p>הכתובת הציבורית: /{current.locale === "en" ? "" : `${current.locale === "pt-BR" ? "pt-br" : current.locale}/`}resources/a/{current.slug}</p> : null}
+          {revisions.length ? (
+            <section>
+              <h2>גרסאות</h2>
+              <ul>
+                {revisions.map((revision) => (
+                  <li key={revision._id}>
+                    גרסה {revision.version}
+                    {current?.status === "published" ? null : (
+                      <button type="button" onClick={() => restoreRevision(revision._id).catch((error) => setMessage(error?.response?.data?.error || error.message))}>שחזור לטיוטה</button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null}
           {audit.length ? (
             <section>
               <h2>יומן שינויים</h2>

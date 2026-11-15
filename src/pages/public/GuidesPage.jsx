@@ -141,6 +141,11 @@ function GuideSection({ section, locale }) {
           </tbody>
         </table>
       ) : null}
+      {section.links?.length ? (
+        <ul className="guide-links">
+          {section.links.map((link) => <li key={link.href}><Link to={link.href}>{link.label}</Link></li>)}
+        </ul>
+      ) : null}
       {section.shots?.length ? (
         <div className="guide-shots">
           {section.shots.map((shot) => (

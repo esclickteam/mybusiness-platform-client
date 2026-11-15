@@ -123,7 +123,7 @@ export function ResourceHubPage() {
     kindLabel: kindLabel("guide", locale),
   }));
   const visibleCards = [...publishedCards, ...cards];
-  const fresh = visibleCards.filter((card) => card.updated === "2026-11-15");
+  const fresh = visibleCards.filter((card) => card.kind !== "guide").slice(0, 4);
   const start = cards.filter((card) => card.start);
   const needle = query.trim().toLowerCase();
   const filtered = visibleCards.filter((card) => {

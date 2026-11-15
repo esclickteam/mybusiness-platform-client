@@ -1107,7 +1107,7 @@ function escapeText(value) {
   return escapeHtml(value);
 }
 
-function renderSection(section) {
+function renderSection(section, locale = "en") {
   if (Array.isArray(section)) {
     const [heading, body] = section;
     return `<h2>${escapeText(heading)}</h2>${(body || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`).join("")}`;
@@ -1129,13 +1129,16 @@ function renderSection(section) {
   for (const shot of section.shots || []) {
     parts.push(`<figure><img src="${escapeHtml(shot.src)}" alt="${escapeText(shot.caption || section.heading)}" /><figcaption>${escapeText(shot.caption || "")}</figcaption></figure>`);
   }
+  if (section.links?.length) {
+    parts.push(`<ul>${section.links.map((link) => `<li><a href="${escapeHtml(localeHref(locale, link.href))}">${escapeText(link.label)}</a></li>`).join("")}</ul>`);
+  }
   return parts.join("");
 }
 
 function renderLocalized(page, locale, path) {
   const meta = marketingLocaleMeta(locale);
   const paragraphs = (page.lede ? [`<p>${escapeText(page.lede)}</p>`] : []).concat((page.paragraphs || []).map((paragraph) => `<p>${escapeText(paragraph)}</p>`)).join("");
-  const sections = (page.sections || []).map(renderSection).join("");
+  const sections = (page.sections || []).map((section) => renderSection(section, locale)).join("");
   const faqs = page.faq?.length ? page.faq : faqItems(path, locale);
   const faqHeading = path === "/" && HOME_FAQ_TITLE[locale]
     ? HOME_FAQ_TITLE[locale]
