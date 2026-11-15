@@ -120,7 +120,9 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
       <div className="static-field"><strong>{t("leftover.contractChrome.commissionPayment")}</strong> {payment || t("leftover.contractChrome.none")}</div>
       <div className="static-field"><strong>{t("leftover.contractChrome.validityLabel")}</strong> {startDate || t("leftover.contractChrome.notSet")} {t("leftover.contractChrome.to")} {endDate || t("leftover.contractChrome.notSet")}</div>
       <div className="static-field">
-        <strong>{t("leftover.contractChrome.terms")}</strong> {cancelAnytime ? "❎ {t("leftover.contractChrome.cancelAnytimeShort")}" : ""} {confidentiality ? "| 🔒 {t("leftover.contractChrome.confidentialityShort")}" : ""}
+        <strong>{t("leftover.contractChrome.terms")}</strong>{" "}
+        {cancelAnytime ? <span>❎ {t("leftover.contractChrome.cancelAnytimeShort")}</span> : null}{" "}
+        {confidentiality ? <span>| 🔒 {t("leftover.contractChrome.confidentialityShort")}</span> : null}
       </div>
       <div className="static-field"><strong>{t("leftover.contractChrome.createdAt")}</strong> {new Date(createdAt).toLocaleDateString(i18n.language || undefined)}</div>
       <div className="static-field"><strong>{t("leftover.contractChrome.status")}</strong> {status}</div>
