@@ -1,9 +1,7 @@
 .site-footer,
 .site-footer.hx-footer {
-  background:
-    radial-gradient(ellipse 55% 80% at 100% 0%, rgba(61, 99, 255, 0.28), transparent 55%),
-    linear-gradient(155deg, #321064 0%, #3a1578 46%, #1c2d72 100%);
-  color: #f4efff;
+  background: #141b3b;
+  color: #dce3f7;
   padding: 3.5rem 0 0;
 }
 
@@ -30,8 +28,8 @@
 .site-footer__brand p {
   max-width: 16rem;
   margin: 0.9rem 0 0;
-  color: #e7def8;
-  font-size: 0.95rem;
+  color: #dce3f7;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.55;
 }
@@ -39,7 +37,7 @@
 .site-footer__col h2 {
   margin: 0 0 0.85rem;
   color: #fff;
-  font-size: 0.82rem;
+  font-size: 1rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -56,8 +54,8 @@
 .site-footer__col a,
 .site-footer__legal a,
 .site-footer__social a {
-  color: #e4dcf6;
-  font-size: 0.92rem;
+  color: #dce3f7;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.4;
   text-decoration: none;
@@ -65,18 +63,17 @@
 
 .site-footer__col a:hover,
 .site-footer__legal a:hover,
-.site-footer__social a:hover,
 .site-footer__cookie:hover {
-  color: #fff;
+  color: #c4b5fd;
 }
 
 .site-footer__cookie {
   border: 0;
   background: none;
   padding: 0;
-  color: #e4dcf6;
+  color: #dce3f7;
   font: inherit;
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.4;
   cursor: pointer;
@@ -95,7 +92,7 @@
   gap: 0.9rem 1.4rem;
   margin-top: 2.4rem;
   padding: 1.1rem 0 1.3rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  border-top: 1px solid #354063;
 }
 
 .site-footer__bar p,
@@ -110,8 +107,8 @@
 }
 
 .site-footer__bar p {
-  color: #ddd2f4;
-  font-size: 0.82rem;
+  color: #dce3f7;
+  font-size: 1rem;
   font-weight: 700;
 }
 
@@ -180,6 +177,14 @@
 
   .site-footer__brand p {
     max-width: none;
+  }
+
+  .site-footer__col a,
+  .site-footer__legal a,
+  .site-footer__cookie,
+  .site-footer__bar p,
+  .site-footer__brand p {
+    font-size: 0.95rem;
   }
 }
 

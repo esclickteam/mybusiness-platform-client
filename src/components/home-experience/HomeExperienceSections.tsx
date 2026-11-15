@@ -183,16 +183,19 @@ export default function HomeExperienceSections() {
       <a className="hx-skip" href="#how">{text("דילוג לתוכן", "Skip to content")}</a>
       <div className="ht-root" ref={ref}>
         <Hero seek={null} />
-        <CustomerCommandCenter />
-        <WhatsAppOperations />
-        <SmartAutomations />
-        <MetaCampaigns />
-        <AiActionFlow />
-        <MeetingBooking />
-        <WebsiteGallery />
-        <Benefits />
+        <div className="ht-band ht-band-purple">
+          <CustomerCommandCenter />
+          <WhatsAppOperations />
+          <SmartAutomations />
+        </div>
+        <div className="ht-band ht-band-light">
+          <MetaCampaigns />
+          <AiActionFlow />
+          <MeetingBooking />
+          <WebsiteGallery />
+          <Benefits />
+        </div>
         <Faq />
-        <Close />
       </div>
     </>
   );
@@ -233,29 +236,9 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
           </h1>
           <p className="hx-lead">{hero.lead1}</p>
           <div className="hx-actions">
-            <Cta to="/register">{hero.start}</Cta>
             <Cta to="/contact" tone="line">{hero.see}</Cta>
           </div>
-          {Array.isArray(hero.trust) && hero.trust.length ? (
-            <ul className="hx-hero-trust">
-              {hero.trust.map((item: string) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          ) : null}
         </div>
-        <aside className="ht-hero-side" aria-label={hero.demoEyebrow}>
-          <p className="ht-eyebrow">{hero.demoEyebrow}</p>
-          <p className="ht-hero-side-lead">{hero.demoLead}</p>
-          <ol className="ht-hero-steps">
-            {steps.map((step, index) => (
-              <li key={step.id}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                {step.label}
-              </li>
-            ))}
-          </ol>
-        </aside>
       </div>
       <div className="hx-hero-stage" id="product-theater">
         <div className="hx-hero-stage-inner">
@@ -280,7 +263,7 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
 }
 
 
-function BenefitIcon({ kind }: { kind: "system" | "phone" | "official" | "test" | "start" }) {
+function BenefitIcon({ kind }: { kind: "system" | "phone" | "official" | "flow" | "spark" | "test" }) {
   const pen = {
     width: 40,
     height: 40,
@@ -318,18 +301,26 @@ function BenefitIcon({ kind }: { kind: "system" | "phone" | "official" | "test" 
       </svg>
     );
   }
-  if (kind === "test") {
+  if (kind === "flow") {
     return (
       <svg {...pen}>
-        <circle cx="16" cy="16" r="9" strokeDasharray="3 2.4" />
-        <path d="m13.5 12.2 7 3.8-7 3.8z" fill="currentColor" stroke="none" />
+        <path d="M7 8h8.5M7 16h18M7 24h12" />
+        <path d="m12.5 5.2 3.2 2.8-3.2 2.8M21.5 13.2 25 16l-3.5 2.8M16 21.2l3.2 2.8-3.2 2.8" />
+      </svg>
+    );
+  }
+  if (kind === "spark") {
+    return (
+      <svg {...pen}>
+        <path d="M16 5.5v4.2M16 22.3v4.2M5.5 16h4.2M22.3 16h4.2M8.4 8.4l3 3M20.6 20.6l3 3M23.6 8.4l-3 3M11.4 20.6l-3 3" />
+        <circle cx="16" cy="16" r="2.2" />
       </svg>
     );
   }
   return (
     <svg {...pen}>
-      <circle cx="8" cy="16" r="2" fill="currentColor" stroke="none" />
-      <path d="M10.5 16H24M19 11l5 5-5 5" />
+      <circle cx="16" cy="16" r="9" strokeDasharray="3 2.4" />
+      <path d="m13.5 12.2 7 3.8-7 3.8z" fill="currentColor" stroke="none" />
     </svg>
   );
 }
@@ -337,22 +328,19 @@ function BenefitIcon({ kind }: { kind: "system" | "phone" | "official" | "test" 
 function Benefits() {
   const { text } = useCopy();
   const items = [
-    ["system", text("מערכת אחת במקום כלים מפוזרים", "One system instead of scattered tools"), text("לידים, שיחות, משימות, אוטומציות וקמפיינים חולקים את אותו כרטיס לקוח.", "Leads, conversations, tasks, automations and campaigns share the same customer record.")],
-    ["phone", text("עובד גם מהטלפון", "Works from your phone"), text("אותה מערכת בדסקטופ ובמובייל — לענות לליד גם מחוץ למשרד.", "The same system on desktop and mobile, so you can answer a lead away from the office.")],
-    ["official", text("חיבורים רשמיים", "Official connections"), text("WhatsApp Business API ו־Meta דרך החיבורים הרשמיים, בהתאם לאישורים.", "WhatsApp Business API and Meta through their official connections, subject to approval.")],
-    ["test", text("בודקים לפני שמפעילים", "Test before you go live"), text("הרצת בדיקה לאוטומציות, בלי לשלוח הודעות ובלי לשנות נתונים.", "Test runs for automations that send nothing and change no data.")],
+    ["system", text("מערכת אחת. הכול מחובר.", "One system. Everything connected."), text("לידים, לקוחות, שיחות, משימות ואוטומציות — הכול באותה סביבת עבודה.", "Leads, customers, conversations, tasks and automations live in the same workspace.")],
+    ["phone", text("עובדים מכל מקום", "Work from anywhere"), text("גישה לניהול העסק מהמחשב ומהטלפון, עם חוויית שימוש מותאמת.", "Run the business from a computer or a phone, with a layout that fits the screen.")],
+    ["official", text("חיבורים רשמיים", "Official connections"), text("חיבור ל־WhatsApp Business API ול־Meta באמצעות האינטגרציות הרלוונטיות.", "Connect WhatsApp Business API and Meta through the integrations those platforms provide.")],
+    ["flow", text("אוטומציות חכמות", "Smart automations"), text("תהליכים אוטומטיים שמצמצמים עבודה ידנית ועוזרים לעקוב אחרי לקוחות.", "Automated steps that cut repetitive work and help the team follow up.")],
+    ["spark", text("AI שמקדם החלטות", "AI that moves the next step forward"), text("תובנות והצעות פעולה שעוזרות להבין מה לעשות בהמשך.", "Insights and suggested next actions that make the following step clearer.")],
+    ["test", text("מתנסים לפני שמפעילים", "Try it before you turn it on"), text("הדגמות וסימולציות שמאפשרות להכיר תהליכים לפני הפעלה אמיתית.", "Demos and simulations so you can see a process before it runs for real.")],
   ] as const;
   return (
     <section className="ht-benefits" id="benefits" aria-labelledby="ht-benefits-title">
       <div className="ht-wrap">
         <div className="ht-head" data-reveal>
-          <p className="ht-eyebrow">{text("יתרונות מרכזיים", "Key benefits")}</p>
           <h2 id="ht-benefits-title">
-            {text("כל מה שהעסק צריך", "Everything the business needs")}
-            <span className="ht-stop">.</span>
-            {" "}
-            {text("במקום אחד", "In one place")}
-            <span className="ht-stop">.</span>
+            {text("כל מה שהעסק צריך. במקום אחד.", "Everything the business needs. In one place.")}
           </h2>
         </div>
         <ul className="ht-benefit-grid">
@@ -405,33 +393,6 @@ function Faq() {
               </div>
             );
           })}
-        </div>
-        <div className="ht-faq-more" data-reveal>
-          <div className="hx-actions">
-            <Cta to="/faq" tone="line">{text("לכל השאלות הנפוצות", "View all FAQs")}</Cta>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function Close() {
-  const { text } = useCopy();
-  return (
-    <section className="ht-close" aria-labelledby="ht-close-title">
-      <Waves className="ht-close-waves" />
-      <div className="ht-wrap ht-close-inner" data-reveal>
-        <h2 id="ht-close-title">{text("העסק שלכם מוכן לעבוד חכם יותר.", "Your business is ready to work smarter.")}</h2>
-        <p>
-          {text(
-            "פותחים חשבון חינמי, מחברים את מקורות הלידים, ומתחילים לנהל את הלקוחות מתוך מערכת אחת.",
-            "Open a free account, connect your lead sources, and start managing customers from one system.",
-          )}
-        </p>
-        <div className="hx-actions">
-          <Cta to="/register" tone="light">{text("התחילו בחינם עכשיו", "Start for free now")}</Cta>
-          <Cta to="/contact" tone="line">{text("קבעו הדגמה אישית", "Schedule a personal demo")}</Cta>
         </div>
       </div>
     </section>

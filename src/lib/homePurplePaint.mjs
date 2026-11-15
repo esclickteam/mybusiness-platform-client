@@ -113,18 +113,6 @@ const HERO_WAVES = `<svg class="ht-waves ht-hero-waves" viewBox="0 0 1440 320" p
 const THEATER_MEDIA = "/demo-media/home/theater";
 const THEATER_VERSION = "t7";
 
-function heroSideHtml(hx) {
-  const steps = (hx.processSteps || [])
-    .map(
-      (step, index) =>
-        `<li><span>${String(index + 1).padStart(2, "0")}</span>${escapeText(step[1])}</li>`,
-    )
-    .join("");
-  return `<aside class="ht-hero-side" aria-label="${escapeHtml(hx.demoEyebrow)}"><p class="ht-eyebrow">${escapeText(
-    hx.demoEyebrow,
-  )}</p><p class="ht-hero-side-lead">${escapeText(hx.demoLead)}</p><ol class="ht-hero-steps">${steps}</ol></aside>`;
-}
-
 /** Static frame of ProductTheater: same bar, stage and caption, so the swap to React does not move anything. */
 function theaterShellHtml(hx, lang) {
   const steps = hx.processSteps || [];
@@ -176,19 +164,14 @@ export function renderPurpleHomePrerender(locale) {
   const kicker = hx.kicker
     ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
     : `<p class="hx-hero-brand">BizUply</p>`;
-  const trust = Array.isArray(hx.trust) && hx.trust.length
-    ? `<ul class="hx-hero-trust">${hx.trust.map((item) => `<li>${escapeText(item)}</li>`).join("")}</ul>`
-    : "";
   const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="hx-hero-pin"><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(
     hx.lineTwo,
     lineTwoHot,
-  )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
-    hx.start,
-  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
+  )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
     hx.see,
-  )}</span><i aria-hidden="true"></i></a></div>${trust}</div>${heroSideHtml(hx)}</div><div class="hx-hero-stage" id="product-theater"><div class="hx-hero-stage-inner">${theaterShellHtml(
+  )}</span><i aria-hidden="true"></i></a></div></div></div><div class="hx-hero-stage" id="product-theater"><div class="hx-hero-stage-inner">${theaterShellHtml(
     hx,
     locale === "he" ? "he" : "en",
   )}</div></div></section>`;
