@@ -163,12 +163,13 @@
   color: #5b21b6;
 }
 
-.guide-answer {
+.guide-page > header p.guide-answer {
   margin: 0 0 1.5rem;
   padding: 1rem 1.1rem;
   border-inline-start: 4px solid #6d28d9;
+  border-radius: 2px;
   background: #f5f3ff;
-  border-radius: 0.9rem;
+  color: #17152b;
 }
 
 .guide-answer b {
