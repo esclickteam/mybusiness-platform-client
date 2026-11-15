@@ -56,19 +56,19 @@ const META_LEADS = {
 };
 
 const REVIEW = t(
-  "Checked on 15 November 2026. Product prices on this page follow the pricing page. Read both again each quarter.",
-  "נבדק ב־15 בנובמבר 2026. מחירי המוצר בעמוד הזה עוקבים אחרי עמוד המחירים. קוראים את שניהם שוב בכל רבעון.",
-  "Revisado el 15 de noviembre de 2026. Los precios del producto en esta página siguen la página de precios. Lea ambas de nuevo cada trimestre.",
-  "Verificado em 15 de novembro de 2026. Os preços do produto nesta página seguem a página de preços. Leia as duas de novo a cada trimestre.",
-  "فُحص في 15 نوفمبر 2026. أسعار المنتج في هذه الصفحة تتبع صفحة الأسعار. أعيدوا قراءة الاثنتين كل ربع سنة.",
+  "Checked on 15 November 2026. CRM only at $49 a month is on the CRM page. The business plan at $99 a month or $990 a year, and the website price, are on the pricing page. Read them again each quarter.",
+  "נבדק ב־15 בנובמבר 2026. CRM בלבד ב־49 דולר לחודש מופיע בעמוד ה־CRM. החבילה העסקית ב־99 דולר לחודש או 990 לשנה, ומחיר האתר, מופיעים בעמוד המחירים. קוראים אותם שוב בכל רבעון.",
+  "Revisado el 15 de noviembre de 2026. El CRM solo a 49 dólares al mes está en la página de CRM. El plan de negocio a 99 al mes o 990 al año, y el precio del sitio, están en la página de precios. Léalos de nuevo cada trimestre.",
+  "Verificado em 15 de novembro de 2026. O CRM sozinho a US$ 49 por mês está na página de CRM. O plano de negócios a US$ 99 por mês ou US$ 990 por ano, e o preço do site, estão na página de preços. Leia de novo a cada trimestre.",
+  "فُحص في 15 نوفمبر 2026. CRM وحده بـ 49 دولاراً في الشهر في صفحة CRM. الخطة التجارية بـ 99 دولاراً في الشهر أو 990 في السنة، وسعر الموقع، في صفحة الأسعار. أعيدوا قراءتها كل ربع سنة.",
 );
 
 const REVIEW_META = t(
-  "Checked on 15 November 2026. Bizuply's $29 is on the pricing page. Meta's category rates are not copied here. Open Meta's pricing page, updated 30 September 2026, before you budget a send, and read both again each quarter.",
-  "נבדק ב־15 בנובמבר 2026. ה־29 דולר של ביזאפלי נמצאים בעמוד המחירים. תעריפי הקטגוריות של Meta לא מועתקים לכאן. פותחים את עמוד המחירים של Meta, שעודכן ב־30 בספטמבר 2026, לפני שמתקצבים שליחה, וקוראים את שניהם שוב בכל רבעון.",
-  "Revisado el 15 de noviembre de 2026. Los 29 dólares de Bizuply están en la página de precios. Las tarifas por categoría de Meta no se copian aquí. Abra la página de precios de Meta, actualizada el 30 de septiembre de 2026, antes de presupuestar un envío, y lea ambas de nuevo cada trimestre.",
-  "Verificado em 15 de novembro de 2026. Os US$ 29 da Bizuply estão na página de preços. As tarifas por categoria da Meta não são copiadas aqui. Abra a página de preços da Meta, atualizada em 30 de setembro de 2026, antes de orçar um envio, e leia as duas de novo a cada trimestre.",
-  "فُحص في 15 نوفمبر 2026. مبلغ 29 دولاراً من Bizuply في صفحة الأسعار. أسعار فئات Meta غير منسوخة هنا. افتحوا صفحة أسعار Meta، المحدّثة في 30 سبتمبر 2026، قبل وضع ميزانية الإرسال، وأعيدوا قراءة الاثنتين كل ربع سنة.",
+  "Checked on 15 November 2026. Bizuply's $29 per connected number is on the WhatsApp API page. It is not one of the cards on the main pricing page. Meta's category rates are not copied here. Open Meta's pricing page, updated 30 September 2026, before you budget a send, and read both again each quarter.",
+  "נבדק ב־15 בנובמבר 2026. 29 הדולר של ביזאפלי למספר מחובר מופיעים בעמוד WhatsApp API. הם לא כרטיס בעמוד המחירים הראשי. תעריפי הקטגוריות של Meta לא מועתקים לכאן. פותחים את עמוד המחירים של Meta, שעודכן ב־30 בספטמבר 2026, לפני שמתקצבים שליחה, וקוראים את שניהם שוב בכל רבעון.",
+  "Revisado el 15 de noviembre de 2026. Los 29 dólares de Bizuply por número conectado están en la página de WhatsApp API. No son una tarjeta de la página de precios principal. Las tarifas por categoría de Meta no se copian aquí. Abra la página de precios de Meta, actualizada el 30 de septiembre de 2026, antes de presupuestar un envío, y lea ambas de nuevo cada trimestre.",
+  "Verificado em 15 de novembro de 2026. Os US$ 29 da Bizuply por número conectado estão na página de WhatsApp API. Não são um cartão da página de preços principal. As tarifas por categoria da Meta não são copiadas aqui. Abra a página de preços da Meta, atualizada em 30 de setembro de 2026, antes de orçar um envio, e leia as duas de novo a cada trimestre.",
+  "فُحص في 15 نوفمبر 2026. مبلغ 29 دولاراً من Bizuply لكل رقم متصل في صفحة WhatsApp API. ليس بطاقة في صفحة الأسعار الرئيسية. أسعار فئات Meta غير منسوخة هنا. افتحوا صفحة أسعار Meta، المحدّثة في 30 سبتمبر 2026، قبل وضع ميزانية الإرسال، وأعيدوا قراءة الاثنتين كل ربع سنة.",
 );
 
 function link(href, label) {
