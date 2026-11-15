@@ -242,7 +242,7 @@ html.hx-preview body {
   width: min(1320px, calc(100% - 3rem));
   margin-inline: auto;
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
+  grid-template-columns: minmax(0, 46rem);
   gap: clamp(2rem, 5vw, 5rem);
   align-items: end;
   padding: clamp(2rem, 4.4vw, 4rem) 0 clamp(1.75rem, 3vw, 2.6rem);
@@ -270,7 +270,7 @@ html.hx-preview body {
 .hx-display {
   margin: 0;
   font-family: Assistant, Inter, system-ui, sans-serif;
-  font-size: clamp(2.7rem, 6vw, 5.8rem);
+  font-size: clamp(2.25rem, 1.35rem + 2.1vw, 4.25rem);
   font-weight: 800;
   line-height: 0.98;
   letter-spacing: -0.05em;
@@ -301,7 +301,7 @@ html.hx-preview body {
   max-width: 36rem;
   margin: 1.5rem 0 0;
   color: #3f3a52;
-  font-size: clamp(1.05rem, 1.35vw, 1.24rem);
+  font-size: clamp(1.05rem, 0.45vw + 0.95rem, 1.25rem);
   line-height: 1.6;
 }
 .hx-actions {
@@ -321,7 +321,7 @@ html.hx-preview body {
   border-radius: 0;
   background: #5b21b6;
   color: #fff;
-  font-size: 1.02rem;
+  font-size: 1.0625rem;
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.01em;
@@ -629,7 +629,7 @@ html.hx-preview body {
     padding: 2rem 0 1.75rem;
   }
   .hx-display {
-    font-size: clamp(2.5rem, 11.5vw, 3.4rem);
+    font-size: clamp(2.25rem, 8vw, 2.75rem);
   }
   .hx-lead {
     margin-top: 1.1rem;
@@ -846,18 +846,30 @@ html.hx-preview body {
 .ht-benefits {
   background: #f6f5fb;
 }
+.ht-band-purple { background: #4c1d95; }
+.ht-band-light { background: #f6f5fb; }
+.ht-band-purple .cc-section,
+.ht-band-purple .wa-section,
+.ht-band-purple .au-section,
+.ht-band-light .cs-section,
+.ht-band-light .ai-section,
+.ht-band-light .mt-section,
+.ht-band-light .ht-products.wg-section,
+.ht-band-light .ht-benefits {
+  background: transparent;
+}
 .ht-root h2 {
   max-width: 20ch;
   margin: 0;
   color: #1a0b33;
-  font-size: clamp(2rem, 4.1vw, 3.5rem);
+  font-size: clamp(2.35rem, 1.35rem + 1.55vw, 3rem);
   font-weight: 800;
-  line-height: 1.04;
-  letter-spacing: -0.045em;
+  line-height: 1.08;
+  letter-spacing: -0.04em;
 }
 [dir="rtl"] .ht-root h2 {
-  line-height: 1.12;
-  letter-spacing: -0.025em;
+  line-height: 1.18;
+  letter-spacing: -0.02em;
 }
 [dir="rtl"] #ht-benefits-title .ht-stop {
   margin-inline-start: -0.22em;
@@ -865,16 +877,17 @@ html.hx-preview body {
 .ht-root h3 {
   margin: 0;
   color: #1a0b33;
-  font-size: 1.2rem;
+  font-size: clamp(1.35rem, 0.4vw + 1.15rem, 1.65rem);
   font-weight: 800;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 1.3;
 }
+[dir="rtl"] .ht-root h3 { line-height: 1.4; }
 .ht-lead {
   max-width: 42rem;
   margin: 1.1rem 0 0;
   color: #3f3a52;
-  font-size: clamp(1.04rem, 1.3vw, 1.18rem);
+  font-size: clamp(1.05rem, 0.35vw + 0.95rem, 1.25rem);
   line-height: 1.65;
 }
 .ht-head {
@@ -3081,7 +3094,8 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   background: transparent;
   text-align: start;
 }
-.ht-faq-item h3 { font-size: 1.02rem; }
+.ht-faq-item h3 { font-size: clamp(1.05rem, 0.35vw + 0.95rem, 1.2rem); }
+.ht-faq-a p { font-size: clamp(1rem, 0.25vw + 0.92rem, 1.125rem); line-height: 1.7; }
 .ht-faq-item button {
   display: flex;
   align-items: center;
@@ -3289,9 +3303,14 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   gap: clamp(1.5rem, 3vw, 2.5rem);
   align-items: start;
 }
+.ht-root .ht-benefits h2 {
+  max-width: 14em;
+  text-wrap: balance;
+}
 .ht-root .ht-benefit-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 2.5rem 2rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.75rem 2.4rem;
+  margin-top: clamp(2rem, 4vw, 3rem);
 }
 .ht-root .ht-benefit-grid li,
 .ht-root .ht-benefit-grid li:nth-child(-n + 2),
@@ -3337,12 +3356,20 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   .ht-editorial-head,
   .ht-follow,
   .ht-follow.is-flip,
-  .ht-pair,
-  .ht-root .ht-benefit-grid {
+  .ht-pair {
     grid-template-columns: 1fr;
+  }
+  .ht-root .ht-benefit-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 1.4rem;
   }
   .ht-follow.is-flip .ht-follow-copy { order: 0; }
   .ht-follow { margin-top: 3rem; }
   .ht-root .ht-editorial-head h2 { max-width: none; }
+}
+@media (max-width: 640px) {
+  .ht-root .ht-benefit-grid {
+    grid-template-columns: 1fr;
+  }
 }
 

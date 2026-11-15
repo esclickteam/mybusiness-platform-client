@@ -2,7 +2,7 @@
   position: relative;
   padding: clamp(2.6rem, 4.5vw, 4rem) 0;
   color: #172033;
-  background: #4c1d95;
+  background: transparent;
 }
 
 .cc-section svg {
@@ -72,7 +72,7 @@
   background: transparent;
   color: #ddd6fe;
   font: inherit;
-  font-size: 0.86rem;
+  font-size: 0.98rem;
   font-weight: 700;
   text-align: start;
   cursor: pointer;
@@ -101,7 +101,7 @@
 
 .cc-metrics p + p { border-inline-start: 1px solid #efeaf6; }
 .cc-metrics span { display: grid; }
-.cc-metrics small { color: #6d657e; font-size: 0.78rem; font-weight: 700; }
+.cc-metrics small { color: #6d657e; font-size: 0.90rem; font-weight: 700; }
 .cc-metrics b { color: #141226; font-size: 1.95rem; line-height: 1; letter-spacing: -0.03em; }
 
 .cc-layout {
@@ -138,7 +138,7 @@
   border-radius: 8px;
   background: #efe9ff;
   color: #5b21b6;
-  font-size: 0.78rem;
+  font-size: 0.90rem;
   text-align: center;
 }
 
@@ -178,7 +178,7 @@
 .cc-list li button span { display: grid; gap: 0.12rem; min-width: 0; }
 .cc-list strong { font-size: 0.98rem; font-weight: 800; }
 .cc-list small,
-.cc-list em { color: #6d657e; font-size: 0.78rem; font-style: normal; font-weight: 700; }
+.cc-list em { color: #6d657e; font-size: 0.90rem; font-style: normal; font-weight: 700; }
 
 .cc-card { padding: 1.15rem 1.25rem 0.15rem; }
 .cc-feed { padding: 0 1.25rem 1.25rem; }
@@ -222,7 +222,7 @@
   border-radius: 999px;
   background: #fff;
   color: #5c5670;
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   font-weight: 800;
 }
 
@@ -236,7 +236,7 @@
   border-radius: 999px;
   background: #e8f8ef;
   color: #067647;
-  font-size: 0.86rem;
+  font-size: 0.98rem;
   font-weight: 800;
 }
 .cc-status i {
@@ -279,7 +279,7 @@
   padding-top: 0.75rem;
   border-top: 1px solid #ece7f4;
   color: #3d4658;
-  font-size: 0.92rem;
+  font-size: 0.98rem;
   font-weight: 700;
 }
 .cc-contact svg { color: #64748b; }
@@ -375,7 +375,7 @@
 .cc-timeline .is-task i { background: #2563eb; }
 .cc-timeline strong { display: block; color: #141226; font-size: 0.98rem; }
 .cc-timeline p { margin: 0.15rem 0 0; color: #4b4560; font-weight: 600; line-height: 1.4; }
-.cc-timeline time { color: #6d657e; font-size: 0.78rem; font-weight: 700; white-space: nowrap; }
+.cc-timeline time { color: #6d657e; font-size: 0.90rem; font-weight: 700; white-space: nowrap; }
 
 .cc-empty,
 .cc-notice { margin: 0.65rem 0 0; font-weight: 800; }
@@ -427,7 +427,7 @@
 .cc-actions > button:nth-of-type(4) svg { color: #7c3aed; }
 .cc-actions > button:hover { border-color: #c4b5fd; background: #f7f4ff; }
 .cc-actions form { display: grid; gap: 0.4rem; padding: 0.7rem; background: #f7f5ff; }
-.cc-actions label { font-size: 0.8rem; font-weight: 800; }
+.cc-actions label { font-size: 0.92rem; font-weight: 800; }
 .cc-actions input,
 .cc-actions textarea {
   width: 100%;
@@ -502,7 +502,7 @@
   .cc-pipeline button { font-size: 0.62rem; }
   .cc-timeline li { gap: 0.65rem; padding: 0.58rem 0; }
   .cc-timeline::before { top: 1.7rem; bottom: 1.7rem; }
-  .cc-timeline time { grid-column: 2; font-size: 0.72rem; }
+  .cc-timeline time { grid-column: 2; font-size: 0.84rem; }
 }
 
 @media (max-width: 340px) {

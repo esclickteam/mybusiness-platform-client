@@ -2,7 +2,7 @@
   position: relative;
   padding: clamp(2.4rem, 4.5vw, 3.8rem) 0;
   color: #172033;
-  background: #4c1d95;
+  background: transparent;
 }
 
 .wa-section svg {
@@ -28,7 +28,7 @@
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.12);
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   font-weight: 800;
 }
 .wa-kicker span { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: #22c55e; }
@@ -36,7 +36,7 @@
   max-width: 22em;
   margin: 0 auto;
   color: #fff;
-  font-size: clamp(1.7rem, 3vw, 2.45rem);
+  font-size: clamp(2.35rem, 1.35rem + 1.55vw, 3rem);
   line-height: 1.15;
   letter-spacing: -0.03em;
 }
@@ -45,7 +45,7 @@
   font-size: 1rem;
   line-height: 1.25;
 }
-.wa-head p { margin: 0.55rem auto 0; max-width: 38rem; color: rgba(255, 255, 255, 0.86); font-weight: 650; }
+.wa-head p { margin: 0.55rem auto 0; max-width: 38rem; color: rgba(255, 255, 255, 0.86); font-size: clamp(1.05rem, 0.3vw + 0.95rem, 1.2rem); font-weight: 650; line-height: 1.6; }
 .wa-points {
   display: flex;
   flex-wrap: wrap;
@@ -60,7 +60,7 @@
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.1);
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   font-weight: 800;
 }
 
@@ -85,7 +85,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   font-weight: 800;
 }
 .wa-demo { padding: 0.25rem 0.55rem; border-radius: 999px; background: #f5f3ff; color: #5b21b6; }
@@ -103,7 +103,7 @@
   background: #fff;
   color: #3f3a52;
   font: inherit;
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   font-weight: 800;
   cursor: pointer;
 }
@@ -156,7 +156,7 @@
   border-radius: 6px;
   background: #6d28d9;
   color: #fff;
-  font-size: 0.78rem;
+  font-size: 0.90rem;
   font-weight: 800;
 }
 .wa-inbox-head button:hover { background: #5b21b6; }
@@ -169,7 +169,7 @@
   border-radius: 999px;
   background: #fff;
   color: #4b4563;
-  font-size: 0.75rem;
+  font-size: 0.87rem;
   font-weight: 800;
 }
 .wa-filters button b { margin-inline-start: 0.2rem; color: #6d28d9; }
@@ -216,7 +216,7 @@
   border-radius: 50%;
   background: #efe8ff;
   color: #5b21b6;
-  font-size: 0.78rem;
+  font-size: 0.90rem;
 }
 .wa-inbox li button span { display: contents; }
 .wa-inbox strong { grid-area: name; }
@@ -224,12 +224,12 @@
   grid-area: preview;
   overflow: hidden;
   color: #6d657e;
-  font-size: 0.78rem;
+  font-size: 0.90rem;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 .wa-inbox em,
-.wa-inbox i { grid-area: time; color: #6d657e; font-size: 0.72rem; font-style: normal; font-weight: 700; }
+.wa-inbox i { grid-area: time; color: #6d657e; font-size: 0.84rem; font-style: normal; font-weight: 700; }
 .wa-inbox i {
   grid-area: badge;
   justify-self: end;
@@ -260,7 +260,7 @@
   border-radius: 50%;
   background: linear-gradient(180deg, #f5f3ff, #e9e0ff);
   color: #5b21b6;
-  font-size: 0.9rem;
+  font-size: 0.98rem;
   box-shadow: 0 0 0 4px #fff, 0 0 0 5px #ece7f6;
 }
 .wa-chat-head div,
@@ -268,7 +268,7 @@
 .wa-chat-head h3,
 .wa-who strong { font-size: 1.15rem; letter-spacing: -0.02em; }
 .wa-chat-head p,
-.wa-source { margin: 0; color: #6d657e; font-size: 0.8rem; font-weight: 700; }
+.wa-source { margin: 0; color: #6d657e; font-size: 0.92rem; font-weight: 700; }
 .wa-status {
   display: inline-flex;
   width: fit-content;
@@ -277,7 +277,7 @@
   border-radius: 999px;
   background: #e8f8ef;
   color: #067647;
-  font-size: 0.75rem;
+  font-size: 0.87rem;
   font-weight: 800;
 }
 
@@ -314,7 +314,7 @@
   border-start-end-radius: 4px;
   background: #d8f8c8;
 }
-.wa-thread time { display: flex; gap: 0.35rem; color: #6d657e; font-size: 0.72rem; font-weight: 700; }
+.wa-thread time { display: flex; gap: 0.35rem; color: #6d657e; font-size: 0.84rem; font-weight: 700; }
 .wa-thread .is-out time { justify-self: end; }
 .wa-thread time span.is-read { color: #2563eb; }
 .wa-thread .is-fresh { animation: wa-pop 280ms ease; }
@@ -326,7 +326,7 @@
 .wa-notice {
   margin: 0 1rem;
   color: #5b21b6;
-  font-size: 0.82rem;
+  font-size: 0.94rem;
   font-weight: 800;
 }
 
@@ -403,7 +403,7 @@
   color: #6d657e;
   font-weight: 650;
 }
-.wa-preview span { color: #6d28d9; font-size: 0.75rem; font-weight: 800; }
+.wa-preview span { color: #6d28d9; font-size: 0.87rem; font-weight: 800; }
 .wa-preview.is-set { border-style: solid; border-color: #c4b5fd; background: #f7f4ff; color: #1e1b4b; }
 .wa-send,
 .wa-primary,
@@ -413,19 +413,19 @@
 .wa-task-form button:hover { background: #5b21b6; }
 
 .wa-profile { display: grid; align-content: start; gap: 0.55rem; padding: 0.95rem 0.9rem 1rem; }
-.wa-profile h4 { margin: 0.3rem 0 0; font-size: 0.86rem; }
+.wa-profile h4 { margin: 0.3rem 0 0; font-size: 0.98rem; }
 .wa-profile p { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
 .wa-contact { display: flex; align-items: center; gap: 0.4rem; color: #24183f; }
 .wa-contact svg { color: #6d28d9; }
 .wa-who { display: flex; align-items: center; gap: 0.65rem; }
 .wa-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.wa-tags span { padding: 0.2rem 0.45rem; border-radius: 999px; background: #f5f3ff; color: #5b21b6; font-size: 0.75rem; font-weight: 800; }
+.wa-tags span { padding: 0.2rem 0.45rem; border-radius: 999px; background: #f5f3ff; color: #5b21b6; font-size: 0.87rem; font-weight: 800; }
 .wa-activity { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
 .wa-activity li { display: grid; gap: 0.12rem; padding: 0.45rem 0.5rem; border-radius: 8px; background: #faf9fd; }
 .wa-activity .is-task { border: 1px solid #c9efd8; background: #f0fdf4; }
-.wa-activity .is-task em { color: #067647; font-size: 0.75rem; font-style: normal; font-weight: 800; }
+.wa-activity .is-task em { color: #067647; font-size: 0.87rem; font-style: normal; font-weight: 800; }
 .wa-activity .is-task strong { color: #14532d; }
-.wa-activity time { color: #6d657e; font-size: 0.75rem; font-weight: 700; }
+.wa-activity time { color: #6d657e; font-size: 0.87rem; font-weight: 700; }
 .wa-primary,
 .wa-secondary,
 .wa-task-form button { width: 100%; }
@@ -442,7 +442,7 @@
   font-weight: 800;
 }
 .wa-task-form { display: grid; gap: 0.35rem; }
-.wa-task-form label { font-size: 0.8rem; font-weight: 800; }
+.wa-task-form label { font-size: 0.92rem; font-weight: 800; }
 .wa-task-form input {
   width: 100%;
   min-height: 2.5rem;
@@ -483,7 +483,7 @@
 }
 
 @media (max-width: 390px) {
-  .wa-head h2 { font-size: 1.45rem; }
+  .wa-head h2 { font-size: 1.75rem; }
   .wa-filters button { font-size: 0.7rem; }
   .wa-thread li { max-width: 92%; }
 }

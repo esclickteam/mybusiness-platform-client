@@ -1,7 +1,7 @@
 .mt-section {
   padding: clamp(2.8rem, 5vw, 4.4rem) 0;
   color: #1a0b33;
-  background: #f6f5fb;
+  background: transparent;
 }
 .mt-split {
   display: grid;
@@ -27,7 +27,7 @@
   border-radius: 8px;
   background: #f3e8ff;
   color: #6d28d9;
-  font-size: 0.8rem;
+  font-size: 0.92rem;
   font-weight: 800;
 }
 .mt-kicker svg { width: 0.95rem; height: 0.95rem; }
@@ -35,7 +35,7 @@
   max-width: 11em;
   margin: 0;
   color: #5b21b6;
-  font-size: clamp(1.9rem, 3vw, 2.85rem);
+  font-size: clamp(2.35rem, 1.35rem + 1.55vw, 3rem);
   line-height: 1.12;
 }
 .mt-lead > p { margin: 0.85rem 0 0; max-width: 28rem; color: #4b4563; font-weight: 650; line-height: 1.55; }
@@ -45,7 +45,7 @@
 .mt-lead strong,
 .mt-lead li span { display: block; }
 .mt-lead strong { color: #1e1b4b; }
-.mt-lead li span { color: #5c5670; font-size: 0.92rem; font-weight: 650; }
+.mt-lead li span { color: #5c5670; font-size: 0.98rem; font-weight: 650; }
 .mt-confirm {
   width: 100%;
   min-height: 3.15rem;
@@ -70,7 +70,7 @@
 .mt-card { padding: 1.15rem 1.15rem 1.2rem; }
 .mt-card header { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.8rem; }
 .ht-root .mt-section h3 { margin: 0; color: #1e1b4b; font-size: 1.05rem; }
-.mt-card header p { margin: 0.25rem 0 0; color: #6d657e; font-size: 0.84rem; font-weight: 650; }
+.mt-card header p { margin: 0.25rem 0 0; color: #6d657e; font-size: 0.96rem; font-weight: 650; }
 .mt-ico {
   display: grid;
   flex: 0 0 auto;
@@ -104,7 +104,7 @@
 }
 .mt-days button b,
 .mt-days button span { display: block; }
-.mt-days button b { font-size: 0.78rem; font-weight: 750; }
+.mt-days button b { font-size: 0.90rem; font-weight: 750; }
 .mt-days button span { font-size: 1.05rem; }
 .mt-nav {
   display: grid;
@@ -160,11 +160,11 @@
   font-weight: 800;
 }
 .mt-success strong { display: block; color: #166534; }
-.mt-success p { margin: 0.2rem 0 0; color: #3f6b4e; font-size: 0.86rem; font-weight: 650; }
+.mt-success p { margin: 0.2rem 0 0; color: #3f6b4e; font-size: 0.98rem; font-weight: 650; }
 .mt-crm {
   margin: 0.7rem 0 0;
   color: #6d28d9;
-  font-size: 0.78rem;
+  font-size: 0.90rem;
   font-weight: 800;
 }
 .mt-summary {
@@ -197,12 +197,12 @@
   .mt-confirm { order: 3; }
 }
 @media (max-width: 390px) {
-  .ht-root .mt-section h2 { font-size: 1.55rem; }
+  .ht-root .mt-section h2 { font-size: 1.75rem; }
   .mt-card { padding: 0.85rem 0.7rem 0.9rem; }
   .mt-days,
   .mt-times { gap: 0.28rem; }
   .mt-days button,
-  .mt-times button { min-height: 2.9rem; padding: 0.2rem 0.05rem; font-size: 0.78rem; }
+  .mt-times button { min-height: 2.9rem; padding: 0.2rem 0.05rem; font-size: 0.90rem; }
   .mt-days button b { font-size: 0.68rem; }
   .mt-nav { width: 1.35rem; }
   .mt-summary { grid-template-columns: 1fr; }

@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { changeAppLanguage } from "../i18n/persistLanguage";
 import { openCookieSettings } from "../lib/trackingConsent";
 import { coerceSupportedLanguage, getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 import "../styles/MarketingFooter.css";
@@ -36,14 +35,6 @@ const SYSTEMS: Record<string, string> = {
   ar: "الأنظمة",
 };
 
-const REGION = [
-  ["he", "ישראל"],
-  ["en", "United States"],
-  ["es", "España"],
-  ["pt-BR", "Brasil"],
-  ["ar", "المنطقة العربية"],
-] as const;
-
 const SOLUTION_LABELS: Record<string, Record<string, string>> = {
   clinics: { en: "Clinics", he: "קליניקות", es: "Clínicas", "pt-BR": "Clínicas", ar: "عيادات" },
   beauty: { en: "Beauty", he: "מכוני יופי", es: "Belleza", "pt-BR": "Beleza", ar: "التجميل" },
@@ -53,14 +44,6 @@ const SOLUTION_LABELS: Record<string, Record<string, string>> = {
   agencies: { en: "Agencies", he: "סוכנויות", es: "Agencias", "pt-BR": "Agências", ar: "الوكالات" },
   leads: { en: "Lead-based businesses", he: "עסקים מבוססי לידים", es: "Negocios de leads", "pt-BR": "Negócios de leads", ar: "أعمال العملاء المحتملين" },
   ready: { en: "Ready systems", he: "מערכות מוכנות", es: "Sistemas listos", "pt-BR": "Sistemas prontos", ar: "أنظمة جاهزة" },
-};
-
-const REGION_COPY: Record<string, { label: string; aria: string }> = {
-  he: { label: "אזור", aria: "בחירת אזור" },
-  en: { label: "Region", aria: "Choose a region" },
-  es: { label: "Región", aria: "Elegir región" },
-  "pt-BR": { label: "Região", aria: "Escolher região" },
-  ar: { label: "المنطقة", aria: "اختيار المنطقة" },
 };
 
 function solutionLabel(locale: string, key: string) {
@@ -75,7 +58,6 @@ export default function Footer() {
   const footerDir = getTextDirection(language);
   const region = coerceSupportedLanguage(i18n.language);
   const logoAlt = language === "he" ? "ביזאפלי (BizUply)" : "BizUply";
-  const regionCopy = REGION_COPY[region] || REGION_COPY.en;
 
   const columns: { title: string; links: FooterLink[] }[] = [
     {
@@ -164,24 +146,6 @@ export default function Footer() {
         </div>
         <div className="site-footer__tools">
           <LanguageSwitcher />
-          <label className="site-footer__region">
-            <span>{regionCopy.label}</span>
-            <select
-              value={region}
-              aria-label={regionCopy.aria}
-              onChange={(event) => {
-                void changeAppLanguage(event.target.value);
-              }}
-            >
-              {REGION.map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
-          </label>
-          <div className="site-footer__social">
-            <a href="https://www.facebook.com/bizuply" target="_blank" rel="noreferrer">Facebook</a>
-            <a href="https://www.instagram.com/bizuply" target="_blank" rel="noreferrer">Instagram</a>
-          </div>
         </div>
       </div>
     </footer>
