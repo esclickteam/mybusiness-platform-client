@@ -14,6 +14,7 @@ const PreLoginBot = lazy(() => import("./components/PreLoginBot"));
 const SupportChatWidget = lazy(() => import("./components/SupportChatWidget"));
 const AccessibilityWidget = lazy(() => import("./components/site-plugins/accessibility/AccessibilityWidget"));
 import PlatformConsentBanner from "./components/tracking/PlatformConsentBanner";
+import PublicContentAnalytics from "./components/tracking/PublicContentAnalytics";
 const AdminSoftphoneHost = lazy(() => import("./components/AdminSoftphoneHost"));
 const AdminShell = lazy(() => import("./pages/admin/shell/AdminShell"));
 const StaffSoftphoneHost = lazy(() => import("./components/staff/StaffSoftphoneHost"));
@@ -153,6 +154,7 @@ const PublishedArticlePage = lazy(() =>
   import("./pages/public/KnowledgeCenter").then((mod) => ({ default: mod.PublishedArticlePage }))
 );
 const AdminKnowledgePage = lazy(() => import("./pages/admin/AdminKnowledge"));
+const ContentAnalyticsPage = lazy(() => import("./pages/admin/contentAnalytics/ContentAnalyticsPage"));
 const AgentsProductPage = lazy(() =>
   import("./pages/product/AgentsProductPage")
 );
@@ -1864,6 +1866,7 @@ export default function App() {
                         <Route path="guided-demos/:id" element={<AdminGuidedDemoDetail />} />
                         <Route path="site-edit" element={<EditSiteContent />} />
                         <Route path="knowledge" element={<AdminKnowledgePage />} />
+                        <Route path="content-analytics" element={<ContentAnalyticsPage />} />
                         <Route path="roles" element={<ManageRoles />} />
                         <Route path="affiliates" element={<AdminAffiliates />} />
                         <Route path="marketers" element={<AdminMarketers />} />
@@ -2023,7 +2026,10 @@ export default function App() {
         )}
 
       {!isSaasPublicSite && !isMiniSiteHost && !location.pathname.startsWith("/embed/") && (
-        <PlatformConsentBanner />
+        <>
+          <PlatformConsentBanner />
+          <PublicContentAnalytics />
+        </>
       )}
 
       {showPublicWidgets && (

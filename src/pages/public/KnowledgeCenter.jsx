@@ -4,6 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
+import { sendContentEvent } from "../../lib/publicContentAnalytics.mjs";
+import { analyticsAllowed } from "../../lib/trackingConsent";
 import {
   clusterLabel,
   connectionLinks,
@@ -243,12 +245,20 @@ function parseNonNegative(value) {
   return number;
 }
 
-function Calculator({ title, body, fields, compute, ui }) {
+function Calculator({ title, body, fields, compute, ui, calculatorId }) {
   const [raw, setRaw] = useState(() => fields.map(() => ""));
   const values = raw.map((value) => parseNonNegative(value));
   const complete = raw.every((value) => value !== "");
   const ready = values.every((value) => value !== null);
   const output = complete && ready ? compute(values) : null;
+  useEffect(() => {
+    if (!calculatorId || output == null || !analyticsAllowed()) return;
+    sendContentEvent({
+      event: "calculator_use",
+      path: window.location.pathname,
+      calculatorId,
+    }, { consent: true });
+  }, [calculatorId, output]);
   return (
     <section className="knowledge-calc">
       <h3>{title}</h3>
@@ -306,6 +316,7 @@ export function TemplatesPage() {
           <section className="knowledge-section">
             <h2>{ui.calculators}</h2>
             <Calculator
+              calculatorId="conversion"
               title={ui.conversionTitle}
               body={ui.conversionBody}
               fields={[ui.conversions, ui.visitors]}
@@ -313,6 +324,7 @@ export function TemplatesPage() {
               compute={([conversions, opportunities]) => (opportunities > 0 ? formatPercent((conversions / opportunities) * 100) : null)}
             />
             <Calculator
+              calculatorId="cost"
               title={ui.costTitle}
               body={ui.costBody}
               fields={[ui.spend, ui.leads]}
@@ -320,6 +332,7 @@ export function TemplatesPage() {
               compute={([spend, leads]) => (leads > 0 ? `${new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }).format(spend / leads)} ${ui.perLead}` : null)}
             />
             <Calculator
+              calculatorId="roas"
               title={ui.roiTitle}
               body={ui.roiBody}
               fields={[ui.revenue, ui.spend]}

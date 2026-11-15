@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { analyticsAllowed, clearTrackingChoice, marketingAllowed, readConsent, readTrackingChoice, writeAdvertisementConsent, writeTrackingChoice } from "./trackingConsent";
+import { analyticsAllowed, clearTrackingChoice, marketingAllowed, readConsent, readTrackingChoice, writeAdvertisementConsent, writeMeasurementConsent, writeTrackingChoice } from "./trackingConsent";
 
 describe("tracking consent", () => {
   it("keeps marketing measurement off until the visitor allows it", () => {
@@ -109,6 +109,36 @@ describe("tracking consent", () => {
     expect(writeAdvertisementConsent(false)).toBe(true);
     expect(jar).toContain("bizuply_tracking=v2:none:2026-11-07");
     expect(marketingAllowed()).toBe(false);
+  });
+
+  it("keeps analytics separate from advertising and off unless the flag is on", () => {
+    const analyticsOnly = readConsent("bizuply_tracking=v2:an:2026-11-07");
+    expect(analyticsOnly.analytics).toBe(true);
+    expect(analyticsOnly.advertisement).toBe(false);
+    expect(analyticsOnly.decided).toBe(true);
+    expect(analyticsAllowed("bizuply_tracking=v2:an:2026-11-07")).toBe(false);
+    expect(marketingAllowed("bizuply_tracking=v2:an:2026-11-07")).toBe(false);
+
+    let jar = "";
+    vi.stubGlobal("document", {
+      get cookie() {
+        return jar;
+      },
+      set cookie(value: string) {
+        const pair = value.split(";")[0];
+        const name = pair.split("=")[0].trim();
+        const parts = jar.split("; ").filter((part) => part && !part.startsWith(`${name}=`));
+        if (!/Max-Age=0/i.test(value)) parts.push(pair.trim());
+        jar = parts.join("; ");
+      },
+    });
+    vi.stubGlobal("window", { location: { hostname: "localhost" }, dispatchEvent: () => true });
+    expect(writeMeasurementConsent({ advertisement: false, analytics: true })).toBe(true);
+    expect(jar).toContain("bizuply_tracking=v2:an:2026-11-07");
+    expect(writeMeasurementConsent({ advertisement: true, analytics: true })).toBe(true);
+    expect(jar).toContain("bizuply_tracking=v2:ad.an:2026-11-07");
+    expect(readConsent().advertisement).toBe(true);
+    expect(readConsent().analytics).toBe(true);
   });
 });
 
