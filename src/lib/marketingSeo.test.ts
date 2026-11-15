@@ -201,8 +201,14 @@ describe("marketing crawl files", () => {
       const body = buildMarketingPrerender(route)?.inner || "";
       expect(head.match(/"@type":"FAQPage"/g)?.length).toBe(1);
       expect(head.match(/"@type":"Question"/g)?.length).toBe(HOME_FAQ[locale].length);
-      expect(head).toContain(home.faq1q);
-      expect(head).toContain(home.faq10a);
+      expect(head).toContain(HOME_FAQ[locale][0][0]);
+      expect(head).toContain(HOME_FAQ[locale][0][1]);
+      if (locale === "he" || locale === "en") {
+        expect(HOME_FAQ[locale]).toHaveLength(8);
+        expect(head).not.toContain(home.faq10a);
+      } else {
+        expect(head).toContain(home.faq10a);
+      }
       expect(body).toContain('class="hx-hero"');
       expect(body).toContain('data-home-design="sketch"');
       expect(body).toContain('class="hx-display"');

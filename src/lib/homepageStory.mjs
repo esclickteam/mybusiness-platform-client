@@ -162,75 +162,35 @@ export const STORY = {
     "faq": [
           [
                 "What is Bizuply, and who is it for?",
-                "Bizuply is a workspace for businesses that want to manage customers, enquiries and processes without jumping between systems. It fits a small business that is starting to collect enquiries, and a team that already runs several channels. You begin with the tools active on the account, and can add more as the need changes. The result is one workspace where the team can see who the customer is, where they came from, and what should happen next."
+                "Bizuply is a workspace for businesses that want customer records, conversations and follow-up in one place. It suits a small business that is starting to collect enquiries, and a team that already works across more than one channel. You turn on the tools the account needs, and add others as the work grows."
           ],
           [
-                "Which tools can I manage on the platform?",
-                "On the same account you can work with CRM and leads, the WhatsApp Business API, automations, Meta campaigns and website building. Not every tool is active on every plan. The pricing page shows what is included, and the SaaS catalog shows which ready-made systems are available. Together they keep the path from the first enquiry to the follow-up in one place, instead of splitting it across separate tools."
+                "Which tools and systems can you run in Bizuply?",
+                "The same account can hold the CRM and leads, the WhatsApp Business API, smart automations, Meta campaigns, an appointments calendar, AI insights and a website. Not every tool is included in every plan. The pricing page shows what each plan covers."
           ],
           [
-                "How does the CRM work?",
-                "The lead list collects enquiries. You open a record, read the details, change the status and add a follow-up task. After you save, the updated status stays on the record, so the team can see who got in touch and what the next step is. That is the daily rhythm of the CRM: a list you can scan, a record you can open, and a next step that does not get lost."
-          ],
-          [
-                "How do leads reach the system?",
-                "A lead can arrive from a form on a site built in Bizuply, and from connected marketing channels such as Meta, when the connection and permissions are active. Each record keeps its source, so you can see where the enquiry came from. Knowing the source makes it easier to see which channel is actually bringing people in, and to continue the conversation in the same record."
-          ],
-          [
-                "How do you follow up on leads and customers?",
-                "On the record you log what happens next and open a task with a time. In the list you filter by status and find enquiries that are still open. For example, a new enquiry can move to “contacted”, and a task can be opened to call the customer back. A clear next step is what turns a new enquiry into a customer relationship, rather than a message that sits unanswered."
+                "How does the CRM work, and how do you manage leads?",
+                "The lead list gathers enquiries. Open a record, read the details, change the status and add a follow-up task. A lead can arrive from a form on a Bizuply site, or from a connected channel such as Meta, when that connection is active. The source stays on the record, so the team can see where the enquiry came from and what should happen next."
           ],
           [
                 "What does the WhatsApp Business API include?",
-                "You can manage business conversations from the inbox, reply to a customer, and keep the conversation next to the customer record when that link exists on the account. Connection depends on eligibility, setup and Meta’s policies. Meta’s message charges are separate from the Bizuply subscription. The inbox is built for the business: the conversation stays available to the team, next to the customer it belongs to."
+                "You manage business conversations from an inbox, reply to the customer, and keep the thread next to the customer record when that link exists on the account. Setup depends on eligibility and Meta’s policies. The Bizuply subscription is $29 a month per connected number. Meta’s message charges are billed separately."
           ],
           [
-                "What is the difference between regular WhatsApp Business and the API?",
-                "The WhatsApp Business app is for working from the business phone. The API connects the number to a workspace, so a team can handle conversations inside Bizuply and relate messages to the lead process. It is not the same screen, and activation requires a connection that meets Meta’s conditions. The API is the option when the conversation needs to live in the workspace, with the lead, the task, and the rest of the team."
+                "How do the smart automations work?",
+                "You choose an automation, set the event that starts it and the action it should take, then save. On the business plan, a new lead can create a dated follow-up task. The available actions depend on the plan. An automation does not send a WhatsApp template on its own and does not spend an ad budget."
           ],
           [
-                "How do automations work?",
-                "You choose an automation, set the event that starts it and the action it should take, then save. In a demo environment you can test the run and see the result before relying on it in daily work. The available actions depend on the plan and the active settings. You stay in control of the sequence. The system runs the step you defined, and the team still decides how the relationship continues."
+                "Can you manage Meta campaigns?",
+                "Yes, when an ads account is connected with the right permissions. You can open a campaign, choose an objective, fill in the details and save a draft. Publishing and spending a budget happen only when you approve them. Media charges are billed by Meta."
           ],
           [
-                "Can I manage Meta campaigns?",
-                "Yes, when an ads account is connected with the right permissions. You can open a campaign, choose an objective, fill in the details and save a draft. Publishing and spending a budget happen only when you approve them, and media charges are billed by Meta. A draft stays a draft until you choose to publish, so the team can prepare the campaign without spending a budget by accident."
+                "Can you build a website and connect it to the CRM?",
+                "In the website editor you open a site, change a heading or a color, preview it and save. A form on a Bizuply site can create a lead in the CRM, so the enquiry does not stay only in an email inbox. The website-only plan is $129 a year. A website can also be added to the business plan."
           ],
           [
-                "Can I build a website or a landing page?",
-                "In the website editor you open an existing site, select a component, change a heading or a color, preview it and save a draft. The change appears on the site after you save. You do not need to write code for that edit. The site becomes part of the same system: the page the customer sees and the lead the team receives stay connected."
-          ],
-          [
-                "Can website forms be connected to the CRM?",
-                "A form on a site built in Bizuply can create a lead record in the CRM, so a website enquiry does not stay only in an email inbox. Once the record exists, you handle it like any other lead: status, task and follow-up. The form is no longer a dead end. The enquiry arrives where the team already works."
-          ],
-          [
-                "Is Bizuply a fit for a small business?",
-                "Yes. A small business can start with the lead list and follow-up tasks, without turning on every product on the first day. The right plan depends on the tools you actually need, and the details are on the pricing page. Starting small is a practical way in. The workspace can grow with the business, one tool at a time."
-          ],
-          [
-                "Does it fit teams and growing businesses?",
-                "A team can work on the same records, according to the permissions set on the account. As more channels are added — a site, WhatsApp or a campaign — the customer information stays in the same workspace instead of splitting across separate tools. Shared records mean the customer does not have to repeat themselves, and the team does not have to reconstruct the story from separate inboxes."
-          ],
-          [
-                "Can I start with one product and add more later?",
-                "Yes. You can start with CRM only, then connect WhatsApp, an automation, campaigns or a website when they are available on the plan. You do not have to run every product at once. The value is continuity. A new channel adds to the customer record instead of starting a second, disconnected process."
-          ],
-          [
-                "Can I manage several business processes in the same system?",
-                "You can run lead intake, record follow-up, a WhatsApp conversation and a next task at the same time. Each process stays tied to the same customer, so you see the sequence rather than a single isolated action. Several processes, one customer. The team sees the whole thread, not a pile of unrelated tasks."
-          ],
-          [
-                "Can I use Bizuply from a mobile device?",
-                "You can open the workspace in a phone browser and handle a lead, a conversation or a task when you are away from the computer. Dense screens are more comfortable on a computer, but the main actions are available on a small screen too. The phone is there for the moment a customer is waiting. The fuller workspace stays comfortable on a computer."
-          ],
-          [
-                "How do I start using the system?",
-                "You register, enter the workspace and open the first tool — usually the lead list. From there you connect a form, a WhatsApp number or an ads account only when that connection is relevant. Short guides are on the guides page. Most teams open the lead list the same day they register, and connect the next channel only when they are ready."
-          ],
-          [
-                "How do the plans and pricing work?",
-                "Bizuply offers different plans and services depending on the tools a business needs. The CRM plan starts at $49 per month, while the Business plan is $99 per month or $990 per year. WhatsApp Business API is $29 per month per connected number, with Meta messaging charges billed separately. Visit the pricing page for current plans and service details. The right starting point is the set of tools the business will actually use, and the pricing page is the place to compare them."
+                "How do you get started with Bizuply, and what does it cost?",
+                "Create an account and open the lead list first. Connect a form, a WhatsApp number or an ads account when that channel is relevant. The business plan is $99 a month or $990 a year. WhatsApp Business API is $29 a month per connected number, with Meta’s message fees billed separately. The pricing page lists the current plans."
           ]
     ],
     "finalTitle": "Bring your business together with Bizuply",
@@ -401,76 +361,36 @@ export const STORY = {
     "faqLead": "תשובות ברורות על הפלטפורמה, על הכלים העסקיים, על המחירים ועל הדרכים להתחיל.",
     "faq": [
           [
-                "מהי Bizuply ולמי היא מתאימה?",
-                "Bizuply היא סביבת עבודה לעסקים שרוצים לנהל לקוחות, פניות ותהליכים בלי לקפוץ בין מערכות. היא מתאימה לעסק קטן שמתחיל לרכז פניות, ולצוות שכבר מנהל כמה ערוצים במקביל. מתחילים מהכלים שפעילים בחשבון, ואפשר להוסיף עוד כשהצורך משתנה. כך הצוות רואה מי הלקוח, מאיפה הגיע, ומה הצעד הבא — בלי לחפש את זה בכמה מערכות."
+                "מה זה Bizuply ולמי היא מתאימה?",
+                "Bizuply היא סביבת עבודה לעסקים שרוצים לנהל לקוחות, שיחות ומעקב במקום אחד. היא מתאימה לעסק קטן שמתחיל לרכז פניות, ולצוות שכבר עובד בכמה ערוצים. מתחילים מהכלים שפעילים בחשבון, ומוסיפים עוד כשהעבודה גדלה."
           ],
           [
-                "אילו כלים אפשר לנהל בפלטפורמה?",
-                "באותו חשבון אפשר לעבוד עם CRM ולידים, WhatsApp Business API, אוטומציות, קמפיינים של Meta ובניית אתר. לא כל כלי פעיל בכל מסלול. בעמוד המחירים רואים מה כלול, ובקטלוג ה־SaaS רואים אילו מערכות מוכנות זמינות. יחד הם שומרים את הדרך מהפנייה הראשונה ועד המשך הטיפול במקום אחד."
+                "אילו כלים ומערכות אפשר לנהל ב־Bizuply?",
+                "באותו חשבון אפשר לעבוד עם CRM ולידים, WhatsApp Business API, אוטומציות חכמות, קמפיינים של Meta, יומן פגישות, תובנות AI ובניית אתר. לא כל כלי כלול בכל מסלול. עמוד המחירים מציג מה כל מסלול כולל."
           ],
           [
-                "איך מערכת ה־CRM עובדת?",
-                "רשימת הלידים מרכזת את הפניות. פותחים כרטיס, רואים את הפרטים, משנים סטטוס ומוסיפים משימת המשך. אחרי השמירה הסטטוס המעודכן נשאר על הרשומה, כך שהצוות רואה מי פנה ומה הצעד הבא. זה קצב העבודה היומי: רשימה שאפשר לסרוק, כרטיס שאפשר לפתוח, וצעד הבא שלא הולך לאיבוד."
-          ],
-          [
-                "איך מגיעים לידים למערכת?",
-                "ליד יכול להגיע מטופס באתר שנבנה ב־Bizuply, ומערוצי שיווק מחוברים כמו Meta, כשהחיבור וההרשאות פעילים. לכל רשומה נשמר המקור שלה, כדי להבין מאיפה הפנייה הגיעה. כשהמקור שמור על הרשומה, קל יותר להבין איזה ערוץ באמת מביא פניות ולהמשיך את הטיפול באותו כרטיס."
-          ],
-          [
-                "איך מתבצע מעקב אחרי לידים ולקוחות?",
-                "בכרטיס מתעדים את המשך הטיפול ופותחים משימה עם מועד. ברשימה מסננים לפי סטטוס ומאתרים פניות שעדיין פתוחות. לדוגמה: פנייה חדשה עוברת לסטטוס ״נוצר קשר״, ונפתחת משימה לחזור אל הלקוח. צעד הבא ברור הוא מה שהופך פנייה חדשה לקשר עם לקוח, במקום הודעה שנשארת בלי מענה."
+                "איך עובד ה־CRM ואיך מנהלים לידים?",
+                "רשימת הלידים מרכזת את הפניות. פותחים כרטיס, קוראים את הפרטים, משנים סטטוס ומוסיפים משימת המשך. ליד יכול להגיע מטופס באתר של Bizuply, או מערוץ מחובר כמו Meta, כשהחיבור פעיל. המקור נשמר על הרשומה, כך שהצוות רואה מאיפה הפנייה הגיעה ומה הצעד הבא."
           ],
           [
                 "מה כולל WhatsApp Business API?",
-                "אפשר לנהל שיחות עסקיות מתוך תיבת השיחות, לענות ללקוח ולשמור את השיחה ליד כרטיס הלקוח כשהקישור קיים בחשבון. החיבור תלוי בזכאות, בהגדרות ובמדיניות של Meta. חיובי ההודעות של Meta נפרדים ממנוי Bizuply. תיבת השיחות בנויה לעסק: השיחה נשארת זמינה לצוות, ליד הלקוח שאליו היא שייכת."
+                "מנהלים שיחות עסקיות מתוך תיבת השיחות, עונים ללקוח ושומרים את השיחה ליד כרטיס הלקוח כשהקישור קיים בחשבון. ההפעלה תלויה בזכאות ובמדיניות של Meta. המנוי של Bizuply הוא 29$ לחודש לכל מספר מחובר. חיובי ההודעות של Meta נפרדים."
           ],
           [
-                "מה ההבדל בין WhatsApp Business רגיל לבין API?",
-                "אפליקציית WhatsApp Business מיועדת לעבודה מהטלפון של העסק. ה־API מחבר את המספר לסביבת עבודה, כדי שצוות ינהל שיחות מתוך Bizuply ויהיה אפשר לחבר הודעות לתהליך הליד. זה לא אותו מסך, וההפעלה דורשת חיבור שעומד בתנאי Meta. ה־API הוא הבחירה כשהשיחה צריכה לחיות בתוך סביבת העבודה, יחד עם הליד, המשימה ושאר הצוות."
+                "איך עובדות האוטומציות החכמות?",
+                "בוחרים אוטומציה, מגדירים את האירוע שמתחיל אותה ואת הפעולה שתתבצע, ושומרים. במסלול העסקי, ליד חדש יכול ליצור משימת המשך עם מועד. הפעולות הזמינות תלויות במסלול. אוטומציה לא שולחת תבנית WhatsApp בעצמה ולא מוציאה תקציב פרסום."
           ],
           [
-                "איך האוטומציות עובדות?",
-                "בוחרים אוטומציה, מגדירים אירוע שמתחיל אותה ופעולה שתתבצע, ושומרים. בסביבת דמו אפשר לבדוק את ההפעלה ולראות את התוצאה לפני שמסתמכים עליה בעבודה השוטפת. הפעולות הזמינות תלויות במסלול ובהגדרות הפעילות. השליטה נשארת אצלכם. המערכת מריצה את הצעד שהגדרתם, והצוות מחליט איך ממשיכים את הקשר."
+                "האם אפשר לנהל קמפיינים של Meta?",
+                "כן, כשמחובר חשבון מודעות עם ההרשאות המתאימות. אפשר לפתוח קמפיין, לבחור מטרה, למלא פרטים ולשמור טיוטה. פרסום והפעלת תקציב קורים רק אחרי אישור. החיוב על המדיה הוא מול Meta."
           ],
           [
-                "האם ניתן לנהל קמפיינים של Meta?",
-                "כן, כשמחובר חשבון מודעות עם ההרשאות המתאימות. אפשר לפתוח קמפיין, לבחור מטרה, למלא פרטים ולשמור טיוטה. פרסום בפועל והפעלת תקציב נעשים רק כשמאשרים אותם, והחיוב על המדיה הוא מול Meta. טיוטה נשארת טיוטה עד שבוחרים לפרסם, כך שאפשר להכין קמפיין בלי להוציא תקציב בטעות."
+                "האם אפשר לבנות אתר ולחבר אותו ל־CRM?",
+                "בעורך האתרים פותחים אתר, משנים כותרת או צבע, רואים תצוגה מקדימה ושומרים. טופס באתר של Bizuply יכול ליצור ליד ב־CRM, כך שהפנייה לא נשארת רק בתיבת מייל. מסלול אתר בלבד עולה 129$ לשנה, ואפשר גם להוסיף אתר למסלול העסקי."
           ],
           [
-                "האם אפשר לבנות אתר או דף נחיתה?",
-                "בעורך האתרים פותחים אתר קיים, בוחרים רכיב, משנים כותרת או צבע, רואים תצוגה מקדימה ושומרים טיוטה. השינוי מופיע באתר אחרי השמירה. אין צורך לכתוב קוד כדי לבצע את העריכה הזו. האתר הופך לחלק מאותה מערכת: העמוד שהלקוח רואה והליד שהצוות מקבל נשארים מחוברים."
-          ],
-          [
-                "האם ניתן לחבר טפסים מהאתר ל־CRM?",
-                "טופס באתר שנבנה ב־Bizuply יכול ליצור רשומת ליד ב־CRM, כך שפנייה מהאתר לא נשארת רק בתיבת מייל. אחרי שהרשומה נוצרת ממשיכים לטפל בה כמו בכל ליד אחר: סטטוס, משימה ומעקב. הטופס לא נשאר סוף הדרך. הפנייה מגיעה למקום שבו הצוות כבר עובד."
-          ],
-          [
-                "האם Bizuply מתאימה לעסקים קטנים?",
-                "כן. עסק קטן יכול להתחיל ברשימת לידים ובמשימות המשך, בלי להפעיל כל מוצר ביום הראשון. המסלול הנכון תלוי בכלים שבאמת צריך, והפירוט נמצא בעמוד המחירים. להתחיל בקטן זו דרך מעשית להיכנס. סביבת העבודה יכולה לגדול עם העסק, כלי אחרי כלי."
-          ],
-          [
-                "האם היא מתאימה לצוותים ולעסקים בצמיחה?",
-                "צוות יכול לעבוד על אותן רשומות, לפי ההרשאות שמוגדרות בחשבון. ככל שנוספים ערוצים — אתר, וואטסאפ או קמפיין — המידע על הלקוח נשאר באותה סביבה, במקום להתפצל בין כלים נפרדים. רשומות משותפות אומרות שהלקוח לא צריך לחזור על עצמו, והצוות לא צריך לשחזר את הסיפור מתיבות נפרדות."
-          ],
-          [
-                "האם אפשר להתחיל עם מוצר אחד ולהוסיף מוצרים בהמשך?",
-                "כן. אפשר להתחיל ב־CRM בלבד, ואחר כך לחבר וואטסאפ, אוטומציה, קמפיינים או אתר כשהם זמינים במסלול. אין חובה להפעיל את כל המוצרים יחד. הערך הוא רצף. ערוץ חדש מצטרף לכרטיס הלקוח, במקום לפתוח תהליך נפרד ומנותק."
-          ],
-          [
-                "האם אפשר לנהל כמה תהליכים עסקיים באותה מערכת?",
-                "אפשר לנהל במקביל קליטת ליד, מעקב בכרטיס, שיחת וואטסאפ ומשימת המשך. כל תהליך נשאר קשור לאותו לקוח, ולכן רואים את הרצף ולא רק פעולה בודדת. כמה תהליכים, לקוח אחד. הצוות רואה את כל השרשור, לא ערימה של משימות בלי קשר."
-          ],
-          [
-                "האם אפשר להשתמש ב־Bizuply ממכשיר נייד?",
-                "אפשר לפתוח את סביבת העבודה מהדפדפן בטלפון ולטפל בליד, בשיחה או במשימה כשלא נמצאים מול המחשב. מסכים צפופים נוחים יותר במחשב, אבל הפעולות המרכזיות זמינות גם במסך קטן. הטלפון נמצא שם לרגע שבו לקוח מחכה. סביבת העבודה המלאה נשארת נוחה יותר במחשב."
-          ],
-          [
-                "איך מתחילים להשתמש במערכת?",
-                "נרשמים, נכנסים לסביבת העבודה ופותחים את הכלי הראשון — לרוב רשימת הלידים. משם מחברים טופס, מספר וואטסאפ או חשבון מודעות רק כשהחיבור רלוונטי. מדריכים קצרים נמצאים בעמוד המדריכים. אפשר להיכנס לרשימת הלידים באותו היום שבו נרשמים, ולחבר את הערוץ הבא רק כשמוכנים."
-          ],
-          [
-                "איך עובדות החבילות והתמחור?",
-                "Bizuply מציעה מסלולים ושירותים שונים לפי הכלים שהעסק צריך. מסלול ה־CRM מתחיל ב־49$ לחודש, והמסלול העסקי עולה 99$ לחודש או 990$ לשנה. WhatsApp Business API עולה 29$ לחודש לכל מספר מחובר, וחיובי ההודעות של Meta מחויבים בנפרד. בעמוד המחירים מופיעים המסלולים והשירותים העדכניים. נקודת ההתחלה הנכונה היא סט הכלים שהעסק באמת ישתמש בו, ועמוד המחירים הוא המקום להשוות ביניהם."
+                "איך מתחילים לעבוד עם Bizuply וכמה זה עולה?",
+                "פותחים חשבון ומתחילים מרשימת הלידים. מחברים טופס, מספר WhatsApp או חשבון מודעות כשהערוץ רלוונטי. המסלול העסקי עולה 99$ לחודש או 990$ לשנה. WhatsApp Business API עולה 29$ לחודש לכל מספר מחובר, וחיובי ההודעות של Meta נפרדים. עמוד המחירים מציג את המסלולים העדכניים."
           ]
     ],
     "finalTitle": "חברו את העסק עם Bizuply",
