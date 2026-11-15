@@ -5,24 +5,18 @@ import { MOBILE_DEMO_DURATION, MOBILE_DEMO_RAIL, MOBILE_DEMO_SCENES, sceneAt } f
 
 describe("mobile demo sketch rail", () => {
   it("follows the requested sidebar order and uses icons from the real nav", () => {
-    expect(MOBILE_DEMO_RAIL.map((item) => item.en)).toEqual([
-      "Business",
-      "Website",
-      "CRM System",
-      "Automations",
-      "WhatsApp API",
-      "Meta Campaigns",
-      "Collaborations",
-      "Business Advisor",
-      "Edit Business Page",
-      "View Public Profile",
-      "Build Website",
-    ]);
     const nav = readFileSync(path.join(process.cwd(), "src/components/BusinessWorkspaceNav.tsx"), "utf8");
-    for (const item of MOBILE_DEMO_RAIL) {
-      expect(nav, item.icon).toContain(item.icon);
-    }
-    expect(new Set(MOBILE_DEMO_RAIL.map((item) => item.icon)).size).toBe(MOBILE_DEMO_RAIL.length);
+    const itemsStart = nav.indexOf("const items: NavItemConfig[]");
+    const itemsEnd = nav.indexOf("const whatsappBase", itemsStart);
+    const items = nav.slice(itemsStart, itemsEnd);
+    const found = [...items.matchAll(/labelKey: "businessNav\.([^"]+)"[\s\S]{0,500}?icon: (\w+)/g)].map((match) => ({
+      key: match[1],
+      icon: match[2],
+    }));
+    const skipped = new Set(["mySaas", "saasBridge", "globalBusinessClub"]);
+    const live = found.filter((item) => !skipped.has(item.key));
+    expect(MOBILE_DEMO_RAIL.map((item) => item.icon)).toEqual(live.map((item) => item.icon));
+    expect(MOBILE_DEMO_RAIL.map((item) => item.en)).not.toContain("Website");
   });
 
   it("plays the sample story in order over 15 seconds", () => {
@@ -35,7 +29,7 @@ describe("mobile demo sketch rail", () => {
       "meeting",
       "automations",
     ]);
-    expect(sceneAt(0).scene.rail).toBe("business");
+    expect(sceneAt(0).scene.rail).toBe("dashboard");
     expect(sceneAt(2.5).scene.id).toBe("crm");
     expect(sceneAt(5).scene.id).toBe("whatsapp");
     expect(sceneAt(7.5).scene.id).toBe("task");

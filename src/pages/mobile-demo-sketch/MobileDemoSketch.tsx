@@ -1,13 +1,14 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
-  AppWindow,
   Bell,
   CalendarDays,
   Check,
   CircleUserRound,
   ClipboardList,
+  CreditCard,
   Handshake,
+  HelpCircle,
   LayoutDashboard,
   LayoutTemplate,
   Lock,
@@ -20,6 +21,7 @@ import {
   Play,
   RefreshCw,
   Search,
+  Shield,
   Sparkles,
   UserPlus,
   UserRound,
@@ -42,7 +44,6 @@ import "./mobileDemoSketch.css";
 
 const ICONS: Record<MobileDemoIconName, LucideIcon> = {
   LayoutDashboard,
-  AppWindow,
   CircleUserRound,
   Workflow,
   MessageCircle,
@@ -52,6 +53,9 @@ const ICONS: Record<MobileDemoIconName, LucideIcon> = {
   PencilLine,
   UserRound,
   LayoutTemplate,
+  Shield,
+  CreditCard,
+  HelpCircle,
 };
 
 const COPY = {
@@ -172,7 +176,7 @@ function useReducedMotion() {
 }
 
 function SceneIcon({ scene, size = 16 }: { scene: MobileDemoSceneId; size?: number }) {
-  const key = MOBILE_DEMO_SCENES.find((item) => item.id === scene)?.rail || "business";
+  const key = MOBILE_DEMO_SCENES.find((item) => item.id === scene)?.rail || "dashboard";
   const spec = MOBILE_DEMO_RAIL.find((item) => item.key === key) || MOBILE_DEMO_RAIL[0];
   const Icon = ICONS[spec.icon];
   return <Icon size={size} strokeWidth={2} aria-hidden="true" />;
@@ -381,7 +385,6 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
         <header className="mdsk-top" dir={he ? "rtl" : "ltr"}>
           <div className="mdsk-brand">
             <img src="/logo-mark.svg" alt="BizUply" />
-            <span className="mdsk-demo-pill">{copy.demo}</span>
           </div>
           <div className="mdsk-tools" aria-hidden="true">
             <Search size={16} />

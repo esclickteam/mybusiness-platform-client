@@ -1,11 +1,12 @@
 /**
- * Icon rail for the mobile homepage demo sketch.
- * Icon names are the lucide icons already used in BusinessWorkspaceNav.
- * Order is the sketch brief (reference film), not a second product sidebar.
+ * Icon rail for the mobile demo sketch.
+ * Same entries, order, and lucide icons as BusinessWorkspaceNav for a full
+ * BizUply workspace that includes WhatsApp API and Meta Campaigns.
+ * Hidden product entries (My SaaS, SaaS bridge, Global Business Club) stay out.
+ * There is no separate Website item in that sidebar.
  */
 export const MOBILE_DEMO_RAIL = [
-  { key: "business", icon: "LayoutDashboard", he: "מערכת עסק", en: "Business" },
-  { key: "website", icon: "AppWindow", he: "אתר", en: "Website" },
+  { key: "dashboard", icon: "LayoutDashboard", he: "דשבורד", en: "Dashboard" },
   { key: "crm", icon: "CircleUserRound", he: "מערכת CRM", en: "CRM System" },
   { key: "automations", icon: "Workflow", he: "אוטומציות", en: "Automations" },
   { key: "whatsapp", icon: "MessageCircle", he: "WhatsApp API", en: "WhatsApp API" },
@@ -15,6 +16,9 @@ export const MOBILE_DEMO_RAIL = [
   { key: "edit", icon: "PencilLine", he: "עריכת עמוד עסקי", en: "Edit Business Page" },
   { key: "profile", icon: "UserRound", he: "צפייה בפרופיל הציבורי", en: "View Public Profile" },
   { key: "build", icon: "LayoutTemplate", he: "בניית אתרים", en: "Build Website" },
+  { key: "security", icon: "Shield", he: "סורק אבטחה", en: "Security scanner" },
+  { key: "billing", icon: "CreditCard", he: "חיוב ומנוי", en: "Billing & Subscription" },
+  { key: "help", icon: "HelpCircle", he: "מרכז עזרה", en: "Help Center" },
 ] as const;
 
 export type MobileDemoRailKey = (typeof MOBILE_DEMO_RAIL)[number]["key"];
@@ -22,7 +26,7 @@ export type MobileDemoIconName = (typeof MOBILE_DEMO_RAIL)[number]["icon"];
 
 /** Sample story. Nothing here is a real customer. */
 export const MOBILE_DEMO_SCENES = [
-  { id: "lead", rail: "business", seconds: 2.5 },
+  { id: "lead", rail: "dashboard", seconds: 2.5 },
   { id: "crm", rail: "crm", seconds: 2.5 },
   { id: "whatsapp", rail: "whatsapp", seconds: 2.5 },
   { id: "task", rail: "crm", seconds: 2.5 },

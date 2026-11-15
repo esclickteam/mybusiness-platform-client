@@ -7,9 +7,9 @@
 }
 
 .mdsk-wrap {
-  width: min(920px, calc(100% - 16px));
+  width: min(920px, calc(100% - 12px));
   margin: 0 auto;
-  padding: 28px 0 64px;
+  padding: 8px 0 28px;
 }
 
 .mdsk-kicker {
@@ -68,7 +68,7 @@
 }
 
 .mdsk-live {
-  margin-top: 22px;
+  margin-top: 0;
 }
 
 .mdsk-board {
@@ -230,7 +230,7 @@
 .mdsk-app {
   display: grid;
   grid-template-columns: var(--rail) minmax(0, 1fr);
-  min-height: 430px;
+  min-height: 520px;
   direction: ltr;
   background: #f4f1fa;
 }
@@ -247,8 +247,8 @@
 
 .mdsk-rail span {
   display: grid;
-  width: calc(var(--rail) - 8px);
-  height: calc(var(--rail) - 8px);
+  width: calc(var(--rail) - 10px);
+  height: 30px;
   place-items: center;
   color: rgba(255, 255, 255, 0.82);
 }
@@ -646,7 +646,7 @@
     --icon: 16px;
   }
   .mdsk-app {
-    min-height: 408px;
+    min-height: 492px;
   }
   .mdsk-brand img {
     max-width: 92px;
@@ -662,14 +662,26 @@
     --icon: 19px;
   }
   .mdsk-app {
-    min-height: 440px;
+    min-height: 540px;
   }
   .mdsk-main {
     padding: 12px;
   }
 }
 
+@media (max-width: 899px) {
+  .mdsk-kicker,
+  .mdsk-wrap h1,
+  .mdsk-lead,
+  .mdsk-legend {
+    display: none;
+  }
+}
+
 @media (min-width: 900px) {
+  .mdsk-wrap {
+    padding-top: 28px;
+  }
   .mdsk-live {
     display: none;
   }
