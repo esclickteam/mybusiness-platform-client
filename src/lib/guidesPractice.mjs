@@ -32,7 +32,7 @@ const META_PRICING = {
 };
 
 const META_TEMPLATES = {
-  href: "https://developers.facebook.com/docs/whatsapp/message-templates",
+  href: "https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview",
   external: true,
   label: t(
     "Meta: WhatsApp message templates",
@@ -44,7 +44,7 @@ const META_TEMPLATES = {
 };
 
 const META_LEADS = {
-  href: "https://developers.facebook.com/docs/marketing-api/guides/lead-ads",
+  href: "https://developers.facebook.com/documentation/ads-commerce/marketing-api/guides/lead-ads",
   external: true,
   label: t(
     "Meta: Lead Ads",

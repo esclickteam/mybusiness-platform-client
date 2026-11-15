@@ -35,7 +35,7 @@ describe("knowledge library", () => {
     expect(tools).toContain("/downloads/bizuply-lead-tracker.xlsx");
     const compare = buildMarketingPrerender("/he/compare/whatsapp-app-or-api")?.inner || "";
     expect(compare).toContain("30 בספטמבר 2026");
-    expect(compare).toContain("https://developers.facebook.com/docs/whatsapp/pricing");
+    expect(compare).toContain("https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing/");
     const guide = buildMarketingPrerender("/he/guides/what-is-a-crm")?.inner || "";
     expect(guide).toContain("איפה העמוד הזה נעצר");
     expect(guide).toContain("/he/compare/crm-or-spreadsheet");

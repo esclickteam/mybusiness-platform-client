@@ -460,7 +460,7 @@ export const KNOWLEDGE_DRAFTS = [
     ],
     sources: [
       metaPricing,
-      { href: "https://developers.facebook.com/docs/whatsapp/message-templates", label: t("Meta: message templates", "Meta: תבניות הודעה", "Meta: plantillas", "Meta: modelos", "Meta: قوالب الرسائل") },
+      { href: "https://developers.facebook.com/documentation/business-messaging/whatsapp/templates/overview", label: t("Meta: message templates", "Meta: תבניות הודעה", "Meta: plantillas", "Meta: modelos", "Meta: قوالب الرسائل") },
     ],
   }),
   article({
