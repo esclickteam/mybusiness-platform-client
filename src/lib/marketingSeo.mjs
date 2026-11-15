@@ -345,6 +345,7 @@ const NOINDEX_PREFIXES = [
   "/store",
   "/whatsapp-api/login",
   "/home-preview",
+  "/mobile-demo-sketch",
   "/compliance/report",
   "/compliance/account",
   "/compliance/demo",
