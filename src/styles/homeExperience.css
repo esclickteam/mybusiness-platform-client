@@ -843,6 +843,10 @@ html.hx-preview body {
   position: relative;
   padding-block: clamp(4.5rem, 9vw, 8rem);
 }
+.ht-benefits,
+.ht-faq {
+  background: #f6f5fb;
+}
 .ht-root h2 {
   max-width: 20ch;
   margin: 0;
@@ -1102,7 +1106,7 @@ html.hx-preview body {
 
 /* Website gallery */
 .ht-products {
-  background: linear-gradient(180deg, #fff 0%, #f7f3ff 55%, #fff 100%);
+  background: #f6f5fb;
   overflow: hidden;
 }
 .ht-gallery {
@@ -1323,9 +1327,7 @@ html.hx-preview body {
 
 /* Pricing */
 .ht-pricing {
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 0%, rgba(196, 181, 253, 0.3), transparent 70%),
-    #fff;
+  background: #f6f5fb;
 }
 .ht-pricing .ht-head {
   text-align: center;
