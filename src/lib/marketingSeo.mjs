@@ -21,6 +21,13 @@ import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
+import {
+  isKnowledgePath,
+  knowledgeFaq,
+  knowledgeMarketingEntries,
+  knowledgePage,
+  renderKnowledgeInner,
+} from "./knowledgeHub.mjs";
 import { getCoreProductStory } from "./coreProductStories.mjs";
 import { legalCrawl } from "./legalCrawl.mjs";
 import {
@@ -307,6 +314,7 @@ export const MARKETING_PAGES = [
     priority: "0.4",
   },
   ...activityMarketingEntries(),
+  ...knowledgeMarketingEntries(),
 ];
 
 const NOINDEX_PREFIXES = [
@@ -358,6 +366,8 @@ export function marketingLegacyRedirectPath(pathname) {
   if (path === "/join") return "/business";
   if (path === "/Pricing") return "/pricing";
   if (path === "/en/security-scanner") return "/security-scanner";
+  if (path === "/blog") return "/guides";
+  if (path === "/industries") return "/solutions";
   return "";
 }
 
@@ -633,6 +643,7 @@ const ABOUT_FAQ = {
 };
 
 function faqItems(path, language) {
+  if (isKnowledgePath(path)) return knowledgeFaq(path, language);
   if (path === "/website-scan") return WEBSITE_SCAN[language]?.faq || WEBSITE_SCAN.en.faq;
   if (path === "/security-scanner") return SECURITY_SCANNER[language]?.faq || SECURITY_SCANNER.en.faq;
   if (path === "/partners") return partnerFaqPairs(language);
@@ -850,8 +861,42 @@ function collaborationsDocumentHead(locale) {
   ].join("\n");
 }
 
+function knowledgeDocumentHead(path, locale) {
+  const page = knowledgePage(path, locale);
+  if (!page?.title) return null;
+  const canonical = marketingPublicUrl(path, locale);
+  const blocks = [
+    `<title>${escapeHtml(page.title)}</title>`,
+    `<meta name="description" content="${escapeHtml(page.description)}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+    hreflangTags(path),
+    ...sharedSocialTags(page.title, page.description, canonical, locale),
+    `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
+    `<script type="application/ld+json">${jsonLd(pageSchema({ path, title: page.title, description: page.description, crumb: page.crumb }, canonical, locale))}</script>`,
+    `<script type="application/ld+json">${jsonLd(breadcrumbSchema({ path, title: page.title, description: page.description, crumb: page.crumb }, canonical, locale))}</script>`,
+  ];
+  if (path.startsWith("/compare/") && path !== "/compare") {
+    blocks.push(`<script type="application/ld+json">${jsonLd({
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: page.h1,
+      description: page.description,
+      dateModified: page.updated,
+      inLanguage: locale,
+      mainEntityOfPage: canonical,
+      author: { "@id": `${MARKETING_ORIGIN}/#organization` },
+      publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
+    })}</script>`);
+  }
+  const faq = faqSchemaTag(path, locale);
+  if (faq) blocks.push(faq);
+  return blocks.join("\n");
+}
+
 export function buildMarketingDocumentHead(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (isKnowledgePath(path)) return knowledgeDocumentHead(path, locale);
   if (path === "/crm") return crmDocumentHead(locale);
   if (path === "/collaborations") return collaborationsDocumentHead(locale);
   if (path.startsWith("/guides/") && path !== "/guides") {
@@ -1227,6 +1272,12 @@ function legalPrerender(path) {
 
 export function buildMarketingPrerender(pathname) {
   const { locale, path } = splitMarketingLocale(pathname);
+  if (isKnowledgePath(path)) {
+    const page = knowledgePage(path, locale);
+    if (!page?.h1) return null;
+    const meta = marketingLocaleMeta(locale);
+    return { lang: meta.htmlLang, dir: meta.dir, inner: renderKnowledgeInner(path, locale) };
+  }
   if (locale === "en" && (path === "/privacy" || path === "/privacy-policy" || path === "/terms")) return legalPrerender(path);
   if (path === "/crm") {
     const copy = getCrmCopy(locale);

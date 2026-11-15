@@ -124,6 +124,7 @@ export default function Footer() {
     {
       title: t("footer.resources"),
       links: [
+        { label: t("footer.library"), to: "/resources" },
         { label: t("footer.guides"), to: "/guides" },
         { label: t("footer.faq"), to: "/faq" },
         { label: t("footer.services"), to: "/services" },

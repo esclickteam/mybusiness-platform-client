@@ -41,6 +41,7 @@ import {
   isUnknownMarketingPath,
   marketingPublicRedirect,
 } from "./src/lib/marketingSeo.mjs";
+import { renderStoredArticleInner, storedArticleSlug } from "./src/lib/knowledgeHub.mjs";
 import { renderCookieBannerPaint, trackingChoiceFromCookie } from "./src/lib/cookieBannerPaint.mjs";
 import { lastLanguageCookie, localeFromLanguageTag, marketingLanguageRedirectPath, splitMarketingLocale } from "./src/lib/localePath.mjs";
 import { buildCrmHeaderPaint } from "./src/lib/crmMarketingCopy.mjs";
@@ -856,6 +857,87 @@ function withHostLanguageCookieCleared(headers) {
   return next;
 }
 
+function escapeHead(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+async function handleStoredArticle(request, pathname) {
+  const { locale, path } = splitMarketingLocale(pathname);
+  const slug = storedArticleSlug(path);
+  if (!path.startsWith("/resources/a/")) return null;
+  const missing = () => new Response(buildNotFoundHtml(), {
+    status: 404,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "x-robots-tag": "noindex, nofollow",
+      "x-bizuply-seo-edge": "knowledge-not-found",
+    },
+  });
+  if (!slug) return missing();
+  let article = null;
+  try {
+    const response = await fetch(
+      `https://api.bizuply.com/api/knowledge/articles/${encodeURIComponent(locale)}/${encodeURIComponent(slug)}`,
+      { headers: { accept: "application/json" } },
+    );
+    if (response.status === 301 || response.status === 302) {
+      const location = response.headers.get("location");
+      if (location) {
+        return new Response(null, {
+          status: 301,
+          headers: { location, "cache-control": "public, max-age=300" },
+        });
+      }
+    }
+    if (response.ok) {
+      const payload = await response.json();
+      article = payload?.article || null;
+    }
+  } catch {
+    article = null;
+  }
+  if (!article?.h1) return missing();
+  const prefix = locale === "en" ? "" : locale === "pt-BR" ? "/pt-br" : `/${locale}`;
+  const canonical = `https://bizuply.com${prefix}/resources/a/${slug}`;
+  const alternates = Array.isArray(article.alternates) && article.alternates.length
+    ? article.alternates
+    : [{ locale, slug }];
+  const hreflang = alternates.map((item) => {
+    const itemPrefix = item.locale === "en" ? "" : item.locale === "pt-BR" ? "/pt-br" : `/${item.locale}`;
+    return `<link rel="alternate" hreflang="${escapeHead(item.locale)}" href="https://bizuply.com${itemPrefix}/resources/a/${escapeHead(item.slug)}" />`;
+  }).join("");
+  const dir = locale === "he" || locale === "ar" ? "rtl" : "ltr";
+  const lang = locale === "pt-BR" ? "pt-BR" : locale;
+  const head = [
+    `<title>${escapeHead(article.title || article.h1)}</title>`,
+    `<meta name="description" content="${escapeHead(article.description || "")}" />`,
+    `<meta name="robots" content="index, follow" />`,
+    `<link rel="canonical" href="${escapeHead(canonical)}" />`,
+    hreflang,
+    `<meta property="og:title" content="${escapeHead(article.title || article.h1)}" />`,
+    `<meta property="og:description" content="${escapeHead(article.description || "")}" />`,
+    `<meta property="og:url" content="${escapeHead(canonical)}" />`,
+  ].join("\n");
+  const htmlRes = await fetch(new URL("/index.html", request.url), { headers: shellDocumentHeaders() });
+  if (!htmlRes.ok) return missing();
+  let html = await htmlRes.text();
+  html = injectSeoHead(html, head);
+  html = html.replace(/<html\b[^>]*>/i, `<html lang="${lang}" dir="${dir}">`);
+  html = injectCrawlableDocument(html, renderStoredArticleInner(article));
+  return new Response(html, {
+    status: 200,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "x-bizuply-seo-edge": "knowledge-article",
+    },
+  });
+}
+
 async function handleMarketingDocument(request) {
   if (!isDocumentNavigation(request)) return passThrough();
   const pathname = getPathname(request);
@@ -1164,6 +1246,8 @@ export default async function middleware(request) {
   }
 
   if (isPlatformMarketingHost(host)) {
+    const storedArticle = await handleStoredArticle(request, pathname);
+    if (storedArticle) return storedArticle;
     return handleMarketingDocument(request);
   }
 

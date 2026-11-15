@@ -8,6 +8,7 @@ import { getHebrewMarketingPage } from "./hebrewMarketing.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS } from "./guidesMarketing.mjs";
 import { getActivityPage } from "./activityPages.mjs";
+import { isKnowledgePath } from "./knowledgeHub.mjs";
 
 export {
   MARKETING_LOCALE_PREFIXES,
@@ -36,6 +37,7 @@ export function hasLocalizedMarketingPage(path, locale) {
     const slug = path.slice("/guides/".length);
     return GUIDE_SLUGS.includes(slug);
   }
+  if (isKnowledgePath(path)) return true;
   if (getActivityPage(path, language)) return true;
   if (language === "en") return path !== "/whatsapp-api";
   if (language === "he") return Boolean(getHebrewMarketingPage(path));

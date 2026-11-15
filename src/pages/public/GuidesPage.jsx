@@ -69,6 +69,7 @@ export function GuidesIndexPage() {
         <p className="guide-kicker">BizUply</p>
         <h1>{page.h1}</h1>
         <p>{page.description}</p>
+        <p><Link to="/resources">{locale === "he" ? "מרכז הידע" : locale === "es" ? "Biblioteca" : locale === "pt-BR" ? "Biblioteca" : locale === "ar" ? "المكتبة" : "Resource library"}</Link></p>
       </header>
       <article className="guide-feature">
         <div>
