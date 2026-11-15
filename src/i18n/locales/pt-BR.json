@@ -3021,7 +3021,9 @@
           "8": "Tarefas, registro de chamadas e alertas",
           "9": "Análises e painel de desempenho",
           "10": "Opção de adicionar agentes humanos",
-          "11": "Opção de adicionar o site à parte"
+          "11": "Opção de adicionar o site à parte",
+          "12": "Conexão do WhatsApp Business após a aprovação da Meta, sem taxa extra da Bizuply",
+          "13": "O WhatsApp Business API é uma assinatura à parte: US$ 29 por mês por número"
         }
       },
       "yearly": {
@@ -3039,7 +3041,38 @@
           "4": "Automações e alertas sem limites",
           "5": "Painel de desempenho e análises",
           "6": "Opção de adicionar o site à parte",
-          "7": "Opção de adicionar mais serviços de negócio"
+          "7": "Opção de adicionar mais serviços de negócio",
+          "8": "A conexão do WhatsApp Business está incluída; a assinatura da API é à parte"
+        }
+      },
+      "crm_only": {
+        "name": "Somente CRM",
+        "badge": "Leads e clientes",
+        "description": "Gestão de leads e clientes. Sem agenda, automações, colaborações ou WhatsApp.",
+        "note": "Cobrança mensal renovável",
+        "button": "Escolher CRM",
+        "pricePeriod": "/mês",
+        "features": {
+          "0": "Lista de leads e os seis status",
+          "1": "Perfis, notas e histórico de atividade",
+          "2": "Tarefas de retorno com data e hora",
+          "3": "Campos personalizados no cadastro",
+          "4": "Agenda, automações, colaborações e WhatsApp não estão incluídos"
+        }
+      },
+      "whatsapp_api": {
+        "name": "WhatsApp Business API",
+        "badge": "Por número",
+        "description": "Assinatura da Bizuply para um número de WhatsApp conectado. As cobranças de mensagens da Meta não estão incluídas.",
+        "note": "A Meta cobra as mensagens entregues à parte, conforme a categoria e o país do destinatário. Não há teste grátis.",
+        "button": "Abrir a assinatura do WhatsApp",
+        "pricePeriod": "/mês por número",
+        "metaLink": "Preços de mensagens da Meta",
+        "features": {
+          "0": "Uma assinatura cobre um número conectado",
+          "1": "API, modelos, caixa de entrada e painel",
+          "2": "Outro número precisa da própria assinatura",
+          "3": "As cobranças da Meta não estão incluídas nos US$ 29"
         }
       }
     },

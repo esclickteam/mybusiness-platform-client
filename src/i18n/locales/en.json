@@ -3059,7 +3059,9 @@
           "8": "Tasks, call logging, and alerts",
           "9": "Analytics and performance dashboard",
           "10": "Option to add human agents",
-          "11": "Option to add website building separately"
+          "11": "Option to add website building separately",
+          "12": "WhatsApp Business connection after Meta approval, with no extra Bizuply fee",
+          "13": "WhatsApp Business API is a separate subscription at $29 per number"
         }
       },
       "yearly": {
@@ -3077,7 +3079,38 @@
           "4": "Automations and alerts without limits",
           "5": "Performance dashboard and analytics",
           "6": "Option to add website building separately",
-          "7": "Option to add additional business services"
+          "7": "Option to add additional business services",
+          "8": "WhatsApp Business connection is included; the API subscription is separate"
+        }
+      },
+      "crm_only": {
+        "name": "CRM only",
+        "badge": "Leads and clients",
+        "description": "Lead and client management. Appointments, automations, collaborations, and WhatsApp are not included.",
+        "note": "Renewing monthly billing",
+        "button": "Choose CRM",
+        "pricePeriod": "/month",
+        "features": {
+          "0": "Lead list and the six lead statuses",
+          "1": "Customer profiles, notes, and activity history",
+          "2": "Follow-up tasks with a date and time",
+          "3": "Custom fields on the customer record",
+          "4": "Appointments, automations, collaborations, and WhatsApp are not included"
+        }
+      },
+      "whatsapp_api": {
+        "name": "WhatsApp Business API",
+        "badge": "Per number",
+        "description": "Bizuply subscription for one connected WhatsApp number. Meta messaging charges are not included.",
+        "note": "Meta charges delivered messages separately, by category and recipient country. There is no free trial.",
+        "button": "Open WhatsApp signup",
+        "pricePeriod": "/month per number",
+        "metaLink": "Meta's message pricing",
+        "features": {
+          "0": "One subscription covers one connected number",
+          "1": "API, templates, inbox, and dashboard",
+          "2": "Another number needs its own subscription",
+          "3": "Meta charges are not included in the $29"
         }
       }
     },
