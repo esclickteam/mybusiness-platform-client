@@ -1,10 +1,7 @@
 .ai-section {
   padding: clamp(2.8rem, 5vw, 4.4rem) 0;
   color: #1a0b33;
-  background:
-    radial-gradient(ellipse 38% 46% at 100% 0%, rgba(196, 181, 253, 0.55), transparent 60%),
-    radial-gradient(ellipse 32% 40% at 0% 100%, rgba(221, 214, 254, 0.75), transparent 58%),
-    linear-gradient(180deg, #f3edff 0%, #fbfaff 48%, #fff 100%);
+  background: transparent;
 }
 .ai-split {
   display: grid;

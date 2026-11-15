@@ -2,10 +2,7 @@
   position: relative;
   padding: clamp(2.6rem, 4.5vw, 4rem) 0;
   color: #172033;
-  background:
-    radial-gradient(ellipse 46% 78% at 96% 0%, #60a5fa 0%, transparent 46%),
-    radial-gradient(ellipse 34% 50% at 0% 100%, #7c3aed 0%, transparent 55%),
-    linear-gradient(145deg, #4c1d95 0%, #5b21b6 46%, #3730a3 100%);
+  background: transparent;
 }
 
 .cc-section svg {
@@ -33,7 +30,7 @@
   width: min(1320px, calc(100% - 2.4rem));
   margin-inline: auto;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(91, 33, 182, 0.14);
   border-radius: 26px;
   background: #fff;
   box-shadow: 0 42px 90px rgba(24, 8, 58, 0.34);

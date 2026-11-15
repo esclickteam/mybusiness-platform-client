@@ -184,17 +184,19 @@ export default function HomeExperienceSections() {
       <a className="hx-skip" href="#how">{text("דילוג לתוכן", "Skip to content")}</a>
       <div className="ht-root" ref={ref}>
         <Hero seek={null} />
-        <CustomerCommandCenter />
-        <WhatsAppOperations />
-        <SmartAutomations />
-        <MetaCampaigns />
-        <AiActionFlow />
-        <MeetingBooking />
-        <WebsiteGallery />
-        <Benefits />
-        <Pricing />
-        <Faq />
-        <Close />
+        <div className="ht-canvas">
+          <CustomerCommandCenter />
+          <WhatsAppOperations />
+          <SmartAutomations />
+          <MetaCampaigns />
+          <AiActionFlow />
+          <MeetingBooking />
+          <WebsiteGallery />
+          <Benefits />
+          <Pricing />
+          <Faq />
+          <Close />
+        </div>
       </div>
     </>
   );
@@ -479,7 +481,7 @@ function Close() {
           )}
         </p>
         <div className="hx-actions">
-          <Cta to="/register" tone="light">{text("התחילו בחינם עכשיו", "Start for free now")}</Cta>
+          <Cta to="/register">{text("התחילו בחינם עכשיו", "Start for free now")}</Cta>
           <Cta to="/contact" tone="line">{text("קבעו הדגמה אישית", "Schedule a personal demo")}</Cta>
         </div>
       </div>
