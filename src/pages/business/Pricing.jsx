@@ -35,9 +35,10 @@ import {
   PRICING_SERVICE_PURCHASE,
 } from "../../data/pricingAddonsData";
 import {
-  PRICING_PACKAGES,
+  PRICING_PAGE_PACKAGES,
   WEBSITE_ADDON,
 } from "../../data/pricingPackagesData";
+import { SIGN_UP_URL } from "../public/whatsapp/siteConfig";
 import ServiceDetailModal from "../../components/pricing/ServiceDetailModal";
 import ServicePurchasePanel from "../../components/pricing/ServicePurchasePanel";
 import { ScrollProgress } from "../../components/product-marketing";
@@ -57,6 +58,17 @@ import { billingCheckoutErrorMessage } from "../../components/billing/billingCop
 import SubscriptionTermsNotice from "../../components/billing/SubscriptionTermsNotice";
 import "../../components/product-marketing/marketingKit.css";
 import "../../styles/PricingServices.css";
+
+const META_WHATSAPP_PRICING_URL =
+  "https://developers.facebook.com/documentation/business-messaging/whatsapp/pricing/";
+
+function displayedPackagePrice(pkg, billingMarket) {
+  if (pkg.type === "website") return billingMarket.prices.websiteAnnual;
+  if (pkg.type === "yearly") return planAmount("yearly", billingMarket);
+  if (pkg.type === "crm_only") return planAmount("crm_only", billingMarket);
+  if (pkg.type === "whatsapp_api") return pkg.price;
+  return billingMarket.prices.businessMonthly;
+}
 
 const ICON_MAP = {
   headset: Headset,
@@ -241,6 +253,10 @@ export default function Plans() {
   };
 
   const handleCheckout = async (plan) => {
+    if (plan.externalHref) {
+      window.location.assign(plan.type === "whatsapp_api" ? SIGN_UP_URL : plan.externalHref);
+      return;
+    }
     const wantsWebsiteAddon = Boolean(
       plan.allowsWebsiteAddon && websiteAddonByPlan[plan.type]
     );
@@ -338,18 +354,12 @@ export default function Plans() {
 
   const packages = useMemo(
     () =>
-      PRICING_PACKAGES.map((pkg) => {
+      PRICING_PAGE_PACKAGES.map((pkg) => {
         const tx = (suffix, _he, en) =>
           t(`pricing.packages.${pkg.type}.${suffix}`, {
             defaultValue: en,
           });
-        const checkoutPlan = pkg.checkoutPlan || pkg.type;
-        const regionalPrice =
-          checkoutPlan === "website"
-            ? billingMarket.prices.websiteAnnual
-            : checkoutPlan === "yearly"
-              ? planAmount("yearly", billingMarket)
-              : billingMarket.prices.businessMonthly;
+        const regionalPrice = displayedPackagePrice(pkg, billingMarket);
         return {
           ...pkg,
           price: regionalPrice,
@@ -654,7 +664,7 @@ export default function Plans() {
             </p>
           </motion.div>
 
-          <div className="mt-12 grid gap-7 lg:grid-cols-3">
+          <div className="mt-12 grid gap-7 md:grid-cols-2 xl:grid-cols-3">
             {packages.map((plan, index) => {
               const isLoading =
                 plan.checkoutPlan != null && loadingPlan === plan.checkoutPlan;
@@ -727,7 +737,17 @@ export default function Plans() {
                       <div className="mt-4 rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-black text-indigo-700">
                         {plan.note}
                       </div>
-                      <SubscriptionTermsNotice plan={plan.type} billingCountry={billingMarket.billingCountry} />
+                      {plan.type === "whatsapp_api" ? (
+                        <p className="mt-3 text-sm font-semibold leading-6 text-slate-700">
+                          <a className="underline" href={META_WHATSAPP_PRICING_URL} target="_blank" rel="noopener noreferrer">
+                            {t("pricing.packages.whatsapp_api.metaLink", {
+                              defaultValue: "Meta's message pricing",
+                            })}
+                          </a>
+                        </p>
+                      ) : (
+                        <SubscriptionTermsNotice plan={plan.type} billingCountry={billingMarket.billingCountry} />
+                      )}
 
                       <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 

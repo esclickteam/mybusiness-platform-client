@@ -3022,7 +3022,9 @@
           "8": "Tareas, registro de llamadas y alertas",
           "9": "Analítica y panel de rendimiento",
           "10": "Opción de añadir agentes humanos",
-          "11": "Opción de añadir el sitio por separado"
+          "11": "Opción de añadir el sitio por separado",
+          "12": "Conexión de WhatsApp Business tras la aprobación de Meta, sin cargo extra de Bizuply",
+          "13": "WhatsApp Business API es una suscripción aparte: 29 dólares al mes por número"
         }
       },
       "yearly": {
@@ -3040,7 +3042,38 @@
           "4": "Automatizaciones y alertas sin límites",
           "5": "Panel de rendimiento y analítica",
           "6": "Opción de añadir el sitio por separado",
-          "7": "Opción de añadir más servicios de negocio"
+          "7": "Opción de añadir más servicios de negocio",
+          "8": "La conexión de WhatsApp Business está incluida; la suscripción del API es aparte"
+        }
+      },
+      "crm_only": {
+        "name": "Solo CRM",
+        "badge": "Leads y clientes",
+        "description": "Gestión de leads y clientes. Sin citas, automatizaciones, colaboraciones ni WhatsApp.",
+        "note": "Cobro mensual renovable",
+        "button": "Elegir CRM",
+        "pricePeriod": "/mes",
+        "features": {
+          "0": "Lista de leads y los seis estados",
+          "1": "Perfiles, notas e historial de actividad",
+          "2": "Tareas de seguimiento con fecha y hora",
+          "3": "Campos personalizados en el expediente",
+          "4": "Citas, automatizaciones, colaboraciones y WhatsApp no están incluidos"
+        }
+      },
+      "whatsapp_api": {
+        "name": "WhatsApp Business API",
+        "badge": "Por número",
+        "description": "Suscripción de Bizuply para un número de WhatsApp conectado. Los cargos de mensajes de Meta no están incluidos.",
+        "note": "Meta cobra los mensajes entregados por separado, según la categoría y el país del destinatario. No hay prueba gratuita.",
+        "button": "Abrir el registro de WhatsApp",
+        "pricePeriod": "/mes por número",
+        "metaLink": "Precios de mensajes de Meta",
+        "features": {
+          "0": "Una suscripción cubre un número conectado",
+          "1": "API, plantillas, bandeja y panel",
+          "2": "Otro número necesita su propia suscripción",
+          "3": "Los cargos de Meta no están incluidos en los 29 dólares"
         }
       }
     },

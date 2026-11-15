@@ -1,9 +1,11 @@
 /** BizUply service packages for the public pricing page (USD) */
 
 export type PricingPackage = {
-  type: "website" | "monthly" | "yearly";
-  /** Stripe checkout plan key — null means contact / non-Stripe */
-  checkoutPlan: "monthly" | "yearly" | "website" | null;
+  type: "website" | "monthly" | "yearly" | "crm_only" | "whatsapp_api";
+  /** Existing checkout plan key. Null means this card does not start a platform checkout. */
+  checkoutPlan: "monthly" | "yearly" | "website" | "crm_only" | null;
+  /** Existing public page. Used when the card must not start a platform checkout. */
+  externalHref?: string;
   highlighted: boolean;
   /** Business packages can optionally add a yearly self-serve website subscription */
   allowsWebsiteAddon: boolean;
@@ -116,6 +118,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "אנליטיקה ודשבורד ביצועים",
       "אפשרות להוסיף נציגים אנושיים",
       "אפשרות להוסיף בניית אתר בנפרד",
+      "חיבור חשבון WhatsApp Business אחרי אישור Meta, בלי תשלום נוסף לביזאפלי",
+      "WhatsApp Business API הוא מנוי נפרד: 29 דולר לחודש למספר",
     ],
     featuresEn: [
       "Professional business page on the platform",
@@ -130,6 +134,8 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "Analytics and performance dashboard",
       "Option to add human agents",
       "Option to add website building separately",
+      "WhatsApp Business connection after Meta approval, with no extra Bizuply fee",
+      "WhatsApp Business API is a separate subscription at $29 per number",
     ],
   },
   {
@@ -161,6 +167,7 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "דשבורד ביצועים ואנליטיקה",
       "אפשרות להוסיף בניית אתר בנפרד",
       "אפשרות להוסיף שירותים נוספים לעסק",
+      "חיבור WhatsApp Business כלול; מנוי ה־API נפרד",
     ],
     featuresEn: [
       "Everything in the Business monthly package",
@@ -171,6 +178,81 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "Performance dashboard and analytics",
       "Option to add website building separately",
       "Option to add additional business services",
+      "WhatsApp Business connection is included; the API subscription is separate",
     ],
   },
+];
+
+const EXTRA_PRICING_PACKAGES: PricingPackage[] = [
+  {
+    type: "crm_only",
+    checkoutPlan: "crm_only",
+    highlighted: false,
+    allowsWebsiteAddon: false,
+    price: 49,
+    pricePeriodHe: "לחודש",
+    pricePeriodEn: "/month",
+    nameHe: "CRM בלבד",
+    nameEn: "CRM only",
+    badgeHe: "לידים ולקוחות",
+    badgeEn: "Leads and clients",
+    descriptionHe: "ניהול לידים ולקוחות. בלי תורים, אוטומציות, שיתופים או WhatsApp.",
+    descriptionEn: "Lead and client management. Appointments, automations, collaborations, and WhatsApp are not included.",
+    noteHe: "חיוב חודשי מתחדש",
+    noteEn: "Renewing monthly billing",
+    buttonHe: "בחירת CRM",
+    buttonEn: "Choose CRM",
+    featuresHe: [
+      "רשימת לידים וששת הסטטוסים",
+      "פרופילי לקוח, הערות והיסטוריית פעילות",
+      "משימות המשך עם תאריך ושעה",
+      "שדות מותאמים ברשומת הלקוח",
+      "תורים, אוטומציות, שיתופים ו־WhatsApp אינם כלולים",
+    ],
+    featuresEn: [
+      "Lead list and the six lead statuses",
+      "Customer profiles, notes, and activity history",
+      "Follow-up tasks with a date and time",
+      "Custom fields on the customer record",
+      "Appointments, automations, collaborations, and WhatsApp are not included",
+    ],
+  },
+  {
+    type: "whatsapp_api",
+    checkoutPlan: null,
+    externalHref: "https://whatsapp.bizuply.com/get-started#request-access",
+    highlighted: false,
+    allowsWebsiteAddon: false,
+    price: 29,
+    pricePeriodHe: "לחודש למספר",
+    pricePeriodEn: "/month per number",
+    nameHe: "WhatsApp Business API",
+    nameEn: "WhatsApp Business API",
+    badgeHe: "לכל מספר",
+    badgeEn: "Per number",
+    descriptionHe: "מנוי ביזאפלי למספר וואטסאפ מחובר אחד. חיובי ההודעות של Meta אינם כלולים.",
+    descriptionEn: "Bizuply subscription for one connected WhatsApp number. Meta messaging charges are not included.",
+    noteHe: "Meta מחייבת הודעות שנמסרו בנפרד, לפי קטגוריה ומדינת הנמען. אין ניסיון חינם.",
+    noteEn: "Meta charges delivered messages separately, by category and recipient country. There is no free trial.",
+    buttonHe: "למנוי הוואטסאפ",
+    buttonEn: "Open WhatsApp signup",
+    featuresHe: [
+      "מנוי אחד למספר מחובר אחד",
+      "API, תבניות, תיבת הודעות ולוח בקרה",
+      "מספר נוסף דורש מנוי נוסף",
+      "חיובי Meta אינם כלולים ב־29 הדולר",
+    ],
+    featuresEn: [
+      "One subscription covers one connected number",
+      "API, templates, inbox, and dashboard",
+      "Another number needs its own subscription",
+      "Meta charges are not included in the $29",
+    ],
+  },
+];
+
+/** Pricing page only. Homepage consumers keep the original three packages. */
+export const PRICING_PAGE_PACKAGES: PricingPackage[] = [
+  ...PRICING_PACKAGES,
+  ...EXTRA_PRICING_PACKAGES,
 ];

@@ -14,8 +14,11 @@ describe("pricing package locales", () => {
       const monthly = catalogs[locale].pricing.packages.monthly.features;
       const yearly = catalogs[locale].pricing.packages.yearly.features;
       expect(Object.keys(website)).toHaveLength(10);
-      expect(Object.keys(monthly)).toHaveLength(12);
-      expect(Object.keys(yearly)).toHaveLength(8);
+      expect(Object.keys(monthly)).toHaveLength(14);
+      expect(Object.keys(yearly)).toHaveLength(9);
+      expect(Object.keys(catalogs[locale].pricing.packages.crm_only.features)).toHaveLength(5);
+      expect(Object.keys(catalogs[locale].pricing.packages.whatsapp_api.features)).toHaveLength(4);
+      expect(catalogs[locale].pricing.packages.whatsapp_api.metaLink).toBeTruthy();
       expect(website[0]).toBeTruthy();
     }
 
