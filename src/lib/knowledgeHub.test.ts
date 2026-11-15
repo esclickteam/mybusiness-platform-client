@@ -37,7 +37,7 @@ describe("knowledge library", () => {
     expect(compare).toContain("30 בספטמבר 2026");
     expect(compare).toContain("https://developers.facebook.com/docs/whatsapp/pricing");
     const guide = buildMarketingPrerender("/he/guides/what-is-a-crm")?.inner || "";
-    expect(guide).toContain("איפה העמוד הזה נעצר");
+    expect(guide).toContain("מה עושים אחר כך");
     expect(guide).toContain("/he/compare/crm-or-spreadsheet");
     expect(guide).not.toMatch(/SEO|GEO|AEO|AI Optimized/);
   });

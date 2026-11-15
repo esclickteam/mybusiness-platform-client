@@ -23,9 +23,9 @@ const EN = {
     [
       ["What the $29 covers", ["One connected number: the connection, the API and webhooks, templates, the dashboard and the docs. A second number needs a second subscription."]],
       ["What Meta still controls", ["Template approval, message category and the fee that depends on the recipient country. BizUply does not publish Meta's rate card. Meta's own documentation is the source for those rates."]],
-      ["What is not available", ["Several client numbers are not managed from one agency screen. Each number keeps its own subscription, key and webhook."]],
+      ["One number, one subscription", ["Each connected number has its own subscription, key, and webhook. There is no single screen for several clients' numbers."]],
     ],
-    [["Can an automation send WhatsApp by itself?", "Only through an approved template on a paid number. The business-plan automation can be the trigger. The demo saves the automation and does not send a real message."]],
+    [["Can an automation send WhatsApp by itself?", "Only through an approved template on a paid number. The business-plan automation can be the trigger. Trying the automation saves the rule and does not send a WhatsApp message."]],
   ),
   "website-form-to-crm": guide(
     "How a website form becomes a lead | BizUply",
@@ -45,14 +45,14 @@ const EN = {
     [
       ["What you configure", ["Hours for each day, and services with a duration and a price. The calendar offers openings in 15-minute steps. A booking stores the service, the price, a payment status and a note."]],
       ["Who can book", ["Staff book from the calendar. Clients can book on the public booking page when it is enabled, and both the client and the business can receive an email confirmation."]],
-      ["The plan boundary", ["CRM only at $49 a month is the pipeline and the client file. Appointments, collaborations and automations are on the business plan at $99 a month or $990 a year."]],
+      ["Which plan includes appointments", ["CRM only at $49 a month is the lead list and the client file. Appointments, collaborations and automations are on the business plan at $99 a month or $990 a year."]],
     ],
     [["Is this a clinical record?", "No. It is a calendar and a client file. Medical charts stay in a system built for them."]],
   ),
   "from-ad-to-follow-up": guide(
     "From a Meta lead to the next task | BizUply",
     "A lead form can create the CRM record, a person or an automation can set the next task, and WhatsApp is optional and priced apart.",
-    "Four steps that already exist in the product",
+    "Four steps from the ad to the next task",
     [
       ["The lead arrives", ["Meta Lead Ads, a BizUply website form, or a Google Ads lead form. Each keeps its source. The first status is New."]],
       ["Someone owns the next step", ["A status change is logged on the timeline. A task with a date and time appears in notifications when it is overdue. On the business plan an automation can create that task for a new lead."]],
@@ -81,9 +81,9 @@ const HE = {
     [
       ["מה ה־29 דולר מכסים", ["מספר מחובר אחד: החיבור, ה־API וה־webhooks, תבניות, לוח הבקרה והתיעוד. מספר שני דורש מנוי שני."]],
       ["מה נשאר אצל Meta", ["אישור התבנית, קטגוריית ההודעה והעמלה לפי מדינת הנמען. ביזאפלי לא מפרסמת את המחירון של Meta."]],
-      ["מה לא זמין", ["כמה מספרי לקוחות לא מנוהלים ממסך סוכנות אחד. לכל מספר מנוי, מפתח ו־webhook משלו."]],
+      ["מספר אחד, מנוי אחד", ["לכל מספר מחובר יש מנוי, מפתח ו־webhook משלו. אין מסך אחד לכמה מספרי לקוחות."]],
     ],
-    [["אוטומציה יכולה לשלוח WhatsApp לבד?", "רק דרך תבנית מאושרת על מספר בתשלום. הטריגר יכול להיות אוטומציה של החבילה העסקית. הדמו שומר את האוטומציה ולא שולח הודעה אמיתית."]],
+    [["אוטומציה יכולה לשלוח WhatsApp לבד?", "רק דרך תבנית מאושרת על מספר בתשלום. הטריגר יכול להיות אוטומציה של החבילה העסקית. ניסיון של האוטומציה שומר את הכלל ולא שולח הודעת וואטסאפ."]],
   ),
   "website-form-to-crm": guide(
     "איך טופס באתר הופך לליד | ביזאפלי",
@@ -103,14 +103,14 @@ const HE = {
     [
       ["מה מגדירים", ["שעות לכל יום, ושירותים עם משך ומחיר. היומן מציע פתיחות בקפיצות של 15 דקות. זימון שומר שירות, מחיר, סטטוס תשלום והערה."]],
       ["מי קובע", ["הצוות קובע מהיומן. לקוח יכול לקבוע בעמוד הזימון הציבורי כשהוא פעיל, והלקוח והעסק יכולים לקבל אישור במייל."]],
-      ["גבול המסלול", ["CRM בלבד ב־49 דולר לחודש הוא הצינור ותיק הלקוח. תורים, שיתופים ואוטומציות נמצאים בחבילה העסקית ב־99 לחודש או 990 לשנה."]],
+      ["איזו חבילה כוללת תורים", ["CRM בלבד ב־49 דולר לחודש הוא רשימת הלידים ותיק הלקוח. תורים, שיתופי פעולה ואוטומציות נמצאים בחבילה העסקית ב־99 לחודש או 990 לשנה."]],
     ],
     [["זה רשומה רפואית?", "לא. זה יומן ותיק לקוח. תיק רפואי נשאר במערכת שנבנתה בשבילו."]],
   ),
   "from-ad-to-follow-up": guide(
     "מליד של Meta עד המשימה הבאה | ביזאפלי",
     "טופס לידים יכול ליצור את הרשומה ב־CRM, אדם או אוטומציה יכולים לקבוע את המשימה הבאה, ו־WhatsApp נשאר רשות ובמחיר נפרד.",
-    "ארבעה צעדים שכבר קיימים במוצר",
+    "ארבעה צעדים מהמודעה עד המשימה הבאה",
     [
       ["הליד מגיע", ["Lead Ads של Meta, טופס באתר ביזאפלי, או טופס Google Ads. לכל אחד נשמר המקור. הסטטוס הראשון הוא חדש."]],
       ["מישהו מחזיק את הצעד הבא", ["שינוי סטטוס נרשם בציר הזמן. משימה עם תאריך ושעה מופיעה בהתראות כשהיא באיחור. בחבילה העסקית אוטומציה יכולה ליצור את המשימה לליד חדש."]],
@@ -139,9 +139,9 @@ const ES = {
     [
       ["Qué cubren los 29 dólares", ["Un número: conexión, API y webhooks, plantillas, panel y documentación. Un segundo número pide otra suscripción."]],
       ["Qué sigue en Meta", ["La aprobación, la categoría y la tarifa según el país del destinatario. BizUply no publica la tarifa de Meta."]],
-      ["Qué no está", ["Varios números de clientes no se gestionan desde una pantalla de agencia."]],
+      ["Un número, una suscripción", ["Cada número conectado tiene su suscripción, su clave y su webhook. No hay una sola pantalla para varios números de clientes."]],
     ],
-    [["¿Una automatización envía WhatsApp sola?", "Solo con una plantilla aprobada y un número de pago. La demo guarda la automatización y no envía un mensaje real."]],
+    [["¿Una automatización envía WhatsApp sola?", "Solo con una plantilla aprobada y un número de pago. Probar la automatización guarda la regla y no envía un mensaje de WhatsApp."]],
   ),
   "website-form-to-crm": guide(
     "Cómo un formulario del sitio se vuelve un lead | BizUply",
@@ -161,14 +161,14 @@ const ES = {
     [
       ["Qué se configura", ["Horas por día y servicios con duración y precio. La agenda ofrece huecos de 15 minutos. La reserva guarda servicio, precio, estado de pago y nota."]],
       ["Quién reserva", ["El equipo reserva en el calendario. El cliente puede reservar en la página pública cuando está activa."]],
-      ["El límite del plan", ["CRM solo a 49 dólares es el pipeline y el expediente. Citas, colaboraciones y automatizaciones están en el plan de 99 al mes o 990 al año."]],
+      ["Qué plan incluye las citas", ["El CRM solo a 49 dólares es la lista de leads y el expediente. Las citas, las colaboraciones y las automatizaciones están en el plan de 99 al mes o 990 al año."]],
     ],
     [["¿Es una historia clínica?", "No. Es agenda y expediente. La historia clínica se queda en su sistema."]],
   ),
   "from-ad-to-follow-up": guide(
     "De un lead de Meta a la tarea siguiente | BizUply",
     "Un formulario puede crear el registro, una persona o una automatización puede fijar la tarea, y WhatsApp sigue siendo opcional y de pago aparte.",
-    "Cuatro pasos que ya existen",
+    "Cuatro pasos del anuncio a la tarea siguiente",
     [
       ["Llega el lead", ["Lead Ads, un formulario de BizUply o un formulario de Google Ads. Cada uno guarda su origen. El primer estado es Nuevo."]],
       ["Alguien tiene el siguiente paso", ["El cambio de estado queda en la línea de tiempo. Una tarea vencida aparece en las notificaciones. En el plan de negocio una automatización puede crear esa tarea."]],
@@ -197,9 +197,9 @@ const PT = {
     [
       ["O que os 29 dólares cobrem", ["Um número: conexão, API e webhooks, modelos, painel e documentação. Um segundo número pede outra assinatura."]],
       ["O que continua na Meta", ["A aprovação, a categoria e a tarifa conforme o país do destinatário. A BizUply não publica a tabela da Meta."]],
-      ["O que não existe", ["Vários números de clientes não são geridos numa tela de agência."]],
+      ["Um número, uma assinatura", ["Cada número conectado tem a própria assinatura, a própria chave e o próprio webhook. Não há uma única tela para vários números de clientes."]],
     ],
-    [["Uma automação envia WhatsApp sozinha?", "Só com modelo aprovado e número pago. A demo salva a automação e não envia mensagem real."]],
+    [["Uma automação envia WhatsApp sozinha?", "Só com modelo aprovado e número pago. Testar a automação salva a regra e não envia uma mensagem de WhatsApp."]],
   ),
   "website-form-to-crm": guide(
     "Como um formulário do site vira um lead | BizUply",
@@ -219,14 +219,14 @@ const PT = {
     [
       ["O que se configura", ["Horas por dia e serviços com duração e preço. A agenda oferece vagas de 15 minutos. A reserva guarda serviço, preço, status de pagamento e nota."]],
       ["Quem marca", ["A equipe marca no calendário. O cliente pode marcar na página pública quando ela está ativa."]],
-      ["O limite do plano", ["CRM sozinho a 49 dólares é o pipeline e o arquivo. Agenda, colaborações e automações ficam no plano de 99 por mês ou 990 por ano."]],
+      ["Qual plano inclui a agenda", ["O CRM sozinho a 49 dólares é a lista de leads e o arquivo. Agenda, colaborações e automações ficam no plano de 99 por mês ou 990 por ano."]],
     ],
     [["É um prontuário?", "Não. É agenda e arquivo. O prontuário fica no sistema feito para isso."]],
   ),
   "from-ad-to-follow-up": guide(
     "De um lead da Meta à tarefa seguinte | BizUply",
     "Um formulário pode criar o registro, uma pessoa ou uma automação pode marcar a tarefa, e o WhatsApp continua opcional e com preço à parte.",
-    "Quatro passos que já existem",
+    "Quatro passos do anúncio à tarefa seguinte",
     [
       ["O lead chega", ["Lead Ads, um formulário da BizUply ou um formulário do Google Ads. Cada um guarda a origem. O primeiro status é Novo."]],
       ["Alguém fica com o próximo passo", ["A mudança de status fica na linha do tempo. Uma tarefa atrasada aparece nas notificações. No plano de negócios uma automação pode criar essa tarefa."]],
@@ -255,9 +255,9 @@ const AR = {
     [
       ["ماذا يغطي مبلغ 29 دولاراً", ["رقماً واحداً: الربط وواجهة البرمجة وwebhooks والقوالب واللوحة والتوثيق. الرقم الثاني يحتاج اشتراكاً آخر."]],
       ["ماذا يبقى لدى Meta", ["الموافقة والفئة والرسوم حسب بلد المستلم. لا تنشر BizUply جدول Meta."]],
-      ["ما غير المتاح", ["لا تُدار أرقام عدة عملاء من شاشة وكالة واحدة."]],
+      ["رقم واحد، اشتراك واحد", ["لكل رقم متصل اشتراكه ومفتاحه وwebhook الخاص به. لا توجد شاشة واحدة لأرقام عملاء عدة."]],
     ],
-    [["هل ترسل الأتمتة واتساب وحدها؟", "فقط بقالب معتمد ورقم مدفوع. يحفظ العرض الأتمتة ولا يرسل رسالة حقيقية."]],
+    [["هل ترسل الأتمتة واتساب وحدها؟", "فقط بقالب معتمد ورقم مدفوع. تجربة الأتمتة تحفظ القاعدة ولا ترسل رسالة واتساب."]],
   ),
   "website-form-to-crm": guide(
     "كيف يصبح نموذج الموقع عميلاً محتملاً | BizUply",
@@ -277,14 +277,14 @@ const AR = {
     [
       ["ماذا يُضبط", ["ساعات كل يوم وخدمات بمدة وسعر. يعرض التقويم فترات من 15 دقيقة. يحفظ الحجز الخدمة والسعر وحالة الدفع وملاحظة."]],
       ["من يحجز", ["يحجز الفريق من التقويم. يمكن للعميل الحجز في الصفحة العامة حين تكون مفعّلة."]],
-      ["حد الخطة", ["CRM وحده بـ 49 دولاراً هو المسار والملف. المواعيد والتعاون والأتمتة في خطة 99 شهرياً أو 990 سنوياً."]],
+      ["أي خطة تشمل المواعيد", ["CRM وحده بـ 49 دولاراً هو قائمة العملاء والملف. المواعيد والتعاون والأتمتة في خطة 99 شهرياً أو 990 سنوياً."]],
     ],
     [["هل هذا ملف طبي؟", "لا. هو تقويم وملف عميل. الملف الطبي يبقى في نظامه."]],
   ),
   "from-ad-to-follow-up": guide(
     "من عميل Meta المحتمل إلى المهمة التالية | BizUply",
     "يمكن للنموذج أن ينشئ السجل، ويمكن لشخص أو لأتمتة تحديد المهمة، ويبقى واتساب اختيارياً وبسعر منفصل.",
-    "أربع خطوات موجودة فعلاً",
+    "أربع خطوات من الإعلان إلى المهمة التالية",
     [
       ["يصل العميل المحتمل", ["إعلانات Meta أو نموذج BizUply أو نموذج Google Ads. يحتفظ كل منها بمصدره. الحالة الأولى جديد."]],
       ["شخص يملك الخطوة التالية", ["يُسجَّل تغيير الحالة على الخط الزمني. تظهر المهمة المتأخرة في التنبيهات. في الخطة التجارية يمكن للأتمتة إنشاء هذه المهمة."]],
