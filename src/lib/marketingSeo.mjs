@@ -770,6 +770,27 @@ function sharedSocialTags(title, description, canonical, language = "en", image 
  * Returns null when the path should keep the SPA shell unchanged
  * (dynamic public routes such as bookings and partner storefronts).
  */
+function guideArticleSchema(article, canonical, locale) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.h1,
+    description: article.description,
+    dateModified: article.updated,
+    inLanguage: locale,
+    mainEntityOfPage: canonical,
+    author: { "@id": `${MARKETING_ORIGIN}/#organization` },
+    publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
+  };
+  const citation = (article.sources || []).filter((source) => /^https?:\/\//.test(source.href)).map((source) => ({
+    "@type": "CreativeWork",
+    name: source.label,
+    url: source.href,
+  }));
+  if (citation.length) schema.citation = citation;
+  return schema;
+}
+
 function guideHead(path, locale) {
   const slug = path.slice("/guides/".length);
   if (!slug || slug.includes("/")) return null;
@@ -787,17 +808,7 @@ function guideHead(path, locale) {
     `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
     `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
     `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, locale))}</script>`,
-    `<script type="application/ld+json">${jsonLd({
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: article.h1,
-      description: article.description,
-      dateModified: article.updated,
-      inLanguage: locale,
-      mainEntityOfPage: canonical,
-      author: { "@id": `${MARKETING_ORIGIN}/#organization` },
-      publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
-    })}</script>`,
+    `<script type="application/ld+json">${jsonLd(guideArticleSchema(article, canonical, locale))}</script>`,
     faqSchemaTag(path, locale),
   ].filter(Boolean).join("\n");
 }
@@ -1149,10 +1160,16 @@ function renderLocalized(page, locale, path) {
     ? `<p><a href="${escapeHtml(`${servicePrefix}${page.serviceLink.href}`)}">${escapeText(page.serviceLink.label)}</a></p>`
     : "";
   const updated = page.updated ? `<p>${escapeText(locale === "he" ? `עודכן ${page.updated}` : locale === "ar" ? `آخر تحديث ${page.updated}` : locale === "es" ? `Actualizado el ${page.updated}` : locale === "pt-BR" ? `Atualizado em ${page.updated}` : `Updated ${page.updated}`)}</p>` : "";
+  const review = page.review ? `<p>${escapeText(page.review)}</p>` : "";
+  const sourcesHeading = locale === "he" ? "מקורות" : locale === "ar" ? "المصادر" : locale === "es" ? "Fuentes" : locale === "pt-BR" ? "Fontes" : "Sources";
+  const sources = page.sources?.length
+    ? `<h2>${sourcesHeading}</h2><ul>${page.sources.map((source) => `<li><a href="${escapeHtml(source.external ? source.href : localeHref(locale, source.href))}">${escapeText(source.label)}</a></li>`).join("")}</ul>`
+    : "";
+  const products = (page.products || []).map((item) => `<p><a href="${escapeHtml(localeHref(locale, item.href))}">${escapeText(item.label)}</a></p>`).join("");
   return {
     lang: meta.htmlLang,
     dir: meta.dir,
-    inner: `<main lang="${meta.htmlLang}" dir="${meta.dir}"><h1>${escapeText(page.h1)}</h1>${updated}${paragraphs}${sections}${service}${faq}</main>`,
+    inner: `<main lang="${meta.htmlLang}" dir="${meta.dir}"><h1>${escapeText(page.h1)}</h1>${updated}${review}${paragraphs}${sections}${sources}${products}${service}${faq}</main>`,
   };
 }
 

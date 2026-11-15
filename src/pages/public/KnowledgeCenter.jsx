@@ -14,6 +14,7 @@ import {
   knowledgeUi,
   learningPaths,
   templateFiles,
+  topicShelves,
 } from "../../lib/knowledgeHub.mjs";
 import { glossaryPage } from "../../lib/glossaryContent.mjs";
 import { compareIndex, getCompare } from "../../lib/compareContent.mjs";
@@ -163,6 +164,29 @@ export function ResourceHubPage() {
                 </ul>
               </section>
               <section className="knowledge-section">
+                <h2>{knowledgePage("/academy", locale).h1}</h2>
+                <p>{knowledgePage("/academy", locale).lede}</p>
+                {learningPaths(locale).map((path) => (
+                  <article key={path.id} className="knowledge-path">
+                    <h3>{path.title}</h3>
+                    <p>{path.body}</p>
+                    <ol>
+                      {path.steps.map((step, index) => (
+                        <li key={step.href}><Link to={step.href}>{index + 1}. {step.title}</Link></li>
+                      ))}
+                    </ol>
+                  </article>
+                ))}
+              </section>
+              {topicShelves(locale).map((shelf) => (
+                <section className="knowledge-section" key={shelf.id}>
+                  <h2>{shelf.title}</h2>
+                  <ul className="knowledge-grid">
+                    {shelf.items.map((item) => <li key={item.href}><Card item={item} ui={ui} /></li>)}
+                  </ul>
+                </section>
+              ))}
+              <section className="knowledge-section">
                 <h2>{ui.fresh}</h2>
                 <ul className="knowledge-grid">
                   {fresh.map((item) => <li key={item.href}><Card item={item} ui={ui} /></li>)}
@@ -170,14 +194,16 @@ export function ResourceHubPage() {
               </section>
             </>
           ) : null}
-          <section className="knowledge-section">
-            <h2>{ui.guides}</h2>
-            {filtered.length ? (
-              <ul className="knowledge-grid">
-                {filtered.map((item) => <li key={item.href}><Card item={item} ui={ui} /></li>)}
-              </ul>
-            ) : <p>{ui.empty}</p>}
-          </section>
+          {needle || cluster !== "all" || kind !== "all" ? (
+            <section className="knowledge-section">
+              <h2>{ui.guides}</h2>
+              {filtered.length ? (
+                <ul className="knowledge-grid">
+                  {filtered.map((item) => <li key={item.href}><Card item={item} ui={ui} /></li>)}
+                </ul>
+              ) : <p>{ui.empty}</p>}
+            </section>
+          ) : null}
           <section className="knowledge-section">
             <h2>{ui.industriesTitle}</h2>
             <p>{ui.industriesBody}</p>

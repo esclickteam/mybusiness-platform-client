@@ -70,6 +70,15 @@ export function readingMinutes(article, locale) {
   return Math.max(1, Math.round(words / pace));
 }
 
+export function topicShelves(locale) {
+  const cards = guideCards(locale);
+  return ["crm", "whatsapp", "automations", "websites", "campaigns", "appointments"].map((id) => ({
+    id,
+    title: clusterLabel(id, locale),
+    items: cards.filter((card) => card.cluster === id),
+  })).filter((shelf) => shelf.items.length);
+}
+
 export function guideCards(locale) {
   return GUIDE_SLUGS.map((slug) => {
     const article = getGuide(slug, locale) || getGuide(slug, "en");

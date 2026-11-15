@@ -454,6 +454,55 @@
   color: #fff;
 }
 
+.guide-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.guide-review {
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 1px solid #e7e1d6;
+  border-radius: 2px;
+  background: #fff;
+  color: #3f3a57;
+  line-height: 1.6;
+}
+
+.guide-source-list {
+  margin: 0.4rem 0 0;
+  padding-inline-start: 1.2rem;
+}
+
+.guide-source-list a {
+  color: #321064;
+  font-weight: 700;
+}
+
+.guide-block .guide-links {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.8rem;
+  padding: 0;
+  background: transparent;
+}
+
+.guide-block .guide-links a {
+  color: #321064;
+}
+
+.guide-products {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 0.4rem 0 0;
+}
+
+.guide-body {
+  font-size: 1.05rem;
+  line-height: 1.75;
+}
+
 @media (max-width: 700px) {
   .guide-block,
   .guide-toc {
@@ -462,6 +511,19 @@
 
   .guide-page h1 {
     max-width: none;
+    font-size: clamp(1.7rem, 8vw, 2.3rem);
+    line-height: 1.2;
+  }
+
+  .guide-block p,
+  .guide-faq p,
+  .guide-review {
+    font-size: 1.05rem;
+    line-height: 1.75;
+  }
+
+  .guide-toc {
+    border-radius: 2px;
   }
 }
 
