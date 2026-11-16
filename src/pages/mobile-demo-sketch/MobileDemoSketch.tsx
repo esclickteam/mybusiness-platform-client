@@ -296,18 +296,18 @@ const RECORDING_SRC = "/recordings/bizuply-mobile-demo.mp4";
 /** When each real module becomes visible, so the sketch icon matches the screen. */
 const RECORDING_RAIL: { at: number; rail: (typeof MOBILE_DEMO_RAIL)[number]["key"] }[] = [
   { at: 0, rail: "dashboard" },
-  { at: 4.551, rail: "crm" },
-  { at: 10.101, rail: "automations" },
-  { at: 15.652, rail: "whatsapp" },
-  { at: 20.202, rail: "meta" },
-  { at: 24.752, rail: "collab" },
-  { at: 28.303, rail: "advisor" },
-  { at: 31.854, rail: "edit" },
-  { at: 35.405, rail: "profile" },
-  { at: 38.955, rail: "build" },
-  { at: 43.505, rail: "security" },
-  { at: 47.055, rail: "billing" },
-  { at: 50.605, rail: "help" },
+  { at: 6.1, rail: "crm" },
+  { at: 12.5, rail: "automations" },
+  { at: 19.1, rail: "whatsapp" },
+  { at: 25.2, rail: "meta" },
+  { at: 31.0, rail: "collab" },
+  { at: 35.2, rail: "advisor" },
+  { at: 39.4, rail: "edit" },
+  { at: 43.6, rail: "profile" },
+  { at: 47.8, rail: "build" },
+  { at: 52.4, rail: "security" },
+  { at: 56.2, rail: "billing" },
+  { at: 60.2, rail: "help" },
 ];
 
 function railAt(time: number) {
