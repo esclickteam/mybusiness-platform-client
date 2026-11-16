@@ -70,6 +70,14 @@
   box-shadow: 0 24px 50px -28px rgba(72, 33, 139, 0.5);
 }
 
+.dd-stage.dd-home {
+  width: 100%;
+  margin-top: 0;
+  border-radius: 22px;
+  background: transparent;
+  box-shadow: none;
+}
+
 .dd-viewport {
   position: relative;
   height: min(78vh, 720px);

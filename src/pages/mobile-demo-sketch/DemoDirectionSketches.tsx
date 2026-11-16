@@ -189,6 +189,23 @@ function HorizontalShowcase({ shots, paused }: { shots: Shot[]; paused: boolean 
   );
 }
 
+export function MobileProductRow() {
+  const [paused, setPaused] = useState(false);
+  return (
+    <div className="dd-stage dd-home">
+      <HorizontalShowcase shots={FLOW} paused={paused} />
+      <button
+        type="button"
+        className="dd-pause"
+        aria-pressed={paused}
+        onClick={() => setPaused((value) => !value)}
+      >
+        {paused ? "הפעלה" : "השהיה"}
+      </button>
+    </div>
+  );
+}
+
 export default function DemoDirectionSketches() {
   const [sketch, setSketch] = useState<"a" | "b">("a");
   const [paused, setPaused] = useState(false);

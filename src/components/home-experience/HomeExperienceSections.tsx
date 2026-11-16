@@ -5,7 +5,7 @@ import { getTextDirection } from "../../i18n/localeUtils";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
-import MobileLeadCard from "./MobileLeadCard";
+import { MobileProductRow } from "../../pages/mobile-demo-sketch/DemoDirectionSketches";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import CustomerCommandCenter from "./CustomerCommandCenter";
 import WhatsAppOperations from "./WhatsAppOperations";
@@ -260,7 +260,7 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
       <div className="hx-hero-stage" id="product-theater">
         <div className="hx-hero-stage-inner">
           {narrow ? (
-            <MobileLeadCard language={language} />
+            <MobileProductRow />
           ) : (
             <ProductTheater
               desktop={filmFor(`${lang}-desktop` as FilmKey)}
