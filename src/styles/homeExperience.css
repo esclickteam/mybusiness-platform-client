@@ -3312,7 +3312,7 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
   max-width: none;
 }
 .ht-faq {
-  background: #f5f2ff;
+  background: #f3f0ff;
   color: #1a0b33;
 }
 .ht-faq-list {
@@ -3603,6 +3603,18 @@ html.ht-motion .pm-ai.is-in .pm-ai__insight b {
 @media (max-width: 640px) {
   .ht-root .ht-benefit-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Bottom of the FAQ only. Top padding stays with the other sections.
+   Together with the footer’s 3.5rem top padding this is 80px,
+   and 56px once that padding is the whole gap on a phone. */
+.ht-faq {
+  padding-bottom: max(0px, calc(80px - 3.5rem));
+}
+@media (max-width: 700px) {
+  .ht-faq {
+    padding-bottom: 0;
   }
 }
 

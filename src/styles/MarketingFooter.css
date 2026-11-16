@@ -1,12 +1,10 @@
 .site-footer,
 .site-footer.hx-footer {
+  margin: 0;
   color: #21172f;
   padding: 3.5rem 0 0;
-  border-top: 1px solid rgba(167, 139, 250, 0.38);
-  background:
-    radial-gradient(ellipse 52% 78% at 0% 0%, rgba(147, 197, 253, 0.42), transparent 60%),
-    radial-gradient(ellipse 48% 86% at 100% 100%, rgba(196, 181, 253, 0.58), transparent 62%),
-    linear-gradient(180deg, #fbf9ff 0%, #f4efff 46%, #efe8ff 100%);
+  border-top: 0;
+  background: #f3f0ff;
 }
 
 .site-footer__main,
@@ -97,9 +95,13 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.9rem 1.4rem;
+  width: 100%;
   margin-top: 2.4rem;
-  padding: 1.1rem 0 1.3rem;
-  border-top: 1px solid rgba(167, 139, 250, 0.45);
+  margin-inline: 0;
+  padding: 1.15rem max(1.2rem, calc((100% - 1180px) / 2)) 1.35rem;
+  border-top: 0;
+  background: #171b42;
+  color: #f4f1ff;
 }
 
 .site-footer__bar p,
@@ -114,9 +116,26 @@
 }
 
 .site-footer__bar p {
-  color: #534c66;
+  color: #f4f1ff;
   font-size: 0.95rem;
   font-weight: 500;
+}
+
+.site-footer__bar .site-footer__legal a,
+.site-footer__bar .site-footer__cookie {
+  color: #f4f1ff;
+}
+
+.site-footer__bar .site-footer__legal a:hover,
+.site-footer__bar .site-footer__cookie:hover,
+.site-footer__bar .site-footer__legal a:focus-visible,
+.site-footer__bar .site-footer__cookie:focus-visible {
+  color: #ddd3f7;
+}
+
+.site-footer__bar a:focus-visible,
+.site-footer__bar .site-footer__cookie:focus-visible {
+  outline-color: #ddd3f7;
 }
 
 .site-footer__region {
@@ -141,16 +160,21 @@
   color: #1a0b33;
 }
 
-.site-footer .site-header__icon-btn {
+.site-footer .site-header__icon-btn,
+.site-footer .site-header__icon-btn:has(.site-header__lang-code) {
   border-radius: 0;
-  border-color: rgba(91, 33, 182, 0.22);
-  background: rgba(255, 255, 255, 0.72);
-  color: #21172f;
+  border-color: rgba(244, 241, 255, 0.55);
+  background: #fff;
+  color: #171b42;
 }
 
-.site-footer .site-header__icon-btn:hover {
-  background: #fff;
-  color: #5b21b6;
+.site-footer .site-header__icon-btn:hover,
+.site-footer .site-header__icon-btn[aria-expanded="true"],
+.site-footer .site-header__icon-btn:has(.site-header__lang-code):hover,
+.site-footer .site-header__icon-btn:has(.site-header__lang-code)[aria-expanded="true"] {
+  border-color: #ddd3f7;
+  background: #f3f0ff;
+  color: #171b42;
 }
 
 @media (max-width: 1100px) {
@@ -172,9 +196,12 @@
     padding-top: 2.4rem;
   }
 
-  .site-footer__main,
-  .site-footer__bar {
+  .site-footer__main {
     width: min(1180px, calc(100% - 1.6rem));
+  }
+
+  .site-footer__bar {
+    padding-inline: 0.8rem;
   }
 
   .site-footer__main {
