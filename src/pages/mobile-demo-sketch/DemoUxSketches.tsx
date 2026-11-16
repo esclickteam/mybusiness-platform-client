@@ -199,7 +199,7 @@ function SiteScreen() {
             <strong>{copy.siteLine}</strong>
             <span className="ux2-site-cta">{copy.siteCta}</span>
           </div>
-          <img className="ux2-site-shot" src="/demo-direction/site-cleanser.webp?v=5" alt="" />
+          <img className="ux2-site-shot" src="/demo-direction/site-cleanser.webp?v=6" alt="" />
         </div>
         <section className="ux2-site-next">
           <b>{copy.serviceTitle}</b>
