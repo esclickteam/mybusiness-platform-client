@@ -112,6 +112,7 @@
 .mdsk-window {
   --rail: 42px;
   --icon: 18px;
+  position: relative;
   overflow: hidden;
   border: 1px solid rgba(91, 33, 182, 0.18);
   border-radius: 16px 16px 10px 10px;
@@ -270,6 +271,61 @@
   padding: 12px 10px;
   overflow: hidden;
   background: #f4f1fa;
+}
+
+.mdsk-embed {
+  width: 100%;
+  max-width: 430px;
+  margin-inline: auto;
+  overflow-x: hidden;
+}
+
+.mdsk-main.is-film {
+  display: block;
+  padding: 0;
+}
+
+.mdsk-film,
+.mdsk-film video {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  background: #f7f8fc;
+}
+
+.mdsk-toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+  white-space: nowrap;
+}
+
+.mdsk-demo[data-reduced="true"] .mdsk-toggle,
+.mdsk-toggle:focus-visible {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  z-index: 3;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: 6px 10px;
+  overflow: visible;
+  clip: auto;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #48218b;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .mdsk-scene {

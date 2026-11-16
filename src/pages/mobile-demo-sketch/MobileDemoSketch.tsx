@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   Bell,
@@ -12,21 +12,15 @@ import {
   LayoutDashboard,
   LayoutTemplate,
   Lock,
-  Maximize,
   Megaphone,
   MessageCircle,
-  Minimize,
-  Pause,
   PencilLine,
-  Play,
   RefreshCw,
   Search,
   Shield,
   Sparkles,
   UserPlus,
   UserRound,
-  Volume2,
-  VolumeX,
   Workflow,
 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
@@ -156,11 +150,6 @@ const COPY = {
 } as const;
 
 type Copy = (typeof COPY)["he"];
-
-function formatClock(seconds: number) {
-  const safe = Math.max(0, Math.floor(seconds));
-  return `0:${String(safe % 60).padStart(2, "0")}`;
-}
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(() =>
@@ -302,26 +291,41 @@ function SceneView({ scene, local, copy, motion }: { scene: MobileDemoSceneId; l
   );
 }
 
-function pinnedTime() {
-  if (typeof window === "undefined") return null;
-  const raw = new URLSearchParams(window.location.search).get("t");
-  if (raw == null || raw === "") return null;
-  const value = Number(raw);
-  if (!Number.isFinite(value)) return null;
-  return Math.min(MOBILE_DEMO_DURATION - 0.05, Math.max(0, value));
+const RECORDING_SRC = "/recordings/bizuply-mobile-demo.mp4";
+
+/** When each real module becomes visible, so the sketch icon matches the screen. */
+const RECORDING_RAIL: { at: number; rail: (typeof MOBILE_DEMO_RAIL)[number]["key"] }[] = [
+  { at: 0, rail: "dashboard" },
+  { at: 6.1, rail: "crm" },
+  { at: 12.5, rail: "automations" },
+  { at: 19.1, rail: "whatsapp" },
+  { at: 25.2, rail: "meta" },
+  { at: 31.0, rail: "collab" },
+  { at: 35.2, rail: "advisor" },
+  { at: 39.4, rail: "edit" },
+  { at: 43.6, rail: "profile" },
+  { at: 47.8, rail: "build" },
+  { at: 52.4, rail: "security" },
+  { at: 56.2, rail: "billing" },
+  { at: 60.2, rail: "help" },
+];
+
+function railAt(time: number) {
+  let rail = RECORDING_RAIL[0].rail;
+  for (const cue of RECORDING_RAIL) {
+    if (time + 0.05 >= cue.at) rail = cue.rail;
+  }
+  return rail;
 }
 
 function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boolean }) {
   const reduced = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
-  const [pinned] = useState(pinnedTime);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [manual, setManual] = useState<"play" | "pause" | null>(null);
   const [inView, setInView] = useState(false);
-  const [time, setTime] = useState(() => pinned ?? (poster ? 14.9 : 0));
-  const [muted, setMuted] = useState(true);
-  const [full, setFull] = useState(false);
-  const progressId = useId();
-  const playing = manual === "play" || (manual == null && !poster && pinned == null && !reduced && inView);
+  const [time, setTime] = useState(0);
+  const playing = inView && (manual === "play" || (manual == null && !poster && !reduced));
 
   useEffect(() => {
     const node = rootRef.current;
@@ -338,44 +342,22 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
   }, []);
 
   useEffect(() => {
-    if (!playing) return undefined;
-    let frame = 0;
-    let last = performance.now();
-    const tick = (now: number) => {
-      const delta = Math.min(0.064, (now - last) / 1000);
-      last = now;
-      setTime((value) => (value + delta) % MOBILE_DEMO_DURATION);
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    const node = videoRef.current;
+    if (!node) return undefined;
+    node.muted = true;
+    if (playing) {
+      const pending = node.play();
+      if (pending) pending.catch(() => setManual("pause"));
+    } else {
+      node.pause();
+    }
+    return undefined;
   }, [playing]);
 
-  useEffect(() => {
-    const onChange = () => setFull(document.fullscreenElement === rootRef.current);
-    document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
-  }, []);
-
-  const shownTime = reduced && !playing && time === 0 ? MOBILE_DEMO_DURATION - 0.05 : time;
-  const { scene, local } = sceneAt(shownTime);
-  const active = scene.rail;
-  const motion = playing && !reduced;
-  const percent = (shownTime / MOBILE_DEMO_DURATION) * 100;
-
-  async function toggleFull() {
-    const node = rootRef.current;
-    if (!node) return;
-    try {
-      if (document.fullscreenElement) await document.exitFullscreen();
-      else await node.requestFullscreen();
-    } catch {
-      setFull(false);
-    }
-  }
+  const active = railAt(time);
 
   return (
-    <div className="mdsk-demo" ref={rootRef} data-scene={scene.id} data-playing={playing ? "true" : "false"}>
+    <div className="mdsk-demo" ref={rootRef} data-playing={playing ? "true" : "false"} data-reduced={reduced ? "true" : "false"}>
       <div className="mdsk-window">
         <div className="mdsk-chrome">
           <span className="mdsk-dots" aria-hidden="true"><i /><i /><i /></span>
@@ -404,48 +386,40 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
               );
             })}
           </nav>
-          <div className="mdsk-main" dir={he ? "rtl" : "ltr"}>
-            <SceneView key={scene.id} scene={scene.id} local={motion || shownTime > 0 ? local : 1} copy={copy} motion={motion} />
+          <div className="mdsk-main is-film" dir={he ? "rtl" : "ltr"}>
+            <div className="mdsk-film">
+              <video
+                ref={videoRef}
+                src={RECORDING_SRC}
+                playsInline
+                loop
+                muted
+                preload="auto"
+                onTimeUpdate={(event) => setTime(event.currentTarget.currentTime || 0)}
+              />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="mdsk-player">
         <button
           type="button"
-          aria-label={playing ? copy.pause : copy.play}
+          className="mdsk-toggle"
+          aria-pressed={playing}
           onClick={() => setManual(playing ? "pause" : "play")}
         >
-          {playing ? <Pause size={16} /> : <Play size={16} />}
-        </button>
-        <span className="mdsk-time">{formatClock(shownTime)} / {formatClock(MOBILE_DEMO_DURATION)}</span>
-        <input
-          id={progressId}
-          className="mdsk-range"
-          type="range"
-          min={0}
-          max={MOBILE_DEMO_DURATION}
-          step={0.1}
-          value={Number(shownTime.toFixed(1))}
-          aria-label={copy.progress}
-          style={{ ["--p" as string]: `${percent}%` }}
-          onChange={(event) => {
-            setManual("pause");
-            setTime(Number(event.target.value));
-          }}
-        />
-        <button
-          type="button"
-          aria-pressed={muted}
-          aria-label={muted ? copy.unmute : copy.mute}
-          title={copy.quiet}
-          onClick={() => setMuted((value) => !value)}
-        >
-          {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-        </button>
-        <button type="button" aria-label={full ? copy.exit : copy.full} onClick={() => void toggleFull()}>
-          {full ? <Minimize size={16} /> : <Maximize size={16} />}
+          {playing ? copy.pause : copy.play}
         </button>
       </div>
+    </div>
+  );
+}
+
+export function MobileDemoRecording() {
+  const { i18n } = useTranslation();
+  const he = (i18n.language || "he").toLowerCase().startsWith("he");
+  const copy = he ? COPY.he : COPY.en;
+  return (
+    <div className="mdsk-embed" dir={he ? "rtl" : "ltr"} lang={he ? "he" : "en"}>
+      <DemoPlayer copy={copy} he={he} poster={false} />
     </div>
   );
 }
