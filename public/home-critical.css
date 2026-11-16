@@ -774,7 +774,8 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
   .ht-theater {
     display: none;
   }
-  .hx-mlead {
+  .hx-mlead,
+  .hx-mrow {
     display: block;
   }
   .ht-stage {
@@ -972,8 +973,45 @@ html.hx-preview .app-scroll-area.home-preview-scroll {
     font-size: 0.98rem;
   }
 }
+.hx-mrow {
+  display: none;
+  overflow: hidden;
+}
+.hx-mrow-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.hx-mrow img {
+  display: block;
+  width: 22%;
+  height: auto;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 16px;
+  background: #fff;
+}
+.hx-mrow img.is-center {
+  width: 48%;
+  max-height: 250px;
+  border: 2px solid #7c3aed;
+}
+.hx-mrow-caption {
+  margin: 0.4rem 0 0;
+  color: #5b21b6;
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: center;
+}
+@media (max-width: 760px) {
+  .hx-mrow {
+    display: block;
+  }
+}
 @media (min-width: 761px) {
-  .hx-mlead {
+  .hx-mlead,
+  .hx-mrow {
     display: none;
   }
 }

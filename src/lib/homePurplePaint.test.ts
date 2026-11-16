@@ -16,9 +16,10 @@ describe("sketch home first paint", () => {
     expect(en.inner).toContain(HX_HERO_COPY.en.see);
     expect(en.inner).toContain("/demo-media/home/theater/en-desktop.webp");
     expect(en.inner).not.toContain("/demo-media/home/theater/en-mobile.webp");
-    expect(en.inner).toContain("Claire Bennett");
+    expect(en.inner).not.toContain("Claire Bennett");
     expect(en.inner).toContain('class="ht-theater"');
-    expect(en.inner).toContain('class="hx-mlead"');
+    expect(en.inner).toContain('class="hx-mrow"');
+    expect(en.inner).toContain("/demo-direction/dash.png");
     for (const [, label] of HX_HERO_COPY.en.processSteps) {
       expect(en.inner).toContain(`<span class="ht-tab-label">${label.replace(/&/g, "&amp;")}</span>`);
     }
@@ -39,7 +40,8 @@ describe("sketch home first paint", () => {
     expect(he.inner).toContain("BizUply");
     expect(he.inner).toContain(HX_HERO_COPY.he.see);
     expect(he.inner).toContain("/demo-media/home/theater/he-desktop.webp");
-    expect(he.inner).toContain("נועה לוי");
+    expect(he.inner).toContain("לוח בקרה");
+    expect(he.inner).not.toContain("נועה לוי");
     expect(he.inner).not.toContain("/demo-media/home/theater/he-mobile.webp");
     expect(he.inner).toContain("שלב 1 מתוך 6");
     expect(he.headline).toBe(`${HX_HERO_COPY.he.lineOne} ${HX_HERO_COPY.he.lineTwo}`);

@@ -130,6 +130,9 @@ describe("marketing crawl files", () => {
     expect(isUnknownMarketingPath("/home-preview")).toBe(false);
     expect(buildMarketingDocumentHead("/home-preview") || "").toContain("noindex, nofollow");
     expect(buildMarketingSitemapXml()).not.toContain("/home-preview");
+    expect(isMarketingNoindexPath("/demo-sketches")).toBe(true);
+    expect(isUnknownMarketingPath("/demo-sketches")).toBe(false);
+    expect(buildMarketingSitemapXml()).not.toContain("/demo-sketches");
     expect(isMarketingNoindexPath("/mobile-demo-sketch")).toBe(true);
     expect(isUnknownMarketingPath("/mobile-demo-sketch")).toBe(false);
     expect(buildMarketingDocumentHead("/mobile-demo-sketch") || "").toContain("noindex, nofollow");
