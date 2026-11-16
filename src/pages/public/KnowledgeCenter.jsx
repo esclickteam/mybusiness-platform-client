@@ -257,7 +257,7 @@ function Calculator({ title, body, fields, compute, ui, calculatorId }) {
       event: "calculator_use",
       path: window.location.pathname,
       calculatorId,
-    }, { consent: true });
+    });
   }, [calculatorId, output]);
   return (
     <section className="knowledge-calc">

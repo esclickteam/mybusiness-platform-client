@@ -268,7 +268,7 @@ export default function Register() {
       if (marketingAllowed() && window.fbq) window.fbq("track", "InitiateCheckout");
       const contentPath = rememberedContentPath();
       if (analyticsAllowed() && contentPath) {
-        sendContentEvent({ event: "content_signup", path: contentPath }, { consent: true });
+        sendContentEvent({ event: "content_signup", path: contentPath });
       }
       window.location.href = data.url;
     } catch (err) {
