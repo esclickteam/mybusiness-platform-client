@@ -75,7 +75,7 @@ export function parseConsentValue(value: string): ConsentPreferences {
     const decided = body === "none" || (tokens.length > 0 && tokens.every((token) => token === "ad" || token === "an"));
     return {
       necessary: true,
-      analytics: tokens.includes("an"),
+      analytics: version === NOTICE_VERSION && tokens.includes("an"),
       advertisement: tokens.includes("ad"),
       functionality: false,
       version,

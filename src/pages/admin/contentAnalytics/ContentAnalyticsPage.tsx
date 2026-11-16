@@ -26,9 +26,75 @@ type Summary = {
   byLocale?: Named[];
   byContentType?: Named[];
   byCountry?: Named[];
+  byEvent?: Named[];
+};
+
+const EVENT_LABELS: Record<string, string> = {
+  resource_view: "צפייה במשאב",
+  guide_view: "צפייה במדריך",
+  guide_product_click: "לחיצה למוצר ממדריך",
+  template_download: "הורדת תבנית",
+  calculator_use: "שימוש במחשבון",
+  pricing_click: "לחיצה למחירון",
+  content_signup: "הרשמה מתוכן",
 };
 
 const RANGES = [7, 30, 90];
+
+function layoutPreview(): "off" | "empty" | "sample" | "" {
+  if (!import.meta.env.DEV || typeof window === "undefined") return "";
+  const value = new URLSearchParams(window.location.search).get("preview");
+  return value === "off" || value === "empty" || value === "sample" ? value : "";
+}
+
+function previewSummary(kind: "off" | "empty" | "sample", days: number): Summary {
+  if (kind === "off") {
+    return {
+      enabled: false,
+      retentionDays: 180,
+      rangeDays: days,
+      separateFromSearchConsole: true,
+      gsc: { connected: false, reason: "no_search_console_session" },
+      totals: null,
+    };
+  }
+  const zero = kind === "empty";
+  const count = (value: number) => (zero ? 0 : value);
+  return {
+    enabled: true,
+    retentionDays: 180,
+    rangeDays: days,
+    separateFromSearchConsole: true,
+    gsc: { connected: false, reason: "no_search_console_session" },
+    totals: {
+      contentViews: count(12),
+      uniqueConsentedVisitors: count(5),
+      returningConsentedVisitors: count(2),
+      templateDownloads: count(3),
+      calculatorUses: count(4),
+      productClicks: count(2),
+      pricingClicks: count(1),
+      contentSignups: count(1),
+      conversionDenominator: "unique consented visitors who viewed a content page in the range",
+      conversionRate: zero ? null : 0.2,
+    },
+    topPages: zero ? [] : [{ name: "/guides/what-is-a-crm", count: 7 }, { name: "/he/resources", count: 5 }],
+    downloads: zero ? [] : [{ name: "bizuply-lead-tracker.xlsx", count: 3 }],
+    calculators: zero ? [] : [{ name: "conversion", count: 4 }],
+    byLocale: zero ? [] : [{ name: "he", count: 8 }, { name: "en", count: 4 }],
+    byContentType: zero ? [] : [{ name: "guide", count: 7 }, { name: "resource", count: 5 }],
+    byCountry: zero ? [] : [{ name: "IL", count: 9 }],
+    byEvent: [
+      "resource_view",
+      "guide_view",
+      "guide_product_click",
+      "template_download",
+      "calculator_use",
+      "pricing_click",
+      "content_signup",
+    ].map((name, index) => ({ name, count: zero ? 0 : [5, 7, 2, 3, 4, 1, 1][index] })),
+  };
+}
 
 function List({ title, rows }: { title: string; rows: Named[] }) {
   return (
@@ -49,8 +115,14 @@ export default function ContentAnalyticsPage() {
   const [days, setDays] = useState(30);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState("");
+  const preview = layoutPreview();
 
   useEffect(() => {
+    if (preview) {
+      setSummary(previewSummary(preview, days));
+      setError("");
+      return undefined;
+    }
     let cancelled = false;
     setError("");
     API.get<Summary>("/admin/public-analytics/summary", { params: { days } })
@@ -63,7 +135,7 @@ export default function ContentAnalyticsPage() {
     return () => {
       cancelled = true;
     };
-  }, [days]);
+  }, [days, preview]);
 
   const totals = summary?.totals;
   const rate = totals?.conversionRate == null ? "—" : `${Math.round(totals.conversionRate * 1000) / 10}%`;
@@ -72,7 +144,8 @@ export default function ContentAnalyticsPage() {
     <main className="content-analytics" dir="rtl">
       <header>
         <h1>ביצועי התוכן</h1>
-        <p>הנתונים כאן הם אירועים פנימיים של האתר הציבורי, רק ממבקרים שאישרו מדידה. הם אינם מספרי Search Console.</p>
+        <p>הנתונים כאן הם אירועים פנימיים של האתר הציבורי, רק ממבקרים שאישרו מדידה. הם אינם מספרי <bdi>Search Console</bdi>.</p>
+        {preview ? <p className="content-analytics__off">תצוגת מבנה לבדיקה. אלה אינם נתוני bizuply.com.</p> : null}
       </header>
       <div className="content-analytics__ranges">
         {RANGES.map((range) => (
@@ -84,6 +157,16 @@ export default function ContentAnalyticsPage() {
       {error ? <p className="content-analytics__error">{error}</p> : null}
       {summary && !summary.enabled ? (
         <p className="content-analytics__off">המדידה כבויה. לא נאספים אירועים ולא מוצגים מספרי מבקרים.</p>
+      ) : null}
+      {totals ? (
+        <section className="content-analytics__events" aria-label="שבעת האירועים">
+          {(summary?.byEvent || []).map((row) => (
+            <article key={row.name}>
+              <span>{EVENT_LABELS[row.name] || row.name}</span>
+              <strong>{row.count}</strong>
+            </article>
+          ))}
+        </section>
       ) : null}
       {totals ? (
         <section className="content-analytics__stats">
@@ -110,22 +193,26 @@ export default function ContentAnalyticsPage() {
       ) : null}
       <section className="content-analytics__gsc">
         <h2>Search Console</h2>
-        <p>החיבור לא נפתח מהשרת הזה. אין כאן חשיפות, קליקים, CTR או עמודים מאונדקסים.</p>
-        <p>המספרים למעלה, כשהמדידה פעילה, נשארים בנפרד מהדוח של Google.</p>
+        <p>החיבור לא נפתח מהשרת הזה. אין כאן חשיפות, קליקים, <bdi>CTR</bdi> או עמודים מאונדקסים.</p>
+        <p>המספרים למעלה, כשהמדידה פעילה, נשארים בנפרד מהדוח של <bdi>Google</bdi>.</p>
       </section>
       <style>{`
-        .content-analytics { max-width: 1080px; margin: 0 auto; padding: 28px 20px 64px; color: #1e1b4b; }
+        .content-analytics { max-width: 1080px; margin: 0 auto; padding: 28px 16px 64px; color: #1e1b4b; }
         .content-analytics h1 { margin: 0 0 8px; font-size: 32px; }
-        .content-analytics__ranges { display: flex; gap: 8px; margin: 20px 0; }
-        .content-analytics button { border: 1px solid #6d28d9; background: #fff; color: #6d28d9; border-radius: 2px; padding: 8px 14px; }
+        .content-analytics__ranges { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+        .content-analytics button { border: 1px solid #6d28d9; background: #fff; color: #6d28d9; border-radius: 2px; min-height: 44px; padding: 8px 14px; }
         .content-analytics button[aria-pressed="true"] { background: #6d28d9; color: #fff; }
         .content-analytics__off, .content-analytics__error, .content-analytics__gsc { background: #f5f3ff; padding: 16px; border: 1px solid #ddd6fe; }
-        .content-analytics__stats, .content-analytics__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin: 16px 0; }
-        .content-analytics__stats article, .content-analytics__card { border: 1px solid #e9e5ff; padding: 14px; background: #fff; }
-        .content-analytics__stats strong { display: block; font-size: 28px; color: #6d28d9; }
+        .content-analytics__events, .content-analytics__stats, .content-analytics__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 16px 0; }
+        .content-analytics__events article, .content-analytics__stats article, .content-analytics__card { border: 1px solid #e9e5ff; padding: 14px; background: #fff; overflow-wrap: anywhere; }
+        .content-analytics__events strong, .content-analytics__stats strong { display: block; font-size: 28px; color: #6d28d9; }
         .content-analytics__card ul { list-style: none; padding: 0; margin: 0; }
         .content-analytics__card li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px solid #f3f0ff; }
         .content-analytics__gsc { margin-top: 20px; }
+        @media (max-width: 640px) {
+          .content-analytics h1 { font-size: 26px; }
+          .content-analytics__events strong, .content-analytics__stats strong { font-size: 22px; }
+        }
       `}</style>
     </main>
   );

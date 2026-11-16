@@ -16,25 +16,25 @@ export default function PublicContentAnalytics() {
     if (!publicContentAnalyticsEnabled() || !analyticsAllowed()) return;
     const view = classifyContentView(location.pathname);
     if (!view) return;
-    sendContentEvent(view, { consent: true });
+    sendContentEvent(view);
   }, [location.pathname]);
 
   useEffect(() => {
-    if (!publicContentAnalyticsEnabled()) return;
     const onConsent = () => {
       if (!analyticsAllowed()) {
         forgetContentVisitor();
         return;
       }
+      if (!publicContentAnalyticsEnabled()) return;
       const view = classifyContentView(window.location.pathname);
-      if (view) sendContentEvent(view, { consent: true });
+      if (view) sendContentEvent(view);
     };
     const onClick = (event: MouseEvent) => {
-      if (!analyticsAllowed()) return;
+      if (!publicContentAnalyticsEnabled() || !analyticsAllowed()) return;
       const anchor = (event.target as Element | null)?.closest?.("a");
       if (!anchor) return;
       const click = classifyContentClick(window.location.pathname, anchor.getAttribute("href") || "");
-      if (click) sendContentEvent(click, { consent: true });
+      if (click) sendContentEvent(click);
     };
     window.addEventListener("bizuply-tracking-consent", onConsent);
     document.addEventListener("click", onClick);

@@ -140,6 +140,22 @@ describe("tracking consent", () => {
     expect(readConsent().advertisement).toBe(true);
     expect(readConsent().analytics).toBe(true);
   });
+
+  it("does not promote an older advertising choice into analytics consent", () => {
+    for (const cookie of [
+      "bizuply_tracking=all",
+      "bizuply_tracking=essential",
+      "bizuply_tracking=v2:ad:2026-11-07",
+      "bizuply_tracking=v2:none:2026-11-07",
+      "bizuply_tracking=v2:an:2026-11-06",
+    ]) {
+      expect(readConsent(cookie).analytics).toBe(false);
+      expect(analyticsAllowed(cookie)).toBe(false);
+    }
+    expect(readConsent("bizuply_tracking=v2:an:2026-11-07").analytics).toBe(true);
+    expect(readConsent("bizuply_tracking=v2:ad.an:2026-11-07").advertisement).toBe(true);
+    expect(analyticsAllowed("bizuply_tracking=v2:an:2026-11-07")).toBe(false);
+  });
 });
 
 afterEach(() => {
