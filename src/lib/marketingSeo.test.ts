@@ -132,6 +132,9 @@ describe("marketing crawl files", () => {
     expect(buildMarketingSitemapXml()).not.toContain("/home-preview");
     expect(isMarketingNoindexPath("/demo-sketches")).toBe(true);
     expect(isMarketingNoindexPath("/demo-ux-sketches")).toBe(true);
+    expect(isMarketingNoindexPath("/demo-site-sketches")).toBe(true);
+    expect(isUnknownMarketingPath("/demo-site-sketches")).toBe(false);
+    expect(buildMarketingSitemapXml()).not.toContain("/demo-site-sketches");
     expect(isUnknownMarketingPath("/demo-ux-sketches")).toBe(false);
     expect(buildMarketingSitemapXml()).not.toContain("/demo-ux-sketches");
     expect(isUnknownMarketingPath("/demo-sketches")).toBe(false);

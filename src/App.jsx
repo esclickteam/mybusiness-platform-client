@@ -181,6 +181,7 @@ const LoginSketches = lazy(() => import("./pages/login-sketches/LoginSketches"))
 const MobileDemoSketch = lazy(() => import("./pages/mobile-demo-sketch/MobileDemoSketch"));
 const DemoDirectionSketches = lazy(() => import("./pages/mobile-demo-sketch/DemoDirectionSketches"));
 const DemoUxSketches = lazy(() => import("./pages/mobile-demo-sketch/DemoUxSketches"));
+const SiteWindowSketches = lazy(() => import("./pages/mobile-demo-sketch/SiteWindowSketches"));
 const WhatsAppApiLoginPage = lazy(() => import("./pages/whatsappApi/WhatsAppApiLoginPage"));
 const AiAutomationTemplatesVisualPage = import.meta.env.DEV
   ? lazy(() => import("./pages/dev/AiAutomationTemplatesVisualPage"))
@@ -1043,7 +1044,7 @@ export default function App() {
   const isAuthShellRoute =
     location.pathname === "/login" || location.pathname === "/register";
   const isLoginSketch = /(?:^|\/)login-sketches(?:\/|$)/.test(location.pathname);
-  const isMobileDemoSketch = /(?:^|\/)(?:mobile-demo-sketch|demo-sketches|demo-ux-sketches)(?:\/|$)/.test(location.pathname);
+  const isMobileDemoSketch = /(?:^|\/)(?:mobile-demo-sketch|demo-sketches|demo-ux-sketches|demo-site-sketches)(?:\/|$)/.test(location.pathname);
   const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const isPartnerSignRoute = location.pathname.startsWith("/sign/partner-agreement/");
   const bizuplyBookingToken = (() => {
@@ -1530,6 +1531,7 @@ export default function App() {
                         <Route path="/mobile-demo-sketch" element={<MobileDemoSketch />} />
                         <Route path="/demo-sketches" element={<DemoDirectionSketches />} />
                         <Route path="/demo-ux-sketches" element={<DemoUxSketches />} />
+                        <Route path="/demo-site-sketches" element={<SiteWindowSketches />} />
                         <Route
                           path="/saas-studio/:templateSlug/:publicSlug"
                           element={

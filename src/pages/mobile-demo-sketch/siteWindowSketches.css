@@ -1,0 +1,268 @@
+.sws {
+  min-height: 100vh;
+  margin: 0;
+  padding: 28px 0 48px;
+  background: #f6f3ff;
+  color: #1e1b4b;
+  font-family: Heebo, sans-serif;
+}
+
+.sws-intro {
+  width: min(560px, calc(100% - 2rem));
+  margin: 0 auto 22px;
+}
+
+.sws-intro p,
+.sws-intro h1 {
+  margin: 0;
+}
+
+.sws-intro > p:first-child {
+  color: #6d28d9;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sws-intro h1 {
+  margin-top: 4px;
+  font-size: 28px;
+  line-height: 1.15;
+}
+
+.sws-intro > p:nth-of-type(2) {
+  margin-top: 8px;
+  color: #4c4563;
+  font-size: 15px;
+}
+
+.sws-intro div {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.sws-intro button {
+  padding: 6px 12px;
+  border: 1px solid #ddd6fe;
+  border-radius: 999px;
+  background: #fff;
+  color: #5b21b6;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sws-intro button[aria-pressed="true"] {
+  border-color: #6d28d9;
+  background: #6d28d9;
+  color: #fff;
+}
+
+.sws-figure {
+  width: min(560px, calc(100% - 2rem));
+  margin: 0 auto 28px;
+}
+
+.sws-figure figcaption {
+  margin-bottom: 8px;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.sws-stage {
+  width: calc(100vw - 2rem);
+  margin-inline: auto;
+  container-type: inline-size;
+}
+
+.sws-window {
+  width: min(68cqw, calc(min(32vh, 236px) * 260 / 220));
+  overflow: hidden;
+  border: 2px solid #7c3aed;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.28), 0 22px 36px -18px rgba(91, 33, 182, 0.55);
+}
+
+.sws-window header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 7px 10px;
+  background: linear-gradient(90deg, #5b21b6 0%, #2563eb 100%);
+  color: #fff;
+}
+
+.sws-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.sws-dots i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+}
+
+.sws-window header strong {
+  font-size: 13px;
+}
+
+.sws-site {
+  display: flex;
+  flex-direction: column;
+  height: 225px;
+  overflow: hidden;
+  background: #fff;
+  font-size: 12px;
+}
+
+.sws-editor {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  align-items: center;
+  min-height: 24px;
+  padding: 3px 8px;
+  background: #1e1b4b;
+  color: #fff;
+}
+
+.sws-editor b { font-size: 12px; }
+.sws-editor span { color: #ddd6fe; font-size: 11px; font-weight: 800; }
+.sws-editor .is-on {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #dcfce7;
+  color: #047857;
+}
+
+.sws-scroll,
+.sws-clip {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.sws-nav {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  align-items: center;
+  min-height: 26px;
+  padding: 4px 8px;
+  border-bottom: 1px solid #ede9fe;
+  background: #fff;
+}
+
+.sws-nav b {
+  margin-inline-end: auto;
+  color: #5b21b6;
+  font-size: 13px;
+}
+
+.sws-nav span {
+  color: #4c4563;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.sws-page {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.sws-page.is-scroll .sws-rows-track {
+  animation: sws-scroll 7.5s cubic-bezier(0.45, 0.05, 0.25, 1) infinite;
+}
+
+.sws-hero {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+}
+
+.sws-hero div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.sws-hero strong {
+  color: #1e1b4b;
+  font-size: 15px;
+  line-height: 1.2;
+}
+
+.sws-hero em {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #6d28d9;
+  color: #fff;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.sws-hero img {
+  display: block;
+  flex: 0 0 auto;
+  width: 100px;
+  aspect-ratio: 400 / 384;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.sws-rows {
+  max-height: 32px;
+  overflow: hidden;
+}
+
+.sws-rows p:first-child { margin-top: 0; }
+
+.sws-next {
+  padding: 6px 8px 8px;
+  background: #f4f1fb;
+}
+
+.sws-next b {
+  display: block;
+  font-size: 12px;
+}
+
+.sws-next p {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0 0;
+  padding: 5px 7px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sws-next p span:last-child { color: #5b21b6; }
+
+@keyframes sws-scroll {
+  0%, 20% { transform: translateY(0); }
+  46%, 74% { transform: translateY(-32px); }
+  100% { transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sws-page.is-scroll .sws-rows-track {
+    animation: none;
+    transform: translateY(-32px);
+  }
+}
