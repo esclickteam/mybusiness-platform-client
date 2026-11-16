@@ -1526,9 +1526,6 @@ export default function App() {
                         <Route path="/login" element={<Login />} />
                         <Route path="/login-sketches/:variant" element={<LoginSketches />} />
                         <Route path="/mobile-demo-sketch" element={<MobileDemoSketch />} />
-                        {import.meta.env.DEV ? (
-                          <Route path="/dev/content-analytics-preview" element={<ContentAnalyticsPage />} />
-                        ) : null}
                         <Route
                           path="/saas-studio/:templateSlug/:publicSlug"
                           element={

@@ -41,61 +41,6 @@ const EVENT_LABELS: Record<string, string> = {
 
 const RANGES = [7, 30, 90];
 
-function layoutPreview(): "off" | "empty" | "sample" | "" {
-  if (!import.meta.env.DEV || typeof window === "undefined") return "";
-  const value = new URLSearchParams(window.location.search).get("preview");
-  return value === "off" || value === "empty" || value === "sample" ? value : "";
-}
-
-function previewSummary(kind: "off" | "empty" | "sample", days: number): Summary {
-  if (kind === "off") {
-    return {
-      enabled: false,
-      retentionDays: 180,
-      rangeDays: days,
-      separateFromSearchConsole: true,
-      gsc: { connected: false, reason: "no_search_console_session" },
-      totals: null,
-    };
-  }
-  const zero = kind === "empty";
-  const count = (value: number) => (zero ? 0 : value);
-  return {
-    enabled: true,
-    retentionDays: 180,
-    rangeDays: days,
-    separateFromSearchConsole: true,
-    gsc: { connected: false, reason: "no_search_console_session" },
-    totals: {
-      contentViews: count(12),
-      uniqueConsentedVisitors: count(5),
-      returningConsentedVisitors: count(2),
-      templateDownloads: count(3),
-      calculatorUses: count(4),
-      productClicks: count(2),
-      pricingClicks: count(1),
-      contentSignups: count(1),
-      conversionDenominator: "unique consented visitors who viewed a content page in the range",
-      conversionRate: zero ? null : 0.2,
-    },
-    topPages: zero ? [] : [{ name: "/guides/what-is-a-crm", count: 7 }, { name: "/he/resources", count: 5 }],
-    downloads: zero ? [] : [{ name: "bizuply-lead-tracker.xlsx", count: 3 }],
-    calculators: zero ? [] : [{ name: "conversion", count: 4 }],
-    byLocale: zero ? [] : [{ name: "he", count: 8 }, { name: "en", count: 4 }],
-    byContentType: zero ? [] : [{ name: "guide", count: 7 }, { name: "resource", count: 5 }],
-    byCountry: zero ? [] : [{ name: "IL", count: 9 }],
-    byEvent: [
-      "resource_view",
-      "guide_view",
-      "guide_product_click",
-      "template_download",
-      "calculator_use",
-      "pricing_click",
-      "content_signup",
-    ].map((name, index) => ({ name, count: zero ? 0 : [5, 7, 2, 3, 4, 1, 1][index] })),
-  };
-}
-
 function List({ title, rows }: { title: string; rows: Named[] }) {
   return (
     <section className="content-analytics__card">
@@ -115,14 +60,8 @@ export default function ContentAnalyticsPage() {
   const [days, setDays] = useState(30);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [error, setError] = useState("");
-  const preview = layoutPreview();
 
   useEffect(() => {
-    if (preview) {
-      setSummary(previewSummary(preview, days));
-      setError("");
-      return undefined;
-    }
     let cancelled = false;
     setError("");
     API.get<Summary>("/admin/public-analytics/summary", { params: { days } })
@@ -135,7 +74,7 @@ export default function ContentAnalyticsPage() {
     return () => {
       cancelled = true;
     };
-  }, [days, preview]);
+  }, [days]);
 
   const totals = summary?.totals;
   const rate = totals?.conversionRate == null ? "—" : `${Math.round(totals.conversionRate * 1000) / 10}%`;
@@ -145,7 +84,6 @@ export default function ContentAnalyticsPage() {
       <header>
         <h1>ביצועי התוכן</h1>
         <p>הנתונים כאן הם אירועים פנימיים של האתר הציבורי, רק ממבקרים שאישרו מדידה. הם אינם מספרי <bdi>Search Console</bdi>.</p>
-        {preview ? <p className="content-analytics__off">תצוגת מבנה לבדיקה. אלה אינם נתוני bizuply.com.</p> : null}
       </header>
       <div className="content-analytics__ranges">
         {RANGES.map((range) => (
