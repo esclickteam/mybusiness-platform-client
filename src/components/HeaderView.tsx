@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaUser } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 
 import MobileMenu from "./MobileMenu";
 import LanguageSwitcher from "./LanguageSwitcher";
+import SiteNavIcon from "./SiteNavIcon";
 import { getTextDirection } from "../i18n/localeUtils";
 import { normalizeMarketingLocale } from "../lib/localePathCore.mjs";
 import { marketingNav } from "../lib/marketingNav.mjs";
@@ -30,6 +31,14 @@ export default function HeaderView({
   const [menuOpen, setMenuOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [navPath, setNavPath] = useState(location.pathname);
+  if (navPath !== location.pathname) {
+    setNavPath(location.pathname);
+    setOpenGroup(null);
+    setMenuOpen(false);
+  }
+  const closeTimer = useRef<number | null>(null);
+  const hoverNav = useRef(false);
   const groups = marketingNav(normalizeMarketingLocale(i18n.language));
 
   const headerDir = getTextDirection(i18n.language);
@@ -58,8 +67,31 @@ export default function HeaderView({
   };
 
   useEffect(() => {
-    setOpenGroup(null);
-  }, [location.pathname]);
+    if (!openGroup) return undefined;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpenGroup(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openGroup]);
+
+  useEffect(() => {
+    hoverNav.current = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    return () => {
+      if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    };
+  }, []);
+
+  const holdGroup = (id: string) => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    setOpenGroup(id);
+  };
+
+  const releaseGroup = () => {
+    if (closeTimer.current) window.clearTimeout(closeTimer.current);
+    closeTimer.current = window.setTimeout(() => setOpenGroup(null), 180);
+  };
 
   useEffect(() => {
     const read = () => {
@@ -89,7 +121,7 @@ export default function HeaderView({
 
           <div className="site-header__nav">
             {groups.map((group) => {
-              if (!group.links) {
+              if (!group.columns) {
                 const isActive = location.pathname === group.to;
                 return (
                   <Link
@@ -106,8 +138,12 @@ export default function HeaderView({
                 <div
                   key={group.id}
                   className={`site-nav__item${open ? " is-open" : ""}`}
-                  onMouseEnter={() => setOpenGroup(group.id)}
-                  onMouseLeave={() => setOpenGroup(null)}
+                  onMouseEnter={() => {
+                    if (hoverNav.current) holdGroup(group.id);
+                  }}
+                  onMouseLeave={() => {
+                    if (hoverNav.current) releaseGroup();
+                  }}
                   onBlur={(event) => {
                     const next = event.relatedTarget;
                     if (!(next instanceof Node) || !event.currentTarget.contains(next)) setOpenGroup(null);
@@ -122,43 +158,59 @@ export default function HeaderView({
                     type="button"
                     className="site-header__link site-nav__button"
                     aria-expanded={open}
+                    aria-controls={`site-nav-${group.id}`}
                     aria-haspopup="true"
-                    onClick={() => setOpenGroup(open ? null : group.id)}
+                    onClick={() => {
+                      if (closeTimer.current) window.clearTimeout(closeTimer.current);
+                      setOpenGroup(open ? null : group.id);
+                    }}
                     onKeyDown={(event) => {
                       if (event.key !== "ArrowDown") return;
                       event.preventDefault();
-                      setOpenGroup(group.id);
-                      const panel = event.currentTarget.nextElementSibling;
-                      requestAnimationFrame(() => {
-                        const link = panel?.querySelector("a");
+                      holdGroup(group.id);
+                      const menuId = group.id;
+                      window.setTimeout(() => {
+                        const link = document.getElementById(`site-nav-${menuId}`)?.querySelector("a");
                         if (link instanceof HTMLAnchorElement) link.focus();
-                      });
+                      }, 0);
                     }}
                   >
                     {group.label}
+                    <svg className="site-nav__chevron" viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="M6 9l6 6 6-6" />
+                    </svg>
                   </button>
                   <div
-                    className={`site-nav__panel${group.id === "industries" ? " site-nav__mega" : ""}${group.links.length > 5 ? " is-wide" : ""}`}
+                    id={`site-nav-${group.id}`}
+                    className="site-nav__panel site-nav__mega"
+                    data-cols={Math.max(group.columns.length, ...group.columns.map((column) => column.layout || 1))}
                     hidden={!open}
+                    role="region"
+                    aria-label={group.label}
                   >
-                    {group.links.map(([to, label, blurb]) => (
-                      <Link key={to} to={to} onClick={() => setOpenGroup(null)}>
-                        {to === "/security-scanner" ? (
-                          <svg className="site-nav__shield" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                            <path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 8.4 8 9.5 4.6-1.1 8-4.5 8-9.5V5l-8-3Z" />
-                            <path fill="#ffffff" d="m8.2 11.2 2.2 2.2 5-5 1.2 1.2-6.2 6.2-3.4-3.4 1.2-1.2Z" />
-                          </svg>
-                        ) : to === "/website-scan" ? (
-                          <svg className="site-nav__shield" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                            <path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 8.4 8 9.5 4.6-1.1 8-4.5 8-9.5V5l-8-3Z" />
-                          </svg>
-                        ) : group.id === "industries" ? <IndustryMark path={to} /> : null}
-                        <span>
-                          <strong>{label}</strong>
-                          {blurb ? <small>{blurb}</small> : null}
-                        </span>
-                      </Link>
-                    ))}
+                    <div
+                      className="site-nav__sheet"
+                      style={{ gridTemplateColumns: `repeat(${group.columns.length}, minmax(0, 1fr))` }}
+                    >
+                      {group.columns.map((column) => (
+                        <div
+                          key={column.id}
+                          className="site-nav__col"
+                          style={column.layout > 1 ? { gridTemplateColumns: `repeat(${column.layout}, minmax(0, 1fr))` } : undefined}
+                        >
+                          <p className="site-nav__kicker">{column.title}</p>
+                          {column.links.map((link) => (
+                            <Link key={link.to} to={link.to} onClick={() => setOpenGroup(null)}>
+                              <SiteNavIcon name={link.icon} />
+                              <span>
+                                <strong>{link.label}</strong>
+                                {link.blurb ? <small>{link.blurb}</small> : null}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               );
@@ -205,7 +257,7 @@ export default function HeaderView({
             <div className="site-header__mobile">
               <button
                 type="button"
-                onClick={() => setMenuOpen(true)}
+                onClick={() => setMenuOpen((open) => !open)}
                 className="site-header__burger"
                 aria-label={t("common.openMenu")}
                 aria-expanded={menuOpen}
@@ -226,22 +278,5 @@ export default function HeaderView({
         onLogout={handleLogout}
       />
     </>
-  );
-}
-
-function IndustryMark({ path }: { path: string }) {
-  const paths: Record<string, string> = {
-    "/solutions/clinics": "M8 4h8v4h4v12H4V8h4V4zm2 2v2h4V6h-4zm-4 6h12",
-    "/solutions/beauty": "M12 3l1.6 4.2L18 9l-4.4 1.8L12 15l-1.6-4.2L6 9l4.4-1.8L12 3zM6 15l.8 2.2L9 18l-2.2.8L6 21l-.8-2.2L3 18l2.2-.8L6 15z",
-    "/solutions/real-estate": "M4 20V9l8-5 8 5v11H4zm5-2h2v-4H9v4zm4 0h2v-6h-2v6z",
-    "/solutions/restaurants": "M7 3v8a3 3 0 0 0 2 2.8V21h2v-7.2A3 3 0 0 0 13 11V3h-2v6H9V3H7zm10 0v8h2a3 3 0 0 1-3 3v7h-2V3h3z",
-    "/solutions/service-businesses": "M14 6l4 4-8 8H6v-4l8-8zm1.5-1.5l2 2",
-    "/solutions/agencies": "M4 16l8-10 8 10H4zm4.2-2h7.6L12 9.2 8.2 14zM4 18h16v2H4v-2z",
-    "/solutions/lead-based": "M5 12h8m0 0l-3-3m3 3l-3 3M13 7h6v4h-6M13 13h6v4h-6",
-  };
-  return (
-    <svg className="site-nav__icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path d={paths[path] || "M5 12h14"} />
-    </svg>
   );
 }
