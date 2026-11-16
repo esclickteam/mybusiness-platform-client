@@ -132,7 +132,10 @@ function theaterShellHtml(hx, lang) {
     .replace("{n}", "1")
     .replace("{total}", String(steps.length));
   const poster = `${THEATER_MEDIA}/${lang}-desktop.webp?v=${THEATER_VERSION}`;
-  const row = `<div class="hx-mrow"><div class="hx-mrow-track"><div class="hx-mrow-card" style="width:48%;max-width:220px;padding:14px 12px;border:2px solid #7c3aed;border-radius:16px;background:#fff;text-align:center"><b style="display:block;color:#5b21b6;font-size:1.6rem">128</b><span style="color:#4c4563;font-size:.85rem;font-weight:700">לידים</span></div></div><p class="hx-mrow-caption">לוח בקרה</p></div>`;
+  const hebrew = String(lang || "").toLowerCase().startsWith("he");
+  const metric = hebrew ? "לידים" : "Leads";
+  const caption = hebrew ? "לוח בקרה" : "Dashboard";
+  const row = `<div class="hx-mrow"><div class="hx-mrow-track"><div class="hx-mrow-card" style="width:48%;max-width:220px;padding:14px 12px;border:2px solid #7c3aed;border-radius:16px;background:#fff;text-align:center"><b style="display:block;color:#5b21b6;font-size:1.6rem">128</b><span style="color:#4c4563;font-size:.85rem;font-weight:700">${metric}</span></div></div><p class="hx-mrow-caption">${caption}</p></div>`;
   return `<div class="ht-theater" aria-hidden="true"><div class="ht-bar"><div class="ht-tabs">${tabs}</div><div class="ht-controls">${controls}</div></div><div class="ht-stage"><picture><source media="(min-width: 761px)" srcset="${poster}" width="1920" height="1080"><img class="ht-poster" alt="${escapeHtml(
     hx.processLabel || hx.stageAlt,
   )}" width="1920" height="1080" decoding="async"></picture></div><div class="ht-caption"><p class="ht-caption-step">${escapeText(

@@ -143,8 +143,21 @@
   object-fit: contain;
 }
 
-.dd-h-slide .dd-window em {
+.dd-h-slide .dd-window .ux2-site-shot {
+  width: min(124px, 50%);
+  height: auto;
+  max-height: none;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  object-position: center;
+}
+
+.dd-h-slide .dd-window > header em {
   display: none;
+}
+
+.dd-h-slide .dd-window .ux2-site-cta {
+  margin-inline-start: 0;
 }
 
 .dd-h-caption {

@@ -1,6 +1,22 @@
-import { useEffect, useId, useRef, useState, type PointerEvent, type ReactElement, type ReactNode, type RefObject, type TransitionEvent } from "react";
+import { createContext, useContext, useEffect, useId, useRef, useState, type PointerEvent, type ReactElement, type ReactNode, type RefObject, type TransitionEvent } from "react";
 import { Helmet } from "react-helmet-async";
+import { carouselStep, clampCarouselIndex } from "./carouselIndex";
+import { demoBoardText } from "./demoCopy";
 import "./demoUxSketches.css";
+
+const DemoLanguageContext = createContext("he");
+
+export function DemoLanguage({ language, children }: { language: string; children: ReactNode }) {
+  return <DemoLanguageContext.Provider value={language}>{children}</DemoLanguageContext.Provider>;
+}
+
+function useBoardText() {
+  return demoBoardText(useContext(DemoLanguageContext));
+}
+
+export function useDemoHebrew() {
+  return useContext(DemoLanguageContext).toLowerCase().startsWith("he");
+}
 
 type Sketch = {
   id: string;
@@ -10,18 +26,24 @@ type Sketch = {
 };
 
 function Board({ className, children }: { className: string; children: ReactNode }) {
-  return <div className={`ux2-board ${className}`}>{children}</div>;
+  const he = useContext(DemoLanguageContext).toLowerCase().startsWith("he");
+  return (
+    <div className={`ux2-board ${className}`} dir={he ? "rtl" : "ltr"}>
+      {children}
+    </div>
+  );
 }
 
 function DashboardScreen() {
   const raw = useId().replace(/:/g, "");
+  const copy = useBoardText();
   return (
     <Board className="ux2-dash">
       <div className="ux2-kpis">
-        <p><b dir="ltr">128</b><span>לידים</span><em dir="ltr">+18%</em></p>
-        <p><b dir="ltr">41%</b><span>המרה</span><em dir="ltr">+6%</em></p>
-        <p><b dir="ltr">₪186K</b><span>הכנסה</span><em dir="ltr">+12%</em></p>
-        <p><b dir="ltr">23</b><span>משימות</span><em>פתוחות</em></p>
+        <p><b dir="ltr">128</b><span>{copy.leads}</span><em dir="ltr">+18%</em></p>
+        <p><b dir="ltr">41%</b><span>{copy.conversion}</span><em dir="ltr">+6%</em></p>
+        <p><b dir="ltr">₪186K</b><span>{copy.revenue}</span><em dir="ltr">+12%</em></p>
+        <p><b dir="ltr">23</b><span>{copy.tasks}</span><em>{copy.open}</em></p>
       </div>
       <div className="ux2-chart">
         <svg viewBox="0 0 240 72" preserveAspectRatio="none" aria-hidden="true">
@@ -36,32 +58,28 @@ function DashboardScreen() {
           <circle cx="210" cy="16" r="3.2" fill="#fff" stroke="#6d28d9" strokeWidth="2" />
         </svg>
         <ol>
-          <li>א׳</li><li>ב׳</li><li>ג׳</li><li>ד׳</li><li>ה׳</li><li>ו׳</li><li>ש׳</li>
+          {copy.days.map((day, index) => <li key={`${day}-${index}`}>{day}</li>)}
         </ol>
       </div>
       <ul className="ux2-feed">
-        <li><i>ת</i><b>תמר לוי</b><span>ליד חדש מ־Meta</span><em>עכשיו</em></li>
-        <li><i>ד</i><b>דניאל כהן</b><span>פגישה נקבעה</span><em>14:30</em></li>
-        <li><i>נ</i><b>נועה ברק</b><span>עסקה נסגרה</span><em>אתמול</em></li>
+        {copy.feed.map(([mark, name, detail, when]) => (
+          <li key={name}><i>{mark}</i><b>{name}</b><span>{detail}</span><em>{when}</em></li>
+        ))}
       </ul>
     </Board>
   );
 }
 
 function CrmPipelineScreen() {
-  const stages = [
-    { name: "חדש", lead: "תמר לוי", value: "₪4,800" },
-    { name: "בטיפול", lead: "דניאל כהן", value: "₪6,200" },
-    { name: "פגישה", lead: "נועה ברק", value: "₪8,900" },
-  ];
+  const copy = useBoardText();
   return (
     <Board className="ux2-crm-a">
-      <p className="ux2-crm-metric"><b dir="ltr">₪86K</b><span>בצנרת</span></p>
-      {stages.map((stage) => (
-        <p key={stage.name}>
-          <em>{stage.name}</em>
-          <b>{stage.lead}</b>
-          <span dir="ltr">{stage.value}</span>
+      <p className="ux2-crm-metric"><b dir="ltr">₪86K</b><span>{copy.pipeline}</span></p>
+      {copy.stages.map(([name, lead, value]) => (
+        <p key={name}>
+          <em>{name}</em>
+          <b>{lead}</b>
+          <span dir="ltr">{value}</span>
         </p>
       ))}
     </Board>
@@ -69,59 +87,64 @@ function CrmPipelineScreen() {
 }
 
 function CrmLeadScreen() {
+  const copy = useBoardText();
   return (
     <Board className="ux2-crm-b">
       <ol>
-        <li>חדש</li>
-        <li className="is-on">בטיפול</li>
-        <li>פגישה</li>
+        {copy.stages.map(([name], index) => (
+          <li key={name} className={index === 1 ? "is-on" : undefined}>{name}</li>
+        ))}
       </ol>
       <article>
-        <header><b>תמר לוי</b><em>בטיפול</em></header>
-        <p>מקור · Meta</p>
+        <header><b>{copy.stages[0][1]}</b><em>{copy.stages[1][0]}</em></header>
+        <p>{copy.source}</p>
         <strong dir="ltr">₪4,800</strong>
-        <footer><span>הפעולה הבאה</span><b>שיחת WhatsApp</b></footer>
+        <footer><span>{copy.next}</span><b>{copy.nextAction}</b></footer>
       </article>
     </Board>
   );
 }
 
 function WhatsAppScreen() {
+  const copy = useBoardText();
+  const people = copy.feed;
   return (
     <Board className="ux2-wa">
       <aside>
-        <strong>שיחות</strong>
-        <p className="is-on"><i>ת</i><b>תמר לוי</b><span>10:30 מושלם</span><em>2</em></p>
-        <p><i>ד</i><b>דניאל כהן</b><span>קיבלתי את ההצעה</span></p>
-        <p><i>נ</i><b>נועה ברק</b><span>תודה, נסגר</span></p>
+        <strong>{copy.chats}</strong>
+        <p className="is-on"><i>{people[0][0]}</i><b>{people[0][1]}</b><span>{copy.thread[1]}</span><em>2</em></p>
+        <p><i>{people[1][0]}</i><b>{people[1][1]}</b><span>{copy.thread[2]}</span></p>
+        <p><i>{people[2][0]}</i><b>{people[2][1]}</b><span>{copy.thread[3]}</span></p>
       </aside>
       <section>
-        <header><i>ת</i><b>תמר לוי</b><span>מחוברת · Meta</span></header>
+        <header><i>{people[0][0]}</i><b>{people[0][1]}</b><span>{copy.online}</span></header>
         <div className="ux2-thread">
-          <p>יש תור השבוע?</p>
-          <p className="out">מחר ב־10:30.</p>
-          <p>מתאים לי</p>
-          <p className="out">קבעתי, אישור נשלח.</p>
+          <p>{copy.thread[0]}</p>
+          <p className="out">{copy.thread[1]}</p>
+          <p>{copy.thread[2]}</p>
+          <p className="out">{copy.thread[3]}</p>
         </div>
-        <div className="ux2-compose"><span>הודעה</span><b>↑</b></div>
+        <div className="ux2-compose"><span>{copy.reply}</span><b>↑</b></div>
       </section>
     </Board>
   );
 }
 
 function AutomationScreen() {
+  const copy = useBoardText();
+  const he = useContext(DemoLanguageContext).toLowerCase().startsWith("he");
   return (
     <Board className="ux2-auto">
       <div className="ux2-auto-top">
-        <b>ליד ממודעה</b>
-        <em>פעיל</em>
-        <span>128 היום · 96%</span>
+        <b>{copy.autoTitle}</b>
+        <em>{copy.active}</em>
+        <span>{copy.autoStat}</span>
       </div>
-      <div className="ux2-flow" dir="ltr">
-        <p className="n-task"><small>פעולה</small><b>משימה</b></p>
-        <p className="n-if"><small>תנאי</small><b dir="ltr">₪2,000+</b></p>
-        <p className="n-trigger"><small>טריגר</small><b>ליד חדש</b></p>
-        <p className="n-wa"><small>פעולה</small><b>WhatsApp</b></p>
+      <div className={he ? "ux2-flow" : "ux2-flow is-ltr"} dir="ltr">
+        <p className="n-task"><small>{copy.action}</small><b>{copy.task}</b></p>
+        <p className="n-if"><small>{copy.condition}</small><b dir="ltr">₪2,000+</b></p>
+        <p className="n-trigger"><small>{copy.trigger}</small><b>{copy.newLead}</b></p>
+        <p className="n-wa"><small>{copy.action}</small><b>WhatsApp</b></p>
       </div>
     </Board>
   );
@@ -129,17 +152,18 @@ function AutomationScreen() {
 
 function MetaScreen() {
   const raw = useId().replace(/:/g, "");
+  const copy = useBoardText();
   return (
     <Board className="ux2-meta">
       <div className="ux2-meta-top">
-        <b>לידים · תל אביב</b>
-        <em>פעיל</em>
+        <b>{copy.campaign}</b>
+        <em>{copy.active}</em>
       </div>
       <div className="ux2-metrics">
-        <p><b dir="ltr">₪4,820</b><span>הוצאה</span></p>
-        <p><b dir="ltr">186K</b><span>חשיפות</span></p>
+        <p><b dir="ltr">₪4,820</b><span>{copy.spend}</span></p>
+        <p><b dir="ltr">186K</b><span>{copy.reach}</span></p>
         <p><b dir="ltr">4.8%</b><span>CTR</span></p>
-        <p><b dir="ltr">312</b><span>לידים</span></p>
+        <p><b dir="ltr">312</b><span>{copy.leads}</span></p>
       </div>
       <svg viewBox="0 0 244 70" preserveAspectRatio="none" aria-hidden="true">
         <defs>
@@ -153,37 +177,61 @@ function MetaScreen() {
         <path d="M0 54 C30 50 46 40 70 38 S118 46 146 24 S190 8 244 16" fill="none" stroke="#2563eb" strokeWidth="2.4" />
       </svg>
       <ul>
-        <li><b>מודעת קוסמטיקה</b><span /><em dir="ltr">₪2,140</em></li>
-        <li><b>מודעת פגישת היכרות</b><span /><em dir="ltr">₪1,680</em></li>
+        <li><b>{copy.adOne}</b><span /><em dir="ltr">₪2,140</em></li>
+        <li><b>{copy.adTwo}</b><span /><em dir="ltr">₪1,680</em></li>
       </ul>
     </Board>
   );
 }
 
 function SiteScreen() {
+  const copy = useBoardText();
   return (
     <Board className="ux2-site">
-      <div className="ux2-editor">
+      <nav className="ux2-site-nav">
         <b>Petaluxe</b>
-        <span>עריכה</span>
-        <span className="is-on">תצוגה</span>
-        <span>פרסום</span>
+        <span>{copy.navTreatments}</span>
+        <span>{copy.navAbout}</span>
+      </nav>
+      <div className="ux2-site-page">
+        <div className="ux2-site-hero">
+          <div>
+            <strong>{copy.siteLine}</strong>
+            <span className="ux2-site-cta">{copy.siteCta}</span>
+          </div>
+          <img className="ux2-site-shot" src="/demo-direction/site-cleanser.webp?v=6" alt="" />
+        </div>
+        <section className="ux2-site-next">
+          <b>{copy.serviceTitle}</b>
+          <div className="ux2-site-rows">
+            <div className="ux2-site-track">
+              <p><span>{copy.serviceOne}</span><span dir="ltr">₪280</span></p>
+              <p><span>{copy.serviceTwo}</span><span dir="ltr">₪160</span></p>
+            </div>
+          </div>
+        </section>
       </div>
-      <img src="/template-screenshots/petaluxe.webp" alt="תבנית האתר Petaluxe" />
-      <p>גלריה · 12</p>
     </Board>
   );
 }
 
-export const PRODUCT_SCREENS: { key: string; title: string; Screen: () => ReactElement }[] = [
-  { key: "dash", title: "לוח בקרה", Screen: DashboardScreen },
-  { key: "crm-a", title: "CRM · צינור", Screen: CrmPipelineScreen },
-  { key: "crm-b", title: "CRM · כרטיס", Screen: CrmLeadScreen },
-  { key: "wa", title: "WhatsApp", Screen: WhatsAppScreen },
-  { key: "auto", title: "אוטומציות", Screen: AutomationScreen },
-  { key: "meta", title: "קמפיינים", Screen: MetaScreen },
-  { key: "site", title: "בניית אתרים", Screen: SiteScreen },
+const PRODUCT_SCREEN_PARTS: { key: string; Screen: () => ReactElement }[] = [
+  { key: "dash", Screen: DashboardScreen },
+  { key: "crm-a", Screen: CrmPipelineScreen },
+  { key: "crm-b", Screen: CrmLeadScreen },
+  { key: "wa", Screen: WhatsAppScreen },
+  { key: "auto", Screen: AutomationScreen },
+  { key: "meta", Screen: MetaScreen },
+  { key: "site", Screen: SiteScreen },
 ];
+
+export function productScreens(language: string) {
+  const titles = demoBoardText(language).titles;
+  return PRODUCT_SCREEN_PARTS.map((item, index) => ({
+    ...item,
+    title: titles[index] || item.key,
+  }));
+}
 
 const SKETCHES: Sketch[] = [
   {
@@ -278,18 +326,20 @@ function useCarouselMotion(
 
   useEffect(() => {
     if (paused || reduced || !visible || metrics.widths.length === 0) return;
+    const length = count + 2;
     const timer = window.setTimeout(() => {
-      setAnimate(true);
-      setIndex((value) => value + 1);
+      const step = carouselStep(index, length);
+      setAnimate(step.animate);
+      setIndex(step.index);
     }, 1900);
     return () => window.clearTimeout(timer);
-  }, [paused, reduced, visible, index, metrics.widths.length]);
+  }, [paused, reduced, visible, index, metrics.widths.length, count]);
 
   function commit(next: number) {
     drag.current.active = false;
     setDragX(0);
     setAnimate(true);
-    setIndex(next);
+    setIndex(clampCarouselIndex(next, count + 2));
   }
 
   function onTransitionEnd(event: TransitionEvent<HTMLDivElement>) {

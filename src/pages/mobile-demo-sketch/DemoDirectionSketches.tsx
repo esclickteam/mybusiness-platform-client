@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
+import { Component, useEffect, useMemo, useRef, useState, type ReactElement, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
-import { PRODUCT_SCREENS } from "./DemoUxSketches";
+import { useTranslation } from "react-i18next";
+import { carouselStep, clampCarouselIndex } from "./carouselIndex";
+import { DemoLanguage, productScreens, useDemoHebrew } from "./DemoUxSketches";
 import "./demoDirectionSketches.css";
 
 type Shot = {
@@ -25,20 +27,23 @@ const FLOW: Shot[] = [
   { key: "site", title: "בניית אתר", line: "תבנית Spalcio", src: screen("site.png"), width: 360, height: 490 },
 ];
 
-const LIVE: Shot[] = PRODUCT_SCREENS.map((item) => ({
-  key: item.key,
-  title: item.title,
-  line: "",
-  src: "",
-  width: 260,
-  height: 220,
-  Screen: item.Screen,
-}));
+function liveShots(language: string): Shot[] {
+  return productScreens(language).map((item) => ({
+    key: item.key,
+    title: item.title,
+    line: "",
+    src: "",
+    width: 260,
+    height: 220,
+    Screen: item.Screen,
+  }));
+}
 
 function Window({ shot, index }: { shot: Shot; index: number }) {
   const Screen = shot.Screen;
+  const he = useDemoHebrew();
   return (
-    <article className="dd-window" dir="rtl" style={{ ["--i" as string]: index }}>
+    <article className="dd-window" dir={he ? "rtl" : "ltr"} style={{ ["--i" as string]: index }}>
       <header>
         <span className="dd-dots" aria-hidden="true">
           <i />
@@ -125,17 +130,18 @@ function HorizontalShowcase({ shots, paused }: { shots: Shot[]; paused: boolean 
   useEffect(() => {
     if (paused || reduced || !visible || metrics.widths.length === 0) return;
     const timer = window.setTimeout(() => {
-      setAnimate(true);
-      setIndex((value) => value + 1);
+      const step = carouselStep(index, slides.length);
+      setAnimate(step.animate);
+      setIndex(step.index);
     }, 1900);
     return () => window.clearTimeout(timer);
-  }, [paused, reduced, visible, index, metrics.widths.length]);
+  }, [paused, reduced, visible, index, metrics.widths.length, slides.length]);
 
   function commit(next: number) {
     drag.current.active = false;
     setDragX(0);
     setAnimate(true);
-    setIndex(next);
+    setIndex(clampCarouselIndex(next, slides.length));
   }
 
   function onTransitionEnd(event: React.TransitionEvent<HTMLDivElement>) {
@@ -169,9 +175,10 @@ function HorizontalShowcase({ shots, paused }: { shots: Shot[]; paused: boolean 
     else commit(index);
   }
 
-  const center = metrics.widths.slice(0, index).reduce((sum, width) => sum + width, 0) + (metrics.widths[index] || 0) / 2;
+  const safeIndex = clampCarouselIndex(index, slides.length);
+  const center = metrics.widths.slice(0, safeIndex).reduce((sum, width) => sum + width, 0) + (metrics.widths[safeIndex] || 0) / 2;
   const shift = metrics.widths.length === 0 ? 0 : metrics.view / 2 - center + dragX;
-  const activeShot = slides[index];
+  const activeShot = slides[safeIndex];
 
   return (
     <div
@@ -192,7 +199,7 @@ function HorizontalShowcase({ shots, paused }: { shots: Shot[]; paused: boolean 
       >
         {slides.map((shot, position) => (
           <div
-            className={position === index ? "dd-h-slide is-active" : "dd-h-slide"}
+            className={position === safeIndex ? "dd-h-slide is-active" : "dd-h-slide"}
             key={`${shot.key}-${position}`}
             aria-hidden={position !== index}
             style={{ ["--ratio" as string]: shot.width / shot.height }}
@@ -201,23 +208,46 @@ function HorizontalShowcase({ shots, paused }: { shots: Shot[]; paused: boolean 
           </div>
         ))}
       </div>
-      <p className="dd-h-caption">{activeShot.title}</p>
+      <p className="dd-h-caption">{activeShot?.title || ""}</p>
     </div>
   );
 }
 
+class ProductRowBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: unknown) {
+    console.error("Mobile product row failed:", error);
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
+}
+
 export function MobileProductRow() {
+  const { i18n } = useTranslation();
+  const language = i18n.resolvedLanguage || i18n.language || "en";
+  const shots = useMemo(() => liveShots(language), [language]);
   const [paused, setPaused] = useState(false);
   return (
     <div className="dd-stage dd-home">
-      <HorizontalShowcase shots={LIVE} paused={paused} />
+      <ProductRowBoundary key={language}>
+        <DemoLanguage language={language}>
+          <HorizontalShowcase shots={shots} paused={paused} />
+        </DemoLanguage>
+      </ProductRowBoundary>
       <button
         type="button"
         className="dd-pause"
         aria-pressed={paused}
         onClick={() => setPaused((value) => !value)}
       >
-        {paused ? "הפעלה" : "השהיה"}
+        {language.toLowerCase().startsWith("he") ? (paused ? "הפעלה" : "השהיה") : (paused ? "Play" : "Pause")}
       </button>
     </div>
   );

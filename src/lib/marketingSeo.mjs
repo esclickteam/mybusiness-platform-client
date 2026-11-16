@@ -348,6 +348,7 @@ const NOINDEX_PREFIXES = [
   "/mobile-demo-sketch",
   "/demo-sketches",
   "/demo-ux-sketches",
+  "/demo-site-sketches",
   "/compliance/report",
   "/compliance/account",
   "/compliance/demo",
