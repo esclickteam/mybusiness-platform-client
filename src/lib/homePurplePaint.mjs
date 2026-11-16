@@ -89,7 +89,7 @@ export function renderMarketingHeader(locale) {
   const href = (path) => localeHref(navLocale, path);
   const nav = marketingNav(navLocale)
     .map((group) =>
-      group.links
+      group.columns
         ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
         : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`,
     )

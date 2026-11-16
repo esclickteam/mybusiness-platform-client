@@ -182,7 +182,7 @@ function Solutions() {
         </section>
 
         {/* Solutions cards */}
-        <section className="mt-20 grid gap-7 lg:grid-cols-2">
+        <section id="solutions-needs" className="mt-20 grid gap-7 lg:grid-cols-2">
           {solutions.map((item, index) => (
             <article
               key={item.key}
@@ -232,7 +232,7 @@ function Solutions() {
           ))}
         </section>
 
-        <section className="mt-16 grid gap-3 sm:grid-cols-2">
+        <section id="solutions-industries" className="mt-16 grid gap-3 sm:grid-cols-2">
           {industries.map((item) => (
             <Link key={item.path} to={item.path} className="rounded-2xl border border-slate-200 bg-white p-5 text-slate-800">
               <span className="text-xs font-black uppercase tracking-wide text-indigo-700">{item.label}</span>

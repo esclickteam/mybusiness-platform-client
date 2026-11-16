@@ -158,7 +158,7 @@ export function ResourceHubPage() {
           </section>
           {!needle && cluster === "all" && kind === "all" ? (
             <>
-              <section className="knowledge-section">
+              <section id="start-here" className="knowledge-section">
                 <h2>{ui.start}</h2>
                 <ul className="knowledge-grid">
                   {start.map((item) => <li key={item.href}><Card item={item} ui={ui} /></li>)}
@@ -313,7 +313,7 @@ export function TemplatesPage() {
               ))}
             </ul>
           </section>
-          <section className="knowledge-section">
+          <section id="calculators" className="knowledge-section">
             <h2>{ui.calculators}</h2>
             <Calculator
               calculatorId="conversion"

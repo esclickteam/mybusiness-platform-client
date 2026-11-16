@@ -1,8 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-const logo = "/logo-mark.svg";
+import SiteNavIcon from "./SiteNavIcon";
 import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 import { privacyFacts } from "./privacy/PrivacyFacts";
 import { normalizeMarketingLocale } from "../lib/localePathCore.mjs";
@@ -18,6 +17,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
     user?.role === "business" && !user?.hasAccess ? businessNoAccessPath(user) : "/dashboard";
 
   const groups = marketingNav(normalizeMarketingLocale(i18n.language));
+  const [openGroup, setOpenGroup] = useState(null);
 
   useEffect(() => {
     if (!open) return;
@@ -49,24 +49,9 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
       />
 
       <div className="site-mobile__panel">
-        <div className="site-mobile__top">
-          <Link to="/" onClick={onClose} className="site-mobile__brand" aria-label={i18n.language === "he" ? "ביזאפלי (BizUply)" : "BizUply"}>
-            <img src={logo} alt={i18n.language === "he" ? "ביזאפלי (BizUply)" : "BizUply"} />
-          </Link>
-
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label={t("common.closeMenu")}
-            className="site-mobile__close"
-          >
-            <FaTimes />
-          </button>
-        </div>
-
-        <nav className="site-mobile__nav">
+        <nav className="site-mobile__nav" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
           {groups.map((group) => {
-            if (!group.links) {
+            if (!group.columns) {
               const active = location.pathname === group.to;
               return (
                 <Link
@@ -79,22 +64,36 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                 </Link>
               );
             }
+            const expanded = openGroup === group.id;
             return (
-              <details key={group.id} className="site-mobile__group">
-                <summary>{group.label}</summary>
-                {group.links.map(([to, label, blurb]) => (
-                  <Link key={to} to={to} onClick={onClose} className="site-mobile__sub">
-                    {to === "/security-scanner" ? (
-                      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                        <path fill="currentColor" d="M12 2 4 5v6c0 5 3.4 8.4 8 9.5 4.6-1.1 8-4.5 8-9.5V5l-8-3Z" />
-                        <path fill="#ffffff" d="m8.2 11.2 2.2 2.2 5-5 1.2 1.2-6.2 6.2-3.4-3.4 1.2-1.2Z" />
-                      </svg>
-                    ) : null}
-                    <span>{label}</span>
-                    {blurb ? <small>{blurb}</small> : null}
-                  </Link>
-                ))}
-              </details>
+              <div key={group.id} className={`site-mobile__group${expanded ? " is-open" : ""}`}>
+                <button
+                  type="button"
+                  className="site-mobile__summary"
+                  aria-expanded={expanded}
+                  onClick={() => setOpenGroup(expanded ? null : group.id)}
+                >
+                  {group.label}
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M6 9l6 6 6-6" />
+                  </svg>
+                </button>
+                <div className="site-mobile__subs" inert={!expanded}>
+                  <div className="site-mobile__subs-inner">
+                    {group.columns.map((column) => (
+                      <div key={column.id}>
+                        <p className="site-mobile__kicker">{column.title}</p>
+                        {column.links.map((link) => (
+                          <Link key={link.to} to={link.to} onClick={onClose} className="site-mobile__sub">
+                            <SiteNavIcon name={link.icon} />
+                            <span>{link.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
             );
           })}
         </nav>

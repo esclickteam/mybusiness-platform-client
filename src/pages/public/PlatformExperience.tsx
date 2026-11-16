@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { getActivityPage } from "../../lib/activityPages.mjs";
-import { marketingNav } from "../../lib/marketingNav.mjs";
+import { industryNav } from "../../lib/marketingNav.mjs";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
 import "./platformExperience.css";
 
@@ -99,9 +99,8 @@ export default function PlatformExperience() {
   const rootRef = useRef<HTMLElement>(null);
   const [status, setStatus] = useState(0);
   const [step, setStep] = useState(0);
-  const nav = marketingNav(locale);
-  const industryGroup = nav.find((group) => group.id === "industries");
-  const industries = (industryGroup?.links || []) as Array<[string, string, string?]>;
+  const industryGroup = industryNav(locale);
+  const industries = industryGroup.links as Array<[string, string, string?]>;
   const lang = locale === "pt-BR" ? "pt-BR" : locale;
   const statuses = STATUS_KEYS.map((key) => t(`automations.catalog.leadStatuses.${key}`));
 
