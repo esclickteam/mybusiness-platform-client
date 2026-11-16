@@ -25,6 +25,8 @@ describe("sketch home first paint", () => {
     }
     expect(en.inner).toContain(HX_HERO_COPY.en.processCopy[0][0]);
     expect(en.inner).toContain('class="site-header__end"');
+    expect(en.inner).toContain('<button type="button" class="site-header__link site-nav__button"');
+    expect(en.inner).toContain('class="site-nav__chevron"');
     expect(en.inner).not.toContain('class="home-crawl"');
     expect(en.crawl).toContain('class="home-crawl"');
     expect(en.inner).not.toContain('class="home-hero"');
@@ -77,6 +79,10 @@ describe("sketch home first paint", () => {
     expect(criticalCss).toContain("font-size: 0.78rem");
     expect(criticalCss).toMatch(/\.hx-display\s*\{[^}]*margin:\s*0;/);
     expect(criticalCss).toContain(".hx-skip");
+    expect(criticalCss).toContain(".site-nav__button");
+    expect(criticalCss).toContain("appearance: none");
+    expect(criticalCss).toContain(".site-nav__chevron");
+    expect(criticalCss).toContain(".site-nav__button:focus-visible");
     expect(criticalCss).toContain("overflow: visible");
     expect(criticalCss).toContain("html.bizuply-home .app-scroll-area");
     expect(criticalCss).not.toMatch(/(?:^|\n)\.app-scroll-area\s*,/);
