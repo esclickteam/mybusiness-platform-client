@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   ANALYTICS_NOTICE_VERSION,
@@ -9,14 +10,20 @@ import {
   contentVisitorKey,
   forgetContentVisitor,
   publicContentAnalyticsEnabled,
+  sendContentEvent,
 } from "./publicContentAnalytics.mjs";
+import { PUBLIC_CONTENT_ANALYTICS_RELEASED } from "./publicContentAnalyticsRelease.mjs";
 import { NOTICE_VERSION } from "./trackingConsent";
 
 describe("public content analytics", () => {
-  it("stays off unless the flag is exactly on", () => {
+  it("stays off when the vite flag is on and the release lock is held", () => {
+    const source = readFileSync("src/lib/publicContentAnalyticsRelease.mjs", "utf8");
+    expect(source).toMatch(/PUBLIC_CONTENT_ANALYTICS_RELEASED = false/);
+    expect(source).not.toMatch(/import\.meta|process\.env/);
+    expect(PUBLIC_CONTENT_ANALYTICS_RELEASED).toBe(false);
     expect(publicContentAnalyticsEnabled({ VITE_PUBLIC_CONTENT_ANALYTICS: "" })).toBe(false);
     expect(publicContentAnalyticsEnabled({})).toBe(false);
-    expect(publicContentAnalyticsEnabled({ VITE_PUBLIC_CONTENT_ANALYTICS: "1" })).toBe(true);
+    expect(publicContentAnalyticsEnabled({ VITE_PUBLIC_CONTENT_ANALYTICS: "1" })).toBe(false);
   });
 
   it("counts a guide and a resource path, and drops personal query strings", () => {
@@ -45,52 +52,33 @@ describe("public content analytics", () => {
     expect(consentGrantsAnalytics("v2:ad.an:2026-11-07")).toBe(true);
   });
 
-  it("does not create a visitor id without analytics consent, and deduplicates a view", () => {
+  it("does not send an event or create a visitor id while the release lock is held", () => {
     vi.stubEnv("VITE_PUBLIC_CONTENT_ANALYTICS", "1");
     const local = memoryStorage();
     const session = memoryStorage();
-    let jar = "";
+    let jar = "bizuply_tracking=v2:an:2026-11-07; bizuply_measure_hint=analytics";
     vi.stubGlobal("localStorage", local);
     vi.stubGlobal("sessionStorage", session);
-    vi.stubGlobal("navigator", { userAgent: "desktop", sendBeacon: undefined });
+    vi.stubGlobal("navigator", { userAgent: "desktop" });
     vi.stubGlobal("document", {
       get cookie() {
         return jar;
       },
+      set cookie(value: string) {
+        jar = value;
+      },
       referrer: "https://www.google.com/search?q=crm&email=person@example.com",
     });
-
-    expect(buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" })).toBeNull();
-    expect(local.data.size).toBe(0);
-
-    jar = "bizuply_tracking=all";
-    expect(buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" })).toBeNull();
-    jar = "bizuply_tracking=v2:ad:2026-11-07";
-    expect(buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" })).toBeNull();
-    expect(contentVisitorKey(false)).toBe("");
-
-    jar = "bizuply_tracking=v2:an:2026-11-07";
-    const first = buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm?email=person@example.com" });
-    expect(first).toBeNull();
-    const view = buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" });
-    expect(view?.consentProof).toBeUndefined();
-    expect(view).not.toHaveProperty("consent");
-    expect(view?.referrer).toBe("https://www.google.com/");
-    expect(view?.visitorKey).toMatch(/^[0-9a-f-]{36}$/i);
-    expect(JSON.stringify(view)).not.toMatch(/email|person@/);
-    expect(buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" })).toBeNull();
-
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     vi.stubGlobal("fetch", fetchMock);
-    forgetContentVisitor();
-    expect(contentVisitorKey(false)).toBe("");
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    const body = JSON.parse(String(fetchMock.mock.calls[0][1].body));
-    expect(body.purpose).toBe("withdraw_analytics");
-    expect(body.visitorKey).toBe(view?.visitorKey);
-    jar = "";
+
     expect(buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" })).toBeNull();
-    expect(contentVisitorKey(false)).toBe("");
+    sendContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" });
+    forgetContentVisitor();
+    expect(local.data.size).toBe(0);
+    expect(contentVisitorKey()).toBe("");
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(jar).not.toMatch(/bizuply_measure=/);
   });
 });
 

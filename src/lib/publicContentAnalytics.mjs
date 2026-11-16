@@ -1,7 +1,11 @@
 /**
  * First-party events for the public Bizuply site.
- * The flag defaults off. No event is built unless analytics consent is true.
+ * The Vite flag is not enough. The release lock in code must also be open.
+ * Visitor ids are minted by the server inside an HttpOnly cookie. This module
+ * does not create one, and it does not send one.
  */
+
+import { publicContentAnalyticsReleased } from "./publicContentAnalyticsRelease.mjs";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const ANALYTICS_NOTICE_VERSION = "2026-11-07";
@@ -17,7 +21,8 @@ const FILES = new Set([
 const PRODUCTS = new Set(["crm", "automations", "appointments", "website-builder", "platform", "whatsapp-api"]);
 
 export function publicContentAnalyticsEnabled(env = import.meta.env) {
-  return String(env?.VITE_PUBLIC_CONTENT_ANALYTICS || "") === "1";
+  return publicContentAnalyticsReleased()
+    && String(env?.VITE_PUBLIC_CONTENT_ANALYTICS || "") === "1";
 }
 
 export function consentGrantsAnalytics(proof) {
@@ -37,35 +42,6 @@ function referrerForServer() {
   } catch {
     return "";
   }
-}
-
-function consentProof() {
-  if (typeof document === "undefined") return "";
-  const values = String(document.cookie || "")
-    .split(";")
-    .map((part) => part.trim())
-    .filter((part) => part.startsWith("bizuply_tracking="))
-    .map((part) => {
-      const raw = part.slice("bizuply_tracking=".length);
-      try {
-        return decodeURIComponent(raw);
-      } catch {
-        return raw;
-      }
-    });
-  return values.length ? values[values.length - 1] : "";
-}
-
-function uuid() {
-  const cryptoApi = globalThis.crypto;
-  if (cryptoApi?.randomUUID) return cryptoApi.randomUUID();
-  if (!cryptoApi?.getRandomValues) return "";
-  const bytes = new Uint8Array(16);
-  cryptoApi.getRandomValues(bytes);
-  bytes[6] = (bytes[6] & 0x0f) | 0x40;
-  bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  const hex = [...bytes].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
 export function cleanContentPath(value) {
@@ -135,21 +111,9 @@ function storageRemove(store, key) {
   }
 }
 
-export function contentVisitorKey(create = false) {
+export function contentVisitorKey() {
   const existing = storageGet(localStorage, VISITOR_KEY);
-  if (UUID.test(existing)) return existing;
-  if (!create) return "";
-  const next = uuid();
-  storageSet(localStorage, VISITOR_KEY, next);
-  return next;
-}
-
-export function contentSessionKey() {
-  const existing = storageGet(sessionStorage, SESSION_KEY);
-  if (UUID.test(existing)) return existing;
-  const next = uuid();
-  storageSet(sessionStorage, SESSION_KEY, next);
-  return next;
+  return UUID.test(existing) ? existing : "";
 }
 
 export function rememberContentPath(path) {
@@ -182,20 +146,21 @@ function deduped(payload) {
   return false;
 }
 
+function measurementHint() {
+  if (typeof document === "undefined") return false;
+  return String(document.cookie || "")
+    .split(";")
+    .some((part) => part.trim() === "bizuply_measure_hint=analytics");
+}
+
 export function buildContentEvent(input) {
   if (!publicContentAnalyticsEnabled()) return null;
-  const proof = consentProof();
-  if (!consentGrantsAnalytics(proof)) return null;
+  if (!measurementHint()) return null;
   const path = cleanContentPath(input.path);
   if (!path) return null;
-  const visitorKey = contentVisitorKey(true);
-  const sessionKey = contentSessionKey();
-  if (!UUID.test(visitorKey) || !UUID.test(sessionKey)) return null;
   const payload = {
     event: input.event,
     path,
-    visitorKey,
-    sessionKey,
     targetPath: input.targetPath ? cleanContentPath(input.targetPath) : "",
     fileName: input.fileName || "",
     calculatorId: input.calculatorId || "",
@@ -212,7 +177,10 @@ export function sendContentEvent(input) {
   if (payload.event === "resource_view" || payload.event === "guide_view") rememberContentPath(payload.path);
   fetch(`${apiBase()}/public-analytics/events`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "X-Bizuply-Measure": "1",
+    },
     body: JSON.stringify(payload),
     keepalive: true,
     credentials: "include",
@@ -220,14 +188,18 @@ export function sendContentEvent(input) {
 }
 
 export function forgetContentVisitor() {
-  const visitorKey = contentVisitorKey(false);
   clearContentIdentity();
-  if (!visitorKey) return;
-  const body = JSON.stringify({ visitorKey, purpose: "withdraw_analytics" });
-  fetch(`${apiBase()}/public-analytics/forget`, {
+  if (!publicContentAnalyticsReleased()) return;
+  fetch(`${apiBase()}/public-analytics/consent`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body,
+    headers: {
+      "Content-Type": "application/json",
+      "X-Bizuply-Measure": "1",
+    },
+    body: JSON.stringify({
+      decision: "withdraw_analytics",
+      noticeVersion: ANALYTICS_NOTICE_VERSION,
+    }),
     keepalive: true,
     credentials: "include",
   }).catch(() => {});

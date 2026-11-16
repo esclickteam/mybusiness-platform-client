@@ -158,6 +158,7 @@ export function writeAdvertisementConsent(advertisement: boolean): boolean {
 
 export function writeMeasurementConsent(choice: { advertisement: boolean; analytics: boolean }): boolean {
   if (typeof document === "undefined") return false;
+  if (!publicContentAnalyticsEnabled()) return writeAdvertisementConsent(choice.advertisement);
   const value = consentCookieValue(choice);
   const maxAge = 180 * 24 * 60 * 60;
   const domain = cookieDomain();

@@ -134,11 +134,12 @@ describe("tracking consent", () => {
     });
     vi.stubGlobal("window", { location: { hostname: "localhost" }, dispatchEvent: () => true });
     expect(writeMeasurementConsent({ advertisement: false, analytics: true })).toBe(true);
-    expect(jar).toContain("bizuply_tracking=v2:an:2026-11-07");
+    expect(jar).toContain("bizuply_tracking=v2:none:2026-11-07");
+    expect(jar).not.toContain(":an:");
     expect(writeMeasurementConsent({ advertisement: true, analytics: true })).toBe(true);
-    expect(jar).toContain("bizuply_tracking=v2:ad.an:2026-11-07");
+    expect(jar).toContain("bizuply_tracking=v2:ad:2026-11-07");
     expect(readConsent().advertisement).toBe(true);
-    expect(readConsent().analytics).toBe(true);
+    expect(readConsent().analytics).toBe(false);
   });
 
   it("does not promote an older advertising choice into analytics consent", () => {
