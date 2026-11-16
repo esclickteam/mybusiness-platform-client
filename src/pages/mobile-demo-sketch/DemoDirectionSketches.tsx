@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactElement } from "react";
 import { Helmet } from "react-helmet-async";
+import { PRODUCT_SCREENS } from "./DemoUxSketches";
 import "./demoDirectionSketches.css";
 
 type Shot = {
@@ -9,6 +10,7 @@ type Shot = {
   src: string;
   width: number;
   height: number;
+  Screen?: () => ReactElement;
 };
 
 const screen = (file: string) => new URL(`./screens/${file}`, import.meta.url).href;
@@ -23,7 +25,18 @@ const FLOW: Shot[] = [
   { key: "site", title: "בניית אתר", line: "תבנית Spalcio", src: screen("site.png"), width: 360, height: 490 },
 ];
 
+const LIVE: Shot[] = PRODUCT_SCREENS.map((item) => ({
+  key: item.key,
+  title: item.title,
+  line: "",
+  src: "",
+  width: 260,
+  height: 220,
+  Screen: item.Screen,
+}));
+
 function Window({ shot, index }: { shot: Shot; index: number }) {
+  const Screen = shot.Screen;
   return (
     <article className="dd-window" dir="rtl" style={{ ["--i" as string]: index }}>
       <header>
@@ -35,14 +48,18 @@ function Window({ shot, index }: { shot: Shot; index: number }) {
         <strong>{shot.title}</strong>
         <em>{shot.line}</em>
       </header>
-      <img
-        src={shot.src}
-        alt=""
-        width={shot.width}
-        height={shot.height}
-        loading="eager"
-        decoding="async"
-      />
+      {Screen ? (
+        <Screen />
+      ) : (
+        <img
+          src={shot.src}
+          alt=""
+          width={shot.width}
+          height={shot.height}
+          loading="eager"
+          decoding="async"
+        />
+      )}
     </article>
   );
 }
@@ -193,7 +210,7 @@ export function MobileProductRow() {
   const [paused, setPaused] = useState(false);
   return (
     <div className="dd-stage dd-home">
-      <HorizontalShowcase shots={FLOW} paused={paused} />
+      <HorizontalShowcase shots={LIVE} paused={paused} />
       <button
         type="button"
         className="dd-pause"

@@ -175,6 +175,16 @@ function SiteScreen() {
   );
 }
 
+export const PRODUCT_SCREENS: { key: string; title: string; Screen: () => ReactElement }[] = [
+  { key: "dash", title: "לוח בקרה", Screen: DashboardScreen },
+  { key: "crm-a", title: "CRM · צינור", Screen: CrmPipelineScreen },
+  { key: "crm-b", title: "CRM · כרטיס", Screen: CrmLeadScreen },
+  { key: "wa", title: "WhatsApp", Screen: WhatsAppScreen },
+  { key: "auto", title: "אוטומציות", Screen: AutomationScreen },
+  { key: "meta", title: "קמפיינים", Screen: MetaScreen },
+  { key: "site", title: "בניית אתרים", Screen: SiteScreen },
+];
+
 const SKETCHES: Sketch[] = [
   {
     id: "dash",

@@ -19,7 +19,8 @@ describe("sketch home first paint", () => {
     expect(en.inner).not.toContain("Claire Bennett");
     expect(en.inner).toContain('class="ht-theater"');
     expect(en.inner).toContain('class="hx-mrow"');
-    expect(en.inner).toContain("/demo-direction/dash.png");
+    expect(en.inner).toContain('class="hx-mrow-card"');
+    expect(en.inner).not.toContain("/demo-direction/dash.png");
     for (const [, label] of HX_HERO_COPY.en.processSteps) {
       expect(en.inner).toContain(`<span class="ht-tab-label">${label.replace(/&/g, "&amp;")}</span>`);
     }
