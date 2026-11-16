@@ -48,30 +48,40 @@ function DashboardScreen() {
   );
 }
 
-function CrmScreen() {
-  const columns = [
-    { name: "חדש", tone: "new", cards: [["תמר", "₪4.8K", "Meta"], ["יואב", "₪2.1K", "אתר"]] },
-    { name: "בטיפול", tone: "work", cards: [["דניאל", "₪6.2K", "WhatsApp"], ["מיכל", "₪3.4K", "Meta"]] },
-    { name: "פגישה", tone: "meet", cards: [["נועה", "₪8.9K", "שיחה"], ["שירה", "₪5.4K", "Meta"]] },
-    { name: "נסגר", tone: "won", cards: [["רועי", "₪5.1K", "Meta"], ["יעל", "₪7.4K", "WhatsApp"]] },
+function CrmPipelineScreen() {
+  const stages = [
+    { name: "חדש", lead: "תמר לוי", value: "₪4,800" },
+    { name: "בטיפול", lead: "דניאל כהן", value: "₪6,200" },
+    { name: "פגישה", lead: "נועה ברק", value: "₪8,900" },
   ];
   return (
-    <Board className="ux2-crm">
-      <div className="ux2-pipe-top">
-        <b>₪248K בצנרת</b>
-        <span>28 עסקאות</span>
-        <span>9 השבוע</span>
-      </div>
-      <div className="ux2-cols">
-        {columns.map((column) => (
-          <section key={column.name} className={`tone-${column.tone}`}>
-            <header><b>{column.name}</b><em>{column.cards.length}</em></header>
-            {column.cards.map(([name, value, source]) => (
-              <p key={name}><b>{name}</b><span dir="ltr">{value}</span><small>{source}</small></p>
-            ))}
-          </section>
-        ))}
-      </div>
+    <Board className="ux2-crm-a">
+      <p className="ux2-crm-metric"><b dir="ltr">₪86K</b><span>בצנרת</span></p>
+      {stages.map((stage) => (
+        <p key={stage.name}>
+          <em>{stage.name}</em>
+          <b>{stage.lead}</b>
+          <span dir="ltr">{stage.value}</span>
+        </p>
+      ))}
+    </Board>
+  );
+}
+
+function CrmLeadScreen() {
+  return (
+    <Board className="ux2-crm-b">
+      <ol>
+        <li>חדש</li>
+        <li className="is-on">בטיפול</li>
+        <li>פגישה</li>
+      </ol>
+      <article>
+        <header><b>תמר לוי</b><em>בטיפול</em></header>
+        <p>מקור · Meta</p>
+        <strong dir="ltr">₪4,800</strong>
+        <footer><span>הפעולה הבאה</span><b>שיחת WhatsApp</b></footer>
+      </article>
     </Board>
   );
 }
@@ -173,10 +183,16 @@ const SKETCHES: Sketch[] = [
     Screen: DashboardScreen,
   },
   {
-    id: "crm",
-    title: "CRM",
-    change: "צינור של ארבעה שלבים, עם שווי עסקה ומקור בכל כרטיס, במקום רשימת שמות.",
-    Screen: CrmScreen,
+    id: "crm-a",
+    title: "CRM · צינור",
+    change: "חלופה A. שלושה שלבים, כרטיס ליד אחד בכל שלב, ומדד אחד: הסכום בצנרת.",
+    Screen: CrmPipelineScreen,
+  },
+  {
+    id: "crm-b",
+    title: "CRM · כרטיס",
+    change: "חלופה B. ליד אחד בולט עם סטטוס, שווי והפעולה הבאה, ומעליו שלבי המכירה.",
+    Screen: CrmLeadScreen,
   },
   {
     id: "wa",
@@ -346,8 +362,8 @@ export default function DemoUxSketches() {
       </Helmet>
       <header className="ux2-intro">
         <p>BizUply</p>
-        <h1>שש סקיצות בגודל חלון הקרוסלה</h1>
-        <p>כל מסך מצויר לגודל שבו הוא יופיע במובייל, בלי הקטנה. האנימציה הקיימת לא השתנתה, והעמוד החי לא.</p>
+        <h1>שתי חלופות ל־CRM</h1>
+        <p>חמש הסקיצות שאושרו נשארו כמו שהן. ל־CRM יש שתי חלופות בתוך אותה קרוסלה: צינור נקי, או כרטיס לקוח מרכזי.</p>
       </header>
 
       <section className="ux2-stage" aria-label="תצוגה בתוך הקרוסלה">
