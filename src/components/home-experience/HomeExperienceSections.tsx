@@ -1,11 +1,12 @@
 import { Fragment, useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import MobileLeadCard from "./MobileLeadCard";
+import { MobileDemoRecording } from "../../pages/mobile-demo-sketch/MobileDemoSketch";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import CustomerCommandCenter from "./CustomerCommandCenter";
 import WhatsAppOperations from "./WhatsAppOperations";
@@ -233,6 +234,8 @@ function useNarrowHero() {
 
 function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
   const { cine, language } = useCopy();
+  const { pathname } = useLocation();
+  const homePreview = /(?:^|\/)home-preview\/?$/.test(pathname);
   const hero = cine.hero;
   const lang = language.startsWith("he") ? "he" : "en";
   const narrow = useNarrowHero();
@@ -260,7 +263,7 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
       <div className="hx-hero-stage" id="product-theater">
         <div className="hx-hero-stage-inner">
           {narrow ? (
-            <MobileLeadCard language={language} />
+            homePreview ? <MobileDemoRecording /> : <MobileLeadCard language={language} />
           ) : (
             <ProductTheater
               desktop={filmFor(`${lang}-desktop` as FilmKey)}

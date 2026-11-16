@@ -311,13 +311,30 @@ function pinnedTime() {
   return Math.min(MOBILE_DEMO_DURATION - 0.05, Math.max(0, value));
 }
 
+const RECORDING_SRC = "/recordings/bizuply-mobile-demo.mp4";
+
+/** Cuts in the real recording, used only to light the matching sketch icon. */
+const RECORDING_RAIL: { until: number; rail: (typeof MOBILE_DEMO_RAIL)[number]["key"] }[] = [
+  { until: 1.6, rail: "dashboard" },
+  { until: 6.3, rail: "crm" },
+  { until: 8.8, rail: "whatsapp" },
+  { until: 9.9, rail: "crm" },
+  { until: Number.POSITIVE_INFINITY, rail: "automations" },
+];
+
+function railAt(time: number) {
+  return RECORDING_RAIL.find((item) => time < item.until)?.rail || "automations";
+}
+
 function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boolean }) {
   const reduced = useReducedMotion();
   const rootRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [pinned] = useState(pinnedTime);
   const [manual, setManual] = useState<"play" | "pause" | null>(null);
   const [inView, setInView] = useState(false);
-  const [time, setTime] = useState(() => pinned ?? (poster ? 14.9 : 0));
+  const [time, setTime] = useState(() => pinned ?? 0);
+  const [duration, setDuration] = useState(MOBILE_DEMO_DURATION);
   const [muted, setMuted] = useState(true);
   const [full, setFull] = useState(false);
   const progressId = useId();
@@ -338,18 +355,17 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
   }, []);
 
   useEffect(() => {
-    if (!playing) return undefined;
-    let frame = 0;
-    let last = performance.now();
-    const tick = (now: number) => {
-      const delta = Math.min(0.064, (now - last) / 1000);
-      last = now;
-      setTime((value) => (value + delta) % MOBILE_DEMO_DURATION);
-      frame = requestAnimationFrame(tick);
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [playing]);
+    const node = videoRef.current;
+    if (!node) return undefined;
+    node.muted = muted;
+    if (playing) {
+      const pending = node.play();
+      if (pending) pending.catch(() => setManual("pause"));
+    } else {
+      node.pause();
+    }
+    return undefined;
+  }, [playing, muted]);
 
   useEffect(() => {
     const onChange = () => setFull(document.fullscreenElement === rootRef.current);
@@ -357,11 +373,9 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
     return () => document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
-  const shownTime = reduced && !playing && time === 0 ? MOBILE_DEMO_DURATION - 0.05 : time;
-  const { scene, local } = sceneAt(shownTime);
-  const active = scene.rail;
-  const motion = playing && !reduced;
-  const percent = (shownTime / MOBILE_DEMO_DURATION) * 100;
+  const shownTime = time;
+  const active = railAt(shownTime);
+  const percent = duration > 0 ? (shownTime / duration) * 100 : 0;
 
   async function toggleFull() {
     const node = rootRef.current;
@@ -375,7 +389,7 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
   }
 
   return (
-    <div className="mdsk-demo" ref={rootRef} data-scene={scene.id} data-playing={playing ? "true" : "false"}>
+    <div className="mdsk-demo" ref={rootRef} data-playing={playing ? "true" : "false"}>
       <div className="mdsk-window">
         <div className="mdsk-chrome">
           <span className="mdsk-dots" aria-hidden="true"><i /><i /><i /></span>
@@ -404,8 +418,23 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
               );
             })}
           </nav>
-          <div className="mdsk-main" dir={he ? "rtl" : "ltr"}>
-            <SceneView key={scene.id} scene={scene.id} local={motion || shownTime > 0 ? local : 1} copy={copy} motion={motion} />
+          <div className="mdsk-main is-film" dir={he ? "rtl" : "ltr"}>
+            <div className="mdsk-film">
+              <video
+                ref={videoRef}
+                src={RECORDING_SRC}
+                playsInline
+                preload="auto"
+                muted={muted}
+                onLoadedMetadata={(event) => {
+                  const node = event.currentTarget;
+                  if (Number.isFinite(node.duration) && node.duration > 0) setDuration(node.duration);
+                  if (pinned != null) node.currentTime = Math.min(pinned, Math.max(0, node.duration - 0.05));
+                }}
+                onTimeUpdate={(event) => setTime(event.currentTarget.currentTime || 0)}
+                onEnded={() => setManual("pause")}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -417,20 +446,22 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
         >
           {playing ? <Pause size={16} /> : <Play size={16} />}
         </button>
-        <span className="mdsk-time">{formatClock(shownTime)} / {formatClock(MOBILE_DEMO_DURATION)}</span>
+        <span className="mdsk-time">{formatClock(shownTime)} / {formatClock(duration)}</span>
         <input
           id={progressId}
           className="mdsk-range"
           type="range"
           min={0}
-          max={MOBILE_DEMO_DURATION}
+          max={duration}
           step={0.1}
-          value={Number(shownTime.toFixed(1))}
+          value={Math.min(duration, shownTime)}
           aria-label={copy.progress}
           style={{ ["--p" as string]: `${percent}%` }}
           onChange={(event) => {
+            const next = Number(event.target.value);
             setManual("pause");
-            setTime(Number(event.target.value));
+            setTime(next);
+            if (videoRef.current) videoRef.current.currentTime = next;
           }}
         />
         <button
@@ -446,6 +477,17 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
           {full ? <Minimize size={16} /> : <Maximize size={16} />}
         </button>
       </div>
+    </div>
+  );
+}
+
+export function MobileDemoRecording() {
+  const { i18n } = useTranslation();
+  const he = (i18n.language || "he").toLowerCase().startsWith("he");
+  const copy = he ? COPY.he : COPY.en;
+  return (
+    <div className="mdsk-embed" dir={he ? "rtl" : "ltr"} lang={he ? "he" : "en"}>
+      <DemoPlayer copy={copy} he={he} poster={false} />
     </div>
   );
 }

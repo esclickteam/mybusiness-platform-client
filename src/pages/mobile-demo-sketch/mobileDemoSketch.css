@@ -272,6 +272,36 @@
   background: #f4f1fa;
 }
 
+.mdsk-embed {
+  width: 100%;
+  max-width: 430px;
+  margin-inline: auto;
+  overflow-x: hidden;
+}
+
+.mdsk-main.is-film {
+  position: relative;
+  padding: 0;
+}
+
+.mdsk-film {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #f7f8fc;
+}
+
+.mdsk-film video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: calc(100% * 390 / 318);
+  height: auto;
+  max-width: none;
+  aspect-ratio: 390 / 844;
+}
+
 .mdsk-scene {
   display: flex;
   flex: 1;
