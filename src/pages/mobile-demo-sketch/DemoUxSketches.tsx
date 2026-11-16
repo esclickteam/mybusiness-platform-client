@@ -1,126 +1,167 @@
-import { useEffect, useRef, useState, type ReactElement } from "react";
+import { useEffect, useId, useRef, useState, type PointerEvent, type ReactElement, type ReactNode, type RefObject, type TransitionEvent } from "react";
 import { Helmet } from "react-helmet-async";
 import "./demoUxSketches.css";
 
 type Sketch = {
   id: string;
   title: string;
-  line: string;
   change: string;
   Screen: () => ReactElement;
 };
 
+function Board({ className, children }: { className: string; children: ReactNode }) {
+  return <div className={`ux2-board ${className}`}>{children}</div>;
+}
+
 function DashboardScreen() {
-  const bars = [8, 12, 9, 15, 11, 18, 13];
+  const raw = useId().replace(/:/g, "");
   return (
-    <div className="ux-screen">
-      <div className="ux-metrics">
-        <article><span>לידים חדשים</span><strong>13</strong><em>השבוע</em></article>
-        <article><span>פגישות</span><strong>4</strong><em>קרובות</em></article>
-        <article><span>WhatsApp</span><strong>28</strong><em>נשלחו</em></article>
-        <article><span>המרה</span><strong>18%</strong><em>מליד לפגישה</em></article>
+    <Board className="ux2-dash">
+      <div className="ux2-kpis">
+        <p><b dir="ltr">128</b><span>לידים</span><em dir="ltr">+18%</em></p>
+        <p><b dir="ltr">41%</b><span>המרה</span><em dir="ltr">+6%</em></p>
+        <p><b dir="ltr">₪186K</b><span>הכנסה</span><em dir="ltr">+12%</em></p>
+        <p><b dir="ltr">23</b><span>משימות</span><em>פתוחות</em></p>
       </div>
-      <div className="ux-panel">
-        <p>לידים לפי יום</p>
-        <div className="ux-bars" aria-hidden="true">
-          {bars.map((value, index) => <i key={index} style={{ height: `${value * 4}px` }} />)}
-        </div>
+      <div className="ux2-chart">
+        <svg viewBox="0 0 240 72" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id={`d${raw}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#7c3aed" stopOpacity="0.38" />
+              <stop offset="1" stopColor="#7c3aed" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <path d="M0 52 C28 50 38 30 62 32 S104 58 132 28 S176 10 210 16 S232 22 240 14 V72 H0 Z" fill={`url(#d${raw})`} />
+          <path d="M0 52 C28 50 38 30 62 32 S104 58 132 28 S176 10 210 16 S232 22 240 14" fill="none" stroke="#6d28d9" strokeWidth="2.4" />
+          <circle cx="210" cy="16" r="3.2" fill="#fff" stroke="#6d28d9" strokeWidth="2" />
+        </svg>
+        <ol>
+          <li>א׳</li><li>ב׳</li><li>ג׳</li><li>ד׳</li><li>ה׳</li><li>ו׳</li><li>ש׳</li>
+        </ol>
       </div>
-      <ul className="ux-feed">
-        <li><b>תמר לוי</b><span>ליד חדש מ־Meta</span></li>
-        <li><b>הילה גולן</b><span>פגישה מחר ב־11:00</span></li>
+      <ul className="ux2-feed">
+        <li><i>ת</i><b>תמר לוי</b><span>ליד חדש מ־Meta</span><em>עכשיו</em></li>
+        <li><i>ד</i><b>דניאל כהן</b><span>פגישה נקבעה</span><em>14:30</em></li>
+        <li><i>נ</i><b>נועה ברק</b><span>עסקה נסגרה</span><em>אתמול</em></li>
       </ul>
-    </div>
+    </Board>
   );
 }
 
 function CrmScreen() {
+  const columns = [
+    { name: "חדש", tone: "new", cards: [["תמר", "₪4.8K", "Meta"], ["יואב", "₪2.1K", "אתר"]] },
+    { name: "בטיפול", tone: "work", cards: [["דניאל", "₪6.2K", "WhatsApp"], ["מיכל", "₪3.4K", "Meta"]] },
+    { name: "פגישה", tone: "meet", cards: [["נועה", "₪8.9K", "שיחה"], ["שירה", "₪5.4K", "Meta"]] },
+    { name: "נסגר", tone: "won", cards: [["רועי", "₪5.1K", "Meta"], ["יעל", "₪7.4K", "WhatsApp"]] },
+  ];
   return (
-    <div className="ux-screen">
-      <div className="ux-pills">
-        <span>חדש 6</span>
-        <span>בטיפול 4</span>
-        <span>פגישה 2</span>
+    <Board className="ux2-crm">
+      <div className="ux2-pipe-top">
+        <b>₪248K בצנרת</b>
+        <span>28 עסקאות</span>
+        <span>9 השבוע</span>
       </div>
-      <article className="ux-lead is-open">
-        <header><strong>תמר לוי</strong><em>חדש</em></header>
-        <p>052-5552266</p>
-        <p>tamar.levi@example.com</p>
-        <footer><span>Meta</span><span>ליד</span></footer>
-      </article>
-      <article className="ux-lead">
-        <header><strong>הילה גולן</strong><em>בטיפול</em></header>
-        <p>050-5550111 · שיחת היכרות</p>
-      </article>
-    </div>
+      <div className="ux2-cols">
+        {columns.map((column) => (
+          <section key={column.name} className={`tone-${column.tone}`}>
+            <header><b>{column.name}</b><em>{column.cards.length}</em></header>
+            {column.cards.map(([name, value, source]) => (
+              <p key={name}><b>{name}</b><span dir="ltr">{value}</span><small>{source}</small></p>
+            ))}
+          </section>
+        ))}
+      </div>
+    </Board>
   );
 }
 
 function WhatsAppScreen() {
   return (
-    <div className="ux-screen ux-chat">
-      <header className="ux-chat-top">
-        <strong>תמר לוי</strong>
-        <span>052-5552266</span>
-      </header>
-      <div className="ux-bubble is-out">שלום תמר, ראינו את הפנייה מ־Meta. נוח לך מחר ב־10:30?</div>
-      <div className="ux-bubble">כן, מתאים. תודה.</div>
-      <p className="ux-sent">נשלחה · 21:29</p>
-      <div className="ux-reply">תשובה ללקוח</div>
-    </div>
+    <Board className="ux2-wa">
+      <aside>
+        <strong>שיחות</strong>
+        <p className="is-on"><i>ת</i><b>תמר לוי</b><span>10:30 מושלם</span><em>2</em></p>
+        <p><i>ד</i><b>דניאל כהן</b><span>קיבלתי את ההצעה</span></p>
+        <p><i>נ</i><b>נועה ברק</b><span>תודה, נסגר</span></p>
+      </aside>
+      <section>
+        <header><i>ת</i><b>תמר לוי</b><span>מחוברת · Meta</span></header>
+        <div className="ux2-thread">
+          <p>יש תור השבוע?</p>
+          <p className="out">מחר ב־10:30.</p>
+          <p>מתאים לי</p>
+          <p className="out">קבעתי, אישור נשלח.</p>
+        </div>
+        <div className="ux2-compose"><span>הודעה</span><b>↑</b></div>
+      </section>
+    </Board>
   );
 }
 
 function AutomationScreen() {
   return (
-    <div className="ux-screen ux-flow">
-      <article><small>טריגר</small><strong>ליד חדש</strong><span>נכנס ל־CRM</span></article>
-      <i />
-      <article><small>תנאי</small><strong>המקור הוא Meta</strong><span>רק לידים מהקמפיין</span></article>
-      <i />
-      <article><small>פעולה</small><strong>משימת מעקב</strong><span>לנציג, תוך 24 שעות</span></article>
-      <i />
-      <article><small>פעולה</small><strong>תבנית WhatsApp</strong><span>הודעת פתיחה ללקוח</span></article>
-    </div>
+    <Board className="ux2-auto">
+      <div className="ux2-auto-top">
+        <b>ליד ממודעה</b>
+        <em>פעיל</em>
+        <span>128 היום · 96%</span>
+      </div>
+      <div className="ux2-flow" dir="ltr">
+        <p className="n-task"><small>פעולה</small><b>משימה</b></p>
+        <p className="n-if"><small>תנאי</small><b dir="ltr">₪2,000+</b></p>
+        <p className="n-trigger"><small>טריגר</small><b>ליד חדש</b></p>
+        <p className="n-wa"><small>פעולה</small><b>WhatsApp</b></p>
+      </div>
+    </Board>
   );
 }
 
 function MetaScreen() {
-  const bars = [6, 9, 8, 12, 10, 14, 11];
+  const raw = useId().replace(/:/g, "");
   return (
-    <div className="ux-screen">
-      <header className="ux-campaign"><strong>Facebook leads</strong><em>פעיל</em></header>
-      <div className="ux-metrics">
-        <article><span>הוצאה</span><strong>₪2,171</strong></article>
-        <article><span>חשיפות</span><strong>18,211</strong></article>
-        <article><span>הקלקות</span><strong>11,291</strong></article>
-        <article><span>CTR</span><strong>2.4%</strong></article>
+    <Board className="ux2-meta">
+      <div className="ux2-meta-top">
+        <b>לידים · תל אביב</b>
+        <em>פעיל</em>
       </div>
-      <div className="ux-panel">
-        <p>לידים מהקמפיין</p>
-        <div className="ux-bars" aria-hidden="true">
-          {bars.map((value, index) => <i key={index} style={{ height: `${value * 4}px` }} />)}
-        </div>
+      <div className="ux2-metrics">
+        <p><b dir="ltr">₪4,820</b><span>הוצאה</span></p>
+        <p><b dir="ltr">186K</b><span>חשיפות</span></p>
+        <p><b dir="ltr">4.8%</b><span>CTR</span></p>
+        <p><b dir="ltr">312</b><span>לידים</span></p>
       </div>
-    </div>
+      <svg viewBox="0 0 244 70" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <linearGradient id={`m${raw}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="#2563eb" stopOpacity="0.35" />
+            <stop offset="1" stopColor="#2563eb" stopOpacity="0" />
+          </linearGradient>
+        </defs>
+        {[18, 36, 54].map((y) => <line key={y} x1="0" y1={y} x2="244" y2={y} stroke="#e4e0f2" strokeWidth="1" />)}
+        <path d="M0 54 C30 50 46 40 70 38 S118 46 146 24 S190 8 244 16 V70 H0 Z" fill={`url(#m${raw})`} />
+        <path d="M0 54 C30 50 46 40 70 38 S118 46 146 24 S190 8 244 16" fill="none" stroke="#2563eb" strokeWidth="2.4" />
+      </svg>
+      <ul>
+        <li><b>מודעת קוסמטיקה</b><span /><em dir="ltr">₪2,140</em></li>
+        <li><b>מודעת פגישת היכרות</b><span /><em dir="ltr">₪1,680</em></li>
+      </ul>
+    </Board>
   );
 }
 
 function SiteScreen() {
   return (
-    <div className="ux-screen">
-      <div className="ux-editor">
+    <Board className="ux2-site">
+      <div className="ux2-editor">
+        <b>Petaluxe</b>
         <span>עריכה</span>
         <span className="is-on">תצוגה</span>
-        <span>גלריה</span>
+        <span>פרסום</span>
       </div>
-      <article className="ux-site">
-        <p>סטודיו נועה</p>
-        <strong>חוויות מותאמות לעסק</strong>
-        <button type="button">קביעת פגישה</button>
-      </article>
-      <p className="ux-template">תבנית Spalcio · עמוד הבית</p>
-    </div>
+      <img src="/template-screenshots/petaluxe.webp" alt="תבנית האתר Petaluxe" />
+      <p>גלריה · 12</p>
+    </Board>
   );
 }
 
@@ -128,119 +169,247 @@ const SKETCHES: Sketch[] = [
   {
     id: "dash",
     title: "לוח בקרה",
-    line: "Business Dashboard",
-    change: "במקום כרטיסי מדד חתוכים, ארבעה מספרים ברורים, גרף לידים שבועי ושתי פעולות אחרונות. אלה נתונים שכבר מופיעים בלוח הבקרה.",
+    change: "ארבעה מדדים, גרף שבועי ושלוש פעולות אחרונות ממלאים את החלון. אין כרטיס יחיד עם שטח ריק.",
     Screen: DashboardScreen,
   },
   {
     id: "crm",
     title: "CRM",
-    line: "לידים ולקוחות",
-    change: "צינור קצר לפי סטטוס, וכרטיס ליד פתוח עם שם, טלפון, אימייל ומקור. בלי טבלה שנחתכת במובייל.",
+    change: "צינור של ארבעה שלבים, עם שווי עסקה ומקור בכל כרטיס, במקום רשימת שמות.",
     Screen: CrmScreen,
   },
   {
     id: "wa",
     title: "WhatsApp",
-    line: "שיחה פתוחה",
-    change: "השיחה עצמה במרכז: הודעה יוצאת, תשובת הלקוח, סטטוס שליחה ושדה תשובה. זה מסך תיבת הדואר, לא רשימת מספרים.",
+    change: "רשימת שיחות לצד שיחה פתוחה: כותרת לקוח, בועות ושורת מענה. זה ממשק, לא הודעה בודדת.",
     Screen: WhatsAppScreen,
   },
   {
     id: "auto",
-    title: "אוטומציה",
-    line: "טריגר, תנאי ופעולות",
-    change: "תהליך אחד קריא מלמעלה למטה: ליד חדש, תנאי לפי מקור Meta, משימת מעקב ותבנית WhatsApp. אלה צמתים שקיימים בעורך.",
+    title: "אוטומציות",
+    change: "תרשים על קנבס: טריגר, תנאי ושני ענפי פעולה מחוברים בקווים, לא ערימת קופסאות.",
     Screen: AutomationScreen,
   },
   {
     id: "meta",
     title: "קמפיינים",
-    line: "Meta Campaigns",
-    change: "קמפיין פעיל עם הוצאה, חשיפות, הקלקות ו־CTR, וגרף לידים. בלי טבלת עמודות שנחתכת.",
+    change: "קמפיין פעיל עם הוצאה, חשיפות, CTR, לידים וגרף מגמה. שתי מודעות סוגרות את החלון.",
     Screen: MetaScreen,
   },
   {
     id: "site",
-    title: "בניית אתר",
-    line: "Website Builder",
-    change: "תצוגת האתר המוכן לצד מצבי העריכה, התצוגה והגלריה. לא קטלוג תבניות מרוחק.",
+    title: "בניית אתרים",
+    change: "תבנית אמיתית מהמוצר, עם סרגל עריכה, תצוגה ופרסום. התמונה ממלאת את החלון.",
     Screen: SiteScreen,
   },
 ];
 
-function CarouselWindow({ sketch }: { sketch: Sketch }) {
-  const Screen = sketch.Screen;
-  const viewRef = useRef<HTMLDivElement>(null);
-  const scaleRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.64);
+function useCarouselMotion(
+  viewportRef: RefObject<HTMLDivElement | null>,
+  trackRef: RefObject<HTMLDivElement | null>,
+  count: number,
+  paused: boolean,
+) {
+  const drag = useRef({ x: 0, active: false });
+  const [index, setIndex] = useState(1);
+  const [animate, setAnimate] = useState(true);
+  const [dragX, setDragX] = useState(0);
+  const [metrics, setMetrics] = useState({ view: 0, widths: [] as number[] });
+  const [visible, setVisible] = useState(true);
+  const [reduced, setReduced] = useState(false);
+
   useEffect(() => {
-    const view = viewRef.current;
-    const scaled = scaleRef.current;
-    const screen = scaled?.querySelector<HTMLElement>(".ux-screen");
-    if (!view || !screen) return;
-    const apply = () => {
-      const next = Math.min(view.clientWidth / screen.offsetWidth, view.clientHeight / screen.offsetHeight);
-      setScale(Number.isFinite(next) && next > 0 ? next : 0.64);
-    };
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const apply = () => setReduced(media.matches);
     apply();
-    const observer = new ResizeObserver(apply);
-    observer.observe(screen);
-    observer.observe(view);
+    media.addEventListener("change", apply);
+    return () => media.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    const node = viewportRef.current;
+    if (!node) return;
+    const measure = () => {
+      const widths = [...node.querySelectorAll<HTMLElement>(".ux2-slide")].map((slide) => slide.offsetWidth);
+      setMetrics({ view: node.clientWidth, widths });
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
     return () => observer.disconnect();
-  }, [sketch.id]);
+  }, [count, viewportRef]);
+
+  useEffect(() => {
+    const node = viewportRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setVisible(entry.isIntersecting),
+      { threshold: 0.4 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [viewportRef]);
+
+  useEffect(() => {
+    if (paused || reduced || !visible || metrics.widths.length === 0) return;
+    const timer = window.setTimeout(() => {
+      setAnimate(true);
+      setIndex((value) => value + 1);
+    }, 1900);
+    return () => window.clearTimeout(timer);
+  }, [paused, reduced, visible, index, metrics.widths.length]);
+
+  function commit(next: number) {
+    drag.current.active = false;
+    setDragX(0);
+    setAnimate(true);
+    setIndex(next);
+  }
+
+  function onTransitionEnd(event: TransitionEvent<HTMLDivElement>) {
+    if (event.target !== trackRef.current || event.propertyName !== "transform") return;
+    if (index === count + 1) {
+      setAnimate(false);
+      setIndex(1);
+    } else if (index === 0) {
+      setAnimate(false);
+      setIndex(count);
+    }
+  }
+
+  function onPointerDown(event: PointerEvent<HTMLDivElement>) {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    drag.current = { x: event.clientX, active: true };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setAnimate(false);
+  }
+
+  function onPointerMove(event: PointerEvent<HTMLDivElement>) {
+    if (!drag.current.active) return;
+    setDragX(event.clientX - drag.current.x);
+  }
+
+  function onPointerUp(event: PointerEvent<HTMLDivElement>) {
+    if (!drag.current.active) return;
+    const dx = event.clientX - drag.current.x;
+    if (dx <= -42) commit(index + 1);
+    else if (dx >= 42) commit(index - 1);
+    else commit(index);
+  }
+
+  const center = metrics.widths.slice(0, index).reduce((sum, width) => sum + width, 0) + (metrics.widths[index] || 0) / 2;
+  const shift = metrics.widths.length === 0 ? 0 : metrics.view / 2 - center + dragX;
+
+  return {
+    index,
+    animate,
+    shift,
+    onTransitionEnd,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp,
+    jump(next: number) {
+      setAnimate(true);
+      setIndex(next);
+    },
+  };
+}
+
+function WindowFrame({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="ux-inset">
-      <article className="ux-window">
-        <header>
-          <span><i /><i /><i /></span>
-          <strong>{sketch.title}</strong>
-        </header>
-        <div className="ux-window-view" ref={viewRef}>
-          <div className="ux-window-scale" ref={scaleRef} style={{ transform: `translateX(-50%) scale(${scale})` }}>
-            <Screen />
-          </div>
-        </div>
-      </article>
-      <p>{sketch.title}</p>
-    </div>
+    <article className="ux2-window">
+      <header>
+        <span><i /><i /><i /></span>
+        <strong>{title}</strong>
+      </header>
+      {children}
+    </article>
   );
 }
 
 export default function DemoUxSketches() {
-  const [current, setCurrent] = useState(SKETCHES[0].id);
-  const sketch = SKETCHES.find((item) => item.id === current) || SKETCHES[0];
-  const Screen = sketch.Screen;
+  const [paused, setPaused] = useState(false);
+  const [selected, setSelected] = useState(SKETCHES[0].id);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const slides = [SKETCHES[SKETCHES.length - 1], ...SKETCHES, SKETCHES[0]];
+  const motion = useCarouselMotion(viewportRef, trackRef, SKETCHES.length, paused);
+  const active = SKETCHES[(motion.index - 1 + SKETCHES.length) % SKETCHES.length];
+  const chosen = SKETCHES.find((sketch) => sketch.id === selected) || SKETCHES[0];
+  const Chosen = chosen.Screen;
+
   return (
-    <main className="ux-page" lang="he" dir="rtl">
+    <main className="ux2-page" lang="he" dir="rtl">
       <Helmet>
-        <title>סקיצות UX למסכי ההדגמה | BizUply</title>
+        <title>סקיצות UX לחלונות ההדגמה | BizUply</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
-      <header className="ux-top">
-        <p className="ux-brand">BizUply</p>
-        <h1>שש סקיצות למסכי ההדגמה</h1>
-        <p className="ux-note">הצעה לתוכן שבתוך החלונות. ההדגמה האופקית באתר לא השתנתה.</p>
-        <div className="ux-switch" role="tablist" aria-label="בחירת מסך">
-          {SKETCHES.map((item) => (
-            <button key={item.id} type="button" role="tab" aria-selected={item.id === sketch.id} onClick={() => setCurrent(item.id)}>
-              {item.title}
-            </button>
-          ))}
-        </div>
+      <header className="ux2-intro">
+        <p>BizUply</p>
+        <h1>שש סקיצות בגודל חלון הקרוסלה</h1>
+        <p>כל מסך מצויר לגודל שבו הוא יופיע במובייל, בלי הקטנה. האנימציה הקיימת לא השתנתה, והעמוד החי לא.</p>
       </header>
-      <section className="ux-copy" aria-live="polite">
-        <p className="ux-kicker">{sketch.line}</p>
-        <h2>{sketch.title}</h2>
-        <p>{sketch.change}</p>
+
+      <section className="ux2-stage" aria-label="תצוגה בתוך הקרוסלה">
+        <div
+          className="ux2-viewport"
+          ref={viewportRef}
+          dir="ltr"
+          onPointerDown={motion.onPointerDown}
+          onPointerMove={motion.onPointerMove}
+          onPointerUp={motion.onPointerUp}
+          onPointerCancel={motion.onPointerUp}
+        >
+          <div
+            className="ux2-track"
+            ref={trackRef}
+            data-animate={motion.animate ? "true" : "false"}
+            onTransitionEnd={motion.onTransitionEnd}
+            style={{ transform: `translateX(${motion.shift}px)` }}
+          >
+            {slides.map((sketch, position) => {
+              const Screen = sketch.Screen;
+              return (
+                <div className={position === motion.index ? "ux2-slide is-active" : "ux2-slide"} key={`${sketch.id}-${position}`}>
+                  <WindowFrame title={sketch.title}>
+                    <Screen />
+                  </WindowFrame>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        <p className="ux2-caption">{active.title}</p>
+        <button type="button" aria-pressed={paused} onClick={() => setPaused((value) => !value)}>
+          {paused ? "הפעלה" : "השהיה"}
+        </button>
       </section>
-      <section className="ux-block" aria-label="המסך המלא">
-        <h3>המסך המלא</h3>
-        <Screen />
-      </section>
-      <section className="ux-block" aria-label="אותו מסך בתוך חלון הקרוסלה">
-        <h3>בתוך חלון הקרוסלה</h3>
-        <CarouselWindow sketch={sketch} />
+
+      <div className="ux2-tabs" role="tablist" aria-label="בחירת מסך">
+        {SKETCHES.map((sketch, position) => (
+          <button
+            key={sketch.id}
+            type="button"
+            role="tab"
+            aria-selected={selected === sketch.id}
+            onClick={() => {
+              setSelected(sketch.id);
+              motion.jump(position + 1);
+            }}
+          >
+            {sketch.title}
+          </button>
+        ))}
+      </div>
+
+      <section className="ux2-detail" aria-label={chosen.title}>
+        <div className="ux2-stage ux2-still">
+          <WindowFrame title={chosen.title}>
+            <Chosen />
+          </WindowFrame>
+        </div>
+        <h2>{chosen.title}</h2>
+        <p>{chosen.change}</p>
       </section>
     </main>
   );
