@@ -78,6 +78,7 @@ function homeStoryHtml(locale) {
 }
 
 const GLOBE = `<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>`;
+const CHEVRON = `<svg class="site-nav__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg>`;
 
 /** Logged-out marketing header. Same structure the React header paints, so hydration does not swap in a different bar. */
 export function renderMarketingHeader(locale) {
@@ -90,7 +91,7 @@ export function renderMarketingHeader(locale) {
   const nav = marketingNav(navLocale)
     .map((group) =>
       group.columns
-        ? `<span class="site-header__link site-nav__button">${escapeText(group.label)}</span>`
+        ? `<span class="site-nav__item"><button type="button" class="site-header__link site-nav__button" aria-expanded="false" aria-haspopup="true">${escapeText(group.label)}${CHEVRON}</button></span>`
         : `<a class="site-header__link" href="${escapeHtml(href(group.to))}">${escapeText(group.label)}</a>`,
     )
     .join("");
