@@ -9,6 +9,8 @@ describe("demo carousel copy", () => {
     expect(values.some((value) => hebrew.test(value))).toBe(false);
     expect(values).toContain("Dashboard");
     expect(values).toContain("Book a visit");
+    expect(values).toContain("Claire Bennett");
+    expect(values).not.toContain("Tamar Levi");
   });
 
   it("uses Hebrew when the site is Hebrew", () => {
