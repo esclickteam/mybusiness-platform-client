@@ -1,3 +1,5 @@
+import { publicContentAnalyticsEnabled } from "./publicContentAnalytics.mjs";
+
 export const TRACKING_COOKIE = "bizuply_tracking";
 export const NOTICE_VERSION = "2026-11-07";
 const LEGACY_NOTICE_VERSION = "2026-11-06";
@@ -6,7 +8,7 @@ export type TrackingChoice = "unknown" | "essential" | "all";
 
 export type ConsentPreferences = {
   necessary: true;
-  analytics: false;
+  analytics: boolean;
   advertisement: boolean;
   functionality: false;
   version: string;
@@ -70,13 +72,14 @@ export function parseConsentValue(value: string): ConsentPreferences {
   if (value.startsWith("v2:")) {
     const [body = "", version = NOTICE_VERSION] = value.slice(3).split(":");
     const tokens = body.split(".").filter(Boolean);
+    const decided = body === "none" || (tokens.length > 0 && tokens.every((token) => token === "ad" || token === "an"));
     return {
       necessary: true,
-      analytics: false,
+      analytics: version === NOTICE_VERSION && tokens.includes("an"),
       advertisement: tokens.includes("ad"),
       functionality: false,
       version,
-      decided: body === "ad" || body === "none",
+      decided,
     };
   }
   return { ...EMPTY };
@@ -96,8 +99,9 @@ export function marketingAllowed(cookie?: string): boolean {
   return readConsent(cookie).advertisement;
 }
 
-export function analyticsAllowed(): boolean {
-  return false;
+export function analyticsAllowed(cookie?: string): boolean {
+  if (!publicContentAnalyticsEnabled()) return false;
+  return readConsent(cookie).analytics;
 }
 
 function expireCookie(name: string): void {
@@ -131,13 +135,14 @@ export function stopMeasurement(): void {
   clearMeasurementCookies();
 }
 
-function consentCookieValue(advertisement: boolean): string {
-  return `v2:${advertisement ? "ad" : "none"}:${NOTICE_VERSION}`;
+function consentCookieValue(choice: { advertisement: boolean; analytics?: boolean }): string {
+  const tokens = [choice.advertisement ? "ad" : "", choice.analytics ? "an" : ""].filter(Boolean);
+  return `v2:${tokens.join(".") || "none"}:${NOTICE_VERSION}`;
 }
 
 export function writeAdvertisementConsent(advertisement: boolean): boolean {
   if (typeof document === "undefined") return false;
-  const value = consentCookieValue(advertisement);
+  const value = consentCookieValue({ advertisement });
   const maxAge = 180 * 24 * 60 * 60;
   const domain = cookieDomain();
   if (domain) document.cookie = `${TRACKING_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
@@ -148,6 +153,27 @@ export function writeAdvertisementConsent(advertisement: boolean): boolean {
   if (advertisement) browser.__bizuplyPixelStopped = false;
   else stopMeasurement();
   window.dispatchEvent(new CustomEvent("bizuply-tracking-consent", { detail: advertisement ? "all" : "essential" }));
+  return true;
+}
+
+export function writeMeasurementConsent(choice: { advertisement: boolean; analytics: boolean }): boolean {
+  if (typeof document === "undefined") return false;
+  if (!publicContentAnalyticsEnabled()) return writeAdvertisementConsent(choice.advertisement);
+  const value = consentCookieValue(choice);
+  const maxAge = 180 * 24 * 60 * 60;
+  const domain = cookieDomain();
+  if (domain) document.cookie = `${TRACKING_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
+  document.cookie = `${TRACKING_COOKIE}=${value}; Path=/; Max-Age=${maxAge}; SameSite=Lax${domain}`;
+  const saved = readConsent();
+  if (!saved.decided || saved.advertisement !== choice.advertisement || saved.analytics !== choice.analytics || saved.functionality) {
+    return false;
+  }
+  const browser = window as Window & { __bizuplyPixelStopped?: boolean };
+  if (choice.advertisement) browser.__bizuplyPixelStopped = false;
+  else stopMeasurement();
+  window.dispatchEvent(new CustomEvent("bizuply-tracking-consent", {
+    detail: { advertisement: choice.advertisement, analytics: choice.analytics },
+  }));
   return true;
 }
 

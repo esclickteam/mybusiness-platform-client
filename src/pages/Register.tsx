@@ -9,7 +9,8 @@ import { persistBillingCountry } from "../billing/billingMarkets";
 import { useBillingMarket } from "../billing/useBillingMarket";
 import SubscriptionTermsNotice from "../components/billing/SubscriptionTermsNotice";
 import { createConsentKey, storePrivacyConsent } from "../lib/privacyConsentClient";
-import { marketingAllowed, NOTICE_VERSION } from "../lib/trackingConsent";
+import { rememberedContentPath, sendContentEvent } from "../lib/publicContentAnalytics.mjs";
+import { analyticsAllowed, marketingAllowed, NOTICE_VERSION } from "../lib/trackingConsent";
 import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
 import SocialAuthButtons from "../components/auth/SocialAuthButtons";
@@ -265,6 +266,10 @@ export default function Register() {
         return;
       }
       if (marketingAllowed() && window.fbq) window.fbq("track", "InitiateCheckout");
+      const contentPath = rememberedContentPath();
+      if (analyticsAllowed() && contentPath) {
+        sendContentEvent({ event: "content_signup", path: contentPath });
+      }
       window.location.href = data.url;
     } catch (err) {
       const apiErr = err as { response?: { data?: { code?: string } } };

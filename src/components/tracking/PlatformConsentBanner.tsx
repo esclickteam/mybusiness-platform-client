@@ -2,7 +2,9 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from "re
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { readConsent, writeAdvertisementConsent } from "../../lib/trackingConsent";
+import { analyticsConsentCopy } from "../../lib/publicAnalyticsConsentCopy.mjs";
+import { publicContentAnalyticsEnabled } from "../../lib/publicContentAnalytics.mjs";
+import { readConsent, writeAdvertisementConsent, writeMeasurementConsent } from "../../lib/trackingConsent";
 
 declare global {
   interface Window {
@@ -92,11 +94,13 @@ export default function PlatformConsentBanner() {
   const [view, setView] = useState<"notice" | "manage">(() =>
     window.__bizuplyCookieView === "manage" || window.__bizuplyCookieManage ? "manage" : "notice",
   );
+  const measurement = publicContentAnalyticsEnabled();
   const [advertisement, setAdvertisement] = useState(() =>
     typeof window.__bizuplyCookieMarketing === "boolean"
       ? window.__bizuplyCookieMarketing
       : readConsent().advertisement,
   );
+  const [analytics, setAnalytics] = useState(() => measurement && readConsent().analytics);
   const [saveFailed, setSaveFailed] = useState(false);
 
   useLayoutEffect(() => {
@@ -107,6 +111,7 @@ export default function PlatformConsentBanner() {
   useEffect(() => {
     const reopen = () => {
       setAdvertisement(readConsent().advertisement);
+      setAnalytics(measurement && readConsent().analytics);
       setSaveFailed(false);
       setView("manage");
       setOpen(true);
@@ -117,6 +122,7 @@ export default function PlatformConsentBanner() {
 
   function leaveManage() {
     setAdvertisement(readConsent().advertisement);
+    setAnalytics(measurement && readConsent().analytics);
     setSaveFailed(false);
     if (readConsent().decided) setOpen(false);
     else setView("notice");
@@ -138,20 +144,24 @@ export default function PlatformConsentBanner() {
 
   if (!open || window.__BIZUPLY_PUBLIC_SITE__) return null;
 
-  function persist(next: boolean) {
-    const saved = writeAdvertisementConsent(next);
+  function persist(nextAdvertisement: boolean, nextAnalytics = false) {
+    const saved = measurement
+      ? writeMeasurementConsent({ advertisement: nextAdvertisement, analytics: nextAnalytics })
+      : writeAdvertisementConsent(nextAdvertisement);
     if (!saved) {
       setSaveFailed(true);
       setOpen(true);
       return;
     }
-    setAdvertisement(next);
+    setAdvertisement(nextAdvertisement);
+    setAnalytics(measurement && nextAnalytics);
     setSaveFailed(false);
     setView("notice");
     setOpen(false);
   }
 
-  const text = (key: string) => t(`trackingConsent.${key}`);
+  const proposed = measurement ? analyticsConsentCopy(i18n.language) : null;
+  const text = (key: string) => (proposed && key in proposed ? proposed[key as keyof typeof proposed] : t(`trackingConsent.${key}`));
   const headers: Row = {
     name: text("name"),
     provider: text("provider"),
@@ -203,10 +213,10 @@ export default function PlatformConsentBanner() {
             {saveFailed ? <p className="cookie-banner__error" role="alert">{text("saveFailed")}</p> : null}
           </div>
           <div className="cookie-banner__actions">
-            <button type="button" className="cookie-banner__primary" onClick={() => persist(true)}>
+            <button type="button" className="cookie-banner__primary" onClick={() => persist(true, measurement)}>
               {text("acceptAll")}
             </button>
-            <button type="button" className="cookie-banner__outline" onClick={() => persist(false)}>
+            <button type="button" className="cookie-banner__outline" onClick={() => persist(false, false)}>
               {text("essentialOnly")}
             </button>
             <button
@@ -214,6 +224,7 @@ export default function PlatformConsentBanner() {
               className="cookie-banner__secondary"
               onClick={() => {
                 setAdvertisement(readConsent().advertisement);
+                setAnalytics(measurement && readConsent().analytics);
                 setSaveFailed(false);
                 setView("manage");
               }}
@@ -244,8 +255,28 @@ export default function PlatformConsentBanner() {
           id="cookie-analytics"
           title={text("analyticsTitle")}
           detail={text("analyticsDetail")}
-          empty={text("noneFound")}
-          control={<span className="cookie-banner__unused">{text("unused")}</span>}
+          headers={measurement ? headers : undefined}
+          rows={measurement ? [{
+            name: "bizuply_content_vid",
+            provider: text("bizuply"),
+            purpose: text("analyticsPurpose"),
+            duration: text("analyticsDuration"),
+          }] : undefined}
+          empty={measurement ? undefined : text("noneFound")}
+          control={measurement ? (
+            <button
+              type="button"
+              className="cookie-banner__switch"
+              role="switch"
+              aria-checked={analytics}
+              onClick={() => {
+                setAnalytics((value) => !value);
+                setSaveFailed(false);
+              }}
+            >
+              {analytics ? text("on") : text("off")}
+            </button>
+          ) : <span className="cookie-banner__unused">{text("unused")}</span>}
         />
         <Category
           id="cookie-advertisement"
@@ -278,7 +309,7 @@ export default function PlatformConsentBanner() {
         {saveFailed ? <p className="cookie-banner__error" role="alert">{text("saveFailed")}</p> : null}
       </div>
       <div className="cookie-banner__actions">
-        <button type="button" className="cookie-banner__primary" onClick={() => persist(advertisement)}>
+        <button type="button" className="cookie-banner__primary" onClick={() => persist(advertisement, analytics)}>
           {text("save")}
         </button>
         <button type="button" className="cookie-banner__secondary" onClick={leaveManage}>
