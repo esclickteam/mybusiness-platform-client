@@ -194,7 +194,6 @@ export function buildContentEvent(input) {
   const payload = {
     event: input.event,
     path,
-    consentProof: proof,
     visitorKey,
     sessionKey,
     targetPath: input.targetPath ? cleanContentPath(input.targetPath) : "",
@@ -216,7 +215,7 @@ export function sendContentEvent(input) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
     keepalive: true,
-    credentials: "omit",
+    credentials: "include",
   }).catch(() => {});
 }
 
@@ -230,5 +229,6 @@ export function forgetContentVisitor() {
     headers: { "Content-Type": "application/json" },
     body,
     keepalive: true,
+    credentials: "include",
   }).catch(() => {});
 }

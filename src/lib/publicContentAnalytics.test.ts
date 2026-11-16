@@ -73,7 +73,8 @@ describe("public content analytics", () => {
     const first = buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm?email=person@example.com" });
     expect(first).toBeNull();
     const view = buildContentEvent({ event: "guide_view", path: "/guides/what-is-a-crm" });
-    expect(view?.consentProof).toBe("v2:an:2026-11-07");
+    expect(view?.consentProof).toBeUndefined();
+    expect(view).not.toHaveProperty("consent");
     expect(view?.referrer).toBe("https://www.google.com/");
     expect(view?.visitorKey).toMatch(/^[0-9a-f-]{36}$/i);
     expect(JSON.stringify(view)).not.toMatch(/email|person@/);
