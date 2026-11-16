@@ -78,24 +78,21 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                     <path d="M6 9l6 6 6-6" />
                   </svg>
                 </button>
-                {expanded ? (
-                  <div className="site-mobile__subs">
+                <div className="site-mobile__subs" inert={!expanded}>
+                  <div className="site-mobile__subs-inner">
                     {group.columns.map((column) => (
                       <div key={column.id}>
                         <p className="site-mobile__kicker">{column.title}</p>
                         {column.links.map((link) => (
                           <Link key={link.to} to={link.to} onClick={onClose} className="site-mobile__sub">
                             <SiteNavIcon name={link.icon} />
-                            <span>
-                              {link.label}
-                              {link.blurb ? <small>{link.blurb}</small> : null}
-                            </span>
+                            <span>{link.label}</span>
                           </Link>
                         ))}
                       </div>
                     ))}
                   </div>
-                ) : null}
+                </div>
               </div>
             );
           })}

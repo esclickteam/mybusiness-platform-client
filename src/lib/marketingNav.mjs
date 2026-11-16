@@ -28,10 +28,13 @@ const LABEL = {
   resources: pack("Resources", "משאבים", "Recursos", "Recursos", "الموارد"),
   pricing: pack("Pricing", "מחירים", "Precios", "Preços", "الأسعار"),
   platformCol: pack("The platform", "הפלטפורמה", "La plataforma", "A plataforma", "المنصة"),
-  productCol: pack("Products", "המוצרים", "Productos", "Produtos", "المنتجات"),
+  customersCol: pack("Customer management", "ניהול לקוחות", "Gestión de clientes", "Gestão de clientes", "إدارة العملاء"),
+  marketingCol: pack("Marketing and communication", "שיווק ותקשורת", "Marketing y comunicación", "Marketing e comunicação", "التسويق والتواصل"),
+  buildCol: pack("Websites and automations", "אתרים ואוטומציות", "Sitios y automatización", "Sites e automação", "المواقع والأتمتة"),
+  saasCol: pack("SaaS systems", "מערכות SaaS", "Sistemas SaaS", "Sistemas SaaS", "أنظمة SaaS"),
   needCol: pack("By business need", "לפי צורך עסקי", "Por necesidad", "Por necessidade", "حسب الحاجة"),
   industryCol: pack("By industry", "לפי ענף", "Por sector", "Por setor", "حسب القطاع"),
-  supportCol: pack("Help", "עזרה", "Ayuda", "Ajuda", "مساعدة"),
+  supportCol: pack("Support", "תמיכה", "Soporte", "Suporte", "الدعم"),
   libraryCol: pack("Library", "הספרייה", "Biblioteca", "Biblioteca", "المكتبة"),
   toolsCol: pack("Tools", "כלים", "Herramientas", "Ferramentas", "أدوات"),
 };
@@ -150,35 +153,11 @@ const ITEM = {
     icon: "catalog",
     label: pack("SaaS systems", "מערכות SaaS", "Sistemas SaaS", "Sistemas SaaS", "أنظمة SaaS"),
     blurb: pack(
-      "The existing catalog of ready systems.",
-      "קטלוג המערכות המוכנות הקיים.",
-      "El catálogo existente de sistemas listos.",
-      "O catálogo existente de sistemas prontos.",
-      "كتالوج الأنظمة الجاهزة الموجود.",
-    ),
-  },
-  needs: {
-    to: "/solutions#solutions-needs",
-    icon: "need",
-    label: pack("Solutions by business need", "פתרונות לפי צורך עסקי", "Soluciones por necesidad", "Soluções por necessidade", "حلول حسب الحاجة"),
-    blurb: pack(
-      "The situations already written on the solutions page.",
-      "המצבים שכבר כתובים בעמוד הפתרונות.",
-      "Las situaciones ya escritas en la página de soluciones.",
-      "As situações já escritas na página de soluções.",
-      "الحالات المكتوبة أصلاً في صفحة الحلول.",
-    ),
-  },
-  industryHub: {
-    to: "/solutions#solutions-industries",
-    icon: "industry",
-    label: pack("Solutions by industry", "פתרונות לפי ענף", "Soluciones por sector", "Soluções por setor", "حلول حسب القطاع"),
-    blurb: pack(
-      "The industry pages, at their current addresses.",
-      "עמודי הענפים, בכתובות הקיימות שלהם.",
-      "Las páginas de sector, en sus direcciones actuales.",
-      "As páginas de setor, nos endereços atuais.",
-      "صفحات القطاعات، بعناوينها الحالية.",
+      "Ready systems for a specific kind of business.",
+      "מערכות מוכנות לסוג עסק מסוים.",
+      "Sistemas listos para un tipo concreto de negocio.",
+      "Sistemas prontos para um tipo específico de negócio.",
+      "أنظمة جاهزة لنوع محدد من الأعمال.",
     ),
   },
   clinics: {
@@ -270,11 +249,11 @@ const ITEM = {
     icon: "start",
     label: pack("Getting started", "מדריכי התחלה", "Primeros pasos", "Primeiros passos", "البدء"),
     blurb: pack(
-      "The starter guides already in the resource library.",
-      "מדריכי ההתחלה שכבר נמצאים בספריית המשאבים.",
-      "Las guías de inicio que ya están en la biblioteca.",
-      "Os guias iniciais que já estão na biblioteca.",
-      "أدلة البداية الموجودة أصلاً في المكتبة.",
+      "Starter guides for the first setup.",
+      "מדריכים לצעדים הראשונים.",
+      "Guías para los primeros pasos.",
+      "Guias para os primeiros passos.",
+      "أدلة للخطوات الأولى.",
     ),
   },
   faq: {
@@ -294,11 +273,11 @@ const ITEM = {
     icon: "contact",
     label: pack("Contact support", "יצירת קשר עם התמיכה", "Contactar con soporte", "Falar com o suporte", "التواصل مع الدعم"),
     blurb: pack(
-      "The contact form. Sending it does not start a charge.",
-      "טופס יצירת הקשר. השליחה לא מתחילה חיוב.",
-      "El formulario de contacto. Enviarlo no inicia un cobro.",
-      "O formulário de contato. Enviá-lo não inicia uma cobrança.",
-      "نموذج الاتصال. إرساله لا يبدأ عملية دفع.",
+      "Send a question to the team.",
+      "שליחת שאלה לצוות.",
+      "Envíe una pregunta al equipo.",
+      "Envie uma pergunta à equipe.",
+      "أرسلوا سؤالاً إلى الفريق.",
     ),
   },
   library: {
@@ -318,11 +297,11 @@ const ITEM = {
     icon: "guides",
     label: pack("Guides and articles", "מדריכים ומאמרים", "Guías y artículos", "Guias e artigos", "أدلة ومقالات"),
     blurb: pack(
-      "The guide library that is already published.",
-      "ספריית המדריכים שכבר מפורסמת.",
-      "La biblioteca de guías que ya está publicada.",
-      "A biblioteca de guias que já está publicada.",
-      "مكتبة الأدلة المنشورة أصلاً.",
+      "Guides for CRM, WhatsApp, sites, and campaigns.",
+      "מדריכים ל־CRM, ל־WhatsApp, לאתרים ולקמפיינים.",
+      "Guías de CRM, WhatsApp, sitios y campañas.",
+      "Guias de CRM, WhatsApp, sites e campanhas.",
+      "أدلة لـ CRM وواتساب والمواقع والحملات.",
     ),
   },
   templates: {
@@ -342,11 +321,11 @@ const ITEM = {
     icon: "calculator",
     label: pack("Calculators", "מחשבונים", "Calculadoras", "Calculadoras", "حاسبات"),
     blurb: pack(
-      "Conversion rate, cost per lead, and return, on the templates page.",
-      "שיעור המרה, עלות לליד ותשואה, בעמוד התבניות.",
-      "Tasa de conversión, costo por lead y retorno, en la página de plantillas.",
-      "Taxa de conversão, custo por lead e retorno, na página de modelos.",
-      "معدل التحويل وتكلفة العميل المحتمل والعائد، في صفحة القوالب.",
+      "Conversion rate, cost per lead, and return.",
+      "שיעור המרה, עלות לליד ותשואה.",
+      "Tasa de conversión, costo por lead y retorno.",
+      "Taxa de conversão, custo por lead e retorno.",
+      "معدل التحويل وتكلفة العميل المحتمل والعائد.",
     ),
   },
   glossary: {
@@ -366,11 +345,11 @@ const ITEM = {
     icon: "compare",
     label: pack("Comparisons", "השוואות", "Comparaciones", "Comparações", "مقارنات"),
     blurb: pack(
-      "The comparison pages that are already published.",
-      "עמודי ההשוואה שכבר מפורסמים.",
-      "Las páginas de comparación que ya están publicadas.",
-      "As páginas de comparação que já estão publicadas.",
-      "صفحات المقارنة المنشورة أصلاً.",
+      "Two ways to handle the same job.",
+      "שתי דרכים לאותה עבודה.",
+      "Dos formas de hacer el mismo trabajo.",
+      "Duas formas de fazer o mesmo trabalho.",
+      "طريقتان للعمل نفسه.",
     ),
   },
   paths: {
@@ -397,10 +376,11 @@ function item(key, locale) {
   };
 }
 
-function column(id, title, keys, locale) {
+function column(id, title, keys, locale, layout = 1) {
   return {
     id,
     title: text(title, locale),
+    layout,
     links: keys.map((key) => item(key, locale)),
   };
 }
@@ -411,25 +391,30 @@ export function marketingNav(locale) {
     {
       id: "platform",
       label: text(LABEL.platform, language),
-      columns: [column("platform", LABEL.platformCol, ["overview", "how", "features", "workflows"], language)],
+      columns: [column("platform", LABEL.platformCol, ["overview", "how", "features"], language, 3)],
     },
     {
       id: "products",
       label: text(LABEL.products, language),
-      columns: [column("products", LABEL.productCol, ["crm", "whatsapp", "campaigns", "websites", "automation", "systems"], language)],
+      columns: [
+        column("customers", LABEL.customersCol, ["crm"], language),
+        column("marketing", LABEL.marketingCol, ["whatsapp", "campaigns"], language),
+        column("build", LABEL.buildCol, ["websites", "automation"], language),
+        column("saas", LABEL.saasCol, ["systems"], language),
+      ],
     },
     {
       id: "solutions",
       label: text(LABEL.solutions, language),
       columns: [
-        column("needs", LABEL.needCol, ["needs", "industryHub"], language),
-        column("industries", LABEL.industryCol, ["clinics", "beauty", "realEstate", "restaurants", "service", "agencies", "leads"], language),
+        column("needs", LABEL.needCol, ["leads", "service", "agencies"], language),
+        column("industries", LABEL.industryCol, ["clinics", "beauty", "realEstate", "restaurants"], language),
       ],
     },
     {
       id: "support",
       label: text(LABEL.support, language),
-      columns: [column("support", LABEL.supportCol, ["gettingStarted", "faq", "contact"], language)],
+      columns: [column("support", LABEL.supportCol, ["faq", "contact"], language, 2)],
     },
     {
       id: "resources",
@@ -447,11 +432,16 @@ export function marketingNav(locale) {
   ];
 }
 
+const INDUSTRY_ORDER = ["clinics", "beauty", "realEstate", "restaurants", "service", "agencies", "leads"];
+const INDUSTRY_LABEL = pack("Industries", "ענפים", "Sectores", "Setores", "القطاعات");
+
 export function industryNav(locale) {
-  const group = marketingNav(locale).find((item) => item.id === "solutions");
-  const column = group.columns.find((item) => item.id === "industries");
+  const language = LOCALES.includes(locale) ? locale : locale === "pt" ? "pt-BR" : "en";
   return {
-    label: column.title,
-    links: column.links.map((link) => [link.to, link.label, link.blurb]),
+    label: text(INDUSTRY_LABEL, language),
+    links: INDUSTRY_ORDER.map((key) => {
+      const link = item(key, language);
+      return [link.to, link.label, link.blurb];
+    }),
   };
 }

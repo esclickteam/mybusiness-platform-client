@@ -67,6 +67,16 @@ export default function HeaderView({
   };
 
   useEffect(() => {
+    if (!openGroup) return undefined;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpenGroup(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [openGroup]);
+
+  useEffect(() => {
     hoverNav.current = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     return () => {
       if (closeTimer.current) window.clearTimeout(closeTimer.current);
@@ -158,11 +168,11 @@ export default function HeaderView({
                       if (event.key !== "ArrowDown") return;
                       event.preventDefault();
                       holdGroup(group.id);
-                      const panel = event.currentTarget.nextElementSibling;
-                      requestAnimationFrame(() => {
-                        const link = panel?.querySelector("a");
+                      const menuId = group.id;
+                      window.setTimeout(() => {
+                        const link = document.getElementById(`site-nav-${menuId}`)?.querySelector("a");
                         if (link instanceof HTMLAnchorElement) link.focus();
-                      });
+                      }, 0);
                     }}
                   >
                     {group.label}
@@ -173,11 +183,21 @@ export default function HeaderView({
                   <div
                     id={`site-nav-${group.id}`}
                     className="site-nav__panel site-nav__mega"
+                    data-cols={Math.max(group.columns.length, ...group.columns.map((column) => column.layout || 1))}
                     hidden={!open}
+                    role="region"
+                    aria-label={group.label}
                   >
-                    <div className="site-nav__sheet">
+                    <div
+                      className="site-nav__sheet"
+                      style={{ gridTemplateColumns: `repeat(${group.columns.length}, minmax(0, 1fr))` }}
+                    >
                       {group.columns.map((column) => (
-                        <div key={column.id} className={`site-nav__col${column.links.length > 4 ? " is-split" : ""}`}>
+                        <div
+                          key={column.id}
+                          className="site-nav__col"
+                          style={column.layout > 1 ? { gridTemplateColumns: `repeat(${column.layout}, minmax(0, 1fr))` } : undefined}
+                        >
                           <p className="site-nav__kicker">{column.title}</p>
                           {column.links.map((link) => (
                             <Link key={link.to} to={link.to} onClick={() => setOpenGroup(null)}>

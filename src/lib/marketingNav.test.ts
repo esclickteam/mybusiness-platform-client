@@ -13,8 +13,6 @@ const LIVE = new Set([
   "/meta-campaigns",
   "/website-builder",
   "/saas",
-  "/solutions#solutions-needs",
-  "/solutions#solutions-industries",
   "/solutions/clinics",
   "/solutions/beauty",
   "/solutions/real-estate",
@@ -22,7 +20,6 @@ const LIVE = new Set([
   "/solutions/service-businesses",
   "/solutions/agencies",
   "/solutions/lead-based",
-  "/resources#start-here",
   "/faq",
   "/contact",
   "/resources",
@@ -56,7 +53,7 @@ describe("marketingNav", () => {
         for (const link of links) {
           expect(LIVE.has(link.to), link.to).toBe(true);
           expect(link.label.trim().length).toBeGreaterThan(1);
-          expect(link.blurb).not.toMatch(/SEO|GEO|AEO|תשובה למנועי AI/i);
+          expect(link.blurb).not.toMatch(/SEO|GEO|AEO|תשובה למנועי AI|already written|current addresses|existing catalog/i);
         }
       }
     }
@@ -70,11 +67,22 @@ describe("marketingNav", () => {
     expect(hrefs).not.toContain("/integrations");
     expect(hrefs).toContain("/solutions/agencies");
     expect(hrefs).toContain("/saas");
+    expect(hrefs.filter((href) => href === "/automations")).toHaveLength(1);
+    expect(marketingNav("en").find((group) => group.id === "products").columns.map((column) => column.id)).toEqual([
+      "customers",
+      "marketing",
+      "build",
+      "saas",
+    ]);
+    expect(marketingNav("en").find((group) => group.id === "support").columns[0].links.map((link) => link.to)).toEqual([
+      "/faq",
+      "/contact",
+    ]);
   });
 
   it("keeps the industry addresses for the platform page", () => {
     const industries = industryNav("he");
-    expect(industries.label).toBe("לפי ענף");
+    expect(industries.label).toBe("ענפים");
     expect(industries.links.map((link) => link[0])).toEqual([
       "/solutions/clinics",
       "/solutions/beauty",
