@@ -2,59 +2,63 @@ import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import "./demoDirectionSketches.css";
 
-const SCREENS = {
-  dash: "/demo-direction/dash.png",
-  crm: "/demo-direction/crm.png",
-  lead: "/demo-direction/lead.png",
-  wa: "/demo-direction/wa.png",
-  auto: "/demo-direction/auto.png",
-  meta: "/demo-direction/meta.png",
-  site: "/demo-direction/site.png",
-} as const;
+type Shot = {
+  key: string;
+  title: string;
+  line: string;
+  src: string;
+  width: number;
+  height: number;
+};
 
-type Shot = { key: string; title: string; src: string; alt: string };
+const screen = (file: string) => new URL(`./screens/${file}`, import.meta.url).href;
 
 const FLOW: Shot[] = [
-  { key: "dash", title: "לוח בקרה", src: SCREENS.dash, alt: "מדדי לוח הבקרה של חשבון ההדגמה" },
-  { key: "crm", title: "לידים ולקוחות", src: SCREENS.crm, alt: "כרטיסי לידים אמיתיים" },
-  { key: "lead", title: "כרטיס ליד", src: SCREENS.lead, alt: "כרטיס הליד של תמר לוי" },
-  { key: "wa", title: "WhatsApp", src: SCREENS.wa, alt: "הודעת וואטסאפ לדוגמה" },
-  { key: "auto", title: "אוטומציה", src: SCREENS.auto, alt: "פעולה בתוך תהליך אוטומציה" },
-  { key: "meta", title: "קמפיינים", src: SCREENS.meta, alt: "מדדי קמפיין Meta" },
-  { key: "site", title: "בניית אתר", src: SCREENS.site, alt: "תבנית אתר אמיתית" },
+  { key: "dash", title: "לוח בקרה", line: "13 לידים חדשים", src: screen("dash.png"), width: 360, height: 374 },
+  { key: "crm", title: "לידים ולקוחות", line: "תמר לוי · הילה גולן", src: screen("crm.png"), width: 360, height: 420 },
+  { key: "lead", title: "כרטיס ליד", line: "תמר לוי · 052-5552266", src: screen("lead.png"), width: 360, height: 520 },
+  { key: "wa", title: "WhatsApp", line: "הודעה שנשלחה ללקוח", src: screen("wa.png"), width: 360, height: 240 },
+  { key: "auto", title: "אוטומציה", line: "העברה לכרטיס הלקוח", src: screen("auto.png"), width: 360, height: 260 },
+  { key: "meta", title: "קמפיינים", line: "18,211 חשיפות", src: screen("meta.png"), width: 360, height: 250 },
+  { key: "site", title: "בניית אתר", line: "תבנית Spalcio", src: screen("site.png"), width: 360, height: 490 },
 ];
 
-function Board({ shot, className = "" }: { shot: Shot; className?: string }) {
+const SHOWCASE_KEYS = ["site", "crm", "wa", "meta", "auto"];
+
+function Window({ shot, index }: { shot: Shot; index: number }) {
   return (
-    <figure className={`dd-board ${className}`.trim()}>
-      <figcaption>{shot.title}</figcaption>
-      <img src={shot.src} alt={shot.alt} />
-    </figure>
+    <article className="dd-window" style={{ ["--i" as string]: index }}>
+      <header>
+        <span className="dd-dots" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+        </span>
+        <strong>{shot.title}</strong>
+        <em>{shot.line}</em>
+      </header>
+      <img
+        src={shot.src}
+        alt=""
+        width={shot.width}
+        height={shot.height}
+        loading="eager"
+        decoding="async"
+      />
+    </article>
   );
 }
 
-function Showcase() {
+function Stage({ shots, variant }: { shots: Shot[]; variant: "showcase" | "flow" }) {
+  const loop = [...shots, ...shots];
   return (
-    <div className="dd-collage" aria-hidden="false">
-      <Board shot={FLOW[1]} className="is-wide" />
-      <Board shot={FLOW[3]} />
-      <Board shot={FLOW[5]} className="is-meta" />
-      <Board shot={FLOW[6]} className="is-site" />
-      <Board shot={FLOW[4]} className="is-auto" />
-      <span className="dd-cursor" aria-hidden="true" />
-    </div>
-  );
-}
-
-function Flow() {
-  const cards = [...FLOW, ...FLOW];
-  return (
-    <div className="dd-viewport">
+    <div className={`dd-viewport is-${variant}`}>
       <div className="dd-track">
-        {cards.map((shot, index) => (
-          <Board key={`${shot.key}-${index}`} shot={shot} />
+        {loop.map((shot, index) => (
+          <Window key={`${shot.key}-${index}`} shot={shot} index={index % shots.length} />
         ))}
       </div>
+      {variant === "showcase" ? <span className="dd-cursor" aria-hidden="true" /> : null}
     </div>
   );
 }
@@ -62,6 +66,7 @@ function Flow() {
 export default function DemoDirectionSketches() {
   const [sketch, setSketch] = useState<"a" | "b">("a");
   const [paused, setPaused] = useState(false);
+  const showcase = SHOWCASE_KEYS.map((key) => FLOW.find((shot) => shot.key === key)!);
   return (
     <main className="dd-page" data-paused={paused ? "true" : "false"} lang="he" dir="rtl">
       <Helmet>
@@ -71,7 +76,7 @@ export default function DemoDirectionSketches() {
       <header className="dd-top">
         <p className="dd-brand">BizUply</p>
         <h1>שתי סקיצות להדגמה</h1>
-        <p className="dd-note">חלונות אמיתיים מחשבון ההדגמה. זו סקיצה לבחירה, לא הסרטון הסופי.</p>
+        <p className="dd-note">מסכים אמיתיים מחשבון ההדגמה. סקיצה לבחירה, לא הסרטון הסופי.</p>
         <div className="dd-switch" role="tablist" aria-label="בחירת סקיצה">
           <button type="button" role="tab" aria-selected={sketch === "a"} onClick={() => setSketch("a")}>
             סקיצה A · חלונות יחד
@@ -82,7 +87,7 @@ export default function DemoDirectionSketches() {
         </div>
       </header>
       <section className="dd-stage" aria-label={sketch === "a" ? "סקיצה A" : "סקיצה B"}>
-        {sketch === "a" ? <Showcase /> : <Flow />}
+        {sketch === "a" ? <Stage shots={showcase} variant="showcase" /> : <Stage shots={FLOW} variant="flow" />}
       </section>
       <button
         type="button"
