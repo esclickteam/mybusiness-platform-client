@@ -1,0 +1,320 @@
+.ux-page {
+  min-height: 100vh;
+  margin: 0;
+  padding: 16px 12px 36px;
+  overflow-x: hidden;
+  background:
+    radial-gradient(120% 36% at 50% -8%, #efe8ff 0%, transparent 58%),
+    #f4f7fb;
+  color: #21172f;
+  font-family: Assistant, "Segoe UI", sans-serif;
+}
+
+.ux-top,
+.ux-copy,
+.ux-block {
+  width: min(430px, 100%);
+  margin-inline: auto;
+}
+
+.ux-brand {
+  margin: 0;
+  color: #5b21b6;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ux-top h1,
+.ux-copy h2,
+.ux-block h3 {
+  margin: 4px 0 8px;
+  line-height: 1.2;
+}
+
+.ux-top h1 { font-size: 22px; }
+.ux-copy h2 { font-size: 20px; }
+.ux-block h3 { font-size: 14px; color: #5c5670; }
+
+.ux-note,
+.ux-copy p {
+  margin: 0 0 12px;
+  color: #5c5670;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.ux-kicker {
+  margin: 0;
+  color: #5b21b6;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ux-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+}
+
+.ux-switch button {
+  min-height: 40px;
+  padding: 6px 8px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background: #fff;
+  color: #48218b;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.ux-switch button[aria-selected="true"] {
+  border-color: #5b21b6;
+  background: #5b21b6;
+  color: #fff;
+}
+
+.ux-copy,
+.ux-block {
+  margin-top: 16px;
+}
+
+.ux-screen {
+  width: min(340px, 100%);
+  margin-inline: auto;
+  padding: 12px;
+  border: 1px solid #e6e1f2;
+  border-radius: 10px;
+  background: #fff;
+  box-shadow: 0 16px 34px -24px rgba(33, 23, 47, 0.45);
+}
+
+.ux-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.ux-metrics article,
+.ux-panel,
+.ux-lead,
+.ux-site {
+  border: 1px solid #ece8f5;
+  border-radius: 8px;
+  background: #fbfaff;
+}
+
+.ux-metrics article {
+  padding: 8px 10px;
+}
+
+.ux-metrics span,
+.ux-panel p,
+.ux-lead p,
+.ux-template,
+.ux-sent {
+  margin: 0;
+  color: #6b657c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ux-metrics strong {
+  display: block;
+  margin-top: 2px;
+  color: #21172f;
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.ux-metrics em {
+  color: #5b21b6;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.ux-panel { margin-top: 8px; padding: 8px 10px 10px; }
+.ux-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 56px;
+  margin-top: 8px;
+}
+.ux-bars i {
+  flex: 1;
+  border-radius: 4px 4px 0 0;
+  background: linear-gradient(180deg, #7c3aed, #2563eb);
+}
+
+.ux-feed { margin: 8px 0 0; padding: 0; list-style: none; }
+.ux-feed li {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 0;
+  border-top: 1px solid #efeaf8;
+  font-size: 13px;
+}
+.ux-feed span { color: #6b657c; font-size: 12px; }
+
+.ux-pills { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.ux-pills span,
+.ux-editor span,
+.ux-reply {
+  display: grid;
+  place-items: center;
+  min-height: 32px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background: #fff;
+  color: #48218b;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ux-lead { margin-top: 8px; padding: 10px; }
+.ux-lead.is-open { border-color: #c4b5fd; background: #fff; }
+.ux-lead header,
+.ux-campaign {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.ux-lead strong,
+.ux-campaign strong { font-size: 16px; }
+.ux-lead em,
+.ux-campaign em {
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: #efe8ff;
+  color: #5b21b6;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+.ux-lead p { margin-top: 4px; }
+.ux-lead footer { display: flex; gap: 6px; margin-top: 8px; }
+.ux-lead footer span {
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ux-chat { display: flex; flex-direction: column; gap: 8px; background: #f7f5fb; }
+.ux-chat-top strong { display: block; font-size: 16px; }
+.ux-chat-top span { color: #6b657c; font-size: 12px; }
+.ux-bubble {
+  width: fit-content;
+  max-width: 88%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.ux-bubble.is-out { margin-inline-start: auto; background: #dcfce7; }
+.ux-sent { text-align: left; }
+.ux-reply { color: #8b849c; font-weight: 700; }
+
+.ux-flow { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+.ux-flow article {
+  padding: 7px 10px;
+  border: 1px solid #ddd6fe;
+  border-radius: 8px;
+  background: #fff;
+}
+.ux-flow small { color: #5b21b6; font-size: 10px; font-weight: 800; }
+.ux-flow strong { display: block; font-size: 14px; }
+.ux-flow span { color: #6b657c; font-size: 11px; }
+.ux-flow > i {
+  width: 2px;
+  height: 8px;
+  margin-inline: auto;
+  background: #c4b5fd;
+}
+
+.ux-campaign { margin-bottom: 8px; }
+.ux-editor { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+.ux-editor .is-on { border-color: #5b21b6; background: #5b21b6; color: #fff; }
+.ux-site {
+  margin-top: 8px;
+  padding: 16px 12px;
+  background: linear-gradient(160deg, #2e1065, #1d4ed8);
+  color: #fff;
+}
+.ux-site p { margin: 0; color: #ddd6fe; font-size: 12px; }
+.ux-site strong { display: block; margin: 6px 0 12px; font-size: 18px; line-height: 1.25; }
+.ux-site button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #fff;
+  color: #5b21b6;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+}
+.ux-template { margin-top: 8px; }
+
+.ux-inset { display: grid; justify-items: center; }
+.ux-window {
+  width: 250px;
+  overflow: hidden;
+  border: 2px solid #7c3aed;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18);
+}
+.ux-window header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 6px 10px;
+  background: linear-gradient(90deg, #5b21b6, #2563eb);
+  color: #fff;
+}
+.ux-window header span { display: inline-flex; gap: 3px; }
+.ux-window header i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+.ux-window header strong { font-size: 12px; }
+.ux-window-view {
+  position: relative;
+  height: 220px;
+  overflow: hidden;
+  background: #fff;
+}
+.ux-window-scale {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 340px;
+  transform-origin: top center;
+}
+.ux-window-scale .ux-screen {
+  width: 340px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.ux-inset > p {
+  margin: 8px 0 0;
+  color: #5b21b6;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+@media (max-width: 360px) {
+  .ux-switch { grid-template-columns: 1fr 1fr; }
+}
