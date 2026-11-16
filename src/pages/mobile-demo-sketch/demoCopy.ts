@@ -34,6 +34,11 @@ export type DemoBoardText = {
   siteLine: string;
   siteCta: string;
   gallery: string;
+  navTreatments: string;
+  navAbout: string;
+  serviceTitle: string;
+  serviceOne: string;
+  serviceTwo: string;
   titles: string[];
 };
 
@@ -81,6 +86,11 @@ const he: DemoBoardText = {
   siteLine: "טיפוח שמרגיש אישי",
   siteCta: "קביעת תור",
   gallery: "גלריה · 12",
+  navTreatments: "טיפולים",
+  navAbout: "אודות",
+  serviceTitle: "הטיפולים",
+  serviceOne: "טיפול פנים",
+  serviceTwo: "ייעוץ עור",
   titles: ["לוח בקרה", "CRM · צינור", "CRM · כרטיס", "WhatsApp", "אוטומציות", "קמפיינים", "בניית אתרים"],
 };
 
@@ -128,6 +138,11 @@ const en: DemoBoardText = {
   siteLine: "Care that feels personal",
   siteCta: "Book a visit",
   gallery: "Gallery · 12",
+  navTreatments: "Treatments",
+  navAbout: "About",
+  serviceTitle: "Treatments",
+  serviceOne: "Facial care",
+  serviceTwo: "Skin consult",
   titles: ["Dashboard", "CRM · Pipeline", "CRM · Lead", "WhatsApp", "Automations", "Campaigns", "Website"],
 };
 

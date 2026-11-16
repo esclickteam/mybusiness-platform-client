@@ -188,19 +188,28 @@ function SiteScreen() {
   const copy = useBoardText();
   return (
     <Board className="ux2-site">
-      <div className="ux2-editor">
+      <nav className="ux2-site-nav">
         <b>Petaluxe</b>
-        <span>{copy.edit}</span>
-        <span className="is-on">{copy.preview}</span>
-        <span>{copy.publish}</span>
-      </div>
-      <div className="ux2-site-hero">
-        <img src="/demo-direction/site-hero.webp" alt="" />
-        <p>{copy.gallery}</p>
-        <div>
-          <b>{copy.siteLine}</b>
-          <em>{copy.siteCta}</em>
+        <span>{copy.navTreatments}</span>
+        <span>{copy.navAbout}</span>
+      </nav>
+      <div className="ux2-site-page">
+        <div className="ux2-site-hero">
+          <div>
+            <strong>{copy.siteLine}</strong>
+            <span className="ux2-site-cta">{copy.siteCta}</span>
+          </div>
+          <img className="ux2-site-shot" src="/demo-direction/site-cleanser.webp?v=5" alt="" />
         </div>
+        <section className="ux2-site-next">
+          <b>{copy.serviceTitle}</b>
+          <div className="ux2-site-rows">
+            <div className="ux2-site-track">
+              <p><span>{copy.serviceOne}</span><span dir="ltr">₪280</span></p>
+              <p><span>{copy.serviceTwo}</span><span dir="ltr">₪160</span></p>
+            </div>
+          </div>
+        </section>
       </div>
     </Board>
   );
