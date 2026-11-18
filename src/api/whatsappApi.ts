@@ -1059,6 +1059,9 @@ export type InvistimoCutoverReadiness = {
   executeEnabled: false;
   sendEnabled: false;
   registerEnabled: false;
+  webhookEnabled?: boolean;
+  queuesPaused?: boolean;
+  activatesOnBoot?: boolean;
   readyForWindow: boolean;
   readyToCutover: false;
   checks: InvistimoCutoverReadinessCheck[];

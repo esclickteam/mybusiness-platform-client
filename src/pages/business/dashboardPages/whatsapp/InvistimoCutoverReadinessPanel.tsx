@@ -18,7 +18,15 @@ export default function InvistimoCutoverReadinessPanel({ businessId }: Props) {
     setError("");
     try {
       const next = await getInvistimoCutoverReadiness(businessId);
-      if (next.executeEnabled || next.sendEnabled || next.registerEnabled || next.readyToCutover) {
+      if (
+        next.executeEnabled ||
+        next.sendEnabled ||
+        next.registerEnabled ||
+        next.readyToCutover ||
+        next.webhookEnabled ||
+        next.queuesPaused ||
+        next.activatesOnBoot
+      ) {
         throw new Error("Readiness response tried to enable cutover");
       }
       setReport(next);
@@ -43,8 +51,8 @@ export default function InvistimoCutoverReadinessPanel({ businessId }: Props) {
         <div>
           <h2 className="text-lg font-black text-slate-900">מוכנות להחלפת הספק</h2>
           <p className="mt-1 text-sm font-medium text-slate-500">
-            חשבון Bizuply 1713214566994439 מול 360dialog 1042912532080617. המסך לא מפעיל מעבר, לא
-            שולח הודעה ולא רושם את המספר.
+            חשבון Bizuply 1713214566994439 מול 360dialog 1042912532080617. הקליטה החדשה כבויה והתורים
+            לא מושהים. המסך לא מפעיל מעבר, לא שולח הודעה ולא רושם את המספר.
           </p>
         </div>
         <button type="button" className={btnSecondary} onClick={() => void load()} disabled={loading}>

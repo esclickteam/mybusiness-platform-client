@@ -12,6 +12,9 @@ vi.mock("../../../../api/whatsappApi", () => ({
     executeEnabled: false,
     sendEnabled: false,
     registerEnabled: false,
+    webhookEnabled: false,
+    queuesPaused: false,
+    activatesOnBoot: false,
     readyForWindow: false,
     readyToCutover: false,
     checks: [
@@ -28,6 +31,7 @@ describe("Invistimo cutover readiness panel", () => {
     expect(await screen.findByText("register_blocked")).toBeTruthy();
     expect(screen.getByText("conversation_routing")).toBeTruthy();
     expect(screen.getByText(/1713214566994439/)).toBeTruthy();
+    expect(screen.getByText(/הקליטה החדשה כבויה/)).toBeTruthy();
     expect(screen.queryByRole("button", { name: /הפעל|cutover|שלח/i })).toBeNull();
     expect(screen.getByRole("button", { name: "רענון מוכנות" })).toBeTruthy();
   });
