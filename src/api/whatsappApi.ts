@@ -1044,6 +1044,34 @@ export type InvistimoPendingTemplatePreviewReport = {
   templates: InvistimoPendingTemplatePreview[];
 };
 
+export type InvistimoCutoverReadinessCheck = {
+  id: string;
+  pass: boolean;
+  detail: string;
+  windowOnly?: boolean;
+};
+
+export type InvistimoCutoverReadiness = {
+  success: boolean;
+  messagingAccountId: string;
+  liveWabaId: string;
+  phoneNumberId: string;
+  executeEnabled: false;
+  sendEnabled: false;
+  registerEnabled: false;
+  readyForWindow: boolean;
+  readyToCutover: false;
+  checks: InvistimoCutoverReadinessCheck[];
+  windowOnly: Array<{ id: string; where: string; requiredInWindow: boolean }>;
+};
+
+export async function getInvistimoCutoverReadiness(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-cutover-readiness", {
+    params: { businessId },
+  });
+  return data as InvistimoCutoverReadiness;
+}
+
 export async function listInvistimoPendingTemplates(businessId: string) {
   const { data } = await API.get("/whatsapp/invistimo-pending-templates", {
     params: { businessId },

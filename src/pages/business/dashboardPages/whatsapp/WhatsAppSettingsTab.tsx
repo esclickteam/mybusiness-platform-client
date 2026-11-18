@@ -73,6 +73,7 @@ import {
 } from "../../../../styles/bizuplyUi";
 import { isInvistimoAdminBusiness } from "../../../../utils/invistimoAdmin";
 import WhatsAppInvistimoSharePanel from "./WhatsAppInvistimoSharePanel";
+import InvistimoCutoverReadinessPanel from "./InvistimoCutoverReadinessPanel";
 import { isInvistimoShareTenant } from "./invistimoAccountSharePolicy";
 
 type OutletCtx = { businessId: string | null };
@@ -1096,6 +1097,9 @@ export default function WhatsAppSettingsTab() {
         {isInvistimoAdminBusiness(businessId) ? (
           <div className="mt-5">
             <WhatsAppInvistimoSharePanel businessId={businessId} />
+            <div className="mt-4">
+              <InvistimoCutoverReadinessPanel businessId={businessId} />
+            </div>
           </div>
         ) : null}
 
