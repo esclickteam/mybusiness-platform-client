@@ -1015,6 +1015,42 @@ export type InvistimoWhatsAppMigrationStatus = {
   live?: WhatsAppStagingStatus["live"];
 };
 
+export type InvistimoPendingTemplatePreview = {
+  name: string;
+  language: string;
+  category: string;
+  status: string;
+  preview: {
+    header: string;
+    body: string;
+    footer: string;
+    buttons: string[];
+  };
+};
+
+export type InvistimoPendingTemplatePreviewReport = {
+  success: boolean;
+  readOnly: true;
+  persisted: false;
+  sendEnabled: false;
+  editEnabled: false;
+  activateEnabled: false;
+  source: "pending_messaging_account";
+  messagingAccountId: string;
+  liveWabaId: string;
+  phoneNumberId: string;
+  accountName: string;
+  approvedCount: number;
+  templates: InvistimoPendingTemplatePreview[];
+};
+
+export async function listInvistimoPendingTemplates(businessId: string) {
+  const { data } = await API.get("/whatsapp/invistimo-pending-templates", {
+    params: { businessId },
+  });
+  return data as InvistimoPendingTemplatePreviewReport;
+}
+
 export async function getInvistimoWhatsAppMigration(businessId: string) {
   const { data } = await API.get("/whatsapp/invistimo-migration", {
     params: { businessId },

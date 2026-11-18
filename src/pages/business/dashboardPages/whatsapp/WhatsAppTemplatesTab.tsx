@@ -40,6 +40,8 @@ import {
   metaTemplateStatusKey,
   metaTemplateStatusLabel,
 } from "../../../../i18n/whatsappMappingCopy";
+import { isInvistimoShareTenant } from "./invistimoAccountSharePolicy";
+import InvistimoPendingTemplatesPanel from "./InvistimoPendingTemplatesPanel";
 
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
@@ -320,8 +322,12 @@ export default function WhatsAppTemplatesTab() {
     );
   }
 
+  const showPendingCatalog = isInvistimoShareTenant(businessId);
   return (
     <div className="space-y-4" dir={getTextDirection(i18n.language)} data-demo-target="whatsapp-templates" data-testid="whatsapp-module-templates">
+      {showPendingCatalog && businessId ? (
+        <InvistimoPendingTemplatesPanel businessId={businessId} />
+      ) : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-black text-slate-900">
@@ -413,6 +419,11 @@ export default function WhatsAppTemplatesTab() {
         />
       )}
 
+      {showPendingCatalog ? (
+        <p className="text-sm font-bold text-slate-700">
+          קטלוג שמור של החיבור הפעיל. זה אינו חשבון Bizuply החדש.
+        </p>
+      ) : null}
       <div className={`${cardBase} overflow-hidden`}>
         <div className="overflow-x-auto">
           <table className="min-w-full text-start text-sm">
