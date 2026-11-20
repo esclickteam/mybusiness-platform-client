@@ -94,7 +94,7 @@ const EN: GetStartedCopy = {
     },
     {
       title: "Generate your API key and configure webhooks",
-      text: "In the portal, open WhatsApp → API / Developers to create an API key and set the webhook URL that receives incoming messages and delivery statuses.",
+      text: "In the portal, open WhatsApp → API / Developers to create an API key and set the webhook URL that receives outbound message status events (accepted, sent, delivered, read and failed). Customer replies stay in the Bizuply inbox.",
       actors: ["you"],
     },
     {
@@ -221,7 +221,7 @@ const HE: GetStartedCopy = {
     },
     {
       title: "יצירת מפתח API והגדרת Webhooks",
-      text: "בפורטל, פתחו את WhatsApp ← API / מפתחים כדי ליצור מפתח API ולהגדיר את כתובת ה-Webhook שמקבלת הודעות נכנסות וסטטוסי מסירה.",
+      text: "בפורטל, פתחו את WhatsApp ← API / מפתחים כדי ליצור מפתח API ולהגדיר את כתובת ה-Webhook שמקבלת סטטוס של הודעות יוצאות. תשובות לקוחות נשארות בתיבה של ביזאפלי.",
       actors: ["you"],
     },
     {

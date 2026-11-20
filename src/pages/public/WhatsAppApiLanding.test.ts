@@ -83,9 +83,17 @@ describe("WhatsApp API site copy", () => {
       "How do webhooks work?",
       "Can I manage multiple numbers?",
       "Can agencies use Bizuply?",
+      "How do I test the connection?",
     ]) {
       expect(help).toContain(q);
     }
+    expect(help).not.toMatch(/send the onboarding request/i);
+    expect(help).toContain("pay $29/month for one number");
+    const started = read("whatsapp/getStartedCopy.ts") + read("whatsapp/pages/GetStartedPage.tsx");
+    expect(started).not.toMatch(/incoming messages/i);
+    expect(started).toContain("SignupCheckoutForm");
+    expect(started).toContain("isWhatsAppApiSelfServe");
+    expect(started).toContain("outbound message status");
   });
 
   it("labels the hero simulation as sample data and only shows status webhooks", () => {
@@ -97,11 +105,11 @@ describe("WhatsApp API site copy", () => {
 
   it("routes every page in the primary navigation", () => {
     const shell = read("WhatsAppApiLanding.tsx");
-    for (const route of ["/developers", "/agencies", "/pricing", "/docs", "/help", "/get-started", "/security"]) {
+    for (const route of ["/developers", "/agencies", "/pricing", "/docs", "/help", "/guides", "/get-started", "/security"]) {
       expect(shell).toContain(`case "${route}"`);
     }
     const chrome = read("whatsapp/SiteChrome.tsx");
-    for (const label of ["Overview", "Developers", "Agencies", "Pricing", "Documentation", "Help Center", "Log in", "Get Started"]) {
+    for (const label of ["Overview", "Developers", "Agencies", "Pricing", "Documentation", "Guides", "Help Center", "Log in", "Get Started"]) {
       expect(chrome).toContain(`"${label}"`);
     }
   });
@@ -110,11 +118,22 @@ describe("WhatsApp API site copy", () => {
     const shell = read("WhatsAppApiLanding.tsx");
     const localized = shell.match(/const LOCALIZED_PATHS = new Set\(\[([^\]]*)\]\)/)?.[1] ?? "";
     expect(localized).toContain('"/get-started"');
+    expect(localized).toContain('"/help"');
+    expect(localized).toContain('"/pricing"');
+    expect(localized).toContain('"/guides"');
     expect(shell).toMatch(/LOCALIZED_PATHS\.has\(path\) \? page : <div \{\.\.\.englishOnly\(lang\)\}>/);
   });
 
   it("labels the interactive flow as an illustration, not a live transaction", () => {
     expect(read("whatsapp/ApiFlowDemo.tsx")).toMatch(/not a live API transaction/i);
+  });
+
+  it("ships usage guides that match the live product and do not send", () => {
+    const guides = read("whatsapp/pages/GuidesPage.tsx");
+    expect(guides).toContain("How to connect WhatsApp Business Platform");
+    expect(guides).toContain("WhatsApp app versus WhatsApp API");
+    expect(guides).toContain("Nothing here is a live send");
+    expect(guides).toContain("moduleId=\"whatsapp\"");
   });
 
   it("documents only endpoints that exist in the OpenAPI spec", () => {

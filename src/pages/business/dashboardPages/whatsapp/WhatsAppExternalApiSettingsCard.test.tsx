@@ -56,4 +56,22 @@ describe("WhatsAppExternalApiSettingsCard subscription gate", () => {
     expect(await screen.findByRole("button", { name: CREATE })).toBeEnabled();
     expect(screen.getByText(CAN_CREATE_HINT)).toBeInTheDocument();
   });
+
+  it("does not ask an existing Bizuply plan that already includes WhatsApp to pay $29", async () => {
+    getSettings.mockResolvedValue(
+      settings({
+        gateEnabled: true,
+        allowed: true,
+        via: "plan",
+        reason: "included_in_plan",
+        selfServe: true,
+        subscription: null,
+      })
+    );
+    render(<WhatsAppExternalApiSettingsCard businessId="biz1" linked={false} />);
+
+    expect(await screen.findByRole("button", { name: CREATE })).toBeEnabled();
+    expect(screen.queryByText(/subscription \(\$29\/month\) is required/)).toBeNull();
+    expect(screen.queryByRole("button", { name: /Subscribe · \$29\/month/ })).toBeNull();
+  });
 });

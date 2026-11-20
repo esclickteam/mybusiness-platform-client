@@ -12,22 +12,32 @@ export type WhatsAppApiAuthConfig = {
 };
 
 const KNOWN: SocialProvider[] = ["google", "microsoft"];
-const EMPTY: WhatsAppApiAuthConfig = { loaded: false, selfServe: false, providers: [], turnstileSiteKey: null };
+/** Optimistic self-serve so Get Started never flashes the sales-request form. */
+const EMPTY: WhatsAppApiAuthConfig = { loaded: false, selfServe: true, providers: [], turnstileSiteKey: null };
 
 let pending: Promise<WhatsAppApiAuthConfig> | null = null;
+
+function parseSelfServe(data: { selfServe?: unknown } | null | undefined): boolean {
+  return data?.selfServe == null ? true : Boolean(data.selfServe);
+}
+
+/** Signup/checkout unless the server has loaded and explicitly closed self-serve. */
+export function isWhatsAppApiSelfServe(config: WhatsAppApiAuthConfig): boolean {
+  return !config.loaded || config.selfServe;
+}
 
 export function fetchWhatsAppApiAuthConfig(): Promise<WhatsAppApiAuthConfig> {
   if (!pending) {
     pending = API.get("/whatsapp-api/availability")
       .then(({ data }) => ({
         loaded: true,
-        selfServe: Boolean(data?.selfServe),
+        selfServe: parseSelfServe(data),
         providers: KNOWN.filter((p) => Array.isArray(data?.providers) && data.providers.includes(p)),
         turnstileSiteKey: typeof data?.turnstileSiteKey === "string" && data.turnstileSiteKey ? data.turnstileSiteKey : null,
       }))
       .catch(() => {
         pending = null;
-        return { ...EMPTY, loaded: true };
+        return { loaded: true, selfServe: true, providers: [], turnstileSiteKey: null };
       });
   }
   return pending;

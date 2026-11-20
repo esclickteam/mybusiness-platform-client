@@ -19,7 +19,7 @@ function steps(overrides: Partial<Record<SetupStep["key"], SetupStep["status"]>>
     { key: "connect", status: status("connect"), to: `${BASE}/connection` },
     { key: "apiKey", status: status("apiKey"), to: `${BASE}/developers` },
     { key: "webhook", status: status("webhook"), to: `${BASE}/developers` },
-    { key: "firstMessage", status: status("firstMessage"), to: `${BASE}/developers` },
+    { key: "firstMessage", status: status("firstMessage"), to: `${BASE}/connection` },
   ];
 }
 
@@ -61,6 +61,10 @@ describe("WhatsAppApiSetupSteps", () => {
     expect(screen.getByText("whatsappApiPortal.setup.steps.apiKey.cta").closest("a")).toHaveAttribute(
       "href",
       `${BASE}/developers`
+    );
+    expect(screen.getByText("whatsappApiPortal.setup.steps.firstMessage.cta").closest("a")).toHaveAttribute(
+      "href",
+      `${BASE}/connection`
     );
     expect(screen.queryByText("whatsappApiPortal.setup.steps.subscription.cta")).toBeNull();
   });

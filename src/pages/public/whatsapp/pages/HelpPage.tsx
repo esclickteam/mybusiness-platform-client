@@ -1,5 +1,7 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BookOpen, FileText, LifeBuoy, Mail, Search, ShieldCheck } from "lucide-react";
+import { coerceSupportedLanguage } from "../../../../i18n/localeUtils";
 import ContactRequestForm from "../ContactRequestForm";
 import { PRIVACY_URL, SIGN_IN_URL, SUPPORT_EMAIL, SiteLink, TERMS_URL } from "../siteConfig";
 import { Accordion, SectionHead } from "../ui";
@@ -17,7 +19,7 @@ const ARTICLES: Array<{ topic: Topic; q: string; a: string }> = [
   {
     topic: "Getting started",
     q: "How do I start?",
-    a: "If you already have a Bizuply account, log in and open WhatsApp → Connection to start Meta's Embedded Signup. If you're new, send the onboarding request on the Get Started page and we'll reply with access.",
+    a: "Create a WhatsApp API account on Get Started, pay $29/month for one number, then open WhatsApp → Connection and run Meta's Embedded Signup. Existing Bizuply customers can log in and go straight to Connection. Support is for questions, not for issuing access.",
   },
   {
     topic: "Getting started",
@@ -111,23 +113,127 @@ const ARTICLES: Array<{ topic: Topic; q: string; a: string }> = [
   },
   {
     topic: "API & webhooks",
+    q: "How do I test the connection?",
+    a: "After the number is connected and a template is approved, open WhatsApp → Connection and send a test template to a phone you own. Confirm consent first. Meta may charge for that send. To test webhooks without messaging a customer, use Send test webhook under WhatsApp → API / Developers.",
+  },
+  {
+    topic: "API & webhooks",
     q: "Do webhooks include customer replies?",
     a: "Not yet. Webhooks cover outbound message status: accepted, sent, delivered, read and failed. Customer replies appear in the Bizuply WhatsApp inbox.",
   },
 ];
 
+const TOPICS_HE: Topic[] = ["Getting started", "Meta & verification", "Numbers", "Templates & messaging", "Billing", "API & webhooks"];
+
+const TOPIC_LABEL_HE: Record<Topic, string> = {
+  "Getting started": "התחלה",
+  "Meta & verification": "Meta ואימות",
+  Numbers: "מספרים",
+  "Templates & messaging": "תבניות והודעות",
+  Billing: "חיוב",
+  "API & webhooks": "API ו־Webhooks",
+};
+
+const ARTICLES_HE: Array<{ topic: Topic; q: string; a: string }> = [
+  { topic: "Getting started", q: "מהו WhatsApp Business API?", a: "זו פלטפורמת Meta לעסקים ששולחים הודעות וואטסאפ מהמערכת שלהם, לא מאפליקציה בטלפון. ביזאפלי מחברת את המספר דרך Cloud API ונותנת REST API, webhooks חתומים ולוח בקרה." },
+  { topic: "Getting started", q: "איך מתחילים?", a: "יוצרים חשבון WhatsApp API בעמוד ההתחלה, משלמים 29 דולר לחודש למספר אחד, ואז פותחים וואטסאפ → חיבור ומריצים את Embedded Signup של Meta. לקוחות ביזאפלי קיימים יכולים להתחבר ולעבור ישר לחיבור. התמיכה לשאלות, לא להנפקת גישה." },
+  { topic: "Getting started", q: "איך ביזאפלי קשורה ל־Meta?", a: "ביזאפלי בנויה על WhatsApp Cloud API של Meta. ההודעות עוברות שם, והמספרים מתחברים ב־Embedded Signup. מדיניות, סקירות, מגבלות וחיובים של Meta חלים כרגיל." },
+  { topic: "Getting started", q: "צריך מפתח?", a: "לא כדי לחבר מספר, לנהל תבניות או להשתמש בלוח. כדי לשלוח מהמערכות שלכם מישהו צריך לקרוא ל־REST API ולטפל ב־webhooks. בתיעוד יש דוגמאות cURL, JavaScript ו־Python." },
+  { topic: "Getting started", q: "סוכנויות יכולות להשתמש בביזאפלי?", a: "כן. סוכנות יכולה לחבר מספר של לקוח ולבנות אינטגרציה על ה־API. לכל מספר יש מנוי 29 דולר, מפתח ו־webhook משלו. קונסולת ריבוי לקוחות עדיין אינה זמינה." },
+  { topic: "Meta & verification", q: "Meta צריכה לאשר את החשבון?", a: "Meta בודקת שמות תצוגה ועשויה לבקש אימות עסק. ביזאפלי לא מוסיפה תור אישורים, וגם לא יכולה לדלג על בדיקות Meta." },
+  { topic: "Meta & verification", q: "כמה זמן לוקח החיבור?", a: "זרימת Embedded Signup עצמה קצרה. הזמן עד שליחה בנפח מלא תלוי בסקירות ובמגבלות ש־Meta קובעת, ולכן אין הבטחת זמן קבוע." },
+  { topic: "Meta & verification", q: "למה אפשר לפנות רק למספר מוגבל של לקוחות?", a: "Meta קובעת כמה לקוחות ייחודיים אפשר לפתוח איתם שיחה ב־24 שעות. המגבלה עולה עם הודעות איכותיות. וואטסאפ → חיבור מציג את המגבלה ואת דירוג האיכות." },
+  { topic: "Numbers", q: "אפשר להשתמש במספר קיים?", a: "לרוב כן. המספר חייב לקבל קוד ב־SMS או בשיחה. אם הוא באפליקציית וואטסאפ, ייתכן שצריך להעביר או להסיר אותו קודם, לפי מה ש־Meta תומכת." },
+  { topic: "Numbers", q: "אפשר לנהל כמה מספרים?", a: "כן, אחד לכל סביבת עבודה. כל מנוי מכסה מספר אחד. אין תצוגה מאוחדת לכמה מספרים." },
+  { topic: "Templates & messaging", q: "למה חייבים תבניות?", a: "וואטסאפ דורש תבנית מאושרת כדי לפתוח שיחה עם לקוח. ה־API שולח תבניות מאושרות. תשובות בתוך חלון 24 השעות מטופלות בתיבה." },
+  { topic: "Templates & messaging", q: "התבנית נדחתה. מה עכשיו?", a: "Meta דוחה תבניות שחורגות ממדיניות או לא מתאימות לקטגוריה. עורכים בוואטסאפ → תבניות ושולחים שוב. תבניות שנדחו או ממתינות לא נשלחות דרך ה־API." },
+  { topic: "Billing", q: "מה כוללים 29 הדולר?", a: "מנוי ביזאפלי למספר מחובר אחד: Embedded Signup, REST API ומפתח, webhooks חתומים, תבניות, תיבה, אנליטיקה, לוח בקרה, תיעוד ותמיכה בדוא״ל. אין ניסיון חינם, חיובי Meta נפרדים, וייתכן מס." },
+  { topic: "Billing", q: "מה Meta מחייבת בנפרד?", a: "Meta מחייבת לפי מדינת הנמען וקטגוריית התבנית. תשובות בחלון 24 השעות לרוב בחינם. בחיוב הסטנדרטי Meta מחייבת את אמצעי התשלום בחשבון WhatsApp Business. מחשבון המחירים מעריך את זה." },
+  { topic: "API & webhooks", q: "איך עובדים מפתחות API?", a: "יוצרים מפתח תחת וואטסאפ → API / מפתחים ושולחים כ־Bearer. כל מפתח שייך לסביבה אחת. הוא מוצג פעם אחת ונשמר כגיבוב. חידוש מבטל את הקודם מיד." },
+  { topic: "API & webhooks", q: "איך עובדים webhooks?", a: "מגדירים כתובת HTTPS תחת וואטסאפ → API / מפתחים. ביזאפלי שולחת סטטוס של הודעות יוצאות: accepted, sent, delivered, read ו־failed. כל בקשה חתומה ב־HMAC-SHA256." },
+  { topic: "API & webhooks", q: "אפשר לחבר CRM?", a: "כן, אם ה־CRM יכול לקרוא ל־REST API או להריץ קוד. ביזאפלי לא משווקת מחברים מוכנים ל־CRM; אתם או המפתח קוראים ל־API." },
+  { topic: "API & webhooks", q: "אפשר לחבר מוצר SaaS שלי?", a: "כן. השרת קורא ל־API עם מפתח הסביבה. לכל מספר מחובר מפתח משלו, לכן SaaS שמשרת כמה עסקים צריך סביבה ומנוי לכל מספר." },
+  { topic: "API & webhooks", q: "ה־webhook לא מקבל אירועים.", a: "בודקים שהכתובת ב־https ומחזירה 2xx תוך 15 שניות, ושמאמתים חתימה על גוף הבקשה הגולמי. משתמשים ב־Send test webhook. ניסיונות חוזרים עד חמש פעמים." },
+  { topic: "API & webhooks", q: "מתקבל WHATSAPP_NOT_CONNECTED.", a: "לסביבה מאחורי המפתח אין מספר וואטסאפ מחובר במלואו. פותחים וואטסאפ → חיבור ומשלימים או מתקנים." },
+  { topic: "API & webhooks", q: "איך בודקים את החיבור?", a: "אחרי שהמספר מחובר ותבנית אושרה, פותחים וואטסאפ → חיבור ושולחים תבנית בדיקה לטלפון שלכם. מאשרים הסכמה קודם. Meta עשויה לחייב. לבדיקת webhook בלי הודעה ללקוח משתמשים ב־Send test webhook." },
+  { topic: "API & webhooks", q: "האם webhooks כוללים תשובות לקוחות?", a: "עדיין לא. webhooks מכסים סטטוס הודעות יוצאות. תשובות לקוחות מופיעות בתיבת הוואטסאפ של ביזאפלי." },
+];
+
+const SHELL = {
+  en: {
+    eyebrow: "Help Center",
+    title: "How can we help?",
+    lead: "Answers about onboarding, Meta's requirements, numbers, templates, billing and the API.",
+    search: "Search help articles",
+    placeholder: "Search, e.g. verification, webhook, template",
+    all: "All",
+    topics: "Filter by topic",
+    articles: "Help articles",
+    article: "article",
+    articlesN: "articles",
+    empty: "No articles match. Try another term, or contact support below.",
+    resources: "Resources",
+    docs: "Documentation",
+    docsLead: "API guides, webhooks and the endpoint reference.",
+    security: "Security",
+    securityLead: "How keys, webhooks and Meta tokens are protected.",
+    privacy: "Privacy Policy",
+    privacyLead: "How Bizuply handles personal data.",
+    terms: "Terms of Service",
+    termsLead: "The terms for using Bizuply.",
+    support: "Support",
+    contact: "Contact support.",
+    contactLead: "Send the form, or email us. For API issues, include the requestId from the error response.",
+    existing: "Existing customers can also log in and see live connection status under WhatsApp → Connection.",
+    noStatus: "There is no public service status page yet. Connection and Meta account status are shown live in your dashboard.",
+  },
+  he: {
+    eyebrow: "מרכז עזרה",
+    title: "איך אפשר לעזור?",
+    lead: "תשובות על חיבור, דרישות Meta, מספרים, תבניות, חיוב וה־API.",
+    search: "חיפוש במאמרי העזרה",
+    placeholder: "חיפוש, למשל אימות, webhook, תבנית",
+    all: "הכול",
+    topics: "סינון לפי נושא",
+    articles: "מאמרי עזרה",
+    article: "מאמר",
+    articlesN: "מאמרים",
+    empty: "אין מאמרים תואמים. נסו מונח אחר, או פנו לתמיכה למטה.",
+    resources: "משאבים",
+    docs: "תיעוד",
+    docsLead: "מדריכי API, webhooks ומפרט נקודות הקצה.",
+    security: "אבטחה",
+    securityLead: "איך מוגנים מפתחות, webhooks וטוקנים של Meta.",
+    privacy: "מדיניות פרטיות",
+    privacyLead: "איך ביזאפלי מטפלת במידע אישי.",
+    terms: "תנאי שימוש",
+    termsLead: "התנאים לשימוש בביזאפלי.",
+    support: "תמיכה",
+    contact: "פנייה לתמיכה.",
+    contactLead: "שולחים את הטופס, או כותבים לנו. לבעיות API מצרפים את ה־requestId מתשובת השגיאה.",
+    existing: "לקוחות קיימים יכולים גם להתחבר ולראות סטטוס חיבור חי תחת וואטסאפ → חיבור.",
+    noStatus: "אין עדיין עמוד סטטוס ציבורי. סטטוס החיבור וחשבון Meta מוצגים בלוח הבקרה.",
+  },
+};
+
 export default function HelpPage() {
+  const { i18n } = useTranslation();
+  const he = coerceSupportedLanguage(i18n.language) === "he";
+  const shell = he ? SHELL.he : SHELL.en;
+  const source = he ? ARTICLES_HE : ARTICLES;
+  const topicList = he ? TOPICS_HE : TOPICS;
   const [query, setQuery] = useState("");
   const [topic, setTopic] = useState<Topic | null>(null);
 
   const results = useMemo(() => {
     const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
-    return ARTICLES.filter((article) => {
+    return source.filter((article) => {
       if (topic && article.topic !== topic) return false;
-      const text = `${article.q} ${article.a} ${article.topic}`.toLowerCase();
+      const label = he ? TOPIC_LABEL_HE[article.topic] : article.topic;
+      const text = `${article.q} ${article.a} ${label}`.toLowerCase();
       return terms.every((term) => text.includes(term));
     });
-  }, [query, topic]);
+  }, [query, topic, source, he]);
 
   return (
     <>
@@ -135,18 +241,18 @@ export default function HelpPage() {
         <div className="wa-wrap">
           <SectionHead
             as="h1"
-            eyebrow="Help Center"
-            title="How can we help?"
-            lead="Answers about onboarding, Meta's requirements, numbers, templates, billing and the API."
+            eyebrow={shell.eyebrow}
+            title={shell.title}
+            lead={shell.lead}
           />
           <div className="wa-help-search" role="search">
             <Search size={18} aria-hidden="true" />
-            <label htmlFor="wa-help-search" className="wa-sr">Search help articles</label>
+            <label htmlFor="wa-help-search" className="wa-sr">{shell.search}</label>
             <input
               id="wa-help-search"
               className="wa-input"
               type="search"
-              placeholder="Search, e.g. verification, webhook, template"
+              placeholder={shell.placeholder}
               value={query}
               onChange={(event) => setQuery(event.target.value)}
               autoComplete="off"
@@ -157,24 +263,24 @@ export default function HelpPage() {
 
       <section className="wa-section is-tight" aria-labelledby="wa-help-articles">
         <div className="wa-wrap" style={{ maxWidth: 900 }}>
-          <h2 id="wa-help-articles" className="wa-sr">Help articles</h2>
-          <div className="wa-chips" role="group" aria-label="Filter by topic">
-            <button type="button" className="wa-chip" aria-pressed={topic === null} onClick={() => setTopic(null)}>All</button>
-            {TOPICS.map((item) => (
+          <h2 id="wa-help-articles" className="wa-sr">{shell.articles}</h2>
+          <div className="wa-chips" role="group" aria-label={shell.topics}>
+            <button type="button" className="wa-chip" aria-pressed={topic === null} onClick={() => setTopic(null)}>{shell.all}</button>
+            {topicList.map((item) => (
               <button key={item} type="button" className="wa-chip" aria-pressed={topic === item} onClick={() => setTopic(topic === item ? null : item)}>
-                {item}
+                {he ? TOPIC_LABEL_HE[item] : item}
               </button>
             ))}
           </div>
           <p className="wa-fine" aria-live="polite" style={{ marginBottom: 14 }}>
-            {results.length} {results.length === 1 ? "article" : "articles"}
+            {results.length} {results.length === 1 ? shell.article : shell.articlesN}
           </p>
           {results.length ? (
             <Accordion key={`${topic}-${query}`} items={results.map((article) => ({ q: article.q, a: article.a }))} />
           ) : (
             <div className="wa-card">
               <p style={{ margin: 0 }}>
-                No articles match. Try another term, or contact support below.
+                {shell.empty}
               </p>
             </div>
           )}
@@ -183,27 +289,27 @@ export default function HelpPage() {
 
       <section className="wa-section is-band" aria-labelledby="wa-help-resources">
         <div className="wa-wrap">
-          <h2 id="wa-help-resources" className="wa-h2" style={{ marginBottom: 28 }}>Resources</h2>
+          <h2 id="wa-help-resources" className="wa-h2" style={{ marginBottom: 28 }}>{shell.resources}</h2>
           <div className="wa-grid-4">
             <SiteLink to="/docs" className="wa-card is-hover" style={{ textDecoration: "none" }}>
               <div className="wa-card-icon"><BookOpen size={20} aria-hidden="true" /></div>
-              <h3 className="wa-h3">Documentation</h3>
-              <p>API guides, webhooks and the endpoint reference.</p>
+              <h3 className="wa-h3">{shell.docs}</h3>
+              <p>{shell.docsLead}</p>
             </SiteLink>
             <SiteLink to="/security" className="wa-card is-hover" style={{ textDecoration: "none" }}>
               <div className="wa-card-icon"><ShieldCheck size={20} aria-hidden="true" /></div>
-              <h3 className="wa-h3">Security</h3>
-              <p>How keys, webhooks and Meta tokens are protected.</p>
+              <h3 className="wa-h3">{shell.security}</h3>
+              <p>{shell.securityLead}</p>
             </SiteLink>
             <a href={PRIVACY_URL} className="wa-card is-hover" style={{ textDecoration: "none" }}>
               <div className="wa-card-icon"><FileText size={20} aria-hidden="true" /></div>
-              <h3 className="wa-h3">Privacy Policy</h3>
-              <p>How Bizuply handles personal data.</p>
+              <h3 className="wa-h3">{shell.privacy}</h3>
+              <p>{shell.privacyLead}</p>
             </a>
             <a href={TERMS_URL} className="wa-card is-hover" style={{ textDecoration: "none" }}>
               <div className="wa-card-icon"><FileText size={20} aria-hidden="true" /></div>
-              <h3 className="wa-h3">Terms of Service</h3>
-              <p>The terms for using Bizuply.</p>
+              <h3 className="wa-h3">{shell.terms}</h3>
+              <p>{shell.termsLead}</p>
             </a>
           </div>
         </div>
@@ -212,17 +318,17 @@ export default function HelpPage() {
       <section className="wa-section" id="contact" aria-labelledby="wa-help-contact">
         <div className="wa-wrap wa-split" style={{ alignItems: "start" }}>
           <div>
-            <p className="wa-eyebrow"><LifeBuoy size={14} aria-hidden="true" /> Support</p>
-            <h2 id="wa-help-contact" className="wa-h2">Contact support.</h2>
+            <p className="wa-eyebrow"><LifeBuoy size={14} aria-hidden="true" /> {shell.support}</p>
+            <h2 id="wa-help-contact" className="wa-h2">{shell.contact}</h2>
             <p className="wa-lead">
-              Send the form, or email us. For API issues, include the <code>requestId</code> from the error response.
+              {shell.contactLead}
             </p>
             <ul className="wa-list">
               <li><Mail size={16} aria-hidden="true" /> <a className="wa-link" href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a></li>
-              <li><LifeBuoy size={16} aria-hidden="true" /> <span>Existing customers can also <a className="wa-link" href={SIGN_IN_URL}>log in</a> and see live connection status under WhatsApp → Connection.</span></li>
+              <li><LifeBuoy size={16} aria-hidden="true" /> <span>{shell.existing}</span></li>
             </ul>
             <p className="wa-fine">
-              There is no public service status page yet. Connection and Meta account status are shown live in your dashboard.
+              {shell.noStatus}
             </p>
           </div>
           <div className="wa-card">
