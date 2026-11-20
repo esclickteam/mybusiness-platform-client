@@ -38,6 +38,9 @@ function aiStudioErrorText(
   const serverText = String(data?.error || "");
   const leaked = /[$]|USD|דולר/i.test(serverText);
   const renewal = data?.resetsAtLabel ? ` המכסה תתחדש ב־${data.resetsAtLabel}.` : "";
+  if (code === "AI_STUDIO_PLAN_INVALID") {
+    return serverText || "לא הצלחתי לבנות אתר תואם לבקשה. לא נשמר אתר גנרי. נסו לנסח שוב.";
+  }
   if (code === "AI_STUDIO_DAILY_QUOTA") {
     return !leaked && serverText.startsWith(DAILY_QUOTA_TEXT) ? serverText : `${DAILY_QUOTA_TEXT}${renewal}`;
   }
@@ -225,6 +228,8 @@ export default function AiStudioPocPage() {
       status: publish ? "published" : "draft",
       activePageId: materialized.activePageId,
       pages: materialized.pages,
+      pagesAuthoritative: true,
+      replacePages: true,
       data: home?.data,
       templateData: home?.templateData,
       projectData: home?.projectData,
