@@ -6,6 +6,7 @@ export type ManagedWhatsAppHealthStatus =
   | "healthy"
   | "degraded"
   | "failed"
+  | "rate_limited"
   | "not_configured";
 
 export type ManagedWhatsAppConnectionSummary = {
@@ -33,9 +34,9 @@ export type ManagedWhatsAppConnectionSummary = {
 export type AdminManagedWhatsAppHealth = {
   status: ManagedWhatsAppHealthStatus | string;
   tokenConfigured: boolean;
-  authenticationValid: boolean;
-  wabaAccessible: boolean;
-  phoneNumberAccessible: boolean;
+  authenticationValid: boolean | null;
+  wabaAccessible: boolean | null;
+  phoneNumberAccessible: boolean | null;
   phoneBelongsToWaba?: boolean;
   wabaId?: string;
   phoneNumberId?: string;
@@ -47,6 +48,11 @@ export type AdminManagedWhatsAppHealth = {
   errorCode?: string | null;
   errorType?: string | null;
   errorMessage?: string | null;
+  httpStatus?: number | null;
+  graphCode?: number | null;
+  graphSubcode?: number | null;
+  fbtraceId?: string | null;
+  retryAt?: string | null;
   tokenType?: string | null;
   tokenTypeLabel?: string | null;
   tokenIsSystemUser?: boolean;
