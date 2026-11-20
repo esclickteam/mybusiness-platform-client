@@ -1,0 +1,11 @@
+title = "Working-tree secret scan"
+
+[allowlist]
+paths = [
+  '''(^|/)package-lock\.json$''',
+  '''(^|/)node_modules/''',
+]
+regexes = [
+  '''sk_test_''',
+  '''sk_live_dummy''',
+]
