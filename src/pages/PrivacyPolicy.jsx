@@ -6,6 +6,8 @@ import { getTextDirection } from "../i18n/localeUtils";
 import LegalDocumentLinks from "../components/legal/LegalDocumentLinks";
 import PrivacyRequestForm from "../components/privacy/PrivacyRequestForm";
 import PrivacyFacts from "../components/privacy/PrivacyFacts";
+import PublicContentMeasurementNotice from "../components/privacy/PublicContentMeasurementNotice";
+import { measurementNotice } from "../lib/publicContentMeasurementNotice.mjs";
 import { openCookieSettings } from "../lib/trackingConsent";
 import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
 import { SCOPE, TERMS_CHAPTER } from "../lib/complianceConsentCopy";
@@ -107,6 +109,12 @@ function PrivacyPolicy() {
               </a>
             ))}
           </nav>
+          <a
+            href="#public-content-measurement"
+            className="mt-2 flex items-center gap-3 rounded-2xl border border-slate-100 bg-white/70 px-4 py-3 text-sm font-black text-slate-700 transition hover:-translate-y-0.5 hover:bg-white hover:text-slate-800"
+          >
+            {measurementNotice(locale).nav}
+          </a>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
             <p className="text-sm font-black text-slate-900">
@@ -282,6 +290,8 @@ function PrivacyPolicy() {
               <Trans i18nKey="privacyPage.s8.p3" components={{ strong: <strong /> }} />
             </p>
           </section>
+
+          <PublicContentMeasurementNotice className={sectionBase} headingClass={h2Base} textClass={pBase} />
 
           <section id="section-9" className={sectionBase}>
             <h2 className={h2Base}>{t("privacyPage.s9.h")}</h2>
