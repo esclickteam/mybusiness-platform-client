@@ -128,6 +128,8 @@ function healthHeadline(status: string | undefined, copy: AdminManagedWhatsAppCo
       return { emoji: "🟠", label: copy.healthDegraded, color: "#c2410c", bg: "#fff7ed" };
     case "failed":
       return { emoji: "🔴", label: copy.healthFailed, color: "#b91c1c", bg: "#fef2f2" };
+    case "rate_limited":
+      return { emoji: "🟡", label: copy.healthRateLimited, color: "#a16207", bg: "#fefce8" };
     default:
       return { emoji: "⚪", label: copy.healthUnset, color: "#475569", bg: "#f8fafc" };
   }
@@ -204,14 +206,25 @@ function formatTokenValidity(
   return copy.unknown;
 }
 
+function probeAccessLabel(
+  value: boolean | null | undefined,
+  copy: AdminManagedWhatsAppCopy
+) {
+  if (value == null) return copy.notChecked;
+  return value ? copy.ok : copy.errorWord;
+}
+
 function ManagedConnectionHealthPanel({
   health,
+  connectionReady,
   copy,
 }: {
   health?: AdminManagedWhatsAppHealth;
+  connectionReady?: boolean;
   copy: AdminManagedWhatsAppCopy;
 }) {
   const headline = healthHeadline(health?.status, copy);
+  const rateLimited = health?.status === "rate_limited";
   return (
     <div
       style={{
@@ -222,9 +235,12 @@ function ManagedConnectionHealthPanel({
         border: "1px solid rgba(15,23,42,0.06)",
       }}
     >
-      <strong style={{ color: headline.color, fontSize: 15 }}>
-        {copy.connectionState}: {headline.emoji} {headline.label}
+      <strong style={{ color: connectionReady ? "#047857" : "#b91c1c", fontSize: 15 }}>
+        {copy.connectionState}: {connectionReady ? copy.connectionConnected : copy.connectionNotConnected}
       </strong>
+      <div style={{ color: headline.color, fontSize: 14, marginTop: 6 }}>
+        {copy.healthCheckState}: {headline.emoji} {headline.label}
+      </div>
       <div
         style={{
           marginTop: 10,
@@ -283,11 +299,10 @@ function ManagedConnectionHealthPanel({
           </div>
         ) : null}
         <div>
-          {copy.wabaLabel}: {okLabel(Boolean(health?.wabaAccessible), copy.ok, copy.errorWord)}
+          {copy.wabaLabel}: {probeAccessLabel(health?.wabaAccessible, copy)}
         </div>
         <div>
-          {copy.whatsappNumber}:{" "}
-          {okLabel(Boolean(health?.phoneNumberAccessible), copy.ok, copy.errorWord)}
+          {copy.whatsappNumber}: {probeAccessLabel(health?.phoneNumberAccessible, copy)}
         </div>
         <div>
           {copy.lastCheck}: {formatDate(health?.lastCheckedAt, copy.dateLocale)}
@@ -299,8 +314,13 @@ function ManagedConnectionHealthPanel({
           {copy.lastSuccessfulSend}: {formatDate(health?.lastSuccessfulSendAt, copy.dateLocale)}
         </div>
         {health?.errorMessage ? (
-          <div style={{ color: "#b91c1c", marginTop: 4 }}>
+          <div style={{ color: rateLimited ? "#a16207" : "#b91c1c", marginTop: 4 }}>
             {copy.lastError}: {health.errorMessage}
+            {health.httpStatus ? ` · HTTP ${health.httpStatus}` : ""}
+            {health.graphCode != null ? ` · code ${health.graphCode}` : ""}
+            {health.graphSubcode != null ? ` · subcode ${health.graphSubcode}` : ""}
+            {health.fbtraceId ? ` · fbtrace ${health.fbtraceId}` : ""}
+            {health.retryAt ? ` · retry ${formatDate(health.retryAt, copy.dateLocale)}` : ""}
           </div>
         ) : null}
       </div>
@@ -1218,7 +1238,11 @@ export default function AdminManagedWhatsApp() {
                   {copy.activeEnabled}
                 </label>
               ) : null}
-              <ManagedConnectionHealthPanel health={status.health} copy={copy} />
+              <ManagedConnectionHealthPanel
+                health={status.health}
+                connectionReady={Boolean(status.connection?.connectionReady)}
+                copy={copy}
+              />
               {showIlCredentialForm &&
               !status.connection?.managedBusinessIdConfigured ? (
                 <div
