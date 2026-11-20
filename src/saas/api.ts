@@ -49,3 +49,34 @@ export async function checkCountryAvailability(body: { slug: string; country: st
   return data as { success: boolean; result: "review" | "assigned"; guaranteed: false };
 }
 
+/**
+ * Sandbox-only purchase → provision. Requires server SAAS_CHECKOUT_MODE=sandbox.
+ * Never use for live charges; live /checkout stays disabled until owner approval.
+ */
+export async function createSandboxSaasCheckout(body: {
+  slug: string;
+  name: string;
+  email: string;
+  businessName?: string;
+  paymentType?: "full" | "deposit";
+  autoProvision?: boolean;
+}) {
+  const { data } = await API.post("/saas-marketplace/sandbox-checkout", body);
+  return data as {
+    success: boolean;
+    mode: "sandbox";
+    provisioned: boolean;
+    orderToken?: string;
+    paymentId?: string;
+    account?: {
+      email?: string;
+      tenantIds?: string[];
+      passwordSetupUrl?: string | null;
+      studioPathHint?: string | null;
+    } | null;
+    note?: string;
+    code?: string;
+    error?: string;
+  };
+}
+
