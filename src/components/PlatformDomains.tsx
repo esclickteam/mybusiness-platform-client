@@ -3,15 +3,14 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
-import { WayArt } from "./HomeVisuals";
 import { Reveal } from "./product-marketing";
 import "../styles/homeWow.css";
 
 const WAYS = [
-  { n: 1, to: "/platform" },
-  { n: 2, to: "/website-builder" },
-  { n: 3, to: "/meta-campaigns" },
-  { n: 4, to: "/pricing" },
+  { n: 1, to: "/platform", image: "/demo-media/home/crm.jpg" },
+  { n: 2, to: "/website-builder", image: "/demo-media/websites/poster.jpg" },
+  { n: 3, to: "/meta-campaigns", image: "/demo-media/campaigns/poster.jpg" },
+  { n: 4, to: "/pricing", image: "/demo-media/automations/poster.jpg" },
 ] as const;
 
 export default function PlatformDomains() {
@@ -27,8 +26,10 @@ export default function PlatformDomains() {
         <div className="home-ways__grid">
           {WAYS.map((way) => (
             <Reveal key={way.n} from="up" distance={20}>
-              <article className="home-way">
-                <WayArt index={way.n - 1} />
+              <article className={`home-way home-way--shot home-way--shot-${way.n}`}>
+                <div className="home-way__shot">
+                  <img src={way.image} alt={t(`home.way${way.n}Title`)} width="1280" height="800" />
+                </div>
                 <div>
                   <h3>{t(`home.way${way.n}Title`)}</h3>
                   <p>{t(`home.way${way.n}Body`)}</p>
