@@ -77,3 +77,34 @@ export const SALE_STATUS = "זמינה למכירה, עם סיכון מתועד"
 export function systemBySlug(slug: string) {
   return SAAS_SYSTEMS.find((system) => system.slug === slug);
 }
+
+export type OwnerCoverageInput = {
+  templateSlug?: string;
+  ownerKey?: string;
+};
+
+export function ownerCoverage(rows: OwnerCoverageInput[]) {
+  const known = new Set(SAAS_SYSTEMS.map((system) => system.slug));
+  const systems = SAAS_SYSTEMS.map((system) => {
+    const matched = rows.filter((row) => row.templateSlug === system.slug);
+    const owners = new Set(matched.map((row) => row.ownerKey || "ללא בעלים"));
+    return {
+      slug: system.slug,
+      name: system.name,
+      businesses: matched.length,
+      owners: matched.length ? owners.size : 0,
+      detail: matched.length
+        ? "בעלים הרשומים ב-Bizuply"
+        : "אין עסק רשום ב-Bizuply. בעלים מתוך המערכת עצמה עדיין לא נקראים.",
+    };
+  });
+  const unknown = new Map<string, number>();
+  for (const row of rows) {
+    const slug = row.templateSlug || "";
+    if (!known.has(slug)) unknown.set(slug, (unknown.get(slug) || 0) + 1);
+  }
+  return {
+    systems,
+    unknown: Array.from(unknown, ([slug, businesses]) => ({ slug: slug || "ללא מערכת", businesses })),
+  };
+}
