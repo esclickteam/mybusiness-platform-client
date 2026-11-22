@@ -178,7 +178,10 @@ export function buildPublishPayloadFromAdsManager(
     budgetAmount: amount,
     budgetStrategy: campaign.budgetStrategy,
     useCampaignBudget: campaign.budgetStrategy === "campaign",
-    isAdsetBudgetSharingEnabled: campaign.budgetStrategy === "campaign",
+    isAdsetBudgetSharingEnabled:
+      campaign.budgetStrategy === "adset" &&
+      campaign.budgetType === "daily" &&
+      campaign.adSetBudgetSharing === true,
     bidStrategy: mapUiBidStrategy(campaign.bidStrategy),
     bidAmount: Number(campaign.bidAmount) || undefined,
     roasAverageFloor: Number(campaign.roasAverageFloor) || undefined,

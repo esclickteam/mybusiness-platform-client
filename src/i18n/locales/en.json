@@ -10764,6 +10764,8 @@
       "campaignBudgetHint": "Set one budget at the campaign level and distribute it across ad sets.",
       "adSetBudget": "Ad set budget",
       "adSetBudgetHint": "Control budget separately for each ad set.",
+      "adSetBudgetSharing": "Share budget across ad sets",
+      "adSetBudgetSharingHint": "Meta can move up to 20% of the daily budget between ad sets. Off by default, and only when the budget is set on the ad set.",
       "dailyBudget": "Daily budget",
       "lifetimeBudget": "Lifetime budget",
       "budgetAverage": "You’ll spend an average of {{currency}} {{amount}} per day. Actual daily spend may vary.",

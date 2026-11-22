@@ -17,6 +17,7 @@ export function createDefaultCampaign(): CampaignDraft {
     objective: "OUTCOME_LEADS",
     status: "DRAFT",
     budgetStrategy: "campaign",
+    adSetBudgetSharing: false,
     budgetType: "daily",
     budgetAmount: "70.00",
     currency: "ILS",

@@ -53,6 +53,8 @@ export type CampaignDraft = {
   objective: CampaignObjective;
   status: string;
   budgetStrategy: BudgetStrategy;
+  /** Share up to 20% of an ad set daily budget. Never implied by campaign budget. */
+  adSetBudgetSharing: boolean;
   budgetType: BudgetType;
   budgetAmount: string;
   currency: string;
