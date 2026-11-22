@@ -681,7 +681,6 @@ function TimelineItem({ event, locale }: { event: TimelineEvent; locale: string 
     task: t("crm.common.task"),
     call: t("crm.workspace.logCall"),
     meeting: t("crm.workspace.meeting"),
-    whatsapp: t("crm.common.whatsapp"),
     whatsapp_received: t("crm.workspace.whatsappReceived"),
   };
   const typeLabel = typeLabels[event.type] || event.type || t("crm.workspace.tabs.activity");
