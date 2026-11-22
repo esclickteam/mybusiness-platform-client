@@ -52,6 +52,7 @@ describe("Ads Manager Marketing API parity", () => {
     const publish = buildPublishPayloadFromAdsManager(state);
     expect(publish.status).toBe("PAUSED");
     expect(publish.useCampaignBudget).toBe(true);
+    expect(publish.isAdsetBudgetSharingEnabled).toBe(false);
     expect(publish.bidStrategy).toBe("COST_CAP");
     expect(publish.bidAmount).toBe(18);
     expect(publish.advantagePlacements).toBe(false);
@@ -63,6 +64,43 @@ describe("Ads Manager Marketing API parity", () => {
     expect(publish.creativeFormat).toBe("carousel");
     expect(publish.carouselCards).toHaveLength(2);
     expect(placementPayload(state.adSets[0]).advantagePlacements).toBe(false);
+  });
+
+  it("does not turn on ad set budget sharing for a campaign budget", () => {
+    const state = createDefaultAdsManagerState();
+    state.campaign.budgetStrategy = "campaign";
+    state.campaign.adSetBudgetSharing = true;
+    state.adSets[0].facebookPageId = "123";
+    state.ads[0].facebookPageId = "123";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Hi";
+    const publish = buildPublishPayloadFromAdsManager(state);
+    expect(publish.useCampaignBudget).toBe(true);
+    expect(publish.isAdsetBudgetSharingEnabled).toBe(false);
+    expect(publish.dailyBudget).toBe(70);
+  });
+
+  it("sends ad set budget sharing only when that setting is on", () => {
+    const state = createDefaultAdsManagerState();
+    state.campaign.budgetStrategy = "adset";
+    state.campaign.budgetType = "daily";
+    state.campaign.adSetBudgetSharing = true;
+    state.adSets[0].facebookPageId = "123";
+    state.ads[0].facebookPageId = "123";
+    state.ads[0].primaryText = "Hello";
+    state.ads[0].headline = "Hi";
+    const enabled = buildPublishPayloadFromAdsManager(state);
+    expect(enabled.useCampaignBudget).toBe(false);
+    expect(enabled.isAdsetBudgetSharingEnabled).toBe(true);
+    expect(enabled.dailyBudget).toBe(70);
+    state.campaign.adSetBudgetSharing = false;
+    const disabled = buildPublishPayloadFromAdsManager(state);
+    expect(disabled.isAdsetBudgetSharingEnabled).toBe(false);
+    state.campaign.budgetType = "lifetime";
+    state.campaign.adSetBudgetSharing = true;
+    const lifetime = buildPublishPayloadFromAdsManager(state);
+    expect(lifetime.isAdsetBudgetSharingEnabled).toBe(false);
+    expect(lifetime.lifetimeBudget).toBe(70);
   });
 
   it("sends excluded locations to Graph targeting", () => {

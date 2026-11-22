@@ -187,6 +187,25 @@ export default function CampaignLevelEditor({
               description={t("metaCampaigns.adsManager.adSetBudgetHint")}
             />
           </div>
+          {sessionMode !== "edit" && campaign.budgetStrategy === "adset" ? (
+            <label className="mt-3 flex items-start gap-2 text-[13px] text-[#1C1E21]">
+              <input
+                type="checkbox"
+                className="mt-0.5"
+                checked={campaign.adSetBudgetSharing === true && campaign.budgetType === "daily"}
+                disabled={campaign.budgetType === "lifetime"}
+                onChange={(e) => onChange({ adSetBudgetSharing: e.target.checked })}
+              />
+              <span>
+                <span className="font-semibold">
+                  {t("metaCampaigns.adsManager.adSetBudgetSharing")}
+                </span>
+                <span className="mt-0.5 block text-[#65676B]">
+                  {t("metaCampaigns.adsManager.adSetBudgetSharingHint")}
+                </span>
+              </span>
+            </label>
+          ) : null}
         </div>
 
         <div className="grid grid-cols-[140px_1fr_90px] gap-2" data-demo-target="meta-budget">
