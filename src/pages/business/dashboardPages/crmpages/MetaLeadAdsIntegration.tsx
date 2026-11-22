@@ -154,10 +154,7 @@ export default function MetaLeadAdsIntegration({
 
   const isAdminCrm = destination === "admin_crm";
   const reconnectRequired = Boolean(statusSnapshot.reconnectRequired);
-  const isConnected =
-    Boolean(connectedPage?.pageId) &&
-    !reconnectRequired &&
-    statusSnapshot.connectionHealthy !== false;
+  const isConnected = Boolean(connectedPage?.pageId) && !reconnectRequired;
   const hasForm = Boolean(selectedForm?.formId) || selectedForms.length > 0;
   const pageAlreadyConnected =
     isConnected &&
@@ -855,6 +852,13 @@ export default function MetaLeadAdsIntegration({
                     <p className="mt-1 text-xs font-bold leading-5 text-amber-700">
                       {t(`${T}.reconnectRequiredDesc`)}
                     </p>
+                    {Number(intake?.failedCount || 0) > 0 ? (
+                      <p className="mt-1 text-xs font-bold leading-5 text-amber-800">
+                        {t(`${T}.reconnectWaiting`, {
+                          count: Number(intake?.failedCount || 0),
+                        })}
+                      </p>
+                    ) : null}
                     <button
                       type="button"
                       onClick={connectFacebook}

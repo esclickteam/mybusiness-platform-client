@@ -4355,8 +4355,9 @@
           "retryRateLimit": "Meta rate-limited the retry. Try again in a few minutes."
         },
         "connected": "Connected",
-        "reconnectRequired": "Meta reconnect required",
-        "reconnectRequiredDesc": "The Page is still saved, but Lead Ads permission is missing (including leads_retrieval and pages_manage_metadata), or this app is not subscribed to leadgen on the Page itself. Reconnect Facebook, approve those permissions, and select this business's Facebook Page.",
+        "reconnectRequired": "Meta Lead Ads disconnected",
+        "reconnectRequiredDesc": "The Page is still saved, but the token or permissions are no longer valid. New leads stay out of the CRM until you reconnect Meta.",
+        "reconnectWaiting": "{{count}} leads are waiting in the recovery queue and will be imported after a successful reconnect, without duplicates.",
         "notConnected": "Not connected",
         "selectedPage": "Selected Page",
         "leadForms": "Lead Forms",

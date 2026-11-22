@@ -54,14 +54,7 @@ export function resolveMetaAccountConnected(
 export function isMetaLeadReconnectRequired(
   snapshot: MetaLeadWizardSnapshot
 ): boolean {
-  if (snapshot.reconnectRequired === true) return true;
-  if (
-    snapshot.connectionHealthy === false &&
-    Boolean(resolveConnectedPageId(snapshot))
-  ) {
-    return true;
-  }
-  return false;
+  return snapshot.reconnectRequired === true;
 }
 
 export function isMetaLeadSetupComplete(

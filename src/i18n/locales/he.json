@@ -4355,8 +4355,9 @@
           "retryRateLimit": "Meta הגבילה את הקצב. נסו שוב בעוד כמה דקות."
         },
         "connected": "מחובר",
-        "reconnectRequired": "נדרש חיבור מחדש ל-Meta",
-        "reconnectRequiredDesc": "העמוד שמור, אבל חסרות הרשאות Lead Ads (כולל leads_retrieval ו-pages_manage_metadata), או שהאפליקציה עדיין לא רשומה ל-leadgen על העמוד. חברו מחדש את פייסבוק, אשרו את ההרשאות, ובחרו את עמוד הפייסבוק של העסק.",
+        "reconnectRequired": "החיבור ל-Meta Lead Ads נותק",
+        "reconnectRequiredDesc": "החיבור לעמוד נשמר, אבל הטוקן או ההרשאות כבר לא תקינים. לידים חדשים לא נכנסים ל-CRM עד שתחברו את Meta מחדש.",
+        "reconnectWaiting": "{{count}} לידים ממתינים בתור השחזור וייכנסו אחרי חיבור מחדש מוצלח, בלי כפילות.",
         "notConnected": "לא מחובר",
         "selectedPage": "עמוד נבחר",
         "leadForms": "טפסי לידים",

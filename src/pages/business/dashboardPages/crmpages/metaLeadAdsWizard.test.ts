@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   canNavigateToMetaLeadWizardStep,
   deriveMetaLeadWizardStep,
+  isMetaLeadReconnectRequired,
   isMetaLeadSetupComplete,
 } from "./metaLeadAdsWizard";
 
@@ -87,6 +88,19 @@ describe("deriveMetaLeadWizardStep", () => {
     expect(isMetaLeadSetupComplete(snapshot)).toBe(false);
     expect(deriveMetaLeadWizardStep(snapshot)).toBe(1);
     expect(canNavigateToMetaLeadWizardStep(snapshot, 3)).toBe(false);
+  });
+
+  it("keeps a saved page and form when Meta is temporarily unhealthy", () => {
+    const snapshot = {
+      metaAccountConnected: true,
+      connectedPageId: "1326020490583991",
+      selectedLeadFormId: "1720163819102905",
+      reconnectRequired: false,
+      connectionHealthy: false,
+    };
+    expect(isMetaLeadReconnectRequired(snapshot)).toBe(false);
+    expect(isMetaLeadSetupComplete(snapshot)).toBe(true);
+    expect(deriveMetaLeadWizardStep(snapshot)).toBe(3);
   });
 
   it("does not open step 2 or 3 before those prerequisites exist", () => {
