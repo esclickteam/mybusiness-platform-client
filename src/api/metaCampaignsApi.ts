@@ -58,6 +58,9 @@ export type MetaCampaign = {
   /** Ads Manager Delivery (prefer ad effective_status) */
   effectiveStatus: string;
   deliveryStatus?: string;
+  deliveryStatuses?: string[];
+  deliverySyncError?: boolean;
+  deliveryPartial?: boolean;
   campaignEffectiveStatus?: string;
   editorDraft?: {
     ads?: Array<Record<string, string>>;
@@ -410,6 +413,8 @@ export type MetaCampaignsOverview = {
   series: MetaCampaignSeriesPoint[];
   comparisonSeries?: MetaCampaignSeriesPoint[];
   campaigns: MetaCampaign[];
+  deliveryPartial?: boolean;
+  deliverySyncError?: boolean;
   insights: MetaCampaignInsight[];
   comparison?: {
     current?: MetaCampaignsOverview["kpis"];
@@ -709,6 +714,27 @@ export async function disconnectMetaAds(businessId?: string) {
     { businessId },
     withBusiness(businessId)
   );
+  return data;
+}
+
+export type MetaCampaignDeliveryRow = {
+  id: string;
+  status?: string;
+  configuredStatus?: string;
+  effectiveStatus?: string;
+  deliveryStatus?: string;
+  deliveryStatuses?: string[];
+  deliverySyncError?: boolean;
+};
+
+export async function getMetaCampaignDelivery(businessId?: string) {
+  const { data } = await API.get<{
+    success: boolean;
+    readOnly?: boolean;
+    campaigns: MetaCampaignDeliveryRow[];
+    deliveryPartial?: boolean;
+    deliverySyncError?: boolean;
+  }>("/meta-campaigns/delivery-statuses", withBusiness(businessId));
   return data;
 }
 

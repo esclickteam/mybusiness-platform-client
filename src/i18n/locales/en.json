@@ -11768,10 +11768,12 @@
       "pending_review": "In review",
       "in_process": "Processing",
       "adset_paused": "Ad set paused",
-      "disapproved": "Not approved",
+      "disapproved": "Rejected",
       "rejected": "Rejected",
-      "with_issues": "Needs attention",
-      "campaign_paused": "Campaign paused"
+      "with_issues": "With an error",
+      "campaign_paused": "Campaign paused",
+      "unknown": "Status not verified",
+      "limited": "Limited"
     },
     "human": {
       "HOLD": "Keep the budget as it is for now",
@@ -12125,7 +12127,8 @@
       "activePausedHint": "Configured status across this ad account",
       "sharedRange": "Date range",
       "showingRange": "Showing: {{range}}",
-      "pausedHistorical": "This campaign is paused. Numbers below are historical performance, not current delivery."
+      "pausedHistorical": "This campaign is paused. Numbers below are historical performance, not current delivery.",
+      "deliveryPartial": "This refresh read only part of the ads so it stays inside Meta's limit. Status is based on the ads that were read."
     },
     "empty": {
       "notConnectedTitle": "No connected ad account found",

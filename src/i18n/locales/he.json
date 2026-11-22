@@ -11755,11 +11755,13 @@
       "failed": "נכשל",
       "pending_review": "בבדיקה",
       "in_process": "בעיבוד",
-      "with_issues": "יש בעיה",
+      "with_issues": "עם שגיאה",
       "campaign_paused": "הקמפיין מושהה",
       "adset_paused": "מערך המודעות מושהה",
-      "disapproved": "לא אושר",
-      "rejected": "נדחה"
+      "disapproved": "נדחה",
+      "rejected": "נדחה",
+      "unknown": "הסטטוס לא אומת",
+      "limited": "מוגבל"
     },
     "human": {
       "HOLD": "מומלץ להשאיר את התקציב ללא שינוי",
@@ -12113,7 +12115,8 @@
       "activePausedHint": "סטטוס מוגדר בכל החשבון",
       "sharedRange": "טווח תאריכים",
       "showingRange": "מוצג: {{range}}",
-      "pausedHistorical": "הקמפיין מושהה. המספרים כאן הם ביצועים היסטוריים, לא מסירה פעילה עכשיו."
+      "pausedHistorical": "הקמפיין מושהה. המספרים כאן הם ביצועים היסטוריים, לא מסירה פעילה עכשיו.",
+      "deliveryPartial": "הרענון קרא חלק מהמודעות כדי לא לחרוג ממגבלת Meta. הסטטוס מבוסס על המודעות שנקראו."
     },
     "empty": {
       "notConnectedTitle": "לא נמצא חשבון מודעות מחובר",

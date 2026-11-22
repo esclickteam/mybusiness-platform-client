@@ -60,7 +60,7 @@ import {
   formatNumber,
   formatPercent,
   formatRoas,
-  metaDeliveryStatusKey,
+  deliveryStatusLabel,
   resolveMetaAccountStatus,
   resolveCampaignCurrency,
   SEGMENT_OPTIONS,
@@ -72,6 +72,7 @@ import MetaCampaignDeleteDialog from "./MetaCampaignDeleteDialog";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
 import {
   canToggleMetaDelivery,
+  deliveryLabelStatuses,
   displayListStatus,
   isQaTestDraftName,
   loadHideQaDrafts,
@@ -1106,8 +1107,8 @@ export default function MetaCampaignsOverviewTab() {
             <div className="space-y-3 p-3 md:hidden">
               {campaigns.length ? (
                 campaigns.map((campaign) => {
-                  const listStatus = displayListStatus(campaign);
-                  const deliveryStatus = listStatus;
+                  const deliveryParts = deliveryLabelStatuses(campaign);
+                  const deliveryStatus = deliveryParts[0] || displayListStatus(campaign);
                   const tone = statusTone(deliveryStatus);
                   const isConfiguredActive =
                     String(campaign.configuredStatus || campaign.status || "").toUpperCase() === "ACTIVE";
@@ -1116,7 +1117,7 @@ export default function MetaCampaignsOverviewTab() {
                     <article key={campaign.id} className="rounded-xl border border-slate-100 p-3" data-testid={`campaign-row-${campaign.id}`}>
                       <p className="break-words font-black text-slate-900">{campaign.name}</p>
                       <span className={`mt-2 inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
-                        {t(`metaCampaigns.status.${metaDeliveryStatusKey(deliveryStatus)}`, { defaultValue: deliveryStatus })}
+                        {deliveryStatusLabel(deliveryParts, t)}
                       </span>
                       <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
                         <div>
@@ -1307,7 +1308,8 @@ export default function MetaCampaignsOverviewTab() {
                 <tbody>
                   {campaigns.length ? (
                     campaigns.map((campaign, campaignIndex) => {
-                      const deliveryStatus = displayListStatus(campaign);
+                      const deliveryParts = deliveryLabelStatuses(campaign);
+                      const deliveryStatus = deliveryParts[0] || displayListStatus(campaign);
                       const tone = statusTone(deliveryStatus);
                       const isConfiguredActive =
                         String(
@@ -1353,14 +1355,7 @@ export default function MetaCampaignsOverviewTab() {
                               <span
                                 className={`h-1.5 w-1.5 rounded-full ${tone.dot}`}
                               />
-                              {t(
-                                `metaCampaigns.status.${metaDeliveryStatusKey(
-                                  deliveryStatus
-                                )}`,
-                                {
-                                  defaultValue: deliveryStatus,
-                                }
-                              )}
+                              {deliveryStatusLabel(deliveryParts, t)}
                             </span>
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">

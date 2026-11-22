@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Copy, Eye, Loader2, Pause, Pencil, Play, RefreshCw, Trash2 } from "lucide-react";
 import {
   duplicateLocalCampaignDraft,
   getMetaCampaign,
+  getMetaCampaignDelivery,
   getMetaCampaignsOverview,
   saveMetaEditorDraft,
   setMetaCampaignStatus,
@@ -27,8 +28,8 @@ import MetaCampaignDetailsDrawer from "./MetaCampaignDetailsDrawer";
 import CreateCampaignButton from "./CreateCampaignButton";
 import { metaAdsFriendlyMessage } from "./metaAdsFriendlyError";
 import {
+  deliveryStatusLabel,
   formatDateTimeHe,
-  metaDeliveryStatusKey,
   resolveCampaignCurrency,
   statusTone,
 } from "./metaCampaignUtils";
@@ -39,10 +40,16 @@ import { removeCampaignsFromList } from "./campaignListDeletion";
 import { useCampaignDraftDelete } from "./useCampaignDraftDelete";
 import {
   canToggleMetaDelivery,
+  campaignConfiguredOn,
+  campaignMatchesStatusFilter,
+  DELIVERY_REFRESH_MS,
+  deliveryLabelStatuses,
   displayListStatus,
   isQaTestDraftName,
   loadHideQaDrafts,
+  mergeDeliveryRefresh,
   saveHideQaDrafts,
+  shouldRefreshDelivery,
 } from "./campaignLocalDraft";
 
 type OutletCtx = { businessId: string | null };
@@ -84,6 +91,8 @@ export default function MetaCampaignsCampaignsPage() {
   const [columnsOpen, setColumnsOpen] = useState(false);
   const [lastSynced, setLastSynced] = useState<Date | null>(null);
   const [insightsError, setInsightsError] = useState<string | null>(null);
+  const [deliveryPartial, setDeliveryPartial] = useState(false);
+  const deliveryRefreshLock = useRef(false);
   const [details, setDetails] = useState<MetaCampaign | null>(null);
   const [pending, setPending] = useState<MetaCampaign | null>(null);
   const [busyId, setBusyId] = useState("");
@@ -113,6 +122,7 @@ export default function MetaCampaignsCampaignsPage() {
       if (data.connection?.selectedAdAccount?.timezoneName) setTimeZone(data.connection.selectedAdAccount.timezoneName);
       setCurrency(resolveCampaignCurrency(data.connection?.selectedAdAccount?.currency));
       setInsightsError(data.insightsSync?.ok === false ? data.insightsSync.error || "unavailable" : null);
+      setDeliveryPartial(Boolean(data.deliveryPartial));
       const syncedAt = data.insightsSync?.syncedAt || data.connection?.lastSyncAt;
       if (!data.insightsSync || data.insightsSync.ok !== false) {
         setLastSynced(syncedAt ? new Date(syncedAt) : new Date());
@@ -145,12 +155,61 @@ export default function MetaCampaignsCampaignsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId, rangeQuery.datePreset, rangeQuery.days, rangeQuery.since, rangeQuery.until, rangeQuery.compare, rangeQuery.compareSince, rangeQuery.compareUntil, rangeQuery.timezone]);
 
+  async function refreshDelivery() {
+    if (!businessId || deliveryRefreshLock.current) return;
+    if (!shouldRefreshDelivery(document.visibilityState)) return;
+    deliveryRefreshLock.current = true;
+    try {
+      const data = await getMetaCampaignDelivery(businessId);
+      setDeliveryPartial(Boolean(data.deliveryPartial));
+      setCampaigns((current) =>
+        mergeDeliveryRefresh(current, data.campaigns, { failed: Boolean(data.deliverySyncError) && !data.campaigns?.length })
+      );
+    } catch {
+      // Keep the last labels. A failed read must not mark campaigns active.
+    } finally {
+      deliveryRefreshLock.current = false;
+    }
+  }
+
+  useEffect(() => {
+    if (!businessId) return undefined;
+    let timer = 0;
+    const stop = () => {
+      if (timer) window.clearInterval(timer);
+      timer = 0;
+    };
+    const start = () => {
+      stop();
+      if (!shouldRefreshDelivery(document.visibilityState)) return;
+      timer = window.setInterval(() => {
+        void refreshDelivery();
+      }, DELIVERY_REFRESH_MS);
+    };
+    const onVisibility = () => {
+      if (!shouldRefreshDelivery(document.visibilityState)) {
+        stop();
+        return;
+      }
+      start();
+      void refreshDelivery();
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    start();
+    return () => {
+      stop();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+    // refreshDelivery closes over the latest businessId. The interval is recreated with it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId]);
+
   const rows = useMemo(() => {
     const filtered = campaigns.filter((row) => {
       const hay = `${row.name || ""} ${row.id || ""}`.toLowerCase();
       if (query && !hay.includes(query.toLowerCase())) return false;
       const status = campaignListStatus(row);
-      if (statusFilter !== "all" && status !== statusFilter) return false;
+      if (!campaignMatchesStatusFilter(row, statusFilter, status)) return false;
       if (hideQaDrafts && isQaTestDraftName(row.name)) return false;
       return true;
     });
@@ -355,6 +414,10 @@ export default function MetaCampaignsCampaignsPage() {
           <option value="DRAFT">{t("metaCampaigns.status.draft")}</option>
           <option value="PENDING_PUBLISH">{t("metaCampaigns.status.pending_publish")}</option>
           <option value="FAILED">{t("metaCampaigns.status.failed")}</option>
+          <option value="PENDING_REVIEW">{t("metaCampaigns.status.pending_review")}</option>
+          <option value="IN_PROCESS">{t("metaCampaigns.status.in_process")}</option>
+          <option value="DISAPPROVED">{t("metaCampaigns.status.disapproved")}</option>
+          <option value="WITH_ISSUES">{t("metaCampaigns.status.with_issues")}</option>
         </select>
         <label className="inline-flex items-center gap-2 self-center text-xs font-bold text-slate-600">
           <input
@@ -413,6 +476,11 @@ export default function MetaCampaignsCampaignsPage() {
           {t("metaCampaigns.actions.refresh")}
         </button>
       </div>
+      {deliveryPartial ? (
+        <p className="text-xs font-semibold text-slate-500" data-testid="meta-delivery-partial">
+          {t("metaCampaigns.ux.deliveryPartial")}
+        </p>
+      ) : null}
       {columnsOpen ? <ManagerColumnMenu prefs={columnPrefs} onChange={updateColumnPrefs} /> : null}
 
       {loading ? (
@@ -457,7 +525,7 @@ export default function MetaCampaignsCampaignsPage() {
                 </button>
                 <div className="flex flex-wrap items-center gap-2">
                   <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
-                    {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
+                    {deliveryStatusLabel(deliveryLabelStatuses(campaign), t)}
                   </span>
                   <span className="text-xs font-semibold text-slate-500">
                     {formatDateTimeHe(campaign.localUpdatedAt || campaign.updatedTime)}
@@ -477,7 +545,7 @@ export default function MetaCampaignsCampaignsPage() {
                       >
                         {column === "status" ? (
                           <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
-                            {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
+                            {deliveryStatusLabel(deliveryLabelStatuses(campaign), t)}
                           </span>
                         ) : (
                           campaignColumnText(campaign, column, currency)
@@ -523,7 +591,7 @@ export default function MetaCampaignsCampaignsPage() {
                   </button>
                   {canToggleLive ? (
                     <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
-                      {listStatus === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                      {campaignConfiguredOn(campaign) ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
                     </button>
                   ) : null}
                 </div>
@@ -610,7 +678,7 @@ export default function MetaCampaignsCampaignsPage() {
                             </>
                           ) : column === "status" ? (
                             <span className={`inline-flex rounded-full border px-2 py-0.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}>
-                              {t(`metaCampaigns.status.${metaDeliveryStatusKey(delivery)}`, { defaultValue: delivery })}
+                              {deliveryStatusLabel(deliveryLabelStatuses(campaign), t)}
                             </span>
                           ) : column === "updated" ? (
                             <div className="text-xs font-semibold text-slate-500">
@@ -668,8 +736,8 @@ export default function MetaCampaignsCampaignsPage() {
                         </button>
                         {canToggleLive ? (
                           <button type="button" className={btnPrimary} onClick={() => setPending(campaign)}>
-                            {listStatus === "ACTIVE" ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
-                            {listStatus === "ACTIVE" ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
+                            {campaignConfiguredOn(campaign) ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                            {campaignConfiguredOn(campaign) ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.resume")}
                           </button>
                         ) : null}
                       </div>
