@@ -159,6 +159,25 @@ describe("CRMLeadsWorkspace isolated UI", () => {
     expect(screen.getByText("crm.workspace.logCall")).toBeInTheDocument();
   });
 
+  it("shows an incoming WhatsApp activity separately from a note", async () => {
+    fetchTimeline.mockResolvedValue([
+      { id: "note-1", type: "note", at: sampleLead.createdAt, actor: "system", text: "שמורה" },
+      {
+        id: "wa-1",
+        type: "whatsapp_received",
+        at: sampleLead.createdAt,
+        actor: "system",
+        text: "נכנסה",
+      },
+    ]);
+    renderWorkspace();
+    fireEvent.click(await screen.findByText("Ada Lovelace"));
+    fireEvent.click(await screen.findByText("crm.workspace.tabs.activity"));
+    expect(await screen.findByText("crm.workspace.whatsappReceived")).toBeInTheDocument();
+    expect(screen.getByText("נכנסה")).toBeInTheDocument();
+    expect(screen.getAllByText("crm.common.note").length).toBeGreaterThan(0);
+  });
+
   it("opens only the lead in the direct link, then switches and stays on the clicked lead", async () => {
     const bella = {
       ...sampleLead,

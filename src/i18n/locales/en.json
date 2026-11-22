@@ -4587,6 +4587,7 @@
       "assigned": "Agent updated",
       "callLogged": "Call logged",
       "logCall": "Log call",
+      "whatsappReceived": "Incoming WhatsApp message",
       "callNote": "Call summary",
       "meeting": "Meeting",
       "meetingTitle": "Meeting title",
