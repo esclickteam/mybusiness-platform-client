@@ -40,14 +40,19 @@ export default function PublishResultModal({
     PAUSED: c("statusPaused"),
     REJECTED: c("statusRejected"),
     ERROR: c("statusFailed"),
+    STILL_ACTIVE: c("statusStillActive"),
     UNKNOWN: c("statusUnknown"),
   };
 
   const outcome = publish.outcome || "";
-  const creationFailed =
+  const stillActive =
+    outcome === "still_active" ||
+    publish.displayStatus === "STILL_ACTIVE" ||
+    publish.lastMetaErrorCode === "PAUSE_ROLLBACK_FAILED";
+  const creationFailed = !stillActive && (
     outcome === "creation_failed" ||
     publish.publishStatus === "failed" ||
-    publish.publishStatus === "partial_failed";
+    publish.publishStatus === "partial_failed");
   const rejected = outcome === "rejected" || publish.displayStatus === "DISAPPROVED" || publish.displayStatus === "REJECTED";
   const pending = outcome === "pending_review";
   const created =
@@ -71,6 +76,8 @@ export default function PublishResultModal({
       : updateSummary.verifiedLeadFormId
         ? c("outcomeUpdatedForm")
         : c("outcomeUpdated")
+    : stillActive
+    ? c("outcomeStillActive")
     : creationFailed
     ? c("outcomeCreationFailed")
     : rejected
@@ -85,6 +92,8 @@ export default function PublishResultModal({
   const subtitle = updateSummary
     ? updateSummary.message ||
       (updateVerified ? c("changesPublished") : c("changesNotPublished"))
+    : stillActive
+    ? publish.lastError || publish.lastMetaErrorMessage || c("outcomeStillActiveHint")
     : creationFailed
     ? publish.lastMetaErrorMessage || publish.lastError || c("publishFailSubtitle")
     : rejected
@@ -124,7 +133,7 @@ export default function PublishResultModal({
       >
         <div className="flex items-start justify-between gap-3 border-b border-[#E4E6EB] px-4 py-3">
           <div className="flex items-start gap-2">
-            {creationFailed || rejected || (updateSummary && !updateVerified) ? (
+            {stillActive || creationFailed || rejected || (updateSummary && !updateVerified) ? (
               <X className="mt-0.5 h-5 w-5 text-[#FA383E]" />
             ) : (
               <CheckCircle2 className="mt-0.5 h-5 w-5 text-[#31A24C]" />
@@ -204,7 +213,7 @@ export default function PublishResultModal({
             )}
             {c("syncStatusFromMeta")}
           </button>
-          {creationFailed && onRetry ? (
+          {creationFailed && !stillActive && onRetry ? (
             <button type="button" className={metaBtnSecondary} onClick={onRetry}>
               {c("retryFailedStage")}
             </button>
