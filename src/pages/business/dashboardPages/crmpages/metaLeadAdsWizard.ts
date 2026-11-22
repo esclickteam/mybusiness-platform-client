@@ -10,6 +10,7 @@ export type MetaLeadWizardSnapshot = {
   selectedForms?: Array<{ formId?: string | null; id?: string | null }>;
   reconnectRequired?: boolean | null;
   connectionHealthy?: boolean | null;
+  recoveryPendingCount?: number | null;
 };
 
 export function cleanId(value: unknown): string {
@@ -55,6 +56,12 @@ export function isMetaLeadReconnectRequired(
   snapshot: MetaLeadWizardSnapshot
 ): boolean {
   return snapshot.reconnectRequired === true;
+}
+
+export function isMetaLeadRecoveryClear(
+  snapshot: MetaLeadWizardSnapshot
+): boolean {
+  return Number(snapshot.recoveryPendingCount || 0) === 0;
 }
 
 export function isMetaLeadSetupComplete(

@@ -3,6 +3,7 @@ import {
   canNavigateToMetaLeadWizardStep,
   deriveMetaLeadWizardStep,
   isMetaLeadReconnectRequired,
+  isMetaLeadRecoveryClear,
   isMetaLeadSetupComplete,
 } from "./metaLeadAdsWizard";
 
@@ -100,7 +101,22 @@ describe("deriveMetaLeadWizardStep", () => {
     };
     expect(isMetaLeadReconnectRequired(snapshot)).toBe(false);
     expect(isMetaLeadSetupComplete(snapshot)).toBe(true);
+    expect(isMetaLeadRecoveryClear(snapshot)).toBe(true);
     expect(deriveMetaLeadWizardStep(snapshot)).toBe(3);
+  });
+
+  it("keeps the connection complete while leads are still waiting", () => {
+    const snapshot = {
+      metaAccountConnected: true,
+      connectedPageId: "1326020490583991",
+      selectedLeadFormId: "1720163819102905",
+      reconnectRequired: false,
+      connectionHealthy: true,
+      recoveryPendingCount: 2,
+    };
+    expect(isMetaLeadSetupComplete(snapshot)).toBe(true);
+    expect(isMetaLeadRecoveryClear(snapshot)).toBe(false);
+    expect(isMetaLeadReconnectRequired(snapshot)).toBe(false);
   });
 
   it("does not open step 2 or 3 before those prerequisites exist", () => {

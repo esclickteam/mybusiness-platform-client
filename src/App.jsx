@@ -165,6 +165,9 @@ const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
 const Pricing = lazy(() => import("./pages/business/Pricing"));
+const MetaLeadAdsBannerPreview = lazy(() =>
+  import("./pages/business/dashboardPages/crmpages/MetaLeadAdsBannerPreview")
+);
 const Checkout = lazy(() => import("./pages/Checkout"));
 const FAQ = lazy(() => import("./pages/FAQ"));
 const Accessibility = lazy(() => import("./pages/Accessibility"));
@@ -1399,6 +1402,12 @@ export default function App() {
                           element={<BizuplyEarlyAccessLanding />}
                         />
                         <Route path="/home-preview" element={<HomeExperiencePreview />} />
+                        {import.meta.env.DEV ? (
+                          <Route
+                            path="/meta-lead-ads-banner-preview"
+                            element={<MetaLeadAdsBannerPreview />}
+                          />
+                        ) : null}
                         <Route path="/s/:slug" element={<SaasPublicSite />} />
                         <Route path="/saas" element={<SaasMarketplacePage />} />
                         <Route path="/saas/:slug/demo" element={<SaasTemplateDemoPage />} />
