@@ -16,7 +16,11 @@ function measured(campaign: MetaCampaign, key: string): number | null {
 /** Text for one campaign column. Missing Meta fields stay an em dash. */
 export function campaignColumnText(campaign: MetaCampaign, column: ManagerColumnId, currency: string): string {
   if (column === "name") return campaign.name || "—";
-  if (column === "status") return campaign.deliveryStatus || campaign.effectiveStatus || campaign.status || "—";
+  if (column === "status") {
+    const parts = (campaign.deliveryStatuses || []).filter(Boolean);
+    if (parts.length) return parts.join(" · ");
+    return campaign.deliveryStatus || campaign.effectiveStatus || campaign.status || "—";
+  }
   if (column === "budget") {
     if (campaign.dailyBudget) return formatCurrency(campaign.dailyBudget, currency);
     if (campaign.lifetimeBudget) return formatCurrency(campaign.lifetimeBudget, currency);

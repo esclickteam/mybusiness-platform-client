@@ -7,6 +7,7 @@ import type { MetaCampaign } from "../../../../api/metaCampaignsApi";
 
 const api = vi.hoisted(() => ({
   getMetaCampaignsOverview: vi.fn(),
+  getMetaCampaignDelivery: vi.fn(),
   deleteLocalCampaignDraft: vi.fn(),
   deleteMetaObjects: vi.fn(),
   duplicateLocalCampaignDraft: vi.fn(),
@@ -90,6 +91,34 @@ describe("Meta campaign list delete", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     window.localStorage.clear();
+    api.getMetaCampaignDelivery.mockResolvedValue({ success: true, campaigns: [], deliverySyncError: false });
+  });
+
+  it("shows in-review delivery while the switch still offers pause", async () => {
+    const inReview: MetaCampaign = {
+      ...live,
+      id: "120258064256700405",
+      name: "קמפיין לידים 22/11/26",
+      status: "ACTIVE",
+      configuredStatus: "ACTIVE",
+      effectiveStatus: "PENDING_REVIEW",
+      deliveryStatus: "PENDING_REVIEW",
+      deliveryStatuses: ["DISAPPROVED", "PENDING_REVIEW", "ACTIVE"],
+    };
+    api.getMetaCampaignsOverview.mockResolvedValue({
+      campaigns: [inReview],
+      connection: { selectedAdAccount: { currency: "ILS" } },
+    });
+    render(
+      <MemoryRouter initialEntries={["/business/biz-1/dashboard/meta-campaigns/campaigns"]}>
+        <Routes>
+          <Route path="/business/:businessId/dashboard/meta-campaigns/campaigns" element={<MetaCampaignsCampaignsPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+    expect((await screen.findAllByText("נדחה · בבדיקה · פעיל")).length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: "השהיה" }).length).toBeGreaterThan(0);
+    expect(screen.queryByRole("button", { name: "הפעלה מחדש" })).toBeNull();
   });
 
   it("shows a trash button on desktop and mobile, then deletes only the local draft", async () => {

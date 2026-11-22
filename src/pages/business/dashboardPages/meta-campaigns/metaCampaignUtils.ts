@@ -123,12 +123,25 @@ export function metaDeliveryStatusKey(status: string) {
     return "disapproved";
   }
   if (value === "REJECTED") return "rejected";
+  if (value === "UNKNOWN") return "unknown";
+  if (value.includes("LIMIT")) return "limited";
   if (value === "ARCHIVED") return "archived";
   if (value === "DELETED") return "deleted";
   if (value === "DRAFT") return "draft";
   if (value === "PENDING_PUBLISH") return "pending_publish";
   if (value === "FAILED" || value === "PARTIAL_FAILED") return "failed";
   return value.toLowerCase();
+}
+
+export function deliveryStatusLabel(
+  statuses: string[],
+  t: (key: string, options?: { defaultValue?: string }) => string
+) {
+  const labels = (statuses.length ? statuses : [""]).map((status) => {
+    const key = metaDeliveryStatusKey(status);
+    return t(`metaCampaigns.status.${key}`, { defaultValue: status || "—" });
+  });
+  return labels.filter(Boolean).join(" · ");
 }
 
 export function metaObjectiveLabel(
@@ -218,12 +231,20 @@ export function statusTone(status: string) {
       dot: "bg-slate-400",
     };
   }
-  if (value === "DISAPPROVED" || value === "REJECTED" || value === "WITH_ISSUES") {
+  if (value === "DISAPPROVED" || value === "REJECTED" || value === "WITH_ISSUES" || value.includes("LIMIT")) {
     return {
       bg: "bg-rose-50",
       text: "text-rose-700",
       border: "border-rose-100",
       dot: "bg-rose-500",
+    };
+  }
+  if (value === "UNKNOWN") {
+    return {
+      bg: "bg-slate-100",
+      text: "text-slate-600",
+      border: "border-slate-200",
+      dot: "bg-slate-400",
     };
   }
   return {
