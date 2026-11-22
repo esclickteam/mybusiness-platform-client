@@ -5,6 +5,7 @@ import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   canNavigateToMetaLeadWizardStep,
   deriveMetaLeadWizardStep,
+  isMetaLeadRecoveryClear,
   isMetaLeadSetupComplete,
   persistedMetaLeadWizardStep,
   type MetaLeadWizardSnapshot,
@@ -71,6 +72,7 @@ type MetaLeadAdsIntegrationProps = {
   onBack?: () => void;
   destination?: "business" | "admin_crm";
   onLeadsSynced?: (summary: AdminMetaSyncSummary) => void;
+  previewStatus?: StatusPayload | null;
 };
 
 type IntakePanel = {
@@ -105,6 +107,7 @@ type StatusPayload = {
   selectedLeadFormId?: string | null;
   connectionHealthy?: boolean;
   reconnectRequired?: boolean;
+  recoveryPendingCount?: number;
   healthReasons?: string[];
   lastError?: string;
   intake?: IntakePanel;
@@ -127,6 +130,7 @@ export default function MetaLeadAdsIntegration({
   onBack,
   destination = "business",
   onLeadsSynced,
+  previewStatus = null,
 }: MetaLeadAdsIntegrationProps) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
@@ -154,10 +158,7 @@ export default function MetaLeadAdsIntegration({
 
   const isAdminCrm = destination === "admin_crm";
   const reconnectRequired = Boolean(statusSnapshot.reconnectRequired);
-  const isConnected =
-    Boolean(connectedPage?.pageId) &&
-    !reconnectRequired &&
-    statusSnapshot.connectionHealthy !== false;
+  const isConnected = Boolean(connectedPage?.pageId) && !reconnectRequired;
   const hasForm = Boolean(selectedForm?.formId) || selectedForms.length > 0;
   const pageAlreadyConnected =
     isConnected &&
@@ -185,6 +186,7 @@ export default function MetaLeadAdsIntegration({
       selectedForms,
       reconnectRequired: statusSnapshot.reconnectRequired,
       connectionHealthy: statusSnapshot.connectionHealthy,
+      recoveryPendingCount: statusSnapshot.recoveryPendingCount,
     }),
     [
       statusSnapshot,
@@ -248,6 +250,9 @@ export default function MetaLeadAdsIntegration({
       selectedForms: nextSelectedForms,
       reconnectRequired: Boolean(data.reconnectRequired),
       connectionHealthy: data.connectionHealthy,
+      recoveryPendingCount: Number(
+        data.recoveryPendingCount ?? data.intake?.failedCount ?? 0
+      ),
     });
 
     return isMetaLeadSetupComplete({
@@ -262,6 +267,9 @@ export default function MetaLeadAdsIntegration({
         "",
       reconnectRequired: Boolean(data.reconnectRequired),
       connectionHealthy: data.connectionHealthy,
+      recoveryPendingCount: Number(
+        data.recoveryPendingCount ?? data.intake?.failedCount ?? 0
+      ),
     });
   };
 
@@ -294,11 +302,17 @@ export default function MetaLeadAdsIntegration({
   };
 
   useEffect(() => {
+    if (previewStatus) {
+      applyStatusPayload(previewStatus);
+      setLoading(false);
+      if (previewStatus.reconnectRequired) setViewingStep(1);
+      return;
+    }
     if (businessId && isAdminUser() && !isAdminCrm) {
       setAdminActiveBusinessId(businessId);
     }
     loadStatus();
-  }, [businessId, isAdminCrm]);
+  }, [businessId, isAdminCrm, previewStatus]);
 
   // Return from Facebook OAuth → stay in wizard on page/form step.
   useEffect(() => {
@@ -639,7 +653,12 @@ export default function MetaLeadAdsIntegration({
   const stepItems = [
     { id: 1 as const, label: t(`${T}.wizard.step1Label`) },
     { id: 2 as const, label: t(`${T}.wizard.step2Label`) },
-    { id: 3 as const, label: t(`${T}.wizard.step3Label`) },
+    {
+      id: 3 as const,
+      label: isMetaLeadRecoveryClear(wizardSnapshot)
+        ? t(`${T}.wizard.step3Label`)
+        : t(`${T}.recoveryPendingTitle`),
+    },
   ];
 
   return (
@@ -675,7 +694,10 @@ export default function MetaLeadAdsIntegration({
               {stepItems.map((item) => {
                 const active = wizardStep === item.id;
                 const persistedDone =
-                  persistedStep > item.id || (item.id === 3 && setupComplete);
+                  persistedStep > item.id ||
+                  (item.id === 3 &&
+                    setupComplete &&
+                    isMetaLeadRecoveryClear(wizardSnapshot));
                 const done = persistedDone && !active;
                 const clickable = canNavigateToMetaLeadWizardStep(
                   wizardSnapshot,
@@ -848,13 +870,23 @@ export default function MetaLeadAdsIntegration({
                 ) : null}
 
                 {reconnectRequired ? (
-                  <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                  <div
+                    data-testid="meta-lead-reconnect-banner"
+                    className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4"
+                  >
                     <p className="text-sm font-black text-amber-800">
                       {t(`${T}.reconnectRequired`)}
                     </p>
                     <p className="mt-1 text-xs font-bold leading-5 text-amber-700">
                       {t(`${T}.reconnectRequiredDesc`)}
                     </p>
+                    {Number(intake?.failedCount || 0) > 0 ? (
+                      <p className="mt-1 text-xs font-bold leading-5 text-amber-800">
+                        {t(`${T}.reconnectWaiting`, {
+                          count: Number(intake?.failedCount || 0),
+                        })}
+                      </p>
+                    ) : null}
                     <button
                       type="button"
                       onClick={connectFacebook}
@@ -1143,26 +1175,45 @@ export default function MetaLeadAdsIntegration({
                   <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-6">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
-                          <CheckCircle2 className="h-3.5 w-3.5" />
-                          {t(`${T}.connected`)}
-                        </div>
-                        <h2 className="text-2xl font-black text-slate-900">
-                          {t(`${T}.wizard.readyTitle`)}
-                        </h2>
-                        <p className="mt-2 text-sm font-semibold text-slate-500">
-                          {isAdminCrm
-                            ? t(`${T}.wizard.readyDescAdmin`)
-                            : t(`${T}.wizard.readyDesc`)}
-                        </p>
-                        <p className="mt-2 text-sm font-black text-emerald-700">
-                          {t(`${T}.wizard.readyListening`, {
-                            form:
-                              selectedForm?.formName ||
-                              selectedForms[0]?.formName ||
-                              emDash,
-                          })}
-                        </p>
+                        {isMetaLeadRecoveryClear(wizardSnapshot) ? (
+                          <>
+                            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              {t(`${T}.connected`)}
+                            </div>
+                            <h2 className="text-2xl font-black text-slate-900">
+                              {t(`${T}.wizard.readyTitle`)}
+                            </h2>
+                            <p className="mt-2 text-sm font-semibold text-slate-500">
+                              {isAdminCrm
+                                ? t(`${T}.wizard.readyDescAdmin`)
+                                : t(`${T}.wizard.readyDesc`)}
+                            </p>
+                            <p className="mt-2 text-sm font-black text-emerald-700">
+                              {t(`${T}.wizard.readyListening`, {
+                                form:
+                                  selectedForm?.formName ||
+                                  selectedForms[0]?.formName ||
+                                  emDash,
+                              })}
+                            </p>
+                          </>
+                        ) : (
+                          <div data-testid="meta-lead-recovery-pending">
+                            <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              {t(`${T}.connectionHealthy`)}
+                            </div>
+                            <h2 className="text-2xl font-black text-slate-900">
+                              {t(`${T}.recoveryPendingTitle`)}
+                            </h2>
+                            <p className="mt-2 text-sm font-semibold leading-6 text-amber-800">
+                              {t(`${T}.recoveryPendingDesc`, {
+                                count: Number(wizardSnapshot.recoveryPendingCount || 0),
+                              })}
+                            </p>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex flex-wrap gap-2">
