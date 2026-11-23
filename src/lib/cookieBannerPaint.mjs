@@ -3,7 +3,7 @@
 export const COOKIE_BANNER_COPY = {
   en: {
     noticeTitle: "Your privacy matters to us",
-    noticeIntro: "We use cookies to run the site, improve your browsing, and measure how it performs. Depending on your choice, we may also use cookies for usage analysis and personalized advertising. You can change your preferences at any time.",
+    noticeIntro: "Necessary cookies run the site. Advertising stays off until you allow it. Content measurement is not collecting and has no switch until Bizuply turns it on. You can change this choice at any time.",
     essentialOnly: "Essential cookies only",
     manage: "Manage preferences",
     manageTitle: "Manage cookie preferences",
@@ -57,7 +57,7 @@ export const COOKIE_BANNER_COPY = {
   },
   he: {
     noticeTitle: "הפרטיות שלכם חשובה לנו",
-    noticeIntro: "אנחנו משתמשים בעוגיות כדי להפעיל את האתר, לשפר את חוויית הגלישה ולמדוד את ביצועיו. בכפוף לבחירתכם, נוכל להשתמש גם בעוגיות לניתוח שימוש ולפרסום מותאם אישית. תוכלו לשנות את העדפותיכם בכל עת.",
+    noticeIntro: "עוגיות הכרחיות מפעילות את האתר. פרסום נשאר כבוי עד שתאשרו אותו. מדידת תוכן אינה אוספת ואין לה מתג עד שביזאפלי מפעילה אותה. אפשר לשנות את הבחירה בכל עת.",
     essentialOnly: "עוגיות חיוניות בלבד",
     manage: "ניהול העדפות",
     manageTitle: "ניהול העדפות העוגיות",
@@ -111,7 +111,7 @@ export const COOKIE_BANNER_COPY = {
   },
   es: {
     noticeTitle: "Su privacidad nos importa",
-    noticeIntro: "Usamos cookies para que el sitio funcione, para mejorar la experiencia de navegación y para medir su rendimiento. Según su elección, también podemos usar cookies para analizar el uso y para publicidad personalizada. Puede cambiar sus preferencias en cualquier momento.",
+    noticeIntro: "Las cookies necesarias hacen funcionar el sitio. La publicidad permanece apagada hasta que usted la permita. La medición de contenido no está recogiendo y no tiene interruptor hasta que Bizuply la active. Puede cambiar esta elección en cualquier momento.",
     essentialOnly: "Solo cookies esenciales",
     manage: "Gestionar preferencias",
     manageTitle: "Gestionar las preferencias de cookies",
@@ -165,7 +165,7 @@ export const COOKIE_BANNER_COPY = {
   },
   "pt-BR": {
     noticeTitle: "A sua privacidade é importante para nós",
-    noticeIntro: "Usamos cookies para o site funcionar, para melhorar a experiência de navegação e para medir o desempenho. De acordo com a sua escolha, também podemos usar cookies para análise de uso e publicidade personalizada. Você pode alterar suas preferências a qualquer momento.",
+    noticeIntro: "Cookies necessários fazem o site funcionar. A publicidade fica desligada até você permitir. A medição de conteúdo não está coletando e não tem interruptor até a Bizuply ligá-la. Você pode mudar esta escolha a qualquer momento.",
     essentialOnly: "Somente cookies essenciais",
     manage: "Gerenciar preferências",
     manageTitle: "Gerenciar preferências de cookies",
@@ -219,7 +219,7 @@ export const COOKIE_BANNER_COPY = {
   },
   ar: {
     noticeTitle: "خصوصيتكم تهمّنا",
-    noticeIntro: "نستخدم ملفات تعريف الارتباط لتشغيل الموقع وتحسين تجربة التصفح وقياس أدائه. وبحسب اختياركم، قد نستخدمها أيضًا لتحليل الاستخدام وللإعلان المخصّص. يمكنكم تغيير تفضيلاتكم في أي وقت.",
+    noticeIntro: "ملفات الارتباط الضرورية تشغّل الموقع. يبقى الإعلان متوقفاً حتى تسمحوا به. قياس المحتوى لا يجمع وليس له مفتاح إلى أن تُشغّله Bizuply. يمكنكم تغيير هذا الاختيار في أي وقت.",
     essentialOnly: "ملفات تعريف الارتباط الضرورية فقط",
     manage: "إدارة التفضيلات",
     manageTitle: "إدارة تفضيلات ملفات تعريف الارتباط",

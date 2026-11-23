@@ -257,9 +257,14 @@ export default function PlatformConsentBanner() {
           detail={text("analyticsDetail")}
           headers={measurement ? headers : undefined}
           rows={measurement ? [{
-            name: "bizuply_content_vid",
+            name: "bizuply_measure",
             provider: text("bizuply"),
             purpose: text("analyticsPurpose"),
+            duration: text("analyticsDuration"),
+          }, {
+            name: "bizuply_measure_hint",
+            provider: text("bizuply"),
+            purpose: text("analyticsHint"),
             duration: text("analyticsDuration"),
           }] : undefined}
           empty={measurement ? undefined : text("noneFound")}

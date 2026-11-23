@@ -18,7 +18,7 @@ describe("cookie banner first paint", () => {
     const hebrew = renderCookieBannerPaint("he");
     const visible = hebrew.split("<script>")[0];
     expect(visible).toContain("הפרטיות שלכם חשובה לנו");
-    expect(visible).toContain("לשפר את חוויית הגלישה ולמדוד את ביצועיו");
+    expect(visible).toContain("מדידת תוכן אינה אוספת ואין לה מתג");
     expect(visible).toContain("אישור כל העוגיות");
     expect(visible).toContain("עוגיות חיוניות בלבד");
     expect(visible).toContain("ניהול העדפות");
