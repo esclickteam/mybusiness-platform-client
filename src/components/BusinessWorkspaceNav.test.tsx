@@ -330,6 +330,43 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(navLink(eventlyBusinessId, "automations")).toBeNull();
     expect(navLink(eventlyBusinessId, "global-club")).toBeNull();
     expect(navLink(eventlyBusinessId, "website")).toBeNull();
+    expect(navLink(eventlyBusinessId, "security")).toBeNull();
+  });
+
+  it("hides the security scanner for Evently 360 and keeps it for every other business", async () => {
+    const eventlyBusinessId = "6abcdba96130a8de386dfc86";
+    await renderNav({
+      user: {
+        businessId: eventlyBusinessId,
+        role: "business",
+        enabledModules: ["dashboard", "crm", "whatsapp", "meta-campaigns"],
+      },
+      urlBusinessId: eventlyBusinessId,
+    });
+    expect(navLink(eventlyBusinessId, "security")).toBeNull();
+    expect(navLink(eventlyBusinessId, "help-center")).not.toBeNull();
+
+    cleanup();
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        enabledModules: ["dashboard", "crm"],
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+    expect(navLink(OTHER_BUSINESS_ID, "security")).not.toBeNull();
+
+    cleanup();
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        enabledModules: ["dashboard", "crm"],
+      },
+      urlBusinessId: eventlyBusinessId,
+    });
+    expect(navLink(eventlyBusinessId, "security")).not.toBeNull();
   });
 
   it("shows campaigns when a limited package explicitly includes them", async () => {

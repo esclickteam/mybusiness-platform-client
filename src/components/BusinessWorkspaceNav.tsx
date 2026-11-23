@@ -113,6 +113,17 @@ export function canSeeRestrictedNav(businessId: unknown): boolean {
   return RESTRICTED_NAV_ALLOWED_BUSINESS_IDS.has(normalized);
 }
 
+/** Evently 360 only. Other businesses keep the security scanner in the sidebar. */
+const HIDE_SECURITY_SCANNER_BUSINESS_IDS = new Set([
+  "6abcdba96130a8de386dfc86",
+]);
+
+export function hideSecurityScannerNav(businessId: unknown): boolean {
+  const normalized = normalizeBusinessId(businessId);
+  if (!normalized) return false;
+  return HIDE_SECURITY_SCANNER_BUSINESS_IDS.has(normalized);
+}
+
 function workspaceGroup(moduleKey?: string | null) {
   if (!moduleKey || moduleKey === "dashboard") return "overview";
   if (moduleKey === "crm" || moduleKey === "automations" || moduleKey === "integrations") {
@@ -511,6 +522,12 @@ export default function BusinessWorkspaceNav({
   const showProductSwitcher = !isWhatsAppApiPortalUser(user) && activeProducts.length > 1;
 
   const visibleItems = isWhatsAppApiPortalUser(user) ? apiPortalItems : items.filter((item) => {
+    if (
+      item.labelKey === "businessNav.securityScanner" &&
+      hideSecurityScannerNav(user?.businessId)
+    ) {
+      return false;
+    }
     if (accountKind === "saas_only") {
       return item.moduleKey === "saas" || item.labelKey === "businessNav.helpCenter" || item.labelKey === "businessNav.securityScanner";
     }
