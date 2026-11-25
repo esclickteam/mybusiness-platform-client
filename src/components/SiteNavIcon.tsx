@@ -27,6 +27,8 @@ const PATHS: Record<string, string> = {
   glossary: "M5 5h10a4 4 0 0 1 4 4v10H9a4 4 0 0 0-4 4zM9 5v14",
   compare: "M5 6h6v12H5zM13 6h6v12h-6",
   path: "M6 16a3 3 0 1 0 0.1 0M18 8a3 3 0 1 0 0.1 0M8.5 14.5l7-5",
+  calendar: "M5 6h14v13H5zM5 10h14M9 4v4M15 4v4",
+  ai: "M12 4l1.2 3.2L16.5 8.4 13.2 9.6 12 13l-1.2-3.4L7.5 8.4l3.3-1.2zM6 16h4M14 17h4",
 };
 
 export default function SiteNavIcon({ name }: { name?: string }) {

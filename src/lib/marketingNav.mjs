@@ -136,6 +136,30 @@ const ITEM = {
       "انشروا موقعاً، ويمكن لنموذج مدعوم أن ينشئ عميلاً محتملاً في CRM.",
     ),
   },
+  appointments: {
+    to: "/appointments",
+    icon: "calendar",
+    label: pack("Appointments", "פגישות", "Citas", "Agendamentos", "المواعيد"),
+    blurb: pack(
+      "Open times, a service, and the booking on the customer card.",
+      "חלונות פנויים, שירות, והתור על כרטיס הלקוח.",
+      "Horarios libres, un servicio y la reserva en la ficha.",
+      "Horários livres, um serviço e o agendamento na ficha.",
+      "أوقات متاحة وخدمة والحجز على بطاقة العميل.",
+    ),
+  },
+  agents: {
+    to: "/agents",
+    icon: "ai",
+    label: pack("AI advisor", "יועץ AI", "Asesor de IA", "Consultor de IA", "مستشار الذكاء الاصطناعي"),
+    blurb: pack(
+      "The business plan includes the advisor and AI automations.",
+      "החבילה העסקית כוללת את היועץ ואוטומציות AI.",
+      "El plan de negocio incluye el asesor y las automatizaciones de IA.",
+      "O plano de negócios inclui o consultor e as automações de IA.",
+      "تشمل الخطة التجارية المستشار وأتمتة الذكاء الاصطناعي.",
+    ),
+  },
   automation: {
     to: "/automations",
     icon: "automation",
@@ -397,9 +421,9 @@ export function marketingNav(locale) {
       id: "products",
       label: text(LABEL.products, language),
       columns: [
-        column("customers", LABEL.customersCol, ["crm"], language),
+        column("customers", LABEL.customersCol, ["crm", "appointments"], language),
         column("marketing", LABEL.marketingCol, ["whatsapp", "campaigns"], language),
-        column("build", LABEL.buildCol, ["websites", "automation"], language),
+        column("build", LABEL.buildCol, ["websites", "automation", "agents"], language),
         column("saas", LABEL.saasCol, ["systems"], language),
       ],
     },

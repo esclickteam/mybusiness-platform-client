@@ -1425,9 +1425,9 @@ html.hx-preview .site-header__bar {
 @media (min-width: 1100px) {
   html.bizuply-home .site-header__logo img,
   html.hx-preview .site-header__logo img {
-    width: 168px;
+    width: 190px;
     height: auto;
-    max-width: 168px;
+    max-width: 190px;
   }
 }
 @media (max-width: 760px) {
@@ -1543,3 +1543,17 @@ html.hx-preview .site-header__bar {
 @media (max-width: 860px) {
   .bz-open__pin { padding: 72px 16px 0; }
 }
+.site-header__lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #111936;
+}
+.site-header__lang svg { width: 22px; height: 22px; }
+.site-header__lang-caret { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 2; }
+html.bizuply-home .site-header__cta span,
+html.hx-preview .site-header__cta span { position: relative; z-index: 1; }

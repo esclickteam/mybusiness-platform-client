@@ -11,7 +11,7 @@ const PACKS = {
     title: "Bizi AI",
     role: "היועצת העסקית החכמה של Bizuply",
     launcher: "בואו להתייעץ איתי!",
-    launcherSub: "Bizi – היועצת החכמה שלכם.",
+    launcherSub: "Bizi – היועצת החכמה של העסק שלכם",
     greeting: "היי! אני Bizi, היועצת החכמה של Bizuply. ספרו לי קצת על העסק שלכם ואעזור לכם למצוא את הפתרון המתאים ביותר.",
     hint: "המחירים מגיעים מהקטלוג המאושר. אין כאן גישה לנתוני לקוחות.",
     prompts: [
@@ -34,8 +34,8 @@ const PACKS = {
   en: {
     title: "Bizi AI",
     role: "Bizuply business advisor",
-    launcher: "Let’s talk",
-    launcherSub: "Bizi – AI advisor",
+    launcher: "Come and talk with me",
+    launcherSub: "Bizi – the smart advisor for your business",
     greeting: "Hi, I’m Bizi, the Bizuply advisor. Tell me a little about the business and I’ll help you find the published package that fits.",
     hint: "Prices come from the approved catalog. This chat cannot read customer data.",
     prompts: [
@@ -58,8 +58,8 @@ const PACKS = {
   es: {
     title: "Bizi AI",
     role: "Asesora de negocio de Bizuply",
-    launcher: "Hablemos",
-    launcherSub: "Bizi, su asesora de negocio.",
+    launcher: "Vengan a consultarme",
+    launcherSub: "Bizi, la asesora inteligente de su negocio",
     greeting: "Hola, soy Bizi, la asesora de Bizuply. Cuéntenme sobre el negocio y les ayudo a encontrar el paquete publicado que encaja.",
     hint: "Los precios salen del catálogo aprobado. Este chat no lee datos de clientes.",
     prompts: [
@@ -82,8 +82,8 @@ const PACKS = {
   "pt-BR": {
     title: "Bizi AI",
     role: "Consultora de negócios da Bizuply",
-    launcher: "Vamos conversar",
-    launcherSub: "Bizi, sua consultora de negócios.",
+    launcher: "Venham conversar comigo",
+    launcherSub: "Bizi, a consultora inteligente do seu negócio",
     greeting: "Olá, eu sou a Bizi, a consultora da Bizuply. Contem um pouco sobre o negócio e eu ajudo a encontrar o pacote publicado que combina.",
     hint: "Os preços vêm do catálogo aprovado. Este chat não lê dados de clientes.",
     prompts: [
@@ -106,8 +106,8 @@ const PACKS = {
   ar: {
     title: "Bizi AI",
     role: "مستشارة Bizuply للأعمال",
-    launcher: "لنستشر معًا",
-    launcherSub: "Bizi، مستشارتكم الذكية.",
+    launcher: "تعالوا للاستشارة",
+    launcherSub: "Bizi، المستشارة الذكية لعملكم",
     greeting: "مرحباً، أنا Bizi، مستشارة Bizuply. أخبروني عن النشاط وسأساعدكم في إيجاد الباقة المنشورة المناسبة.",
     hint: "الأسعار من الكتالوج المعتمد. هذه الدردشة لا تقرأ بيانات العملاء.",
     prompts: [

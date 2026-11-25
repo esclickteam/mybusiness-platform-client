@@ -23,12 +23,12 @@ describe("LanguageSwitcher", () => {
 
   it("shows the compact current-language control and all five options", async () => {
     render(<LanguageSwitcher />);
-    expect(screen.getByText("EN")).toBeTruthy();
+    expect(screen.queryByText("EN")).toBeNull();
     fireEvent.click(screen.getByLabelText(/change language/i));
     expect(screen.getByText("English")).toBeTruthy();
     expect(screen.getByText("עברית")).toBeTruthy();
     expect(screen.getByText("Español")).toBeTruthy();
-    expect(screen.getByText("Português (Brasil)")).toBeTruthy();
+    expect(screen.getByText("Português")).toBeTruthy();
     expect(screen.getByText("العربية")).toBeTruthy();
     expect(screen.getByRole("listbox").parentElement).toBe(document.body);
   });
@@ -72,7 +72,7 @@ describe("LanguageSwitcher", () => {
       expect(menu.className).toContain("overflow-y-auto");
       expect(Number.parseFloat(menu.style.left)).toBe(expectedLeft);
       expect(Number.parseFloat(menu.style.maxHeight)).toBeGreaterThan(100);
-      for (const option of ["English", "עברית", "Español", "Português (Brasil)", "العربية"]) {
+      for (const option of ["English", "עברית", "Español", "Português", "العربية"]) {
         expect(screen.getByRole("option", { name: new RegExp(option.replace(/[()]/g, "\\$&")) })).toBeTruthy();
       }
     } finally {

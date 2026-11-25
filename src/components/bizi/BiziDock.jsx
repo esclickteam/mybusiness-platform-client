@@ -11,6 +11,8 @@ export default function BiziDock() {
   const copy = biziCopy(i18n.language);
   const [open, setOpen] = useState(false);
   const [entered, setEntered] = useState(false);
+  const [pose, setPose] = useState("compact");
+  const [figureReady, setFigureReady] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -19,6 +21,10 @@ export default function BiziDock() {
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setEntered(true));
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const loadFigure = window.setTimeout(() => setFigureReady(true), 120);
+    const greet = reduced ? 0 : window.setTimeout(() => setPose("greet"), 280);
+    const tuck = reduced ? 0 : window.setTimeout(() => setPose("compact"), 4600);
     try {
       const saved = JSON.parse(sessionStorage.getItem(STORE) || "[]");
       if (Array.isArray(saved)) setMessages(saved);
@@ -29,6 +35,9 @@ export default function BiziDock() {
     window.addEventListener("bizuply:openSupportChat", openFromPage);
     return () => {
       window.cancelAnimationFrame(frame);
+      window.clearTimeout(loadFigure);
+      if (greet) window.clearTimeout(greet);
+      if (tuck) window.clearTimeout(tuck);
       window.removeEventListener("bizuply:openSupportChat", openFromPage);
     };
   }, []);
@@ -105,16 +114,38 @@ export default function BiziDock() {
   }
 
   return (
-    <aside className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`} dir={i18n.dir()}>
+    <aside
+      className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${pose === "greet" || open ? " is-greet" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`}
+      dir={i18n.dir()}
+      onMouseEnter={() => {
+        if (!open && figureReady) setPose("greet");
+      }}
+      onMouseLeave={() => {
+        if (!open) setPose("compact");
+      }}
+    >
       <div className="bizi-dock__shell">
+        {figureReady ? (
+          <img
+            ref={faceRef}
+            className="bizi-dock__figure"
+            src="/brand/bizi-advisor.webp"
+            alt=""
+            width="720"
+            height="658"
+            decoding="async"
+          />
+        ) : null}
         <header className="bizi-dock__bar">
-          <img ref={faceRef} className="bizi-dock__face" src="/brand/bizi-face.webp" alt="" width="68" height="68" />
           <button type="button" className="bizi-dock__hit" onClick={toggle} aria-expanded={open}>
+            <span className="bizi-dock__mark" aria-hidden="true">
+              <img src="/brand/mark.png" alt="" width="64" height="64" />
+            </span>
             <span className="bizi-dock__copy">
               <strong>{open ? copy.title : copy.launcher}</strong>
               <small>{open ? copy.role : copy.launcherSub}</small>
             </span>
-            <span className="bizi-dock__chat" aria-hidden="true">{open ? "×" : "✎"}</span>
+            <span className="bizi-dock__chat" aria-hidden="true">{open ? "×" : ""}</span>
           </button>
         </header>
         {open ? (

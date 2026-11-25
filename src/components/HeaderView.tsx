@@ -142,7 +142,7 @@ export default function HeaderView({
         dir={headerDir}
       >
         <nav className="site-header__bar" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
-          <Link to="/" className="site-header__logo" aria-label={i18n.language === "he" ? "ביזאפלי (BizUply)" : "BizUply"}>
+          <Link to="/" className="site-header__logo" aria-label={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"}>
             <img className="site-header__logo-img site-header__logo-img--light" src="/brand/logo.png" alt="" width="1166" height="398" decoding="async" />
           </Link>
 
@@ -238,6 +238,12 @@ export default function HeaderView({
                         </div>
                       ))}
                     </div>
+                    <aside className="site-nav__promo">
+                      <p>{t("nav.platform", { defaultValue: "Bizuply" })}</p>
+                      <strong>{i18n.language.startsWith("he") ? "כל העסק במקום אחד" : i18n.language.startsWith("es") ? "Todo el negocio en un lugar" : i18n.language.startsWith("pt") ? "Todo o negócio em um lugar" : i18n.language.startsWith("ar") ? "كل العمل في مكان واحد" : "The whole business in one place"}</strong>
+                      <span>{i18n.language.startsWith("he") ? "CRM, לידים, WhatsApp, אוטומציות ואתר." : i18n.language.startsWith("es") ? "CRM, leads, WhatsApp, automatizaciones y un sitio." : i18n.language.startsWith("pt") ? "CRM, leads, WhatsApp, automações e um site." : i18n.language.startsWith("ar") ? "CRM وعملاء محتملون وWhatsApp وأتمتة وموقع." : "CRM, leads, WhatsApp, automations and a website."}</span>
+                      <Link to="/register" onClick={() => setOpenGroup(null)}>{t("nav.cta")}</Link>
+                    </aside>
                   </div>
                 </div>
               );
@@ -255,8 +261,8 @@ export default function HeaderView({
                   <Link to="/login" className="site-header__signin">
                     {t("common.login")}
                   </Link>
-                  <Link to="/pricing" className="site-header__cta">
-                    {t("nav.cta")}
+                  <Link to="/register" className="site-header__cta">
+                    <span>{t("nav.cta")}</span>
                   </Link>
                 </>
               ) : (
