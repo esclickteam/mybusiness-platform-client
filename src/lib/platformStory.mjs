@@ -283,6 +283,7 @@ export function platformStory(locale) {
     sections: next.sections,
     steps: next.steps,
     compare: next.compare,
+    faq: next.faq,
     ui: next.ui,
   };
 }
