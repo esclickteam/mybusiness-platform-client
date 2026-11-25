@@ -6,6 +6,7 @@ import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import films from "./theaterFilms.json";
+import HomeFull from "./HomeFull";
 
 const MEDIA = "/demo-media/home";
 const FILM_VERSION = "t7";
@@ -75,15 +76,6 @@ function Words({ text, hot = -1, delay = 0 }: { text: string; hot?: number; dela
   );
 }
 
-const NODES = [
-  { to: "/crm", he: "CRM", en: "CRM", es: "CRM", pt: "CRM", ar: "CRM" },
-  { to: "/whatsapp-api", he: "WhatsApp", en: "WhatsApp", es: "WhatsApp", pt: "WhatsApp", ar: "WhatsApp" },
-  { to: "/automations", he: "אוטומציות", en: "Automations", es: "Automatizaciones", pt: "Automações", ar: "الأتمتة" },
-  { to: "/meta-campaigns", he: "שיווק", en: "Marketing", es: "Marketing", pt: "Marketing", ar: "التسويق" },
-  { to: "/appointments", he: "יומן ופגישות", en: "Calendar and meetings", es: "Calendario y reuniones", pt: "Agenda e reuniões", ar: "التقويم والاجتماعات" },
-  { to: "/website-builder", he: "בניית אתרים", en: "Website builder", es: "Creador de sitios", pt: "Criador de sites", ar: "بناء المواقع" },
-] as const;
-
 export default function WorldHome() {
   const { i18n } = useTranslation();
   const language = i18n.language || "en";
@@ -94,11 +86,6 @@ export default function WorldHome() {
   const openRef = useRef<HTMLElement | null>(null);
   const connectRef = useRef<HTMLElement | null>(null);
   const lang = language.toLowerCase().startsWith("he") ? "he" : "en";
-  const locale = language.toLowerCase().startsWith("he") ? "he"
-    : language.toLowerCase().startsWith("es") ? "es"
-    : language.toLowerCase().startsWith("pt") ? "pt"
-    : language.toLowerCase().startsWith("ar") ? "ar"
-    : "en";
   const hot = Math.max(0, String(hero.lineThree || "").trim().split(/\s+/).filter(Boolean).length - 1);
   const labels = (hero.processSteps || []) as [string, string][];
   const copy = (hero.processCopy || []) as [string, string][];
@@ -170,8 +157,8 @@ export default function WorldHome() {
             </div>
           </div>
           <div className="bz-spec__film">
-            <span className="bz-spec__pink" aria-hidden="true" />
-            <span className="bz-spec__yellow" aria-hidden="true" />
+            <img className="bz-mark bz-mark--a" src="/brand/mark.png" alt="" width="679" height="819" />
+            <img className="bz-mark bz-mark--b" src="/brand/mark.png" alt="" width="679" height="819" />
             <ProductTheater
               desktop={filmFor(`${lang}-desktop` as FilmKey)}
               mobile={filmFor(`${lang}-mobile` as FilmKey)}
@@ -203,24 +190,40 @@ export default function WorldHome() {
             )}
           </p>
         </div>
-        <div className="bz-orbit" aria-hidden="false">
-          <svg className="bz-orbit__lines" viewBox="0 0 100 100" aria-hidden="true">
-            <path d="M50 50 C 50 32, 50 28, 50 18" />
-            <path d="M50 50 C 64 46, 74 36, 82 28" />
-            <path d="M50 50 C 66 54, 76 64, 84 74" />
-            <path d="M50 50 C 50 66, 50 74, 50 86" />
-            <path d="M50 50 C 36 56, 26 66, 18 76" />
-            <path d="M50 50 C 34 44, 24 34, 16 24" />
-          </svg>
-          <span className="bz-orbit__hub">Bizuply</span>
-          <span className="bz-orbit__dot" aria-hidden="true" />
-          {NODES.map((node) => (
-            <Link key={node.to} to={node.to} className="bz-orbit__node">
-              {node[locale]}
-            </Link>
-          ))}
+        <div className="bz-mosaic">
+          <Link className="bz-shot bz-shot--crm" to="/crm">
+            <img src={`${MEDIA}/screens/${lang}-desktop-crm-list.webp`} alt="" />
+            <strong>CRM</strong>
+            <em style={{ opacity: "var(--in)" }}>{homeText(language, "ליד חדש נכנס לשלב המכירה", "A new lead enters the sales stage")}</em>
+          </Link>
+          <Link className="bz-shot bz-shot--wa" to="/whatsapp-api">
+            <img src={`${MEDIA}/screens/${lang}-desktop-whatsapp.webp`} alt="" />
+            <strong>WhatsApp</strong>
+            <em style={{ opacity: "var(--in)" }}>{homeText(language, "הודעה נשמרת באותה שיחה", "A message stays in the same thread")}</em>
+          </Link>
+          <figure className="bz-shot bz-shot--hub">
+            <img src={`${MEDIA}/screens/${lang}-desktop-dashboard.webp`} alt="" />
+            <strong>Bizuply</strong>
+          </figure>
+          <Link className="bz-shot bz-shot--auto" to="/automations">
+            <img src={`${MEDIA}/screens/${lang}-desktop-automation.webp`} alt="" />
+            <strong>{homeText(language, "אוטומציות", "Automations")}</strong>
+          </Link>
+          <Link className="bz-shot bz-shot--cal" to="/appointments">
+            <img src={`${MEDIA}/screens/${lang}-desktop-campaigns.webp`} alt="" />
+            <strong>{homeText(language, "יומן ושיווק", "Calendar and marketing")}</strong>
+          </Link>
+          <Link className="bz-shot bz-shot--site" to="/website-builder">
+            <img src="/demo-media/home/websites.jpg" alt="" />
+            <strong>{homeText(language, "בניית אתרים", "Website builder")}</strong>
+          </Link>
+          <Link className="bz-shot bz-shot--ai" to="/agents">
+            <img src={`${MEDIA}/screens/${lang}-desktop-ai.webp`} alt="" />
+            <strong>AI</strong>
+          </Link>
         </div>
       </section>
+      <HomeFull language={language} />
     </div>
   );
 }

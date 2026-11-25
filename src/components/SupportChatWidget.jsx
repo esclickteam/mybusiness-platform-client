@@ -1,7 +1,6 @@
 import React, { Component, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { Bot } from "lucide-react";
 import ChatBot from "./ChatBot";
 
 function isBizuplyPublicBookingPath(pathname = "") {
@@ -53,7 +52,7 @@ class ChatBotBoundary extends Component {
  * Listens for `bizuply:openSupportChat` CustomEvent with optional { message }.
  */
 export default function SupportChatWidget() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const [chatOpen, setChatOpen] = useState(false);
   const [initialMessage, setInitialMessage] = useState(null);
@@ -88,10 +87,14 @@ export default function SupportChatWidget() {
         <button
           type="button"
           onClick={() => setChatOpen(true)}
-          className="bizuply-chat-launcher fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full border border-violet-400/40 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-600 text-white shadow-[0_14px_36px_rgba(109,40,217,0.45)] transition hover:scale-105 hover:from-violet-500 hover:via-violet-500 hover:to-indigo-500 hover:shadow-[0_18px_44px_rgba(109,40,217,0.55)]"
+          className="bizuply-chat-launcher bizi-launcher"
           aria-label={t("leftover.chat.openAssistant")}
         >
-          <Bot size={24} className="text-white" />
+          <img src="/brand/bizi.png" alt="" width="64" height="64" />
+          <span>
+            <strong>{String(i18n.language || "").startsWith("he") ? "בואו להתייעץ איתי!" : "Let’s talk"}</strong>
+            <small>Bizi</small>
+          </span>
         </button>
       )}
 
