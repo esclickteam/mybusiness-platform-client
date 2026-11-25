@@ -45,10 +45,13 @@
 
 .site-mobile__brand img {
   display: block;
-  height: 32px;
+  height: 34px;
   width: auto;
-  max-width: 148px;
+  max-width: 168px;
   object-fit: contain;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .site-mobile__lang {

@@ -23,14 +23,21 @@
 
 .site-header__logo {
   position: relative;
-  min-width: 9.5rem;
+  min-width: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .site-header__logo-img {
   display: block;
-  height: 2.85rem;
+  height: 2.15rem;
   width: auto;
-  max-width: min(11.5rem, 42vw);
+  max-width: min(11.5rem, 46vw);
+  aspect-ratio: 1166 / 398;
+  object-fit: contain;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .site-header__logo-img--dark {

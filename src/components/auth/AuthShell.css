@@ -303,8 +303,11 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 
 .auth-card__logo {
   display: block;
-  width: 148px;
+  width: min(100%, 210px);
   height: auto;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .auth-social-pair {

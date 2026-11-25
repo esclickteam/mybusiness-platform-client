@@ -22,9 +22,12 @@
 
 .site-footer__brand img {
   display: block;
-  width: 180px;
+  width: min(100%, 210px);
   max-width: 100%;
   height: auto;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
 }
 
 .site-footer__brand p {

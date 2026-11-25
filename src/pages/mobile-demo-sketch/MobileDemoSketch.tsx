@@ -384,7 +384,7 @@ function DemoPlayer({ copy, he, poster }: { copy: Copy; he: boolean; poster: boo
         </div>
         <header className="mdsk-top" dir={he ? "rtl" : "ltr"}>
           <div className="mdsk-brand">
-            <img src="/logo-mark.svg" alt="BizUply" />
+            <img src="/brand/logo.png" alt="BizUply" />
           </div>
           <div className="mdsk-tools" aria-hidden="true">
             <Search size={16} />

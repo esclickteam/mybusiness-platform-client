@@ -137,7 +137,7 @@ function Platform({ language }: { language: string }) {
   return (
     <section className="bz-platform" data-bz-tone="paper" aria-labelledby="bz-platform-title">
       <div className="bz-platform__mark" aria-hidden="true">
-        <img src="/brand/mark.svg" alt="" width="64" height="64" />
+        <img src="/brand/mark.png" alt="" width="679" height="819" />
       </div>
       <p className="bz-kicker">{say(language, { he: "הפלטפורמה", en: "The platform", es: "La plataforma", pt: "A plataforma", ar: "المنصة" })}</p>
       <h2 id="bz-platform-title">

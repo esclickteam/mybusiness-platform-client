@@ -89,7 +89,7 @@ function ApprovedCard({ lang, compact }: { lang: Lang; compact: boolean }) {
 
   return (
     <form className={compact ? "lcm-card is-compact" : "lcm-card"} dir={dir} onSubmit={(event) => event.preventDefault()}>
-      <img className="lcm-logo" src="/logo-mark.svg" alt="BizUply" />
+      <img className="lcm-logo" src="/brand/logo.png" alt="BizUply" />
       <h3>{copy.title}</h3>
       <p className="lcm-sub">{copy.sub}</p>
       <label className="lcm-label" htmlFor={`${lang}-${compact}-email`}>{copy.email}</label>

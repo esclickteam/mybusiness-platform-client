@@ -98,9 +98,9 @@ export function renderMarketingHeader(locale) {
   const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
   return `<header class="site-header" dir="${meta.dir}"><nav class="site-header__bar" aria-label="${escapeText(
     hx.navAria,
-  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img class="site-header__logo-img site-header__logo-img--dark" src="/brand/logo-on-dark.svg" alt="${escapeHtml(
+  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img class="site-header__logo-img site-header__logo-img--dark" src="/brand/logo-on-dark.png" alt="${escapeHtml(
     logoAlt,
-  )}" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__end"><span class="site-header__icon-btn"><span class="site-header__lang-code">${escapeText(
+  )}" width="1166" height="398" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__end"><span class="site-header__icon-btn"><span class="site-header__lang-code">${escapeText(
     short,
   )}</span>${GLOBE}</span><div class="site-header__actions"><a class="site-header__signin" href="${escapeHtml(
     href("/login"),

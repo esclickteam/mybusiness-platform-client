@@ -127,7 +127,7 @@ export default function Footer() {
       <div className="site-footer__main">
         <div className="site-footer__brand">
           <Link to="/" aria-label={t("footer.logoAria")}>
-            <img src="/brand/logo.svg" alt={logoAlt} width="176" height="52" />
+            <img src="/brand/logo.png" alt={logoAlt} width="1166" height="398" />
           </Link>
           <p>{t("footer.tagline")}</p>
         </div>

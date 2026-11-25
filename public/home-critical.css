@@ -59,17 +59,21 @@ html.hx-preview img {
   display: inline-flex;
   align-items: center;
   flex: 0 0 auto;
-  min-width: min(9.5rem, 34vw);
+  min-width: 0;
+  background: transparent;
   text-decoration: none;
 }
 .site-header__logo img {
   display: block;
-  height: 2.85rem;
+  height: 2.15rem;
   width: auto;
-  max-width: none;
-  min-width: min(9.5rem, 34vw);
-  aspect-ratio: 176 / 52;
+  max-width: min(11.5rem, 46vw);
+  min-width: 0;
+  aspect-ratio: 1166 / 398;
   object-fit: contain;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   flex-shrink: 0;
 }
 .site-header__nav {
@@ -231,11 +235,11 @@ html.hx-preview img {
     min-height: 5rem;
   }
   .site-header__logo {
-    min-width: 11rem;
+    min-width: 0;
   }
   .site-header__logo img {
-    height: 3.25rem;
-    min-width: 11rem;
+    height: 2.45rem;
+    min-width: 0;
   }
   .site-header__link {
     font-size: 1rem;
@@ -252,8 +256,8 @@ html.hx-preview img {
 }
 @media (min-width: 1100px) and (max-width: 1280px) {
   .site-header__logo img {
-    height: 2.7rem;
-    min-width: 9.1rem;
+    height: 2.25rem;
+    min-width: 0;
   }
   .site-header__link {
     font-size: 0.92rem;
