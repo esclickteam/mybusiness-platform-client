@@ -1,7 +1,7 @@
 .px {
-  --ink: #1a0b33;
+  --ink: #111936;
   --paper: #f7f6fc;
-  --violet: #5b21b6;
+  --violet: #2541F5;
   --deep: #321064;
   --blue: #3d63ff;
   color: var(--ink);
@@ -73,7 +73,7 @@
   background:
     radial-gradient(ellipse 55% 45% at 92% 12%, rgba(61, 99, 255, 0.45), transparent 60%),
     radial-gradient(ellipse 42% 40% at 8% 88%, rgba(124, 58, 237, 0.55), transparent 62%),
-    linear-gradient(155deg, #5b21b6 0%, #3a1578 46%, #1c2d72 100%);
+    linear-gradient(155deg, #2541F5 0%, #3a1578 46%, #1c2d72 100%);
   color: #fff;
 }
 
@@ -100,7 +100,7 @@
 .px-browser-bar span {
   width: 0.48rem;
   height: 0.48rem;
-  background: #c4b5fd;
+  background: #ffd0ea;
 }
 
 .px-browser img,

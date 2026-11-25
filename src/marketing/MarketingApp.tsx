@@ -68,7 +68,7 @@ export default function MarketingApp() {
   useEffect(() => installMarketingNavigation(), []);
 
   return (
-    <div className="app-layout hx-has-site-header" dir={getTextDirection(i18n.language)} lang={getHtmlLang(i18n.language)}>
+    <div className="app-layout hx-has-site-header bz-public" dir={getTextDirection(i18n.language)} lang={getHtmlLang(i18n.language)}>
       <HeaderView />
       <main className="app-main">
         <div className="app-scroll-area home-preview-scroll">

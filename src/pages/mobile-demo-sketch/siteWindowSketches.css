@@ -18,7 +18,7 @@
 }
 
 .sws-intro > p:first-child {
-  color: #6d28d9;
+  color: #2541F5;
   font-size: 13px;
   font-weight: 800;
 }
@@ -46,15 +46,15 @@
   border: 1px solid #ddd6fe;
   border-radius: 999px;
   background: #fff;
-  color: #5b21b6;
+  color: #2541F5;
   font: inherit;
   font-size: 13px;
   font-weight: 800;
 }
 
 .sws-intro button[aria-pressed="true"] {
-  border-color: #6d28d9;
-  background: #6d28d9;
+  border-color: #2541F5;
+  background: #2541F5;
   color: #fff;
 }
 
@@ -78,7 +78,7 @@
 .sws-window {
   width: min(68cqw, calc(min(32vh, 236px) * 260 / 220));
   overflow: hidden;
-  border: 2px solid #7c3aed;
+  border: 2px solid #2541F5;
   border-radius: 18px;
   background: #fff;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.28), 0 22px 36px -18px rgba(91, 33, 182, 0.55);
@@ -90,7 +90,7 @@
   gap: 8px;
   min-height: 38px;
   padding: 7px 10px;
-  background: linear-gradient(90deg, #5b21b6 0%, #2563eb 100%);
+  background: linear-gradient(90deg, #2541F5 0%, #2563eb 100%);
   color: #fff;
 }
 
@@ -161,7 +161,7 @@
 
 .sws-nav b {
   margin-inline-end: auto;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 13px;
 }
 
@@ -208,7 +208,7 @@
 .sws-hero em {
   padding: 5px 8px;
   border-radius: 999px;
-  background: #6d28d9;
+  background: #2541F5;
   color: #fff;
   font-size: 12px;
   font-style: normal;
@@ -252,7 +252,7 @@
   font-weight: 700;
 }
 
-.sws-next p span:last-child { color: #5b21b6; }
+.sws-next p span:last-child { color: #2541F5; }
 
 @keyframes sws-scroll {
   0%, 20% { transform: translateY(0); }

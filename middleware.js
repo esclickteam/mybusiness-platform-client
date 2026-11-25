@@ -1029,9 +1029,9 @@ async function handleMarketingDocument(request) {
       const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale === "en" ? "en" : locale.locale);
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       const htmlClass = isHome
-        ? ' class="bizuply-home hx-preview" style="background:#ffffff"'
+        ? ' class="bizuply-home hx-preview" style="background:#2541F5"'
         : isPartners
-          ? ' class="bizuply-partners" style="background:#1e1b4b"'
+          ? ' class="bizuply-partners" style="background:#111936"'
           : "";
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,

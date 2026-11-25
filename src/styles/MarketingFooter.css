@@ -1,10 +1,10 @@
 .site-footer,
 .site-footer.hx-footer {
   margin: 0;
-  color: #21172f;
+  color: #111936;
   padding: 3.5rem 0 0;
   border-top: 0;
-  background: #f3f0ff;
+  background: #f4f6ff;
 }
 
 .site-footer__main,
@@ -38,7 +38,7 @@
 
 .site-footer__col h2 {
   margin: 0 0 0.9rem;
-  color: #4c1d95;
+  color: #1a2fd0;
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -56,7 +56,7 @@
 .site-footer__col a,
 .site-footer__legal a,
 .site-footer__social a {
-  color: #21172f;
+  color: #111936;
   font-size: 0.98rem;
   font-weight: 500;
   line-height: 1.45;
@@ -68,14 +68,14 @@
 .site-footer__cookie:hover,
 .site-footer__col a:focus-visible,
 .site-footer__legal a:focus-visible {
-  color: #5b21b6;
+  color: #2541F5;
 }
 
 .site-footer__cookie {
   border: 0;
   background: none;
   padding: 0;
-  color: #21172f;
+  color: #111936;
   font: inherit;
   font-size: 0.98rem;
   font-weight: 500;
@@ -85,7 +85,7 @@
 
 .site-footer a:focus-visible,
 .site-footer__cookie:focus-visible {
-  outline: 2px solid #5b21b6;
+  outline: 2px solid #2541F5;
   outline-offset: 3px;
 }
 
@@ -151,13 +151,13 @@
   border: 1px solid rgba(91, 33, 182, 0.22);
   border-radius: 0;
   background: rgba(255, 255, 255, 0.72);
-  color: #21172f;
+  color: #111936;
   padding: 0.35rem 0.45rem;
   font: inherit;
 }
 
 .site-footer__region option {
-  color: #1a0b33;
+  color: #111936;
 }
 
 .site-footer .site-header__icon-btn,
@@ -173,7 +173,7 @@
 .site-footer .site-header__icon-btn:has(.site-header__lang-code):hover,
 .site-footer .site-header__icon-btn:has(.site-header__lang-code)[aria-expanded="true"] {
   border-color: #ddd3f7;
-  background: #f3f0ff;
+  background: #f4f6ff;
   color: #171b42;
 }
 

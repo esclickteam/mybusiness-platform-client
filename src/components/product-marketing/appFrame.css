@@ -109,7 +109,7 @@
 }
 
 .pmk-rail__item.is-active {
-  background: linear-gradient(115deg, #4f46e5, #7c3aed);
+  background: linear-gradient(115deg, #4f46e5, #2541F5);
   color: #fff;
   box-shadow: 0 8px 20px rgba(79, 70, 229, 0.24);
 }
@@ -305,7 +305,7 @@
 
 .pmk-pill--live {
   background: #f5f3ff;
-  color: #6d28d9;
+  color: #2541F5;
 }
 
 /* rule flow: trigger → condition → action */
@@ -411,7 +411,7 @@
   max-width: 88%;
   padding: 0.55rem 0.7rem;
   border-radius: 0.9rem;
-  background: linear-gradient(115deg, #4f46e5, #7c3aed);
+  background: linear-gradient(115deg, #4f46e5, #2541F5);
   font-size: 0.78rem;
   font-weight: 700;
   line-height: 1.55;

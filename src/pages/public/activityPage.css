@@ -11,7 +11,7 @@
   padding: clamp(2.5rem, 6vw, 4.5rem) 1.25rem 2.5rem;
   background:
     radial-gradient(ellipse 70% 80% at 100% 0%, rgba(61, 99, 255, 0.38), transparent 58%),
-    linear-gradient(165deg, #321064 0%, #5b21b6 55%, #3a1d86 100%);
+    linear-gradient(165deg, #321064 0%, #2541F5 55%, #3a1d86 100%);
   color: #fff;
 }
 
@@ -81,7 +81,7 @@
 
 .act-links a {
   font-weight: 800;
-  color: #5b21b6;
+  color: #2541F5;
 }
 
 .act-body,
@@ -140,7 +140,7 @@
 
 .act-steps li::before {
   content: counter(act, decimal-leading-zero);
-  color: #6d28d9;
+  color: #2541F5;
   font-weight: 800;
 }
 

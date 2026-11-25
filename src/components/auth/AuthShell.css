@@ -127,7 +127,7 @@
 }
 
 .auth-stage--centered {
-  background: #f6f3fd;
+  background: #f4f6ff;
   font-family: Assistant, Inter, system-ui, sans-serif;
 }
 
@@ -234,7 +234,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 
 .auth-login__row a,
 .auth-login__foot a {
-  color: #6d28d9;
+  color: #2541F5;
   font-weight: 800;
   text-decoration: none;
 }
@@ -249,7 +249,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 .auth-login__check input {
   width: 1.05rem;
   height: 1.05rem;
-  accent-color: #5b21b6;
+  accent-color: #2541F5;
 }
 
 .auth-login__submit {
@@ -261,7 +261,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   height: 50px;
   border: 0;
   border-radius: 10px;
-  background: linear-gradient(90deg, #7b3ff3 0%, #5b21b6 100%);
+  background: linear-gradient(90deg, #2541F5 0%, #2541F5 100%);
   color: #fff;
   font: inherit;
   font-size: 1.05rem;
@@ -270,7 +270,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 }
 
 .auth-login__submit:hover { filter: brightness(1.06); }
-.auth-login__submit:focus-visible { outline: 2px solid #5b21b6; outline-offset: 3px; }
+.auth-login__submit:focus-visible { outline: 2px solid #2541F5; outline-offset: 3px; }
 .auth-login__submit:disabled { cursor: wait; filter: none; opacity: 0.62; }
 
 [dir="rtl"] .auth-login__arrow { transform: scaleX(-1); }
@@ -363,7 +363,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 999px;
-  background: #7c3aed;
+  background: #2541F5;
   box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
 }
 
@@ -396,7 +396,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 }
 
 .auth-card .relative:focus-within svg {
-  color: #6d28d9;
+  color: #2541F5;
 }
 
 .auth-card svg {
@@ -451,7 +451,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 
 .auth-showcase__title em {
   font-style: normal;
-  background: linear-gradient(90deg, #7dd3fc, #a78bfa 45%, #e9d5ff);
+  background: linear-gradient(90deg, #7dd3fc, #FF42B3 45%, #ffd0ea);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -475,7 +475,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 999px;
-  background: #c4b5fd;
+  background: #ffd0ea;
   box-shadow: 0 0 12px rgba(196, 181, 253, 0.9);
 }
 
@@ -512,14 +512,14 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   height: 2.4rem;
   margin-inline: auto;
   border-radius: 14px;
-  background: #f5f3ff;
-  color: #6d28d9;
+  background: #f4f6ff;
+  color: #2541F5;
   transition: transform 0.25s ease, background 0.25s ease;
 }
 
 .auth-float:hover .auth-float__icon {
   transform: translateY(-2px);
-  background: #ede9fe;
+  background: #e7ebff;
 }
 
 .auth-float strong {
@@ -622,7 +622,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 
 .auth-live__title em {
   font-style: normal;
-  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  background: linear-gradient(90deg, #2563eb, #2541F5);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -701,7 +701,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #7c3aed;
+  color: #2541F5;
 }
 
 .auth-live__badge {
@@ -738,7 +738,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   width: 2.4rem;
   height: 2.4rem;
   border-radius: 999px;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  background: linear-gradient(135deg, #2563eb, #2541F5);
   color: #ffffff;
   font-size: 0.75rem;
   font-weight: 800;
@@ -768,7 +768,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   padding: 0.25rem;
   border-radius: 999px;
   background: #f3edff;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.75rem;
   font-weight: 800;
   text-align: center;
@@ -857,7 +857,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 
 .auth-chart path {
   fill: none;
-  stroke: #7c3aed;
+  stroke: #2541F5;
   stroke-width: 2.5;
   stroke-linecap: round;
   stroke-dasharray: 280;
@@ -970,22 +970,22 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   100% { opacity: 0.35; }
 }
 @keyframes authRail {
-  0%, 22% { background: #7c3aed; }
+  0%, 22% { background: #2541F5; }
   25%, 100% { background: #e5e7eb; }
 }
 @keyframes authRail2 {
   0%, 25% { background: #e5e7eb; }
-  27%, 47% { background: #7c3aed; }
+  27%, 47% { background: #2541F5; }
   50%, 100% { background: #e5e7eb; }
 }
 @keyframes authRail3 {
   0%, 50% { background: #e5e7eb; }
-  52%, 72% { background: #7c3aed; }
+  52%, 72% { background: #2541F5; }
   75%, 100% { background: #e5e7eb; }
 }
 @keyframes authRail4 {
   0%, 75% { background: #e5e7eb; }
-  77%, 97% { background: #7c3aed; }
+  77%, 97% { background: #2541F5; }
   100% { background: #e5e7eb; }
 }
 

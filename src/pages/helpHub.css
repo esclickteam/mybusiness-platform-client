@@ -1,7 +1,7 @@
 /* Polish for the existing help home. The hero illustration stays as drawn. */
 
 .help-hub {
-  color: #21172f;
+  color: #111936;
   background: #f4f1fa;
 }
 
@@ -18,7 +18,7 @@
 }
 
 .help-hub h2 {
-  color: #21172f;
+  color: #111936;
   letter-spacing: -0.02em;
 }
 
@@ -65,19 +65,19 @@
 .help-hub a:focus-visible,
 .help-hub button:focus-visible,
 .help-hub input:focus-visible {
-  outline: 2px solid #5b21b6;
+  outline: 2px solid #2541F5;
   outline-offset: 3px;
 }
 
 .help-search {
-  border: 2px solid #5b21b6 !important;
+  border: 2px solid #2541F5 !important;
   background: #ffffff;
   box-shadow: 0 10px 28px rgba(91, 33, 182, 0.12);
 }
 
 .help-search input {
   height: 68px;
-  color: #21172f;
+  color: #111936;
   font-size: 1rem;
 }
 

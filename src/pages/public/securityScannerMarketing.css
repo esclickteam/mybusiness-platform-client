@@ -11,12 +11,12 @@
 
 .scanner-product__hero {
   padding: 88px 0 64px;
-  background: linear-gradient(160deg, #ffffff 0%, #eef2ff 48%, #f3e8ff 100%);
+  background: linear-gradient(160deg, #ffffff 0%, #eef2ff 48%, #f4f6ff 100%);
 }
 
 .scanner-product__kicker {
   margin: 0 0 12px;
-  color: #5b21b6;
+  color: #2541F5;
   font-weight: 700;
 }
 
@@ -85,14 +85,14 @@
 .scanner-product__sheet,
 .scanner-product details {
   padding: 20px;
-  border: 1px solid #ddd6fe;
+  border: 1px solid #dbe2ff;
   background: #ffffff;
 }
 
 .scanner-product__board strong {
   display: block;
   margin-top: 8px;
-  color: #4c1d95;
+  color: #1a2fd0;
   font-size: 32px;
 }
 
@@ -115,7 +115,7 @@
   padding: 14px 16px;
   background: #fff;
   color: #1e1b4b;
-  border: 1px solid #ddd6fe;
+  border: 1px solid #dbe2ff;
   border-radius: 0;
   line-height: 1.7;
 }

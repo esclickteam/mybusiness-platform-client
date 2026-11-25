@@ -5,8 +5,9 @@
 
 const HERO = {
   en: {
-    lineOne: "Your business.",
-    lineTwo: "Working smarter.",
+    lineOne: "Big ideas.",
+    lineTwo: "Smarter business.",
+    lineThree: "",
     kicker: "BizUply | Smart CRM for growing businesses",
     lead1:
       "CRM, customer communication on WhatsApp, smart automations, meeting management and reports — in one platform that moves your business forward.",
@@ -50,8 +51,9 @@ const HERO = {
     ],
   },
   he: {
-    lineOne: "העסק שלכם.",
-    lineTwo: "עובד חכם יותר.",
+    lineOne: "כל העסק שלך.",
+    lineTwo: "מערכת אחת.",
+    lineThree: "אינסוף אפשרויות.",
     kicker: "BizUply | CRM חכם לעסקים בצמיחה",
     lead1:
       "CRM, תקשורת עם לקוחות ב־WhatsApp, אוטומציות חכמות, ניהול פגישות ודוחות — בפלטפורמה אחת שמקדמת את העסק שלכם.",
@@ -95,8 +97,9 @@ const HERO = {
     ],
   },
   es: {
-    lineOne: "Su negocio.",
-    lineTwo: "Trabaja con más inteligencia.",
+    lineOne: "Todo tu negocio.",
+    lineTwo: "Un sistema.",
+    lineThree: "Posibilidades infinitas.",
     kicker: "BizUply | CRM inteligente para negocios en crecimiento",
     lead1:
       "CRM, comunicación con clientes en WhatsApp, automatizaciones inteligentes, gestión de reuniones e informes — en una plataforma que hace avanzar su negocio.",
@@ -140,8 +143,9 @@ const HERO = {
     ],
   },
   "pt-BR": {
-    lineOne: "O seu negócio.",
-    lineTwo: "Funciona de forma mais inteligente.",
+    lineOne: "Todo o seu negócio.",
+    lineTwo: "Um sistema.",
+    lineThree: "Possibilidades infinitas.",
     kicker: "BizUply | CRM inteligente para negócios em crescimento",
     lead1:
       "CRM, comunicação com clientes no WhatsApp, automações inteligentes, gestão de reuniões e relatórios — em uma plataforma que impulsiona o seu negócio.",
@@ -185,8 +189,9 @@ const HERO = {
     ],
   },
   ar: {
-    lineOne: "عملكم.",
-    lineTwo: "يعمل بذكاء أكبر.",
+    lineOne: "كل عملك.",
+    lineTwo: "نظام واحد.",
+    lineThree: "احتمالات بلا حدود.",
     kicker: "BizUply | نظام CRM ذكي للأعمال النامية",
     lead1:
       "CRM، والتواصل مع العملاء عبر WhatsApp، والأتمتة الذكية، وإدارة الاجتماعات والتقارير — في منصة واحدة تدفع عملكم إلى الأمام.",

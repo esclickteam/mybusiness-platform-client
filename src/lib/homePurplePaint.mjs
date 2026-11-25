@@ -98,7 +98,7 @@ export function renderMarketingHeader(locale) {
   const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
   return `<header class="site-header" dir="${meta.dir}"><nav class="site-header__bar" aria-label="${escapeText(
     hx.navAria,
-  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img src="/logo-mark.svg" alt="${escapeHtml(
+  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img class="site-header__logo-img site-header__logo-img--dark" src="/brand/logo-on-dark.svg" alt="${escapeHtml(
     logoAlt,
   )}" width="176" height="52" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__end"><span class="site-header__icon-btn"><span class="site-header__lang-code">${escapeText(
     short,
@@ -109,7 +109,7 @@ export function renderMarketingHeader(locale) {
   )}</a></div><div class="site-header__mobile"><span class="site-header__burger" aria-hidden="true"><span></span><span></span><span></span></span></div></div></nav></header>`;
 }
 
-const HERO_WAVES = `<svg class="ht-waves ht-hero-waves" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ht-wave-a" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#6d28d9" stop-opacity="0.55"></stop><stop offset="0.55" stop-color="#4f46e5" stop-opacity="0.4"></stop><stop offset="1" stop-color="#3b82f6" stop-opacity="0.35"></stop></linearGradient><linearGradient id="ht-wave-b" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#a78bfa" stop-opacity="0.4"></stop><stop offset="1" stop-color="#93c5fd" stop-opacity="0.32"></stop></linearGradient></defs><g class="ht-wave ht-wave-1"><path d="M0 210 C 240 140 420 280 720 214 S 1180 120 1440 190 V320 H0Z" fill="url(#ht-wave-b)"></path><path d="M1440 210 C 1680 140 1860 280 2160 214 S 2620 120 2880 190 V320 H1440Z" fill="url(#ht-wave-b)"></path></g><g class="ht-wave ht-wave-2"><path d="M0 250 C 260 196 470 300 760 252 S 1210 176 1440 236 V320 H0Z" fill="url(#ht-wave-a)"></path><path d="M1440 250 C 1700 196 1910 300 2200 252 S 2650 176 2880 236 V320 H1440Z" fill="url(#ht-wave-a)"></path></g><path class="ht-wave-line" d="M0 176 C 300 120 520 236 820 186 S 1250 110 1440 160" fill="none"></path></svg>`;
+const HERO_WAVES = `<svg class="ht-waves ht-hero-waves" viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="ht-wave-a" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF42B3" stop-opacity="0.55"></stop><stop offset="0.55" stop-color="#2541F5" stop-opacity="0.2"></stop><stop offset="1" stop-color="#EDFF00" stop-opacity="0.35"></stop></linearGradient><linearGradient id="ht-wave-b" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#EDFF00" stop-opacity="0.28"></stop><stop offset="1" stop-color="#FFFFFF" stop-opacity="0.2"></stop></linearGradient></defs><g class="ht-wave ht-wave-1"><path d="M0 210 C 240 140 420 280 720 214 S 1180 120 1440 190 V320 H0Z" fill="url(#ht-wave-b)"></path><path d="M1440 210 C 1680 140 1860 280 2160 214 S 2620 120 2880 190 V320 H1440Z" fill="url(#ht-wave-b)"></path></g><g class="ht-wave ht-wave-2"><path d="M0 250 C 260 196 470 300 760 252 S 1210 176 1440 236 V320 H0Z" fill="url(#ht-wave-a)"></path><path d="M1440 250 C 1700 196 1910 300 2200 252 S 2650 176 2880 236 V320 H1440Z" fill="url(#ht-wave-a)"></path></g><path class="ht-wave-line" d="M0 176 C 300 120 520 236 820 186 S 1250 110 1440 160" fill="none"></path></svg>`;
 
 const THEATER_MEDIA = "/demo-media/home/theater";
 const THEATER_VERSION = "t7";
@@ -135,7 +135,7 @@ function theaterShellHtml(hx, lang) {
   const hebrew = String(lang || "").toLowerCase().startsWith("he");
   const metric = hebrew ? "לידים" : "Leads";
   const caption = hebrew ? "לוח בקרה" : "Dashboard";
-  const row = `<div class="hx-mrow"><div class="hx-mrow-track"><div class="hx-mrow-card" style="width:48%;max-width:220px;padding:14px 12px;border:2px solid #7c3aed;border-radius:16px;background:#fff;text-align:center"><b style="display:block;color:#5b21b6;font-size:1.6rem">128</b><span style="color:#4c4563;font-size:.85rem;font-weight:700">${metric}</span></div></div><p class="hx-mrow-caption">${caption}</p></div>`;
+  const row = `<div class="hx-mrow"><div class="hx-mrow-track"><div class="hx-mrow-card" style="width:48%;max-width:220px;padding:14px 12px;border:2px solid #2541F5;border-radius:2px;background:#fff;text-align:center"><b style="display:block;color:#2541F5;font-size:1.6rem">128</b><span style="color:#111936;font-size:.85rem;font-weight:700">${metric}</span></div></div><p class="hx-mrow-caption">${caption}</p></div>`;
   return `<div class="ht-theater" aria-hidden="true"><div class="ht-bar"><div class="ht-tabs">${tabs}</div><div class="ht-controls">${controls}</div></div><div class="ht-stage"><picture><source media="(min-width: 761px)" srcset="${poster}" width="1920" height="1080"><img class="ht-poster" alt="${escapeHtml(
     hx.processLabel || hx.stageAlt,
   )}" width="1920" height="1080" decoding="async"></picture></div><div class="ht-caption"><p class="ht-caption-step">${escapeText(
@@ -156,10 +156,11 @@ function faqBodyHtml(items) {
 export function renderPurpleHomePrerender(locale) {
   const meta = marketingLocaleMeta(locale);
   const hx = HX_HERO_COPY[locale] || HX_HERO_COPY.en;
-  const lineTwoHot = Math.max(0, String(hx.lineTwo).trim().split(/\s+/).length - 1);
+  const hotSource = hx.lineThree ? hx.lineThree : hx.lineTwo;
+  const lineHot = Math.max(0, String(hotSource).trim().split(/\s+/).length - 1);
   const faqs = HOME_FAQ[locale] || HOME_FAQ.en;
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
-  const headline = `${hx.lineOne} ${hx.lineTwo}`;
+  const headline = [hx.lineOne, hx.lineTwo, hx.lineThree].filter(Boolean).join(" ");
 
   const header = renderMarketingHeader(locale);
   const href = (path) => localeHref(locale === "pt-BR" || locale === "he" || locale === "es" || locale === "ar" ? locale : "en", path);
@@ -167,12 +168,15 @@ export function renderPurpleHomePrerender(locale) {
   const kicker = hx.kicker
     ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
     : `<p class="hx-hero-brand">BizUply</p>`;
-  const hero = `<section class="hx-hero" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="hx-hero-pin"><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const third = hx.lineThree
+    ? `<span class="hx-line">${heroWords(hx.lineThree, lineHot)}</span>`
+    : "";
+  const secondHot = hx.lineThree ? -1 : lineHot;
+  const hero = `<section class="hx-hero" data-bz-tone="ink" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="hx-hero-pin"><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
-  )}</span><span class="hx-line">${heroWords(
-    hx.lineTwo,
-    lineTwoHot,
-  )}</span></h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
+  )}</span><span class="hx-line">${heroWords(hx.lineTwo, secondHot)}</span>${third}</h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
+    hx.start,
+  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
     hx.see,
   )}</span><i aria-hidden="true"></i></a></div></div></div><div class="hx-hero-stage" id="product-theater"><div class="hx-hero-stage-inner">${theaterShellHtml(
     hx,

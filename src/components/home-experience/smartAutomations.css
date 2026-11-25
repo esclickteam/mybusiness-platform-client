@@ -81,7 +81,7 @@
 }
 .au-run {
   border: 0;
-  background: #6d28d9;
+  background: #2541F5;
   color: #fff;
 }
 .au-run:disabled { opacity: 0.7; cursor: progress; }
@@ -101,7 +101,7 @@
   font-size: 0.90rem;
   font-weight: 800;
 }
-.au-badge { background: #f5f3ff; color: #5b21b6; }
+.au-badge { background: #f4f6ff; color: #2541F5; }
 .au-draft { background: #f3f4f6; color: #4b5563; }
 .au-picker {
   display: flex;
@@ -117,7 +117,7 @@
   max-width: 18rem;
   min-height: 2.5rem;
   padding: 0 0.6rem;
-  border: 1px solid #ddd6fe;
+  border: 1px solid #dbe2ff;
   border-radius: 6px;
   background: #fff;
   color: #141226;
@@ -156,7 +156,7 @@
 .au-library button span { display: grid; gap: 0.1rem; }
 .au-library small { color: #6d657e; font-weight: 650; }
 .au-library button:hover,
-.au-flow button:hover { border-color: #c4b5fd; }
+.au-flow button:hover { border-color: #ffd0ea; }
 
 .au-canvas {
   display: flex;
@@ -165,7 +165,7 @@
   justify-content: center;
   padding: 0.85rem 0.7rem 0.9rem;
   background-color: #f7f6fb;
-  background-image: radial-gradient(#ddd6fe 1.1px, transparent 1.1px);
+  background-image: radial-gradient(#dbe2ff 1.1px, transparent 1.1px);
   background-size: 18px 18px;
 }
 .au-flow {
@@ -188,7 +188,7 @@
   inset-inline-end: -1.7rem;
   width: 1.7rem;
   height: 2px;
-  background: #c4b5fd;
+  background: #ffd0ea;
 }
 .au-link::before,
 .au-link::after {
@@ -200,7 +200,7 @@
   inset-inline-start: 0.35rem;
   width: 0.45rem;
   height: 0.45rem;
-  border: 2px solid #8b5cf6;
+  border: 2px solid #FF42B3;
   border-radius: 50%;
   background: #fff;
   transform: translateY(-50%);
@@ -209,15 +209,15 @@
   inset-inline-end: 0;
   width: 0.42rem;
   height: 0.42rem;
-  border-top: 2px solid #7c3aed;
-  border-inline-end: 2px solid #7c3aed;
+  border-top: 2px solid #2541F5;
+  border-inline-end: 2px solid #2541F5;
   transform: translateY(-50%) rotate(45deg);
 }
 [dir="rtl"] .au-link::after { transform: translateY(-50%) rotate(-135deg); }
 .au-link.is-done { background: #86efac; }
 .au-link.is-done::before { border-color: #16a34a; }
 .au-link.is-done::after { border-color: #16a34a; }
-.au-link.is-now { background: #7c3aed; }
+.au-link.is-now { background: #2541F5; }
 .au-flow button {
   position: relative;
   display: flex;
@@ -250,15 +250,15 @@
   padding: 0.2rem 0.55rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.85);
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.87rem;
   font-style: normal;
   font-weight: 800;
 }
 .au-flow .is-trigger { background: #eefbf3; color: #166534; }
 .au-flow .is-trigger .au-glyph { color: #16a34a; }
-.au-flow .is-condition { background: #f4efff; color: #5b21b6; }
-.au-flow .is-condition .au-glyph { color: #7c3aed; }
+.au-flow .is-condition { background: #eef1ff; color: #2541F5; }
+.au-flow .is-condition .au-glyph { color: #2541F5; }
 .au-flow .is-action { background: #eef4ff; color: #1e3a8a; }
 .au-flow .is-action .au-glyph { color: #2563eb; }
 .au-flow .is-result { background: #eefbf3; color: #166534; }
@@ -267,9 +267,9 @@
 .au-flow .is-condition small,
 .au-flow .is-action small,
 .au-flow .is-result small { color: #4b4563; }
-.au-flow .is-on { box-shadow: inset 0 0 0 2px #7c3aed, 0 0 0 5px rgba(124, 58, 237, 0.12); }
+.au-flow .is-on { box-shadow: inset 0 0 0 2px #2541F5, 0 0 0 5px rgba(124, 58, 237, 0.12); }
 .au-flow .is-done { border-color: #86efac; }
-.au-flow .is-now { box-shadow: inset 0 0 0 2px #6d28d9, 0 0 0 6px rgba(109, 40, 217, 0.16); }
+.au-flow .is-now { box-shadow: inset 0 0 0 2px #2541F5, 0 0 0 6px rgba(109, 40, 217, 0.16); }
 .au-check {
   position: absolute;
   top: 0.55rem;
@@ -317,7 +317,7 @@
   height: 100%;
   margin-inline-end: auto;
   border-radius: inherit;
-  background: linear-gradient(90deg, #7c3aed, #60a5fa);
+  background: linear-gradient(90deg, #2541F5, #60a5fa);
 }
 .au-result {
   margin: 0.7rem 0 0;
@@ -336,8 +336,8 @@
   margin: 0.7rem 0 0.35rem;
   padding: 0.2rem 0.5rem;
   border-radius: 999px;
-  background: #f4efff;
-  color: #5b21b6;
+  background: #eef1ff;
+  color: #2541F5;
   font-weight: 800;
 }
 .au-inspector h4 { margin: 0.2rem 0; color: #141226; font-size: 1.05rem; }
@@ -354,10 +354,10 @@
   padding: 0.6rem;
   border-radius: 8px;
   background: #fff;
-  color: #5b21b6 !important;
+  color: #2541F5 !important;
 }
 
-.au-section :focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.au-section :focus-visible { outline: 2px solid #ffd0ea; outline-offset: 2px; }
 
 @media (max-width: 980px) {
   .au-wrap { width: calc(100% - 1rem); }

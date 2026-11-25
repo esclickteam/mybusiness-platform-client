@@ -1222,7 +1222,7 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <div className={`app-layout${shareSiteHeader ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
+      <div className={`app-layout${shareSiteHeader ? " hx-has-site-header" : ""}${!isWorkspaceRoute && !isBusinessChatRoute && !isMiniSiteHost ? " bz-public" : ""}`} dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
           !isSaasPublicSite &&

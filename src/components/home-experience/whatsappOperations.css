@@ -88,7 +88,7 @@
   font-size: 0.94rem;
   font-weight: 800;
 }
-.wa-demo { padding: 0.25rem 0.55rem; border-radius: 999px; background: #f5f3ff; color: #5b21b6; }
+.wa-demo { padding: 0.25rem 0.55rem; border-radius: 999px; background: #f4f6ff; color: #2541F5; }
 .wa-live { color: #047857; }
 .wa-live i { width: 0.5rem; height: 0.5rem; border-radius: 50%; background: #22c55e; }
 .wa-bar strong { margin-inline-start: auto; color: #141226; }
@@ -107,7 +107,7 @@
   font-weight: 800;
   cursor: pointer;
 }
-.wa-reset:hover { border-color: #c4b5fd; background: #faf8ff; }
+.wa-reset:hover { border-color: #ffd0ea; background: #faf8ff; }
 
 .wa-panes { display: none; }
 
@@ -154,12 +154,12 @@
   padding: 0 0.55rem;
   border: 0;
   border-radius: 6px;
-  background: #6d28d9;
+  background: #2541F5;
   color: #fff;
   font-size: 0.90rem;
   font-weight: 800;
 }
-.wa-inbox-head button:hover { background: #5b21b6; }
+.wa-inbox-head button:hover { background: #2541F5; }
 
 .wa-filters { display: flex; flex-wrap: wrap; gap: 0.35rem; padding: 0.35rem 0.75rem 0.5rem; }
 .wa-filters button {
@@ -172,8 +172,8 @@
   font-size: 0.87rem;
   font-weight: 800;
 }
-.wa-filters button b { margin-inline-start: 0.2rem; color: #6d28d9; }
-.wa-filters button.is-on { border-color: #6d28d9; background: #f5f3ff; color: #4c1d95; }
+.wa-filters button b { margin-inline-start: 0.2rem; color: #2541F5; }
+.wa-filters button.is-on { border-color: #2541F5; background: #f4f6ff; color: #1a2fd0; }
 
 .wa-search {
   display: flex;
@@ -215,7 +215,7 @@
   height: 2.4rem;
   border-radius: 50%;
   background: #efe8ff;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.90rem;
 }
 .wa-inbox li button span { display: contents; }
@@ -236,12 +236,12 @@
   min-width: 1.15rem;
   padding: 0.05rem 0.3rem;
   border-radius: 999px;
-  background: #6d28d9;
+  background: #2541F5;
   color: #fff;
   text-align: center;
 }
-.wa-inbox li button.is-on { background: #f3e8ff; }
-.wa-inbox li button:hover { background: #faf7ff; }
+.wa-inbox li button.is-on { background: #f4f6ff; }
+.wa-inbox li button:hover { background: #f4f6ff; }
 .wa-empty { margin: 0.8rem; color: #6d657e; font-weight: 800; }
 
 .wa-chat { display: flex; min-width: 0; flex-direction: column; background: #f7f5fb; }
@@ -258,8 +258,8 @@
   width: 3.1rem;
   height: 3.1rem;
   border-radius: 50%;
-  background: linear-gradient(180deg, #f5f3ff, #e9e0ff);
-  color: #5b21b6;
+  background: linear-gradient(180deg, #f4f6ff, #e9e0ff);
+  color: #2541F5;
   font-size: 0.98rem;
   box-shadow: 0 0 0 4px #fff, 0 0 0 5px #ece7f6;
 }
@@ -325,7 +325,7 @@
 
 .wa-notice {
   margin: 0 1rem;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.94rem;
   font-weight: 800;
 }
@@ -354,8 +354,8 @@
   border-radius: 6px;
   font-weight: 800;
 }
-.wa-template-row > button { justify-content: flex-start; padding: 0 0.8rem; border: 1px solid #ddd6fe; background: #fff; color: #3b2768; }
-.wa-template-row > button.is-set { background: #f6f2ff; border-color: #6d28d9; }
+.wa-template-row > button { justify-content: flex-start; padding: 0 0.8rem; border: 1px solid #dbe2ff; background: #fff; color: #3b2768; }
+.wa-template-row > button.is-set { background: #f6f2ff; border-color: #2541F5; }
 .wa-template-row > button:hover,
 .wa-secondary:hover { background: #efe8ff; }
 .wa-template-menu {
@@ -385,11 +385,11 @@
   color: #141226;
   text-align: start;
 }
-.wa-template-menu button svg { margin-top: 0.15rem; color: #6d28d9; }
+.wa-template-menu button svg { margin-top: 0.15rem; color: #2541F5; }
 .wa-template-menu button span { display: grid; gap: 0.12rem; }
 .wa-template-menu button.is-on,
-.wa-template-menu button:hover { background: #f4efff; }
-.wa-template-menu button.is-on { box-shadow: inset 0 0 0 1px #c4b5fd; }
+.wa-template-menu button:hover { background: #eef1ff; }
+.wa-template-menu button.is-on { box-shadow: inset 0 0 0 1px #ffd0ea; }
 .wa-template-menu small { color: #6d657e; font-weight: 650; }
 .wa-preview {
   display: grid;
@@ -397,29 +397,29 @@
   min-height: 3.4rem;
   margin: 0;
   padding: 0.65rem 0.75rem;
-  border: 1px dashed #ddd6fe;
+  border: 1px dashed #dbe2ff;
   border-radius: 8px;
   background: #faf9fd;
   color: #6d657e;
   font-weight: 650;
 }
-.wa-preview span { color: #6d28d9; font-size: 0.87rem; font-weight: 800; }
-.wa-preview.is-set { border-style: solid; border-color: #c4b5fd; background: #f7f4ff; color: #1e1b4b; }
+.wa-preview span { color: #2541F5; font-size: 0.87rem; font-weight: 800; }
+.wa-preview.is-set { border-style: solid; border-color: #ffd0ea; background: #f7f4ff; color: #1e1b4b; }
 .wa-send,
 .wa-primary,
-.wa-task-form button { background: #6d28d9; color: #fff; }
+.wa-task-form button { background: #2541F5; color: #fff; }
 .wa-send:hover,
 .wa-primary:hover,
-.wa-task-form button:hover { background: #5b21b6; }
+.wa-task-form button:hover { background: #2541F5; }
 
 .wa-profile { display: grid; align-content: start; gap: 0.55rem; padding: 0.95rem 0.9rem 1rem; }
 .wa-profile h4 { margin: 0.3rem 0 0; font-size: 0.98rem; }
 .wa-profile p { margin: 0; font-weight: 700; overflow-wrap: anywhere; }
 .wa-contact { display: flex; align-items: center; gap: 0.4rem; color: #24183f; }
-.wa-contact svg { color: #6d28d9; }
+.wa-contact svg { color: #2541F5; }
 .wa-who { display: flex; align-items: center; gap: 0.65rem; }
 .wa-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-.wa-tags span { padding: 0.2rem 0.45rem; border-radius: 999px; background: #f5f3ff; color: #5b21b6; font-size: 0.87rem; font-weight: 800; }
+.wa-tags span { padding: 0.2rem 0.45rem; border-radius: 999px; background: #f4f6ff; color: #2541F5; font-size: 0.87rem; font-weight: 800; }
 .wa-activity { display: grid; gap: 0.4rem; margin: 0; padding: 0; list-style: none; }
 .wa-activity li { display: grid; gap: 0.12rem; padding: 0.45rem 0.5rem; border-radius: 8px; background: #faf9fd; }
 .wa-activity .is-task { border: 1px solid #c9efd8; background: #f0fdf4; }
@@ -452,7 +452,7 @@
   font: inherit;
 }
 
-.wa-section :focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.wa-section :focus-visible { outline: 2px solid #ffd0ea; outline-offset: 2px; }
 
 @media (max-width: 980px) {
   .wa-wrap { width: calc(100% - 1rem); }
@@ -471,7 +471,7 @@
     color: #4b4563;
     font-weight: 800;
   }
-  .wa-panes button.is-on { border-color: #6d28d9; background: #f5f3ff; color: #5b21b6; }
+  .wa-panes button.is-on { border-color: #2541F5; background: #f4f6ff; color: #2541F5; }
   .wa-layout { display: block; min-height: 0; }
   .wa-layout .wa-inbox,
   .wa-layout .wa-chat,

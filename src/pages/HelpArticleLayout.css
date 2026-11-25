@@ -4,7 +4,7 @@
   min-height: 100%;
   background: #f4f1fa;
   padding: 1.5rem 0 3rem;
-  color: #21172f;
+  color: #111936;
 }
 
 .guide-article-page[dir="rtl"] {
@@ -22,7 +22,7 @@
   margin: 0 auto;
   padding: 2rem 24px 3rem;
   font-family: Assistant, Inter, system-ui, Arial, sans-serif;
-  color: #21172f;
+  color: #111936;
   line-height: 1.8;
   direction: inherit;
   text-align: inherit;
@@ -36,7 +36,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 36px;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.92rem;
   font-weight: 700;
   text-decoration: none;
@@ -48,7 +48,7 @@
 }
 
 .guide-article-crumb a:focus-visible {
-  outline: 2px solid #5b21b6;
+  outline: 2px solid #2541F5;
   outline-offset: 3px;
 }
 
@@ -58,16 +58,16 @@
   margin-bottom: 1.25rem;
   letter-spacing: -0.03em;
   line-height: 1.2;
-  color: #21172f;
+  color: #111936;
   background: none;
-  -webkit-text-fill-color: #21172f;
+  -webkit-text-fill-color: #111936;
 }
 
 .guide-article-container h2 {
   font-size: 1.35rem;
   font-weight: 700;
   margin: 2.15rem 0 0.75rem;
-  color: #21172f;
+  color: #111936;
   letter-spacing: -0.02em;
   line-height: 1.35;
 }
@@ -76,7 +76,7 @@
   font-size: 1.1rem;
   font-weight: 700;
   margin: 1.35rem 0 0.5rem;
-  color: #21172f;
+  color: #111936;
   line-height: 1.4;
 }
 
@@ -137,14 +137,14 @@
 .guide-article-container blockquote {
   margin: 1rem 0;
   padding: 0.75rem 1rem;
-  border-inline-start: 4px solid #5b21b6;
+  border-inline-start: 4px solid #2541F5;
   background: #f4f1fa;
   color: #2a2238;
   border-radius: 0;
 }
 
 .guide-article-container a {
-  color: #5b21b6;
+  color: #2541F5;
   font-weight: 700;
   overflow-wrap: anywhere;
 }
@@ -154,7 +154,7 @@
 }
 
 .guide-article-container a:focus-visible {
-  outline: 2px solid #5b21b6;
+  outline: 2px solid #2541F5;
   outline-offset: 2px;
 }
 

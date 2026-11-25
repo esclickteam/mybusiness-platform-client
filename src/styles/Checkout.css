@@ -23,7 +23,7 @@
 .checkout-title {
     font-size: 28px;
     font-weight: bold;
-    color: #21172f;
+    color: #111936;
     margin-bottom: 15px;
 }
 
@@ -36,7 +36,7 @@
 .checkout-price, .checkout-duration {
     font-size: 20px;
     font-weight: bold;
-    color: #21172f;
+    color: #111936;
     margin-bottom: 10px;
 }
 
@@ -48,7 +48,7 @@
 }
 
 .pay-button, .retry-link {
-    background: #5b21b6;
+    background: #2541F5;
     color: white;
     padding: 12px 20px;
     border: none;
@@ -70,7 +70,7 @@
 
 .pay-button:hover:not(:disabled),
 .retry-link:hover:not(:disabled) {
-    background: #4c1d95;
+    background: #1a2fd0;
 }
 
 .return-link {

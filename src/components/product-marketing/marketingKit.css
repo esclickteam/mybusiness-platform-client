@@ -17,8 +17,8 @@
   --pm-ink-soft: #1e293b;
   --pm-muted: #64748b;
 
-  --pm-violet: #6d28d9;
-  --pm-indigo: #4f46e5;
+  --pm-violet: #2541F5;
+  --pm-indigo: #2541F5;
   --pm-blue: #2563eb;
   --pm-sky: #0ea5e9;
   --pm-cyan: #06b6d4;
@@ -215,7 +215,7 @@
 
 .pm-cta--primary {
   color: #fff;
-  background: linear-gradient(115deg, #7c3aed, #4f46e5 46%, #2563eb);
+  background: linear-gradient(115deg, #2541F5, #2541F5 46%, #2563eb);
   box-shadow: 0 16px 38px rgba(79, 70, 229, 0.3);
 }
 
@@ -250,7 +250,7 @@
 }
 
 .pm-cta--light {
-  color: #4c1d95;
+  color: #1a2fd0;
   background: #fff;
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.18);
 }
@@ -394,7 +394,7 @@
   opacity: 0;
   background: radial-gradient(
     18rem circle at var(--pm-mx, 50%) var(--pm-my, 0%),
-    color-mix(in srgb, var(--pm-spot-accent, #7c3aed) 14%, transparent),
+    color-mix(in srgb, var(--pm-spot-accent, #2541F5) 14%, transparent),
     transparent 68%
   );
   transition: opacity 0.35s var(--pm-ease);
@@ -427,10 +427,10 @@
 }
 
 .pm-spot:hover .pm-spot__shell {
-  border-color: color-mix(in srgb, var(--pm-spot-accent, #7c3aed) 38%, transparent);
+  border-color: color-mix(in srgb, var(--pm-spot-accent, #2541F5) 38%, transparent);
   box-shadow:
     0 26px 60px rgba(15, 23, 42, 0.1),
-    0 0 0 1px color-mix(in srgb, var(--pm-spot-accent, #7c3aed) 16%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--pm-spot-accent, #2541F5) 16%, transparent);
 }
 
 @keyframes pm-gold-spin {
@@ -462,11 +462,11 @@
   color: #fff;
   background: linear-gradient(
     135deg,
-    var(--pm-spot-accent, #7c3aed),
-    color-mix(in srgb, var(--pm-spot-accent, #7c3aed) 40%, #2563eb)
+    var(--pm-spot-accent, #2541F5),
+    color-mix(in srgb, var(--pm-spot-accent, #2541F5) 40%, #2563eb)
   );
   box-shadow: 0 10px 24px
-    color-mix(in srgb, var(--pm-spot-accent, #7c3aed) 30%, transparent);
+    color-mix(in srgb, var(--pm-spot-accent, #2541F5) 30%, transparent);
 }
 
 .pm-spot__title {
@@ -500,7 +500,7 @@
   border-radius: 999px;
   font-size: 0.74rem;
   font-weight: 800;
-  color: #4c1d95;
+  color: #1a2fd0;
   background: rgba(124, 58, 237, 0.07);
   border: 1px solid rgba(196, 181, 253, 0.55);
 }
@@ -560,7 +560,7 @@
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1;
-  background: linear-gradient(120deg, #7c3aed, #2563eb 60%, #06b6d4);
+  background: linear-gradient(120deg, #2541F5, #2563eb 60%, #06b6d4);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -659,7 +659,7 @@
   height: 1.5rem;
   border-radius: 0.5rem;
   color: #fff;
-  background: var(--pm-chip-accent, #7c3aed);
+  background: var(--pm-chip-accent, #2541F5);
 }
 
 .pm-chip__meta {
@@ -791,7 +791,7 @@
   color: #fff;
   background:
     radial-gradient(ellipse 55% 80% at 100% 0%, rgba(56, 189, 248, 0.3), transparent 58%),
-    linear-gradient(120deg, #5b21b6 0%, #6d28d9 38%, #2563eb 100%);
+    linear-gradient(120deg, #2541F5 0%, #2541F5 38%, #2563eb 100%);
   box-shadow: 0 30px 70px rgba(79, 70, 229, 0.28);
 }
 
@@ -852,7 +852,7 @@
   z-index: 60;
   height: 3px;
   transform-origin: left center;
-  background: linear-gradient(90deg, #7c3aed, #2563eb 45%, #06b6d4);
+  background: linear-gradient(90deg, #2541F5, #2563eb 45%, #06b6d4);
   box-shadow: 0 0 14px rgba(124, 58, 237, 0.5);
 }
 

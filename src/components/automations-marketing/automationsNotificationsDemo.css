@@ -103,7 +103,7 @@
   font-weight: 900;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #7c3aed;
+  color: #2541F5;
 }
 
 .amx-notif__head h3 {
@@ -177,7 +177,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: #6d28d9;
+  color: #2541F5;
 }
 
 .amx-notif__list {
@@ -244,7 +244,7 @@
 .amx-notif__type {
   font-size: 0.7rem;
   font-weight: 900;
-  color: #6d28d9;
+  color: #2541F5;
 }
 
 .amx-notif__row time {

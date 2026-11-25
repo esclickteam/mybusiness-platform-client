@@ -7,6 +7,7 @@ import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import { MobileProductRow } from "../../pages/mobile-demo-sketch/DemoDirectionSketches";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
+import BrandChapters from "./BrandChapters";
 import CustomerCommandCenter from "./CustomerCommandCenter";
 import WhatsAppOperations from "./WhatsAppOperations";
 import SmartAutomations from "./SmartAutomations";
@@ -153,13 +154,13 @@ function Waves({ className = "" }: { className?: string }) {
     <svg className={`ht-waves ${className}`} viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
       <defs>
         <linearGradient id="ht-wave-a" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stopColor="#6d28d9" stopOpacity="0.55" />
-          <stop offset="0.55" stopColor="#4f46e5" stopOpacity="0.4" />
-          <stop offset="1" stopColor="#3b82f6" stopOpacity="0.35" />
+          <stop offset="0" stopColor="#FF42B3" stopOpacity="0.55" />
+          <stop offset="0.55" stopColor="#2541F5" stopOpacity="0.2" />
+          <stop offset="1" stopColor="#EDFF00" stopOpacity="0.35" />
         </linearGradient>
         <linearGradient id="ht-wave-b" x1="0" x2="1" y1="0" y2="0">
-          <stop offset="0" stopColor="#a78bfa" stopOpacity="0.4" />
-          <stop offset="1" stopColor="#93c5fd" stopOpacity="0.32" />
+          <stop offset="0" stopColor="#EDFF00" stopOpacity="0.28" />
+          <stop offset="1" stopColor="#FFFFFF" stopOpacity="0.2" />
         </linearGradient>
       </defs>
       <g className="ht-wave ht-wave-1">
@@ -184,18 +185,21 @@ export default function HomeExperienceSections() {
       <a className="hx-skip" href="#how">{text("דילוג לתוכן", "Skip to content")}</a>
       <div className="ht-root" ref={ref}>
         <Hero seek={null} />
-        <div className="ht-band ht-band-purple">
+        <BrandChapters slot="platform" />
+        <div className="ht-band ht-band-purple" data-bz-tone="ink">
           <CustomerCommandCenter />
           <WhatsAppOperations />
           <SmartAutomations />
         </div>
-        <div className="ht-band ht-band-light">
+        <BrandChapters slot="journey" />
+        <div className="ht-band ht-band-light" data-bz-tone="paper">
           <MetaCampaigns />
           <AiActionFlow />
           <MeetingBooking />
           <WebsiteGallery />
           <Benefits />
         </div>
+        <BrandChapters slot="close" />
         <Faq />
       </div>
     </>
@@ -236,10 +240,11 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
   const hero = cine.hero;
   const lang = language.startsWith("he") ? "he" : "en";
   const narrow = useNarrowHero();
-  const hot = Math.max(0, String(hero.lineTwo).trim().split(/\s+/).length - 1);
+  const hotSource = hero.lineThree || hero.lineTwo;
+  const hot = Math.max(0, String(hotSource).trim().split(/\s+/).length - 1);
   const steps = useSteps();
   return (
-    <section className="hx-hero" id="how" aria-labelledby="hx-hero-title">
+    <section className="hx-hero" id="how" data-bz-tone="ink" aria-labelledby="hx-hero-title">
       <div className="hx-geo hx-geo-a" aria-hidden="true" />
       <div className="hx-geo hx-geo-b" aria-hidden="true" />
       <div className="hx-geo hx-geo-c" aria-hidden="true" />
@@ -249,10 +254,12 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
           <p className="hx-hero-kicker">{hero.kicker || "BizUply"}</p>
           <h1 className="hx-display" id="hx-hero-title">
             <Words text={hero.lineOne} />
-            <Words text={hero.lineTwo} hot={hot} delay={220} />
+            <Words text={hero.lineTwo} hot={hero.lineThree ? -1 : hot} delay={90} />
+            {hero.lineThree ? <Words text={hero.lineThree} hot={hot} delay={180} /> : null}
           </h1>
           <p className="hx-lead">{hero.lead1}</p>
           <div className="hx-actions">
+            <Cta to="/register">{hero.start}</Cta>
             <Cta to="/contact" tone="line">{hero.see}</Cta>
           </div>
         </div>
@@ -385,7 +392,7 @@ function Faq() {
   const shown = locale === "he" || locale === "en" ? items.slice(0, 8) : items;
   const [open, setOpen] = useState<number | null>(null);
   return (
-    <section className="ht-faq" id="faq" aria-labelledby="ht-faq-title">
+    <section className="ht-faq" id="faq" data-bz-tone="paper" aria-labelledby="ht-faq-title">
       <div className="ht-wrap ht-faq-center">
         <h2 id="ht-faq-title" data-reveal>{text("שאלות נפוצות", "Frequently Asked Questions")}</h2>
         <div className="ht-faq-list">

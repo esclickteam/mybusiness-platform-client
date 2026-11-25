@@ -1,10 +1,10 @@
 /* Public company pages. Purple, blue and white, rectangular controls, large type. */
 
 .co-page {
-  --co-ink: #1a0b33;
+  --co-ink: #111936;
   --co-muted: #4c3d66;
   --co-deep: #321064;
-  --co-violet: #5b21b6;
+  --co-violet: #2541F5;
   --co-blue: #3d63ff;
   --co-paper: #f7f6fc;
   --co-line: rgba(50, 16, 100, 0.12);
@@ -31,7 +31,7 @@
   background:
     radial-gradient(720px 420px at 88% 8%, rgba(61, 99, 255, 0.45), transparent 62%),
     radial-gradient(540px 360px at 8% 90%, rgba(116, 55, 245, 0.35), transparent 60%),
-    linear-gradient(145deg, #321064 0%, #5b21b6 58%, #3d2a9a 100%);
+    linear-gradient(145deg, #321064 0%, #2541F5 58%, #3d2a9a 100%);
 }
 
 .co-page .stage-hero::before {
@@ -84,7 +84,7 @@
   padding: clamp(4.5rem, 8vw, 7rem) clamp(1.25rem, 4vw, 3rem) 2.5rem;
   background:
     radial-gradient(680px 320px at 90% 0%, rgba(61, 99, 255, 0.4), transparent 60%),
-    linear-gradient(145deg, #321064, #5b21b6 70%);
+    linear-gradient(145deg, #321064, #2541F5 70%);
   color: #fff;
 }
 
@@ -191,7 +191,7 @@
   padding: clamp(4rem, 8vw, 6.5rem) clamp(1.25rem, 4vw, 3rem) 2rem;
   background:
     radial-gradient(640px 280px at 100% 0%, rgba(61, 99, 255, 0.42), transparent 62%),
-    linear-gradient(145deg, #321064, #5b21b6);
+    linear-gradient(145deg, #321064, #2541F5);
   color: #fff;
 }
 
@@ -209,7 +209,7 @@
 
 .co-faq,
 .co-search {
-  --co-ink: #1a0b33;
+  --co-ink: #111936;
   --co-muted: #4c3d66;
   --co-paper: #f7f6fc;
   --co-line: rgba(50, 16, 100, 0.12);
@@ -320,7 +320,7 @@
   position: relative;
   z-index: 1;
   background: #fff;
-  color: #1a0b33;
+  color: #111936;
   border: 1px solid rgba(255, 255, 255, 0.4);
   padding: 1.25rem;
 }
@@ -333,7 +333,7 @@
 .stage-hero [class*="bg-white"] ,
 .stage-hero [class*="bg-white"] p,
 .stage-hero [class*="bg-amber"] p {
-  color: #1a0b33;
+  color: #111936;
 }
 
 .pricing-stage .stage-hero {
