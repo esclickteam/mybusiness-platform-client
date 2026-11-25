@@ -21,6 +21,7 @@ import { marketingNav } from "./marketingNav.mjs";
 import { getLocaleMarketingPage } from "./localeMarketing.mjs";
 import { GUIDE_SLUGS, getGuide, guidePath } from "./guidesMarketing.mjs";
 import { activityMarketingEntries, getActivityPage } from "./activityPages.mjs";
+import { platformStory } from "./platformStory.mjs";
 import {
   isKnowledgePath,
   knowledgeFaq,
@@ -666,6 +667,7 @@ const ABOUT_FAQ = {
 };
 
 function faqItems(path, language) {
+  if (path === "/platform") return platformStory(language).faq;
   if (isKnowledgePath(path)) return knowledgeFaq(path, language);
   if (path === "/website-scan") return WEBSITE_SCAN[language]?.faq || WEBSITE_SCAN.en.faq;
   if (path === "/security-scanner") return SECURITY_SCANNER[language]?.faq || SECURITY_SCANNER.en.faq;
@@ -922,6 +924,34 @@ export function buildMarketingDocumentHead(pathname) {
   if (isKnowledgePath(path)) return knowledgeDocumentHead(path, locale);
   if (path === "/crm") return crmDocumentHead(locale);
   if (path === "/collaborations") return collaborationsDocumentHead(locale);
+  if (path === "/platform") {
+    const story = platformStory(locale);
+    const canonical = marketingPublicUrl("/platform", locale);
+    const page = { path, title: story.title, description: story.description, crumb: story.crumb };
+    return [
+      `<title>${escapeHtml(page.title)}</title>`,
+      `<meta name="description" content="${escapeHtml(page.description)}" />`,
+      `<meta name="robots" content="index, follow" />`,
+      `<link rel="canonical" href="${escapeHtml(canonical)}" />`,
+      hreflangTags("/platform"),
+      ...sharedSocialTags(page.title, page.description, canonical, locale),
+      `<script type="application/ld+json">${jsonLd(organizationSchema())}</script>`,
+      `<script type="application/ld+json">${jsonLd(pageSchema(page, canonical, locale))}</script>`,
+      `<script type="application/ld+json">${jsonLd(breadcrumbSchema(page, canonical, locale))}</script>`,
+      `<script type="application/ld+json">${jsonLd({
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        name: "Bizuply",
+        applicationCategory: "BusinessApplication",
+        operatingSystem: "Web",
+        description: page.description,
+        url: canonical,
+        inLanguage: locale,
+        publisher: { "@id": `${MARKETING_ORIGIN}/#organization` },
+      })}</script>`,
+      faqSchemaTag("/platform", locale),
+    ].filter(Boolean).join("\n");
+  }
   if (path.startsWith("/guides/") && path !== "/guides") {
     const head = guideHead(path, locale);
     if (head) return head;

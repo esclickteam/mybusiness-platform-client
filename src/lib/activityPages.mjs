@@ -1088,6 +1088,7 @@ PAGES["/solutions/ready-systems"] = industry({
 });
 
 import { getActivityDepth } from "./activityDepth.mjs";
+import { platformStory } from "./platformStory.mjs";
 
 export function getActivityPage(path, locale) {
   const found = PAGES[path];
@@ -1096,12 +1097,14 @@ export function getActivityPage(path, locale) {
   const base = found.locales[language] || found.locales.en;
   const depth = getActivityDepth(path, language);
   const copyForLocale = depth ? { ...base, ...depth } : base;
+  const overlay = path === "/platform" ? platformStory(language) : null;
+  const merged = overlay ? { ...copyForLocale, ...overlay } : copyForLocale;
   return {
-    ...copyForLocale,
+    ...merged,
     layout: found.layout,
     media: found.media,
     path,
-    paragraphs: [copyForLocale.lede],
+    paragraphs: [merged.lede],
   };
 }
 

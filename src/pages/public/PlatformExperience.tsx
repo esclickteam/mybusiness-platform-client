@@ -1,321 +1,293 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { getActivityPage } from "../../lib/activityPages.mjs";
+import { platformStory } from "../../lib/platformStory.mjs";
 import { industryNav } from "../../lib/marketingNav.mjs";
-import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
+import { getGuide } from "../../lib/guidesMarketing.mjs";
+import {
+  MARKETING_LOCALE_PREFIXES,
+  marketingPublicUrl,
+  splitMarketingLocale,
+  withMarketingLocale,
+} from "../../lib/localePath.mjs";
 import "./platformExperience.css";
 
-const STATUS_KEYS = ["new", "contacted", "interested", "converted", "lost", "old"] as const;
+const GUIDE_SLUGS = ["what-is-a-crm", "meta-lead-ads-to-crm", "whatsapp-cloud-api-cost", "follow-up-on-leads"];
 
-const STEP_MEDIA = [
-  { src: "/demo-media/forms/form.png", width: 1200, height: 800 },
-  { src: "/demo-media/crm/lead-file.png", width: 1400, height: 900 },
-  { src: "/demo-media/crm/lead-task.png", width: 1400, height: 900 },
-  { src: "/demo-media/home/automations.jpg", width: 1600, height: 1000 },
-];
+const STATUS = {
+  he: ["חדש", "נוצר קשר", "מעוניין", "הומר", "אבוד", "ישן"],
+  en: ["New", "Contacted", "Interested", "Converted", "Lost", "Old"],
+  es: ["Nuevo", "Contactado", "Interesado", "Convertido", "Perdido", "Antiguo"],
+  "pt-BR": ["Novo", "Contactado", "Interessado", "Convertido", "Perdido", "Antigo"],
+  ar: ["جديد", "تم التواصل", "مهتم", "تم التحويل", "مفقود", "قديم"],
+};
 
-const COPY = {
-  en: {
-    contact: "See how BizUply can fit your business",
-    pricing: "Pricing",
-    statusNow: "One status on the lead",
-    plans: [
-      ["CRM only", "$49 per month"],
-      ["Business plan", "$99 per month or $990 per year"],
-      ["WhatsApp", "$29 per month per number"],
-    ],
-    extra: [
-      ["Does BizUply publish growth or savings figures?", "No. The dashboard shows views that already exist, including new and untreated leads and upcoming appointments."],
-      ["What does the business plan include?", "CRM together with appointments, collaborations and automations, at $99 per month or $990 per year. WhatsApp stays $29 per month per connected number, and Meta messaging fees are separate."],
-    ],
-  },
-  he: {
-    contact: "גלו איך BizUply יכולה להתאים לעסק שלכם",
-    pricing: "למחירון",
-    statusNow: "סטטוס אחד על הליד",
-    plans: [
-      ["CRM בלבד", "49 דולר לחודש"],
-      ["החבילה העסקית", "99 דולר לחודש או 990 דולר לשנה"],
-      ["WhatsApp", "29 דולר לחודש לכל מספר"],
-    ],
-    extra: [
-      ["האם BizUply מפרסמת אחוזי צמיחה או חיסכון?", "לא. לוח הבקרה מציג תצוגות שקיימות במוצר, כולל לידים חדשים, לידים שלא טופלו ופגישות קרובות."],
-      ["מה כלול בחבילה העסקית?", "CRM יחד עם תורים, שיתופים ואוטומציות, ב־99 דולר לחודש או 990 דולר לשנה. WhatsApp נשאר 29 דולר לחודש לכל מספר מחובר, וחיובי ההודעות של Meta נפרדים."],
-    ],
-  },
-  es: {
-    contact: "Ved cómo BizUply puede encajar en el negocio",
-    pricing: "Precios",
-    statusNow: "Un estado en el lead",
-    plans: [
-      ["Solo CRM", "49 dólares al mes"],
-      ["Plan de negocio", "99 al mes o 990 al año"],
-      ["WhatsApp", "29 al mes por número"],
-    ],
-    extra: [
-      ["¿BizUply publica porcentajes de crecimiento o ahorro?", "No. El panel muestra vistas que ya existen: leads nuevos, leads sin tratar y próximas citas."],
-      ["¿Qué incluye el plan de negocio?", "CRM, citas, colaboraciones y automatizaciones, a 99 al mes o 990 al año. WhatsApp sigue a 29 al mes por número conectado, y Meta cobra los mensajes aparte."],
-    ],
-  },
-  "pt-BR": {
-    contact: "Veja como a BizUply pode servir ao negócio",
-    pricing: "Preços",
-    statusNow: "Um status no lead",
-    plans: [
-      ["Somente CRM", "49 dólares por mês"],
-      ["Plano de negócios", "99 por mês ou 990 por ano"],
-      ["WhatsApp", "29 por mês por número"],
-    ],
-    extra: [
-      ["A BizUply publica percentuais de crescimento ou economia?", "Não. O painel mostra visões que já existem: leads novos, leads sem tratamento e próximos compromissos."],
-      ["O que o plano de negócios inclui?", "CRM, agenda, colaborações e automações, a 99 por mês ou 990 por ano. O WhatsApp continua a 29 por mês por número conectado, e a Meta cobra as mensagens à parte."],
-    ],
-  },
-  ar: {
-    contact: "اكتشفوا كيف تناسب BizUply عملكم",
-    pricing: "الأسعار",
-    statusNow: "حالة واحدة على العميل المحتمل",
-    plans: [
-      ["CRM وحده", "49 دولاراً شهرياً"],
-      ["الخطة التجارية", "99 شهرياً أو 990 سنوياً"],
-      ["واتساب", "29 شهرياً لكل رقم"],
-    ],
-    extra: [
-      ["هل تنشر BizUply نسب نمو أو وفراً؟", "لا. تعرض اللوحة مشاهد موجودة بالفعل: عملاء محتملون جدد، وعملاء لم يُعالجوا، ومواعيد قريبة."],
-      ["ماذا تشمل الخطة التجارية؟", "CRM والمواعيد والتعاون والأتمتة، بـ 99 شهرياً أو 990 سنوياً. يبقى واتساب 29 شهرياً لكل رقم متصل، ورسوم رسائل Meta منفصلة."],
-    ],
-  },
-} as const;
+const CHANNELS = ["Meta", "Facebook", "Instagram", "WhatsApp", "Google Ads"];
+
+const FAQ_TITLE = {
+  he: "שאלות נפוצות על Bizuply",
+  en: "Questions about Bizuply",
+  es: "Preguntas sobre Bizuply",
+  "pt-BR": "Perguntas sobre a Bizuply",
+  ar: "أسئلة عن Bizuply",
+};
+
+function screen(locale, name) {
+  const folder = locale === "he" || locale === "ar" ? "he" : "en";
+  return `/demo-media/home/screens/${folder}-desktop-${name}.webp`;
+}
+
+function Journey({ title, paragraphs, steps }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) return undefined;
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let frame = 0;
+    const tick = () => {
+      frame = 0;
+      if (media.matches || window.innerWidth < 900) {
+        node.style.setProperty("--j", "1");
+        return;
+      }
+      const box = node.getBoundingClientRect();
+      const total = Math.max(node.offsetHeight - window.innerHeight, 1);
+      const passed = Math.min(Math.max(-box.top, 0), total);
+      node.style.setProperty("--j", String(passed / total));
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(tick);
+    };
+    tick();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+  return (
+    <section className="px-band is-journey" ref={ref} id="journey">
+      <div className="px-pin">
+        <div className="px-copy">
+          <p className="px-index">02</p>
+          <h2>{title}</h2>
+          {paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
+        <ol className="px-steps">
+          {steps.map((step, index) => (
+            <li key={step} style={{ "--i": index, "--n": steps.length }}>{step}</li>
+          ))}
+        </ol>
+      </div>
+    </section>
+  );
+}
 
 export default function PlatformExperience() {
-  const { i18n, t } = useTranslation();
-  const locale = normalizeMarketingLocale(i18n.language);
-  const page = getActivityPage("/platform", locale);
-  const dir = getTextDirection(locale);
-  const ui = COPY[locale] || COPY.en;
-  const rootRef = useRef<HTMLElement>(null);
-  const [status, setStatus] = useState(0);
-  const [step, setStep] = useState(0);
-  const industryGroup = industryNav(locale);
-  const industries = industryGroup.links as Array<[string, string, string?]>;
-  const lang = locale === "pt-BR" ? "pt-BR" : locale;
-  const statuses = STATUS_KEYS.map((key) => t(`automations.catalog.leadStatuses.${key}`));
+  const language = splitMarketingLocale(typeof window === "undefined" ? "/" : window.location.pathname).locale;
+  const story = platformStory(language);
+  const dir = getTextDirection(language);
+  const canonical = marketingPublicUrl("/platform", language);
+  const href = (path) => withMarketingLocale(path, language);
+  const statuses = STATUS[language] || STATUS.en;
+  const industries = industryNav(language).links || [];
+  const guides = GUIDE_SLUGS.map((slug) => ({ slug, guide: getGuide(slug, language) })).filter((item) => item.guide?.h1);
+  const shots = {
+    0: screen(language, "dashboard"),
+    2: screen(language, "crm-list"),
+    3: screen(language, "whatsapp"),
+    4: screen(language, "automation"),
+    5: screen(language, "campaigns"),
+    6: "/demo-media/home/appointments.jpg",
+    7: "/demo-media/websites/my-sites.jpg",
+    8: screen(language, "ai"),
+  };
+  const faqHeading = FAQ_TITLE[language] || FAQ_TITLE.en;
 
   useEffect(() => {
-    const root = rootRef.current;
-    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
-    root.classList.add("px-motion");
-    const nodes = root.querySelectorAll("[data-reveal]");
-    const seen = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        seen.unobserve(entry.target);
-      });
-    }, { threshold: 0.18 });
-    nodes.forEach((node) => seen.observe(node));
-    return () => seen.disconnect();
-  }, [locale]);
-
-  if (!page) return null;
-
-  const [place, team, fit, flow, decisions, start] = page.sections;
-  const faqs = [...page.faq, ...ui.extra];
+    document.title = story.title;
+    const setMeta = (attr: "name" | "property", key: string, content: string) => {
+      let node = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+      if (!node) {
+        node = document.createElement("meta");
+        node.setAttribute(attr, key);
+        document.head.appendChild(node);
+      }
+      node.setAttribute("content", content);
+    };
+    setMeta("name", "description", story.description);
+    setMeta("property", "og:title", story.title);
+    setMeta("property", "og:description", story.description);
+    setMeta("property", "og:url", canonical);
+    setMeta("property", "og:type", "website");
+    let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "canonical";
+      document.head.appendChild(link);
+    }
+    link.href = canonical;
+    const alternates: Array<[string, string]> = [
+      ["en", marketingPublicUrl("/platform", "en")],
+      ["x-default", marketingPublicUrl("/platform", "en")],
+      ...MARKETING_LOCALE_PREFIXES.map((entry) => [entry.htmlLang, marketingPublicUrl("/platform", entry.locale)] as [string, string]),
+    ];
+    for (const [lang, hrefValue] of alternates) {
+      let alt = document.head.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${lang}"]`);
+      if (!alt) {
+        alt = document.createElement("link");
+        alt.rel = "alternate";
+        alt.hreflang = lang;
+        document.head.appendChild(alt);
+      }
+      alt.href = hrefValue;
+    }
+    document.documentElement.lang = language === "pt-BR" ? "pt-BR" : language;
+    document.documentElement.dir = dir;
+  }, [canonical, dir, language, story.description, story.title]);
 
   return (
-    <article className="px" dir={dir} lang={lang} ref={rootRef}>
+    <article className="px" lang={language === "pt-BR" ? "pt-BR" : language} dir={dir}>
       <Helmet>
-        <title>{page.title}</title>
-        <meta name="description" content={page.description} />
-        <link rel="canonical" href={marketingPublicUrl("/platform", locale)} />
+        <html lang={language === "pt-BR" ? "pt-BR" : language} dir={dir} />
+        <title>{story.title}</title>
+        <meta name="description" content={story.description} />
+        <link rel="canonical" href={canonical} />
+        <meta property="og:title" content={story.title} />
+        <meta property="og:description" content={story.description} />
+        <meta property="og:url" content={canonical} />
+        <meta property="og:type" content="website" />
+        <link rel="alternate" hrefLang="en" href={marketingPublicUrl("/platform", "en")} />
+        <link rel="alternate" hrefLang="x-default" href={marketingPublicUrl("/platform", "en")} />
+        {MARKETING_LOCALE_PREFIXES.map((entry) => (
+          <link key={entry.locale} rel="alternate" hrefLang={entry.htmlLang} href={marketingPublicUrl("/platform", entry.locale)} />
+        ))}
       </Helmet>
 
       <header className="px-hero">
-        <div className="px-hero-copy">
-          <p className="px-kicker">{page.crumb}</p>
-          <h1>{page.h1}</h1>
-          <p className="px-lede">{page.lede}</p>
+        <div className="px-hero__copy">
+          <p className="px-kicker">{story.kicker}</p>
+          <h1>{story.h1}</h1>
           <div className="px-actions">
-            <Link className="px-btn px-btn--light" to="/contact">{ui.contact}</Link>
-            <Link className="px-btn px-btn--line" to="/pricing">{ui.pricing}</Link>
+            <Link className="px-btn is-yellow" to={href("/register")}>{story.primary}</Link>
+            <Link className="px-btn is-ghost" to={href("/contact")}>{story.secondary}</Link>
           </div>
+          <p className="px-lede">{story.lede}</p>
         </div>
-        <div className="px-stage">
-          <figure className="px-browser">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            <img src="/demo-media/home/crm.jpg" alt={place?.[0] || page.h1} width="1600" height="1000" />
-          </figure>
-          <p className="px-chip">
-            <small>{ui.statusNow}</small>
-            <strong>{statuses[0]}</strong>
-          </p>
-        </div>
+        <figure className="px-stage">
+          <img src={screen(language, "crm-card")} alt="" width="1440" height="900" />
+          <ul className="px-float">
+            {statuses.slice(0, 3).map((status) => <li key={status}>{status}</li>)}
+          </ul>
+        </figure>
       </header>
 
-      <nav className="px-rail" data-reveal aria-label={page.h1}>
-        {page.sections.map(([heading], index) => (
-          <a key={heading} href={`#px-${index}`}>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {heading}
-          </a>
-        ))}
-      </nav>
+      {story.sections.map(([heading, paragraphs], index) => {
+        if (index === 1) {
+          return <Journey key={heading} title={heading} paragraphs={paragraphs} steps={story.steps} />;
+        }
+        const shot = shots[index];
+        const tone = index === 3 || index === 17 ? "is-blue" : index === 4 || index === 15 ? "is-ink" : index === 8 || index === 14 ? "is-soft" : "is-paper";
+        return (
+          <section className={`px-band ${tone}`} key={heading} id={`s${index + 1}`}>
+            <div className={shot ? "px-split" : "px-stack"}>
+              <div className="px-copy">
+                <p className="px-index">{String(index + 1).padStart(2, "0")}</p>
+                <h2>{heading}</h2>
+                {paragraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                {index === 2 ? (
+                  <ul className="px-status">{statuses.map((status) => <li key={status}>{status}</li>)}</ul>
+                ) : null}
+                {index === 9 ? (
+                  <ul className="px-links">
+                    {story.links.slice(0, 8).map(([path, label]) => (
+                      <li key={path}><Link to={href(path)}>{label}</Link></li>
+                    ))}
+                  </ul>
+                ) : null}
+                {index === 10 ? (
+                  <ul className="px-links">
+                    {industries.map(([path, label]) => (
+                      <li key={path}><Link to={href(path)}>{label}</Link></li>
+                    ))}
+                  </ul>
+                ) : null}
+                {index === 11 ? (
+                  <div className="px-flow" aria-hidden="false">
+                    <ul>{CHANNELS.map((name) => <li key={name}>{name}</li>)}</ul>
+                    <span className="px-flow__line" />
+                    <strong>Bizuply</strong>
+                    <span className="px-flow__line" />
+                    <ul>
+                      <li>CRM</li>
+                      <li>WhatsApp</li>
+                      <li>{language === "he" ? "משימה" : "Task"}</li>
+                    </ul>
+                  </div>
+                ) : null}
+                {index === 13 ? (
+                  <div className="px-table-wrap">
+                    <table>
+                      <thead>
+                        <tr>{story.compare.columns.map((column) => <th key={column}>{column}</th>)}</tr>
+                      </thead>
+                      <tbody>
+                        {story.compare.rows.map((row) => (
+                          <tr key={row[0]}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : null}
+                {index === 16 ? (
+                  <ul className="px-guides">
+                    {guides.map(({ slug, guide }) => (
+                      <li key={slug}>
+                        <Link to={href(`/guides/${slug}`)}>
+                          <strong>{guide.h1}</strong>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {index === 17 ? (
+                  <div className="px-actions">
+                    <Link className="px-btn is-yellow" to={href("/register")}>{story.primary}</Link>
+                    <Link className="px-btn is-ghost" to={href("/contact")}>{story.secondary}</Link>
+                    <Link className="px-btn is-line" to={href("/pricing")}>{story.plans}</Link>
+                  </div>
+                ) : null}
+              </div>
+              {shot ? (
+                <figure className="px-shot">
+                  <img src={shot} alt="" width="1440" height="900" loading="lazy" />
+                </figure>
+              ) : null}
+            </div>
+          </section>
+        );
+      })}
 
-      <section className="px-crm" id="px-0" data-reveal>
-        <div className="px-crm-copy">
-          <h2>{place?.[0]}</h2>
-          {(place?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-          <div className="px-statuses" role="listbox" aria-label={ui.statusNow}>
-            {statuses.map((label, index) => (
-              <button
-                key={STATUS_KEYS[index]}
-                type="button"
-                role="option"
-                aria-selected={status === index}
-                className={status === index ? "is-on" : ""}
-                onClick={() => setStatus(index)}
-              >
-                <i aria-hidden="true" />
-                {label}
-              </button>
+      <section className="px-band is-paper" id="faq">
+        <div className="px-stack">
+          <h2>{faqHeading}</h2>
+          <div className="px-faq">
+            {story.faq.map(([question, answer]) => (
+              <details key={question}>
+                <summary>{question}</summary>
+                <div className="px-answer"><p>{answer}</p></div>
+              </details>
             ))}
           </div>
-          <p className="px-status-read"><span>{ui.statusNow}</span> {statuses[status]}</p>
-        </div>
-        <figure className="px-browser px-browser--raised">
-          <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-          <img
-            src={status < 3 ? "/demo-media/crm/leads-list.png" : "/demo-media/crm/lead-file.png"}
-            alt={place?.[0] || "CRM"}
-            width="1400"
-            height="900"
-          />
-        </figure>
-      </section>
-
-      <section className="px-quote" id="px-1" data-reveal>
-        <h2>{team?.[0]}</h2>
-        {(team?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-      </section>
-
-      <section className="px-flow" id="px-3" data-reveal>
-        <div className="px-flow-head">
-          <h2>{flow?.[0]}</h2>
-          {(flow?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-        </div>
-        <div className="px-steps" role="tablist">
-          {(page.steps || []).map((item, index) => (
-            <button
-              key={item}
-              type="button"
-              role="tab"
-              id={`px-step-${index}`}
-              aria-selected={step === index}
-              aria-controls="px-step-panel"
-              className={step === index ? "is-on" : ""}
-              onClick={() => setStep(index)}
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              {item}
-            </button>
-          ))}
-        </div>
-        <div className="px-flow-stage" id="px-step-panel" role="tabpanel" aria-labelledby={`px-step-${step}`}>
-          <figure className="px-browser">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            {STEP_MEDIA.map((media, index) => (
-              <img
-                key={media.src}
-                src={media.src}
-                alt=""
-                width={media.width}
-                height={media.height}
-                className={step === index ? "is-on" : ""}
-              />
-            ))}
-          </figure>
-          <p>{page.steps?.[step]}</p>
-        </div>
-      </section>
-
-      <section className="px-calendar" id="px-4" data-reveal>
-        <figure className="px-browser px-browser--wide">
-          <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-          <img src="/demo-media/home/appointments.jpg" alt={decisions?.[0] || ""} width="1600" height="1000" />
-        </figure>
-        <div className="px-calendar-card">
-          <h2>{decisions?.[0]}</h2>
-          {(decisions?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-        </div>
-      </section>
-
-      <section className="px-tools" id="px-2" data-reveal>
-        <div className="px-tools-copy">
-          <h2>{fit?.[0]}</h2>
-          {(fit?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-          <div className="px-links">
-            {page.links.map(([to, label]) => <Link key={to} to={to}>{label}</Link>)}
-          </div>
-        </div>
-        <div className="px-tools-stage">
-          <figure className="px-browser px-browser--back">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            <img src="/demo-media/websites/my-sites.jpg" alt={fit?.[0] || ""} width="1400" height="900" />
-          </figure>
-          <figure className="px-browser px-browser--front">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            <img src="/demo-media/whatsapp/still-3.jpg" alt="WhatsApp" width="1600" height="1000" />
-          </figure>
-        </div>
-      </section>
-
-      {industries.length ? (
-        <section className="px-industries" data-reveal>
-          <h2>{industryGroup?.label}</h2>
-          <ul>
-            {industries.map((link) => (
-              <li key={link[0]}>
-                <Link to={link[0]}>
-                  <strong>{link[1]}</strong>
-                  {link[2] ? <span>{link[2]}</span> : null}
-                </Link>
-              </li>
+          <ul className="px-links">
+            {story.links.slice(8).map(([path, label]) => (
+              <li key={path}><Link to={href(path)}>{label}</Link></li>
             ))}
           </ul>
-        </section>
-      ) : null}
-
-      <section className="px-plans" id="px-5" data-reveal>
-        <h2>{start?.[0]}</h2>
-        <div className="px-plan-grid">
-          {ui.plans.map(([name, detail]) => (
-            <article key={name}>
-              <h3>{name}</h3>
-              <p>{detail}</p>
-            </article>
-          ))}
         </div>
-        {(start?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-        <Link className="px-btn px-btn--solid" to="/pricing">{ui.pricing}</Link>
-      </section>
-
-      <section className="px-faq" data-reveal>
-        <h2>{locale === "he" ? "שאלות נפוצות" : locale === "ar" ? "أسئلة شائعة" : locale === "es" ? "Preguntas frecuentes" : locale === "pt-BR" ? "Perguntas frequentes" : "FAQ"}</h2>
-        {faqs.map(([question, answer]) => (
-          <details key={question}>
-            <summary>{question}</summary>
-            <p>{answer}</p>
-          </details>
-        ))}
-      </section>
-
-      <section className="px-close" data-reveal>
-        <h2>{page.h1}</h2>
-        <p>{page.description}</p>
-        <Link className="px-btn px-btn--light" to="/contact">{ui.contact}</Link>
       </section>
     </article>
   );
