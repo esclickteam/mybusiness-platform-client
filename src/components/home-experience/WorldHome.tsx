@@ -39,35 +39,14 @@ function useReduced() {
   return reduced;
 }
 
-function Words({ text, hot = -1, delay = 0 }: { text: string; hot?: number; delay?: number }) {
+function Words({ text, hot = -1 }: { text: string; hot?: number }) {
   const words = String(text || "").split(" ").filter(Boolean);
-  const reduced = useReduced();
-  const [motionReady, setMotionReady] = useState(false);
-  useEffect(() => {
-    if (reduced) {
-      setMotionReady(false);
-      return undefined;
-    }
-    let inner = 0;
-    const outer = window.requestAnimationFrame(() => {
-      inner = window.requestAnimationFrame(() => setMotionReady(true));
-    });
-    return () => {
-      window.cancelAnimationFrame(outer);
-      window.cancelAnimationFrame(inner);
-    };
-  }, [reduced, text]);
   return (
     <>
       {words.map((word, index) => (
         <Fragment key={`${word}-${index}`}>
           <span className={index === hot ? "hx-word is-hot" : "hx-word"}>
-            <span
-              className={motionReady ? "hx-word__in" : undefined}
-              style={motionReady ? { animationDelay: `${delay + index * 70}ms` } : undefined}
-            >
-              {word}
-            </span>
+            <span>{word}</span>
           </span>
           {index < words.length - 1 ? " " : null}
         </Fragment>
@@ -129,7 +108,7 @@ export default function WorldHome() {
         <div className="bz-open__pin">
           <div className="bz-sheet" aria-hidden="true" />
           <div className="bz-spec__copy">
-            <p className="hx-hero-kicker">{hero.kicker}</p>
+            {hero.kicker ? <p className="hx-hero-kicker">{hero.kicker}</p> : null}
             <h1 className="hx-display" id="hx-hero-title">
               <span className="hx-line"><Words text={hero.lineOne} hot={hero.lineThree ? -1 : Math.max(0, String(hero.lineOne || "").trim().split(/\s+/).filter(Boolean).length - 1)} /></span>
               {hero.lineTwo || hero.lineThree ? (
@@ -139,6 +118,7 @@ export default function WorldHome() {
                 </span>
               ) : null}
             </h1>
+            {hero.sub ? <p className="hx-sub">{hero.sub}</p> : null}
             <p className="hx-lead">{hero.lead1}</p>
             <div className="hx-actions">
               <Link className="hx-btn" to="/register"><span>{hero.start}</span></Link>

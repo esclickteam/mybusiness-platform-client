@@ -151,18 +151,24 @@ const RING = [
 
 const RING_BOX = { w: 980, h: 560, cx: 490, cy: 280 };
 
-function ringPath(x: number, y: number) {
+function ringEnds(x: number, y: number) {
   const len = Math.hypot(x, y) || 1;
   const ux = x / len;
   const uy = y / len;
   const rx = 168;
   const ry = 84;
   const start = (rx * ry) / Math.hypot(ry * ux, rx * uy);
-  const end = Math.max(start + 28, len - 32);
-  const x1 = RING_BOX.cx + ux * start;
-  const y1 = RING_BOX.cy + uy * start;
-  const x2 = RING_BOX.cx + ux * end;
-  const y2 = RING_BOX.cy + uy * end;
+  const end = Math.max(start + 36, len - 36);
+  return {
+    x1: RING_BOX.cx + ux * start,
+    y1: RING_BOX.cy + uy * start,
+    x2: RING_BOX.cx + ux * end,
+    y2: RING_BOX.cy + uy * end,
+  };
+}
+
+function ringPath(x: number, y: number) {
+  const { x1, y1, x2, y2 } = ringEnds(x, y);
   return `M ${x1.toFixed(1)} ${y1.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)}`;
 }
 
@@ -600,21 +606,21 @@ export default function ShowHome({ language }: { language: string }) {
               <img className="ring-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
               <div className="tool-orbit">
                 <svg className="ring-lines" viewBox={`0 0 ${RING_BOX.w} ${RING_BOX.h}`} aria-hidden="true">
-                  {RING.map((item) => (
-                    <path key={item.id} pathLength="1" d={ringPath(item.x, item.y)} />
-                  ))}
+                  {RING.map((item, index) => {
+                    const ends = ringEnds(item.x, item.y);
+                    return (
+                      <g key={item.id}>
+                        <path id={`ring-line-${item.id}`} d={ringPath(item.x, item.y)} />
+                        <circle className="ring-node" cx={(ends.x1 + ends.x2) / 2} cy={(ends.y1 + ends.y2) / 2} r="3.2" />
+                        <circle className="ring-runner" r="3.4">
+                          <animateMotion dur="6.5s" repeatCount="indefinite" begin={`${index * -0.9}s`}>
+                            <mpath href={`#ring-line-${item.id}`} />
+                          </animateMotion>
+                        </circle>
+                      </g>
+                    );
+                  })}
                 </svg>
-                {RING.map((item) => (
-                  <span
-                    key={`${item.id}-spark`}
-                    className="ring-spark"
-                    style={{
-                      left: `${50 + ((item.x * 0.62) / RING_BOX.w) * 100}%`,
-                      top: `${50 + ((item.y * 0.62) / RING_BOX.h) * 100}%`,
-                      ["--c" as string]: item.color,
-                    }}
-                  />
-                ))}
                 {RING.map((item) => {
                   const len = Math.hypot(item.x, item.y) || 1;
                   return (

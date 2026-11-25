@@ -218,7 +218,7 @@ describe("marketing crawl files", () => {
       expect(head).toContain(HOME_FAQ[locale][0][0]);
       expect(head).toContain(HOME_FAQ[locale][0][1]);
       if (locale === "he" || locale === "en") {
-        expect(HOME_FAQ[locale]).toHaveLength(19);
+        expect(HOME_FAQ[locale]).toHaveLength(8);
         expect(head).not.toContain(home.faq10a);
       } else {
         expect(head).toContain(home.faq10a);
@@ -229,20 +229,22 @@ describe("marketing crawl files", () => {
       expect(body).not.toContain('class="home-hero"');
       expect(body).not.toContain("home-hero__title");
       if (locale === "he") {
+        expect(body).toContain(">הפלטפורמה</span>");
         expect(body).toContain(">העסק</span>");
-        expect(body).toContain(">אחד</span>");
+        expect(body).toContain("כל העסק שלכם במקום אחד");
         expect(body).toContain("Bizuply");
       } else if (locale === "es") {
-        expect(body).toContain(">Todo</span>");
-        expect(body).toContain(">lugar</span>");
+        expect(body).toContain(">plataforma</span>");
+        expect(body).toContain(">negocio</span>");
       } else if (locale === "pt-BR") {
+        expect(body).toContain(">plataforma</span>");
         expect(body).toContain(">negócio</span>");
       } else if (locale === "ar") {
-        expect(body).toContain(">عملكم</span>");
+        expect(body).toContain(">المنصة</span>");
+        expect(body).toContain(">العمل</span>");
       } else {
-        expect(body).toContain(">Your</span>");
+        expect(body).toContain(">platform</span>");
         expect(body).toContain(">business</span>");
-        expect(body).toContain(">place</span>");
       }
       const crawl = buildMarketingPrerender(route)?.crawl || "";
       expect(crawl).toContain(home.faqTitle);

@@ -165,23 +165,23 @@ export function renderPurpleHomePrerender(locale) {
   const header = renderMarketingHeader(locale);
   const href = (path) => localeHref(locale === "pt-BR" || locale === "he" || locale === "es" || locale === "ar" ? locale : "en", path);
 
-  const kicker = hx.kicker
-    ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
-    : `<p class="hx-hero-brand">Bizuply</p>`;
+  const kicker = hx.kicker ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>` : "";
   const secondLine = hx.lineTwo || hx.lineThree
     ? `<span class="hx-line">${heroWords(hx.lineTwo, hx.lineThree ? -1 : lineHot)}${hx.lineThree ? ` ${heroWords(hx.lineThree, lineHot)}` : ""}</span>`
     : "";
+  const sub = hx.sub ? `<p class="hx-sub">${escapeText(hx.sub)}</p>` : "";
   const filmLang = locale === "he" ? "he" : "en";
-  const hero = `<section class="hx-hero" data-bz-tone="paper" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="bz-spec__copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const hero = `<section class="hx-hero" data-bz-tone="paper" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="bz-open__pin"><div class="bz-spec__copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
-  )}</span>${secondLine}</h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
+    Math.max(0, String(hx.lineOne || "").trim().split(/\s+/).length - 1),
+  )}</span>${secondLine}</h1>${sub}<p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,
   )}</span></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
     hx.see,
-  )}</span></a></div></div><div class="bz-spec__film"><span class="bz-spec__pink" aria-hidden="true"></span><span class="bz-spec__yellow" aria-hidden="true"></span>${theaterShellHtml(
+  )}</span></a></div></div><div class="bz-spec__film">${theaterShellHtml(
     hx,
     filmLang,
-  )}</div></section>`;
+  )}</div></div></section>`;
 
   const read = `<article class="home-read">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,

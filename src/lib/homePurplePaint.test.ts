@@ -11,8 +11,9 @@ describe("sketch home first paint", () => {
     expect(en.inner).toContain('data-home-design="sketch"');
     expect(en.inner).toContain('class="hx-hero"');
     expect(en.inner).toContain('class="hx-display"');
-    expect(en.inner).toContain(">Your</span>");
+    expect(en.inner).toContain(">platform</span>");
     expect(en.inner).toContain(">business</span>");
+    expect(en.inner).toContain("Your whole business in one place");
     expect(en.inner).toContain(HX_HERO_COPY.en.see);
     expect(en.inner).toContain("/demo-media/home/theater/en-desktop.webp");
     expect(en.inner).toContain('class="ht-theater"');
@@ -32,8 +33,9 @@ describe("sketch home first paint", () => {
   it("keeps Hebrew hero copy aligned with the React sketch home", () => {
     const he = renderPurpleHomePrerender("he");
     expect(he.dir).toBe("rtl");
+    expect(he.inner).toContain(">הפלטפורמה</span>");
     expect(he.inner).toContain(">העסק</span>");
-    expect(he.inner).toContain(">אחד</span>");
+    expect(he.inner).toContain("כל העסק שלכם במקום אחד");
     expect(he.inner).toContain("Bizuply");
     expect(he.inner).toContain(HX_HERO_COPY.he.see);
     expect(he.inner).toContain("/demo-media/home/theater/he-desktop.webp");
