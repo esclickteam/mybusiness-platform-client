@@ -18,7 +18,7 @@ body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
 
 .bizi-dock__shell {
   pointer-events: auto;
-  overflow: hidden;
+  overflow: visible;
   border: 2px solid #ff42b3;
   border-radius: 999px;
   background: #2541f5;
@@ -33,6 +33,7 @@ body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
 .bizi-dock.is-open .bizi-dock__shell {
   border-radius: 22px;
   animation: none;
+  overflow: hidden;
   height: min(700px, calc(100vh - 48px));
   display: flex;
   flex-direction: column;
@@ -142,7 +143,7 @@ body:has(.cookie-banner--notice) .bizi-dock { bottom: 132px; }
 body:has(.cookie-banner--manage) .bizi-dock { bottom: calc(min(70dvh, 36rem) + 16px); }
 
 @media (max-width: 720px) {
-  .bizi-dock { left: 16px; right: auto; bottom: 16px; width: min(290px, calc(100vw - 88px)); }
+  .bizi-dock { left: 16px; right: auto; bottom: 16px; width: min(290px, calc(100vw - 32px)); }
   .bizi-dock.is-ltr { left: auto; right: 16px; }
   .bizi-dock.is-open { width: calc(100vw - 16px); left: 8px; right: auto; }
   .bizi-dock.is-ltr.is-open { left: auto; right: 8px; }
