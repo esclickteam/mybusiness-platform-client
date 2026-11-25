@@ -108,7 +108,7 @@ export default function BiziDock() {
     <aside className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`} dir={i18n.dir()}>
       <div className="bizi-dock__shell">
         <header className="bizi-dock__bar">
-          <img ref={faceRef} className="bizi-dock__face" src="/brand/bizi.png" alt="" width="68" height="68" />
+          <img ref={faceRef} className="bizi-dock__face" src="/brand/bizi-face.webp" alt="" width="68" height="68" />
           <button type="button" className="bizi-dock__hit" onClick={toggle} aria-expanded={open}>
             <span className="bizi-dock__copy">
               <strong>{open ? copy.title : copy.launcher}</strong>

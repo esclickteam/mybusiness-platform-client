@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, lazy, Suspense, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
@@ -6,7 +6,7 @@ import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import films from "./theaterFilms.json";
-import ShowHome from "./ShowHome";
+const ShowHome = lazy(() => import("./ShowHome"));
 
 const MEDIA = "/demo-media/home";
 const FILM_VERSION = "t7";
@@ -85,6 +85,8 @@ export default function WorldHome() {
   const reduced = useReduced();
   const lang = language.toLowerCase().startsWith("he") ? "he" : "en";
   const openRef = useRef<HTMLElement | null>(null);
+  const restRef = useRef<HTMLDivElement | null>(null);
+  const [showRest, setShowRest] = useState(false);
   const hot = Math.max(0, String(hero.lineThree || "").trim().split(/\s+/).filter(Boolean).length - 1);
   const labels = (hero.processSteps || []) as [string, string][];
   const copy = (hero.processCopy || []) as [string, string][];
@@ -94,6 +96,19 @@ export default function WorldHome() {
     title: copy[index]?.[0] || "",
     body: copy[index]?.[1] || "",
   }));
+
+  useEffect(() => {
+    const node = restRef.current;
+    if (!node) return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) setShowRest(true);
+      },
+      { rootMargin: "900px" },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
       const open = openRef.current;
@@ -163,7 +178,13 @@ export default function WorldHome() {
         </div>
       </section>
 
-      <ShowHome language={language} />
+      <div ref={restRef}>
+        {showRest ? (
+          <Suspense fallback={null}>
+            <ShowHome language={language} />
+          </Suspense>
+        ) : null}
+      </div>
     </div>
   );
 }

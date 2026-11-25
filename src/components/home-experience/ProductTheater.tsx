@@ -70,6 +70,7 @@ export default function ProductTheater({
   const [active, setActive] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [ready, setReady] = useState(false);
+  const [near, setNear] = useState(false);
   const activeRef = useRef(0);
 
   const paintProgress = useCallback(() => {
@@ -110,6 +111,7 @@ export default function ProductTheater({
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return undefined;
+    if (!near) return undefined;
     setReady(false);
     activeRef.current = 0;
     setActive(0);
@@ -137,7 +139,7 @@ export default function ProductTheater({
       video.removeEventListener("ended", onEnded);
       video.removeEventListener("timeupdate", paintProgress);
     };
-  }, [film.src, paintProgress, play, reduced]);
+  }, [film.src, near, paintProgress, play, reduced]);
 
   useEffect(() => {
     const node = rootRef.current;
@@ -146,6 +148,7 @@ export default function ProductTheater({
     const observer = new IntersectionObserver(
       ([entry]) => {
         inView.current = Boolean(entry?.isIntersecting);
+        if (entry?.isIntersecting) setNear(true);
         if (!inView.current) video.pause();
         else if (!userPaused.current && !reduced && video.readyState >= 2) play();
       },
@@ -221,6 +224,7 @@ export default function ProductTheater({
     if (!video) return;
     if (video.paused) {
       userPaused.current = false;
+      setNear(true);
       play();
     } else {
       userPaused.current = true;
@@ -311,14 +315,14 @@ export default function ProductTheater({
           className="ht-video"
           muted
           playsInline
-          preload="auto"
+          preload={near ? "metadata" : "none"}
           poster={film.poster}
           width={film.width}
           height={film.height}
           aria-label={labels.region}
           onClick={toggle}
         >
-          <source src={film.src} type="video/mp4" />
+          {near ? <source src={film.src} type="video/mp4" /> : null}
         </video>
         <canvas ref={canvasRef} className="ht-freeze" aria-hidden="true" />
         {!playing && ready ? (

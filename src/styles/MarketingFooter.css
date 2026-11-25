@@ -30,6 +30,16 @@
   box-shadow: none;
 }
 
+.site-footer__logo--dark { display: none; }
+
+body:has(.bz-world) .site-footer__logo--light { display: none; }
+body:has(.bz-world) .site-footer__logo--dark { display: block; }
+
+body:has(.bz-world) .site-footer__bar {
+  background: #111936;
+  color: #fff;
+}
+
 .site-footer__brand p {
   max-width: 16rem;
   margin: 0.9rem 0 0;

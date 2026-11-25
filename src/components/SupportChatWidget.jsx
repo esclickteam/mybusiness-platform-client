@@ -2,7 +2,7 @@ import React, { Component, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Bot } from "lucide-react";
-import ChatBot from "./ChatBot";
+const ChatBot = React.lazy(() => import("./ChatBot"));
 import { isPublicSalesPath } from "./bizi/biziPublic";
 import BiziDock from "./bizi/BiziDock";
 
@@ -112,13 +112,15 @@ export default function SupportChatWidget() {
 
       {chatOpen && (
         <ChatBotBoundary key={panelKey} onClose={handleCloseAfterError}>
-          <ChatBot
-            chatOpen={chatOpen}
-            setChatOpen={setChatOpen}
-            initialMessage={initialMessage}
-            onInitialMessageSent={() => setInitialMessage(null)}
-            hideLauncher
-          />
+          <React.Suspense fallback={null}>
+            <ChatBot
+              chatOpen={chatOpen}
+              setChatOpen={setChatOpen}
+              initialMessage={initialMessage}
+              onInitialMessageSent={() => setInitialMessage(null)}
+              hideLauncher
+            />
+          </React.Suspense>
         </ChatBotBoundary>
       )}
     </>

@@ -7,6 +7,157 @@ import "./showHome.css";
 
 const GUIDES = ["what-is-a-crm", "meta-lead-ads-to-crm", "whatsapp-cloud-api-cost", "follow-up-on-leads"];
 
+const shot = (locale: string, name: string) => `/demo-media/home/screens/${locale === "he" ? "he" : "en"}-desktop-${name}.webp`;
+
+const PRODUCTS = [
+  {
+    id: "crm",
+    tone: "crm",
+    href: "/crm",
+    tabHe: "CRM",
+    tabEn: "CRM",
+    bodyHe: "ניהול לידים ולקוחות בשישה סטטוסים: חדש, נוצר קשר, מעוניין, הומר, אבוד וליד ישן. כל שינוי נשמר על הכרטיס, יחד עם מקור ההגעה והמשימה הבאה. מתאים לצוות שרוצה לראות מי ממתין לטיפול בלי לעבור בין כלים.",
+    bodyEn: "Leads and customers move through six statuses: New, Contacted, Interested, Converted, Lost and Old. Every change stays on the card, with the source and the next task. It fits a team that wants to see who is waiting without switching tools.",
+    points: [
+      ["שישה סטטוסים על לוח אחד", "Six statuses on one board"],
+      ["מקור הגעה, תגיות והיסטוריית טיפול", "Source, tags and the activity history"],
+      ["משימת המשך על אותו כרטיס", "The next task on the same card"],
+    ],
+    linkHe: "למערכת ה־CRM",
+    linkEn: "Explore the CRM",
+    file: "crm-list",
+  },
+  {
+    id: "wa",
+    tone: "wa",
+    href: "/whatsapp-api",
+    tabHe: "WhatsApp",
+    tabEn: "WhatsApp",
+    bodyHe: "השיחה נפתחת מתוך סביבת העבודה ונשמרת על כרטיס הלקוח. תבנית יוצאת רק אחרי אישור Meta, ואפשר לראות את מצב הטיפול ליד פרטי הלקוח. מתאים לעסק שעונה ללקוחות מאותו מקום שבו נמצא הליד.",
+    bodyEn: "The conversation opens in the workspace and stays on the customer card. An outbound template is sent only after Meta approval, and the follow-up sits next to the customer details. It fits a business that replies from the same place as the lead.",
+    points: [
+      ["רשימת שיחות וחלון אחד", "A conversation list and one thread"],
+      ["שיוך לכרטיס הלקוח", "Linked to the customer card"],
+      ["תבניות מאושרות וחיווי זמן", "Approved templates and a time stamp"],
+    ],
+    linkHe: "ל־WhatsApp",
+    linkEn: "Explore WhatsApp",
+    file: "whatsapp",
+  },
+  {
+    id: "auto",
+    tone: "auto",
+    href: "/automations",
+    tabHe: "אוטומציות",
+    tabEn: "Automations",
+    bodyHe: "אוטומציה מחברת טריגר, תנאי ופעולה. כשליד עובר לסטטוס מעוניין ויש לו טלפון, נפתחת משימת המשך על אותו כרטיס. מתאים לעסק שרוצה שהצעד הבא ייווצר גם כשהצוות עסוק.",
+    bodyEn: "An automation connects a trigger, a condition and an action. When a lead moves to Interested and has a phone number, the next task opens on that card. It fits a business that wants the next step created while the team is busy.",
+    points: [
+      ["טריגר על שינוי סטטוס", "A trigger when the status changes"],
+      ["תנאי לפי השדות שבכרטיס", "A condition based on the card fields"],
+      ["פעולה שיוצרת משימה", "An action that creates a task"],
+    ],
+    linkHe: "לעורך האוטומציות",
+    linkEn: "Explore automations",
+    file: "automation",
+  },
+  {
+    id: "ads",
+    tone: "ads",
+    href: "/meta-campaigns",
+    tabHe: "שיווק",
+    tabEn: "Marketing",
+    bodyHe: "לידים ממודעות Meta ומטפסי Google Ads נכנסים ל־CRM עם המקור. רואים אילו פניות הגיעו מאיזו פעילות, וההוצאה על המדיה נשארת אצל Meta או Google. מתאים למי שמפרסם ורוצה את הליד באותו לוח.",
+    bodyEn: "Leads from Meta ads and Google Ads forms enter the CRM with their source. You can see which activity brought the enquiry. Media spend stays with Meta or Google. It fits a business that advertises and wants the lead on the same board.",
+    points: [
+      ["Meta Lead Ads", "Meta Lead Ads"],
+      ["טפסי Google Ads", "Google Ads lead forms"],
+      ["מקור ההגעה על הליד", "The source stored on the lead"],
+    ],
+    linkHe: "לכלי השיווק",
+    linkEn: "Explore marketing",
+    file: "campaigns",
+  },
+  {
+    id: "cal",
+    tone: "cal",
+    href: "/appointments",
+    tabHe: "יומן",
+    tabEn: "Calendar",
+    bodyHe: "מגדירים שירות, משך וזמינות. המערכת מחשבת חלונות פנויים בקפיצות של 15 דקות, והתור נשמר עם הלקוח, השירות והשעה. מתאים לנותני שירות שמתאמים פגישות מתוך הכרטיס.",
+    bodyEn: "You set the service, the duration and the availability. Open times are calculated in 15-minute steps, and the booking is stored with the customer, the service and the time. It fits service providers who schedule from the card.",
+    points: [
+      ["יומן שבועי", "A weekly calendar"],
+      ["שירות, משך ומחיר", "Service, duration and price"],
+      ["התור שמור על הלקוח", "The booking stays on the customer"],
+    ],
+    linkHe: "למערכת הפגישות",
+    linkEn: "Explore meetings",
+    file: "dashboard",
+  },
+  {
+    id: "site",
+    tone: "site",
+    href: "/website-builder",
+    tabHe: "בניית אתרים",
+    tabEn: "Websites",
+    bodyHe: "עורך ויזואלי, תבניות, עמודים וטפסים, עם תצוגה לדסקטופ ולמובייל. טופס באתר יכול להיפתח כליד ב־CRM. מתאים לעסק שבונה את האתר בעצמו ורוצה שהפניות ייכנסו למערכת.",
+    bodyEn: "A visual editor, templates, pages and forms, with a desktop and a mobile view. A form on the site can open as a lead in the CRM. It fits a business building its own site and wanting enquiries in the system.",
+    points: [
+      ["עורך ויזואלי ותבניות", "A visual editor and templates"],
+      ["התאמה לדסקטופ ולמובייל", "Desktop and mobile layouts"],
+      ["טופס שמקושר ל־CRM", "A form linked to the CRM"],
+    ],
+    linkHe: "לבניית האתרים",
+    linkEn: "Explore the website builder",
+    file: "sites",
+  },
+  {
+    id: "ai",
+    tone: "ai",
+    href: "/agents",
+    tabHe: "AI",
+    tabEn: "AI",
+    bodyHe: "בחבילה העסקית כלולים היועץ העסקי ואוטומציות AI, לצד משימות ותיעוד. אפשר לבקש סיכום של לידים שממתינים ולראות את התוצאה ליד הסטטוס והמקור. זה כלי העבודה במערכת, לא כפתור הייעוץ הצף.",
+    bodyEn: "The business plan includes the business advisor and AI automations, alongside tasks and notes. You can ask for the leads that are waiting and see the result next to the status and the source. This is the tool inside the product, not the floating advisor.",
+    points: [
+      ["בקשה בשפה חופשית", "A request in plain language"],
+      ["קריאה של סטטוס ומקור", "It reads the status and the source"],
+      ["תוצאה שאפשר להמשיך ממנה למשימה", "A result you can continue into a task"],
+    ],
+    linkHe: "לכלי ה־AI",
+    linkEn: "Explore the AI tools",
+    file: "ai",
+  },
+] as const;
+
+function MetaMark() {
+  return (
+    <svg viewBox="0 0 48 24" width="48" height="24" aria-hidden="true">
+      <path fill="#0668E1" d="M13.5 3.2C9.4 3.2 6 7 6 12s3.4 8.8 7.5 8.8c2.7 0 4.8-1.5 6.5-4.1 1.7 2.6 3.8 4.1 6.5 4.1 4.1 0 7.5-3.8 7.5-8.8S30.6 3.2 26.5 3.2c-2.7 0-4.8 1.5-6.5 4.1-1.7-2.6-3.8-4.1-6.5-4.1zm0 3.2c1.6 0 3 1.4 4.4 3.8-.5.8-1 1.7-1.4 2.6.4-.9.9-1.8 1.4-2.6C16.5 7.8 15.1 6.4 13.5 6.4 11.2 6.4 9.4 8.9 9.4 12s1.8 5.6 4.1 5.6c1.6 0 3-1.4 4.4-3.8.5-.8 1-1.7 1.4-2.6-.4.9-.9 1.8-1.4 2.6-1.4 2.4-2.8 3.8-4.4 3.8-2.3 0-4.1-2.5-4.1-5.6s1.8-5.6 4.1-5.6zm13 0c1.6 0 3 1.4 4.4 3.8-.5.8-1 1.7-1.4 2.6.4-.9.9-1.8 1.4-2.6C29.5 7.8 28.1 6.4 26.5 6.4 24.2 6.4 22.4 8.9 22.4 12s1.8 5.6 4.1 5.6c1.6 0 3-1.4 4.4-3.8.5-.8 1-1.7 1.4-2.6-.4.9-.9 1.8-1.4 2.6-1.4 2.4-2.8 3.8-4.4 3.8-2.3 0-4.1-2.5-4.1-5.6s1.8-5.6 4.1-5.6z" />
+    </svg>
+  );
+}
+
+function GoogleMark() {
+  return (
+    <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+      <path fill="#4285F4" d="M23 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7C21.6 18.7 23 15.8 23 12.3z" />
+      <path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-5.9-2.2-6.9-5.1H1.3v3c2 4 6.1 6.7 10.7 6.7z" />
+      <path fill="#FBBC05" d="M5.1 14.3A7.2 7.2 0 0 1 4.7 12c0-.8.1-1.6.4-2.3V6.7H1.3A12 12 0 0 0 0 12c0 1.9.5 3.8 1.3 5.3l3.8-3z" />
+      <path fill="#EA4335" d="M12 4.8c1.7 0 3.3.6 4.5 1.8l3.4-3.4C17.9 1.1 15.2 0 12 0 7.4 0 3.3 2.7 1.3 6.7l3.8 3C6.1 7 8.8 4.8 12 4.8z" />
+    </svg>
+  );
+}
+
+function WhatsAppMark() {
+  return (
+    <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
+      <path fill="#25D366" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.2c-.2.7-1.3 1.2-1.8 1.3-.5.1-1 .2-3.4-.7-2.9-1.1-4.7-4-4.8-4.2-.2-.2-1.3-1.7-1.3-3.2s.8-2.3 1.1-2.6c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.6.8 2 .8 2.1.1.2.1.3 0 .5-.1.2-.2.3-.3.5l-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1.3.1 1.6.8 1.9.9.3.2.5.2.6.3.1.3 0 .8-.2 1.5z" />
+    </svg>
+  );
+}
+
 function localeOf(language: string) {
   const value = language.toLowerCase();
   if (value.startsWith("he")) return "he";
@@ -18,10 +169,20 @@ function localeOf(language: string) {
 
 export default function ShowHome({ language }: { language: string }) {
   const locale = localeOf(language);
-  const he = locale === "he" || locale === "ar";
-  const t = (hebrew: string, english: string) => (locale === "he" ? hebrew : english);
+  const rtl = locale === "he" || locale === "ar";
+  const he = locale === "he";
+  const t = (hebrew: string, english: string) => (he ? hebrew : english);
+  function openLayer(index: number) {
+    setFocus(index);
+    const scene = document.querySelector<HTMLElement>(".sc-platform");
+    if (!scene || window.matchMedia("(max-width: 980px)").matches) return;
+    const total = scene.offsetHeight - window.innerHeight;
+    const top = scene.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: top + total * (index / 6), behavior: "smooth" });
+  }
   const screen = (name: string) => `/demo-media/home/screens/${locale === "he" ? "he" : "en"}-desktop-${name}.webp`;
   const [openFaq, setOpenFaq] = useState(0);
+  const [focus, setFocus] = useState(0);
   const faqs = ((HOME_FAQ as Record<string, [string, string][]>)[locale] || HOME_FAQ.en).slice(0, 6);
   const guides = GUIDES.map((slug) => ({ slug, article: getGuide(slug, locale) })).filter((item) => item.article?.h1);
 
@@ -36,6 +197,12 @@ export default function ShowHome({ language }: { language: string }) {
         const total = Math.max(1, scene.offsetHeight - window.innerHeight);
         const progress = Math.min(1, Math.max(0, -rect.top / total));
         scene.style.setProperty("--p", progress.toFixed(4));
+        if (scene.classList.contains("sc-platform")) {
+          const index = Math.round(progress * 6);
+          const tone = ["crm", "wa", "auto", "ads", "cal", "site", "ai"][index] || "crm";
+          if (scene.dataset.tone !== tone) scene.dataset.tone = tone;
+          setFocus((current) => (current === index ? current : index));
+        }
       });
     };
     const request = () => {
@@ -66,35 +233,38 @@ export default function ShowHome({ language }: { language: string }) {
       ];
 
   return (
-    <div className="sh" dir={he ? "rtl" : "ltr"}>
-      <section className="sc sc-platform" data-scene>
+    <div className="sh" dir={rtl ? "rtl" : "ltr"}>
+      <section className="sc sc-platform" data-scene data-tone="crm">
         <div className="sc-pin">
-          <span className="plat-wash" />
-          <span className="plat-wash plat-wash--b" />
-          <div className="sc-wrap plat">
-            <div className="plat-copy">
-              <h2>{t("כל מה שהעסק שלכם צריך. עכשיו הכל מתחבר.", "Everything the business needs. Now it connects.")}</h2>
-              <p>{t("ליד, שיחה, משימה, פגישה ואתר נשארים על אותו לקוח. כל שכבה היא מוצר קיים בפלטפורמה, לא מודול נפרד שצריך לייצא אליו נתונים.", "A lead, a conversation, a task, a meeting and the website stay on the same customer. Each layer is a product already in the platform.")}</p>
-              <p>{t("מתאים לעסק שירות, לסוכנות ולצוות שמטפל בפניות מכמה מקורות ורוצה לראות את השלב הבא בלי לעבור בין כלים.", "It fits a service business, an agency, or a team handling enquiries from several sources.")}</p>
+          <div className="sc-wrap deck-wrap">
+            <header className="deck-head">
+              <h2>{t("כל מה שהעסק שלכם צריך. במקום אחד.", "Everything your business needs. Connected.")}</h2>
+              <p>{t("נהלו לקוחות, שיחות, שיווק ותהליכי עבודה בסביבת עבודה אחת. הכירו את הכלים שיעזרו לעסק שלכם להתקדם.", "Manage your customers, conversations, marketing and workflows in one connected workspace. Discover the tools that help your business move forward.")}</p>
+            </header>
+            <div className="deck-tabs" role="tablist">
+              {PRODUCTS.map((product, index) => (
+                <button key={product.id} type="button" role="tab" aria-selected={focus === index} className={`tone-${product.tone}${focus === index ? " is-on" : ""}`} onClick={() => openLayer(index)}>{t(product.tabHe, product.tabEn)}</button>
+              ))}
             </div>
-            <div className="stack">
-              {[
-                ["crm-list", "CRM", t("שישה סטטוסים, מקור הגעה ומשימה על הכרטיס.", "Six statuses, a source, and the next task on the card."), ["/crm", t("למערכת ה־CRM", "Open the CRM")]],
-                ["whatsapp", "WhatsApp", t("שיחה שמורה על הלקוח, עם תבנית מאושרת.", "The thread stays on the customer, with an approved template."), ["/whatsapp-api", "WhatsApp"]],
-                ["automation", t("אוטומציות", "Automations"), t("טריגר, תנאי ופעולה על מה שהמערכת יודעת לבצע.", "A trigger, a condition and an action the product can run."), ["/automations", t("לעורך האוטומציות", "Open automations")]],
-                ["campaigns", "Meta", t("ליד ממודעה נכנס עם המקור שלו.", "A lead from an ad arrives with its source."), ["/meta-campaigns", t("לשיווק", "Open marketing")]],
-                ["ai", "AI", t("היועץ העסקי ואוטומציות AI בחבילה העסקית.", "The business advisor and AI automations in the business plan."), ["/agents", t("לכלי ה־AI", "Open AI tools")]],
-              ].map(([shot, title, body, link], index) => (
-                <article className="stack-card" style={{ ["--i" as string]: index }} key={String(title)}>
-                  <div>
-                    <h3>{title}</h3>
-                    <ul>
-                      <li>{body}</li>
-                      <li>{t("הנתונים נשארים בסביבת העבודה.", "The record stays in the workspace.")}</li>
-                    </ul>
-                    <Link className="sh-go" to={(link as string[])[0]}>{(link as string[])[1]}</Link>
+            <div className="deck" style={{ ["--focus" as string]: focus }}>
+              {PRODUCTS.map((product, index) => (
+                <article className={`deck-card tone-${product.tone}${focus === index ? " is-front" : ""}`} style={{ ["--i" as string]: index }} key={product.id}>
+                  <button type="button" className="deck-tab" onClick={() => openLayer(index)}>{t(product.tabHe, product.tabEn)}</button>
+                  <div className="deck-body">
+                    <div className="deck-copy">
+                      <h3>{t(product.tabHe, product.tabEn)}</h3>
+                      <p>{t(product.bodyHe, product.bodyEn)}</p>
+                      <ul>
+                        {product.points.map(([hePoint, enPoint]) => <li key={hePoint}>{t(hePoint, enPoint)}</li>)}
+                      </ul>
+                      <Link className="sh-go" to={product.href}>{t(product.linkHe, product.linkEn)}</Link>
+                    </div>
+                    <div className="deck-ui">
+                      {Math.abs(focus - index) < 2 ? (
+                        <img src={product.file === "sites" ? `/demo-media/home/sites/lashora-${locale === "he" ? "he" : "en"}-desk.webp` : shot(locale, product.file)} alt="" loading="lazy" decoding="async" />
+                      ) : null}
+                    </div>
                   </div>
-                  <div className="stack-shot"><img src={screen(String(shot))} alt="" /></div>
                 </article>
               ))}
             </div>
@@ -387,16 +557,43 @@ export default function ShowHome({ language }: { language: string }) {
       <section className="sc sc-int" data-scene>
         <div className="sc-pin">
           <div className="sc-wrap">
-            <h2>{t("החיבורים שעובדים היום.", "The connections that work today.")}</h2>
-            <div className="orbit">
-              <article className="hub">
-                <h3>Bizuply</h3>
-                <p>{t("הליד נפתח ב־CRM עם המקור, והמשך הטיפול נשאר שם.", "The lead opens in the CRM with its source, and the follow-up stays there.")}</p>
+            <header className="link-head">
+              <h2>{t("הכלים שאתם כבר עובדים איתם. עכשיו הכל מחובר.", "Connect your favorite tools. Bring everything together.")}</h2>
+              <p>{t("חברו את מקורות הפניות, השיחות והפעילות השיווקית שלכם לסביבת עבודה אחת.", "Bring enquiries, customer conversations and marketing activity into one connected workspace.")}</p>
+            </header>
+            <div className="link-map">
+              <svg viewBox="0 0 1000 560" className="link-lines" aria-hidden="true">
+                <path pathLength="1" d="M170 120 C 300 120, 380 230, 470 270" />
+                <path pathLength="1" d="M830 120 C 700 130, 620 220, 540 270" />
+                <path pathLength="1" d="M170 450 C 300 430, 380 340, 470 310" />
+                <path pathLength="1" d="M830 450 C 700 430, 620 350, 540 310" />
+              </svg>
+              <article className="inode meta">
+                <MetaMark />
+                <h3>Meta Lead Ads</h3>
+                <p>{t("טופס מהמודעה נפתח כליד עם שם המודעה.", "A form from the ad opens as a lead with the ad name.")}</p>
               </article>
-              <article className="sat sat-a"><h3>Meta Lead Ads</h3><p>{t("טופס לידים מהמודעה נכנס עם שם המודעה.", "The lead form from the ad arrives with the ad name.")}</p></article>
-              <article className="sat sat-b"><h3>Google Ads</h3><p>{t("טופס לידים של גוגל נכנס לאותו לוח.", "A Google lead form enters the same board.")}</p></article>
-              <article className="sat sat-c"><h3>{t("טופס באתר", "Site form")}</h3><p>{t("טופס באתר Bizuply נפתח כליד.", "A form on a Bizuply site opens as a lead.")}</p></article>
-              <article className="sat sat-d"><h3>WhatsApp Cloud API</h3><p>{t("השיחה משויכת לכרטיס. 29$ לחודש למספר.", "The thread is linked to the card. $29 per month per number.")}</p></article>
+              <article className="inode google">
+                <GoogleMark />
+                <h3>Google Ads</h3>
+                <p>{t("טופס לידים של גוגל נכנס לאותו לוח.", "A Google lead form enters the same board.")}</p>
+              </article>
+              <article className="inode form">
+                <img src="/brand/mark.png" alt="" width="42" height="42" />
+                <h3>{t("טופס באתר", "Website form")}</h3>
+                <p>{t("פנייה מטופס באתר Bizuply נפתחת כליד.", "An enquiry from a Bizuply site form opens as a lead.")}</p>
+              </article>
+              <article className="inode wa">
+                <WhatsAppMark />
+                <h3>WhatsApp Cloud API</h3>
+                <p>{t("השיחה נשמרת על כרטיס הלקוח.", "The conversation stays on the customer card.")}</p>
+              </article>
+              <article className="crm-core">
+                <img src="/brand/logo.png" alt="Bizuply" width="180" height="62" />
+                <div className="crm-row travel-meta"><b>{t("נועה לוי", "Noa Levi")}</b><span>Meta Lead Ads</span></div>
+                <div className="crm-row travel-form"><b>{t("דניאל כהן", "Daniel Cohen")}</b><span>{t("טופס באתר", "Website form")}</span></div>
+                <div className="crm-row travel-wa"><b>{t("נועה לוי", "Noa Levi")}</b><span>WhatsApp · 09:22</span></div>
+              </article>
             </div>
           </div>
         </div>
@@ -465,14 +662,16 @@ export default function ShowHome({ language }: { language: string }) {
 
       <section className="sc sc-end" data-scene>
         <div className="sc-pin">
-          <div className="end-shapes" aria-hidden="true"><span /><span /></div>
-          <div className="sc-wrap end-in">
-            <h2>{t("הגיע הזמן לקחת את העסק שלכם קדימה.", "It’s time to move the business forward.")}</h2>
-            <p>{t("אפשר להתחיל לבד, או לקבוע הדגמה ולראות את הלוח, השיחה והיומן על אותו לקוח.", "Start on your own, or book a demo and see the board, the thread and the calendar on the same customer.")}</p>
-            <Link className="sh-go" to="/register">{t("התחילו בחינם", "Start for free")}</Link>
-            <Link className="sh-go" to="/contact">{t("קבעו הדגמה אישית", "Schedule a personal demo")}</Link>
+          <span className="end-yellow" aria-hidden="true" />
+          <div className="end-copy">
+            <h2>{t("הגיע הזמן לקחת את העסק שלכם קדימה.", "Your next big step starts here.")}</h2>
+            <p>{t("כל הכלים לניהול העסק, הלקוחות והשיווק שלכם. בפלטפורמה אחת.", "Every tool for the business, the customers and the marketing. On one platform.")}</p>
+            <div className="end-actions">
+              <Link className="sh-go" to="/register">{t("התחילו בחינם", "Start for free")}</Link>
+              <Link className="sh-go is-line" to="/contact">{t("קבעו הדגמה אישית", "Schedule a personal demo")}</Link>
+            </div>
           </div>
-          <div className="navy-join" />
+          <div className="end-blue" aria-hidden="true" />
         </div>
       </section>
     </div>
