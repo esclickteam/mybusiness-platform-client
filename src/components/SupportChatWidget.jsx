@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Bot } from "lucide-react";
 import ChatBot from "./ChatBot";
-import { biziCopy, isPublicSalesPath } from "./bizi/biziPublic";
+import { isPublicSalesPath } from "./bizi/biziPublic";
+import BiziDock from "./bizi/BiziDock";
 
 function isBizuplyPublicBookingPath(pathname = "") {
   const parts = String(pathname || "")
@@ -54,10 +55,9 @@ class ChatBotBoundary extends Component {
  * Listens for `bizuply:openSupportChat` CustomEvent with optional { message }.
  */
 export default function SupportChatWidget() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const location = useLocation();
   const sales = isPublicSalesPath(location.pathname);
-  const salesCopy = biziCopy(i18n.language);
   const [chatOpen, setChatOpen] = useState(false);
   const [initialMessage, setInitialMessage] = useState(null);
   const [panelKey, setPanelKey] = useState(0);
@@ -84,6 +84,8 @@ export default function SupportChatWidget() {
   if (isBizuplyPublicBookingPath(location.pathname)) {
     return null;
   }
+
+  if (sales) return <BiziDock />;
 
   return (
     <>

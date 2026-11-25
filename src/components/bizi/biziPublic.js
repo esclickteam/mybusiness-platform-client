@@ -11,7 +11,7 @@ const PACKS = {
     title: "Bizi AI",
     role: "היועצת העסקית החכמה של Bizuply",
     launcher: "בואו להתייעץ איתי!",
-    launcherSub: "Bizi – היועצת החכמה שלכם.",
+    launcherSub: "Bizi – יועצת AI",
     greeting: "היי! אני Bizi, היועצת החכמה של Bizuply. ספרו לי קצת על העסק שלכם ואעזור לכם למצוא את הפתרון המתאים ביותר.",
     hint: "המחירים מגיעים מהקטלוג המאושר. אין כאן גישה לנתוני לקוחות.",
     prompts: [
@@ -35,7 +35,7 @@ const PACKS = {
     title: "Bizi AI",
     role: "Bizuply business advisor",
     launcher: "Let’s talk",
-    launcherSub: "Bizi, your business advisor.",
+    launcherSub: "Bizi – AI advisor",
     greeting: "Hi, I’m Bizi, the Bizuply advisor. Tell me a little about the business and I’ll help you find the published package that fits.",
     hint: "Prices come from the approved catalog. This chat cannot read customer data.",
     prompts: [

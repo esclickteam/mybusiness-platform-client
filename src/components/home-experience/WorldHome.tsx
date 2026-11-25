@@ -6,7 +6,7 @@ import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import films from "./theaterFilms.json";
-import LivingHome from "./LivingHome";
+import Experience from "./Experience";
 
 const MEDIA = "/demo-media/home";
 const FILM_VERSION = "t7";
@@ -83,9 +83,8 @@ export default function WorldHome() {
   const hero = cine.hero;
   const dir = getTextDirection(language);
   const reduced = useReduced();
-  const openRef = useRef<HTMLElement | null>(null);
-  const connectRef = useRef<HTMLElement | null>(null);
   const lang = language.toLowerCase().startsWith("he") ? "he" : "en";
+  const openRef = useRef<HTMLElement | null>(null);
   const hot = Math.max(0, String(hero.lineThree || "").trim().split(/\s+/).filter(Boolean).length - 1);
   const labels = (hero.processSteps || []) as [string, string][];
   const copy = (hero.processCopy || []) as [string, string][];
@@ -97,8 +96,7 @@ export default function WorldHome() {
   }));
 
   useEffect(() => {
-    const open = openRef.current;
-    const connect = connectRef.current;
+      const open = openRef.current;
     let frame = 0;
     const tick = () => {
       frame = 0;
@@ -109,18 +107,6 @@ export default function WorldHome() {
         open.style.setProperty("--p", progress.toFixed(4));
       } else if (open) {
         open.style.setProperty("--p", "0");
-      }
-      if (connect) {
-        if (reduced) {
-          connect.style.setProperty("--in", "1");
-          connect.style.setProperty("--out", "0");
-        } else {
-          const rect = connect.getBoundingClientRect();
-          const total = Math.max(1, connect.offsetHeight - window.innerHeight);
-          const seen = Math.min(1, Math.max(0, -rect.top / total));
-          connect.style.setProperty("--in", Math.min(1, seen / 0.55).toFixed(4));
-          connect.style.setProperty("--out", Math.min(1, Math.max(0, (seen - 0.62) / 0.38)).toFixed(4));
-        }
       }
     };
     const request = () => {
@@ -177,65 +163,7 @@ export default function WorldHome() {
         </div>
       </section>
 
-      <section className="bz-connect" ref={connectRef} data-bz-tone="paper" aria-labelledby="bz-connect-title">
-        <div className="bz-connect__pin">
-        <div className="bz-veil" aria-hidden="true" />
-        <div className="bz-connect__copy">
-          <h2 id="bz-connect-title">
-            <span>{homeText(language, "לא עוד מערכת לכל משימה.", "Not another system for every task.")}</span>
-            <span>{homeText(language, "כל העסק שלכם מחובר.", "Your whole business, connected.")}</span>
-          </h2>
-          <p>
-            {homeText(
-              language,
-              "מהפנייה הראשונה ועד המשך הטיפול בלקוח – כל המידע, התקשורת והפעולות העסקיות נמצאים בסביבת עבודה אחת.",
-              "From the first enquiry through the next step with a customer, the information, the communication and the business actions sit in one workspace.",
-            )}
-          </p>
-        </div>
-        <div className="bz-mosaic">
-          <svg className="bz-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            <path pathLength="1" d="M50 46 C 42 36, 32 24, 22 16" />
-            <path pathLength="1" d="M50 46 C 58 34, 70 24, 80 16" />
-            <path pathLength="1" d="M50 50 C 36 58, 24 68, 16 80" />
-            <path pathLength="1" d="M50 50 C 64 58, 76 68, 84 80" />
-          </svg>
-          <span className="bz-spark bz-spark--a" aria-hidden="true" />
-          <span className="bz-spark bz-spark--b" aria-hidden="true" />
-          <Link className="bz-shot bz-shot--crm" to="/crm">
-            <img src={`${MEDIA}/screens/${lang}-desktop-crm-list.webp`} alt="" />
-            <strong>CRM</strong>
-            <em style={{ opacity: "var(--in)" }}>{homeText(language, "ליד חדש נכנס לשלב המכירה", "A new lead enters the sales stage")}</em>
-          </Link>
-          <Link className="bz-shot bz-shot--wa" to="/whatsapp-api">
-            <img src={`${MEDIA}/screens/${lang}-desktop-whatsapp.webp`} alt="" />
-            <strong>WhatsApp</strong>
-            <em style={{ opacity: "var(--in)" }}>{homeText(language, "הודעה נשמרת באותה שיחה", "A message stays in the same thread")}</em>
-          </Link>
-          <figure className="bz-shot bz-shot--hub">
-            <img src={`${MEDIA}/screens/${lang}-desktop-dashboard.webp`} alt="" />
-            <strong>Bizuply</strong>
-          </figure>
-          <Link className="bz-shot bz-shot--auto" to="/automations">
-            <img src={`${MEDIA}/screens/${lang}-desktop-automation.webp`} alt="" />
-            <strong>{homeText(language, "אוטומציות", "Automations")}</strong>
-          </Link>
-          <Link className="bz-shot bz-shot--cal" to="/appointments">
-            <img src={`${MEDIA}/screens/${lang}-desktop-campaigns.webp`} alt="" />
-            <strong>{homeText(language, "יומן ושיווק", "Calendar and marketing")}</strong>
-          </Link>
-          <Link className="bz-shot bz-shot--site" to="/website-builder">
-            <img src="/demo-media/home/websites.jpg" alt="" />
-            <strong>{homeText(language, "בניית אתרים", "Website builder")}</strong>
-          </Link>
-          <Link className="bz-shot bz-shot--ai" to="/agents">
-            <img src={`${MEDIA}/screens/${lang}-desktop-ai.webp`} alt="" />
-            <strong>AI</strong>
-          </Link>
-        </div>
-        </div>
-      </section>
-      <LivingHome language={language} />
+      <Experience language={language} />
     </div>
   );
 }

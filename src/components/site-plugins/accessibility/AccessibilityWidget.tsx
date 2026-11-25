@@ -253,7 +253,7 @@ export default function AccessibilityWidget({
 
   if (settings.isActive === false) return null;
 
-  const accent = settings.accentColor || "#7C3AED";
+  const accent = settings.accentColor || "#2541F5";
   // Trigger defaults to left; panel always docks left.
   const triggerSide =
     settings.widgetPosition === "bottom-right" ? "right" : "left";

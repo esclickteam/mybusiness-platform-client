@@ -27,7 +27,7 @@
 .hx-hero[data-hx-first-paint] {
   --p: 0;
   position: relative;
-  height: calc(100svh + 720px);
+  min-height: 100svh;
   margin: 0;
   padding: 0;
   overflow: visible;
@@ -37,16 +37,15 @@
 }
 
 .bz-open__pin {
-  position: sticky;
-  top: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  gap: 1rem;
-  height: 100svh;
-  padding: 96px 64px 1.5rem;
-  overflow: hidden;
+  gap: 0.75rem;
+  min-height: 100svh;
+  padding: 92px 64px 2rem;
+  overflow: visible;
 }
 
 .bz-sheet {
@@ -152,9 +151,14 @@
 }
 
 .bz-spec__film {
-  transform:
-    translateY(calc(max(0, var(--p) - 0.55) * -40px))
-    scale(calc(1 + clamp(0, (var(--p) - 0.2) / 0.45, 1) * 0.08));
+  transform: translateY(calc(var(--p) * -28px));
+}
+
+.bz-world .ht-stage,
+.bz-world .ht-video,
+.bz-world .ht-poster {
+  object-fit: contain;
+  clip-path: none;
 }
 
 .bz-mark {
