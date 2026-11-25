@@ -98,7 +98,7 @@ export function renderMarketingHeader(locale) {
   const short = locale === "pt-BR" ? "PT" : String(meta.htmlLang || "en").slice(0, 2).toUpperCase();
   return `<header class="site-header" dir="${meta.dir}"><nav class="site-header__bar" aria-label="${escapeText(
     hx.navAria,
-  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img class="site-header__logo-img site-header__logo-img--dark" src="/brand/logo-on-dark.png" alt="${escapeHtml(
+  )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img class="site-header__logo-img site-header__logo-img--light" src="/brand/logo.png" alt="${escapeHtml(
     logoAlt,
   )}" width="1166" height="398" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__end"><span class="site-header__icon-btn"><span class="site-header__lang-code">${escapeText(
     short,
@@ -162,28 +162,24 @@ export function renderPurpleHomePrerender(locale) {
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
   const headline = [hx.lineOne, hx.lineTwo, hx.lineThree].filter(Boolean).join(" ");
 
-  const header = renderMarketingHeader(locale).replace(
-    '<header class="site-header"',
-    '<header class="site-header is-on-dark" data-tone="ink"',
-  );
+  const header = renderMarketingHeader(locale);
   const href = (path) => localeHref(locale === "pt-BR" || locale === "he" || locale === "es" || locale === "ar" ? locale : "en", path);
 
   const kicker = hx.kicker
     ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
     : `<p class="hx-hero-brand">BizUply</p>`;
-  const third = hx.lineThree
-    ? `<span class="hx-line">${heroWords(hx.lineThree, lineHot)}</span>`
-    : "";
-  const secondHot = hx.lineThree ? -1 : lineHot;
-  const shotLang = locale === "he" ? "he" : "en";
-  const media = `<div class="bz-stage__media" aria-hidden="true"><img class="bz-float bz-float--desk" src="/demo-media/home/screens/${shotLang}-desktop-dashboard.webp" alt="" width="1600" height="1000"><img class="bz-float bz-float--card" src="/demo-media/home/screens/${shotLang}-desktop-crm-card.webp" alt="" width="1400" height="900"><img class="bz-float bz-float--phone" src="/demo-media/home/screens/${shotLang}-mobile-whatsapp.webp" alt="" width="640" height="1280"><img class="bz-float bz-float--film" src="/demo-media/home/theater/${shotLang}-desktop.webp?v=${THEATER_VERSION}" alt="" width="1920" height="1080"></div>`;
-  const hero = `<section class="hx-hero" data-bz-tone="ink" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="bz-stage__shapes" aria-hidden="true"><span class="bz-blob bz-blob--pink"></span><span class="bz-blob bz-blob--yellow"></span><span class="bz-bridge"></span></div><div class="bz-stage__copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const secondLine = `<span class="hx-line">${heroWords(hx.lineTwo, hx.lineThree ? -1 : lineHot)}${hx.lineThree ? ` ${heroWords(hx.lineThree, lineHot)}` : ""}</span>`;
+  const filmLang = locale === "he" ? "he" : "en";
+  const hero = `<section class="hx-hero" data-bz-tone="paper" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="bz-spec__copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
-  )}</span><span class="hx-line">${heroWords(hx.lineTwo, secondHot)}</span>${third}</h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
+  )}</span>${secondLine}</h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,
   )}</span></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
     hx.see,
-  )}</span></a></div></div>${media}</section>`;
+  )}</span></a></div></div><div class="bz-spec__film"><span class="bz-spec__pink" aria-hidden="true"></span><span class="bz-spec__yellow" aria-hidden="true"></span>${theaterShellHtml(
+    hx,
+    filmLang,
+  )}</div></section>`;
 
   const crawl = `<div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,

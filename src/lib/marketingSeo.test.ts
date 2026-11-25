@@ -240,9 +240,9 @@ describe("marketing crawl files", () => {
       } else if (locale === "ar") {
         expect(body).toContain(">عملك.</span>");
       } else {
-        expect(body).toContain(">Big</span>");
-        expect(body).toContain(">ideas.</span>");
+        expect(body).toContain(">Your</span>");
         expect(body).toContain(">business.</span>");
+        expect(body).toContain(">possibilities.</span>");
       }
       const crawl = buildMarketingPrerender(route)?.crawl || "";
       expect(crawl).toContain(home.faqTitle);

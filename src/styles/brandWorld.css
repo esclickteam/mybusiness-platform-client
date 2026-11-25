@@ -37,37 +37,31 @@
 }
 
 .site-header__logo img.site-header__logo-img--dark {
-  opacity: 0;
-}
-
-.site-header.is-on-dark .site-header__logo img.site-header__logo-img--light,
-.site-header[data-tone="ink"] .site-header__logo img.site-header__logo-img--light,
-.site-header[data-tone="navy"] .site-header__logo img.site-header__logo-img--light {
-  opacity: 0;
-}
-
-.site-header.is-on-dark .site-header__logo img.site-header__logo-img--dark,
-.site-header[data-tone="ink"] .site-header__logo img.site-header__logo-img--dark,
-.site-header[data-tone="navy"] .site-header__logo img.site-header__logo-img--dark {
-  opacity: 1;
+  display: none;
 }
 
 .site-header {
   transition: background-color 0.35s linear, color 0.35s linear, border-color 0.35s linear;
 }
 
-.site-header[data-tone="ink"] {
-  background: #2541f5;
-  color: #fff;
-  border-bottom-color: transparent;
+.site-header[data-tone="ink"],
+.site-header[data-tone="navy"],
+.site-header[data-tone="pink"],
+.site-header[data-tone="yellow"],
+.site-header.is-on-dark {
+  background: #fff;
+  color: #111936;
+  border-bottom: 1px solid rgba(17, 25, 54, 0.08);
   box-shadow: none;
 }
 
 .site-header[data-tone="ink"] .site-header__link,
 .site-header[data-tone="ink"] .site-header__signin,
 .site-header[data-tone="navy"] .site-header__link,
-.site-header[data-tone="navy"] .site-header__signin {
-  color: #fff;
+.site-header[data-tone="navy"] .site-header__signin,
+.site-header.is-on-dark .site-header__link,
+.site-header.is-on-dark .site-header__signin {
+  color: #111936;
 }
 
 html.bizuply-home .site-header[data-tone="paper"] .site-header__link,

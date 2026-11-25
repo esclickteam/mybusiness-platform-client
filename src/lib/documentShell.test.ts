@@ -87,7 +87,7 @@ describe("first paint document shell", () => {
     expect(page.body).toContain('class="hx-hero"');
     expect(page.body).toContain('data-home-design="sketch"');
     expect(page.body).toContain('class="hx-display"');
-    expect(page.body).toContain(">Big</span>");
+    expect(page.body).toContain(">Your</span>");
     expect(page.body).toContain(">business.</span>");
     expect(page.body).not.toContain('class="home-hero"');
     expect(page.body).not.toContain("home-hero__title");
@@ -96,7 +96,7 @@ describe("first paint document shell", () => {
     expect(noscriptCrawl(page.body)).toContain('class="home-crawl"');
     expect(rootInner(page.body)).not.toContain('class="home-crawl"');
     expect(rootInner(page.body)).toContain("hx-display");
-    expect(rootInner(page.body)).toContain(">Big</span>");
+    expect(rootInner(page.body)).toContain(">Your</span>");
     expect(rootInner(page.body)).toContain(">business.</span>");
     expect(rootInner(page.body)).not.toContain("The official website is bizuply.com");
     expect(rootInner(page.body)).not.toContain("<h1>Bizuply</h1>");

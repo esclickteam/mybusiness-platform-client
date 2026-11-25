@@ -89,7 +89,7 @@ describe("marketing edge integration", () => {
     expect(page.body).toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
     expect(page.body).toContain('class="hx-hero"');
     expect(page.body).toContain('data-home-design="sketch"');
-    expect(page.body).toContain(">Big</span>");
+    expect(page.body).toContain(">Your</span>");
     expect(page.body).toContain(">business.</span>");
     expect(page.body).not.toContain('class="home-hero"');
     expect(page.body).not.toContain("home-hero__title");

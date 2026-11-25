@@ -1383,3 +1383,26 @@ html.hx-preview .site-header__cta {
   .hx-hero[data-hx-first-paint] { grid-template-columns: 1fr; min-height: auto; }
   .bz-stage__media { height: 68vw; }
 }
+
+/* spec-hero */
+.hx-hero[data-hx-first-paint] {
+  display: block;
+  min-height: 100svh;
+  height: auto;
+  padding: 96px 64px 3rem;
+  background: #2541f5;
+  color: #fff;
+  text-align: center;
+}
+.bz-spec__copy { position: relative; z-index: 1; max-width: 1160px; margin: 0 auto; }
+.bz-spec__film { position: relative; z-index: 1; width: min(1160px, 100%); margin: 1.5rem auto 0; }
+.bz-spec__pink, .bz-spec__yellow { position: absolute; z-index: 0; }
+.bz-spec__pink { width: 160px; height: 120px; inset-inline-start: -40px; bottom: 12px; background: #ff42b3; border-radius: 60px; }
+.bz-spec__yellow { width: 180px; height: 56px; inset-inline-end: -36px; top: 16px; background: #edff00; border-radius: 28px; transform: rotate(-18deg); }
+.hx-hero[data-hx-first-paint] .hx-display { color: #fff; font-size: clamp(36px, 4.4vw, 76px); line-height: 1.1; font-weight: 700; text-align: center; }
+.hx-hero[data-hx-first-paint] .ht-theater { position: relative; z-index: 1; background: #fff; border-radius: 8px; }
+.hx-hero[data-hx-first-paint] .ht-stage { aspect-ratio: 16 / 9; }
+.hx-hero[data-hx-first-paint] .ht-poster { object-fit: contain; }
+@media (max-width: 860px) {
+  .hx-hero[data-hx-first-paint] { padding: 84px 20px 2rem; }
+}
