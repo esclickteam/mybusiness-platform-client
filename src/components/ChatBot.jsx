@@ -19,6 +19,8 @@ import {
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import { getIntlLocale, isHebrewLanguage } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
+import { biziCopy, isPublicSalesPath } from "./bizi/biziPublic";
+import BiziCards from "./bizi/BiziCards";
 import {
   disconnectSupportGuestSocket,
   ensureNotifyPermission,
@@ -132,6 +134,8 @@ export default function ChatBot({
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const sales = isPublicSalesPath(location.pathname);
+  const salesCopy = biziCopy(i18n.language);
 
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
@@ -175,6 +179,7 @@ export default function ChatBot({
   const openHistoryLabel = t("chatbot.supportOpenHistory");
 
   const quickPrompts = useMemo(() => {
+    if (sales) return biziCopy(i18n.language).prompts;
     if (user?.businessId) {
       return [
         t("chatbot.quickPrompts.myLeads"),
@@ -189,7 +194,31 @@ export default function ChatBot({
       t("chatbot.quickPrompts.crmLeads"),
       t("chatbot.quickPrompts.publishSite"),
     ];
-  }, [t, i18n.language, user?.businessId]);
+  }, [t, i18n.language, user?.businessId, sales]);
+
+  useEffect(() => {
+    if (!sales) return;
+    try {
+      const saved = sessionStorage.getItem("bizi-transcript");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length) setChatMessages(parsed);
+      }
+    } catch {
+      /* keep the empty thread */
+    }
+    // Restore once per mount so a language change does not reload over a live thread.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!sales) return;
+    try {
+      sessionStorage.setItem("bizi-transcript", JSON.stringify(chatMessages.slice(-40)));
+    } catch {
+      /* storage can be unavailable */
+    }
+  }, [sales, chatMessages]);
 
   const fallbackSuggestions = useMemo(
     () => [
@@ -494,7 +523,7 @@ export default function ChatBot({
   }, []);
 
   const sendBotMessage = useCallback(
-    async (messageText, { fromSuggestion = false } = {}) => {
+    async (messageText, { fromSuggestion = false, consent = false, contact = null } = {}) => {
       const text = (messageText ?? chatInput).trim();
       if (!text || isLoading || sendingRef.current) return;
 
@@ -515,7 +544,7 @@ export default function ChatBot({
 
         const headers = { "Content-Type": "application/json" };
         const token = localStorage.getItem("token");
-        if (token) headers.Authorization = `Bearer ${token}`;
+        if (token && !sales) headers.Authorization = `Bearer ${token}`;
 
         const recentMessages = chatMessages
           .filter((m) => m.sender === "user" || m.sender === "bot")
@@ -535,6 +564,9 @@ export default function ChatBot({
             timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
             currentPath: location.pathname || "",
             recentMessages,
+            channel: sales ? "bizi" : undefined,
+            consent: consent === true,
+            contact: contact || undefined,
           }),
         });
 
@@ -577,6 +609,7 @@ export default function ChatBot({
             links: Array.isArray(data.links) ? data.links : [],
             actions: Array.isArray(data.actions) ? data.actions : [],
             offerHuman: Boolean(data.offerHuman),
+            cards: Array.isArray(data.cards) ? data.cards : [],
             usedSystemData: Boolean(data.usedSystemData),
             source: data.source || "Bizuply AI",
           },
@@ -923,7 +956,7 @@ export default function ChatBot({
         ? historyViewItem
           ? t("chatbot.supportViewConversation")
           : historyTitle
-        : t("chatbot.title");
+        : sales ? salesCopy.title : t("chatbot.title");
 
   if (!chatOpen) {
     // Launcher can live in SupportChatWidget (hideLauncher) so the button
@@ -1232,10 +1265,10 @@ export default function ChatBot({
                   <Bot size={28} />
                 </div>
                 <p className="mt-4 text-sm font-bold text-slate-700">
-                  {t("chatbot.greeting")}
+                  {sales ? salesCopy.greeting : t("chatbot.greeting")}
                 </p>
                 <p className="mt-1 text-xs text-slate-500">
-                  {t("chatbot.greetingHint")}
+                  {sales ? salesCopy.hint : t("chatbot.greetingHint")}
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {quickPrompts.map((prompt) => (
@@ -1290,6 +1323,15 @@ export default function ChatBot({
                       {msg.text}
                     </div>
                   </div>
+                )}
+                {msg.sender === "bot" && msg.cards?.length > 0 && (
+                  <BiziCards
+                    cards={msg.cards}
+                    language={i18n.language}
+                    onLead={(contact) =>
+                      sendBotMessage(salesCopy.agree, { fromSuggestion: true, consent: true, contact })
+                    }
+                  />
                 )}
 
                 {msg.sender === "bot" &&

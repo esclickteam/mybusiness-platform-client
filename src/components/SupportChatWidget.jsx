@@ -1,7 +1,9 @@
 import React, { Component, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
+import { Bot } from "lucide-react";
 import ChatBot from "./ChatBot";
+import { biziCopy, isPublicSalesPath } from "./bizi/biziPublic";
 
 function isBizuplyPublicBookingPath(pathname = "") {
   const parts = String(pathname || "")
@@ -54,6 +56,8 @@ class ChatBotBoundary extends Component {
 export default function SupportChatWidget() {
   const { t, i18n } = useTranslation();
   const location = useLocation();
+  const sales = isPublicSalesPath(location.pathname);
+  const salesCopy = biziCopy(i18n.language);
   const [chatOpen, setChatOpen] = useState(false);
   const [initialMessage, setInitialMessage] = useState(null);
   const [panelKey, setPanelKey] = useState(0);
@@ -87,14 +91,20 @@ export default function SupportChatWidget() {
         <button
           type="button"
           onClick={() => setChatOpen(true)}
-          className="bizuply-chat-launcher bizi-launcher"
-          aria-label={t("leftover.chat.openAssistant")}
+          className={sales ? "bizuply-chat-launcher bizi-launcher" : "bizuply-chat-launcher fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-[#2541f5] text-white"}
+          aria-label={sales ? salesCopy.launcher : t("leftover.chat.openAssistant")}
         >
-          <img src="/brand/bizi.png" alt="" width="64" height="64" />
-          <span>
-            <strong>{String(i18n.language || "").startsWith("he") ? "בואו להתייעץ איתי!" : "Let’s talk"}</strong>
-            <small>Bizi</small>
-          </span>
+          {sales ? (
+            <>
+              <img src="/brand/bizi.png" alt="" width="64" height="64" />
+              <span>
+                <strong>{salesCopy.launcher}</strong>
+                <small>{salesCopy.launcherSub}</small>
+              </span>
+            </>
+          ) : (
+            <Bot size={24} />
+          )}
         </button>
       )}
 

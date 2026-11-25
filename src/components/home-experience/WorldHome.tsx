@@ -6,7 +6,7 @@ import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import films from "./theaterFilms.json";
-import HomeFull from "./HomeFull";
+import LivingHome from "./LivingHome";
 
 const MEDIA = "/demo-media/home";
 const FILM_VERSION = "t7";
@@ -113,12 +113,13 @@ export default function WorldHome() {
       if (connect) {
         if (reduced) {
           connect.style.setProperty("--in", "1");
+          connect.style.setProperty("--out", "0");
         } else {
           const rect = connect.getBoundingClientRect();
-          const start = window.innerHeight * 0.92;
-          const end = window.innerHeight * 0.4;
-          const progress = Math.min(1, Math.max(0, (start - rect.top) / (start - end)));
-          connect.style.setProperty("--in", progress.toFixed(4));
+          const total = Math.max(1, connect.offsetHeight - window.innerHeight);
+          const seen = Math.min(1, Math.max(0, -rect.top / total));
+          connect.style.setProperty("--in", Math.min(1, seen / 0.55).toFixed(4));
+          connect.style.setProperty("--out", Math.min(1, Math.max(0, (seen - 0.62) / 0.38)).toFixed(4));
         }
       }
     };
@@ -177,6 +178,8 @@ export default function WorldHome() {
       </section>
 
       <section className="bz-connect" ref={connectRef} data-bz-tone="paper" aria-labelledby="bz-connect-title">
+        <div className="bz-connect__pin">
+        <div className="bz-veil" aria-hidden="true" />
         <div className="bz-connect__copy">
           <h2 id="bz-connect-title">
             <span>{homeText(language, "לא עוד מערכת לכל משימה.", "Not another system for every task.")}</span>
@@ -191,6 +194,14 @@ export default function WorldHome() {
           </p>
         </div>
         <div className="bz-mosaic">
+          <svg className="bz-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <path pathLength="1" d="M50 46 C 42 36, 32 24, 22 16" />
+            <path pathLength="1" d="M50 46 C 58 34, 70 24, 80 16" />
+            <path pathLength="1" d="M50 50 C 36 58, 24 68, 16 80" />
+            <path pathLength="1" d="M50 50 C 64 58, 76 68, 84 80" />
+          </svg>
+          <span className="bz-spark bz-spark--a" aria-hidden="true" />
+          <span className="bz-spark bz-spark--b" aria-hidden="true" />
           <Link className="bz-shot bz-shot--crm" to="/crm">
             <img src={`${MEDIA}/screens/${lang}-desktop-crm-list.webp`} alt="" />
             <strong>CRM</strong>
@@ -222,8 +233,9 @@ export default function WorldHome() {
             <strong>AI</strong>
           </Link>
         </div>
+        </div>
       </section>
-      <HomeFull language={language} />
+      <LivingHome language={language} />
     </div>
   );
 }

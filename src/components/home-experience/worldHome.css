@@ -153,8 +153,8 @@
 
 .bz-spec__film {
   transform:
-    translateY(calc(max(0, var(--p) - 0.55) * -90px))
-    scale(calc(1 - clamp(0, (var(--p) - 0.25) / 0.3, 1) * 0.14));
+    translateY(calc(max(0, var(--p) - 0.55) * -40px))
+    scale(calc(1 + clamp(0, (var(--p) - 0.2) / 0.45, 1) * 0.08));
 }
 
 .bz-mark {
@@ -207,13 +207,30 @@
 
 .bz-connect {
   --in: 0;
+  --out: 0;
   position: relative;
   z-index: 1;
-  padding: 5rem 64px 6rem;
   background: #fff;
   color: #111936;
   text-align: center;
 }
+
+@media (min-width: 900px) {
+  .bz-connect { min-height: 120vh; }
+}
+
+.bz-connect__pin { padding: 4rem 64px 5rem; }
+
+.bz-veil {
+  position: absolute;
+  inset: auto 0 0 0;
+  z-index: 0;
+  height: 100%;
+  background: #edff00;
+  clip-path: circle(calc(var(--out) * 80%) at 30% 80%);
+  pointer-events: none;
+}
+.bz-connect__copy, .bz-mosaic { position: relative; z-index: 1; }
 
 .bz-connect__copy {
   width: min(860px, 100%);
@@ -372,7 +389,34 @@
 @keyframes bz-film-in { from { transform: translateY(48px) scale(0.97); } }
 @keyframes bz-side-in { from { translate: -24px 0; } }
 
+.bz-links {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.bz-links path {
+  fill: none;
+  stroke: #2541f5;
+  stroke-width: 0.6;
+  stroke-dasharray: 1;
+  stroke-dashoffset: calc(1 - var(--in, 0));
+}
+.bz-spark {
+  position: absolute;
+  z-index: 2;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff42b3;
+}
+.bz-spark--a { inset-inline-start: calc(18% + var(--in, 0) * 24%); top: calc(18% + var(--in, 0) * 22%); }
+.bz-spark--b { inset-inline-end: calc(16% + (1 - var(--in, 0)) * 20%); bottom: calc(16% + var(--in, 0) * 18%); background: #edff00; }
+.bz-shot--crm { transform: translateY(calc((1 - var(--in, 0)) * 28px)) scale(calc(1 + var(--out, 0) * 0.18)); }
+
 .bz-mosaic {
+  position: relative;
   display: grid;
   grid-template-columns: 0.9fr 1.25fr 0.9fr;
   gap: 0.8rem;
@@ -429,7 +473,9 @@
 .bz-bizi { display: grid; grid-template-columns: 280px 1fr; gap: 2rem; align-items: center; }
 .bz-bizi img { width: 240px; height: 240px; object-fit: cover; border-radius: 50%; }
 @media (max-width: 900px) {
+  .bz-connect__pin { padding: 2.5rem 20px; }
   .bz-rest { width: calc(100% - 40px); }
   .bz-mosaic, .bz-split, .bz-plans, .bz-bizi { grid-template-columns: 1fr; }
   .bz-shot--hub img, .bz-shot img { height: auto; }
+  .bz-links, .bz-spark { display: none; }
 }
