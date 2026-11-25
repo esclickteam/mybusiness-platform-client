@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { biziCopy } from "./biziPublic";
 import BiziCards from "./BiziCards";
@@ -50,6 +50,24 @@ export default function BiziDock() {
       window.removeEventListener("bizuply:openSupportChat", openFromPage);
     };
   }, []);
+
+  useLayoutEffect(() => {
+    const figure = faceRef.current;
+    const shell = figure?.parentElement;
+    const text = shell?.querySelector(".bizi-dock__copy strong");
+    const close = shell?.querySelector(".bizi-dock__x");
+    if (!figure || !shell || !text) return undefined;
+    const place = () => {
+      const height = figure.getBoundingClientRect().height;
+      if (height < 40) return;
+      const top = text.getBoundingClientRect().top - shell.getBoundingClientRect().top - 10 - height;
+      figure.style.top = `${top}px`;
+      if (close) close.style.top = `${top + 8}px`;
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
+  }, [i18n.language, figureReady, open, tucked, shown]);
 
   useEffect(() => {
     try {
