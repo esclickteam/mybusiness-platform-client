@@ -162,7 +162,10 @@ export function renderPurpleHomePrerender(locale) {
   const faqTitle = HOME_FAQ_TITLE[locale] || HOME_FAQ_TITLE.en;
   const headline = [hx.lineOne, hx.lineTwo, hx.lineThree].filter(Boolean).join(" ");
 
-  const header = renderMarketingHeader(locale);
+  const header = renderMarketingHeader(locale).replace(
+    '<header class="site-header"',
+    '<header class="site-header is-on-dark" data-tone="ink"',
+  );
   const href = (path) => localeHref(locale === "pt-BR" || locale === "he" || locale === "es" || locale === "ar" ? locale : "en", path);
 
   const kicker = hx.kicker
@@ -173,17 +176,14 @@ export function renderPurpleHomePrerender(locale) {
     : "";
   const secondHot = hx.lineThree ? -1 : lineHot;
   const shotLang = locale === "he" ? "he" : "en";
-  const collage = `<div class="bz-collage" aria-hidden="true"><img class="bz-shot bz-shot-a" src="/demo-media/home/screens/${shotLang}-desktop-dashboard.webp" alt="" width="1600" height="1000"><img class="bz-shot bz-shot-b" src="/demo-media/home/screens/${shotLang}-desktop-whatsapp.webp" alt="" width="1200" height="800"><img class="bz-shot bz-shot-c" src="/demo-media/home/screens/${shotLang}-mobile-crm-card.webp" alt="" width="640" height="1280"><img class="bz-mark-float" src="/brand/mark.png" alt="" width="679" height="819"></div>`;
-  const hero = `<section class="hx-hero" data-bz-tone="ink" data-hx-first-paint="true" aria-labelledby="hx-hero-title">${collage}<div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="hx-hero-pin"><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const media = `<div class="bz-stage__media" aria-hidden="true"><img class="bz-float bz-float--desk" src="/demo-media/home/screens/${shotLang}-desktop-dashboard.webp" alt="" width="1600" height="1000"><img class="bz-float bz-float--card" src="/demo-media/home/screens/${shotLang}-desktop-crm-card.webp" alt="" width="1400" height="900"><img class="bz-float bz-float--phone" src="/demo-media/home/screens/${shotLang}-mobile-whatsapp.webp" alt="" width="640" height="1280"><img class="bz-float bz-float--film" src="/demo-media/home/theater/${shotLang}-desktop.webp?v=${THEATER_VERSION}" alt="" width="1920" height="1080"></div>`;
+  const hero = `<section class="hx-hero" data-bz-tone="ink" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="bz-stage__shapes" aria-hidden="true"><span class="bz-blob bz-blob--pink"></span><span class="bz-blob bz-blob--yellow"></span><span class="bz-bridge"></span></div><div class="bz-stage__copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(hx.lineTwo, secondHot)}</span>${third}</h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,
-  )}</span><i aria-hidden="true"></i></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
+  )}</span></a><a class="hx-btn hx-btn-line" href="${escapeHtml(href("/contact"))}"><span>${escapeText(
     hx.see,
-  )}</span><i aria-hidden="true"></i></a></div></div></div><div class="hx-hero-stage" id="product-theater"><div class="hx-hero-stage-inner">${theaterShellHtml(
-    hx,
-    locale === "he" ? "he" : "en",
-  )}</div></div></section>`;
+  )}</span></a></div></div>${media}</section>`;
 
   const crawl = `<div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,

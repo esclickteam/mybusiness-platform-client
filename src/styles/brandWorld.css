@@ -23,37 +23,33 @@
 
 .site-header__logo {
   position: relative;
+  display: inline-grid;
   min-width: 0;
   background: transparent;
   box-shadow: none;
 }
 
-.site-header__logo-img {
-  display: block;
-  height: 2.55rem;
+.site-header__logo img {
+  grid-area: 1 / 1;
+  height: 3rem;
   width: auto;
-  max-width: min(11.5rem, 46vw);
-  aspect-ratio: 1166 / 398;
-  object-fit: contain;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
+  max-width: min(13.5rem, 52vw);
 }
 
-.site-header__logo-img--dark {
-  display: none;
+.site-header__logo img.site-header__logo-img--dark {
+  opacity: 0;
 }
 
-.site-header.is-on-dark .site-header__logo-img--light,
-.site-header[data-tone="ink"] .site-header__logo-img--light,
-.site-header[data-tone="navy"] .site-header__logo-img--light {
-  display: none;
+.site-header.is-on-dark .site-header__logo img.site-header__logo-img--light,
+.site-header[data-tone="ink"] .site-header__logo img.site-header__logo-img--light,
+.site-header[data-tone="navy"] .site-header__logo img.site-header__logo-img--light {
+  opacity: 0;
 }
 
-.site-header.is-on-dark .site-header__logo-img--dark,
-.site-header[data-tone="ink"] .site-header__logo-img--dark,
-.site-header[data-tone="navy"] .site-header__logo-img--dark {
-  display: block;
+.site-header.is-on-dark .site-header__logo img.site-header__logo-img--dark,
+.site-header[data-tone="ink"] .site-header__logo img.site-header__logo-img--dark,
+.site-header[data-tone="navy"] .site-header__logo img.site-header__logo-img--dark {
+  opacity: 1;
 }
 
 .site-header {

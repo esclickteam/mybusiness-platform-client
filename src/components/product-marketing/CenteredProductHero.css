@@ -452,3 +452,48 @@
 .pmx-final {
   margin-top: clamp(3rem, 6vw, 4.5rem);
 }
+
+.pm-hero,
+.pm-hero[data-accent="pink"],
+.pm-hero[data-accent="cyan"],
+.pm-hero[data-accent="emerald"] {
+  min-height: 78vh;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: clamp(6rem, 12vh, 8rem) clamp(1.2rem, 5vw, 4.5rem) 3.5rem;
+  text-align: start;
+  color: #fff;
+  background: #2541f5;
+}
+
+.pm-hero__inner,
+.pm-hero__title,
+.pm-hero__lead,
+.pm-hero__actions {
+  text-align: start;
+  align-items: flex-start;
+}
+
+.pm-hero__title {
+  max-width: 12ch;
+  color: #fff;
+  font-size: clamp(3rem, 6.4vw, 5.8rem);
+  line-height: 0.94;
+}
+
+.pm-hero__title-grad {
+  background: none;
+  color: #edff00;
+  -webkit-text-fill-color: #edff00;
+}
+
+.pm-hero__lead,
+.pm-hero__note {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.pm-cta--primary {
+  border-radius: 999px;
+  background: #edff00;
+  color: #111936;
+}

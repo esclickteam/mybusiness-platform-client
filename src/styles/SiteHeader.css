@@ -30,7 +30,7 @@
   inset-inline: 0;
   bottom: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.45), rgba(14, 165, 233, 0.45), transparent);
+  background: transparent;
 }
 
 .site-header__bar {
@@ -47,7 +47,7 @@
 }
 
 .site-header__logo {
-  display: inline-flex;
+  display: inline-grid;
   align-items: center;
   flex: 0 0 auto;
   min-width: 0;
@@ -55,10 +55,11 @@
 }
 
 .site-header__logo img {
+  grid-area: 1 / 1;
   display: block;
-  height: 2.55rem;
+  height: 3rem;
   width: auto;
-  max-width: min(11.5rem, 46vw);
+  max-width: min(13.5rem, 52vw);
   object-fit: contain;
   background: transparent;
   border: 0;

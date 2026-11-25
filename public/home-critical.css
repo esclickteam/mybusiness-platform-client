@@ -1355,3 +1355,31 @@ html.hx-preview .site-header__cta {
   background: #0d1430;
 }
 
+
+/* world-stage */
+.hx-hero[data-hx-first-paint] {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(18rem, 1.08fr);
+  align-items: center;
+  gap: 2rem;
+  min-height: 100svh;
+  padding: 7rem 4vw 9rem;
+  overflow: visible;
+  color: #fff;
+  background: #2541f5;
+}
+.bz-stage__shapes, .bz-blob, .bz-bridge, .bz-float { position: absolute; }
+.bz-blob--pink { width: 220px; height: 220px; border-radius: 58% 42% 62% 38%; background: #ff42b3; inset-inline-end: -40px; top: -40px; }
+.bz-blob--yellow { width: 120px; height: 120px; border-radius: 50%; background: #edff00; inset-inline-start: 46%; top: 80px; }
+.bz-bridge { left: -8%; right: -8%; bottom: -80px; height: 140px; background: #edff00; border-radius: 50% 50% 0 0 / 100% 100% 0 0; }
+.bz-stage__media { position: relative; height: min(72vh, 680px); }
+.bz-float { object-fit: cover; background: #111936; }
+.bz-float--desk { width: 86%; height: 58%; inset-inline-end: 0; top: 0; border-radius: 1.6rem 2.8rem 1rem 2rem; }
+.bz-float--card { width: 48%; height: 36%; inset-inline-start: 0; bottom: 8%; border-radius: 1.2rem; }
+.bz-float--phone { width: 24%; height: 62%; inset-inline-end: 6%; bottom: 0; border-radius: 1.8rem; }
+.bz-float--film { width: 42%; height: 34%; inset-inline-start: 18%; top: 18%; border-radius: 46% 46% 18% 18%; }
+.hx-hero[data-hx-first-paint] .hx-display { color: #fff; font-size: clamp(3.4rem, 6.6vw, 7.4rem); line-height: 0.9; }
+@media (max-width: 860px) {
+  .hx-hero[data-hx-first-paint] { grid-template-columns: 1fr; min-height: auto; }
+  .bz-stage__media { height: 68vw; }
+}

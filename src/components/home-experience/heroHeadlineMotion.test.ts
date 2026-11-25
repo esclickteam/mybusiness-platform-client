@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const css = readFileSync(path.join(root, "src/styles/homeExperience.css"), "utf8");
 const sections = readFileSync(
-  path.join(root, "src/components/home-experience/HomeExperienceSections.tsx"),
+  path.join(root, "src/components/home-experience/WorldHome.tsx"),
   "utf8",
 );
 
