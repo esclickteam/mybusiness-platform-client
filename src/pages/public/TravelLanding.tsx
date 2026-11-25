@@ -374,7 +374,7 @@ export default function TravelLanding() {
 
       <header className="tl-nav">
         <a className="tl-brand" href="#top">
-          <img src="/bizuply%20logo.webp" alt="Bizuply" />
+          <img src="/brand/logo.png" alt="Bizuply" />
           <span>TRAVEL</span>
         </a>
         <nav className={menuOpen ? "tl-nav-links is-open" : "tl-nav-links"}>
