@@ -82,11 +82,11 @@ describe("marketing edge integration", () => {
     const page = await read(await middleware(request("https://bizuply.com/", "bizuply.com")));
     expect(page.status).toBe(200);
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("marketing");
-    expect(page.body).toContain("<title>BizUply | CRM, lead management, WhatsApp Business API and business tools</title>");
+    expect(page.body).toContain("<title>Bizuply | CRM, WhatsApp &amp; Business Automation Platform</title>");
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"name":"Bizuply LLC"');
-    expect(page.body).toContain('"name":"BizUply"');
-    expect(page.body).toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
+    expect(page.body).toContain('"name":"Bizuply"');
+    expect(page.body).toContain('"alternateName":["Bizuply","ביזאפלי","BizUply"]');
     expect(page.body).toContain('class="hx-hero"');
     expect(page.body).toContain('data-home-design="sketch"');
     expect(page.body).toContain(">Your</span>");
@@ -107,7 +107,7 @@ describe("marketing edge integration", () => {
     const booking = await middleware(request("https://bizuply.com/book/example-business", "bizuply.com"));
     const login = await read(await middleware(request("https://bizuply.com/login", "bizuply.com")));
     expect(crm.status).toBe(200);
-    expect(crm.body).toContain("<title>CRM for leads and customers | BizUply</title>");
+    expect(crm.body).toContain("<title>CRM for leads and customers | Bizuply</title>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');
     const hebrewCrm = await read(await middleware(request("https://bizuply.com/he/crm", "bizuply.com")));
@@ -115,7 +115,7 @@ describe("marketing edge integration", () => {
     expect(hebrewCrm.body).toContain('lang="he" dir="rtl"');
     expect(hebrewCrm.body).toContain("<h1>מערכת CRM שמחברת בין הלידים, הלקוחות והעבודה היומיומית</h1>");
     expect(hebrewCrm.body).toContain('href="https://bizuply.com/he/crm"');
-    expect(hebrewCrm.body).toContain('alt="ביזאפלי (BizUply)"');
+    expect(hebrewCrm.body).toContain('alt="ביזאפלי (Bizuply)"');
     const hebrewHome = await read(await middleware(request("https://bizuply.com/he", "bizuply.com")));
     expect(hebrewHome.body).toContain('rel="canonical" href="https://bizuply.com/he"');
     const whatsappHebrew = await read(await middleware(request("https://bizuply.com/he/whatsapp-api", "bizuply.com")));

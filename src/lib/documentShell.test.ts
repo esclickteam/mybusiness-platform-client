@@ -78,11 +78,11 @@ describe("first paint document shell", () => {
     const page = await documentFor("https://bizuply.com/", "bizuply.com");
     expect(page.status).toBe(200);
     expect(page.headers.get("x-bizuply-seo-edge")).toBe("marketing");
-    expect(page.body).toContain("<title>BizUply | CRM, lead management, WhatsApp Business API and business tools</title>");
+    expect(page.body).toContain("<title>Bizuply | CRM, WhatsApp &amp; Business Automation Platform</title>");
     expect(page.body).toContain('rel="canonical" href="https://bizuply.com/"');
     expect(page.body).toContain('"@type":"Organization"');
-    expect(page.body).toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
-    expect(page.body).toContain('"name":"BizUply"');
+    expect(page.body).toContain('"alternateName":["Bizuply","ביזאפלי","BizUply"]');
+    expect(page.body).toContain('"name":"Bizuply"');
     expect(page.body).toContain("In Hebrew, the brand name is ביזאפלי.");
     expect(page.body).toContain('class="hx-hero"');
     expect(page.body).toContain('data-home-design="sketch"');
@@ -173,7 +173,7 @@ describe("first paint document shell", () => {
     expect(body).toContain("/home-critical.css");
     expect(body).toContain('class="site-header"');
     expect(body).not.toContain('id="home-critical"');
-    expect(body).toContain("CRM for leads and customers | BizUply");
+    expect(body).toContain("CRM for leads and customers | Bizuply");
   });
 
   it("keeps Hebrew homepage visual and CRM copy in noscript without a second visible H1", async () => {
@@ -191,7 +191,7 @@ describe("first paint document shell", () => {
     expect(rootInner(hebrew.body)).not.toContain("<h1>Bizuply</h1>");
 
     const crm = await documentFor("https://bizuply.com/crm", "bizuply.com");
-    expect(crm.body).toContain("<title>CRM for leads and customers | BizUply</title>");
+    expect(crm.body).toContain("<title>CRM for leads and customers | Bizuply</title>");
     expect(crm.body).toContain("<h1>A CRM that connects leads, customers and everyday work</h1>");
     expect(crm.body).toContain('href="https://bizuply.com/crm"');
     expect(crm.body).toContain('"@type":"BreadcrumbList"');

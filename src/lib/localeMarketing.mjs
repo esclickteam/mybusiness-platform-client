@@ -70,8 +70,8 @@ const WHATSAPP_FAQ = {
 const PAGES = {
   es: {
     "/": page(
-      "Bizuply | Plataforma integral de gestión empresarial y CRM",
-      "Gestione leads, clientes, WhatsApp Business, campañas de Meta, citas, sitios y automatizaciones en una plataforma conectada. Descubra Bizuply.",
+      "Bizuply | CRM, WhatsApp y automatización para empresas",
+      "Gestione leads, relaciones con clientes, conversaciones de WhatsApp, campañas, citas y flujos de trabajo en una plataforma de negocio conectada.",
       "Bizuply",
       "Todo lo que su negocio necesita para crecer en un solo lugar",
       [
@@ -243,8 +243,8 @@ function cloneShape(locale, dict) {
 
 cloneShape("pt-BR", {
   "/": page(
-    "Bizuply | Plataforma completa de gestão empresarial e CRM",
-    "Gerencie leads, clientes, WhatsApp Business, campanhas da Meta, compromissos, sites e automações em uma plataforma conectada. Conheça a Bizuply.",
+    "Bizuply | CRM, WhatsApp e automação para empresas",
+    "Gerencie leads, relacionamentos com clientes, conversas no WhatsApp, campanhas, compromissos e fluxos de trabalho em uma plataforma de negócios conectada.",
     "Bizuply",
     "Tudo o que o seu negócio precisa para crescer em um só lugar",
     [
@@ -357,8 +357,8 @@ cloneShape("pt-BR", {
 
 cloneShape("ar", {
   "/": page(
-    "Bizuply | منصة متكاملة لإدارة الأعمال وCRM",
-    "أديروا العملاء المحتملين والعملاء وWhatsApp Business وحملات Meta والمواعيد والمواقع والأتمتة في منصة واحدة متصلة. اكتشفوا Bizuply.",
+    "Bizuply | نظام CRM وواتساب وأتمتة الأعمال",
+    "أديروا العملاء المحتملين وعلاقات العملاء ومحادثات WhatsApp والحملات والمواعيد وسير العمل في منصة أعمال واحدة متصلة.",
     "Bizuply",
     "كل ما يحتاجه عملكم للنمو في مكان واحد",
     [

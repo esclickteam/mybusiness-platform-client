@@ -74,7 +74,7 @@ describe("marketing crawl files", () => {
       expect(head).toContain('content="index, follow"');
       expect(head).toContain('"@type":"Organization"');
       expect(head).toContain('"name":"Bizuply LLC"');
-      expect(head).toContain('"name":"BizUply"');
+      expect(head).toContain('"name":"Bizuply"');
       expect(head).not.toContain("aggregateRating");
     }
   });
@@ -97,11 +97,12 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/business/123/dashboard")).toContain("noindex, nofollow");
     expect(isMarketingNoindexPath("/business")).toBe(false);
     expect(buildMarketingDocumentHead("/book/abc")).toBeNull();
-    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["BizUply","Bizuply","ביזאפלי"]');
-    expect(buildMarketingDocumentHead("/") || "").toContain('"name":"BizUply"');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["Bizuply","ביזאפלי","BizUply"]');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"name":"Bizuply"');
+    expect(buildMarketingDocumentHead("/") || "").toContain('"alternateName":["ביזאפלי","BizUply"]');
     expect(buildMarketingDocumentHead("/") || "").toContain("ביזאפלי");
     expect(buildMarketingDocumentHead("/he/") || "").toContain(
-      "<title>BizUply | מערכת CRM, ניהול עסק, WhatsApp ואוטומציות</title>",
+      "<title>ביזאפלי (Bizuply) | מערכת CRM, וואטסאפ עסקי ואוטומציות</title>",
     );
     expect(buildMarketingDocumentHead("/he/") || "").toContain('rel="canonical" href="https://bizuply.com/he"');
     expect(buildMarketingSitemapXml()).toContain("<loc>https://bizuply.com/he</loc>");
@@ -144,7 +145,7 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/mobile-demo-sketch") || "").toContain("noindex, nofollow");
     expect(buildMarketingSitemapXml()).not.toContain("/mobile-demo-sketch");
     const hebrew = buildMarketingDocumentHead("/he/crm") || "";
-    expect(hebrew).toContain("<title>מערכת CRM לניהול לידים ולקוחות | BizUply</title>");
+    expect(hebrew).toContain("<title>מערכת CRM לניהול לידים ולקוחות | Bizuply</title>");
     expect(hebrew).toContain('hreflang="he" href="https://bizuply.com/he/crm"');
     expect(hebrew).toContain('hreflang="en" href="https://bizuply.com/crm"');
     expect(hebrew).toContain('hreflang="x-default" href="https://bizuply.com/crm"');
@@ -163,9 +164,9 @@ describe("marketing crawl files", () => {
     expect(buildMarketingDocumentHead("/crm") || "").toContain("How much does Bizuply CRM cost?");
     expect(buildMarketingDocumentHead("/about") || "").toContain("Our Mission, Approach");
     expect(buildMarketingDocumentHead("/about") || "").toContain("images/about/og.png");
-    expect(buildMarketingPrerender("/about")?.inner).toContain("Meet BizUply");
+    expect(buildMarketingPrerender("/about")?.inner).toContain("Meet Bizuply");
     expect(buildMarketingPrerender("/about")?.inner).toContain("Ready-Made SaaS Solutions");
-    expect(buildMarketingPrerender("/he/about")?.inner).toContain("הכירו את BizUply");
+    expect(buildMarketingPrerender("/he/about")?.inner).toContain("הכירו את ביזאפלי");
     expect(buildMarketingPrerender("/he/terms")).toBeNull();
     const spanish = buildMarketingDocumentHead("/es/crm") || "";
     expect(spanish).toContain('hreflang="es" href="https://bizuply.com/es/crm"');
@@ -184,9 +185,9 @@ describe("marketing crawl files", () => {
 
   it("keeps Spanish and Portuguese titles distinct where the wording used to match", () => {
     const pairs = [
-      ["/es/agents", "/pt-br/agents", "Agentes humanos para leads y seguimiento | BizUply", "Agentes humanos para leads e acompanhamento | BizUply"],
-      ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | BizUply", "Restaurantes: contatos no CRM | BizUply"],
-      ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp Business API para empresas | BizUply", "API do WhatsApp Business para empresas | BizUply"],
+      ["/es/agents", "/pt-br/agents", "Agentes humanos para leads y seguimiento | Bizuply", "Agentes humanos para leads e acompanhamento | Bizuply"],
+      ["/es/solutions/restaurants", "/pt-br/solutions/restaurants", "Restaurantes: consultas en el CRM | Bizuply", "Restaurantes: contatos no CRM | Bizuply"],
+      ["/es/whatsapp-api", "/pt-br/whatsapp-api", "WhatsApp Business API para empresas | Bizuply", "API do WhatsApp Business para empresas | Bizuply"],
     ];
     for (const [esPath, ptPath, esTitle, ptTitle] of pairs) {
       const esHead = buildMarketingDocumentHead(esPath) || "";
@@ -217,7 +218,7 @@ describe("marketing crawl files", () => {
       expect(head).toContain(HOME_FAQ[locale][0][0]);
       expect(head).toContain(HOME_FAQ[locale][0][1]);
       if (locale === "he" || locale === "en") {
-        expect(HOME_FAQ[locale]).toHaveLength(8);
+        expect(HOME_FAQ[locale]).toHaveLength(19);
         expect(head).not.toContain(home.faq10a);
       } else {
         expect(head).toContain(home.faq10a);
@@ -231,7 +232,7 @@ describe("marketing crawl files", () => {
         expect(body).toContain(">העסק</span>");
         expect(body).toContain(">אחת.</span>");
         expect(body).toContain(">אפשרויות.</span>");
-        expect(body).toContain("BizUply");
+        expect(body).toContain("Bizuply");
       } else if (locale === "es") {
         expect(body).toContain(">Todo</span>");
         expect(body).toContain(">negocio.</span>");

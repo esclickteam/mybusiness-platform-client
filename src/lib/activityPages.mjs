@@ -16,7 +16,7 @@ function pack(layout, media, locales) {
 const PAGES = {
   "/platform": pack("flow", "crm", {
     en: copy(
-      "One platform for business operations | BizUply",
+      "One platform for business operations | Bizuply",
       "BizUply connects customer management, enquiries, appointments, business communication and digital tools in one workspace.",
       "Platform",
       "One platform for running your business",
@@ -46,7 +46,7 @@ const PAGES = {
       ],
     ),
     he: copy(
-      "פלטפורמה אחת לניהול הפעילות העסקית | BizUply",
+      "פלטפורמה אחת לניהול הפעילות העסקית | Bizuply",
       "BizUply מחברת בין ניהול לקוחות, פניות, פגישות, תקשורת עסקית וכלים דיגיטליים בסביבת עבודה אחת.",
       "הפלטפורמה",
       "פלטפורמה אחת לניהול הפעילות העסקית שלך",
@@ -76,7 +76,7 @@ const PAGES = {
       ],
     ),
     es: copy(
-      "Una plataforma para la actividad del negocio | BizUply",
+      "Una plataforma para la actividad del negocio | Bizuply",
       "BizUply conecta clientes, consultas, citas, comunicación y herramientas digitales en un mismo espacio de trabajo.",
       "Plataforma",
       "Una plataforma para gestionar la actividad de su negocio",
@@ -106,7 +106,7 @@ const PAGES = {
       ],
     ),
     "pt-BR": copy(
-      "Uma plataforma para a atividade do negócio | BizUply",
+      "Uma plataforma para a atividade do negócio | Bizuply",
       "A BizUply liga clientes, contatos, agenda, comunicação e ferramentas digitais no mesmo espaço de trabalho.",
       "Plataforma",
       "Uma plataforma para conduzir a atividade do negócio",
@@ -136,7 +136,7 @@ const PAGES = {
       ],
     ),
     ar: copy(
-      "منصة واحدة لإدارة نشاط الأعمال | BizUply",
+      "منصة واحدة لإدارة نشاط الأعمال | Bizuply",
       "تربط BizUply العملاء والاستفسارات والمواعيد والتواصل التجاري والأدوات الرقمية في مساحة عمل واحدة.",
       "المنصة",
       "منصة واحدة لإدارة نشاط أعمالكم",
@@ -168,7 +168,7 @@ const PAGES = {
   }),
   "/services": pack("split", null, {
     en: copy(
-      "Setup we do for you | BizUply",
+      "Setup we do for you | Bizuply",
       "Expert website build, automation setup, CRM migration and human follow-up. Software subscriptions stay separate. Hidden services are not offered here.",
       "Services",
       "Work we do for the business",
@@ -206,7 +206,7 @@ const PAGES = {
       ],
     ),
     es: copy(
-      "Puesta en marcha hecha por nosotros | BizUply",
+      "Puesta en marcha hecha por nosotros | Bizuply",
       "Sitio de experto, automatizaciones, migración de CRM y seguimiento humano. Las suscripciones de software siguen aparte. Los servicios ocultos no se venden aquí.",
       "Servicios",
       "Trabajo que hacemos por el negocio",
@@ -225,7 +225,7 @@ const PAGES = {
       ],
     ),
     "pt-BR": copy(
-      "Implantação feita por nós | BizUply",
+      "Implantação feita por nós | Bizuply",
       "Site de especialista, automações, migração de CRM e acompanhamento humano. As assinaturas do software continuam à parte. Serviços ocultos não são vendidos aqui.",
       "Serviços",
       "Trabalho que fazemos pelo negócio",
@@ -244,7 +244,7 @@ const PAGES = {
       ],
     ),
     ar: copy(
-      "تهيئة ننفذها لكم | BizUply",
+      "تهيئة ننفذها لكم | Bizuply",
       "بناء موقع على يد مختص، وتهيئة الأتمتة، ونقل CRM، ومتابعة بشرية. اشتراكات البرنامج تبقى منفصلة. الخدمات المخفية لا تُباع هنا.",
       "الخدمات",
       "عمل نقوم به لصالح النشاط",
@@ -267,7 +267,7 @@ const PAGES = {
 
 const WEBSITE = pack("split", "site", {
   en: copy(
-    "Expert website build | BizUply",
+    "Expert website build | Bizuply",
     "A BizUply expert builds a site of up to five pages from an existing template for $399. The self-serve editor remains available on its own.",
     "Expert website",
     "A site built for you, from the tools you already have",
@@ -293,7 +293,7 @@ const WEBSITE = pack("split", "site", {
     [["/website-builder", "בנייה לבד"], ["/pricing", "מחירון"], ["/crm", "CRM"]],
   ),
   es: copy(
-    "Sitio web de experto | BizUply",
+    "Sitio web de experto | Bizuply",
     "Un experto de BizUply construye un sitio de hasta cinco páginas sobre una plantilla existente por 399 dólares. El editor de autoservicio sigue disponible.",
     "Sitio de experto",
     "Un sitio construido para usted, con las herramientas que ya existen",
@@ -306,7 +306,7 @@ const WEBSITE = pack("split", "site", {
     [["/website-builder", "Constructor"], ["/pricing", "Precios"], ["/crm", "CRM"]],
   ),
   "pt-BR": copy(
-    "Site feito por especialista | BizUply",
+    "Site feito por especialista | Bizuply",
     "Um especialista da BizUply monta um site de até cinco páginas em um modelo existente por 399 dólares. O editor de autoatendimento continua disponível.",
     "Site de especialista",
     "Um site feito para você, com as ferramentas que já existem",
@@ -319,7 +319,7 @@ const WEBSITE = pack("split", "site", {
     [["/website-builder", "Construtor"], ["/pricing", "Preços"], ["/crm", "CRM"]],
   ),
   ar: copy(
-    "بناء موقع على يد مختص | BizUply",
+    "بناء موقع على يد مختص | Bizuply",
     "يبني مختص من BizUply موقعاً حتى خمس صفحات على قالب موجود مقابل 399 دولاراً. يبقى المحرر ذاتي الخدمة متاحاً.",
     "موقع مختص",
     "موقع يُبنى لكم بالأدوات الموجودة فعلاً",
@@ -337,7 +337,7 @@ PAGES["/services/website-build"] = WEBSITE;
 
 PAGES["/services/automations-setup"] = pack("split", "automation", {
   en: copy(
-    "Automation setup | BizUply",
+    "Automation setup | Bizuply",
     "We build the automation for you. One simple automation is $99. A pack of three is $249. A pack of six is $399. A complex process is quoted.",
     "Automation setup",
     "An automation built for the way the business already works",
@@ -363,7 +363,7 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
     [["/automations", "מוצר האוטומציות"], ["/pricing", "מחירון"], ["/whatsapp-api", "WhatsApp"]],
   ),
   es: copy(
-    "Puesta en marcha de automatizaciones | BizUply",
+    "Puesta en marcha de automatizaciones | Bizuply",
     "Nosotros montamos la automatización. Una simple cuesta 99 dólares. Tres cuestan 249. Seis cuestan 399. Un proceso complejo se cotiza.",
     "Automatizaciones",
     "Una automatización montada según cómo ya trabaja el negocio",
@@ -376,7 +376,7 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
     [["/automations", "Producto"], ["/pricing", "Precios"], ["/whatsapp-api", "WhatsApp"]],
   ),
   "pt-BR": copy(
-    "Implantação de automações | BizUply",
+    "Implantação de automações | Bizuply",
     "Nós montamos a automação. Uma simples custa 99 dólares. Três custam 249. Seis custam 399. Um processo complexo é orçado.",
     "Automações",
     "Uma automação montada do jeito que o negócio já trabalha",
@@ -389,7 +389,7 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
     [["/automations", "Produto"], ["/pricing", "Preços"], ["/whatsapp-api", "WhatsApp"]],
   ),
   ar: copy(
-    "تهيئة الأتمتة | BizUply",
+    "تهيئة الأتمتة | Bizuply",
     "نجهّز الأتمتة لكم. أتمتة بسيطة واحدة 99 دولاراً. ثلاث بـ 249. ست بـ 399. العملية المعقدة تُسعَّر بعرض.",
     "تهيئة الأتمتة",
     "أتمتة تُبنى حسب طريقة عمل النشاط",
@@ -405,7 +405,7 @@ PAGES["/services/automations-setup"] = pack("split", "automation", {
 
 PAGES["/services/crm-migration"] = pack("split", "crm", {
   en: copy(
-    "CRM migration | BizUply",
+    "CRM migration | Bizuply",
     "Move clients, leads and statuses into BizUply. Basic migration is $249 once. A large or complex move is quoted separately.",
     "CRM migration",
     "Bring the existing pipeline into BizUply",
@@ -431,7 +431,7 @@ PAGES["/services/crm-migration"] = pack("split", "crm", {
     [["/crm", "CRM"], ["/pricing", "מחירון"]],
   ),
   es: copy(
-    "Migración de CRM | BizUply",
+    "Migración de CRM | Bizuply",
     "Pase clientes, leads y estados a BizUply. La migración básica cuesta 249 dólares una vez. Un volumen grande se cotiza aparte.",
     "Migración",
     "Traer el pipeline actual a BizUply",
@@ -444,7 +444,7 @@ PAGES["/services/crm-migration"] = pack("split", "crm", {
     [["/crm", "CRM"], ["/pricing", "Precios"]],
   ),
   "pt-BR": copy(
-    "Migração de CRM | BizUply",
+    "Migração de CRM | Bizuply",
     "Traga clientes, leads e status para a BizUply. A migração básica custa 249 dólares uma vez. Um volume grande é orçado à parte.",
     "Migração",
     "Trazer o pipeline atual para a BizUply",
@@ -457,7 +457,7 @@ PAGES["/services/crm-migration"] = pack("split", "crm", {
     [["/crm", "CRM"], ["/pricing", "Preços"]],
   ),
   ar: copy(
-    "الانتقال من CRM آخر | BizUply",
+    "الانتقال من CRM آخر | Bizuply",
     "ننقل العملاء والعملاء المحتملين والحالات إلى BizUply. النقل الأساسي 249 دولاراً مرة واحدة. الحجم الكبير يُسعَّر على حدة.",
     "نقل CRM",
     "إحضار المسار الحالي إلى BizUply",
@@ -473,7 +473,7 @@ PAGES["/services/crm-migration"] = pack("split", "crm", {
 
 PAGES["/services/human-follow-up"] = pack("split", null, {
   en: copy(
-    "Human follow-up | BizUply",
+    "Human follow-up | Bizuply",
     "People, not a chatbot. Initial lead response is $199 a month. A personal sales rep is $499 a month. Old-lead follow-up starts at $149 once.",
     "Human follow-up",
     "A person follows the lead inside the CRM",
@@ -499,7 +499,7 @@ PAGES["/services/human-follow-up"] = pack("split", null, {
     [["/agents", "נציגים"], ["/pricing", "מחירון"], ["/crm", "CRM"]],
   ),
   es: copy(
-    "Seguimiento humano | BizUply",
+    "Seguimiento humano | Bizuply",
     "Personas, no un chatbot. La respuesta inicial cuesta 199 dólares al mes. Un comercial cuesta 499. El seguimiento de leads antiguos empieza en 149.",
     "Seguimiento humano",
     "Una persona atiende el lead dentro del CRM",
@@ -512,7 +512,7 @@ PAGES["/services/human-follow-up"] = pack("split", null, {
     [["/agents", "Agentes"], ["/pricing", "Precios"], ["/crm", "CRM"]],
   ),
   "pt-BR": copy(
-    "Acompanhamento humano | BizUply",
+    "Acompanhamento humano | Bizuply",
     "Pessoas, não um chatbot. A resposta inicial custa 199 dólares por mês. Um vendedor custa 499. O follow-up de leads antigos começa em 149.",
     "Acompanhamento humano",
     "Uma pessoa trata o lead dentro do CRM",
@@ -525,7 +525,7 @@ PAGES["/services/human-follow-up"] = pack("split", null, {
     [["/agents", "Agentes"], ["/pricing", "Preços"], ["/crm", "CRM"]],
   ),
   ar: copy(
-    "متابعة بشرية | BizUply",
+    "متابعة بشرية | Bizuply",
     "أشخاص، لا روبوت دردشة. الرد الأولي 199 دولاراً شهرياً. مندوب المبيعات 499. متابعة العملاء المحتملين القدامى تبدأ من 149.",
     "متابعة بشرية",
     "شخص يتابع العميل المحتمل داخل CRM",
@@ -545,7 +545,7 @@ function industry(locales) {
 
 PAGES["/solutions/clinics"] = industry({
   en: copy(
-    "Clinics and appointment businesses | BizUply",
+    "Clinics and appointment businesses | Bizuply",
     "A clinic can keep inquiries, a client file and a 15-minute appointment calendar in BizUply. This is not a medical-records system.",
     "Clinics",
     "Inquiries and appointments for a clinic",
@@ -571,7 +571,7 @@ PAGES["/solutions/clinics"] = industry({
     [["/appointments", "תורים"], ["/crm", "CRM"], ["/website-builder", "בונה אתרים"]],
   ),
   es: copy(
-    "Clínicas y negocios con citas | BizUply",
+    "Clínicas y negocios con citas | Bizuply",
     "Una clínica puede guardar consultas, un expediente y un calendario de 15 minutos en BizUply. No es un sistema de historia clínica.",
     "Clínicas",
     "Consultas y citas para una clínica",
@@ -584,7 +584,7 @@ PAGES["/solutions/clinics"] = industry({
     [["/appointments", "Citas"], ["/crm", "CRM"], ["/website-builder", "Constructor"]],
   ),
   "pt-BR": copy(
-    "Clínicas e negócios com agenda | BizUply",
+    "Clínicas e negócios com agenda | Bizuply",
     "Uma clínica pode guardar pedidos, um arquivo e uma agenda de 15 minutos na BizUply. Não é um sistema de prontuário.",
     "Clínicas",
     "Pedidos e horários para uma clínica",
@@ -597,7 +597,7 @@ PAGES["/solutions/clinics"] = industry({
     [["/appointments", "Agenda"], ["/crm", "CRM"], ["/website-builder", "Construtor"]],
   ),
   ar: copy(
-    "العيادات والأعمال ذات المواعيد | BizUply",
+    "العيادات والأعمال ذات المواعيد | Bizuply",
     "يمكن للعيادة حفظ الطلبات وملف العميل وتقويم بخطوات 15 دقيقة في BizUply. هذا ليس نظام ملفات طبية.",
     "عيادات",
     "طلبات ومواعيد لعيادة",
@@ -613,7 +613,7 @@ PAGES["/solutions/clinics"] = industry({
 
 PAGES["/solutions/beauty"] = industry({
   en: copy(
-    "Beauty studios | BizUply",
+    "Beauty studios | Bizuply",
     "A salon can publish a site, take a booking and keep the client file in BizUply. A separate beauty SaaS, if one is public, is listed on the marketplace rather than invented here.",
     "Beauty",
     "Bookings and a client file for a beauty studio",
@@ -639,7 +639,7 @@ PAGES["/solutions/beauty"] = industry({
     [["/appointments", "תורים"], ["/website-builder", "בונה אתרים"], ["/saas", "מרקטפלייס"]],
   ),
   es: copy(
-    "Estudios de belleza | BizUply",
+    "Estudios de belleza | Bizuply",
     "Un salón puede publicar un sitio, tomar reservas y guardar el expediente en BizUply. Un SaaS de belleza, si es público, aparece en el marketplace.",
     "Belleza",
     "Reservas y expediente para un estudio de belleza",
@@ -652,7 +652,7 @@ PAGES["/solutions/beauty"] = industry({
     [["/appointments", "Citas"], ["/website-builder", "Constructor"], ["/saas", "Marketplace"]],
   ),
   "pt-BR": copy(
-    "Estúdios de beleza | BizUply",
+    "Estúdios de beleza | Bizuply",
     "Um salão pode publicar um site, receber reservas e guardar o arquivo na BizUply. Um SaaS de beleza, se for público, aparece no marketplace.",
     "Beleza",
     "Reservas e arquivo para um estúdio de beleza",
@@ -665,7 +665,7 @@ PAGES["/solutions/beauty"] = industry({
     [["/appointments", "Agenda"], ["/website-builder", "Construtor"], ["/saas", "Marketplace"]],
   ),
   ar: copy(
-    "معاهد التجميل | BizUply",
+    "معاهد التجميل | Bizuply",
     "يمكن للمعهد نشر موقع واستقبال حجز وحفظ ملف العميل في BizUply. نظام تجميل منفصل، إن كان عاماً، يظهر في السوق وليس هنا.",
     "تجميل",
     "حجوزات وملف عميل لمعهد تجميل",
@@ -681,7 +681,7 @@ PAGES["/solutions/beauty"] = industry({
 
 PAGES["/solutions/real-estate"] = industry({
   en: copy(
-    "Real estate inquiries | BizUply",
+    "Real estate inquiries | Bizuply",
     "An agency can capture a property inquiry in the CRM and follow it with tasks. A property marketplace product is only offered if the SaaS list currently publishes it.",
     "Real estate",
     "Follow a property inquiry without a separate spreadsheet",
@@ -707,7 +707,7 @@ PAGES["/solutions/real-estate"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "קמפיינים"], ["/saas", "מרקטפלייס"]],
   ),
   es: copy(
-    "Consultas inmobiliarias | BizUply",
+    "Consultas inmobiliarias | Bizuply",
     "Una agencia puede guardar una consulta de inmueble en el CRM y seguirla con tareas. Un producto inmobiliario solo se ofrece si el marketplace lo publica.",
     "Inmobiliario",
     "Seguir una consulta de inmueble sin una hoja aparte",
@@ -720,7 +720,7 @@ PAGES["/solutions/real-estate"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "Campañas"], ["/saas", "Marketplace"]],
   ),
   "pt-BR": copy(
-    "Pedidos imobiliários | BizUply",
+    "Pedidos imobiliários | Bizuply",
     "Uma imobiliária pode guardar um pedido de imóvel no CRM e acompanhá-lo com tarefas. Um produto imobiliário só é oferecido se o marketplace o publicar.",
     "Imóveis",
     "Acompanhar um pedido de imóvel sem uma planilha à parte",
@@ -733,7 +733,7 @@ PAGES["/solutions/real-estate"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "Campanhas"], ["/saas", "Marketplace"]],
   ),
   ar: copy(
-    "استفسارات العقارات | BizUply",
+    "استفسارات العقارات | Bizuply",
     "يمكن لوكالة حفظ استفسار عن عقار في CRM ومتابعته بمهام. منتج عقاري يُعرض فقط إذا نشره السوق الآن.",
     "عقارات",
     "متابعة استفسار عن عقار دون جدول منفصل",
@@ -749,7 +749,7 @@ PAGES["/solutions/real-estate"] = industry({
 
 PAGES["/solutions/restaurants"] = industry({
   en: copy(
-    "Restaurants | BizUply",
+    "Restaurants | Bizuply",
     "A restaurant that wants a ready ordering system should look at the SaaS marketplace. BizUply CRM is for inquiries and follow-up, not a kitchen display.",
     "Restaurants",
     "Inquiries in the CRM, ordering systems on the marketplace",
@@ -775,7 +775,7 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "מרקטפלייס"], ["/crm", "CRM"], ["/website-builder", "בונה אתרים"]],
   ),
   es: copy(
-    "Restaurantes: consultas en el CRM | BizUply",
+    "Restaurantes: consultas en el CRM | Bizuply",
     "Un restaurante que quiere un sistema de pedidos listo debe mirar el marketplace. El CRM de BizUply es para consultas, no para la cocina.",
     "Restaurantes",
     "Consultas en el CRM, pedidos en el marketplace",
@@ -788,7 +788,7 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "Marketplace"], ["/crm", "CRM"], ["/website-builder", "Constructor"]],
   ),
   "pt-BR": copy(
-    "Restaurantes: contatos no CRM | BizUply",
+    "Restaurantes: contatos no CRM | Bizuply",
     "Um restaurante que quer um sistema de pedidos pronto deve olhar o marketplace. O CRM da BizUply é para pedidos de contato, não para a cozinha.",
     "Restaurantes",
     "Contatos no CRM, pedidos no marketplace",
@@ -801,7 +801,7 @@ PAGES["/solutions/restaurants"] = industry({
     [["/saas", "Marketplace"], ["/crm", "CRM"], ["/website-builder", "Construtor"]],
   ),
   ar: copy(
-    "المطاعم | BizUply",
+    "المطاعم | Bizuply",
     "مطعم يريد نظام طلبات جاهزاً ينظر إلى السوق. CRM في BizUply للاستفسارات والمتابعة، لا لشاشة المطبخ.",
     "مطاعم",
     "استفسارات في CRM، وأنظمة طلب في السوق",
@@ -817,7 +817,7 @@ PAGES["/solutions/restaurants"] = industry({
 
 PAGES["/solutions/service-businesses"] = industry({
   en: copy(
-    "Service businesses | BizUply",
+    "Service businesses | Bizuply",
     "Trades, studios and local services can keep the lead, the visit and the follow-up in one account.",
     "Service businesses",
     "From the first inquiry to the visit",
@@ -843,7 +843,7 @@ PAGES["/solutions/service-businesses"] = industry({
     [["/crm", "CRM"], ["/appointments", "תורים"], ["/pricing", "מחירון"]],
   ),
   es: copy(
-    "Negocios de servicios | BizUply",
+    "Negocios de servicios | Bizuply",
     "Oficios, estudios y servicios locales pueden guardar el lead, la visita y el seguimiento en una cuenta.",
     "Servicios",
     "De la primera consulta a la visita",
@@ -856,7 +856,7 @@ PAGES["/solutions/service-businesses"] = industry({
     [["/crm", "CRM"], ["/appointments", "Citas"], ["/pricing", "Precios"]],
   ),
   "pt-BR": copy(
-    "Negócios de serviço | BizUply",
+    "Negócios de serviço | Bizuply",
     "Ofícios, estúdios e serviços locais podem guardar o lead, a visita e o acompanhamento numa conta.",
     "Serviços",
     "Do primeiro contato à visita",
@@ -869,7 +869,7 @@ PAGES["/solutions/service-businesses"] = industry({
     [["/crm", "CRM"], ["/appointments", "Agenda"], ["/pricing", "Preços"]],
   ),
   ar: copy(
-    "أعمال الخدمات | BizUply",
+    "أعمال الخدمات | Bizuply",
     "يمكن للحِرف والاستوديوهات والخدمات المحلية حفظ العميل المحتمل والزيارة والمتابعة في حساب واحد.",
     "خدمات",
     "من أول طلب حتى الزيارة",
@@ -885,7 +885,7 @@ PAGES["/solutions/service-businesses"] = industry({
 
 PAGES["/solutions/agencies"] = industry({
   en: copy(
-    "Marketing agencies | BizUply",
+    "Marketing agencies | Bizuply",
     "An agency can run its own leads, collaborations and human follow-up in BizUply. One screen does not yet manage several clients' WhatsApp numbers.",
     "Agencies",
     "The agency's own pipeline, not every client's inbox",
@@ -911,7 +911,7 @@ PAGES["/solutions/agencies"] = industry({
     [["/collaborations", "שיתופים"], ["/meta-campaigns", "קמפיינים"], ["/crm", "CRM"]],
   ),
   es: copy(
-    "Agencias de marketing | BizUply",
+    "Agencias de marketing | Bizuply",
     "Una agencia puede llevar sus propios leads, colaboraciones y seguimiento humano en BizUply. Una pantalla aún no gestiona el WhatsApp de varios clientes.",
     "Agencias",
     "El pipeline de la agencia, no la bandeja de cada cliente",
@@ -924,7 +924,7 @@ PAGES["/solutions/agencies"] = industry({
     [["/collaborations", "Colaboraciones"], ["/meta-campaigns", "Campañas"], ["/crm", "CRM"]],
   ),
   "pt-BR": copy(
-    "Agências de marketing | BizUply",
+    "Agências de marketing | Bizuply",
     "Uma agência pode cuidar dos próprios leads, colaborações e acompanhamento humano na BizUply. Uma tela ainda não gere o WhatsApp de vários clientes.",
     "Agências",
     "O pipeline da agência, não a caixa de cada cliente",
@@ -937,7 +937,7 @@ PAGES["/solutions/agencies"] = industry({
     [["/collaborations", "Colaborações"], ["/meta-campaigns", "Campanhas"], ["/crm", "CRM"]],
   ),
   ar: copy(
-    "وكالات التسويق | BizUply",
+    "وكالات التسويق | Bizuply",
     "يمكن للوكالة إدارة عملائها المحتملين وتعاونها والمتابعة البشرية في BizUply. شاشة واحدة لا تدير بعد أرقام واتساب لعدة عملاء.",
     "وكالات",
     "مسار الوكالة نفسها، لا صندوق كل عميل",
@@ -953,7 +953,7 @@ PAGES["/solutions/agencies"] = industry({
 
 PAGES["/solutions/lead-based"] = industry({
   en: copy(
-    "Businesses that live on leads | BizUply",
+    "Businesses that live on leads | Bizuply",
     "Meta Lead Ads, a website form and Google Ads lead forms can enter the same pipeline, with a source on each lead.",
     "Lead-based",
     "One pipeline for every place a lead starts",
@@ -979,7 +979,7 @@ PAGES["/solutions/lead-based"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "קמפיינים"], ["/guides/meta-lead-ads-to-crm", "מדריך"]],
   ),
   es: copy(
-    "Negocios que viven de leads | BizUply",
+    "Negocios que viven de leads | Bizuply",
     "Lead Ads de Meta, un formulario del sitio y formularios de Google Ads pueden entrar al mismo pipeline, con un origen en cada lead.",
     "Basados en leads",
     "Un pipeline para cada lugar donde nace un lead",
@@ -992,7 +992,7 @@ PAGES["/solutions/lead-based"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "Campañas"], ["/guides/meta-lead-ads-to-crm", "Guía"]],
   ),
   "pt-BR": copy(
-    "Negócios que vivem de leads | BizUply",
+    "Negócios que vivem de leads | Bizuply",
     "Lead Ads da Meta, um formulário do site e formulários do Google Ads podem entrar no mesmo pipeline, com uma origem em cada lead.",
     "Baseados em leads",
     "Um pipeline para cada lugar onde um lead nasce",
@@ -1005,7 +1005,7 @@ PAGES["/solutions/lead-based"] = industry({
     [["/crm", "CRM"], ["/meta-campaigns", "Campanhas"], ["/guides/meta-lead-ads-to-crm", "Guia"]],
   ),
   ar: copy(
-    "أعمال تعيش على العملاء المحتملين | BizUply",
+    "أعمال تعيش على العملاء المحتملين | Bizuply",
     "يمكن لإعلانات Meta ونموذج الموقع ونماذج Google Ads أن تدخل المسار نفسه، مع مصدر على كل عميل محتمل.",
     "قائم على العملاء",
     "مسار واحد لكل مكان يبدأ فيه عميل محتمل",
@@ -1021,7 +1021,7 @@ PAGES["/solutions/lead-based"] = industry({
 
 PAGES["/solutions/ready-systems"] = industry({
   en: copy(
-    "A ready SaaS, or software of your own | BizUply",
+    "A ready SaaS, or software of your own | Bizuply",
     "The marketplace lists systems the API marks as public. Custom development is a conversation, not a checkout on this page. White label is described only on a product that publishes it.",
     "SaaS",
     "See what is actually public before you plan a launch",
@@ -1047,7 +1047,7 @@ PAGES["/solutions/ready-systems"] = industry({
     [["/saas", "למרקטפלייס"], ["/contact", "יצירת קשר"], ["/platform", "הפלטפורמה"]],
   ),
   es: copy(
-    "Un SaaS listo, o software propio | BizUply",
+    "Un SaaS listo, o software propio | Bizuply",
     "El marketplace muestra los sistemas que la API marca como públicos. El desarrollo a medida es una conversación, no una compra en esta página.",
     "SaaS",
     "Ver qué es público antes de planear un lanzamiento",
@@ -1060,7 +1060,7 @@ PAGES["/solutions/ready-systems"] = industry({
     [["/saas", "Abrir el marketplace"], ["/contact", "Contacto"], ["/platform", "La plataforma"]],
   ),
   "pt-BR": copy(
-    "Um SaaS pronto, ou um software seu | BizUply",
+    "Um SaaS pronto, ou um software seu | Bizuply",
     "O marketplace mostra os sistemas que a API marca como públicos. Desenvolvimento sob medida é uma conversa, não uma compra nesta página.",
     "SaaS",
     "Ver o que é público antes de planejar um lançamento",
@@ -1073,7 +1073,7 @@ PAGES["/solutions/ready-systems"] = industry({
     [["/saas", "Abrir o marketplace"], ["/contact", "Contato"], ["/platform", "A plataforma"]],
   ),
   ar: copy(
-    "نظام SaaS جاهز، أو برنامج خاص بكم | BizUply",
+    "نظام SaaS جاهز، أو برنامج خاص بكم | Bizuply",
     "يعرض السوق الأنظمة التي تعلّمها الواجهة كعامة. التطوير المخصص محادثة، لا شراء من هذه الصفحة. العلامة البيضاء تُذكر فقط في منتج ينشرها.",
     "SaaS",
     "رؤية ما هو عام فعلاً قبل التخطيط للإطلاق",

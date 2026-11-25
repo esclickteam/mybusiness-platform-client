@@ -1,13 +1,37 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
+import { STORY } from "../../lib/homepageStory.mjs";
 import { getGuide } from "../../lib/guidesMarketing.mjs";
 import { CircleUserRound, Megaphone } from "lucide-react";
 import "./showHome.css";
 
 const GUIDES = ["what-is-a-crm", "meta-lead-ads-to-crm", "whatsapp-cloud-api-cost", "follow-up-on-leads"];
 
-const shot = (locale: string, name: string) => `/demo-media/home/screens/${locale === "he" ? "he" : "en"}-desktop-${name}.webp`;
+type StoryBlock = { title: string; body: string; points?: string[] };
+type HomeStory = {
+  waysTitle: string; waysLead: string; ways: StoryBlock[];
+  showTitle: string; showLead: string; films: StoryBlock[];
+  journeyTitle: string; journeyLead: string; steps: StoryBlock[];
+  audienceTitle: string; audienceLead: string; audiences: StoryBlock[];
+  whyTitle: string; whyLead: string; whyCards: StoryBlock[];
+};
+
+function ReadBlock({ title, lead, items }: { title: string; lead: string; items: StoryBlock[] }) {
+  return (
+    <section>
+      <h2>{title}</h2>
+      <p>{lead}</p>
+      {items.map((item) => (
+        <div key={item.title}>
+          <h3>{item.title}</h3>
+          <p>{item.body}</p>
+          {item.points?.length ? <ul>{item.points.map((point) => <li key={point}>{point}</li>)}</ul> : null}
+        </div>
+      ))}
+    </section>
+  );
+}
 
 const PRODUCTS = [
   {
@@ -164,9 +188,9 @@ export default function ShowHome({ language }: { language: string }) {
     window.scrollTo({ top: top + total * (index / 6), behavior: "smooth" });
   }
   const screen = (name: string) => `/demo-media/home/screens/${locale === "he" ? "he" : "en"}-desktop-${name}.webp`;
-  const [openFaq, setOpenFaq] = useState(0);
   const [focus, setFocus] = useState(0);
-  const faqs = ((HOME_FAQ as Record<string, [string, string][]>)[locale] || HOME_FAQ.en).slice(0, 6);
+  const faqs = ((HOME_FAQ as Record<string, [string, string][]>)[locale] || HOME_FAQ.en);
+  const story = ((STORY as Record<string, HomeStory>)[locale] || STORY.en) as HomeStory;
   const guides = GUIDES.map((slug) => ({ slug, article: getGuide(slug, locale) })).filter((item) => item.article?.h1);
 
   useEffect(() => {
@@ -244,7 +268,7 @@ export default function ShowHome({ language }: { language: string }) {
                     </div>
                     <div className="deck-ui">
                       {Math.abs(focus - index) < 2 ? (
-                        <img src={product.file === "sites" ? `/demo-media/home/sites/lashora-${locale === "he" ? "he" : "en"}-desk.webp` : shot(locale, product.file)} alt="" loading="lazy" decoding="async" />
+                        <img src={product.file === "sites" ? `/demo-media/home/sites/lashora-${locale === "he" ? "he" : "en"}-desk.webp` : shot(locale, product.file)} alt={t(product.tabHe, product.tabEn)} width="1280" height="800" loading="lazy" decoding="async" />
                       ) : null}
                     </div>
                   </div>
@@ -592,16 +616,34 @@ export default function ShowHome({ language }: { language: string }) {
         </div>
       </section>
 
+      <section className="sc sc-read" data-scene>
+        <div className="sc-pin">
+          <div className="sc-wrap">
+            <ReadBlock title={story.waysTitle} lead={story.waysLead} items={story.ways} />
+            <ReadBlock title={story.showTitle} lead={story.showLead} items={story.films} />
+            <ReadBlock title={story.journeyTitle} lead={story.journeyLead} items={story.steps} />
+            <ReadBlock title={story.audienceTitle} lead={story.audienceLead} items={story.audiences} />
+            <ReadBlock title={story.whyTitle} lead={story.whyLead} items={story.whyCards} />
+          </div>
+        </div>
+      </section>
+
       <section className="sc sc-faq" data-scene>
         <div className="sc-pin">
           <div className="sc-wrap">
             <h2>{t("כל מה שרציתם לדעת.", "What people ask before they start.")}</h2>
-            {faqs.map(([question, answer], index) => (
-              <details key={question} open={openFaq === index} onToggle={(event) => { if (event.currentTarget.open) setOpenFaq(index); }}>
-                <summary>{question}</summary>
+            {faqs.map(([question, answer]) => (
+              <article key={question}>
+                <h3>{question}</h3>
                 <p>{answer}</p>
-              </details>
+              </article>
             ))}
+            <p className="faq-more">
+              <Link to="/pricing">{t("המסלולים והמחירים", "Plans and prices")}</Link>
+              <Link to="/solutions">{t("פתרונות לפי סוג העסק", "Solutions by business")}</Link>
+              <Link to="/guides">{t("מדריכים", "Guides")}</Link>
+              <Link to="/partners">{t("תוכנית שותפים", "Partner program")}</Link>
+            </p>
           </div>
         </div>
       </section>

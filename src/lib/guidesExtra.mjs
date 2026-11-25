@@ -6,7 +6,7 @@ function guide(title, description, h1, sections, faq) {
 
 const EN = {
   "connect-a-meta-ad-account": guide(
-    "How to connect a Meta ad account | BizUply",
+    "How to connect a Meta ad account | Bizuply",
     "The business connects its own Meta ad account in the BizUply dashboard. Campaigns, ad sets and ads can then be created there. Meta still bills the spend.",
     "Connect the Meta ad account you already own",
     [
@@ -17,7 +17,7 @@ const EN = {
     [["Does connecting the account start spending?", "No. Spend starts when a campaign is published and Meta delivers it. Meta sends the bill for the media."]],
   ),
   "whatsapp-message-templates": guide(
-    "How WhatsApp templates work in BizUply | BizUply",
+    "How WhatsApp templates work in BizUply | Bizuply",
     "A business message that starts a conversation uses a template Meta has approved. The number itself is $29 a month, and Meta bills messages separately. There is no free trial.",
     "Templates, then a paid number, then a send",
     [
@@ -28,7 +28,7 @@ const EN = {
     [["Can an automation send WhatsApp by itself?", "Only through an approved template on a paid number. The business-plan automation can be the trigger. Trying the automation saves the rule and does not send a WhatsApp message."]],
   ),
   "website-form-to-crm": guide(
-    "How a website form becomes a lead | BizUply",
+    "How a website form becomes a lead | Bizuply",
     "A form on a site built in BizUply can create a lead whose source is the website. The same pipeline also accepts Meta Lead Ads and Google Ads lead forms.",
     "Publish the page, then read the lead where the team already works",
     [
@@ -39,7 +39,7 @@ const EN = {
     [["Does the form require the business plan?", "The lead can enter the CRM on the $49 plan. Automations that react to that lead need the business plan."]],
   ),
   "appointments-for-a-service-business": guide(
-    "How appointments work for a service business | BizUply",
+    "How appointments work for a service business | Bizuply",
     "Business hours and a service catalog produce 15-minute openings. Appointments are part of the business plan, not of CRM only.",
     "Hours, a service, then an open slot",
     [
@@ -50,7 +50,7 @@ const EN = {
     [["Is this a clinical record?", "No. It is a calendar and a client file. Medical charts stay in a system built for them."]],
   ),
   "from-ad-to-follow-up": guide(
-    "From a Meta lead to the next task | BizUply",
+    "From a Meta lead to the next task | Bizuply",
     "A lead form can create the CRM record, a person or an automation can set the next task, and WhatsApp is optional and priced apart.",
     "Four steps from the ad to the next task",
     [
@@ -122,7 +122,7 @@ const HE = {
 
 const ES = {
   "connect-a-meta-ad-account": guide(
-    "Cómo conectar una cuenta de anuncios de Meta | BizUply",
+    "Cómo conectar una cuenta de anuncios de Meta | Bizuply",
     "El negocio conecta su propia cuenta en el panel de BizUply. Después se pueden crear campañas, conjuntos y anuncios. El gasto lo cobra Meta.",
     "Conecte la cuenta de anuncios que ya es suya",
     [
@@ -133,7 +133,7 @@ const ES = {
     [["¿Conectar empieza a gastar?", "No. El gasto empieza cuando una campaña se publica y Meta la distribuye."]],
   ),
   "whatsapp-message-templates": guide(
-    "Cómo funcionan las plantillas de WhatsApp | BizUply",
+    "Cómo funcionan las plantillas de WhatsApp | Bizuply",
     "Un mensaje que abre una conversación usa una plantilla aprobada por Meta. El número cuesta 29 dólares al mes y Meta cobra los mensajes aparte. No hay prueba gratis.",
     "Plantilla, número de pago y después el envío",
     [
@@ -144,7 +144,7 @@ const ES = {
     [["¿Una automatización envía WhatsApp sola?", "Solo con una plantilla aprobada y un número de pago. Probar la automatización guarda la regla y no envía un mensaje de WhatsApp."]],
   ),
   "website-form-to-crm": guide(
-    "Cómo un formulario del sitio se vuelve un lead | BizUply",
+    "Cómo un formulario del sitio se vuelve un lead | Bizuply",
     "Un formulario en un sitio de BizUply puede crear un lead con origen Sitio. Al mismo pipeline entran Lead Ads y formularios de Google Ads.",
     "Publique la página y lea el lead donde el equipo ya trabaja",
     [
@@ -155,7 +155,7 @@ const ES = {
     [["¿El formulario exige el plan de negocio?", "El lead puede entrar al CRM de 49 dólares. Una automatización que reaccione pide el plan de negocio."]],
   ),
   "appointments-for-a-service-business": guide(
-    "Cómo funcionan las citas en un negocio de servicios | BizUply",
+    "Cómo funcionan las citas en un negocio de servicios | Bizuply",
     "El horario y el catálogo crean huecos de 15 minutos. Las citas forman parte del plan de negocio, no del CRM solo.",
     "Horario, servicio y un hueco libre",
     [
@@ -166,7 +166,7 @@ const ES = {
     [["¿Es una historia clínica?", "No. Es agenda y expediente. La historia clínica se queda en su sistema."]],
   ),
   "from-ad-to-follow-up": guide(
-    "De un lead de Meta a la tarea siguiente | BizUply",
+    "De un lead de Meta a la tarea siguiente | Bizuply",
     "Un formulario puede crear el registro, una persona o una automatización puede fijar la tarea, y WhatsApp sigue siendo opcional y de pago aparte.",
     "Cuatro pasos del anuncio a la tarea siguiente",
     [
@@ -180,7 +180,7 @@ const ES = {
 
 const PT = {
   "connect-a-meta-ad-account": guide(
-    "Como conectar uma conta de anúncios da Meta | BizUply",
+    "Como conectar uma conta de anúncios da Meta | Bizuply",
     "O negócio conecta a própria conta no painel da BizUply. Depois dá para criar campanhas, conjuntos e anúncios. O gasto continua com a Meta.",
     "Conecte a conta de anúncios que já é sua",
     [
@@ -191,7 +191,7 @@ const PT = {
     [["Conectar começa a gastar?", "Não. O gasto começa quando uma campanha é publicada e a Meta a distribui."]],
   ),
   "whatsapp-message-templates": guide(
-    "Como funcionam os modelos de WhatsApp | BizUply",
+    "Como funcionam os modelos de WhatsApp | Bizuply",
     "Uma mensagem que abre conversa usa um modelo aprovado pela Meta. O número custa 29 dólares por mês e a Meta cobra as mensagens à parte. Não há teste grátis.",
     "Modelo, número pago e só então o envio",
     [
@@ -202,7 +202,7 @@ const PT = {
     [["Uma automação envia WhatsApp sozinha?", "Só com modelo aprovado e número pago. Testar a automação salva a regra e não envia uma mensagem de WhatsApp."]],
   ),
   "website-form-to-crm": guide(
-    "Como um formulário do site vira um lead | BizUply",
+    "Como um formulário do site vira um lead | Bizuply",
     "Um formulário num site da BizUply pode criar um lead com origem Site. O mesmo pipeline recebe Lead Ads e formulários do Google Ads.",
     "Publique a página e leia o lead onde a equipe já trabalha",
     [
@@ -213,7 +213,7 @@ const PT = {
     [["O formulário exige o plano de negócios?", "O lead pode entrar no CRM de 49 dólares. Uma automação que reaja pede o plano de negócios."]],
   ),
   "appointments-for-a-service-business": guide(
-    "Como a agenda funciona num negócio de serviço | BizUply",
+    "Como a agenda funciona num negócio de serviço | Bizuply",
     "O horário e o catálogo criam vagas de 15 minutos. A agenda faz parte do plano de negócios, não do CRM sozinho.",
     "Horário, serviço e uma vaga livre",
     [
@@ -224,7 +224,7 @@ const PT = {
     [["É um prontuário?", "Não. É agenda e arquivo. O prontuário fica no sistema feito para isso."]],
   ),
   "from-ad-to-follow-up": guide(
-    "De um lead da Meta à tarefa seguinte | BizUply",
+    "De um lead da Meta à tarefa seguinte | Bizuply",
     "Um formulário pode criar o registro, uma pessoa ou uma automação pode marcar a tarefa, e o WhatsApp continua opcional e com preço à parte.",
     "Quatro passos do anúncio à tarefa seguinte",
     [
@@ -238,7 +238,7 @@ const PT = {
 
 const AR = {
   "connect-a-meta-ad-account": guide(
-    "كيف يُربط حساب إعلانات Meta | BizUply",
+    "كيف يُربط حساب إعلانات Meta | Bizuply",
     "يربط النشاط حسابه في لوحة BizUply. بعدها يمكن إنشاء حملات ومجموعات وإعلانات. يبقى الإنفاق على Meta.",
     "اربطوا حساب الإعلانات الذي تملكونه",
     [
@@ -249,7 +249,7 @@ const AR = {
     [["هل يبدأ الربط الإنفاق؟", "لا. يبدأ الإنفاق حين تُنشر حملة وتوزّعها Meta."]],
   ),
   "whatsapp-message-templates": guide(
-    "كيف تعمل قوالب واتساب | BizUply",
+    "كيف تعمل قوالب واتساب | Bizuply",
     "رسالة تفتح محادثة تستخدم قالباً وافقت عليه Meta. الرقم 29 دولاراً شهرياً وتحصّل Meta الرسائل بشكل منفصل. لا توجد تجربة مجانية.",
     "قالب، ثم رقم مدفوع، ثم إرسال",
     [
@@ -260,7 +260,7 @@ const AR = {
     [["هل ترسل الأتمتة واتساب وحدها؟", "فقط بقالب معتمد ورقم مدفوع. تجربة الأتمتة تحفظ القاعدة ولا ترسل رسالة واتساب."]],
   ),
   "website-form-to-crm": guide(
-    "كيف يصبح نموذج الموقع عميلاً محتملاً | BizUply",
+    "كيف يصبح نموذج الموقع عميلاً محتملاً | Bizuply",
     "يمكن لنموذج في موقع BizUply أن ينشئ عميلاً محتملاً بمصدر الموقع. المسار نفسه يستقبل إعلانات Meta ونماذج Google Ads.",
     "انشروا الصفحة واقرؤوا العميل حيث يعمل الفريق",
     [
@@ -271,7 +271,7 @@ const AR = {
     [["هل النموذج يطلب الخطة التجارية؟", "يمكن للعميل المحتمل دخول CRM ذي 49 دولاراً. أتمتة تتفاعل معه تطلب الخطة التجارية."]],
   ),
   "appointments-for-a-service-business": guide(
-    "كيف تعمل المواعيد لعمل خدمات | BizUply",
+    "كيف تعمل المواعيد لعمل خدمات | Bizuply",
     "ساعات العمل والكتالوج ينتجان فترات من 15 دقيقة. المواعيد جزء من الخطة التجارية لا من CRM وحده.",
     "ساعات، خدمة، ثم فترة فارغة",
     [
@@ -282,7 +282,7 @@ const AR = {
     [["هل هذا ملف طبي؟", "لا. هو تقويم وملف عميل. الملف الطبي يبقى في نظامه."]],
   ),
   "from-ad-to-follow-up": guide(
-    "من عميل Meta المحتمل إلى المهمة التالية | BizUply",
+    "من عميل Meta المحتمل إلى المهمة التالية | Bizuply",
     "يمكن للنموذج أن ينشئ السجل، ويمكن لشخص أو لأتمتة تحديد المهمة، ويبقى واتساب اختيارياً وبسعر منفصل.",
     "أربع خطوات من الإعلان إلى المهمة التالية",
     [

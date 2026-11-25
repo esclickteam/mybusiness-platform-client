@@ -23,7 +23,7 @@ const L = {
 export const MORE = {
   "/automations": {
     en: story(
-      "Business automations for customers and processes | BizUply",
+      "Business automations for customers and processes | Bizuply",
       "BizUply automations run on the business plan. A supported event, such as a new lead, can create a follow-up task. The business plan is $99 per month or $990 per year.",
       "Automations",
       "Business automations that take repeated work off the list",
@@ -43,7 +43,7 @@ export const MORE = {
       L.en,
     ),
     he: story(
-      "אוטומציות עסקיות לניהול לקוחות ותהליכים | BizUply",
+      "אוטומציות עסקיות לניהול לקוחות ותהליכים | Bizuply",
       "האוטומציות של BizUply כלולות בחבילה העסקית. אירוע נתמך, כמו ליד חדש, יכול ליצור משימת המשך. החבילה עולה 99 דולר לחודש או 990 דולר לשנה.",
       "אוטומציות",
       "אוטומציות עסקיות שמפחיתות עבודה חוזרת",
@@ -63,7 +63,7 @@ export const MORE = {
       L.he,
     ),
     es: story(
-      "Automatizaciones de negocio para clientes y procesos | BizUply",
+      "Automatizaciones de negocio para clientes y procesos | Bizuply",
       "Las automatizaciones de BizUply forman parte del plan de negocio. Un evento compatible, como un lead nuevo, puede crear una tarea de seguimiento. El plan cuesta 99 dólares al mes o 990 al año.",
       "Automatizaciones",
       "Automatizaciones que quitan trabajo repetido de la lista",
@@ -83,7 +83,7 @@ export const MORE = {
       L.es,
     ),
     "pt-BR": story(
-      "Automações de negócio para clientes e processos | BizUply",
+      "Automações de negócio para clientes e processos | Bizuply",
       "As automações da BizUply fazem parte do plano de negócios. Um evento compatível, como um lead novo, pode criar uma tarefa de acompanhamento. O plano custa 99 dólares por mês ou 990 por ano.",
       "Automações",
       "Automações que tiram o trabalho repetido da lista",
@@ -103,7 +103,7 @@ export const MORE = {
       L["pt-BR"],
     ),
     ar: story(
-      "أتمتة الأعمال لإدارة العملاء والعمليات | BizUply",
+      "أتمتة الأعمال لإدارة العملاء والعمليات | Bizuply",
       "أتمتة BizUply جزء من الخطة التجارية. حدث مدعوم، مثل عميل محتمل جديد، يمكن أن ينشئ مهمة متابعة. الخطة 99 دولاراً شهرياً أو 990 سنوياً.",
       "الأتمتة",
       "أتمتة تخفف العمل المتكرر",

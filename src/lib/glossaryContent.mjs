@@ -332,7 +332,7 @@ export function glossaryPage(locale) {
   const language = locale === "pt" ? "pt-BR" : locale;
   const pack = {
     en: {
-      title: "Glossary of business terms | BizUply",
+      title: "Glossary of business terms | Bizuply",
       description: "Plain definitions of CRM, leads, pipeline, conversion rate, WhatsApp templates, CAC, LTV and the other terms teams mix up.",
       crumb: "Glossary",
       h1: "A glossary for running the work",
@@ -346,21 +346,21 @@ export function glossaryPage(locale) {
       lede: "הגדרות קצרות שאפשר להשתמש בהן בישיבה. בכל ערך: מה המילה אומרת, איך משתמשים בה, ודוגמה עסקית אחת. רעיונות קרובים חולקים ערך.",
     },
     es: {
-      title: "Glosario de términos de negocio | BizUply",
+      title: "Glosario de términos de negocio | Bizuply",
       description: "Definiciones claras de CRM, leads, pipeline, tasa de conversión, plantillas de WhatsApp, CAC, LTV y otros términos que los equipos confunden.",
       crumb: "Glosario",
       h1: "Un glosario para el trabajo",
       lede: "Definiciones cortas para una reunión. Cada entrada dice qué significa la palabra, cómo usarla y un ejemplo. Las ideas cercanas comparten entrada.",
     },
     "pt-BR": {
-      title: "Glossário de termos de negócio | BizUply",
+      title: "Glossário de termos de negócio | Bizuply",
       description: "Definições claras de CRM, leads, pipeline, taxa de conversão, modelos de WhatsApp, CAC, LTV e outros termos que as equipes misturam.",
       crumb: "Glossário",
       h1: "Um glossário para o trabalho",
       lede: "Definições curtas para uma reunião. Cada verbete diz o que a palavra significa, como usá-la e um exemplo. Ideias próximas dividem o mesmo verbete.",
     },
     ar: {
-      title: "معجم مصطلحات العمل | BizUply",
+      title: "معجم مصطلحات العمل | Bizuply",
       description: "تعريفات واضحة لـ CRM والعملاء المحتملين ومسار المبيعات ومعدل التحويل وقوالب واتساب وCAC وLTV ومصطلحات تخلطها الفرق.",
       crumb: "المعجم",
       h1: "معجم للعمل نفسه",

@@ -84,7 +84,7 @@ const CHEVRON = `<svg class="site-nav__chevron" viewBox="0 0 24 24" aria-hidden=
 export function renderMarketingHeader(locale) {
   const meta = marketingLocaleMeta(locale);
   const hx = HX_HERO_COPY[locale] || HX_HERO_COPY.en;
-  const logoAlt = locale === "he" ? "ביזאפלי (BizUply)" : "BizUply";
+  const logoAlt = locale === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
   const navLocale =
     locale === "he" || locale === "es" || locale === "pt-BR" || locale === "ar" ? locale : "en";
   const href = (path) => localeHref(navLocale, path);
@@ -167,7 +167,7 @@ export function renderPurpleHomePrerender(locale) {
 
   const kicker = hx.kicker
     ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
-    : `<p class="hx-hero-brand">BizUply</p>`;
+    : `<p class="hx-hero-brand">Bizuply</p>`;
   const secondLine = `<span class="hx-line">${heroWords(hx.lineTwo, hx.lineThree ? -1 : lineHot)}${hx.lineThree ? ` ${heroWords(hx.lineThree, lineHot)}` : ""}</span>`;
   const filmLang = locale === "he" ? "he" : "en";
   const hero = `<section class="hx-hero" data-bz-tone="paper" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="bz-spec__copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(

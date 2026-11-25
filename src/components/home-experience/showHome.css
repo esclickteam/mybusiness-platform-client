@@ -306,12 +306,23 @@
 .mag a:nth-child(2) { background: var(--pink); color: var(--navy); }
 .mag a:hover { transform: translateY(-6px); }
 
+.sc-read { height: auto; background: #fff; }
+.sc-read .sc-pin { position: relative; height: auto; overflow: visible; align-content: start; padding-bottom: 24px; }
+.sc-read section { margin-top: 1.8rem; }
+.sc-read section:first-child { margin-top: 0; }
+.sc-read h3 { margin-top: 0.9rem; }
+.sc-read p { margin-top: 0.35rem; max-width: 68ch; }
+.sc-read ul { margin: 0.35rem 0 0; padding-inline-start: 1.15rem; }
+.sc-read li { margin-top: 0.2rem; }
+
 /* FAQ */
-.sc-faq { background: var(--paper); height: 150vh; }
-.sc-faq details { margin-top: 0.45rem; border-radius: 14px; background: #fff; overflow: hidden; opacity: clamp(0.4, calc(0.4 + var(--p, 0)), 1); }
-.sc-faq summary { padding: 0.85rem 1rem; font-weight: 750; cursor: pointer; }
-.sc-faq details p { padding: 0 1rem 0.9rem; max-height: 0; overflow: hidden; transition: max-height 320ms ease, padding 320ms ease; }
-.sc-faq details[open] p { max-height: 220px; }
+.sc-faq { background: var(--paper); height: auto; }
+.sc-faq .sc-pin { position: relative; height: auto; overflow: visible; align-content: start; padding-bottom: 48px; }
+.sc-faq article { margin-top: 0.45rem; border-radius: 14px; background: #fff; padding: 0.85rem 1rem 0.95rem; }
+.sc-faq h3 { font-size: 1.02rem; }
+.sc-faq article p { margin-top: 0.35rem; }
+.sc-faq .faq-more { display: flex; flex-wrap: wrap; gap: 0.8rem 1.2rem; margin-top: 1rem; }
+.sc-faq .faq-more a { color: var(--blue); font-weight: 750; }
 
 /* Close */
 .sc-end { height: 150vh; background: var(--pink); }

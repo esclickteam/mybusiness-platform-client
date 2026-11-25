@@ -34,7 +34,7 @@ describe("sketch home first paint", () => {
     expect(he.dir).toBe("rtl");
     expect(he.inner).toContain(">העסק</span>");
     expect(he.inner).toContain(">אפשרויות.</span>");
-    expect(he.inner).toContain("BizUply");
+    expect(he.inner).toContain("Bizuply");
     expect(he.inner).toContain(HX_HERO_COPY.he.see);
     expect(he.inner).toContain("/demo-media/home/theater/he-desktop.webp");
     expect(he.inner).toContain('class="ht-theater"');

@@ -16,7 +16,7 @@ function guide(title, description, h1, sections, faq) {
 
 const EN = {
   "what-is-a-crm": guide(
-    "What is a CRM for a small business? | BizUply",
+    "What is a CRM for a small business? | Bizuply",
     "A CRM keeps leads, customers, tasks and appointments in one pipeline. BizUply CRM only is $49 per month.",
     "What is a CRM for a small business?",
     [
@@ -27,7 +27,7 @@ const EN = {
     [["Does a CRM replace WhatsApp?", "No. WhatsApp Cloud API is a separate subscription at $29 per month per connected number, plus Meta messaging fees."]],
   ),
   "meta-lead-ads-to-crm": guide(
-    "How to connect Meta Lead Ads to a CRM | BizUply",
+    "How to connect Meta Lead Ads to a CRM | Bizuply",
     "Connect your own Facebook page. After the approved BizUply app receives permission, new Lead Ads enter the CRM with a source and a status.",
     "How Meta Lead Ads enter the CRM",
     [
@@ -38,7 +38,7 @@ const EN = {
     [["Which CRM price includes this?", "Lead Ads can feed the CRM. CRM only is $49 per month. Automations that continue the follow-up are on the business plan at $99 per month or $990 per year."]],
   ),
   "whatsapp-cloud-api-cost": guide(
-    "How much does WhatsApp Cloud API cost? | BizUply",
+    "How much does WhatsApp Cloud API cost? | Bizuply",
     "BizUply charges $29 per month for one connected WhatsApp number. Meta messaging fees are separate. There is no free trial.",
     "What WhatsApp Cloud API costs in BizUply",
     [
@@ -49,7 +49,7 @@ const EN = {
     [["Is there a free trial?", "No. The subscription starts at $29 per month for one number."]],
   ),
   "business-automation": guide(
-    "What is a business automation in BizUply? | BizUply",
+    "What is a business automation in BizUply? | Bizuply",
     "An automation starts with a trigger, such as a new lead, and can create a task, a reminder or a follow-up. It is part of the $99 business plan.",
     "Business automations that stay attached to the CRM",
     [
@@ -60,7 +60,7 @@ const EN = {
     [["Can an automation send any WhatsApp message?", "Only through the connected WhatsApp Cloud API, using templates Meta has approved, on a paid $29 number subscription."]],
   ),
   "build-a-website-without-code": guide(
-    "How do you build a business website without code? | BizUply",
+    "How do you build a business website without code? | Bizuply",
     "Pick a template, edit it in the visual editor, publish to your domain, and send form inquiries into the CRM.",
     "Build a site without writing the page by hand",
     [
@@ -71,7 +71,7 @@ const EN = {
     [["Do I need a developer to publish?", "Publishing from the editor does not require writing the page. A developer can still add custom head or body markup if the business wants that."]],
   ),
   "manage-meta-campaigns": guide(
-    "Can you manage Meta campaigns from another system? | BizUply",
+    "Can you manage Meta campaigns from another system? | Bizuply",
     "The BizUply dashboard can create and edit campaigns, ad sets and ads on the business's own Meta ad account, and show performance. Meta still bills the spend.",
     "Meta campaigns inside the BizUply dashboard",
     [
@@ -82,7 +82,7 @@ const EN = {
     [["Does this replace Meta Ads Manager?", "It is a working path inside BizUply for the connected account. Meta remains the ads platform and the biller."]],
   ),
   "crm-and-business-platform": guide(
-    "What is the difference between a CRM and a business platform? | BizUply",
+    "What is the difference between a CRM and a business platform? | Bizuply",
     "CRM only is the pipeline, the client file and appointments intake at $49. The business plan adds appointments, collaborations and automations for $99 or $990 a year.",
     "CRM only and the business plan",
     [
@@ -93,7 +93,7 @@ const EN = {
     [["Are the prices negotiable on this page?", "No. These are the published prices. Package settings are not changed from a marketing page."]],
   ),
   "follow-up-on-leads": guide(
-    "How do you follow up on a new lead? | BizUply",
+    "How do you follow up on a new lead? | Bizuply",
     "A new lead gets a status, a timeline entry and a dated task. Overdue tasks show in the notification center. Automations can add the next step on the business plan.",
     "Follow up without losing the lead",
     [
@@ -107,7 +107,7 @@ const EN = {
 
 const ES = {
   "what-is-a-crm": guide(
-    "¿Qué es un CRM para un negocio pequeño? | BizUply",
+    "¿Qué es un CRM para un negocio pequeño? | Bizuply",
     "Un CRM guarda leads, clientes, tareas y citas en un pipeline. CRM solo de BizUply cuesta 49 dólares al mes.",
     "¿Qué es un CRM para un negocio pequeño?",
     [
@@ -118,7 +118,7 @@ const ES = {
     [["¿El CRM reemplaza WhatsApp?", "No. WhatsApp Cloud API es una suscripción aparte de 29 dólares al mes por número, más las tarifas de Meta."]],
   ),
   "meta-lead-ads-to-crm": guide(
-    "Cómo conectar Meta Lead Ads a un CRM | BizUply",
+    "Cómo conectar Meta Lead Ads a un CRM | Bizuply",
     "El negocio conecta su página de Facebook. Con el permiso, los Lead Ads nuevos entran al CRM con origen y estado.",
     "Cómo entran los Meta Lead Ads al CRM",
     [
@@ -129,7 +129,7 @@ const ES = {
     [["¿Qué precio incluye esto?", "Los Lead Ads pueden alimentar el CRM. CRM solo cuesta 49 dólares al mes. Las automatizaciones de seguimiento están en el plan de 99 dólares al mes o 990 al año."]],
   ),
   "whatsapp-cloud-api-cost": guide(
-    "¿Cuánto cuesta WhatsApp Cloud API? | BizUply",
+    "¿Cuánto cuesta WhatsApp Cloud API? | Bizuply",
     "BizUply cobra 29 dólares al mes por un número conectado. Las tarifas de Meta van aparte. No hay prueba gratis.",
     "Cuánto cuesta WhatsApp Cloud API en BizUply",
     [
@@ -140,7 +140,7 @@ const ES = {
     [["¿Hay prueba gratis?", "No. La suscripción empieza en 29 dólares al mes por un número."]],
   ),
   "business-automation": guide(
-    "¿Qué es una automatización de negocio en BizUply? | BizUply",
+    "¿Qué es una automatización de negocio en BizUply? | Bizuply",
     "Una automatización empieza con un disparador, como un lead nuevo, y puede crear una tarea o un recordatorio. Forma parte del plan de 99 dólares.",
     "Automatizaciones unidas al CRM",
     [
@@ -151,7 +151,7 @@ const ES = {
     [["¿Puede enviar cualquier WhatsApp?", "Solo por WhatsApp Cloud API, con plantillas que Meta ya aprobó, en un número de pago de 29 dólares."]],
   ),
   "build-a-website-without-code": guide(
-    "¿Cómo crear un sitio de negocio sin código? | BizUply",
+    "¿Cómo crear un sitio de negocio sin código? | Bizuply",
     "Elija una plantilla, edítela en el editor visual, publíquela en su dominio y envíe los formularios al CRM.",
     "Crear un sitio sin escribir la página a mano",
     [
@@ -162,7 +162,7 @@ const ES = {
     [["¿Hace falta un desarrollador para publicar?", "Publicar desde el editor no exige escribir la página. Un desarrollador puede añadir marcado personalizado si el negocio lo quiere."]],
   ),
   "manage-meta-campaigns": guide(
-    "¿Se pueden gestionar campañas de Meta desde otro sistema? | BizUply",
+    "¿Se pueden gestionar campañas de Meta desde otro sistema? | Bizuply",
     "El panel de BizUply puede crear y editar campañas, conjuntos y anuncios en la cuenta de Meta del negocio y mostrar resultados. Meta cobra el gasto.",
     "Campañas de Meta dentro del panel",
     [
@@ -173,7 +173,7 @@ const ES = {
     [["¿Reemplaza al Administrador de anuncios?", "Es una vía de trabajo dentro de BizUply para la cuenta conectada. Meta sigue siendo la plataforma y quien cobra."]],
   ),
   "crm-and-business-platform": guide(
-    "¿Qué diferencia hay entre un CRM y una plataforma de negocio? | BizUply",
+    "¿Qué diferencia hay entre un CRM y una plataforma de negocio? | Bizuply",
     "CRM solo es el pipeline y el expediente por 49 dólares. El plan de negocio añade citas, colaboraciones y automatizaciones por 99 o 990 al año.",
     "CRM solo y el plan de negocio",
     [
@@ -184,7 +184,7 @@ const ES = {
     [["¿Estos precios se negocian aquí?", "No. Son los precios publicados. Una página de marketing no cambia los paquetes."]],
   ),
   "follow-up-on-leads": guide(
-    "¿Cómo hacer seguimiento de un lead nuevo? | BizUply",
+    "¿Cómo hacer seguimiento de un lead nuevo? | Bizuply",
     "El lead recibe un estado, una entrada en la línea de tiempo y una tarea con fecha. Las tareas vencidas aparecen en las notificaciones.",
     "Seguir el lead sin perderlo",
     [
@@ -198,7 +198,7 @@ const ES = {
 
 const PT = {
   "what-is-a-crm": guide(
-    "O que é um CRM para uma pequena empresa? | BizUply",
+    "O que é um CRM para uma pequena empresa? | Bizuply",
     "Um CRM guarda leads, clientes, tarefas e compromissos em um pipeline. O CRM sozinho da BizUply custa 49 dólares por mês.",
     "O que é um CRM para uma pequena empresa?",
     [
@@ -209,7 +209,7 @@ const PT = {
     [["O CRM substitui o WhatsApp?", "Não. A WhatsApp Cloud API é uma assinatura à parte de 29 dólares por mês por número, mais as tarifas da Meta."]],
   ),
   "meta-lead-ads-to-crm": guide(
-    "Como conectar Meta Lead Ads a um CRM | BizUply",
+    "Como conectar Meta Lead Ads a um CRM | Bizuply",
     "O negócio conecta a própria página do Facebook. Com a permissão, novos Lead Ads entram no CRM com origem e status.",
     "Como os Meta Lead Ads entram no CRM",
     [
@@ -220,7 +220,7 @@ const PT = {
     [["Qual preço inclui isso?", "Lead Ads podem alimentar o CRM. CRM sozinho custa 49 dólares por mês. As automações de acompanhamento estão no plano de 99 dólares por mês ou 990 por ano."]],
   ),
   "whatsapp-cloud-api-cost": guide(
-    "Quanto custa a WhatsApp Cloud API? | BizUply",
+    "Quanto custa a WhatsApp Cloud API? | Bizuply",
     "A BizUply cobra 29 dólares por mês por um número conectado. As tarifas da Meta são à parte. Não há teste grátis.",
     "Quanto a WhatsApp Cloud API custa na BizUply",
     [
@@ -231,7 +231,7 @@ const PT = {
     [["Existe teste grátis?", "Não. A assinatura começa em 29 dólares por mês para um número."]],
   ),
   "business-automation": guide(
-    "O que é uma automação de negócio na BizUply? | BizUply",
+    "O que é uma automação de negócio na BizUply? | Bizuply",
     "Uma automação começa com um gatilho, como um lead novo, e pode criar uma tarefa ou um lembrete. Faz parte do plano de 99 dólares.",
     "Automações ligadas ao CRM",
     [
@@ -242,7 +242,7 @@ const PT = {
     [["Pode enviar qualquer WhatsApp?", "Só pela WhatsApp Cloud API, com modelos que a Meta já aprovou, em um número pago de 29 dólares."]],
   ),
   "build-a-website-without-code": guide(
-    "Como criar um site de negócio sem código? | BizUply",
+    "Como criar um site de negócio sem código? | Bizuply",
     "Escolha um modelo, edite no editor visual, publique no seu domínio e envie os formulários ao CRM.",
     "Criar um site sem escrever a página à mão",
     [
@@ -253,7 +253,7 @@ const PT = {
     [["Preciso de um desenvolvedor para publicar?", "Publicar pelo editor não exige escrever a página. Um desenvolvedor ainda pode acrescentar marcação personalizada."]],
   ),
   "manage-meta-campaigns": guide(
-    "Dá para gerenciar campanhas da Meta em outro sistema? | BizUply",
+    "Dá para gerenciar campanhas da Meta em outro sistema? | Bizuply",
     "O painel da BizUply pode criar e editar campanhas, conjuntos e anúncios na conta de Meta do negócio e mostrar resultados. A Meta cobra a mídia.",
     "Campanhas da Meta dentro do painel",
     [
@@ -264,7 +264,7 @@ const PT = {
     [["Isso substitui o Gerenciador de Anúncios?", "É um caminho de trabalho dentro da BizUply para a conta conectada. A Meta continua sendo a plataforma e quem cobra."]],
   ),
   "crm-and-business-platform": guide(
-    "Qual é a diferença entre um CRM e uma plataforma de negócios? | BizUply",
+    "Qual é a diferença entre um CRM e uma plataforma de negócios? | Bizuply",
     "CRM sozinho é o pipeline e o arquivo por 49 dólares. O plano de negócios acrescenta agenda, colaborações e automações por 99 ou 990 por ano.",
     "CRM sozinho e o plano de negócios",
     [
@@ -275,7 +275,7 @@ const PT = {
     [["Esses preços são negociáveis nesta página?", "Não. São os preços publicados. Uma página de marketing não altera os pacotes."]],
   ),
   "follow-up-on-leads": guide(
-    "Como acompanhar um lead novo? | BizUply",
+    "Como acompanhar um lead novo? | Bizuply",
     "O lead recebe um status, um registro na linha do tempo e uma tarefa com data. Tarefas atrasadas aparecem nas notificações.",
     "Acompanhar o lead sem perdê-lo",
     [
@@ -289,7 +289,7 @@ const PT = {
 
 const AR = {
   "what-is-a-crm": guide(
-    "ما هو CRM لنشاط صغير؟ | BizUply",
+    "ما هو CRM لنشاط صغير؟ | Bizuply",
     "يحفظ CRM العملاء المحتملين والعملاء والمهام والمواعيد في مسار واحد. CRM وحده في BizUply بـ 49 دولاراً شهرياً.",
     "ما هو CRM لنشاط صغير؟",
     [
@@ -300,7 +300,7 @@ const AR = {
     [["هل يستبدل CRM واتساب؟", "لا. واجهة واتساب السحابية اشتراك منفصل بـ 29 دولاراً شهرياً لكل رقم، إضافة إلى رسوم Meta."]],
   ),
   "meta-lead-ads-to-crm": guide(
-    "كيف تربطون إعلانات Meta للعملاء المحتملين بـ CRM | BizUply",
+    "كيف تربطون إعلانات Meta للعملاء المحتملين بـ CRM | Bizuply",
     "يربط النشاط صفحته في فيسبوك. بعد الإذن تدخل الإعلانات الجديدة إلى CRM مع المصدر والحالة.",
     "كيف تدخل إعلانات Meta إلى CRM",
     [
@@ -311,7 +311,7 @@ const AR = {
     [["أي سعر يشمل ذلك؟", "يمكن للإعلانات تغذية CRM. CRM وحده 49 دولاراً شهرياً. أتمتة المتابعة في خطة 99 دولاراً شهرياً أو 990 سنوياً."]],
   ),
   "whatsapp-cloud-api-cost": guide(
-    "كم تكلف واجهة واتساب السحابية؟ | BizUply",
+    "كم تكلف واجهة واتساب السحابية؟ | Bizuply",
     "تتقاضى BizUply 29 دولاراً شهرياً لرقم واحد متصل. رسوم Meta منفصلة. لا توجد تجربة مجانية.",
     "تكلفة واجهة واتساب السحابية في BizUply",
     [
@@ -322,7 +322,7 @@ const AR = {
     [["هل توجد تجربة مجانية؟", "لا. يبدأ الاشتراك من 29 دولاراً شهرياً لرقم واحد."]],
   ),
   "business-automation": guide(
-    "ما هي أتمتة الأعمال في BizUply؟ | BizUply",
+    "ما هي أتمتة الأعمال في BizUply؟ | Bizuply",
     "تبدأ الأتمتة بمحفّز، مثل عميل محتمل جديد، ويمكن أن تنشئ مهمة أو تذكيراً. هي جزء من خطة 99 دولاراً.",
     "أتمتة مرتبطة بـ CRM",
     [
@@ -333,7 +333,7 @@ const AR = {
     [["هل ترسل أي رسالة واتساب؟", "فقط عبر واجهة واتساب السحابية بقوالب وافقت عليها Meta، وعلى رقم مدفوع بـ 29 دولاراً."]],
   ),
   "build-a-website-without-code": guide(
-    "كيف تبنون موقع نشاط بلا كود؟ | BizUply",
+    "كيف تبنون موقع نشاط بلا كود؟ | Bizuply",
     "اختاروا قالباً، حرّروه في المحرر المرئي، انشروه على نطاقكم، وأرسلوا النماذج إلى CRM.",
     "بناء موقع دون كتابة الصفحة يدوياً",
     [
@@ -344,7 +344,7 @@ const AR = {
     [["هل يلزم مطوّر للنشر؟", "النشر من المحرر لا يتطلب كتابة الصفحة. يمكن لمطوّر إضافة وسم مخصص إذا أراد النشاط ذلك."]],
   ),
   "manage-meta-campaigns": guide(
-    "هل يمكن إدارة حملات Meta من نظام آخر؟ | BizUply",
+    "هل يمكن إدارة حملات Meta من نظام آخر؟ | Bizuply",
     "يمكن للوحة BizUply إنشاء وتحرير الحملات والمجموعات والإعلانات في حساب Meta الخاص بالنشاط وعرض النتائج. تحصّل Meta الإنفاق.",
     "حملات Meta داخل اللوحة",
     [
@@ -355,7 +355,7 @@ const AR = {
     [["هل يستبدل مدير إعلانات Meta؟", "هو مسار عمل داخل BizUply للحساب المتصل. تبقى Meta المنصة والجهة التي تحصّل الرسوم."]],
   ),
   "crm-and-business-platform": guide(
-    "ما الفرق بين CRM ومنصة إدارة النشاط؟ | BizUply",
+    "ما الفرق بين CRM ومنصة إدارة النشاط؟ | Bizuply",
     "CRM وحده هو المسار والملف بـ 49 دولاراً. الخطة التجارية تضيف المواعيد والتعاون والأتمتة بـ 99 أو 990 سنوياً.",
     "CRM وحده والخطة التجارية",
     [
@@ -366,7 +366,7 @@ const AR = {
     [["هل هذه الأسعار قابلة للتفاوض هنا؟", "لا. هذه الأسعار المنشورة. صفحة تسويق لا تغيّر الباقات."]],
   ),
   "follow-up-on-leads": guide(
-    "كيف تتابعون عميلاً محتملاً جديداً؟ | BizUply",
+    "كيف تتابعون عميلاً محتملاً جديداً؟ | Bizuply",
     "يحصل العميل المحتمل على حالة وسجل في الخط الزمني ومهمة بتاريخ. المهام المتأخرة تظهر في التنبيهات.",
     "متابعة العميل المحتمل دون ضياعه",
     [

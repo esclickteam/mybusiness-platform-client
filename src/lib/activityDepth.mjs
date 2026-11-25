@@ -31,7 +31,7 @@ function put(path, locales) {
 
 put("/solutions/clinics", {
   en: page(
-    "Clinic enquiries, clients and appointments | BizUply",
+    "Clinic enquiries, clients and appointments | Bizuply",
     "Run a clinic's enquiries, appointments and follow-up in BizUply. This is an operations workspace. It is not a medical-records system and it does not claim HIPAA or clinical compliance.",
     "Clinics",
     "A clinic runs more smoothly when the day is in one workspace",
@@ -51,7 +51,7 @@ put("/solutions/clinics", {
     links("clinic", "en"),
   ),
   he: page(
-    "מערכת לניהול קליניקה, לקוחות ותורים | BizUply",
+    "מערכת לניהול קליניקה, לקוחות ותורים | Bizuply",
     "ניהול פניות, תורים ומעקב של קליניקה ב־BizUply. זו סביבת עבודה תפעולית. היא אינה מערכת רשומות רפואיות ואינה טוענת לעמידה ב־HIPAA או בדרישות קליניות.",
     "קליניקות",
     "ניהול קליניקה מתחיל בסביבת עבודה מסודרת",
@@ -71,7 +71,7 @@ put("/solutions/clinics", {
     links("clinic", "he"),
   ),
   es: page(
-    "Consultas, clientes y citas para una clínica | BizUply",
+    "Consultas, clientes y citas para una clínica | Bizuply",
     "Organice consultas, citas y seguimiento de una clínica en BizUply. Es un espacio operativo. No es un sistema de historia clínica y no afirma cumplir HIPAA ni una norma clínica.",
     "Clínicas",
     "Una clínica trabaja mejor cuando el día está en un solo espacio",
@@ -91,7 +91,7 @@ put("/solutions/clinics", {
     links("clinic", "es"),
   ),
   "pt-BR": page(
-    "Consultas, clientes e horários de uma clínica | BizUply",
+    "Consultas, clientes e horários de uma clínica | Bizuply",
     "Organize consultas, horários e acompanhamento de uma clínica na BizUply. É um espaço operacional. Não é prontuário e não afirma HIPAA nem conformidade clínica.",
     "Clínicas",
     "A clínica funciona melhor quando o dia está num único espaço",
@@ -111,7 +111,7 @@ put("/solutions/clinics", {
     links("clinic", "pt-BR"),
   ),
   ar: page(
-    "استفسارات العملاء والمواعيد لعيادة | BizUply",
+    "استفسارات العملاء والمواعيد لعيادة | Bizuply",
     "أديروا استفسارات العيادة ومواعيدها ومتابعتها في BizUply. هذه مساحة تشغيل. ليست نظام سجلات طبية ولا تدّعي HIPAA أو امتثالاً سريرياً.",
     "عيادات",
     "إدارة العيادة تبدأ بمساحة عمل مرتبة",

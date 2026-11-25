@@ -18,11 +18,11 @@ const CRM_SHEET = {
   slug: "crm-or-spreadsheet",
   path: "/compare/crm-or-spreadsheet",
   title: row(
-    "CRM or a spreadsheet for a small business | BizUply",
+    "CRM or a spreadsheet for a small business | Bizuply",
     "CRM או גיליון לעסק קטן | ביזאפלי",
-    "CRM o una hoja de cálculo para un negocio pequeño | BizUply",
-    "CRM ou uma planilha para um pequeno negócio | BizUply",
-    "CRM أو جدول لنشاط صغير | BizUply",
+    "CRM o una hoja de cálculo para un negocio pequeño | Bizuply",
+    "CRM ou uma planilha para um pequeno negócio | Bizuply",
+    "CRM أو جدول لنشاط صغير | Bizuply",
   ),
   description: row(
     "When a spreadsheet is enough for leads, and when a shared lead list is worth the move. Each side is named for what it is good at.",
@@ -165,11 +165,11 @@ const WA = {
   slug: "whatsapp-app-or-api",
   path: "/compare/whatsapp-app-or-api",
   title: row(
-    "WhatsApp Business app or the WhatsApp Business Platform | BizUply",
+    "WhatsApp Business app or the WhatsApp Business Platform | Bizuply",
     "אפליקציית WhatsApp Business או פלטפורמת WhatsApp | ביזאפלי",
-    "App WhatsApp Business o la plataforma de WhatsApp | BizUply",
-    "App WhatsApp Business ou a plataforma do WhatsApp | BizUply",
-    "تطبيق WhatsApp Business أو منصة واتساب | BizUply",
+    "App WhatsApp Business o la plataforma de WhatsApp | Bizuply",
+    "App WhatsApp Business ou a plataforma do WhatsApp | Bizuply",
+    "تطبيق WhatsApp Business أو منصة واتساب | Bizuply",
   ),
   description: row(
     "The app is for a person messaging in WhatsApp. The platform is the API a system uses, with templates and Meta's per-message charges. How to tell which one you need.",
@@ -368,7 +368,7 @@ export function compareIndex(locale) {
   };
   const pack = loc(row(
     {
-      title: "Comparisons | BizUply",
+      title: "Comparisons | Bizuply",
       description: "A CRM next to a spreadsheet, and the WhatsApp Business app next to the platform.",
       crumb: "Comparisons",
       h1: "Two ways to do the same work",
@@ -382,21 +382,21 @@ export function compareIndex(locale) {
       lede: "CRM לצד גיליון, ואפליקציית WhatsApp Business לצד הפלטפורמה. כל השוואה אומרת מה מקבלים ועל מה מוותרים.",
     },
     {
-      title: "Comparaciones | BizUply",
+      title: "Comparaciones | Bizuply",
       description: "Un CRM junto a una hoja de cálculo, y la app de WhatsApp Business junto a la plataforma.",
       crumb: "Comparaciones",
       h1: "Dos formas de hacer el mismo trabajo",
       lede: "Un CRM junto a una hoja de cálculo, y la app de WhatsApp Business junto a la plataforma. Cada comparación dice qué se gana y qué se deja.",
     },
     {
-      title: "Comparações | BizUply",
+      title: "Comparações | Bizuply",
       description: "Um CRM ao lado de uma planilha, e o app WhatsApp Business ao lado da plataforma.",
       crumb: "Comparações",
       h1: "Dois jeitos de fazer o mesmo trabalho",
       lede: "Um CRM ao lado de uma planilha, e o app WhatsApp Business ao lado da plataforma. Cada comparação diz o que se ganha e o que se deixa.",
     },
     {
-      title: "مقارنات | BizUply",
+      title: "مقارنات | Bizuply",
       description: "CRM إلى جانب جدول، وتطبيق WhatsApp Business إلى جانب المنصة.",
       crumb: "مقارنات",
       h1: "طريقتان للعمل نفسه",
