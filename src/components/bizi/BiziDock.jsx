@@ -5,26 +5,36 @@ import BiziCards from "./BiziCards";
 import "./biziDock.css";
 
 const STORE = "bizi-transcript";
+const POSE = "bizi-figure";
+
+function readTucked() {
+  try {
+    return sessionStorage.getItem(POSE) === "tucked";
+  } catch {
+    return false;
+  }
+}
 
 export default function BiziDock() {
   const { i18n } = useTranslation();
   const copy = biziCopy(i18n.language);
   const [open, setOpen] = useState(false);
   const [entered, setEntered] = useState(false);
-  const [pose, setPose] = useState("compact");
+  const [tucked, setTucked] = useState(readTucked);
+  const [shown, setShown] = useState(readTucked);
   const [figureReady, setFigureReady] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
   const faceRef = useRef(null);
+  const markRef = useRef(null);
   const listRef = useRef(null);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setEntered(true));
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const loadFigure = window.setTimeout(() => setFigureReady(true), 120);
-    const greet = reduced ? 0 : window.setTimeout(() => setPose("greet"), 280);
-    const tuck = reduced ? 0 : window.setTimeout(() => setPose("compact"), 4600);
+    const loadFigure = window.setTimeout(() => setFigureReady(true), 80);
+    const greet = window.setTimeout(() => setShown(true), reduced || readTucked() ? 0 : 40);
     try {
       const saved = JSON.parse(sessionStorage.getItem(STORE) || "[]");
       if (Array.isArray(saved)) setMessages(saved);
@@ -36,8 +46,7 @@ export default function BiziDock() {
     return () => {
       window.cancelAnimationFrame(frame);
       window.clearTimeout(loadFigure);
-      if (greet) window.clearTimeout(greet);
-      if (tuck) window.clearTimeout(tuck);
+      window.clearTimeout(greet);
       window.removeEventListener("bizuply:openSupportChat", openFromPage);
     };
   }, []);
@@ -94,38 +103,44 @@ export default function BiziDock() {
   }
 
   function toggle() {
-    const face = faceRef.current;
-    const first = face?.getBoundingClientRect();
     setOpen((value) => !value);
-    window.requestAnimationFrame(() => {
-      const next = faceRef.current?.getBoundingClientRect();
-      if (!first || !next || !faceRef.current) return;
-      const dx = first.left - next.left;
-      const dy = first.top - next.top;
-      const scale = first.width / next.width;
-      faceRef.current.style.transition = "none";
-      faceRef.current.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      window.requestAnimationFrame(() => {
-        if (!faceRef.current) return;
-        faceRef.current.style.transition = "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)";
-        faceRef.current.style.transform = "none";
-      });
-    });
+  }
+
+  function tuck(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const figure = faceRef.current;
+    const mark = markRef.current;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const finish = () => {
+      setTucked(true);
+      try {
+        sessionStorage.setItem(POSE, "tucked");
+      } catch {
+        /* keep the visual state for this page */
+      }
+    };
+    if (reduced || !figure || !mark) {
+      finish();
+      return;
+    }
+    const from = figure.getBoundingClientRect();
+    const to = mark.getBoundingClientRect();
+    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+    const scale = Math.max(0.12, to.width / from.width);
+    figure.style.transition = "transform 460ms cubic-bezier(0.22, 1, 0.36, 1)";
+    figure.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+    window.setTimeout(finish, 460);
   }
 
   return (
     <aside
-      className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${pose === "greet" || open ? " is-greet" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`}
+      className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${shown && !tucked ? " is-shown" : ""}${tucked ? " is-tucked" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`}
       dir={i18n.dir()}
-      onMouseEnter={() => {
-        if (!open && figureReady) setPose("greet");
-      }}
-      onMouseLeave={() => {
-        if (!open) setPose("compact");
-      }}
     >
       <div className="bizi-dock__shell">
-        {figureReady ? (
+        {figureReady && !tucked ? (
           <img
             ref={faceRef}
             className="bizi-dock__figure"
@@ -136,16 +151,27 @@ export default function BiziDock() {
             decoding="async"
           />
         ) : null}
+        {!tucked ? (
+          <button type="button" className="bizi-dock__x" onClick={tuck} aria-label={copy.hide}>
+            ×
+          </button>
+        ) : null}
         <header className="bizi-dock__bar">
           <button type="button" className="bizi-dock__hit" onClick={toggle} aria-expanded={open}>
-            <span className="bizi-dock__mark" aria-hidden="true">
-              <img src="/brand/mark.png" alt="" width="64" height="64" />
+            <span className="bizi-dock__mark" ref={markRef} aria-hidden="true">
+              <img src={tucked ? "/brand/bizi-advisor.webp" : "/brand/mark.png"} alt="" width="64" height="64" />
             </span>
             <span className="bizi-dock__copy">
               <strong>{open ? copy.title : copy.launcher}</strong>
               <small>{open ? copy.role : copy.launcherSub}</small>
             </span>
-            <span className="bizi-dock__chat" aria-hidden="true">{open ? "×" : ""}</span>
+            <span className="bizi-dock__chat" aria-hidden="true">
+              {open ? "×" : (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 5.5h14a1 1 0 0 1 1 1v8.2a1 1 0 0 1-1 1H9.2L5 19.2V6.5a1 1 0 0 1 1-1z" />
+                </svg>
+              )}
+            </span>
           </button>
         </header>
         {open ? (

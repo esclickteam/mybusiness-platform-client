@@ -433,13 +433,12 @@ body:has(.bz-world) .site-footer li { color: rgba(255,255,255,.88); }
 
 .sc-int { height: 165vh; background: #fff; }
 .sc-int .sc-pin { padding-top: 72px; padding-bottom: 28px; overflow: visible; }
-.tool-ring { position: relative; width: min(980px, calc(100% - 24px)); aspect-ratio: 980 / 560; height: auto; margin: 3.2rem auto 0; box-shadow: none; border: 0; }
-.tool-orbit { position: absolute; inset: 0; transform-origin: 50% 50%; animation: tool-orbit 72s linear infinite; }
+.tool-ring { position: relative; width: min(980px, calc(100% - 24px)); aspect-ratio: 980 / 560; height: auto; margin: 3.2rem auto 4.5rem; overflow: visible; box-shadow: none; border: 0; }
+.tool-orbit { position: absolute; inset: 0; overflow: visible; transform-origin: 50% 50%; animation: tool-orbit 72s linear infinite; }
 .ring-logo { position: absolute; z-index: 2; left: 50%; top: 50%; width: 20%; height: auto; background: none; border: 0; transform: translate(-50%, -50%); }
-.ring-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.ring-lines path { fill: none; stroke: rgba(37, 65, 245, 0.85); stroke-width: 1.6; stroke-linecap: round; }
-.ring-lines .ring-node { fill: #fff; stroke: #2541f5; stroke-width: 2; }
-.ring-lines .ring-runner { fill: #2541f5; }
+.ring-live { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.ring-live line { stroke: #2541f5; stroke-width: 2; stroke-linecap: round; }
+.ring-live circle { fill: #fff; stroke: #2541f5; stroke-width: 2; }
 .ring-slot { position: absolute; z-index: 3; width: 56px; height: 56px; transform: translate(-50%, -50%); }
 .ring-icon { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px rgba(17,25,54,.08); animation: tool-spin 72s linear infinite; }
 .ring-icon img, .ring-icon svg { width: 32px; height: 32px; }
@@ -504,7 +503,7 @@ body:has(.bz-world) .site-footer li { color: rgba(255,255,255,.88); }
   .deck-card .deck-tab { display: none; }
   .deck-ui { min-height: 240px; }
   .link-map { height: auto; display: grid; gap: 0.5rem; transform: none; }
-  .link-lines, .end-blue, .ring-lines, .ring-spark { display: none; }
+  .link-lines, .end-blue, .ring-lines, .ring-spark, .ring-live { display: none; }
   .sc-site { height: 480vh; }
   .sc-site .sc-pin { position: sticky; top: 0; height: 100svh; padding: 20px 0 8px; }
   .site-stage { height: calc(100svh - 250px); }

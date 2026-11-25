@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { getGuide } from "../../lib/guidesMarketing.mjs";
@@ -151,25 +151,74 @@ const RING = [
 
 const RING_BOX = { w: 980, h: 560, cx: 490, cy: 280 };
 
-function ringEnds(x: number, y: number) {
-  const len = Math.hypot(x, y) || 1;
-  const ux = x / len;
-  const uy = y / len;
-  const rx = 168;
-  const ry = 84;
-  const start = (rx * ry) / Math.hypot(ry * ux, rx * uy);
-  const end = Math.max(start + 36, len - 36);
-  return {
-    x1: RING_BOX.cx + ux * start,
-    y1: RING_BOX.cy + uy * start,
-    x2: RING_BOX.cx + ux * end,
-    y2: RING_BOX.cy + uy * end,
-  };
-}
-
-function ringPath(x: number, y: number) {
-  const { x1, y1, x2, y2 } = ringEnds(x, y);
-  return `M ${x1.toFixed(1)} ${y1.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+function RingWires() {
+  const svgRef = useRef<SVGSVGElement>(null);
+  useEffect(() => {
+    const svg = svgRef.current;
+    const ring = svg?.parentElement;
+    if (!svg || !ring) return undefined;
+    const lines = [...svg.querySelectorAll("line")];
+    const dots = [...svg.querySelectorAll("circle")];
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let frame = 0;
+    const draw = (time: number) => {
+      frame = window.requestAnimationFrame(draw);
+      if (document.hidden || getComputedStyle(svg).display === "none") return;
+      const box = ring.getBoundingClientRect();
+      svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
+      svg.setAttribute("preserveAspectRatio", "none");
+      const logo = ring.querySelector<HTMLElement>(".ring-logo")?.getBoundingClientRect();
+      const slots = [...ring.querySelectorAll<HTMLElement>(".ring-icon")];
+      if (!logo || slots.length !== lines.length || box.width < 40) return;
+      const lx = logo.left + logo.width / 2 - box.left;
+      const ly = logo.top + logo.height / 2 - box.top;
+      const hw = logo.width / 2 + 20;
+      const hh = logo.height / 2 + 20;
+      slots.forEach((icon, index) => {
+        const bounds = icon.getBoundingClientRect();
+        const ix = bounds.left + bounds.width / 2 - box.left;
+        const iy = bounds.top + bounds.height / 2 - box.top;
+        const dx = lx - ix;
+        const dy = ly - iy;
+        const len = Math.hypot(dx, dy) || 1;
+        const ux = dx / len;
+        const uy = dy / len;
+        const x1 = ix + ux * (bounds.width / 2);
+        const y1 = iy + uy * (bounds.height / 2);
+        const vx = -ux;
+        const vy = -uy;
+        const tx = Math.abs(vx) < 1e-4 ? Infinity : hw / Math.abs(vx);
+        const ty = Math.abs(vy) < 1e-4 ? Infinity : hh / Math.abs(vy);
+        const edge = Math.min(tx, ty);
+        let x2 = lx + vx * edge;
+        let y2 = ly + vy * edge;
+        const span = Math.hypot(x2 - x1, y2 - y1);
+        if (span < 12) {
+          x2 = x1 + ux * 12;
+          y2 = y1 + uy * 12;
+        }
+        lines[index].setAttribute("x1", x1.toFixed(2));
+        lines[index].setAttribute("y1", y1.toFixed(2));
+        lines[index].setAttribute("x2", x2.toFixed(2));
+        lines[index].setAttribute("y2", y2.toFixed(2));
+        const travel = reduced ? 0.55 : ((time / 2600) + index / RING.length) % 1;
+        dots[index].setAttribute("cx", (x1 + (x2 - x1) * travel).toFixed(2));
+        dots[index].setAttribute("cy", (y1 + (y2 - y1) * travel).toFixed(2));
+      });
+    };
+    frame = window.requestAnimationFrame(draw);
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  return (
+    <svg className="ring-live" ref={svgRef} aria-hidden="true">
+      {RING.map((item) => (
+        <g key={item.id}>
+          <line x1="0" y1="0" x2="0" y2="0" />
+          <circle r="3.5" />
+        </g>
+      ))}
+    </svg>
+  );
 }
 
 function localeOf(language: string) {
@@ -603,24 +652,9 @@ export default function ShowHome({ language }: { language: string }) {
               <p>{t("השיווק, הפניות והלקוחות מגיעים לסביבת העבודה של Bizuply", "Marketing, enquiries and customers reach the Bizuply workspace")}</p>
             </header>
             <div className="tool-ring">
+              <RingWires />
               <img className="ring-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
               <div className="tool-orbit">
-                <svg className="ring-lines" viewBox={`0 0 ${RING_BOX.w} ${RING_BOX.h}`} aria-hidden="true">
-                  {RING.map((item, index) => {
-                    const ends = ringEnds(item.x, item.y);
-                    return (
-                      <g key={item.id}>
-                        <path id={`ring-line-${item.id}`} d={ringPath(item.x, item.y)} />
-                        <circle className="ring-node" cx={(ends.x1 + ends.x2) / 2} cy={(ends.y1 + ends.y2) / 2} r="3.2" />
-                        <circle className="ring-runner" r="3.4">
-                          <animateMotion dur="6.5s" repeatCount="indefinite" begin={`${index * -0.9}s`}>
-                            <mpath href={`#ring-line-${item.id}`} />
-                          </animateMotion>
-                        </circle>
-                      </g>
-                    );
-                  })}
-                </svg>
                 {RING.map((item) => {
                   const len = Math.hypot(item.x, item.y) || 1;
                   return (
@@ -636,8 +670,8 @@ export default function ShowHome({ language }: { language: string }) {
                       <span
                         className="ring-arm"
                         style={{
-                          ["--ox" as string]: `${((item.x / len) * 100).toFixed(1)}px`,
-                          ["--oy" as string]: `${((item.y / len) * 74).toFixed(1)}px`,
+                          ["--ox" as string]: `${((item.x / len) * 152).toFixed(1)}px`,
+                          ["--oy" as string]: `${((item.y / len) * 118).toFixed(1)}px`,
                         }}
                       >
                         <span className="ring-copy">

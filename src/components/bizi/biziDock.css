@@ -32,29 +32,50 @@ body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
 .bizi-dock__figure {
   position: absolute;
   z-index: 1;
-  inset-inline-start: 8px;
-  bottom: 46px;
+  inset-inline-start: 10px;
+  top: -158px;
   width: auto;
   height: 200px;
   max-height: 210px;
   object-fit: contain;
   object-position: center bottom;
   pointer-events: none;
+  transform-origin: center center;
   opacity: 0;
-  transform: translateY(42%);
-  transition: opacity 520ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(28px);
+  transition: opacity 500ms ease, transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.bizi-dock.is-greet .bizi-dock__figure,
-.bizi-dock.is-open .bizi-dock__figure {
+.bizi-dock.is-shown .bizi-dock__figure {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
 }
 
-.bizi-dock.is-open .bizi-dock__figure {
-  height: 132px;
-  bottom: auto;
-  top: -78px;
+.bizi-dock__x {
+  position: absolute;
+  z-index: 4;
+  top: -150px;
+  inset-inline-start: 168px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: #111936;
+  font-size: 15px;
+  line-height: 22px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(17, 25, 54, 0.16);
+  pointer-events: auto;
+}
+
+.bizi-dock.is-tucked .bizi-dock__mark img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 14%;
 }
 
 .bizi-dock.is-in .bizi-dock__shell {
@@ -123,11 +144,10 @@ body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
   place-items: center;
   width: 28px;
   height: 28px;
-  border-radius: 50%;
-  background: #edff00;
   color: #111936;
   font-weight: 800;
 }
+.bizi-dock__chat svg { width: 22px; height: 22px; fill: #111936; }
 
 .bizi-dock:not(.is-open) .bizi-dock__shell:hover {
   box-shadow: 0 18px 40px rgba(37, 65, 245, 0.28);
@@ -180,7 +200,8 @@ body:has(.cookie-banner--manage) .bizi-dock { bottom: calc(min(70dvh, 36rem) + 1
   .bizi-dock.is-open { width: calc(100vw - 16px); left: 8px; right: auto; }
   .bizi-dock.is-ltr.is-open { left: auto; right: 8px; }
   .bizi-dock.is-open .bizi-dock__shell { height: min(78vh, 700px); }
-  .bizi-dock:not(.is-open) .bizi-dock__figure { display: none; }
+  .bizi-dock__figure { height: 132px; top: -104px; }
+  .bizi-dock__x { top: -98px; inset-inline-start: 108px; }
   .bizi-dock__copy small { display: none; }
   .bizi-dock__bar { min-height: 58px; }
 }
@@ -189,5 +210,5 @@ body:has(.cookie-banner--manage) .bizi-dock { bottom: calc(min(70dvh, 36rem) + 1
   .bizi-dock.is-in .bizi-dock__shell,
   .bizi-dock__copy,
   .bizi-dock__figure { animation: none; transition: none; }
-  .bizi-dock:not(.is-open) .bizi-dock__figure { display: none; }
+  .bizi-dock__figure { opacity: 1; transform: none; transition: none; }
 }
