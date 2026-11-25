@@ -29,54 +29,6 @@ body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
   transition: border-radius 420ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 420ms ease;
 }
 
-.bizi-dock__figure {
-  position: absolute;
-  z-index: 1;
-  inset-inline-start: 10px;
-  top: -158px;
-  width: auto;
-  height: 200px;
-  max-height: 210px;
-  object-fit: contain;
-  object-position: center bottom;
-  pointer-events: none;
-  transform-origin: center center;
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 500ms ease, transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.bizi-dock.is-shown .bizi-dock__figure {
-  opacity: 1;
-  transform: none;
-}
-
-.bizi-dock__x {
-  position: absolute;
-  z-index: 4;
-  top: -150px;
-  inset-inline-start: 168px;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.94);
-  color: #111936;
-  font-size: 15px;
-  line-height: 22px;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(17, 25, 54, 0.16);
-  pointer-events: auto;
-}
-
-.bizi-dock.is-tucked .bizi-dock__mark img {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-  object-position: center 18%;
-}
 
 .bizi-dock.is-in .bizi-dock__shell {
   animation: bizi-grow 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -111,7 +63,13 @@ body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
   box-shadow: 0 6px 16px rgba(17, 25, 54, 0.16);
 }
 
-.bizi-dock__mark img { width: 26px; height: 26px; object-fit: contain; }
+.bizi-dock__mark img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center 18%;
+}
 
 .bizi-dock__hit {
   display: flex;
@@ -200,15 +158,11 @@ body:has(.cookie-banner--manage) .bizi-dock { bottom: calc(min(70dvh, 36rem) + 1
   .bizi-dock.is-open { width: calc(100vw - 16px); left: 8px; right: auto; }
   .bizi-dock.is-ltr.is-open { left: auto; right: 8px; }
   .bizi-dock.is-open .bizi-dock__shell { height: min(78vh, 700px); }
-  .bizi-dock__figure { height: 132px; top: -104px; }
-  .bizi-dock__x { top: -98px; inset-inline-start: 108px; }
   .bizi-dock__copy small { display: none; }
   .bizi-dock__bar { min-height: 58px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .bizi-dock.is-in .bizi-dock__shell,
-  .bizi-dock__copy,
-  .bizi-dock__figure { animation: none; transition: none; }
-  .bizi-dock__figure { opacity: 1; transform: none; transition: none; }
+  .bizi-dock__copy { animation: none; transition: none; }
 }

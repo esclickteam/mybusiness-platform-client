@@ -1,40 +1,23 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { biziCopy } from "./biziPublic";
 import BiziCards from "./BiziCards";
 import "./biziDock.css";
 
 const STORE = "bizi-transcript";
-const POSE = "bizi-figure";
-
-function readTucked() {
-  try {
-    return sessionStorage.getItem(POSE) === "tucked";
-  } catch {
-    return false;
-  }
-}
 
 export default function BiziDock() {
   const { i18n } = useTranslation();
   const copy = biziCopy(i18n.language);
   const [open, setOpen] = useState(false);
   const [entered, setEntered] = useState(false);
-  const [tucked, setTucked] = useState(readTucked);
-  const [shown, setShown] = useState(readTucked);
-  const [figureReady, setFigureReady] = useState(false);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState([]);
-  const faceRef = useRef(null);
-  const markRef = useRef(null);
   const listRef = useRef(null);
 
   useEffect(() => {
     const frame = window.requestAnimationFrame(() => setEntered(true));
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const loadFigure = window.setTimeout(() => setFigureReady(true), 80);
-    const greet = window.setTimeout(() => setShown(true), reduced || readTucked() ? 0 : 40);
     try {
       const saved = JSON.parse(sessionStorage.getItem(STORE) || "[]");
       if (Array.isArray(saved)) setMessages(saved);
@@ -45,29 +28,9 @@ export default function BiziDock() {
     window.addEventListener("bizuply:openSupportChat", openFromPage);
     return () => {
       window.cancelAnimationFrame(frame);
-      window.clearTimeout(loadFigure);
-      window.clearTimeout(greet);
       window.removeEventListener("bizuply:openSupportChat", openFromPage);
     };
   }, []);
-
-  useLayoutEffect(() => {
-    const figure = faceRef.current;
-    const shell = figure?.parentElement;
-    const text = shell?.querySelector(".bizi-dock__copy strong");
-    const close = shell?.querySelector(".bizi-dock__x");
-    if (!figure || !shell || !text) return undefined;
-    const place = () => {
-      const height = figure.getBoundingClientRect().height;
-      if (height < 40) return;
-      const top = text.getBoundingClientRect().top - shell.getBoundingClientRect().top - 10 - height;
-      figure.style.top = `${top}px`;
-      if (close) close.style.top = `${top + 8}px`;
-    };
-    place();
-    window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
-  }, [i18n.language, figureReady, open, tucked, shown]);
 
   useEffect(() => {
     try {
@@ -124,60 +87,16 @@ export default function BiziDock() {
     setOpen((value) => !value);
   }
 
-  function tuck(event) {
-    event.preventDefault();
-    event.stopPropagation();
-    const figure = faceRef.current;
-    const mark = markRef.current;
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const finish = () => {
-      setTucked(true);
-      try {
-        sessionStorage.setItem(POSE, "tucked");
-      } catch {
-        /* keep the visual state for this page */
-      }
-    };
-    if (reduced || !figure || !mark) {
-      finish();
-      return;
-    }
-    const from = figure.getBoundingClientRect();
-    const to = mark.getBoundingClientRect();
-    const dx = to.left + to.width / 2 - (from.left + from.width / 2);
-    const dy = to.top + to.height / 2 - (from.top + from.height / 2);
-    const scale = Math.max(0.12, to.width / from.width);
-    figure.style.transition = "transform 460ms cubic-bezier(0.22, 1, 0.36, 1)";
-    figure.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-    window.setTimeout(finish, 460);
-  }
-
   return (
     <aside
-      className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${shown && !tucked ? " is-shown" : ""}${tucked ? " is-tucked" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`}
+      className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`}
       dir={i18n.dir()}
     >
       <div className="bizi-dock__shell">
-        {figureReady && !tucked ? (
-          <img
-            ref={faceRef}
-            className="bizi-dock__figure"
-            src="/brand/bizi-advisor.webp"
-            alt=""
-            width="840"
-            height="840"
-            decoding="async"
-          />
-        ) : null}
-        {!tucked ? (
-          <button type="button" className="bizi-dock__x" onClick={tuck} aria-label={copy.hide}>
-            ×
-          </button>
-        ) : null}
         <header className="bizi-dock__bar">
           <button type="button" className="bizi-dock__hit" onClick={toggle} aria-expanded={open}>
-            <span className="bizi-dock__mark" ref={markRef} aria-hidden="true">
-              <img src={tucked ? "/brand/bizi-advisor.webp" : "/brand/mark.png"} alt="" width="840" height="840" />
+            <span className="bizi-dock__mark" aria-hidden="true">
+              <img src="/brand/bizi-advisor.webp" alt="" width="840" height="840" />
             </span>
             <span className="bizi-dock__copy">
               <strong>{open ? copy.title : copy.launcher}</strong>
