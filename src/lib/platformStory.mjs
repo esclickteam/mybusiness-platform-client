@@ -268,7 +268,21 @@ const STORIES = {
   ar: packLocale("ar"),
 };
 
+import { platformOverview } from "./platformOverview.mjs";
+
 export function platformStory(locale) {
-  if (locale === "pt") return STORIES["pt-BR"];
-  return STORIES[locale] || STORIES.en;
+  const language = locale === "pt" ? "pt-BR" : locale;
+  const base = STORIES[language] || STORIES.en;
+  const next = platformOverview(language);
+  return {
+    ...base,
+    title: next.title,
+    description: next.description,
+    h1: next.h1,
+    lede: next.lede,
+    sections: next.sections,
+    steps: next.steps,
+    compare: next.compare,
+    ui: next.ui,
+  };
 }
