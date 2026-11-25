@@ -33,6 +33,41 @@ export default function BiziDock() {
   }, []);
 
   useEffect(() => {
+    const sync = () => {
+      const banner = document.querySelector(".cookie-banner--notice, .cookie-banner--manage");
+      const height = banner && window.innerWidth <= 720 ? Math.ceil(banner.getBoundingClientRect().height) : 0;
+      document.documentElement.style.setProperty("--bizi-cookie", `${height}px`);
+    };
+    sync();
+    const observer = new ResizeObserver(sync);
+    const banner = document.querySelector(".cookie-banner");
+    if (banner) observer.observe(banner);
+    window.addEventListener("resize", sync);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", sync);
+      document.documentElement.style.removeProperty("--bizi-cookie");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open || !window.visualViewport) return undefined;
+    const viewport = window.visualViewport;
+    const sync = () => {
+      const overlap = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      document.documentElement.style.setProperty("--bizi-kb", `${Math.round(overlap)}px`);
+    };
+    sync();
+    viewport.addEventListener("resize", sync);
+    viewport.addEventListener("scroll", sync);
+    return () => {
+      viewport.removeEventListener("resize", sync);
+      viewport.removeEventListener("scroll", sync);
+      document.documentElement.style.removeProperty("--bizi-kb");
+    };
+  }, [open]);
+
+  useEffect(() => {
     try {
       sessionStorage.setItem(STORE, JSON.stringify(messages.slice(-40)));
     } catch {

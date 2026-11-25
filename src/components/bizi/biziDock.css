@@ -153,13 +153,50 @@ body:has(.cookie-banner--notice) .bizi-dock { bottom: 132px; }
 body:has(.cookie-banner--manage) .bizi-dock { bottom: calc(min(70dvh, 36rem) + 16px); }
 
 @media (max-width: 720px) {
-  .bizi-dock { left: 12px; right: auto; bottom: 12px; width: min(250px, calc(100vw - 88px)); }
-  .bizi-dock.is-ltr { left: auto; right: 12px; }
-  .bizi-dock.is-open { width: calc(100vw - 16px); left: 8px; right: auto; }
-  .bizi-dock.is-ltr.is-open { left: auto; right: 8px; }
-  .bizi-dock.is-open .bizi-dock__shell { height: min(78vh, 700px); }
-  .bizi-dock__copy small { display: none; }
-  .bizi-dock__bar { min-height: 58px; }
+  .bizi-dock,
+  .bizi-dock.is-in {
+    left: 16px;
+    right: auto;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    width: 58px;
+    height: 58px;
+  }
+  .bizi-dock.is-ltr { left: auto; right: 16px; }
+  .bizi-dock.is-in .bizi-dock__shell { animation: none; }
+  .bizi-dock:not(.is-open) .bizi-dock__shell {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    box-shadow: 0 8px 18px rgba(17, 25, 54, 0.18);
+  }
+  .bizi-dock:not(.is-open) .bizi-dock__copy,
+  .bizi-dock:not(.is-open) .bizi-dock__chat { display: none; }
+  .bizi-dock:not(.is-open) .bizi-dock__bar { min-height: 0; padding: 0; }
+  .bizi-dock:not(.is-open) .bizi-dock__hit { min-height: 58px; width: 58px; justify-content: center; }
+  .bizi-dock:not(.is-open) .bizi-dock__mark,
+  .bizi-dock:not(.is-open) .bizi-dock__mark img { width: 100%; height: 100%; box-shadow: none; }
+  .bizi-dock.is-open {
+    width: calc(100vw - 16px);
+    height: auto;
+    left: 8px;
+    right: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom) + var(--bizi-kb, 0px));
+  }
+  .bizi-dock.is-ltr.is-open { left: 8px; right: 8px; }
+  .bizi-dock.is-open .bizi-dock__shell {
+    height: min(78dvh, 700px);
+    max-height: calc(100dvh - 16px - env(safe-area-inset-bottom) - var(--bizi-kb, 0px));
+  }
+  .bizi-dock.is-open .bizi-dock__copy small { display: block; }
+  .bizi-dock:not(.is-open),
+  body:has(.cookie-banner--notice) .bizi-dock:not(.is-open),
+  body:has(.cookie-banner--manage) .bizi-dock:not(.is-open) {
+    bottom: calc(16px + var(--bizi-cookie, 0px) + env(safe-area-inset-bottom));
+  }
+  body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left,
+  body:has(.bizi-dock.is-ltr) .bizuply-a11y-trigger--right {
+    bottom: calc(16px + 58px + 12px + var(--bizi-cookie, 0px) + env(safe-area-inset-bottom)) !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
