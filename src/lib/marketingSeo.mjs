@@ -76,7 +76,7 @@ ${MARKETING_ROBOTS_RULES}
 Sitemap: https://bizuply.com/sitemap.xml
 `;
 
-const OG_IMAGE = "https://bizuply.com/bizuply%20logo.png";
+const OG_IMAGE = "https://bizuply.com/brand/logo.png";
 const ABOUT_OG_IMAGE = "https://bizuply.com/images/about/og.png";
 const ORGANIZATION_LOGO = "https://bizuply.com/brand/logo.png";
 const FACEBOOK_DOMAIN_VERIFICATION = "azd93f5jgru1b53xrjj0dqaco20viu";

@@ -1,10 +1,10 @@
 .site-footer,
 .site-footer.hx-footer {
   margin: 0;
-  color: #111936;
+  color: #fff;
   padding: 3.5rem 0 0;
   border-top: 0;
-  background: #f4f6ff;
+  background: #111936;
 }
 
 .site-footer__main,
@@ -30,20 +30,23 @@
   box-shadow: none;
 }
 
-.site-footer__logo--dark { display: none; }
-
-body:has(.bz-world) .site-footer__logo--light { display: none; }
-body:has(.bz-world) .site-footer__logo--dark { display: block; }
+.site-footer__brand img.site-footer__logo--light { display: none; }
+.site-footer__brand img.site-footer__logo--dark { display: block; }
 
 body:has(.bz-world) .site-footer__bar {
   background: #111936;
   color: #fff;
 }
 
+.site-footer p,
+.site-footer a,
+.site-footer h2,
+.site-footer li { color: rgba(255,255,255,.88); }
+
 .site-footer__brand p {
   max-width: 16rem;
   margin: 0.9rem 0 0;
-  color: #534c66;
+  color: rgba(255,255,255,.88);
   font-size: 0.98rem;
   font-weight: 500;
   line-height: 1.6;
@@ -51,7 +54,7 @@ body:has(.bz-world) .site-footer__bar {
 
 .site-footer__col h2 {
   margin: 0 0 0.9rem;
-  color: #1a2fd0;
+  color: rgba(255,255,255,.88);
   font-size: 0.95rem;
   font-weight: 700;
   letter-spacing: 0.01em;
@@ -69,7 +72,7 @@ body:has(.bz-world) .site-footer__bar {
 .site-footer__col a,
 .site-footer__legal a,
 .site-footer__social a {
-  color: #111936;
+  color: rgba(255,255,255,.88);
   font-size: 0.98rem;
   font-weight: 500;
   line-height: 1.45;
@@ -88,7 +91,7 @@ body:has(.bz-world) .site-footer__bar {
   border: 0;
   background: none;
   padding: 0;
-  color: #111936;
+  color: rgba(255,255,255,.88);
   font: inherit;
   font-size: 0.98rem;
   font-weight: 500;
@@ -113,7 +116,7 @@ body:has(.bz-world) .site-footer__bar {
   margin-inline: 0;
   padding: 1.15rem max(1.2rem, calc((100% - 1180px) / 2)) 1.35rem;
   border-top: 0;
-  background: #171b42;
+  background: #111936;
   color: #f4f1ff;
 }
 

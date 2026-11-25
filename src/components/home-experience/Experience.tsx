@@ -82,7 +82,7 @@ const EN: Copy = {
   ask: "Ask Bizi",
   close: "It’s time to connect the whole business.",
   closeLead: "Customers, marketing, conversations and workflows — on one platform.",
-  start: "Start for free",
+  start: "Get Started",
   demo: "Schedule a personal demo",
   sample: "Sample",
 };
@@ -121,7 +121,7 @@ const HE: Copy = {
   ask: "שאלו את Bizi",
   close: "הגיע הזמן לחבר את כל העסק שלכם.",
   closeLead: "לקוחות, שיווק, שיחות ותהליכי עבודה — בפלטפורמה אחת.",
-  start: "התחילו בחינם",
+  start: "התחילו עכשיו",
   demo: "קבעו הדגמה אישית",
   sample: "דוגמה",
 };

@@ -40,7 +40,7 @@ const T = {
     "Bizuply منصة متصلة لإدارة النشاط. تجمع علاقة العملاء والنشاط التسويقي والعمل اليومي في مساحة رقمية واحدة. تتشارك الوحدات المدعومة المعلومات ذات الصلة، فتنتقلون من إجراء إلى الذي يليه بترتيب.",
   ],
   meet: ["הכירו את סביבת העבודה", "See the workspace", "Ver el espacio de trabajo", "Ver o espaço de trabalho", "تعرّفوا على مساحة العمل"],
-  start: ["התחילו בחינם", "Start for free", "Empiecen gratis", "Comecem grátis", "ابدأوا مجاناً"],
+  start: ["התחילו עכשיו", "Get Started", "Empieza ahora", "Comece agora", "ابدأ الآن"],
   demo: ["קבעו הדגמה", "Book a demo", "Reserven una demostración", "Marquem uma demonstração", "احجزوا عرضاً"],
   plans: ["השוו בין החבילות", "Compare plans", "Comparen los planes", "Comparem os planos", "قارنوا الباقات"],
   sStruct: ["מה הופך מספר כלי עבודה לפלטפורמה עסקית אחת", "What turns several tools into one business platform", "Qué convierte varias herramientas en una plataforma", "O que transforma várias ferramentas numa plataforma", "ما الذي يحوّل عدة أدوات إلى منصة واحدة"],

@@ -1022,7 +1022,6 @@ export default function App() {
   const isCinematicHome =
     !isPrivateOwnerHost &&
     (location.pathname === "/" || isHomePreview);
-  const shareSiteHeader = isCinematicHome || /\/website-scan\/?$/.test(location.pathname) || /\/seo-scanner\/?$/.test(location.pathname);
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -1219,6 +1218,7 @@ export default function App() {
     !isPublicPartnerSales &&
     !isBizuplyPublicBookingRoute;
   const scanFilm = /\/compliance\/demo\/?$/.test(location.pathname) && new URLSearchParams(location.search).get("film") === "1";
+  const shareSiteHeader = !isWorkspaceRoute && !isBusinessChatRoute && !isMiniSiteHost;
 
   return (
     <NotificationsProvider>

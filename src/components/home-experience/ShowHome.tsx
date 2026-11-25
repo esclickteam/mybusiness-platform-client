@@ -834,7 +834,7 @@ export default function ShowHome({ language }: { language: string }) {
             <h2>{t("הגיע הזמן לקחת את העסק שלכם קדימה.", "Your next big step starts here.")}</h2>
             <p>{t("כל הכלים לניהול העסק, הלקוחות והשיווק שלכם. בפלטפורמה אחת.", "Every tool for the business, the customers and the marketing. On one platform.")}</p>
             <div className="end-actions">
-              <Link className="sh-go" to="/register">{t("התחילו בחינם", "Start for free")}</Link>
+              <Link className="sh-go" to="/register">{t("התחילו עכשיו", "Get Started")}</Link>
               <Link className="sh-go is-line" to="/contact">{t("קבעו הדגמה אישית", "Schedule a personal demo")}</Link>
             </div>
           </div>

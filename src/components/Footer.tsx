@@ -57,7 +57,7 @@ export default function Footer() {
   const language = normalizeLanguage(i18n.language);
   const footerDir = getTextDirection(language);
   const region = coerceSupportedLanguage(i18n.language);
-  const logoAlt = language === "he" ? "ביזאפלי (BizUply)" : "BizUply";
+  const logoAlt = language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
 
   const columns: { title: string; links: FooterLink[] }[] = [
     {

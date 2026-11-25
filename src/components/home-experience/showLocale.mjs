@@ -39,7 +39,7 @@ const COPY = {
   "Guides": ["Guías", "Guias", "أدلة"],
   "Your next big step starts here.": ["El siguiente gran paso empieza aquí.", "O próximo grande passo começa aqui.", "خطوتكم الكبيرة التالية تبدأ هنا."],
   "Every tool for the business, the customers and the marketing. On one platform.": ["Todas las herramientas del negocio, los clientes y el marketing. En una plataforma.", "Todas as ferramentas do negócio, dos clientes e do marketing. Em uma plataforma.", "كل أدوات العمل والعملاء والتسويق. في منصة واحدة."],
-  "Start for free": ["Empiece gratis", "Comece grátis", "ابدأوا مجاناً"],
+  "Get Started": ["Empieza ahora", "Comece agora", "ابدأ الآن"],
   "Schedule a personal demo": ["Reserve una demo personal", "Agende uma demo pessoal", "احجزوا عرضاً شخصياً"],
   "Request": ["Solicitud", "Pedido", "طلب"],
   "Working": ["En proceso", "Em andamento", "قيد العمل"],

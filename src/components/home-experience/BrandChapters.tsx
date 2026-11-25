@@ -366,7 +366,7 @@ function Close({ language }: { language: string }) {
           })}
         </p>
         <div className="bz-final__actions">
-          <Link to="/register">{say(language, { he: "התחילו בחינם", en: "Start for free", es: "Empiece gratis", pt: "Comece grátis", ar: "ابدأوا مجاناً" })}</Link>
+          <Link to="/register">{say(language, { he: "התחילו עכשיו", en: "Get Started", es: "Empieza ahora", pt: "Comece agora", ar: "ابدأ الآن" })}</Link>
           <Link to="/pricing">{say(language, { he: "למחירים", en: "See pricing", es: "Ver precios", pt: "Ver preços", ar: "الأسعار" })}</Link>
         </div>
       </section>

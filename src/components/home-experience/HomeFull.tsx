@@ -164,7 +164,7 @@ export default function HomeFull({ language }: { language: string }) {
           <h2>{t("הגיע הזמן לחבר את כל העסק שלכם.", "It’s time to connect the whole business.")}</h2>
           <p style={{ marginInline: "auto" }}>{t("כלים לניהול לקוחות, שיווק, תקשורת ותהליכי עבודה — בפלטפורמה אחת.", "Tools for customers, marketing, communication and workflows — on one platform.")}</p>
           <div style={{ display: "flex", gap: "0.7rem", justifyContent: "center", flexWrap: "wrap" }}>
-            <Link className="bz-link" to="/register">{t("התחילו בחינם", "Start for free")}</Link>
+            <Link className="bz-link" to="/register">{t("התחילו עכשיו", "Get Started")}</Link>
             <Link className="bz-link" to="/contact" style={{ background: "transparent", color: "#111936", border: "2px solid #111936" }}>{t("קבעו הדגמה אישית", "Schedule a personal demo")}</Link>
           </div>
         </div>
