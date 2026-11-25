@@ -5,8 +5,8 @@
 
 const HERO = {
   en: {
-    lineOne: "Your whole business in one system with endless possibilities",
-    lineTwo: "",
+    lineOne: "Your whole business in one place",
+    lineTwo: "CRM, leads, WhatsApp, automations, campaigns and a website in one system",
     lineThree: "",
     kicker: "The smart platform for running a business",
     lead1:
@@ -51,8 +51,8 @@ const HERO = {
     ],
   },
   he: {
-    lineOne: "כל העסק שלך במערכת אחת עם אינסוף אפשרויות",
-    lineTwo: "",
+    lineOne: "כל העסק שלכם במקום אחד",
+    lineTwo: "CRM, לידים, WhatsApp, אוטומציות, קמפיינים ואתר במערכת אחת",
     lineThree: "",
     kicker: "הפלטפורמה החכמה לניהול העסק",
     lead1:
@@ -97,8 +97,8 @@ const HERO = {
     ],
   },
   es: {
-    lineOne: "Todo tu negocio en un sistema con posibilidades infinitas",
-    lineTwo: "",
+    lineOne: "Todo su negocio en un solo lugar",
+    lineTwo: "CRM, leads, WhatsApp, automatizaciones, campañas y un sitio en un sistema",
     lineThree: "",
     kicker: "La plataforma inteligente para gestionar el negocio",
     lead1:
@@ -143,8 +143,8 @@ const HERO = {
     ],
   },
   "pt-BR": {
-    lineOne: "Todo o seu negócio em um sistema com possibilidades infinitas",
-    lineTwo: "",
+    lineOne: "Todo o seu negócio em um só lugar",
+    lineTwo: "CRM, leads, WhatsApp, automações, campanhas e um site em um sistema",
     lineThree: "",
     kicker: "A plataforma inteligente para gerir o negócio",
     lead1:
@@ -189,8 +189,8 @@ const HERO = {
     ],
   },
   ar: {
-    lineOne: "كل عملك في نظام واحد مع احتمالات بلا حدود",
-    lineTwo: "",
+    lineOne: "كل عملكم في مكان واحد",
+    lineTwo: "CRM والعملاء المحتملون وWhatsApp والأتمتة والحملات وموقع في نظام واحد",
     lineThree: "",
     kicker: "المنصة الذكية لإدارة العمل",
     lead1:

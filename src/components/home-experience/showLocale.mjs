@@ -27,7 +27,7 @@ const COPY = {
   "Marketing agencies": ["Agencias de marketing", "Agências de marketing", "وكالات التسويق"],
   "Teams": ["Equipos", "Equipes", "الفرق"],
   "From the first enquiry through the next step.": ["De la primera consulta al siguiente paso.", "Do primeiro contato ao próximo passo.", "من أول طلب إلى الخطوة التالية."],
-  "All your tools connected in one place": ["Todas sus herramientas conectadas en un solo lugar", "Todas as suas ferramentas ligadas num só lugar", "كل أدواتكم متصلة في مكان واحد"],
+  "All your work channels connected in one place": ["Todos sus canales de trabajo conectados en un solo lugar", "Todos os seus canais de trabalho ligados num só lugar", "كل قنوات العمل لديكم متصلة في مكان واحد"],
   "Marketing, enquiries and customers reach the Bizuply workspace": ["El marketing, las consultas y los clientes llegan al espacio de trabajo de Bizuply", "O marketing, os contatos e os clientes chegam ao espaço de trabalho da Bizuply", "يصل التسويق والطلبات والعملاء إلى مساحة عمل Bizuply"],
   "Big opportunities start with a partnership.": ["Las grandes oportunidades empiezan con una colaboración.", "As grandes oportunidades começam com uma parceria.", "الفرص الكبيرة تبدأ بشراكة."],
   "Partner program": ["Programa de partners", "Programa de parceiros", "برنامج الشركاء"],

@@ -428,17 +428,26 @@ body:has(.bz-world) .site-footer li { color: rgba(255,255,255,.88); }
 .deck-ui img { width: 100%; height: 100%; object-fit: contain; object-position: center top; background: #fff; }
 
 .sc-int { height: 165vh; background: #fff; }
-.sc-int .sc-pin { padding-top: 64px; padding-bottom: 24px; }
-.tool-ring { position: relative; width: min(980px, 100%, calc(62vh * 980 / 560)); aspect-ratio: 980 / 560; height: auto; margin: 0.2rem auto 0; box-shadow: none; }
-.ring-logo { position: absolute; z-index: 1; left: 50%; top: 50%; width: 22%; height: auto; background: none; border: 0; transform: translate(-50%, -50%) scale(calc(0.92 + min(var(--p, 0) * 4, 1) * 0.08)); }
+.sc-int .sc-pin { padding-top: 72px; padding-bottom: 28px; overflow: visible; }
+.tool-ring { position: relative; width: min(980px, calc(100% - 24px)); aspect-ratio: 980 / 560; height: auto; margin: 3.2rem auto 0; box-shadow: none; border: 0; }
+.tool-orbit { position: absolute; inset: 0; transform-origin: 50% 50%; animation: tool-orbit 72s linear infinite; }
+.ring-logo { position: absolute; z-index: 2; left: 50%; top: 50%; width: 20%; height: auto; background: none; border: 0; transform: translate(-50%, -50%); }
 .ring-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-.ring-lines path { fill: none; stroke: #2541f5; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.22) / 0.4, 1)); }
-.ring-mark { position: absolute; z-index: 2; width: 72px; height: 72px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px rgba(17,25,54,.08); cursor: pointer; transform: translate(-50%, -50%) scale(calc(0.9 + clamp(0, (var(--p, 0) - 0.05) / 0.35, 1) * 0.1)); opacity: clamp(0.15, calc(var(--p, 0) * 2.4), 1); }
-.ring-mark img, .ring-mark svg { width: 40px; height: 40px; }
-.ring-name { position: absolute; left: 50%; top: 50%; width: max-content; max-width: none; font-size: 13px; font-weight: 750; line-height: 1.25; color: #111936; white-space: nowrap; text-align: center; pointer-events: none; transform: translate(-50%, -50%) translate(calc(var(--ux) * 104px), calc(var(--uy) * 92px)); }
-.ring-tip { position: absolute; top: calc(100% + 8px); inset-inline-start: 50%; width: max-content; max-width: 210px; transform: translateX(-50%); padding: 0.4rem 0.55rem; border-radius: 8px; background: #111936; color: #fff; font-size: 12px; line-height: 1.35; opacity: 0; pointer-events: none; }
-.ring-mark:hover .ring-tip, .ring-mark:focus-visible .ring-tip { opacity: 1; z-index: 3; }
-.ring-spark { position: absolute; z-index: 1; width: 9px; height: 9px; margin: 0; border-radius: 50%; background: var(--c); transform: translate(-50%, -50%); opacity: clamp(0, (var(--p, 0) - 0.34) * 5, 1); }
+.ring-lines path { fill: none; stroke: #2541f5; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.18) / 0.35, 1)); }
+.ring-slot { position: absolute; z-index: 3; width: 56px; height: 56px; transform: translate(-50%, -50%); }
+.ring-icon { width: 56px; height: 56px; display: grid; place-items: center; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px rgba(17,25,54,.08); animation: tool-spin 72s linear infinite; }
+.ring-icon img, .ring-icon svg { width: 32px; height: 32px; }
+.ring-arm { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform: translate(var(--ox), var(--oy)); }
+.ring-copy { position: absolute; left: 0; top: 0; width: 9.4rem; display: grid; gap: 0.1rem; text-align: center; animation: tool-upright 72s linear infinite; }
+.ring-copy strong { font-size: 14px; line-height: 1.2; }
+.ring-copy small { font-size: 12px; line-height: 1.3; color: #33405f; }
+.ring-spark { position: absolute; z-index: 1; width: 9px; height: 9px; border-radius: 50%; background: var(--c); transform: translate(-50%, -50%); opacity: clamp(0, (var(--p, 0) - 0.3) * 5, 1); }
+@keyframes tool-orbit { to { transform: rotate(360deg); } }
+@keyframes tool-spin { to { transform: rotate(-360deg); } }
+@keyframes tool-upright {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
 .link-head { max-width: 760px; margin-bottom: 0.6rem; }
 .sc-int .link-head { margin-inline: auto; text-align: center; }
 .sc-int .link-head p { margin: 0.35rem auto 0; }
@@ -490,11 +499,13 @@ body:has(.bz-world) .site-footer li { color: rgba(255,255,255,.88); }
   .deck-ui { min-height: 240px; }
   .link-map { height: auto; display: grid; gap: 0.5rem; transform: none; }
   .link-lines, .end-blue, .ring-lines, .ring-spark { display: none; }
-  .tool-ring { height: auto; aspect-ratio: auto; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; box-shadow: none; }
-  .ring-logo, .ring-mark { position: relative; left: auto; top: auto; transform: none; opacity: 1; }
-  .ring-logo { width: 160px; }
-  .ring-mark { width: auto; height: auto; display: flex; align-items: center; gap: 0.45rem; border-radius: 999px; padding: 0.35rem 0.7rem 0.35rem 0.35rem; }
-  .ring-name { position: static; max-width: 9rem; transform: none; text-align: start; white-space: normal; }
+  .tool-ring { height: auto; aspect-ratio: auto; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 1.2rem; }
+  .tool-orbit { position: static; display: contents; animation: none; }
+  .ring-logo, .ring-slot, .ring-arm, .ring-icon, .ring-copy { position: static; left: auto; top: auto; width: auto; height: auto; transform: none; animation: none; }
+  .ring-logo { width: 150px; }
+  .ring-slot { display: flex; align-items: center; gap: 0.55rem; width: min(100%, 28rem); }
+  .ring-icon { width: 56px; height: 56px; flex: none; }
+  .ring-copy { text-align: start; }
   .inode, .crm-core { position: relative; inset: auto; width: auto; transform: none; opacity: 1; }
   .board { grid-template-columns: 1fr 1fr; }
   .drawer { grid-column: 1 / -1; }
@@ -522,5 +533,6 @@ body:has(.bz-world) .site-footer li { color: rgba(255,255,255,.88); }
 @media (prefers-reduced-motion: reduce) {
   .sc { height: auto; }
   .sc-pin { position: relative; height: auto; }
+  .tool-orbit, .ring-icon, .ring-copy { animation: none; }
   .stack-card, .lead, .bubble, .node, .camp, .day, .step, .plan, .mag a, .sol-track, .sat { transform: none; opacity: 1; clip-path: none; }
 }

@@ -230,20 +230,19 @@ describe("marketing crawl files", () => {
       expect(body).not.toContain("home-hero__title");
       if (locale === "he") {
         expect(body).toContain(">העסק</span>");
-        expect(body).toContain(">אחת</span>");
-        expect(body).toContain(">אפשרויות</span>");
+        expect(body).toContain(">אחד</span>");
         expect(body).toContain("Bizuply");
       } else if (locale === "es") {
         expect(body).toContain(">Todo</span>");
-        expect(body).toContain(">negocio</span>");
+        expect(body).toContain(">lugar</span>");
       } else if (locale === "pt-BR") {
         expect(body).toContain(">negócio</span>");
       } else if (locale === "ar") {
-        expect(body).toContain(">عملك</span>");
+        expect(body).toContain(">عملكم</span>");
       } else {
         expect(body).toContain(">Your</span>");
         expect(body).toContain(">business</span>");
-        expect(body).toContain(">possibilities</span>");
+        expect(body).toContain(">place</span>");
       }
       const crawl = buildMarketingPrerender(route)?.crawl || "";
       expect(crawl).toContain(home.faqTitle);

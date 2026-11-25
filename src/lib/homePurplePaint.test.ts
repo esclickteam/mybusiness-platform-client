@@ -33,7 +33,7 @@ describe("sketch home first paint", () => {
     const he = renderPurpleHomePrerender("he");
     expect(he.dir).toBe("rtl");
     expect(he.inner).toContain(">העסק</span>");
-    expect(he.inner).toContain(">אפשרויות</span>");
+    expect(he.inner).toContain(">אחד</span>");
     expect(he.inner).toContain("Bizuply");
     expect(he.inner).toContain(HX_HERO_COPY.he.see);
     expect(he.inner).toContain("/demo-media/home/theater/he-desktop.webp");
