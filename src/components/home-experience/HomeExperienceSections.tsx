@@ -245,6 +245,12 @@ function Hero({ seek }: { seek: { index: number; nonce: number } | null }) {
   const steps = useSteps();
   return (
     <section className="hx-hero" id="how" data-bz-tone="ink" aria-labelledby="hx-hero-title">
+      <div className="bz-collage" aria-hidden="true">
+        <img className="bz-shot bz-shot-a" src={`/demo-media/home/screens/${lang}-desktop-dashboard.webp`} alt="" width="1600" height="1000" />
+        <img className="bz-shot bz-shot-b" src={`/demo-media/home/screens/${lang}-desktop-whatsapp.webp`} alt="" width="1200" height="800" />
+        <img className="bz-shot bz-shot-c" src={`/demo-media/home/screens/${lang}-mobile-crm-card.webp`} alt="" width="640" height="1280" />
+        <img className="bz-mark-float" src="/brand/mark.png" alt="" width="679" height="819" />
+      </div>
       <div className="hx-geo hx-geo-a" aria-hidden="true" />
       <div className="hx-geo hx-geo-b" aria-hidden="true" />
       <div className="hx-geo hx-geo-c" aria-hidden="true" />

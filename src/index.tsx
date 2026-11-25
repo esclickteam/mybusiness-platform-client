@@ -15,6 +15,7 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 /* Styles */
 import "./styles/index.css";
 import "./styles/brandWorld.css";
+import "./styles/redesignStage.css";
 import { registerServiceWorkerNotificationBridge } from "./utils/notificationNavigation";
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";

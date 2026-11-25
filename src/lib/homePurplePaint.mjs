@@ -172,7 +172,9 @@ export function renderPurpleHomePrerender(locale) {
     ? `<span class="hx-line">${heroWords(hx.lineThree, lineHot)}</span>`
     : "";
   const secondHot = hx.lineThree ? -1 : lineHot;
-  const hero = `<section class="hx-hero" data-bz-tone="ink" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="hx-hero-pin"><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
+  const shotLang = locale === "he" ? "he" : "en";
+  const collage = `<div class="bz-collage" aria-hidden="true"><img class="bz-shot bz-shot-a" src="/demo-media/home/screens/${shotLang}-desktop-dashboard.webp" alt="" width="1600" height="1000"><img class="bz-shot bz-shot-b" src="/demo-media/home/screens/${shotLang}-desktop-whatsapp.webp" alt="" width="1200" height="800"><img class="bz-shot bz-shot-c" src="/demo-media/home/screens/${shotLang}-mobile-crm-card.webp" alt="" width="640" height="1280"><img class="bz-mark-float" src="/brand/mark.png" alt="" width="679" height="819"></div>`;
+  const hero = `<section class="hx-hero" data-bz-tone="ink" data-hx-first-paint="true" aria-labelledby="hx-hero-title">${collage}<div class="hx-geo hx-geo-a" aria-hidden="true"></div><div class="hx-geo hx-geo-b" aria-hidden="true"></div><div class="hx-geo hx-geo-c" aria-hidden="true"></div>${HERO_WAVES}<div class="hx-hero-pin"><div class="hx-hero-copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,
   )}</span><span class="hx-line">${heroWords(hx.lineTwo, secondHot)}</span>${third}</h1><p class="hx-lead">${escapeText(hx.lead1)}</p><div class="hx-actions"><a class="hx-btn" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.start,

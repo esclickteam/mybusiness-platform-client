@@ -65,7 +65,7 @@ html.hx-preview img {
 }
 .site-header__logo img {
   display: block;
-  height: 2.15rem;
+  height: 2.55rem;
   width: auto;
   max-width: min(11.5rem, 46vw);
   min-width: 0;
@@ -1237,5 +1237,121 @@ html.hx-preview .site-header__cta {
   color: #111936;
   border-radius: 0;
   box-shadow: none;
+}
+
+
+/* redesign-hero */
+/* A new public composition. The old stacked hero and repeating cards
+   stay in the DOM for the product films; this layer breaks them apart. */
+
+.hx-hero {
+  min-height: 100svh;
+  padding: 0 0 clamp(4rem, 8vw, 7rem);
+  background: #2541f5;
+  overflow: clip;
+}
+
+.bz-collage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bz-shot,
+.bz-mark-float {
+  position: absolute;
+  display: block;
+  max-width: none;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.bz-shot-a {
+  width: min(48vw, 680px);
+  height: min(34vw, 440px);
+  object-fit: cover;
+  inset-inline-end: -6vw;
+  top: 7vh;
+  transform: rotate(7deg);
+  clip-path: polygon(7% 0, 100% 8%, 93% 100%, 0 86%);
+}
+
+.bz-shot-b {
+  width: min(26vw, 340px);
+  height: min(32vw, 420px);
+  object-fit: cover;
+  inset-inline-start: 38%;
+  bottom: 16vh;
+  transform: rotate(-9deg);
+  clip-path: polygon(0 10%, 100% 0, 92% 100%, 8% 88%);
+}
+
+.bz-shot-c {
+  width: min(16vw, 190px);
+  height: min(34vw, 390px);
+  object-fit: cover;
+  inset-inline-end: 22%;
+  top: 38vh;
+  transform: rotate(5deg);
+  clip-path: polygon(12% 0, 100% 0, 100% 92%, 0 100%);
+}
+
+.bz-mark-float {
+  width: min(42vw, 520px);
+  height: auto;
+  inset-inline-start: -10vw;
+  bottom: -8vh;
+  transform: rotate(-14deg);
+}
+
+.hx-hero-pin {
+  position: relative;
+  z-index: 3;
+  width: min(1440px, calc(100% - 2.4rem));
+  display: block;
+  padding-top: clamp(1.4rem, 5vh, 3.4rem);
+}
+
+.hx-hero-copy {
+  max-width: 11em;
+}
+
+.hx-display {
+  font-size: clamp(3.5rem, 8.6vw, 8.2rem);
+  line-height: 0.88;
+  text-wrap: balance;
+}
+
+.hx-lead {
+  max-width: 28rem;
+  font-size: 1.2rem;
+}
+
+.hx-hero-stage {
+  position: relative;
+  z-index: 4;
+  width: min(860px, calc(100% - 2rem));
+  margin-top: clamp(1.5rem, 4vh, 3rem);
+  margin-inline-start: auto;
+  margin-inline-end: clamp(0.6rem, 4vw, 3rem);
+  transform: rotate(-2.4deg);
+}
+
+.ht-theater {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.ht-bar,
+.ht-caption {
+  background: rgba(17, 25, 54, 0.92);
+  color: #fff;
+}
+
+.ht-stage {
+  background: #0d1430;
 }
 
