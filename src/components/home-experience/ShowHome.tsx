@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
 import { getGuide } from "../../lib/guidesMarketing.mjs";
-import { PRICING_PAGE_PACKAGES } from "../../data/pricingPackagesData";
+import { CircleUserRound, Megaphone } from "lucide-react";
 import "./showHome.css";
 
 const GUIDES = ["what-is-a-crm", "meta-lead-ads-to-crm", "whatsapp-cloud-api-cost", "follow-up-on-leads"];
@@ -131,32 +131,15 @@ const PRODUCTS = [
   },
 ] as const;
 
-function MetaMark() {
-  return (
-    <svg viewBox="0 0 48 24" width="48" height="24" aria-hidden="true">
-      <path fill="#0668E1" d="M13.5 3.2C9.4 3.2 6 7 6 12s3.4 8.8 7.5 8.8c2.7 0 4.8-1.5 6.5-4.1 1.7 2.6 3.8 4.1 6.5 4.1 4.1 0 7.5-3.8 7.5-8.8S30.6 3.2 26.5 3.2c-2.7 0-4.8 1.5-6.5 4.1-1.7-2.6-3.8-4.1-6.5-4.1zm0 3.2c1.6 0 3 1.4 4.4 3.8-.5.8-1 1.7-1.4 2.6.4-.9.9-1.8 1.4-2.6C16.5 7.8 15.1 6.4 13.5 6.4 11.2 6.4 9.4 8.9 9.4 12s1.8 5.6 4.1 5.6c1.6 0 3-1.4 4.4-3.8.5-.8 1-1.7 1.4-2.6-.4.9-.9 1.8-1.4 2.6-1.4 2.4-2.8 3.8-4.4 3.8-2.3 0-4.1-2.5-4.1-5.6s1.8-5.6 4.1-5.6zm13 0c1.6 0 3 1.4 4.4 3.8-.5.8-1 1.7-1.4 2.6.4-.9.9-1.8 1.4-2.6C29.5 7.8 28.1 6.4 26.5 6.4 24.2 6.4 22.4 8.9 22.4 12s1.8 5.6 4.1 5.6c1.6 0 3-1.4 4.4-3.8.5-.8 1-1.7 1.4-2.6-.4.9-.9 1.8-1.4 2.6-1.4 2.4-2.8 3.8-4.4 3.8-2.3 0-4.1-2.5-4.1-5.6s1.8-5.6 4.1-5.6z" />
-    </svg>
-  );
-}
-
-function GoogleMark() {
-  return (
-    <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
-      <path fill="#4285F4" d="M23 12.3c0-.8-.1-1.6-.2-2.3H12v4.4h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7C21.6 18.7 23 15.8 23 12.3z" />
-      <path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.7-2.9c-1 .7-2.4 1.2-4.2 1.2-3.2 0-5.9-2.2-6.9-5.1H1.3v3c2 4 6.1 6.7 10.7 6.7z" />
-      <path fill="#FBBC05" d="M5.1 14.3A7.2 7.2 0 0 1 4.7 12c0-.8.1-1.6.4-2.3V6.7H1.3A12 12 0 0 0 0 12c0 1.9.5 3.8 1.3 5.3l3.8-3z" />
-      <path fill="#EA4335" d="M12 4.8c1.7 0 3.3.6 4.5 1.8l3.4-3.4C17.9 1.1 15.2 0 12 0 7.4 0 3.3 2.7 1.3 6.7l3.8 3C6.1 7 8.8 4.8 12 4.8z" />
-    </svg>
-  );
-}
-
-function WhatsAppMark() {
-  return (
-    <svg viewBox="0 0 24 24" width="32" height="32" aria-hidden="true">
-      <path fill="#25D366" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.8 14.2c-.2.7-1.3 1.2-1.8 1.3-.5.1-1 .2-3.4-.7-2.9-1.1-4.7-4-4.8-4.2-.2-.2-1.3-1.7-1.3-3.2s.8-2.3 1.1-2.6c.3-.3.6-.4.8-.4h.6c.2 0 .4 0 .6.5.2.6.8 2 .8 2.1.1.2.1.3 0 .5-.1.2-.2.3-.3.5l-.4.5c-.1.1-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1.1.2-.3.4-.2.6-.1.3.1 1.6.8 1.9.9.3.2.5.2.6.3.1.3 0 .8-.2 1.5z" />
-    </svg>
-  );
-}
+const RING = [
+  { id: "meta", x: 0, y: -168, delay: "0.02", color: "#0081FB", he: "לידים ממודעות Meta נכנסים ל־CRM עם המקור.", en: "Leads from Meta ads enter the CRM with their source.", icon: <img src="/brand/marks/meta.svg" alt="Meta" /> },
+  { id: "facebook", x: 230, y: -96, delay: "0.08", color: "#0866FF", he: "לידים ממודעות פייסבוק מגיעים דרך Meta Lead Ads.", en: "Leads from Facebook ads arrive through Meta Lead Ads.", icon: <img src="/brand/marks/facebook.svg" alt="Facebook" /> },
+  { id: "instagram", x: 250, y: 48, delay: "0.14", color: "#E1306C", he: "לידים ממודעות אינסטגרם מגיעים דרך Meta Lead Ads.", en: "Leads from Instagram ads arrive through Meta Lead Ads.", icon: <img src="/brand/marks/instagram.svg" alt="Instagram" /> },
+  { id: "whatsapp", x: 120, y: 158, delay: "0.2", color: "#25D366", he: "השיחה נשמרת על כרטיס הלקוח.", en: "The conversation stays on the customer card.", icon: <img src="/brand/marks/whatsapp.svg" alt="WhatsApp" /> },
+  { id: "ads", x: -120, y: 158, delay: "0.26", color: "#4285F4", he: "טופס לידים של Google Ads נכנס לאותו לוח.", en: "A Google Ads lead form enters the same board.", icon: <img src="/google-ads.svg" alt="Google Ads" /> },
+  { id: "crm", x: -250, y: 48, delay: "0.32", color: "#2541F5", he: "כרטיס הלקוח, הסטטוס והמשימה הבאה.", en: "The customer card, the status and the next task.", icon: <CircleUserRound color="#2541F5" size={40} aria-hidden="true" /> },
+  { id: "campaigns", x: -230, y: -96, delay: "0.38", color: "#111936", he: "ניהול הקמפיינים במערכת, והליד מגיע עם המקור.", en: "Campaign management in the product, with the source on the lead.", icon: <Megaphone color="#111936" size={40} aria-hidden="true" /> },
+];
 
 function localeOf(language: string) {
   const value = language.toLowerCase();
@@ -558,63 +541,26 @@ export default function ShowHome({ language }: { language: string }) {
         <div className="sc-pin">
           <div className="sc-wrap">
             <header className="link-head">
-              <h2>{t("הכלים שאתם כבר עובדים איתם. עכשיו הכל מחובר.", "Connect your favorite tools. Bring everything together.")}</h2>
-              <p>{t("חברו את מקורות הפניות, השיחות והפעילות השיווקית שלכם לסביבת עבודה אחת.", "Bring enquiries, customer conversations and marketing activity into one connected workspace.")}</p>
+              <h2>{t("כל הכלים שלכם. מחוברים לעסק אחד.", "Your tools. One connected business.")}</h2>
+              <p>{t("חברו את פעילות השיווק, הפניות והלקוחות שלכם לסביבת עבודה אחת, שבה כל המידע נמצא במקום הנכון.", "Bring your marketing, enquiries and customers into one workspace, where each detail stays in the right place.")}</p>
             </header>
-            <div className="link-map">
-              <svg viewBox="0 0 1000 560" className="link-lines" aria-hidden="true">
-                <path pathLength="1" d="M170 120 C 300 120, 380 230, 470 270" />
-                <path pathLength="1" d="M830 120 C 700 130, 620 220, 540 270" />
-                <path pathLength="1" d="M170 450 C 300 430, 380 340, 470 310" />
-                <path pathLength="1" d="M830 450 C 700 430, 620 350, 540 310" />
+            <div className="ring">
+              <svg className="ring-lines" viewBox="0 0 760 520" aria-hidden="true">
+                {RING.map((item) => (
+                  <path key={item.id} pathLength="1" d={`M380 260 C ${(380 + item.x) / 2} ${260 - 40}, ${(380 + item.x) / 2} ${item.y + 260}, ${380 + item.x} ${260 + item.y}`} />
+                ))}
               </svg>
-              <article className="inode meta">
-                <MetaMark />
-                <h3>Meta Lead Ads</h3>
-                <p>{t("טופס מהמודעה נפתח כליד עם שם המודעה.", "A form from the ad opens as a lead with the ad name.")}</p>
-              </article>
-              <article className="inode google">
-                <GoogleMark />
-                <h3>Google Ads</h3>
-                <p>{t("טופס לידים של גוגל נכנס לאותו לוח.", "A Google lead form enters the same board.")}</p>
-              </article>
-              <article className="inode form">
-                <img src="/brand/mark.png" alt="" width="42" height="42" />
-                <h3>{t("טופס באתר", "Website form")}</h3>
-                <p>{t("פנייה מטופס באתר Bizuply נפתחת כליד.", "An enquiry from a Bizuply site form opens as a lead.")}</p>
-              </article>
-              <article className="inode wa">
-                <WhatsAppMark />
-                <h3>WhatsApp Cloud API</h3>
-                <p>{t("השיחה נשמרת על כרטיס הלקוח.", "The conversation stays on the customer card.")}</p>
-              </article>
-              <article className="crm-core">
-                <img src="/brand/logo.png" alt="Bizuply" width="180" height="62" />
-                <div className="crm-row travel-meta"><b>{t("נועה לוי", "Noa Levi")}</b><span>Meta Lead Ads</span></div>
-                <div className="crm-row travel-form"><b>{t("דניאל כהן", "Daniel Cohen")}</b><span>{t("טופס באתר", "Website form")}</span></div>
-                <div className="crm-row travel-wa"><b>{t("נועה לוי", "Noa Levi")}</b><span>WhatsApp · 09:22</span></div>
-              </article>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="sc sc-price" data-scene>
-        <div className="sc-pin">
-          <div className="sc-wrap">
-            <h2>{t("הפתרון שמתאים לעסק שלכם.", "The fit for the business.")}</h2>
-            <p>{t("המחירים מתוך הקטלוג המפורסם. חבילה עסקית אינה כוללת אתר. אתר בלבד אינו כולל את מערכת ה־CRM המלאה.", "Prices are the published catalog. A business plan does not include a website. Website only does not include the full CRM.")}</p>
-            <div className="plans">
-              {PRICING_PAGE_PACKAGES.map((plan, index) => (
-                <article className="plan" style={{ ["--i" as string]: index }} key={plan.type}>
-                  <h3>{locale === "he" ? plan.nameHe : plan.nameEn}</h3>
-                  <b>${plan.price}</b>
-                  <span>{locale === "he" ? plan.pricePeriodHe : plan.pricePeriodEn}</span>
-                  <ul>{(locale === "he" ? plan.featuresHe : plan.featuresEn).slice(0, 4).map((feature) => <li key={feature}>{feature}</li>)}</ul>
-                </article>
+              {RING.map((item) => (
+                <span key={`${item.id}-spark`} className="ring-spark" style={{ ["--x" as string]: `${item.x}px`, ["--y" as string]: `${item.y}px`, ["--c" as string]: item.color }} />
+              ))}
+              <img className="ring-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
+              {RING.map((item) => (
+                <button key={item.id} type="button" className="ring-mark" style={{ ["--x" as string]: `${item.x}px`, ["--y" as string]: `${item.y}px`, ["--d" as string]: item.delay }}>
+                  {item.icon}
+                  <span className="ring-tip">{t(item.he, item.en)}</span>
+                </button>
               ))}
             </div>
-            <Link className="sh-go" to="/pricing">{t("לכל המחירים", "See pricing")}</Link>
           </div>
         </div>
       </section>
