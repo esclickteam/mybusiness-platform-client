@@ -6,7 +6,7 @@ import { cinematicFor } from "../../lib/homeCinematic.mjs";
 import { homeText } from "./homeCopy";
 import ProductTheater, { type TheaterFilm, type TheaterStep } from "./ProductTheater";
 import films from "./theaterFilms.json";
-import Experience from "./Experience";
+import ShowHome from "./ShowHome";
 
 const MEDIA = "/demo-media/home";
 const FILM_VERSION = "t7";
@@ -163,7 +163,7 @@ export default function WorldHome() {
         </div>
       </section>
 
-      <Experience language={language} />
+      <ShowHome language={language} />
     </div>
   );
 }

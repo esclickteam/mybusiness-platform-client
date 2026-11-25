@@ -1,16 +1,19 @@
 .bizi-dock {
   position: fixed;
-  z-index: 10000;
-  right: 24px;
+  z-index: 10020;
+  left: 24px;
+  right: auto;
   bottom: 24px;
-  left: auto;
   width: 72px;
-  max-width: calc(100vw - 32px);
+  max-width: calc(100vw - 48px);
   color: #fff;
   pointer-events: none;
 }
 
-.bizi-dock.is-in { width: min(300px, calc(100vw - 96px)); }
+.bizi-dock.is-ltr { left: auto; right: 24px; }
+.bizi-dock.is-in { width: 290px; }
+
+body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
 .bizi-dock.is-open { width: min(416px, calc(100vw - 24px)); }
 
 .bizi-dock__shell {
@@ -139,8 +142,10 @@ body:has(.cookie-banner--notice) .bizi-dock { bottom: 132px; }
 body:has(.cookie-banner--manage) .bizi-dock { bottom: calc(min(70dvh, 36rem) + 16px); }
 
 @media (max-width: 720px) {
-  .bizi-dock { right: 16px; bottom: 16px; }
-  .bizi-dock.is-open { width: calc(100vw - 16px); right: 8px; }
+  .bizi-dock { left: 16px; right: auto; bottom: 16px; width: min(290px, calc(100vw - 88px)); }
+  .bizi-dock.is-ltr { left: auto; right: 16px; }
+  .bizi-dock.is-open { width: calc(100vw - 16px); left: 8px; right: auto; }
+  .bizi-dock.is-ltr.is-open { left: auto; right: 8px; }
   .bizi-dock.is-open .bizi-dock__shell { height: min(78vh, 700px); }
 }
 

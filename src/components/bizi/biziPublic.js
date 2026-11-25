@@ -11,7 +11,7 @@ const PACKS = {
     title: "Bizi AI",
     role: "היועצת העסקית החכמה של Bizuply",
     launcher: "בואו להתייעץ איתי!",
-    launcherSub: "Bizi – יועצת AI",
+    launcherSub: "Bizi – היועצת החכמה שלכם.",
     greeting: "היי! אני Bizi, היועצת החכמה של Bizuply. ספרו לי קצת על העסק שלכם ואעזור לכם למצוא את הפתרון המתאים ביותר.",
     hint: "המחירים מגיעים מהקטלוג המאושר. אין כאן גישה לנתוני לקוחות.",
     prompts: [
