@@ -428,16 +428,20 @@ body:has(.bz-world) .site-footer li { color: rgba(255,255,255,.88); }
 .deck-ui img { width: 100%; height: 100%; object-fit: contain; object-position: center top; background: #fff; }
 
 .sc-int { height: 165vh; background: #fff; }
-.ring { position: relative; width: min(760px, calc(100% - 8px)); height: 520px; margin: 0.4rem auto 0; }
-.ring-logo { position: absolute; z-index: 2; left: 50%; top: 50%; width: min(230px, 36%); height: auto; transform: translate(-50%, -50%) scale(calc(0.8 + min(var(--p, 0) * 5, 1) * 0.2)); }
+.sc-int .sc-pin { padding-top: 64px; padding-bottom: 24px; }
+.tool-ring { position: relative; width: min(980px, 100%, calc(62vh * 980 / 560)); aspect-ratio: 980 / 560; height: auto; margin: 0.2rem auto 0; box-shadow: none; }
+.ring-logo { position: absolute; z-index: 1; left: 50%; top: 50%; width: 22%; height: auto; background: none; border: 0; transform: translate(-50%, -50%) scale(calc(0.92 + min(var(--p, 0) * 4, 1) * 0.08)); }
 .ring-lines { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .ring-lines path { fill: none; stroke: #2541f5; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.22) / 0.4, 1)); }
-.ring-mark { position: absolute; z-index: 3; left: 50%; top: 50%; width: 78px; height: 78px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px rgba(17,25,54,.08); cursor: pointer; --travel: calc(clamp(0, (var(--p, 0) - 0.06) / 0.4, 1) * (1 - max(0, var(--p, 0) - 0.8) * 0.22)); transform: translate(-50%, -50%) translate(calc(var(--x) * var(--travel)), calc(var(--y) * var(--travel))); }
-.ring-mark img, .ring-mark svg { width: 44px; height: 44px; }
+.ring-mark { position: absolute; z-index: 2; width: 72px; height: 72px; display: grid; place-items: center; padding: 0; border: 0; border-radius: 50%; background: #fff; box-shadow: inset 0 0 0 1px rgba(17,25,54,.08); cursor: pointer; transform: translate(-50%, -50%) scale(calc(0.9 + clamp(0, (var(--p, 0) - 0.05) / 0.35, 1) * 0.1)); opacity: clamp(0.15, calc(var(--p, 0) * 2.4), 1); }
+.ring-mark img, .ring-mark svg { width: 40px; height: 40px; }
+.ring-name { position: absolute; left: 50%; top: 50%; width: max-content; max-width: none; font-size: 13px; font-weight: 750; line-height: 1.25; color: #111936; white-space: nowrap; text-align: center; pointer-events: none; transform: translate(-50%, -50%) translate(calc(var(--ux) * 104px), calc(var(--uy) * 92px)); }
 .ring-tip { position: absolute; top: calc(100% + 8px); inset-inline-start: 50%; width: max-content; max-width: 210px; transform: translateX(-50%); padding: 0.4rem 0.55rem; border-radius: 8px; background: #111936; color: #fff; font-size: 12px; line-height: 1.35; opacity: 0; pointer-events: none; }
-.ring-mark:hover .ring-tip, .ring-mark:focus-visible .ring-tip { opacity: 1; }
-.ring-spark { position: absolute; z-index: 2; left: 50%; top: 50%; width: 9px; height: 9px; margin: -4px; border-radius: 50%; background: var(--c); --hop: calc(clamp(0, (var(--p, 0) - 0.38) / 0.4, 1) * (1 - max(0, var(--p, 0) - 0.8) * 0.22)); transform: translate(calc(var(--x) * var(--hop)), calc(var(--y) * var(--hop))); opacity: clamp(0, (var(--p, 0) - 0.34) * 5, 1); }
+.ring-mark:hover .ring-tip, .ring-mark:focus-visible .ring-tip { opacity: 1; z-index: 3; }
+.ring-spark { position: absolute; z-index: 1; width: 9px; height: 9px; margin: 0; border-radius: 50%; background: var(--c); transform: translate(-50%, -50%); opacity: clamp(0, (var(--p, 0) - 0.34) * 5, 1); }
 .link-head { max-width: 760px; margin-bottom: 0.6rem; }
+.sc-int .link-head { margin-inline: auto; text-align: center; }
+.sc-int .link-head p { margin: 0.35rem auto 0; }
 .link-map { position: relative; height: 520px; transform: scale(calc(1 - max(0, var(--p, 0) - 0.86) * 1.4)); }
 .link-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
 .link-lines path { fill: none; stroke: #2541f5; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - clamp(0, (var(--p, 0) - 0.18) / 0.4, 1)); }
@@ -486,9 +490,11 @@ body:has(.bz-world) .site-footer li { color: rgba(255,255,255,.88); }
   .deck-ui { min-height: 240px; }
   .link-map { height: auto; display: grid; gap: 0.5rem; transform: none; }
   .link-lines, .end-blue, .ring-lines, .ring-spark { display: none; }
-  .ring { height: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
-  .ring-logo, .ring-mark { position: relative; left: auto; top: auto; transform: none; }
-  .ring-logo { width: 180px; }
+  .tool-ring { height: auto; aspect-ratio: auto; width: 100%; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; box-shadow: none; }
+  .ring-logo, .ring-mark { position: relative; left: auto; top: auto; transform: none; opacity: 1; }
+  .ring-logo { width: 160px; }
+  .ring-mark { width: auto; height: auto; display: flex; align-items: center; gap: 0.45rem; border-radius: 999px; padding: 0.35rem 0.7rem 0.35rem 0.35rem; }
+  .ring-name { position: static; max-width: 9rem; transform: none; text-align: start; white-space: normal; }
   .inode, .crm-core { position: relative; inset: auto; width: auto; transform: none; opacity: 1; }
   .board { grid-template-columns: 1fr 1fr; }
   .drawer { grid-column: 1 / -1; }

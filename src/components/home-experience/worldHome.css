@@ -66,10 +66,10 @@
 }
 
 .bz-spec__film {
-  --grow: clamp(0, (var(--p) - 0.08) / 0.42, 1);
-  --shrink: clamp(0, (var(--p) - 0.72) / 0.22, 1);
-  --room: calc(340px - (var(--grow) * 250px) + (var(--shrink) * 230px));
-  width: min(1080px, 88vw, calc((100svh - var(--room) - 190px) * 16 / 9));
+  --grow: clamp(0, (var(--p) - 0.08) / 0.36, 1);
+  --shrink: clamp(0, (var(--p) - 0.68) / 0.24, 1);
+  --room: calc(308px - (var(--grow) * 246px) + (var(--shrink) * 224px));
+  width: min(calc(100vw - 40px), calc((100svh - var(--room) - 120px) * 16 / 9));
   margin-inline: auto;
   flex-shrink: 0;
   transform: none;
@@ -213,6 +213,8 @@
   white-space: normal;
 }
 .bz-world .ht-tab-label { overflow: visible; text-overflow: unset; white-space: normal; }
+.bz-world .ht-tab-num,
+.bz-world .ht-caption { display: none; }
 
 .bz-world .ht-stage {
   aspect-ratio: 16 / 9;

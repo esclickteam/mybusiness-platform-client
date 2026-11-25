@@ -12,7 +12,7 @@ describe("sketch home first paint", () => {
     expect(en.inner).toContain('class="hx-hero"');
     expect(en.inner).toContain('class="hx-display"');
     expect(en.inner).toContain(">Your</span>");
-    expect(en.inner).toContain(">business.</span>");
+    expect(en.inner).toContain(">business</span>");
     expect(en.inner).toContain(HX_HERO_COPY.en.see);
     expect(en.inner).toContain("/demo-media/home/theater/en-desktop.webp");
     expect(en.inner).toContain('class="ht-theater"');
@@ -33,7 +33,7 @@ describe("sketch home first paint", () => {
     const he = renderPurpleHomePrerender("he");
     expect(he.dir).toBe("rtl");
     expect(he.inner).toContain(">העסק</span>");
-    expect(he.inner).toContain(">אפשרויות.</span>");
+    expect(he.inner).toContain(">אפשרויות</span>");
     expect(he.inner).toContain("Bizuply");
     expect(he.inner).toContain(HX_HERO_COPY.he.see);
     expect(he.inner).toContain("/demo-media/home/theater/he-desktop.webp");

@@ -5,9 +5,9 @@
 
 const HERO = {
   en: {
-    lineOne: "Your whole business.",
-    lineTwo: "One system.",
-    lineThree: "Endless possibilities.",
+    lineOne: "Your whole business in one system with endless possibilities",
+    lineTwo: "",
+    lineThree: "",
     kicker: "The smart platform for running a business",
     lead1:
       "Bizuply is one platform for leads and customers, WhatsApp conversations, campaigns, appointments and automations.",
@@ -51,9 +51,9 @@ const HERO = {
     ],
   },
   he: {
-    lineOne: "כל העסק שלך.",
-    lineTwo: "מערכת אחת.",
-    lineThree: "אינסוף אפשרויות.",
+    lineOne: "כל העסק שלך במערכת אחת עם אינסוף אפשרויות",
+    lineTwo: "",
+    lineThree: "",
     kicker: "הפלטפורמה החכמה לניהול העסק",
     lead1:
       "ביזאפלי (Bizuply) היא פלטפורמה אחת לניהול לידים ולקוחות, שיחות WhatsApp, קמפיינים, פגישות ואוטומציות.",
@@ -97,9 +97,9 @@ const HERO = {
     ],
   },
   es: {
-    lineOne: "Todo tu negocio.",
-    lineTwo: "Un sistema.",
-    lineThree: "Posibilidades infinitas.",
+    lineOne: "Todo tu negocio en un sistema con posibilidades infinitas",
+    lineTwo: "",
+    lineThree: "",
     kicker: "La plataforma inteligente para gestionar el negocio",
     lead1:
       "Bizuply es una plataforma para leads y clientes, conversaciones de WhatsApp, campañas, citas y automatizaciones.",
@@ -143,9 +143,9 @@ const HERO = {
     ],
   },
   "pt-BR": {
-    lineOne: "Todo o seu negócio.",
-    lineTwo: "Um sistema.",
-    lineThree: "Possibilidades infinitas.",
+    lineOne: "Todo o seu negócio em um sistema com possibilidades infinitas",
+    lineTwo: "",
+    lineThree: "",
     kicker: "A plataforma inteligente para gerir o negócio",
     lead1:
       "A Bizuply é uma plataforma para leads e clientes, conversas no WhatsApp, campanhas, compromissos e automações.",
@@ -189,9 +189,9 @@ const HERO = {
     ],
   },
   ar: {
-    lineOne: "كل عملك.",
-    lineTwo: "نظام واحد.",
-    lineThree: "احتمالات بلا حدود.",
+    lineOne: "كل عملك في نظام واحد مع احتمالات بلا حدود",
+    lineTwo: "",
+    lineThree: "",
     kicker: "المنصة الذكية لإدارة العمل",
     lead1:
       "Bizuply منصة واحدة للعملاء المحتملين والعملاء ومحادثات WhatsApp والحملات والمواعيد والأتمتة.",

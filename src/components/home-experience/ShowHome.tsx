@@ -139,18 +139,32 @@ const PRODUCTS = [
   },
 ] as const;
 
-const TOOLS_START = ["meta", "facebook", "instagram", "whatsapp"] as const;
-const TOOLS_END = ["ads", "crm", "campaigns"] as const;
-
 const RING = [
-  { id: "meta", nameHe: "Meta", nameEn: "Meta", he: "חיבור פעילות השיווק והלידים לסביבת העבודה העסקית.", en: "Connects marketing activity and leads to the business workspace.", es: "Conecta la actividad de marketing y los leads con el espacio de trabajo.", pt: "Liga a atividade de marketing e os leads ao espaço de trabalho.", ar: "يربط نشاط التسويق والعملاء المحتملين بمساحة العمل.", icon: <img src="/brand/marks/meta.svg" alt="" /> },
-  { id: "facebook", nameHe: "Facebook", nameEn: "Facebook", he: "קליטת פניות ממודעות וטופסי לידים נתמכים.", en: "Brings in enquiries from supported ads and lead forms.", es: "Recibe consultas de anuncios y formularios de leads compatibles.", pt: "Recebe contatos de anúncios e formulários de leads compatíveis.", ar: "يستقبل الطلبات من الإعلانات ونماذج العملاء المحتملين المدعومة.", icon: <img src="/brand/marks/facebook.svg" alt="" /> },
-  { id: "instagram", nameHe: "Instagram", nameEn: "Instagram", he: "חיבור פעילות הפרסום דרך Meta.", en: "Connects advertising activity through Meta.", es: "Conecta la publicidad a través de Meta.", pt: "Liga a publicidade pela Meta.", ar: "يربط نشاط الإعلان عبر Meta.", icon: <img src="/brand/marks/instagram.svg" alt="" /> },
-  { id: "whatsapp", nameHe: "WhatsApp Business", nameEn: "WhatsApp Business", he: "ניהול שיחות ותקשורת עם לקוחות מתוך המערכת.", en: "Manage customer conversations from inside the system.", es: "Gestione las conversaciones con clientes desde el sistema.", pt: "Gerencie as conversas com clientes de dentro do sistema.", ar: "إدارة محادثات العملاء من داخل النظام.", icon: <img src="/brand/marks/whatsapp.svg" alt="" /> },
-  { id: "ads", nameHe: "Google Ads", nameEn: "Google Ads", he: "קליטת לידים מטופסי פרסום נתמכים.", en: "Brings in leads from supported ad forms.", es: "Recibe leads de formularios de anuncios compatibles.", pt: "Recebe leads de formulários de anúncios compatíveis.", ar: "يستقبل العملاء المحتملين من نماذج الإعلانات المدعومة.", icon: <img src="/google-ads.svg" alt="" /> },
-  { id: "crm", nameHe: "CRM", nameEn: "CRM", he: "ניהול לידים, לקוחות, משימות והיסטוריית פעילות.", en: "Manage leads, customers, tasks and the activity history.", es: "Gestione leads, clientes, tareas y el historial.", pt: "Gerencie leads, clientes, tarefas e o histórico.", ar: "إدارة العملاء المحتملين والعملاء والمهام وسجل النشاط.", icon: <CircleUserRound color="#2541F5" size={36} aria-hidden="true" /> },
-  { id: "campaigns", nameHe: "ניהול קמפיינים", nameEn: "Campaign management", he: "מעקב אחר פעילות הקמפיינים ומקורות הלידים.", en: "Follow campaign activity and where each lead came from.", es: "Siga la actividad de las campañas y el origen de cada lead.", pt: "Acompanhe a atividade das campanhas e a origem de cada lead.", ar: "متابعة نشاط الحملات ومصدر كل عميل محتمل.", icon: <Megaphone color="#111936" size={36} aria-hidden="true" /> },
+  { id: "meta", x: 0, y: -200, color: "#0081FB", nameHe: "Meta", nameEn: "Meta", he: "חיבור פעילות השיווק והלידים לסביבת העבודה העסקית.", en: "Connects marketing activity and leads to the business workspace.", es: "Conecta la actividad de marketing y los leads con el espacio de trabajo.", pt: "Liga a atividade de marketing e os leads ao espaço de trabalho.", ar: "يربط نشاط التسويق والعملاء المحتملين بمساحة العمل.", icon: <img src="/brand/marks/meta.svg" alt="" /> },
+  { id: "facebook", x: 270, y: -112, color: "#0866FF", nameHe: "Facebook", nameEn: "Facebook", he: "קליטת פניות ממודעות וטופסי לידים נתמכים.", en: "Brings in enquiries from supported ads and lead forms.", es: "Recibe consultas de anuncios y formularios de leads compatibles.", pt: "Recebe contatos de anúncios e formulários de leads compatíveis.", ar: "يستقبل الطلبات من الإعلانات ونماذج العملاء المحتملين المدعومة.", icon: <img src="/brand/marks/facebook.svg" alt="" /> },
+  { id: "instagram", x: 292, y: 78, color: "#E1306C", nameHe: "Instagram", nameEn: "Instagram", he: "חיבור פעילות הפרסום דרך Meta.", en: "Connects advertising activity through Meta.", es: "Conecta la publicidad a través de Meta.", pt: "Liga a publicidade pela Meta.", ar: "يربط نشاط الإعلان عبر Meta.", icon: <img src="/brand/marks/instagram.svg" alt="" /> },
+  { id: "whatsapp", x: 146, y: 196, color: "#25D366", nameHe: "WhatsApp Business", nameEn: "WhatsApp Business", he: "ניהול שיחות ותקשורת עם לקוחות מתוך המערכת.", en: "Manage customer conversations from inside the system.", es: "Gestione las conversaciones con clientes desde el sistema.", pt: "Gerencie as conversas com clientes de dentro do sistema.", ar: "إدارة محادثات العملاء من داخل النظام.", icon: <img src="/brand/marks/whatsapp.svg" alt="" /> },
+  { id: "ads", x: -146, y: 196, color: "#4285F4", nameHe: "Google Ads", nameEn: "Google Ads", he: "קליטת לידים מטופסי פרסום נתמכים.", en: "Brings in leads from supported ad forms.", es: "Recibe leads de formularios de anuncios compatibles.", pt: "Recebe leads de formulários de anúncios compatíveis.", ar: "يستقبل العملاء المحتملين من نماذج الإعلانات المدعومة.", icon: <img src="/google-ads.svg" alt="" /> },
+  { id: "crm", x: -292, y: 78, color: "#2541F5", nameHe: "CRM", nameEn: "CRM", he: "ניהול לידים, לקוחות, משימות והיסטוריית פעילות.", en: "Manage leads, customers, tasks and the activity history.", es: "Gestione leads, clientes, tareas y el historial.", pt: "Gerencie leads, clientes, tarefas e o histórico.", ar: "إدارة العملاء المحتملين والعملاء والمهام وسجل النشاط.", icon: <CircleUserRound color="#2541F5" size={36} aria-hidden="true" /> },
+  { id: "campaigns", x: -270, y: -112, color: "#111936", nameHe: "ניהול קמפיינים", nameEn: "Campaign management", he: "מעקב אחר פעילות הקמפיינים ומקורות הלידים.", en: "Follow campaign activity and where each lead came from.", es: "Siga la actividad de las campañas y el origen de cada lead.", pt: "Acompanhe a atividade das campanhas e a origem de cada lead.", ar: "متابعة نشاط الحملات ومصدر كل عميل محتمل.", icon: <Megaphone color="#111936" size={36} aria-hidden="true" /> },
 ];
+
+const RING_BOX = { w: 980, h: 560, cx: 490, cy: 280 };
+
+function ringPath(x: number, y: number) {
+  const len = Math.hypot(x, y) || 1;
+  const ux = x / len;
+  const uy = y / len;
+  const rx = 168;
+  const ry = 84;
+  const start = (rx * ry) / Math.hypot(ry * ux, rx * uy);
+  const end = Math.max(start + 28, len - 60);
+  const x1 = RING_BOX.cx + ux * start;
+  const y1 = RING_BOX.cy + uy * start;
+  const x2 = RING_BOX.cx + ux * end;
+  const y2 = RING_BOX.cy + uy * end;
+  return `M ${x1.toFixed(1)} ${y1.toFixed(1)} L ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+}
 
 function localeOf(language: string) {
   const value = language.toLowerCase();
@@ -579,33 +593,47 @@ export default function ShowHome({ language }: { language: string }) {
         <div className="sc-pin">
           <div className="sc-wrap">
             <header className="link-head">
-              <h2>{t("כל הכלים שלכם. מחוברים לעסק אחד.", "Your tools. One connected business.")}</h2>
-              <p>{t("חברו את פעילות השיווק, הפניות והלקוחות שלכם לסביבת עבודה אחת, שבה כל המידע נמצא במקום הנכון.", "Bring your marketing, enquiries and customers into one workspace, where each detail stays in the right place.")}</p>
+              <h2>{t("כל הכלים שלכם מחוברים במקום אחד", "All your tools connected in one place")}</h2>
+              <p>{t("השיווק, הפניות והלקוחות מגיעים לסביבת העבודה של Bizuply", "Marketing, enquiries and customers reach the Bizuply workspace")}</p>
             </header>
-            <div className="tools">
-              <ul className="tools-side">
-                {TOOLS_START.map((id) => {
-                  const item = RING.find((entry) => entry.id === id)!;
-                  return (
-                    <li className="tool" key={id}>
-                      <span className="tool-mark">{item.icon}</span>
-                      <span><strong>{toolName(item)}</strong><small>{toolText(item)}</small></span>
-                    </li>
-                  );
-                })}
-              </ul>
-              <img className="tools-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
-              <ul className="tools-side is-end">
-                {TOOLS_END.map((id) => {
-                  const item = RING.find((entry) => entry.id === id)!;
-                  return (
-                    <li className="tool" key={id}>
-                      <span className="tool-mark">{item.icon}</span>
-                      <span><strong>{toolName(item)}</strong><small>{toolText(item)}</small></span>
-                    </li>
-                  );
-                })}
-              </ul>
+            <div className="tool-ring">
+              <svg className="ring-lines" viewBox={`0 0 ${RING_BOX.w} ${RING_BOX.h}`} aria-hidden="true">
+                {RING.map((item) => (
+                  <path key={item.id} pathLength="1" d={ringPath(item.x, item.y)} />
+                ))}
+              </svg>
+              {RING.map((item) => (
+                  <span
+                    key={`${item.id}-spark`}
+                    className="ring-spark"
+                    style={{
+                      left: `${50 + ((item.x * 0.62) / RING_BOX.w) * 100}%`,
+                      top: `${50 + ((item.y * 0.62) / RING_BOX.h) * 100}%`,
+                      ["--c" as string]: item.color,
+                    }}
+                  />
+                ))}
+              <img className="ring-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
+              {RING.map((item) => {
+                const len = Math.hypot(item.x, item.y) || 1;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="ring-mark"
+                    style={{
+                      left: `${50 + (item.x / RING_BOX.w) * 100}%`,
+                      top: `${50 + (item.y / RING_BOX.h) * 100}%`,
+                      ["--ux" as string]: (item.x / len).toFixed(3),
+                      ["--uy" as string]: (item.y / len).toFixed(3),
+                    }}
+                  >
+                    {item.icon}
+                    <span className="ring-name">{toolName(item)}</span>
+                    <span className="ring-tip">{toolText(item)}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

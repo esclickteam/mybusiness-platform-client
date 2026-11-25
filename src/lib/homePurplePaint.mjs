@@ -168,7 +168,9 @@ export function renderPurpleHomePrerender(locale) {
   const kicker = hx.kicker
     ? `<p class="hx-hero-kicker">${escapeText(hx.kicker)}</p>`
     : `<p class="hx-hero-brand">Bizuply</p>`;
-  const secondLine = `<span class="hx-line">${heroWords(hx.lineTwo, hx.lineThree ? -1 : lineHot)}${hx.lineThree ? ` ${heroWords(hx.lineThree, lineHot)}` : ""}</span>`;
+  const secondLine = hx.lineTwo || hx.lineThree
+    ? `<span class="hx-line">${heroWords(hx.lineTwo, hx.lineThree ? -1 : lineHot)}${hx.lineThree ? ` ${heroWords(hx.lineThree, lineHot)}` : ""}</span>`
+    : "";
   const filmLang = locale === "he" ? "he" : "en";
   const hero = `<section class="hx-hero" data-bz-tone="paper" data-hx-first-paint="true" aria-labelledby="hx-hero-title"><div class="bz-spec__copy">${kicker}<h1 class="hx-display" id="hx-hero-title"><span class="hx-line">${heroWords(
     hx.lineOne,

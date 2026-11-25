@@ -1395,7 +1395,9 @@ html.hx-preview .site-header__cta {
   text-align: center;
 }
 .bz-spec__copy { position: relative; z-index: 1; max-width: 1160px; margin: 0 auto; }
-.bz-spec__film { position: relative; z-index: 1; width: min(1080px, 88vw, calc((100svh - 530px) * 16 / 9)); margin: 1.5rem auto 0; }
+.bz-spec__film { position: relative; z-index: 1; width: min(calc(100vw - 40px), calc((100svh - 428px) * 16 / 9)); margin: 1.5rem auto 0; }
+.hx-hero .ht-caption,
+.hx-hero .ht-tab-num { display: none; }
 .home-read { width: min(980px, calc(100% - 48px)); margin: 2rem auto 3rem; color: #111936; }
 .home-read h2 { margin: 1.4rem 0 0.4rem; font-size: 1.6rem; }
 .home-read h3 { margin: 0.8rem 0 0.25rem; font-size: 1.05rem; }

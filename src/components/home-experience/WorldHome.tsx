@@ -131,11 +131,13 @@ export default function WorldHome() {
           <div className="bz-spec__copy">
             <p className="hx-hero-kicker">{hero.kicker}</p>
             <h1 className="hx-display" id="hx-hero-title">
-              <span className="hx-line"><Words text={hero.lineOne} /></span>
-              <span className="hx-line">
-                <Words text={hero.lineTwo} />
-                {hero.lineThree ? <> <Words text={hero.lineThree} hot={hot} delay={120} /></> : null}
-              </span>
+              <span className="hx-line"><Words text={hero.lineOne} hot={hero.lineThree ? -1 : Math.max(0, String(hero.lineOne || "").trim().split(/\s+/).filter(Boolean).length - 1)} /></span>
+              {hero.lineTwo || hero.lineThree ? (
+                <span className="hx-line">
+                  {hero.lineTwo ? <Words text={hero.lineTwo} /> : null}
+                  {hero.lineThree ? <> <Words text={hero.lineThree} hot={hot} delay={120} /></> : null}
+                </span>
+              ) : null}
             </h1>
             <p className="hx-lead">{hero.lead1}</p>
             <div className="hx-actions">
