@@ -42,7 +42,7 @@ export default function MarketingApp() {
 
   useLayoutEffect(() => {
     const cinematicReady = () =>
-      Boolean(document.querySelector("#root .hx-page, #root .hx-hero"));
+      Boolean(document.querySelector("#root .sc-faq"));
     const release = () => {
       // Keep purple SSR hero until React cinematic home mounts — never on chrome alone.
       if (!cinematicReady()) return;

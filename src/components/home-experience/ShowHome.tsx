@@ -1,37 +1,21 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { HOME_FAQ } from "../../lib/homeFaq.mjs";
-import { STORY } from "../../lib/homepageStory.mjs";
 import { getGuide } from "../../lib/guidesMarketing.mjs";
 import { CircleUserRound, Megaphone } from "lucide-react";
+import { localize } from "./showLocale.mjs";
 import "./showHome.css";
 
+const SITES = [
+  { id: "lashora", color: "#fff0f8", he: "יופי וטיפוח", en: "Beauty", es: "Belleza", pt: "Beleza", ar: "جمال وعناية" },
+  { id: "noodlix", color: "#f3fff8", he: "מסעדה", en: "Restaurant", es: "Restaurante", pt: "Restaurante", ar: "مطعم" },
+  { id: "primeview", color: "#f1f4ff", he: "נדל״ן", en: "Real estate", es: "Inmobiliaria", pt: "Imóveis", ar: "عقارات" },
+  { id: "florique", color: "#fff7fb", he: "חנות וסטודיו", en: "Shop and studio", es: "Tienda y estudio", pt: "Loja e estúdio", ar: "متجر واستوديو" },
+  { id: "studiora", color: "#f7f7ff", he: "נותני שירות", en: "Service studio", es: "Estudio de servicios", pt: "Estúdio de serviços", ar: "مقدمو خدمات" },
+  { id: "advisora", color: "#f4f7ff", he: "עסק ושירותים", en: "Business services", es: "Servicios de negocio", pt: "Serviços de negócio", ar: "خدمات الأعمال" },
+] as const;
+
 const GUIDES = ["what-is-a-crm", "meta-lead-ads-to-crm", "whatsapp-cloud-api-cost", "follow-up-on-leads"];
-
-type StoryBlock = { title: string; body: string; points?: string[] };
-type HomeStory = {
-  waysTitle: string; waysLead: string; ways: StoryBlock[];
-  showTitle: string; showLead: string; films: StoryBlock[];
-  journeyTitle: string; journeyLead: string; steps: StoryBlock[];
-  audienceTitle: string; audienceLead: string; audiences: StoryBlock[];
-  whyTitle: string; whyLead: string; whyCards: StoryBlock[];
-};
-
-function ReadBlock({ title, lead, items }: { title: string; lead: string; items: StoryBlock[] }) {
-  return (
-    <section>
-      <h2>{title}</h2>
-      <p>{lead}</p>
-      {items.map((item) => (
-        <div key={item.title}>
-          <h3>{item.title}</h3>
-          <p>{item.body}</p>
-          {item.points?.length ? <ul>{item.points.map((point) => <li key={point}>{point}</li>)}</ul> : null}
-        </div>
-      ))}
-    </section>
-  );
-}
 
 const PRODUCTS = [
   {
@@ -155,14 +139,17 @@ const PRODUCTS = [
   },
 ] as const;
 
+const TOOLS_START = ["meta", "facebook", "instagram", "whatsapp"] as const;
+const TOOLS_END = ["ads", "crm", "campaigns"] as const;
+
 const RING = [
-  { id: "meta", x: 0, y: -168, delay: "0.02", color: "#0081FB", he: "לידים ממודעות Meta נכנסים ל־CRM עם המקור.", en: "Leads from Meta ads enter the CRM with their source.", icon: <img src="/brand/marks/meta.svg" alt="Meta" /> },
-  { id: "facebook", x: 230, y: -96, delay: "0.08", color: "#0866FF", he: "לידים ממודעות פייסבוק מגיעים דרך Meta Lead Ads.", en: "Leads from Facebook ads arrive through Meta Lead Ads.", icon: <img src="/brand/marks/facebook.svg" alt="Facebook" /> },
-  { id: "instagram", x: 250, y: 48, delay: "0.14", color: "#E1306C", he: "לידים ממודעות אינסטגרם מגיעים דרך Meta Lead Ads.", en: "Leads from Instagram ads arrive through Meta Lead Ads.", icon: <img src="/brand/marks/instagram.svg" alt="Instagram" /> },
-  { id: "whatsapp", x: 120, y: 158, delay: "0.2", color: "#25D366", he: "השיחה נשמרת על כרטיס הלקוח.", en: "The conversation stays on the customer card.", icon: <img src="/brand/marks/whatsapp.svg" alt="WhatsApp" /> },
-  { id: "ads", x: -120, y: 158, delay: "0.26", color: "#4285F4", he: "טופס לידים של Google Ads נכנס לאותו לוח.", en: "A Google Ads lead form enters the same board.", icon: <img src="/google-ads.svg" alt="Google Ads" /> },
-  { id: "crm", x: -250, y: 48, delay: "0.32", color: "#2541F5", he: "כרטיס הלקוח, הסטטוס והמשימה הבאה.", en: "The customer card, the status and the next task.", icon: <CircleUserRound color="#2541F5" size={40} aria-hidden="true" /> },
-  { id: "campaigns", x: -230, y: -96, delay: "0.38", color: "#111936", he: "ניהול הקמפיינים במערכת, והליד מגיע עם המקור.", en: "Campaign management in the product, with the source on the lead.", icon: <Megaphone color="#111936" size={40} aria-hidden="true" /> },
+  { id: "meta", nameHe: "Meta", nameEn: "Meta", he: "חיבור פעילות השיווק והלידים לסביבת העבודה העסקית.", en: "Connects marketing activity and leads to the business workspace.", es: "Conecta la actividad de marketing y los leads con el espacio de trabajo.", pt: "Liga a atividade de marketing e os leads ao espaço de trabalho.", ar: "يربط نشاط التسويق والعملاء المحتملين بمساحة العمل.", icon: <img src="/brand/marks/meta.svg" alt="" /> },
+  { id: "facebook", nameHe: "Facebook", nameEn: "Facebook", he: "קליטת פניות ממודעות וטופסי לידים נתמכים.", en: "Brings in enquiries from supported ads and lead forms.", es: "Recibe consultas de anuncios y formularios de leads compatibles.", pt: "Recebe contatos de anúncios e formulários de leads compatíveis.", ar: "يستقبل الطلبات من الإعلانات ونماذج العملاء المحتملين المدعومة.", icon: <img src="/brand/marks/facebook.svg" alt="" /> },
+  { id: "instagram", nameHe: "Instagram", nameEn: "Instagram", he: "חיבור פעילות הפרסום דרך Meta.", en: "Connects advertising activity through Meta.", es: "Conecta la publicidad a través de Meta.", pt: "Liga a publicidade pela Meta.", ar: "يربط نشاط الإعلان عبر Meta.", icon: <img src="/brand/marks/instagram.svg" alt="" /> },
+  { id: "whatsapp", nameHe: "WhatsApp Business", nameEn: "WhatsApp Business", he: "ניהול שיחות ותקשורת עם לקוחות מתוך המערכת.", en: "Manage customer conversations from inside the system.", es: "Gestione las conversaciones con clientes desde el sistema.", pt: "Gerencie as conversas com clientes de dentro do sistema.", ar: "إدارة محادثات العملاء من داخل النظام.", icon: <img src="/brand/marks/whatsapp.svg" alt="" /> },
+  { id: "ads", nameHe: "Google Ads", nameEn: "Google Ads", he: "קליטת לידים מטופסי פרסום נתמכים.", en: "Brings in leads from supported ad forms.", es: "Recibe leads de formularios de anuncios compatibles.", pt: "Recebe leads de formulários de anúncios compatíveis.", ar: "يستقبل العملاء المحتملين من نماذج الإعلانات المدعومة.", icon: <img src="/google-ads.svg" alt="" /> },
+  { id: "crm", nameHe: "CRM", nameEn: "CRM", he: "ניהול לידים, לקוחות, משימות והיסטוריית פעילות.", en: "Manage leads, customers, tasks and the activity history.", es: "Gestione leads, clientes, tareas y el historial.", pt: "Gerencie leads, clientes, tarefas e o histórico.", ar: "إدارة العملاء المحتملين والعملاء والمهام وسجل النشاط.", icon: <CircleUserRound color="#2541F5" size={36} aria-hidden="true" /> },
+  { id: "campaigns", nameHe: "ניהול קמפיינים", nameEn: "Campaign management", he: "מעקב אחר פעילות הקמפיינים ומקורות הלידים.", en: "Follow campaign activity and where each lead came from.", es: "Siga la actividad de las campañas y el origen de cada lead.", pt: "Acompanhe a atividade das campanhas e a origem de cada lead.", ar: "متابعة نشاط الحملات ومصدر كل عميل محتمل.", icon: <Megaphone color="#111936" size={36} aria-hidden="true" /> },
 ];
 
 function localeOf(language: string) {
@@ -178,7 +165,18 @@ export default function ShowHome({ language }: { language: string }) {
   const locale = localeOf(language);
   const rtl = locale === "he" || locale === "ar";
   const he = locale === "he";
-  const t = (hebrew: string, english: string) => (he ? hebrew : english);
+  const say = (item: { he: string; en: string; es: string; pt: string; ar: string }) =>
+    locale === "he" ? item.he : locale === "es" ? item.es : locale === "pt-BR" ? item.pt : locale === "ar" ? item.ar : item.en;
+  const t = (hebrew: string, english: string) => localize(locale, hebrew, english);
+  const toolName = (item: (typeof RING)[number]) => {
+    if (item.id !== "campaigns") return he ? item.nameHe : item.nameEn;
+    if (locale === "es") return "Gestión de campañas";
+    if (locale === "pt-BR") return "Gestão de campanhas";
+    if (locale === "ar") return "إدارة الحملات";
+    return he ? item.nameHe : item.nameEn;
+  };
+  const toolText = (item: (typeof RING)[number]) =>
+    locale === "he" ? item.he : locale === "es" ? item.es : locale === "pt-BR" ? item.pt : locale === "ar" ? item.ar : item.en;
   function openLayer(index: number) {
     setFocus(index);
     const scene = document.querySelector<HTMLElement>(".sc-platform");
@@ -188,9 +186,10 @@ export default function ShowHome({ language }: { language: string }) {
     window.scrollTo({ top: top + total * (index / 6), behavior: "smooth" });
   }
   const screen = (name: string) => `/demo-media/home/screens/${locale === "he" ? "he" : "en"}-desktop-${name}.webp`;
+  const shot = (_locale: string, name: string) => `/demo-media/home/screens/${locale === "he" ? "he" : "en"}-desktop-${name}.webp`;
   const [focus, setFocus] = useState(0);
+  const [siteAt, setSiteAt] = useState(0);
   const faqs = ((HOME_FAQ as Record<string, [string, string][]>)[locale] || HOME_FAQ.en);
-  const story = ((STORY as Record<string, HomeStory>)[locale] || STORY.en) as HomeStory;
   const guides = GUIDES.map((slug) => ({ slug, article: getGuide(slug, locale) })).filter((item) => item.article?.h1);
 
   useEffect(() => {
@@ -209,6 +208,13 @@ export default function ShowHome({ language }: { language: string }) {
           const tone = ["crm", "wa", "auto", "ads", "cal", "site", "ai"][index] || "crm";
           if (scene.dataset.tone !== tone) scene.dataset.tone = tone;
           setFocus((current) => (current === index ? current : index));
+        }
+        if (scene.classList.contains("sc-site") && !window.matchMedia("(max-width: 980px)").matches) {
+          const span = progress * SITES.length;
+          const base = Math.min(SITES.length - 1, Math.floor(Math.min(span, SITES.length - 0.001)));
+          const tone = Math.min(SITES.length - 1, Math.max(0, Math.round(Math.min(span, SITES.length - 0.001))));
+          scene.style.backgroundColor = SITES[tone].color;
+          setSiteAt((current) => (current === base ? current : base));
         }
       });
     };
@@ -454,32 +460,40 @@ export default function ShowHome({ language }: { language: string }) {
 
       <section className="sc sc-site" data-scene>
         <div className="sc-pin">
-          <span className="dot-y" />
-          <div className="sc-wrap">
-            <h2>{t("האתר שלכם. המותג שלכם. הכל מחובר.", "Your site. Your brand. Connected.")}</h2>
-            <p>{t("עורך ויזואלי, תבניות, עמודים וטפסים. טופס באתר יכול להיפתח כליד ב־CRM. אתר בלבד הוא 129$ לשנה, ודומיין כלול לשנה הראשונה.", "A visual editor, templates, pages and forms. A form on the site can open as a lead in the CRM. Website only is $129 a year, with a domain included for the first year.")}</p>
-            <div className="editor">
-              <aside className="rail">
-                <strong>{t("עמודים", "Pages")}</strong>
-                <button type="button">{t("דף הבית", "Home")}</button>
-                <button type="button">{t("שירותים", "Services")}</button>
-                <button type="button">{t("צור קשר", "Contact")}</button>
-              </aside>
-              <div className="stage">
-                <div className="frames">
-                  <div className="desk"><img src={`/demo-media/home/sites/lashora-${locale === "he" ? "he" : "en"}-desk.webp`} alt={t("תצוגת האתר בדסקטופ", "Desktop site")} /></div>
-                  <div className="mob"><img src={`/demo-media/home/sites/lashora-${locale === "he" ? "he" : "en"}-phone.webp`} alt={t("תצוגת האתר במובייל", "Mobile site")} /></div>
-                </div>
-              </div>
-              <aside className="props">
-                <strong>{t("רכיבים", "Blocks")}</strong>
-                <div>{t("כותרת", "Heading")}</div>
-                <div>{t("גלריה", "Gallery")}</div>
-                <div>{t("טופס יצירת קשר", "Contact form")}</div>
-                <p>{t("הטופס שולח את השם, הטלפון והבקשה ל־CRM.", "The form sends the name, phone and request to the CRM.")}</p>
-              </aside>
+          <div className="sc-wrap site-gallery">
+            <h2>{t("האתר שלכם. המותג שלכם. אינסוף אפשרויות.", "Your site. Your brand. Endless possibilities.")}</h2>
+            <p>{t("בנו אתר מקצועי שמשקף את העסק שלכם, עם תבניות מעוצבות, עורך ויזואלי, התאמה למובייל וחיבור למערכת ניהול הלקוחות.", "Build a professional site that reflects the business, with designed templates, a visual editor, a mobile layout and a connection to customer management.")}</p>
+            <p className="site-kind" aria-live="polite">
+              {SITES.map((site, index) => (
+                <span className={index === siteAt ? "is-on" : ""} style={{ ["--i" as string]: index }} key={site.id}>{say(site)}</span>
+              ))}
+            </p>
+            <div className="site-stage">
+              {SITES.map((site, index) => {
+                const near = Math.abs(index - siteAt) <= 1;
+                if (!near) return null;
+                const lang = locale === "he" ? "he" : "en";
+                return (
+                  <div className={`site-frame${index === siteAt ? " is-on" : ""}`} style={{ ["--i" as string]: index }} key={site.id}>
+                    <div className="desk"><img src={`/demo-media/home/sites/${site.id}-${lang}-desk.webp`} alt={`${say(site)} — ${site.id}`} width="1440" height="900" loading={index === 0 ? "eager" : "lazy"} decoding="async" /></div>
+                    <div className="mob"><img src={`/demo-media/home/sites/${site.id}-${lang}-phone.webp`} alt="" width="390" height="844" loading="lazy" decoding="async" /></div>
+                  </div>
+                );
+              })}
             </div>
-            <Link className="sh-go" to="/website-builder">{t("גלו את בניית האתרים", "Explore the website builder")}</Link>
+            <div className="site-dots" role="tablist">
+              {SITES.map((site, index) => (
+                <button key={site.id} type="button" role="tab" aria-selected={index === siteAt} className={index === siteAt ? "is-on" : ""} onClick={() => {
+                  setSiteAt(index);
+                  const scene = document.querySelector<HTMLElement>(".sc-site");
+                  if (!scene) return;
+                  const total = scene.offsetHeight - window.innerHeight;
+                  const top = scene.getBoundingClientRect().top + window.scrollY;
+                  window.scrollTo({ top: top + total * ((index + 0.15) / SITES.length), behavior: "smooth" });
+                }}>{say(site)}</button>
+              ))}
+            </div>
+            <Link className="sh-go" to="/website-builder">{t("גלו את מערכת בניית האתרים", "Explore the website builder")}</Link>
           </div>
         </div>
       </section>
@@ -568,22 +582,30 @@ export default function ShowHome({ language }: { language: string }) {
               <h2>{t("כל הכלים שלכם. מחוברים לעסק אחד.", "Your tools. One connected business.")}</h2>
               <p>{t("חברו את פעילות השיווק, הפניות והלקוחות שלכם לסביבת עבודה אחת, שבה כל המידע נמצא במקום הנכון.", "Bring your marketing, enquiries and customers into one workspace, where each detail stays in the right place.")}</p>
             </header>
-            <div className="ring">
-              <svg className="ring-lines" viewBox="0 0 760 520" aria-hidden="true">
-                {RING.map((item) => (
-                  <path key={item.id} pathLength="1" d={`M380 260 C ${(380 + item.x) / 2} ${260 - 40}, ${(380 + item.x) / 2} ${item.y + 260}, ${380 + item.x} ${260 + item.y}`} />
-                ))}
-              </svg>
-              {RING.map((item) => (
-                <span key={`${item.id}-spark`} className="ring-spark" style={{ ["--x" as string]: `${item.x}px`, ["--y" as string]: `${item.y}px`, ["--c" as string]: item.color }} />
-              ))}
-              <img className="ring-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
-              {RING.map((item) => (
-                <button key={item.id} type="button" className="ring-mark" style={{ ["--x" as string]: `${item.x}px`, ["--y" as string]: `${item.y}px`, ["--d" as string]: item.delay }}>
-                  {item.icon}
-                  <span className="ring-tip">{t(item.he, item.en)}</span>
-                </button>
-              ))}
+            <div className="tools">
+              <ul className="tools-side">
+                {TOOLS_START.map((id) => {
+                  const item = RING.find((entry) => entry.id === id)!;
+                  return (
+                    <li className="tool" key={id}>
+                      <span className="tool-mark">{item.icon}</span>
+                      <span><strong>{toolName(item)}</strong><small>{toolText(item)}</small></span>
+                    </li>
+                  );
+                })}
+              </ul>
+              <img className="tools-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
+              <ul className="tools-side is-end">
+                {TOOLS_END.map((id) => {
+                  const item = RING.find((entry) => entry.id === id)!;
+                  return (
+                    <li className="tool" key={id}>
+                      <span className="tool-mark">{item.icon}</span>
+                      <span><strong>{toolName(item)}</strong><small>{toolText(item)}</small></span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
           </div>
         </div>
@@ -616,27 +638,16 @@ export default function ShowHome({ language }: { language: string }) {
         </div>
       </section>
 
-      <section className="sc sc-read" data-scene>
-        <div className="sc-pin">
-          <div className="sc-wrap">
-            <ReadBlock title={story.waysTitle} lead={story.waysLead} items={story.ways} />
-            <ReadBlock title={story.showTitle} lead={story.showLead} items={story.films} />
-            <ReadBlock title={story.journeyTitle} lead={story.journeyLead} items={story.steps} />
-            <ReadBlock title={story.audienceTitle} lead={story.audienceLead} items={story.audiences} />
-            <ReadBlock title={story.whyTitle} lead={story.whyLead} items={story.whyCards} />
-          </div>
-        </div>
-      </section>
-
       <section className="sc sc-faq" data-scene>
         <div className="sc-pin">
-          <div className="sc-wrap">
-            <h2>{t("כל מה שרציתם לדעת.", "What people ask before they start.")}</h2>
+          <div className="sc-wrap faq-wrap">
+            <h2>{t("כל מה שרציתם לדעת.", "Everything you wanted to know.")}</h2>
+            <p className="faq-lead">{t("תשובות לשאלות נפוצות על Bizuply, המוצרים שלנו והדרך להתחיל לעבוד עם המערכת.", "Answers to common questions about Bizuply, the products and how to start.")}</p>
             {faqs.map(([question, answer]) => (
-              <article key={question}>
-                <h3>{question}</h3>
-                <p>{answer}</p>
-              </article>
+              <details key={question}>
+                <summary>{question}</summary>
+                <p><span>{answer}</span></p>
+              </details>
             ))}
             <p className="faq-more">
               <Link to="/pricing">{t("המסלולים והמחירים", "Plans and prices")}</Link>

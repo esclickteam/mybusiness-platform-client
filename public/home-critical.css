@@ -1395,7 +1395,11 @@ html.hx-preview .site-header__cta {
   text-align: center;
 }
 .bz-spec__copy { position: relative; z-index: 1; max-width: 1160px; margin: 0 auto; }
-.bz-spec__film { position: relative; z-index: 1; width: min(1160px, 100%); margin: 1.5rem auto 0; }
+.bz-spec__film { position: relative; z-index: 1; width: min(1080px, 88vw, calc((100svh - 530px) * 16 / 9)); margin: 1.5rem auto 0; }
+.home-read { width: min(980px, calc(100% - 48px)); margin: 2rem auto 3rem; color: #111936; }
+.home-read h2 { margin: 1.4rem 0 0.4rem; font-size: 1.6rem; }
+.home-read h3 { margin: 0.8rem 0 0.25rem; font-size: 1.05rem; }
+.home-read p, .home-read li { line-height: 1.55; }
 .bz-spec__pink, .bz-spec__yellow { position: absolute; z-index: 0; }
 .bz-spec__pink { width: 160px; height: 120px; inset-inline-start: -40px; bottom: 12px; background: #ff42b3; border-radius: 60px; }
 .bz-spec__yellow { width: 180px; height: 56px; inset-inline-end: -36px; top: 16px; background: #edff00; border-radius: 28px; transform: rotate(-18deg); }

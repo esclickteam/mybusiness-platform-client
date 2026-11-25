@@ -85,8 +85,6 @@ export default function WorldHome() {
   const reduced = useReduced();
   const lang = language.toLowerCase().startsWith("he") ? "he" : "en";
   const openRef = useRef<HTMLElement | null>(null);
-  const restRef = useRef<HTMLDivElement | null>(null);
-  const [showRest, setShowRest] = useState(false);
   const hot = Math.max(0, String(hero.lineThree || "").trim().split(/\s+/).filter(Boolean).length - 1);
   const labels = (hero.processSteps || []) as [string, string][];
   const copy = (hero.processCopy || []) as [string, string][];
@@ -98,24 +96,11 @@ export default function WorldHome() {
   }));
 
   useEffect(() => {
-    const node = restRef.current;
-    if (!node) return undefined;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) setShowRest(true);
-      },
-      { rootMargin: "900px" },
-    );
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-      const open = openRef.current;
+    const open = openRef.current;
     let frame = 0;
     const tick = () => {
       frame = 0;
-      if (open && !reduced && window.matchMedia("(min-width: 861px)").matches) {
+      if (open && !reduced) {
         const rect = open.getBoundingClientRect();
         const total = open.offsetHeight - window.innerHeight;
         const progress = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
@@ -178,13 +163,9 @@ export default function WorldHome() {
         </div>
       </section>
 
-      <div ref={restRef}>
-        {showRest ? (
-          <Suspense fallback={null}>
-            <ShowHome language={language} />
-          </Suspense>
-        ) : null}
-      </div>
+      <Suspense fallback={null}>
+        <ShowHome language={language} />
+      </Suspense>
     </div>
   );
 }

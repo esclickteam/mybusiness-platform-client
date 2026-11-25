@@ -181,6 +181,9 @@ export function renderPurpleHomePrerender(locale) {
     filmLang,
   )}</div></section>`;
 
+  const read = `<article class="home-read">${homeStoryHtml(locale)}<section><h2>${escapeText(
+    faqTitle,
+  )}</h2><p>${escapeText((STORY[locale] || STORY.en).faqLead)}</p>${faqBodyHtml(faqs)}</section></article>`;
   const crawl = `<div class="home-crawl">${homeStoryHtml(locale)}<section><h2>${escapeText(
     faqTitle,
   )}</h2><p>${escapeText((STORY[locale] || STORY.en).faqLead)}</p>${faqBodyHtml(faqs)}</section></div>`;
@@ -190,6 +193,6 @@ export function renderPurpleHomePrerender(locale) {
     dir: meta.dir,
     headline,
     crawl,
-    inner: `<main class="home-shell hx-paint" lang="${meta.htmlLang}" dir="${meta.dir}" data-home-design="sketch">${header}<div class="hx-page" data-hx-shell="true" dir="${meta.dir}">${hero}</div></main>`,
+    inner: `<main class="home-shell hx-paint" lang="${meta.htmlLang}" dir="${meta.dir}" data-home-design="sketch">${header}<div class="hx-page" data-hx-shell="true" dir="${meta.dir}">${hero}${read}</div></main>`,
   };
 }
