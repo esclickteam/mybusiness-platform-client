@@ -149,9 +149,13 @@ const RING = [
   { id: "campaigns", x: -147, y: -117, color: "#111936", nameHe: "ניהול קמפיינים", nameEn: "Campaign management", he: "מעקב אחר פעילות הקמפיינים ומקורות הלידים.", en: "Follow campaign activity and where each lead came from.", es: "Siga la actividad de las campañas y el origen de cada lead.", pt: "Acompanhe a atividade das campanhas e a origem de cada lead.", ar: "متابعة نشاط الحملات ومصدر كل عميل محتمل.", icon: <Megaphone color="#111936" size={36} aria-hidden="true" /> },
 ];
 
-const RING_BOX = { w: 980, h: 560, cx: 490, cy: 280 };
+function halfExtent(width: number, height: number, ux: number, uy: number) {
+  const tx = Math.abs(ux) < 1e-4 ? Infinity : (width / 2) / Math.abs(ux);
+  const ty = Math.abs(uy) < 1e-4 ? Infinity : (height / 2) / Math.abs(uy);
+  return Math.min(tx, ty);
+}
 
-function RingWires() {
+function RingWires({ locale }: { locale: string }) {
   const svgRef = useRef<SVGSVGElement>(null);
   useEffect(() => {
     const svg = svgRef.current;
@@ -159,22 +163,106 @@ function RingWires() {
     if (!svg || !ring) return undefined;
     const lines = [...svg.querySelectorAll("line")];
     const dots = [...svg.querySelectorAll("circle")];
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const copies = [...ring.querySelectorAll<HTMLElement>(".ring-copy")];
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const mobile = window.matchMedia("(max-width: 980px)");
+    const iconRadius = 28;
+    const gap = 10;
+
+    const fit = () => {
+      if (mobile.matches) {
+        ring.style.removeProperty("width");
+        ring.style.removeProperty("height");
+        ring.style.removeProperty("--orbit");
+        copies.forEach((copy) => { copy.style.transform = ""; });
+        return;
+      }
+      const sizes = copies.map((copy) => ({ w: Math.min(copy.scrollWidth, 180), h: copy.scrollHeight }));
+      const count = sizes.length || 1;
+      const parent = ring.parentElement?.clientWidth || 1100;
+      const boxes = (radius: number, theta: number) => sizes.map((size, index) => {
+        const angle = -Math.PI / 2 + (index * 2 * Math.PI) / count + theta;
+        const ux = Math.cos(angle);
+        const uy = Math.sin(angle);
+        const reach = halfExtent(size.w, size.h, -ux, -uy);
+        const tx = ux * (radius + iconRadius + gap + reach);
+        const ty = uy * (radius + iconRadius + gap + reach);
+        return {
+          l: tx - size.w / 2,
+          t: ty - size.h / 2,
+          r: tx + size.w / 2,
+          b: ty + size.h / 2,
+          ix: ux * radius,
+          iy: uy * radius,
+        };
+      });
+      const hits = (radius: number) => {
+        for (let step = 0; step < 24; step += 1) {
+          const placed = boxes(radius, (step * Math.PI) / 12);
+          for (let i = 0; i < placed.length; i += 1) {
+            for (let j = i + 1; j < placed.length; j += 1) {
+              const a = placed[i];
+              const b = placed[j];
+              if (a.l < b.r + 8 && a.r > b.l - 8 && a.t < b.b + 8 && a.b > b.t - 8) return true;
+            }
+            for (let j = 0; j < placed.length; j += 1) {
+              if (i === j) continue;
+              const icon = { l: placed[j].ix - iconRadius, t: placed[j].iy - iconRadius, r: placed[j].ix + iconRadius, b: placed[j].iy + iconRadius };
+              const text = placed[i];
+              if (text.l < icon.r && text.r > icon.l && text.t < icon.b && text.b > icon.t) return true;
+            }
+          }
+        }
+        return false;
+      };
+      let low = 200;
+      let high = 520;
+      while (high - low > 2) {
+        const mid = (low + high) / 2;
+        if (hits(mid)) low = mid;
+        else high = mid;
+      }
+      let radius = high + 6;
+      const extent = (value: number) => {
+        let maxX = 120;
+        let maxY = 120;
+        for (let step = 0; step < 24; step += 1) {
+          boxes(value, (step * Math.PI) / 12).forEach((item) => {
+            maxX = Math.max(maxX, Math.abs(item.l), Math.abs(item.r));
+            maxY = Math.max(maxY, Math.abs(item.t), Math.abs(item.b));
+          });
+        }
+        return { maxX, maxY };
+      };
+      let bounds = extent(radius);
+      while (bounds.maxX * 2 + 8 > parent && radius > 140) {
+        radius -= 4;
+        bounds = extent(radius);
+      }
+      ring.style.setProperty("--orbit", `${radius.toFixed(1)}px`);
+      ring.style.width = `${Math.min(parent, Math.ceil(bounds.maxX * 2 + 8))}px`;
+      ring.style.height = `${Math.ceil(bounds.maxY * 2 + 8)}px`;
+    };
+
+    fit();
+    document.fonts?.ready.then(fit).catch(() => undefined);
     let frame = 0;
     const draw = (time: number) => {
       frame = window.requestAnimationFrame(draw);
-      if (document.hidden || getComputedStyle(svg).display === "none") return;
+      if (document.hidden || mobile.matches) return;
       const box = ring.getBoundingClientRect();
+      if (box.width < 40) return;
       svg.setAttribute("viewBox", `0 0 ${box.width} ${box.height}`);
       svg.setAttribute("preserveAspectRatio", "none");
+      if (getComputedStyle(svg).display === "none") return;
       const logo = ring.querySelector<HTMLElement>(".ring-logo")?.getBoundingClientRect();
-      const slots = [...ring.querySelectorAll<HTMLElement>(".ring-icon")];
-      if (!logo || slots.length !== lines.length || box.width < 40) return;
+      const icons = [...ring.querySelectorAll<HTMLElement>(".ring-icon")];
+      if (!logo || icons.length !== lines.length) return;
       const lx = logo.left + logo.width / 2 - box.left;
       const ly = logo.top + logo.height / 2 - box.top;
       const hw = logo.width / 2 + 20;
       const hh = logo.height / 2 + 20;
-      slots.forEach((icon, index) => {
+      icons.forEach((icon, index) => {
         const bounds = icon.getBoundingClientRect();
         const ix = bounds.left + bounds.width / 2 - box.left;
         const iy = bounds.top + bounds.height / 2 - box.top;
@@ -185,15 +273,14 @@ function RingWires() {
         const uy = dy / len;
         const x1 = ix + ux * (bounds.width / 2);
         const y1 = iy + uy * (bounds.height / 2);
-        const vx = -ux;
-        const vy = -uy;
-        const tx = Math.abs(vx) < 1e-4 ? Infinity : hw / Math.abs(vx);
-        const ty = Math.abs(vy) < 1e-4 ? Infinity : hh / Math.abs(vy);
+        const inwardX = -ux;
+        const inwardY = -uy;
+        const tx = Math.abs(inwardX) < 1e-4 ? Infinity : hw / Math.abs(inwardX);
+        const ty = Math.abs(inwardY) < 1e-4 ? Infinity : hh / Math.abs(inwardY);
         const edge = Math.min(tx, ty);
-        let x2 = lx + vx * edge;
-        let y2 = ly + vy * edge;
-        const span = Math.hypot(x2 - x1, y2 - y1);
-        if (span < 12) {
+        let x2 = lx + inwardX * edge;
+        let y2 = ly + inwardY * edge;
+        if (Math.hypot(x2 - x1, y2 - y1) < 12) {
           x2 = x1 + ux * 12;
           y2 = y1 + uy * 12;
         }
@@ -201,14 +288,24 @@ function RingWires() {
         lines[index].setAttribute("y1", y1.toFixed(2));
         lines[index].setAttribute("x2", x2.toFixed(2));
         lines[index].setAttribute("y2", y2.toFixed(2));
-        const travel = reduced ? 0.55 : ((time / 2600) + index / RING.length) % 1;
+        const travel = reduced.matches ? 0.55 : ((time / 2600) + index / RING.length) % 1;
         dots[index].setAttribute("cx", (x1 + (x2 - x1) * travel).toFixed(2));
         dots[index].setAttribute("cy", (y1 + (y2 - y1) * travel).toFixed(2));
+        const copy = copies[index];
+        if (!copy) return;
+        const reach = halfExtent(copy.offsetWidth, copy.offsetHeight, ux, uy);
+        const ox = -ux * (bounds.width / 2 + gap + reach);
+        const oy = -uy * (bounds.height / 2 + gap + reach);
+        copy.style.transform = `translate(-50%, -50%) translate(${ox.toFixed(2)}px, ${oy.toFixed(2)}px)`;
       });
     };
     frame = window.requestAnimationFrame(draw);
-    return () => window.cancelAnimationFrame(frame);
-  }, []);
+    window.addEventListener("resize", fit);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", fit);
+    };
+  }, [locale]);
   return (
     <svg className="ring-live" ref={svgRef} aria-hidden="true">
       {RING.map((item) => (
@@ -652,28 +749,22 @@ export default function ShowHome({ language }: { language: string }) {
               <p>{t("השיווק, הפניות והלקוחות מגיעים לסביבת העבודה של Bizuply", "Marketing, enquiries and customers reach the Bizuply workspace")}</p>
             </header>
             <div className="tool-ring">
-              <RingWires />
+              <RingWires locale={locale} />
               <img className="ring-logo" src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
               <div className="tool-orbit">
-                {RING.map((item) => {
-                  const len = Math.hypot(item.x, item.y) || 1;
+                {RING.map((item, index) => {
+                  const angle = -Math.PI / 2 + (index * 2 * Math.PI) / RING.length;
                   return (
                     <span
                       key={item.id}
                       className="ring-slot"
                       style={{
-                        left: `${50 + (item.x / RING_BOX.w) * 100}%`,
-                        top: `${50 + (item.y / RING_BOX.h) * 100}%`,
+                        ["--ax" as string]: Math.cos(angle).toFixed(4),
+                        ["--ay" as string]: Math.sin(angle).toFixed(4),
                       }}
                     >
-                      <span className="ring-icon">{item.icon}</span>
-                      <span
-                        className="ring-arm"
-                        style={{
-                          ["--ox" as string]: `${((item.x / len) * 152).toFixed(1)}px`,
-                          ["--oy" as string]: `${((item.y / len) * 118).toFixed(1)}px`,
-                        }}
-                      >
+                      <span className="ring-unit">
+                        <span className="ring-icon">{item.icon}</span>
                         <span className="ring-copy">
                           <strong>{toolName(item)}</strong>
                           <small>{toolText(item)}</small>

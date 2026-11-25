@@ -75,7 +75,7 @@ body:has(.bizi-dock:not(.is-ltr)) .bizuply-a11y-trigger--left { bottom: 112px; }
   height: 42px;
   border-radius: 50%;
   object-fit: cover;
-  object-position: center 14%;
+  object-position: center 18%;
 }
 
 .bizi-dock.is-in .bizi-dock__shell {

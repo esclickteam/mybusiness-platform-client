@@ -146,8 +146,8 @@ export default function BiziDock() {
             className="bizi-dock__figure"
             src="/brand/bizi-advisor.webp"
             alt=""
-            width="720"
-            height="658"
+            width="840"
+            height="840"
             decoding="async"
           />
         ) : null}
@@ -159,7 +159,7 @@ export default function BiziDock() {
         <header className="bizi-dock__bar">
           <button type="button" className="bizi-dock__hit" onClick={toggle} aria-expanded={open}>
             <span className="bizi-dock__mark" ref={markRef} aria-hidden="true">
-              <img src={tucked ? "/brand/bizi-advisor.webp" : "/brand/mark.png"} alt="" width="64" height="64" />
+              <img src={tucked ? "/brand/bizi-advisor.webp" : "/brand/mark.png"} alt="" width="840" height="840" />
             </span>
             <span className="bizi-dock__copy">
               <strong>{open ? copy.title : copy.launcher}</strong>
