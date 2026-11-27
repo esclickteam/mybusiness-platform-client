@@ -2,7 +2,7 @@
 .pf {
   --blue: #2541f5;
   --pink: #ff42b3;
-  --yellow: #edff00;
+  --yellow: #65e5b5;
   --ink: #111936;
   --muted: #3c4666;
   --line: rgba(17, 25, 54, 0.12);
@@ -153,15 +153,15 @@
 .pf-steps li, .pf-day li { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 10px; padding: 14px 0; border-top: 1px solid var(--line); }
 .pf-day li { grid-template-columns: 1fr; }
 .pf-steps span { color: var(--pink); font-weight: 720; }
-.pf-steps li.is-on, .pf-day li.is-on { background: linear-gradient(90deg, rgba(237,255,0,.55), transparent 70%); border-radius: 12px; }
+.pf-steps li.is-on, .pf-day li.is-on { background: linear-gradient(90deg, rgba(101,229,181,.55), transparent 70%); border-radius: 12px; }
 #journey { background: linear-gradient(90deg, #fff 0 46%, #e7ecff 46% 100%); }
 #journey .pf-journey-shot { animation: pf-mask 380ms ease; }
 #day { background: #f7f8ff; }
 #day[data-tone="pink"] { background: linear-gradient(180deg, #fff 0%, #fff0f8 100%); }
-#day[data-tone="yellow"] { background: linear-gradient(180deg, #fff 0%, #f8ffc8 100%); }
+#day[data-tone="yellow"] { background: linear-gradient(180deg, #fff 0%, #d4f7e5 100%); }
 #day .is-on { box-shadow: inset 3px 0 0 var(--blue); }
 #day[data-tone="pink"] .is-on { box-shadow: inset 3px 0 0 var(--pink); }
-#day[data-tone="yellow"] .is-on { box-shadow: inset 3px 0 0 #b6c400; }
+#day[data-tone="yellow"] .is-on { box-shadow: inset 3px 0 0 #65e5b5; }
 
 .pf-fit { background: #fff5fb; }
 .pf-fit .pf-tabs button { background: #fff; color: var(--ink); border: 1px solid var(--line); }

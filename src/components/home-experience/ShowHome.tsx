@@ -619,7 +619,7 @@ export default function ShowHome({ language }: { language: string }) {
                 <p>{t("חלון של 15 דקות. השירות והמחיר נשמרים עם התור.", "15-minute slots. The service and price are stored with the booking.")}</p>
               </aside>
             </div>
-            <Link className="sh-go" to="/appointments" style={{ background: "#edff00", color: "#111936" }}>{t("גלו את מערכת הפגישות", "Explore meetings")}</Link>
+            <Link className="sh-go" to="/appointments" style={{ background: "#65e5b5", color: "#111936" }}>{t("גלו את מערכת הפגישות", "Explore meetings")}</Link>
           </div>
         </div>
       </section>
