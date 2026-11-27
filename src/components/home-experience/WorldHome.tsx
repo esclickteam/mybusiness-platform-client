@@ -62,7 +62,8 @@ export default function WorldHome() {
   const hero = cine.hero;
   const dir = getTextDirection(language);
   const reduced = useReduced();
-  const lang = language.toLowerCase().startsWith("he") ? "he" : "en";
+  const code = language.toLowerCase();
+  const lang = code.startsWith("he") || code.startsWith("ar") ? "he" : "en";
   const openRef = useRef<HTMLElement | null>(null);
   const hot = Math.max(0, String(hero.lineThree || "").trim().split(/\s+/).filter(Boolean).length - 1);
   const labels = (hero.processSteps || []) as [string, string][];
