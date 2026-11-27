@@ -13,31 +13,31 @@ const T = {
   title: [
     "מערכת לניהול עסקים, שיווק ומכירות | BizUply",
     "All-in-One Business Management Platform | BizUply",
-    "Espacio de trabajo conectado para el negocio | Bizuply",
-    "Espaço de trabalho conectado para o negócio | Bizuply",
-    "مساحة عمل متصلة لإدارة النشاط | Bizuply",
+    "Plataforma para clientes, marketing, ventas y automatización | BizUply",
+    "Plataforma para clientes, marketing, vendas e automação | BizUply",
+    "منصة لإدارة العملاء والتسويق والمبيعات والأتمتة | BizUply",
   ],
   description: [
     "BizUply מחברת CRM, ניהול לקוחות, שיווק, WhatsApp Business API, אוטומציות ואתרים בפלטפורמה עסקית אחת. הכירו את הכלים לניהול העסק.",
     "Connect CRM, customer management, marketing, WhatsApp Business API, automation and websites in one business management platform with BizUply.",
-    "Bizuply es un espacio de trabajo conectado para clientes, leads, WhatsApp Business, campañas, citas, sitios y automatizaciones. Los precios están en la página de planes.",
-    "A Bizuply é um espaço de trabalho conectado para clientes, leads, WhatsApp Business, campanhas, agenda, sites e automações. Os preços ficam na página de planos.",
-    "Bizuply مساحة عمل متصلة للعملاء وواتساب للأعمال والحملات والمواعيد والمواقع والأتمتة. الأسعار في صفحة الباقات.",
+    "BizUply conecta CRM, clientes, marketing, WhatsApp Business API, automatizaciones y sitios en una plataforma. Lo disponible depende del plan y de las conexiones.",
+    "A BizUply liga CRM, clientes, marketing, WhatsApp Business API, automações e sites numa plataforma. O que está disponível depende do plano e das ligações.",
+    "تربط BizUply إدارة العملاء والتسويق وواجهة واتساب للأعمال والأتمتة والمواقع في منصة واحدة. ما هو متاح يعتمد على الباقة والربط.",
   ],
   eyebrow: ["סביבת העבודה של Bizuply", "The Bizuply workspace", "El espacio de trabajo de Bizuply", "O espaço de trabalho da Bizuply", "مساحة عمل Bizuply"],
   h1: [
     "פלטפורמה חכמה לניהול עסקים, שיווק, מכירות ואוטומציות",
     "A business platform for customers, marketing, sales and automation",
-    "El espacio de trabajo que conecta cada parte del negocio",
-    "O espaço de trabalho que liga cada parte do negócio",
-    "مساحة العمل التي تربط كل جزء من النشاط",
+    "Plataforma para clientes, marketing, ventas y automatización",
+    "Plataforma para clientes, marketing, vendas e automação",
+    "منصة لإدارة العملاء والتسويق والمبيعات والأتمتة",
   ],
   lede: [
     "BizUply היא פלטפורמת ניהול עסקים שמחברת בין הכלים הנדרשים לפעילות: CRM, לידים, לקוחות, שיווק דיגיטלי, WhatsApp Business API, אוטומציות, אתרים, משימות ופגישות. אפשר לבנות סביבת עבודה לפי צורכי העסק ולחבר תהליכים שקודם התנהלו במערכות נפרדות. היקף הכלים תלוי בחבילה ובחיבורים שהוגדרו.",
     "BizUply is a business platform that connects the tools a company uses to operate: CRM, leads, customers, digital marketing, the WhatsApp Business API, automations, websites, tasks and appointments. A business can shape the workspace around its work and connect processes that used to live in separate systems. What is available depends on the plan and the connections that are set up.",
-    "Bizuply es una plataforma conectada para dirigir un negocio. Reúne la relación con los clientes, la actividad de marketing y el trabajo diario en un espacio digital. Los módulos compatibles comparten la información relevante, para pasar de una acción a la siguiente con orden.",
-    "A Bizuply é uma plataforma conectada para conduzir um negócio. Reúne o relacionamento com clientes, a atividade de marketing e o trabalho diário num espaço digital. Os módulos compatíveis partilham a informação relevante, para passar de uma ação à seguinte com ordem.",
-    "Bizuply منصة متصلة لإدارة النشاط. تجمع علاقة العملاء والنشاط التسويقي والعمل اليومي في مساحة رقمية واحدة. تتشارك الوحدات المدعومة المعلومات ذات الصلة، فتنتقلون من إجراء إلى الذي يليه بترتيب.",
+    "BizUply es una plataforma de gestión que conecta CRM, leads, clientes, marketing, WhatsApp Business API, automatizaciones, sitios, tareas y citas. El alcance depende del plan y de las conexiones.",
+    "A BizUply é uma plataforma de gestão que liga CRM, leads, clientes, marketing, WhatsApp Business API, automações, sites, tarefas e reuniões. O alcance depende do plano e das ligações.",
+    "BizUply منصة إدارة تربط CRM والعملاء المحتملين والعملاء والتسويق وواجهة واتساب للأعمال والأتمتة والمواقع والمهام والمواعيد. النطاق يعتمد على الباقة والربط.",
   ],
   meet: ["הכירו את סביבת העבודה", "See the workspace", "Ver el espacio de trabajo", "Ver o espaço de trabalho", "تعرّفوا على مساحة العمل"],
   start: ["התחילו עכשיו", "Get Started", "Empieza ahora", "Comece agora", "ابدأ الآن"],
@@ -405,6 +405,23 @@ export function platformOverview(locale) {
       ["האם כל המוצרים כלולים בכל חבילה?", "לא בהכרח. זמינות המודולים נקבעת לפי החבילה ולפי השירותים שחוברו."],
       ["כיצד אפשר להכיר את המערכת לפני שמתחילים?", "אפשר לקרוא את עמודי המוצרים, לראות את ההדגמות באתר, לעבור לעמוד איך זה עובד או לתאם הדגמה."],
     );
+  }
+  if (language === "es" || language === "pt-BR" || language === "ar") {
+    const extra = {
+      es: [
+        ["¿En qué se diferencia BizUply de un CRM?", ["Un CRM suele centrarse en fichas y ventas. BizUply incluye el CRM dentro de un espacio más amplio de marketing, comunicación y automatización, según el plan."]],
+        ["Cuando las herramientas trabajan juntas", ["La información relevante queda en un lugar. Una consulta, una conversación y una venta pueden seguir en el mismo registro."]],
+      ],
+      "pt-BR": [
+        ["Qual é a diferença entre a BizUply e um CRM?", ["Um CRM costuma focar fichas e vendas. A BizUply inclui o CRM num espaço mais amplo de marketing, comunicação e automação, conforme o plano."]],
+        ["Quando as ferramentas trabalham juntas", ["A informação relevante fica num lugar. Um contato, uma conversa e uma venda podem continuar no mesmo registro."]],
+      ],
+      ar: [
+        ["ما الفرق بين BizUply ونظام CRM؟", ["يركز CRM عادة على السجلات والمبيعات. تضم BizUply إدارة العملاء داخل مساحة أوسع للتسويق والتواصل والأتمتة، وفق الباقة."]],
+        ["عندما تعمل الأدوات معاً", ["تبقى المعلومات ذات الصلة في مكان واحد. يمكن للطلب والمحادثة والبيع أن تتتابع في السجل نفسه."]],
+      ],
+    };
+    sections.splice(2, 0, ...extra[language]);
   }
   if (language === "en") {
     sections.splice(2, 0,

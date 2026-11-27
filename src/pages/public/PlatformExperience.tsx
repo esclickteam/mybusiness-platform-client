@@ -55,7 +55,7 @@ export default function PlatformExperience() {
     ["#fit", say("התאמה", "Fit", "Encaje", "Encaixe", "الملاءمة")],
     ["#faq", say("שאלות", "Questions", "Preguntas", "Perguntas", "أسئلة")],
   ];
-  const titleMark = say("שיווק, מכירות ואוטומציות", "marketing, sales and automation", "cada parte del negocio", "cada parte do negócio", "كل جزء من النشاط");
+  const titleMark = say("שיווק, מכירות ואוטומציות", "marketing, sales and automation", "marketing, ventas y automatización", "marketing, vendas e automação", "التسويق والمبيعات والأتمتة");
   const [tool, setTool] = useState(0);
   const [fit, setFit] = useState(0);
   const [journeyStep, setJourneyStep] = useState(0);
@@ -234,30 +234,30 @@ export default function PlatformExperience() {
         </div>
       </section>
 
-      {(language === "he" || language === "en") && (
-        <section id="difference" className="pf-section">
+      <section id="difference" className="pf-section">
           <div className="pf-wrap pf-split">
             <div>
-              <h2>{language === "he" ? "מה ההבדל בין BizUply למערכת CRM רגילה?" : "How is BizUply different from a CRM?"}</h2>
-              <p>
-                {language === "he"
-                  ? "מערכת CRM מתמקדת בניהול קשרי לקוחות ובתהליכי מכירה. BizUply כוללת את ה-CRM כחלק מסביבה רחבה יותר, עם שיווק, תקשורת, אוטומציות וניהול פעילות. היקף הכלים תלוי בחבילה ובחיבורים."
-                  : "A CRM usually focuses on customer records and sales. BizUply includes CRM inside a wider workspace for marketing, communication, automation and day-to-day work. What is included depends on the plan and the connections."}
-              </p>
-              <Link to={href("/how-it-works")}>{language === "he" ? "איך סביבת העבודה פועלת" : "See how the workspace runs"}</Link>
+              <h2>{say("מה ההבדל בין BizUply למערכת CRM רגילה?", "How is BizUply different from a CRM?", "¿En qué se diferencia BizUply de un CRM?", "Qual é a diferença entre a BizUply e um CRM?", "ما الفرق بين BizUply ونظام CRM؟")}</h2>
+              <p>{say(
+                "מערכת CRM מתמקדת בניהול קשרי לקוחות ובתהליכי מכירה. BizUply כוללת את ה-CRM כחלק מסביבה רחבה יותר, עם שיווק, תקשורת, אוטומציות וניהול פעילות. היקף הכלים תלוי בחבילה ובחיבורים.",
+                "A CRM usually focuses on customer records and sales. BizUply includes CRM inside a wider workspace for marketing, communication, automation and day-to-day work. What is included depends on the plan and the connections.",
+                "Un CRM suele centrarse en fichas y ventas. BizUply incluye el CRM en un espacio más amplio de marketing, comunicación y automatización. Lo incluido depende del plan.",
+                "Um CRM costuma focar fichas e vendas. A BizUply inclui o CRM num espaço mais amplo de marketing, comunicação e automação. O que entra depende do plano.",
+                "يركز CRM عادة على السجلات والمبيعات. تضم BizUply ذلك داخل مساحة أوسع للتسويق والتواصل والأتمتة. ما هو مشمول يعتمد على الباقة.",
+              )}</p>
+              <Link to={href("/how-it-works")}>{say("איך סביבת העבודה פועלת", "See how the workspace runs", "Cómo funciona el espacio de trabajo", "Como o espaço de trabalho funciona", "كيف تعمل مساحة العمل")}</Link>
             </div>
             <div>
-              <h3>{language === "he" ? "כשהכלים עובדים יחד" : "When the tools work together"}</h3>
+              <h3>{say("כשהכלים עובדים יחד", "When the tools work together", "Cuando las herramientas trabajan juntas", "Quando as ferramentas trabalham juntas", "عندما تعمل الأدوات معاً")}</h3>
               <ul>
-                <li>{language === "he" ? "מידע עסקי רלוונטי נשמר במקום אחד." : "Relevant business information stays in one place."}</li>
-                <li>{language === "he" ? "פנייה, תקשורת ומכירה יכולות להמשיך על אותה רשומה." : "An inquiry, a conversation and a sale can continue on the same record."}</li>
-                <li>{language === "he" ? "אוטומציות נבנות מהאירועים שהעורך תומך בהם." : "Automations are built from events the editor supports."}</li>
-                <li>{language === "he" ? "הגישה לצוות נקבעת לפי התפקיד והחבילה." : "Team access follows the role and the plan."}</li>
+                <li>{say("מידע עסקי רלוונטי נשמר במקום אחד.", "Relevant business information stays in one place.", "La información relevante queda en un lugar.", "A informação relevante fica num lugar.", "تبقى المعلومات ذات الصلة في مكان واحد.")}</li>
+                <li>{say("פנייה, תקשורת ומכירה יכולות להמשיך על אותה רשומה.", "An inquiry, a conversation and a sale can continue on the same record.", "Una consulta, una conversación y una venta pueden seguir en el mismo registro.", "Um contato, uma conversa e uma venda podem continuar no mesmo registro.", "يمكن للطلب والمحادثة والبيع أن تتتابع في السجل نفسه.")}</li>
+                <li>{say("אוטומציות נבנות מהאירועים שהעורך תומך בהם.", "Automations are built from events the editor supports.", "Las automatizaciones salen de eventos que el editor admite.", "As automações partem de eventos que o editor admite.", "تُبنى الأتمتة من أحداث يدعمها المحرر.")}</li>
+                <li>{say("הגישה לצוות נקבעת לפי התפקיד והחבילה.", "Team access follows the role and the plan.", "El acceso del equipo sigue el rol y el plan.", "O acesso da equipe segue o papel e o plano.", "وصول الفريق يتبع الدور والباقة.")}</li>
               </ul>
             </div>
           </div>
         </section>
-      )}
 
       <section id="journey" className="pf-section" data-scrub>
         <div className="pf-wrap pf-split">

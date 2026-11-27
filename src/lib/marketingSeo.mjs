@@ -205,9 +205,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/features",
-    title: "Bizuply — All the Tools Your Business Needs in One Place",
+    title: "Business Tools & Digital Solutions | BizUply",
     description:
-      "Explore Bizuply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses.",
+      "Explore BizUply's business tools, CRM, marketing, WhatsApp API, automation, AI, websites and digital business development solutions.",
     crumb: "Features",
     lastmod: "2026-08-01",
     changefreq: "monthly",
