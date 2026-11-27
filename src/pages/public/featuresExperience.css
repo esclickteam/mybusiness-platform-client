@@ -37,6 +37,9 @@
 .ft-services { background: #111936; color: #fff; }
 .ft-services h2, .ft-services h3, .ft-services p, .ft-services li { color: #fff; }
 .ft-services a { color: #65e5b5; }
+.ft-services .ft-note h3,
+.ft-services .ft-note p { color: #111936; }
+.ft-services .ft-note a { color: #2541f5; }
 .ft-services article { background: rgba(255,255,255,.06); border-radius: 16px; padding: 16px; }
 @media (max-width: 900px) {
   .ft-split, .ft-cards, .ft-flow, .ft-fits, .ft-shots { grid-template-columns: 1fr; }

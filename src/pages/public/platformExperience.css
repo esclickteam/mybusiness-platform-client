@@ -156,8 +156,25 @@
 .pf-steps li.is-on, .pf-day li.is-on { background: linear-gradient(90deg, rgba(101,229,181,.55), transparent 70%); border-radius: 12px; }
 #journey { background: linear-gradient(90deg, #fff 0 46%, #e7ecff 46% 100%); }
 #journey .pf-journey-shot { animation: pf-mask 380ms ease; }
-#day { min-height: 240vh; background: #f7f8ff; }
-.pf-day-pin { position: sticky; top: 92px; }
+#journey.pf-scrub,
+#day.pf-scrub { padding: 0; background: #f7f8ff; }
+#journey.pf-scrub { background: linear-gradient(90deg, #fff 0 46%, #e7ecff 46% 100%); }
+.pf-scrub-pin {
+  position: relative;
+  top: 0;
+  min-height: calc(100svh - 88px);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  background: inherit;
+}
+.scrub-step-shot { display: none; width: 100%; height: auto; margin-top: 10px; border-radius: 16px; }
+@media (min-width: 901px) {
+  #journey .pf-steps li { padding: 7px 0; }
+  #journey .pf-steps h3 { margin-bottom: 2px; }
+  #journey .pf-steps p, #day .pf-day p { margin: 0; font-size: 0.98rem; line-height: 1.4; }
+  .pf-scrub-pin .pf-frame img { max-height: calc(100svh - 180px); object-fit: contain; background: #fff; }
+}
 #day[data-tone="pink"] { background: linear-gradient(180deg, #fff 0%, #fff0f8 100%); }
 #day[data-tone="yellow"] { background: linear-gradient(180deg, #fff 0%, #d4f7e5 100%); }
 #day .is-on { box-shadow: inset 3px 0 0 var(--blue); }
@@ -281,13 +298,19 @@
   .pf-hero .pf-frame { margin-inline-start: 18px; }
   .pf-stage { min-height: 0; }
   #journey { background: #eef1ff; color: var(--ink); }
-  #day { min-height: 0; }
-  .pf-day-pin { position: static; }
+  #journey.pf-scrub,
+  #day.pf-scrub { height: auto !important; padding: 48px 0; background: #eef1ff; }
+  .pf-scrub-pin { position: static; min-height: 0; display: block; }
+  .scrub-stage-shot { display: none; }
+  .scrub-step-shot { display: block; animation: pf-step-in 420ms ease both; }
+@keyframes pf-step-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
   .pf-btn { width: auto; }
   .pf-actions { justify-content: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .pf-hero .pf-frame, .pf-explorer article.is-on, .pf-journey-shot { animation: none; }
+  .pf-scrub-pin { position: static; min-height: 0; }
+  #journey.pf-scrub, #day.pf-scrub { height: auto !important; }
+  .pf-hero .pf-frame, .pf-explorer article.is-on, .pf-journey-shot, .scrub-step-shot { animation: none; }
   .pf-answer, .pf-slab.blue { transition: none; }
   .pf-wires path { stroke-dashoffset: 0; }
 }

@@ -10,11 +10,13 @@ import {
   splitMarketingLocale,
   withMarketingLocale,
 } from "../../lib/localePath.mjs";
+import { scrubSection } from "./scrollScrub.js";
 import "./platformExperience.css";
 
 const GUIDES = ["what-is-a-crm", "follow-up-on-leads", "whatsapp-cloud-api-cost", "business-automation", "manage-meta-campaigns", "crm-and-business-platform"];
 const FIT_SITES = ["studiora", "advisora", "studiora", "lashora", "primeview", "noodlix", "florique"];
 const JOURNEY_SHOTS = ["crm-list", "crm-card", "whatsapp", "dashboard", "automation"];
+const DAY_SHOTS = ["crm-list", "crm-card", "dashboard", "automation"];
 
 function shot(locale, name) {
   const folder = locale === "he" || locale === "ar" ? "he" : "en";
@@ -113,27 +115,24 @@ export default function PlatformExperience() {
       const vh = window.innerHeight || 800;
       document.querySelectorAll<HTMLElement>(".pf [data-scrub]").forEach((node) => {
         if (reduce) {
+          node.style.height = "";
           node.style.setProperty("--p", "1");
           return;
         }
+        if (node.id === "journey" || node.id === "day") {
+          const count = node.id === "day" ? ui.day.length : ui.journey.length;
+          const pin = node.querySelector<HTMLElement>(".pf-scrub-pin");
+          const p = scrubSection(node, pin, count, reduce);
+          if (p == null) return;
+          node.style.setProperty("--p", p.toFixed(3));
+          const next = Math.min(count - 1, Math.floor(Math.min(p, 0.999999) * count));
+          if (node.id === "journey") setJourneyStep((current) => (current === next ? current : next));
+          else setDayStep((current) => (current === next ? current : next));
+          return;
+        }
         const box = node.getBoundingClientRect();
-        let p = Math.min(1, Math.max(0, (vh - box.top) / (box.height + vh)));
-        if (node.id === "day") {
-          const tall = node.offsetHeight > vh * 1.3;
-          const range = tall ? Math.max(node.offsetHeight - vh * 1.35, 1) : vh * 0.9;
-          const origin = tall ? 72 : vh * 0.82;
-          p = Math.min(1, Math.max(0, (origin - box.top) / range));
-        }
+        const p = Math.min(1, Math.max(0, (vh - box.top) / (box.height + vh)));
         node.style.setProperty("--p", p.toFixed(3));
-        if (node.id === "journey") {
-          const next = Math.min(ui.journey.length - 1, Math.max(0, Math.floor(p * ui.journey.length)));
-          setJourneyStep((current) => (current === next ? current : next));
-        }
-        if (node.id === "day") {
-          const last = ui.day.length - 1;
-          const next = p >= 0.72 ? last : Math.min(last - 1, Math.floor((p / 0.72) * last));
-          setDayStep((current) => (current === next ? current : next));
-        }
       });
     };
     const onScroll = () => {
@@ -142,9 +141,11 @@ export default function PlatformExperience() {
     tick();
     const area = document.querySelector(".app-scroll-area");
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
     area?.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       area?.removeEventListener("scroll", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
@@ -259,7 +260,8 @@ export default function PlatformExperience() {
           </div>
         </section>
 
-      <section id="journey" className="pf-section" data-scrub>
+      <section id="journey" className="pf-section pf-scrub" data-scrub>
+        <div className="pf-scrub-pin">
         <div className="pf-wrap pf-split">
           <div>
             <h2>{ui.sJourney}</h2>
@@ -271,19 +273,21 @@ export default function PlatformExperience() {
                   <div>
                     <h3>{step.title}</h3>
                     <p>{step.body}</p>
+                    <img className="scrub-step-shot" src={shot(language, JOURNEY_SHOTS[index] || "crm-list")} alt="" width="1440" height="900" />
                   </div>
                 </li>
               ))}
             </ol>
           </div>
-          <figure className="pf-frame pf-journey-shot" key={JOURNEY_SHOTS[journeyStep]}>
+          <figure className="pf-frame pf-journey-shot scrub-stage-shot">
             <img src={shot(language, JOURNEY_SHOTS[journeyStep] || "crm-list")} alt="" width="1440" height="900" />
           </figure>
         </div>
+        </div>
       </section>
 
-      <section id="day" className="pf-section" data-scrub data-tone={["blue", "blue", "yellow", "pink"][dayStep] || "blue"}>
-        <div className="pf-day-pin">
+      <section id="day" className="pf-section pf-scrub" data-scrub data-tone={["blue", "blue", "yellow", "pink"][dayStep] || "blue"}>
+        <div className="pf-scrub-pin">
         <div className="pf-wrap pf-split">
           <div>
             <h2>{ui.sDay}</h2>
@@ -292,12 +296,13 @@ export default function PlatformExperience() {
                 <li key={item.title} className={index === dayStep ? "is-on" : ""}>
                   <h3>{item.title}</h3>
                   <p>{item.body}</p>
+                  <img className="scrub-step-shot" src={shot(language, DAY_SHOTS[index] || "crm-card")} alt="" width="1440" height="900" />
                 </li>
               ))}
             </ul>
           </div>
-          <figure className="pf-frame">
-            <img src={shot(language, dayStep === 2 ? "dashboard" : dayStep === 3 ? "automation" : "crm-card")} alt="" width="1440" height="900" />
+          <figure className="pf-frame scrub-stage-shot">
+            <img src={shot(language, DAY_SHOTS[dayStep] || "crm-card")} alt="" width="1440" height="900" />
           </figure>
         </div>
         </div>

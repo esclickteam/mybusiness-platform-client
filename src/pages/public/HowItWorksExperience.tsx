@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { marketingPublicUrl, withMarketingLocale } from "../../lib/localePath.mjs";
+import { scrubSection } from "./scrollScrub.js";
 import "./howItWorksExperience.css";
 
 const COPY = {
@@ -162,17 +163,11 @@ export default function HowItWorksExperience({ language }: { language: "he" | "e
     const tick = () => {
       frame = 0;
       const node = document.getElementById("workday");
-      if (!node) return;
-      if (reduce) {
-        setStep(copy.day.length - 1);
-        return;
-      }
-      const vh = window.innerHeight || 800;
-      const box = node.getBoundingClientRect();
-      const range = Math.max(node.offsetHeight - vh * 0.62, 1);
-      const p = Math.min(1, Math.max(0, (72 - box.top) / range));
-      const last = copy.day.length - 1;
-      const next = p >= 0.72 ? last : Math.min(last - 1, Math.floor((p / 0.72) * last));
+      const pin = node?.querySelector(".hw-pin");
+      if (!node || !pin) return;
+      const p = scrubSection(node, pin, copy.day.length, reduce);
+      if (p == null) return;
+      const next = Math.min(copy.day.length - 1, Math.floor(Math.min(p, 0.999999) * copy.day.length));
       setStep((current) => (current === next ? current : next));
     };
     const onScroll = () => {
@@ -181,9 +176,11 @@ export default function HowItWorksExperience({ language }: { language: "he" | "e
     tick();
     const area = document.querySelector(".app-scroll-area");
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
     area?.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
       area?.removeEventListener("scroll", onScroll);
       if (frame) window.cancelAnimationFrame(frame);
     };
@@ -279,12 +276,13 @@ export default function HowItWorksExperience({ language }: { language: "he" | "e
                   <li key={title} className={index === step ? "is-on" : ""}>
                     <strong>{title}</strong>
                     <span>{body}</span>
+                    <img className="scrub-step-shot" src={shot(language, ["campaigns", "crm-list", "crm-card", "whatsapp", "dashboard", "automation"][index] || "crm-list")} alt="" width="1440" height="900" />
                   </li>
                 ))}
               </ol>
             </div>
-            <figure>
-              <img src={shot(language, step < 3 ? "crm-list" : step < 5 ? "crm-card" : "automation")} alt="" width="1440" height="900" />
+            <figure className="scrub-stage-shot">
+              <img src={shot(language, ["campaigns", "crm-list", "crm-card", "whatsapp", "dashboard", "automation"][step] || "crm-list")} alt="" width="1440" height="900" />
             </figure>
           </div>
         </div>
