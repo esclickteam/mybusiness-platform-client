@@ -35,7 +35,7 @@ const COPY = {
     lang: "he",
     navAria: "ניווט ראשי",
     login: "התחברות",
-    cta: "הירשמו עכשיו",
+    cta: "התחילו עכשיו",
     langCode: "HE",
     about: "אודות",
     website: "בניית אתר וחנות",

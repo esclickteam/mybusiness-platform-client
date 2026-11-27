@@ -66,7 +66,11 @@ export default function FeaturesExperience({ language }: { language: string }) {
         <link rel="canonical" href={marketingPublicUrl("/features", language)} />
         <meta property="og:title" content={copy.title} />
         <meta property="og:description" content={copy.description} />
+        <meta property="og:url" content={marketingPublicUrl("/features", language)} />
         <meta property="og:image" content="https://bizuply.com/brand/logo.png" />
+        {[["en", "en"], ["he", "he"], ["es", "es"], ["pt-BR", "pt-BR"], ["ar", "ar"], ["x-default", "en"]].map(([lang, loc]) => (
+          <link key={lang} rel="alternate" hrefLang={lang} href={marketingPublicUrl("/features", loc)} />
+        ))}
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 

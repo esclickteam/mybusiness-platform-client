@@ -52,12 +52,13 @@ export function captureLocalePaintHold(doc: Document = document): HTMLElement | 
     zIndex: "2147483000",
     pointerEvents: "none",
     overflow: "hidden",
-    background: "#ffffff",
+    background: "#2541f5",
   });
 
   const wrap = doc.createElement("div");
+  wrap.className = "bz-world";
+  wrap.dir = doc.documentElement.dir || "ltr";
   wrap.style.minHeight = "100%";
-  wrap.style.background = "#ffffff";
 
   const header =
     doc.querySelector("#root .site-header") ||
@@ -67,7 +68,12 @@ export function captureLocalePaintHold(doc: Document = document): HTMLElement | 
   if (header) {
     wrap.appendChild(header.cloneNode(true));
   }
-  wrap.appendChild(hero.cloneNode(true));
+  const heroClone = hero.cloneNode(true);
+  if (heroClone instanceof HTMLElement) {
+    heroClone.style.background = "#2541f5";
+    heroClone.style.color = "#fff";
+  }
+  wrap.appendChild(heroClone);
   hold.appendChild(wrap);
   doc.documentElement.appendChild(hold);
   return hold;
@@ -96,6 +102,7 @@ export function heroMediaReady(doc: Document = document): boolean {
   const hero = doc.querySelector<HTMLElement>("#root .hx-hero");
   if (!isUsableHero(hero)) return false;
   const shot =
+    doc.querySelector<HTMLVideoElement>("#root .ht-video") ||
     doc.querySelector<HTMLImageElement>("#root .hx-hero-shot-1") ||
     doc.querySelector<HTMLImageElement>("#root .hx-hero-stage-inner img") ||
     doc.querySelector<HTMLImageElement>("#root .hx-hero-frame img") ||
@@ -106,6 +113,7 @@ export function heroMediaReady(doc: Document = document): boolean {
     return shot.complete && shot.naturalWidth > 0;
   }
   if (shot instanceof HTMLVideoElement) {
+    if (shot.classList.contains("ht-video")) return true;
     return shot.readyState >= 2 || Boolean(shot.poster);
   }
   return true;

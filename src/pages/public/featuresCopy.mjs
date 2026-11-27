@@ -1,3 +1,5 @@
+import { FEATURE_BODIES } from "./featuresLocaleBodies.mjs";
+
 const he = {
   title: "כלים ופתרונות דיגיטליים לעסקים | יכולות BizUply",
   description: "גלו את יכולות BizUply: ניהול לקוחות, CRM, שיווק, WhatsApp API, אוטומציות, AI, בניית אתרים, ליווי עסקי והקמת עסקים דיגיטליים.",
@@ -265,12 +267,18 @@ const ar = pack({
   endBody: "ابدأوا بالبرنامج، أو تعرّفوا على المنصة، أو اسألوا عن خدمات الإطلاق المنشورة.",
 });
 
-function overlay(copy, titles, bodies, faqs) {
+function overlay(copy, titles, bodies, faqs, extra = {}) {
+  const merged = { ...copy, ...extra };
   return {
-    ...copy,
-    groups: copy.groups.map((group, index) => ({ ...group, title: titles[index], body: bodies[index] })),
+    ...merged,
+    groups: copy.groups.map((group, index) => ({
+      ...group,
+      title: titles[index],
+      body: bodies[index],
+      items: extra.items?.[index] || group.items,
+      link: group.link ? [group.link[0], extra.links?.[index] || group.link[1]] : null,
+    })),
     faq: faqs,
-    faqTitle: faqs === copy.faq ? copy.faqTitle : copy.faqTitle,
   };
 }
 
@@ -309,16 +317,19 @@ const esReady = overlay(es,
   ["Un CRM que conecta clientes, ventas y el siguiente paso", "Comunicación por la API oficial de WhatsApp Business", "Conectar el marketing con el siguiente paso", "Una presencia digital unida al negocio", "IA dentro del trabajo", "Gestionar el tiempo dentro del trabajo", "Un espacio que también cabe a un equipo", "Colaboraciones y un programa de socios", "Ver la actividad que el sistema guardó"],
   ["El CRM guarda ficha, estado, notas y tareas. Los estados son Nuevo, Contactado, Interesado, Convertido, Perdido y Antiguo.", "La conexión usa la interfaz oficial. Un hilo puede vincularse al cliente. No hay mensajes ilimitados y las tarifas de Meta son aparte. Esta página no afirma un estatus de Tech Provider.", "Tras conectar la cuenta publicitaria se pueden editar campañas de Meta. Un lead compatible sigue en el CRM. Google Ads aquí significa formularios compatibles, no gestionar la campaña. El gasto queda en Meta o Google.", "El constructor crea un sitio sobre una plantilla, apto para móvil, con un formulario que puede seguir como lead. El sitio tiene su propio precio.", "La cuenta de negocio incluye herramientas de IA junto a tareas y automatizaciones. No dirigen el negocio en lugar del equipo. Los escáneres revisan un sitio público y no son una certificación.", "La agenda forma parte del plan de negocio, no es el único producto. Una cita o una tarea puede unirse a una persona que ya está en la ficha.", "El acceso sigue los roles que admite el plan.", "Dentro del producto, una colaboración es una oportunidad entre negocios, sin socio ni ingreso prometido. El programa comercial de socios es otra página.", "Las pantallas muestran consultas, estados y actividad guardada. No hay tasas de éxito ni cifras de ingresos inventadas."],
   esFaq,
+  FEATURE_BODIES.es,
 );
 const ptReady = overlay(pt,
   ["Um CRM que liga clientes, vendas e o passo seguinte", "Comunicação pela API oficial do WhatsApp Business", "Ligar o marketing ao passo seguinte", "Uma presença digital ligada ao negócio", "IA dentro do trabalho", "Gerir o tempo dentro do trabalho", "Um espaço que também serve a uma equipe", "Colaborações e um programa de parceiros", "Ver a atividade que o sistema guardou"],
   ["O CRM guarda ficha, status, notas e tarefas. Os status são Novo, Contactado, Interessado, Convertido, Perdido e Antigo.", "A ligação usa a interface oficial. Uma conversa pode ligar-se ao cliente. Não há mensagens ilimitadas e as tarifas da Meta são à parte. Esta página não afirma um estatuto de Tech Provider.", "Depois de ligar a conta de anúncios dá para editar campanhas da Meta. Um lead compatível segue no CRM. Google Ads aqui significa formulários compatíveis, não gerir a campanha. O gasto fica na Meta ou no Google.", "O construtor cria um site sobre um modelo, adequado ao telemóvel, com um formulário que pode seguir como lead. O site tem preço próprio.", "A conta de negócios inclui ferramentas de IA junto de tarefas e automações. Não gerem o negócio no lugar da equipe. Os scanners verificam um site público e não são uma certificação.", "A agenda faz parte do plano de negócios, não é o único produto.", "O acesso segue os papéis que o plano admite.", "No produto, uma colaboração é uma oportunidade entre negócios, sem parceiro ou receita prometida. O programa comercial de parceiros é outra página.", "Os ecrãs mostram contatos, status e atividade guardada. Não há taxas de sucesso nem números de receita inventados."],
   ptFaq,
+  FEATURE_BODIES["pt-BR"],
 );
 const arReady = overlay(ar,
   ["CRM يربط العملاء والمبيعات والخطوة التالية", "تواصل عبر واجهة واتساب للأعمال الرسمية", "ربط التسويق بالخطوة التالية", "حضور رقمي يتصل بالنشاط", "ذكاء اصطناعي داخل العمل", "إدارة الوقت داخل العمل", "مساحة تناسب فريقاً أيضاً", "تعاون وبرنامج شركاء", "رؤية النشاط الذي حفظه النظام"],
   ["يحفظ CRM البطاقة والحالة والملاحظات والمهام. الحالات هي جديد، تم التواصل، مهتم، تم التحويل، خاسر وقديم.", "يستخدم الربط الواجهة الرسمية. يمكن ربط المحادثة بالعميل. لا توجد رسائل بلا حد ورسوم Meta منفصلة. لا تدّعي هذه الصفحة صفة Tech Provider.", "بعد ربط حساب الإعلانات يمكن تعديل حملات Meta. يتابع العميل المحتمل المدعوم في CRM. Google Ads هنا يعني نماذج مدعومة، لا إدارة الحملة. يبقى الإنفاق لدى Meta أو Google.", "يبني منشئ المواقع موقعاً على قالب مناسب للجوال، مع نموذج يمكن أن يتابع كعميل محتمل. للموقع سعر مستقل.", "يتضمن حساب الأعمال أدوات ذكاء اصطناعي إلى جانب المهام والأتمتة. هي لا تدير النشاط بدل الفريق. فاحصات الموقع العام ليست شهادة.", "التقويم جزء من الخطة التجارية وليس المنتج الوحيد.", "الوصول يتبع الأدوار التي تدعمها الباقة.", "داخل المنتج، التعاون فرصة بين أنشطة، بلا شريك أو دخل مضمون. برنامج الشركاء التجاري صفحة أخرى.", "تعرض الشاشات الطلبات والحالات والنشاط المحفوظ. لا توجد نسب نجاح أو أرقام دخل مختلقة."],
   arFaq,
+  FEATURE_BODIES.ar,
 );
 
 export const FEATURES = { he, en, es: esReady, "pt-BR": ptReady, ar: arReady };
