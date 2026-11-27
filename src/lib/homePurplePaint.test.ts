@@ -11,20 +11,15 @@ describe("sketch home first paint", () => {
     expect(en.inner).toContain('data-home-design="sketch"');
     expect(en.inner).toContain('class="hx-hero"');
     expect(en.inner).toContain('class="hx-display"');
-    expect(en.inner).toContain(">Your</span>");
-    expect(en.inner).toContain(">smarter.</span>");
+    expect(en.inner).toContain(">platform</span>");
+    expect(en.inner).toContain(">business</span>");
+    expect(en.inner).toContain("Your whole business in one place");
     expect(en.inner).toContain(HX_HERO_COPY.en.see);
     expect(en.inner).toContain("/demo-media/home/theater/en-desktop.webp");
-    expect(en.inner).not.toContain("/demo-media/home/theater/en-mobile.webp");
-    expect(en.inner).not.toContain("Claire Bennett");
     expect(en.inner).toContain('class="ht-theater"');
-    expect(en.inner).toContain('class="hx-mrow"');
-    expect(en.inner).toContain('class="hx-mrow-card"');
+    expect(en.inner).not.toContain("/demo-media/home/screens/en-desktop-dashboard.webp");
+    expect(en.inner).not.toContain("Claire Bennett");
     expect(en.inner).not.toContain("/demo-direction/dash.png");
-    for (const [, label] of HX_HERO_COPY.en.processSteps) {
-      expect(en.inner).toContain(`<span class="ht-tab-label">${label.replace(/&/g, "&amp;")}</span>`);
-    }
-    expect(en.inner).toContain(HX_HERO_COPY.en.processCopy[0][0]);
     expect(en.inner).toContain('class="site-header__end"');
     expect(en.inner).toContain('<button type="button" class="site-header__link site-nav__button"');
     expect(en.inner).toContain('class="site-nav__chevron"');
@@ -38,16 +33,17 @@ describe("sketch home first paint", () => {
   it("keeps Hebrew hero copy aligned with the React sketch home", () => {
     const he = renderPurpleHomePrerender("he");
     expect(he.dir).toBe("rtl");
+    expect(he.inner).toContain(">הפלטפורמה</span>");
     expect(he.inner).toContain(">העסק</span>");
-    expect(he.inner).toContain(">יותר.</span>");
-    expect(he.inner).toContain("BizUply");
+    expect(he.inner).toContain("כל העסק שלכם במקום אחד");
+    expect(he.inner).toContain("Bizuply");
     expect(he.inner).toContain(HX_HERO_COPY.he.see);
     expect(he.inner).toContain("/demo-media/home/theater/he-desktop.webp");
-    expect(he.inner).toContain("לוח בקרה");
+    expect(he.inner).toContain('class="ht-theater"');
     expect(he.inner).not.toContain("נועה לוי");
-    expect(he.inner).not.toContain("/demo-media/home/theater/he-mobile.webp");
-    expect(he.inner).toContain("שלב 1 מתוך 6");
-    expect(he.headline).toBe(`${HX_HERO_COPY.he.lineOne} ${HX_HERO_COPY.he.lineTwo}`);
+    expect(he.headline).toBe(
+      [HX_HERO_COPY.he.lineOne, HX_HERO_COPY.he.lineTwo, HX_HERO_COPY.he.lineThree].filter(Boolean).join(" "),
+    );
   });
 
   it("critical CSS paints white canvas, never the legacy dark hero gradient", () => {

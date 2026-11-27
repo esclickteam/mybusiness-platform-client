@@ -688,7 +688,7 @@ export default function BusinessDashboardLayout() {
                     </span>
                   ) : hideBizuplyChrome ? null : (
                     <img
-                      src="/bizuply logo.png"
+                      src={sidebarCollapsed && !isMobile ? "/brand/mark.png" : "/bizuply logo.png"}
                       alt="BizUply Logo"
                       className={`
                       object-contain

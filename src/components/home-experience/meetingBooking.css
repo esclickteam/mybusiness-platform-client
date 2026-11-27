@@ -1,6 +1,6 @@
 .mt-section {
   padding: clamp(2.8rem, 5vw, 4.4rem) 0;
-  color: #1a0b33;
+  color: #111936;
   background: transparent;
 }
 .mt-split {
@@ -25,8 +25,8 @@
   margin: 0 0 0.75rem;
   padding: 0.35rem 0.7rem;
   border-radius: 8px;
-  background: #f3e8ff;
-  color: #6d28d9;
+  background: #f4f6ff;
+  color: #2541F5;
   font-size: 0.92rem;
   font-weight: 800;
 }
@@ -34,14 +34,14 @@
 .ht-root .mt-section h2 {
   max-width: 11em;
   margin: 0;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: clamp(2.35rem, 1.35rem + 1.55vw, 3rem);
   line-height: 1.12;
 }
 .mt-lead > p { margin: 0.85rem 0 0; max-width: 28rem; color: #4b4563; font-weight: 650; line-height: 1.55; }
 .mt-lead ul { display: grid; gap: 0.85rem; margin: 1.15rem 0 0; padding: 0; list-style: none; }
 .mt-lead li { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem; align-items: start; }
-.mt-lead li > svg { width: 1.35rem; height: 1.35rem; margin-top: 0.15rem; color: #7c3aed; }
+.mt-lead li > svg { width: 1.35rem; height: 1.35rem; margin-top: 0.15rem; color: #2541F5; }
 .mt-lead strong,
 .mt-lead li span { display: block; }
 .mt-lead strong { color: #1e1b4b; }
@@ -52,7 +52,7 @@
   margin-top: auto;
   border: 0;
   border-radius: 8px;
-  background: linear-gradient(90deg, #7c3aed, #6d28d9);
+  background: linear-gradient(90deg, #2541F5, #2541F5);
   color: #fff;
   font: inherit;
   font-weight: 800;
@@ -78,8 +78,8 @@
   width: 2.3rem;
   height: 2.3rem;
   border-radius: 10px;
-  background: #f3e8ff;
-  color: #7c3aed;
+  background: #f4f6ff;
+  color: #2541F5;
 }
 .mt-ico svg,
 .mt-nav svg,
@@ -113,10 +113,10 @@
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: #7c3aed;
+  color: #2541F5;
 }
 .mt-days button.is-on,
-.mt-times button.is-on { border-color: #6d28d9; background: #6d28d9; color: #fff; }
+.mt-times button.is-on { border-color: #2541F5; background: #2541F5; color: #fff; }
 .mt-days button i,
 .mt-times button i {
   position: absolute;
@@ -129,7 +129,7 @@
   display: grid;
   place-items: center;
   height: 1.8rem;
-  color: #8b5cf6;
+  color: #FF42B3;
 }
 .mt-join svg {
   width: 1.35rem;
@@ -163,7 +163,7 @@
 .mt-success p { margin: 0.2rem 0 0; color: #3f6b4e; font-size: 0.98rem; font-weight: 650; }
 .mt-crm {
   margin: 0.7rem 0 0;
-  color: #6d28d9;
+  color: #2541F5;
   font-size: 0.90rem;
   font-weight: 800;
 }
@@ -173,18 +173,18 @@
   gap: 0.4rem;
   margin-top: 0.4rem;
   padding: 1rem 0.5rem;
-  border: 2px solid #ddd6fe;
+  border: 2px solid #dbe2ff;
   box-shadow: 0 16px 36px rgba(91, 33, 182, 0.12);
 }
 .mt-summary strong { font-size: 1.05rem; }
 .mt-summary div { min-width: 0; padding: 0.35rem 0.7rem; text-align: center; }
 .mt-summary div + div { border-inline-start: 1px solid #ece7f6; }
-.mt-summary svg { width: 1.2rem; height: 1.2rem; color: #7c3aed; }
+.mt-summary svg { width: 1.2rem; height: 1.2rem; color: #2541F5; }
 .mt-summary strong,
 .mt-summary small { display: block; }
 .mt-summary strong { margin-top: 0.25rem; color: #1e1b4b; }
 .mt-summary small { margin-top: 0.15rem; color: #6d657e; font-weight: 700; }
-.mt-section :focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.mt-section :focus-visible { outline: 2px solid #ffd0ea; outline-offset: 2px; }
 
 @media (max-width: 860px) {
   .mt-split { display: flex; flex-direction: column; width: min(520px, calc(100% - 1.4rem)); }

@@ -617,9 +617,9 @@ function whatsappHeadHtml(pathname) {
     `<meta name="twitter:title" content="${title}" />`,
     `<meta name="twitter:description" content="${description}" />`,
     `<meta name="twitter:image" content="${image}" />`,
-    `<link rel="icon" href="/favicon.ico" sizes="any" />`,
-    `<link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />`,
-    `<link rel="apple-touch-icon" href="/apple-touch-icon-v3.png" />`,
+    `<link rel="icon" href="/favicon.ico?v=5" sizes="any" />`,
+    `<link rel="icon" type="image/png" href="/favicon-32x32.png?v=5" sizes="32x32" />`,
+    `<link rel="apple-touch-icon" href="/apple-touch-icon-v3.png?v=5" />`,
     page
       ? `<script id="wa-product-schema" type="application/ld+json">${JSON.stringify(WHATSAPP_PRODUCT_SCHEMA).replace(/</g, "\\u003c")}</script>`
       : "",
@@ -1029,9 +1029,9 @@ async function handleMarketingDocument(request) {
       const lang = meta.lang || (locale.locale === "pt-BR" ? "pt-BR" : locale.locale === "en" ? "en" : locale.locale);
       const dir = meta.dir || (locale.locale === "he" || locale.locale === "ar" ? "rtl" : "ltr");
       const htmlClass = isHome
-        ? ' class="bizuply-home hx-preview" style="background:#ffffff"'
+        ? ' class="bizuply-home hx-preview" style="background:#2541F5"'
         : isPartners
-          ? ' class="bizuply-partners" style="background:#1e1b4b"'
+          ? ' class="bizuply-partners" style="background:#111936"'
           : "";
       documentHtml = documentHtml.replace(
         /<html\b[^>]*>/i,

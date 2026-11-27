@@ -1,0 +1,194 @@
+import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { biziCopy } from "./biziPublic";
+import BiziCards from "./BiziCards";
+import "./biziDock.css";
+
+const STORE = "bizi-transcript";
+
+export default function BiziDock() {
+  const { i18n } = useTranslation();
+  const copy = biziCopy(i18n.language);
+  const [open, setOpen] = useState(false);
+  const [entered, setEntered] = useState(false);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const listRef = useRef(null);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => setEntered(true));
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(STORE) || "[]");
+      if (Array.isArray(saved)) setMessages(saved);
+    } catch {
+      /* keep the empty thread */
+    }
+    const openFromPage = () => setOpen(true);
+    window.addEventListener("bizuply:openSupportChat", openFromPage);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("bizuply:openSupportChat", openFromPage);
+    };
+  }, []);
+
+  useEffect(() => {
+    const sync = () => {
+      const banner = document.querySelector(".cookie-banner--notice, .cookie-banner--manage");
+      const height = banner && window.innerWidth <= 720 ? Math.ceil(banner.getBoundingClientRect().height) : 0;
+      document.documentElement.style.setProperty("--bizi-cookie", `${height}px`);
+    };
+    sync();
+    const observer = new ResizeObserver(sync);
+    const banner = document.querySelector(".cookie-banner");
+    if (banner) observer.observe(banner);
+    window.addEventListener("resize", sync);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", sync);
+      document.documentElement.style.removeProperty("--bizi-cookie");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!open || !window.visualViewport) return undefined;
+    const viewport = window.visualViewport;
+    const sync = () => {
+      const overlap = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+      document.documentElement.style.setProperty("--bizi-kb", `${Math.round(overlap)}px`);
+    };
+    sync();
+    viewport.addEventListener("resize", sync);
+    viewport.addEventListener("scroll", sync);
+    return () => {
+      viewport.removeEventListener("resize", sync);
+      viewport.removeEventListener("scroll", sync);
+      document.documentElement.style.removeProperty("--bizi-kb");
+    };
+  }, [open]);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(STORE, JSON.stringify(messages.slice(-40)));
+    } catch {
+      /* storage can be unavailable */
+    }
+    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
+  }, [messages, open]);
+
+  async function ask(text, extra = {}) {
+    const question = String(text || "").trim();
+    if (!question || loading) return;
+    setInput("");
+    setMessages((current) => [...current, { sender: "user", text: question }]);
+    setLoading(true);
+    try {
+      const recentMessages = messages.slice(-6).map((item) => ({
+        role: item.sender === "user" ? "user" : "assistant",
+        content: String(item.text || "").slice(0, 800),
+      }));
+      const response = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          question,
+          locale: i18n.language,
+          currentPath: window.location.pathname,
+          recentMessages,
+          channel: "bizi",
+          consent: extra.consent === true,
+          contact: extra.contact,
+        }),
+      });
+      const data = await response.json().catch(() => ({}));
+      setMessages((current) => [
+        ...current,
+        {
+          sender: "bot",
+          text: data.answer || copy.hint,
+          cards: Array.isArray(data.cards) ? data.cards : [],
+          offerHuman: Boolean(data.offerHuman),
+        },
+      ]);
+    } catch {
+      setMessages((current) => [...current, { sender: "bot", text: copy.hint }]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function toggle() {
+    setOpen((value) => !value);
+  }
+
+  return (
+    <aside
+      className={`bizi-dock${entered ? " is-in" : ""}${open ? " is-open" : ""}${String(i18n.language || "").startsWith("he") || String(i18n.language || "").startsWith("ar") ? "" : " is-ltr"}`}
+      dir={i18n.dir()}
+    >
+      <div className="bizi-dock__shell">
+        <header className="bizi-dock__bar">
+          <button type="button" className="bizi-dock__hit" onClick={toggle} aria-expanded={open}>
+            <span className="bizi-dock__mark" aria-hidden="true">
+              <img src="/brand/bizi-advisor.webp" alt="" width="840" height="840" />
+            </span>
+            <span className="bizi-dock__copy">
+              <strong>{open ? copy.title : copy.launcher}</strong>
+              <small>{open ? copy.role : copy.launcherSub}</small>
+            </span>
+            <span className="bizi-dock__chat" aria-hidden="true">
+              {open ? "×" : (
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 5.5h14a1 1 0 0 1 1 1v8.2a1 1 0 0 1-1 1H9.2L5 19.2V6.5a1 1 0 0 1 1-1z" />
+                </svg>
+              )}
+            </span>
+          </button>
+        </header>
+        {open ? (
+          <div className="bizi-dock__panel">
+            <div className="bizi-dock__thread" ref={listRef}>
+              {messages.length === 0 ? <p className="bizi-dock__hello">{copy.greeting}</p> : null}
+              {messages.map((message, index) => (
+                <div key={`${message.sender}-${index}`} className={`bizi-dock__msg is-${message.sender}`}>
+                  <p>{message.text}</p>
+                  {message.cards?.length ? (
+                    <BiziCards
+                      cards={message.cards}
+                      language={i18n.language}
+                      onLead={(contact) => ask(copy.agree, { consent: true, contact })}
+                    />
+                  ) : null}
+                  {message.offerHuman ? (
+                    <button type="button" className="bizi-dock__human" onClick={() => ask(copy.prompts[5])}>
+                      {copy.prompts[5]}
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+              {loading ? <p className="bizi-dock__msg is-bot">…</p> : null}
+              {messages.length === 0 ? (
+                <div className="bizi-dock__starts">
+                  {copy.prompts.slice(0, 5).map((prompt) => (
+                    <button key={prompt} type="button" onClick={() => ask(prompt)}>{prompt}</button>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            <form
+              className="bizi-dock__form"
+              onSubmit={(event) => {
+                event.preventDefault();
+                ask(input);
+              }}
+            >
+              <input value={input} onChange={(event) => setInput(event.target.value)} aria-label={copy.launcher} />
+              <button type="submit">{copy.send}</button>
+            </form>
+          </div>
+        ) : null}
+      </div>
+    </aside>
+  );
+}

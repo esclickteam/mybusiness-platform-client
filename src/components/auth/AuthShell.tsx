@@ -141,7 +141,7 @@ export function AuthCard({
     <div className="auth-card">
       <div className="auth-card__mark">
         {productLogo && !whiteLabel ? (
-          <img className="auth-card__logo" src="/logo-mark.svg" alt="BizUply" />
+          <img className="auth-card__logo" src="/brand/logo.png" alt="Bizuply" width="1534" height="540" />
         ) : (
           <BrandMark size="sm" />
         )}

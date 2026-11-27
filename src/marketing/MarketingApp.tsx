@@ -42,7 +42,7 @@ export default function MarketingApp() {
 
   useLayoutEffect(() => {
     const cinematicReady = () =>
-      Boolean(document.querySelector("#root .hx-page, #root .hx-hero"));
+      Boolean(document.querySelector("#root .sc-faq"));
     const release = () => {
       // Keep purple SSR hero until React cinematic home mounts — never on chrome alone.
       if (!cinematicReady()) return;
@@ -68,7 +68,7 @@ export default function MarketingApp() {
   useEffect(() => installMarketingNavigation(), []);
 
   return (
-    <div className="app-layout hx-has-site-header" dir={getTextDirection(i18n.language)} lang={getHtmlLang(i18n.language)}>
+    <div className="app-layout hx-has-site-header bz-public" dir={getTextDirection(i18n.language)} lang={getHtmlLang(i18n.language)}>
       <HeaderView />
       <main className="app-main">
         <div className="app-scroll-area home-preview-scroll">

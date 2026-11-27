@@ -70,8 +70,8 @@ const WHATSAPP_FAQ = {
 const PAGES = {
   es: {
     "/": page(
-      "Bizuply | Plataforma integral de gestión empresarial y CRM",
-      "Gestione leads, clientes, WhatsApp Business, campañas de Meta, citas, sitios y automatizaciones en una plataforma conectada. Descubra Bizuply.",
+      "Bizuply | CRM, WhatsApp y automatización para empresas",
+      "Gestione leads, relaciones con clientes, conversaciones de WhatsApp, campañas, citas y flujos de trabajo en una plataforma de negocio conectada.",
       "Bizuply",
       "Todo lo que su negocio necesita para crecer en un solo lugar",
       [
@@ -126,11 +126,11 @@ const PAGES = {
       ],
     ),
     "/features": page(
-      "Funciones | Bizuply",
-      "CRM, citas, sitio web, automatizaciones, colaboraciones, agentes humanos y WhatsApp Cloud API.",
+      "Herramientas y soluciones digitales para negocios | BizUply",
+      "Conozca las capacidades de BizUply: CRM, marketing, WhatsApp API, automatizaciones, IA, sitios web y servicios de puesta en marcha.",
       "Funciones",
-      "Funciones",
-      ["Las funciones publicadas son las que ya funcionan en el producto: CRM y leads, citas, constructor de sitios, automatizaciones, campañas de Meta dentro del panel y WhatsApp Cloud API."],
+      "Todo lo necesario para gestionar, promocionar y hacer crecer el negocio",
+      ["BizUply conecta CRM, marketing, WhatsApp Business API, automatizaciones en el plan de negocio, sitios, tareas y citas. Los servicios de puesta en marcha se venden aparte. No hay un curso de programación a la venta."],
     ),
     "/solutions": page(
       "Soluciones para negocios | Bizuply",
@@ -243,8 +243,8 @@ function cloneShape(locale, dict) {
 
 cloneShape("pt-BR", {
   "/": page(
-    "Bizuply | Plataforma completa de gestão empresarial e CRM",
-    "Gerencie leads, clientes, WhatsApp Business, campanhas da Meta, compromissos, sites e automações em uma plataforma conectada. Conheça a Bizuply.",
+    "Bizuply | CRM, WhatsApp e automação para empresas",
+    "Gerencie leads, relacionamentos com clientes, conversas no WhatsApp, campanhas, compromissos e fluxos de trabalho em uma plataforma de negócios conectada.",
     "Bizuply",
     "Tudo o que o seu negócio precisa para crescer em um só lugar",
     [
@@ -280,7 +280,7 @@ cloneShape("pt-BR", {
       "O site tem um preço anual próprio na página de preços. Ele não faz parte do produto de CRM.",
     ],
   ),
-  "/features": page("Recursos | Bizuply", "CRM, agenda, site, automações, colaborações, agentes humanos e WhatsApp Cloud API.", "Recursos", "Recursos", ["Os recursos publicados são os que já funcionam: CRM e leads, agenda, construtor de sites, automações, campanhas da Meta no painel e WhatsApp Cloud API."]),
+  "/features": page("Ferramentas e soluções digitais para negócios | BizUply", "Conheça as capacidades da BizUply: CRM, marketing, WhatsApp API, automações, IA, sites e serviços de implantação.", "Recursos", "Tudo o que é preciso para gerir, divulgar e fazer crescer o negócio", ["A BizUply liga CRM, marketing, WhatsApp Business API, automações no plano de negócios, sites, tarefas e reuniões. Os serviços de implantação são vendidos à parte. Não há um curso de programação à venda."]),
   "/solutions": page("Soluções para negócios | Bizuply", "Uma plataforma para negócios de serviço que recebem leads, marcam horários e respondem no WhatsApp.", "Soluções", "Soluções para negócios", ["A Bizuply serve a negócios que precisam de um pipeline, um arquivo de cliente e uma agenda. Ela não substitui o gerenciador de anúncios da Meta."]),
   "/crm": page(
     "CRM para pequenas empresas com anúncios de cadastro | Bizuply",
@@ -357,8 +357,8 @@ cloneShape("pt-BR", {
 
 cloneShape("ar", {
   "/": page(
-    "Bizuply | منصة متكاملة لإدارة الأعمال وCRM",
-    "أديروا العملاء المحتملين والعملاء وWhatsApp Business وحملات Meta والمواعيد والمواقع والأتمتة في منصة واحدة متصلة. اكتشفوا Bizuply.",
+    "Bizuply | نظام CRM وواتساب وأتمتة الأعمال",
+    "أديروا العملاء المحتملين وعلاقات العملاء ومحادثات WhatsApp والحملات والمواعيد وسير العمل في منصة أعمال واحدة متصلة.",
     "Bizuply",
     "كل ما يحتاجه عملكم للنمو في مكان واحد",
     [
@@ -394,7 +394,7 @@ cloneShape("ar", {
       "للموقع سعر سنوي مستقل في صفحة الأسعار. وهو ليس منتج CRM.",
     ],
   ),
-  "/features": page("المزايا | Bizuply", "CRM والمواعيد والموقع والأتمتة والتعاون ووكلاء بشريون وواجهة واتساب.", "المزايا", "المزايا", ["المزايا المنشورة هي ما يعمل اليوم: CRM والعملاء المحتملون، والمواعيد، ومنشئ المواقع، والأتمتة، وحملات Meta داخل اللوحة، وواجهة واتساب."]),
+  "/features": page("أدوات وحلول رقمية للأعمال | BizUply", "تعرّفوا على قدرات BizUply: إدارة العملاء، والتسويق، وواجهة واتساب، والأتمتة، والذكاء الاصطناعي، والمواقع، وخدمات الإطلاق.", "المزايا", "كل ما يلزم لإدارة النشاط وتسويقه وتنميته", ["تربط BizUply إدارة العملاء والتسويق وواجهة واتساب والأتمتة في الخطة التجارية والمواقع والمهام والمواعيد. خدمات الإطلاق تُباع بشكل منفصل. لا توجد دورة برمجة للبيع."]),
   "/solutions": page("حلول لإدارة النشاط | Bizuply", "منصة لأنشطة الخدمات التي تستقبل عملاء محتملين وتحجز مواعيد وترد عبر واتساب.", "حلول", "حلول للنشاط", ["Bizuply مخصصة لمن يحتاج مساراً وملف عميل وتقويماً. هي لا تستبدل مدير إعلانات Meta."]),
   "/crm": page(
     "برنامج إدارة علاقات العملاء للشركات | Bizuply",

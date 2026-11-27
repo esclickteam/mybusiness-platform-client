@@ -24,7 +24,7 @@
   line-height: 1.25;
   letter-spacing: -0.3px;
 
-  background: linear-gradient(90deg, #2563eb, #7c3aed);
+  background: linear-gradient(90deg, #2563eb, #2541F5);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -57,7 +57,7 @@
 .howitworks-section h2 {
   font-size: 1.55rem;
   font-weight: 600;
-  color: #5b21b6;
+  color: #2541F5;
   margin-bottom: 1rem;
 }
 

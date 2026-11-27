@@ -131,7 +131,7 @@
 }
 
 .crx-source {
-  --crx-accent: #7c3aed;
+  --crx-accent: #2541F5;
   position: relative;
   overflow: hidden;
   display: grid;
@@ -314,7 +314,7 @@
 }
 
 .crx-pipeline li {
-  --crx-accent: #7c3aed;
+  --crx-accent: #2541F5;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;

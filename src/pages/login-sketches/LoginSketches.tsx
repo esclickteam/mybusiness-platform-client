@@ -218,7 +218,7 @@ function LoginSketch({ variant }: { variant: Variant }) {
       </Helmet>
       {premium ? (
         <header className="lsk-bar">
-          <img className="lsk-logo" src="/logo-mark.svg" alt="BizUply" width="148" height="44" />
+          <img className="lsk-logo" src="/brand/logo.png" alt="BizUply" width="1534" height="540" />
           <div className="lsk-bar-tools">
             <Link className="lsk-switch" to={`/login-sketches/${other}`}>{otherLabel}</Link>
             <LanguageSwitcher />
@@ -231,7 +231,7 @@ function LoginSketch({ variant }: { variant: Variant }) {
         </>
       )}
       <form className="lsk-form" onSubmit={onSubmit} noValidate>
-        {premium ? null : <img className="lsk-logo" src="/logo-mark.svg" alt="BizUply" width="176" height="52" />}
+        {premium ? null : <img className="lsk-logo" src="/brand/logo.png" alt="BizUply" width="1534" height="540" />}
         <h1>{t("login.cardTitle")}</h1>
         {premium ? <p className="lsk-lead">{t("login.cardSubtitle")}</p> : null}
         {premium ? (

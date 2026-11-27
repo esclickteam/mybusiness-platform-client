@@ -1022,7 +1022,6 @@ export default function App() {
   const isCinematicHome =
     !isPrivateOwnerHost &&
     (location.pathname === "/" || isHomePreview);
-  const shareSiteHeader = isCinematicHome || /\/website-scan\/?$/.test(location.pathname) || /\/seo-scanner\/?$/.test(location.pathname);
   const isSaasMarketplaceRoute =
     location.pathname === "/saas" || location.pathname.startsWith("/saas/");
   const isSaasPublicSite = location.pathname.startsWith("/s/");
@@ -1219,10 +1218,11 @@ export default function App() {
     !isPublicPartnerSales &&
     !isBizuplyPublicBookingRoute;
   const scanFilm = /\/compliance\/demo\/?$/.test(location.pathname) && new URLSearchParams(location.search).get("film") === "1";
+  const shareSiteHeader = !isWorkspaceRoute && !isBusinessChatRoute && !isMiniSiteHost;
 
   return (
     <NotificationsProvider>
-      <div className={`app-layout${shareSiteHeader ? " hx-has-site-header" : ""}`} dir={appDir} lang={appLang}>
+      <div className={`app-layout${shareSiteHeader ? " hx-has-site-header" : ""}${!isWorkspaceRoute && !isBusinessChatRoute && !isMiniSiteHost ? " bz-public" : ""}`} dir={appDir} lang={appLang}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
           !isSaasPublicSite &&
@@ -2006,7 +2006,6 @@ export default function App() {
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
-        !isCinematicHome &&
         !isSaasMarketplaceRoute && !isSaasPublicSite &&
         !isDevVisualRoute &&
         !isBusinessChatRoute &&

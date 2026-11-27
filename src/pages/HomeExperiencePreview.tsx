@@ -2,9 +2,10 @@ import { useEffect, useLayoutEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
 import { marketingPublicUrl } from "../lib/localePathCore.mjs";
+import "../styles/homeExperience.css";
+import "../components/home-experience/worldHome.css";
 import HomeExperienceSections from "../components/home-experience/HomeExperienceSections";
 import HomeExperienceFooter from "../components/home-experience/HomeExperienceFooter";
-import "../styles/homeExperience.css";
 
 const HREFLANG = [
   ["en", marketingPublicUrl("/", "en")],

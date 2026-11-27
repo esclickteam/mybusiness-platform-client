@@ -6,7 +6,7 @@
   background:
     radial-gradient(120% 42% at 50% -8%, #efe8ff 0%, transparent 58%),
     #f4f7fb;
-  color: #21172f;
+  color: #111936;
   font-family: Assistant, "Segoe UI", sans-serif;
 }
 
@@ -18,7 +18,7 @@
 
 .dd-brand {
   margin: 0;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.04em;
@@ -57,8 +57,8 @@
 }
 
 .dd-switch button[aria-selected="true"] {
-  border-color: #5b21b6;
-  background: #5b21b6;
+  border-color: #2541F5;
+  background: #2541F5;
   color: #fff;
 }
 
@@ -132,7 +132,7 @@
 .dd-h-slide.is-active .dd-window {
   opacity: 1;
   transform: scale(1);
-  border-color: #7c3aed;
+  border-color: #2541F5;
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.28), 0 22px 36px -18px rgba(91, 33, 182, 0.55);
 }
 
@@ -163,7 +163,7 @@
 .dd-h-caption {
   margin: 0;
   padding: 0 16px 14px;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 13px;
   font-weight: 800;
   text-align: center;
@@ -188,7 +188,7 @@
   gap: 8px;
   min-height: 38px;
   padding: 7px 10px;
-  background: linear-gradient(90deg, #5b21b6 0%, #2563eb 100%);
+  background: linear-gradient(90deg, #2541F5 0%, #2563eb 100%);
   color: #fff;
 }
 
@@ -277,7 +277,7 @@
 
 @keyframes dd-focus {
   0%, 10% {
-    border-color: #7c3aed;
+    border-color: #2541F5;
     transform: translateY(-4px) scale(1.015);
     box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.28), 0 22px 36px -18px rgba(91, 33, 182, 0.55);
   }

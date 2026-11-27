@@ -58,7 +58,7 @@
 .cc-brand span {
   width: 1.15rem;
   height: 1.15rem;
-  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  background: linear-gradient(135deg, #60a5fa, #FF42B3);
 }
 
 .cc-side button {
@@ -70,7 +70,7 @@
   border: 0;
   border-radius: 10px;
   background: transparent;
-  color: #ddd6fe;
+  color: #dbe2ff;
   font: inherit;
   font-size: 0.98rem;
   font-weight: 700;
@@ -79,7 +79,7 @@
 }
 
 .cc-side button.is-on,
-.cc-side button:hover { background: #6d4aff; color: #fff; }
+.cc-side button:hover { background: #2541F5; color: #fff; }
 
 .cc-body,
 .cc-stage { min-width: 0; }
@@ -96,7 +96,7 @@
   gap: 0.75rem;
   margin: 0;
   padding: 0.95rem 1.15rem;
-  color: #6d28d9;
+  color: #2541F5;
 }
 
 .cc-metrics p + p { border-inline-start: 1px solid #efeaf6; }
@@ -137,7 +137,7 @@
   padding: 0.05rem 0.4rem;
   border-radius: 8px;
   background: #efe9ff;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.90rem;
   text-align: center;
 }
@@ -246,7 +246,7 @@
   border-bottom: 1.5px solid currentColor;
   transform: rotate(45deg) translateY(-1px);
 }
-.cc-status.is-new { background: #f5f3ff; color: #6d28d9; }
+.cc-status.is-new { background: #f4f6ff; color: #2541F5; }
 .cc-status.is-interested,
 .cc-status.is-quote { background: #eff6ff; color: #1d4ed8; }
 .cc-status-menu {
@@ -268,7 +268,7 @@
   font-weight: 800;
   text-align: start;
 }
-.cc-status-menu button:hover { background: #f5f3ff; }
+.cc-status-menu button:hover { background: #f4f6ff; }
 
 .cc-contact {
   display: flex;
@@ -287,7 +287,7 @@
 .cc-contact span { display: inline-flex; align-items: center; gap: 0.35rem; padding: 0; border: 0; background: transparent; color: inherit; }
 .cc-contact .is-whatsapp,
 .cc-contact .is-whatsapp svg { color: #059669; }
-.cc-contact button:hover { color: #5b21b6; }
+.cc-contact button:hover { color: #2541F5; }
 
 .cc-pipeline {
   display: grid;
@@ -319,7 +319,7 @@
 .cc-pipeline .is-done button { color: #141226; }
 .cc-pipeline i { display: block; width: 100%; height: 0.22rem; background: #ece7f5; }
 .cc-pipeline .is-done i,
-.cc-pipeline .is-on i { background: #6d28d9; }
+.cc-pipeline .is-on i { background: #2541F5; }
 
 .cc-phone-actions { display: none; }
 
@@ -371,7 +371,7 @@
 .cc-timeline svg { stroke: #fff; }
 .cc-timeline .is-whatsapp i { background: #3b82f6; }
 .cc-timeline .is-call i { background: #22c55e; }
-.cc-timeline .is-note i { background: #8b5cf6; }
+.cc-timeline .is-note i { background: #FF42B3; }
 .cc-timeline .is-task i { background: #2563eb; }
 .cc-timeline strong { display: block; color: #141226; font-size: 0.98rem; }
 .cc-timeline p { margin: 0.15rem 0 0; color: #4b4560; font-weight: 600; line-height: 1.4; }
@@ -380,7 +380,7 @@
 .cc-empty,
 .cc-notice { margin: 0.65rem 0 0; font-weight: 800; }
 .cc-empty { color: #6d657e; }
-.cc-notice { color: #5b21b6; }
+.cc-notice { color: #2541F5; }
 
 .cc-follow {
   display: flex;
@@ -423,9 +423,9 @@
 }
 .cc-actions > button svg { width: 1.15rem; height: 1.15rem; color: #2563eb; }
 .cc-actions > button:nth-of-type(2) svg { color: #059669; }
-.cc-actions > button:nth-of-type(3) svg { color: #4f46e5; }
-.cc-actions > button:nth-of-type(4) svg { color: #7c3aed; }
-.cc-actions > button:hover { border-color: #c4b5fd; background: #f7f4ff; }
+.cc-actions > button:nth-of-type(3) svg { color: #2541F5; }
+.cc-actions > button:nth-of-type(4) svg { color: #2541F5; }
+.cc-actions > button:hover { border-color: #ffd0ea; background: #f7f4ff; }
 .cc-actions form { display: grid; gap: 0.4rem; padding: 0.7rem; background: #f7f5ff; }
 .cc-actions label { font-size: 0.92rem; font-weight: 800; }
 .cc-actions input,
@@ -439,14 +439,14 @@
   font: inherit;
 }
 .cc-actions textarea { min-height: 4rem; resize: vertical; }
-.cc-actions form button { min-height: 2.5rem; border: 0; background: #5b21b6; color: #fff; font-weight: 800; }
-.cc-actions form button:hover { background: #4c1d95; }
+.cc-actions form button { min-height: 2.5rem; border: 0; background: #2541F5; color: #fff; font-weight: 800; }
+.cc-actions form button:hover { background: #1a2fd0; }
 
 .cc-details { display: grid; align-content: start; gap: 0.55rem; padding: 0.8rem 0.9rem 1rem; border-top: 1px solid #f3effa; }
 .cc-details p { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0; color: #141226; font-weight: 700; overflow-wrap: anywhere; }
-.cc-details svg { color: #6d28d9; }
+.cc-details svg { color: #2541F5; }
 
-.cc-section :focus-visible { outline: 2px solid #c4b5fd; outline-offset: 2px; }
+.cc-section :focus-visible { outline: 2px solid #ffd0ea; outline-offset: 2px; }
 
 @media (max-width: 980px) {
   .cc-app { grid-template-columns: 1fr; width: calc(100% - 1rem); border-radius: 22px; }

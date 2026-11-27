@@ -1,7 +1,7 @@
 .site-footer {
-  border-top: 3px solid #5b21b6;
+  border-top: 3px solid #2541F5;
   background: #f7f1ff;
-  color: #1a0b33;
+  color: #111936;
   padding: 2.4rem clamp(1rem, 4vw, 3rem) 1.2rem;
 }
 
@@ -55,7 +55,7 @@
 
 .site-footer a:hover,
 .site-footer a:focus-visible {
-  color: #5b21b6;
+  color: #2541F5;
 }
 
 .site-footer__rights {

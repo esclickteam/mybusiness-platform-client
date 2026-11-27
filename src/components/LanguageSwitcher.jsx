@@ -2,7 +2,7 @@ import { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FaGlobe } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { LANGUAGE_META, getShortLanguageLabel } from "../i18n/languages";
+import { LANGUAGE_META } from "../i18n/languages";
 import { coerceSupportedLanguage, getTextDirection } from "../i18n/localeUtils";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
 import { splitMarketingLocale, withMarketingLocale } from "../lib/localePathCore.mjs";
@@ -58,7 +58,6 @@ export default function LanguageSwitcher({
   const menuRef = useRef(null);
   const menuId = useId();
   const currentLang = coerceSupportedLanguage(i18n.language);
-  const shortLabel = getShortLanguageLabel(currentLang);
   const dir = getTextDirection(currentLang);
 
   const changeLanguage = async (lng) => {
@@ -154,7 +153,7 @@ export default function LanguageSwitcher({
           aria-label={t("common.changeLanguage")}
           dir={dir}
           data-align={align}
-          className="site-lang-menu fixed z-[99999] overflow-y-auto overscroll-contain border border-slate-200 bg-white p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]"
+          className="site-lang-menu fixed z-[99999] overflow-y-auto overscroll-contain"
           style={{ width: MENU_WIDTH, maxWidth: `calc(100vw - ${VIEWPORT_MARGIN * 2}px)` }}
         >
           {LANGUAGE_META.map((lang) => {
@@ -167,18 +166,11 @@ export default function LanguageSwitcher({
                 role="option"
                 aria-selected={isActive}
                 onClick={() => changeLanguage(lang.code)}
-                className={`flex w-full items-center gap-3 px-3 py-2.5 text-start text-sm font-bold transition ${
-                  isActive
-                    ? "bg-violet-50 text-violet-800"
-                    : "text-slate-700 hover:bg-slate-50"
-                }`}
+                className={`site-lang-menu__option${isActive ? " is-active" : ""}`}
               >
-                <span className="text-base leading-none" aria-hidden="true">
-                  {lang.flag}
-                </span>
-                <span className="min-w-0 flex-1">{lang.nativeLabel}</span>
+                <span className="min-w-0 flex-1">{lang.code === "pt-BR" ? "Português" : lang.nativeLabel}</span>
                 {isActive ? (
-                  <span className="text-violet-700" aria-hidden="true">
+                  <span className="site-lang-menu__mark" aria-hidden="true">
                     ✓
                   </span>
                 ) : null}
@@ -196,23 +188,17 @@ export default function LanguageSwitcher({
         ref={triggerRef}
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={
-          compact
-            ? "site-header__icon-btn group"
-            : `group flex h-[58px] w-[58px] items-center justify-center rounded-2xl shadow-[0_12px_30px_rgba(79,70,229,0.22)] transition hover:-translate-y-0.5 ${
-                open
-                  ? "bg-gradient-to-br from-indigo-600 to-violet-700 text-white"
-                  : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-              }`
-        }
-        aria-label={`${shortLabel}, ${t("common.changeLanguage")}`}
+        className="site-header__lang"
+        aria-label={t("common.changeLanguage")}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={menuId}
         title={t("common.changeLanguage")}
       >
-        <span className="site-header__lang-code">{shortLabel}</span>
-        <FaGlobe className="lang-globe transition-transform duration-300 group-hover:rotate-12 motion-reduce:transition-none motion-reduce:group-hover:rotate-0" size={compact ? 16 : 22} aria-hidden="true" />
+        <FaGlobe size={22} aria-hidden="true" />
+        <svg className="site-header__lang-caret" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </button>
       {menu}
     </div>

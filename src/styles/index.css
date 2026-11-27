@@ -387,3 +387,43 @@ body:has(.cookie-banner--manage) .bizuply-a11y-trigger {
     bottom: calc(18rem + env(safe-area-inset-bottom)) !important;
   }
 }
+
+.bizi-launcher {
+  position: fixed;
+  z-index: 10000;
+  inset-inline-end: 1.25rem;
+  bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: min(290px, calc(100vw - 2rem));
+  min-height: 68px;
+  padding: 4px 14px 4px 4px;
+  border: 2px solid #ff42b3;
+  border-radius: 999px;
+  background: #2541f5;
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(17, 25, 54, 0.25);
+  text-align: start;
+}
+
+.bizi-launcher img {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #fff;
+}
+
+.bizi-launcher strong,
+.bizi-launcher small { display: block; color: #fff; }
+.bizi-launcher small { font-weight: 600; opacity: 0.9; }
+
+@media (max-width: 960px) {
+  .bizi-launcher {
+    width: min(260px, calc(100vw - 5.5rem)) !important;
+    height: auto !important;
+    left: auto !important;
+    right: auto !important;
+  }
+}

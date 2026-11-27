@@ -113,10 +113,10 @@
 .crm-hero__title-grad {
   background: linear-gradient(
     100deg,
-    #6d28d9 0%,
+    #2541F5 0%,
     #2563eb 38%,
     #06b6d4 62%,
-    #6d28d9 100%
+    #2541F5 100%
   );
   background-size: 250% 100%;
   -webkit-background-clip: text;

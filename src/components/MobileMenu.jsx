@@ -130,7 +130,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
             </button>
           ) : (
             <Link to="/" onClick={onClose} className="site-mobile__brand" aria-label={logoAlt}>
-              <img src="/logo-mark.svg" alt="" width="176" height="52" />
+              <img src="/brand/logo.png" alt="" width="1534" height="540" />
             </Link>
           )}
           {screen ? (

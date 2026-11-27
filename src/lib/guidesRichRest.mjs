@@ -2,7 +2,7 @@
 
 export function installRemainingGuides(add, t) {
   add("what-is-a-crm", {
-    title: t("What is a CRM for a small business? | BizUply", "מהו CRM לעסק קטן? | ביזאפלי", "Qué es un CRM para un negocio pequeño | BizUply", "O que é um CRM para um pequeno negócio | BizUply", "ما هو CRM لنشاط صغير؟ | BizUply"),
+    title: t("What is a CRM for a small business? | Bizuply", "מהו CRM לעסק קטן? | ביזאפלי", "Qué es un CRM para un negocio pequeño | Bizuply", "O que é um CRM para um pequeno negócio | Bizuply", "ما هو CRM لنشاط صغير؟ | Bizuply"),
     description: t(
       "A CRM is the record of people who might buy and people who already did. In BizUply, CRM only is $49 a month.",
       "CRM הוא הרשומה של מי שעשוי לקנות ושל מי שכבר קנה. בביזאפלי, CRM בלבד עולה 49 דולר לחודש.",

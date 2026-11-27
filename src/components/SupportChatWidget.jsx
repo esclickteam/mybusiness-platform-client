@@ -2,7 +2,9 @@ import React, { Component, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { Bot } from "lucide-react";
-import ChatBot from "./ChatBot";
+const ChatBot = React.lazy(() => import("./ChatBot"));
+import { isPublicSalesPath } from "./bizi/biziPublic";
+import BiziDock from "./bizi/BiziDock";
 
 function isBizuplyPublicBookingPath(pathname = "") {
   const parts = String(pathname || "")
@@ -55,6 +57,7 @@ class ChatBotBoundary extends Component {
 export default function SupportChatWidget() {
   const { t } = useTranslation();
   const location = useLocation();
+  const sales = isPublicSalesPath(location.pathname);
   const [chatOpen, setChatOpen] = useState(false);
   const [initialMessage, setInitialMessage] = useState(null);
   const [panelKey, setPanelKey] = useState(0);
@@ -82,28 +85,42 @@ export default function SupportChatWidget() {
     return null;
   }
 
+  if (sales) return <BiziDock />;
+
   return (
     <>
       {!chatOpen && (
         <button
           type="button"
           onClick={() => setChatOpen(true)}
-          className="bizuply-chat-launcher fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full border border-violet-400/40 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-600 text-white shadow-[0_14px_36px_rgba(109,40,217,0.45)] transition hover:scale-105 hover:from-violet-500 hover:via-violet-500 hover:to-indigo-500 hover:shadow-[0_18px_44px_rgba(109,40,217,0.55)]"
-          aria-label={t("leftover.chat.openAssistant")}
+          className={sales ? "bizuply-chat-launcher bizi-launcher" : "bizuply-chat-launcher fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-[#2541f5] text-white"}
+          aria-label={sales ? salesCopy.launcher : t("leftover.chat.openAssistant")}
         >
-          <Bot size={24} className="text-white" />
+          {sales ? (
+            <>
+              <img src="/brand/bizi.png" alt="" width="64" height="64" />
+              <span>
+                <strong>{salesCopy.launcher}</strong>
+                <small>{salesCopy.launcherSub}</small>
+              </span>
+            </>
+          ) : (
+            <Bot size={24} />
+          )}
         </button>
       )}
 
       {chatOpen && (
         <ChatBotBoundary key={panelKey} onClose={handleCloseAfterError}>
-          <ChatBot
-            chatOpen={chatOpen}
-            setChatOpen={setChatOpen}
-            initialMessage={initialMessage}
-            onInitialMessageSent={() => setInitialMessage(null)}
-            hideLauncher
-          />
+          <React.Suspense fallback={null}>
+            <ChatBot
+              chatOpen={chatOpen}
+              setChatOpen={setChatOpen}
+              initialMessage={initialMessage}
+              onInitialMessageSent={() => setInitialMessage(null)}
+              hideLauncher
+            />
+          </React.Suspense>
         </ChatBotBoundary>
       )}
     </>

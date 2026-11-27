@@ -37,7 +37,7 @@ export const CRM_MEDIA = {
 const en = {
   lang: "en",
   dir: "ltr",
-  title: "CRM for leads and customers | BizUply",
+  title: "CRM for leads and customers | Bizuply",
   description:
     "BizUply CRM keeps leads, customers, statuses, notes and follow-up tasks in one place. The published CRM plan is $49 per month.",
   crumb: "CRM",
@@ -253,7 +253,7 @@ function pack(lang, dir, title, description, hero, rest) {
 const he = pack(
   "he",
   "rtl",
-  "מערכת CRM לניהול לידים ולקוחות | BizUply",
+  "מערכת CRM לניהול לידים ולקוחות | Bizuply",
   "מערכת CRM של BizUply לניהול לידים, לקוחות, סטטוסים, משימות ומעקבים. רכזו את המידע העסקי ושמרו על תהליך עבודה מסודר. המחיר המפורסם של CRM בלבד הוא 49 דולר לחודש.",
   {
     eyebrow: "BizUply CRM",

@@ -50,7 +50,7 @@ const browser = await chromium.launch({ headless: true });
   check("white canvas first paint", /rgb\(255,\s*255,\s*255\)|rgba\(0,\s*0,\s*0,\s*0\)/.test(htmlBg) || bodyBg.includes("255, 255, 255"), `${htmlBg} / ${bodyBg}`);
 
   const title = await page.locator("#hx-hero-title").innerText().catch(() => "");
-  check("sketch headline", /העסק שלכם/.test(title) && /עובד חכם יותר/.test(title), title.replace(/\s+/g, " ").slice(0, 80));
+  check("sketch headline", /כל העסק שלך/.test(title) && /אינסוף אפשרויות/.test(title), title.replace(/\s+/g, " ").slice(0, 80));
 
   const laptop = await page.locator('[class*="laptop"], [class*="device-frame"], .hx-hero-chrome').count();
   check("no laptop chrome", laptop === 0, `count=${laptop}`);

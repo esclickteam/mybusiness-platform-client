@@ -57,7 +57,7 @@ export default function Footer() {
   const language = normalizeLanguage(i18n.language);
   const footerDir = getTextDirection(language);
   const region = coerceSupportedLanguage(i18n.language);
-  const logoAlt = language === "he" ? "ביזאפלי (BizUply)" : "BizUply";
+  const logoAlt = language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply";
 
   const columns: { title: string; links: FooterLink[] }[] = [
     {
@@ -127,7 +127,8 @@ export default function Footer() {
       <div className="site-footer__main">
         <div className="site-footer__brand">
           <Link to="/" aria-label={t("footer.logoAria")}>
-            <img src="/logo-mark.svg" alt={logoAlt} width="176" height="52" />
+            <img className="site-footer__logo site-footer__logo--light" src="/brand/logo.png" alt={logoAlt} width="1534" height="540" />
+            <img className="site-footer__logo site-footer__logo--dark" src="/brand/logo-wordmark-white.png" alt="" width="1534" height="540" />
           </Link>
           <p>{t("footer.tagline")}</p>
         </div>

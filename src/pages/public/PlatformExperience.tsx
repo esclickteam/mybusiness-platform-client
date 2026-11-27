@@ -1,321 +1,434 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../../i18n/localeUtils";
-import { getActivityPage } from "../../lib/activityPages.mjs";
-import { industryNav } from "../../lib/marketingNav.mjs";
-import { marketingPublicUrl, normalizeMarketingLocale } from "../../lib/localePath.mjs";
+import { platformStory } from "../../lib/platformStory.mjs";
+import { getGuide } from "../../lib/guidesMarketing.mjs";
+import {
+  MARKETING_LOCALE_PREFIXES,
+  marketingPublicUrl,
+  splitMarketingLocale,
+  withMarketingLocale,
+} from "../../lib/localePath.mjs";
+import { scrubSection } from "./scrollScrub.js";
 import "./platformExperience.css";
 
-const STATUS_KEYS = ["new", "contacted", "interested", "converted", "lost", "old"] as const;
+const GUIDES = ["what-is-a-crm", "follow-up-on-leads", "whatsapp-cloud-api-cost", "business-automation", "manage-meta-campaigns", "crm-and-business-platform"];
+const FIT_SITES = ["studiora", "advisora", "studiora", "lashora", "primeview", "noodlix", "florique"];
+const JOURNEY_SHOTS = ["crm-list", "crm-card", "whatsapp", "dashboard", "automation"];
+const DAY_SHOTS = ["crm-list", "crm-card", "dashboard", "automation"];
 
-const STEP_MEDIA = [
-  { src: "/demo-media/forms/form.png", width: 1200, height: 800 },
-  { src: "/demo-media/crm/lead-file.png", width: 1400, height: 900 },
-  { src: "/demo-media/crm/lead-task.png", width: 1400, height: 900 },
-  { src: "/demo-media/home/automations.jpg", width: 1600, height: 1000 },
-];
+function shot(locale, name) {
+  const folder = locale === "he" || locale === "ar" ? "he" : "en";
+  return `/demo-media/home/screens/${folder}-desktop-${name}.webp`;
+}
 
-const COPY = {
-  en: {
-    contact: "See how BizUply can fit your business",
-    pricing: "Pricing",
-    statusNow: "One status on the lead",
-    plans: [
-      ["CRM only", "$49 per month"],
-      ["Business plan", "$99 per month or $990 per year"],
-      ["WhatsApp", "$29 per month per number"],
-    ],
-    extra: [
-      ["Does BizUply publish growth or savings figures?", "No. The dashboard shows views that already exist, including new and untreated leads and upcoming appointments."],
-      ["What does the business plan include?", "CRM together with appointments, collaborations and automations, at $99 per month or $990 per year. WhatsApp stays $29 per month per connected number, and Meta messaging fees are separate."],
-    ],
-  },
-  he: {
-    contact: "גלו איך BizUply יכולה להתאים לעסק שלכם",
-    pricing: "למחירון",
-    statusNow: "סטטוס אחד על הליד",
-    plans: [
-      ["CRM בלבד", "49 דולר לחודש"],
-      ["החבילה העסקית", "99 דולר לחודש או 990 דולר לשנה"],
-      ["WhatsApp", "29 דולר לחודש לכל מספר"],
-    ],
-    extra: [
-      ["האם BizUply מפרסמת אחוזי צמיחה או חיסכון?", "לא. לוח הבקרה מציג תצוגות שקיימות במוצר, כולל לידים חדשים, לידים שלא טופלו ופגישות קרובות."],
-      ["מה כלול בחבילה העסקית?", "CRM יחד עם תורים, שיתופים ואוטומציות, ב־99 דולר לחודש או 990 דולר לשנה. WhatsApp נשאר 29 דולר לחודש לכל מספר מחובר, וחיובי ההודעות של Meta נפרדים."],
-    ],
-  },
-  es: {
-    contact: "Ved cómo BizUply puede encajar en el negocio",
-    pricing: "Precios",
-    statusNow: "Un estado en el lead",
-    plans: [
-      ["Solo CRM", "49 dólares al mes"],
-      ["Plan de negocio", "99 al mes o 990 al año"],
-      ["WhatsApp", "29 al mes por número"],
-    ],
-    extra: [
-      ["¿BizUply publica porcentajes de crecimiento o ahorro?", "No. El panel muestra vistas que ya existen: leads nuevos, leads sin tratar y próximas citas."],
-      ["¿Qué incluye el plan de negocio?", "CRM, citas, colaboraciones y automatizaciones, a 99 al mes o 990 al año. WhatsApp sigue a 29 al mes por número conectado, y Meta cobra los mensajes aparte."],
-    ],
-  },
-  "pt-BR": {
-    contact: "Veja como a BizUply pode servir ao negócio",
-    pricing: "Preços",
-    statusNow: "Um status no lead",
-    plans: [
-      ["Somente CRM", "49 dólares por mês"],
-      ["Plano de negócios", "99 por mês ou 990 por ano"],
-      ["WhatsApp", "29 por mês por número"],
-    ],
-    extra: [
-      ["A BizUply publica percentuais de crescimento ou economia?", "Não. O painel mostra visões que já existem: leads novos, leads sem tratamento e próximos compromissos."],
-      ["O que o plano de negócios inclui?", "CRM, agenda, colaborações e automações, a 99 por mês ou 990 por ano. O WhatsApp continua a 29 por mês por número conectado, e a Meta cobra as mensagens à parte."],
-    ],
-  },
-  ar: {
-    contact: "اكتشفوا كيف تناسب BizUply عملكم",
-    pricing: "الأسعار",
-    statusNow: "حالة واحدة على العميل المحتمل",
-    plans: [
-      ["CRM وحده", "49 دولاراً شهرياً"],
-      ["الخطة التجارية", "99 شهرياً أو 990 سنوياً"],
-      ["واتساب", "29 شهرياً لكل رقم"],
-    ],
-    extra: [
-      ["هل تنشر BizUply نسب نمو أو وفراً؟", "لا. تعرض اللوحة مشاهد موجودة بالفعل: عملاء محتملون جدد، وعملاء لم يُعالجوا، ومواعيد قريبة."],
-      ["ماذا تشمل الخطة التجارية؟", "CRM والمواعيد والتعاون والأتمتة، بـ 99 شهرياً أو 990 سنوياً. يبقى واتساب 29 شهرياً لكل رقم متصل، ورسوم رسائل Meta منفصلة."],
-    ],
-  },
-} as const;
+function siteShot(locale, name) {
+  const folder = locale === "he" || locale === "ar" ? "he" : "en";
+  return `/demo-media/home/sites/${name}-${folder}-desk.webp`;
+}
+
+function markTitle(text, mark) {
+  const index = text.indexOf(mark);
+  if (index < 0) return text;
+  return (
+    <>
+      {text.slice(0, index)}
+      <em>{mark}</em>
+      {text.slice(index + mark.length)}
+    </>
+  );
+}
 
 export default function PlatformExperience() {
-  const { i18n, t } = useTranslation();
-  const locale = normalizeMarketingLocale(i18n.language);
-  const page = getActivityPage("/platform", locale);
-  const dir = getTextDirection(locale);
-  const ui = COPY[locale] || COPY.en;
-  const rootRef = useRef<HTMLElement>(null);
-  const [status, setStatus] = useState(0);
-  const [step, setStep] = useState(0);
-  const industryGroup = industryNav(locale);
-  const industries = industryGroup.links as Array<[string, string, string?]>;
-  const lang = locale === "pt-BR" ? "pt-BR" : locale;
-  const statuses = STATUS_KEYS.map((key) => t(`automations.catalog.leadStatuses.${key}`));
+  const language = splitMarketingLocale(typeof window === "undefined" ? "/" : window.location.pathname).locale;
+  const story = platformStory(language);
+  const ui = story.ui;
+  const dir = getTextDirection(language);
+  const href = (path) => withMarketingLocale(path, language);
+  const canonical = marketingPublicUrl("/platform", language);
+  const guides = GUIDES.map((slug) => ({ slug, guide: getGuide(slug, language) })).filter((item) => item.guide?.h1);
+  const say = (he, en, es, pt, ar) => (language === "he" ? he : language === "es" ? es : language === "pt-BR" ? pt : language === "ar" ? ar : en);
+  const jumps = [
+    ["#structure", say("המבנה", "Structure", "Estructura", "Estrutura", "البنية")],
+    ["#workspace", say("הכלים", "Tools", "Herramientas", "Ferramentas", "الأدوات")],
+    ["#journey", say("התהליך", "Process", "Proceso", "Processo", "العملية")],
+    ["#day", say("שגרה", "A workday", "La jornada", "O dia", "يوم العمل")],
+    ["#fit", say("התאמה", "Fit", "Encaje", "Encaixe", "الملاءمة")],
+    ["#faq", say("שאלות", "Questions", "Preguntas", "Perguntas", "أسئلة")],
+  ];
+  const titleMark = say("שיווק, מכירות ואוטומציות", "marketing, sales and automation", "marketing, ventas y automatización", "marketing, vendas e automação", "التسويق والمبيعات والأتمتة");
+  const [tool, setTool] = useState(0);
+  const [fit, setFit] = useState(0);
+  const [journeyStep, setJourneyStep] = useState(0);
+  const [dayStep, setDayStep] = useState(0);
+  const activeTool = ui.products[tool] || ui.products[0];
+  const activeFit = ui.fits[fit] || ui.fits[0];
 
   useEffect(() => {
-    const root = rootRef.current;
-    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return undefined;
-    root.classList.add("px-motion");
-    const nodes = root.querySelectorAll("[data-reveal]");
-    const seen = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-in");
-        seen.unobserve(entry.target);
+    document.title = story.title;
+    const setMeta = (attr: "name" | "property", key: string, content: string) => {
+      let node = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`);
+      if (!node) {
+        node = document.createElement("meta");
+        node.setAttribute(attr, key);
+        document.head.appendChild(node);
+      }
+      node.content = content;
+    };
+    setMeta("name", "description", story.description);
+    setMeta("property", "og:title", story.title);
+    setMeta("property", "og:description", story.description);
+    setMeta("property", "og:url", canonical);
+    setMeta("property", "og:type", "website");
+    let link = document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "canonical";
+      document.head.appendChild(link);
+    }
+    link.href = canonical;
+    const alternates: Array<[string, string]> = [
+      ["en", marketingPublicUrl("/platform", "en")],
+      ["x-default", marketingPublicUrl("/platform", "en")],
+      ...MARKETING_LOCALE_PREFIXES.map((entry) => [entry.htmlLang, marketingPublicUrl("/platform", entry.locale)] as [string, string]),
+    ];
+    for (const [lang, value] of alternates) {
+      let alt = document.head.querySelector<HTMLLinkElement>(`link[rel="alternate"][hreflang="${lang}"]`);
+      if (!alt) {
+        alt = document.createElement("link");
+        alt.rel = "alternate";
+        alt.hreflang = lang;
+        document.head.appendChild(alt);
+      }
+      alt.href = value;
+    }
+    document.documentElement.lang = language === "pt-BR" ? "pt-BR" : language;
+    document.documentElement.dir = dir;
+  }, [canonical, dir, language, story.description, story.title]);
+
+  useEffect(() => {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let frame = 0;
+    const tick = () => {
+      frame = 0;
+      const vh = window.innerHeight || 800;
+      document.querySelectorAll<HTMLElement>(".pf [data-scrub]").forEach((node) => {
+        if (reduce) {
+          node.style.height = "";
+          node.style.setProperty("--p", "1");
+          return;
+        }
+        if (node.id === "journey" || node.id === "day") {
+          const count = node.id === "day" ? ui.day.length : ui.journey.length;
+          const pin = node.querySelector<HTMLElement>(".pf-scrub-pin");
+          const p = scrubSection(node, pin, count, reduce);
+          if (p == null) return;
+          node.style.setProperty("--p", p.toFixed(3));
+          const next = Math.min(count - 1, Math.floor(Math.min(p, 0.999999) * count));
+          if (node.id === "journey") setJourneyStep((current) => (current === next ? current : next));
+          else setDayStep((current) => (current === next ? current : next));
+          return;
+        }
+        const box = node.getBoundingClientRect();
+        const p = Math.min(1, Math.max(0, (vh - box.top) / (box.height + vh)));
+        node.style.setProperty("--p", p.toFixed(3));
       });
-    }, { threshold: 0.18 });
-    nodes.forEach((node) => seen.observe(node));
-    return () => seen.disconnect();
-  }, [locale]);
-
-  if (!page) return null;
-
-  const [place, team, fit, flow, decisions, start] = page.sections;
-  const faqs = [...page.faq, ...ui.extra];
+    };
+    const onScroll = () => {
+      if (!frame) frame = window.requestAnimationFrame(tick);
+    };
+    tick();
+    const area = document.querySelector(".app-scroll-area");
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    area?.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      area?.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [language, ui.day.length, ui.journey.length]);
 
   return (
-    <article className="px" dir={dir} lang={lang} ref={rootRef}>
+    <article className="pf" lang={language === "pt-BR" ? "pt-BR" : language} dir={dir}>
       <Helmet>
-        <title>{page.title}</title>
-        <meta name="description" content={page.description} />
-        <link rel="canonical" href={marketingPublicUrl("/platform", locale)} />
+        <title>{story.title}</title>
+        <meta name="description" content={story.description} />
+        <link rel="canonical" href={canonical} />
       </Helmet>
 
-      <header className="px-hero">
-        <div className="px-hero-copy">
-          <p className="px-kicker">{page.crumb}</p>
-          <h1>{page.h1}</h1>
-          <p className="px-lede">{page.lede}</p>
-          <div className="px-actions">
-            <Link className="px-btn px-btn--light" to="/contact">{ui.contact}</Link>
-            <Link className="px-btn px-btn--line" to="/pricing">{ui.pricing}</Link>
+      <header className="pf-hero" data-scrub>
+        <div className="pf-wrap pf-hero-grid">
+          <div>
+            <p className="pf-eye">{ui.eyebrow}</p>
+            <h1>{markTitle(ui.h1, titleMark)}</h1>
+            <p className="pf-lede">{ui.lede}</p>
+            <div className="pf-actions">
+              <a className="pf-btn ghost" href="#workspace">{ui.meet}</a>
+              <Link className="pf-btn yellow" to={href("/register")}>{ui.start}</Link>
+            </div>
           </div>
-        </div>
-        <div className="px-stage">
-          <figure className="px-browser">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            <img src="/demo-media/home/crm.jpg" alt={place?.[0] || page.h1} width="1600" height="1000" />
-          </figure>
-          <p className="px-chip">
-            <small>{ui.statusNow}</small>
-            <strong>{statuses[0]}</strong>
-          </p>
+          <div className="pf-stage">
+            <span className="pf-slab blue" />
+            <span className="pf-slab pink" />
+            <span className="pf-slab yellow" />
+            <figure className="pf-frame">
+              <img src={shot(language, "crm-list")} alt="" width="1440" height="900" />
+            </figure>
+          </div>
         </div>
       </header>
 
-      <nav className="px-rail" data-reveal aria-label={page.h1}>
-        {page.sections.map(([heading], index) => (
-          <a key={heading} href={`#px-${index}`}>
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {heading}
-          </a>
-        ))}
+      <nav className="pf-jump" aria-label={ui.sWork}>
+        <div className="pf-wrap">
+          {jumps.map(([id, label]) => <a key={id} href={id}>{label}</a>)}
+        </div>
       </nav>
 
-      <section className="px-crm" id="px-0" data-reveal>
-        <div className="px-crm-copy">
-          <h2>{place?.[0]}</h2>
-          {(place?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-          <div className="px-statuses" role="listbox" aria-label={ui.statusNow}>
-            {statuses.map((label, index) => (
-              <button
-                key={STATUS_KEYS[index]}
-                type="button"
-                role="option"
-                aria-selected={status === index}
-                className={status === index ? "is-on" : ""}
-                onClick={() => setStatus(index)}
-              >
-                <i aria-hidden="true" />
-                {label}
+      <section id="structure" className="pf-section" data-scrub>
+        <div className="pf-wrap">
+          <h2>{ui.sStruct}</h2>
+          <p>{ui.structA}</p>
+          <p>{ui.structB}</p>
+          <div className="pf-flow">
+            <svg className="pf-wires" viewBox="0 0 900 80" aria-hidden="true">
+              <path d="M40 40 H860" />
+              <circle cx="150" cy="40" r="7" />
+              <circle cx="450" cy="40" r="7" />
+              <circle cx="750" cy="40" r="7" />
+            </svg>
+            <ol className="pf-layers">
+              <li><span>01</span><h3>{ui.layer1}</h3><p>{ui.layer1b}</p></li>
+              <li><span>02</span><h3>{ui.layer2}</h3><p>{ui.layer2b}</p></li>
+              <li><span>03</span><h3>{ui.layer3}</h3><p>{ui.layer3b}</p></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section id="workspace" className="pf-section pf-navy">
+        <div className="pf-wrap">
+          <h2>{ui.sWork}</h2>
+          <div className="pf-tabs" role="tablist">
+            {ui.products.map((product, index) => (
+              <button key={product.id} type="button" role="tab" aria-selected={index === tool} className={index === tool ? "is-on" : ""} onClick={() => setTool(index)}>
+                {product.name}
               </button>
             ))}
           </div>
-          <p className="px-status-read"><span>{ui.statusNow}</span> {statuses[status]}</p>
-        </div>
-        <figure className="px-browser px-browser--raised">
-          <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-          <img
-            src={status < 3 ? "/demo-media/crm/leads-list.png" : "/demo-media/crm/lead-file.png"}
-            alt={place?.[0] || "CRM"}
-            width="1400"
-            height="900"
-          />
-        </figure>
-      </section>
-
-      <section className="px-quote" id="px-1" data-reveal>
-        <h2>{team?.[0]}</h2>
-        {(team?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-      </section>
-
-      <section className="px-flow" id="px-3" data-reveal>
-        <div className="px-flow-head">
-          <h2>{flow?.[0]}</h2>
-          {(flow?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-        </div>
-        <div className="px-steps" role="tablist">
-          {(page.steps || []).map((item, index) => (
-            <button
-              key={item}
-              type="button"
-              role="tab"
-              id={`px-step-${index}`}
-              aria-selected={step === index}
-              aria-controls="px-step-panel"
-              className={step === index ? "is-on" : ""}
-              onClick={() => setStep(index)}
-            >
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              {item}
-            </button>
-          ))}
-        </div>
-        <div className="px-flow-stage" id="px-step-panel" role="tabpanel" aria-labelledby={`px-step-${step}`}>
-          <figure className="px-browser">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            {STEP_MEDIA.map((media, index) => (
-              <img
-                key={media.src}
-                src={media.src}
-                alt=""
-                width={media.width}
-                height={media.height}
-                className={step === index ? "is-on" : ""}
-              />
-            ))}
-          </figure>
-          <p>{page.steps?.[step]}</p>
-        </div>
-      </section>
-
-      <section className="px-calendar" id="px-4" data-reveal>
-        <figure className="px-browser px-browser--wide">
-          <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-          <img src="/demo-media/home/appointments.jpg" alt={decisions?.[0] || ""} width="1600" height="1000" />
-        </figure>
-        <div className="px-calendar-card">
-          <h2>{decisions?.[0]}</h2>
-          {(decisions?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-        </div>
-      </section>
-
-      <section className="px-tools" id="px-2" data-reveal>
-        <div className="px-tools-copy">
-          <h2>{fit?.[0]}</h2>
-          {(fit?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-          <div className="px-links">
-            {page.links.map(([to, label]) => <Link key={to} to={to}>{label}</Link>)}
+          <div className="pf-explorer">
+            <figure className="pf-frame" key={activeTool.id}>
+              <img src={shot(language, activeTool.shot)} alt="" width="1440" height="900" />
+            </figure>
+            <div>
+              {ui.products.map((product, index) => (
+                <article key={product.id} id={product.id} className={index === tool ? "is-on" : ""}>
+                  <h3>{product.name}</h3>
+                  <p>{product.body}</p>
+                  <Link to={href(product.href)}>{ui.open}</Link>
+                </article>
+              ))}
+            </div>
           </div>
         </div>
-        <div className="px-tools-stage">
-          <figure className="px-browser px-browser--back">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            <img src="/demo-media/websites/my-sites.jpg" alt={fit?.[0] || ""} width="1400" height="900" />
+      </section>
+
+      <section id="difference" className="pf-section">
+          <div className="pf-wrap pf-split">
+            <div>
+              <h2>{say("מה ההבדל בין BizUply למערכת CRM רגילה?", "How is BizUply different from a CRM?", "¿En qué se diferencia BizUply de un CRM?", "Qual é a diferença entre a BizUply e um CRM?", "ما الفرق بين BizUply ونظام CRM؟")}</h2>
+              <p>{say(
+                "מערכת CRM מתמקדת בניהול קשרי לקוחות ובתהליכי מכירה. BizUply כוללת את ה-CRM כחלק מסביבה רחבה יותר, עם שיווק, תקשורת, אוטומציות וניהול פעילות. היקף הכלים תלוי בחבילה ובחיבורים.",
+                "A CRM usually focuses on customer records and sales. BizUply includes CRM inside a wider workspace for marketing, communication, automation and day-to-day work. What is included depends on the plan and the connections.",
+                "Un CRM suele centrarse en fichas y ventas. BizUply incluye el CRM en un espacio más amplio de marketing, comunicación y automatización. Lo incluido depende del plan.",
+                "Um CRM costuma focar fichas e vendas. A BizUply inclui o CRM num espaço mais amplo de marketing, comunicação e automação. O que entra depende do plano.",
+                "يركز CRM عادة على السجلات والمبيعات. تضم BizUply ذلك داخل مساحة أوسع للتسويق والتواصل والأتمتة. ما هو مشمول يعتمد على الباقة.",
+              )}</p>
+              <Link to={href("/how-it-works")}>{say("איך סביבת העבודה פועלת", "See how the workspace runs", "Cómo funciona el espacio de trabajo", "Como o espaço de trabalho funciona", "كيف تعمل مساحة العمل")}</Link>
+            </div>
+            <div>
+              <h3>{say("כשהכלים עובדים יחד", "When the tools work together", "Cuando las herramientas trabajan juntas", "Quando as ferramentas trabalham juntas", "عندما تعمل الأدوات معاً")}</h3>
+              <ul>
+                <li>{say("מידע עסקי רלוונטי נשמר במקום אחד.", "Relevant business information stays in one place.", "La información relevante queda en un lugar.", "A informação relevante fica num lugar.", "تبقى المعلومات ذات الصلة في مكان واحد.")}</li>
+                <li>{say("פנייה, תקשורת ומכירה יכולות להמשיך על אותה רשומה.", "An inquiry, a conversation and a sale can continue on the same record.", "Una consulta, una conversación y una venta pueden seguir en el mismo registro.", "Um contato, uma conversa e uma venda podem continuar no mesmo registro.", "يمكن للطلب والمحادثة والبيع أن تتتابع في السجل نفسه.")}</li>
+                <li>{say("אוטומציות נבנות מהאירועים שהעורך תומך בהם.", "Automations are built from events the editor supports.", "Las automatizaciones salen de eventos que el editor admite.", "As automações partem de eventos que o editor admite.", "تُبنى الأتمتة من أحداث يدعمها المحرر.")}</li>
+                <li>{say("הגישה לצוות נקבעת לפי התפקיד והחבילה.", "Team access follows the role and the plan.", "El acceso del equipo sigue el rol y el plan.", "O acesso da equipe segue o papel e o plano.", "وصول الفريق يتبع الدور والباقة.")}</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+      <section id="journey" className="pf-section pf-scrub" data-scrub>
+        <div className="pf-scrub-pin">
+        <div className="pf-wrap pf-split">
+          <div>
+            <h2>{ui.sJourney}</h2>
+            <p>{ui.journeyLede}</p>
+            <ol className="pf-steps">
+              {ui.journey.map((step, index) => (
+                <li key={step.title} className={index === journeyStep ? "is-on" : ""}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p>{step.body}</p>
+                    <img className="scrub-step-shot" src={shot(language, JOURNEY_SHOTS[index] || "crm-list")} alt="" width="1440" height="900" />
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <figure className="pf-frame pf-journey-shot scrub-stage-shot">
+            <img src={shot(language, JOURNEY_SHOTS[journeyStep] || "crm-list")} alt="" width="1440" height="900" />
           </figure>
-          <figure className="px-browser px-browser--front">
-            <div className="px-browser-bar" aria-hidden="true"><span /><span /><span /></div>
-            <img src="/demo-media/whatsapp/still-3.jpg" alt="WhatsApp" width="1600" height="1000" />
-          </figure>
+        </div>
         </div>
       </section>
 
-      {industries.length ? (
-        <section className="px-industries" data-reveal>
-          <h2>{industryGroup?.label}</h2>
-          <ul>
-            {industries.map((link) => (
-              <li key={link[0]}>
-                <Link to={link[0]}>
-                  <strong>{link[1]}</strong>
-                  {link[2] ? <span>{link[2]}</span> : null}
-                </Link>
+      <section id="day" className="pf-section pf-scrub" data-scrub data-tone={["blue", "blue", "yellow", "pink"][dayStep] || "blue"}>
+        <div className="pf-scrub-pin">
+        <div className="pf-wrap pf-split">
+          <div>
+            <h2>{ui.sDay}</h2>
+            <ul className="pf-day">
+              {ui.day.map((item, index) => (
+                <li key={item.title} className={index === dayStep ? "is-on" : ""}>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                  <img className="scrub-step-shot" src={shot(language, DAY_SHOTS[index] || "crm-card")} alt="" width="1440" height="900" />
+                </li>
+              ))}
+            </ul>
+          </div>
+          <figure className="pf-frame scrub-stage-shot">
+            <img src={shot(language, DAY_SHOTS[dayStep] || "crm-card")} alt="" width="1440" height="900" />
+          </figure>
+        </div>
+        </div>
+      </section>
+
+      <section id="fit" className="pf-section pf-fit">
+        <div className="pf-wrap">
+          <h2>{ui.sFit}</h2>
+          <p>{ui.fitLede}</p>
+          <div className="pf-fit-grid">
+            <div className="pf-tabs" role="tablist">
+              {ui.fits.map((item, index) => (
+                <button key={item.href} type="button" role="tab" aria-selected={index === fit} className={index === fit ? "is-on" : ""} onClick={() => setFit(index)}>
+                  {item.name}
+                </button>
+              ))}
+            </div>
+            <div className="pf-fit-stage">
+              <span className="pf-fit-wash" />
+              <figure className="pf-frame" key={activeFit.href}>
+                <img src={siteShot(language, FIT_SITES[fit] || "studiora")} alt="" width="1440" height="900" />
+              </figure>
+              <div>
+                <h3>{activeFit.name}</h3>
+                <p>{activeFit.body}</p>
+                <Link to={href(activeFit.href)}>{ui.open}</Link>
+              </div>
+            </div>
+          </div>
+          <div className="pf-fit-all">
+            {ui.fits.map((item) => (
+              <p key={item.href}><strong>{item.name}. </strong>{item.body} <Link to={href(item.href)}>{item.name}</Link></p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="compare" className="pf-section">
+        <div className="pf-wrap">
+          <h2>{ui.sCompare}</h2>
+          <p>{ui.compareNote}</p>
+          <div className="pf-table">
+            <table>
+              <thead><tr>{story.compare.columns.map((column) => <th key={column}>{column}</th>)}</tr></thead>
+              <tbody>
+                {story.compare.rows.map((row) => (
+                  <tr key={row[0]}>{row.map((cell) => <td key={cell}>{cell}</td>)}</tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="channels" className="pf-section" data-scrub>
+        <div className="pf-wrap">
+          <h2>{ui.sChan}</h2>
+          <div className="pf-hub">
+            <img src="/brand/logo.png" alt="Bizuply" width="220" height="75" />
+          </div>
+          <ul className="pf-channels">
+            {ui.channels.map((item) => (
+              <li key={item.name}>
+                <div>
+                  <h3>{item.name}</h3>
+                  <small>{item.kind === "external" ? ui.external : ui.internal}</small>
+                </div>
+                <p>{item.body}</p>
+                {item.kind === "external"
+                  ? <a href={item.href} rel="noopener noreferrer">{item.name}</a>
+                  : <Link to={href(item.href)}>{ui.open}</Link>}
               </li>
             ))}
           </ul>
-        </section>
-      ) : null}
+        </div>
+      </section>
 
-      <section className="px-plans" id="px-5" data-reveal>
-        <h2>{start?.[0]}</h2>
-        <div className="px-plan-grid">
-          {ui.plans.map(([name, detail]) => (
-            <article key={name}>
-              <h3>{name}</h3>
-              <p>{detail}</p>
-            </article>
+      <section id="trust" className="pf-section pf-trust">
+        <div className="pf-wrap">
+          <h2>{ui.sTrust}</h2>
+          <p>{ui.trustBody}</p>
+          <p className="pf-links">
+            <Link to={href("/privacy")}>{ui.privacy}</Link>
+            <Link to={href("/terms")}>{ui.terms}</Link>
+            <Link to={href("/pricing")}>{ui.plans}</Link>
+          </p>
+          <div className="pf-actions">
+            <Link className="pf-btn yellow" to={href("/register")}>{ui.start}</Link>
+            <Link className="pf-btn ghost" to={href("/contact")}>{ui.demo}</Link>
+          </div>
+        </div>
+      </section>
+
+      <section id="guides" className="pf-section">
+        <div className="pf-wrap">
+          <h2>{ui.guides}</h2>
+          <ul className="pf-guides">
+            {guides.map(({ slug, guide }) => (
+              <li key={slug}><Link to={href(`/guides/${slug}`)}>{guide.h1}</Link></li>
+            ))}
+          </ul>
+        </div>
+      </section>
+
+      <section id="faq" className="pf-section">
+        <div className="pf-wrap pf-faq">
+          <h2>{ui.sFaq}</h2>
+          {story.faq.map(([question, answer]) => (
+            <details key={question}>
+              <summary>{question}</summary>
+              <div className="pf-answer"><p>{answer}</p></div>
+            </details>
           ))}
         </div>
-        {(start?.[1] || []).map((paragraph) => <p key={paragraph.slice(0, 40)}>{paragraph}</p>)}
-        <Link className="px-btn px-btn--solid" to="/pricing">{ui.pricing}</Link>
       </section>
 
-      <section className="px-faq" data-reveal>
-        <h2>{locale === "he" ? "שאלות נפוצות" : locale === "ar" ? "أسئلة شائعة" : locale === "es" ? "Preguntas frecuentes" : locale === "pt-BR" ? "Perguntas frequentes" : "FAQ"}</h2>
-        {faqs.map(([question, answer]) => (
-          <details key={question}>
-            <summary>{question}</summary>
-            <p>{answer}</p>
-          </details>
-        ))}
-      </section>
-
-      <section className="px-close" data-reveal>
-        <h2>{page.h1}</h2>
-        <p>{page.description}</p>
-        <Link className="px-btn px-btn--light" to="/contact">{ui.contact}</Link>
+      <section className="pf-end">
+        <div className="pf-wrap">
+          <h2>{ui.endTitle}</h2>
+          <p>{ui.endBody}</p>
+          <div className="pf-actions">
+            <Link className="pf-btn yellow" to={href("/register")}>{ui.start}</Link>
+            <Link className="pf-btn ghost" to={href("/contact")}>{ui.demo}</Link>
+            <Link className="pf-btn ghost" to={href("/pricing")}>{ui.plans}</Link>
+          </div>
+        </div>
       </section>
     </article>
   );

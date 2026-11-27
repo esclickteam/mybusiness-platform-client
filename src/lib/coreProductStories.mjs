@@ -31,7 +31,7 @@ const LINKS = {
 const PAGES = {
   "/whatsapp-api": {
     en: story(
-      "WhatsApp Business API for businesses | BizUply",
+      "WhatsApp Business API for businesses | Bizuply",
       "Connect WhatsApp Business API with BizUply. Approved templates and business messaging under Meta's rules, with a published price of $29 per connected number. Meta messaging fees are separate.",
       "WhatsApp",
       "WhatsApp Business API that connects communication to the business",
@@ -55,7 +55,7 @@ const PAGES = {
       LINKS.en,
     ),
     he: story(
-      "WhatsApp Business API לעסקים | BizUply",
+      "WhatsApp Business API לעסקים | Bizuply",
       "חיבור WhatsApp Business API לעסק עם BizUply. תבניות הודעה ותקשורת עסקית בהתאם למדיניות Meta. המחיר המפורסם הוא 29 דולר לחודש למספר מחובר, וחיובי ההודעות של Meta נפרדים.",
       "WhatsApp",
       "WhatsApp Business API שמחבר בין התקשורת לעסק",
@@ -80,7 +80,7 @@ const PAGES = {
       LINKS.he,
     ),
     es: story(
-      "WhatsApp Business API para empresas | BizUply",
+      "WhatsApp Business API para empresas | Bizuply",
       "Conecte WhatsApp Business API con BizUply. Plantillas aprobadas y mensajería empresarial según las reglas de Meta. El precio publicado es 29 dólares al mes por número conectado. Los cargos de Meta van aparte.",
       "WhatsApp",
       "WhatsApp Business API que une la comunicación con el negocio",
@@ -104,7 +104,7 @@ const PAGES = {
       LINKS.es,
     ),
     "pt-BR": story(
-      "API do WhatsApp Business para empresas | BizUply",
+      "API do WhatsApp Business para empresas | Bizuply",
       "Conecte a API do WhatsApp Business com a BizUply. Modelos aprovados e mensagens comerciais segundo as regras da Meta. O preço publicado é 29 dólares por mês para cada número conectado. As tarifas de mensagem da Meta são separadas.",
       "WhatsApp",
       "API do WhatsApp Business ligada ao trabalho do negócio",
@@ -128,7 +128,7 @@ const PAGES = {
       LINKS["pt-BR"],
     ),
     ar: story(
-      "WhatsApp Business API للأعمال | BizUply",
+      "WhatsApp Business API للأعمال | Bizuply",
       "اربطوا WhatsApp Business API مع BizUply. قوالب معتمدة وتواصل تجاري وفق قواعد Meta. السعر المنشور 29 دولاراً شهرياً لكل رقم متصل. رسوم رسائل Meta منفصلة.",
       "WhatsApp",
       "WhatsApp Business API يربط التواصل بعمل النشاط",

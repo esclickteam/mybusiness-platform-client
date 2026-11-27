@@ -1,6 +1,6 @@
 .cs-section {
   padding: clamp(2.8rem, 5vw, 4.2rem) 0;
-  color: #1a0b33;
+  color: #111936;
   background: transparent;
 }
 .cs-split {
@@ -17,7 +17,7 @@
   padding: 0.38rem 0.8rem;
   border-radius: 8px;
   background: #efe9ff;
-  color: #6d28d9;
+  color: #2541F5;
   font-size: 0.96rem;
   font-weight: 800;
 }
@@ -30,7 +30,7 @@
 }
 .ht-root .cs-section h2 span {
   display: block;
-  color: #5b21b6;
+  color: #2541F5;
   font-weight: 750;
 }
 .cs-copy p:last-child {
@@ -50,7 +50,7 @@
 }
 .cs-demo-tag {
   margin: 0 0 0.45rem;
-  color: #7c3aed;
+  color: #2541F5;
   font-size: 0.90rem;
   font-weight: 800;
   text-align: end;
@@ -121,7 +121,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #c4b5fd;
+  color: #ffd0ea;
   font-weight: 800;
 }
 .cs-toggle i {
@@ -147,7 +147,7 @@
 .cs-arrow {
   position: relative;
   height: 1.6rem;
-  color: #7c3aed;
+  color: #2541F5;
 }
 .cs-arrow svg {
   position: absolute;
@@ -251,13 +251,13 @@
   margin: 0.75rem 0 0;
   padding: 0.85rem 0.95rem;
   border-radius: 14px;
-  background: linear-gradient(90deg, #f5f3ff, #eef2ff);
-  color: #4c1d95;
+  background: linear-gradient(90deg, #f4f6ff, #eef2ff);
+  color: #1a2fd0;
   font-weight: 800;
   line-height: 1.45;
 }
-.cs-insight svg { flex: 0 0 auto; width: 1.25rem; height: 1.25rem; color: #7c3aed; }
-.cs-section :focus-visible { outline: 2px solid #ddd6fe; outline-offset: 2px; }
+.cs-insight svg { flex: 0 0 auto; width: 1.25rem; height: 1.25rem; color: #2541F5; }
+.cs-section :focus-visible { outline: 2px solid #dbe2ff; outline-offset: 2px; }
 
 @keyframes cs-draw { to { stroke-dashoffset: 0; } }
 @keyframes cs-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

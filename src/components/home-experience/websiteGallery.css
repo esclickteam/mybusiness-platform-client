@@ -37,7 +37,7 @@
   border: 1px solid #e4e0f2;
   border-radius: 0;
   background: #fff;
-  color: #1a0b33;
+  color: #111936;
   font: inherit;
   font-size: 0.98rem;
   font-weight: 800;
@@ -45,8 +45,8 @@
 }
 
 .wg-chip.is-on {
-  border-color: #5b21b6;
-  background: #5b21b6;
+  border-color: #2541F5;
+  background: #2541F5;
   color: #fff;
 }
 
@@ -74,14 +74,14 @@
 
 .wg-showing {
   margin: 0 0 0.45rem;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.90rem;
   font-weight: 800;
 }
 
 .ht-root .wg-name {
   margin: 0;
-  color: #1a0b33;
+  color: #111936;
   font-size: clamp(2rem, 3vw, 2.8rem);
   font-weight: 800;
   letter-spacing: -0.04em;
@@ -93,7 +93,7 @@
   margin: 0.85rem 0 0;
   padding: 0.28rem 0.65rem;
   background: #ece9ff;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.98rem;
   font-weight: 800;
 }
@@ -119,9 +119,9 @@
   justify-content: center;
   min-height: 2.9rem;
   padding: 0.7rem 1.05rem;
-  border: 1.5px solid #5b21b6;
+  border: 1.5px solid #2541F5;
   border-radius: 0;
-  background: #5b21b6;
+  background: #2541F5;
   color: #fff;
   font: inherit;
   font-size: 0.98rem;
@@ -133,18 +133,18 @@
 
 .wg-btn-line {
   background: #fff;
-  color: #5b21b6;
+  color: #2541F5;
 }
 
 .wg-btn:hover {
-  background: #4c1d95;
-  border-color: #4c1d95;
+  background: #1a2fd0;
+  border-color: #1a2fd0;
   color: #fff;
 }
 
 .wg-btn-line:hover {
-  background: #f5f3ff;
-  color: #4c1d95;
+  background: #f4f6ff;
+  color: #1a2fd0;
 }
 
 .wg-stage {
@@ -210,7 +210,7 @@
 }
 
 .wg-thumb.is-on img {
-  box-shadow: 0 0 0 2px #5b21b6;
+  box-shadow: 0 0 0 2px #2541F5;
 }
 
 .wg-thumb span {
@@ -222,7 +222,7 @@
 }
 
 .wg-thumb.is-on span {
-  color: #5b21b6;
+  color: #2541F5;
 }
 
 @keyframes wg-fade {

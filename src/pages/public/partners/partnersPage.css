@@ -4,8 +4,8 @@
 .ipartner {
   --ink: #0b1220;
   --muted: #4b5870;
-  --violet: #5b21b6;
-  --violet-deep: #4c1d95;
+  --violet: #2541F5;
+  --violet-deep: #1a2fd0;
   --indigo: #1e1b4b;
   --blue: #1d4ed8;
   --line: rgba(15, 23, 42, 0.1);
@@ -110,7 +110,7 @@
   background:
     radial-gradient(820px 460px at 100% -8%, rgba(96, 165, 250, 0.42), transparent 62%),
     radial-gradient(640px 420px at -12% 110%, rgba(196, 181, 253, 0.38), transparent 58%),
-    linear-gradient(148deg, #1e1b4b 0%, #312e81 46%, #4c1d95 82%, #1e40af 140%);
+    linear-gradient(148deg, #1e1b4b 0%, #312e81 46%, #1a2fd0 82%, #1e40af 140%);
 }
 .ip-hero::before,
 .ip-hero::after {
@@ -141,7 +141,7 @@
   gap: 36px;
   align-items: center;
 }
-.ip-hero .ip-kicker { color: #ddd6fe; }
+.ip-hero .ip-kicker { color: #dbe2ff; }
 .ip-hero h1 {
   margin: 14px 0 0;
   max-width: 12ch;
@@ -169,7 +169,7 @@
   color: var(--indigo);
   border-color: #fff;
 }
-.ip-hero .ip-btn-primary:hover { background: #ede9fe; }
+.ip-hero .ip-btn-primary:hover { background: #e7ebff; }
 .ip-hero .ip-btn-ghost {
   background: transparent;
   color: #fff;
@@ -251,7 +251,7 @@
   display: grid;
   place-items: center;
   color: var(--violet-deep);
-  background: #f5f3ff;
+  background: #f4f6ff;
   border: 1px solid rgba(91, 33, 182, 0.16);
   margin-bottom: 16px;
 }
@@ -449,7 +449,7 @@
 }
 .ip-compare-card { background: #fff; padding: 22px 20px; }
 .ip-compare-card.is-featured {
-  background: #faf7ff;
+  background: #f4f6ff;
   box-shadow: inset 4px 0 0 var(--violet);
 }
 [dir="rtl"] .ip-compare-card.is-featured { box-shadow: inset -4px 0 0 var(--violet); }
@@ -478,9 +478,9 @@
   border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
-.ip-table th { background: #faf7ff; font-size: 0.92rem; }
+.ip-table th { background: #f4f6ff; font-size: 0.92rem; }
 .ip-table tr.is-featured-row th,
-.ip-table tr.is-featured-row td { background: #faf7ff; font-weight: 700; }
+.ip-table tr.is-featured-row td { background: #f4f6ff; font-weight: 700; }
 
 /* ========== Membership ========== */
 .ip-billing-grid {
@@ -623,7 +623,7 @@
 }
 .ip-results span { display: block; color: var(--muted); font-size: 0.88rem; font-weight: 700; line-height: 1.4; }
 .ip-results strong { display: block; margin-top: 6px; font-size: 1.45rem; letter-spacing: -0.03em; }
-.ip-results-total { background: #faf7ff !important; border-color: rgba(91, 33, 182, 0.28) !important; }
+.ip-results-total { background: #f4f6ff !important; border-color: rgba(91, 33, 182, 0.28) !important; }
 .ip-results-balance { background: var(--indigo) !important; border-color: var(--indigo) !important; color: #fff; }
 .ip-results-balance span { color: rgba(255, 255, 255, 0.75); }
 .ip-calc-note { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.55; }
@@ -710,7 +710,7 @@
   padding: 48px 28px;
   background:
     radial-gradient(500px 220px at 100% 0%, rgba(96, 165, 250, 0.35), transparent 70%),
-    linear-gradient(145deg, #1e1b4b, #4c1d95 70%, #1d4ed8);
+    linear-gradient(145deg, #1e1b4b, #1a2fd0 70%, #1d4ed8);
   color: #fff;
 }
 .ip-close h2,
@@ -1007,7 +1007,7 @@
 .ip-offer.is-side h3,
 .ip-offer.is-side .ip-product-link { color: #fff; }
 .ip-offer.is-side p { color: rgba(255, 255, 255, 0.82); }
-.ip-offer.is-side .ip-offer-kicker { color: #ddd6fe !important; }
+.ip-offer.is-side .ip-offer-kicker { color: #dbe2ff !important; }
 .ip-offer.is-side .ip-icon {
   color: #fff;
   background: rgba(255, 255, 255, 0.12);
@@ -1015,7 +1015,7 @@
 }
 .ip-offer-market {
   padding: 8px;
-  background: linear-gradient(135deg, #1e1b4b, #4c1d95 70%, #1d4ed8);
+  background: linear-gradient(135deg, #1e1b4b, #1a2fd0 70%, #1d4ed8);
 }
 .ip-offer-market-copy { padding: 20px 16px 4px; color: #fff; }
 .ip-offer-market-copy h3 { margin: 0; color: #fff; font-size: 1.6rem; }
@@ -1051,7 +1051,7 @@
   display: block;
   height: 100%;
   width: 0;
-  background: linear-gradient(90deg, #c4b5fd, #5b21b6 46%, #1d4ed8);
+  background: linear-gradient(90deg, #ffd0ea, #2541F5 46%, #1d4ed8);
 }
 .ip-reveal.is-in .ip-level-progress span { animation: ip-rail 1.15s ease forwards; }
 

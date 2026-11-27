@@ -36,7 +36,7 @@
 
 .about-kicker {
   margin: 0 0 0.85rem;
-  color: #c4b5fd;
+  color: #ffd0ea;
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.16em;
@@ -54,7 +54,7 @@
   background:
     radial-gradient(820px 460px at 78% 8%, rgba(109, 94, 252, 0.42), transparent 62%),
     radial-gradient(640px 420px at 8% 92%, rgba(37, 99, 235, 0.32), transparent 58%),
-    linear-gradient(145deg, #321064 0%, #5b21b6 62%, #2436b8 100%);
+    linear-gradient(145deg, #321064 0%, #2541F5 62%, #2436b8 100%);
   color: var(--about-on-dark);
   overflow: hidden;
 }
@@ -177,7 +177,7 @@
 .about-faq-item summary:focus-visible,
 .about-people a:focus-visible,
 .about-crumb a:focus-visible {
-  outline: 2px solid #c4b5fd;
+  outline: 2px solid #ffd0ea;
   outline-offset: 3px;
 }
 

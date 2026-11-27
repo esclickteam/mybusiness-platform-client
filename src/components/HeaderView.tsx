@@ -31,6 +31,11 @@ export default function HeaderView({
   const [menuOpen, setMenuOpen] = useState(false);
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  const [surface, setSurface] = useState<"paper" | "ink" | "pink" | "yellow" | "navy">(() =>
+    typeof document !== "undefined" && document.documentElement.classList.contains("bizuply-home")
+      ? "ink"
+      : "paper",
+  );
   const [navPath, setNavPath] = useState(location.pathname);
   if (navPath !== location.pathname) {
     setNavPath(location.pathname);
@@ -39,6 +44,8 @@ export default function HeaderView({
   }
   const closeTimer = useRef<number | null>(null);
   const hoverNav = useRef(false);
+  const surfaceRef = useRef(surface);
+  surfaceRef.current = surface;
   const groups = marketingNav(normalizeMarketingLocale(i18n.language));
 
   const headerDir = getTextDirection(i18n.language);
@@ -98,25 +105,45 @@ export default function HeaderView({
       const area = document.querySelector(".app-scroll-area");
       const nested = area instanceof HTMLElement ? area.scrollTop : 0;
       setScrolled((window.scrollY || nested) > 4);
+      const header = document.querySelector(".site-header");
+      if (!(header instanceof HTMLElement) || typeof document.elementFromPoint !== "function") return;
+      const y = Math.min(window.innerHeight - 2, header.getBoundingClientRect().bottom + 2);
+      const x = Math.min(window.innerWidth - 2, Math.max(8, window.innerWidth * 0.5));
+      const hit = document.elementFromPoint(x, y);
+      const zone = hit instanceof Element ? hit.closest("[data-bz-tone]") : null;
+      const tone = zone?.getAttribute("data-bz-tone");
+      const next =
+        tone === "ink" || tone === "pink" || tone === "yellow" || tone === "navy" || tone === "paper"
+          ? tone
+          : document.querySelector(".hx-hero")?.getBoundingClientRect().bottom > y
+            ? "ink"
+            : "paper";
+      if (next !== surfaceRef.current) setSurface(next);
     };
     read();
     window.addEventListener("scroll", read, { passive: true });
+    window.addEventListener("resize", read);
     const area = document.querySelector(".app-scroll-area");
     area?.addEventListener("scroll", read, { passive: true });
     return () => {
       window.removeEventListener("scroll", read);
+      window.removeEventListener("resize", read);
       area?.removeEventListener("scroll", read);
     };
-  }, []);
+  }, [location.pathname]);
 
   if (isDashboard) return null;
 
   return (
     <>
-      <header className={`site-header${scrolled ? " is-scrolled" : ""}`} dir={headerDir}>
+      <header
+        className={`site-header${scrolled ? " is-scrolled" : ""}${surface === "ink" || surface === "navy" ? " is-on-dark" : ""}`}
+        data-tone={surface}
+        dir={headerDir}
+      >
         <nav className="site-header__bar" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
-          <Link to="/" className="site-header__logo" aria-label={i18n.language === "he" ? "ביזאפלי (BizUply)" : "BizUply"}>
-            <img src="/logo-mark.svg" alt={i18n.language === "he" ? "ביזאפלי (BizUply)" : "BizUply"} width="176" height="52" fetchPriority="low" decoding="async" />
+          <Link to="/" className="site-header__logo" aria-label={i18n.language === "he" ? "ביזאפלי (Bizuply)" : "Bizuply"}>
+            <img className="site-header__logo-img site-header__logo-img--light" src="/brand/logo.png" alt="" width="1534" height="540" decoding="async" />
           </Link>
 
           <div className="site-header__nav">
@@ -228,8 +255,8 @@ export default function HeaderView({
                   <Link to="/login" className="site-header__signin">
                     {t("common.login")}
                   </Link>
-                  <Link to="/pricing" className="site-header__cta">
-                    {t("nav.cta")}
+                  <Link to="/register" className="site-header__cta">
+                    <span>{t("nav.cta")}</span>
                   </Link>
                 </>
               ) : (

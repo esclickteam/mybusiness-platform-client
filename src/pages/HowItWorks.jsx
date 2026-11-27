@@ -1,7 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
-import { marketingPublicUrl, normalizeMarketingLocale } from "../lib/localePath.mjs";
+import { marketingPublicUrl, normalizeMarketingLocale, splitMarketingLocale } from "../lib/localePath.mjs";
+import HowItWorksExperience from "./public/HowItWorksExperience";
 import "../styles/publicStage.css";
 
 const stepMeta = [
@@ -46,7 +47,8 @@ const stepMeta = [
 
 function HowItWorks() {
   const { t, i18n } = useTranslation();
-  const locale = normalizeMarketingLocale(i18n.language);
+  const locale = normalizeMarketingLocale(splitMarketingLocale(typeof window !== "undefined" ? window.location.pathname : "").locale || i18n.language);
+  if (locale === "he" || locale === "en") return <HowItWorksExperience language={locale} />;
 
   const overviewStats = [
     ["01", t("howItWorks.overviewStat1Label")],
