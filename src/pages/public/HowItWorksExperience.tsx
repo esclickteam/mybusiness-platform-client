@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { marketingPublicUrl, withMarketingLocale } from "../../lib/localePath.mjs";
 import { scrubSection } from "./scrollScrub.js";
+import { HOW_LOCALES } from "./howItWorksLocales.mjs";
 import "./howItWorksExperience.css";
 
 const COPY = {
@@ -144,15 +145,16 @@ const COPY = {
     end: "Time to connect the work",
     endb: "Look at the workspace, choose the tools that fit the business, and run the work from one place.",
   },
+  ...HOW_LOCALES,
 };
 
 function shot(language, name) {
-  const folder = language === "he" ? "he" : "en";
+  const folder = language === "he" || language === "ar" ? "he" : "en";
   return `/demo-media/home/screens/${folder}-desktop-${name}.webp`;
 }
 
-export default function HowItWorksExperience({ language }: { language: "he" | "en" }) {
-  const copy = COPY[language] || COPY.en;
+export default function HowItWorksExperience({ language }: { language: string }) {
+  const copy = (COPY as Record<string, typeof COPY.en>)[language] || COPY.en;
   const href = (path) => withMarketingLocale(path, language);
   const [step, setStep] = useState(0);
   const canonical = marketingPublicUrl("/how-it-works", language);
@@ -197,7 +199,7 @@ export default function HowItWorksExperience({ language }: { language: "he" | "e
   };
 
   return (
-    <article className="hw" dir={language === "he" ? "rtl" : "ltr"} lang={language}>
+    <article className="hw" dir={language === "he" || language === "ar" ? "rtl" : "ltr"} lang={language}>
       <Helmet>
         <title>{copy.title}</title>
         <meta name="description" content={copy.description} />
@@ -205,6 +207,9 @@ export default function HowItWorksExperience({ language }: { language: "he" | "e
         <meta property="og:title" content={copy.title} />
         <meta property="og:description" content={copy.description} />
         <meta property="og:url" content={canonical} />
+        {[["en", "en"], ["he", "he"], ["es", "es"], ["pt-BR", "pt-BR"], ["ar", "ar"], ["x-default", "en"]].map(([lang, loc]) => (
+          <link key={lang} rel="alternate" hrefLang={lang} href={marketingPublicUrl("/how-it-works", loc)} />
+        ))}
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       </Helmet>
 

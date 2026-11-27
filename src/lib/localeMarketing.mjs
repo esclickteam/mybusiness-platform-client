@@ -108,11 +108,11 @@ const PAGES = {
       ["Las respuestas de producto, precios y límites están en cada página de producto y en el centro de guías."],
     ),
     "/how-it-works": page(
-      "Cómo funciona Bizuply",
-      "Cómo Bizuply conecta leads, citas, el sitio y las automatizaciones en un solo flujo de trabajo.",
+      "Cómo funciona BizUply | Gestión conectada del negocio",
+      "Descubra cómo BizUply conecta marketing, leads, clientes, WhatsApp, ventas y automatización en un mismo flujo de trabajo.",
       "Cómo funciona",
-      "Cómo funciona",
-      ["Un lead entra desde Meta, Google Ads o el sitio. Recibe un estado, una tarea y, si hace falta, una cita. Las automatizaciones del plan de negocio pueden continuar el seguimiento."],
+      "Cómo BizUply hace más simple gestionar un negocio",
+      ["Desde la primera consulta hasta la relación con el cliente, el trabajo permanece en un mismo espacio. Lo incluido depende del plan y de las conexiones."],
     ),
     "/pricing": page(
       "Precios | Bizuply",
@@ -268,7 +268,7 @@ cloneShape("pt-BR", {
   ),
   "/contact": page("Contato | Bizuply", "Fale com a equipe da Bizuply sobre suporte, cobrança e o produto.", "Contato", "Contato", ["Escreva para a equipe da Bizuply sobre suporte, cobrança ou uma dúvida do produto."]),
   "/faq": page("Perguntas frequentes | Bizuply", "Respostas sobre leads, Meta, sites, automações, preços e suporte.", "Perguntas", "Perguntas frequentes", ["As respostas de produto, preço e limite estão em cada página de produto e no centro de guias."]),
-  "/how-it-works": page("Como a Bizuply funciona", "Como a Bizuply liga leads, agenda, site e automações em um fluxo.", "Como funciona", "Como funciona", ["Um lead entra pela Meta, pelo Google Ads ou pelo site. Ele recebe um status, uma tarefa e, se preciso, um compromisso. As automações do plano de negócios podem continuar o acompanhamento."]),
+  "/how-it-works": page("Como a BizUply funciona | Gestão conectada do negócio", "Veja como a BizUply liga marketing, leads, clientes, WhatsApp, vendas e automação num mesmo fluxo de trabalho.", "Como funciona", "Como a BizUply torna a gestão de um negócio mais simples", ["Da primeira consulta ao relacionamento com o cliente, o trabalho fica num mesmo espaço. O que entra depende do plano e das ligações."]),
   "/pricing": page(
     "Preços | Bizuply",
     "CRM sozinho: 49 dólares por mês. Plano de negócios: 99 dólares por mês ou 990 por ano. WhatsApp: 29 dólares por mês por número, mais as tarifas da Meta.",
@@ -382,7 +382,7 @@ cloneShape("ar", {
   ),
   "/contact": page("اتصلوا بنا | Bizuply", "تواصلوا مع فريق Bizuply للدعم والأسئلة التجارية.", "اتصلوا بنا", "اتصلوا بنا", ["اكتبوا لفريق Bizuply بشأن الدعم أو الفوترة أو سؤال عن المنتج."]),
   "/faq": page("أسئلة شائعة | Bizuply", "إجابات عن العملاء المحتملين وMeta والمواقع والأتمتة والأسعار والدعم.", "أسئلة", "أسئلة شائعة", ["إجابات المنتج والسعر والحدود موجودة في صفحة كل منتج وفي مركز الأدلة."]),
-  "/how-it-works": page("كيف تعمل Bizuply", "كيف تربط Bizuply العملاء المحتملين والمواعيد والموقع والأتمتة في مسار واحد.", "آلية العمل", "كيف تعمل", ["يصل العميل المحتمل من Meta أو Google Ads أو الموقع. يحصل على حالة ومهمة وعند الحاجة على موعد. أتمتة الخطة التجارية يمكن أن تواصل المتابعة."]),
+  "/how-it-works": page("كيف تعمل BizUply | إدارة أعمال متصلة", "اكتشفوا كيف تربط BizUply التسويق والعملاء المحتملين وإدارة العملاء وواتساب والمبيعات والأتمتة في مسار عمل واحد.", "آلية العمل", "كيف تجعل BizUply إدارة النشاط أبسط", ["من أول استفسار حتى العلاقة المستمرة مع العميل، يبقى العمل في مساحة واحدة. ما هو متاح يعتمد على الباقة والربط."]),
   "/pricing": page(
     "الأسعار | Bizuply",
     "CRM وحده 49 دولاراً شهرياً. الخطة التجارية 99 دولاراً شهرياً أو 990 سنوياً. واتساب 29 دولاراً شهرياً لكل رقم، إضافة إلى رسوم Meta.",
