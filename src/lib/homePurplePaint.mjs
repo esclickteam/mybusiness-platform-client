@@ -99,7 +99,7 @@ export function renderMarketingHeader(locale) {
     hx.navAria,
   )}"><a class="site-header__logo" href="${escapeHtml(href("/"))}"><img class="site-header__logo-img site-header__logo-img--light" src="/brand/logo.png" alt="${escapeHtml(
     logoAlt,
-  )}" width="1166" height="398" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__end"><span class="site-header__lang">${GLOBE}<svg class="site-header__lang-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span><div class="site-header__actions"><a class="site-header__signin" href="${escapeHtml(
+  )}" width="1534" height="540" fetchpriority="low" decoding="async"></a><div class="site-header__nav">${nav}</div><div class="site-header__end"><span class="site-header__lang">${GLOBE}<svg class="site-header__lang-caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"></path></svg></span><div class="site-header__actions"><a class="site-header__signin" href="${escapeHtml(
     href("/login"),
   )}">${escapeText(hx.login)}</a><a class="site-header__cta" href="${escapeHtml(href("/register"))}"><span>${escapeText(
     hx.cta,

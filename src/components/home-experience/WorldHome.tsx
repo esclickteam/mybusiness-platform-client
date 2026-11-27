@@ -126,8 +126,8 @@ export default function WorldHome() {
             </div>
           </div>
           <div className="bz-spec__film">
-            <img className="bz-mark bz-mark--a" src="/brand/mark.png" alt="" width="679" height="819" />
-            <img className="bz-mark bz-mark--b" src="/brand/mark.png" alt="" width="679" height="819" />
+            <img className="bz-mark bz-mark--a" src="/brand/mark.png" alt="" width="778" height="953" />
+            <img className="bz-mark bz-mark--b" src="/brand/mark.png" alt="" width="778" height="953" />
             <ProductTheater
               desktop={filmFor(`${lang}-desktop` as FilmKey)}
               mobile={filmFor(`${lang}-mobile` as FilmKey)}

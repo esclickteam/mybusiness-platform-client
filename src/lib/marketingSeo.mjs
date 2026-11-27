@@ -784,8 +784,8 @@ function sharedSocialTags(title, description, canonical, language = "en", image 
     `<meta name="twitter:title" content="${safeTitle}" />`,
     `<meta name="twitter:description" content="${safeDescription}" />`,
     `<meta name="twitter:image" content="${safeImage}" />`,
-    `<link rel="icon" href="/favicon-v2.png?v=4" type="image/png" />`,
-    `<link rel="apple-touch-icon" href="/apple-touch-icon-v3.png?v=4" />`,
+    `<link rel="icon" href="/favicon-v2.png?v=5" type="image/png" />`,
+    `<link rel="apple-touch-icon" href="/apple-touch-icon-v3.png?v=5" />`,
     `<meta name="facebook-domain-verification" content="${FACEBOOK_DOMAIN_VERIFICATION}" />`,
   ];
 }
