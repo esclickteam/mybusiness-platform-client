@@ -106,18 +106,12 @@ html.hx-preview .site-header[data-tone="paper"] {
 }
 
 .site-header[data-tone="paper"] .site-header__cta,
-.bz-public .site-header:not([data-tone="ink"]):not([data-tone="navy"]):not([data-tone="pink"]):not([data-tone="yellow"]) .site-header__cta {
-  border-radius: 0;
-  background: #2541f5;
-  color: #fff;
-  box-shadow: none;
-}
-
+.bz-public .site-header:not([data-tone="ink"]):not([data-tone="navy"]):not([data-tone="pink"]):not([data-tone="yellow"]) .site-header__cta,
 .site-header[data-tone="ink"] .site-header__cta,
 .site-header[data-tone="navy"] .site-header__cta {
-  background: #edff00;
-  color: #111936;
   border-radius: 0;
+  background: #65e5b5;
+  color: #111936;
   box-shadow: none;
 }
 

@@ -53,12 +53,14 @@ html.hx-preview {
 .hx-has-site-header .site-header__cta {
   height: 2.5rem;
   padding-inline: 1.05rem;
-  background: #2541F5;
+  background: #65e5b5;
+  color: #111936;
   box-shadow: none;
 }
 
 .hx-has-site-header .site-header__cta:hover {
-  background: #2541f5;
+  background: #65e5b5;
+  color: #fff;
   transform: none;
   box-shadow: none;
 }

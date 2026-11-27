@@ -170,10 +170,10 @@ html.hx-preview img {
   height: 2.5rem;
   padding-inline: 1.05rem;
   border-radius: 0;
-  background: #2541F5;
+  background: #65e5b5;
   font-size: 1rem;
   font-weight: 800;
-  color: #fff;
+  color: #111936;
   text-decoration: none;
   box-shadow: none;
 }
@@ -1233,8 +1233,8 @@ html.hx-preview .site-header__signin {
 
 html.bizuply-home .site-header__cta,
 html.hx-preview .site-header__cta {
-  background: #2541f5;
-  color: #fff;
+  background: #65e5b5;
+  color: #111936;
   border-radius: 8px;
   height: 48px;
   min-height: 48px;

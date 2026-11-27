@@ -36,7 +36,7 @@ export const HOME_SHELL = {
     "stageWhatsappAlt": "שיחת WhatsApp של Northwind Studio בתוך Bizuply",
     "stageAppointmentsAlt": "יומן פגישות של Northwind Studio בתוך Bizuply",
     "login": "התחברות",
-    "cta": "הירשמו עכשיו",
+    "cta": "התחילו עכשיו",
     "sources": "מאיפה מגיעות הפניות",
     "navAria": "ניווט ראשי"
   },
@@ -55,7 +55,7 @@ export const HOME_SHELL = {
     "stageWhatsappAlt": "Una conversación de WhatsApp de Northwind Studio dentro de Bizuply",
     "stageAppointmentsAlt": "El calendario de citas de Northwind Studio dentro de Bizuply",
     "login": "Iniciar sesión",
-    "cta": "Empezar",
+    "cta": "Empieza ahora",
     "sources": "De dónde vienen las investigaciones",
     "navAria": "Navegación principal"
   },
@@ -74,7 +74,7 @@ export const HOME_SHELL = {
     "stageWhatsappAlt": "Uma conversa de WhatsApp da Northwind Studio dentro da Bizuply",
     "stageAppointmentsAlt": "A agenda da Northwind Studio dentro da Bizuply",
     "login": "Entrar",
-    "cta": "Começar",
+    "cta": "Comece agora",
     "sources": "De onde vêm as investigações?",
     "navAria": "Navegação principal"
   },
