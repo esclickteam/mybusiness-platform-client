@@ -51,7 +51,7 @@ const FAQ_HE = [
   ["האם Bizuply כוללת מערכת תורים ופגישות?", "כן. אפשר להגדיר שירות, משך וזמינות, והמערכת מחשבת חלונות פנויים. הפגישה נשמרת עם הלקוח. הזמינות תלויה בחבילה."],
   ["האם אפשר לבנות אתר ולחבר אותו לניהול הלקוחות?", "בונה האתרים כולל עורך ויזואלי ותבניות. טופס באתר יכול להיפתח כליד ב־CRM, בהתאם להגדרות."],
   ["האם ניתן להשתמש רק בחלק מהכלים?", "כן. יש מוצרים וחבילות שונות. פירוט המחירים וההכללה של כל כלי נמצא בעמוד המחירים, ולא בעמוד הזה."],
-  ["איך מתחילים להשתמש ב־Bizuply?", "אפשר להכיר את המוצרים, לבדוק את החבילות ולהירשם לפי האפשרויות באתר. אפשר גם לפנות ל־Bizi, היועצת החכמה, או לקבוע הדגמה אישית."],
+  ["איך מתחילים להשתמש ב־Bizuply?", "אפשר להכיר את המוצרים, לבדוק את החבילות ולהירשם לפי האפשרויות באתר. אפשר גם לקבוע הדגמה."],
 ];
 
 const FAQ_EN = [
@@ -64,7 +64,7 @@ const FAQ_EN = [
   ["Does Bizuply include appointments?", "Yes. You set the service, duration and availability, and open times are calculated from that. The booking stays with the customer. Availability of the calendar depends on the plan."],
   ["Can a website connect to customer management?", "The website builder includes a visual editor and templates. A form on the site can open as a lead in the CRM, according to the settings."],
   ["Can a business use only some of the tools?", "Yes. Products and plans differ. Prices and what each plan includes are on the pricing page, not on this overview."],
-  ["How do we start?", "Review the products, check the current plans and create an account from the options on the site. You can also talk with Bizi, the advisor, or book a personal demonstration."],
+  ["How do we start?", "Review the products, check the current plans and create an account from the options on the site. You can also book a demonstration."],
 ];
 
 function packLocale(code) {
@@ -180,7 +180,7 @@ function packLocale(code) {
           ["¿Hay citas?", "Sí. Se definen servicio, duración y disponibilidad, y la cita queda con el cliente, según el plan."],
           ["¿Un sitio puede conectarse al CRM?", "El constructor incluye editor y plantillas. Un formulario puede abrir un lead en el CRM."],
           ["¿Se puede usar solo una parte?", "Sí. Los productos y los planes son distintos. Los precios están en la página de precios."],
-          ["¿Cómo se empieza?", "Revisen los productos, comprueben los planes y creen una cuenta. También pueden hablar con Bizi o reservar una demostración."],
+          ["¿Cómo se empieza?", "Revisen los productos, comprueben los planes y creen una cuenta. También pueden reservar una demostración."],
         ],
         pt: [
           ["O que é a Bizuply?", "A Bizuply, ביזאפלי em hebraico, é uma plataforma de gestão que reúne CRM, clientes, comunicação, automações, marketing, agenda, sites e ferramentas de IA. O que está disponível depende dos produtos e do plano."],
@@ -192,7 +192,7 @@ function packLocale(code) {
           ["Há agenda?", "Sim. Definem-se serviço, duração e disponibilidade, e a reunião fica com o cliente, conforme o plano."],
           ["Um site pode ligar ao CRM?", "O construtor inclui editor e modelos. Um formulário pode abrir um lead no CRM."],
           ["Dá para usar só uma parte?", "Sim. Os produtos e os planos são diferentes. Os preços ficam na página de preços."],
-          ["Como começar?", "Revise os produtos, confira os planos e crie uma conta. Também dá para falar com a Bizi ou marcar uma demonstração."],
+          ["Como começar?", "Revise os produtos, confira os planos e crie uma conta. Também dá para marcar uma demonstração."],
         ],
         ar: [
           ["ما هي Bizuply؟", "Bizuply، وبيزأبلي بالعبرية، منصة لإدارة الأعمال تجمع CRM والعملاء والتواصل والأتمتة والتسويق والمواعيد والمواقع وأدوات الذكاء الاصطناعي. المتاح يعتمد على المنتجات والباقة."],
@@ -204,7 +204,7 @@ function packLocale(code) {
           ["هل توجد مواعيد؟", "نعم. تُحدَّد الخدمة والمدة والتوفر، ويُحفظ الموعد مع العميل وفق الباقة."],
           ["هل يمكن ربط موقع بـ CRM؟", "يتضمن المنشئ محرراً وقوالب. يمكن أن يفتح النموذج عميلاً محتملاً في CRM."],
           ["هل يمكن استخدام جزء فقط؟", "نعم. تختلف المنتجات والباقات. الأسعار في صفحة الأسعار."],
-          ["كيف نبدأ؟", "راجعوا المنتجات والباقات وأنشئوا حساباً. يمكن أيضاً الحديث مع Bizi أو حجز عرض."],
+          ["كيف نبدأ؟", "راجعوا المنتجات والباقات وأنشئوا حساباً. يمكن أيضاً حجز عرض."],
         ],
       }[es ? "es" : pt ? "pt" : "ar"];
       return local[index];

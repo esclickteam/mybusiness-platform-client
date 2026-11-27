@@ -176,9 +176,9 @@ export const MARKETING_PAGES = [
   },
   {
     path: "/how-it-works",
-    title: "How It Works - Bizuply | Platform Guide",
+    title: "How BizUply Works | Connected Business Management",
     description:
-      "A simple guide on how Bizuply connects businesses with clients, manages appointments, and improves communication with smart automation tools.",
+      "Discover how BizUply connects marketing, leads, customer management, WhatsApp, sales and automation into one connected business workflow.",
     crumb: "How it works",
     lastmod: "2025-07-01",
     changefreq: "monthly",

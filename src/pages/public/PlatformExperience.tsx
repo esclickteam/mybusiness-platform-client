@@ -55,7 +55,7 @@ export default function PlatformExperience() {
     ["#fit", say("התאמה", "Fit", "Encaje", "Encaixe", "الملاءمة")],
     ["#faq", say("שאלות", "Questions", "Preguntas", "Perguntas", "أسئلة")],
   ];
-  const titleMark = say("כל חלקי העסק", "every part of the business", "cada parte del negocio", "cada parte do negócio", "كل جزء من النشاط");
+  const titleMark = say("שיווק, מכירות ואוטומציות", "marketing, sales and automation", "cada parte del negocio", "cada parte do negócio", "كل جزء من النشاط");
   const [tool, setTool] = useState(0);
   const [fit, setFit] = useState(0);
   const [journeyStep, setJourneyStep] = useState(0);
@@ -117,15 +117,21 @@ export default function PlatformExperience() {
           return;
         }
         const box = node.getBoundingClientRect();
-        const passed = vh - box.top;
-        const p = Math.min(1, Math.max(0, passed / (box.height + vh)));
+        let p = Math.min(1, Math.max(0, (vh - box.top) / (box.height + vh)));
+        if (node.id === "day") {
+          const tall = node.offsetHeight > vh * 1.3;
+          const range = tall ? Math.max(node.offsetHeight - vh * 1.35, 1) : vh * 0.9;
+          const origin = tall ? 72 : vh * 0.82;
+          p = Math.min(1, Math.max(0, (origin - box.top) / range));
+        }
         node.style.setProperty("--p", p.toFixed(3));
         if (node.id === "journey") {
           const next = Math.min(ui.journey.length - 1, Math.max(0, Math.floor(p * ui.journey.length)));
           setJourneyStep((current) => (current === next ? current : next));
         }
         if (node.id === "day") {
-          const next = Math.min(ui.day.length - 1, Math.max(0, Math.floor(p * ui.day.length)));
+          const last = ui.day.length - 1;
+          const next = p >= 0.72 ? last : Math.min(last - 1, Math.floor((p / 0.72) * last));
           setDayStep((current) => (current === next ? current : next));
         }
       });
@@ -228,6 +234,31 @@ export default function PlatformExperience() {
         </div>
       </section>
 
+      {(language === "he" || language === "en") && (
+        <section id="difference" className="pf-section">
+          <div className="pf-wrap pf-split">
+            <div>
+              <h2>{language === "he" ? "מה ההבדל בין BizUply למערכת CRM רגילה?" : "How is BizUply different from a CRM?"}</h2>
+              <p>
+                {language === "he"
+                  ? "מערכת CRM מתמקדת בניהול קשרי לקוחות ובתהליכי מכירה. BizUply כוללת את ה-CRM כחלק מסביבה רחבה יותר, עם שיווק, תקשורת, אוטומציות וניהול פעילות. היקף הכלים תלוי בחבילה ובחיבורים."
+                  : "A CRM usually focuses on customer records and sales. BizUply includes CRM inside a wider workspace for marketing, communication, automation and day-to-day work. What is included depends on the plan and the connections."}
+              </p>
+              <Link to={href("/how-it-works")}>{language === "he" ? "איך סביבת העבודה פועלת" : "See how the workspace runs"}</Link>
+            </div>
+            <div>
+              <h3>{language === "he" ? "כשהכלים עובדים יחד" : "When the tools work together"}</h3>
+              <ul>
+                <li>{language === "he" ? "מידע עסקי רלוונטי נשמר במקום אחד." : "Relevant business information stays in one place."}</li>
+                <li>{language === "he" ? "פנייה, תקשורת ומכירה יכולות להמשיך על אותה רשומה." : "An inquiry, a conversation and a sale can continue on the same record."}</li>
+                <li>{language === "he" ? "אוטומציות נבנות מהאירועים שהעורך תומך בהם." : "Automations are built from events the editor supports."}</li>
+                <li>{language === "he" ? "הגישה לצוות נקבעת לפי התפקיד והחבילה." : "Team access follows the role and the plan."}</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section id="journey" className="pf-section" data-scrub>
         <div className="pf-wrap pf-split">
           <div>
@@ -252,6 +283,7 @@ export default function PlatformExperience() {
       </section>
 
       <section id="day" className="pf-section" data-scrub data-tone={["blue", "blue", "yellow", "pink"][dayStep] || "blue"}>
+        <div className="pf-day-pin">
         <div className="pf-wrap pf-split">
           <div>
             <h2>{ui.sDay}</h2>
@@ -267,6 +299,7 @@ export default function PlatformExperience() {
           <figure className="pf-frame">
             <img src={shot(language, dayStep === 2 ? "dashboard" : dayStep === 3 ? "automation" : "crm-card")} alt="" width="1440" height="900" />
           </figure>
+        </div>
         </div>
       </section>
 
