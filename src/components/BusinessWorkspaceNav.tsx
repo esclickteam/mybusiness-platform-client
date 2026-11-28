@@ -74,7 +74,6 @@ type NavItemProps = {
   onNavigate?: () => void;
   collapsed?: boolean;
   demoTarget?: string | null;
-  accent?: "pink";
 };
 
 type NavItemConfig = {
@@ -87,7 +86,6 @@ type NavItemConfig = {
   exact?: boolean;
   moduleKey?: string | null;
   demoTarget?: string | null;
-  accent?: "pink";
 };
 
 /* =========================
@@ -152,7 +150,6 @@ function NavItem({
   onNavigate,
   collapsed = false,
   demoTarget = null,
-  accent,
 }: NavItemProps) {
   if (href) {
     return (
@@ -195,17 +192,17 @@ function NavItem({
       data-demo-target={demoTarget || undefined}
       className={({ isActive }) =>
         `
-          group relative flex items-center rounded-lg transition-colors duration-150
+          group relative flex items-center rounded-[6px] transition-colors duration-200
           ${
             collapsed
-              ? "mx-auto h-[42px] w-[42px] justify-center"
-              : "h-[42px] gap-2.5 px-3"
+              ? "mx-auto h-10 w-10 justify-center"
+              : "h-9 gap-2.5 px-2.5"
           }
           text-[13.5px] font-medium tracking-[-0.01em]
           ${
             isActive
-              ? "bg-[#2541F5] text-white"
-              : "text-[#111932] hover:bg-[#E0FAF0]"
+              ? "bg-[#E7FBF3] text-[#111932]"
+              : "text-[#111932] hover:bg-[#F5F7FB]"
           }
         `
       }
@@ -219,10 +216,8 @@ function NavItem({
               shrink-0 transition-colors
               ${
                 isActive
-                  ? "text-white"
-                  : accent === "pink"
-                    ? "text-[#FF299C] group-hover:text-[#111932]"
-                    : "text-[#64748B] group-hover:text-[#111932]"
+                  ? "text-[#2541F5]"
+                  : "text-[#64748B] group-hover:text-[#2541F5]"
               }
             `}
           />
@@ -395,7 +390,6 @@ export default function BusinessWorkspaceNav({
       icon: Sparkles,
       moduleKey: "BizUply",
       demoTarget: "nav-advisor",
-      accent: "pink",
     },
     {
       labelKey: "businessNav.editBusinessPage",
@@ -600,7 +594,7 @@ export default function BusinessWorkspaceNav({
         </div>
       ) : null}
       <div
-        className={`bx-nav-scroll min-h-0 flex-1 space-y-0.5 overflow-x-hidden overflow-y-auto overscroll-contain pb-28 ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
+        className={`min-h-0 flex-1 space-y-0.5 overflow-x-hidden overflow-y-auto overscroll-contain pb-28 ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
       >
         {visibleItems.map((item, index) => {
           const group = workspaceGroup(item.moduleKey);
@@ -609,7 +603,7 @@ export default function BusinessWorkspaceNav({
           return (
             <React.Fragment key={item.to || item.href || item.labelKey}>
               {showGroup ? (
-                <p className="px-3 pb-1 pt-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#64748B]">
+                <p className="px-2.5 pb-0.5 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">
                   {translate(t, `businessNav.groups.${group}`, group)}
                 </p>
               ) : null}
@@ -622,7 +616,6 @@ export default function BusinessWorkspaceNav({
                 onNavigate={onNavigate}
                 collapsed={collapsed}
                 demoTarget={item.demoTarget || null}
-                accent={item.accent}
               />
             </React.Fragment>
           );

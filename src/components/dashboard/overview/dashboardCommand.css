@@ -8,74 +8,16 @@
 .bx-hero {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-}
-
-.bx-hero-banner {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 120px;
-  overflow: hidden;
-  padding: 20px 24px;
-  border-radius: 12px;
-  background: linear-gradient(115deg, #2541f5 0%, #4561ff 70%, #ff299c 100%);
-  color: #fff;
-}
-
-.bx-hero-mark {
-  position: relative;
-  z-index: 1;
-  width: 72px;
-  height: 72px;
-  flex: 0 0 72px;
-  border-radius: 18px;
+  gap: 0.7rem;
+  padding: 1rem 1.05rem 0.9rem;
   background:
-    linear-gradient(#65e5b5, #65e5b5) 0 0 / 28px 28px no-repeat,
-    linear-gradient(rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.22)) 32px 18px / 40px 40px no-repeat;
-  transform: rotate(12deg);
-}
-
-.bx-hero-banner::before,
-.bx-hero-banner::after {
-  content: "";
-  position: absolute;
-  border-radius: 24px;
-  pointer-events: none;
-}
-
-.bx-hero-banner::before {
-  width: 120px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.12);
-  inset-inline-end: 88px;
-  top: -48px;
-  transform: rotate(18deg);
-}
-
-.bx-hero-banner::after {
-  width: 54px;
-  height: 54px;
-  background: #65e5b5;
-  inset-inline-end: 28px;
-  bottom: -16px;
-  transform: rotate(-16deg);
-}
-
-.bx-period {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+    radial-gradient(28rem 9rem at 100% 0%, rgba(255, 41, 156, 0.1), transparent 68%),
+    radial-gradient(24rem 8rem at 0% 120%, rgba(101, 229, 181, 0.2), transparent 70%),
+    linear-gradient(180deg, #fff 0%, #f7f9ff 100%);
+  color: #111932;
   border: 1px solid #e0e6f0;
-  border-radius: 12px;
-  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04), 0 16px 40px rgba(37, 65, 245, 0.05);
 }
 
 .bx-hero-top {
@@ -98,60 +40,35 @@
 }
 
 .bx-actions {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-  padding: 0;
-  background: transparent;
-  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.5rem;
+  background: #fff;
+  border: 1px solid #e0e6f0;
 }
 
 .bx-actions .bx-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px;
-  height: 50px;
-  min-height: 50px;
-  padding: 0 14px;
-  border-radius: 8px;
-  background: #fff;
+  min-height: 2.35rem;
+  height: auto;
+  background: #F5F7FB;
   color: #111932;
   border: 1px solid #e0e6f0;
   white-space: normal;
 }
 
-.bx-actions .bx-btn[data-tone="lead"] {
-  background: #2541f5;
-  color: #fff;
-  border-color: transparent;
-}
-
-.bx-actions .bx-btn[data-tone="meet"] {
-  background: #e0faf0;
+.bx-hero .bx-kicker,
+.bx-hero .bx-title,
+.bx-hero .bx-sub {
   color: #111932;
-  border-color: transparent;
 }
 
-.bx-actions .bx-btn[data-tone="collab"] {
-  background: #ffe4f2;
-  color: #111932;
-  border-color: transparent;
+.bx-hero .bx-kicker {
+  color: #2541f5;
 }
 
-.bx-actions .bx-btn[data-tone="collab"] svg {
-  color: #ff299c;
-}
-
-.bx-hero-banner .bx-title,
-.bx-hero-banner .bx-sub {
-  position: relative;
-  z-index: 1;
-  color: #fff;
-}
-
-.bx-hero-banner .bx-sub {
-  color: rgba(255, 255, 255, 0.88);
+.bx-hero .bx-sub {
+  color: #64748b;
 }
 
 .bx-kicker {
@@ -164,7 +81,7 @@
 
 .bx-title {
   margin: 0;
-  font-size: 27px;
+  font-size: 1.65rem;
   font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.15;
@@ -178,19 +95,20 @@
   line-height: 1.4;
 }
 
-.bx-period .bx-chip,
-.bx-period .bx-field {
-  height: 40px;
+.bx-hero .bx-chip,
+.bx-hero .bx-field,
+.bx-hero .bx-btn {
   border: 1px solid #e0e6f0;
-  border-radius: 8px;
   background: #fff;
   color: #111932;
 }
 
-.bx-period .bx-chip.is-on {
-  border-color: transparent;
-  background: #2541f5;
-  color: #fff;
+.bx-hero .bx-chip.is-on,
+.bx-hero .bx-btn:hover,
+.bx-hero .bx-chip:hover {
+  border-color: #2541f5;
+  background: #eef2ff;
+  color: #2541f5;
 }
 
 .bx-row {
@@ -237,9 +155,11 @@
   color: #fff;
 }
 
-.bx-period .bx-chip:hover:not(.is-on) {
+.bx-hero .bx-btn:hover,
+.bx-hero .bx-chip:hover,
+.bx-actions .bx-btn:hover {
   border-color: #2541f5;
-  background: #edf0ff;
+  background: #eef2ff;
   color: #2541f5;
 }
 
@@ -261,63 +181,40 @@
 .bx-kpi {
   position: relative;
   display: flex;
-  height: 156px;
-  min-height: 148px;
-  overflow: hidden;
+  min-height: 118px;
   flex-direction: column;
   justify-content: space-between;
   border: 1px solid #e0e6f0;
-  border-radius: 12px;
+  border-radius: 14px;
   background: #fff;
-  padding: 20px;
+  padding: 0.95rem 1rem 0.85rem;
   text-align: start;
-  color: #111932;
-  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04);
-  transition: transform 0.16s ease;
+  color: inherit;
+  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04), 0 10px 28px rgba(17, 25, 50, 0.04);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.bx-kpi[data-tone="leads"] {
-  border: 0;
+.bx-kpi::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  inset-inline-end: 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 99px;
+  background: #2541f5;
+}
+
+.bx-snapshot .bx-kpi:nth-child(1) {
   background:
-    radial-gradient(8rem 6rem at 100% 0%, rgba(255, 255, 255, 0.18), transparent 70%),
-    #2541f5;
-  color: #fff;
+    radial-gradient(12rem 7rem at 100% 0%, rgba(37, 65, 245, 0.12), transparent 72%),
+    radial-gradient(9rem 6rem at 0% 100%, rgba(101, 229, 181, 0.28), transparent 74%),
+    #fff;
 }
 
-.bx-kpi[data-tone="leads"] span,
-.bx-kpi[data-tone="leads"] .bx-note {
-  color: rgba(255, 255, 255, 0.86);
-}
-
-.bx-kpi[data-tone="leads"] .bx-delta {
-  color: #65e5b5;
-}
-
-.bx-kpi[data-tone="action"] {
-  border: 0;
-  background: #65e5b5;
-  color: #111932;
-}
-
-.bx-kpi[data-tone="action"] span,
-.bx-kpi[data-tone="action"] .bx-note,
-.bx-kpi[data-tone="action"] .bx-delta {
-  color: #111932;
-}
-
-.bx-kpi[data-tone="meet"] {
-  border: 0;
-  background: #ffe4f2;
-  color: #111932;
-}
-
-.bx-kpi[data-tone="meet"] .bx-delta {
-  color: #ff299c;
-}
-
-.bx-kpi[data-tone="wa"] .bx-delta {
-  color: #2541f5;
-}
+.bx-snapshot .bx-kpi:nth-child(2)::after { background: #65e5b5; }
+.bx-snapshot .bx-kpi:nth-child(3)::after { background: #ff299c; }
+.bx-snapshot .bx-kpi:nth-child(4)::after { background: #111932; }
 
 button.bx-kpi {
   cursor: pointer;
@@ -326,7 +223,7 @@ button.bx-kpi {
 .bx-kpi strong {
   display: block;
   margin-top: 0.35rem;
-  font-size: 34px;
+  font-size: 1.9rem;
   font-weight: 800;
   letter-spacing: -0.05em;
   line-height: 1;
@@ -382,24 +279,13 @@ button.bx-kpi {
 
 .bx-empty {
   display: grid;
-  min-height: 120px;
+  min-height: 88px;
   place-items: center;
   align-content: center;
-  justify-items: center;
-  gap: 6px;
-  border: 1px dashed #c9d4ff;
-  border-radius: 12px;
-  background: #fff;
-  padding: 16px;
+  gap: 0.2rem;
+  background: #F5F7FB;
+  padding: 0.8rem;
   text-align: center;
-}
-
-.bx-empty::before {
-  content: "";
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #2541f5 0%, #65e5b5 62%, #ff299c 100%);
 }
 
 .bx-funnel-block {
@@ -433,7 +319,7 @@ button.bx-kpi {
 
 .bx-meter {
   display: block;
-  height: 12px;
+  height: 8px;
   overflow: hidden;
   border-radius: 999px;
   background: #eef2ff;
@@ -533,22 +419,9 @@ div.bx-lead {
 
 .bx-mod {
   display: flex;
-  min-height: 148px;
+  min-height: 0;
   flex-direction: column;
   gap: 0.55rem;
-  border-radius: 12px;
-}
-
-.bx-mod[data-mod="whatsapp"] { background: #e0faf0; }
-.bx-mod[data-mod="meta"] { background: #edf0ff; }
-.bx-mod[data-mod="automations"] { background: #ffe4f2; }
-
-.bx-mod .bx-btn {
-  background: #2541f5;
-  color: #fff;
-  border: 0;
-  border-radius: 8px;
-  height: 40px;
 }
 
 .bx-mod .bx-btn {
@@ -580,12 +453,6 @@ div.bx-lead {
   }
 }
 
-@media (max-width: 1100px) {
-  .bx-actions {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
 @media (max-width: 900px) {
   .bx-snapshot {
     grid-template-columns: 1fr 1fr;
@@ -594,8 +461,7 @@ div.bx-lead {
 
 @media (max-width: 640px) {
   .bx-snapshot,
-  .bx-modules,
-  .bx-actions {
+  .bx-modules {
     grid-template-columns: 1fr;
   }
 

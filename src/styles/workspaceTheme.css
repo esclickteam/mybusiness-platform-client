@@ -24,70 +24,14 @@
   color: var(--ws-ink);
 }
 
-.bx-shell .acct-app {
-  --acct-ink: #111932;
-  --acct-brand: #2541f5;
-  --acct-emph: #1c32c4;
-  --acct-canvas: #f5f7fb;
-  background: #f5f7fb;
-  color: #111932;
-}
-
-.bx-shell .acct-app .acct-hero {
-  background: #edf0ff !important;
-  color: #111932 !important;
-}
-
-.bx-shell .acct-app .acct-hero h1,
-.bx-shell .acct-app .acct-hero .acct-kicker,
-.bx-shell .acct-app .acct-hero p,
-.bx-shell .acct-app .acct-hero .grid > div p {
-  color: #111932 !important;
-}
-
-.bx-shell .acct-app .acct-kicker {
-  background: #e0faf0 !important;
-  color: #111932 !important;
-}
-
-.bx-shell .acct-app .acct-hero .grid > div {
-  background: #fff !important;
-  border: 1px solid #e0e6f0 !important;
-}
-
-.bx-shell .acct-app section,
-.bx-shell .acct-app .acct-hero {
-  border-radius: 12px !important;
-  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04);
-}
-
-.bx-shell .acct-app button[class*="bg-gradient"],
-.bx-shell .acct-app a[class*="bg-gradient"] {
-  border-radius: 8px !important;
-  background: #2541f5 !important;
-  color: #fff !important;
-  border-color: transparent !important;
-}
-
-.bx-shell .acct-app button[class*="rose"],
-.bx-shell .acct-app a[class*="rose"] {
-  background: #fff !important;
-  color: #be123c !important;
-  border-color: #fecdd3 !important;
-}
-
-.bx-nav-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #c5d0e4 transparent;
-}
-
-.bx-nav-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-
-.bx-nav-scroll::-webkit-scrollbar-thumb {
-  background: #c5d0e4;
-  border-radius: 4px;
+.bx-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, #2541f5 0%, #65e5b5 62%, #ff299c 100%);
 }
 
 .bx-shell .crm-primary-btn,
@@ -181,4 +125,60 @@
 .bx-shell :is(button, a):is(.bg-violet-600, .bg-violet-500):hover {
   background-color: var(--ws-blue-ink) !important;
   color: #fff !important;
+}
+
+/*
+  Leftover brand violet inside the workspace, mapped to the light preview:
+  white surfaces, a soft blue tint, and blue text. No solid color fields.
+  The customer site canvas and the public profile the business chose are excluded.
+*/
+.bx-shell :is(.text-violet-500, .text-violet-600, .text-violet-700, .text-violet-800, .text-violet-900):not([data-visual-template-canvas] *):not(.pub-profile):not(.pub-profile *) {
+  color: var(--ws-blue);
+}
+
+.bx-shell :is(.bg-violet-50, .bg-violet-100):not([data-visual-template-canvas] *):not(.pub-profile):not(.pub-profile *) {
+  background-color: var(--ws-blue-soft);
+}
+
+.bx-shell :is(.border-violet-100, .border-violet-200, .border-violet-300):not([data-visual-template-canvas] *):not(.pub-profile):not(.pub-profile *) {
+  border-color: var(--ws-line);
+}
+
+.bx-shell [class*="from-violet"]:not(button):not(a):not([data-visual-template-canvas] *):not(.pub-profile):not(.pub-profile *) {
+  background-image: none;
+  background-color: #fff;
+}
+
+.bx-shell .acct-app {
+  --acct-ink: #111932;
+  --acct-brand: #2541f5;
+  --acct-emph: #1c32c4;
+  --acct-canvas: #f5f7fb;
+  background: var(--ws-canvas);
+  color: var(--ws-ink);
+}
+
+.bx-shell .acct-app .acct-hero {
+  background:
+    radial-gradient(28rem 9rem at 100% 0%, rgba(255, 41, 156, 0.1), transparent 68%),
+    radial-gradient(24rem 8rem at 0% 120%, rgba(101, 229, 181, 0.2), transparent 70%),
+    linear-gradient(180deg, #fff 0%, #f7f9ff 100%) !important;
+  color: var(--ws-ink) !important;
+}
+
+.bx-shell .acct-app .acct-hero h1,
+.bx-shell .acct-app .acct-hero .acct-kicker,
+.bx-shell .acct-app .acct-hero p,
+.bx-shell .acct-app .acct-hero .grid > div p {
+  color: var(--ws-ink) !important;
+}
+
+.bx-shell .acct-app .acct-kicker {
+  background: var(--ws-blue-soft) !important;
+  color: var(--ws-blue) !important;
+}
+
+.bx-shell .acct-app .acct-hero .grid > div {
+  background: #fff !important;
+  border: 1px solid var(--ws-line) !important;
 }

@@ -815,7 +815,7 @@ export default function BusinessDashboardLayout() {
           {!isWebsiteFullScreen && (
             <header
               className="
-                fixed z-30 flex h-16 items-center justify-between
+                fixed z-30 flex h-14 items-center justify-between
                 border-b border-[#E0E6F0] bg-white px-4
                 transition-all duration-300 lg:px-6
               "
@@ -883,9 +883,9 @@ export default function BusinessDashboardLayout() {
                     type="button"
                     onClick={handleLogout}
                     className="
-                      h-10 rounded-lg border border-[#2541F5] bg-white px-3
-                      text-sm font-semibold text-[#2541F5] transition duration-150
-                      hover:bg-[#EDF0FF]
+                      rounded-[6px] border border-[#E0E6F0] bg-white px-3 py-2
+                      text-sm font-semibold text-[#111932] transition
+                      hover:border-[#2541F5] hover:text-[#2541F5]
                     "
                   >
                     {t("common.logOut")}
@@ -903,10 +903,10 @@ export default function BusinessDashboardLayout() {
                   ? "pt-14"
                   : "pt-0"
                 : isAdmin
-                  ? "pt-28"
+                  ? "pt-24"
                   : showTopBanner
-                    ? "pt-[120px]"
-                    : "pt-16",
+                    ? "pt-[112px]"
+                    : "pt-14",
               // Lets the last portal actions scroll clear of the floating assistant launcher.
               apiPortal && !isWebsiteFullScreen ? "pb-28" : "",
             ].join(" ")}

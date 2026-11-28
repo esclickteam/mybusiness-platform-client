@@ -80,7 +80,7 @@ export default function DashboardModulePanels({
   return (
     <section className="bx-modules" aria-label={t("overview.cmdModules", "Included modules")}>
       {whatsapp ? (
-        <article className="bx-mod" data-mod="whatsapp">
+        <article className="bx-mod">
           <div className="bx-row">
             <h2>{t("overview.cmdWhatsappTitle", "WhatsApp")}</h2>
             <span className={`bx-status ${whatsapp.connected ? "is-on" : ""}`}>
@@ -106,7 +106,7 @@ export default function DashboardModulePanels({
       ) : null}
 
       {meta && meta.status !== "idle" ? (
-        <article className="bx-mod" data-mod="meta">
+        <article className="bx-mod">
           <div className="bx-row">
             <h2>{t("overview.cmdMeta", "Meta campaigns")}</h2>
             <button type="button" className="bx-btn" onClick={() => onOpen("meta-campaigns/campaigns")}>
@@ -149,7 +149,7 @@ export default function DashboardModulePanels({
       ) : null}
 
       {automations && automations.status !== "idle" ? (
-        <article className="bx-mod" data-mod="automations">
+        <article className="bx-mod">
           <div className="bx-row">
             <h2>{t("overview.cmdAutomations", "Automations")}</h2>
             <button type="button" className="bx-btn" onClick={() => onOpen("automations")}>

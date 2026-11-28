@@ -1,7 +1,7 @@
 .biz-admin {
-  --bz-accent: #6d4aff;
-  --bz-accent-strong: #5b3de6;
-  --bz-accent-soft: #f3f0ff;
+  --bz-accent: #2541f5;
+  --bz-accent-strong: #1c32c4;
+  --bz-accent-soft: #eef2ff;
   --bz-bg: #f4f5f7;
   --bz-surface: #ffffff;
   --bz-border: #e6e8ee;
@@ -750,8 +750,8 @@
   width: 28px;
   height: 28px;
   border-radius: 8px;
-  background: #efeaff;
-  color: #5b3de6;
+  background: #eef2ff;
+  color: #2541f5;
   font-style: normal;
   font-weight: 700;
 }
@@ -1391,9 +1391,9 @@
 }
 
 .biz-badge.is-info {
-  border-color: #ddd6fe;
-  background: #f3f0ff;
-  color: #5b3de6;
+  border-color: #dbe3ff;
+  background: #eef2ff;
+  color: #2541f5;
 }
 
 .biz-table-empty,

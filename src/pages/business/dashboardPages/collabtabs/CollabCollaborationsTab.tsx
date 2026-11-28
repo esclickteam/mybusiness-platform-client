@@ -72,7 +72,7 @@ export default function CollabCollaborationsTab({
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-6">
-      <section className="relative overflow-hidden rounded-xl border border-[#E0E6F0] bg-[#E0FAF0] p-5 sm:p-7">
+      <section className="relative overflow-hidden rounded-lg border border-[#E0E6F0] bg-white p-5 shadow-[0_1px_2px_rgba(17,25,50,0.04),0_8px_24px_rgba(17,25,50,0.04)] sm:p-7">
         <div className="pointer-events-none absolute inset-y-0 start-0 w-1 bg-[#2541F5]" />
 
         <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">

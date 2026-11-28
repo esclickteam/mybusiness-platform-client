@@ -64,7 +64,7 @@ export default function SocialAuthButtons({
     </div>
   );
   const buttonClass = layout === "pair"
-    ? "auth-social-btn inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] border border-[#e4dff0] bg-white px-3 text-[0.95rem] font-extrabold text-[#1e1b4b] transition hover:border-[#c4b5fd] hover:bg-[#faf8ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5b21b6] disabled:cursor-not-allowed disabled:opacity-60"
+    ? "auth-social-btn inline-flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] border border-[#e4dff0] bg-white px-3 text-[0.95rem] font-extrabold text-[#1e1b4b] transition hover:border-[#c9d4ff] hover:bg-[#f7f9ff] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
     : "inline-flex h-12 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 shadow-sm transition hover:border-violet-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70";
   return (
     <div className="space-y-4">

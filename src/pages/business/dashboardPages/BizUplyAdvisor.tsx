@@ -160,16 +160,7 @@ const BizUplyAdvisor: React.FC = () => {
       dir={dir}
       className="biz-interior min-h-screen px-3 py-4 sm:px-5 lg:px-6"
     >
-      <div
-        className="mx-auto mb-4 flex w-full max-w-[1700px] items-center justify-between gap-3 rounded-xl px-4 py-4 text-white"
-        style={{ background: "linear-gradient(115deg, #2541F5 0%, #6A78FF 55%, #FF299C 100%)" }}
-      >
-        <div>
-          <p className="text-xs font-bold uppercase tracking-[0.12em] text-white/80">AI</p>
-          <h1 className="text-[26px] font-extrabold leading-tight">{t("advisor.tabs.advisor")}</h1>
-        </div>
-      </div>
-      <div className="mx-auto mb-4 flex w-full max-w-[1700px] flex-wrap gap-2 rounded-xl border border-[#E0E6F0] bg-white p-2">
+      <div className="mx-auto mb-4 flex w-full max-w-[1700px] flex-wrap gap-2 rounded-[22px] border border-slate-200 bg-white p-2 shadow-sm">
         <button
           type="button"
           onClick={() => setActiveTab("advisor")}
