@@ -71,6 +71,22 @@ describe("previewProductionBlockReason", () => {
         token: businessToken,
       })
     ).toBeNull();
+    expect(
+      previewProductionBlockReason({
+        method: "post",
+        url: "/ai/insights",
+        headers,
+        token: businessToken,
+      })
+    ).toBe("external_action");
+    expect(
+      previewProductionBlockReason({
+        method: "post",
+        url: "/ai/insights/dismiss",
+        headers,
+        token: businessToken,
+      })
+    ).toBe("external_action");
   });
 
   it("blocks another business, admin surfaces, and non-business roles", () => {

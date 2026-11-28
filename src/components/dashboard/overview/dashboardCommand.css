@@ -188,7 +188,7 @@
   padding: 0.85rem 0.95rem 0.8rem;
   text-align: start;
   color: inherit;
-  box-shadow: 0 12px 28px rgba(50, 16, 100, 0.06);
+  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04), 0 8px 24px rgba(17, 25, 50, 0.04);
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -235,7 +235,7 @@ button.bx-kpi {
 .bx-panel {
   background: #fff;
   padding: 0.95rem 1rem;
-  box-shadow: 0 12px 28px rgba(50, 16, 100, 0.06);
+  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04), 0 8px 24px rgba(17, 25, 50, 0.04);
 }
 
 .bx-stage h2,

@@ -52,7 +52,7 @@
 
 .ax-tabs__item--active {
   color: #2541F5;
-  background: #f5f3ff;
+  background: #eef2ff;
 }
 
 .ax-home,
@@ -98,7 +98,7 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  border-radius: 10px;
+  border-radius: 6px;
   border: 1px solid #e5e7eb;
   background: #fff;
   color: #0f172a;
@@ -210,8 +210,8 @@
 }
 
 .ax-chip--active {
-  border-color: #ddd6fe;
-  background: #f5f3ff;
+  border-color: #e0e6f0;
+  background: #eef2ff;
   color: #2541F5;
 }
 
@@ -695,7 +695,7 @@
 }
 
 .ax-create-choice:hover:not(:disabled) {
-  border-color: #ddd6fe;
+  border-color: #e0e6f0;
   background: #fafafa;
 }
 
@@ -884,8 +884,8 @@
   width: fit-content;
   max-width: 100%;
   border-radius: 999px;
-  border: 1px solid #ddd6fe;
-  background: #f5f3ff;
+  border: 1px solid #e0e6f0;
+  background: #eef2ff;
   color: #2541F5;
   font-size: 12px;
   font-weight: 700;
@@ -1621,7 +1621,7 @@
 }
 
 .ax-billing-tip-btn:hover {
-  background: #f5f3ff;
+  background: #eef2ff;
   color: #2541F5;
 }
 
@@ -1791,7 +1791,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #f5f3ff;
+  background: #eef2ff;
   color: #2541F5;
   margin-bottom: 4px;
 }
@@ -1834,7 +1834,7 @@
 }
 
 .ax-billing-plan--current {
-  border-color: #ddd6fe;
+  border-color: #e0e6f0;
 }
 
 .ax-billing-plan__badge {

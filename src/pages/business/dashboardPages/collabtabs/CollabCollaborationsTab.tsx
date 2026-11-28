@@ -72,13 +72,12 @@ export default function CollabCollaborationsTab({
 
   return (
     <section className="mx-auto w-full max-w-7xl space-y-6">
-      <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
-        <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-0 left-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
+      <section className="relative overflow-hidden rounded-lg border border-[#E0E6F0] bg-white p-5 shadow-[0_1px_2px_rgba(17,25,50,0.04),0_8px_24px_rgba(17,25,50,0.04)] sm:p-7">
+        <div className="pointer-events-none absolute inset-y-0 start-0 w-1 bg-[#2541F5]" />
 
         <div className="relative flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
+            <div className="inline-flex items-center gap-2 rounded-md border border-[#d9e1ff] bg-[#eef2ff] px-3 py-1.5 text-xs font-bold text-[#1c32c4]">
               <Sparkles className="h-4 w-4" />
               {t("leftover.collab.workspace.badge")}
             </div>
@@ -94,7 +93,7 @@ export default function CollabCollaborationsTab({
 
           <div className="rounded-[1.5rem] border border-white/80 bg-white/75 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-violet-100 text-violet-700">
+              <div className="flex h-12 w-12 items-center justify-center rounded-md border border-[#d9e1ff] bg-[#eef2ff] text-[#2541F5]">
                 <ActiveIcon className="h-6 w-6" />
               </div>
 
@@ -122,16 +121,16 @@ export default function CollabCollaborationsTab({
                 className={[
                   "group flex items-center gap-3 rounded-[1.5rem] border p-4 text-left transition",
                   isActive
-                    ? "border-violet-200 bg-gradient-to-br from-violet-50 to-sky-50 shadow-[0_14px_35px_rgba(124,58,237,0.12)] ring-2 ring-violet-100"
-                    : "border-transparent bg-slate-50/70 hover:-translate-y-0.5 hover:border-sky-100 hover:bg-white hover:shadow-md",
+                    ? "border-[#c9d4ff] bg-[#f8faff] shadow-none ring-1 ring-[#d9e1ff]"
+                    : "border-transparent bg-[#f8fafc] hover:border-[#E0E6F0] hover:bg-white",
                 ].join(" ")}
               >
                 <span
                   className={[
                     "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition",
                     isActive
-                      ? "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white shadow-[0_12px_28px_rgba(124,58,237,0.20)]"
-                      : "bg-white text-sky-700 shadow-sm group-hover:bg-sky-50",
+                      ? "border border-[#d9e1ff] bg-[#eef2ff] text-[#2541F5]"
+                      : "bg-white text-[#64748B] shadow-sm",
                   ].join(" ")}
                 >
                   <Icon className="h-5 w-5" />
@@ -141,7 +140,7 @@ export default function CollabCollaborationsTab({
                   <span
                     className={[
                       "block truncate text-sm font-black",
-                      isActive ? "text-violet-800" : "text-slate-800",
+                      isActive ? "text-[#1c32c4]" : "text-[#111932]",
                     ].join(" ")}
                   >
                     {tab.label}

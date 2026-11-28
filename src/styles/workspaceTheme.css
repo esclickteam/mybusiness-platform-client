@@ -1,8 +1,8 @@
 /*
   Internal workspace design system.
   Scoped to the app shell so the public marketing site and customer websites
-  keep their own colors. Tailwind v4 utilities read these variables, so violet,
-  purple and indigo inside the shell resolve to the BizUply palette.
+  keep their own colors.   Component styles live here. Utility colors are not remapped, so status
+  chips, charts, and official logos keep their own colors.
 */
 
 .bx-shell {
@@ -88,124 +88,31 @@
   border-style: dashed;
 }
 
+/* Page chrome only. Status chips, charts, and brand logos keep their own colors. */
+.bx-shell .crm-app,
+.bx-shell .biz-module,
+.bx-shell .ax-home,
+.bx-shell .af-builder {
+  color: var(--ws-ink);
+}
+
 /*
-  Shared workspace chrome still carries the old violet utilities.
-  These overrides apply only inside the signed-in shell. Public pages and
-  published customer sites are outside .bx-shell, so they keep their colors.
-  Ink stays the text color. Electric blue is reserved for solid actions.
+  Primary actions that still carry the old pale violet gradient or solid violet
+  fill. Status badges, chart series, and official logos are not buttons, so
+  they keep their own colors.
 */
-.bx-shell .text-violet-700,
-.bx-shell .text-violet-800,
-.bx-shell .text-violet-900,
-.bx-shell .text-purple-700,
-.bx-shell .text-purple-800,
-.bx-shell .text-purple-900,
-.bx-shell .text-purple-950,
-.bx-shell .text-indigo-700,
-.bx-shell .text-indigo-800,
-.bx-shell .text-indigo-900 {
-  color: var(--ws-ink);
+.bx-shell :is(button, a).bg-gradient-to-l:is(.from-violet-100, .from-violet-200, .from-violet-500, .from-violet-600),
+.bx-shell :is(button, a):is(.bg-violet-600, .bg-violet-500) {
+  background-image: none !important;
+  background-color: var(--ws-blue) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  border-radius: var(--ws-radius);
+  box-shadow: none !important;
 }
 
-.bx-shell .text-violet-600,
-.bx-shell .text-purple-600,
-.bx-shell .text-indigo-600,
-.bx-shell .text-fuchsia-600 {
-  color: var(--ws-blue);
-}
-
-.bx-shell .text-purple-400,
-.bx-shell .text-violet-400,
-.bx-shell .text-indigo-400 {
-  color: var(--ws-muted);
-}
-
-.bx-shell .bg-violet-50,
-.bx-shell .bg-violet-50\/40,
-.bx-shell .bg-violet-50\/50,
-.bx-shell .bg-violet-50\/60,
-.bx-shell .bg-violet-50\/70,
-.bx-shell .bg-purple-50,
-.bx-shell .bg-purple-50\/40,
-.bx-shell .bg-indigo-50,
-.bx-shell .bg-fuchsia-50,
-.bx-shell .bg-violet-100,
-.bx-shell .bg-purple-100,
-.bx-shell .bg-indigo-100 {
-  background-color: var(--ws-blue-soft);
-  background-image: none;
-}
-
-.bx-shell .border-violet-100,
-.bx-shell .border-violet-100\/70,
-.bx-shell .border-violet-100\/80,
-.bx-shell .border-violet-200,
-.bx-shell .border-violet-200\/70,
-.bx-shell .border-violet-200\/80,
-.bx-shell .border-violet-300,
-.bx-shell .border-violet-400,
-.bx-shell .border-purple-100,
-.bx-shell .border-purple-200,
-.bx-shell .border-indigo-100,
-.bx-shell .border-indigo-200 {
-  border-color: var(--ws-line);
-}
-
-.bx-shell .ring-violet-100,
-.bx-shell .ring-violet-100\/80,
-.bx-shell .ring-violet-200,
-.bx-shell .ring-purple-300,
-.bx-shell .ring-indigo-100 {
-  --tw-ring-color: rgba(37, 65, 245, 0.18);
-}
-
-.bx-shell .from-violet-50,
-.bx-shell .from-violet-100,
-.bx-shell .from-violet-200\/80,
-.bx-shell .from-indigo-50,
-.bx-shell .from-purple-50,
-.bx-shell .to-violet-50,
-.bx-shell .to-violet-50\/70,
-.bx-shell .to-violet-100,
-.bx-shell .via-violet-50 {
-  --tw-gradient-from: #ffffff;
-  --tw-gradient-to: #eef2ff;
-  background-image: none;
-  background-color: #fff;
-}
-
-.bx-shell .bg-violet-500,
-.bx-shell .bg-violet-600,
-.bx-shell .bg-violet-700,
-.bx-shell .bg-purple-600,
-.bx-shell .bg-indigo-500,
-.bx-shell .bg-indigo-600,
-.bx-shell .bg-fuchsia-600 {
-  background-color: var(--ws-blue);
-  background-image: none;
-  color: #fff;
-}
-
-.bx-shell table {
-  width: 100%;
-  border-collapse: collapse;
-  color: var(--ws-ink);
-}
-
-.bx-shell th {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--ws-muted);
-}
-
-.bx-shell td,
-.bx-shell th {
-  border-bottom: 1px solid var(--ws-line);
-}
-
-.bx-shell .modal,
-.bx-shell [role="dialog"] {
-  border-radius: 8px;
-  color: var(--ws-ink);
+.bx-shell :is(button, a).bg-gradient-to-l:is(.from-violet-100, .from-violet-200, .from-violet-500, .from-violet-600):hover,
+.bx-shell :is(button, a):is(.bg-violet-600, .bg-violet-500):hover {
+  background-color: var(--ws-blue-ink) !important;
+  color: #fff !important;
 }

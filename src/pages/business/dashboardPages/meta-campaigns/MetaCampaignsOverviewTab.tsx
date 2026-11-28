@@ -133,7 +133,7 @@ function KpiCard({
     <div className={`${cardBase} relative overflow-hidden p-4`} data-demo-target={demoTarget}>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-gradient-to-l from-violet-50/80 via-sky-50/40 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-[#2541F5]"
       />
       <div className="relative">
         <p className="text-xs font-bold text-slate-500">{label}</p>
@@ -144,7 +144,7 @@ function KpiCard({
           <div className="mt-3">
             <div className="h-2 overflow-hidden rounded-full bg-slate-100">
               <div
-                className="h-full rounded-full bg-gradient-to-l from-violet-500 to-sky-500 transition-all"
+                className="h-full rounded-full bg-[#2541F5] transition-all"
                 style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
               />
             </div>
@@ -616,7 +616,7 @@ export default function MetaCampaignsOverviewTab() {
     return (
       <div className={`${cardBase} p-6 sm:p-8`}>
         <div className="mx-auto max-w-xl text-center">
-          <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-violet-700">
+          <div className="mx-auto grid h-14 w-14 place-items-center rounded-lg border border-[#d9e1ff] bg-[#eef2ff] text-[#2541F5]">
             <Target className="h-7 w-7" />
           </div>
           <h2 className="mt-4 text-xl font-black text-slate-900">

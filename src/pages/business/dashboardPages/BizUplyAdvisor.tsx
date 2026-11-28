@@ -166,7 +166,7 @@ const BizUplyAdvisor: React.FC = () => {
           onClick={() => setActiveTab("advisor")}
           className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition sm:flex-none ${
             activeTab === "advisor"
-              ? "bg-sky-100 text-sky-900 ring-1 ring-sky-200"
+              ? "bg-[#2541F5] text-white"
               : "text-slate-600 hover:bg-slate-50"
           }`}
         >

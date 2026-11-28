@@ -17,7 +17,7 @@
    Header
 ========================= */
 .BizUply-header {
-  color: #5a2ea6;
+  color: #111932;
   margin: 0 auto 1.5rem;   /* ✅ מרכז את הבלוק */
   text-align: center;      /* ✅ מרכז רק את הטקסט */
   font-weight: 800;        /* ✅ יותר פרימיום */
@@ -46,18 +46,18 @@
   font-size: 1rem;
   cursor: pointer;
   transition: all 0.25s ease;
-  color: #5a2ea6;
+  color: #111932;
   position: relative;
 }
 
 .tab-buttons button:hover {
-  background-color: #e4d7ff;
+  background-color: #eef2ff;
 }
 
 .tab-buttons .active {
-  background-color: #7e57c2;
+  background-color: #2541F5;
   color: #fff;
-  border-color: #5a2ea6;
+  border-color: transparent;
 }
 
 /* Notification dot */
@@ -127,7 +127,7 @@
 }
 
 .conversation-selector h3 {
-  color: #5a2ea6;
+  color: #111932;
   margin-bottom: 0.5rem;
 }
 
@@ -148,8 +148,8 @@
 
 .conversation-selector li.active,
 .conversation-selector li:hover {
-  background-color: #7e57c2;
-  color: #fff;
+  background-color: #eef2ff;
+  color: #111932;
 }
 
 /* =========================

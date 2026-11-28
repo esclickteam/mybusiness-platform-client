@@ -55,8 +55,8 @@
 }
 
 .af-card--recipe {
-  background: linear-gradient(180deg, #faf5ff 0%, #fff 55%);
-  border-color: #ddd6fe;
+  background: linear-gradient(180deg, #f5f7fb 0%, #fff 58%);
+  border-color: #e0e6f0;
 }
 
 .af-card__icon {
@@ -66,7 +66,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #ede9fe;
+  background: #eef2ff;
   color: #2541F5;
 }
 
@@ -118,7 +118,7 @@
 
 .af-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 10px; }
 .af-stat { display: flex; flex-direction: column; gap: 2px; padding: 13px 15px; border: 1px solid #e2e8f0; border-radius: 14px; background: #fff; }
-.af-stat strong { font-size: 22px; color: #312e81; }
+.af-stat strong { font-size: 22px; color: #111932; }
 .af-stat span, .af-execution { font-size: 12px; font-weight: 700; color: #64748b; }
 .af-execution { padding: 7px 9px; border-radius: 9px; background: #f8fafc; }
 .af-execution--failed { color: #b91c1c; background: #fff1f2; }
@@ -141,8 +141,8 @@
   flex-direction: column;
   min-height: calc(100vh - 120px);
   height: calc(100vh - 120px);
-  border: 1px solid rgba(91, 33, 182, 0.16);
-  border-radius: 0;
+  border: 1px solid #e0e6f0;
+  border-radius: 8px;
   overflow: hidden;
   background: #F5F7FB;
 }
@@ -245,8 +245,8 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
-  background: #ede9fe;
+  border-radius: 6px;
+  background: #eef2ff;
   color: #2541F5;
   flex-shrink: 0;
 }
@@ -254,8 +254,8 @@
 .af-drawer__search--prominent {
   margin-top: 14px;
   padding: 11px 12px;
-  border-color: #c4b5fd;
-  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.08);
+  border-color: #c9d4fb;
+  box-shadow: 0 0 0 3px rgba(37, 65, 245, 0.12);
 }
 
 .af-drawer__footer-row--split {
@@ -325,8 +325,8 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
-  background: #ede9fe;
+  border-radius: 6px;
+  background: #eef2ff;
   color: #2541F5;
   flex-shrink: 0;
 }
@@ -568,7 +568,7 @@
 }
 
 .af-picker-item:hover:not(:disabled) {
-  border-color: #ddd6fe;
+  border-color: #e0e6f0;
   background: #fafafa;
 }
 
@@ -867,7 +867,7 @@
   gap: 6px;
   max-width: min(920px, calc(100% - 24px));
   padding: 8px 10px;
-  border: 1px solid #ddd6fe;
+  border: 1px solid #e0e6f0;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.95);
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
@@ -1169,7 +1169,7 @@
   margin: 0 0 6px;
   padding: 2px 7px;
   border-radius: 999px;
-  border: 1px solid #ddd6fe;
+  border: 1px solid #e0e6f0;
   background: #f5f3ff;
   font-size: 10px;
   font-weight: 800;
@@ -2053,12 +2053,12 @@
 .af-node,
 .af-picker-item,
 .af-empty {
-  border-radius: 0 !important;
+  border-radius: 6px;
 }
 
 .af-builder-toolbar {
   background: #fff;
-  border-bottom: 1px solid rgba(91, 33, 182, 0.16);
+  border-bottom: 1px solid #e0e6f0;
 }
 
 .af-inspector {
@@ -2073,24 +2073,24 @@
 .af-modal select,
 .af-modal textarea {
   border-radius: 0;
-  border-color: rgba(91, 33, 182, 0.2);
+  border-color: #e0e6f0;
   background: #fff;
   min-height: 42px;
 }
 
 .af-node {
-  border: 1px solid rgba(91, 33, 182, 0.2);
+  border: 1px solid #e0e6f0;
   border-top: 3px solid #2541F5;
   background: #fff;
 }
 
 .af-picker-item {
-  border: 1px solid rgba(91, 33, 182, 0.14);
-  background: #f7f5fb;
+  border: 1px solid #e0e6f0;
+  background: #f5f7fb;
 }
 
 .af-modal {
-  border: 1px solid rgba(91, 33, 182, 0.18);
+  border: 1px solid #e0e6f0;
   border-top: 4px solid #2541F5;
   background: #fff;
   box-shadow: none;
@@ -2114,7 +2114,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border: 1px solid rgba(91, 33, 182, 0.16);
+  border: 1px solid #e0e6f0;
   border-top: 3px solid #2541F5;
   background: #fff;
   padding: 16px;

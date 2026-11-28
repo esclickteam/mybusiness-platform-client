@@ -15,7 +15,7 @@ const AUTH_POST_PATHS = [
 ];
 
 const EXTERNAL_ACTION =
-  /\/(whatsapp(?:-api)?|meta-campaigns|automations|stripe|lemonsqueezy|lemon|plugin-billing|push-billing|client-portal-billing|billing|checkout|voice-verification|embedded-signup|early-access)(?:\/|$)/i;
+  /\/(whatsapp(?:-api)?|meta-campaigns|automations|stripe|lemonsqueezy|lemon|plugin-billing|push-billing|client-portal-billing|billing|checkout|voice-verification|embedded-signup|early-access|ai\/insights)(?:\/|$)/i;
 
 const READ_ONLY_PREVIEW = /\/(?:ad-preview|mapping-preview|send-preview|preview)(?:\/|$)/i;
 
