@@ -48,6 +48,8 @@ import {
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
 import { isWhatsAppApiPortalUser, loginPathForBrowser } from "../../utils/whatsappApiPortal";
+import { isDashboardPathAllowed } from "../../utils/moduleAccess";
+import UpgradeRequired from "../../components/UpgradeRequired";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 /* ============================
@@ -262,6 +264,24 @@ export default function BusinessDashboardLayout() {
   const isWebsiteFullScreen = useMemo(() => {
     return isWebsiteFullScreenRoute(location.pathname, location.search);
   }, [location.pathname, location.search]);
+
+  const moduleUpgrade =
+    !apiPortal &&
+    Boolean(
+      (user as { planLimited?: boolean; automationsAccessible?: boolean } | null)
+        ?.planLimited ||
+        (user as { automationsAccessible?: boolean } | null)?.automationsAccessible ===
+          false
+    ) &&
+    !isDashboardPathAllowed(
+      location.pathname,
+      (user as { enabledModules?: string[] | null } | null)?.enabledModules,
+      {
+        automationsAccessible: (
+          user as { automationsAccessible?: boolean } | null
+        )?.automationsAccessible,
+      }
+    );
 
   useEffect(() => {
     if (isAdmin && businessId) {
@@ -904,7 +924,18 @@ export default function BusinessDashboardLayout() {
                   : "min-h-[calc(100vh-64px)] w-full max-w-none"
               }
             >
-              <Outlet />
+              {moduleUpgrade ? (
+                <UpgradeRequired
+                  businessId={businessId || user?.businessId || ""}
+                  variant={
+                    location.pathname.includes("/dashboard/website")
+                      ? "website"
+                      : "default"
+                  }
+                />
+              ) : (
+                <Outlet />
+              )}
             </div>
           </main>
           <ToastContainer

@@ -135,18 +135,22 @@
   align-items: center;
   justify-content: center;
   padding: 40px 16px;
-  background: #f4f1fa;
-  color: #21172f;
+  background: transparent;
+  color: #111932;
 }
 
 .acct-upgrade-card {
   max-width: 520px;
   width: 100%;
   background: #fff;
-  box-shadow: 0 14px 36px rgba(50, 16, 100, 0.08);
+  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04), 0 16px 40px rgba(37, 65, 245, 0.06);
   padding: 40px 32px;
   text-align: center;
-  border: 1px solid rgba(91, 33, 182, 0.14);
+  border: 1px solid #e0e6f0;
+  border-radius: 16px;
+  background:
+    radial-gradient(16rem 8rem at 100% 0%, rgba(101, 229, 181, 0.2), transparent 70%),
+    #fff;
 }
 
 .acct-upgrade-mark {
@@ -155,7 +159,8 @@
   margin: 0 auto 16px;
   display: grid;
   place-items: center;
-  background: #5b21b6;
+  border-radius: 12px;
+  background: #2541f5;
   color: #fff;
   font-weight: 800;
 }
@@ -187,14 +192,16 @@
 }
 
 .acct-upgrade-primary {
-  background: #5b21b6;
+  background: #2541f5;
   color: #fff;
+  border-radius: 6px;
 }
 
 .acct-upgrade-secondary {
   background: #fff;
-  color: #21172f;
-  border: 1px solid rgba(91, 33, 182, 0.28);
+  color: #111932;
+  border: 1px solid #e0e6f0;
+  border-radius: 6px;
 }
 
 .acct-app .react-tel-input .form-control,

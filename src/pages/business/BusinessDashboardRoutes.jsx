@@ -21,8 +21,6 @@ import {
   isWhatsAppApiPortalUser,
   whatsappApiPortalHome,
 } from "../../utils/whatsappApiPortal";
-import UpgradeRequired from "../../components/UpgradeRequired";
-
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
 const MySaasSystems = lazy(() => import("./dashboardPages/saas/MySaasSystems"));
@@ -363,7 +361,8 @@ function ModuleAccessGuard({
       return <Navigate to={`/business/${businessId}/dashboard/saas`} replace />;
     }
     if (planLimited || automationsAccessible === false) {
-      return <UpgradeRequired businessId={businessId} />;
+      // The workspace shell renders the upgrade card so the sidebar stays available.
+      return children;
     }
     const fallback = getDefaultDashboardPath(businessId, limited);
     return <Navigate to={fallback} replace />;

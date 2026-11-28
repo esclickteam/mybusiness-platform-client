@@ -201,7 +201,7 @@ function NavItem({
           text-[13.5px] font-medium tracking-[-0.01em]
           ${
             isActive
-              ? "bg-[#EEF2FF] text-[#2541F5] shadow-[inset_3px_0_0_#2541F5] rtl:shadow-[inset_-3px_0_0_#2541F5]"
+              ? "bg-[#E7FBF3] text-[#111932]"
               : "text-[#111932] hover:bg-[#F5F7FB]"
           }
         `

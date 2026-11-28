@@ -336,3 +336,74 @@
   margin: 0 0 8px;
   font-size: 1.25rem;
 }
+
+/* Workspace only. Published customer sites and the public marketing site stay outside .bx-shell. */
+.bx-shell .biz-interior,
+.bx-shell .pub-profile,
+.bx-shell .studio-topbar,
+.bx-shell .studio-sidebar,
+.bx-shell .studio-rail,
+.bx-shell .advisor-studio,
+.bx-shell .tpl-picker {
+  --biz-ink: #111932;
+  --biz-brand: #2541f5;
+  --biz-canvas: transparent;
+  color: #111932;
+  background: transparent !important;
+}
+
+.bx-shell .biz-interior,
+.bx-shell .biz-interior *,
+.bx-shell .pub-profile,
+.bx-shell .pub-profile *,
+.bx-shell .advisor-studio,
+.bx-shell .advisor-studio *,
+.bx-shell .studio-topbar,
+.bx-shell .studio-topbar *,
+.bx-shell .studio-sidebar,
+.bx-shell .studio-sidebar button,
+.bx-shell .studio-sidebar input,
+.bx-shell .studio-sidebar a,
+.bx-shell .studio-rail,
+.bx-shell .studio-rail *,
+.bx-shell .tpl-picker button,
+.bx-shell .tpl-picker a,
+.bx-shell .tpl-picker input,
+.bx-shell .tpl-picker article {
+  border-radius: 8px !important;
+}
+
+.bx-shell .biz-interior button[class*="from-violet"],
+.bx-shell .biz-interior a[class*="from-violet"],
+.bx-shell .pub-profile button[class*="from-violet"],
+.bx-shell .pub-profile a[class*="from-violet"],
+.bx-shell .studio-sidebar button[class*="from-violet"],
+.bx-shell .studio-rail button[class*="from-violet"],
+.bx-shell .studio-rail div[class*="from-violet"],
+.bx-shell .biz-interior button.bg-sky-100,
+.bx-shell .biz-interior button.bg-amber-100 {
+  background: #2541f5 !important;
+  color: #fff !important;
+  border-color: transparent !important;
+}
+
+.bx-shell .advisor-bubble {
+  border-color: #e0e6f0;
+  background: #fff;
+  color: #111932;
+}
+
+.bx-shell .advisor-bubble--user {
+  border-inline-start: 4px solid #2541f5;
+  background: #f5f7fb;
+}
+
+.bx-shell .advisor-bubble--ai {
+  border-inline-start: 4px solid #65e5b5;
+}
+
+.bx-shell .studio-topbar,
+.bx-shell .studio-sidebar,
+.bx-shell .studio-rail {
+  border-color: #e0e6f0 !important;
+}

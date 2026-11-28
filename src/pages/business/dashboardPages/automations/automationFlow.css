@@ -959,7 +959,9 @@
   position: relative;
   flex: 1;
   min-height: 560px;
-  background: #f8fafc;
+  background-color: #f5f7fb;
+  background-image: radial-gradient(#d5dced 1px, transparent 1px);
+  background-size: 18px 18px;
 }
 
 .af-canvas-wrap .react-flow__attribution {

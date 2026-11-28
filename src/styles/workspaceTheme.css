@@ -24,6 +24,16 @@
   color: var(--ws-ink);
 }
 
+.bx-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  height: 3px;
+  pointer-events: none;
+  background: linear-gradient(90deg, #2541f5 0%, #65e5b5 62%, #ff299c 100%);
+}
+
 .bx-shell .crm-primary-btn,
 .bx-shell .login-button,
 .bx-shell button.bx-btn.is-on {

@@ -6710,7 +6710,10 @@
       "title": "This module is not included in your plan",
       "text": "Your current plan includes website and domain management only.\nTo get CRM, leads, appointments, collaborations, automations, and business AI — upgrade to the business plan.",
       "upgradeCta": "Upgrade to the business plan",
-      "backToWebsite": "Back to website management"
+      "backToWebsite": "Back to website management",
+      "backToDashboard": "Back to the dashboard",
+      "websiteTitle": "Website management is not in this plan",
+      "websiteText": "This account includes the workspace without the website builder.\nYou can upgrade to open it. The rest of the system stays available."
     },
     "markets": {
       "israel": "Israel (USD)",

@@ -6507,7 +6507,10 @@
       "title": "Este módulo não está incluído no seu plano",
       "text": "O seu plano atual inclui apenas o site e o domínio.\nPara CRM, leads, marcações, colaborações, automações e IA — atualize para o plano Business.",
       "upgradeCta": "Atualizar para o plano Business",
-      "backToWebsite": "Voltar à gestão do site"
+      "backToWebsite": "Voltar à gestão do site",
+      "backToDashboard": "Voltar ao painel",
+      "websiteTitle": "A gestão de sites não está neste plano",
+      "websiteText": "Esta conta inclui o espaço de trabalho sem o construtor de sites.\nVocê pode atualizar o plano para abri-lo. O restante do sistema continua disponível."
     },
     "markets": {
       "israel": "Israel (USD)",
