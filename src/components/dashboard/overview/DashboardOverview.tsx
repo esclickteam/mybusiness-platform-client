@@ -84,7 +84,7 @@ type AccessUser = {
 };
 
 const DATE_PRESETS: DatePreset[] = ["today", "week", "month", "year", "custom"];
-const FUNNEL_COLORS = ["#321064", "#2541F5", "#7437F5", "#3D63FF", "#8EA2FF", "#C4B5FD"];
+const FUNNEL_COLORS = ["#2541F5", "#65E5B5", "#FF299C", "#111932", "#6D84F7", "#9AADF8"];
 const PERFORMANCE_TABS: PerformanceMetric[] = [
   "views",
   "leads",
@@ -569,41 +569,29 @@ export default function DashboardOverview({
                 <p className="bx-note">{moduleReads.leads.message}</p>
               ) : null}
               {funnelTotal > 0 ? (
-                <>
-                  <div className="bx-funnel-bar" role="list">
-                    {funnel.map((stage, index) => (
+                <div className="bx-funnel-list" role="list">
+                  {funnel.map((stage, index) => {
+                    const width = Math.max(6, Math.round(((stage.count || 0) / funnelTotal) * 100));
+                    const color = FUNNEL_COLORS[index % FUNNEL_COLORS.length];
+                    return (
                       <button
                         key={stage.key}
                         type="button"
                         role="listitem"
-                        title={`${stage.label} ${formatNumber(stage.count)}`}
-                        style={{
-                          flexGrow: stage.count || 0,
-                          background: FUNNEL_COLORS[index % FUNNEL_COLORS.length],
-                        }}
-                        onClick={() =>
-                          navigate(`${basePath}/crm/leads?status=${encodeURIComponent(stage.key)}`)
-                        }
-                      />
-                    ))}
-                  </div>
-                  <div className="bx-funnel-legend">
-                    {funnel.map((stage, index) => (
-                      <button
-                        key={stage.key}
-                        type="button"
-                        className="bx-chip"
+                        className="bx-funnel-row"
                         onClick={() =>
                           navigate(`${basePath}/crm/leads?status=${encodeURIComponent(stage.key)}`)
                         }
                       >
-                        <i style={{ background: FUNNEL_COLORS[index % FUNNEL_COLORS.length] }} />
-                        {stage.label}
+                        <span>{stage.label}</span>
+                        <span className="bx-meter" aria-hidden="true">
+                          <i style={{ width: `${width}%`, background: color }} />
+                        </span>
                         <b>{formatNumber(stage.count)}</b>
                       </button>
-                    ))}
-                  </div>
-                </>
+                    );
+                  })}
+                </div>
               ) : moduleReads.leads.status === "ready" ? (
                 <p className="bx-note">{t("overview.noLeadsText")}</p>
               ) : null}
@@ -657,7 +645,9 @@ export default function DashboardOverview({
                             {entered ? <span className="bx-note">{entered}</span> : null}
                           </span>
                           {source ? <span className="bx-note">{source}</span> : null}
-                          <span className="bx-status">{formatLeadStatus(lead.status)}</span>
+                          <span className={`bx-status is-${String(lead.status || "new").toLowerCase().replace(/[^a-z]/g, "")}`}>
+                            {formatLeadStatus(lead.status)}
+                          </span>
                         </button>
                       );
                     })}

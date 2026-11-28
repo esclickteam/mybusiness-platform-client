@@ -20,46 +20,6 @@
   --ws-radius: 6px;
   --ws-shadow: 0 1px 2px rgba(17, 25, 50, 0.04), 0 8px 24px rgba(17, 25, 50, 0.04);
 
-  --color-violet-50: #f5f7fb;
-  --color-violet-100: #eef2ff;
-  --color-violet-200: #d9e2fb;
-  --color-violet-300: #b7c6f8;
-  --color-violet-400: #6d84f7;
-  --color-violet-500: #2541f5;
-  --color-violet-600: #2541f5;
-  --color-violet-700: #1c32c4;
-  --color-violet-800: #15268f;
-  --color-violet-900: #111932;
-  --color-violet-950: #0b1024;
-
-  --color-purple-50: #f5f7fb;
-  --color-purple-100: #eef2ff;
-  --color-purple-200: #d9e2fb;
-  --color-purple-300: #b7c6f8;
-  --color-purple-400: #6d84f7;
-  --color-purple-500: #2541f5;
-  --color-purple-600: #2541f5;
-  --color-purple-700: #1c32c4;
-  --color-purple-800: #15268f;
-  --color-purple-900: #111932;
-  --color-purple-950: #0b1024;
-
-  --color-indigo-50: #f5f7fb;
-  --color-indigo-100: #eef2ff;
-  --color-indigo-200: #d9e2fb;
-  --color-indigo-300: #b7c6f8;
-  --color-indigo-400: #6d84f7;
-  --color-indigo-500: #2541f5;
-  --color-indigo-600: #2541f5;
-  --color-indigo-700: #1c32c4;
-  --color-indigo-800: #15268f;
-  --color-indigo-900: #111932;
-  --color-indigo-950: #0b1024;
-
-  --color-fuchsia-400: #ff5cb5;
-  --color-fuchsia-500: #ff299c;
-  --color-fuchsia-600: #e01486;
-
   background: var(--ws-canvas);
   color: var(--ws-ink);
 }

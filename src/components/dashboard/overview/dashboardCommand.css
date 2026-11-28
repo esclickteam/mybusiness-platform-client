@@ -249,7 +249,7 @@ button.bx-kpi {
 }
 
 .bx-chart {
-  height: 220px;
+  height: 280px;
   margin-top: 0.7rem;
 }
 
@@ -269,41 +269,46 @@ button.bx-kpi {
 }
 
 .bx-funnel-block {
-  margin-top: 0.85rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e0e6f0;
 }
 
-.bx-funnel-bar {
+.bx-funnel-list {
   display: flex;
-  height: 14px;
-  margin-top: 0.65rem;
-  background: #efeaf8;
-  overflow: hidden;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
 }
 
-.bx-funnel-bar button {
-  min-width: 8px;
-  height: 100%;
+.bx-funnel-row {
+  display: grid;
+  grid-template-columns: minmax(88px, 0.7fr) minmax(0, 1.4fr) auto;
+  gap: 0.65rem;
+  align-items: center;
+  width: 100%;
   border: 0;
+  background: transparent;
   padding: 0;
+  color: #111932;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: start;
   cursor: pointer;
 }
 
-.bx-funnel-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-  margin-top: 0.65rem;
-}
-
-.bx-funnel-legend .bx-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.bx-funnel-legend i {
-  width: 8px;
+.bx-meter {
+  display: block;
   height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef2ff;
+}
+
+.bx-meter i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
 }
 
 .bx-list {
@@ -354,10 +359,13 @@ div.bx-lead {
   font-weight: 800;
 }
 
-.bx-status.is-on {
-  background: #2541F5;
-  color: #fff;
-}
+.bx-status.is-on,
+.bx-status.is-new { background: #eef2ff; color: #2541f5; }
+.bx-status.is-contacted { background: #f5f7fb; color: #111932; }
+.bx-status.is-interested { background: #e7fbf3; color: #0f766e; }
+.bx-status.is-converted { background: #d4f7e5; color: #065f46; }
+.bx-status.is-lost { background: #fff1f2; color: #9f1239; }
+.bx-status.is-old { background: #f1f5f9; color: #64748b; }
 
 .bx-attention {
   display: flex;
@@ -441,7 +449,8 @@ div.bx-lead {
     padding: 0.9rem;
   }
 
-  .bx-lead {
+  .bx-lead,
+  .bx-funnel-row {
     grid-template-columns: minmax(0, 1fr);
   }
 
