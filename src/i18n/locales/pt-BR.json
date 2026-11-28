@@ -5610,6 +5610,8 @@
         "faqs": "FAQs"
       },
       "tabListAria": "Guias de página de negócios",
+      "previewDesktop": "Computador",
+      "previewMobile": "Celular",
       "coverAlt": "Foto da capa de {{name}}",
       "logoAlt": "Logotipo de {{name}}",
       "mainImageAlt": "Imagem principal {{index}}",

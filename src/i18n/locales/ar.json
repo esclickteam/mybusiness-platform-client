@@ -5610,6 +5610,8 @@
         "faqs": "الأسئلة الشائعة"
       },
       "tabListAria": "علامات تبويب صفحة العمل",
+      "previewDesktop": "حاسوب",
+      "previewMobile": "جوال",
       "coverAlt": "صورة الغلاف {{name}}",
       "logoAlt": "شعار {{name}}",
       "mainImageAlt": "الصورة الرئيسية {{index}}",

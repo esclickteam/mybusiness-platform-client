@@ -12,8 +12,8 @@ import "react-phone-input-2/lib/style.css";
 import ImageLoader from "@components/ImageLoader";
 import CityAutocomplete from "@components/CityAutocomplete";
 import CategoryAutocomplete from "../../../../components/CategoryAutocomplete";
-import ReviewCard from "@/components/ReviewCard";
-import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
+import PublicProfileCard from "@/components/shared/PublicProfileCard";
+import "@/components/shared/publicProfile.css";
 import { REVIEW_RATING_PARAMETER_DEFINITIONS } from "@/utils/reviewDisplay";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
 import "../../../interiorDesign.css";
@@ -298,7 +298,9 @@ export default function Build() {
     question: "",
     answer: "",
   });
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop");
+  const [editorPane, setEditorPane] = useState<"edit" | "preview">("edit");
+  const [saveNote, setSaveNote] = useState("");
 
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -544,6 +546,7 @@ export default function Build() {
   ]);
 
   const handleInputChange = ({ target: { name, value } }: InputChangeEvent) => {
+    setSaveNote("");
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
 
@@ -889,6 +892,7 @@ export default function Build() {
         }));
 
         setShowViewProfile(true);
+        setSaveNote(t("buildPage.alerts.saved"));
         window.dispatchEvent(new Event("business-profile-updated"));
         void bizAlert(t("buildPage.alerts.saved"));
       } else {
@@ -978,7 +982,7 @@ export default function Build() {
 
   const renderEditTabs = () => {
     return (
-      <div className="mb-6 flex flex-wrap items-center justify-center gap-3 border-b border-violet-100 pb-5 text-center">
+      <div className="biz-public__tabs" role="tablist">
         {TABS.map((tab) => {
           const active = tab === currentTab;
 
@@ -986,13 +990,10 @@ export default function Build() {
             <button
               key={tab}
               type="button"
+              role="tab"
+              aria-selected={active}
               onClick={() => setCurrentTab(tab)}
-              className={[
-                "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
-                active
-                  ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
-                  : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
-              ].join(" ")}
+              className={active ? "biz-public__tab is-on" : "biz-public__tab"}
             >
               {t(TAB_LABEL_KEYS[tab])}
             </button>
@@ -1661,205 +1662,11 @@ export default function Build() {
     );
   };
 
-  const renderPreviewContent = () => {
-    if (currentTab === "Main") {
-      return (
-        <div className="mx-auto max-w-4xl space-y-8 text-center">
-          {businessDetails.mainImages.length ? (
-            <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {businessDetails.mainImages.slice(0, 6).map((url, index) => (
-                <ImageLoader
-                  key={`${url}-${index}`}
-                  src={url}
-                  alt={t("buildPage.gallery.mainImageAlt", { index: index + 1 })}
-                  className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
-                />
-              ))}
-            </div>
-          ) : (
-            <PreviewEmptyState
-              icon="🖼️"
-              title={t("buildPage.previewEmpty.noMainImagesTitle")}
-              text={t("buildPage.previewEmpty.noMainImagesText")}
-            />
-          )}
-
-          <div className="mx-auto max-w-4xl text-start">
-            <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
-              <h2 className="text-xl font-black text-slate-800">
-                {t("buildPage.reviews.recentTitle")}
-              </h2>
-            </div>
-
-            {sortedReviews.length ? (
-              <div className="grid justify-center gap-4 lg:grid-cols-2">
-                {sortedReviews.slice(0, 2).map((review, index) => (
-                  <ReviewCard key={review._id || review.id || index} review={review} />
-                ))}
-              </div>
-            ) : (
-              <PreviewEmptyState
-                icon="⭐"
-                title={t("buildPage.reviews.emptyTitle")}
-                text={t("buildPage.reviews.emptyText")}
-              />
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    if (currentTab === "Gallery") {
-      return (
-        <div className="mx-auto max-w-4xl text-center">
-          {businessDetails.gallery.length ? (
-            <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {businessDetails.gallery.map((url, index) => (
-                <ImageLoader
-                  key={`${url}-${index}`}
-                  src={url}
-                  alt={t("buildPage.gallery.galleryImageAlt", { index: index + 1 })}
-                  className="h-52 w-full max-w-xs rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
-                />
-              ))}
-            </div>
-          ) : (
-            <PreviewEmptyState
-              icon="📸"
-              title={t("buildPage.previewEmpty.noGalleryTitle")}
-              text={t("buildPage.previewEmpty.noGalleryText")}
-            />
-          )}
-        </div>
-      );
-    }
-
-    if (currentTab === "Reviews") {
-      return (
-        <div className="mx-auto max-w-5xl text-start">
-          <div className="mb-5 text-center sm:text-start">
-            <h2 className="text-2xl font-black text-slate-800">{t("buildPage.reviews.title")}</h2>
-            <p className="mt-1 text-sm text-slate-500">{t("buildPage.reviews.countLabel", { count: reviewsCount })}</p>
-          </div>
-
-          {sortedReviews.length ? (
-            <div className="grid justify-center gap-4 lg:grid-cols-2">
-              {sortedReviews.map((review, index) => {
-                const reviewId = String(review._id || review.id || "");
-
-                return (
-                  <ReviewCard
-                    key={review._id || review.id || index}
-                    review={review}
-                    reviewDomId={reviewId ? `review-${reviewId}` : undefined}
-                    highlighted={
-                      Boolean(reviewId) && reviewId === highlightedReviewId
-                    }
-                  />
-                );
-              })}
-            </div>
-          ) : (
-            <PreviewEmptyState
-              icon="⭐"
-              title={t("buildPage.reviews.emptyTitle")}
-              text={t("buildPage.reviews.emptyText")}
-            />
-          )}
-        </div>
-      );
-    }
-
-    if (currentTab === "Website") {
-      return (
-        <div className="mx-auto max-w-3xl text-center">
-          {businessWebsiteUrl ? (
-            <div className="rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-8 shadow-[0_16px_44px_rgba(79,70,229,0.10)]">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
-                🌐
-              </div>
-
-              <h3 className="mt-5 text-2xl font-black text-slate-800">
-                {t("buildPage.website.title")}
-              </h3>
-
-              <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
-                {t("buildPage.website.previewSubtitle")}
-              </p>
-
-              <a
-                href={normalizedWebsiteUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-black shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
-              >
-                {t("buildPage.website.enterSite")}
-              </a>
-            </div>
-          ) : (
-            <PreviewEmptyState
-              icon="🌐"
-              title={t("buildPage.website.emptyTitle")}
-              text={t("buildPage.website.emptyText")}
-            />
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <div className="mx-auto max-w-3xl space-y-3 text-center">
-        {businessDetails.faqs.length ? (
-          businessDetails.faqs.slice(0, 5).map((faq, index) => {
-            const isOpen = openFaqIndex === index;
-
-            return (
-              <div
-                key={getFaqId(faq, index)}
-                className="overflow-hidden rounded-2xl border border-violet-100 bg-white/90 shadow-[0_10px_28px_rgba(79,70,229,0.08)]"
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-center text-sm font-black text-slate-800 hover:bg-violet-50"
-                >
-                  <span className="flex-1 text-center">
-                    {faq.question || t("buildPage.faqs.questionFallback")}
-                  </span>
-
-                  <span
-                    className={[
-                      "text-lg text-violet-600 transition",
-                      isOpen ? "rotate-180" : "",
-                    ].join(" ")}
-                  >
-                    ▾
-                  </span>
-                </button>
-
-                {isOpen && (
-                  <div className="border-t border-violet-100 px-5 py-4 text-center text-sm leading-7 text-slate-600">
-                    {faq.answer || t("buildPage.faqs.answerFallback")}
-                  </div>
-                )}
-              </div>
-            );
-          })
-        ) : (
-          <PreviewEmptyState
-            icon="❔"
-            title={t("buildPage.faqs.emptyPreviewTitle")}
-            text={t("buildPage.faqs.emptyPreviewText")}
-          />
-        )}
-      </div>
-    );
-  };
-
   return (
     <main
       dir={dir}
-      className="biz-interior min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
+      data-pane={editorPane}
+      className="biz-interior biz-build min-h-screen px-4 py-6 text-start sm:px-6"
     >
       <input
         type="file"
@@ -1868,7 +1675,6 @@ export default function Build() {
         className="hidden"
         onChange={handleLogoChange}
       />
-
       <input
         type="file"
         multiple
@@ -1877,7 +1683,6 @@ export default function Build() {
         className="hidden"
         onChange={handleMainImagesChange}
       />
-
       <input
         type="file"
         multiple
@@ -1887,156 +1692,68 @@ export default function Build() {
         onChange={handleGalleryChange}
       />
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-7 xl:flex-row">
-        <section
-          data-demo-target="business-page-editor"
-          className="order-1 w-full overflow-hidden border border-[rgba(91,33,182,0.16)] bg-white xl:w-[52%]"
-        >
-          <div className="relative overflow-hidden border-b border-violet-100 bg-gradient-to-br from-white via-violet-50 to-blue-50 px-6 py-8 sm:px-8">
-            <div className="absolute -left-20 -top-20 h-56 w-56 rounded-full bg-violet-300/35 blur-3xl" />
-            <div className="absolute -bottom-28 right-10 h-72 w-72 rounded-full bg-blue-300/30 blur-3xl" />
-
-            <div className="relative">
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm">
-                  {t("buildPage.header.badgeEdit")}
-                </div>
-
-                <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-1.5 text-xs font-bold text-blue-700 shadow-sm">
-                  {t("buildPage.header.badgeLive")}
-                </div>
-              </div>
-
-              <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                {t("buildPage.header.title")}
-              </h1>
-
-              <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                {t("buildPage.header.subtitle")}
-              </p>
-            </div>
+      <div className="mx-auto max-w-[1200px]">
+        <header className="biz-build__head">
+          <div>
+            <h1>{t("buildPage.header.title")}</h1>
+            <p>{t("buildPage.header.subtitle")}</p>
           </div>
+          <div className="biz-build__actions">
+            {isSaving ? (
+              <span className="biz-build__note">{t("buildPage.actions.saving")}</span>
+            ) : saveNote ? (
+              <span className="biz-build__note">{saveNote}</span>
+            ) : null}
+            <button type="button" className="biz-build__save" onClick={handleSave} disabled={isSaving}>
+              {isSaving ? t("buildPage.actions.saving") : t("buildPage.actions.saveChanges")}
+            </button>
+            {businessDetails._id ? (
+              <button
+                type="button"
+                className="biz-build__view"
+                data-demo-target="business-page-view-public"
+                onClick={() => navigate(`/business/${businessDetails._id}`)}
+                disabled={isSaving}
+              >
+                {t("buildPage.actions.viewProfile")}
+              </button>
+            ) : null}
+          </div>
+        </header>
 
-          <div className="p-5 sm:p-8">
+        <div className="biz-build__switch">
+          <button type="button" className={editorPane === "edit" ? "is-on" : ""} onClick={() => setEditorPane("edit")}>
+            {t("businessProfile.view.editLink")}
+          </button>
+          <button type="button" className={editorPane === "preview" ? "is-on" : ""} onClick={() => setEditorPane("preview")}>
+            {t("businessProfile.mainSection.livePreview")}
+          </button>
+        </div>
+
+        <div className="biz-build__split">
+          <section data-demo-target="business-page-editor" className="biz-build__editor">
             {renderEditTabs()}
-
             {renderEditorContent()}
+          </section>
 
-            <div className="sticky bottom-4 z-10 mt-8 rounded-[1.5rem] border border-white/80 bg-white/90 p-3 shadow-[0_20px_60px_rgba(15,23,42,0.16)] backdrop-blur-xl">
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-black shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
-                >
-                  {isSaving ? t("buildPage.actions.saving") : t("buildPage.actions.saveChanges")}
-                </button>
-
-                {showViewProfile && businessDetails._id && (
-                  <button
-                    type="button"
-                    onClick={() => navigate(`/business/${businessDetails._id}`)}
-                    disabled={isSaving}
-                    data-demo-target="business-page-view-public"
-                    className="flex h-[56px] items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
-                  >
-                    {t("buildPage.actions.viewProfile")}
-                  </button>
-                )}
-              </div>
+          <aside data-demo-target="business-page-preview" className="biz-build__preview">
+            <div className="biz-build__devices">
+              <button type="button" className={previewDevice === "desktop" ? "is-on" : ""} onClick={() => setPreviewDevice("desktop")}>
+                {t("businessProfile.view.previewDesktop")}
+              </button>
+              <button type="button" className={previewDevice === "mobile" ? "is-on" : ""} onClick={() => setPreviewDevice("mobile")}>
+                {t("businessProfile.view.previewMobile")}
+              </button>
             </div>
-          </div>
-        </section>
-
-        <aside data-demo-target="business-page-preview" className="order-2 w-full xl:w-[48%]">
-          <div className="sticky top-4 overflow-hidden border border-[rgba(91,33,182,0.16)] bg-white text-start">
-            <div className="relative p-5 sm:p-7">
-              <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
-              <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
-
-              <div className="relative mb-5 flex items-center justify-between gap-3">
-                <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm">
-                  {t("buildPage.preview.badge")}
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => logoInputRef.current?.click()}
-                  className="inline-flex h-10 items-center justify-center rounded-full border border-violet-100 bg-white/80 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
-                >
-                  {t("buildPage.preview.editLogo")}
-                </button>
-              </div>
-
-              {coverImage ? (
-                <div className="relative overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
-                  <ImageLoader
-                    src={coverImage}
-                    alt={t("buildPage.preview.coverAlt")}
-                    className="h-64 w-full object-cover sm:h-80 lg:h-[360px]"
-                  />
-                </div>
-              ) : (
-                <div className="relative flex h-64 w-full items-center justify-center rounded-[2rem] border border-white/80 bg-gradient-to-br from-violet-100 via-white to-blue-100 text-center shadow-[0_24px_70px_rgba(30,41,59,0.10)] sm:h-80 lg:h-[360px]">
-                  <div>
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
-                      ✨
-                    </div>
-
-                    <p className="mt-4 text-lg font-black text-slate-800">
-                      {t("buildPage.preview.addCover")}
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <div className="border-t border-[rgba(91,33,182,0.12)] bg-white p-5 text-start sm:p-6">
-                <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
-                  {logoPreview ? (
-                    <ImageLoader
-                      src={logoPreview}
-                      alt={t("buildPage.preview.logoAlt")}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <span className="text-4xl font-black text-violet-600">
-                      {businessDetails.businessName?.charAt(0) || "B"}
-                    </span>
-                  )}
-                </div>
-
-                <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-800">
-                  {businessDetails.businessName || t("buildPage.preview.businessNameFallback")}
-                </h2>
-
-                <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
-                  {isMeaningfulCategory(businessDetails.category) && (
-                    <span className="rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
-                      {businessDetails.category}
-                    </span>
-                  )}
-
-                  {businessDetails.address.city && (
-                    <span className="rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700">
-                      {businessDetails.address.city}
-                    </span>
-                  )}
-
-                  {reviewsCount > 0 && (
-                    <span className="rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                      ★ {avg.toFixed(1)} ({t("buildPage.preview.reviewsCount", { count: reviewsCount })})
-                    </span>
-                  )}
-                </div>
-
-                {businessDetails.description && (
-                  <p className="mx-auto mt-5 max-w-3xl text-center text-base leading-8 text-slate-600">
-                    {businessDetails.description}
-                  </p>
-                )}
-
-                <ProfileContactBlock
+            <div className={previewDevice === "mobile" ? "biz-build__phone" : undefined}>
+              <div className="biz-public">
+                <PublicProfileCard
+                  businessName={businessDetails.businessName}
+                  description={businessDetails.description}
+                  logoUrl={logoPreview || ""}
+                  coverUrl={coverImage}
+                  category={isMeaningfulCategory(businessDetails.category) ? businessDetails.category : ""}
+                  city={businessDetails.address.city || ""}
                   phone={businessDetails.phone}
                   email={businessDetails.email}
                   formattedPhone={previewPhone}
@@ -2044,79 +1761,24 @@ export default function Build() {
                   whatsappUrl={businessWhatsappUrl}
                   normalizedWebsiteUrl={normalizedWebsiteUrl}
                   normalizedWhatsappUrl={normalizedWhatsappUrl}
-                  showEmptyPlaceholders
+                  rating={reviewsCount > 0 ? avg : 0}
+                  reviewsCount={reviewsCount}
+                  mainImages={businessDetails.mainImages}
+                  gallery={businessDetails.gallery}
+                  reviews={sortedReviews}
+                  faqs={businessDetails.faqs}
+                  tab={currentTab}
+                  onTabChange={setCurrentTab}
+                  highlightedReviewId={highlightedReviewId}
                 />
-
-                {!businessWebsiteUrl && !businessWhatsappUrl && (
-                  <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-violet-200 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700">
-                    {t("buildPage.preview.noLinksYet")}
-                  </div>
-                )}
-
-                <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
-                  <div
-                    className="flex flex-wrap items-center justify-center gap-3 text-center"
-                    role="tablist"
-                    aria-label={t("buildPage.preview.tabsAria")}
-                  >
-                    {TABS.map((tab) => {
-                      const active = tab === currentTab;
-
-                      return (
-                        <button
-                          key={tab}
-                          type="button"
-                          onClick={() => setCurrentTab(tab)}
-                          role="tab"
-                          aria-selected={active}
-                          className={[
-                            "flex min-w-[118px] cursor-pointer items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
-                            active
-                              ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
-                              : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
-                          ].join(" ")}
-                        >
-                          {t(TAB_LABEL_KEYS[tab])}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="mt-6 border border-[rgba(91,33,182,0.12)] bg-[#F5F7FB] p-4 text-start sm:p-6">
-                  {renderPreviewContent()}
-                </div>
               </div>
             </div>
-          </div>
-        </aside>
+          </aside>
+        </div>
       </div>
     </main>
   );
-}
 
-function PreviewEmptyState({
-  icon,
-  title,
-  text,
-}: {
-  icon: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="mx-auto max-w-xl rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/70 px-6 py-10 text-center shadow-[0_16px_44px_rgba(79,70,229,0.08)]">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-        {icon}
-      </div>
-
-      <h3 className="text-lg font-black text-slate-800">{title}</h3>
-
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        {text}
-      </p>
-    </div>
-  );
 }
 
 function EditorEmptyState({

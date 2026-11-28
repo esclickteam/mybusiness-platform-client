@@ -5610,6 +5610,8 @@
         "faqs": "Preguntas frecuentes"
       },
       "tabListAria": "Pestañas de página de negocios",
+      "previewDesktop": "Escritorio",
+      "previewMobile": "Móvil",
       "coverAlt": "Foto de portada del {{name}}",
       "logoAlt": "Logotipo del {{name}}",
       "mainImageAlt": "Imagen principal {{index}}",

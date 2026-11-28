@@ -5813,6 +5813,8 @@
         "faqs": "שאלות נפוצות"
       },
       "tabListAria": "טאבים של עמוד העסק",
+      "previewDesktop": "מחשב",
+      "previewMobile": "מובייל",
       "coverAlt": "תמונת קאבר של {{name}}",
       "logoAlt": "לוגו {{name}}",
       "mainImageAlt": "תמונה ראשית {{index}}",

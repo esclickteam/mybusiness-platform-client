@@ -5813,6 +5813,8 @@
         "faqs": "FAQs"
       },
       "tabListAria": "Business page tabs",
+      "previewDesktop": "Desktop",
+      "previewMobile": "Mobile",
       "coverAlt": "Cover photo of {{name}}",
       "logoAlt": "Logo of {{name}}",
       "mainImageAlt": "Main image {{index}}",

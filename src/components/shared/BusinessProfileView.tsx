@@ -5,7 +5,6 @@ import React, {
   Suspense,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 import { createPortal } from "react-dom";
@@ -17,12 +16,10 @@ import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
-import Icon from "@/components/ui/Icon";
-import ReviewCard from "../../components/ReviewCard";
-import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
+import PublicProfileCard from "@/components/shared/PublicProfileCard";
 import { lockPageScroll } from "@/utils/pageScrollLock";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
-import "../../pages/interiorDesign.css";
+import "./publicProfile.css";
 
 const ReviewForm = lazy(
   () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
@@ -105,13 +102,6 @@ type SocketLike = {
   _joinedRooms?: Set<string>;
 };
 
-type EmptyStateProps = {
-  title: string;
-  text: string;
-  icon?: string;
-  children?: React.ReactNode;
-};
-
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
 type ProfileTab = (typeof TABS)[number];
@@ -132,25 +122,6 @@ const TAB_KEYS: Record<ProfileTab, string> = {
   Website: "website",
   FAQs: "faqs",
 };
-
-function useOnScreen(ref: React.RefObject<HTMLElement | null>) {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    if (!ref.current) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.1 }
-    );
-
-    observer.observe(ref.current);
-
-    return () => observer.disconnect();
-  }, [ref]);
-
-  return isVisible;
-}
 
 function getBusinessWebsiteUrl(data?: BusinessData) {
   if (!data) return "";
@@ -273,13 +244,6 @@ export default function BusinessProfileView() {
     };
   }, [showReviewModal]);
 
-  const galleryRef = useRef<HTMLDivElement | null>(null);
-  const reviewsRef = useRef<HTMLDivElement | null>(null);
-
-  const galleryVisible = useOnScreen(galleryRef);
-  const reviewsVisible = useOnScreen(reviewsRef);
-
-  const [galleryLoaded, setGalleryLoaded] = useState(false);
   const [reviewsLoaded, setReviewsLoaded] = useState(false);
 
   const { data, isLoading, error, refetch } = useQuery<BusinessData>({
@@ -411,15 +375,6 @@ export default function BusinessProfileView() {
   }, [socket, bizId, queryClient]);
 
   useEffect(() => {
-    if (galleryVisible) setGalleryLoaded(true);
-  }, [galleryVisible]);
-
-  useEffect(() => {
-    if (reviewsVisible) setReviewsLoaded(true);
-  }, [reviewsVisible]);
-
-  useEffect(() => {
-    if (currentTab === "Gallery") setGalleryLoaded(true);
     if (currentTab === "Reviews") setReviewsLoaded(true);
   }, [currentTab]);
 
@@ -597,479 +552,81 @@ export default function BusinessProfileView() {
   const normalizedWhatsappUrl = normalizeWhatsappUrl(businessWhatsappUrl);
   const formattedPhone = formatPhone(phone);
 
-  const renderTabContent = () => {
-    if (currentTab === "Main") {
-      return (
-        <div className="mx-auto max-w-5xl space-y-8">
-          {mainImages.length ? (
-            <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {mainImages.slice(0, 6).map((url, index) => (
-                <img
-                  key={`${url}-${index}`}
-                  src={url}
-                  alt={t("businessProfile.view.mainImageAlt", { index: index + 1 })}
-                  loading="lazy"
-                  className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
-                />
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              title={t("businessProfile.view.empty.mainImagesTitle")}
-              text={t("businessProfile.view.empty.mainImagesText")}
-              icon="🖼️"
-            />
-          )}
-
-          <div className="mx-auto max-w-4xl">
-            <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
-              <h2 className="text-xl font-black text-slate-800">
-                {t("businessProfile.view.recentReviews")}
-              </h2>
-
-              <button
-                type="button"
-                onClick={() => handleTabChange("Reviews")}
-                className="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700 transition hover:bg-violet-100"
-              >
-                {t("businessProfile.view.viewAllReviews")}
-              </button>
-            </div>
-
-            {sortedReviews.length ? (
-              <div className="grid justify-center gap-4 lg:grid-cols-2">
-                {sortedReviews.slice(0, 2).map((review, index) => (
-                  <ReviewCard key={review._id || index} review={review} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState
-                title={t("businessProfile.view.empty.reviewsTitle")}
-                text={t("businessProfile.view.empty.reviewsText")}
-                icon="⭐"
-              />
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    if (currentTab === "Gallery") {
-      return (
-        <div ref={galleryRef} className="mx-auto max-w-5xl">
-          {galleryLoaded ? (
-            gallery.length ? (
-              <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {gallery.map((url, index) => (
-                  <img
-                    key={`${url}-${index}`}
-                    src={url}
-                    alt={t("businessProfile.view.galleryImageAlt", {
-                      index: index + 1,
-                    })}
-                    loading="lazy"
-                    className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
-                  />
-                ))}
-              </div>
-            ) : (
-              <EmptyState
-                title={t("businessProfile.view.empty.galleryTitle")}
-                text={t("businessProfile.view.empty.galleryText")}
-                icon="🖼️"
-              />
-            )
-          ) : (
-            <div className="flex min-h-[30vh] items-center justify-center py-10">
-              <BizuplyLoader
-                size="lg"
-                label={t("businessProfile.view.loadingGallery")}
-              />
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    if (currentTab === "Reviews") {
-      return (
-        <div ref={reviewsRef} className="mx-auto max-w-5xl">
-          {reviewsLoaded ? (
-            <div className="space-y-5">
-              <div className="flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
-                <div>
-                  <h2 className="text-2xl font-black text-slate-800">
-                    {t("businessProfile.view.customerReviews")}
-                  </h2>
-
-                  <p className="mt-1 text-sm text-slate-500">
-                    {t("businessProfile.view.reviewsCount", {
-                      count: reviewsCount,
-                    })}
-                  </p>
-                </div>
-
-                {!isOwner && (
-                  <button
-                    type="button"
-                    className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-black !text-black shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
-                    onClick={() => setShowReviewModal(true)}
-                  >
-                    {t("businessProfile.view.addReview")}
-                  </button>
-                )}
-              </div>
-
-              {showReviewModal &&
-                createPortal(
-                  <div
-                    className="fixed inset-0 z-[10050] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/40 p-4 backdrop-blur-sm sm:p-6"
-                    onClick={() => setShowReviewModal(false)}
-                    role="presentation"
-                  >
-                    <div
-                      className="relative my-auto flex h-[min(920px,calc(100dvh-2rem))] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl"
-                      onClick={(event) => event.stopPropagation()}
-                      role="dialog"
-                      aria-modal="true"
-                      aria-labelledby="review-form-title"
-                    >
-                      <button
-                        type="button"
-                        aria-label={t("businessProfile.view.closeReviewForm")}
-                        className="absolute left-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/95 text-xl font-black text-slate-500 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100 hover:text-slate-800"
-                        onClick={() => setShowReviewModal(false)}
-                      >
-                        ×
-                      </button>
-
-                      <Suspense
-                        fallback={
-                          <div className="flex flex-1 items-center justify-center p-6">
-                            <BizuplyLoader
-                              size="lg"
-                              label={t("businessProfile.view.loadingReviewForm")}
-                            />
-                          </div>
-                        }
-                      >
-                        <ReviewForm
-                          businessId={bizId}
-                          socket={socket as any}
-                          layout="modal"
-                          onSuccess={async () => {
-                            setShowReviewModal(false);
-                            await Promise.all([refetch(), refetchReviews()]);
-                          }}
-                        />
-                      </Suspense>
-                    </div>
-                  </div>,
-                  document.body
-                )}
-
-              {sortedReviews.length ? (
-                <div className="grid justify-center gap-4 lg:grid-cols-2">
-                  {sortedReviews.map((review, index) => (
-                    <ReviewCard
-                      key={review._id || index}
-                      review={review}
-                      reviewDomId={
-                        review._id ? `review-${review._id}` : undefined
-                      }
-                      highlighted={
-                        Boolean(review._id) &&
-                        String(review._id) === highlightedReviewId
-                      }
-                    />
-                  ))}
-                </div>
-              ) : (
-                <EmptyState
-                  title={t("businessProfile.view.empty.reviewsTitle")}
-                  text={t("businessProfile.view.empty.reviewsText")}
-                  icon="⭐"
-                >
-                  {!isOwner && (
-                    <button
-                      type="button"
-                      onClick={() => setShowReviewModal(true)}
-                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black !text-black shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
-                    >
-                      {t("businessProfile.view.writeFirstReview")}
-                    </button>
-                  )}
-                </EmptyState>
-              )}
-            </div>
-          ) : (
-            <div className="flex min-h-[30vh] items-center justify-center py-10">
-              <BizuplyLoader
-                size="lg"
-                label={t("businessProfile.view.loadingReviews")}
-              />
-            </div>
-          )}
-        </div>
-      );
-    }
-
-    if (currentTab === "Website") {
-      return (
-        <div className="mx-auto max-w-3xl">
-          {businessWebsiteUrl || businessWhatsappUrl ? (
-            <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-8 text-center shadow-sm">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
-                🌐
-              </div>
-
-              <h2 className="mt-5 text-3xl font-black text-slate-800">
-                {t("businessProfile.view.websiteTitle")}
-              </h2>
-
-              <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-600">
-                {t("businessProfile.view.websiteDesc")}
-              </p>
-
-              {businessWebsiteUrl && (
-                <a
-                  href={normalizedWebsiteUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  dir="ltr"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-black shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
-                >
-                  {t("businessProfile.contact.websiteCta")}
-                </a>
-              )}
-
-              {businessWhatsappUrl && (
-                <a
-                  href={normalizedWhatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
-                >
-                  {t("businessProfile.contact.whatsappCta")}
-                </a>
-              )}
-            </div>
-          ) : (
-            <EmptyState
-              title={t("businessProfile.view.empty.websiteTitle")}
-              text={t("businessProfile.view.empty.websiteText")}
-              icon="🌐"
-            />
-          )}
-        </div>
-      );
-    }
-
-    return (
-      <div className="mx-auto max-w-3xl space-y-3">
-        {faqs.length ? (
-          faqs.map((faq, index) => {
-            const isOpen = openFaqIndex === index;
-
-            return (
-              <div
-                key={faq._id || index}
-                className="overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-[0_10px_28px_rgba(79,70,229,0.08)]"
-              >
-                <button
-                  type="button"
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-sm font-black text-slate-800 transition hover:bg-violet-50"
-                  onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                >
-                  <span>{faq.question}</span>
-
-                  <span
-                    className={[
-                      "text-lg text-violet-600 transition",
-                      isOpen ? "rotate-180" : "",
-                    ].join(" ")}
-                  >
-                    ▾
-                  </span>
-                </button>
-
-                {isOpen && (
-                  <div className="border-t border-violet-100 px-5 py-4 text-center text-sm leading-7 text-slate-600">
-                    {faq.answer}
-                  </div>
-                )}
-              </div>
-            );
-          })
-        ) : (
-          <EmptyState
-            title={t("businessProfile.view.empty.faqsTitle")}
-            text={t("businessProfile.view.empty.faqsText")}
-            icon="❔"
-          />
-        )}
-      </div>
-    );
-  };
+  const reviewButton = !isOwner ? (
+    <button type="button" className="biz-public__edit" style={{ position: "static" }} onClick={() => setShowReviewModal(true)}>
+      {t("businessProfile.view.addReview")}
+    </button>
+  ) : null;
 
   return (
-    <main
-      dir={dir}
-      className="pub-profile min-h-screen px-4 py-6 text-start sm:px-6 lg:px-8"
-    >
-      <section className="mx-auto max-w-7xl">
-        <div className="relative overflow-visible border border-[rgba(91,33,182,0.16)] bg-white">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
-          <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
-
-          {isOwner && (
-            <Link
-              to={`/business/${bizId}/dashboard/edit`}
-              className="absolute left-5 top-5 z-20 inline-flex h-10 items-center justify-center rounded-full border border-white/80 bg-white/85 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
+    <main dir={dir} className="biz-public min-h-screen px-4 py-6 text-start sm:px-6">
+      <div className="biz-public__frame">
+        <PublicProfileCard
+          businessName={businessName}
+          description={description}
+          logoUrl={logoUrl}
+          coverUrl={coverImage}
+          category={isMeaningfulCategory(category) ? category : ""}
+          city={city}
+          phone={phone}
+          email={email}
+          formattedPhone={formattedPhone}
+          websiteUrl={businessWebsiteUrl}
+          whatsappUrl={businessWhatsappUrl}
+          normalizedWebsiteUrl={normalizedWebsiteUrl}
+          normalizedWhatsappUrl={normalizedWhatsappUrl}
+          rating={roundedAvg}
+          reviewsCount={reviewsCount}
+          mainImages={mainImages}
+          gallery={gallery}
+          reviews={sortedReviews}
+          faqs={faqs}
+          tab={currentTab}
+          onTabChange={handleTabChange}
+          editHref={isOwner ? `/business/${bizId}/dashboard/build` : undefined}
+          reviewsAction={reviewButton}
+          highlightedReviewId={highlightedReviewId}
+        />
+      </div>
+      {showReviewModal &&
+        createPortal(
+          <div
+            className="biz-public__light"
+            onClick={() => setShowReviewModal(false)}
+            role="presentation"
+          >
+            <div
+              className="biz-public__card"
+              style={{ width: "min(640px, 100%)", maxHeight: "calc(100vh - 48px)", overflow: "auto" }}
+              onClick={(event) => event.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="review-form-title"
             >
-              ✏️ {t("businessProfile.view.editLink")}
-            </Link>
-          )}
-
-          <div className="relative">
-            {coverImage ? (
-              <div className="h-36 overflow-hidden border-b border-[rgba(91,33,182,0.12)] sm:h-44">
-                <img
-                  src={coverImage}
-                  alt={t("businessProfile.view.coverAlt", { name: businessName })}
-                  loading="lazy"
-                  className="h-full w-full object-cover"
+              <button type="button" aria-label={t("businessProfile.view.closeReviewForm")} onClick={() => setShowReviewModal(false)}>
+                {t("common.close", "Close")}
+              </button>
+              <Suspense
+                fallback={
+                  <div className="p-6">
+                    <BizuplyLoader size="lg" label={t("businessProfile.view.loadingReviewForm")} />
+                  </div>
+                }
+              >
+                <ReviewForm
+                  businessId={bizId}
+                  socket={socket as any}
+                  layout="modal"
+                  onSuccess={async () => {
+                    setShowReviewModal(false);
+                    await Promise.all([refetch(), refetchReviews()]);
+                  }}
                 />
-              </div>
-            ) : (
-              <div className="flex h-24 items-end border-b border-[rgba(91,33,182,0.12)] bg-[#F4F1FA] px-5 pb-4 sm:px-8">
-                <p className="text-sm font-black text-[#5B21B6]">
-                  {t("businessProfile.view.welcome")}
-                </p>
-              </div>
-            )}
-
-            <div className="grid gap-6 px-5 py-6 text-start sm:px-8 lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
-              <div>
-              <div className="flex h-20 w-20 items-center justify-center overflow-hidden border border-[rgba(91,33,182,0.16)] bg-[#F4F1FA]">
-                {logoUrl ? (
-                  <img
-                    src={logoUrl}
-                    alt={t("businessProfile.view.logoAlt", { name: businessName })}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-4xl font-black text-violet-600">
-                    {businessName?.charAt(0)?.toUpperCase() || "B"}
-                  </span>
-                )}
-              </div>
-
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-[#21172F]">
-                {businessName || t("businessProfile.view.defaultBusinessName")}
-              </h1>
-
-              <div className="mt-4 flex flex-wrap items-center justify-start gap-2">
-                {isMeaningfulCategory(category) && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
-                    <Icon name="category" />
-                    {category}
-                  </span>
-                )}
-
-                {city && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700">
-                    <Icon name="city" />
-                    {city}
-                  </span>
-                )}
-
-                {hasRating && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                    ⭐ {roundedAvg.toFixed(1)}
-                    <span className="text-amber-600/80">
-                      ({t("businessProfile.view.reviewsCount", { count: reviewsCount })})
-                    </span>
-                  </span>
-                )}
-              </div>
-
-              {description && (
-                <p className="mt-4 max-w-3xl text-start text-base leading-7 text-[#3d3452]">
-                  {description}
-                </p>
-              )}
-              </div>
-
-              <div>
-              <ProfileContactBlock
-                phone={phone}
-                email={email}
-                formattedPhone={formattedPhone}
-                websiteUrl={businessWebsiteUrl}
-                whatsappUrl={businessWhatsappUrl}
-                normalizedWebsiteUrl={normalizedWebsiteUrl}
-                normalizedWhatsappUrl={normalizedWhatsappUrl}
-              />
-
-              <div className="mt-6 border-t border-[rgba(91,33,182,0.12)] pt-4">
-                <div
-                  className="flex flex-wrap items-center justify-start gap-2 text-start"
-                  role="tablist"
-                  aria-label={t("businessProfile.view.tabListAria")}
-                >
-                  {TABS.map((tab) => {
-                    const isActive = tab === currentTab;
-
-                    return (
-                      <button
-                        key={tab}
-                        type="button"
-                        className={[
-                          "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
-                          isActive
-                            ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
-                            : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700 hover:shadow-[0_12px_30px_rgba(124,58,237,0.14)]",
-                        ].join(" ")}
-                        onClick={() => handleTabChange(tab)}
-                        role="tab"
-                        aria-selected={isActive}
-                      >
-                        {t(`businessProfile.view.tabs.${TAB_KEYS[tab]}`)}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mt-6 border border-[rgba(91,33,182,0.12)] bg-white p-4 text-start sm:p-6">
-                {renderTabContent()}
-              </div>
+              </Suspense>
             </div>
-          </div>
-        </div>
-        </div>
-      </section>
+          </div>,
+          document.body
+        )}
     </main>
-  );
-}
-
-function EmptyState({ title, text, icon = "✨", children }: EmptyStateProps) {
-  return (
-    <div className="mx-auto max-w-2xl rounded-[1.75rem] border border-dashed border-violet-200 bg-violet-50/70 px-6 py-12 text-center shadow-[0_16px_44px_rgba(79,70,229,0.08)]">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-        {icon}
-      </div>
-
-      <h3 className="text-lg font-black text-slate-800">{title}</h3>
-
-      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        {text}
-      </p>
-
-      {children}
-    </div>
   );
 }
