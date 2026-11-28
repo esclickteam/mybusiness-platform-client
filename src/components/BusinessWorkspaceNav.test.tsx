@@ -333,18 +333,29 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(navLink(eventlyBusinessId, "security")).toBeNull();
   });
 
-  it("hides the security scanner for Evently 360 and keeps it for every other business", async () => {
-    const eventlyBusinessId = "6abcdba96130a8de386dfc86";
+  it("shows the security scanner only when the account purchased it", async () => {
     await renderNav({
       user: {
-        businessId: eventlyBusinessId,
+        businessId: OTHER_BUSINESS_ID,
         role: "business",
-        enabledModules: ["dashboard", "crm", "whatsapp", "meta-campaigns"],
+        enabledModules: null,
+        securityScannerAccess: false,
       },
-      urlBusinessId: eventlyBusinessId,
+      urlBusinessId: OTHER_BUSINESS_ID,
     });
-    expect(navLink(eventlyBusinessId, "security")).toBeNull();
-    expect(navLink(eventlyBusinessId, "help-center")).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "security")).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "help-center")).not.toBeNull();
+
+    cleanup();
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "business",
+        enabledModules: null,
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+    expect(navLink(OTHER_BUSINESS_ID, "security")).toBeNull();
 
     cleanup();
     await renderNav({
@@ -352,21 +363,11 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
         businessId: OTHER_BUSINESS_ID,
         role: "business",
         enabledModules: ["dashboard", "crm"],
+        securityScannerAccess: true,
       },
       urlBusinessId: OTHER_BUSINESS_ID,
     });
     expect(navLink(OTHER_BUSINESS_ID, "security")).not.toBeNull();
-
-    cleanup();
-    await renderNav({
-      user: {
-        businessId: OTHER_BUSINESS_ID,
-        role: "business",
-        enabledModules: ["dashboard", "crm"],
-      },
-      urlBusinessId: eventlyBusinessId,
-    });
-    expect(navLink(eventlyBusinessId, "security")).not.toBeNull();
   });
 
   it("shows campaigns when a limited package explicitly includes them", async () => {
