@@ -182,21 +182,309 @@ const ENGLISH_CHROME = {
   adminCrumb: "Admin",
 };
 
+const SPANISH_GROUPS: Record<string, string> = {
+  dashboard: "Panel",
+  saasOverview: "Resumen",
+  saasSystems: "Sistemas",
+  saasCustomers: "Clientes y negocios",
+  saasSales: "Ventas y pagos",
+  saasOps: "Operación y soporte",
+  saasTools: "Herramientas avanzadas",
+  businesses: "Negocios",
+  crm: "CRM",
+  whatsapp: "WhatsApp API",
+  campaigns: "Campañas",
+  automations: "Automatizaciones",
+  websites: "Sitios web",
+  billing: "Facturación",
+  partners: "Socios",
+  users: "Usuarios",
+  settings: "Ajustes",
+};
+
+const SPANISH_ITEMS: Record<string, string> = {
+  "/admin/dashboard": "Resumen",
+  "/admin/saas": "Panel de control",
+  "/admin/saas-systems": "Diez sistemas",
+  "/admin/saas-marketplace": "Catálogo de venta",
+  "/admin/saas-control-center": "Plantillas de sistemas",
+  "/admin/saas-deals": "Acuerdos y alta",
+  "/admin/saas-internal": "Alta interna del sistema",
+  "/admin/saas-tenants": "Negocios en los sistemas",
+  "/admin/club": "Club de negocios",
+  "/admin/early-access": "Acceso anticipado",
+  "/admin/calendar": "Calendario",
+  "/admin/system": "Herramientas",
+  "/admin/ai-usage": "Uso de IA",
+  "/admin/geo-intel": "Visibilidad en motores de respuesta",
+  "/admin/content-analytics": "Rendimiento del contenido",
+  "/admin/compliance-scans": "Escaneos e informes",
+  "/admin/search-visibility": "Escáner SEO, GEO y AEO",
+  "/admin/security-scans": "Escáner de seguridad",
+  "/admin/global-partners": "Socios globales",
+  "/admin/privacy-requests": "Solicitudes de privacidad",
+  "/admin/logs": "Registro del sistema",
+  "/admin/support-chat": "Soporte",
+  "/admin/businesses": "Todos los negocios",
+  "/admin/crm": "Resumen",
+  "/admin/customers": "Clientes",
+  "/admin/crm/customers": "Leads",
+  "/admin/crm/pipeline": "Pipeline",
+  "/admin/crm/tasks": "Tareas",
+  "/admin/crm/follow-ups": "Seguimientos",
+  "/admin/crm/activities": "Actividad",
+  "/admin/guided-demos": "Demos",
+  "/admin/managed-whatsapp": "Conexión gestionada",
+  "/admin/crm/whatsapp": "Bandeja",
+  "/admin/marketers": "Comerciales",
+  "/admin/automations": "Automatizaciones",
+  "/admin/site-edit": "Contenido del sitio",
+  "/admin/plans": "Planes y precios",
+  "/admin/withdrawals": "Retiros",
+  "/admin/affiliate-payouts": "Pagos de afiliados",
+  "/admin/partner-center": "Centro de socios",
+  "/admin/partners": "Socios",
+  "/admin/affiliates": "Afiliados",
+  "/admin/partner-agreements": "Acuerdos",
+  "/admin/partners/referrals": "Referidos",
+  "/admin/partners/attention": "Requiere atención",
+  "/admin/settings/partner-program": "Precio de sub-socios",
+  "/admin/users": "Todos los usuarios",
+  "/admin/create-user": "Crear usuario",
+  "/admin/roles": "Roles",
+  "/admin/settings": "Ajustes generales",
+  "/admin/settings/legal": "Perfil legal",
+};
+
+const SPANISH_CHROME = {
+  openMenu: "Abrir menú",
+  closeMenu: "Cerrar menú",
+  search: "Buscar",
+  searchScreens: "Buscar pantallas de administración",
+  incomingCall: "Llamada entrante",
+  activeCall: "Llamada activa",
+  adminFallback: "Admin",
+  systemAdmin: "Administrador del sistema",
+  settings: "Ajustes",
+  softphone: "Softphone",
+  logout: "Cerrar sesión",
+  navigation: "Navegación de administración",
+  location: "Ubicación",
+  adminCrumb: "Admin",
+};
+
+const PORTUGUESE_GROUPS: Record<string, string> = {
+  dashboard: "Painel",
+  saasOverview: "Visão geral",
+  saasSystems: "Sistemas",
+  saasCustomers: "Clientes e negócios",
+  saasSales: "Vendas e pagamentos",
+  saasOps: "Operação e suporte",
+  saasTools: "Ferramentas avançadas",
+  businesses: "Negócios",
+  crm: "CRM",
+  whatsapp: "WhatsApp API",
+  campaigns: "Campanhas",
+  automations: "Automações",
+  websites: "Sites",
+  billing: "Cobrança",
+  partners: "Parceiros",
+  users: "Usuários",
+  settings: "Configurações",
+};
+
+const PORTUGUESE_ITEMS: Record<string, string> = {
+  "/admin/dashboard": "Visão geral",
+  "/admin/saas": "Painel de controle",
+  "/admin/saas-systems": "Dez sistemas",
+  "/admin/saas-marketplace": "Catálogo de vendas",
+  "/admin/saas-control-center": "Modelos de sistemas",
+  "/admin/saas-deals": "Negócios e implantação",
+  "/admin/saas-internal": "Implantação interna",
+  "/admin/saas-tenants": "Negócios nos sistemas",
+  "/admin/club": "Clube de negócios",
+  "/admin/early-access": "Acesso antecipado",
+  "/admin/calendar": "Calendário",
+  "/admin/system": "Ferramentas",
+  "/admin/ai-usage": "Uso de IA",
+  "/admin/geo-intel": "Visibilidade em motores de resposta",
+  "/admin/content-analytics": "Desempenho do conteúdo",
+  "/admin/compliance-scans": "Varreduras e relatórios",
+  "/admin/search-visibility": "Scanner de SEO, GEO e AEO",
+  "/admin/security-scans": "Scanner de segurança",
+  "/admin/global-partners": "Parceiros globais",
+  "/admin/privacy-requests": "Pedidos de privacidade",
+  "/admin/logs": "Registro do sistema",
+  "/admin/support-chat": "Suporte",
+  "/admin/businesses": "Todos os negócios",
+  "/admin/crm": "Visão geral",
+  "/admin/customers": "Clientes",
+  "/admin/crm/customers": "Leads",
+  "/admin/crm/pipeline": "Pipeline",
+  "/admin/crm/tasks": "Tarefas",
+  "/admin/crm/follow-ups": "Acompanhamentos",
+  "/admin/crm/activities": "Atividade",
+  "/admin/guided-demos": "Demos",
+  "/admin/managed-whatsapp": "Conexão gerenciada",
+  "/admin/crm/whatsapp": "Caixa de entrada",
+  "/admin/marketers": "Divulgadores",
+  "/admin/automations": "Automações",
+  "/admin/site-edit": "Conteúdo do site",
+  "/admin/plans": "Planos e preços",
+  "/admin/withdrawals": "Saques",
+  "/admin/affiliate-payouts": "Pagamentos de afiliados",
+  "/admin/partner-center": "Central de parceiros",
+  "/admin/partners": "Parceiros",
+  "/admin/affiliates": "Afiliados",
+  "/admin/partner-agreements": "Acordos",
+  "/admin/partners/referrals": "Indicações",
+  "/admin/partners/attention": "Precisa de atenção",
+  "/admin/settings/partner-program": "Preço de subparceiros",
+  "/admin/users": "Todos os usuários",
+  "/admin/create-user": "Criar usuário",
+  "/admin/roles": "Funções",
+  "/admin/settings": "Configurações gerais",
+  "/admin/settings/legal": "Perfil jurídico",
+};
+
+const PORTUGUESE_CHROME = {
+  openMenu: "Abrir menu",
+  closeMenu: "Fechar menu",
+  search: "Buscar",
+  searchScreens: "Buscar telas de administração",
+  incomingCall: "Chamada recebida",
+  activeCall: "Chamada ativa",
+  adminFallback: "Admin",
+  systemAdmin: "Administrador do sistema",
+  settings: "Configurações",
+  softphone: "Softphone",
+  logout: "Sair",
+  navigation: "Navegação da administração",
+  location: "Local",
+  adminCrumb: "Admin",
+};
+
+const ARABIC_GROUPS: Record<string, string> = {
+  dashboard: "لوحة التحكم",
+  saasOverview: "نظرة عامة",
+  saasSystems: "الأنظمة",
+  saasCustomers: "العملاء والأعمال",
+  saasSales: "المبيعات والمدفوعات",
+  saasOps: "التشغيل والدعم",
+  saasTools: "أدوات متقدمة",
+  businesses: "الأعمال",
+  crm: "CRM",
+  whatsapp: "WhatsApp API",
+  campaigns: "الحملات",
+  automations: "الأتمتة",
+  websites: "المواقع",
+  billing: "الفوترة",
+  partners: "الشركاء",
+  users: "المستخدمون",
+  settings: "الإعدادات",
+};
+
+const ARABIC_ITEMS: Record<string, string> = {
+  "/admin/dashboard": "نظرة عامة",
+  "/admin/saas": "لوحة التحكم",
+  "/admin/saas-systems": "الأنظمة العشرة",
+  "/admin/saas-marketplace": "كتالوج البيع",
+  "/admin/saas-control-center": "قوالب الأنظمة",
+  "/admin/saas-deals": "الصفقات والإعداد",
+  "/admin/saas-internal": "إعداد نظام داخلي",
+  "/admin/saas-tenants": "أعمال على الأنظمة",
+  "/admin/club": "نادي الأعمال",
+  "/admin/early-access": "وصول مبكر",
+  "/admin/calendar": "التقويم",
+  "/admin/system": "أدوات",
+  "/admin/ai-usage": "استخدام الذكاء الاصطناعي",
+  "/admin/geo-intel": "الظهور في محركات الإجابة",
+  "/admin/content-analytics": "أداء المحتوى",
+  "/admin/compliance-scans": "الفحوصات والتقارير",
+  "/admin/search-visibility": "ماسح SEO وGEO وAEO",
+  "/admin/security-scans": "ماسح الأمان",
+  "/admin/global-partners": "شركاء عالميون",
+  "/admin/privacy-requests": "طلبات الخصوصية",
+  "/admin/logs": "سجل النظام",
+  "/admin/support-chat": "الدعم",
+  "/admin/businesses": "كل الأعمال",
+  "/admin/crm": "نظرة عامة",
+  "/admin/customers": "العملاء",
+  "/admin/crm/customers": "عملاء محتملون",
+  "/admin/crm/pipeline": "Pipeline",
+  "/admin/crm/tasks": "المهام",
+  "/admin/crm/follow-ups": "المتابعات",
+  "/admin/crm/activities": "النشاط",
+  "/admin/guided-demos": "عروض",
+  "/admin/managed-whatsapp": "اتصال مُدار",
+  "/admin/crm/whatsapp": "صندوق الوارد",
+  "/admin/marketers": "مسوّقون",
+  "/admin/automations": "الأتمتة",
+  "/admin/site-edit": "محتوى الموقع",
+  "/admin/plans": "الباقات والأسعار",
+  "/admin/withdrawals": "السحوبات",
+  "/admin/affiliate-payouts": "مدفوعات المسوّقين",
+  "/admin/partner-center": "مركز الشركاء",
+  "/admin/partners": "الشركاء",
+  "/admin/affiliates": "المسوّقون بالعمولة",
+  "/admin/partner-agreements": "الاتفاقيات",
+  "/admin/partners/referrals": "الإحالات",
+  "/admin/partners/attention": "يحتاج متابعة",
+  "/admin/settings/partner-program": "تسعير الشركاء الفرعيين",
+  "/admin/users": "كل المستخدمين",
+  "/admin/create-user": "إنشاء مستخدم",
+  "/admin/roles": "الأدوار",
+  "/admin/settings": "إعدادات عامة",
+  "/admin/settings/legal": "الملف القانوني",
+};
+
+const ARABIC_CHROME = {
+  openMenu: "فتح القائمة",
+  closeMenu: "إغلاق القائمة",
+  search: "بحث",
+  searchScreens: "البحث في شاشات الإدارة",
+  incomingCall: "مكالمة واردة",
+  activeCall: "مكالمة نشطة",
+  adminFallback: "مدير",
+  systemAdmin: "مدير النظام",
+  settings: "الإعدادات",
+  softphone: "هاتف برمجي",
+  logout: "تسجيل الخروج",
+  navigation: "تنقل الإدارة",
+  location: "الموقع",
+  adminCrumb: "الإدارة",
+};
+
+const SHELL_BY_LANGUAGE = {
+  he: { groups: HEBREW_GROUPS, items: HEBREW_ITEMS, chrome: HEBREW_CHROME },
+  en: { groups: ENGLISH_GROUPS, items: ENGLISH_ITEMS, chrome: ENGLISH_CHROME },
+  es: { groups: SPANISH_GROUPS, items: SPANISH_ITEMS, chrome: SPANISH_CHROME },
+  pt: { groups: PORTUGUESE_GROUPS, items: PORTUGUESE_ITEMS, chrome: PORTUGUESE_CHROME },
+  ar: { groups: ARABIC_GROUPS, items: ARABIC_ITEMS, chrome: ARABIC_CHROME },
+} as const;
+
 export type AdminShellCopy = {
   groups: Record<string, string>;
   items: Record<string, string>;
   chrome: typeof HEBREW_CHROME;
 };
 
+export function adminLanguageCode(language?: string) {
+  const code = String(language || "").toLowerCase();
+  if (code.startsWith("en")) return "en";
+  if (code.startsWith("es")) return "es";
+  if (code.startsWith("pt")) return "pt";
+  if (code.startsWith("ar")) return "ar";
+  if (code.startsWith("he")) return "he";
+  return "en";
+}
+
 export function isEnglishAdminLanguage(language?: string) {
-  return String(language || "").toLowerCase().startsWith("en");
+  return adminLanguageCode(language) === "en";
 }
 
 export function adminShellCopy(language?: string): AdminShellCopy {
-  if (isEnglishAdminLanguage(language)) {
-    return { groups: ENGLISH_GROUPS, items: ENGLISH_ITEMS, chrome: ENGLISH_CHROME };
-  }
-  return { groups: HEBREW_GROUPS, items: HEBREW_ITEMS, chrome: HEBREW_CHROME };
+  return SHELL_BY_LANGUAGE[adminLanguageCode(language)];
 }
 
 export function adminNavPaths() {

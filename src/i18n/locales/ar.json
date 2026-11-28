@@ -680,7 +680,7 @@
       "account": "الحساب"
     },
     "whatsapp": "WhatsApp API",
-    "metaCampaigns": "Meta Campaigns",
+    "metaCampaigns": "حملات Meta",
     "socialSchedule": "جدولة المشاركات والقصص",
     "products": {
       "title": "منتجاتك",
@@ -2332,6 +2332,7 @@
     "compareToPrevious": "مقارنة بالفترة السابقة",
     "noComparison": "لا مقارنة",
     "loadError": "تعذّر تحميل بعض بيانات لوحة المعلومات.",
+    "refreshFailed": "تعذر تحديث الجلسة. قد تكون الأرقام أدناه غير مكتملة.",
     "websiteViews": "مشاهدات الموقع",
     "loadingVisitors": "جاري تحميل الزوار...",
     "uniqueVisitors": "{{count}} زائر فريد",
@@ -9159,7 +9160,7 @@
       "subtitle": "قم بتوصيل حساب WhatsApp Business الخاص بك من خلال Meta. الاتصال آمن ولا يتم عرض التفاصيل هنا.",
       "connectIntro": "سجّل الدخول باستخدام Meta لتوصيل حساب WhatsApp Business الخاص بك ورقم هاتف العمل.",
       "coexistence": {
-        "disabled": "WhatsApp Coexistence is not enabled on this workspace.",
+        "disabled": "تعايش واتساب غير مفعّل. يجب على المسؤول تفعيل إعداد التعايش.",
         "cloudTitle": "رقم جديد أو Cloud API فقط",
         "cloudBody": "اربط رقماً عبر Embedded Signup من Meta لـ Cloud API. إذا كان الرقم في تطبيق WhatsApp Business فقد تزيله Meta من التطبيق.",
         "appTitle": "رقم نشط مسبقاً في WhatsApp Business",
@@ -9424,7 +9425,7 @@
       "channelSettingsCopied": "تم النسخ",
       "channelSettingsCopy": "نسخ",
       "channelPhone": "رقم الهاتف المتصل",
-      "channelPhoneNumberId": "Phone Number ID",
+      "channelPhoneNumberId": "معرّف رقم الهاتف",
       "channelWabaId": "WABA ID",
       "channelWabaName": "اسم WABA",
       "channelPlatformType": "نوع المنصة",
@@ -9436,7 +9437,7 @@
       "channelTimezone": "المنطقة الزمنية",
       "channelNamespace": "Namespace",
       "channelNamespaceCloud": "غير مطلوب لـ Cloud API",
-      "channelWebhookUrl": "Channel Webhook URL",
+      "channelWebhookUrl": "رابط Webhook للقناة",
       "channelVerifyToken": "حالة Verify Token",
       "channelVerificationStatus": "حالة التحقق من Webhook",
       "channelLastEvent": "آخر حدث Webhook",
@@ -10171,7 +10172,7 @@
       "managedTitle": "الفوترة تُدار في Meta",
       "managedBody": "تفاصيل الفوترة ووسائل الدفع تُدار عبر WhatsApp Manager / Meta.",
       "managedHint": "لعرض وسيلة الدفع أو تحديثها، افتح WhatsApp Manager.",
-      "adminApiTooltip": "Billing details are not available through the current Meta API permissions",
+      "adminApiTooltip": "تفاصيل الفوترة غير متاحة ضمن أذونات واجهة Meta الحالية.",
       "paymentConnected": "وسيلة الدفع متصلة",
       "paymentDirect": "فوترة Meta المباشرة",
       "paymentCreditLine": "خط ائتمان",
@@ -17796,83 +17797,83 @@
     },
     "palettes": {
       "luxury-purple": {
-        "name": "Luxury Purple",
+        "name": "بنفسجي فاخر",
         "description": "فاخر وحديث، مناسب للجمال والأعمال الراقية"
       },
       "rose-gold": {
-        "name": "Rose Gold",
+        "name": "ذهبي وردي",
         "description": "أنثوي وفاخر وناعم وبيعي"
       },
       "black-gold": {
-        "name": "Black & Gold",
+        "name": "أسود وذهبي",
         "description": "أنيق ودرامي وفاخر جداً"
       },
       "nude-elegant": {
-        "name": "Nude Elegant",
+        "name": "نيود أنيق",
         "description": "نظيف ولطيف ومهني"
       },
       "ocean-modern": {
-        "name": "Ocean Modern",
+        "name": "محيط عصري",
         "description": "حديث ونظيف وتقني"
       },
       "minimal-mono": {
-        "name": "Minimal Monochrome",
+        "name": "أحادي بسيط",
         "description": "بسيط ونظيف وأنيق"
       },
       "cream-bronze": {
-        "name": "Cream Bronze",
+        "name": "كريمي وبرونزي",
         "description": "كريمي وبرونزي، نظيف وفاخر جداً"
       },
       "emerald-luxury": {
-        "name": "Emerald Luxury",
+        "name": "زمردي فاخر",
         "description": "أخضر زمردي فاخر وعميق وحديث"
       },
       "clean-blue": {
-        "name": "Clean Blue",
+        "name": "أزرق نظيف",
         "description": "عملي ونظيف، مناسب لمقدمي الخدمات وSaaS"
       },
       "soft-pink": {
-        "name": "Soft Pink",
+        "name": "وردي ناعم",
         "description": "وردي ناعم ونظيف وحديث للجمال ونمط الحياة"
       },
       "champagne": {
-        "name": "Champagne",
+        "name": "شامبانيا",
         "description": "شامبانيا وذهب ناعم ومظهر فاخر نظيف"
       },
       "dark-violet": {
-        "name": "Dark Violet",
+        "name": "بنفسجي داكن",
         "description": "داكن وتقني ودرامي وحديث جداً"
       },
       "pearl-luxury": {
-        "name": "Pearl Luxury",
+        "name": "لؤلؤي فاخر",
         "description": "أبيض لؤلؤي نظيف وأنيق ومناسب لعلامة فاخرة"
       },
       "espresso": {
-        "name": "Espresso",
+        "name": "إسبريسو",
         "description": "بني عميق وفاخر ودافئ لنمط الحياة والقهوة والتصميم"
       },
       "sage-modern": {
-        "name": "Sage Modern",
+        "name": "مريمية عصرية",
         "description": "أخضر مريمية ناعم ونظيف وطبيعي ومهدئ"
       },
       "royal-blue": {
-        "name": "Royal Blue",
+        "name": "أزرق ملكي",
         "description": "أزرق عميق وفاخر، مناسب للأعمال والاستشارات والعقارات"
       },
       "midnight-gold": {
-        "name": "Midnight Gold",
+        "name": "ذهبي منتصف الليل",
         "description": "أسود-أزرق مع ذهب، مظهر فاخر حديث وقوي"
       },
       "coral-fresh": {
-        "name": "Coral Fresh",
+        "name": "مرجاني منعش",
         "description": "مرجاني منعش وشاب، مناسب لنمط الحياة والطعام والفعاليات"
       },
       "lavender-clean": {
-        "name": "Lavender Clean",
+        "name": "لافندر نظيف",
         "description": "لافندر نظيف وناعم للجمال والعيادات والعلامات اللطيفة"
       },
       "graphite-pro": {
-        "name": "Graphite Pro",
+        "name": "غرافيت احترافي",
         "description": "رمادي جرافيت مهني وعملي ونظيف وحديث جداً"
       }
     },

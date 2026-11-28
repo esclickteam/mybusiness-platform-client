@@ -2329,6 +2329,7 @@
     "compareToPrevious": "השוואה לתקופה קודמת",
     "noComparison": "ללא השוואה",
     "loadError": "חלק מנתוני הדשבורד לא נטענו.",
+    "refreshFailed": "לא הצלחנו לרענן את החיבור. ייתכן שהמספרים למטה חלקיים.",
     "websiteViews": "צפיות באתר",
     "loadingVisitors": "טוען מבקרים...",
     "uniqueVisitors": "{{count}} מבקרים ייחודיים",

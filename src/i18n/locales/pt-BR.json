@@ -680,7 +680,7 @@
       "account": "Conta"
     },
     "whatsapp": "WhatsApp API",
-    "metaCampaigns": "Meta Campaigns",
+    "metaCampaigns": "Campanhas da Meta",
     "socialSchedule": "Agendar Posts e Histórias",
     "products": {
       "title": "Seus produtos",
@@ -1853,7 +1853,7 @@
       "from": "De",
       "until": "Até",
       "timezone": "Fuso horário",
-      "timezoneIsrael": "Asia/Jerusalem (Israel)",
+      "timezoneIsrael": "Asia/Jerusalém (Israel)",
       "day0": "Dom",
       "day1": "Seg",
       "day2": "Ter",
@@ -2332,6 +2332,7 @@
     "compareToPrevious": "Compare com o período anterior",
     "noComparison": "Sem comparação",
     "loadError": "Alguns dados do painel não puderam ser carregados.",
+    "refreshFailed": "Não foi possível atualizar a sessão. Os números abaixo podem estar incompletos.",
     "websiteViews": "Visualizações do site",
     "loadingVisitors": "Carregando visitantes...",
     "uniqueVisitors": "{{count}} visitantes únicos",
@@ -6067,7 +6068,7 @@
     },
     "categories": {
       "all": "Tudo",
-      "landing": "Landing pages",
+      "landing": "Páginas de destino",
       "business": "Negócios e serviços",
       "real-estate": "Imóveis",
       "portfolio": "Portfólio e agência",
@@ -9159,7 +9160,7 @@
       "subtitle": "Conecte sua conta do WhatsApp Business através do Meta. A conexão é segura e detalhes não são mostrados aqui.",
       "connectIntro": "Entre com o Meta para conectar sua conta WhatsApp Business e número de telefone comercial.",
       "coexistence": {
-        "disabled": "WhatsApp Coexistence is not enabled on this workspace.",
+        "disabled": "A coexistência do WhatsApp não está ativada. Um administrador precisa ativar a configuração de coexistência.",
         "cloudTitle": "Número novo ou só Cloud API",
         "cloudBody": "Conecte um número pelo Embedded Signup da Meta para Cloud API. Se o número já estiver no app WhatsApp Business, a Meta pode tirá-lo do app.",
         "appTitle": "Número já ativo no WhatsApp Business",
@@ -9352,7 +9353,7 @@
       "stagingCheckWarning": "Aviso",
       "stagingCheckReady": "Preparar",
       "stagingCheckNotPerformed": "NÃO realizado",
-      "channelSettingsTitle": "WhatsApp Channel Settings",
+      "channelSettingsTitle": "Configurações do canal do WhatsApp",
       "channelSettingsHint": "Esta é a conexão da Meta com o BizUply.",
       "channelSettingsDirection": "Meta → BizUply",
       "channelSettingsLoadError": "Não foi possível carregar as configurações do canal do WhatsApp",
@@ -9365,7 +9366,7 @@
       "channelSettingsCopied": "Copiado",
       "channelSettingsCopy": "Copiar",
       "channelPhone": "Número de telefone conectado",
-      "channelPhoneNumberId": "Phone Number ID",
+      "channelPhoneNumberId": "ID do número de telefone",
       "channelWabaId": "WABA ID",
       "channelWabaName": "Nome do WABA",
       "channelPlatformType": "Tipo de plataforma",
@@ -9377,7 +9378,7 @@
       "channelTimezone": "Fuso horário",
       "channelNamespace": "Namespace",
       "channelNamespaceCloud": "Não necessário para Cloud API",
-      "channelWebhookUrl": "Channel Webhook URL",
+      "channelWebhookUrl": "URL do webhook do canal",
       "channelVerifyToken": "Status do Verify Token",
       "channelVerificationStatus": "Status de verificação do webhook",
       "channelLastEvent": "Último evento de webhook",
@@ -10171,7 +10172,7 @@
       "managedTitle": "A cobrança é gerenciada na Meta",
       "managedBody": "Os dados de cobrança e as formas de pagamento são gerenciados no WhatsApp Manager / Meta.",
       "managedHint": "Para ver ou atualizar uma forma de pagamento, abra o WhatsApp Manager.",
-      "adminApiTooltip": "Billing details are not available through the current Meta API permissions",
+      "adminApiTooltip": "Os dados de cobrança não estão disponíveis com as permissões atuais da API da Meta.",
       "paymentConnected": "Método de pagamento conectado",
       "paymentDirect": "Cobrança direta da Meta",
       "paymentCreditLine": "Linha de crédito",
@@ -14554,7 +14555,7 @@
     },
     "categories": {
       "commerce": "Lojas e comércio",
-      "landing": "Landing pages",
+      "landing": "Páginas de destino",
       "portfolio": "Portfólio e agência",
       "beauty": "Beleza e higiene",
       "realEstate": "Imóveis",
@@ -17442,7 +17443,7 @@
     "templates": {
       "categories": {
         "all": "Tudo",
-        "landing": "Landing pages",
+        "landing": "Páginas de destino",
         "business": "Negócios e serviços",
         "real-estate": "Imobiliário",
         "portfolio": "Portfólio e agência",
@@ -17796,55 +17797,55 @@
     },
     "palettes": {
       "luxury-purple": {
-        "name": "Luxury Purple",
+        "name": "Roxo luxo",
         "description": "Luxuoso e moderno, para beleza e premium"
       },
       "rose-gold": {
-        "name": "Rose Gold",
+        "name": "Ouro rosa",
         "description": "Feminino, luxuoso, suave e comercial"
       },
       "black-gold": {
-        "name": "Black & Gold",
+        "name": "Preto e ouro",
         "description": "Elegante, dramático e especialmente luxuoso"
       },
       "nude-elegant": {
-        "name": "Nude Elegant",
+        "name": "Nude elegante",
         "description": "Limpo, suave e profissional"
       },
       "ocean-modern": {
-        "name": "Ocean Modern",
+        "name": "Oceano moderno",
         "description": "Moderno, limpo e tecnológico"
       },
       "minimal-mono": {
-        "name": "Minimal Monochrome",
+        "name": "Monocromático minimal",
         "description": "Minimalista, limpo e elegante"
       },
       "cream-bronze": {
-        "name": "Cream Bronze",
+        "name": "Creme e bronze",
         "description": "Creme e bronze, limpo e muito luxuoso"
       },
       "emerald-luxury": {
-        "name": "Emerald Luxury",
+        "name": "Esmeralda luxo",
         "description": "Verde esmeralda luxuoso, profundo e moderno"
       },
       "clean-blue": {
-        "name": "Clean Blue",
+        "name": "Azul limpo",
         "description": "Empresarial e limpo, para serviços e SaaS"
       },
       "soft-pink": {
-        "name": "Soft Pink",
+        "name": "Rosa suave",
         "description": "Rosa suave, limpo e moderno para beleza e lifestyle"
       },
       "champagne": {
-        "name": "Champagne",
+        "name": "Champanhe",
         "description": "Champanhe, ouro suave e visual premium limpo"
       },
       "dark-violet": {
-        "name": "Dark Violet",
+        "name": "Violeta escuro",
         "description": "Escuro, tecnológico, dramático e muito moderno"
       },
       "pearl-luxury": {
-        "name": "Pearl Luxury",
+        "name": "Pérola luxo",
         "description": "Branco pérola, limpo, elegante e premium"
       },
       "espresso": {
@@ -17852,27 +17853,27 @@
         "description": "Marrom profundo, luxuoso e quente para lifestyle, café e design"
       },
       "sage-modern": {
-        "name": "Sage Modern",
+        "name": "Sálvia moderna",
         "description": "Verde sálvia suave, limpo, natural e calmante"
       },
       "royal-blue": {
-        "name": "Royal Blue",
+        "name": "Azul royal",
         "description": "Azul profundo e luxuoso, para negócios, consultoria e imóveis"
       },
       "midnight-gold": {
-        "name": "Midnight Gold",
+        "name": "Ouro meia-noite",
         "description": "Preto-azul com ouro, visual premium moderno e forte"
       },
       "coral-fresh": {
-        "name": "Coral Fresh",
+        "name": "Coral fresco",
         "description": "Coral fresco e jovem, para lifestyle, comida e eventos"
       },
       "lavender-clean": {
-        "name": "Lavender Clean",
+        "name": "Lavanda limpa",
         "description": "Lavanda limpa e suave para beleza, clínicas e marcas suaves"
       },
       "graphite-pro": {
-        "name": "Graphite Pro",
+        "name": "Grafite profissional",
         "description": "Cinza grafite profissional, empresarial, limpo e muito moderno"
       }
     },
@@ -18162,7 +18163,7 @@
     "version": "Versão",
     "internal": "Treino interno do parceiro",
     "clientFacing": "Voltado ao cliente",
-    "hubTraining": "Learn Bizuply",
+    "hubTraining": "Aprender BizUply",
     "hubSales": "Vendas",
     "hubMarketing": "Marketing",
     "hubVideos": "Vídeos",
@@ -18179,7 +18180,7 @@
     "duration": "{{n}} min",
     "readyForProduction": "Pronto para produção",
     "academyKicker": "Academia de parceiros",
-    "academyTitle": "Learn Bizuply",
+    "academyTitle": "Academia BizUply",
     "academyHint": "Doze módulos em ordem. Cada aula cobre uma área do produto.",
     "moduleN": "Módulo {{n}}",
     "videoReady": "Vídeo pronto",
@@ -20705,7 +20706,7 @@
       "sprayTan": "Bronzeamento spray",
       "healthFitness": "Saúde e fitness",
       "fitnessTrainer": "Personal trainer",
-      "yogaPilates": "Yoga / pilates",
+      "yogaPilates": "Yoga e pilates",
       "swimInstructor": "Instrutor de natação / salva-vidas",
       "nutritionist": "Nutricionista / dietista",
       "emotionalTherapist": "Terapeuta emocional / PNL",

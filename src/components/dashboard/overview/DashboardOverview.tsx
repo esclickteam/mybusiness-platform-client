@@ -428,7 +428,9 @@ export default function DashboardOverview({
           <div className="bx-row" style={{ justifyContent: "space-between" }}>
             <div>
               <h2>{t("overview.loadError")}</h2>
-              <p className="bx-note">{error}</p>
+              <p className="bx-note">
+                {error === "Failed to refresh token" ? t("overview.refreshFailed") : error}
+              </p>
             </div>
             <button type="button" className="bx-btn" onClick={onRetry}>
               {t("common.retry")}
