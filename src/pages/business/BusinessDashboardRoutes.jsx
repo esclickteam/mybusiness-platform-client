@@ -790,7 +790,16 @@ const BusinessDashboardRoutes = () => {
             <Route path="*" element={<Navigate to="appointments" replace />} />
           </Route>
 
-          <Route path="security" element={<SecurityScannerPage />} />
+          <Route
+            path="security"
+            element={
+              user?.securityScannerAccess === true ? (
+                <SecurityScannerPage />
+              ) : (
+                <Navigate to={`/business/${businessId}/dashboard/dashboard`} replace />
+              )
+            }
+          />
           <Route path="help-center" element={<HelpCenter />} />
 
           <Route
