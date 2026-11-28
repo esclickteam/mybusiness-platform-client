@@ -109,6 +109,17 @@ describe("persistLanguage", () => {
     expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "he" });
   });
 
+  it("uses the account language in a fresh browser even when a Hebrew cookie exists", () => {
+    document.cookie = `${LANGUAGE_COOKIE}=he; Path=/`;
+    document.documentElement.lang = "he";
+    const result = syncLanguageOnLogin({ language: "pt-BR", billingCountry: "IL", role: "business" });
+    expect(result).toBe("pt-BR");
+    expect(getManualLanguageChoice()).toBeNull();
+    expect(document.documentElement.lang).toBe("pt-BR");
+    expect(document.documentElement.dir).toBe("ltr");
+    expect(API.patch).not.toHaveBeenCalled();
+  });
+
   it("does not invent an account language from geo when nothing was chosen", () => {
     document.cookie = `${GEO_LANG_COOKIE}=he; Path=/`;
     const result = syncLanguageOnLogin({});

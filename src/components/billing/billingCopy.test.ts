@@ -50,6 +50,10 @@ describe("localizeBillingLabel", () => {
     ).toBe("Domain renewal example.com");
   });
 
+  it("maps a stored Hebrew catalog name when the SKU is missing", () => {
+    expect(localizeBillingLabel(t, { name: "חבילה עסקית חודשית" })).toBe("Monthly business plan");
+  });
+
   it("localizes add-on product keys", () => {
     expect(
       localizeBillingLabel(t, {

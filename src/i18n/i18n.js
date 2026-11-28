@@ -203,6 +203,9 @@ export async function bootstrapI18n() {
     scheduleFullLocale(initialLanguage);
   } else {
     await ensureLocale(initialLanguage);
+    // Missing keys must resolve to English, never to the raw key. The English
+    // bundle is the fallback, so it has to be loaded even when the UI is not.
+    if (initialLanguage !== FALLBACK_LANGUAGE) await ensureLocale(FALLBACK_LANGUAGE);
   }
   // Explicit /he|/es|/ar|/pt-br path wins over a stale manual preference so
   // marketing pages like /he/partners do not hydrate as English.

@@ -5,6 +5,7 @@ import {
   LANGUAGE_COOKIE,
   MANUAL_LANG_FLAG,
   applyLanguageFromUrl,
+  appLocalePath,
   explicitLanguageFromUrl,
   coerceSupportedLanguage,
   getHtmlLang,
@@ -226,6 +227,20 @@ describe("explicit preference persistence", () => {
     expect(localStorage.getItem(MANUAL_LANG_FLAG)).toBe("pt-BR");
     expect(document.cookie).toContain(`${LANGUAGE_COOKIE}=pt-BR`);
     expect(getManualLanguageChoice()).toBe("pt-BR");
+  });
+
+  it("rewrites an app prefix to the chosen language and leaves marketing paths", () => {
+    expect(appLocalePath("/he/business/biz/dashboard", "en")).toBe("/business/biz/dashboard");
+    expect(appLocalePath("/business/biz/dashboard/crm", "es")).toBe("/es/business/biz/dashboard/crm");
+    expect(appLocalePath("/business/biz/dashboard", "pt-BR")).toBe("/pt-br/business/biz/dashboard");
+    expect(appLocalePath("/he/business/biz/dashboard", "ar")).toBe("/ar/business/biz/dashboard");
+    expect(appLocalePath("/he/pricing", "en")).toBeNull();
+  });
+
+  it("does not treat a marketing language cookie as a user choice", () => {
+    document.cookie = `${LANGUAGE_COOKIE}=he; Path=/`;
+    expect(getManualLanguageChoice()).toBeNull();
+    expect(resolvePreferredLanguage({ accountLanguage: "es", businessCountry: "IL" })).toBe("es");
   });
 
   it("does not let geo override an explicit local selection", () => {

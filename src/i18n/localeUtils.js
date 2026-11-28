@@ -174,18 +174,21 @@ function readStoredLanguage(raw) {
   return normalizeLanguage(raw, { fallback: null });
 }
 
-/** Read the durable, user-selected language, or null if the user never chose one. */
+/**
+ * Read the language the user chose in the product.
+ * The bizuply_lang cookie is also written by marketing redirects, so it is
+ * not a user choice and must not override the account language.
+ */
 export function getManualLanguageChoice() {
-  const fromStorage =
-    typeof localStorage !== "undefined"
-      ? readStoredLanguage(localStorage.getItem(MANUAL_LANG_FLAG))
-      : null;
-  if (fromStorage) return fromStorage;
+  if (typeof localStorage === "undefined") return null;
+  return readStoredLanguage(localStorage.getItem(MANUAL_LANG_FLAG));
+}
 
-  const fromCookie = readStoredLanguage(getCookie(LANGUAGE_COOKIE));
-  if (fromCookie) return fromCookie;
-
-  return null;
+/** Next app URL for a chosen language, or null when the path is not an app route. */
+export function appLocalePath(pathname, language) {
+  const { path } = splitMarketingLocale(pathname);
+  if (!isAppRoutePath(path)) return null;
+  return withMarketingLocale(path, coerceSupportedLanguage(language));
 }
 
 export function getSessionLanguageOverride() {
@@ -313,9 +316,8 @@ export function resolvePreferredLanguage({
 export function alignAppLocaleUrl(language) {
   if (typeof window === "undefined") return;
   const languageCode = coerceSupportedLanguage(language);
-  const { path } = splitMarketingLocale(window.location.pathname);
-  if (!isAppRoutePath(path)) return;
-  const nextPath = withMarketingLocale(path, languageCode);
+  const nextPath = appLocalePath(window.location.pathname, languageCode);
+  if (!nextPath) return;
   if (!nextPath || nextPath === window.location.pathname) return;
   if (isSoftLocaleHandlerInstalled()) {
     window.dispatchEvent(

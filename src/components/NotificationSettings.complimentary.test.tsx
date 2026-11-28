@@ -94,9 +94,9 @@ describe("complimentary Push for one business", () => {
     );
 
     expect(await screen.findByTestId("push-complimentary-status")).toHaveTextContent(
-      "פעיל \u2013 ללא חיוב"
+      "Active – no charge"
     );
-    expect(screen.getByTestId("push-complimentary-status")).toHaveTextContent("ללא חיוב");
+    expect(screen.getByTestId("push-complimentary-status")).toHaveTextContent("No charge");
     expect(screen.queryByText("התחילו 7 ימים חינם")).not.toBeInTheDocument();
     expect(screen.queryByText("ביטול מנוי")).not.toBeInTheDocument();
     expect(screen.queryByText("$12 לחודש")).not.toBeInTheDocument();

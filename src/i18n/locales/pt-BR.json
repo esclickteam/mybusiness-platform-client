@@ -488,6 +488,10 @@
     "whatsappTitle": "Mantenha as conversas com clientes conectadas",
     "whatsappText": "Gerencie conversas e modelos do WhatsApp Business ao lado das informações do cliente e dos fluxos que importam.",
     "whatsappCta": "Explorar o WhatsApp"
+  ,
+      "visibilityTitle": "Scanner de visibilidade com IA",
+      "visibilityText": "Verificações de SEO, GEO e AEO para qualquer site público, com uma primeira varredura que não exige conta.",
+      "visibilityCta": "Ver o produto"
   },
   "why": {
     "eyebrow": "POR QUE A BIZUPLY",
@@ -685,6 +689,8 @@
       "website": "Site",
       "whatsappApi": "WhatsApp API"
     }
+  ,
+      "securityScanner": "Scanner de segurança"
   },
   "automations": {
     "shell": {
@@ -1454,6 +1460,15 @@
         "perMessage": "por mensagem do WhatsApp",
         "estimateDaily": "Apenas estimativa: por exemplo uma mensagem por dia ≈ {{amount}} / mês",
         "estimate100": "Apenas estimativa: por exemplo 100 mensagens ≈ {{amount}}"
+      ,
+          "connectRequired": "Para enviar mensagens de WhatsApp nas automações, conecte primeiro a conta de WhatsApp do negócio",
+          "connectAccountCta": "Conectar WhatsApp",
+          "reconnectRequired": "Reconexão necessária",
+          "connectedTitle": "WhatsApp conectado",
+          "connectedAs": "Número conectado: {{phone}}",
+          "connectedReadyText": "As mensagens saem do número conectado deste negócio. O número central da Bizuply não é usado.",
+          "ownNumberTitle": "Envio pelo número de WhatsApp do negócio",
+          "ownNumberText": "O envio pelo número da Bizuply não está disponível. Conecte a conta de WhatsApp deste negócio e escolha um modelo aprovado."
       },
       "gmail": {
         "bannerTitle": "Envio pelo Gmail conectado",
@@ -2429,6 +2444,9 @@
     "cmdWaApproved": "Aprovado",
     "cmdWaPending": "Aguardando revisão",
     "cmdWaRejected": "Precisa de revisão"
+  ,
+      "unnamedLead": "Lead sem nome",
+      "leadEntered": "Entrada: {{date}} às {{time}}"
   },
   "dashboard": {
     "live": "Viva",
@@ -2920,6 +2938,31 @@
     "otpVerifying": "Entrando…",
     "usePasswordInstead": "Usar senha",
     "useCodeInstead": "Usar código por e-mail"
+  ,
+      "liveCaption": "Chega um novo lead, o CRM atualiza, uma reunião é marcada e a IA explica o que fazer em seguida.",
+      "liveNewLead": "Novo lead",
+      "liveLeadName": "Maya Levi",
+      "liveLeadMeta": "Site · agora mesmo",
+      "liveStatusNew": "Novo",
+      "liveStatusTalk": "Em contato",
+      "liveStatusBooked": "Reunião",
+      "liveMeetWhen": "Amanhã · 10:30",
+      "liveMeetOk": "Agendado",
+      "liveAiText": "Maya tende a agendar se você responder hoje.",
+      "liveChartTitle": "Esta semana",
+      "liveMetricLeads": "24",
+      "liveMetricLeadsLabel": "Leads",
+      "liveMetricMeetings": "9",
+      "liveMetricMeetingsLabel": "Reuniões",
+      "liveMetricReply": "38%",
+      "liveMetricReplyLabel": "Respostas",
+      "welcomeTitle": "Bem-vindo de volta",
+      "welcomeLead": "Entre no seu espaço de trabalho da Bizuply.",
+      "forgotShort": "Esqueceu a senha?",
+      "rememberShort": "Lembrar de mim",
+      "accountPrompt": "Ainda não tem uma conta?",
+      "registerShort": "Criar conta",
+      "orSoft": "ou"
   },
   "pricing": {
     "seoTitle": "Pacotes de Serviço  Bizuply",
@@ -3521,6 +3564,11 @@
         "name": "Modelos de site",
         "text": "Pontos de partida no criador de sites, editados e publicados pelo negócio."
       }
+    ,
+        "security": {
+          "name": "Scanner de segurança do site",
+          "text": "Uma varredura defensiva, um relatório de achados e recomendações de correção. A varredura não comprova que o site está totalmente seguro."
+        }
     },
     "differenceTitle": "Um espaço compartilhado e software para um só trabalho",
     "differenceLead": "Um sistema dedicado é construído em torno de um fluxo. A BizUply também constrói uma plataforma em que o registro do cliente pode ser compartilhado entre ferramentas. Uma empresa pode usar um produto ou conectar vários.",
@@ -3646,6 +3694,8 @@
       "paymentsDesc": "Rastreamento de receita",
       "miniSaas": "Mini SaaS",
       "miniSaasDesc": "Portais de clientes",
+      "reports": "Relatórios",
+      "reportsDesc": "Métricas do CRM ao vivo",
       "settings": "Configurações",
       "settingsDesc": "Preferências de CRM",
       "newBadge": "Novo"
@@ -3795,6 +3845,19 @@
       "weekdayThu": "Thu",
       "weekdayFri": "Sex.",
       "weekdaySat": "Sáb"
+    ,
+        "conflictWarning": "Este horário se sobrepõe a outro compromisso. Continuar mesmo assim?",
+        "views": {
+          "month": "Mês",
+          "week": "Semana",
+          "day": "Dia"
+        },
+        "hideSidebar": "Ocultar lista",
+        "showSidebar": "Mostrar lista",
+        "upcomingTitle": "Próximos compromissos",
+        "moveConfirm": "Mover este compromisso para {{date}} às {{time}}?",
+        "prevRange": "Intervalo anterior",
+        "nextRange": "Próximo intervalo"
     },
     "services": {
       "badge": "Serviços CRM",
@@ -3851,6 +3914,20 @@
       "durationHours": "{{count}} h",
       "durationHoursMinutes": "{{hours}}h {{minutes}}m",
       "priceValue": "{{value}}"
+    ,
+        "tableView": "Tabela",
+        "cardsView": "Cartões",
+        "category": "Categoria",
+        "generalCategory": "Geral",
+        "inactive": "Inativo",
+        "sortName": "Ordenar por nome",
+        "sortPrice": "Ordenar por preço",
+        "sortDuration": "Ordenar por duração",
+        "duplicate": "Duplicar",
+        "copySuffix": "(cópia)",
+        "name": "Nome",
+        "duration": "Duração",
+        "price": "Preço"
     },
     "settings": {
       "badge": "Configurações do CRM",
@@ -3907,6 +3984,10 @@
           "label": "Segurança",
           "description": "CRM protegido"
         }
+      ,
+          "pipeline": {
+            "label": "Funil e campos de lead"
+          }
       },
       "general": {
         "eyebrow": "Configurações gerais",
@@ -4156,6 +4237,10 @@
         "converted": "Convertido",
         "lost": "Perdido",
         "old": "Velha lead."
+      ,
+          "in_progress": "Em andamento",
+          "quote": "Orçamento",
+          "negotiation": "Negociação"
       },
       "oldLeads": {
         "title": "Velhas leads",
@@ -4429,6 +4514,8 @@
         "saveActivityFailed": "Não conseguiu salvar a atividade. Verifique se a API de atividades está atualizada.",
         "updateTaskFailed": "Falha ao atualizar a tarefa",
         "requestFailed": "Pedido falhou"
+      ,
+          "recordMismatch": "Os dados recebidos não pertencem ao lead selecionado. O salvamento foi bloqueado."
       },
       "drawer": {
         "dossierBadge": "Arquivo de lead",
@@ -4512,6 +4599,8 @@
         "sortNewest": "Ordenar: Mais recente",
         "export": "Exportar",
         "view": "Ver"
+      ,
+          "sortOldest": "Ordenar: mais antigos"
       },
       "filters": {
         "all": "Todos {{count}}",
@@ -4832,6 +4921,8 @@
         "businessIdMissing": "Não conseguimos identificar o negócio. Atualize a página.",
         "createFailed": "A criação de clientes falhou",
         "updateFailed": "Falha na atualização do cliente"
+      ,
+          "recordMismatch": "Os dados recebidos não pertencem ao cliente selecionado. O salvamento foi bloqueado."
       },
       "customFields": {
         "manageButton": "Gerenciar campos variáveis",
@@ -4886,6 +4977,9 @@
         "followUpPlanDesc": "Tabela de acompanhamento por cliente — data, ação e status",
         "fieldN": "Campo {{n}}"
       }
+    ,
+        "imported": "{{count}} clientes importados",
+        "confirmBulk": "Excluir {{count}} clientes selecionados?"
     },
     "customerProfile": {
       "badge": "Ficha do cliente",
@@ -5180,6 +5274,129 @@
       "change": "Trocar horário",
       "placeholder": "Escolha um horário"
     }
+  ,
+      "workspace": {
+        "searchPlaceholder": "Buscar por nome, telefone, e-mail ou ID do lead",
+        "columns": "Colunas",
+        "compactView": "Tabela compacta",
+        "saveView": "Salvar visualização...",
+        "duplicates": "Duplicatas",
+        "selected": "{{count}} selecionados",
+        "applyStatus": "Atualizar status",
+        "applyAgent": "Atribuir agente",
+        "archive": "Arquivar",
+        "confirmBulk": "Aplicar esta ação a {{count}} leads?",
+        "confirmMerge": "Mesclar estes registros manualmente? Nada será excluído.",
+        "bulkDone": "Ação concluída",
+        "imported": "{{count}} leads importados",
+        "merged": "Registros mesclados",
+        "merge": "Mesclagem manual",
+        "saved": "Salvo",
+        "saveNote": "Salvar nota",
+        "unsaved": "Alterações não salvas",
+        "noCustomFields": "Este lead não tem campos personalizados.",
+        "statusUpdated": "Status atualizado",
+        "assigned": "Agente atualizado",
+        "callLogged": "Ligação registrada",
+        "logCall": "Registrar ligação",
+        "whatsappReceived": "Mensagem de WhatsApp recebida",
+        "callNote": "Resumo da ligação",
+        "meeting": "Reunião",
+        "meetingTitle": "Título da reunião",
+        "addMeeting": "Adicionar reunião",
+        "addTask": "Adicionar tarefa",
+        "addDocument": "Adicionar documento",
+        "documentName": "Nome do documento",
+        "dealName": "Nome do negócio",
+        "dealAmount": "Valor",
+        "addDeal": "Criar negócio",
+        "addField": "Adicionar campo",
+        "newField": "Novo campo",
+        "customFields": "Campos personalizados do lead",
+        "pipelineSettings": "Etapas do funil de vendas",
+        "hideStage": "Ocultar",
+        "showInTable": "Mostrar na tabela",
+        "showInFilter": "Mostrar nos filtros",
+        "allStages": "Todas as etapas",
+        "clearFilters": "Limpar filtros",
+        "showing": "Exibindo {{count}} de {{total}}",
+        "next": "Próximo",
+        "from": "De",
+        "to": "Até",
+        "adPlatform": "Plataforma de anúncios",
+        "adset": "Conjunto de anúncios",
+        "ad": "Anúncio",
+        "adId": "ID do anúncio",
+        "receivedAt": "Lead recebido em",
+        "openCampaign": "Abrir campanha",
+        "byAgent": "Desempenho por agente",
+        "callOutcomes": {
+          "answered": "Atendida",
+          "no_answer": "Sem resposta",
+          "interested": "Interessado",
+          "not_interested": "Sem interesse"
+        },
+        "tabs": {
+          "overview": "Visão geral",
+          "personal": "Detalhes e campos personalizados",
+          "source": "Origem e campanha",
+          "form": "Respostas do formulário",
+          "activity": "Notas e atividade",
+          "tasks": "Tarefas",
+          "meetings": "Reuniões",
+          "documents": "Documentos",
+          "deals": "Orçamentos e negócios",
+          "payments": "Pagamentos"
+        },
+        "cols": {
+          "name": "Nome",
+          "phone": "Telefone",
+          "email": "E-mail",
+          "status": "Status",
+          "source": "Origem",
+          "campaign": "Campanha",
+          "form": "Formulário",
+          "assignedToName": "Agente",
+          "createdAt": "Criado",
+          "updatedAt": "Atualizado"
+        },
+        "fieldTypes": {
+          "text": "Texto",
+          "number": "Número",
+          "date": "Data",
+          "time": "Hora",
+          "select": "Lista suspensa",
+          "multiselect": "Seleção múltipla",
+          "boolean": "Sim/Não",
+          "url": "URL",
+          "money": "Valor"
+        },
+        "metrics": {
+          "leads": "Total de leads",
+          "newLeads": "Novos leads",
+          "inProgress": "Leads em andamento",
+          "closed": "Leads fechados",
+          "lost": "Leads perdidos",
+          "conversionRate": "Taxa de conversão",
+          "dealSum": "Valor dos negócios",
+          "revenue": "Receita registrada",
+          "openTasks": "Tarefas abertas",
+          "upcomingMeetings": "Próximas reuniões",
+          "byAgent": "Desempenho por agente",
+          "activeClients": "Clientes ativos",
+          "meetings": "Reuniões"
+        },
+        "charts": {
+          "leadsOverTime": "Leads ao longo do tempo",
+          "status": "Distribuição por status",
+          "sources": "Leads por origem do anúncio",
+          "deals": "Negócios por mês",
+          "funnel": "Funil de vendas"
+        },
+        "vsPreviousPeriod": "em relação ao período anterior",
+        "metric": "Métrica",
+        "value": "Valor"
+      }
   },
   "notifications": {
     "ariaLabel": "Notificações",
@@ -5346,6 +5563,8 @@
         "actionLabel": "Editar SEO"
       }
     }
+  ,
+      "actionCount_zero": "Nenhuma ação recomendada no momento"
   },
   "advisor": {
     "title": "Assessor de Negócios",
@@ -10205,6 +10424,13 @@
       "businessVerification": "A verificação da empresa é gerenciada na Meta",
       "messagingLimited": "O envio está disponível, sujeito aos limites da Meta",
       "codeVerificationExpired": "A verificação do código é gerenciada na Meta"
+    ,
+        "notConnected": "O WhatsApp não está conectado",
+        "phoneRegistrationRequired": "É necessário registrar o telefone na Cloud API",
+        "phoneRegistrationFailed": "Falha no registro do telefone",
+        "paymentIssue": "Pagamento e cobrança precisam de atenção na Meta",
+        "messagingBlocked": "O envio de mensagens está bloqueado na Meta",
+        "wabaNotActive": "A conta do WhatsApp Business não está ativa"
     },
     "accountStatus": {
       "title": "Status da conta do WhatsApp",
@@ -10268,6 +10494,50 @@
         "docs": "Documentação da API"
       }
     }
+  ,
+      "invistimoOps": {
+        "contactsTitle": "Contatos e convidados do Invistimo",
+        "contactsSubtitle": "Convidados do CRM do Invistimo e listas de envio somente desta conta.",
+        "searchGuests": "Buscar convidados por nome, telefone ou e-mail",
+        "search": "Buscar",
+        "guests": "Convidados",
+        "noGuests": "Ainda não há convidados com número de telefone",
+        "manageLists": "Gerenciar listas de envio",
+        "agentsTitle": "Agentes de WhatsApp do Invistimo",
+        "agentsSubtitle": "Convide operadores e defina permissões de caixa de entrada, envio e relatórios somente para o Invistimo.",
+        "agentName": "Nome",
+        "agentEmail": "E-mail",
+        "role": "Função",
+        "roleManager": "Gerente",
+        "roleAgent": "Agente",
+        "roleViewer": "Visualizador",
+        "status": "Status",
+        "actions": "Ações",
+        "inviteAgent": "Convidar agente",
+        "agentSaved": "Agente salvo na conta do Invistimo",
+        "ownerLocked": "Proprietário da conta",
+        "enable": "Ativar",
+        "disable": "Desativar",
+        "scheduledTitle": "Mensagens de WhatsApp agendadas",
+        "scheduledSubtitle": "Os rascunhos ficam aqui até a aprovação da transição do Dialog. Nada é enviado ao vivo.",
+        "noList": "Nenhuma lista de envio",
+        "consent": "Os destinatários consentiram em receber esta mensagem de WhatsApp",
+        "schedule": "Salvar rascunho agendado",
+        "scheduledSaved": "Rascunho agendado salvo. O envio ao vivo continua bloqueado.",
+        "noScheduled": "Ainda não há rascunhos agendados",
+        "cancel": "Cancelar",
+        "loadError": "Não foi possível carregar os dados de gestão de WhatsApp do Invistimo",
+        "saveError": "Não foi possível salvar os dados de gestão de WhatsApp do Invistimo",
+        "perm": {
+          "inbox": "Caixa de entrada",
+          "send": "Enviar",
+          "templates": "Modelos",
+          "automations": "Automações",
+          "contacts": "Contatos",
+          "scheduled": "Agendados",
+          "reports": "Relatórios"
+        }
+      }
   },
   "metaCampaigns": {
     "shell": {
@@ -10286,6 +10556,9 @@
       "portfolio": "Portfólio",
       "copilot": "Copiloto de marketing",
       "settings": "Meta conexão"
+    ,
+        "library": "Biblioteca de criativos",
+        "rules": "Regras de automação"
     },
     "ux": {
       "onboardTitle": "Comece com o Meta Ads",
@@ -10350,6 +10623,10 @@
       "sharedRange": "Intervalo de datas",
       "showingRange": "Exibindo: {{range}}",
       "pausedHistorical": "Esta campanha está pausada. Os números são históricos, não entrega atual."
+    ,
+        "hideQaDrafts": "Ocultar rascunhos antigos de QA",
+        "hideQaDraftsHint": "Oculta nomes como Bizuply DT / QA PAUSED. Nada é excluído.",
+        "deliveryPartial": "Esta atualização leu apenas parte dos anúncios para ficar dentro do limite da Meta. O status se baseia nos anúncios lidos."
     },
     "overview": {
       "heading": "Gestão de campanhas",
@@ -10365,6 +10642,17 @@
       "lastUpdated": "Última atualização: {{time}}",
       "lastSynced": "Última sincronização: {{time}}",
       "lastUpdatedLabel": "Última atualização"
+    ,
+        "syncedWithMeta": "Sincronizado com a Meta",
+        "syncedJustNow": "Sincronizado com a Meta agora mesmo",
+        "syncedMinutesAgo": "Sincronizado com a Meta há {{minutes}} minutos",
+        "instagramNotConnected": "Conta do Instagram não conectada",
+        "instagramConnectHint": "A Página conectada não tem conta profissional do Instagram na Meta. A Bizuply só mostra este status e não conecta o Instagram automaticamente. Campanhas somente no Facebook continuam funcionando.",
+        "instagramConnectCta": "Abrir configurações da Meta",
+        "currentGoal": "Objetivo atual: {{name}}",
+        "noGoal": "Nenhum objetivo de campanha definido",
+        "optimizationStatus": "Otimização: {{status}}",
+        "optimizationIdle": "Otimização: inativa"
     },
     "accountStatus": {
       "active": "Ativo",
@@ -10383,6 +10671,8 @@
       "readOnlyHint": "Os detalhes da campanha são somente leitura sem alterações de edição ou orçamento.",
       "viewLeadsInCrm": "Ver leads no CRM",
       "adSets": "Conjuntos de anúncios"
+    ,
+        "close": "Fechar"
     },
     "actions": {
       "create": "Criar nova campanha",
@@ -10399,6 +10689,38 @@
       "confirmPauseBody": "Pausar {{name}} no Meta? Os anúncios param até você retomar.",
       "confirmResumeTitle": "Retomar a campanha?",
       "confirmResumeBody": "Retomar {{name}} no Meta? Os anúncios voltam a rodar com as configurações salvas."
+    ,
+        "syncThrottled": "A Meta pediu para reduzirmos o ritmo. Tente novamente em instantes.",
+        "confirmActivateSpend": "Isso vai ativar {{name}} na Meta e pode começar a gastar dinheiro.",
+        "rateLimited": "A Meta limitou a sincronização temporariamente. Vamos tentar de novo automaticamente.",
+        "save": "Salvar",
+        "editFull": "Abrir o editor completo",
+        "duplicateDraft": "Duplicar",
+        "deleteDraft": "Excluir rascunho",
+        "deleteCampaign": "Excluir",
+        "confirmDeleteDraftTitle": "Excluir este rascunho?",
+        "confirmDeleteDraftBody": "Excluir \"{{name}}\" da Bizuply? Uma campanha que já existe na Meta também será excluída lá depois da sua confirmação.",
+        "confirmDeleteCampaignTitle": "Deseja excluir a campanha?",
+        "confirmDeleteCampaignTitleMany": "Deseja excluir as campanhas?",
+        "confirmDeleteAdSetTitle": "Deseja excluir o conjunto de anúncios?",
+        "confirmDeleteAdSetTitleMany": "Deseja excluir os conjuntos de anúncios?",
+        "confirmDeleteAdTitle": "Deseja excluir o anúncio?",
+        "confirmDeleteAdTitleMany": "Deseja excluir os anúncios?",
+        "confirmDeleteCampaignMessage": "Se você excluir esta campanha, não poderá restaurá-la depois.",
+        "confirmDeleteCampaignMessageMany": "Se você excluir estas campanhas, não poderá restaurá-las depois.",
+        "confirmDeleteAdSetMessage": "Se você excluir este conjunto de anúncios, não poderá restaurá-lo depois.",
+        "confirmDeleteAdSetMessageMany": "Se você excluir estes conjuntos de anúncios, não poderá restaurá-los depois.",
+        "confirmDeleteAdMessage": "Se você excluir este anúncio, não poderá restaurá-lo depois.",
+        "confirmDeleteAdMessageMany": "Se você excluir estes anúncios, não poderá restaurá-los depois.",
+        "confirmDeleteDraftCascade": "O rascunho será excluído da Bizuply, inclusive os conjuntos de anúncios e os anúncios. Nada será enviado à Meta.",
+        "metaDeleteBlockedBody": "\"{{name}}\" já existe na Meta. Não será excluído nem arquivado lá sem uma aprovação à parte, e não sairá desta lista, porque a próxima sincronização o mostraria de novo.",
+        "metaDeleteBlockedClose": "Entendi",
+        "deletedOnMeta": "O item foi excluído na Meta.",
+        "deletedOnMetaMany": "{{ok}} itens foram excluídos na Meta.",
+        "deletePartial": "Alguns itens não foram excluídos: {{names}}",
+        "draftDeleted": "Rascunho excluído.",
+        "duplicateDraftDone": "Uma cópia em rascunho foi criada. Nada foi enviado à Meta.",
+        "noDraftToDuplicate": "Salve a campanha antes de fazer uma cópia local."
     },
     "creationMode": {
       "title": "Nova campanha",
@@ -10913,8 +11235,287 @@
         "publishFailBody": "Uma ou mais etapas de criação no Meta falharam. Você pode tentar novamente a partir da etapa com falha.",
         "accountBannerDemo": "Conta de anúncios: {{account}} · Página: {{page}} · Modo demo — nada é enviado à Meta",
         "publishFooterNoteDemo": "Modo demo · Publicar cria apenas uma campanha de demo e não envia nada à Meta"
+      ,
+          "editCampaign": "Editar campanha",
+          "saveChanges": "Salvar alterações",
+          "savingChanges": "Salvando alterações…",
+          "unsavedChanges": "Alterações não salvas",
+          "unsavedChangesBody": "Você tem alterações não salvas. Sair sem salvar?",
+          "leaveWithoutSaving": "Sair sem salvar",
+          "stay": "Ficar",
+          "changeReviewTitle": "Revisar alterações",
+          "changeReviewSubtitle": "Somente os campos que você alterou serão enviados à Meta.",
+          "spendImpact": "Pode afetar o gasto",
+          "objectiveLockedHint": "O objetivo da campanha não pode ser alterado depois da criação. Duplique a campanha para usar outro objetivo.",
+          "duplicateWithChanges": "Duplicar com as alterações",
+          "currentLeadForm": "Formulário de lead atual",
+          "chooseOtherForm": "Escolher outro formulário",
+          "leadFormReadOnly": "A Meta não permite editar este formulário existente aqui. Você pode mudar para outro formulário.",
+          "noChanges": "Nenhuma alteração para salvar",
+          "saveSuccess": "Alterações salvas na Bizuply",
+          "saveFailed": "Não foi possível salvar as alterações",
+          "saveDraft": "Salvar como rascunho",
+          "savingDraft": "Salvando rascunho…",
+          "draftSavedServer": "Rascunho salvo na Bizuply. A campanha não foi ativada e nenhum anúncio foi criado na Meta.",
+          "draftSavedNotOnMeta": "As alterações foram salvas na Bizuply. O anúncio ainda não foi criado na Meta.",
+          "changesSavedLocal": "As alterações foram salvas na Bizuply e não foram enviadas à Meta.",
+          "lastSavedAt": "Último salvamento: {{time}}",
+          "unpublishedChanges": "As alterações ainda não foram publicadas",
+          "discardUnsaved": "Descartar alterações não salvas",
+          "discardUnpublished": "Descartar alterações não publicadas",
+          "discardUnpublishedBody": "A versão salva será substituída pela última versão publicada ou carregada da Meta. A própria Meta não será alterada.",
+          "unpublishedDiscarded": "As alterações não publicadas foram descartadas. A última versão publicada foi mantida.",
+          "draftConflict": "Este rascunho foi atualizado em outra aba. Atualize antes de salvar de novo.",
+          "duplicateLocalDone": "Um novo rascunho da Bizuply foi criado. Nada foi enviado à Meta.",
+          "changePlacements": "Posicionamentos",
+          "changeAudiences": "Públicos",
+          "changeDetailedTargeting": "Segmentação detalhada",
+          "changeSelection": "Posição no editor",
+          "serverConfirmedSave": "Salvo na Bizuply",
+          "notYetSaved": "Ainda não salvo no servidor",
+          "metaUpdateFailedDraftKept": "O Invistimo salvou o rascunho, mas a atualização na Meta falhou: {{error}}",
+          "imageNotStored": "A imagem não foi armazenada. Envie de novo.",
+          "publishAction": "Publicar",
+          "publishCampaign": "Publicar campanha",
+          "publishChanges": "Publicar alterações",
+          "noChangesToPublish": "Nenhuma alteração para publicar",
+          "publishChangesConfirmTitle": "Publicar alterações",
+          "publishChangesConfirmBody": "Somente os campos que você alterou serão enviados. O orçamento e o status permanecem como estão, a menos que você os tenha alterado. Nenhuma campanha, conjunto de anúncios ou anúncio adicional será criado.",
+          "approveNewAd": "Autorizo criar um novo anúncio pausado. O anúncio existente não será alterado.",
+          "planLoading": "Verificando com a Meta se o anúncio existente pode ser atualizado…",
+          "changesPublished": "As alterações foram publicadas na Meta.",
+          "leadFormPublished": "O novo formulário está vinculado ao anúncio existente na Meta.",
+          "changesNotPublished": "As alterações não foram publicadas na Meta. Elas permanecem como rascunho.",
+          "leadFormMismatch": "A Meta não salvou o novo formulário de lead no anúncio. As alterações permanecem como rascunho.",
+          "newPausedAdCreated": "Um novo anúncio pausado foi criado. O anúncio existente e o orçamento não foram alterados.",
+          "outcomeUpdated": "Alterações publicadas na Meta",
+          "outcomeUpdatedForm": "O novo formulário está vinculado ao anúncio",
+          "outcomeNewPausedAd": "Um novo anúncio pausado foi criado",
+          "verifiedLeadForm": "Formulário verificado na Meta",
+          "noNewObjects": "Nenhuma campanha, conjunto de anúncios ou anúncio novo foi criado",
+          "publishConfirmTitle": "Confirmar publicação",
+          "publishConfirmBody": "Confirmar a publicação conclui o anúncio existente e ativa a campanha, o conjunto de anúncios e o anúncio. Não cria outra campanha quando já existe uma. O orçamento pode começar a ser gasto. Salvar um rascunho não ativa nada.",
+          "publishLeftPaused": "A publicação permaneceu desativada. Componente que bloqueia a veiculação: {{component}} (status {{status}}).",
+          "publishConfirmBudget": "Orçamento",
+          "publishConfirmAudience": "Público",
+          "publishConfirmPlacements": "Posicionamentos",
+          "publishConfirmForm": "Formulário",
+          "publishConfirmCreative": "Criativo",
+          "confirmPublish": "Publicar",
+          "formSavedInDraft": "Este formulário está salvo no rascunho do Invistimo e ainda não está vinculado a um criativo da Meta.",
+          "formLinkedOnMeta": "Este formulário está vinculado ao criativo da Meta.",
+          "formPageMismatch": "O formulário selecionado não pertence à Página do Facebook atual. A seleção foi mantida, mas escolha um formulário desta Página antes de publicar.",
+          "reviewHeadline": "Título",
+          "reviewPrimaryText": "Texto principal",
+          "reviewDescription": "Descrição",
+          "reviewCta": "Chamada para ação",
+          "reviewMedia": "Mídia",
+          "reviewDestination": "Link de destino",
+          "reviewPage": "Página do Facebook",
+          "reviewInstagram": "Instagram",
+          "reviewMissing": "Campos ausentes",
+          "adNotOnMeta": "O anúncio está salvo como rascunho e ainda não foi criado na Meta",
+          "campaignStatusLabel": "Status",
+          "noPublishRecord": "Não há registro de publicação. Nenhuma campanha nova foi criada.",
+          "loadingCampaign": "Carregando campanha…",
+          "editFooterNote": "Salvar atualiza somente a Bizuply. A Meta só é atualizada depois que você confirma a publicação.",
+          "duplicateStarted": "Uma cópia pausada foi criada",
+          "changeCampaignName": "Nome da campanha",
+          "changeBudget": "Orçamento",
+          "changeBudgetStrategy": "Estratégia de orçamento",
+          "changeAdSetName": "Nome do conjunto de anúncios",
+          "changeAge": "Idade",
+          "changeLocations": "Localizações",
+          "changeGender": "Gênero",
+          "changeAdSetBudget": "Orçamento do conjunto de anúncios",
+          "changeSchedule": "Programação",
+          "changeAdName": "Nome do anúncio",
+          "changeHeadline": "Título",
+          "changePrimaryText": "Texto principal",
+          "changeCta": "Chamada para ação",
+          "changeMedia": "Mídia",
+          "changeLeadForm": "Formulário de lead",
+          "changeWebsite": "Site",
+          "changeDescription": "Descrição",
+          "changeFacebookPage": "Página do Facebook",
+          "changeInstagram": "Conta do Instagram",
+          "ageNotLoaded": "Não foi possível carregar a faixa de idade da Meta",
+          "estimatePendingEdit": "O tamanho do público será atualizado depois que esta segmentação for aplicada",
+          "conversionLocationHintTraffic": "Escolha para onde enviar o tráfego deste anúncio. Campanhas de tráfego não usam formulário de lead.",
+          "conversionLocationHintGeneric": "Escolha para onde as pessoas vão depois de tocar no anúncio.",
+          "phoneConversion": "Ligações",
+          "includePeopleMatching": "Incluir pessoas que correspondam a",
+          "detailedSearchPlaceholder": "Adicionar dados demográficos, interesses ou comportamentos",
+          "browseDemographics": "Dados demográficos",
+          "browseInterests": "Interesses",
+          "browseBehaviors": "Comportamentos",
+          "targetingInfo": "Informações de segmentação",
+          "targetingInfoFallback": "Categoria de segmentação da Meta",
+          "targetingUnsupportedFlexible": "Não é compatível com o flexible_spec da Meta, então não pode ser selecionado",
+          "targetingCategoryNotSelectable": "Somente categoria para navegação — escolha um valor de ID específico da Meta",
+          "detailedBrowseAria": "Navegar na segmentação detalhada",
+          "detailedBrowseFailed": "Não foi possível carregar as categorias de segmentação da Meta",
+          "detailedSearchFailed": "Não foi possível buscar a segmentação detalhada da Meta",
+          "detailedBrowseEmpty": "Não há subcategorias disponíveis para esta conta de anúncios",
+          "detailedSearchEmpty": "Nenhum resultado de segmentação. Tente outra busca.",
+          "detailedSuggestionsEmpty": "Nenhuma sugestão de segmentação disponível no momento.",
+          "detailedSuggestionsUnavailable": "As sugestões oficiais da Meta aparecem depois que você seleciona um público, ou a partir da categoria da Página conectada. Enquanto isso, busque ou navegue nas categorias.",
+          "detailedSuggestionsFailed": "Não foi possível carregar as sugestões de segmentação da Meta",
+          "audienceSizeRange": "Tamanho do público: {{range}}",
+          "audienceSizeLabel": "Tamanho do público",
+          "suggestionsRelevance": "Relevância",
+          "suggestionsSize": "Tamanho",
+          "browseBack": "Voltar",
+          "connectToSearchTargeting": "Conecte o Meta Ads para buscar e navegar na segmentação detalhada.",
+          "manualPlacements": "Manual",
+          "publisherPlatforms": "Plataformas",
+          "devices": "Dispositivos",
+          "sponsoredMessagesNote": "sponsored_messages não pode ser combinado com outras plataformas (Marketing API).",
+          "advancedAudiences": "Personalizados, semelhantes e exclusões",
+          "advancedAudiencesHint": "Selecione públicos existentes da Meta. Criar um novo público semelhante não se aplica a campanhas ativas.",
+          "audienceGraphFieldError": "A Meta não pôde carregar públicos personalizados ou salvos porque foi solicitado um campo de tamanho de público desatualizado. A segmentação existente continua funcionando; tente de novo após a atualização do servidor.",
+          "customAudiences": "Públicos personalizados",
+          "lookalikeAudiences": "Públicos semelhantes",
+          "excludedAudiences": "Exclusões",
+          "noCustomAudiences": "Ainda não há públicos personalizados nesta conta de anúncios.",
+          "noLookalikes": "Ainda não há públicos semelhantes nesta conta de anúncios.",
+          "savedAudience": "Público salvo",
+          "localesHint": "Chaves de localidade de idioma da Meta (exemplo: 6)",
+          "abTests": "Testes A/B nesta conta de anúncios",
+          "abTestsEmpty": "Nenhum Ad Study retornado pela Marketing API.",
+          "abTestsUnavailable": "Os testes A/B não estão disponíveis nesta conta de anúncios ou nesta versão da Marketing API.",
+          "abTestsHint": "Crie apenas um rascunho de teste dividido. Iniciar um estudo exige confirmação explícita e não altera orçamentos de campanhas ativas.",
+          "abTestName": "Nome do estudo",
+          "createAbDraft": "Criar rascunho de estudo A/B",
+          "startAb": "Iniciar estudo",
+          "abConfirmTitle": "Iniciar este estudo A/B?",
+          "abConfirmBody": "A Meta vai iniciar o experimento. Isso não é a publicação de uma campanha, e não alteraremos orçamentos ativos nesta tela.",
+          "abConfirmCheck": "Confirmo que quero iniciar este estudo",
+          "advancedWritesOff": "A criação de públicos semelhantes, anúncios de catálogo e rascunhos A/B fica desativada até que uma conta de anúncios de teste seja autorizada.",
+          "createLookalike": "Criar público semelhante",
+          "createLookalikeHint": "Cria um novo público semelhante na Meta. Ele não é vinculado automaticamente a uma campanha ativa.",
+          "lookalikeSource": "Público de origem",
+          "lookalikeCountry": "País",
+          "lookalikePercent": "Similaridade",
+          "lookalikeName": "Nome do público semelhante",
+          "creatingLookalike": "Criando público semelhante…",
+          "catalogAd": "Catálogo / DPA",
+          "catalogAdDesc": "Anúncios dinâmicos de produto a partir de um conjunto de produtos do catálogo da Meta.",
+          "existingPostAd": "Publicação existente",
+          "existingPostAdDesc": "Use uma publicação de Página já publicada (object_story_id).",
+          "catalog": "Catálogo",
+          "productSet": "Conjunto de produtos",
+          "pickCatalog": "Escolher um catálogo",
+          "pickProductSet": "Escolher um conjunto de produtos",
+          "existingPost": "Publicação da Página",
+          "pickExistingPost": "Escolher uma publicação",
+          "validationCatalog": "Anúncios de catálogo precisam de um conjunto de produtos.",
+          "validationExistingPost": "Anúncios de publicação existente precisam de uma publicação da Página.",
+          "disclaimerTitle": "Título do aviso personalizado",
+          "disclaimerText": "Texto do aviso",
+          "disclaimerHint": "custom_disclaimer opcional do Graph. Deixe em branco para ignorar.",
+          "disclaimerTitlePlaceholder": "Aviso legal",
+          "disclaimerTextPlaceholder": "Concordo com os termos…",
+          "disclaimerRequired": "Exigir confirmação",
+          "syncConflictTitle": "Esta campanha difere da Meta",
+          "syncConflictBody": "Foram detectadas alterações externas na Meta. A Bizuply não vai sobrescrever a Meta nem o seu rascunho não publicado. Escolha qual versão manter no editor.",
+          "syncConflictLocal": "Local",
+          "syncConflictMeta": "Meta",
+          "syncConflictKeep": "Manter rascunho local",
+          "syncConflictLoadMeta": "Carregar versão da Meta",
+          "place_facebook": "Facebook",
+          "place_instagram": "Instagram",
+          "place_threads": "Threads",
+          "place_messenger": "Messenger",
+          "place_audience_network": "Audience Network",
+          "place_feed": "Feed",
+          "place_facebook_reels": "Reels",
+          "place_story": "Stories",
+          "place_marketplace": "Marketplace",
+          "place_video_feeds": "Feeds de vídeo",
+          "place_search": "Pesquisa",
+          "place_right_hand_column": "Coluna da direita",
+          "place_instream_video": "Vídeo in-stream",
+          "place_profile_feed": "Feed do perfil",
+          "place_stream": "Feed",
+          "place_explore": "Explorar",
+          "place_reels": "Reels",
+          "place_explore_home": "Início do Explorar",
+          "place_ig_search": "Pesquisa",
+          "place_classic": "Nativo, banner e intersticial",
+          "place_rewarded_video": "Vídeo com recompensa",
+          "place_mobile": "Celular",
+          "place_desktop": "Computador",
+          "carouselAd": "Carrossel",
+          "carouselAdUploadDesc": "Dois ou mais cartões em um único anúncio.",
+          "carouselCards": "Cartões do carrossel",
+          "carouselNeedImage": "Envie uma imagem para este cartão",
+          "addCarouselCard": "Adicionar cartão",
+          "validationCarousel": "Um carrossel precisa de pelo menos dois cartões com imagem",
+          "refreshFromMeta": "Recarregar configurações da Meta",
+          "refreshConfirmTitle": "Recarregar as configurações da Meta?",
+          "refreshConfirmBody": "Você tem edições não publicadas. Carregar da Meta substitui o editor atual pelas configurações ativas da Meta. Nada é publicado nem ativado.",
+          "refreshConfirmKeep": "Manter minhas edições",
+          "refreshConfirmLoad": "Carregar da Meta",
+          "compatRoasObjective": "O ROAS mínimo só está disponível para campanhas de Vendas ou de promoção de app.",
+          "compatBidAmount": "O teto de custo e o teto de lance exigem um valor de lance positivo.",
+          "compatRoasFloor": "O ROAS mínimo exige um piso de ROAS.",
+          "compatManualPlatform": "Posicionamentos manuais exigem pelo menos uma plataforma.",
+          "compatThreads": "Posicionamentos no Threads exigem o Instagram.",
+          "compatSponsored": "Mensagens patrocinadas não podem ser combinadas com outras plataformas.",
+          "compatAnForms": "O Audience Network não é compatível com Instant Forms.",
+          "compatAnWhatsapp": "O Audience Network não é compatível com anúncios de WhatsApp.",
+          "leadgenTosTitle": "Termos de Serviço de anúncios de lead",
+          "leadgenTosRequired": "Os anúncios de lead não podem veicular até que a Página do Facebook {{page}} aceite os Termos de Serviço de anúncios de lead da Meta.",
+          "leadgenTosOpen": "Ver termos",
+          "leadgenTosChecking": "Consultando a Meta…",
+          "leadgenTosAccepted": "A Meta confirmou a aceitação dos Termos de Serviço de anúncios de lead para {{page}}.",
+          "leadgenTosMissingPermission": "Você não tem permissão para aceitar os Termos de anúncios de lead desta Página. É preciso ter a função de administrador da Página na Meta e a permissão pages_manage_ads.",
+          "leadgenTosUnavailable": "Não foi possível confirmar com a Meta se os Termos de anúncios de lead foram aceitos nesta Página. Você ainda pode salvar um rascunho e verificar de novo.",
+          "leadgenTosDraftOk": "Salvar um rascunho continua disponível antes da aceitação dos termos.",
+          "leadgenTosRecheck": "Verificar de novo",
+          "leadgenTosDemo": "O modo de demonstração não consulta a aceitação na Meta.",
+          "leadgenTosSelectPage": "Escolha uma Página do Facebook para revisar os Termos de anúncios de lead dessa Página.",
+          "estimateUnavailable": "A Meta não retornou uma estimativa de público válida. Altere uma configuração ou tente de novo.",
+          "estimateNeedsLocation": "Escolha uma localização para obter uma estimativa de público da Meta.",
+          "estimateRetry": "Tentar de novo",
+          "recoveredDraftNote": "A Meta não criou um conjunto de anúncios, então a idade e a localização não foram salvas lá. As configurações abaixo são as que você já escolheu. A criação do conjunto de anúncios que falta permanece pausada e não consome orçamento.",
+          "resumeMissingAdSet": "Criar o conjunto de anúncios que falta (pausado)",
+          "forecastLabel": "Previsão de veiculação (não é o tamanho do público):",
+          "forecastReach": "alcance",
+          "forecastImpressions": "impressões",
+          "forecastActions": "resultados",
+          "publishOkCustomer": "A campanha foi enviada. Você pode acompanhar o status aqui.",
+          "outcomeCreationFailed": "A Meta não conseguiu criar a campanha",
+          "outcomeStillActive": "A campanha continua ativa na Meta",
+          "outcomeStillActiveHint": "A Meta recusou pausar um objeto. A publicação não foi interrompida. Abra o Gerenciador de anúncios da Meta e pause o ID mostrado aqui.",
+          "statusStillActive": "Ativo — pause na Meta",
+          "outcomeRejected": "A Meta rejeitou o anúncio",
+          "outcomeRejectedHint": "O anúncio foi criado e depois rejeitado na revisão. Não se trata de uma falha técnica de criação.",
+          "outcomePendingReview": "O anúncio foi criado e aguarda a revisão da Meta",
+          "outcomePendingHint": "A Meta aceitou o anúncio. Ele ainda não foi aprovado e não está marcado como publicado.",
+          "outcomeCreatedPaused": "A campanha foi criada na Meta e está pausada. Nenhum orçamento foi ativado.",
+          "outcomeActive": "A campanha está ativa na Meta",
+          "alreadySubmitted": "Esta campanha já foi enviada à Meta. Nenhuma cópia foi criada.",
+          "metaErrorCode": "código",
+          "metaErrorSubcode": "subcódigo",
+          "metaFbtrace": "fbtrace_id",
+          "createdObjects": "Objetos criados na Meta",
+          "noneCreated": "Nenhuma campanha, conjunto de anúncios ou anúncio foi criado",
+          "validationLeadFormCta": "Escolha uma chamada para ação que a Meta aceite com Instant Forms. \"Ver detalhes\" (OPEN_LINK) é recusada.",
+          "ctaIncompatibleLeadForm": "A Meta não permite este botão com um Instant Form",
+          "ctaConfirmTitle": "Atualizar a chamada para ação?",
+          "ctaConfirmBody": "\"{{current}}\" não é compatível com o novo destino de conversão. Trocar para \"{{suggested}}\"? Não vamos alterar o botão sem a sua confirmação.",
+          "ctaConfirmAccept": "Trocar para {{suggested}}",
+          "ctaConfirmKeep": "Manter minha escolha"
       },
       "budgetAverageMoney": "Você vai gastar em média {{money}} por dia. O gasto diário real pode variar."
+    ,
+        "adSetBudgetSharing": "Compartilhar orçamento entre conjuntos de anúncios",
+        "adSetBudgetSharingHint": "A Meta pode mover até 20% do orçamento diário entre os conjuntos de anúncios. Desativado por padrão e somente quando o orçamento está no conjunto de anúncios.",
+        "minRoas": "ROAS mínimo",
+        "bidAmount": "Lance ou teto de custo",
+        "roasFloor": "Piso de ROAS"
     },
     "ai": {
       "badge": "BizUply AI",
@@ -11117,6 +11718,24 @@
       "custom": "Faixa personalizada",
       "since": "Da",
       "until": "Para"
+    ,
+        "today": "Hoje",
+        "yesterday": "Ontem",
+        "todayYesterday": "Hoje e ontem",
+        "rolling7": "7 dias, incluindo hoje",
+        "last28": "Últimos 28 dias",
+        "thisWeek": "Esta semana",
+        "lastWeek": "Semana passada",
+        "maximum": "Máximo",
+        "presets": "Intervalos de datas",
+        "compare": "Comparar",
+        "comparePrevious": "Período anterior",
+        "compareCustom": "Intervalo personalizado",
+        "update": "Atualizar",
+        "cancel": "Cancelar",
+        "previousMonths": "Meses anteriores",
+        "nextMonths": "Próximos meses",
+        "timezoneNote": "As datas usam o fuso horário da conta de anúncios ({{zone}})"
     },
     "segments": {
       "all": "Tudo",
@@ -11164,6 +11783,14 @@
       "endOngoing": "Em andamento",
       "budgetDaily": "Diariamente.",
       "budgetLifetime": "Vida"
+    ,
+        "adName": "Nome do anúncio",
+        "adSetName": "Nome do conjunto de anúncios",
+        "linkClicks": "Cliques no link",
+        "cpc": "CPC",
+        "cpm": "CPM",
+        "frequency": "Frequência",
+        "objective": "Objetivo"
     },
     "status": {
       "active": "Ativo",
@@ -11178,6 +11805,11 @@
       "rejected": "Rejeitado",
       "with_issues": "Com problemas",
       "campaign_paused": "Campanha desligada"
+    ,
+        "pending_publish": "Aguardando publicação",
+        "failed": "Falhou",
+        "unknown": "Status não verificado",
+        "limited": "Limitado"
     },
     "objectives": {
       "leads": "Leads",
@@ -11236,6 +11868,28 @@
       "loading": "Carregando a saúde da campanha...",
       "error": "Não pude carregar a saúde da campanha.",
       "empty": "Ainda não há recomendações de desempenho."
+    ,
+        "generate": "Gerar recomendações",
+        "apply": "Aplicar recomendação",
+        "undo": "Desfazer",
+        "confirmTitle": "Aplicar esta alteração?",
+        "confirmObject": "Objeto",
+        "confirmCurrent": "Valor atual",
+        "confirmNew": "Novo valor",
+        "confirmWhy": "Motivo",
+        "confirmImpact": "Impacto esperado",
+        "confirmSpend": "Isto pode afetar o gasto",
+        "confirmSpendNo": "Isto não ativa a veiculação",
+        "confirmApply": "Confirmar aplicação",
+        "cancel": "Cancelar",
+        "applied": "Aplicado com sucesso",
+        "applyFailed": "A releitura não coincidiu. A alteração não foi marcada como bem-sucedida.",
+        "lowData": "Ainda não há dados suficientes para recomendar uma alteração",
+        "stale": "A recomendação está desatualizada — recalcule antes de aplicar.",
+        "applyPaused": "A aplicação fica desativada enquanto a campanha estiver pausada.",
+        "issue": "Problema",
+        "evidence": "Evidências",
+        "confidence": "Confiança"
     },
     "empty": {
       "notConnectedTitle": "Nenhuma conta de anúncio conectada encontrada",
@@ -11439,6 +12093,12 @@
       "previewAllHint": "Visualização oficial de Meta para a colocação selecionada (Feed / Story / Reels).",
       "settingsSubtitleNoBudget": "Conecte Meta, escolha uma conta de anúncio e Page. Orçamento é definido por campanha.",
       "metricsMetaParity": "Sincronizado com o Meta Ads Manager para o mesmo intervalo de datas."
+    ,
+        "instagramRequiredForPlacement": "Para anunciar no Instagram, conecte uma conta do Instagram.",
+        "conditionalQuestion": "Mostrar esta pergunta somente se",
+        "conditionalQuestionHint": "dependent_conditional_questions da Meta: a pergunta dependente é exibida depois de uma opção de múltipla escolha da pergunta principal.",
+        "conditionalAlways": "Mostrar sempre",
+        "conditionalPickOption": "Escolher a resposta principal"
     },
     "wizard": {
       "main": {
@@ -11663,6 +12323,10 @@
       "WHATSAPP_MESSAGE": "WhatsApp",
       "WATCH_MORE": "Veja mais",
       "ORDER_NOW": "Peça agora"
+    ,
+        "BOOK_NOW": "Reservar agora",
+        "GET_STARTED": "Começar",
+        "VISIT_WEBSITE": "Visitar o site"
     },
     "preview": {
       "localTitle": "Postar visualização",
@@ -11696,6 +12360,10 @@
         "INSTAGRAM_REELS": "Instagram Reels",
         "RIGHT_COLUMN_STANDARD": "Coluna direita"
       }
+    ,
+        "title": "Pré-visualização do anúncio",
+        "action": "Atualizar pré-visualização",
+        "failed": "Não foi possível carregar a pré-visualização da Meta"
     },
     "settings": {
       "badge": "Conexão",
@@ -11742,6 +12410,11 @@
       "saveBusinessHint": "Salve o portfólio do Meta e depois escolha uma conta de anúncios.",
       "selectBusinessRequired": "Selecione um negócio do Meta",
       "tokenInvalid": "O token do Meta não é mais válido. Reconecte para continuar."
+    ,
+        "managedVia": "Conexão com a Meta gerenciada por: {{name}}",
+        "lastSync": "Última sincronização",
+        "currency": "Moeda",
+        "reconnectNeeded": "Não foi possível concluir a conexão. Tente novamente."
     },
     "toasts": {
       "connected": "Meta Ads conectados com sucesso",
@@ -11760,6 +12433,8 @@
       "mediaUploaded": "Mídia enviada para Meta",
       "leadFormCreated": "Formulário de lead criado",
       "businessSelected": "Negócio do Meta salvo"
+    ,
+        "saved": "Salvo na Meta"
     },
     "errors": {
       "loadOverview": "Falha ao carregar a visão geral da campanha",
@@ -11781,6 +12456,12 @@
       "createLeadForm": "Falha ao criar o formulário de lead",
       "selectBusiness": "Não foi possível salvar o negócio do Meta",
       "statusNotPersisted": "O Meta atualizou a campanha, mas o BizUply não conseguiu salvar o novo status. Atualize e tente de novo."
+    ,
+        "updateCampaign": "A Meta rejeitou a atualização",
+        "duplicate": "Falha ao duplicar na Meta",
+        "deleteCampaignKept": "Não foi possível excluir a campanha. Ela continua na lista.",
+        "deleteForbidden": "Você só pode excluir campanhas que pertencem à sua empresa.",
+        "deleteInProgress": "A exclusão já está em andamento. Não é preciso clicar de novo."
     },
     "review": {
       "captionsAuth": "Revisão do app · Facebook Login · ads_read · ads_management · business_management",
@@ -11837,6 +12518,281 @@
       "retryFailed": "Falha ao tentar novamente",
       "demoCreated": "Campanha de demonstração criada"
     }
+  ,
+      "levels": {
+        "campaigns": "Campanhas",
+        "adsets": "Conjuntos de anúncios",
+        "ads": "Anúncios",
+        "context": "Nível: {{level}}",
+        "selectedCampaign": "Campanha selecionada: {{name}}",
+        "selectedAdSet": "Conjunto de anúncios selecionado: {{name}}",
+        "clearSelection": "Limpar a seleção e mostrar tudo",
+        "search": "Buscar por nome ou ID da Meta",
+        "columns": "Colunas: Desempenho",
+        "presetPerformance": "Desempenho",
+        "presetLeads": "Leads",
+        "presetEngagement": "Engajamento",
+        "presetSpend": "Gasto",
+        "resetColumns": "Restaurar o padrão",
+        "missingMetric": "A Meta não retornou esta métrica para o período e o nível selecionados",
+        "bulkTitle": "Ação em {{count}} itens",
+        "bulkBody": "Ação: {{action}}. Itens: {{names}}.",
+        "bulkLive": "Isso altera a veiculação ativa na Meta.",
+        "bulkSkipped": "{{count}} itens locais não serão enviados à Meta.",
+        "bulkConfirm": "Confirmar ação",
+        "bulkDelete": "Excluir",
+        "bulkPartial": "Sucesso parcial. Falhas: {{names}}",
+        "compare": "Comparar campanhas",
+        "compareNeed": "Selecione pelo menos duas campanhas",
+        "breakdown": "Detalhamento",
+        "grainDay": "Diário",
+        "grainWeek": "Semanal",
+        "grainMonth": "Mensal",
+        "empty": "Nada corresponde a este período e a este filtro",
+        "loadError": "A Meta não retornou dados. Verifique a permissão Insights ou tente novamente.",
+        "history": "Histórico de alterações",
+        "historyEmpty": "Não há histórico de alterações salvo para este item",
+        "performance": "Desempenho",
+        "next": "Próximo",
+        "prev": "Anterior",
+        "selectAll": "Selecionar todas as linhas visíveis",
+        "createdFrom": "Criado a partir de",
+        "createdTo": "Criado até",
+        "landingPageViews": "Visualizações da página de destino",
+        "purchases": "Compras"
+      },
+      "manager": {
+        "configured": "Status configurado",
+        "hierarchy": "Campanha → Conjuntos de anúncios → Anúncios",
+        "edit": "Editar no Invistimo",
+        "adSetName": "Nome do conjunto de anúncios",
+        "viewOnly": "Você pode ver esta campanha, mas não alterar as configurações de gasto.",
+        "duplicateCampaign": "Duplicar campanha",
+        "duplicateAdSet": "Duplicar conjunto de anúncios",
+        "duplicateAd": "Duplicar anúncio",
+        "duplicateConfirm": "Duplicar este {{kind}} como pausado?",
+        "duplicatedPaused": "Duplicado na Meta como PAUSED",
+        "tabs": {
+          "campaign": "Campanhas",
+          "adset": "Conjuntos de anúncios",
+          "ad": "Anúncios"
+        },
+        "libraryTitle": "Biblioteca de criativos",
+        "libraryBody": "Reutilize imagens e vídeos já enviados para esta conta de anúncios.",
+        "uploadNew": "Enviar novo",
+        "reuse": "Copiar ID para reutilizar",
+        "copied": "Copiado",
+        "syncing": "Sincronizando com a Meta…"
+      },
+      "human": {
+        "HOLD": "Manter o orçamento como está por enquanto",
+        "KEEP": "Manter o orçamento como está por enquanto",
+        "NO_CHANGE": "Manter o orçamento como está por enquanto",
+        "INCREASE": "Considerar aumentar o orçamento",
+        "DECREASE": "Considerar reduzir o orçamento",
+        "SCALE_UP": "Considerar escalar com cuidado",
+        "SCALE_DOWN": "Considerar reduzir a escala",
+        "PAUSE": "Considerar pausar",
+        "RESUME": "Considerar reativar",
+        "KEEP_TOTAL": "Manter o mesmo orçamento total",
+        "GROWTH": "Permitir crescimento até o limite",
+        "INSUFFICIENT_DATA": "Ainda não há dados suficientes para recomendar uma mudança de orçamento",
+        "ACTIVE": "Ativo",
+        "PAUSED": "Pausado",
+        "TODAY": "Hoje",
+        "YESTERDAY": "Ontem",
+        "LAST_3D": "Últimos 3 dias",
+        "LAST_7D": "Últimos 7 dias",
+        "LAST_14D": "Últimos 14 dias",
+        "LAST_30D": "Últimos 30 dias",
+        "OUTCOME_LEADS": "Leads",
+        "LEAD_GENERATION": "Leads",
+        "OUTCOME_SALES": "Vendas",
+        "OUTCOME_TRAFFIC": "Tráfego",
+        "OUTCOME_AWARENESS": "Reconhecimento",
+        "OUTCOME_ENGAGEMENT": "Engajamento",
+        "CONVERSIONS": "Conversões",
+        "BLENDED_CPL": "Custo por lead"
+      },
+      "recommendations": {
+        "title": "Recomendações",
+        "subtitle": "Verificações sugeridas para as suas campanhas — nada muda até você aprovar.",
+        "viewCta": "Ver recomendações",
+        "openCount": "{{count}} recomendações abertas",
+        "loading": "Carregando recomendações…",
+        "empty": "Nenhuma recomendação para mostrar.",
+        "whyLabel": "Por que isto foi criado",
+        "review": "Revisar",
+        "confirmHint": "Você só pode aprovar uma alteração depois de revisá-la. Nada muda sem aprovação.",
+        "campaignFallback": "Campanha",
+        "filters": {
+          "all": "Todas",
+          "open": "Abertas",
+          "applied": "Aplicadas",
+          "dismissed": "Dispensadas"
+        },
+        "status": {
+          "open": "Aberta",
+          "applied": "Aplicada",
+          "dismissed": "Dispensada"
+        },
+        "kinds": {
+          "cpl": {
+            "title": "O custo por lead precisa de atenção",
+            "body": "O desempenho da campanha mudou recentemente. Revise o orçamento e o desempenho antes de fazer alterações.",
+            "why": "O custo por lead mudou em relação ao período anterior."
+          },
+          "creative": {
+            "title": "Revise este anúncio",
+            "body": "O desempenho da campanha mudou recentemente. Revise o orçamento e o desempenho antes de fazer alterações.",
+            "why": "O anúncio apresenta sinais que vale a pena conferir."
+          },
+          "budget": {
+            "title": "Revise o orçamento",
+            "body": "O desempenho da campanha mudou recentemente. Revise o orçamento e o desempenho antes de fazer alterações.",
+            "why": "O orçamento ou o ritmo de gasto mudou."
+          },
+          "pause": {
+            "title": "Revise esta campanha",
+            "body": "O desempenho da campanha mudou recentemente. Revise o orçamento e o desempenho antes de fazer alterações.",
+            "why": "O status da campanha precisa de verificação."
+          },
+          "generic": {
+            "title": "Verificação de desempenho recomendada",
+            "body": "O desempenho da campanha mudou recentemente. Revise o orçamento e o desempenho antes de fazer alterações.",
+            "why": "Foi detectado um risco ou uma oportunidade de desempenho."
+          }
+        }
+      },
+      "automationRules": {
+        "title": "Regras de automação",
+        "subtitle": "Regras determinísticas que o servidor avalia em segundo plano. O modo padrão é somente recomendação.",
+        "create": "Nova regra",
+        "save": "Salvar regra",
+        "cancel": "Cancelar",
+        "test": "Testar regra",
+        "evaluate": "Avaliar agora",
+        "enabled": "Ativada",
+        "disabled": "Desativada",
+        "when": "QUANDO",
+        "is": "É",
+        "for": "DURANTE",
+        "onlyIf": "SOMENTE SE",
+        "then": "ENTÃO",
+        "name": "Nome da regra",
+        "scope": "Escopo",
+        "metric": "Métrica",
+        "operator": "Operador",
+        "threshold": "Limite",
+        "window": "Janela de avaliação",
+        "consecutive": "Períodos consecutivos",
+        "minImpressions": "Impressões mínimas",
+        "minSpend": "Gasto mínimo",
+        "minResults": "Resultados mínimos",
+        "minAge": "Idade mínima da campanha (horas)",
+        "action": "Ação",
+        "actionValue": "Valor da ação",
+        "mode": "Modo",
+        "recommend": "Somente recomendação",
+        "automatic": "Automático",
+        "cooldown": "Intervalo (horas)",
+        "objectIds": "IDs de objeto (vazio = todos os correspondentes)",
+        "history": "Histórico da regra",
+        "lastEvaluated": "Última avaliação",
+        "lastTriggered": "Último acionamento",
+        "executions": "Execuções",
+        "status": "Status",
+        "testResult": "Resultado do teste",
+        "noRules": "Ainda não há regras de automação.",
+        "safety": "As regras nunca ativam um objeto pausado. O modo automático executa somente a ação que você escolheu."
+      },
+      "goals": {
+        "title": "Objetivos da campanha",
+        "subtitle": "Sua meta e se os anúncios estão dentro dela.",
+        "setGoal": "Definir objetivo da campanha",
+        "step1": "Objetivo",
+        "step2": "Meta",
+        "step3": "Limites de orçamento",
+        "step4": "Preferência de automação",
+        "moreLeads": "Mais leads",
+        "lowerCpl": "Menor custo por lead",
+        "moreConversions": "Mais conversões no site",
+        "improveEfficiency": "Melhorar a eficiência",
+        "scale": "Escalar o desempenho",
+        "targetCpl": "CPL desejado (ILS)",
+        "currentBudget": "Orçamento diário atual",
+        "maxBudget": "Orçamento diário máximo",
+        "maxIncrease": "Aumento máximo %",
+        "maxDecrease": "Redução máxima %",
+        "recommendOnly": "Somente recomendações",
+        "safeAuto": "Ações automáticas seguras",
+        "draft": "Gerar plano",
+        "reviewTitle": "Com base no seu objetivo, o Invistimo vai monitorar",
+        "start": "Iniciar monitoramento",
+        "editRules": "Você pode editar, remover ou mudar o modo antes de começar.",
+        "status": {
+          "ON_TARGET": "Na meta",
+          "NEAR_TARGET": "Perto da meta",
+          "NEEDS_ATTENTION": "Requer atenção",
+          "INSUFFICIENT_DATA": "Ainda não há dados suficientes"
+        },
+        "current": "Atual",
+        "difference": "Diferença",
+        "started": "Início do objetivo",
+        "noGoals": "Ainda não há objetivos.",
+        "evaluationWindow": "Com base em {{window}}",
+        "basedOnWindow": "Com base em {{window}}",
+        "evaluate": "Atualizar resultados",
+        "remove": "Remover",
+        "currencyValue": "{{value}} ILS",
+        "windows": {
+          "TODAY": "Hoje",
+          "YESTERDAY": "Ontem",
+          "LAST_3D": "Últimos 3 dias",
+          "LAST_7D": "Últimos 7 dias",
+          "LAST_14D": "Últimos 14 dias",
+          "LAST_30D": "Últimos 30 dias"
+        }
+      },
+      "portfolio": {
+        "title": "Otimização de portfólio",
+        "subtitle": "Compare campanhas e revise uma mudança de orçamento sugerida — somente depois da sua aprovação.",
+        "keepTotal": "Manter o orçamento total inalterado",
+        "growth": "Permitir crescimento até o limite da conta",
+        "targetCpl": "CPL combinado desejado",
+        "accountCap": "Limite diário da conta",
+        "maxChange": "Variação máxima %",
+        "analyze": "Analisar",
+        "simulate": "Simular alocação",
+        "apply": "Aplicar alocação",
+        "confirm": "Confirmar aplicação",
+        "review": "Atual → Proposto",
+        "currentTotal": "Orçamento total atual",
+        "proposedTotal": "Orçamento total proposto",
+        "blendedCpl": "CPL combinado",
+        "explanation": "Explicação",
+        "colProposed": "Proposto",
+        "colRec": "Recomendação",
+        "colReason": "Motivo"
+      },
+      "copilot": {
+        "title": "Pergunte à IA sobre suas campanhas",
+        "subtitle": "Pergunte em linguagem simples. As mudanças sugeridas sempre precisam da sua aprovação.",
+        "placeholder": "Onde estou desperdiçando dinheiro?",
+        "ask": "Perguntar",
+        "thinking": "Analisando…",
+        "facts": "Fatos de apoio",
+        "basedOn": "Com base em",
+        "reviewAction": "Revisar ação",
+        "insufficient": "Ainda não há dados suficientes para responder isso com segurança.",
+        "synced": "Com base em dados sincronizados há {{minutes}} minutos",
+        "qAttention": "O que precisa da minha atenção hoje?",
+        "qOverspend": "Onde estou gastando além da conta?",
+        "qGoal": "Qual campanha está mais perto do objetivo?",
+        "qChanged": "O que mudou nos últimos 7 dias?",
+        "qFatigue": "Algum anúncio está com fadiga?",
+        "qScale": "Onde posso escalar com segurança?"
+      }
   },
   "socialSchedule": {
     "loading": "Carregando horário...",
@@ -12771,6 +13727,9 @@
       "trust": "Somos desenvolvedores de análise de aplicativos Meta o aplicativo Bizuply passou no processo de revisão de aplicativos da Meta para conectar anúncios de leads a empresas.",
       "ctaAutomations": "Automações",
       "ctaStartFree": "Ver planos"
+    ,
+        "badgeTech": "Provedor de tecnologia da Meta",
+        "badgeReview": "Análise do app aprovada"
     },
     "stats": {
       "pipelineStatuses": "status no pipeline de lead",
@@ -12778,6 +13737,8 @@
       "docTypes": "tipos de registro no arquivo cliente",
       "calendarResolution": "Resolução do calendário de compromissos",
       "minSuffix": " min"
+    ,
+        "caption": "Fatos do produto, não resultados de desempenho"
     },
     "pipeline": {
       "new": "Novo",
@@ -13033,6 +13994,86 @@
       "text": "Conecte suas fontes de leads, trabalhe com status e tarefas e continue para o arquivo do cliente e calendário de compromissos. Tudo em um aplicativo Meta que passou na Revisão de Aplicativos.",
       "primaryLabel": "Inscreva-se agora"
     }
+  ,
+      "audiences": {
+        "eyebrow": "Para quem é",
+        "titleA": "Equipes que já recebem solicitações ",
+        "titleHighlight": "e precisam de um só lugar para atendê-las",
+        "lead": "O CRM é para negócios que captam leads de anúncios ou de um site e depois precisam de um status, de um acompanhamento e, quando for o caso, de um compromisso.",
+        "cards": {
+          "services": {
+            "title": "Negócios de serviços",
+            "text": "Clínicas, salões, estúdios e equipes de campo que transformam uma solicitação em ficha de cliente e horário marcado."
+          },
+          "ads": {
+            "title": "Negócios que veiculam anúncios de lead",
+            "text": "Equipes que compram formulários de lead do Facebook, do Instagram ou do Google e querem cada envio no funil, com a origem."
+          },
+          "sites": {
+            "title": "Negócios com site na Bizuply",
+            "text": "Um formulário publicado no construtor de sites salva a solicitação com a origem Site e pode enviar um alerta por e-mail."
+          }
+        }
+      },
+      "useCases": {
+        "eyebrow": "Casos de uso",
+        "title": "O que acontece depois que a solicitação chega",
+        "items": {
+          "leadAd": {
+            "title": "Um anúncio de lead vira um cartão no funil",
+            "text": "Depois que a Página do Facebook é conectada e o formulário é selecionado, um novo lead da Meta entra com o status Novo. Os campos de origem e de formulário permanecem no cartão."
+          },
+          "website": {
+            "title": "Um formulário do site entra na mesma lista",
+            "text": "Um formulário de lead em um site da Bizuply é salvo com a origem Site. O negócio pode receber um alerta por e-mail, e o visitante pode ver uma mensagem de agradecimento."
+          },
+          "client": {
+            "title": "Um lead convertido continua como cliente",
+            "text": "A ficha do cliente guarda os dados de contato, um histórico, arquivos e o histórico de compromissos, para o trabalho não parar quando o status muda para Convertido."
+          },
+          "booking": {
+            "title": "O próximo passo pode ser um horário na agenda",
+            "text": "O horário de funcionamento e a duração do serviço definem janelas de 15 minutos. Um agendamento feito na página do cliente envia um e-mail de confirmação e aparece na agenda."
+          }
+        }
+      },
+      "start": {
+        "eyebrow": "Primeiros passos",
+        "title": "Da conta ao primeiro lead",
+        "steps": {
+          "account": {
+            "title": "Crie a conta do negócio",
+            "text": "Abra uma conta na Bizuply e entre no CRM pelo painel do negócio."
+          },
+          "source": {
+            "title": "Conecte uma origem",
+            "text": "Conecte uma Página do Facebook e um formulário de lead, um formulário de lead do Google Ads ou um formulário no seu site da Bizuply."
+          },
+          "work": {
+            "title": "Trabalhe o cartão",
+            "text": "Defina o status, adicione uma nota ou um registro de ligação ou de WhatsApp e crie uma tarefa com data e hora."
+          }
+        }
+      },
+      "pricingNote": {
+        "eyebrow": "Preços",
+        "title": "Somente o CRM custa US$ 49 por mês",
+        "text": "O plano somente CRM custa US$ 49 por mês e renova todo mês. O plano empresarial, que inclui CRM junto com compromissos, colaborações e automações, custa US$ 99 por mês ou US$ 990 por ano.",
+        "plans": "Ver todos os planos",
+        "crmOnly": "Começar somente com o CRM"
+      },
+      "related": {
+        "eyebrow": "Funciona com o restante da Bizuply",
+        "title": "O CRM não é uma caixa de entrada separada",
+        "automations": "Automações",
+        "automationsText": "Lembretes, acompanhamentos, tarefas e alertas ligados ao CRM.",
+        "appointments": "Compromissos",
+        "appointmentsText": "A agenda, os serviços e a página de agendamento do cliente.",
+        "websites": "Construtor de sites",
+        "websitesText": "Um site cujas solicitações entram no mesmo funil.",
+        "whatsapp": "API do WhatsApp",
+        "whatsappText": "Um número de WhatsApp conectado para sistemas que enviam modelos aprovados."
+      }
   },
   "privacyPage": {
   "metaTitle": "Política de privacidade - Bizuply",
@@ -18005,6 +19046,12 @@
       "internationalPrice": "${{annual}} / ano",
       "internationalManual": "Cobrança manual apenas. O cadastro é gratuito e aguarda aprovação do administrador.",
       "internationalLocked": "O cadastro internacional é gratuito no site e aguarda aprovação do administrador. Este formulário não cobra."
+    ,
+        "internationalMonthlyPrice": "US$ {{monthly}} / mês",
+        "annualSavings": "Economize US$ {{amount}} por ano",
+        "noAutoCharge": "Não há cobrança automática.",
+        "continue": "Continuar",
+        "backToInterval": "Alterar intervalo"
     },
     "internationalFee": {
       "pendingTitle": "Aguardando aprovação do administrador",
@@ -18834,6 +19881,9 @@
       }
     },
     "iphoneSafariStep": "Safari → bizuply.com"
+  ,
+      "complimentaryActive": "Ativo – sem cobrança",
+      "complimentaryDetail": "Benefício pessoal. Sem cobrança, sem período de teste e sem data de expiração."
   },
   "domainSearch": {
     "free": "Grátis",
@@ -22509,6 +23559,19 @@
     },
     "upgrade": {
       "title": "Atualizar assinatura"
+    ,
+        "hint": "Esta tela mostra a assinatura ativa e leva à gestão de cobrança e ao catálogo de planos. O pagamento continua nas telas existentes.",
+        "current": "Assinatura atual",
+        "noPlan": "Nenhuma assinatura ativa foi encontrada nos dados de cobrança.",
+        "status": "Status",
+        "nextCharge": "Próxima cobrança",
+        "statusActive": "Ativa",
+        "monthly": "Mensal",
+        "yearly": "Anual",
+        "openBilling": "Gerenciar cobrança",
+        "openPricing": "Ver planos",
+        "loading": "Carregando dados da assinatura...",
+        "loadError": "Não foi possível carregar os dados de cobrança."
     },
     "adsLead": {
       "failed": "A ação falhou. Tente de novo."
@@ -23101,6 +24164,27 @@
       "withdrawError": "Erro ao enviar o pedido de saque",
       "businessNamePh": "Nome do negócio",
       "contactNamePh": "Nome do contato"
+    ,
+        "pageTitle": "Programa de afiliados",
+        "pageHint": "Link pessoal, novos clientes, estatísticas e saque de saldo.",
+        "linkTitle": "Seu link de afiliado",
+        "copyLink": "Copiar link",
+        "createTitle": "Criar um novo cliente",
+        "emailPh": "E-mail",
+        "phonePh": "Telefone",
+        "createButton": "Criar cliente e link de pagamento",
+        "paymentLink": "Link de pagamento",
+        "statsTitle": "Estatísticas",
+        "month": "Mês",
+        "purchases": "Compras",
+        "paid": "Pagas",
+        "unpaid": "Não pagas",
+        "withdrawTitle": "Sacar saldo",
+        "available": "Saldo disponível",
+        "minPh": "Mínimo de US$ 200",
+        "requestWithdraw": "Solicitar saque",
+        "manageBank": "Gerenciar dados bancários",
+        "emptyStats": "Ainda não há dados de compras."
     },
     "upload": {
       "selectFile": "Selecione um arquivo para enviar",
@@ -23155,6 +24239,28 @@
       "youCustomer": "Vocês (cliente)",
       "business": "Negócio",
       "system": "Sistema"
+    ,
+        "inbox": "Caixa de entrada",
+        "title": "Mensagens de clientes",
+        "subtitle": "Todas as conversas com os clientes do negócio em um só lugar.",
+        "conversations": "Conversas",
+        "unread": "Não lidas",
+        "loadingList": "Carregando conversas...",
+        "chatsCount": "{{count}} conversas",
+        "emptyTitle": "Ainda não há conversas",
+        "emptyBody": "Quando os clientes enviarem mensagem para a página do negócio, a conversa aparece aqui.",
+        "selectTitle": "Selecione uma conversa",
+        "selectBody": "Escolha um cliente na lista para ler e responder.",
+        "back": "Voltar às conversas",
+        "noBusinessTitle": "Conta do negócio não encontrada",
+        "noBusinessBody": "Não encontramos um ID de negócio ativo para esta conta.",
+        "loadingData": "Carregando dados...",
+        "chatsWithClients": "Conversas com clientes",
+        "chatWithBusiness": "Conversa com o negócio",
+        "noConversations": "Ainda não há conversas",
+        "loadingConversations": "Carregando conversas...",
+        "loadError": "Erro ao carregar as conversas",
+        "client": "Cliente"
     },
     "loading": {
       "appointments": "Carregando agendamentos...",
@@ -23200,6 +24306,11 @@
       "proceedPayment": "Prosseguir para o pagamento",
       "allCategories": "Tudo",
       "addToCart": "Adicionar ao carrinho"
+    ,
+        "color": "Cor",
+        "size": "Tamanho",
+        "qtyLabel": "Quantidade",
+        "removeItem": "Remover"
     },
     "servicesChrome": {
       "addService": "Adicionar um serviço",
@@ -23322,6 +24433,9 @@
       "tipReviews": "🌟 Enviem um pedido curto de avaliação com um link fácil.",
       "tipDefault": "🎯 Façam hoje uma pequena ação que aproxime vocês da meta.",
       "achieved": "🏆 Meta alcançada: \"{{title}}\" em {{date}}"
+    ,
+        "pageHint": "O progresso é calculado com os dados do negócio já carregados. Os objetivos ficam nesta tela.",
+        "empty": "Ainda não há objetivos. Preencha o formulário para ver o progresso."
     },
     "metaFormChrome": {
       "createForm": "Criar formulário",
@@ -23966,4 +25080,39 @@
     "year": "por ano",
     "subscription": "{{price}} {{interval}}, em dólares americanos, pela Lemon Squeezy. A assinatura é renovada automaticamente até ser cancelada na área de cobrança. O cancelamento interrompe a próxima cobrança, e o acesso continua até o fim do período pago. Os reembolsos seguem os termos de uso publicados."
   }
+,
+    "aiStudio": {
+      "beta": "Beta",
+      "disabledBody": "O AI Studio está incluído no plano de negócios ativo. Este negócio não tem agora um plano de negócios ativo nem acesso de teste.",
+      "disabledNote": "Não há cobrança separada. O site só é publicado depois de uma confirmação explícita.",
+      "backToSites": "Voltar aos sites",
+      "kicker": "BIZUPLY AI STUDIO · {{beta}}",
+      "draftTitle": "Rascunho do site em uma conversa",
+      "draftLead": "O site é criado na conversa, salvo e aberto para edição no Website Studio. A publicação usa o fluxo existente e só depois de uma confirmação explícita. O serviço está incluído no plano de negócios, sem cobrança separada.",
+      "credits": "Tentativas na beta, sem cobrança: {{count}}",
+      "saveSite": "Salvar site",
+      "confirmPublish": "Confirmar publicação",
+      "publishUpdate": "Publicar atualização",
+      "publishSite": "Publicar site",
+      "openStudio": "Abrir no Website Studio",
+      "chat": "Chat",
+      "chatHint": "Tente: «Crie um site para um estúdio de beleza chamado Naveh», «Mude as cores para #7c3aed», «Adicione uma página de preços».",
+      "placeholder": "Escreva um pedido…",
+      "send": "Enviar",
+      "preview": "Prévia do rascunho",
+      "previewEmpty": "O site desenhado aparece aqui depois de ser criado no chat.",
+      "previewNote": "Rascunho desenhado. O site não está publicado.",
+      "versions": "Versões",
+      "versionsEmpty": "As versões são criadas depois de cada alteração bem-sucedida.",
+      "restoreFailed": "Não foi possível restaurar",
+      "starterPrompt": "Crie um site no estilo luxury para um estúdio de beleza chamado Naveh",
+      "chatError": "A conversa falhou",
+      "dailyQuota": "Você atingiu a cota diária do AI Studio. É possível continuar editando o site manualmente. Criar e editar com IA volta depois que a cota for renovada.",
+      "monthlyQuota": "Você atingiu a cota mensal do AI Studio. Os sites criados foram salvos e ainda podem ser editados. O uso de IA volta no início do próximo período.",
+      "quotaRenews": "A cota é renovada em {{date}}.",
+      "manualFallback": "É possível continuar editando o site manualmente. O AI Studio não está disponível agora.",
+      "statusFailed": "Não foi possível carregar o status do AI Studio",
+      "saveFailed": "Não foi possível salvar o rascunho",
+      "publishFailed": "A publicação falhou"
+    }
 }
