@@ -199,6 +199,21 @@ describe("languageFromUrl", () => {
     expect(getManualLanguageChoice()).toBe("he");
     expect(resolvePreferredLanguage({ accountLanguage: "en", businessCountry: "US" })).toBe("he");
   });
+
+  it("does not let a /he app prefix overwrite a saved language", () => {
+    setSessionLanguageOverride("es");
+    window.history.replaceState({}, "", "/he/business/biz/dashboard");
+    expect(languageFromUrl()).toBeNull();
+    expect(explicitLanguageFromUrl()).toBeNull();
+    expect(applyLanguageFromUrl()).toBeNull();
+    expect(getManualLanguageChoice()).toBe("es");
+    expect(resolvePreferredLanguage({ accountLanguage: "en", businessCountry: "IL" })).toBe("es");
+  });
+
+  it("still treats a Hebrew marketing path as a language choice", () => {
+    window.history.replaceState({}, "", "/he/pricing");
+    expect(languageFromUrl()).toBe("he");
+  });
 });
 
 describe("explicit preference persistence", () => {

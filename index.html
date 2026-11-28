@@ -132,7 +132,18 @@
             "partner-materials": 1,
             onboarding: 1,
           };
-          if (pathLocale && pathLocale !== "en") {
+          if (appRoute[bareFirst]) {
+            // Saved preference wins over a stale /he (or /es) app prefix.
+            if (pathLocale && pathLocale !== "en" && lang && lang !== pathLocale) {
+              var appPrefix = lang === "pt-BR" ? "/pt-br" : lang === "en" ? "" : "/" + lang;
+              var appNext = appPrefix + (bare === "/" ? "" : bare);
+              if (!appNext) appNext = "/";
+              if (appNext !== location.pathname) {
+                location.replace(appNext + location.search + location.hash);
+                return;
+              }
+            }
+          } else if (pathLocale && pathLocale !== "en") {
             lang = pathLocale;
             try {
               var langHost = String(location.hostname || "").toLowerCase();
@@ -147,7 +158,7 @@
               if (langDomain) document.cookie = "bizuply_lang=; Path=/; Max-Age=0; SameSite=Lax";
               document.cookie = "bizuply_lang=" + encodeURIComponent(lang) + "; Path=/; Max-Age=31536000; SameSite=Lax" + langDomain;
             } catch (ePathCookie) {}
-          } else if (!appRoute[bareFirst] && lang !== current) {
+          } else if (lang !== current) {
             var prefix = lang === "pt-BR" ? "/pt-br" : lang === "en" ? "" : "/" + lang;
             var next = prefix + (bare === "/" ? "" : bare);
             if (!next) next = "/";

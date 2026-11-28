@@ -21,7 +21,8 @@ import {
   recognizedCountryCode,
 } from "./languages";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
-import { splitMarketingLocale } from "../lib/localePathCore.mjs";
+import { isAppRoutePath, splitMarketingLocale, withMarketingLocale } from "../lib/localePathCore.mjs";
+import { SOFT_LOCALE_EVENT, isSoftLocaleHandlerInstalled } from "../lib/softMarketingLocaleNavigate";
 
 export {
   FALLBACK_LANGUAGE,
@@ -232,8 +233,9 @@ export function detectLanguageFromTimezone() {
 export function languageFromUrl() {
   if (typeof window === "undefined") return null;
   try {
-    const fromPath = splitMarketingLocale(window.location.pathname).locale;
-    if (fromPath && fromPath !== "en") return fromPath;
+    const split = splitMarketingLocale(window.location.pathname);
+    // /he/pricing is a language choice. /he/business/... is only the router prefix.
+    if (split.locale && split.locale !== "en" && !isAppRoutePath(split.path)) return split.locale;
     const raw = new URLSearchParams(window.location.search).get("lang");
     if (!raw) return null;
     return normalizeLanguage(raw, { fallback: null });
@@ -302,6 +304,28 @@ export function resolvePreferredLanguage({
   }
 
   return FALLBACK_LANGUAGE;
+}
+
+/**
+ * Keep an app URL prefix equal to the language already chosen.
+ * Does not write a new preference. Marketing pages are left alone.
+ */
+export function alignAppLocaleUrl(language) {
+  if (typeof window === "undefined") return;
+  const languageCode = coerceSupportedLanguage(language);
+  const { path } = splitMarketingLocale(window.location.pathname);
+  if (!isAppRoutePath(path)) return;
+  const nextPath = withMarketingLocale(path, languageCode);
+  if (!nextPath || nextPath === window.location.pathname) return;
+  if (isSoftLocaleHandlerInstalled()) {
+    window.dispatchEvent(
+      new CustomEvent(SOFT_LOCALE_EVENT, {
+        detail: { path: nextPath, locale: languageCode },
+      })
+    );
+    return;
+  }
+  window.location.replace(`${nextPath}${window.location.search}${window.location.hash}`);
 }
 
 export function detectLanguageFromBrowserSignals() {

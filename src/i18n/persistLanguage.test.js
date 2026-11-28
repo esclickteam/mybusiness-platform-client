@@ -68,6 +68,16 @@ describe("persistLanguage", () => {
     expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "es" });
   });
 
+  it("applies an English account language over a Hebrew document", () => {
+    document.documentElement.lang = "he";
+    document.documentElement.dir = "rtl";
+    const result = syncLanguageOnLogin({ language: "en", billingCountry: "IL", role: "business" });
+    expect(result).toBe("en");
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.documentElement.dir).toBe("ltr");
+    expect(getManualLanguageChoice()).toBeNull();
+  });
+
   it("applies account language without locking it as a manual choice", () => {
     const result = syncLanguageOnLogin({ language: "ar" });
     expect(result).toBe("ar");
