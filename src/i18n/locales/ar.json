@@ -488,6 +488,10 @@
     "whatsappTitle": "أبقوا محادثات العملاء متصلة",
     "whatsappText": "أديروا محادثات وقوالب WhatsApp Business إلى جانب معلومات العميل ومسارات العمل المهمة.",
     "whatsappCta": "استكشفوا WhatsApp"
+  ,
+      "visibilityTitle": "ماسح الظهور بالذكاء الاصطناعي",
+      "visibilityText": "فحوصات SEO وGEO وAEO لأي موقع عام، مع فحص أول لا يحتاج إلى حساب.",
+      "visibilityCta": "عرض المنتج"
   },
   "why": {
     "eyebrow": "لماذا BIZUPLY",
@@ -676,7 +680,7 @@
       "account": "الحساب"
     },
     "whatsapp": "WhatsApp API",
-    "metaCampaigns": "Meta Campaigns",
+    "metaCampaigns": "حملات Meta",
     "socialSchedule": "جدولة المشاركات والقصص",
     "products": {
       "title": "منتجاتك",
@@ -685,6 +689,8 @@
       "website": "الموقع",
       "whatsappApi": "WhatsApp API"
     }
+  ,
+      "securityScanner": "ماسح الأمان"
   },
   "automations": {
     "shell": {
@@ -1454,6 +1460,15 @@
         "perMessage": "لكل رسالة واتساب",
         "estimateDaily": "تقدير فقط: مثلًا رسالة واحدة يوميًا ≈ {{amount}} / شهر",
         "estimate100": "تقدير فقط: مثلًا 100 رسالة ≈ {{amount}}"
+      ,
+          "connectRequired": "لإرسال رسائل WhatsApp ضمن الأتمتة، اربط أولًا حساب WhatsApp الخاص بنشاطك التجاري",
+          "connectAccountCta": "ربط WhatsApp",
+          "reconnectRequired": "يلزم إعادة الربط",
+          "connectedTitle": "تم ربط WhatsApp",
+          "connectedAs": "الرقم المرتبط: {{phone}}",
+          "connectedReadyText": "تُرسل الرسائل من الرقم المرتبط بهذا النشاط التجاري. لا يُستخدم الرقم المركزي لـ Bizuply.",
+          "ownNumberTitle": "الإرسال من رقم WhatsApp الخاص بالنشاط التجاري",
+          "ownNumberText": "الإرسال من رقم Bizuply غير متاح. اربط حساب WhatsApp الخاص بهذا النشاط التجاري واختر قالبًا معتمدًا."
       },
       "gmail": {
         "bannerTitle": "الإرسال عبر Gmail المتصل",
@@ -2317,6 +2332,7 @@
     "compareToPrevious": "مقارنة بالفترة السابقة",
     "noComparison": "لا مقارنة",
     "loadError": "تعذّر تحميل بعض بيانات لوحة المعلومات.",
+    "refreshFailed": "تعذر تحديث الجلسة. قد تكون الأرقام أدناه غير مكتملة.",
     "websiteViews": "مشاهدات الموقع",
     "loadingVisitors": "جاري تحميل الزوار...",
     "uniqueVisitors": "{{count}} زائر فريد",
@@ -2429,6 +2445,9 @@
     "cmdWaApproved": "معتمد",
     "cmdWaPending": "بانتظار المراجعة",
     "cmdWaRejected": "يحتاج إلى مراجعة"
+  ,
+      "unnamedLead": "عميل محتمل بلا اسم",
+      "leadEntered": "تم الإدخال: {{date}} في {{time}}"
   },
   "dashboard": {
     "live": "مباشر",
@@ -2920,6 +2939,31 @@
     "otpVerifying": "جارٍ تسجيل الدخول…",
     "usePasswordInstead": "استخدم كلمة المرور",
     "useCodeInstead": "استخدم رمز البريد"
+  ,
+      "liveCaption": "يصل عميل محتمل جديد، ويتحدّث CRM، ويُحجز اجتماع، ويوضّح الذكاء الاصطناعي الخطوة التالية.",
+      "liveNewLead": "عميل محتمل جديد",
+      "liveLeadName": "Maya Levi",
+      "liveLeadMeta": "الموقع · الآن",
+      "liveStatusNew": "جديد",
+      "liveStatusTalk": "قيد التواصل",
+      "liveStatusBooked": "اجتماع",
+      "liveMeetWhen": "غدًا · 10:30",
+      "liveMeetOk": "تم الحجز",
+      "liveAiText": "من المرجّح أن تحجز Maya إذا رددت اليوم.",
+      "liveChartTitle": "هذا الأسبوع",
+      "liveMetricLeads": "24",
+      "liveMetricLeadsLabel": "العملاء المحتملون",
+      "liveMetricMeetings": "9",
+      "liveMetricMeetingsLabel": "الاجتماعات",
+      "liveMetricReply": "38%",
+      "liveMetricReplyLabel": "الردود",
+      "welcomeTitle": "مرحبًا بعودتك",
+      "welcomeLead": "سجّل الدخول إلى مساحة عمل Bizuply.",
+      "forgotShort": "هل نسيت كلمة المرور؟",
+      "rememberShort": "تذكّرني",
+      "accountPrompt": "ليس لديك حساب بعد؟",
+      "registerShort": "إنشاء حساب",
+      "orSoft": "أو"
   },
   "pricing": {
     "seoTitle": "باقات الخدمات  Bizuply",
@@ -3521,6 +3565,11 @@
         "name": "قوالب المواقع",
         "text": "نقاط بداية في بنّاء المواقع، يعدّلها العمل وينشرها."
       }
+    ,
+        "security": {
+          "name": "ماسح أمان الموقع",
+          "text": "فحص دفاعي وتقرير بالنتائج وتوصيات للإصلاح. لا يُثبت الفحص أن الموقع آمن بالكامل."
+        }
     },
     "differenceTitle": "مساحة عمل مشتركة، وبرمجيات لمهمة واحدة",
     "differenceLead": "يُبنى النظام المخصص حول مسار واحد. تبني BizUply أيضًا منصة يمكن فيها مشاركة سجل العميل بين الأدوات. يمكن لشركة أن تستخدم منتجًا واحدًا، أو أن تربط عدة منتجات.",
@@ -3646,6 +3695,8 @@
       "paymentsDesc": "تتبع الإيرادات",
       "miniSaas": "ميني SaaS",
       "miniSaasDesc": "بوابات العملاء",
+      "reports": "التقارير",
+      "reportsDesc": "مؤشرات CRM المباشرة",
       "settings": "الإعدادات",
       "settingsDesc": "تفضيلات CRM",
       "newBadge": "جديد"
@@ -3795,6 +3846,19 @@
       "weekdayThu": "الخميس",
       "weekdayFri": "الجمعة",
       "weekdaySat": "السبت"
+    ,
+        "conflictWarning": "يتداخل هذا الموعد مع موعد آخر. هل تريد المتابعة على أي حال؟",
+        "views": {
+          "month": "شهر",
+          "week": "أسبوع",
+          "day": "يوم"
+        },
+        "hideSidebar": "إخفاء القائمة",
+        "showSidebar": "إظهار القائمة",
+        "upcomingTitle": "المواعيد القادمة",
+        "moveConfirm": "هل تريد نقل هذا الموعد إلى {{date}} في {{time}}؟",
+        "prevRange": "النطاق السابق",
+        "nextRange": "النطاق التالي"
     },
     "services": {
       "badge": "خدمات CRM",
@@ -3851,6 +3915,20 @@
       "durationHours": "{{count}} ساعة",
       "durationHoursMinutes": "{{hours}}h {{minutes}}m",
       "priceValue": "{{value}} متواجد"
+    ,
+        "tableView": "جدول",
+        "cardsView": "بطاقات",
+        "category": "الفئة",
+        "generalCategory": "عام",
+        "inactive": "غير نشط",
+        "sortName": "الترتيب حسب الاسم",
+        "sortPrice": "الترتيب حسب السعر",
+        "sortDuration": "الترتيب حسب المدة",
+        "duplicate": "تكرار",
+        "copySuffix": "(نسخة)",
+        "name": "الاسم",
+        "duration": "المدة",
+        "price": "السعر"
     },
     "settings": {
       "badge": "إعدادات CRM",
@@ -3907,6 +3985,10 @@
           "label": "الأمن",
           "description": "CRM المحمية"
         }
+      ,
+          "pipeline": {
+            "label": "مسار المبيعات وحقول العملاء المحتملين"
+          }
       },
       "general": {
         "eyebrow": "إعدادات عامة",
@@ -4156,6 +4238,10 @@
         "converted": "المحوّلة",
         "lost": "مفقود",
         "old": "عميل محتمل القديم"
+      ,
+          "in_progress": "قيد التنفيذ",
+          "quote": "عرض سعر",
+          "negotiation": "تفاوض"
       },
       "oldLeads": {
         "title": "العملاء المحتملون القديمة",
@@ -4429,6 +4515,8 @@
         "saveActivityFailed": "فشل في حفظ النشاط. تحقق من تحديث API للأنشطة.",
         "updateTaskFailed": "فشل في تحديث المهمة",
         "requestFailed": "فشل الطلب"
+      ,
+          "recordMismatch": "البيانات المستلمة لا تخص العميل المحتمل المحدد. تم منع الحفظ."
       },
       "drawer": {
         "dossierBadge": "ملف عميل محتمل",
@@ -4512,6 +4600,8 @@
         "sortNewest": "فرز: الأحدث",
         "export": "تصدير",
         "view": "عرض"
+      ,
+          "sortOldest": "الترتيب: الأقدم"
       },
       "filters": {
         "all": "جميع {{count}}",
@@ -4832,6 +4922,8 @@
         "businessIdMissing": "لم نستطع تحديد العمل يرجى تحديث الصفحة.",
         "createFailed": "فشل إنشاء العميل",
         "updateFailed": "فشل تحديث العميل"
+      ,
+          "recordMismatch": "البيانات المستلمة لا تخص العميل المحدد. تم منع الحفظ."
       },
       "customFields": {
         "manageButton": "إدارة الحقول المتغيرة",
@@ -4886,6 +4978,9 @@
         "followUpPlanDesc": "جدول متابعة شخصي لكل عميل — تاريخ وإجراء وحالة",
         "fieldN": "حقل {{n}}"
       }
+    ,
+        "imported": "تم استيراد {{count}} من العملاء",
+        "confirmBulk": "هل تريد حذف {{count}} من العملاء المحددين؟"
     },
     "customerProfile": {
       "badge": "ملف العميل",
@@ -5180,6 +5275,129 @@
       "change": "تغيير الوقت",
       "placeholder": "اختر وقتًا"
     }
+  ,
+      "workspace": {
+        "searchPlaceholder": "ابحث بالاسم أو الهاتف أو البريد الإلكتروني أو معرّف العميل المحتمل",
+        "columns": "الأعمدة",
+        "compactView": "جدول مضغوط",
+        "saveView": "حفظ العرض...",
+        "duplicates": "التكرارات",
+        "selected": "تم تحديد {{count}}",
+        "applyStatus": "تحديث الحالة",
+        "applyAgent": "تعيين وكيل",
+        "archive": "أرشفة",
+        "confirmBulk": "هل تريد تطبيق هذا الإجراء على {{count}} من العملاء المحتملين؟",
+        "confirmMerge": "هل تريد دمج هذه السجلات يدويًا؟ لن يُحذف أي شيء.",
+        "bulkDone": "اكتمل الإجراء",
+        "imported": "تم استيراد {{count}} من العملاء المحتملين",
+        "merged": "تم دمج السجلات",
+        "merge": "دمج يدوي",
+        "saved": "تم الحفظ",
+        "saveNote": "حفظ الملاحظة",
+        "unsaved": "تغييرات غير محفوظة",
+        "noCustomFields": "لا توجد حقول مخصصة لهذا العميل المحتمل.",
+        "statusUpdated": "تم تحديث الحالة",
+        "assigned": "تم تحديث الوكيل",
+        "callLogged": "تم تسجيل المكالمة",
+        "logCall": "تسجيل مكالمة",
+        "whatsappReceived": "رسالة WhatsApp واردة",
+        "callNote": "ملخص المكالمة",
+        "meeting": "اجتماع",
+        "meetingTitle": "عنوان الاجتماع",
+        "addMeeting": "إضافة اجتماع",
+        "addTask": "إضافة مهمة",
+        "addDocument": "إضافة مستند",
+        "documentName": "اسم المستند",
+        "dealName": "اسم الصفقة",
+        "dealAmount": "المبلغ",
+        "addDeal": "إنشاء صفقة",
+        "addField": "إضافة حقل",
+        "newField": "حقل جديد",
+        "customFields": "الحقول المخصصة للعميل المحتمل",
+        "pipelineSettings": "مراحل مسار المبيعات",
+        "hideStage": "إخفاء",
+        "showInTable": "إظهار في الجدول",
+        "showInFilter": "إظهار في عوامل التصفية",
+        "allStages": "كل المراحل",
+        "clearFilters": "مسح عوامل التصفية",
+        "showing": "عرض {{count}} من {{total}}",
+        "next": "التالي",
+        "from": "من",
+        "to": "إلى",
+        "adPlatform": "منصة الإعلان",
+        "adset": "مجموعة الإعلانات",
+        "ad": "إعلان",
+        "adId": "معرّف الإعلان",
+        "receivedAt": "وقت استلام العميل المحتمل",
+        "openCampaign": "فتح الحملة",
+        "byAgent": "الأداء حسب الوكيل",
+        "callOutcomes": {
+          "answered": "تم الرد",
+          "no_answer": "لا إجابة",
+          "interested": "مهتم",
+          "not_interested": "غير مهتم"
+        },
+        "tabs": {
+          "overview": "نظرة عامة",
+          "personal": "التفاصيل والحقول المخصصة",
+          "source": "المصدر والحملة",
+          "form": "إجابات النموذج",
+          "activity": "الملاحظات والنشاط",
+          "tasks": "المهام",
+          "meetings": "الاجتماعات",
+          "documents": "المستندات",
+          "deals": "عروض الأسعار والصفقات",
+          "payments": "المدفوعات"
+        },
+        "cols": {
+          "name": "الاسم",
+          "phone": "الهاتف",
+          "email": "البريد الإلكتروني",
+          "status": "الحالة",
+          "source": "المصدر",
+          "campaign": "الحملة",
+          "form": "النموذج",
+          "assignedToName": "الوكيل",
+          "createdAt": "تاريخ الإنشاء",
+          "updatedAt": "تاريخ التحديث"
+        },
+        "fieldTypes": {
+          "text": "نص",
+          "number": "رقم",
+          "date": "تاريخ",
+          "time": "وقت",
+          "select": "قائمة منسدلة",
+          "multiselect": "تحديد متعدد",
+          "boolean": "نعم/لا",
+          "url": "URL",
+          "money": "مبلغ"
+        },
+        "metrics": {
+          "leads": "إجمالي العملاء المحتملين",
+          "newLeads": "عملاء محتملون جدد",
+          "inProgress": "عملاء محتملون قيد التنفيذ",
+          "closed": "عملاء محتملون مُغلقون",
+          "lost": "عملاء محتملون مفقودون",
+          "conversionRate": "معدل التحويل",
+          "dealSum": "قيمة الصفقات",
+          "revenue": "الإيرادات المسجّلة",
+          "openTasks": "المهام المفتوحة",
+          "upcomingMeetings": "الاجتماعات القادمة",
+          "byAgent": "الأداء حسب الوكيل",
+          "activeClients": "العملاء النشطون",
+          "meetings": "الاجتماعات"
+        },
+        "charts": {
+          "leadsOverTime": "العملاء المحتملون عبر الوقت",
+          "status": "توزيع الحالات",
+          "sources": "العملاء المحتملون حسب مصدر الإعلان",
+          "deals": "الصفقات حسب الشهر",
+          "funnel": "مسار المبيعات"
+        },
+        "vsPreviousPeriod": "مقارنة بالفترة السابقة",
+        "metric": "المؤشر",
+        "value": "القيمة"
+      }
   },
   "notifications": {
     "ariaLabel": "الإخطارات",
@@ -5346,6 +5564,8 @@
         "actionLabel": "تحرير SEO"
       }
     }
+  ,
+      "actionCount_zero": "لا توجد إجراءات موصى بها حاليًا"
   },
   "advisor": {
     "title": "مستشار الأعمال",
@@ -8940,7 +9160,7 @@
       "subtitle": "قم بتوصيل حساب WhatsApp Business الخاص بك من خلال Meta. الاتصال آمن ولا يتم عرض التفاصيل هنا.",
       "connectIntro": "سجّل الدخول باستخدام Meta لتوصيل حساب WhatsApp Business الخاص بك ورقم هاتف العمل.",
       "coexistence": {
-        "disabled": "WhatsApp Coexistence is not enabled on this workspace.",
+        "disabled": "تعايش واتساب غير مفعّل. يجب على المسؤول تفعيل إعداد التعايش.",
         "cloudTitle": "رقم جديد أو Cloud API فقط",
         "cloudBody": "اربط رقماً عبر Embedded Signup من Meta لـ Cloud API. إذا كان الرقم في تطبيق WhatsApp Business فقد تزيله Meta من التطبيق.",
         "appTitle": "رقم نشط مسبقاً في WhatsApp Business",
@@ -9205,7 +9425,7 @@
       "channelSettingsCopied": "تم النسخ",
       "channelSettingsCopy": "نسخ",
       "channelPhone": "رقم الهاتف المتصل",
-      "channelPhoneNumberId": "Phone Number ID",
+      "channelPhoneNumberId": "معرّف رقم الهاتف",
       "channelWabaId": "WABA ID",
       "channelWabaName": "اسم WABA",
       "channelPlatformType": "نوع المنصة",
@@ -9217,7 +9437,7 @@
       "channelTimezone": "المنطقة الزمنية",
       "channelNamespace": "Namespace",
       "channelNamespaceCloud": "غير مطلوب لـ Cloud API",
-      "channelWebhookUrl": "Channel Webhook URL",
+      "channelWebhookUrl": "رابط Webhook للقناة",
       "channelVerifyToken": "حالة Verify Token",
       "channelVerificationStatus": "حالة التحقق من Webhook",
       "channelLastEvent": "آخر حدث Webhook",
@@ -9952,7 +10172,7 @@
       "managedTitle": "الفوترة تُدار في Meta",
       "managedBody": "تفاصيل الفوترة ووسائل الدفع تُدار عبر WhatsApp Manager / Meta.",
       "managedHint": "لعرض وسيلة الدفع أو تحديثها، افتح WhatsApp Manager.",
-      "adminApiTooltip": "Billing details are not available through the current Meta API permissions",
+      "adminApiTooltip": "تفاصيل الفوترة غير متاحة ضمن أذونات واجهة Meta الحالية.",
       "paymentConnected": "وسيلة الدفع متصلة",
       "paymentDirect": "فوترة Meta المباشرة",
       "paymentCreditLine": "خط ائتمان",
@@ -10205,6 +10425,13 @@
       "businessVerification": "توثيق النشاط التجاري يُدار في Meta",
       "messagingLimited": "الإرسال متاح وفق حدود Meta",
       "codeVerificationExpired": "التحقق من الرمز يُدار في Meta"
+    ,
+        "notConnected": "WhatsApp غير مرتبط",
+        "phoneRegistrationRequired": "يلزم تسجيل الهاتف عبر Cloud API",
+        "phoneRegistrationFailed": "فشل تسجيل الهاتف",
+        "paymentIssue": "الدفع / الفوترة بحاجة إلى متابعة في Meta",
+        "messagingBlocked": "المراسلة محظورة في Meta",
+        "wabaNotActive": "حساب WhatsApp Business غير نشط"
     },
     "accountStatus": {
       "title": "حالة حساب واتساب",
@@ -10268,6 +10495,50 @@
         "docs": "توثيق API"
       }
     }
+  ,
+      "invistimoOps": {
+        "contactsTitle": "جهات اتصال Invistimo والضيوف",
+        "contactsSubtitle": "الضيوف من CRM في Invistimo والقوائم البريدية على هذا المستأجر فقط.",
+        "searchGuests": "ابحث عن الضيوف بالاسم أو الهاتف أو البريد الإلكتروني",
+        "search": "بحث",
+        "guests": "الضيوف",
+        "noGuests": "لا يوجد ضيوف لديهم رقم هاتف بعد",
+        "manageLists": "إدارة القوائم البريدية",
+        "agentsTitle": "وكلاء WhatsApp في Invistimo",
+        "agentsSubtitle": "ادعُ المشغّلين وحدّد صلاحيات صندوق الوارد والإرسال والتقارير لـ Invistimo فقط.",
+        "agentName": "الاسم",
+        "agentEmail": "البريد الإلكتروني",
+        "role": "الدور",
+        "roleManager": "مدير",
+        "roleAgent": "وكيل",
+        "roleViewer": "مشاهد",
+        "status": "الحالة",
+        "actions": "الإجراءات",
+        "inviteAgent": "دعوة وكيل",
+        "agentSaved": "تم حفظ الوكيل على مستأجر Invistimo",
+        "ownerLocked": "مالك الحساب",
+        "enable": "تفعيل",
+        "disable": "تعطيل",
+        "scheduledTitle": "رسائل WhatsApp المجدولة",
+        "scheduledSubtitle": "تبقى المسودات هنا إلى أن تُعتمد عملية الانتقال إلى Dialog. لن يُرسل أي شيء بشكل مباشر.",
+        "noList": "لا توجد قائمة بريدية",
+        "consent": "وافق المستلمون على تلقّي رسالة WhatsApp هذه",
+        "schedule": "حفظ المسودة المجدولة",
+        "scheduledSaved": "تم حفظ المسودة المجدولة. ما زال الإرسال المباشر محظورًا.",
+        "noScheduled": "لا توجد مسودات مجدولة بعد",
+        "cancel": "إلغاء",
+        "loadError": "تعذّر تحميل بيانات إدارة WhatsApp في Invistimo",
+        "saveError": "تعذّر حفظ بيانات إدارة WhatsApp في Invistimo",
+        "perm": {
+          "inbox": "صندوق الوارد",
+          "send": "إرسال",
+          "templates": "القوالب",
+          "automations": "الأتمتة",
+          "contacts": "جهات الاتصال",
+          "scheduled": "المجدول",
+          "reports": "التقارير"
+        }
+      }
   },
   "metaCampaigns": {
     "shell": {
@@ -10286,6 +10557,9 @@
       "portfolio": "المحفظة",
       "copilot": "مساعد التسويق",
       "settings": "اتصال Meta"
+    ,
+        "library": "المكتبة الإبداعية",
+        "rules": "قواعد الأتمتة"
     },
     "ux": {
       "onboardTitle": "ابدأ مع إعلانات Meta",
@@ -10350,6 +10624,10 @@
       "sharedRange": "نطاق التاريخ",
       "showingRange": "العرض: {{range}}",
       "pausedHistorical": "هذه الحملة متوقفة. الأرقام أدناه أداء تاريخي وليست تسليمًا حاليًا."
+    ,
+        "hideQaDrafts": "إخفاء مسودات QA القديمة",
+        "hideQaDraftsHint": "يخفي أسماء مثل Bizuply DT / QA PAUSED. لا يُحذف أي شيء.",
+        "deliveryPartial": "قرأ هذا التحديث جزءًا من الإعلانات فقط ليبقى ضمن حد Meta. تستند الحالة إلى الإعلانات التي قُرئت."
     },
     "overview": {
       "heading": "إدارة الحملة",
@@ -10365,6 +10643,17 @@
       "lastUpdated": "تم تحديثه آخر مرة بتاريخ: {{time}}",
       "lastSynced": "آخر مزامنة: {{time}}",
       "lastUpdatedLabel": "آخر تحديث"
+    ,
+        "syncedWithMeta": "تمت المزامنة مع Meta",
+        "syncedJustNow": "تمت المزامنة مع Meta الآن",
+        "syncedMinutesAgo": "تمت المزامنة مع Meta قبل {{minutes}} دقيقة",
+        "instagramNotConnected": "حساب Instagram غير مرتبط",
+        "instagramConnectHint": "الصفحة المرتبطة لا تضم حساب Instagram Business في Meta. يعرض Bizuply هذه الحالة فقط ولا يربط Instagram تلقائيًا. تستمر الحملات المقتصرة على Facebook في العمل.",
+        "instagramConnectCta": "فتح إعدادات Meta",
+        "currentGoal": "الهدف الحالي: {{name}}",
+        "noGoal": "لم يُحدَّد هدف للحملة",
+        "optimizationStatus": "التحسين: {{status}}",
+        "optimizationIdle": "التحسين: خامل"
     },
     "accountStatus": {
       "active": "نشط",
@@ -10383,6 +10672,8 @@
       "readOnlyHint": "تفاصيل الحملة للقراءة فقط - لا تعديل أو تغييرات في الميزانية.",
       "viewLeadsInCrm": "عرض العملاء في CRM",
       "adSets": "مجموعات الإعلانات"
+    ,
+        "close": "إغلاق"
     },
     "actions": {
       "create": "إنشاء حملة جديدة",
@@ -10399,6 +10690,38 @@
       "confirmPauseBody": "إيقاف {{name}} مؤقتاً في ميتا؟ ستتوقف الإعلانات حتى تستأنفوها.",
       "confirmResumeTitle": "استئناف الحملة؟",
       "confirmResumeBody": "استئناف {{name}} في ميتا؟ ستعود الإعلانات للعمل حسب الإعدادات المحفوظة."
+    ,
+        "syncThrottled": "طلبت Meta الإبطاء. أعد المحاولة بعد قليل.",
+        "confirmActivateSpend": "سيؤدي هذا إلى تفعيل {{name}} في Meta وقد يبدأ إنفاق المال.",
+        "rateLimited": "قيّدت Meta المزامنة مؤقتًا. سنعيد المحاولة تلقائيًا.",
+        "save": "حفظ",
+        "editFull": "فتح المحرّر الكامل",
+        "duplicateDraft": "تكرار",
+        "deleteDraft": "حذف المسودة",
+        "deleteCampaign": "حذف",
+        "confirmDeleteDraftTitle": "هل تريد حذف هذه المسودة؟",
+        "confirmDeleteDraftBody": "هل تريد حذف \"{{name}}\" من Bizuply؟ الحملة الموجودة أصلًا على Meta ستُحذف هناك أيضًا بعد التأكيد.",
+        "confirmDeleteCampaignTitle": "هل تريد حذف الحملة؟",
+        "confirmDeleteCampaignTitleMany": "هل تريد حذف الحملات؟",
+        "confirmDeleteAdSetTitle": "هل تريد حذف مجموعة الإعلانات؟",
+        "confirmDeleteAdSetTitleMany": "هل تريد حذف مجموعات الإعلانات؟",
+        "confirmDeleteAdTitle": "هل تريد حذف الإعلان؟",
+        "confirmDeleteAdTitleMany": "هل تريد حذف الإعلانات؟",
+        "confirmDeleteCampaignMessage": "إذا حذفت هذه الحملة، لن تتمكن من استعادتها لاحقًا.",
+        "confirmDeleteCampaignMessageMany": "إذا حذفت هذه الحملات، لن تتمكن من استعادتها لاحقًا.",
+        "confirmDeleteAdSetMessage": "إذا حذفت مجموعة الإعلانات هذه، لن تتمكن من استعادتها لاحقًا.",
+        "confirmDeleteAdSetMessageMany": "إذا حذفت مجموعات الإعلانات هذه، لن تتمكن من استعادتها لاحقًا.",
+        "confirmDeleteAdMessage": "إذا حذفت هذا الإعلان، لن تتمكن من استعادته لاحقًا.",
+        "confirmDeleteAdMessageMany": "إذا حذفت هذه الإعلانات، لن تتمكن من استعادتها لاحقًا.",
+        "confirmDeleteDraftCascade": "ستُحذف المسودة من Bizuply، بما في ذلك مجموعات الإعلانات والإعلانات التابعة لها. لن يُرسل أي شيء إلى Meta.",
+        "metaDeleteBlockedBody": "\"{{name}}\" موجود أصلًا على Meta. لن يُحذف أو يُؤرشف هناك دون موافقة منفصلة، ولن يُزال من هذه القائمة لأن المزامنة التالية ستُظهره مجددًا.",
+        "metaDeleteBlockedClose": "حسنًا",
+        "deletedOnMeta": "تم حذف العنصر على Meta.",
+        "deletedOnMetaMany": "تم حذف {{ok}} من العناصر على Meta.",
+        "deletePartial": "لم تُحذف بعض العناصر: {{names}}",
+        "draftDeleted": "تم حذف المسودة.",
+        "duplicateDraftDone": "تم إنشاء نسخة مسودة. لم يُرسل أي شيء إلى Meta.",
+        "noDraftToDuplicate": "احفظ الحملة قبل إنشاء نسخة محلية."
     },
     "creationMode": {
       "title": "حملة جديدة",
@@ -10913,8 +11236,287 @@
         "publishFailBody": "فشلت خطوة إنشاء واحدة أو أكثر في Meta. يمكنك إعادة المحاولة من المرحلة الفاشلة.",
         "accountBannerDemo": "حساب الإعلانات: {{account}} · الصفحة: {{page}} · الوضع التجريبي — لا يُرسل أي شيء إلى Meta",
         "publishFooterNoteDemo": "الوضع التجريبي · النشر ينشئ حملة تجريبية فقط ولا يرسل أي شيء إلى Meta"
+      ,
+          "editCampaign": "تحرير الحملة",
+          "saveChanges": "حفظ التغييرات",
+          "savingChanges": "جارٍ حفظ التغييرات…",
+          "unsavedChanges": "تغييرات غير محفوظة",
+          "unsavedChangesBody": "لديك تغييرات غير محفوظة. هل تغادر دون حفظ؟",
+          "leaveWithoutSaving": "المغادرة دون حفظ",
+          "stay": "البقاء",
+          "changeReviewTitle": "مراجعة التغييرات",
+          "changeReviewSubtitle": "لن تُرسل إلى Meta إلا الحقول التي غيّرتها.",
+          "spendImpact": "قد يؤثر على الإنفاق",
+          "objectiveLockedHint": "لا يمكن تغيير هدف الحملة بعد إنشائها. كرّر الحملة لاستخدام هدف مختلف.",
+          "duplicateWithChanges": "تكرار مع التغييرات",
+          "currentLeadForm": "نموذج العملاء المحتملين الحالي",
+          "chooseOtherForm": "اختيار نموذج آخر",
+          "leadFormReadOnly": "لا تسمح Meta بتحرير هذا النموذج الحالي من هنا. يمكنك التبديل إلى نموذج آخر.",
+          "noChanges": "لا توجد تغييرات للحفظ",
+          "saveSuccess": "تم حفظ التغييرات في Bizuply",
+          "saveFailed": "تعذّر حفظ التغييرات",
+          "saveDraft": "حفظ كمسودة",
+          "savingDraft": "جارٍ حفظ المسودة…",
+          "draftSavedServer": "تم حفظ المسودة في Bizuply. لم تُفعَّل الحملة ولم يُنشأ إعلان على Meta.",
+          "draftSavedNotOnMeta": "تم حفظ التغييرات في Bizuply. لم يُنشأ الإعلان على Meta بعد.",
+          "changesSavedLocal": "تم حفظ التغييرات في Bizuply ولم تُرسل إلى Meta.",
+          "lastSavedAt": "آخر حفظ: {{time}}",
+          "unpublishedChanges": "التغييرات غير منشورة بعد",
+          "discardUnsaved": "تجاهل التغييرات غير المحفوظة",
+          "discardUnpublished": "تجاهل التغييرات غير المنشورة",
+          "discardUnpublishedBody": "سيُستبدل الإصدار المحفوظ بآخر إصدار منشور أو بالإصدار المحمّل من Meta. لن تتغيّر Meta نفسها.",
+          "unpublishedDiscarded": "تم تجاهل التغييرات غير المنشورة. أُبقي على آخر إصدار منشور.",
+          "draftConflict": "تم تحديث هذه المسودة في علامة تبويب أخرى. أعِد التحميل قبل الحفظ مرة أخرى.",
+          "duplicateLocalDone": "تم إنشاء مسودة جديدة في Bizuply. لم يُرسل أي شيء إلى Meta.",
+          "changePlacements": "مواضع الظهور",
+          "changeAudiences": "الجماهير",
+          "changeDetailedTargeting": "الاستهداف التفصيلي",
+          "changeSelection": "موضع المحرّر",
+          "serverConfirmedSave": "تم الحفظ في Bizuply",
+          "notYetSaved": "لم يُحفظ على الخادم بعد",
+          "metaUpdateFailedDraftKept": "حفظ Invistimo المسودة، لكن فشل تحديث Meta: {{error}}",
+          "imageNotStored": "لم تُخزَّن الصورة. ارفعها مرة أخرى.",
+          "publishAction": "نشر",
+          "publishCampaign": "نشر الحملة",
+          "publishChanges": "نشر التغييرات",
+          "noChangesToPublish": "لا توجد تغييرات للنشر",
+          "publishChangesConfirmTitle": "نشر التغييرات",
+          "publishChangesConfirmBody": "لن تُرسل إلا الحقول التي غيّرتها. تبقى الميزانية والحالة كما هما ما لم تكن قد غيّرتهما. لن تُنشأ حملة أو مجموعة إعلانات أو إعلان إضافي.",
+          "approveNewAd": "أوافق على إنشاء إعلان جديد متوقف مؤقتًا. لن يتغيّر الإعلان الحالي.",
+          "planLoading": "جارٍ التحقق مع Meta مما إذا كان يمكن تحديث الإعلان الحالي…",
+          "changesPublished": "تم نشر التغييرات إلى Meta.",
+          "leadFormPublished": "أُرفق النموذج الجديد بالإعلان الحالي على Meta.",
+          "changesNotPublished": "لم تُنشر التغييرات إلى Meta. ما زالت مسودة.",
+          "leadFormMismatch": "لم تحفظ Meta نموذج العملاء المحتملين الجديد على الإعلان. تبقى التغييرات مسودة.",
+          "newPausedAdCreated": "تم إنشاء إعلان جديد متوقف مؤقتًا. لم يتغيّر الإعلان الحالي ولا الميزانية.",
+          "outcomeUpdated": "تم نشر التغييرات إلى Meta",
+          "outcomeUpdatedForm": "أُرفق النموذج الجديد بالإعلان",
+          "outcomeNewPausedAd": "تم إنشاء إعلان جديد متوقف مؤقتًا",
+          "verifiedLeadForm": "تم التحقق من النموذج على Meta",
+          "noNewObjects": "لم تُنشأ حملة أو مجموعة إعلانات أو إعلان جديد",
+          "publishConfirmTitle": "تأكيد النشر",
+          "publishConfirmBody": "يؤكد النشر إكمال الإعلان الحالي وتشغيل الحملة ومجموعة الإعلانات والإعلان. لن يُنشئ حملة أخرى إذا كانت هناك حملة موجودة أصلًا. يمكن أن تبدأ الميزانية بالإنفاق. حفظ المسودة لا يشغّل أي شيء.",
+          "publishLeftPaused": "بقي النشر متوقفًا. المكوّن الذي يمنع العرض: {{component}} (الحالة {{status}}).",
+          "publishConfirmBudget": "الميزانية",
+          "publishConfirmAudience": "الجمهور",
+          "publishConfirmPlacements": "مواضع الظهور",
+          "publishConfirmForm": "النموذج",
+          "publishConfirmCreative": "المادة الإبداعية",
+          "confirmPublish": "نشر",
+          "formSavedInDraft": "هذا النموذج محفوظ في مسودة Invistimo ولم يُرفق بعد بمادة إبداعية على Meta.",
+          "formLinkedOnMeta": "هذا النموذج مُرفق بالمادة الإبداعية على Meta.",
+          "formPageMismatch": "النموذج المحدد لا يخص صفحة Facebook الحالية. يُحتفظ بالاختيار، لكن اختر نموذجًا من هذه الصفحة قبل النشر.",
+          "reviewHeadline": "العنوان",
+          "reviewPrimaryText": "النص الأساسي",
+          "reviewDescription": "الوصف",
+          "reviewCta": "دعوة إلى الإجراء",
+          "reviewMedia": "الوسائط",
+          "reviewDestination": "رابط الوجهة",
+          "reviewPage": "صفحة Facebook",
+          "reviewInstagram": "Instagram",
+          "reviewMissing": "حقول ناقصة",
+          "adNotOnMeta": "الإعلان محفوظ كمسودة ولم يُنشأ على Meta",
+          "campaignStatusLabel": "الحالة",
+          "noPublishRecord": "لا يوجد سجل نشر قائم. لم تُنشأ حملة جديدة.",
+          "loadingCampaign": "جارٍ تحميل الحملة…",
+          "editFooterNote": "الحفظ يحدّث Bizuply فقط. لا تُحدَّث Meta إلا بعد تأكيد النشر.",
+          "duplicateStarted": "تم إنشاء نسخة مكررة متوقفة مؤقتًا",
+          "changeCampaignName": "اسم الحملة",
+          "changeBudget": "الميزانية",
+          "changeBudgetStrategy": "استراتيجية الميزانية",
+          "changeAdSetName": "اسم مجموعة الإعلانات",
+          "changeAge": "العمر",
+          "changeLocations": "المواقع",
+          "changeGender": "الجنس",
+          "changeAdSetBudget": "ميزانية مجموعة الإعلانات",
+          "changeSchedule": "الجدول",
+          "changeAdName": "اسم الإعلان",
+          "changeHeadline": "العنوان",
+          "changePrimaryText": "النص الأساسي",
+          "changeCta": "دعوة إلى الإجراء",
+          "changeMedia": "الوسائط",
+          "changeLeadForm": "نموذج العملاء المحتملين",
+          "changeWebsite": "الموقع",
+          "changeDescription": "الوصف",
+          "changeFacebookPage": "صفحة Facebook",
+          "changeInstagram": "حساب Instagram",
+          "ageNotLoaded": "تعذّر تحميل النطاق العمري من Meta",
+          "estimatePendingEdit": "سيُحدَّث حجم الجمهور بعد تطبيق هذا الاستهداف",
+          "conversionLocationHintTraffic": "اختر وجهة إرسال الزيارات من هذا الإعلان. حملات الزيارات لا تستخدم نموذج عملاء محتملين.",
+          "conversionLocationHintGeneric": "اختر الوجهة التي ينتقل إليها الأشخاص بعد النقر على الإعلان.",
+          "phoneConversion": "المكالمات",
+          "includePeopleMatching": "تضمين من يطابق",
+          "detailedSearchPlaceholder": "أضف خصائص ديموغرافية أو اهتمامات أو سلوكيات",
+          "browseDemographics": "الخصائص الديموغرافية",
+          "browseInterests": "الاهتمامات",
+          "browseBehaviors": "السلوكيات",
+          "targetingInfo": "معلومات الاستهداف",
+          "targetingInfoFallback": "فئة استهداف Meta",
+          "targetingUnsupportedFlexible": "غير مدعوم في flexible_spec لدى Meta، لذا لا يمكن تحديده",
+          "targetingCategoryNotSelectable": "فئة للتصفح فقط — اختر قيمة معرّف Meta محددة",
+          "detailedBrowseAria": "تصفح الاستهداف التفصيلي",
+          "detailedBrowseFailed": "تعذّر تحميل فئات استهداف Meta",
+          "detailedSearchFailed": "تعذّر البحث في الاستهداف التفصيلي لدى Meta",
+          "detailedBrowseEmpty": "لا توجد فئات فرعية متاحة لحساب الإعلانات هذا",
+          "detailedSearchEmpty": "لا توجد نتائج استهداف. جرّب بحثًا آخر.",
+          "detailedSuggestionsEmpty": "لا تتوفر اقتراحات استهداف حاليًا.",
+          "detailedSuggestionsUnavailable": "تظهر اقتراحات Meta الرسمية بعد اختيار جمهور، أو من فئة الصفحة المرتبطة. في هذه الأثناء، ابحث أو تصفّح الفئات.",
+          "detailedSuggestionsFailed": "تعذّر تحميل اقتراحات استهداف Meta",
+          "audienceSizeRange": "حجم الجمهور: {{range}}",
+          "audienceSizeLabel": "حجم الجمهور",
+          "suggestionsRelevance": "الصلة",
+          "suggestionsSize": "الحجم",
+          "browseBack": "رجوع",
+          "connectToSearchTargeting": "اربط Meta Ads للبحث في الاستهداف التفصيلي وتصفحه.",
+          "manualPlacements": "يدوي",
+          "publisherPlatforms": "المنصات",
+          "devices": "الأجهزة",
+          "sponsoredMessagesNote": "لا يمكن دمج sponsored_messages مع منصات أخرى (Marketing API).",
+          "advancedAudiences": "جماهير مخصصة ومشابهة واستبعادات",
+          "advancedAudiencesHint": "حدّد جماهير Meta الحالية. إنشاء جمهور مشابه جديد لا يُطبَّق على الحملات المباشرة.",
+          "audienceGraphFieldError": "تعذّر على Meta تحميل الجماهير المخصصة أو المحفوظة بسبب طلب حقل قديم لحجم الجمهور. ما زال الاستهداف الحالي يعمل؛ أعد المحاولة بعد تحديث الخادم.",
+          "customAudiences": "الجماهير المخصصة",
+          "lookalikeAudiences": "الجماهير المشابهة",
+          "excludedAudiences": "الاستبعادات",
+          "noCustomAudiences": "لا توجد جماهير مخصصة في حساب الإعلانات هذا بعد.",
+          "noLookalikes": "لا توجد جماهير مشابهة في حساب الإعلانات هذا بعد.",
+          "savedAudience": "جمهور محفوظ",
+          "localesHint": "مفاتيح اللغات المحلية من Meta (مثال: 6)",
+          "abTests": "اختبارات A/B في حساب الإعلانات هذا",
+          "abTestsEmpty": "لم تُرجع Marketing API أي Ad Studies.",
+          "abTestsUnavailable": "اختبارات A/B غير متاحة في حساب الإعلانات هذا أو في إصدار Marketing API.",
+          "abTestsHint": "أنشئ مسودة اختبار مقسّم فقط. بدء الدراسة يتطلب تأكيدًا صريحًا ولا يغيّر ميزانيات الحملات المباشرة.",
+          "abTestName": "اسم الدراسة",
+          "createAbDraft": "إنشاء مسودة دراسة A/B",
+          "startAb": "بدء الدراسة",
+          "abConfirmTitle": "هل تريد بدء دراسة A/B هذه؟",
+          "abConfirmBody": "ستبدأ Meta التجربة. هذا ليس نشرًا للحملة ولن نغيّر الميزانيات المباشرة من هذه الشاشة.",
+          "abConfirmCheck": "أؤكد أنني أريد بدء هذه الدراسة",
+          "advancedWritesOff": "يبقى إنشاء الجماهير المشابهة وإعلانات الكتالوج ومسودات A/B متوقفًا إلى أن يُدرج حساب إعلانات تجريبي في القائمة المسموح بها.",
+          "createLookalike": "إنشاء جمهور مشابه",
+          "createLookalikeHint": "ينشئ جمهورًا مشابهًا جديدًا في Meta. لا يُرفق تلقائيًا بحملة نشطة.",
+          "lookalikeSource": "الجمهور المصدر",
+          "lookalikeCountry": "البلد",
+          "lookalikePercent": "نسبة التشابه",
+          "lookalikeName": "اسم الجمهور المشابه",
+          "creatingLookalike": "جارٍ إنشاء الجمهور المشابه…",
+          "catalogAd": "الكتالوج / DPA",
+          "catalogAdDesc": "إعلانات منتجات ديناميكية من مجموعة منتجات في كتالوج Meta.",
+          "existingPostAd": "منشور موجود",
+          "existingPostAdDesc": "استخدم منشور صفحة تم نشره (object_story_id).",
+          "catalog": "الكتالوج",
+          "productSet": "مجموعة المنتجات",
+          "pickCatalog": "اختيار كتالوج",
+          "pickProductSet": "اختيار مجموعة منتجات",
+          "existingPost": "منشور الصفحة",
+          "pickExistingPost": "اختيار منشور تم نشره",
+          "validationCatalog": "تحتاج إعلانات الكتالوج إلى مجموعة منتجات.",
+          "validationExistingPost": "تحتاج إعلانات المنشور الموجود إلى منشور صفحة.",
+          "disclaimerTitle": "عنوان إخلاء مسؤولية مخصص",
+          "disclaimerText": "نص إخلاء المسؤولية",
+          "disclaimerHint": "حقل Graph custom_disclaimer اختياري. اتركه فارغًا للتخطي.",
+          "disclaimerTitlePlaceholder": "إشعار قانوني",
+          "disclaimerTextPlaceholder": "أوافق على الشروط…",
+          "disclaimerRequired": "اشتراط الإقرار",
+          "syncConflictTitle": "تختلف هذه الحملة عما في Meta",
+          "syncConflictBody": "تم رصد تغييرات خارجية في Meta. لن يستبدل Bizuply ما في Meta أو مسودتك غير المنشورة. اختر الإصدار الذي تريد الإبقاء عليه في المحرّر.",
+          "syncConflictLocal": "محلي",
+          "syncConflictMeta": "Meta",
+          "syncConflictKeep": "الإبقاء على المسودة المحلية",
+          "syncConflictLoadMeta": "تحميل إصدار Meta",
+          "place_facebook": "Facebook",
+          "place_instagram": "Instagram",
+          "place_threads": "Threads",
+          "place_messenger": "Messenger",
+          "place_audience_network": "Audience Network",
+          "place_feed": "الخلاصة",
+          "place_facebook_reels": "Reels",
+          "place_story": "القصص",
+          "place_marketplace": "Marketplace",
+          "place_video_feeds": "خلاصات الفيديو",
+          "place_search": "بحث",
+          "place_right_hand_column": "العمود الأيمن",
+          "place_instream_video": "فيديو أثناء البث",
+          "place_profile_feed": "خلاصة الملف الشخصي",
+          "place_stream": "الخلاصة",
+          "place_explore": "استكشاف",
+          "place_reels": "Reels",
+          "place_explore_home": "رئيسية الاستكشاف",
+          "place_ig_search": "بحث",
+          "place_classic": "إعلان أصلي ولافتة وبيني",
+          "place_rewarded_video": "فيديو بمكافأة",
+          "place_mobile": "الجوال",
+          "place_desktop": "سطح المكتب",
+          "carouselAd": "إعلان دوّار",
+          "carouselAdUploadDesc": "بطاقتان أو أكثر في إعلان واحد.",
+          "carouselCards": "بطاقات الإعلان الدوّار",
+          "carouselNeedImage": "ارفع صورة لهذه البطاقة",
+          "addCarouselCard": "إضافة بطاقة",
+          "validationCarousel": "يحتاج الإعلان الدوّار إلى بطاقتين على الأقل تتضمن صورًا",
+          "refreshFromMeta": "إعادة تحميل الإعدادات من Meta",
+          "refreshConfirmTitle": "هل تريد إعادة تحميل الإعدادات من Meta؟",
+          "refreshConfirmBody": "لديك تعديلات غير منشورة. سيؤدي التحميل من Meta إلى استبدال المحرّر الحالي بإعدادات Meta المباشرة. لن يُنشر أي شيء ولن يُفعَّل.",
+          "refreshConfirmKeep": "الإبقاء على تعديلاتي",
+          "refreshConfirmLoad": "التحميل من Meta",
+          "compatRoasObjective": "الحد الأدنى لـ ROAS متاح فقط لحملات المبيعات أو الترويج للتطبيق.",
+          "compatBidAmount": "يتطلب سقف التكلفة وسقف عرض السعر مبلغ عرض سعر أكبر من صفر.",
+          "compatRoasFloor": "يتطلب الحد الأدنى لـ ROAS قيمة أرضية لـ ROAS.",
+          "compatManualPlatform": "تتطلب مواضع الظهور اليدوية منصة واحدة على الأقل.",
+          "compatThreads": "تتطلب مواضع ظهور Threads وجود Instagram.",
+          "compatSponsored": "لا يمكن دمج الرسائل المموّلة مع منصات أخرى.",
+          "compatAnForms": "Audience Network غير متوافق مع Instant Forms.",
+          "compatAnWhatsapp": "Audience Network غير متوافق مع إعلانات WhatsApp.",
+          "leadgenTosTitle": "شروط خدمة Lead Ads",
+          "leadgenTosRequired": "لا يمكن تشغيل إعلانات Lead Ads قبل أن تقبل صفحة Facebook {{page}} شروط خدمة Lead Ads لدى Meta.",
+          "leadgenTosOpen": "عرض الشروط",
+          "leadgenTosChecking": "جارٍ التحقق مع Meta…",
+          "leadgenTosAccepted": "قبلت Meta شروط خدمة Lead Ads للصفحة {{page}}.",
+          "leadgenTosMissingPermission": "ليست لديك صلاحية قبول شروط Lead Ads لهذه الصفحة. يلزم دور مسؤول الصفحة على Meta وصلاحية pages_manage_ads.",
+          "leadgenTosUnavailable": "تعذّر التحقق مع Meta مما إذا كانت شروط Lead Ads مقبولة لهذه الصفحة. ما زال بإمكانك حفظ مسودة ثم التحقق مرة أخرى.",
+          "leadgenTosDraftOk": "يبقى حفظ المسودة متاحًا قبل قبول الشروط.",
+          "leadgenTosRecheck": "التحقق مرة أخرى",
+          "leadgenTosDemo": "وضع العرض التجريبي لا يتحقق من القبول لدى Meta.",
+          "leadgenTosSelectPage": "اختر صفحة Facebook لمراجعة شروط Lead Ads الخاصة بها.",
+          "estimateUnavailable": "لم تُرجع Meta تقديرًا صالحًا للجمهور. غيّر أحد الإعدادات أو أعد المحاولة.",
+          "estimateNeedsLocation": "اختر موقعًا للحصول على تقدير للجمهور من Meta.",
+          "estimateRetry": "إعادة المحاولة",
+          "recoveredDraftNote": "لم تنشئ Meta مجموعة إعلانات، لذلك لم يُحفظ العمر والموقع هناك. الإعدادات أدناه هي التي اخترتها مسبقًا. يبقى إنشاء مجموعة الإعلانات الناقصة متوقفًا مؤقتًا ولا ينفق من الميزانية.",
+          "resumeMissingAdSet": "إنشاء مجموعة الإعلانات الناقصة (متوقفة مؤقتًا)",
+          "forecastLabel": "توقّع العرض (وليس حجم الجمهور):",
+          "forecastReach": "الوصول",
+          "forecastImpressions": "مرات الظهور",
+          "forecastActions": "النتائج",
+          "publishOkCustomer": "تم إرسال الحملة. يمكنك متابعة حالتها من هنا.",
+          "outcomeCreationFailed": "تعذّر على Meta إنشاء الحملة",
+          "outcomeStillActive": "الحملة ما زالت نشطة في Meta",
+          "outcomeStillActiveHint": "رفضت Meta إيقاف عنصر مؤقتًا. لم يُوقف النشر. افتح Meta Ads Manager وأوقف مؤقتًا المعرّف الظاهر هنا.",
+          "statusStillActive": "نشط — أوقفه مؤقتًا في Meta",
+          "outcomeRejected": "رفضت Meta الإعلان",
+          "outcomeRejectedHint": "تم إنشاء الإعلان ثم رُفض أثناء المراجعة. هذا ليس فشل إنشاء تقنيًا.",
+          "outcomePendingReview": "تم إنشاء الإعلان وهو بانتظار مراجعة Meta",
+          "outcomePendingHint": "قبلت Meta الإعلان. لم يُعتمد بعد ولم يُعلَّم كمنشور.",
+          "outcomeCreatedPaused": "تم إنشاء الحملة في Meta وهي متوقفة مؤقتًا. لم تُفعَّل أي ميزانية.",
+          "outcomeActive": "الحملة نشطة في Meta",
+          "alreadySubmitted": "أُرسلت هذه الحملة إلى Meta مسبقًا. لم تُنشأ نسخة مكررة.",
+          "metaErrorCode": "الرمز",
+          "metaErrorSubcode": "الرمز الفرعي",
+          "metaFbtrace": "fbtrace_id",
+          "createdObjects": "العناصر المُنشأة في Meta",
+          "noneCreated": "لم تُنشأ حملة أو مجموعة إعلانات أو إعلان",
+          "validationLeadFormCta": "اختر دعوة إلى إجراء تدعمها Meta مع Instant Forms. يُرفض خيار \"عرض التفاصيل\" (OPEN_LINK).",
+          "ctaIncompatibleLeadForm": "لا تسمح Meta بهذا الزر مع Instant Form",
+          "ctaConfirmTitle": "هل تريد تحديث الدعوة إلى الإجراء؟",
+          "ctaConfirmBody": "\"{{current}}\" غير مدعوم لوجهة التحويل الجديدة. هل تريد التبديل إلى \"{{suggested}}\"؟ لن نغيّر الزر دون تأكيد.",
+          "ctaConfirmAccept": "التبديل إلى {{suggested}}",
+          "ctaConfirmKeep": "الإبقاء على اختياري"
       },
       "budgetAverageMoney": "ستنفق في المتوسط {{money}} يوميًا. قد يختلف الإنفاق اليومي الفعلي."
+    ,
+        "adSetBudgetSharing": "مشاركة الميزانية بين مجموعات الإعلانات",
+        "adSetBudgetSharingHint": "يمكن لـ Meta نقل ما يصل إلى 20% من الميزانية اليومية بين مجموعات الإعلانات. الخيار متوقف افتراضيًا، ويعمل فقط عندما تُحدَّد الميزانية على مجموعة الإعلانات.",
+        "minRoas": "الحد الأدنى لـ ROAS",
+        "bidAmount": "عرض السعر أو سقف التكلفة",
+        "roasFloor": "أرضية ROAS"
     },
     "ai": {
       "badge": "BizUply منظمة العفو الدولية",
@@ -11117,6 +11719,24 @@
       "custom": "نطاق مخصص",
       "since": "من",
       "until": "إلى"
+    ,
+        "today": "اليوم",
+        "yesterday": "أمس",
+        "todayYesterday": "اليوم وأمس",
+        "rolling7": "7 أيام تشمل اليوم",
+        "last28": "آخر 28 يومًا",
+        "thisWeek": "هذا الأسبوع",
+        "lastWeek": "الأسبوع الماضي",
+        "maximum": "الحد الأقصى",
+        "presets": "نطاقات التاريخ",
+        "compare": "مقارنة",
+        "comparePrevious": "الفترة السابقة",
+        "compareCustom": "نطاق مخصص",
+        "update": "تحديث",
+        "cancel": "إلغاء",
+        "previousMonths": "الأشهر السابقة",
+        "nextMonths": "الأشهر التالية",
+        "timezoneNote": "تستخدم التواريخ المنطقة الزمنية لحساب الإعلانات ({{zone}})"
     },
     "segments": {
       "all": "الكل",
@@ -11164,6 +11784,14 @@
       "endOngoing": "جار",
       "budgetDaily": "يوميا",
       "budgetLifetime": "مدى الحياة"
+    ,
+        "adName": "اسم الإعلان",
+        "adSetName": "اسم مجموعة الإعلانات",
+        "linkClicks": "نقرات الرابط",
+        "cpc": "CPC",
+        "cpm": "CPM",
+        "frequency": "معدّل التكرار",
+        "objective": "الهدف"
     },
     "status": {
       "active": "نشط",
@@ -11178,6 +11806,11 @@
       "rejected": "مرفوضة",
       "with_issues": "مع القضايا",
       "campaign_paused": "حملة Off"
+    ,
+        "pending_publish": "بانتظار النشر",
+        "failed": "فشل",
+        "unknown": "لم يتم التحقق من الحالة",
+        "limited": "محدود"
     },
     "objectives": {
       "leads": "العملاء المحتملون",
@@ -11236,6 +11869,28 @@
       "loading": "تحميل حملة الصحة...",
       "error": "لم يمكن تحميل الحملة الصحية.",
       "empty": "لا توجد توصيات للأداء حتى الآن."
+    ,
+        "generate": "إنشاء التوصيات",
+        "apply": "تطبيق التوصية",
+        "undo": "تراجع",
+        "confirmTitle": "هل تريد تطبيق هذا التغيير؟",
+        "confirmObject": "العنصر",
+        "confirmCurrent": "القيمة الحالية",
+        "confirmNew": "القيمة الجديدة",
+        "confirmWhy": "السبب",
+        "confirmImpact": "الأثر المتوقع",
+        "confirmSpend": "قد يؤثر هذا على الإنفاق",
+        "confirmSpendNo": "هذا لا يفعّل العرض",
+        "confirmApply": "تأكيد التطبيق",
+        "cancel": "إلغاء",
+        "applied": "تم التطبيق بنجاح",
+        "applyFailed": "لم تتطابق إعادة القراءة. لم يُعلَّم التغيير كناجح.",
+        "lowData": "لا تتوفر بيانات كافية للتوصية بتغيير بعد",
+        "stale": "التوصية قديمة — أعد الحساب قبل التطبيق.",
+        "applyPaused": "التطبيق معطّل ما دامت الحملة متوقفة مؤقتًا.",
+        "issue": "المشكلة",
+        "evidence": "الأدلة",
+        "confidence": "درجة الثقة"
     },
     "empty": {
       "notConnectedTitle": "لم يتم العثور على حساب إعلان متصل",
@@ -11439,6 +12094,12 @@
       "previewAllHint": "معاينة Meta الرسمية للموضع المحدد (تغذية / قصة / بكرات).",
       "settingsSubtitleNoBudget": "قم بتوصيل Meta ، واختر حسابًا إعلانيًا وصفحة. يتم تحديد الميزانية لكل حملة.",
       "metricsMetaParity": "تمت المزامنة من Meta Ads Manager لنفس النطاق الزمني."
+    ,
+        "instagramRequiredForPlacement": "للإعلان على Instagram، اربط حساب Instagram.",
+        "conditionalQuestion": "إظهار هذا السؤال فقط إذا",
+        "conditionalQuestionHint": "Meta dependent_conditional_questions: يُعرض السؤال الفرعي بعد خيار من خيارات السؤال الأصلي.",
+        "conditionalAlways": "الإظهار دائمًا",
+        "conditionalPickOption": "اختيار إجابة السؤال الأصلي"
     },
     "wizard": {
       "main": {
@@ -11663,6 +12324,10 @@
       "WHATSAPP_MESSAGE": "WhatsApp",
       "WATCH_MORE": "شاهد المزيد",
       "ORDER_NOW": "اطلب الآن"
+    ,
+        "BOOK_NOW": "احجز الآن",
+        "GET_STARTED": "ابدأ الآن",
+        "VISIT_WEBSITE": "زيارة الموقع"
     },
     "preview": {
       "localTitle": "نشر المعاينة",
@@ -11696,6 +12361,10 @@
         "INSTAGRAM_REELS": "بكرات Instagram",
         "RIGHT_COLUMN_STANDARD": "العمود الأيمن"
       }
+    ,
+        "title": "معاينة الإعلان",
+        "action": "تحديث المعاينة",
+        "failed": "تعذّر تحميل معاينة Meta"
     },
     "settings": {
       "badge": "اتصال",
@@ -11742,6 +12411,11 @@
       "saveBusinessHint": "احفظوا محفظة ميتا ثم اختاروا حساب إعلانات.",
       "selectBusinessRequired": "يرجى اختيار نشاط ميتا",
       "tokenInvalid": "رمز ميتا لم يعد صالحاً. أعيدوا الربط للمتابعة."
+    ,
+        "managedVia": "تُدار صلة Meta عبر: {{name}}",
+        "lastSync": "آخر مزامنة",
+        "currency": "العملة",
+        "reconnectNeeded": "تعذّر إكمال الربط. يُرجى المحاولة مرة أخرى."
     },
     "toasts": {
       "connected": "إعلانات Meta متصلة بنجاح",
@@ -11760,6 +12434,8 @@
       "mediaUploaded": "وسائل الإعلام التي تم تحميلها إلى Meta",
       "leadFormCreated": "تم إنشاء نموذج عميل محتمل",
       "businessSelected": "تم حفظ نشاط ميتا"
+    ,
+        "saved": "تم الحفظ في Meta"
     },
     "errors": {
       "loadOverview": "فشل تحميل نظرة عامة على الحملة",
@@ -11781,6 +12457,12 @@
       "createLeadForm": "فشل في إنشاء نموذج عميل محتمل",
       "selectBusiness": "تعذّر حفظ نشاط ميتا",
       "statusNotPersisted": "حدّثت ميتا الحملة لكن تعذّر على BizUply حفظ الحالة الجديدة. حدّثوا الصفحة وحاولوا مرة أخرى."
+    ,
+        "updateCampaign": "رفضت Meta التحديث",
+        "duplicate": "فشل التكرار في Meta",
+        "deleteCampaignKept": "تعذّر حذف الحملة. ما زالت في القائمة.",
+        "deleteForbidden": "يمكنك حذف الحملات التي تخص نشاطك التجاري فقط.",
+        "deleteInProgress": "الحذف قيد التنفيذ أصلًا. لا حاجة إلى النقر مرة أخرى."
     },
     "review": {
       "captionsAuth": "مراجعة التطبيق · تسجيل فيسبوك · ads_read · ads_management · business_management",
@@ -11837,6 +12519,281 @@
       "retryFailed": "فشلت إعادة المحاولة",
       "demoCreated": "تم إنشاء حملة تجريبية"
     }
+  ,
+      "levels": {
+        "campaigns": "الحملات",
+        "adsets": "مجموعات الإعلانات",
+        "ads": "الإعلانات",
+        "context": "المستوى: {{level}}",
+        "selectedCampaign": "الحملة المحددة: {{name}}",
+        "selectedAdSet": "مجموعة الإعلانات المحددة: {{name}}",
+        "clearSelection": "مسح التحديد وعرض الكل",
+        "search": "البحث بالاسم أو معرّف Meta",
+        "columns": "الأعمدة: الأداء",
+        "presetPerformance": "الأداء",
+        "presetLeads": "العملاء المحتملون",
+        "presetEngagement": "التفاعل",
+        "presetSpend": "الإنفاق",
+        "resetColumns": "استعادة الافتراضي",
+        "missingMetric": "لم تُرجع Meta هذا المؤشر لنطاق التاريخ والمستوى المحددين",
+        "bulkTitle": "إجراء على {{count}} من العناصر",
+        "bulkBody": "الإجراء: {{action}}. العناصر: {{names}}.",
+        "bulkLive": "يغيّر هذا العرض المباشر على Meta.",
+        "bulkSkipped": "لن يُرسل {{count}} من العناصر المحلية إلى Meta.",
+        "bulkConfirm": "تأكيد الإجراء",
+        "bulkDelete": "حذف",
+        "bulkPartial": "نجاح جزئي. ما فشل: {{names}}",
+        "compare": "مقارنة الحملات",
+        "compareNeed": "حدّد حملتين على الأقل",
+        "breakdown": "التقسيم",
+        "grainDay": "يومي",
+        "grainWeek": "أسبوعي",
+        "grainMonth": "شهري",
+        "empty": "لا شيء يطابق هذا النطاق وعامل التصفية",
+        "loadError": "لم تُرجع Meta بيانات. تحقق من صلاحية Insights أو أعد المحاولة.",
+        "history": "سجل التغييرات",
+        "historyEmpty": "لا يوجد سجل تغييرات محفوظ لهذا العنصر",
+        "performance": "الأداء",
+        "next": "التالي",
+        "prev": "السابق",
+        "selectAll": "تحديد كل الصفوف الظاهرة",
+        "createdFrom": "أُنشئ من",
+        "createdTo": "أُنشئ حتى",
+        "landingPageViews": "مشاهدات صفحة الهبوط",
+        "purchases": "عمليات الشراء"
+      },
+      "manager": {
+        "configured": "الحالة المهيأة",
+        "hierarchy": "الحملة ← مجموعات الإعلانات ← الإعلانات",
+        "edit": "تحرير في Invistimo",
+        "adSetName": "اسم مجموعة الإعلانات",
+        "viewOnly": "يمكنك عرض هذه الحملة دون تغيير إعدادات الإنفاق.",
+        "duplicateCampaign": "تكرار الحملة",
+        "duplicateAdSet": "تكرار مجموعة الإعلانات",
+        "duplicateAd": "تكرار الإعلان",
+        "duplicateConfirm": "هل تريد تكرار هذا {{kind}} بحالة إيقاف مؤقت؟",
+        "duplicatedPaused": "تم التكرار في Meta بحالة PAUSED",
+        "tabs": {
+          "campaign": "الحملات",
+          "adset": "مجموعات الإعلانات",
+          "ad": "الإعلانات"
+        },
+        "libraryTitle": "المكتبة الإبداعية",
+        "libraryBody": "أعد استخدام الصور والفيديوهات المرفوعة مسبقًا إلى حساب الإعلانات هذا.",
+        "uploadNew": "رفع جديد",
+        "reuse": "نسخ المعرّف لإعادة الاستخدام",
+        "copied": "تم النسخ",
+        "syncing": "جارٍ المزامنة مع Meta…"
+      },
+      "human": {
+        "HOLD": "أبقِ الميزانية كما هي في الوقت الحالي",
+        "KEEP": "أبقِ الميزانية كما هي في الوقت الحالي",
+        "NO_CHANGE": "أبقِ الميزانية كما هي في الوقت الحالي",
+        "INCREASE": "فكّر في زيادة الميزانية",
+        "DECREASE": "فكّر في خفض الميزانية",
+        "SCALE_UP": "فكّر في التوسيع بحذر",
+        "SCALE_DOWN": "فكّر في التقليص",
+        "PAUSE": "فكّر في الإيقاف المؤقت",
+        "RESUME": "فكّر في إعادة التشغيل",
+        "KEEP_TOTAL": "أبقِ إجمالي الميزانية نفسه",
+        "GROWTH": "اسمح بالنمو حتى السقف",
+        "INSUFFICIENT_DATA": "لا تتوفر بيانات كافية بعد للتوصية بتغيير الميزانية",
+        "ACTIVE": "نشط",
+        "PAUSED": "متوقف مؤقتًا",
+        "TODAY": "اليوم",
+        "YESTERDAY": "أمس",
+        "LAST_3D": "آخر 3 أيام",
+        "LAST_7D": "آخر 7 أيام",
+        "LAST_14D": "آخر 14 يومًا",
+        "LAST_30D": "آخر 30 يومًا",
+        "OUTCOME_LEADS": "العملاء المحتملون",
+        "LEAD_GENERATION": "العملاء المحتملون",
+        "OUTCOME_SALES": "المبيعات",
+        "OUTCOME_TRAFFIC": "الزيارات",
+        "OUTCOME_AWARENESS": "الوعي",
+        "OUTCOME_ENGAGEMENT": "التفاعل",
+        "CONVERSIONS": "التحويلات",
+        "BLENDED_CPL": "تكلفة العميل المحتمل"
+      },
+      "recommendations": {
+        "title": "التوصيات",
+        "subtitle": "فحوصات مقترحة لحملاتك — لا يتغيّر شيء حتى توافق.",
+        "viewCta": "عرض التوصيات",
+        "openCount": "{{count}} توصيات مفتوحة",
+        "loading": "جارٍ تحميل التوصيات…",
+        "empty": "لا توجد توصيات للعرض.",
+        "whyLabel": "سبب إنشاء هذه التوصية",
+        "review": "مراجعة",
+        "confirmHint": "لا يمكنك الموافقة على تغيير إلا بعد مراجعته. لا يتغيّر شيء دون موافقة.",
+        "campaignFallback": "حملة",
+        "filters": {
+          "all": "الكل",
+          "open": "مفتوحة",
+          "applied": "مُطبَّقة",
+          "dismissed": "مُتجاهَلة"
+        },
+        "status": {
+          "open": "مفتوحة",
+          "applied": "مُطبَّقة",
+          "dismissed": "مُتجاهَلة"
+        },
+        "kinds": {
+          "cpl": {
+            "title": "تكلفة العميل المحتمل تحتاج إلى انتباه",
+            "body": "تغيّر أداء الحملة مؤخرًا. راجع الميزانية والأداء قبل إجراء أي تغيير.",
+            "why": "تغيّرت تكلفة العميل المحتمل مقارنة بالفترة السابقة."
+          },
+          "creative": {
+            "title": "راجع هذا الإعلان",
+            "body": "تغيّر أداء الحملة مؤخرًا. راجع الميزانية والأداء قبل إجراء أي تغيير.",
+            "why": "يُظهر الإعلان مؤشرات تستحق المراجعة."
+          },
+          "budget": {
+            "title": "راجع الميزانية",
+            "body": "تغيّر أداء الحملة مؤخرًا. راجع الميزانية والأداء قبل إجراء أي تغيير.",
+            "why": "تغيّرت الميزانية أو وتيرة الإنفاق."
+          },
+          "pause": {
+            "title": "راجع هذه الحملة",
+            "body": "تغيّر أداء الحملة مؤخرًا. راجع الميزانية والأداء قبل إجراء أي تغيير.",
+            "why": "حالة الحملة تحتاج إلى مراجعة."
+          },
+          "generic": {
+            "title": "يُوصى بفحص الأداء",
+            "body": "تغيّر أداء الحملة مؤخرًا. راجع الميزانية والأداء قبل إجراء أي تغيير.",
+            "why": "تم رصد مخاطرة أو فرصة في الأداء."
+          }
+        }
+      },
+      "automationRules": {
+        "title": "قواعد الأتمتة",
+        "subtitle": "قواعد حتمية يقيّمها الخادم في الخلفية. الوضع الافتراضي هو التوصية فقط.",
+        "create": "قاعدة جديدة",
+        "save": "حفظ القاعدة",
+        "cancel": "إلغاء",
+        "test": "اختبار القاعدة",
+        "evaluate": "تقييم الآن",
+        "enabled": "مفعّلة",
+        "disabled": "معطّلة",
+        "when": "عندما",
+        "is": "يساوي",
+        "for": "لمدة",
+        "onlyIf": "فقط إذا",
+        "then": "عندئذٍ",
+        "name": "اسم القاعدة",
+        "scope": "النطاق",
+        "metric": "المؤشر",
+        "operator": "المعامل",
+        "threshold": "الحد",
+        "window": "نافذة التقييم",
+        "consecutive": "فترات متتالية",
+        "minImpressions": "الحد الأدنى لمرات الظهور",
+        "minSpend": "الحد الأدنى للإنفاق",
+        "minResults": "الحد الأدنى للنتائج",
+        "minAge": "الحد الأدنى لعمر الحملة (ساعات)",
+        "action": "الإجراء",
+        "actionValue": "قيمة الإجراء",
+        "mode": "الوضع",
+        "recommend": "التوصية فقط",
+        "automatic": "تلقائي",
+        "cooldown": "فترة التهدئة (ساعات)",
+        "objectIds": "معرّفات العناصر (فارغ = كل المطابق)",
+        "history": "سجل القاعدة",
+        "lastEvaluated": "آخر تقييم",
+        "lastTriggered": "آخر تفعيل",
+        "executions": "عمليات التنفيذ",
+        "status": "الحالة",
+        "testResult": "نتيجة الاختبار",
+        "noRules": "لا توجد قواعد أتمتة بعد.",
+        "safety": "لا تفعّل القواعد أي عنصر متوقف مؤقتًا. الوضع التلقائي ينفّذ الإجراء الذي اخترته فقط."
+      },
+      "goals": {
+        "title": "أهداف الحملات",
+        "subtitle": "هدفك، وما إذا كانت الإعلانات تحققه.",
+        "setGoal": "تحديد هدف الحملة",
+        "step1": "الهدف",
+        "step2": "المستهدف",
+        "step3": "حدود الميزانية",
+        "step4": "تفضيل الأتمتة",
+        "moreLeads": "مزيد من العملاء المحتملين",
+        "lowerCpl": "تكلفة أقل للعميل المحتمل",
+        "moreConversions": "مزيد من تحويلات الموقع",
+        "improveEfficiency": "تحسين الكفاءة",
+        "scale": "توسيع الأداء",
+        "targetCpl": "CPL المستهدف (ILS)",
+        "currentBudget": "الميزانية اليومية الحالية",
+        "maxBudget": "الحد الأقصى للميزانية اليومية",
+        "maxIncrease": "الحد الأقصى للزيادة %",
+        "maxDecrease": "الحد الأقصى للخفض %",
+        "recommendOnly": "توصيات فقط",
+        "safeAuto": "إجراءات تلقائية آمنة",
+        "draft": "إنشاء خطة",
+        "reviewTitle": "بناءً على هدفك، سيراقب Invistimo",
+        "start": "بدء المراقبة",
+        "editRules": "يمكنك التعديل أو الإزالة أو تغيير الوضع قبل البدء.",
+        "status": {
+          "ON_TARGET": "ضمن الهدف",
+          "NEAR_TARGET": "قريب من الهدف",
+          "NEEDS_ATTENTION": "يحتاج إلى انتباه",
+          "INSUFFICIENT_DATA": "لا تتوفر بيانات كافية بعد"
+        },
+        "current": "الحالي",
+        "difference": "الفرق",
+        "started": "وقت بدء الهدف",
+        "noGoals": "لا توجد أهداف بعد.",
+        "evaluationWindow": "بناءً على {{window}}",
+        "basedOnWindow": "بناءً على {{window}}",
+        "evaluate": "تحديث النتائج",
+        "remove": "إزالة",
+        "currencyValue": "{{value}} ILS",
+        "windows": {
+          "TODAY": "اليوم",
+          "YESTERDAY": "أمس",
+          "LAST_3D": "آخر 3 أيام",
+          "LAST_7D": "آخر 7 أيام",
+          "LAST_14D": "آخر 14 يومًا",
+          "LAST_30D": "آخر 30 يومًا"
+        }
+      },
+      "portfolio": {
+        "title": "تحسين المحفظة",
+        "subtitle": "قارن الحملات وراجع تغيير الميزانية المقترح — بعد موافقتك فقط.",
+        "keepTotal": "الإبقاء على إجمالي الميزانية دون تغيير",
+        "growth": "السماح بالنمو حتى سقف الحساب",
+        "targetCpl": "CPL المجمّع المستهدف",
+        "accountCap": "السقف اليومي للحساب",
+        "maxChange": "الحد الأقصى للتغيير %",
+        "analyze": "تحليل",
+        "simulate": "محاكاة التوزيع",
+        "apply": "تطبيق التوزيع",
+        "confirm": "تأكيد التطبيق",
+        "review": "الحالي ← المقترح",
+        "currentTotal": "إجمالي الميزانية الحالي",
+        "proposedTotal": "إجمالي الميزانية المقترح",
+        "blendedCpl": "CPL المجمّع",
+        "explanation": "الشرح",
+        "colProposed": "المقترح",
+        "colRec": "التوصية",
+        "colReason": "السبب"
+      },
+      "copilot": {
+        "title": "اسأل الذكاء الاصطناعي عن حملاتك",
+        "subtitle": "اسأل بلغة واضحة. التغييرات المقترحة تحتاج دائمًا إلى موافقتك.",
+        "placeholder": "أين أهدر المال؟",
+        "ask": "اسأل",
+        "thinking": "جارٍ التحليل…",
+        "facts": "الحقائق الداعمة",
+        "basedOn": "بناءً على",
+        "reviewAction": "مراجعة الإجراء",
+        "insufficient": "لا تتوفر بيانات كافية بعد للإجابة عن هذا بموثوقية.",
+        "synced": "بناءً على بيانات تمت مزامنتها قبل {{minutes}} دقيقة",
+        "qAttention": "ما الذي يحتاج إلى انتباهي اليوم؟",
+        "qOverspend": "أين أُفرط في الإنفاق؟",
+        "qGoal": "أي حملة هي الأقرب إلى هدفها؟",
+        "qChanged": "ما الذي تغيّر خلال آخر 7 أيام؟",
+        "qFatigue": "هل تُظهر أي إعلانات علامات إرهاق؟",
+        "qScale": "أين يمكنني التوسيع بأمان؟"
+      }
   },
   "socialSchedule": {
     "loading": "جدول التحميل...",
@@ -12771,6 +13728,9 @@
       "trust": "Bizuply هي Meta Tech Provider واجتاز التطبيق Meta App Review لربط إعلانات العملاء المحتملين. لسنا Meta Business Partner.",
       "ctaAutomations": "الأتمتة",
       "ctaStartFree": "عرض الباقات"
+    ,
+        "badgeTech": "Meta Tech Provider",
+        "badgeReview": "تمت الموافقة في App Review"
     },
     "stats": {
       "pipelineStatuses": "الحالات في خط أنابيب عميل محتمل",
@@ -12778,6 +13738,8 @@
       "docTypes": "أنواع السجلات في ملف العميل",
       "calendarResolution": "قرار التعيين",
       "minSuffix": " دقيقة"
+    ,
+        "caption": "حقائق عن المنتج، وليست نتائج أداء"
     },
     "pipeline": {
       "new": "جديد",
@@ -13033,6 +13995,86 @@
       "text": "قم بتوصيل مصادر العملاء المحتملين ، والعمل مع الحالات والمهام ، والاستمرار في ملف العميل وتقويم المواعيد. كل ذلك في تطبيق Meta الذي اجتاز مراجعة التطبيقات.",
       "primaryLabel": "سجل الآن"
     }
+  ,
+      "audiences": {
+        "eyebrow": "لمن هذا",
+        "titleA": "لفرق تتلقّى الاستفسارات أصلًا ",
+        "titleHighlight": "وتحتاج إلى مكان واحد للعمل عليها",
+        "lead": "CRM مخصّص للأعمال التي تجمع العملاء المحتملين من الإعلانات أو من موقع، ثم تحتاج إلى حالة ومتابعة وموعد عندما يكون ذلك مناسبًا.",
+        "cards": {
+          "services": {
+            "title": "أعمال الخدمات",
+            "text": "عيادات وصالونات واستوديوهات وفرق ميدانية تحوّل الاستفسار إلى ملف عميل وموعد محجوز."
+          },
+          "ads": {
+            "title": "أعمال تشغّل إعلانات العملاء المحتملين",
+            "text": "فرق تشتري نماذج عملاء محتملين على Facebook أو Instagram أو Google وتريد كل طلب في مسار المبيعات مع مصدره."
+          },
+          "sites": {
+            "title": "أعمال لديها موقع Bizuply",
+            "text": "النموذج المنشور في أداة إنشاء المواقع يحفظ الاستفسار مع مصدر الموقع ويمكنه إرسال تنبيه بالبريد الإلكتروني."
+          }
+        }
+      },
+      "useCases": {
+        "eyebrow": "حالات الاستخدام",
+        "title": "ماذا يحدث بعد وصول الاستفسار",
+        "items": {
+          "leadAd": {
+            "title": "يتحوّل Lead Ad إلى بطاقة في مسار المبيعات",
+            "text": "بعد ربط صفحة Facebook واختيار النموذج، يدخل عميل محتمل جديد من Meta بحالة «جديد». تبقى حقول المصدر والنموذج على البطاقة."
+          },
+          "website": {
+            "title": "ينضم نموذج الموقع إلى القائمة نفسها",
+            "text": "يُحفظ نموذج العملاء المحتملين على موقع Bizuply مع مصدر الموقع. يمكن للنشاط التجاري تلقّي تنبيه بالبريد الإلكتروني، ويمكن للزائر رؤية رسالة شكر."
+          },
+          "client": {
+            "title": "يستمر العميل المحتمل بعد التحويل كعميل",
+            "text": "يحتفظ ملف العميل ببيانات الاتصال والسجل والملفات وسجل المواعيد، فلا يتوقف العمل عندما تتغيّر الحالة إلى «تم التحويل»."
+          },
+          "booking": {
+            "title": "يمكن أن تكون الخطوة التالية موعدًا في التقويم",
+            "text": "تحدّد ساعات العمل ومدة الخدمة نوافذ من 15 دقيقة. الحجز من صفحة العميل يرسل رسالة تأكيد بالبريد الإلكتروني ويظهر في التقويم."
+          }
+        }
+      },
+      "start": {
+        "eyebrow": "البدء",
+        "title": "من الحساب إلى أول عميل محتمل",
+        "steps": {
+          "account": {
+            "title": "إنشاء حساب النشاط التجاري",
+            "text": "افتح حساب Bizuply وادخل إلى CRM من لوحة تحكم النشاط التجاري."
+          },
+          "source": {
+            "title": "ربط مصدر واحد",
+            "text": "اربط صفحة Facebook ونموذج عملاء محتملين، أو نموذج عملاء محتملين في Google Ads، أو نموذجًا على موقع Bizuply."
+          },
+          "work": {
+            "title": "اعمل على البطاقة",
+            "text": "حدّد الحالة، وأضف ملاحظة، وسجّل مكالمة أو رسالة WhatsApp، وأنشئ مهمة بتاريخ ووقت."
+          }
+        }
+      },
+      "pricingNote": {
+        "eyebrow": "التسعير",
+        "title": "خطة CRM فقط بسعر $49 شهريًا",
+        "text": "خطة CRM فقط بسعر $49 شهريًا وتتجدد كل شهر. خطة الأعمال، التي تشمل CRM مع المواعيد والتعاون والأتمتة، بسعر $99 شهريًا أو $990 سنويًا.",
+        "plans": "عرض كل الخطط",
+        "crmOnly": "البدء بخطة CRM فقط"
+      },
+      "related": {
+        "eyebrow": "يعمل مع بقية Bizuply",
+        "title": "CRM ليس صندوق وارد منفصلًا",
+        "automations": "الأتمتة",
+        "automationsText": "تذكيرات ومتابعات ومهام وتنبيهات مرتبطة بـ CRM.",
+        "appointments": "المواعيد",
+        "appointmentsText": "التقويم والخدمات وصفحة حجز العملاء.",
+        "websites": "أداة إنشاء المواقع",
+        "websitesText": "موقع تدخل استفساراته إلى مسار المبيعات نفسه.",
+        "whatsapp": "WhatsApp API",
+        "whatsappText": "رقم WhatsApp مرتبط للأنظمة التي ترسل قوالب معتمدة."
+      }
   },
   "privacyPage": {
   "metaTitle": "سياسة الخصوصية - Bizuply",
@@ -16755,83 +17797,83 @@
     },
     "palettes": {
       "luxury-purple": {
-        "name": "Luxury Purple",
+        "name": "بنفسجي فاخر",
         "description": "فاخر وحديث، مناسب للجمال والأعمال الراقية"
       },
       "rose-gold": {
-        "name": "Rose Gold",
+        "name": "ذهبي وردي",
         "description": "أنثوي وفاخر وناعم وبيعي"
       },
       "black-gold": {
-        "name": "Black & Gold",
+        "name": "أسود وذهبي",
         "description": "أنيق ودرامي وفاخر جداً"
       },
       "nude-elegant": {
-        "name": "Nude Elegant",
+        "name": "نيود أنيق",
         "description": "نظيف ولطيف ومهني"
       },
       "ocean-modern": {
-        "name": "Ocean Modern",
+        "name": "محيط عصري",
         "description": "حديث ونظيف وتقني"
       },
       "minimal-mono": {
-        "name": "Minimal Monochrome",
+        "name": "أحادي بسيط",
         "description": "بسيط ونظيف وأنيق"
       },
       "cream-bronze": {
-        "name": "Cream Bronze",
+        "name": "كريمي وبرونزي",
         "description": "كريمي وبرونزي، نظيف وفاخر جداً"
       },
       "emerald-luxury": {
-        "name": "Emerald Luxury",
+        "name": "زمردي فاخر",
         "description": "أخضر زمردي فاخر وعميق وحديث"
       },
       "clean-blue": {
-        "name": "Clean Blue",
+        "name": "أزرق نظيف",
         "description": "عملي ونظيف، مناسب لمقدمي الخدمات وSaaS"
       },
       "soft-pink": {
-        "name": "Soft Pink",
+        "name": "وردي ناعم",
         "description": "وردي ناعم ونظيف وحديث للجمال ونمط الحياة"
       },
       "champagne": {
-        "name": "Champagne",
+        "name": "شامبانيا",
         "description": "شامبانيا وذهب ناعم ومظهر فاخر نظيف"
       },
       "dark-violet": {
-        "name": "Dark Violet",
+        "name": "بنفسجي داكن",
         "description": "داكن وتقني ودرامي وحديث جداً"
       },
       "pearl-luxury": {
-        "name": "Pearl Luxury",
+        "name": "لؤلؤي فاخر",
         "description": "أبيض لؤلؤي نظيف وأنيق ومناسب لعلامة فاخرة"
       },
       "espresso": {
-        "name": "Espresso",
+        "name": "إسبريسو",
         "description": "بني عميق وفاخر ودافئ لنمط الحياة والقهوة والتصميم"
       },
       "sage-modern": {
-        "name": "Sage Modern",
+        "name": "مريمية عصرية",
         "description": "أخضر مريمية ناعم ونظيف وطبيعي ومهدئ"
       },
       "royal-blue": {
-        "name": "Royal Blue",
+        "name": "أزرق ملكي",
         "description": "أزرق عميق وفاخر، مناسب للأعمال والاستشارات والعقارات"
       },
       "midnight-gold": {
-        "name": "Midnight Gold",
+        "name": "ذهبي منتصف الليل",
         "description": "أسود-أزرق مع ذهب، مظهر فاخر حديث وقوي"
       },
       "coral-fresh": {
-        "name": "Coral Fresh",
+        "name": "مرجاني منعش",
         "description": "مرجاني منعش وشاب، مناسب لنمط الحياة والطعام والفعاليات"
       },
       "lavender-clean": {
-        "name": "Lavender Clean",
+        "name": "لافندر نظيف",
         "description": "لافندر نظيف وناعم للجمال والعيادات والعلامات اللطيفة"
       },
       "graphite-pro": {
-        "name": "Graphite Pro",
+        "name": "غرافيت احترافي",
         "description": "رمادي جرافيت مهني وعملي ونظيف وحديث جداً"
       }
     },
@@ -18005,6 +19047,12 @@
       "internationalPrice": "${{annual}} / سنة",
       "internationalManual": "تحصيل يدوي فقط. التسجيل مجاني وينتظر موافقة المسؤول.",
       "internationalLocked": "التسجيل في المسار الدولي مجاني على الموقع وينتظر موافقة المسؤول. هذا النموذج لا يخصم مبلغاً."
+    ,
+        "internationalMonthlyPrice": "${{monthly}} / شهر",
+        "annualSavings": "وفّر ${{amount}} في السنة",
+        "noAutoCharge": "لا يوجد خصم تلقائي.",
+        "continue": "متابعة",
+        "backToInterval": "تغيير الفترة"
     },
     "internationalFee": {
       "pendingTitle": "الطلب بانتظار موافقة المسؤول",
@@ -18834,6 +19882,9 @@
       }
     },
     "iphoneSafariStep": "Safari → bizuply.com"
+  ,
+      "complimentaryActive": "نشط – دون رسوم",
+      "complimentaryDetail": "ميزة شخصية. بلا رسوم، وبلا فترة تجريبية، وبلا تاريخ انتهاء."
   },
   "domainSearch": {
     "free": "مجاني",
@@ -22509,6 +23560,19 @@
     },
     "upgrade": {
       "title": "ترقية الاشتراك"
+    ,
+        "hint": "تعرض هذه الشاشة الاشتراك النشط وروابط إدارة الفوترة وكتالوج الخطط. يبقى الدفع في الشاشات الحالية.",
+        "current": "الاشتراك الحالي",
+        "noPlan": "لم يُعثر على اشتراك نشط في بيانات الفوترة.",
+        "status": "الحالة",
+        "nextCharge": "الدفعة التالية",
+        "statusActive": "نشط",
+        "monthly": "شهري",
+        "yearly": "سنوي",
+        "openBilling": "إدارة الفوترة",
+        "openPricing": "عرض الخطط",
+        "loading": "جارٍ تحميل بيانات الاشتراك...",
+        "loadError": "تعذّر تحميل بيانات الفوترة."
     },
     "adsLead": {
       "failed": "فشلت العملية. حاول مرة أخرى."
@@ -23101,6 +24165,27 @@
       "withdrawError": "خطأ في إرسال طلب السحب",
       "businessNamePh": "اسم العمل",
       "contactNamePh": "اسم جهة الاتصال"
+    ,
+        "pageTitle": "برنامج الإحالة",
+        "pageHint": "رابط شخصي وعملاء جدد وإحصاءات وسحب الرصيد.",
+        "linkTitle": "رابط الإحالة الشخصي",
+        "copyLink": "نسخ الرابط",
+        "createTitle": "إنشاء عميل جديد",
+        "emailPh": "البريد الإلكتروني",
+        "phonePh": "الهاتف",
+        "createButton": "إنشاء العميل ورابط الدفع",
+        "paymentLink": "رابط الدفع",
+        "statsTitle": "الإحصاءات",
+        "month": "الشهر",
+        "purchases": "المشتريات",
+        "paid": "مدفوع",
+        "unpaid": "غير مدفوع",
+        "withdrawTitle": "سحب الرصيد",
+        "available": "الرصيد المتاح",
+        "minPh": "الحد الأدنى $200",
+        "requestWithdraw": "طلب سحب",
+        "manageBank": "إدارة البيانات البنكية",
+        "emptyStats": "لا توجد بيانات مشتريات بعد."
     },
     "upload": {
       "selectFile": "يرجى اختيار ملف للرفع",
@@ -23155,6 +24240,28 @@
       "youCustomer": "أنتم (عميل)",
       "business": "العمل",
       "system": "النظام"
+    ,
+        "inbox": "صندوق الوارد",
+        "title": "رسائل العملاء",
+        "subtitle": "كل المحادثات مع عملاء النشاط التجاري في مكان واحد.",
+        "conversations": "المحادثات",
+        "unread": "غير مقروء",
+        "loadingList": "جارٍ تحميل المحادثات...",
+        "chatsCount": "{{count}} محادثات",
+        "emptyTitle": "لا توجد محادثات بعد",
+        "emptyBody": "عندما يراسل العملاء صفحة النشاط التجاري، تظهر المحادثة هنا.",
+        "selectTitle": "اختر محادثة",
+        "selectBody": "اختر عميلًا من القائمة للقراءة والرد.",
+        "back": "العودة إلى المحادثات",
+        "noBusinessTitle": "لم يُعثر على حساب النشاط التجاري",
+        "noBusinessBody": "تعذّر العثور على معرّف نشاط تجاري نشط لهذا الحساب.",
+        "loadingData": "جارٍ تحميل البيانات...",
+        "chatsWithClients": "محادثات مع العملاء",
+        "chatWithBusiness": "محادثة مع النشاط التجاري",
+        "noConversations": "لا توجد محادثات بعد",
+        "loadingConversations": "جارٍ تحميل المحادثات...",
+        "loadError": "خطأ أثناء تحميل المحادثات",
+        "client": "عميل"
     },
     "loading": {
       "appointments": "جارٍ تحميل المواعيد...",
@@ -23200,6 +24307,11 @@
       "proceedPayment": "المتابعة إلى الدفع",
       "allCategories": "الكل",
       "addToCart": "إضافة إلى السلة"
+    ,
+        "color": "اللون",
+        "size": "المقاس",
+        "qtyLabel": "الكمية",
+        "removeItem": "إزالة"
     },
     "servicesChrome": {
       "addService": "إضافة خدمة",
@@ -23322,6 +24434,9 @@
       "tipReviews": "🌟 أرسلوا طلب مراجعة قصيراً مع رابط سهل.",
       "tipDefault": "🎯 افعلوا اليوم خطوة صغيرة تقرّبكم من الهدف.",
       "achieved": "🏆 هدف مُنجَز: \"{{title}}\" في {{date}}"
+    ,
+        "pageHint": "يُحسب التقدم من بيانات النشاط التجاري المحمّلة أصلًا. تبقى الأهداف في هذه الشاشة.",
+        "empty": "لا توجد أهداف بعد. املأ النموذج لرؤية التقدم."
     },
     "metaFormChrome": {
       "createForm": "إنشاء نموذج",
@@ -23966,4 +25081,39 @@
     "year": "كل سنة",
     "subscription": "{{price}} {{interval}}، بالدولار الأمريكي، عبر Lemon Squeezy. يتجدد الاشتراك تلقائيًا إلى أن يُلغى في منطقة الفوترة. يوقف الإلغاء عملية التحصيل التالية، ويستمر الوصول حتى نهاية الفترة المدفوعة. تتبع المبالغ المستردة شروط الاستخدام المنشورة."
   }
+,
+    "aiStudio": {
+      "beta": "تجريبي",
+      "disabledBody": "AI Studio مشمول في خطة العمل النشطة. هذا النشاط ليس لديه الآن خطة عمل نشطة أو إذن تجربة.",
+      "disabledNote": "لا توجد رسوم منفصلة. لا يُنشر الموقع إلا بعد تأكيد صريح.",
+      "backToSites": "العودة إلى المواقع",
+      "kicker": "BIZUPLY AI STUDIO · {{beta}}",
+      "draftTitle": "مسودة موقع داخل محادثة",
+      "draftLead": "يُنشأ الموقع داخل المحادثة، ويُحفظ، ويُفتح للتحرير في Website Studio. يستخدم النشر المسار الحالي وبعد تأكيد صريح فقط. الخدمة مشمولة في خطة العمل، دون رسوم منفصلة.",
+      "credits": "محاولات تجريبية، دون رسوم: {{count}}",
+      "saveSite": "حفظ الموقع",
+      "confirmPublish": "تأكيد النشر",
+      "publishUpdate": "نشر التحديث",
+      "publishSite": "نشر الموقع",
+      "openStudio": "فتح في Website Studio",
+      "chat": "محادثة",
+      "chatHint": "جرّب: «أنشئ موقعًا لاستوديو تجميل باسم Naveh»، «غيّر الألوان إلى #7c3aed»، «أضف صفحة أسعار».",
+      "placeholder": "اكتب طلبًا…",
+      "send": "إرسال",
+      "preview": "معاينة المسودة",
+      "previewEmpty": "يظهر الموقع المصمَّم هنا بعد إنشائه في المحادثة.",
+      "previewNote": "مسودة مصمَّمة. الموقع غير منشور.",
+      "versions": "الإصدارات",
+      "versionsEmpty": "تُنشأ الإصدارات بعد كل تغيير ناجح.",
+      "restoreFailed": "فشل الاستعادة",
+      "starterPrompt": "أنشئ موقعًا بأسلوب فاخر لاستوديو تجميل باسم Naveh",
+      "chatError": "فشلت المحادثة",
+      "dailyQuota": "بلغت الحصة اليومية لـ AI Studio. يمكنك متابعة تحرير الموقع يدويًا. يعود الإنشاء والتحرير بالذكاء الاصطناعي بعد تجديد الحصة.",
+      "monthlyQuota": "بلغت الحصة الشهرية لـ AI Studio. المواقع التي أنشأتها محفوظة ويمكن متابعة تحريرها. يعود استخدام الذكاء الاصطناعي في بداية الفترة التالية.",
+      "quotaRenews": "تتجدد الحصة في {{date}}.",
+      "manualFallback": "يمكنك متابعة تحرير الموقع يدويًا. AI Studio غير متاح الآن.",
+      "statusFailed": "تعذر تحميل حالة AI Studio",
+      "saveFailed": "فشل حفظ المسودة",
+      "publishFailed": "فشل النشر"
+    }
 }

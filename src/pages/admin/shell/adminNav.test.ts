@@ -54,4 +54,20 @@ describe("admin nav active state", () => {
     expect(he.chrome.adminCrumb).toBe("אדמין");
     expect(JSON.stringify(en.chrome)).not.toMatch(/[\u0590-\u05FF]/);
   });
+
+  it("keeps Spanish, Portuguese, and Arabic menus out of Hebrew", () => {
+    for (const code of ["es", "pt-BR", "ar"]) {
+      const copy = adminShellCopy(code);
+      const packed = JSON.stringify({ groups: copy.groups, items: copy.items, chrome: copy.chrome });
+      expect(packed).not.toMatch(/[\u0590-\u05FF]/);
+      for (const group of NAV_GROUPS) {
+        expect(copy.groups[group.id]).toBeTruthy();
+        for (const item of group.items) expect(copy.items[item.path]).toBeTruthy();
+      }
+    }
+    expect(adminShellCopy("es").chrome.logout).toBe("Cerrar sesión");
+    expect(adminShellCopy("pt-BR").chrome.logout).toBe("Sair");
+    expect(adminShellCopy("ar").chrome.logout).toBe("تسجيل الخروج");
+    expect(adminShellCopy("ar").groups.dashboard).toBe("لوحة التحكم");
+  });
 });

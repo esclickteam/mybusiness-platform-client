@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowRight,
@@ -22,29 +23,22 @@ import { createMySite } from "../api/mySitesApi";
 import API from "../api";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import PublicVisualSiteRenderer from "../components/site-builder/public/PublicVisualSiteRenderer";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type ChatRow = { role: "user" | "assistant"; content: string; action?: string; via?: string };
 
-const DAILY_QUOTA_TEXT =
-  "הגעת למכסת השימוש היומית ב־AI Studio. ניתן להמשיך לערוך את האתר באופן ידני. האפשרות להמשיך ליצור ולערוך באמצעות AI תתחדש לאחר איפוס המכסה.";
-const MONTHLY_QUOTA_TEXT =
-  "הגעת למכסת השימוש החודשית ב־AI Studio. האתרים שיצרת נשמרו וניתן להמשיך לערוך ולנהל אותם. השימוש ב־AI יתחדש בתחילת תקופת השימוש הבאה.";
-
 function aiStudioErrorText(
+  t: (key: string, options?: Record<string, unknown>) => string,
   data: { code?: string; error?: string; resetsAtLabel?: string } | undefined,
   fallback: string
 ) {
   const code = String(data?.code || "");
   const serverText = String(data?.error || "");
   const leaked = /[$]|USD|דולר/i.test(serverText);
-  const renewal = data?.resetsAtLabel ? ` המכסה תתחדש ב־${data.resetsAtLabel}.` : "";
-  if (code === "AI_STUDIO_DAILY_QUOTA") {
-    return !leaked && serverText.startsWith(DAILY_QUOTA_TEXT) ? serverText : `${DAILY_QUOTA_TEXT}${renewal}`;
-  }
-  if (code === "AI_STUDIO_MONTHLY_QUOTA") {
-    return !leaked && serverText.startsWith(MONTHLY_QUOTA_TEXT) ? serverText : `${MONTHLY_QUOTA_TEXT}${renewal}`;
-  }
-  if (leaked) return "ניתן להמשיך לערוך את האתר באופן ידני. השימוש ב־AI Studio אינו זמין כרגע.";
+  const renewal = data?.resetsAtLabel ? ` ${t("aiStudio.quotaRenews", { date: data.resetsAtLabel })}` : "";
+  if (code === "AI_STUDIO_DAILY_QUOTA") return `${t("aiStudio.dailyQuota")}${renewal}`;
+  if (code === "AI_STUDIO_MONTHLY_QUOTA") return `${t("aiStudio.monthlyQuota")}${renewal}`;
+  if (leaked) return t("aiStudio.manualFallback");
   return serverText || fallback;
 }
 
@@ -59,6 +53,8 @@ function publishSlug(name: string | undefined, siteId: string) {
 }
 
 export default function AiStudioPocPage() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const { businessId = "" } = useParams<{ businessId: string }>();
   const navigate = useNavigate();
   const [status, setStatus] = useState<AiStudioStatus | null>(null);
@@ -67,7 +63,7 @@ export default function AiStudioPocPage() {
   const [plan, setPlan] = useState<AiSitePlan | null>(null);
   const [versions, setVersions] = useState<any[]>([]);
   const [messages, setMessages] = useState<ChatRow[]>([]);
-  const [input, setInput] = useState("צור אתר למכון יופי בשם נווה בסגנון luxury");
+  const [input, setInput] = useState(() => t("aiStudio.starterPrompt"));
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [credits, setCredits] = useState<number | null>(null);
@@ -115,7 +111,7 @@ export default function AiStudioPocPage() {
             publishEnabled: false,
             freeCodePocEnabled: false,
           });
-          setError(e?.response?.data?.error || "לא ניתן לטעון סטטוס AI Studio");
+          setError(e?.response?.data?.error || t("aiStudio.statusFailed"));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -124,7 +120,7 @@ export default function AiStudioPocPage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   const preview = useMemo(() => {
     if (!plan) return null;
@@ -188,7 +184,7 @@ export default function AiStudioPocPage() {
         await persistSite(nextPlan, { siteId: linkedSiteId, publish: sitePublished });
       }
     } catch (e: any) {
-      setError(aiStudioErrorText(e?.response?.data, e?.message || "שגיאה בשיחה"));
+      setError(aiStudioErrorText(t, e?.response?.data, e?.message || t("aiStudio.chatError")));
     } finally {
       setBusy(false);
     }
@@ -249,7 +245,7 @@ export default function AiStudioPocPage() {
     try {
       return await persistSite(plan, { publish: sitePublished });
     } catch (e: any) {
-      setError(e?.response?.data?.error || e?.message || "שמירת טיוטה נכשלה");
+      setError(e?.response?.data?.error || e?.message || t("aiStudio.saveFailed"));
       return "";
     } finally {
       setBusy(false);
@@ -268,7 +264,7 @@ export default function AiStudioPocPage() {
       await persistSite(plan, { publish: true });
       setPublishArmed(false);
     } catch (e: any) {
-      setError(e?.response?.data?.error || e?.message || "הפרסום נכשל");
+      setError(e?.response?.data?.error || e?.message || t("aiStudio.publishFailed"));
     } finally {
       setBusy(false);
     }
@@ -297,7 +293,7 @@ export default function AiStudioPocPage() {
         }))
       );
     } catch (e: any) {
-      setError(e?.response?.data?.error || "שחזור נכשל");
+      setError(e?.response?.data?.error || t("aiStudio.restoreFailed"));
     } finally {
       setBusy(false);
     }
@@ -313,49 +309,41 @@ export default function AiStudioPocPage() {
 
   if (!status?.enabled) {
     return (
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center" dir="rtl">
+      <div className="mx-auto max-w-2xl px-4 py-16 text-center" dir={dir}>
         <div className="mx-auto mb-4 inline-flex rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-800">
-          בטא
+          {t("aiStudio.beta")}
         </div>
         <Sparkles className="mx-auto mb-4 h-10 w-10 text-violet-600" />
         <h1 className="text-2xl font-black text-slate-900">Bizuply AI Studio</h1>
-        <p className="mt-3 text-slate-600">
-          AI Studio כלול בחבילה העסקית הפעילה. לעסק הזה אין כרגע חבילה עסקית פעילה
-          או הרשאת בדיקה.
-        </p>
-        <p className="mt-3 text-sm text-slate-500">
-          אין תשלום נפרד. פרסום האתר נעשה רק אחרי אישור מפורש.
-        </p>
+        <p className="mt-3 text-slate-600">{t("aiStudio.disabledBody")}</p>
+        <p className="mt-3 text-sm text-slate-500">{t("aiStudio.disabledNote")}</p>
         <button
           type="button"
           className="mt-8 inline-flex items-center gap-2 rounded-md bg-slate-900 px-4 py-2 text-white"
           onClick={() => navigate(`/business/${businessId}/dashboard/website`)}
         >
-          חזרה לאתרים
-          <ArrowRight className="h-4 w-4" />
+          {t("aiStudio.backToSites")}
+          <ArrowRight className="h-4 w-4 rtl:rotate-180" />
         </button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50" dir="rtl">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50" dir={dir}>
       <div className="border-b border-slate-200 bg-white/90 backdrop-blur">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3">
           <div>
             <div className="text-xs font-semibold tracking-wide text-violet-600">
-              BIZUPLY AI STUDIO · בטא
+              {t("aiStudio.kicker", { beta: t("aiStudio.beta") })}
             </div>
-            <h1 className="text-lg font-black text-slate-900">טיוטת אתר בשיחה</h1>
-            <p className="mt-1 max-w-xl text-xs text-slate-500">
-              האתר נוצר בשיחה, נשמר, ונפתח לעריכה ב-Website Studio. הפרסום משתמש
-              במנגנון הקיים ורק אחרי אישור מפורש. השירות כלול בחבילה העסקית, בלי תשלום נפרד.
-            </p>
+            <h1 className="text-lg font-black text-slate-900">{t("aiStudio.draftTitle")}</h1>
+            <p className="mt-1 max-w-xl text-xs text-slate-500">{t("aiStudio.draftLead")}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             {credits != null && (
               <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
-                ניסיונות בבטא, בלי חיוב: {credits}
+                {t("aiStudio.credits", { count: credits })}
               </span>
             )}
             <button
@@ -364,7 +352,7 @@ export default function AiStudioPocPage() {
               onClick={saveAsDraftSite}
               className="rounded-md border border-slate-200 bg-white px-3 py-1.5 disabled:opacity-50"
             >
-              שמור אתר
+              {t("aiStudio.saveSite")}
             </button>
             <button
               type="button"
@@ -372,7 +360,7 @@ export default function AiStudioPocPage() {
               onClick={publishSite}
               className="rounded-md border border-violet-200 bg-violet-50 px-3 py-1.5 text-violet-900 disabled:opacity-50"
             >
-              {publishArmed ? "אישור פרסום" : sitePublished ? "פרסם עדכון" : "פרסם אתר"}
+              {publishArmed ? t("aiStudio.confirmPublish") : sitePublished ? t("aiStudio.publishUpdate") : t("aiStudio.publishSite")}
             </button>
             <button
               type="button"
@@ -381,7 +369,7 @@ export default function AiStudioPocPage() {
               className="inline-flex items-center gap-1 rounded-md bg-slate-900 px-3 py-1.5 text-white disabled:opacity-50"
             >
               <Eye className="h-4 w-4" />
-              פתח ב-Website Studio
+              {t("aiStudio.openStudio")}
             </button>
           </div>
         </div>
@@ -390,21 +378,19 @@ export default function AiStudioPocPage() {
       <div className="mx-auto grid max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)_240px]">
         <section className="flex min-h-[70vh] flex-col rounded-xl border border-slate-200 bg-white">
           <div className="border-b border-slate-100 px-4 py-3 text-sm font-semibold text-slate-800">
-            צ׳אט
+            {t("aiStudio.chat")}
           </div>
           <div className="flex-1 space-y-3 overflow-auto p-4">
             {messages.length === 0 && (
-              <p className="text-sm text-slate-500">
-                נסו: «צור אתר למכון יופי בשם נווה», «החלף צבעים ל-#7c3aed», «הוסף עמוד מחירים».
-              </p>
+              <p className="text-sm text-slate-500">{t("aiStudio.chatHint")}</p>
             )}
             {messages.map((m, idx) => (
               <div
                 key={`${m.role}-${idx}`}
                 className={`rounded-lg px-3 py-2 text-sm ${
                   m.role === "user"
-                    ? "mr-8 bg-violet-50 text-slate-900"
-                    : "ml-8 bg-slate-50 text-slate-800"
+                    ? "me-8 bg-violet-50 text-slate-900"
+                    : "ms-8 bg-slate-50 text-slate-800"
                 }`}
               >
                 <div>{m.content}</div>
@@ -428,7 +414,7 @@ export default function AiStudioPocPage() {
                   void sendMessage();
                 }
               }}
-              placeholder="כתבו בקשה בעברית…"
+              placeholder={t("aiStudio.placeholder")}
               disabled={busy}
             />
             <button
@@ -438,18 +424,18 @@ export default function AiStudioPocPage() {
               className="inline-flex items-center gap-1 rounded-md bg-violet-700 px-3 py-2 text-white disabled:opacity-50"
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-              שלח
+              {t("aiStudio.send")}
             </button>
           </div>
         </section>
 
         <section className="rounded-xl border border-slate-200 bg-white">
           <div className="border-b border-slate-100 px-4 py-3 text-sm font-semibold text-slate-800">
-            תצוגת הטיוטה
+            {t("aiStudio.preview")}
           </div>
           <div className="space-y-3 p-4">
             {!preview && (
-              <p className="text-sm text-slate-500">האתר המעוצב יופיע כאן אחרי יצירה בשיחה.</p>
+              <p className="text-sm text-slate-500">{t("aiStudio.previewEmpty")}</p>
             )}
             {preview && (
               <>
@@ -478,7 +464,7 @@ export default function AiStudioPocPage() {
                     disableAnalytics
                   />
                 </div>
-                <p className="text-xs text-slate-400">טיוטה מעוצבת. האתר אינו מפורסם.</p>
+                <p className="text-xs text-slate-400">{t("aiStudio.previewNote")}</p>
               </>
             )}
           </div>
@@ -487,18 +473,18 @@ export default function AiStudioPocPage() {
         <section className="rounded-xl border border-slate-200 bg-white">
           <div className="flex items-center gap-2 border-b border-slate-100 px-3 py-3 text-sm font-semibold">
             <History className="h-4 w-4" />
-            גרסאות
+            {t("aiStudio.versions")}
           </div>
           <div className="max-h-[70vh] space-y-2 overflow-auto p-3">
             {!versions.length && (
-              <p className="text-xs text-slate-500">גרסאות יווצרו אחרי כל שינוי מוצלח.</p>
+              <p className="text-xs text-slate-500">{t("aiStudio.versionsEmpty")}</p>
             )}
             {[...versions].reverse().map((v) => (
               <button
                 key={v.versionId}
                 type="button"
                 onClick={() => void onRestore(v.versionId)}
-                className="block w-full rounded-md border border-slate-100 px-2 py-2 text-right text-xs hover:bg-slate-50"
+                className="block w-full rounded-md border border-slate-100 px-2 py-2 text-start text-xs hover:bg-slate-50"
               >
                 <div className="font-semibold text-slate-800">{v.label || v.versionId}</div>
                 <div className="text-slate-400">{v.versionId}</div>

@@ -5,6 +5,7 @@ import {
   LANGUAGE_COOKIE,
   MANUAL_LANG_FLAG,
   applyLanguageFromUrl,
+  appLocalePath,
   explicitLanguageFromUrl,
   coerceSupportedLanguage,
   getHtmlLang,
@@ -199,6 +200,21 @@ describe("languageFromUrl", () => {
     expect(getManualLanguageChoice()).toBe("he");
     expect(resolvePreferredLanguage({ accountLanguage: "en", businessCountry: "US" })).toBe("he");
   });
+
+  it("does not let a /he app prefix overwrite a saved language", () => {
+    setSessionLanguageOverride("es");
+    window.history.replaceState({}, "", "/he/business/biz/dashboard");
+    expect(languageFromUrl()).toBeNull();
+    expect(explicitLanguageFromUrl()).toBeNull();
+    expect(applyLanguageFromUrl()).toBeNull();
+    expect(getManualLanguageChoice()).toBe("es");
+    expect(resolvePreferredLanguage({ accountLanguage: "en", businessCountry: "IL" })).toBe("es");
+  });
+
+  it("still treats a Hebrew marketing path as a language choice", () => {
+    window.history.replaceState({}, "", "/he/pricing");
+    expect(languageFromUrl()).toBe("he");
+  });
 });
 
 describe("explicit preference persistence", () => {
@@ -211,6 +227,20 @@ describe("explicit preference persistence", () => {
     expect(localStorage.getItem(MANUAL_LANG_FLAG)).toBe("pt-BR");
     expect(document.cookie).toContain(`${LANGUAGE_COOKIE}=pt-BR`);
     expect(getManualLanguageChoice()).toBe("pt-BR");
+  });
+
+  it("rewrites an app prefix to the chosen language and leaves marketing paths", () => {
+    expect(appLocalePath("/he/business/biz/dashboard", "en")).toBe("/business/biz/dashboard");
+    expect(appLocalePath("/business/biz/dashboard/crm", "es")).toBe("/es/business/biz/dashboard/crm");
+    expect(appLocalePath("/business/biz/dashboard", "pt-BR")).toBe("/pt-br/business/biz/dashboard");
+    expect(appLocalePath("/he/business/biz/dashboard", "ar")).toBe("/ar/business/biz/dashboard");
+    expect(appLocalePath("/he/pricing", "en")).toBeNull();
+  });
+
+  it("does not treat a marketing language cookie as a user choice", () => {
+    document.cookie = `${LANGUAGE_COOKIE}=he; Path=/`;
+    expect(getManualLanguageChoice()).toBeNull();
+    expect(resolvePreferredLanguage({ accountLanguage: "es", businessCountry: "IL" })).toBe("es");
   });
 
   it("does not let geo override an explicit local selection", () => {

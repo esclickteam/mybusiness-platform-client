@@ -21,7 +21,8 @@ import {
   recognizedCountryCode,
 } from "./languages";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
-import { splitMarketingLocale } from "../lib/localePathCore.mjs";
+import { isAppRoutePath, splitMarketingLocale, withMarketingLocale } from "../lib/localePathCore.mjs";
+import { SOFT_LOCALE_EVENT, isSoftLocaleHandlerInstalled } from "../lib/softMarketingLocaleNavigate";
 
 export {
   FALLBACK_LANGUAGE,
@@ -173,18 +174,21 @@ function readStoredLanguage(raw) {
   return normalizeLanguage(raw, { fallback: null });
 }
 
-/** Read the durable, user-selected language, or null if the user never chose one. */
+/**
+ * Read the language the user chose in the product.
+ * The bizuply_lang cookie is also written by marketing redirects, so it is
+ * not a user choice and must not override the account language.
+ */
 export function getManualLanguageChoice() {
-  const fromStorage =
-    typeof localStorage !== "undefined"
-      ? readStoredLanguage(localStorage.getItem(MANUAL_LANG_FLAG))
-      : null;
-  if (fromStorage) return fromStorage;
+  if (typeof localStorage === "undefined") return null;
+  return readStoredLanguage(localStorage.getItem(MANUAL_LANG_FLAG));
+}
 
-  const fromCookie = readStoredLanguage(getCookie(LANGUAGE_COOKIE));
-  if (fromCookie) return fromCookie;
-
-  return null;
+/** Next app URL for a chosen language, or null when the path is not an app route. */
+export function appLocalePath(pathname, language) {
+  const { path } = splitMarketingLocale(pathname);
+  if (!isAppRoutePath(path)) return null;
+  return withMarketingLocale(path, coerceSupportedLanguage(language));
 }
 
 export function getSessionLanguageOverride() {
@@ -232,8 +236,9 @@ export function detectLanguageFromTimezone() {
 export function languageFromUrl() {
   if (typeof window === "undefined") return null;
   try {
-    const fromPath = splitMarketingLocale(window.location.pathname).locale;
-    if (fromPath && fromPath !== "en") return fromPath;
+    const split = splitMarketingLocale(window.location.pathname);
+    // /he/pricing is a language choice. /he/business/... is only the router prefix.
+    if (split.locale && split.locale !== "en" && !isAppRoutePath(split.path)) return split.locale;
     const raw = new URLSearchParams(window.location.search).get("lang");
     if (!raw) return null;
     return normalizeLanguage(raw, { fallback: null });
@@ -302,6 +307,27 @@ export function resolvePreferredLanguage({
   }
 
   return FALLBACK_LANGUAGE;
+}
+
+/**
+ * Keep an app URL prefix equal to the language already chosen.
+ * Does not write a new preference. Marketing pages are left alone.
+ */
+export function alignAppLocaleUrl(language) {
+  if (typeof window === "undefined") return;
+  const languageCode = coerceSupportedLanguage(language);
+  const nextPath = appLocalePath(window.location.pathname, languageCode);
+  if (!nextPath) return;
+  if (!nextPath || nextPath === window.location.pathname) return;
+  if (isSoftLocaleHandlerInstalled()) {
+    window.dispatchEvent(
+      new CustomEvent(SOFT_LOCALE_EVENT, {
+        detail: { path: nextPath, locale: languageCode },
+      })
+    );
+    return;
+  }
+  window.location.replace(`${nextPath}${window.location.search}${window.location.hash}`);
 }
 
 export function detectLanguageFromBrowserSignals() {

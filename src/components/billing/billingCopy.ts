@@ -82,7 +82,8 @@ export function localizeBillingLabel(t: TranslateFn, item: BillingCopySource): s
     if (addon) return addon;
   }
 
-  const skuKey = PLAN_SKU_ALIASES[String(item.sku || "").trim()];
+  const skuKey = PLAN_SKU_ALIASES[String(item.sku || "").trim()]
+    || KNOWN_HEBREW_PLAN_NAMES[fallback];
   if (skuKey) {
     return t(`billing.planNames.${skuKey}`, {
       defaultValue: fallback || skuKey,
@@ -91,3 +92,11 @@ export function localizeBillingLabel(t: TranslateFn, item: BillingCopySource): s
 
   return fallback;
 }
+
+const KNOWN_HEBREW_PLAN_NAMES: Record<string, string> = {
+  "חבילה עסקית חודשית": "monthly",
+  "חבילה עסקית שנתית": "yearly",
+  "בניית אתר בלבד": "website",
+  "CRM בלבד": "crm_only",
+  "חבילה עסקית חודשית (Early Bird)": "earlybird",
+};

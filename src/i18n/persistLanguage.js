@@ -10,6 +10,7 @@ import {
   recognizedCountryCode,
   rememberResolvedLanguage,
   languageFromCountry,
+  alignAppLocaleUrl,
   FALLBACK_LANGUAGE,
 } from "./localeUtils";
 import { readGuidedDemoLocaleLock } from "../guidedDemo/sessionStore";
@@ -69,6 +70,7 @@ export async function changeAppLanguage(lng) {
   await ensureLocale(language);
   await i18n.changeLanguage(language);
   await persistAccountLanguage(language);
+  alignAppLocaleUrl(language);
   return language;
 }
 
@@ -91,27 +93,17 @@ export function syncLanguageOnLogin(user) {
     rememberResolvedLanguage(localLanguage);
     applyUiLanguage(localLanguage, { persist: true });
     void persistAccountLanguage(localLanguage);
+    alignAppLocaleUrl(localLanguage);
     return localLanguage;
   }
 
   const accountLanguage = normalizeLanguage(user?.language, { fallback: null });
   if (accountLanguage) {
-    const current = normalizeLanguage(
-      typeof document !== "undefined" ? document.documentElement.lang : "",
-      { fallback: null },
-    );
-    // An unset account defaults to English on the server. That default must
-    // not replace a language already chosen from the browser or the URL.
-    if (
-      accountLanguage === FALLBACK_LANGUAGE &&
-      current &&
-      current !== FALLBACK_LANGUAGE
-    ) {
-      rememberResolvedLanguage(current);
-      return current;
-    }
+    // The account value is explicit, including English. A Hebrew document
+    // or a /he app prefix must not keep the previous language.
     rememberResolvedLanguage(accountLanguage);
     applyUiLanguage(accountLanguage);
+    alignAppLocaleUrl(accountLanguage);
     return accountLanguage;
   }
 
@@ -120,6 +112,7 @@ export function syncLanguageOnLogin(user) {
     const fromCountry = languageFromCountry(businessCountry) || FALLBACK_LANGUAGE;
     rememberResolvedLanguage(fromCountry);
     applyUiLanguage(fromCountry);
+    alignAppLocaleUrl(fromCountry);
     return fromCountry;
   }
 
@@ -134,6 +127,7 @@ export function syncLanguageOnLogin(user) {
     const language = cached || current || FALLBACK_LANGUAGE;
     rememberResolvedLanguage(language);
     applyUiLanguage(language);
+    alignAppLocaleUrl(language);
     return language;
   }
 

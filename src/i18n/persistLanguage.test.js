@@ -68,6 +68,16 @@ describe("persistLanguage", () => {
     expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "es" });
   });
 
+  it("applies an English account language over a Hebrew document", () => {
+    document.documentElement.lang = "he";
+    document.documentElement.dir = "rtl";
+    const result = syncLanguageOnLogin({ language: "en", billingCountry: "IL", role: "business" });
+    expect(result).toBe("en");
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.documentElement.dir).toBe("ltr");
+    expect(getManualLanguageChoice()).toBeNull();
+  });
+
   it("applies account language without locking it as a manual choice", () => {
     const result = syncLanguageOnLogin({ language: "ar" });
     expect(result).toBe("ar");
@@ -97,6 +107,17 @@ describe("persistLanguage", () => {
       syncLanguageOnLogin({ billingCountry: "US", language: "en", role: "business" })
     ).toBe("he");
     expect(API.patch).toHaveBeenCalledWith("/auth/language", { language: "he" });
+  });
+
+  it("uses the account language in a fresh browser even when a Hebrew cookie exists", () => {
+    document.cookie = `${LANGUAGE_COOKIE}=he; Path=/`;
+    document.documentElement.lang = "he";
+    const result = syncLanguageOnLogin({ language: "pt-BR", billingCountry: "IL", role: "business" });
+    expect(result).toBe("pt-BR");
+    expect(getManualLanguageChoice()).toBeNull();
+    expect(document.documentElement.lang).toBe("pt-BR");
+    expect(document.documentElement.dir).toBe("ltr");
+    expect(API.patch).not.toHaveBeenCalled();
   });
 
   it("does not invent an account language from geo when nothing was chosen", () => {

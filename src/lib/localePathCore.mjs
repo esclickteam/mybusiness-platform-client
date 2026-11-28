@@ -20,6 +20,34 @@ export function marketingLocaleMeta(locale) {
   };
 }
 
+/** First path segment of the signed-in product. A /he prefix on these is routing, not a new language choice. */
+const APP_ROUTE_SEGMENTS = new Set([
+  "business",
+  "admin",
+  "staff",
+  "client",
+  "partner",
+  "login",
+  "register",
+  "dashboard",
+  "embed",
+  "marketer",
+  "checkout",
+  "guided-demo",
+  "change-password",
+  "offer",
+  "api",
+  "auth",
+  "partner-materials",
+  "onboarding",
+]);
+
+export function isAppRoutePath(pathname) {
+  const { path } = splitMarketingLocale(pathname);
+  const first = String(path || "/").split("/")[1] || "";
+  return APP_ROUTE_SEGMENTS.has(first.toLowerCase());
+}
+
 export function splitMarketingLocale(pathname) {
   const clean = String(pathname || "/").split(/[?#]/)[0] || "/";
   const path = clean.length > 1 && clean.endsWith("/") ? clean.slice(0, -1) : clean;

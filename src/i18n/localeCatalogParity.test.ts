@@ -31,6 +31,10 @@ describe("locale catalog parity", () => {
     expect(flattenKeys(locale).sort()).toEqual(englishKeys);
   });
 
+  it("keeps the English complimentary status free of Hebrew", () => {
+    expect(en.notificationSettings.complimentaryActive).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("covers the five product languages with core chrome keys", () => {
     expect(englishKeys).toEqual(expect.arrayContaining([
       "common.save",
