@@ -20,7 +20,8 @@ export const AUTOMATION_PREVIEW_ACTION_TOOLTIP = i18n.t(
 export function isAutomationsReadOnly(): boolean {
   return (
     import.meta.env.VITE_AUTOMATIONS_READ_ONLY === "1" ||
-    import.meta.env.VITE_VERCEL_ENV === "preview"
+    import.meta.env.VITE_VERCEL_ENV === "preview" ||
+    import.meta.env.VITE_THIS_PREVIEW_USES_PRODUCTION_API === "1"
   );
 }
 

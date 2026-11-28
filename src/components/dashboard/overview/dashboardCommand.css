@@ -42,7 +42,7 @@
   gap: 0.4rem;
   padding: 0.5rem;
   background: #fff;
-  border: 1px solid rgba(91, 33, 182, 0.12);
+  border: 1px solid #e0e6f0;
 }
 
 .bx-actions .bx-btn {
@@ -50,7 +50,7 @@
   height: auto;
   background: #F5F7FB;
   color: #111932;
-  border: 1px solid rgba(91, 33, 182, 0.16);
+  border: 1px solid #e0e6f0;
   white-space: normal;
 }
 

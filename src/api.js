@@ -18,11 +18,16 @@ import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTe
 import { shouldAttachManagedBusinessHeader } from "./lib/partnerManagedContext";
 
 import { browserHostname, resolveApiBaseUrl } from "./apiBaseUrl";
+import { previewProductionBlockReason } from "./previewProductionGuard";
+
+const allowProductionOnThisPreview =
+  import.meta.env.VITE_THIS_PREVIEW_USES_PRODUCTION_API === "1";
 
 const BASE_URL = resolveApiBaseUrl({
   envApiUrl: import.meta.env.VITE_API_URL,
   mode: import.meta.env.MODE,
   hostname: browserHostname(),
+  allowProductionOnThisPreview,
 });
 
 const API = axios.create({
@@ -140,7 +145,9 @@ API.interceptors.request.use(
     }
 
     try {
-      const managedBusinessId = localStorage.getItem("managedBusinessId");
+      const managedBusinessId = allowProductionOnThisPreview
+        ? ""
+        : localStorage.getItem("managedBusinessId");
       const pagePath =
         typeof window !== "undefined" ? String(window.location?.pathname || "") : "";
       if (
@@ -156,6 +163,23 @@ API.interceptors.request.use(
       }
     } catch {
       delete config.headers["X-Managed-Business-Id"];
+    }
+
+    if (allowProductionOnThisPreview) {
+      delete config.headers["X-Managed-Business-Id"];
+      const block = previewProductionBlockReason({
+        method: config.method,
+        url: config.url,
+        headers: config.headers,
+        token,
+      });
+      if (block) {
+        const err = new Error(
+          "This preview is limited to the signed-in test business and cannot send, automate, launch campaigns, or take payment."
+        );
+        err.code = block;
+        return Promise.reject(err);
+      }
     }
 
     // FormData must not be forced to JSON

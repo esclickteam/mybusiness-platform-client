@@ -3,6 +3,13 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
+// Only the protected preview build of PR #1221 may call the production API.
+// Production deploys and every other preview keep the existing target.
+const thisPreviewUsesProductionApi =
+  process.env.VERCEL_ENV === "preview" &&
+  (process.env.VERCEL_GIT_COMMIT_REF === "cursor/bizuply-public-brand" ||
+    String(process.env.VERCEL_GIT_PULL_REQUEST_ID || "") === "1221");
+
 export default defineConfig({
   plugins: [react(), tailwindcss()],
 
@@ -99,6 +106,9 @@ export default defineConfig({
   define: {
     "process.env.NODE_ENV": JSON.stringify(
       process.env.NODE_ENV || "development"
+    ),
+    "import.meta.env.VITE_THIS_PREVIEW_USES_PRODUCTION_API": JSON.stringify(
+      thisPreviewUsesProductionApi ? "1" : ""
     ),
   },
 });

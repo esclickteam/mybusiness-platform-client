@@ -27,6 +27,58 @@ describe("resolveApiBaseUrl", () => {
     ).toBe(RAILWAY_STAGING_API);
   });
 
+  it("lets only the opted-in PR preview call production", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "mybusiness-platform-client-git-cursor-860463-esclicks-projects.vercel.app",
+        allowProductionOnThisPreview: true,
+      })
+    ).toBe(PRODUCTION_API);
+  });
+
+  it("keeps every other preview on Railway staging when the opt-in is off", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "mybusiness-platform-client-git-cursor-860463-esclicks-projects.vercel.app",
+        allowProductionOnThisPreview: false,
+      })
+    ).toBe(RAILWAY_STAGING_API);
+  });
+
+  it("keeps the dedicated staging host on Railway even if the opt-in is set", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "mybusiness-platform-client-staging.vercel.app",
+        allowProductionOnThisPreview: true,
+      })
+    ).toBe(RAILWAY_STAGING_API);
+  });
+
+  it("does not let the preview opt-in move production or local hosts", () => {
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "www.bizuply.com",
+        allowProductionOnThisPreview: true,
+      })
+    ).toBe("/api");
+    expect(
+      resolveApiBaseUrl({
+        envApiUrl: "https://api.bizuply.com/api",
+        mode: "production",
+        hostname: "localhost",
+        allowProductionOnThisPreview: true,
+      })
+    ).toBe("/api");
+  });
+
   it("forces the dedicated staging client host to Railway Staging", () => {
     expect(
       resolveApiBaseUrl({

@@ -36,13 +36,16 @@ export function browserHostname() {
 }
 
 /**
- * Preview deployments must talk to Railway staging. Project env on Vercel
- * currently bakes VITE_API_URL=https://api.bizuply.com/api for every target.
+ * Preview deployments talk to Railway staging. Project env on Vercel bakes
+ * VITE_API_URL=https://api.bizuply.com/api for every target, so the hostname
+ * guard stays in charge. The single exception is the protected PR #1221
+ * preview build, which opts in with allowProductionOnThisPreview.
  */
 export function resolveApiBaseUrl({
   envApiUrl = "",
   mode = "development",
   hostname = "",
+  allowProductionOnThisPreview = false,
 } = {}) {
   const host = String(hostname || "")
     .toLowerCase()
@@ -52,8 +55,17 @@ export function resolveApiBaseUrl({
 
   // Local Staging proxy / Vite same-origin /api (never cross-origin Production).
   if (host === "localhost" || host === "127.0.0.1") return "/api";
-  // Staging Preview / temporary Vercel hosts must never silently use Production.
-  if (isVercelPreviewHost(hostname)) return RAILWAY_STAGING_API;
+  // Staging Preview / temporary Vercel hosts stay on Railway Staging.
+  // The PR #1221 build is the only preview allowed to call Production.
+  if (isVercelPreviewHost(hostname)) {
+    if (
+      allowProductionOnThisPreview &&
+      host !== "mybusiness-platform-client-staging.vercel.app"
+    ) {
+      return PRODUCTION_API;
+    }
+    return RAILWAY_STAGING_API;
+  }
   // Cloudflare Staging tunnels are served with a same-origin /api proxy to Railway Staging.
   if (isStagingTunnelHost(hostname)) return "/api";
   if (host === "mybusiness-platform-client-staging.vercel.app") {
