@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   CartesianGrid,
-  Line,
-  LineChart,
+  Area,
+  AreaChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -121,6 +121,7 @@ function Kpi({
   delta,
   onClick,
   demoTarget,
+  tone,
 }: {
   label: string;
   value: string;
@@ -128,12 +129,14 @@ function Kpi({
   delta?: string | null;
   onClick?: () => void;
   demoTarget?: string;
+  tone?: string;
 }) {
   if (onClick) {
     return (
       <button
         type="button"
         className="bx-kpi bx-rise"
+        data-tone={tone}
         onClick={onClick}
         data-demo-target={demoTarget}
       >
@@ -150,7 +153,7 @@ function Kpi({
   }
 
   return (
-    <article className="bx-kpi bx-rise" data-demo-target={demoTarget}>
+    <article className="bx-kpi bx-rise" data-tone={tone} data-demo-target={demoTarget}>
       <div>
         <span>{label}</span>
         <strong>{value}</strong>
@@ -294,6 +297,7 @@ export default function DashboardOverview({
           label: t("overview.addLead"),
           icon: <UserPlus size={16} />,
           to: `${basePath}/crm/leads`,
+          tone: "lead",
           dataDemoTarget: "dashboard-quick-add-lead",
         }
       : null,
@@ -301,6 +305,7 @@ export default function DashboardOverview({
       ? {
           label: t("overview.newAppointment"),
           icon: <CalendarPlus size={16} />,
+          tone: "meet",
           to: `${basePath}/crm/appointments`,
         }
       : null,
@@ -308,6 +313,7 @@ export default function DashboardOverview({
       ? {
           label: t("overview.editWebsite"),
           icon: <Pencil size={16} />,
+          tone: "plain",
           to: `${basePath}/website`,
         }
       : null,
@@ -315,20 +321,23 @@ export default function DashboardOverview({
       ? {
           label: t("overview.createCollaboration"),
           icon: <Handshake size={16} />,
+          tone: "collab",
           to: `${basePath}/collab/find-partner`,
         }
       : null,
     surfaces.whatsapp
       ? {
           label: t("overview.cmdOpenWhatsapp", "Open WhatsApp"),
-          icon: <MessageCircle size={16} />,
+          icon: <MessageCircle size={16} color="#25D366" />,
+          tone: "wa",
           to: `${basePath}/whatsapp/overview`,
         }
       : null,
     surfaces.metaCampaigns
       ? {
           label: t("overview.cmdOpenMeta", "Open Meta campaigns"),
-          icon: <Megaphone size={16} />,
+          icon: <Megaphone size={16} color="#0668E1" />,
+          tone: "meta",
           to: `${basePath}/meta-campaigns/campaigns`,
         }
         : null,
@@ -346,7 +355,7 @@ export default function DashboardOverview({
   return (
     <div className="bx-command">
       <section className="bx-hero">
-        <header className="bx-hero-top">
+        <header className="bx-hero-banner">
           <div className="bx-hero-id">
             <h1 className="bx-title">
               {t("overview.greeting", {
@@ -355,7 +364,9 @@ export default function DashboardOverview({
             </h1>
             <p className="bx-sub">{formatDateRangeLabel(filters.startDate, filters.endDate)}</p>
           </div>
-
+          <span className="bx-hero-mark" aria-hidden="true" />
+        </header>
+        <div className="bx-period">
           <div className="bx-hero-controls">
             <div className="bx-row">
               {DATE_PRESETS.map((preset) => (
@@ -383,7 +394,7 @@ export default function DashboardOverview({
               </select>
             </label>
           </div>
-        </header>
+        </div>
         {filters.preset === "custom" ? (
           <div className="bx-row">
             <input
@@ -413,6 +424,7 @@ export default function DashboardOverview({
               key={action!.label}
               type="button"
               className="bx-btn"
+              data-tone={action!.tone || "plain"}
               data-demo-target={action!.dataDemoTarget}
               onClick={() => navigate(action!.to)}
             >
@@ -447,6 +459,7 @@ export default function DashboardOverview({
               demoMode ? data?.leads.change || demoKpis.leads.change : data?.leads.change || 0
             )}
             onClick={() => navigate(`${basePath}/crm/leads`)}
+            tone="leads"
             demoTarget="dashboard-kpi-new-leads"
           />
         ) : null}
@@ -457,6 +470,7 @@ export default function DashboardOverview({
             detail={t("overview.cmdUntreated", {
               count: count(untreatedCount),
             })}
+            tone="action"
             onClick={() => navigate(`${basePath}/crm/leads?status=new`)}
           />
         ) : null}
@@ -467,6 +481,7 @@ export default function DashboardOverview({
             detail={t("overview.next7Days")}
             delta={delta(data?.appointments.change || 0)}
             onClick={() => navigate(`${basePath}/crm/appointments`)}
+            tone="meet"
             demoTarget="dashboard-upcoming-appointments"
           />
         ) : null}
@@ -479,6 +494,7 @@ export default function DashboardOverview({
                 : "—"
             }
             detail={t("overview.cmdRecentNote")}
+            tone="wa"
             onClick={() => navigate(`${basePath}/whatsapp/overview`)}
           />
         ) : null}
@@ -523,31 +539,41 @@ export default function DashboardOverview({
               <div className="bx-chart">
                 {chartHasActivity ? (
                   <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={performanceChartData}>
-                      <CartesianGrid stroke="#efeaf8" vertical={false} />
-                      <XAxis dataKey="label" tick={{ fontSize: 11, fill: "#5c5470" }} />
-                      <YAxis width={36} tick={{ fontSize: 11, fill: "#5c5470" }} />
-                      <Tooltip />
-                      <Line
+                    <AreaChart data={performanceChartData}>
+                      <CartesianGrid stroke="#E0E6F0" vertical={false} />
+                      <XAxis dataKey="label" tick={{ fontSize: 12, fill: "#64748B" }} />
+                      <YAxis width={36} tick={{ fontSize: 12, fill: "#64748B" }} />
+                      <Tooltip
+                        contentStyle={{
+                          background: "#fff",
+                          border: "1px solid #E0E6F0",
+                          borderRadius: 8,
+                          fontSize: 13,
+                        }}
+                      />
+                      <Area
                         type="monotone"
                         dataKey="current"
                         stroke="#2541F5"
+                        fill="#2541F5"
+                        fillOpacity={0.14}
                         strokeWidth={2.5}
                         dot={false}
                         name={t("overview.thisPeriod")}
                       />
                       {showComparison ? (
-                        <Line
+                        <Area
                           type="monotone"
                           dataKey="previous"
-                          stroke="#3D63FF"
+                          stroke="#65E5B5"
+                          fill="#65E5B5"
+                          fillOpacity={0.16}
                           strokeWidth={2}
-                          strokeDasharray="5 5"
                           dot={false}
                           name={t("overview.previousPeriod")}
                         />
                       ) : null}
-                    </LineChart>
+                    </AreaChart>
                   </ResponsiveContainer>
                 ) : (
                   <Empty

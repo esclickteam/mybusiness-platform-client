@@ -717,8 +717,18 @@
   pointer-events: auto;
 }
 
+.af-node--trigger {
+  background: #edf0ff;
+  border-color: #c9d4ff;
+}
+
+.af-node--condition {
+  background: #e0faf0;
+  border-color: #b7efd8;
+}
+
 .af-node--role-trigger {
-  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.18), 0 8px 20px rgba(124, 58, 237, 0.08);
+  box-shadow: 0 0 0 1px rgba(37, 65, 245, 0.16), 0 8px 20px rgba(37, 65, 245, 0.08);
 }
 
 .af-node--role-result {
@@ -1147,8 +1157,8 @@
 }
 
 .af-node--selected {
-  border-color: #c4b5fd;
-  box-shadow: 0 0 0 2px rgba(109, 40, 217, 0.12);
+  border-color: #2541f5;
+  box-shadow: 0 0 0 2px rgba(37, 65, 245, 0.16);
 }
 
 .af-node__badge {
@@ -2120,4 +2130,9 @@
   border-top: 3px solid #2541F5;
   background: #fff;
   padding: 16px;
+}
+
+.af-node__ai-badge {
+  background: #ffe4f2;
+  color: #9d125c;
 }

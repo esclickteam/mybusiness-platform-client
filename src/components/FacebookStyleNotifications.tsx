@@ -1510,54 +1510,15 @@ export default function FacebookStyleNotifications() {
         onClick={toggleOpen}
         aria-label={t("notifications.ariaLabel")}
         data-testid="notifications-bell-button"
-        className={[
-          "relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-none border bg-white shadow-none transition hover:border-[#5B21B6]",
-          unreadCount > 0
-            ? "border-amber-200 from-amber-50 to-white hover:border-amber-300"
-            : "border-slate-200 from-white to-white hover:border-amber-200 hover:from-amber-50",
-        ].join(" ")}
+        className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-transparent bg-[#EDF0FF] text-[#2541F5] transition duration-150 hover:bg-[#E0E4FF]"
       >
-        <motion.span
-          className="inline-flex"
-          style={{ transformOrigin: "50% 4px" }}
-          animate={
-            unreadCount > 0
-              ? { rotate: [0, -16, 13, -11, 9, -6, 4, 0] }
-              : { rotate: 0 }
-          }
-          transition={
-            unreadCount > 0
-              ? {
-                  duration: 1.1,
-                  ease: "easeInOut",
-                  repeat: Infinity,
-                  repeatDelay: 1.5,
-                }
-              : { duration: 0.2 }
-          }
-        >
-          <Bell
-            className="h-6 w-6 fill-amber-400 text-red-500 drop-shadow-[0_1px_1px_rgba(220,38,38,0.35)]"
-            strokeWidth={2.2}
+        <Bell className="h-4 w-4" strokeWidth={2.2} />
+        {unreadCount > 0 ? (
+          <span
+            className="absolute end-1 top-1 h-2 w-2 rounded-full bg-[#FF299C] ring-2 ring-[#EDF0FF]"
+            data-testid="notifications-unread-badge"
           />
-        </motion.span>
-
-        {unreadCount > 0 && (
-          <>
-            <span className="pointer-events-none absolute -right-1.5 -top-1.5 h-5 w-5 rounded-full bg-red-400/50 animate-ping" />
-
-            <motion.span
-              key={unreadCount}
-              initial={{ scale: 0.4, opacity: 0 }}
-              animate={{ scale: [1.6, 1], opacity: 1 }}
-              transition={{ duration: 0.45, ease: "easeOut" }}
-              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 px-1.5 text-[11px] font-black text-black shadow-sm ring-2 ring-white"
-              data-testid="notifications-unread-badge"
-            >
-              {unreadCount > 99 ? "99+" : unreadCount}
-            </motion.span>
-          </>
-        )}
+        ) : null}
       </button>
 
       {toasts.length > 0 && (
