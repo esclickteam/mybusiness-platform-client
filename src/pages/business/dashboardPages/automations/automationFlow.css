@@ -67,7 +67,7 @@
   align-items: center;
   justify-content: center;
   background: #ede9fe;
-  color: #7c3aed;
+  color: #2541F5;
 }
 
 .af-card__title {
@@ -132,7 +132,7 @@
 .af-modal p { color: #64748b; font-weight: 600; }
 .af-modal__close { position: absolute; inset-inline-end: 12px; top: 12px; border: 0; background: transparent; cursor: pointer; }
 .af-history-list { display: grid; gap: 8px; max-height: 50vh; overflow: auto; }
-.af-toolbar__state { border-radius: 999px; padding: 6px 9px; background: #f5f3ff; color: #5b21b6; font-size: 11px; font-weight: 800; }
+.af-toolbar__state { border-radius: 999px; padding: 6px 9px; background: #f5f3ff; color: #2541F5; font-size: 11px; font-weight: 800; }
 .af-test-panel { position: absolute; z-index: 7; inset-inline-start: 12px; top: 16px; display: grid; gap: 8px; max-width: 420px; padding: 12px; border: 1px solid #bae6fd; border-radius: 12px; background: #f0f9ff; color: #075985; font-size: 12px; }
 .af-test-panel ol { margin: 0; padding-inline-start: 18px; }
 
@@ -144,7 +144,7 @@
   border: 1px solid rgba(91, 33, 182, 0.16);
   border-radius: 0;
   overflow: hidden;
-  background: #f4f1fa;
+  background: #F5F7FB;
 }
 
 .af-builder .af-canvas-wrap {
@@ -247,7 +247,7 @@
   height: 34px;
   border-radius: 10px;
   background: #ede9fe;
-  color: #7c3aed;
+  color: #2541F5;
   flex-shrink: 0;
 }
 
@@ -327,7 +327,7 @@
   height: 34px;
   border-radius: 10px;
   background: #ede9fe;
-  color: #7c3aed;
+  color: #2541F5;
   flex-shrink: 0;
 }
 
@@ -370,7 +370,7 @@
   margin: 0;
   font-size: 11px;
   font-weight: 800;
-  color: #7c3aed;
+  color: #2541F5;
 }
 
 .af-trigger-config-card strong {
@@ -644,7 +644,7 @@
 }
 
 .af-empty-trigger:hover:not(:disabled) {
-  border-color: #7c3aed;
+  border-color: #2541F5;
   transform: translateY(-1px);
   box-shadow: 0 14px 34px rgba(124, 58, 237, 0.14);
 }
@@ -659,7 +659,7 @@
   top: -10px;
   inset-inline-start: 50%;
   transform: translateX(-50%);
-  background: #7c3aed;
+  background: #2541F5;
   color: #fff;
   font-size: 11px;
   font-weight: 800;
@@ -757,8 +757,8 @@
 }
 
 .af-edge-add:hover {
-  border-color: #6d28d9;
-  color: #6d28d9;
+  border-color: #2541F5;
+  color: #2541F5;
 }
 
 .af-inspector--drawer {
@@ -843,8 +843,8 @@
 }
 
 .af-filter-chip--active {
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: #2541F5;
+  border-color: #2541F5;
   color: #fff;
 }
 
@@ -853,7 +853,7 @@
   font-size: 10px;
   font-weight: 700;
   font-style: normal;
-  color: #7c3aed;
+  color: #2541F5;
 }
 
 .af-quickbar {
@@ -873,7 +873,7 @@
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
   font-size: 12px;
   font-weight: 800;
-  color: #4c1d95;
+  color: #1C32C4;
 }
 
 .af-quickbar--hint {
@@ -887,7 +887,7 @@
   gap: 4px;
   border: 1px solid #c4b5fd;
   background: #f5f3ff;
-  color: #5b21b6;
+  color: #2541F5;
   border-radius: 999px;
   padding: 5px 9px;
   font-size: 11px;
@@ -896,8 +896,8 @@
 }
 
 .af-quickbar__btn:hover {
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: #2541F5;
+  border-color: #2541F5;
   color: #fff;
 }
 
@@ -1022,7 +1022,7 @@
 }
 
 .af-btn--primary {
-  background: linear-gradient(135deg, #7c3aed, #2563eb);
+  background: linear-gradient(135deg, #2541F5, #2563eb);
   border-color: transparent;
   color: #fff;
 }
@@ -1173,7 +1173,7 @@
   background: #f5f3ff;
   font-size: 10px;
   font-weight: 800;
-  color: #5b21b6;
+  color: #2541F5;
   white-space: nowrap;
 }
 
@@ -1208,7 +1208,7 @@
 }
 
 .af-handle--route {
-  background: #7c3aed !important;
+  background: #2541F5 !important;
 }
 
 .af-handle--yes {
@@ -1968,7 +1968,7 @@
 .af-schedule__day--active {
   border-color: #c4b5fd;
   background: #f5f3ff;
-  color: #5b21b6;
+  color: #2541F5;
 }
 
 .af-schedule__checkbox {
@@ -2063,7 +2063,7 @@
 
 .af-inspector {
   background: #fff;
-  border-inline-start: 4px solid #5b21b6;
+  border-inline-start: 4px solid #2541F5;
 }
 
 .af-inspector input,
@@ -2080,7 +2080,7 @@
 
 .af-node {
   border: 1px solid rgba(91, 33, 182, 0.2);
-  border-top: 3px solid #5b21b6;
+  border-top: 3px solid #2541F5;
   background: #fff;
 }
 
@@ -2091,7 +2091,7 @@
 
 .af-modal {
   border: 1px solid rgba(91, 33, 182, 0.18);
-  border-top: 4px solid #5b21b6;
+  border-top: 4px solid #2541F5;
   background: #fff;
   box-shadow: none;
 }
@@ -2115,7 +2115,7 @@
   flex-direction: column;
   gap: 8px;
   border: 1px solid rgba(91, 33, 182, 0.16);
-  border-top: 3px solid #5b21b6;
+  border-top: 3px solid #2541F5;
   background: #fff;
   padding: 16px;
 }

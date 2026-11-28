@@ -116,7 +116,7 @@ export function PrimaryButton({
   return (
     <button
       {...props}
-      className={`inline-flex items-center justify-center rounded-2xl bg-[#7C4DFF] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(124,77,255,0.28)] transition hover:bg-[#6B3FE8] disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
+      className={`inline-flex items-center justify-center rounded-2xl bg-[#2541F5] px-4 py-2.5 text-sm font-semibold text-white shadow-[0_10px_24px_rgba(124,77,255,0.28)] transition hover:bg-[#6B3FE8] disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
     >
       {children}
     </button>
@@ -131,7 +131,7 @@ export function GhostButton({
   return (
     <button
       {...props}
-      className={`inline-flex items-center justify-center rounded-2xl border border-violet-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-[#7C4DFF]/40 hover:text-[#5B2CFF] disabled:opacity-60 ${className}`}
+      className={`inline-flex items-center justify-center rounded-2xl border border-violet-100 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-[#2541F5]/40 hover:text-[#5B2CFF] disabled:opacity-60 ${className}`}
     >
       {children}
     </button>
@@ -154,7 +154,7 @@ export function Field({
 }
 
 export const fieldClass =
-  "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-[#7C4DFF]/50 focus:ring-2 focus:ring-[#7C4DFF]/15";
+  "w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm text-slate-800 outline-none transition focus:border-[#2541F5]/50 focus:ring-2 focus:ring-[#2541F5]/15";
 
 export function StatusBadge({ children }: { children: React.ReactNode }) {
   return (
@@ -187,7 +187,7 @@ export function ClubSectionTitle({
   return (
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div className="min-w-0">
-        {kicker ? <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{kicker}</p> : null}
+        {kicker ? <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#2541F5]">{kicker}</p> : null}
         <h2 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">{title}</h2>
         {subtitle ? <p className="mt-1 max-w-2xl text-sm text-slate-500">{subtitle}</p> : null}
       </div>
@@ -198,7 +198,7 @@ export function ClubSectionTitle({
 
 export function clubChipClass(active?: boolean) {
   return `shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-    active ? "bg-[#7C4DFF] text-white shadow-[0_8px_18px_rgba(124,77,255,0.28)]" : "bg-white text-slate-600 ring-1 ring-violet-100 hover:text-[#5B2CFF]"
+    active ? "bg-[#2541F5] text-white shadow-[0_8px_18px_rgba(124,77,255,0.28)]" : "bg-white text-slate-600 ring-1 ring-violet-100 hover:text-[#5B2CFF]"
   }`;
 }
 

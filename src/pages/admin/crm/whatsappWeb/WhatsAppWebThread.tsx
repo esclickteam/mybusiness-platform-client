@@ -870,7 +870,7 @@ export default function WhatsAppWebThread({
           {!contactSaved ? (
             <button
               type="button"
-              className="mt-1 text-[12px] font-black text-[#7C4DFF]"
+              className="mt-1 text-[12px] font-black text-[#2541F5]"
               onClick={onAddContact}
             >
               {copy.addContact}
@@ -899,7 +899,7 @@ export default function WhatsAppWebThread({
         </div>
         {linkedCustomerId ? (
           <Link
-            className="hidden text-xs font-black text-[#7C4DFF] sm:inline"
+            className="hidden text-xs font-black text-[#2541F5] sm:inline"
             to={`/admin/crm/customers/${linkedCustomerId}`}
           >
             כרטיס לקוח
@@ -909,7 +909,7 @@ export default function WhatsAppWebThread({
 
       {showConnectionCards ? (
         <div className="shrink-0 border-b border-black/5 bg-white px-3 py-2 text-[11px] font-bold text-slate-500">
-          <span className="text-[#7C4DFF]">BizUply WhatsApp</span>
+          <span className="text-[#2541F5]">BizUply WhatsApp</span>
           {sender.displayPhoneMasked ? (
             <span dir="ltr"> · {sender.displayPhoneMasked}</span>
           ) : null}
@@ -998,7 +998,7 @@ export default function WhatsAppWebThread({
                   {item.message.status === "failed" ? (
                     <button
                       type="button"
-                      className="mt-1 text-[11px] font-black text-[#7C4DFF]"
+                      className="mt-1 text-[11px] font-black text-[#2541F5]"
                       onClick={() => void retryMessage(item.message.id)}
                     >
                       {copy.retry}
@@ -1031,7 +1031,7 @@ export default function WhatsAppWebThread({
         {unseen > 0 ? (
           <button
             type="button"
-            className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white px-3 py-1 text-xs font-black text-[#7C4DFF] shadow"
+            className="absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-white px-3 py-1 text-xs font-black text-[#2541F5] shadow"
             onClick={() => {
               stickRef.current = true;
               setUnseen(0);

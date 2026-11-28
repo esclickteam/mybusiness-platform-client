@@ -207,7 +207,7 @@ function MemberHome({ base }: { base: string }) {
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[repeat(4,minmax(0,1fr))_minmax(240px,0.9fr)]">
         {stats.map((stat) => (
           <div key={stat.label} className="flex items-center gap-3 rounded-full bg-white px-4 py-3 shadow-[0_10px_30px_rgba(76,29,149,0.06)] ring-1 ring-violet-100/80">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#F3EEFF] text-[#7C4DFF]">
+            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#F3EEFF] text-[#2541F5]">
               <stat.icon className="h-5 w-5" />
             </span>
             <div>
@@ -217,9 +217,9 @@ function MemberHome({ base }: { base: string }) {
           </div>
         ))}
         <div className="rounded-[24px] bg-white px-5 py-4 text-sm leading-6 text-slate-600 shadow-[0_10px_30px_rgba(76,29,149,0.06)] ring-1 ring-violet-100/80">
-          <span className="text-lg leading-none text-[#7C4DFF]">“</span>
+          <span className="text-lg leading-none text-[#2541F5]">“</span>
           {t("club.demo.quote")}
-          <span className="mt-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{t("club.brand")}</span>
+          <span className="mt-2 block text-[11px] font-bold uppercase tracking-[0.16em] text-[#2541F5]">{t("club.brand")}</span>
         </div>
       </div>
 
@@ -246,8 +246,8 @@ function MemberHome({ base }: { base: string }) {
                       onClick={() => setTodayVote(option.id)}
                       className={`rounded-2xl border px-3 py-3 text-start text-sm font-semibold transition ${
                         todayVote === option.id
-                          ? "border-[#7C4DFF] bg-[#F3EEFF] text-[#5B2CFF]"
-                          : "border-violet-100 bg-[#FBF9FF] text-slate-700 hover:border-[#7C4DFF]/40"
+                          ? "border-[#2541F5] bg-[#F3EEFF] text-[#5B2CFF]"
+                          : "border-violet-100 bg-[#FBF9FF] text-slate-700 hover:border-[#2541F5]/40"
                       }`}
                     >
                       {t(option.labelKey)}
@@ -272,7 +272,7 @@ function MemberHome({ base }: { base: string }) {
                 <div key={event.id} className="flex gap-3 rounded-2xl bg-[#FBF9FF] p-3">
                   <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white text-center shadow-sm ring-1 ring-violet-100">
                     <span className="text-lg font-black text-slate-900">{event.day}</span>
-                    <span className="text-[10px] font-bold uppercase text-[#7C4DFF]">{t(event.monthKey)}</span>
+                    <span className="text-[10px] font-bold uppercase text-[#2541F5]">{t(event.monthKey)}</span>
                   </div>
                   <div className="min-w-0">
                     <p className="text-sm font-black text-slate-900">{t(event.titleKey)}</p>
@@ -406,11 +406,11 @@ function PremiumHero({
   const avatars = DEMO_MEMBER_META.slice(0, 6);
   return (
     <section className="relative overflow-hidden rounded-[32px] bg-[linear-gradient(135deg,#ffffff_0%,#f4edff_48%,#ece4ff_100%)] px-5 py-7 shadow-[0_24px_70px_rgba(76,29,149,0.10)] ring-1 ring-white sm:px-8 sm:py-9">
-      <div className="pointer-events-none absolute -start-16 top-8 h-64 w-64 rounded-full bg-[#7C4DFF]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -start-16 top-8 h-64 w-64 rounded-full bg-[#2541F5]/10 blur-3xl" />
       <div className="relative grid items-center gap-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(240px,0.85fr)_minmax(240px,280px)]">
         <div className="order-2 lg:order-1">
-          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#7C4DFF] shadow-sm">
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-[#7C4DFF] text-[10px] text-white">B</span>
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-[#2541F5] shadow-sm">
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-[#2541F5] text-[10px] text-white">B</span>
             {t("club.brand")} · {t("club.name")}
           </div>
           <h2 className="max-w-xl text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">{t("club.landing.title")}</h2>
@@ -428,7 +428,7 @@ function PremiumHero({
           <aside className="order-3 rounded-[28px] bg-white p-5 text-center shadow-[0_18px_40px_rgba(76,29,149,0.12)] ring-1 ring-violet-100">
             <div className="relative mx-auto w-fit">
               <ClubAvatar name={member.fullName} photoUrl={member.photoUrl} logoUrl={member.logoUrl} size="lg" />
-              <span className="absolute -end-1 -top-1 grid h-7 w-7 place-items-center rounded-full bg-[#7C4DFF] text-white shadow-md">
+              <span className="absolute -end-1 -top-1 grid h-7 w-7 place-items-center rounded-full bg-[#2541F5] text-white shadow-md">
                 <Crown className="h-3.5 w-3.5" />
               </span>
             </div>
@@ -466,12 +466,12 @@ function ClubGlobe({ avatars }: { avatars: DemoMemberLike[] }) {
     <div className="relative h-[270px] w-[270px]">
       <div className="absolute inset-5 rounded-full bg-[radial-gradient(circle_at_32%_28%,#ffffff_0%,#efe7ff_42%,#d9c8ff_100%)] shadow-[inset_0_0_40px_rgba(124,77,255,0.12)]" />
       <svg viewBox="0 0 270 270" className="absolute inset-0 h-full w-full">
-        <ellipse cx="135" cy="135" rx="78" ry="78" fill="none" stroke="#7C4DFF" strokeOpacity="0.22" strokeWidth="1.5" />
-        <ellipse cx="135" cy="135" rx="52" ry="78" fill="none" stroke="#7C4DFF" strokeOpacity="0.16" />
-        <ellipse cx="135" cy="135" rx="78" ry="28" fill="none" stroke="#7C4DFF" strokeOpacity="0.16" />
-        <ellipse cx="135" cy="135" rx="78" ry="52" fill="none" stroke="#7C4DFF" strokeOpacity="0.12" />
-        <line x1="57" y1="135" x2="213" y2="135" stroke="#7C4DFF" strokeOpacity="0.12" />
-        <line x1="135" y1="57" x2="135" y2="213" stroke="#7C4DFF" strokeOpacity="0.12" />
+        <ellipse cx="135" cy="135" rx="78" ry="78" fill="none" stroke="#2541F5" strokeOpacity="0.22" strokeWidth="1.5" />
+        <ellipse cx="135" cy="135" rx="52" ry="78" fill="none" stroke="#2541F5" strokeOpacity="0.16" />
+        <ellipse cx="135" cy="135" rx="78" ry="28" fill="none" stroke="#2541F5" strokeOpacity="0.16" />
+        <ellipse cx="135" cy="135" rx="78" ry="52" fill="none" stroke="#2541F5" strokeOpacity="0.12" />
+        <line x1="57" y1="135" x2="213" y2="135" stroke="#2541F5" strokeOpacity="0.12" />
+        <line x1="135" y1="57" x2="135" y2="213" stroke="#2541F5" strokeOpacity="0.12" />
       </svg>
       {avatars.map((member, index) => (
         <span key={member.userId} className={`absolute ${spots[index]} rounded-full ring-2 ring-white shadow-md`}>
@@ -480,8 +480,8 @@ function ClubGlobe({ avatars }: { avatars: DemoMemberLike[] }) {
       ))}
       <div className="absolute inset-0 grid place-items-center px-10 text-center">
         <div>
-          <p className="text-sm font-black leading-5 text-[#4c1d95]">{t("club.demo.globeLine1")}</p>
-          <p className="text-sm font-black leading-5 text-[#4c1d95]">{t("club.demo.globeLine2")}</p>
+          <p className="text-sm font-black leading-5 text-[#1C32C4]">{t("club.demo.globeLine1")}</p>
+          <p className="text-sm font-black leading-5 text-[#1C32C4]">{t("club.demo.globeLine2")}</p>
         </div>
       </div>
       <p className="absolute bottom-1 left-1/2 w-max -translate-x-1/2 rounded-full bg-white/90 px-3 py-1 text-[11px] font-semibold text-slate-500 shadow-sm">
@@ -527,11 +527,11 @@ function CommunityPost({
       </div>
       <p className="mt-3 text-sm leading-6 text-slate-700">{post.text}</p>
       <div className="mt-3 flex items-center gap-4 text-sm font-semibold text-slate-500">
-        <button type="button" onClick={onLike} className="inline-flex items-center gap-1.5 hover:text-[#7C4DFF]">
-          <Heart className={`h-4 w-4 ${post.likedByMe || extraLikes ? "fill-[#7C4DFF] text-[#7C4DFF]" : ""}`} />
+        <button type="button" onClick={onLike} className="inline-flex items-center gap-1.5 hover:text-[#2541F5]">
+          <Heart className={`h-4 w-4 ${post.likedByMe || extraLikes ? "fill-[#2541F5] text-[#2541F5]" : ""}`} />
           {post.likeCount + extraLikes}
         </button>
-        <Link to={`${base}/feed`} className="inline-flex items-center gap-1.5 hover:text-[#7C4DFF]">
+        <Link to={`${base}/feed`} className="inline-flex items-center gap-1.5 hover:text-[#2541F5]">
           <MessageCircle className="h-4 w-4" />
           {post.commentCount || post.comments.length}
         </Link>

@@ -362,7 +362,7 @@ export default function AdminCrmCustomer360() {
               {formatIsraelDate(customer.lastActivityAt, true)}
             </p>
             {customer.nextFollowUpAt ? (
-              <p className="mt-1 text-sm font-black text-[#7C4DFF]">
+              <p className="mt-1 text-sm font-black text-[#2541F5]">
                 מעקב הבא: {formatIsraelDate(customer.nextFollowUpAt, true)}
                 {customer.nextFollowUpType
                   ? ` · ${FOLLOW_UP_TYPE_LABELS[customer.nextFollowUpType] || customer.nextFollowUpType}`
@@ -456,7 +456,7 @@ export default function AdminCrmCustomer360() {
             onClick={() => setTab(key)}
             className={[
               "min-h-11 shrink-0 rounded-2xl px-4 text-sm font-black",
-              tab === key ? "bg-[#7C4DFF] text-white" : "bg-white border border-purple-100 text-slate-600",
+              tab === key ? "bg-[#2541F5] text-white" : "bg-white border border-purple-100 text-slate-600",
             ].join(" ")}
           >
             {label}
@@ -478,7 +478,7 @@ export default function AdminCrmCustomer360() {
             <p>אחראי: {customer.assignedAdminName || "לא משויך"}</p>
             <p>מקור ליד: {customer.leadSourceLabel || SOURCE_LABELS[customer.leadSource] || customer.leadSource}</p>
             {customer.metaLead?.formId || customer.metaLead?.formName ? (
-              <div className="mt-3 space-y-1 rounded-2xl border border-purple-100 bg-[#faf7ff] p-3 text-sm font-bold text-slate-700">
+              <div className="mt-3 space-y-1 rounded-2xl border border-purple-100 bg-[#F5F7FB] p-3 text-sm font-bold text-slate-700">
                 <p>עמוד: {customer.metaLead.pageName || customer.metaLead.pageId || "—"}</p>
                 <p>שם הטופס: {customer.metaLead.formName || "—"}</p>
                 <p>מזהה טופס: {customer.metaLead.formId || "—"}</p>
@@ -513,7 +513,7 @@ export default function AdminCrmCustomer360() {
             <CrmCard className="lg:col-span-2">
               <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                 <h3 className="font-black">כל נתוני הטופס</h3>
-                <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-[11px] font-black text-[#7C4DFF] ring-1 ring-purple-100">
+                <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-[11px] font-black text-[#2541F5] ring-1 ring-purple-100">
                   {formDetails.length} שדות
                 </span>
               </div>
@@ -522,7 +522,7 @@ export default function AdminCrmCustomer360() {
                   {formDetails.map((row, index) => (
                     <div
                       key={`${row.label}-${index}`}
-                      className="rounded-xl border border-purple-100 bg-[#faf7ff] p-3"
+                      className="rounded-xl border border-purple-100 bg-[#F5F7FB] p-3"
                     >
                       <p className="mb-1 text-[11px] font-black text-slate-400">{row.label}</p>
                       <p
@@ -556,15 +556,15 @@ export default function AdminCrmCustomer360() {
                 <p key={t._id}>{t.title} · {formatIsraelDate(t.dueAt, true)}</p>
               ))}
           </CrmCard>
-          <CrmCard className="!border-[#7C4DFF]/20 !bg-gradient-to-l !from-[#7C4DFF]/5 !to-white">
+          <CrmCard className="!border-[#2541F5]/20 !bg-gradient-to-l !from-[#2541F5]/5 !to-white">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#7C4DFF]">התיאום הבא</p>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#2541F5]">התיאום הבא</p>
                 {tabData.nextAppointment ? (
                   <>
                     <p className="mt-1 text-lg font-bold text-slate-900">{tabData.nextAppointment.serviceName}</p>
                     <p className="text-sm font-medium text-slate-700">{israelWeekday(tabData.nextAppointment.startAt)}</p>
-                    <p className="text-sm font-semibold text-[#7C4DFF]">
+                    <p className="text-sm font-semibold text-[#2541F5]">
                       {new Intl.DateTimeFormat("he-IL", {
                         timeZone: "Asia/Jerusalem",
                         hour: "2-digit",
@@ -582,7 +582,7 @@ export default function AdminCrmCustomer360() {
               <PrimaryButton compact onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
             </div>
             {tabData.nextAppointment ? (
-              <div className="mt-3 border-t border-[#7C4DFF]/10 pt-3">
+              <div className="mt-3 border-t border-[#2541F5]/10 pt-3">
                 <CustomerAppointmentActions
                   row={tabData.nextAppointment}
                   customerId={id!}
@@ -600,7 +600,7 @@ export default function AdminCrmCustomer360() {
           <CrmCard>
             <h3 className="font-black">גישה נוכחית</h3>
             {(tabData.products?.features || []).filter((f: any) => f.enabled).map((f: any) => (
-              <span key={f.key} className="mb-2 ml-2 inline-flex rounded-full bg-purple-50 px-2 py-1 text-xs font-black text-[#7C4DFF]">{f.name}</span>
+              <span key={f.key} className="mb-2 ml-2 inline-flex rounded-full bg-purple-50 px-2 py-1 text-xs font-black text-[#2541F5]">{f.name}</span>
             ))}
           </CrmCard>
           <PostDemoCustomerSection
@@ -625,10 +625,10 @@ export default function AdminCrmCustomer360() {
             <PrimaryButton compact onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
           </div>
           {(tabData?.upcoming || []).length ? (
-            <div className="rounded-xl border border-[#7C4DFF]/20 bg-[#7C4DFF]/5 p-3">
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#7C4DFF]">קרובים</h3>
+            <div className="rounded-xl border border-[#2541F5]/20 bg-[#2541F5]/5 p-3">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#2541F5]">קרובים</h3>
               {(tabData.upcoming || []).map((row: any) => (
-                <div key={row.id} className="border-t border-[#7C4DFF]/10 py-2 first:border-t-0 first:pt-0">
+                <div key={row.id} className="border-t border-[#2541F5]/10 py-2 first:border-t-0 first:pt-0">
                   <AppointmentDetails row={row} compact />
                   <CustomerAppointmentActions
                     row={row}
@@ -727,7 +727,7 @@ export default function AdminCrmCustomer360() {
                   isIntroSummary ? "border-purple-200 bg-purple-50/30" : "border-purple-100",
                 ].join(" ")}
               >
-                <div className="text-sm font-black text-[#7C4DFF]">
+                <div className="text-sm font-black text-[#2541F5]">
                   {TIMELINE_LABELS[item.type] || item.type} · {formatIsraelDate(item.occurredAt, true)}
                 </div>
                 {isIntroSummary ? (
@@ -769,7 +769,7 @@ export default function AdminCrmCustomer360() {
                   <>
                     <p className="font-bold">{item.description}</p>
                     {item.deepLink ? (
-                      <a className="text-xs font-black text-[#7C4DFF]" href={item.deepLink}>
+                      <a className="text-xs font-black text-[#2541F5]" href={item.deepLink}>
                         פתיחה
                       </a>
                     ) : null}
@@ -849,7 +849,7 @@ export default function AdminCrmCustomer360() {
               <p className="text-xs text-slate-500">נוצר {formatIsraelDate(site.createdAt)} · פורסם {formatIsraelDate(site.lastPublish)}</p>
               <div className="mt-2 flex flex-wrap gap-2">
                 {customer.businessId ? <SecondaryButton onClick={openBusiness}>תצוגת אדמין / עורך</SecondaryButton> : null}
-                {site.publicUrl ? <a className="min-h-11 rounded-2xl bg-purple-50 px-3 py-2 text-sm font-black text-[#7C4DFF]" href={site.publicUrl} target="_blank" rel="noreferrer">אתר מפורסם</a> : null}
+                {site.publicUrl ? <a className="min-h-11 rounded-2xl bg-purple-50 px-3 py-2 text-sm font-black text-[#2541F5]" href={site.publicUrl} target="_blank" rel="noreferrer">אתר מפורסם</a> : null}
               </div>
             </CrmCard>
           ))}
@@ -885,7 +885,7 @@ export default function AdminCrmCustomer360() {
               ) : null}
               <div className="mt-3">
                 <Link
-                  className="inline-flex min-h-11 items-center rounded-2xl bg-purple-50 px-3 py-2 text-sm font-black text-[#7C4DFF]"
+                  className="inline-flex min-h-11 items-center rounded-2xl bg-purple-50 px-3 py-2 text-sm font-black text-[#2541F5]"
                   to={`/admin/crm/whatsapp?customer=${id}`}
                 >
                   פתיחת השיחה בתיבת WhatsApp
@@ -895,7 +895,7 @@ export default function AdminCrmCustomer360() {
           ) : null}
           <div className="flex justify-end">
             <Link
-              className="text-sm font-black text-[#7C4DFF]"
+              className="text-sm font-black text-[#2541F5]"
               to={`/admin/crm/whatsapp?customer=${id}`}
             >
               פתיחה בתיבת WhatsApp

@@ -69,10 +69,10 @@ const emptyForm: ServiceFormState = {
 };
 
 const inputClass =
-  "h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#6D28D9]/40 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-50";
+  "h-11 w-full rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#2541F5]/40 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 const textareaClass =
-  "w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#6D28D9]/40 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-50";
+  "w-full resize-none rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-[#2541F5]/40 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-50";
 
 function normalizeServices(value: unknown): ServiceItem[] {
   if (!Array.isArray(value)) return [];
@@ -347,14 +347,14 @@ export default function CRMServicesTab() {
         <button
           type="button"
           onClick={() => setViewMode("table")}
-          className={`h-8 rounded-lg border px-2.5 text-xs font-black ${viewMode === "table" ? "border-violet-300 bg-violet-50 text-[#6D28D9]" : "border-slate-200 bg-white"}`}
+          className={`h-8 rounded-lg border px-2.5 text-xs font-black ${viewMode === "table" ? "border-violet-300 bg-violet-50 text-[#2541F5]" : "border-slate-200 bg-white"}`}
         >
           {t("crm.services.tableView")}
         </button>
         <button
           type="button"
           onClick={() => setViewMode("cards")}
-          className={`h-8 rounded-lg border px-2.5 text-xs font-black ${viewMode === "cards" ? "border-violet-300 bg-violet-50 text-[#6D28D9]" : "border-slate-200 bg-white"}`}
+          className={`h-8 rounded-lg border px-2.5 text-xs font-black ${viewMode === "cards" ? "border-violet-300 bg-violet-50 text-[#2541F5]" : "border-slate-200 bg-white"}`}
         >
           {t("crm.services.cardsView")}
         </button>
@@ -362,7 +362,7 @@ export default function CRMServicesTab() {
           type="button"
           onClick={openAdd}
           data-demo-target="services-add-button"
-          className="inline-flex h-8 items-center gap-1 rounded-lg bg-[#6D28D9] px-3 text-xs font-black text-white"
+          className="inline-flex h-8 items-center gap-1 rounded-lg bg-[#2541F5] px-3 text-xs font-black text-white"
         >
           <Plus className="h-3.5 w-3.5" />
           {t("crm.services.addService")}
@@ -480,7 +480,7 @@ function ServiceFormPanel({
       <div className="crm-drawer-panel">
         <div className="mb-4 flex items-start justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="min-w-0">
-            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#6D28D9]">
+            <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#2541F5]">
               {editingService
                 ? t("crm.services.formBadgeEdit")
                 : t("crm.services.formBadgeNew")}
@@ -568,7 +568,7 @@ function ServiceFormPanel({
           </FormField>
 
           <FormField label={t("crm.services.imageLabel")}>
-            <label className="flex h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 text-sm font-bold text-slate-500 transition hover:border-[#6D28D9]/40 hover:bg-violet-50">
+            <label className="flex h-11 cursor-pointer items-center justify-between gap-3 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 text-sm font-bold text-slate-500 transition hover:border-[#2541F5]/40 hover:bg-violet-50">
               <span className="truncate">
                 {form.imageFile
                   ? form.imageFile.name
@@ -617,7 +617,7 @@ function ServiceFormPanel({
             onClick={onSave}
             disabled={saving}
             data-demo-target="services-save-button"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
             {saving ? t("crm.services.saving") : t("crm.services.saveService")}
@@ -689,7 +689,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
 
   return (
     <div className="crm-empty">
-      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6D28D9] shadow-sm ring-1 ring-violet-100">
+      <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#2541F5] shadow-sm ring-1 ring-violet-100">
         <Wrench className="h-6 w-6" />
       </div>
 
@@ -705,7 +705,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
         type="button"
         onClick={onCreate}
         data-demo-target="services-add-button"
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#2541F5]"
       >
         <Plus className="h-4 w-4" />
         {t("crm.services.createService")}

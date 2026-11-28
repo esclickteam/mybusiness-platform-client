@@ -125,7 +125,7 @@ export default function PartnerPublicDeal() {
         {heading ? <title>{heading}</title> : null}
       </Helmet>
       <article className="mx-auto max-w-3xl overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(76,29,149,0.12)]">
-        <header className="bg-gradient-to-l from-[#4C1D95] to-[#7C4DFF] px-8 py-8 text-white">
+        <header className="bg-gradient-to-l from-[#1C32C4] to-[#2541F5] px-8 py-8 text-white">
           <div className="flex items-center gap-4">
             {logo ? (
               <img src={logo} alt="" className="h-14 w-14 rounded-2xl bg-white object-cover" />

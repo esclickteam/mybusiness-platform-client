@@ -20,7 +20,7 @@
   }
   
   .payment-methods {
-    background: #f3e8ff;
+    background: #EEF2FF;
     padding: 1.5rem;
     border-radius: 16px;
     border: 1px dashed #caa9f7;
@@ -49,7 +49,7 @@
     font-size: 0.95rem;
     font-weight: bold;
     color: white;
-    background: linear-gradient(to right, #7c4dff, #b388ff);
+    background: linear-gradient(to right, #2541F5, #B7C6F8);
     cursor: pointer;
     transition: background 0.2s;
     display: flex;
@@ -67,7 +67,7 @@
   }
   
   .selected {
-    box-shadow: 0 0 0 2px #7c4dff inset;
+    box-shadow: 0 0 0 2px #2541F5 inset;
     background: linear-gradient(to right, #512da8, #9575cd);
   }
   
@@ -121,7 +121,7 @@
   
   .credit-card-form input:focus,
   .phone-form input:focus {
-    border-color: #a273ff;
+    border-color: #6D84F7;
     box-shadow: 0 0 4px rgba(162, 115, 255, 0.5);
   }
   
@@ -143,7 +143,7 @@
   
   /* כפתור פעולה */
   .pay-btn {
-    background: linear-gradient(to right, #7c4dff, #b388ff);
+    background: linear-gradient(to right, #2541F5, #B7C6F8);
     border: none;
     color: white;
     padding: 0.9rem;

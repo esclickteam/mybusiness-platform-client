@@ -195,10 +195,10 @@ export default function Collab() {
                 className={({ isActive }) =>
                   [
                     "flex min-h-11 items-center justify-center px-4 text-sm font-black",
-                    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5b21b6]",
+                    "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2541F5]",
                     isActive
-                      ? "bg-[#5b21b6] text-white"
-                      : "border border-[rgba(91,33,182,0.18)] bg-white text-[#21172f]",
+                      ? "bg-[#2541F5] text-white"
+                      : "border border-[rgba(91,33,182,0.18)] bg-white text-[#111932]",
                   ].join(" ")
                 }
               >

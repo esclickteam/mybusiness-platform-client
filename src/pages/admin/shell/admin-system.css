@@ -840,8 +840,8 @@
 }
 
 .biz-admin-content [class*="bg-indigo-500"],
-.biz-admin-content [class*="bg-[#7C4DFF]"],
-.biz-admin-content [class*="bg-[#6D28D9]"],
+.biz-admin-content [class*="bg-[#2541F5]"],
+.biz-admin-content [class*="bg-[#2541F5]"],
 .biz-admin-content [class*="bg-[#6d4aff]"],
 .biz-admin-content [class*="bg-[#24124d]"] {
   background-color: var(--bz-accent);

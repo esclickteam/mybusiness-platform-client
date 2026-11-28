@@ -168,7 +168,7 @@ export default function CRMReportsPage() {
               <XAxis dataKey="date" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Line type="monotone" dataKey="count" stroke="#5B21B6" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="count" stroke="#2541F5" strokeWidth={2} dot={false} />
               <Legend />
             </LineChart>
           </ResponsiveContainer>
@@ -180,7 +180,7 @@ export default function CRMReportsPage() {
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Bar dataKey="count" fill="#6334C5" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="count" fill="#2541F5" radius={[0, 0, 0, 0]} />
               <Legend />
             </BarChart>
           </ResponsiveContainer>
@@ -202,7 +202,7 @@ export default function CRMReportsPage() {
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Bar dataKey="count" fill="#5B21B6" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="count" fill="#2541F5" radius={[0, 0, 0, 0]} />
               <Legend />
             </BarChart>
           </ResponsiveContainer>
@@ -213,7 +213,7 @@ export default function CRMReportsPage() {
               <XAxis dataKey="month" tick={{ fontSize: 11 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
               <Tooltip />
-              <Bar dataKey="amount" fill="#6334C5" radius={[0, 0, 0, 0]} />
+              <Bar dataKey="amount" fill="#2541F5" radius={[0, 0, 0, 0]} />
               <Legend />
             </BarChart>
           </ResponsiveContainer>

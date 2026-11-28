@@ -151,7 +151,7 @@ const BarChartComponent = ({
                       fill={
                         entry.name === maxMonth.name
                           ? "#16a34a"
-                          : "#6a11cb"
+                          : "#2541F5"
                       }
                     />
                   ))}
@@ -166,7 +166,7 @@ const BarChartComponent = ({
                 <Line
                   type="monotone"
                   dataKey="customers"
-                  stroke="#6a11cb"
+                  stroke="#2541F5"
                   strokeWidth={2}
                   activeDot={{ r: 6 }}
                 />

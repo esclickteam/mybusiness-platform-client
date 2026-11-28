@@ -2,8 +2,8 @@
   display: grid;
   gap: 16px;
   padding: 16px;
-  background: #f4f1fa;
-  color: #21172f;
+  background: #F5F7FB;
+  color: #111932;
   min-height: calc(100vh - 72px);
 }
 
@@ -15,7 +15,7 @@
 }
 
 .upgrade-head {
-  border-inline-start: 4px solid #5b21b6;
+  border-inline-start: 4px solid #2541F5;
 }
 
 .upgrade-page h1,
@@ -44,12 +44,12 @@
 
 .upgrade-facts div {
   border: 1px solid rgba(91, 33, 182, 0.16);
-  background: #f4f1fa;
+  background: #F5F7FB;
   padding: 12px;
 }
 
 .upgrade-facts dt {
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 12px;
   font-weight: 800;
 }
@@ -72,7 +72,7 @@
   justify-content: center;
   min-height: 44px;
   padding: 8px 14px;
-  background: #5b21b6;
+  background: #2541F5;
   color: #fff;
   font-weight: 800;
   text-decoration: none;
@@ -80,8 +80,8 @@
 
 .upgrade-actions a:last-child {
   background: #fff;
-  color: #21172f;
-  border: 1px solid #5b21b6;
+  color: #111932;
+  border: 1px solid #2541F5;
 }
 
 @media (max-width: 640px) {

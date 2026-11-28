@@ -243,7 +243,7 @@ export default function ComplianceScanDetailPage() {
           border: 1px solid #d7dce8; border-radius: 0; background: #fff; color: #1a0b33;
           min-height: 40px; padding: 0 12px; text-decoration: none; display: inline-flex; align-items: center;
         }
-        .scan-detail__tabs button, .scan-detail__chrome button { background: #5b21b6; color: #fff; cursor: pointer; }
+        .scan-detail__tabs button, .scan-detail__chrome button { background: #2541F5; color: #fff; cursor: pointer; }
         .scan-detail__tabs { display: flex; flex-wrap: wrap; gap: 8px; max-width: 100%; }
         .scan-detail__tabs button[aria-selected="true"] { outline: 2px solid #1a0b33; }
         .scan-detail__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }

@@ -5,8 +5,8 @@
   align-items: start;
   min-height: calc(100vh - 72px);
   padding: 16px;
-  background: #f4f1fa;
-  color: #21172f;
+  background: #F5F7FB;
+  color: #111932;
 }
 
 .goals-header {
@@ -18,7 +18,7 @@
   padding: 16px 18px;
   background: #fff;
   border: 1px solid rgba(91, 33, 182, 0.16);
-  border-inline-start: 4px solid #5b21b6;
+  border-inline-start: 4px solid #2541F5;
 }
 
 .goals-header h1 {
@@ -60,7 +60,7 @@
 .new-goal-form label {
   font-size: 12px;
   font-weight: 800;
-  color: #5b21b6;
+  color: #2541F5;
 }
 
 .new-goal-form input,
@@ -71,7 +71,7 @@
   min-height: 44px;
   border: 1px solid rgba(91, 33, 182, 0.22);
   background: #fff;
-  color: #21172f;
+  color: #111932;
   font-weight: 800;
   padding: 8px 12px;
 }
@@ -79,15 +79,15 @@
 .add-goal-btn,
 .summary-btn,
 .summary-box button {
-  background: #5b21b6;
+  background: #2541F5;
   color: #fff;
-  border-color: #5b21b6;
+  border-color: #2541F5;
   cursor: pointer;
 }
 
 .add-goal-btn--ghost {
   background: #fff;
-  color: #21172f;
+  color: #111932;
 }
 
 .goals-list,
@@ -113,7 +113,7 @@
   gap: 14px;
   align-items: center;
   padding: 14px 16px;
-  border-inline-start: 4px solid #5b21b6;
+  border-inline-start: 4px solid #2541F5;
 }
 
 .goal-sub {
@@ -132,7 +132,7 @@
 
 .progress-bar {
   height: 8px;
-  background: #f4f1fa;
+  background: #F5F7FB;
   border: 1px solid rgba(91, 33, 182, 0.16);
 }
 

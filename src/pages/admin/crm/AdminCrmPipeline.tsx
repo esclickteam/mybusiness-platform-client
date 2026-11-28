@@ -93,7 +93,7 @@ export default function AdminCrmPipeline() {
           >
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-black text-purple-950">{STAGE_LABELS[col.stage] || col.stage}</h3>
-              <span className="rounded-full bg-purple-50 px-2 text-xs font-black text-[#7C4DFF]">{col.items.length}</span>
+              <span className="rounded-full bg-purple-50 px-2 text-xs font-black text-[#2541F5]">{col.items.length}</span>
             </div>
             <div className="space-y-2">
               {col.items.map((card) => (
@@ -113,7 +113,7 @@ export default function AdminCrmPipeline() {
                   <div className="mt-1 text-[11px] text-slate-500">
                     מעקב: {formatIsraelDate(card.nextFollowUpAt)} · פעילות: {formatIsraelDate(card.lastActivityAt)}
                   </div>
-                  <div className="mt-1 text-[11px] font-black text-[#7C4DFF]">
+                  <div className="mt-1 text-[11px] font-black text-[#2541F5]">
                     {card.currentPackageLabel || card.packageInterest || "—"}
                     {card.estimatedValue ? ` · ₪${card.estimatedValue}` : ""}
                   </div>

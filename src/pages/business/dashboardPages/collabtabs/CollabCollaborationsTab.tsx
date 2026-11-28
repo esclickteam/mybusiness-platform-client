@@ -99,7 +99,7 @@ export default function CollabCollaborationsTab({
               </div>
 
               <div>
-                <p className="text-base font-black text-[#21172F]">
+                <p className="text-base font-black text-[#111932]">
                   {activeTab.label}
                 </p>
               </div>

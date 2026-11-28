@@ -94,7 +94,7 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
     <div className="min-h-screen bg-[#F3F0EA]">
       <AdminHeader />
       <main className="mx-auto max-w-[860px] px-4 py-6" dir={page.dir} lang={page.locale}>
-        <Link to={unsaved ? "/admin/partner-agreements/new" : `/admin/partner-agreements/${id}`} className="text-sm font-black text-[#6D28D9]">
+        <Link to={unsaved ? "/admin/partner-agreements/new" : `/admin/partner-agreements/${id}`} className="text-sm font-black text-[#2541F5]">
           {unsaved ? t.backCreate : t.back}
         </Link>
         {unsaved ? (
@@ -152,7 +152,7 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
             className="mt-4 rounded-[28px] bg-white px-6 py-8 shadow-sm sm:px-12"
           >
             <img src={logo} alt="Bizuply" className="h-12 w-auto" />
-            <p className="mt-6 text-xs font-black uppercase tracking-[0.18em] text-[#6D28D9]">{t.program}</p>
+            <p className="mt-6 text-xs font-black uppercase tracking-[0.18em] text-[#2541F5]">{t.program}</p>
             <h1 className="mt-2 text-3xl font-black text-slate-950">{data.title}</h1>
             <p className="mt-2 text-sm font-bold text-slate-500">
               {String(data.agreementNumber || "")}
@@ -178,7 +178,7 @@ export default function AdminPartnerAgreementPreview({ unsaved = false }: { unsa
                   {data.parts && data.parts.length > 1 ? <h2 className="mb-4 text-2xl font-black">{part.title}</h2> : null}
                   {part.sections.filter((section) => (section as { id?: string }).id !== "signatureBlocks" && !section.paragraphs.some((paragraph) => /_{5,}/.test(paragraph))).map((section) => (
                     <section key={`${part.locale}-${section.number}-${section.title}`} className="mb-6">
-                      <h2 className="text-lg font-black text-[#6D28D9]">
+                      <h2 className="text-lg font-black text-[#2541F5]">
                         {section.number ? `${section.number}. ${section.title}` : section.title}
                       </h2>
                       {section.paragraphs.map((paragraph) => (

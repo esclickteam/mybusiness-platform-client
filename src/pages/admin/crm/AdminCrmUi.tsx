@@ -74,7 +74,7 @@ export function PrimaryButton({
     <button
       {...props}
       className={[
-        "inline-flex items-center justify-center rounded-lg bg-[#7C4DFF] font-semibold text-white shadow-sm transition hover:bg-[#6B3FE8] disabled:opacity-50",
+        "inline-flex items-center justify-center rounded-lg bg-[#2541F5] font-semibold text-white shadow-sm transition hover:bg-[#6B3FE8] disabled:opacity-50",
         compact ? "min-h-8 px-3 text-xs" : "min-h-9 px-4 text-sm",
         props.className || "",
       ].join(" ")}
@@ -130,7 +130,7 @@ export function CompactInput({
     <input
       {...props}
       className={[
-        "h-8 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#7C4DFF]/50 focus:ring-2 focus:ring-[#7C4DFF]/10",
+        "h-8 w-full rounded-lg border border-slate-200 bg-white px-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#2541F5]/50 focus:ring-2 focus:ring-[#2541F5]/10",
         className,
       ].join(" ")}
     />
@@ -145,7 +145,7 @@ export function CompactTextarea({
     <textarea
       {...props}
       className={[
-        "min-h-[4.5rem] w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#7C4DFF]/50 focus:ring-2 focus:ring-[#7C4DFF]/10",
+        "min-h-[4.5rem] w-full rounded-lg border border-slate-200 bg-white px-2.5 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#2541F5]/50 focus:ring-2 focus:ring-[#2541F5]/10",
         className,
       ].join(" ")}
     />
@@ -161,7 +161,7 @@ export function CompactSelect({
     <select
       {...props}
       className={[
-        "h-8 w-full rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-800 outline-none focus:border-[#7C4DFF]/50 focus:ring-2 focus:ring-[#7C4DFF]/10",
+        "h-8 w-full rounded-lg border border-slate-200 bg-white px-2 text-sm text-slate-800 outline-none focus:border-[#2541F5]/50 focus:ring-2 focus:ring-[#2541F5]/10",
         className,
       ].join(" ")}
     >
@@ -197,7 +197,7 @@ export function StepIndicator({
               className={[
                 "flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium",
                 active
-                  ? "bg-[#7C4DFF]/10 text-[#7C4DFF]"
+                  ? "bg-[#2541F5]/10 text-[#2541F5]"
                   : done
                     ? "text-emerald-600"
                     : "text-slate-400",
@@ -207,7 +207,7 @@ export function StepIndicator({
                 className={[
                   "grid h-4 w-4 place-items-center rounded-full text-[10px] font-bold",
                   active
-                    ? "bg-[#7C4DFF] text-white"
+                    ? "bg-[#2541F5] text-white"
                     : done
                       ? "bg-emerald-100 text-emerald-700"
                       : "bg-slate-100 text-slate-500",

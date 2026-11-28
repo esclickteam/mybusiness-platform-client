@@ -101,11 +101,11 @@ export default function GlobalBusinessClubPage() {
           ) : (
             <header className="flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#4c1d95,#7C4DFF)] text-white shadow-[0_12px_24px_rgba(124,77,255,0.35)]">
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#1C32C4,#2541F5)] text-white shadow-[0_12px_24px_rgba(124,77,255,0.35)]">
                   <Globe2 className="h-5 w-5" />
                 </span>
                 <div>
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#7C4DFF]">{t("club.brand")}</p>
+                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#2541F5]">{t("club.brand")}</p>
                   <h1 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">{t("club.name")}</h1>
                 </div>
               </div>
@@ -161,7 +161,7 @@ export function ClubNav({ base, isMember, isAdmin }: { base: string; isMember?: 
           end={path === ""}
           className={({ isActive }) =>
             `shrink-0 rounded-full px-3.5 py-2 text-sm font-semibold ${
-              isActive ? "bg-[#7C4DFF] text-white shadow-[0_10px_20px_rgba(124,77,255,0.28)]" : "bg-white/90 text-slate-600 ring-1 ring-violet-100"
+              isActive ? "bg-[#2541F5] text-white shadow-[0_10px_20px_rgba(124,77,255,0.28)]" : "bg-white/90 text-slate-600 ring-1 ring-violet-100"
             }`
           }
         >
@@ -224,7 +224,7 @@ function ClubNotifications({ base, initialUnread }: { base: string; initialUnrea
       >
         <Bell className="h-5 w-5" />
         {unread > 0 ? (
-          <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#7C4DFF] px-1 text-[10px] font-bold text-white">
+          <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-[#2541F5] px-1 text-[10px] font-bold text-white">
             {unread > 9 ? "9+" : unread}
           </span>
         ) : null}

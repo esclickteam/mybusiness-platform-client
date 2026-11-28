@@ -15,7 +15,7 @@
 
 .calendar-title {
   margin: 0;
-  color: #7a3df4;
+  color: #2541F5;
   font-size: 1.3em;
 }
 
@@ -86,7 +86,7 @@
 }
 
 .save-all-btn.styled {
-  background: linear-gradient(to right, #a36eff, #d8b4ff);
+  background: linear-gradient(to right, #6D84F7, #D9E2FB);
   color: #fff;
   border: none;
 }
@@ -97,7 +97,7 @@
 
 .cancel-btn.styled {
   background: #fff;
-  border: 2px solid #a36eff;
+  border: 2px solid #6D84F7;
   color: #8a60e0;
 }
 
@@ -118,7 +118,7 @@
 .summary strong {
   display: block;
   margin-bottom: 8px;
-  color: #7a3df4;
+  color: #2541F5;
   font-size: 1.1em;
 }
 

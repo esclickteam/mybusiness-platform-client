@@ -69,7 +69,7 @@ export function AdminModal({
         <div className="flex shrink-0 items-start justify-between gap-3 border-b border-slate-100 px-4 py-3 sm:px-5">
           <div className="min-w-0">
             {eyebrow ? (
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#7C4DFF]">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-[#2541F5]">
                 {eyebrow}
               </p>
             ) : null}

@@ -75,7 +75,7 @@ const MultiParamRating = ({ onSubmit }) => {
         onClick={handleSubmit}
         style={{
           marginTop: '1rem',
-          background: 'linear-gradient(to right, #a855f7, #d946ef)',
+          background: 'linear-gradient(to right, #6D84F7, #d946ef)',
           color: 'white',
           padding: '10px 20px',
           border: 'none',

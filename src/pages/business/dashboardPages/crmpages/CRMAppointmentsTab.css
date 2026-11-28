@@ -47,7 +47,7 @@
    Buttons (shared style)
 ========================= */
 .primary-btn {
-  background: linear-gradient(135deg, #5e17eb, #7c3aed);
+  background: linear-gradient(135deg, #2541F5, #2541F5);
   color: white;
   border: none;
   border-radius: 14px;
@@ -64,8 +64,8 @@
 }
 
 .secondary-btn {
-  background: #f3edff;
-  color: #5e17eb;
+  background: #F5F7FB;
+  color: #2541F5;
   border: none;
   border-radius: 14px;
   padding: 10px 18px;
@@ -245,7 +245,7 @@
 }
 
 .phone-input:focus {
-  border-color: #7c3aed !important;
+  border-color: #2541F5 !important;
   box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.15);
 }
 
@@ -286,11 +286,11 @@
   text-align: left;
   cursor: pointer;
 
-  color: #5e17eb;
+  color: #2541F5;
 }
 
 .email-menu button:hover {
-  background: #f3edff;
+  background: #F5F7FB;
 }
 
 /* =========================
@@ -354,8 +354,8 @@
   font-size: 0.75rem;
   font-weight: 600;
 
-  background: #f3edff;
-  color: #5e17eb;
+  background: #F5F7FB;
+  color: #2541F5;
 
   padding: 4px 10px;
   border-radius: 999px;

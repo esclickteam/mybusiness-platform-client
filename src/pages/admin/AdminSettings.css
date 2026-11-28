@@ -43,7 +43,7 @@
   }
   
   .settings-form button {
-    background-color: #7c3aed;
+    background-color: #2541F5;
     color: white;
     padding: 12px 20px;
     border: none;
@@ -56,7 +56,7 @@
   }
   
   .settings-form button:hover {
-    background-color: #5b21b6;
+    background-color: #2541F5;
   }
   
   .back-dashboard {

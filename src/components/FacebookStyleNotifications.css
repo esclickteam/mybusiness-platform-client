@@ -19,14 +19,14 @@
   align-items: center;
   justify-content: center;
 
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(88, 28, 135, 0.25);
-  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #e0e6f0;
+  border-radius: 6px;
 
   font-size: 18px;
   cursor: pointer;
   position: relative;
-  color: #6a11cb;
+  color: #111932;
 
   transition: background 0.2s ease, box-shadow 0.2s ease;
 }
@@ -64,7 +64,7 @@
 
 .fb-panel {
   position: fixed; /* 🔑 קריטי – לא נחתך לעולם */
-  top: 64px;       /* גובה ההידר */
+  top: 56px;
   right: 24px;    /* נפתח פנימה למסך */
   
   width: 360px;

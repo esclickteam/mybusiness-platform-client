@@ -154,7 +154,7 @@ export function WhatsAppContactDialog({
           </button>
           <button
             type="submit"
-            className="min-h-11 flex-1 rounded-full bg-[#7C4DFF] text-sm font-black text-white disabled:opacity-50"
+            className="min-h-11 flex-1 rounded-full bg-[#2541F5] text-sm font-black text-white disabled:opacity-50"
             disabled={saving}
           >
             {copy.saveContact}

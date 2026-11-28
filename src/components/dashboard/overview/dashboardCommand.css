@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
-  color: #21172F;
+  color: #111932;
 }
 
 .bx-hero {
@@ -10,11 +10,11 @@
   flex-direction: column;
   gap: 0.55rem;
   padding: 0.7rem 0.9rem;
-  background:
-    radial-gradient(ellipse 36% 120% at 100% 0%, rgba(61, 99, 255, 0.28), transparent 62%),
-    #6334C5;
-  color: #fff;
-  box-shadow: 0 16px 36px rgba(50, 16, 100, 0.16);
+  background: #fff;
+  color: #111932;
+  border: 1px solid #e0e6f0;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(17, 25, 50, 0.04);
 }
 
 .bx-hero-top {
@@ -48,8 +48,8 @@
 .bx-actions .bx-btn {
   min-height: 2.35rem;
   height: auto;
-  background: #f7f6fc;
-  color: #21172f;
+  background: #F5F7FB;
+  color: #111932;
   border: 1px solid rgba(91, 33, 182, 0.16);
   white-space: normal;
 }
@@ -57,11 +57,15 @@
 .bx-hero .bx-kicker,
 .bx-hero .bx-title,
 .bx-hero .bx-sub {
-  color: #fff;
+  color: #111932;
+}
+
+.bx-hero .bx-kicker {
+  color: #2541f5;
 }
 
 .bx-hero .bx-sub {
-  color: rgba(255, 255, 255, 0.78);
+  color: #64748b;
 }
 
 .bx-kicker {
@@ -91,17 +95,17 @@
 .bx-hero .bx-chip,
 .bx-hero .bx-field,
 .bx-hero .bx-btn {
-  border-color: rgba(255, 255, 255, 0.28);
-  background: transparent;
-  color: #fff;
+  border: 1px solid #e0e6f0;
+  background: #fff;
+  color: #111932;
 }
 
 .bx-hero .bx-chip.is-on,
 .bx-hero .bx-btn:hover,
 .bx-hero .bx-chip:hover {
-  border-color: #fff;
-  background: #fff;
-  color: #21172F;
+  border-color: #2541f5;
+  background: #eef2ff;
+  color: #2541f5;
 }
 
 .bx-row {
@@ -120,14 +124,14 @@
 .bx-stage,
 .bx-side,
 .bx-panel {
-  border-radius: 0;
+  border-radius: 6px;
 }
 
 .bx-btn,
 .bx-chip {
   border: 0;
-  background: #f7f6fc;
-  color: #21172F;
+  background: #F5F7FB;
+  color: #111932;
   min-height: 2.15rem;
   padding: 0.35rem 0.7rem;
   font-size: 0.78rem;
@@ -138,20 +142,28 @@
 
 .bx-chip.is-on,
 .bx-btn.is-on {
-  background: #5b21b6;
+  background: #2541f5;
   color: #fff;
 }
 
 .bx-btn:hover,
 .bx-chip:hover {
-  background: #48218B;
+  background: #1c32c4;
   color: #fff;
+}
+
+.bx-hero .bx-btn:hover,
+.bx-hero .bx-chip:hover,
+.bx-actions .bx-btn:hover {
+  border-color: #2541f5;
+  background: #eef2ff;
+  color: #2541f5;
 }
 
 .bx-field {
   border: 0;
-  background: #f7f6fc;
-  color: #21172F;
+  background: #F5F7FB;
+  color: #111932;
   min-height: 2.15rem;
   padding: 0.3rem 0.6rem;
   font-weight: 700;
@@ -169,7 +181,9 @@
   flex-direction: column;
   justify-content: space-between;
   border: 0;
-  border-top: 3px solid #5b21b6;
+  border: 1px solid #e0e6f0;
+  border-top: 3px solid #2541f5;
+  border-radius: 8px;
   background: #fff;
   padding: 0.85rem 0.95rem 0.8rem;
   text-align: start;
@@ -178,18 +192,9 @@
   transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
 
-.bx-snapshot .bx-kpi:first-child {
-  border-top-color: #3d63ff;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(61, 99, 255, 0.28), transparent 46%),
-    #6334C5;
-  color: #fff;
-}
-
-.bx-snapshot .bx-kpi:first-child span,
-.bx-snapshot .bx-kpi:first-child .bx-delta {
-  color: rgba(255, 255, 255, 0.92);
-}
+.bx-snapshot .bx-kpi:nth-child(2) { border-top-color: #65e5b5; }
+.bx-snapshot .bx-kpi:nth-child(3) { border-top-color: #ff299c; }
+.bx-snapshot .bx-kpi:nth-child(4) { border-top-color: #111932; }
 
 button.bx-kpi {
   cursor: pointer;
@@ -213,7 +218,7 @@ button.bx-kpi {
 }
 
 .bx-delta {
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.72rem;
   font-weight: 800;
 }
@@ -258,7 +263,7 @@ button.bx-kpi {
   place-items: center;
   align-content: center;
   gap: 0.2rem;
-  background: #f7f6fc;
+  background: #F5F7FB;
   padding: 0.8rem;
   text-align: center;
 }
@@ -315,7 +320,7 @@ button.bx-kpi {
   align-items: center;
   width: 100%;
   border: 0;
-  background: #f7f6fc;
+  background: #F5F7FB;
   padding: 0.55rem 0.7rem;
   color: inherit;
   text-align: start;
@@ -342,15 +347,15 @@ div.bx-lead {
 
 .bx-status {
   display: inline-flex;
-  background: #f7f6fc;
+  background: #F5F7FB;
   padding: 0.12rem 0.4rem;
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 0.72rem;
   font-weight: 800;
 }
 
 .bx-status.is-on {
-  background: #5b21b6;
+  background: #2541F5;
   color: #fff;
 }
 
@@ -364,7 +369,7 @@ div.bx-lead {
 .bx-attention a {
   display: flex;
   align-items: center;
-  background: #f7f6fc;
+  background: #F5F7FB;
   padding: 0.55rem 0.7rem;
   color: inherit;
   font-size: 0.84rem;

@@ -169,14 +169,14 @@ function NavItem({
         className={`
           group relative flex items-center rounded-none border border-transparent transition-all duration-200
           ${collapsed ? "mx-auto h-11 w-11 justify-center" : "h-11 gap-3 px-3"}
-          text-[13.5px] font-medium tracking-[-0.01em] text-white/80
-          hover:border-white/15 hover:bg-white/10 hover:text-white
+          text-[13.5px] font-medium tracking-[-0.01em] text-[#111932]
+          hover:bg-[#F5F7FB]
         `}
       >
         <Icon
-          size={19}
+          size={18}
           strokeWidth={2}
-          className="shrink-0 text-white/70 transition-colors group-hover:text-white"
+          className="shrink-0 text-[#64748B] transition-colors group-hover:text-[#2541F5]"
         />
         {!collapsed && (
           <>
@@ -198,23 +198,17 @@ function NavItem({
       data-demo-target={demoTarget || undefined}
       className={({ isActive }) =>
         `
-          group relative flex items-center rounded-none transition-all duration-200
+          group relative flex items-center rounded-[6px] transition-colors duration-200
           ${
             collapsed
               ? "mx-auto h-10 w-10 justify-center"
-              : "h-10 gap-2.5 px-2.5"
+              : "h-9 gap-2.5 px-2.5"
           }
           text-[13.5px] font-medium tracking-[-0.01em]
           ${
             isActive
-              ? `
-                  border border-white bg-white
-                  text-[#21172F]
-                `
-              : `
-                  border border-transparent text-white/80
-                  hover:border-white/15 hover:bg-white/10 hover:text-white
-                `
+              ? "bg-[#EEF2FF] text-[#2541F5] shadow-[inset_3px_0_0_#2541F5] rtl:shadow-[inset_-3px_0_0_#2541F5]"
+              : "text-[#111932] hover:bg-[#F5F7FB]"
           }
         `
       }
@@ -228,8 +222,8 @@ function NavItem({
               shrink-0 transition-colors
               ${
                 isActive
-                  ? "text-[#5B21B6]"
-                  : "text-white/70 group-hover:text-white"
+                  ? "text-[#2541F5]"
+                  : "text-[#64748B] group-hover:text-[#2541F5]"
               }
             `}
           />
@@ -580,10 +574,10 @@ export default function BusinessWorkspaceNav({
     >
       {showProductSwitcher && businessId ? (
         <div
-          className={`border-b border-white/10 ${collapsed ? "px-1.5 py-2" : "px-2 py-2"}`}
+          className={`border-b border-[#E0E6F0] ${collapsed ? "px-1.5 py-2" : "px-2 py-2"}`}
         >
           {!collapsed ? (
-            <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-white/45">
+            <p className="mb-1.5 px-2 text-[11px] font-semibold uppercase tracking-wide text-[#64748B]">
               {translate(t, "businessNav.products.title", "Your products")}
             </p>
           ) : null}
@@ -618,7 +612,7 @@ export default function BusinessWorkspaceNav({
           return (
             <React.Fragment key={item.to || item.href || item.labelKey}>
               {showGroup ? (
-                <p className="px-2.5 pb-0.5 pt-3 text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/55">
+                <p className="px-2.5 pb-0.5 pt-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#64748B]">
                   {translate(t, `businessNav.groups.${group}`, group)}
                 </p>
               ) : null}

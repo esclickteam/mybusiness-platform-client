@@ -4,8 +4,8 @@
   gap: 16px;
   align-items: start;
   padding: 16px;
-  background: #f4f1fa;
-  color: #21172f;
+  background: #F5F7FB;
+  color: #111932;
 }
 
 .affiliate-head,
@@ -25,13 +25,13 @@
 }
 
 .affiliate-head {
-  border-inline-start: 4px solid #5b21b6;
+  border-inline-start: 4px solid #2541F5;
 }
 
 .affiliate-page h1,
 .affiliate-page h2 {
   margin: 0 0 8px;
-  color: #21172f;
+  color: #111932;
   font-weight: 900;
 }
 
@@ -64,7 +64,7 @@
   min-height: 44px;
   border: 1px solid rgba(91, 33, 182, 0.22);
   background: #fff;
-  color: #21172f;
+  color: #111932;
   font-weight: 800;
   padding: 8px 12px;
   max-width: 100%;
@@ -87,9 +87,9 @@
 
 .affiliate-page button,
 .payment-button {
-  background: #5b21b6;
+  background: #2541F5;
   color: #fff;
-  border-color: #5b21b6;
+  border-color: #2541F5;
   cursor: pointer;
   white-space: normal;
 }
@@ -109,12 +109,12 @@
 }
 
 .stats-table th {
-  color: #5b21b6;
+  color: #2541F5;
   font-size: 12px;
 }
 
 .success {
-  color: #21172f;
+  color: #111932;
   font-weight: 800;
 }
 

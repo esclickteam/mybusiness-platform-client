@@ -10,7 +10,7 @@
   --text: #0f172a;
   --muted: #475569;
 
-  --violet: #6a11cb;
+  --violet: #2541F5;
   --violet-600: #5a0fb0;
   --blue: #2575fc;
 
@@ -285,7 +285,7 @@ body {
 .view-profile-btn {
   margin-top: 0.5rem;
 
-  background: linear-gradient(90deg, #6a11cb 0%, #2575fc 100%);
+  background: linear-gradient(90deg, #2541F5 0%, #2575fc 100%);
   color: #fff;
 
   padding: 12px 18px;

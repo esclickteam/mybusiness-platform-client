@@ -1231,7 +1231,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           <button
             type="button"
             onClick={openCreate}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-4 text-sm font-black text-white transition hover:bg-[#2541F5]"
           >
             <Plus className="h-4 w-4" />
             {t("crm.clients.addClient")}
@@ -1532,7 +1532,7 @@ function ClientDataPanel({
             type="button"
             onClick={save}
             disabled={saving || fields.length === 0}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] px-4 text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2541F5] px-4 text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {saving ? t("crm.common.saving") : t("crm.clients.clientDataPanel.savingData")}
@@ -1557,7 +1557,7 @@ function ClientDataPanel({
             <button
               type="button"
               onClick={onManageFields}
-              className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+              className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-5 text-sm font-black text-white transition hover:bg-[#2541F5]"
             >
               <Plus className="h-4 w-4" />
               {t("crm.clients.customFields.defineNow")}
@@ -1704,7 +1704,7 @@ function ClientCustomFieldsManager({
             <button
               type="button"
               onClick={addField}
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#2541F5] px-4 text-sm font-black text-white transition hover:bg-[#2541F5]"
             >
               <Plus className="h-4 w-4" />
               {t("crm.clients.customFields.addField")}
@@ -1885,7 +1885,7 @@ function ClientCustomFieldsManager({
             type="button"
             onClick={save}
             disabled={saving}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:opacity-50"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-5 text-sm font-black text-white transition hover:bg-[#2541F5] disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {saving
@@ -1991,7 +1991,7 @@ function ConfiguredFieldInput({
                     onChange(summaryDraft);
                     setSummaryOpen(false);
                   }}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-5 text-sm font-black text-white transition hover:bg-[#2541F5]"
                 >
                   <Save className="h-4 w-4" />
                   {t("crm.clients.clientDataPanel.saveSummary")}
@@ -2079,7 +2079,7 @@ function ConfiguredFieldInput({
             className={[
               "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
               Boolean(value)
-                ? "bg-[#6D28D9] text-white"
+                ? "bg-[#2541F5] text-white"
                 : "border-slate-300 bg-white text-transparent",
             ].join(" ")}
           >
@@ -2445,7 +2445,7 @@ function ClientTrackingFieldEditor({
                   onChange(normalizeTrackingFieldValue(draft));
                   setOpen(false);
                 }}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-5 text-sm font-black text-white transition hover:bg-[#2541F5]"
               >
                 <Save className="h-4 w-4" />
                 {t("crm.clients.clientDataPanel.saveTracking")}
@@ -2584,7 +2584,7 @@ function PortalAccessPanel({
             type="button"
             onClick={save}
             disabled={saving}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2541F5] text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {saving ? t("crm.common.saving") : t("crm.clients.portal.savingAccess")}
@@ -2924,7 +2924,7 @@ function ClientsTable({
                     <button
                       type="button"
                       onClick={() => onOpen(client)}
-                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-[#6D28D9] hover:text-white"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-[#2541F5] hover:text-white"
                       aria-label={t("crm.clients.table.openClient")}
                     >
                       <MoreHorizontal className="h-4 w-4" />
@@ -3138,7 +3138,7 @@ function StatCard({
 
   if (featured) {
     return (
-      <div className="crm-kpi bg-gradient-to-br from-[#6D28D9] to-[#2563EB] text-white">
+      <div className="crm-kpi bg-gradient-to-br from-[#2541F5] to-[#2563EB] text-white">
         <div className="flex items-start justify-between gap-3">
           <div>
             <h3 className="text-white/80">{label}</h3>
@@ -3213,7 +3213,7 @@ function FilterPill({ label, active, onClick }: { label: string; active?: boolea
       className={[
         "rounded-xl px-4 py-2 text-xs font-black transition",
         active
-          ? "bg-[#6D28D9] text-white shadow-lg shadow-slate-200"
+          ? "bg-[#2541F5] text-white shadow-lg shadow-slate-200"
           : "border border-slate-200 bg-white text-slate-500 hover:bg-slate-50",
       ].join(" ")}
     >
@@ -3279,7 +3279,7 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6]"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2541F5] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#2541F5]"
       >
         <Plus className="h-5 w-5" />
         {t("crm.clients.createClient")}

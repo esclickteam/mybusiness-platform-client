@@ -93,7 +93,7 @@ function SendDemoButton({
       type="button"
       onClick={onClick}
       data-testid="admin-send-demo-button"
-      className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#6D28D9] px-3 text-xs font-black text-white shadow-sm transition hover:-translate-y-0.5 ${className}`}
+      className={`inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#2541F5] px-3 text-xs font-black text-white shadow-sm transition hover:-translate-y-0.5 ${className}`}
     >
       <Play className="h-3.5 w-3.5" />
       שליחת דמו
@@ -432,7 +432,7 @@ export default function AdminSendGuidedDemoModal({
                 <button
                   type="button"
                   onClick={() => void copyLink()}
-                  className="inline-flex items-center gap-2 rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-[#2541F5] px-4 py-3 text-sm font-black text-white"
                   data-testid="admin-created-copy-link"
                 >
                   <Copy className="h-4 w-4" />
@@ -506,7 +506,7 @@ export default function AdminSendGuidedDemoModal({
                 type="button"
                 disabled={Boolean(submitting) || !canSubmit}
                 onClick={() => void submit(false)}
-                className="mt-4 rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
+                className="mt-4 rounded-2xl bg-[#2541F5] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
               >
                 {submitting ? "יוצר קישור..." : "יצירת קישור לדמו"}
               </button>
@@ -781,7 +781,7 @@ export default function AdminSendGuidedDemoModal({
                 type="button"
                 disabled={Boolean(submitting) || !canSubmit}
                 onClick={() => void submit(false)}
-                className="rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
+                className="rounded-2xl bg-[#2541F5] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
                 data-testid="admin-create-demo-link"
               >
                 {submitting === "link" ? "יוצר קישור..." : "יצירת קישור לדמו"}

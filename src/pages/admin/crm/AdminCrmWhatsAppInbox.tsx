@@ -395,7 +395,7 @@ export default function AdminCrmWhatsAppInbox() {
       dir={dir}
     >
       {banner ? (
-        <div className="shrink-0 border-b border-purple-100 bg-violet-50 px-4 py-2 text-sm font-bold text-[#7C4DFF]">
+        <div className="shrink-0 border-b border-purple-100 bg-violet-50 px-4 py-2 text-sm font-bold text-[#2541F5]">
           {banner}
         </div>
       ) : null}
@@ -412,7 +412,7 @@ export default function AdminCrmWhatsAppInbox() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="min-h-10 rounded-full bg-[#7C4DFF] px-3 text-xs font-black text-white"
+                  className="min-h-10 rounded-full bg-[#2541F5] px-3 text-xs font-black text-white"
                   onClick={() => setNewMessageOpen(true)}
                 >
                   {copy.newMessage}

@@ -35,7 +35,7 @@
   
   .plan-form button,
   .coupon-section button {
-    background-color: #7c3aed;
+    background-color: #2541F5;
     color: white;
     padding: 10px 16px;
     border: none;
@@ -47,7 +47,7 @@
   
   .plan-form button:hover,
   .coupon-section button:hover {
-    background-color: #5b21b6;
+    background-color: #2541F5;
   }
   
   .plans-table {
@@ -65,7 +65,7 @@
   }
   
   .plans-table th {
-    background-color: #f3e8ff;
+    background-color: #EEF2FF;
     color: #4a148c;
     font-size: 14px;
   }
@@ -98,11 +98,11 @@
   }
   
   .edit-btn {
-    background-color: #7c3aed;
+    background-color: #2541F5;
   }
   
   .edit-btn:hover {
-    background-color: #5b21b6;
+    background-color: #2541F5;
   }
   
   .delete-btn:hover {

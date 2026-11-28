@@ -269,7 +269,7 @@ export function WhatsAppMessageComposer({
 
         <button
           type="button"
-          className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full bg-[#7C4DFF] text-sm font-black text-white disabled:opacity-50"
+          className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-full bg-[#2541F5] text-sm font-black text-white disabled:opacity-50"
           disabled={!canSend}
           onMouseDown={(e) => e.preventDefault()}
           onClick={onSend}

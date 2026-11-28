@@ -1,9 +1,9 @@
 .crm-surface {
   --crm-border: rgba(91, 33, 182, 0.14);
-  --crm-violet: #5b21b6;
-  --crm-text: #21172f;
-  background: #f4f1fa;
-  color: #21172f;
+  --crm-violet: #2541F5;
+  --crm-text: #111932;
+  background: #F5F7FB;
+  color: #111932;
 }
 
 .crm-kpi {
@@ -60,7 +60,7 @@
   text-align: center;
   border: 1px dashed rgba(109, 40, 217, 0.28);
   border-radius: 0;
-  background: #faf7ff;
+  background: #F5F7FB;
 }
 
 .crm-kanban-card {

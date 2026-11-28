@@ -545,7 +545,7 @@ export default function CollabMessagesTab({
             <button
               type="button"
               onClick={() => navigate("../find-partner")}
-              className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-[#5B21B6] px-5 text-sm font-black text-white"
+              className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-[#2541F5] px-5 text-sm font-black text-white"
             >
               <Send className="h-4 w-4" />
               {t("leftover.collab.activeTab.createProposal")}

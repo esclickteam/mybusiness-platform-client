@@ -313,7 +313,7 @@ export default function CRMClientDossier({
   return (
     <div
       dir={dir}
-      className="client-file fixed inset-0 z-[90] flex flex-col bg-[#F4F1FA] text-start"
+      className="client-file fixed inset-0 z-[90] flex flex-col bg-[#F5F7FB] text-start"
     >
       <header className="client-file-head shrink-0 border-b border-slate-200 bg-white">
         <div className="flex flex-wrap items-center justify-between gap-3 px-3 py-3 sm:px-5">
@@ -329,7 +329,7 @@ export default function CRMClientDossier({
               </span>
             </button>
 
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-violet-100 text-base font-black text-[#6D28D9]">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-violet-100 text-base font-black text-[#2541F5]">
               {getInitials(client.fullName) || (
                 <UserRound className="h-5 w-5" />
               )}
@@ -379,7 +379,7 @@ export default function CRMClientDossier({
             <button
               type="button"
               onClick={onEdit}
-              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#2541F5] px-4 text-sm font-black text-white transition hover:bg-[#2541F5]"
             >
               <Edit3 className="h-4 w-4" />
               {t("crm.common.edit")}
@@ -692,7 +692,7 @@ function TabButton({
       className={[
         "relative inline-flex h-11 items-center justify-center gap-2 px-3 text-sm font-black transition",
         active
-          ? "text-[#6D28D9]"
+          ? "text-[#2541F5]"
           : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
       ].join(" ")}
     >
@@ -706,7 +706,7 @@ function TabButton({
       <span
         className={[
           "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
-          active ? "bg-[#6D28D9]" : "bg-transparent",
+          active ? "bg-[#2541F5]" : "bg-transparent",
         ].join(" ")}
       />
     </button>
@@ -1105,7 +1105,7 @@ function TagsPanel({
             type="button"
             onClick={() => void addTag()}
             disabled={saving || !draft.trim()}
-            className="inline-flex h-10 items-center justify-center rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:opacity-50"
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-[#2541F5] px-4 text-sm font-black text-white transition hover:bg-[#2541F5] disabled:opacity-50"
           >
             {t("crm.clients.tags.add")}
           </button>
@@ -1422,7 +1422,7 @@ function FilesPanel({
         <button
           type="button"
           onClick={onGoDocument}
-          className="inline-flex h-10 items-center rounded-xl bg-[#6D28D9] px-3 text-xs font-black text-white"
+          className="inline-flex h-10 items-center rounded-xl bg-[#2541F5] px-3 text-xs font-black text-white"
         >
           {t("crm.clients.filesPanel.addFromDocs")}
         </button>

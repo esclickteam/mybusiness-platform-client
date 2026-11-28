@@ -104,7 +104,7 @@
 }
 
 .chat-input-row input:focus {
-  box-shadow: 0 0 0 2px #b388ff;
+  box-shadow: 0 0 0 2px #B7C6F8;
   outline: none;
 }
 
@@ -119,7 +119,7 @@
 }
 
 .chat-input-row button:hover {
-  background: linear-gradient(to right, #a855f7, #7c3aed);
+  background: linear-gradient(to right, #6D84F7, #2541F5);
 }
 
 /* הודעות מערכת */

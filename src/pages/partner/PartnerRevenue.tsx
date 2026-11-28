@@ -85,7 +85,7 @@ export default function PartnerRevenue() {
           </p>
         </PartnerCard>
         <PartnerCard className="p-5">
-          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#2541F5]">
             {t("partner.revenue.notPartnerDebt")}
           </p>
           <p className="mt-2 text-sm font-bold text-slate-600">

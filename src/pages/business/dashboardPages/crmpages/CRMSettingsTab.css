@@ -28,13 +28,13 @@
 }
 
 .settings-form input:focus {
-  border-color: #7c4dff;
+  border-color: #2541F5;
   box-shadow: 0 0 8px rgba(124, 77, 255, 0.5);
   outline: none;
 }
 
 .save-settings-btn {
-  background-color: #7c4dff;
+  background-color: #2541F5;
   color: white;
   border: none;
   padding: 0.8rem;

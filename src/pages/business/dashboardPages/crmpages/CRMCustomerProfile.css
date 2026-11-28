@@ -60,7 +60,7 @@
 .add-event-card input:focus,
 .add-event-card textarea:focus {
   outline: none;
-  border-color: #7c4dff;
+  border-color: #2541F5;
   box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.15);
 }
 
@@ -121,7 +121,7 @@
   border: none;
   cursor: pointer;
   font-size: 0.85rem;
-  color: #5e17eb;
+  color: #2541F5;
 }
 
 .event-actions button:hover {
@@ -153,7 +153,7 @@
 .event-item input:focus,
 .event-item textarea:focus {
   outline: none;
-  border-color: #7c4dff;
+  border-color: #2541F5;
   box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.15);
 }
 
@@ -184,7 +184,7 @@
 }
 
 .actions button.primary {
-  background: linear-gradient(135deg, #7c4dff, #5e17eb);
+  background: linear-gradient(135deg, #2541F5, #2541F5);
   border: none;
   color: #ffffff;
   box-shadow: 0 10px 24px rgba(94, 23, 235, 0.35);
@@ -198,7 +198,7 @@
    Primary button (header)
 ===================================================== */
 .primary {
-  background: linear-gradient(135deg, #7c4dff, #5e17eb);
+  background: linear-gradient(135deg, #2541F5, #2541F5);
   border: none;
   color: #ffffff;
   padding: 12px 20px;
@@ -223,7 +223,7 @@
 
 .client-badge.vip {
   background: #ede9fe;
-  color: #6d28d9;
+  color: #2541F5;
 }
 
 .client-badge.lead {

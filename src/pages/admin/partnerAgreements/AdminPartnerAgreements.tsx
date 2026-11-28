@@ -125,7 +125,7 @@ export default function AdminPartnerAgreements() {
                 type="button"
                 onClick={() => setFilter(id)}
                 className={`rounded-full px-3 py-1.5 text-sm font-black ${
-                  filter === id ? "bg-[#7C4DFF] text-white" : "bg-slate-100 text-slate-700"
+                  filter === id ? "bg-[#2541F5] text-white" : "bg-slate-100 text-slate-700"
                 }`}
               >
                 {copy[id]}
@@ -168,7 +168,7 @@ export default function AdminPartnerAgreements() {
                       <td>{row.partnerName || "—"}</td>
                       <td>
                         {row.agreementId ? (
-                          <Link className="font-black text-[#6D28D9]" to={`/admin/partner-agreements/${row.agreementId}`}>
+                          <Link className="font-black text-[#2541F5]" to={`/admin/partner-agreements/${row.agreementId}`}>
                             {row.agreementNumber}
                           </Link>
                         ) : (
@@ -231,7 +231,7 @@ export default function AdminPartnerAgreements() {
                   items.map((row) => (
                     <tr key={row.id} className="border-t border-slate-100">
                       <td className="py-2">
-                        <Link className="font-black text-[#6D28D9]" to={`/admin/partner-agreements/${row.id}`}>
+                        <Link className="font-black text-[#2541F5]" to={`/admin/partner-agreements/${row.id}`}>
                           {row.agreementNumber}
                         </Link>
                       </td>
@@ -247,7 +247,7 @@ export default function AdminPartnerAgreements() {
                       <td data-testid="list-payment-status">Payment: {row.status === "payment_pending" ? "Pending" : agreementStatusLabel(row.paymentStatus, text)}</td>
                       <td>{row.verificationStatus || "—"} · {row.activationStatus || "—"}</td>
                       <td className="space-x-2 py-2">
-                        <Link className="font-black text-[#6D28D9]" to={`/admin/partner-agreements/${row.id}`}>View</Link>
+                        <Link className="font-black text-[#2541F5]" to={`/admin/partner-agreements/${row.id}`}>View</Link>
                         <button type="button" className="font-black text-slate-800" onClick={async () => {
                           const res = await API.get(`/admin/partner-agreements/${row.id}/documents`);
                           setDocuments({ id: row.id, files: res.data?.documents?.files || [] });
@@ -269,7 +269,7 @@ export default function AdminPartnerAgreements() {
                 <li key={`${file.kind}-${file.filename}`}>
                   {file.kind} · {file.filename} · {file.uploadedAt ? String(file.uploadedAt).slice(0, 16) : ""}
                   {" "}
-                  <button type="button" className="font-black text-[#6D28D9]" onClick={async () => {
+                  <button type="button" className="font-black text-[#2541F5]" onClick={async () => {
                     const res = await API.get(`/admin/partner-agreements/${documents.id}/verification/files/${file.kind}`, { responseType: "blob" });
                     const url = URL.createObjectURL(res.data);
                     window.open(url, "_blank", "noopener");

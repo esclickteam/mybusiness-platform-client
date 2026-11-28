@@ -803,7 +803,7 @@ export default function AdminPartnerAgreementEditor() {
       <main className="mx-auto max-w-[1100px] space-y-4 px-4 py-6" data-testid="partner-agreement-form" dir={page.dir} lang={page.locale}>
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <Link to="/admin/partner-agreements" className="text-sm font-black text-[#6D28D9]">
+            <Link to="/admin/partner-agreements" className="text-sm font-black text-[#2541F5]">
               {t.back}
             </Link>
             <h1 className="text-3xl font-black text-slate-900">{id ? t.agreement : t.create}</h1>
@@ -928,7 +928,7 @@ export default function AdminPartnerAgreementEditor() {
               {page.text.sign.bizuplyProgress}: {record.signatureProgress.bizuply.completed} {page.text.sign.of} {record.signatureProgress.bizuply.required} {page.text.sign.completed}
             </p>
             {record.signatureStatus || record.signatureStatusLabel ? (
-              <p className="mt-2 text-sm font-bold text-[#6D28D9]">{agreementStatusLabel(record.signatureStatus || record.status, page.text) || record.signatureStatusLabel}</p>
+              <p className="mt-2 text-sm font-bold text-[#2541F5]">{agreementStatusLabel(record.signatureStatus || record.status, page.text) || record.signatureStatusLabel}</p>
             ) : null}
           </div>
         ) : null}
@@ -1115,7 +1115,7 @@ export default function AdminPartnerAgreementEditor() {
                 onChange={(imageDataUrl) => setBizSignature(signConfirmed && imageDataUrl ? { imageDataUrl, confirmed: true } : null)}
               />
             </div>
-            <button type="button" disabled={busy || !bizSignature} onClick={() => void onSignExisting()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="sign-existing-bizuply-button">
+            <button type="button" disabled={busy || !bizSignature} onClick={() => void onSignExisting()} className="mt-3 rounded-2xl bg-[#2541F5] px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="sign-existing-bizuply-button">
               Sign as Bizuply
             </button>
           </section>
@@ -1138,7 +1138,7 @@ export default function AdminPartnerAgreementEditor() {
                 onChange={(imageDataUrl) => setBizSignature(signConfirmed && imageDataUrl ? { imageDataUrl, confirmed: true } : null)}
               />
             </div>
-            <button type="button" disabled={busy || !bizSignature} onClick={() => void onCreateSigned()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">
+            <button type="button" disabled={busy || !bizSignature} onClick={() => void onCreateSigned()} className="mt-3 rounded-2xl bg-[#2541F5] px-4 py-2 text-sm font-black text-white disabled:opacity-50">
               Create Agreement & Generate Signing Links
             </button>
           </section>
@@ -1168,7 +1168,7 @@ export default function AdminPartnerAgreementEditor() {
             <p className="mt-1 text-sm font-semibold text-slate-600">
               Creates a separate pending link for each partner signatory. Nothing is emailed or sent on WhatsApp.
             </p>
-            <button type="button" disabled={busy} onClick={() => void onGeneratePartnerLinks()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="generate-partner-links-button">
+            <button type="button" disabled={busy} onClick={() => void onGeneratePartnerLinks()} className="mt-3 rounded-2xl bg-[#2541F5] px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="generate-partner-links-button">
               Generate Partner Signing Links
             </button>
           </section>
@@ -1214,7 +1214,7 @@ export default function AdminPartnerAgreementEditor() {
         ) : null}
 
         <div className="flex flex-wrap gap-2">
-          <button type="button" disabled={busy || !editable} onClick={() => void onSave()} className="rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white disabled:opacity-50">{t.save}</button>
+          <button type="button" disabled={busy || !editable} onClick={() => void onSave()} className="rounded-2xl bg-[#2541F5] px-4 py-2 text-sm font-black text-white disabled:opacity-50">{t.save}</button>
           <button type="button" disabled={busy} onClick={() => void onPreview()} className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-50">{t.preview}</button>
           {!editable && record ? (
             <button type="button" disabled={busy} onClick={() => void onAmend()} className="rounded-2xl bg-amber-500 px-4 py-2 text-sm font-black text-white disabled:opacity-50" data-testid="new-agreement-version">
@@ -1251,7 +1251,7 @@ export default function AdminPartnerAgreementEditor() {
               <input type="date" className={inputClass} value={renewal.endDate} onChange={(e) => setRenewal({ ...renewal, endDate: e.target.value })} />
               <input className={inputClass} placeholder={t.newNumber} value={renewal.agreementNumber} onChange={(e) => setRenewal({ ...renewal, agreementNumber: e.target.value })} />
             </div>
-            <button type="button" disabled={busy} onClick={() => void onRenew()} className="mt-3 rounded-2xl bg-[#7C4DFF] px-4 py-2 text-sm font-black text-white">{t.renew}</button>
+            <button type="button" disabled={busy} onClick={() => void onRenew()} className="mt-3 rounded-2xl bg-[#2541F5] px-4 py-2 text-sm font-black text-white">{t.renew}</button>
           </section>
         ) : null}
 
@@ -1290,7 +1290,7 @@ export default function AdminPartnerAgreementEditor() {
                 {record.versions.map((version) => (
                   <Link
                     key={version.versionNumber}
-                    className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-[#6D28D9]"
+                    className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-[#2541F5]"
                     to={`/admin/partner-agreements/${record.id}/preview?version=${version.versionNumber}`}
                   >
                     {fill(version.frozen ? t.versionSigned : t.version, { version: version.versionNumber })}

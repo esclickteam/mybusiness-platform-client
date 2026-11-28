@@ -283,7 +283,7 @@ export default function AdminSupportChatSendTemplateModal({
             data-testid="support-template-send"
             disabled={!selected || sending || missingVars.length > 0}
             onClick={() => void send()}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-4 py-3 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 disabled:opacity-40"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2541F5] px-4 py-3 text-sm font-black text-white shadow-md shadow-[#2541F5]/25 disabled:opacity-40"
           >
             <Send size={16} className="-scale-x-100" />
             {sending ? "Sending…" : "Send template"}

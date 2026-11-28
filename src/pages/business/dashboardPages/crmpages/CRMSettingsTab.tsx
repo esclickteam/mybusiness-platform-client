@@ -379,7 +379,7 @@ export default function CRMSettingsTab() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-4 text-sm font-black text-white transition hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
             {saving
@@ -472,14 +472,14 @@ export default function CRMSettingsTab() {
                   className={[
                     "relative flex min-w-fit items-center gap-2 px-3 py-3 text-start transition",
                     isActive
-                      ? "text-[#6D28D9]"
+                      ? "text-[#2541F5]"
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
                   ].join(" ")}
                 >
                   <Icon
                     className={[
                       "h-4 w-4",
-                      isActive ? "text-[#6D28D9]" : "text-slate-400",
+                      isActive ? "text-[#2541F5]" : "text-slate-400",
                     ].join(" ")}
                   />
 
@@ -489,7 +489,7 @@ export default function CRMSettingsTab() {
                   <span
                     className={[
                       "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
-                      isActive ? "bg-[#6D28D9]" : "bg-transparent",
+                      isActive ? "bg-[#2541F5]" : "bg-transparent",
                     ].join(" ")}
                   />
                 </button>
@@ -1366,7 +1366,7 @@ function SettingsPanel({
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2541F5] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
               {saving ? t("crm.common.saving") : actionLabel}
@@ -1738,7 +1738,7 @@ function SaveButton({
       type="button"
       onClick={onClick}
       disabled={saving}
-      className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2541F5] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Save className="h-5 w-5" />
       {saving ? t("crm.common.saving") : label}

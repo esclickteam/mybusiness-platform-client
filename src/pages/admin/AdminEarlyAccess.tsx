@@ -408,7 +408,7 @@ function AdminEarlyAccess() {
             type="button"
             disabled={chatOpeningId === id}
             onClick={() => void openWhatsAppSupportChat(item)}
-            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#7C4DFF] px-4 text-xs font-black text-white disabled:opacity-50"
+            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#2541F5] px-4 text-xs font-black text-white disabled:opacity-50"
           >
             <MessageCircle className="h-3.5 w-3.5" />
             {chatOpeningId === id ? "פותח..." : "פתיחת השיחה ב-WhatsApp"}

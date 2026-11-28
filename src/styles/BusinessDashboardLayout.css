@@ -7,8 +7,8 @@
   left: 0;
   width: 250px;
   height: 100dvh;
-  background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
-  color: #2a165f;
+  background: linear-gradient(180deg, #EEF2FF 0%, #e6d6ff 100%);
+  color: #111932;
   display: flex;
   flex-direction: column;
   box-shadow: 4px 0 24px rgba(88, 28, 135, 0.15);
@@ -59,7 +59,7 @@
   font-size: 14px;
   font-weight: 600;
 
-  color: #2a165f;
+  color: #111932;
   text-decoration: none;
   border: none;
 
@@ -73,7 +73,7 @@
 
 .dashboard-layout-sidebar nav a.active {
   background: #ffffff;
-  color: #4c1fd8;
+  color: #2541F5;
   font-weight: 700;
 
   box-shadow: 0 6px 18px rgba(88, 28, 135, 0.18);
@@ -90,7 +90,7 @@
   font-size: 13px;
   font-weight: 600;
 
-  color: #4c1fd8;
+  color: #2541F5;
   background: rgba(255, 255, 255, 0.45);
   border: 1px dashed rgba(88, 28, 135, 0.3);
   border-radius: 14px;
@@ -149,7 +149,7 @@
   right: 0;
   height: 64px;
 
-  background: linear-gradient(180deg, #f3e8ff 0%, #e6d6ff 100%);
+  background: linear-gradient(180deg, #EEF2FF 0%, #e6d6ff 100%);
   border-bottom: 1px solid rgba(88, 28, 135, 0.15);
 
   display: flex;
@@ -181,7 +181,7 @@
 
   font-size: 15px;
   font-weight: 600;
-  color: #2a165f;
+  color: #111932;
 }
 
 .dashboard-layout-header-left > div:first-child {
@@ -241,7 +241,7 @@
   border-radius: 10px;
   font-size: 13px;
   font-weight: 600;
-  color: #2a165f;
+  color: #111932;
   cursor: pointer;
 }
 
@@ -374,7 +374,7 @@
 
 .earlybird-timer strong {
   font-weight: 600;
-  color: #4c1fd8;            /* סגול ברור – יוצר דחיפות עדינה */
+  color: #2541F5;            /* סגול ברור – יוצר דחיפות עדינה */
   margin-left: 4px;         /* ⬅️ רווח טבעי בין הטקסט למספר */
 }
 
@@ -389,7 +389,7 @@
 
 .trial-status strong {
   font-weight: 600;
-  color: #4c1fd8;
+  color: #2541F5;
 }
 
 .trial-upgrade-link {
@@ -524,7 +524,7 @@
   border: 1px solid rgba(88, 28, 135, 0.25);
 
   background: #ffffff;          /* ✅ תמיד לבן */
-  color: #4c1fd8;               /* ✅ אייקון ברור */
+  color: #2541F5;               /* ✅ אייקון ברור */
 
   display: inline-flex;
   align-items: center;
@@ -538,13 +538,13 @@
 /* ✅ גם בהובר נשאר לבן */
 .header-hamburger-btn:hover {
   background: #ffffff;
-  color: #4c1fd8;
+  color: #2541F5;
 }
 
 /* ✅ גם בלחיצה נשאר לבן (זה מה שחסר לך) */
 .header-hamburger-btn:active {
   background: #ffffff !important;
-  color: #4c1fd8 !important;
+  color: #2541F5 !important;
   transform: scale(0.97);
 }
 
@@ -552,13 +552,13 @@
 .header-hamburger-btn:focus,
 .header-hamburger-btn:focus-visible {
   background: #ffffff !important;
-  color: #4c1fd8 !important;
+  color: #2541F5 !important;
   box-shadow: 0 0 0 2px rgba(94, 23, 235, 0.15);
 }
 
 /* ✅ מבטיח שגם האייקון עצמו לא יכהה */
 .header-hamburger-btn svg {
-  color: #4c1fd8 !important;
+  color: #2541F5 !important;
 }
 
   /* לא להעמיס באנר במובייל */

@@ -379,7 +379,7 @@ export default function ClientDocumentationPanel({
           <p className="text-[11px] font-black uppercase tracking-[0.14em] text-[#6b6280]">
             {t("crm.clients.documentation.journeyBadge")}
           </p>
-          <h3 className="mt-1 truncate text-base font-black text-[#21172f]">
+          <h3 className="mt-1 truncate text-base font-black text-[#111932]">
             {t("crm.clients.documentation.openFullJourney")}
           </h3>
           <p className="mt-1 text-xs font-bold text-[#6b6280]">
@@ -388,7 +388,7 @@ export default function ClientDocumentationPanel({
             })}
           </p>
         </div>
-        <span className="grid h-11 w-11 shrink-0 place-items-center bg-[#efe8fb] text-[#5b21b6]">
+        <span className="grid h-11 w-11 shrink-0 place-items-center bg-[#EEF2FF] text-[#2541F5]">
           <Route className="h-5 w-5" />
         </span>
       </button>
@@ -585,7 +585,7 @@ export default function ClientDocumentationPanel({
             <button
               type="button"
               onClick={() => setJourneyOpen(true)}
-              className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#6D28D9] px-3 text-xs font-black text-white transition hover:bg-[#5B21B6]"
+              className="mt-3 inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#2541F5] px-3 text-xs font-black text-white transition hover:bg-[#2541F5]"
             >
               <Route className="h-3.5 w-3.5" />
               {t("crm.clients.documentation.openFullJourney")}
@@ -699,7 +699,7 @@ function ClientJourneyModal({
               ×
             </button>
 
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-violet-100 text-sm font-black text-[#6D28D9] shadow-sm">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-violet-100 text-sm font-black text-[#2541F5] shadow-sm">
               <Route className="h-4 w-4" />
             </div>
 

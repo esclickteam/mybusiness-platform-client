@@ -66,7 +66,7 @@ function StaffDashboard() {
     >
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         <div className="mb-8 text-center sm:text-right">
-          <p className="text-sm font-bold text-[#7C4DFF]">מרכז עובדים</p>
+          <p className="text-sm font-bold text-[#2541F5]">מרכז עובדים</p>
           <h1 className="mt-1 text-3xl font-black text-slate-900">
             דשבורד עובד
           </h1>
@@ -102,7 +102,7 @@ function StaffDashboard() {
             to="/staff/create-user"
             className="group flex items-center gap-4 rounded-2xl border border-violet-100 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-500/10"
           >
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/30">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#2541F5] text-white shadow-md shadow-[#2541F5]/30">
               <UserPlus className="h-6 w-6" />
             </span>
             <div>

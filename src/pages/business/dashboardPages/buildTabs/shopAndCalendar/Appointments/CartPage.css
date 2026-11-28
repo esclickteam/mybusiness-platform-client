@@ -2,8 +2,8 @@
   display: grid;
   gap: 12px;
   padding: 16px;
-  background: #f4f1fa;
-  color: #21172f;
+  background: #F5F7FB;
+  color: #111932;
 }
 
 .cart-head,
@@ -17,7 +17,7 @@
 }
 
 .cart-head {
-  border-inline-start: 4px solid #5b21b6;
+  border-inline-start: 4px solid #2541F5;
 }
 
 .cart-page h2,
@@ -58,7 +58,7 @@
   min-height: 40px;
   border: 1px solid rgba(91, 33, 182, 0.22);
   background: #fff;
-  color: #21172f;
+  color: #111932;
   font-weight: 800;
   padding: 6px 10px;
 }
@@ -74,9 +74,9 @@
 
 .remove-btn,
 .pay-btn {
-  background: #5b21b6;
+  background: #2541F5;
   color: #fff;
-  border-color: #5b21b6;
+  border-color: #2541F5;
   cursor: pointer;
 }
 

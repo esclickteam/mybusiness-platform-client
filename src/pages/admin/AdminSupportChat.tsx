@@ -222,7 +222,7 @@ function ChatMessageBody({
               rel="noreferrer"
               dir="ltr"
               className={`inline break-all underline ${
-                mine ? "text-white" : "text-[#5B21B6]"
+                mine ? "text-white" : "text-[#2541F5]"
               }`}
             >
               {part.value}
@@ -287,7 +287,7 @@ function ChatBubble({
           mine
             ? msg.deliveryStatus === "failed"
               ? "rounded-bl-md bg-rose-600 text-white"
-              : "rounded-bl-md bg-[#7C4DFF] text-white shadow-[#7C4DFF]/20"
+              : "rounded-bl-md bg-[#2541F5] text-white shadow-[#2541F5]/20"
             : msg.senderType === "bot"
               ? "rounded-br-md border border-slate-200 bg-white text-slate-800"
               : "rounded-br-md border border-emerald-100 bg-emerald-50 text-slate-800"
@@ -326,7 +326,7 @@ function ChatBubble({
                 href={interactiveDemoOpenUrl(msg.metadata?.demoLink)}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-1 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-black text-[#6D28D9]"
+                className="mt-1 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-black text-[#2541F5]"
                 data-testid="interactive-demo-open"
               >
                 Open demo
@@ -1185,8 +1185,8 @@ export default function AdminSupportChat() {
                   onClick={() => setFilter(key)}
                   className={`rounded-full px-3 py-1.5 text-xs font-black transition ${
                     filter === key
-                      ? "bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25"
-                      : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-violet-50 hover:text-[#7C4DFF]"
+                      ? "bg-[#2541F5] text-white shadow-md shadow-[#2541F5]/25"
+                      : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-violet-50 hover:text-[#2541F5]"
                   }`}
                 >
                   {label}
@@ -1255,7 +1255,7 @@ export default function AdminSupportChat() {
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#7C4DFF] to-[#A78BFA] text-xs font-black text-white shadow-sm">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#2541F5] to-[#9AADF8] text-xs font-black text-white shadow-sm">
                         {initialsFromName(c.name)}
                       </span>
                       <div className="min-w-0 flex-1">
@@ -1314,7 +1314,7 @@ export default function AdminSupportChat() {
           >
             {!selected ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_top,_rgba(124,77,255,0.08),_transparent_45%)] p-8 text-center text-slate-500">
-                <span className="grid h-16 w-16 place-items-center rounded-[22px] bg-violet-50 text-[#7C4DFF] ring-1 ring-violet-100">
+                <span className="grid h-16 w-16 place-items-center rounded-[22px] bg-violet-50 text-[#2541F5] ring-1 ring-violet-100">
                   <Headphones size={30} />
                 </span>
                 <p className="text-base font-black text-slate-800">
@@ -1331,12 +1331,12 @@ export default function AdminSupportChat() {
                     <button
                       type="button"
                       onClick={goBackToList}
-                      className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-[#7C4DFF] lg:hidden"
+                      className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-[#2541F5] lg:hidden"
                     >
                       <ArrowRight size={14} />
                       חזרה לרשימה
                     </button>
-                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#7C4DFF] to-[#A78BFA] text-xs font-black text-white">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#2541F5] to-[#9AADF8] text-xs font-black text-white">
                       {initialsFromName(selected.name)}
                     </span>
                     <div className="min-w-0">
@@ -1369,7 +1369,7 @@ export default function AdminSupportChat() {
                           {selected.sourceLeadId ? (
                             <Link
                               to={`/admin/early-access?lead=${encodeURIComponent(selected.sourceLeadId)}`}
-                              className="text-[#7C4DFF] underline"
+                              className="text-[#2541F5] underline"
                             >
                               ליד מקושר
                             </Link>
@@ -1377,7 +1377,7 @@ export default function AdminSupportChat() {
                           {selected.sourceCustomerId ? (
                             <Link
                               to="/admin/customers"
-                              className="text-[#7C4DFF] underline"
+                              className="text-[#2541F5] underline"
                             >
                               לקוח מקושר
                             </Link>
@@ -1409,13 +1409,13 @@ export default function AdminSupportChat() {
                     {selected.channel === "whatsapp" ? (
                       <AdminSendDemoButton
                         onClick={() => setDemoOpen(true)}
-                        className="!min-h-0 rounded-2xl px-3.5 py-2 text-xs shadow-md shadow-[#6D28D9]/20"
+                        className="!min-h-0 rounded-2xl px-3.5 py-2 text-xs shadow-md shadow-[#2541F5]/20"
                       />
                     ) : null}
                     <button
                       type="button"
                       onClick={() => void openCustomerHistory()}
-                      className="inline-flex items-center gap-1.5 rounded-2xl bg-[#7C4DFF] px-3.5 py-2 text-xs font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0]"
+                      className="inline-flex items-center gap-1.5 rounded-2xl bg-[#2541F5] px-3.5 py-2 text-xs font-black text-white shadow-md shadow-[#2541F5]/25 transition hover:bg-[#6B3FE0]"
                     >
                       <History size={15} />
                       היסטוריית שיחות של הלקוח
@@ -1645,7 +1645,7 @@ export default function AdminSupportChat() {
                         </p>
                         <button
                           type="button"
-                          className="mt-2 inline-flex items-center gap-1.5 rounded-xl bg-[#7C4DFF] px-3 py-1.5 text-[11px] font-black text-white"
+                          className="mt-2 inline-flex items-center gap-1.5 rounded-xl bg-[#2541F5] px-3 py-1.5 text-[11px] font-black text-white"
                           onClick={() => setTemplateOpen(true)}
                         >
                           <FileText size={13} />
@@ -1702,7 +1702,7 @@ export default function AdminSupportChat() {
                           selected.status === "closed" ||
                           sending
                         }
-                        className="flex h-11 min-h-11 w-11 items-center justify-center rounded-2xl bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-40"
+                        className="flex h-11 min-h-11 w-11 items-center justify-center rounded-2xl bg-[#2541F5] text-white shadow-md shadow-[#2541F5]/25 transition hover:bg-[#6B3FE0] disabled:opacity-40"
                         aria-label="שליחה"
                       >
                         <Send size={16} className="-scale-x-100" />

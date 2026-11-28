@@ -145,7 +145,7 @@ export default function PartnerStorefrontSettings() {
           href={previewUrl}
           target="_blank"
           rel="noreferrer"
-          className="block text-sm font-black text-[#7C4DFF]"
+          className="block text-sm font-black text-[#2541F5]"
         >
           {t("partner.storefront.previewUrl", { url: previewUrl })}
         </a>

@@ -2083,7 +2083,7 @@ export default function Build() {
                   </div>
                 </div>
 
-                <div className="mt-6 border border-[rgba(91,33,182,0.12)] bg-[#F4F1FA] p-4 text-start sm:p-6">
+                <div className="mt-6 border border-[rgba(91,33,182,0.12)] bg-[#F5F7FB] p-4 text-start sm:p-6">
                   {renderPreviewContent()}
                 </div>
               </div>

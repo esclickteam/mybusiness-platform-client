@@ -26,7 +26,7 @@
 ========================= */
 
 .add-collab-button {
-  background: #5e17eb;
+  background: #2541F5;
   color: #fff;
   border: none;
   padding: 10px 16px;
@@ -42,7 +42,7 @@
 }
 
 .save-button {
-  background: #5e17eb;
+  background: #2541F5;
   color: #fff;
   border: none;
   padding: 12px;
@@ -129,7 +129,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #5e17eb;
+  border-color: #2541F5;
 }
 
 .phone-group {
@@ -213,7 +213,7 @@
 
 .tag.need {
   background: rgba(94, 23, 235, 0.1);
-  color: #5e17eb;
+  color: #2541F5;
 }
 
 .tag.offer {
@@ -244,7 +244,7 @@
 
 .message-box-button {
   margin-top: auto;
-  background: #5e17eb;        /* סגול ראשי */
+  background: #2541F5;        /* סגול ראשי */
   color: #ffffff;             /* טקסט לבן */
   border: none;
   border-radius: 14px;
@@ -277,7 +277,7 @@
 }
 
 .react-tel-input .form-control:focus {
-  border-color: #5e17eb;
+  border-color: #2541F5;
   box-shadow: 0 0 0 2px rgba(94, 23, 235, 0.15);
 }
 

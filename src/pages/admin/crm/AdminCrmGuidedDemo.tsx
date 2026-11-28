@@ -36,7 +36,7 @@ export default function AdminCrmGuidedDemo() {
   return (
     <div className="min-h-screen bg-[#F7F4FF] px-4 py-8" dir="rtl" style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}>
       <div className="mx-auto max-w-3xl space-y-4">
-        <p className="text-xs font-black text-[#7C4DFF]">BizUply · דמו מודרך</p>
+        <p className="text-xs font-black text-[#2541F5]">BizUply · דמו מודרך</p>
         <h1 className="text-3xl font-black text-purple-950">סיור קצר במערכת</h1>
         {error ? <p className="font-bold text-rose-700">{error}</p> : null}
         {data ? (
@@ -46,7 +46,7 @@ export default function AdminCrmGuidedDemo() {
             </p>
             <div className="flex flex-wrap gap-2">
               {(data.moduleLabels || []).map((mod) => (
-                <span key={mod.key} className="rounded-full bg-white px-3 py-1 text-sm font-black text-[#7C4DFF] border border-purple-100">
+                <span key={mod.key} className="rounded-full bg-white px-3 py-1 text-sm font-black text-[#2541F5] border border-purple-100">
                   {mod.label}
                 </span>
               ))}
@@ -69,7 +69,7 @@ export default function AdminCrmGuidedDemo() {
             ) : null}
             <Link
               to="/register"
-              className="inline-flex min-h-11 items-center rounded-2xl bg-[#7C4DFF] px-5 text-sm font-black text-white"
+              className="inline-flex min-h-11 items-center rounded-2xl bg-[#2541F5] px-5 text-sm font-black text-white"
             >
               לפתיחת חשבון
             </Link>

@@ -348,7 +348,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               onClick={handleSave}
               disabled={saving}
               data-demo-target="work-hours-save"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#2541F5] px-4 text-sm font-black text-white transition hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-4 w-4" />
               {saving ? t("crm.common.saving") : t("crm.common.saveChanges")}
@@ -391,7 +391,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-[#6D28D9]">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-[#2541F5]">
                 <Clock className="h-5 w-5" />
               </div>
 
@@ -415,7 +415,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               onClick={handleSave}
               disabled={saving}
               data-demo-target="work-hours-save"
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#2541F5] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
               {saving ? t("crm.common.saving") : t("crm.workHours.saveHours")}
@@ -477,7 +477,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                   onClick={handleSave}
                   disabled={saving}
                   data-demo-target="work-hours-save"
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-sm font-black text-black shadow-lg shadow-sky-100 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-sm font-black text-black shadow-lg shadow-sky-100 transition hover:-translate-y-0.5 hover:bg-[#2541F5] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Save className="h-4 w-4" />
                   {saving ? t("crm.common.saving") : t("crm.common.save")}
@@ -561,7 +561,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                           className={[
                             "inline-flex h-11 min-w-[104px] items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
                             isClosed
-                              ? "bg-[#6D28D9] text-white shadow-lg shadow-slate-200 hover:bg-[#5B21B6]"
+                              ? "bg-[#2541F5] text-white shadow-lg shadow-slate-200 hover:bg-[#2541F5]"
                               : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
                           ].join(" ")}
                         >

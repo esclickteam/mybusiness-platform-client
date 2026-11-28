@@ -288,7 +288,7 @@ export default function CRMLeadCard({
               type="button"
               onClick={() => setTab(key)}
               className={`shrink-0 px-3 py-2 text-xs font-black ${
-                tab === key ? "text-[#5B21B6]" : "text-slate-500"
+                tab === key ? "text-[#2541F5]" : "text-slate-500"
               }`}
               aria-current={tab === key ? "page" : undefined}
             >

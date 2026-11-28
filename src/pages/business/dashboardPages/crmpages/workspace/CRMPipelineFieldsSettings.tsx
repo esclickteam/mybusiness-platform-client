@@ -65,7 +65,7 @@ export default function CRMPipelineFieldsSettings() {
         </div>
         <button
           type="button"
-          className="mt-3 rounded-xl bg-[#6D28D9] px-4 py-2 text-xs font-black text-white"
+          className="mt-3 rounded-xl bg-[#2541F5] px-4 py-2 text-xs font-black text-white"
           onClick={() => void savePipelineStages(stages).then(() => setNotice(t("crm.workspace.saved")))}
         >
           {t("crm.common.save")}
@@ -167,7 +167,7 @@ export default function CRMPipelineFieldsSettings() {
         </div>
         <button
           type="button"
-          className="mt-3 rounded-xl bg-[#6D28D9] px-4 py-2 text-xs font-black text-white"
+          className="mt-3 rounded-xl bg-[#2541F5] px-4 py-2 text-xs font-black text-white"
           onClick={() => void saveLeadCustomFields(fields).then(() => setNotice(t("crm.workspace.saved")))}
         >
           {t("crm.common.save")}

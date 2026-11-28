@@ -12,7 +12,7 @@
   max-width: 650px;
   margin: 0 auto 36px;
   padding: 38px 32px 22px;
-  border: 1.5px solid #e3cbff;
+  border: 1.5px solid #EEF2FF;
   position: relative;
 }
 
@@ -51,7 +51,7 @@
 .type-toggle-btn.selected,
 .type-toggle-btn:hover,
 .type-toggle-btn:focus {
-  background: linear-gradient(90deg, #b378e9 0%, #ad3bfd 95%);
+  background: linear-gradient(90deg, #8AA0F8 0%, #2541F5 95%);
   color: #fff;
   border-color: #9c46e5;
   box-shadow: 0 4px 19px rgba(132,50,200,0.18);
@@ -62,7 +62,7 @@
 .hr-sep {
   border: none;
   height: 1.5px;
-  background: linear-gradient(to left, #e3cbff 0%, #fff 50%, #e3cbff 100%);
+  background: linear-gradient(to left, #EEF2FF 0%, #fff 50%, #EEF2FF 100%);
   margin: 34px 0 24px;
 }
 
@@ -110,7 +110,7 @@
 
 /* כפתור הוספת שירות */
 .add-service-btn {
-  background: linear-gradient(90deg, #9852ee 20%, #742cd7 100%);
+  background: linear-gradient(90deg, #6D84F7 20%, #2541F5 100%);
   color: #fff;
   font-size: 1.18em;
   font-weight: 800;
@@ -129,14 +129,14 @@
 }
 .add-service-btn:hover,
 .add-service-btn:focus {
-  background: linear-gradient(90deg, #a168ee 20%, #9738e8 100%);
+  background: linear-gradient(90deg, #6D84F7 20%, #2541F5 100%);
 }
 
 /* כפתור מעבר להגדרת יומן */
 .go-to-calendar-btn {
   display: block;
   margin: 36px auto 0;
-  background: linear-gradient(90deg, #a259ff 0%, #7a3df4 90%);
+  background: linear-gradient(90deg, #6D84F7 0%, #2541F5 90%);
   color: #fff;
   font-size: 1em;
   font-weight: 700;
@@ -151,7 +151,7 @@
   transition: background .18s, transform .11s;
 }
 .go-to-calendar-btn:hover {
-  background: linear-gradient(90deg, #7a3df4 0%, #5e2fcf 90%);
+  background: linear-gradient(90deg, #2541F5 0%, #1C32C4 90%);
   transform: scale(1.04);
 }
 .go-to-calendar-btn:active {
@@ -202,7 +202,7 @@
   position: absolute;
   left: 17px;
   top: 18px;
-  background: linear-gradient(90deg, #f2b6e3 0%, #e6c5ff 100%);
+  background: linear-gradient(90deg, #FFD0EA 0%, #EEF2FF 100%);
   border: none;
   color: #863a99;
   border-radius: 50%;
@@ -217,7 +217,7 @@
   justify-content: center;
 }
 .service-card .delete-service-btn:hover {
-  background: linear-gradient(90deg, #ee80c3 0%, #c589e9 100%);
+  background: linear-gradient(90deg, #FF299C 0%, #9AADF8 100%);
 }
 
 .service-card .service-name {
@@ -294,11 +294,11 @@
   transition: background .2s, transform .1s;
 }
 .slot-btn:hover {
-  background: #e3cbff;
+  background: #EEF2FF;
   transform: translateY(-2px);
 }
 .slot-btn.active {
-  background: linear-gradient(90deg, #b378e9 0%, #ad3bfd 95%);
+  background: linear-gradient(90deg, #8AA0F8 0%, #2541F5 95%);
   color: #fff;
   border-color: #9c46e5;
   box-shadow: 0 4px 16px rgba(132,50,200,0.2);
@@ -308,7 +308,7 @@
 .book-action button {
   margin: 20px auto;
   display: block;
-  background: linear-gradient(90deg, #9852ee 20%, #742cd7 100%);
+  background: linear-gradient(90deg, #6D84F7 20%, #2541F5 100%);
   color: #fff;
   font-size: 1.15em;
   font-weight: 800;
@@ -322,7 +322,7 @@
   transition: background .2s, transform .1s;
 }
 .book-action button:hover {
-  background: linear-gradient(90deg, #a168ee 20%, #9738e8 100%);
+  background: linear-gradient(90deg, #6D84F7 20%, #2541F5 100%);
   transform: scale(1.03);
 }
 .book-action button:active {

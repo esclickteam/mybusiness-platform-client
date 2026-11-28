@@ -80,7 +80,7 @@
 }
 
 .service-price {
-  color: #5e17eb;
+  color: #2541F5;
 }
 
 .service-duration {
@@ -98,7 +98,7 @@
   border: none;
   border-radius: 20px;
 
-  background: linear-gradient(135deg, #7a3df4, #b46af1);
+  background: linear-gradient(135deg, #2541F5, #b46af1);
   color: #fff;
 
   font-size: 0.85rem;

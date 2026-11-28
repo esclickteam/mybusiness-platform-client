@@ -93,10 +93,10 @@ export function EnterpriseProposalView({
             ) : null}
             {monthly > 0 ? (
               <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
-                <p className="text-xs font-black uppercase tracking-wide text-[#6D28D9]">
+                <p className="text-xs font-black uppercase tracking-wide text-[#2541F5]">
                   מנוי חודשי
                 </p>
-                <p className="mt-2 text-3xl font-black text-[#6D28D9]">
+                <p className="mt-2 text-3xl font-black text-[#2541F5]">
                   {money(monthly)} <span className="text-base font-bold">לחודש</span>
                 </p>
               </div>
@@ -134,7 +134,7 @@ export function EnterpriseProposalView({
                           key={item}
                           className="flex items-start gap-2 text-sm font-semibold leading-7 text-slate-700"
                         >
-                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#6D28D9]" />
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#2541F5]" />
                           <span>{item}</span>
                         </li>
                       ))}

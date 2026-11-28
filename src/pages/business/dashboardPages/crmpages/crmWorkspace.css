@@ -1,7 +1,7 @@
 .crm-ops {
   --crm-line: rgba(15, 23, 42, 0.12);
-  --crm-violet: #5b21b6;
-  color: #21172f;
+  --crm-violet: #2541F5;
+  color: #111932;
 }
 
 .crm-ops-toolbar {
@@ -40,7 +40,7 @@
 }
 
 .crm-ops-stats b {
-  color: #21172f;
+  color: #111932;
 }
 
 .crm-cal-shell {
@@ -120,7 +120,7 @@
 }
 
 .crm-chip.tone-open { background: #e0f2fe; color: #075985; }
-.crm-chip.tone-paid { background: #ede9fe; color: #5b21b6; }
+.crm-chip.tone-paid { background: #ede9fe; color: #2541F5; }
 .crm-chip.tone-done { background: #dcfce7; color: #166534; }
 .crm-chip.tone-busy { background: #ffe4e6; color: #9f1239; }
 

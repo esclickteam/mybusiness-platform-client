@@ -293,7 +293,7 @@ export default function AdminInteractiveDemoFollowupModal({
               onClick={() => setSendMode("template")}
               className={`w-full rounded-2xl border px-4 py-3 text-right transition ${
                 activeMode === "template"
-                  ? "border-[#6D28D9] bg-violet-50 shadow-sm"
+                  ? "border-[#2541F5] bg-violet-50 shadow-sm"
                   : "border-slate-200 bg-white hover:border-slate-300"
               }`}
             >
@@ -318,7 +318,7 @@ export default function AdminInteractiveDemoFollowupModal({
               }}
               className={`w-full rounded-2xl border px-4 py-3 text-right transition disabled:cursor-not-allowed disabled:opacity-50 ${
                 activeMode === "direct"
-                  ? "border-[#6D28D9] bg-violet-50 shadow-sm"
+                  ? "border-[#2541F5] bg-violet-50 shadow-sm"
                   : "border-slate-200 bg-white hover:border-slate-300"
               }`}
             >
@@ -339,7 +339,7 @@ export default function AdminInteractiveDemoFollowupModal({
             {activeMode === "direct" ? (
               <div dir="ltr" className="mt-2 text-sm font-semibold leading-6 text-slate-800">
                 <p>Interactive demo:</p>
-                <p className="break-all text-[#6D28D9]" data-testid="interactive-demo-direct-preview">
+                <p className="break-all text-[#2541F5]" data-testid="interactive-demo-direct-preview">
                   {directPreviewUrl(demoToken)}
                 </p>
               </div>
@@ -349,7 +349,7 @@ export default function AdminInteractiveDemoFollowupModal({
                   {TEMPLATE_BODY}
                 </p>
                 <span
-                  className="mt-3 inline-flex rounded-full bg-[#6D28D9] px-3 py-1.5 text-xs font-black text-white"
+                  className="mt-3 inline-flex rounded-full bg-[#2541F5] px-3 py-1.5 text-xs font-black text-white"
                   data-testid="interactive-demo-button-preview"
                 >
                   {INTERACTIVE_DEMO_BUTTON}
@@ -380,7 +380,7 @@ export default function AdminInteractiveDemoFollowupModal({
             data-testid="interactive-demo-create"
             disabled={!canCreate}
             onClick={() => void createDemo()}
-            className="w-full rounded-2xl border border-[#6D28D9] px-4 py-3 text-sm font-black text-[#6D28D9] disabled:opacity-40"
+            className="w-full rounded-2xl border border-[#2541F5] px-4 py-3 text-sm font-black text-[#2541F5] disabled:opacity-40"
           >
             {creating ? "יוצר דמו..." : "יצירת דמו חדש"}
           </button>
@@ -389,7 +389,7 @@ export default function AdminInteractiveDemoFollowupModal({
             data-testid="interactive-demo-send"
             disabled={!canSend}
             onClick={() => void send()}
-            className="w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
+            className="w-full rounded-2xl bg-[#2541F5] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
           >
             {sending
               ? "שולח..."

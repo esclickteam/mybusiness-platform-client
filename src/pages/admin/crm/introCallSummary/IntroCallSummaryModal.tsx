@@ -42,7 +42,7 @@ function ShortTextarea({
 }) {
   return (
     <textarea
-      className="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-900 outline-none focus:border-[#7C4DFF]/40 sm:text-base"
+      className="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-900 outline-none focus:border-[#2541F5]/40 sm:text-base"
       rows={rows}
       placeholder={placeholder}
       value={value}
@@ -76,7 +76,7 @@ function CheckboxGroup({
           >
             <input
               type="checkbox"
-              className="h-4 w-4 accent-[#7C4DFF]"
+              className="h-4 w-4 accent-[#2541F5]"
               checked={values.includes(option.value)}
               onChange={(e) => {
                 onChange(
@@ -129,7 +129,7 @@ function RadioGroup({
             <input
               type="radio"
               name={name}
-              className="h-4 w-4 accent-[#7C4DFF]"
+              className="h-4 w-4 accent-[#2541F5]"
               checked={value === option.value}
               onChange={() => onChange(option.value)}
             />

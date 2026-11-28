@@ -71,7 +71,7 @@ export function AppointmentDetails({ row, compact = false }: { row: any; compact
         {row.serviceName || "שיחה ראשונית"}
       </h3>
       <p className="mt-0.5 text-xs font-medium text-slate-600">{israelDateShort(row.startAt)}</p>
-      <p className="text-sm font-semibold text-[#7C4DFF]">
+      <p className="text-sm font-semibold text-[#2541F5]">
         {timeRange(row.startAt, row.endAt, row.durationMinutes)} · {row.durationMinutes || 15} דקות
       </p>
       {!compact ? (
@@ -368,7 +368,7 @@ export function AdminBizuplyBookFlow({
                 <button
                   key={id}
                   type="button"
-                  className="flex w-full items-center justify-between rounded-lg border border-slate-100 bg-white px-3 py-2 text-right transition hover:border-[#7C4DFF]/30 hover:bg-[#7C4DFF]/5"
+                  className="flex w-full items-center justify-between rounded-lg border border-slate-100 bg-white px-3 py-2 text-right transition hover:border-[#2541F5]/30 hover:bg-[#2541F5]/5"
                   onClick={() => {
                     setCustomer({
                       id,
@@ -398,7 +398,7 @@ export function AdminBizuplyBookFlow({
           {!createOpen ? (
             <button
               type="button"
-              className="mt-2 text-xs font-semibold text-[#7C4DFF] hover:underline"
+              className="mt-2 text-xs font-semibold text-[#2541F5] hover:underline"
               onClick={() => setCreateOpen(true)}
             >
               + יצירת ליד/לקוח חדש
@@ -426,7 +426,7 @@ export function AdminBizuplyBookFlow({
                 className={[
                   "rounded-lg border px-3 py-2 text-right transition",
                   serviceKey === row.key
-                    ? "border-[#7C4DFF] bg-[#7C4DFF]/5 ring-1 ring-[#7C4DFF]/20"
+                    ? "border-[#2541F5] bg-[#2541F5]/5 ring-1 ring-[#2541F5]/20"
                     : "border-slate-200 bg-white hover:border-slate-300",
                 ].join(" ")}
               >
@@ -443,7 +443,7 @@ export function AdminBizuplyBookFlow({
           <SectionLabel>שלב {lockedCustomer ? 2 : 3} — בחירת מועד</SectionLabel>
           <div className="mb-3 flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
             <span className="text-xs text-slate-500">משך הפגישה:</span>
-            <span className="text-sm font-semibold text-[#7C4DFF]">
+            <span className="text-sm font-semibold text-[#2541F5]">
               {selectedService?.nameHe} — {selectedService?.durationMinutes} דקות
             </span>
           </div>
@@ -463,8 +463,8 @@ export function AdminBizuplyBookFlow({
                     className={[
                       "h-8 rounded-lg px-2.5 text-xs font-semibold tabular-nums transition",
                       startAt === slot.startAt
-                        ? "bg-[#7C4DFF] text-white"
-                        : "border border-slate-200 bg-white text-slate-700 hover:border-[#7C4DFF]/30",
+                        ? "bg-[#2541F5] text-white"
+                        : "border border-slate-200 bg-white text-slate-700 hover:border-[#2541F5]/30",
                     ].join(" ")}
                   >
                     {israelTime(slot.startAt)}

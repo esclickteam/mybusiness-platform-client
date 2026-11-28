@@ -320,7 +320,7 @@ export default function CRMCustomerFile({
 
   return (
     <section className="space-y-6">
-      <div className="overflow-hidden rounded-2xl border border-violet-100/80 bg-gradient-to-br from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] p-6 text-slate-800 shadow-[0_16px_48px_rgba(99,102,241,0.08)]">
+      <div className="overflow-hidden rounded-2xl border border-violet-100/80 bg-gradient-to-br from-[#F5F7FB] via-[#f3f8ff] to-[#eefcff] p-6 text-slate-800 shadow-[0_16px_48px_rgba(99,102,241,0.08)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex min-w-0 gap-4">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.5rem] border border-violet-100/80 bg-white/80 text-2xl font-black text-violet-700 shadow-sm">
@@ -605,8 +605,8 @@ function TabButton({
       className={[
         "inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-3 text-sm font-black transition",
         active
-          ? "bg-[#6D28D9] text-white shadow-[0_10px_24px_rgba(109,40,217,0.22)]"
-          : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-[#6D28D9]",
+          ? "bg-[#2541F5] text-white shadow-[0_10px_24px_rgba(109,40,217,0.22)]"
+          : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-[#2541F5]",
       ].join(" ")}
     >
       <Icon className="h-4 w-4" />

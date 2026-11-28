@@ -91,7 +91,7 @@ function TermField({
           {labels.custom}
         </label>
         {mode === "custom" ? (
-          <button type="button" className="text-xs font-black text-[#6D28D9]" disabled={!editable} onClick={onReset}>
+          <button type="button" className="text-xs font-black text-[#2541F5]" disabled={!editable} onClick={onReset}>
             {labels.reset}
           </button>
         ) : null}
@@ -201,7 +201,7 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
                 }} />
               </div>
             ))}
-            <button type="button" className="text-sm font-black text-[#6D28D9]" disabled={!editable} onClick={() => set("installments", [...(form.installments || []), { label: fill(c.installmentName, { n: (form.installments?.length || 0) + 1 }), amount: "", dueDate: "" }])}>
+            <button type="button" className="text-sm font-black text-[#2541F5]" disabled={!editable} onClick={() => set("installments", [...(form.installments || []), { label: fill(c.installmentName, { n: (form.installments?.length || 0) + 1 }), amount: "", dueDate: "" }])}>
               {c.addInstallment}
             </button>
           </div>
@@ -242,7 +242,7 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
                     }} />
                   </div>
                 ))}
-                <button type="button" className="text-sm font-black text-[#6D28D9]" disabled={!editable} onClick={() => set("productCommissions", [...(form.productCommissions || []), { name: "", percent: "" }])}>
+                <button type="button" className="text-sm font-black text-[#2541F5]" disabled={!editable} onClick={() => set("productCommissions", [...(form.productCommissions || []), { name: "", percent: "" }])}>
                   {c.addProduct}
                 </button>
                 <label className="block text-sm font-bold">
@@ -269,7 +269,7 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
                     }} />
                   </div>
                 ))}
-                <button type="button" className="text-sm font-black text-[#6D28D9]" disabled={!editable || tiers.length >= 8} onClick={() => set("commissionTiers", [...tiers, { minCustomers: (tiers[tiers.length - 1]?.maxCustomers || 0) + 1, maxCustomers: null, percent: 0 }])}>
+                <button type="button" className="text-sm font-black text-[#2541F5]" disabled={!editable || tiers.length >= 8} onClick={() => set("commissionTiers", [...tiers, { minCustomers: (tiers[tiers.length - 1]?.maxCustomers || 0) + 1, maxCustomers: null, percent: 0 }])}>
                   {c.addTier}
                 </button>
               </div>
@@ -310,7 +310,7 @@ export default function CommercialTermsPanel({ form, set, editable, currencies, 
                 }} />
               </div>
             ))}
-            <button type="button" className="text-sm font-black text-[#6D28D9]" disabled={!editable} onClick={() => set("additionalAmounts", [...(form.additionalAmounts || []), { label: "", amount: "" }])}>
+            <button type="button" className="text-sm font-black text-[#2541F5]" disabled={!editable} onClick={() => set("additionalAmounts", [...(form.additionalAmounts || []), { label: "", amount: "" }])}>
               {c.addAmount}
             </button>
           </div>

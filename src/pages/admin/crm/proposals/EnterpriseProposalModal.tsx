@@ -306,7 +306,7 @@ export default function EnterpriseProposalModal({
           }}
           footer={
             <div className="border-t border-slate-100 pt-6">
-              <div className="min-h-12 rounded-2xl bg-[#6D28D9] px-4 py-3 text-center text-base font-black text-white">
+              <div className="min-h-12 rounded-2xl bg-[#2541F5] px-4 py-3 text-center text-base font-black text-white">
                 אישור ההצעה ומעבר לתשלום
               </div>
             </div>
@@ -398,7 +398,7 @@ export default function EnterpriseProposalModal({
               <h3 className="text-lg font-black">מה כולל הפרויקט</h3>
               <button
                 type="button"
-                className="rounded-xl bg-[#6D28D9] px-3 py-2 text-xs font-black text-white"
+                className="rounded-xl bg-[#2541F5] px-3 py-2 text-xs font-black text-white"
                 onClick={() => {
                   const next = emptySection();
                   setSections((prev) => [...prev, next]);
@@ -438,7 +438,7 @@ export default function EnterpriseProposalModal({
                     />
                     <button
                       type="button"
-                      className="text-xs font-black text-[#6D28D9]"
+                      className="text-xs font-black text-[#2541F5]"
                       onClick={() => setOpenSection((id) => (id === section.id ? "" : section.id))}
                     >
                       {openSection === section.id ? "סגירה" : "פתיחה"}
@@ -490,7 +490,7 @@ export default function EnterpriseProposalModal({
                       ))}
                       <button
                         type="button"
-                        className="text-xs font-black text-[#6D28D9]"
+                        className="text-xs font-black text-[#2541F5]"
                         onClick={() =>
                           patchSection(sectionIndex, { items: [...section.items, ""] })
                         }
@@ -509,7 +509,7 @@ export default function EnterpriseProposalModal({
               <h3 className="text-lg font-black">תנאי החבילה</h3>
               <button
                 type="button"
-                className="text-xs font-black text-[#6D28D9]"
+                className="text-xs font-black text-[#2541F5]"
                 onClick={() => setTermsText(defaultTerms)}
               >
                 השתמש בתנאי החבילה הקיימים
@@ -527,7 +527,7 @@ export default function EnterpriseProposalModal({
               <h3 className="text-lg font-black">תנאי ביטול</h3>
               <button
                 type="button"
-                className="text-xs font-black text-[#6D28D9]"
+                className="text-xs font-black text-[#2541F5]"
                 onClick={() => setCancellationTerms(defaultCancellation)}
               >
                 השתמש בתנאי הביטול הקיימים

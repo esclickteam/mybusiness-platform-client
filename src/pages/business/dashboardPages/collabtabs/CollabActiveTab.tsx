@@ -191,7 +191,7 @@ export default function CollabActiveTab({
 
   return (
     <div className="space-y-6">
-      <section className="border border-[rgba(91,33,182,0.16)] border-s-4 border-s-[#5B21B6] bg-white p-5 sm:p-6">
+      <section className="border border-[rgba(91,33,182,0.16)] border-s-4 border-s-[#2541F5] bg-white p-5 sm:p-6">
         <div className="grid gap-4">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
@@ -211,7 +211,7 @@ export default function CollabActiveTab({
               <button
                 type="button"
                 onClick={() => navigate("../find-partner")}
-                className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-[#5B21B6] px-5 text-sm font-black text-white"
+                className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-[#2541F5] px-5 text-sm font-black text-white"
               >
                 <Search className="h-4 w-4" />
                 {t("leftover.collab.activeTab.findPartners")}
@@ -220,7 +220,7 @@ export default function CollabActiveTab({
               <button
                 type="button"
                 onClick={() => navigate("../find-partner")}
-                className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-white px-5 text-sm font-black text-[#21172F]"
+                className="inline-flex h-12 items-center justify-center gap-2 border border-[rgba(91,33,182,0.2)] bg-white px-5 text-sm font-black text-[#111932]"
               >
                 <Plus className="h-4 w-4" />
                 {t("leftover.collab.activeTab.createProposal")}
@@ -347,7 +347,7 @@ export default function CollabActiveTab({
       </div>
       {opened && (
         <div
-          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#21172F]/40 p-4"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-[#111932]/40 p-4"
           onMouseDown={() => setOpened(null)}
         >
           <div
@@ -356,7 +356,7 @@ export default function CollabActiveTab({
             className="biz-doc max-h-[90vh] w-full max-w-2xl overflow-y-auto border border-[rgba(91,33,182,0.16)] bg-white p-5"
             onMouseDown={(event) => event.stopPropagation()}
           >
-            <h3 className="text-xl font-black text-[#21172F]">
+            <h3 className="text-xl font-black text-[#111932]">
               {opened.title || t("leftover.collab.activeTab.untitled")}
             </h3>
             <p className="mt-3 text-sm font-semibold leading-6 text-[#3d3452]">
@@ -370,7 +370,7 @@ export default function CollabActiveTab({
               {opened.agreementId && (
                 <button
                   type="button"
-                  className="inline-flex h-11 items-center bg-[#5B21B6] px-4 text-sm font-black text-white"
+                  className="inline-flex h-11 items-center bg-[#2541F5] px-4 text-sm font-black text-white"
                   onClick={() => navigate(`../messages?agreementId=${opened.agreementId}`)}
                 >
                   {t("collab.messages.viewAgreement")}
@@ -378,7 +378,7 @@ export default function CollabActiveTab({
               )}
               <button
                 type="button"
-                className="inline-flex h-11 items-center border border-[rgba(91,33,182,0.2)] bg-white px-4 text-sm font-black text-[#21172F]"
+                className="inline-flex h-11 items-center border border-[rgba(91,33,182,0.2)] bg-white px-4 text-sm font-black text-[#111932]"
                 onClick={() => setOpened(null)}
               >
                 {t("crm.common.close")}
@@ -458,7 +458,7 @@ function ProposalCard({
         <button
           type="button"
           onClick={onOpen}
-          className="inline-flex items-center gap-2 text-sm font-black text-[#5B21B6]"
+          className="inline-flex items-center gap-2 text-sm font-black text-[#2541F5]"
         >
           {t("leftover.collab.activeTab.viewDetails")}
           <ArrowRight className="h-4 w-4" />
@@ -639,7 +639,7 @@ function StatusBadge({ status }: { status: string }) {
 function HumanUpsellCard() {
   const { t } = useTranslation();
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 p-5 text-white shadow-[0_20px_70px_rgba(124,58,237,0.22)]">
+    <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-l from-[#F5F7FB] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 p-5 text-white shadow-[0_20px_70px_rgba(124,58,237,0.22)]">
       <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
 
       <div className="relative">

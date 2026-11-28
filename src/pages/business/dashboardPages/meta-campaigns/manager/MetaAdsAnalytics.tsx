@@ -34,7 +34,7 @@ type Props = {
   selectedIds: string[];
 };
 
-const LINE_COLORS = ["#7c3aed", "#0f766e", "#b45309", "#0369a1", "#be123c", "#4338ca"];
+const LINE_COLORS = ["#2541F5", "#0f766e", "#b45309", "#0369a1", "#be123c", "#4338ca"];
 
 function formatPoint(key: string, value: number, currency: string) {
   const unit = chartMetricUnit(key);

@@ -319,7 +319,7 @@ export default function CRMLeadsWorkspace({
 
       <div className="crm-leads-bar">
         <div className="crm-search">
-          <Search className="h-4 w-4 text-[#5B21B6]" />
+          <Search className="h-4 w-4 text-[#2541F5]" />
           <input
             value={state.q}
             onChange={(event) => updateState({ q: event.target.value })}

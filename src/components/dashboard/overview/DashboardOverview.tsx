@@ -84,7 +84,7 @@ type AccessUser = {
 };
 
 const DATE_PRESETS: DatePreset[] = ["today", "week", "month", "year", "custom"];
-const FUNNEL_COLORS = ["#321064", "#5B21B6", "#7437F5", "#3D63FF", "#8EA2FF", "#C4B5FD"];
+const FUNNEL_COLORS = ["#321064", "#2541F5", "#7437F5", "#3D63FF", "#8EA2FF", "#C4B5FD"];
 const PERFORMANCE_TABS: PerformanceMetric[] = [
   "views",
   "leads",
@@ -531,7 +531,7 @@ export default function DashboardOverview({
                       <Line
                         type="monotone"
                         dataKey="current"
-                        stroke="#5B21B6"
+                        stroke="#2541F5"
                         strokeWidth={2.5}
                         dot={false}
                         name={t("overview.thisPeriod")}

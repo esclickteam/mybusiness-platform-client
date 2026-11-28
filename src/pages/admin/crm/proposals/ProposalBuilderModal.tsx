@@ -185,7 +185,7 @@ function CatalogCard({
     <div
       className={[
         "rounded-2xl border p-4",
-        selected ? "border-[#6D28D9] bg-[#6D28D9]/5" : "border-slate-200 bg-white",
+        selected ? "border-[#2541F5] bg-[#2541F5]/5" : "border-slate-200 bg-white",
         interestBadge ? "border-amber-200 bg-amber-50/40 ring-1 ring-amber-200" : "",
       ].join(" ")}
     >
@@ -220,7 +220,7 @@ function CatalogCard({
             selected
               ? "border border-slate-300 bg-white text-slate-700"
               : interestBadge
-                ? "bg-[#6D28D9] text-white"
+                ? "bg-[#2541F5] text-white"
                 : "border border-slate-200 bg-white",
           ].join(" ")}
         >
@@ -238,7 +238,7 @@ function CatalogCard({
       ) : null}
       <button
         type="button"
-        className="mt-3 text-xs font-black text-[#6D28D9]"
+        className="mt-3 text-xs font-black text-[#2541F5]"
         onClick={onExpand}
       >
         {expanded ? "⌃ הסתר פירוט" : "⌄ פירוט מה כלול"}
@@ -675,7 +675,7 @@ export default function ProposalBuilderModal({
           }}
           footer={
             <div className="space-y-2 border-t border-slate-100 pt-6 opacity-70">
-              <div className="min-h-12 rounded-2xl bg-[#6D28D9] px-4 py-3 text-center text-base font-black text-white">
+              <div className="min-h-12 rounded-2xl bg-[#2541F5] px-4 py-3 text-center text-base font-black text-white">
                 אני רוצה להתחיל
               </div>
               <div className="min-h-11 rounded-2xl border border-slate-200 px-4 py-3 text-center text-sm font-black text-slate-700">
@@ -773,7 +773,7 @@ export default function ProposalBuilderModal({
           </section>
 
           {/* Selected lines — always-visible price edit */}
-          <section className="rounded-3xl border-2 border-[#6D28D9]/30 bg-violet-50/30 p-4 sm:p-5">
+          <section className="rounded-3xl border-2 border-[#2541F5]/30 bg-violet-50/30 p-4 sm:p-5">
             <h3 className="text-lg font-black text-slate-900">רכיבי ההצעה שנבחרו</h3>
             <p className="mt-1 text-xs font-semibold text-slate-500">
               אפשר לשנות סכום חודשי או חד־פעמי לכל רכיב. השינוי חל רק על ההצעה הזו.
@@ -829,7 +829,7 @@ export default function ProposalBuilderModal({
                     {line.priceEdited && !item!.customizable ? (
                       <button
                         type="button"
-                        className="mt-2 text-xs font-black text-[#6D28D9]"
+                        className="mt-2 text-xs font-black text-[#2541F5]"
                         onClick={() => {
                           setLineBilling(line.sku, line.catalogBilling);
                           setLinePrice(line.sku, line.catalogAmountIls);
@@ -861,7 +861,7 @@ export default function ProposalBuilderModal({
                     ) : null}
 
                     <details className="mt-3">
-                      <summary className="cursor-pointer text-xs font-black text-[#6D28D9]">
+                      <summary className="cursor-pointer text-xs font-black text-[#2541F5]">
                         עריכת פירוט להצעה זו
                       </summary>
                       <div className="mt-2 space-y-2">
@@ -969,7 +969,7 @@ export default function ProposalBuilderModal({
             onClick={() => onOpenEnterprise?.()}
             className="w-full rounded-3xl border-2 border-slate-900 bg-gradient-to-l from-violet-50 to-white p-5 text-right"
           >
-            <p className="text-[11px] font-black uppercase tracking-wide text-[#6D28D9]">
+            <p className="text-[11px] font-black uppercase tracking-wide text-[#2541F5]">
               Enterprise
             </p>
             <h3 className="mt-1 text-lg font-black text-slate-900">

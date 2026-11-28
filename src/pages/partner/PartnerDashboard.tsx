@@ -612,7 +612,7 @@ function MyPartnerSubscriptionCard({
   const renewal = partner?.nextRenewalAt || partner?.currentPeriodEnd;
   return (
     <PartnerCard className="overflow-hidden p-5">
-      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#7C3AED]">
+      <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#2541F5]">
         {t("partner.dashboard.mySubscription")}
       </p>
       <p className="mt-1 text-lg font-black text-slate-900">{planName}</p>

@@ -898,8 +898,8 @@ export default function MetaCampaignsOverviewTab() {
                         <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="spendFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#7C3AED" stopOpacity={0.2} />
-                        <stop offset="95%" stopColor="#7C3AED" stopOpacity={0} />
+                        <stop offset="5%" stopColor="#2541F5" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="#2541F5" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
@@ -944,7 +944,7 @@ export default function MetaCampaignsOverviewTab() {
                         type="monotone"
                         dataKey="spend"
                         name={t("metaCampaigns.chart.spend")}
-                        stroke="#7C3AED"
+                        stroke="#2541F5"
                         fill="url(#spendFill)"
                         strokeWidth={2.5}
                       />
@@ -1023,7 +1023,7 @@ export default function MetaCampaignsOverviewTab() {
                         type="monotone"
                         dataKey="compareSpend"
                         name={`${t("metaCampaigns.ranges.compare")} ${t("metaCampaigns.chart.spend")}`}
-                        stroke="#7C3AED"
+                        stroke="#2541F5"
                         strokeDasharray="5 4"
                         strokeWidth={1.5}
                         dot={false}

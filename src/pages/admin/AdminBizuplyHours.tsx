@@ -133,7 +133,7 @@ function TabButton({
       onClick={onClick}
       className={[
         "h-8 rounded-lg px-3 text-xs font-semibold transition",
-        active ? "bg-[#7C4DFF] text-white" : "text-slate-600 hover:bg-slate-100",
+        active ? "bg-[#2541F5] text-white" : "text-slate-600 hover:bg-slate-100",
       ].join(" ")}
     >
       {children}
@@ -369,7 +369,7 @@ export default function AdminBizuplyHours({
                     onClick={() => setDayEnabled(day, !enabled)}
                     className={[
                       "h-7 rounded-md px-2 text-[11px] font-semibold",
-                      enabled ? "bg-[#7C4DFF] text-white" : "bg-slate-100 text-slate-500",
+                      enabled ? "bg-[#2541F5] text-white" : "bg-slate-100 text-slate-500",
                     ].join(" ")}
                   >
                     {enabled ? "פעיל" : "כבוי"}
@@ -395,7 +395,7 @@ export default function AdminBizuplyHours({
                     )}
                   </div>
                   {enabled ? (
-                    <button type="button" className="mt-1 text-[11px] font-semibold text-[#7C4DFF] md:mt-0" onClick={() => addWindow(day)}>
+                    <button type="button" className="mt-1 text-[11px] font-semibold text-[#2541F5] md:mt-0" onClick={() => addWindow(day)}>
                       + טווח
                     </button>
                   ) : (
@@ -531,7 +531,7 @@ export default function AdminBizuplyHours({
                         </CompactSelect>
                       </label>
                     </div>
-                    <button type="button" className="text-xs font-semibold text-[#7C4DFF]" onClick={() => setEditingService(null)}>
+                    <button type="button" className="text-xs font-semibold text-[#2541F5]" onClick={() => setEditingService(null)}>
                       סיום עריכה
                     </button>
                   </div>
@@ -543,7 +543,7 @@ export default function AdminBizuplyHours({
                         <p className="truncate text-[11px] text-slate-500">{row.descriptionHe}</p>
                       ) : null}
                       {row.locked ? (
-                        <span className="text-[10px] font-medium text-[#7C4DFF]">ברירת מחדל</span>
+                        <span className="text-[10px] font-medium text-[#2541F5]">ברירת מחדל</span>
                       ) : null}
                     </div>
                     <span className="hidden text-xs text-slate-600 sm:block">{row.durationMinutes} דק׳</span>
@@ -575,7 +575,7 @@ export default function AdminBizuplyHours({
                       {!row.locked ? (
                         <button
                           type="button"
-                          className="text-[11px] font-semibold text-[#7C4DFF]"
+                          className="text-[11px] font-semibold text-[#2541F5]"
                           onClick={() => setEditingService(realIndex)}
                         >
                           עריכה
@@ -591,7 +591,7 @@ export default function AdminBizuplyHours({
           {!serviceDraftOpen ? (
             <button
               type="button"
-              className="mt-2 flex h-8 w-full items-center justify-center gap-1 rounded-lg border border-dashed border-slate-300 text-xs font-semibold text-[#7C4DFF] transition hover:border-[#7C4DFF]/40 hover:bg-[#7C4DFF]/5"
+              className="mt-2 flex h-8 w-full items-center justify-center gap-1 rounded-lg border border-dashed border-slate-300 text-xs font-semibold text-[#2541F5] transition hover:border-[#2541F5]/40 hover:bg-[#2541F5]/5"
               onClick={() => setServiceDraftOpen(true)}
             >
               + הוספת שירות

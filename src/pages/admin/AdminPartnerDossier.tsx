@@ -160,7 +160,7 @@ export default function AdminPartnerDossier() {
         {tab === "overview" ? (
           <button
             type="button"
-            className="mt-4 rounded-2xl bg-[#6D28D9] px-4 py-2 text-sm font-black text-white"
+            className="mt-4 rounded-2xl bg-[#2541F5] px-4 py-2 text-sm font-black text-white"
             onClick={() => {
               void API.post(`/admin/partners/${partnerId}/open-workspace`).then((res) => {
                 loginWithToken?.(res.data.user, res.data.token, { skipRedirect: true });
@@ -193,7 +193,7 @@ export default function AdminPartnerDossier() {
 
         {tab === "legal" || tab === "commercial" ? (
           <section className="mt-5 rounded-3xl border bg-white p-5" dir="ltr">
-            <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">Partner Details / Commercial</p>
+            <p className="text-xs font-black uppercase tracking-wide text-[#2541F5]">Partner Details / Commercial</p>
             <h2 className="mt-1 text-xl font-black">{partner.name}</h2>
             <p className="mt-1 text-sm font-bold text-slate-600">
               Public/brand name stays as Partner.name. Legal company name is stored separately and can be edited here after create.
@@ -287,7 +287,7 @@ export default function AdminPartnerDossier() {
                   setSavingCommercial(false);
                 }
               }}
-              className="mt-4 rounded-xl bg-[#7C4DFF] px-5 py-2.5 text-sm font-black text-white disabled:opacity-60"
+              className="mt-4 rounded-xl bg-[#2541F5] px-5 py-2.5 text-sm font-black text-white disabled:opacity-60"
             >
               {savingCommercial ? "Saving..." : "Save commercial details"}
             </button>
@@ -304,7 +304,7 @@ export default function AdminPartnerDossier() {
                       : "Not sent";
               return (
                 <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">Invitation</p>
+                  <p className="text-xs font-black uppercase tracking-wide text-[#2541F5]">Invitation</p>
                   <p className="mt-2 text-sm font-black">Status: {label}</p>
                   <p className="mt-1 text-sm font-bold text-slate-600">
                     Email: {invite.email || "—"}
@@ -358,7 +358,7 @@ export default function AdminPartnerDossier() {
           <section className="mt-5 rounded-3xl border bg-white p-5" dir="ltr">
             {onboarding ? (
               <>
-                <p className="text-xs font-black uppercase tracking-wide text-[#7C3AED]">Partner onboarding</p>
+                <p className="text-xs font-black uppercase tracking-wide text-[#2541F5]">Partner onboarding</p>
                 <h2 className="mt-1 text-xl font-black">{onboarding.nextAction?.title}</h2>
                 <p className="mt-1 text-sm font-bold text-slate-600">{onboarding.nextAction?.detail}</p>
                 <p className="mt-3 text-sm font-black">

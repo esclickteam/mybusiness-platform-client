@@ -151,7 +151,7 @@ export default function AdminBizuplyCalendar() {
       >
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-black text-[#7C4DFF]">
+            <p className="text-xs font-black text-[#2541F5]">
               {israelTime(row.startAt)} · {row.serviceName || "שיחה ראשונית"} · {row.durationMinutes || 15} דקות
             </p>
             <h2 className="text-base font-black text-purple-950">{row.contactName || "ללא שם"}</h2>
@@ -211,7 +211,7 @@ export default function AdminBizuplyCalendar() {
               onClick={() => setView(key)}
               className={[
                 "min-h-11 rounded-2xl px-4 text-sm font-black",
-                view === key ? "bg-[#7C4DFF] text-white" : "border border-purple-100 bg-white text-slate-600",
+                view === key ? "bg-[#2541F5] text-white" : "border border-purple-100 bg-white text-slate-600",
               ].join(" ")}
             >
               {key === "day" ? "יום" : key === "week" ? "שבוע" : key === "month" ? "חודש" : "רשימה"}
@@ -259,7 +259,7 @@ export default function AdminBizuplyCalendar() {
                   <p className="text-xs font-black">{cell.date.slice(8)}</p>
                   {holiday ? <p className="truncate text-[10px] font-bold text-amber-700">{holiday}</p> : null}
                   {rows.slice(0, 3).map((row: any) => (
-                    <p key={row.id} className="truncate text-[10px] font-bold text-[#7C4DFF]">
+                    <p key={row.id} className="truncate text-[10px] font-bold text-[#2541F5]">
                       {israelTime(row.startAt)} {row.contactName}
                     </p>
                   ))}

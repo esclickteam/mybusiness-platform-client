@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { heLabel, heLabels, PROPOSAL_STATUS_LABELS } from "./proposalLabels";
 
-const BRAND = "#6D28D9";
+const BRAND = "#2541F5";
 
 export type ProposalLine = {
   sku: string;
@@ -111,7 +111,7 @@ function LineCard({
         <span className="min-w-0 flex-1">
           <span className="flex flex-wrap items-center gap-2">
             <span className="text-base font-black text-slate-900 sm:text-lg">{line.nameHe}</span>
-            <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-[11px] font-black text-[#6D28D9]">
+            <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-[11px] font-black text-[#2541F5]">
               {badgeFor(line)}
             </span>
             {line.priceEdited ? (
@@ -125,7 +125,7 @@ function LineCard({
               {line.summaryHe}
             </span>
           ) : null}
-          <span className="mt-2 inline-flex items-center gap-1 text-xs font-black text-[#6D28D9]">
+          <span className="mt-2 inline-flex items-center gap-1 text-xs font-black text-[#2541F5]">
             {open ? "⌃ הסתר פירוט" : "⌄ פירוט מלא"}
           </span>
         </span>
@@ -273,7 +273,7 @@ export function ProposalDocumentView({
         <header
           className="relative overflow-hidden px-5 py-8 text-white sm:px-10 sm:py-10"
           style={{
-            background: `linear-gradient(120deg, #1e1b4b 0%, ${BRAND} 55%, #7c3aed 100%)`,
+            background: `linear-gradient(120deg, #1e1b4b 0%, ${BRAND} 55%, #2541F5 100%)`,
           }}
         >
           <div className="pointer-events-none absolute inset-0 opacity-20">
@@ -335,7 +335,7 @@ export function ProposalDocumentView({
               </div>
               {proposal.proposalNumber ? (
                 <div className="rounded-2xl bg-violet-50 px-4 py-3 text-center">
-                  <p className="text-[11px] font-black text-[#6D28D9]">מספר הצעה</p>
+                  <p className="text-[11px] font-black text-[#2541F5]">מספר הצעה</p>
                   <p className="mt-1 text-sm font-black text-slate-900">
                     {proposal.proposalNumber}
                   </p>
@@ -360,7 +360,7 @@ export function ProposalDocumentView({
                       key={bit.title}
                       className="rounded-2xl border border-violet-100 bg-violet-50/50 p-4"
                     >
-                      <p className="text-xs font-black text-[#6D28D9]">{bit.title}</p>
+                      <p className="text-xs font-black text-[#2541F5]">{bit.title}</p>
                       <ul className="mt-2 space-y-1 text-sm font-semibold text-slate-700">
                         {bit.items.map((item) => (
                           <li key={item}>• {item}</li>
@@ -428,7 +428,7 @@ export function ProposalDocumentView({
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                     חיוב חודשי
                   </p>
-                  <p className="mt-2 text-2xl font-black text-[#6D28D9] sm:text-3xl">
+                  <p className="mt-2 text-2xl font-black text-[#2541F5] sm:text-3xl">
                     {money(totals.monthlyIls || 0)}
                   </p>
                   <p className="mt-1 text-xs font-bold text-slate-500">לחודש</p>
@@ -476,7 +476,7 @@ export function ProposalDocumentView({
                   key={step.n}
                   className="rounded-2xl border border-slate-200 bg-white p-4 text-center"
                 >
-                  <span className="mx-auto grid h-9 w-9 place-items-center rounded-full bg-[#6D28D9] text-sm font-black text-white">
+                  <span className="mx-auto grid h-9 w-9 place-items-center rounded-full bg-[#2541F5] text-sm font-black text-white">
                     {step.n}
                   </span>
                   <p className="mt-3 text-sm font-black text-slate-900">{step.t}</p>
@@ -504,7 +504,7 @@ export function ProposalDocumentView({
                     key={item}
                     className="flex items-start gap-2 text-sm font-semibold leading-6 text-slate-700"
                   >
-                    <span className="mt-1 text-[#6D28D9]">•</span>
+                    <span className="mt-1 text-[#2541F5]">•</span>
                     <span>{item}</span>
                   </li>
                 ))}

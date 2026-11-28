@@ -838,7 +838,7 @@ function AdminCustomers() {
                         onClick={() => updateForm("plan", pkg.id)}
                         className={`rounded-[22px] border p-4 text-right transition ${
                           active
-                            ? "border-[#7C4DFF] bg-violet-50 shadow-md shadow-violet-200/50"
+                            ? "border-[#2541F5] bg-violet-50 shadow-md shadow-violet-200/50"
                             : "border-slate-200 bg-white hover:border-violet-200"
                         }`}
                       >
@@ -854,7 +854,7 @@ function AdminCustomers() {
                           <span
                             className={`mt-1 h-4 w-4 rounded-full border-2 ${
                               active
-                                ? "border-[#7C4DFF] bg-[#7C4DFF]"
+                                ? "border-[#2541F5] bg-[#2541F5]"
                                 : "border-slate-300 bg-white"
                             }`}
                           />
@@ -932,7 +932,7 @@ function AdminCustomers() {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#7C4DFF]/25 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2541F5] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#2541F5]/25 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70"
                 >
                   {form.startCheckout ? (
                     <CreditCard className="h-4 w-4" />
@@ -1089,7 +1089,7 @@ function AdminCustomers() {
                       }
                       className={`rounded-2xl border p-3 text-right ${
                         active
-                          ? "border-[#7C4DFF] bg-violet-50"
+                          ? "border-[#2541F5] bg-violet-50"
                           : "border-slate-200"
                       }`}
                     >
@@ -1168,7 +1168,7 @@ function AdminCustomers() {
                   type="button"
                   disabled={Boolean(checkoutUserId || markingUserId)}
                   onClick={submitPayModal}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-5 py-3.5 text-sm font-black text-white disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#2541F5] px-5 py-3.5 text-sm font-black text-white disabled:opacity-60"
                 >
                   {payModal.mode === "stripe" ? (
                     <CreditCard className="h-4 w-4" />

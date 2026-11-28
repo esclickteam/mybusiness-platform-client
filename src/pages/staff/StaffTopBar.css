@@ -18,7 +18,7 @@
   .left-section span {
     margin-left: 20px;
     font-size: 16px;
-    color: #4c1d95;
+    color: #1C32C4;
   }
   
   .middle-section {
@@ -36,7 +36,7 @@
   }
   
   .middle-section button {
-    background-color: #4c1d95;
+    background-color: #1C32C4;
     color: white;
     padding: 6px 12px;
     border: none;
@@ -46,7 +46,7 @@
   }
   
   .middle-section button:hover {
-    background-color: #6d28d9;
+    background-color: #2541F5;
   }
   
   .right-section button {
@@ -54,7 +54,7 @@
     padding: 8px 14px;
     font-size: 14px;
     font-weight: bold;
-    background-color: #7c3aed;
+    background-color: #2541F5;
     color: white;
     border: none;
     border-radius: 8px;
@@ -63,7 +63,7 @@
   }
   
   .right-section button:hover {
-    background-color: #5b21b6;
+    background-color: #2541F5;
   }
   
   .break-status {

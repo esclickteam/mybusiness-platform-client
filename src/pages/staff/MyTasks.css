@@ -50,7 +50,7 @@
   }
   
   .task-form button {
-    background-color: #7c3aed;
+    background-color: #2541F5;
     color: white;
     padding: 10px 16px;
     border: none;
@@ -61,7 +61,7 @@
   }
   
   .task-form button:hover {
-    background-color: #5b21b6;
+    background-color: #2541F5;
   }
   
   .task-list {
@@ -71,7 +71,7 @@
   }
   
   .task-list li {
-    background-color: #f3e8ff;
+    background-color: #EEF2FF;
     margin-bottom: 12px;
     padding: 15px;
     border-radius: 12px;
@@ -106,7 +106,7 @@
     font-weight: bold;
     cursor: pointer;
     background-color: #dcd0fa;
-    color: #4c1d95;
+    color: #1C32C4;
     transition: background 0.2s ease;
   }
   

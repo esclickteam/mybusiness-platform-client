@@ -682,7 +682,7 @@ export default function AdminCreateUser() {
                   key={type.id}
                   className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold transition ${
                     form.userType === type.id
-                      ? "border-[#7C4DFF] bg-violet-50 text-[#5B35D6]"
+                      ? "border-[#2541F5] bg-violet-50 text-[#5B35D6]"
                       : "border-slate-200 hover:border-slate-300"
                   }`}
                 >
@@ -717,7 +717,7 @@ export default function AdminCreateUser() {
                   ["saas_only", "משתמש SaaS בלבד"],
                   ["bizuply_saas", "משתמש Bizuply + SaaS"],
                 ].map(([id, label]) => (
-                  <label key={id} className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold ${form.accountKind === id ? "border-[#7C4DFF] bg-violet-50" : "border-slate-200"}`}>
+                  <label key={id} className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold ${form.accountKind === id ? "border-[#2541F5] bg-violet-50" : "border-slate-200"}`}>
                     <input type="radio" name="accountKind" value={id} checked={form.accountKind === id} onChange={onChange} className="me-2" />
                     {label}
                   </label>
@@ -816,7 +816,7 @@ export default function AdminCreateUser() {
                       key={plan.planKey}
                       className={`cursor-pointer rounded-xl border px-3 py-3 text-sm ${
                         form.partnerPlanKey === plan.planKey
-                          ? "border-[#7C4DFF] bg-violet-50"
+                          ? "border-[#2541F5] bg-violet-50"
                           : "border-slate-200"
                       }`}
                     >
@@ -840,7 +840,7 @@ export default function AdminCreateUser() {
                   <label
                     className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold ${
                       form.partnerStatus === "pending_setup"
-                        ? "border-[#7C4DFF] bg-violet-50"
+                        ? "border-[#2541F5] bg-violet-50"
                         : "border-slate-200"
                     }`}
                   >
@@ -860,7 +860,7 @@ export default function AdminCreateUser() {
                   <label
                     className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold ${
                       form.partnerStatus === "active"
-                        ? "border-[#7C4DFF] bg-violet-50"
+                        ? "border-[#2541F5] bg-violet-50"
                         : "border-slate-200"
                     }`}
                   >
@@ -1080,7 +1080,7 @@ export default function AdminCreateUser() {
                         key={pkg.sku}
                         className={`cursor-pointer rounded-xl border px-3 py-3 text-sm transition ${
                           form.packageSku === pkg.sku
-                            ? "border-[#7C4DFF] bg-violet-50"
+                            ? "border-[#2541F5] bg-violet-50"
                             : "border-slate-200"
                         }`}
                       >
@@ -1219,7 +1219,7 @@ export default function AdminCreateUser() {
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-xl bg-[#7C4DFF] px-6 py-3 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-60"
+              className="rounded-xl bg-[#2541F5] px-6 py-3 text-sm font-black text-white shadow-md shadow-[#2541F5]/25 transition hover:bg-[#6B3FE0] disabled:opacity-60"
             >
               {submitting
                 ? "מקים..."

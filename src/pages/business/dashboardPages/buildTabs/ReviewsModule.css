@@ -23,7 +23,7 @@
   margin: 0.5rem auto 1.5rem;
   padding: 10px 22px;
   border-radius: 999px;
-  background: linear-gradient(135deg, #6a11cb, #2575fc);
+  background: linear-gradient(135deg, #2541F5, #2575fc);
   color: #fff;
   border: none;
   font-weight: 600;
@@ -63,7 +63,7 @@
 
 /* Example */
 .review-card.example {
-  background: #faf7ff;
+  background: #F5F7FB;
   border: 1px dashed #c9b8ff;
 }
 
@@ -99,7 +99,7 @@
   padding: 2px 8px;
   border-radius: 999px;
   background: #ede4ff;
-  color: #6a11cb;
+  color: #2541F5;
 }
 
 /* =========================
@@ -125,7 +125,7 @@
 .toggle-review-btn {
   background: none;
   border: none;
-  color: #6a11cb;
+  color: #2541F5;
   font-size: 0.85rem;
   cursor: pointer;
   padding: 0;

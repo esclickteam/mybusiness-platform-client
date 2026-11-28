@@ -295,7 +295,7 @@ export default function AdminCrmCustomers() {
         <span>
           {source}
           {formName ? (
-            <span className="mt-1 block text-[11px] font-black text-[#7C4DFF]">טופס ליד · {formName}</span>
+            <span className="mt-1 block text-[11px] font-black text-[#2541F5]">טופס ליד · {formName}</span>
           ) : null}
         </span>
       );
@@ -442,7 +442,7 @@ export default function AdminCrmCustomers() {
             <button
               key={filter._id}
               type="button"
-              className="rounded-full border border-purple-200 px-3 py-1 text-xs font-black text-[#7C4DFF]"
+              className="rounded-full border border-purple-200 px-3 py-1 text-xs font-black text-[#2541F5]"
               onClick={() => {
                 const f = filter.filters || {};
                 setQ(f.q || "");

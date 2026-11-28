@@ -11,7 +11,7 @@
 
   /* ✅ clean background (no heavy purple gradient) */
   background:
-    radial-gradient(900px 420px at 20% 20%, rgba(91, 76, 245, 0.14), transparent 60%),
+    radial-gradient(900px 420px at 20% 20%, rgba(37, 65, 245, 0.14), transparent 60%),
     radial-gradient(900px 420px at 80% 70%, rgba(34, 211, 238, 0.12), transparent 60%),
     #f6f7fb;
 }
@@ -104,8 +104,8 @@ label {
 .login-input:focus,
 .password-input:focus {
   outline: none;
-  border-color: rgba(91, 76, 245, 0.80);
-  box-shadow: 0 0 0 4px rgba(91, 76, 245, 0.15);
+  border-color: rgba(37, 65, 245, 0.80);
+  box-shadow: 0 0 0 4px rgba(37, 65, 245, 0.15);
 }
 
 /* Password wrapper */
@@ -136,7 +136,7 @@ label {
   border: none;
   box-shadow: none;
 
-  color: rgba(91, 76, 245, 0.9);
+  color: rgba(37, 65, 245, 0.9);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -205,7 +205,7 @@ label {
   border: none;
   box-shadow: none;
 
-  color: #5b4cf5;
+  color: #2541F5;
   font-size: 14px;
   font-weight: 800;
 
@@ -223,8 +223,8 @@ label {
 
 
 .forgot-inside-btn:hover {
-  background: rgba(91, 76, 245, 0.10);
-  border-color: rgba(91, 76, 245, 0.26);
+  background: rgba(37, 65, 245, 0.10);
+  border-color: rgba(37, 65, 245, 0.26);
   transform: translateY(-1px);
 }
 
@@ -252,7 +252,7 @@ label {
 }
 
 .signup-link-text {
-  color: #5b4cf5;
+  color: #2541F5;
   font-weight: 800;
   text-decoration: none;
 }

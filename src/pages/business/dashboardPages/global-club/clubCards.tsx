@@ -68,7 +68,7 @@ export function ClubPostCard({
           if (isDemoId(post._id)) return;
           void clubSend("post", `/club/posts/${post._id}/react`).then(refresh);
         }}>
-          <Heart className={`h-4 w-4 ${post.likedByMe ? "fill-[#7C4DFF] text-[#7C4DFF]" : ""}`} />
+          <Heart className={`h-4 w-4 ${post.likedByMe ? "fill-[#2541F5] text-[#2541F5]" : ""}`} />
           {t("club.feed.like", { count: post.likeCount })}
         </GhostButton>
         <span className="inline-flex items-center gap-1.5 rounded-2xl px-3 py-2 text-sm font-semibold text-slate-600">
@@ -79,7 +79,7 @@ export function ClubPostCard({
           if (isDemoId(post._id)) return;
           void clubSend("post", `/club/posts/${post._id}/save`).then(refresh);
         }}>
-          <Bookmark className={`h-4 w-4 ${post.savedByMe ? "fill-[#7C4DFF] text-[#7C4DFF]" : ""}`} />
+          <Bookmark className={`h-4 w-4 ${post.savedByMe ? "fill-[#2541F5] text-[#2541F5]" : ""}`} />
           {post.savedByMe ? t("club.feed.saved") : t("club.feed.save")}
         </GhostButton>
         <GhostButton

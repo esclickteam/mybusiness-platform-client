@@ -16,7 +16,7 @@ export function WhatsAppContactPanel({
   const identity = conversationIdentity(row);
   return (
     <aside className="hidden h-full min-h-0 w-[300px] shrink-0 flex-col overflow-y-auto border-s border-[#e9edef] bg-white p-4 xl:flex">
-      <p className="text-xs font-black uppercase tracking-wide text-[#7C4DFF]">{copy.contactDetails}</p>
+      <p className="text-xs font-black uppercase tracking-wide text-[#2541F5]">{copy.contactDetails}</p>
       <h2 className="mt-2 text-lg font-black text-[#111b21]">{identity.title || copy.unsavedHint}</h2>
       {identity.person ? <p className="text-sm font-bold text-slate-600">{identity.person}</p> : null}
       {identity.phone ? (
@@ -52,7 +52,7 @@ export function WhatsAppContactPanel({
       )}
       <button
         type="button"
-        className="mt-4 min-h-11 rounded-full bg-[#7C4DFF] px-4 text-sm font-black text-white"
+        className="mt-4 min-h-11 rounded-full bg-[#2541F5] px-4 text-sm font-black text-white"
         onClick={row.contactSaved ? onEdit : onAdd}
       >
         {row.contactSaved ? copy.editContact : copy.addContact}

@@ -75,14 +75,14 @@ function navClass(isActive: boolean, variant: "side" | "pill") {
     return [
       "flex items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-black transition",
       isActive
-        ? "bg-[#6D28D9] text-white shadow-[0_8px_18px_rgba(109,40,217,0.28)]"
+        ? "bg-[#2541F5] text-white shadow-[0_8px_18px_rgba(109,40,217,0.28)]"
         : "text-slate-600 hover:bg-white/70 hover:text-slate-900",
     ].join(" ");
   }
   return [
     "inline-flex shrink-0 items-center gap-2 rounded-full px-4 py-2 text-sm font-black transition",
     isActive
-      ? "bg-[#6D28D9] text-white shadow-[0_8px_18px_rgba(109,40,217,0.22)]"
+      ? "bg-[#2541F5] text-white shadow-[0_8px_18px_rgba(109,40,217,0.22)]"
       : "bg-white text-slate-600 shadow-sm hover:text-slate-900",
   ].join(" ");
 }
@@ -165,11 +165,11 @@ export default function PartnerLayout() {
   const sidebar = (
     <div className="flex h-full flex-col">
       <div className="flex items-center gap-3 px-4 pb-6 pt-5">
-        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#6D28D9] text-sm font-black text-white">
+        <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#2541F5] text-sm font-black text-white">
           BP
         </span>
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7C3AED]">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#2541F5]">
             Bizuply Partner
           </p>
           <p className="text-sm font-black text-slate-900">{t("partnerNav.dashboard")}</p>
@@ -256,7 +256,7 @@ export default function PartnerLayout() {
                   <Menu className="h-5 w-5" />
                 </button>
                 <div className="min-w-0">
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7C3AED]">
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#2541F5]">
                     BIZUPLY PARTNER
                   </p>
                   <h1 className="truncate text-xl font-black text-slate-900 md:text-2xl">
@@ -276,7 +276,7 @@ export default function PartnerLayout() {
                   <span className="hidden text-sm font-black text-slate-700 sm:block">
                     {displayName}
                   </span>
-                  <span className="grid h-9 w-9 place-items-center rounded-full bg-[#6D28D9] text-xs font-black text-white">
+                  <span className="grid h-9 w-9 place-items-center rounded-full bg-[#2541F5] text-xs font-black text-white">
                     {initials || "BP"}
                   </span>
                 </div>

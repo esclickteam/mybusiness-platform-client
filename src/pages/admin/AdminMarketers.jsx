@@ -159,7 +159,7 @@ export default function AdminMarketers() {
             <button
               type="submit"
               disabled={loading}
-              className="rounded-xl bg-[#7C4DFF] px-5 py-2.5 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-60"
+              className="rounded-xl bg-[#2541F5] px-5 py-2.5 text-sm font-black text-white shadow-md shadow-[#2541F5]/25 transition hover:bg-[#6B3FE0] disabled:opacity-60"
             >
               {loading ? "יוצר..." : "צור משווק"}
             </button>

@@ -165,10 +165,10 @@ export default function PartnerRegister() {
                       data-testid={option.interval === "annual" ? "international-annual-price" : "international-monthly-price"}
                       aria-pressed={selected}
                       onClick={() => chooseBillingInterval(option.interval)}
-                      className={`rounded-xl border p-3 text-start text-sm ${selected ? "border-[#6D28D9] bg-violet-50" : "border-slate-200"}`}
+                      className={`rounded-xl border p-3 text-start text-sm ${selected ? "border-[#2541F5] bg-violet-50" : "border-slate-200"}`}
                     >
                       {option.bestValue ? (
-                        <span className="mb-2 inline-block whitespace-nowrap rounded-full bg-[#6D28D9] px-2 py-0.5 text-xs font-black text-white">
+                        <span className="mb-2 inline-block whitespace-nowrap rounded-full bg-[#2541F5] px-2 py-0.5 text-xs font-black text-white">
                           Best Value
                         </span>
                       ) : null}

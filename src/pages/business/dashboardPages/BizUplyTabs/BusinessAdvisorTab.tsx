@@ -708,18 +708,18 @@ export default function BusinessAdvisorTab({
     <section
       dir={dir}
       data-demo-target="advisor-panel"
-      className="advisor-studio h-[calc(100vh-88px)] max-h-[calc(100vh-88px)] overflow-hidden bg-[#F4F1FA] p-3 text-start text-[#21172F] sm:p-4"
+      className="advisor-studio h-[calc(100vh-88px)] max-h-[calc(100vh-88px)] overflow-hidden bg-[#F5F7FB] p-3 text-start text-[#111932] sm:p-4"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] flex-col gap-4">
         <header className="advisor-bar shrink-0 border border-[rgba(91,33,182,0.14)] bg-white px-4 py-3">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-3">
-              <BrainCircuit className="h-5 w-5 shrink-0 text-[#5B21B6]" />
+              <BrainCircuit className="h-5 w-5 shrink-0 text-[#2541F5]" />
 
               <div className="min-w-0">
               <div data-demo-target="advisor-header">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-lg font-black text-[#21172F]">
+                  <h1 className="text-lg font-black text-[#111932]">
                     {t("advisor.title")}
                   </h1>
 
@@ -768,7 +768,7 @@ export default function BusinessAdvisorTab({
               <button
                 type="button"
                 onClick={startNewConversation}
-                className="inline-flex h-11 items-center gap-2 border border-[#5B21B6] bg-[#5B21B6] px-4 text-sm font-black text-white"
+                className="inline-flex h-11 items-center gap-2 border border-[#2541F5] bg-[#2541F5] px-4 text-sm font-black text-white"
               >
                 <Plus className="h-5 w-5" />
                 {t("advisor.newChat")}
@@ -1042,7 +1042,7 @@ export default function BusinessAdvisorTab({
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading || !userInput.trim() || isLimitReached}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#5B21B6] bg-[#5B21B6] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 border border-[#2541F5] bg-[#2541F5] px-5 text-sm font-black text-white disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500"
                 >
                   {loading ? t("advisor.thinking") : t("advisor.send")}
                   <ArrowUp className="h-5 w-5" />

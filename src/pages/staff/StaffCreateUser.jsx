@@ -157,7 +157,7 @@ export default function StaffCreateUser() {
         <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
           <div>
             <h1 className="flex items-center gap-2 text-2xl font-black text-slate-900">
-              <UserPlus className="h-6 w-6 text-[#7C4DFF]" />
+              <UserPlus className="h-6 w-6 text-[#2541F5]" />
               יצירת בעל עסק
             </h1>
             <p className="mt-1 text-sm font-bold text-slate-500">
@@ -214,7 +214,7 @@ export default function StaffCreateUser() {
         >
           <section>
             <h2 className="mb-3 flex items-center gap-2 text-base font-black">
-              <Building2 className="h-4 w-4 text-[#7C4DFF]" />
+              <Building2 className="h-4 w-4 text-[#2541F5]" />
               פרטי בעל העסק
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
@@ -315,7 +315,7 @@ export default function StaffCreateUser() {
 
           <section>
             <h2 className="mb-3 flex items-center gap-2 text-base font-black">
-              <Package className="h-4 w-4 text-[#7C4DFF]" />
+              <Package className="h-4 w-4 text-[#2541F5]" />
               חבילה מהקטלוג
             </h2>
             {packageCards.length === 0 ? (
@@ -329,7 +329,7 @@ export default function StaffCreateUser() {
                     key={pkg.sku}
                     className={`cursor-pointer rounded-xl border px-3 py-3 text-sm transition ${
                       form.packageSku === pkg.sku
-                        ? "border-[#7C4DFF] bg-violet-50"
+                        ? "border-[#2541F5] bg-violet-50"
                         : "border-slate-200 hover:border-slate-300"
                     }`}
                   >
@@ -364,7 +364,7 @@ export default function StaffCreateUser() {
 
           <section>
             <h2 className="mb-3 flex items-center gap-2 text-base font-black">
-              <CreditCard className="h-4 w-4 text-[#7C4DFF]" />
+              <CreditCard className="h-4 w-4 text-[#2541F5]" />
               תשלום
             </h2>
             <div className="grid gap-2 sm:grid-cols-2">
@@ -416,7 +416,7 @@ export default function StaffCreateUser() {
             <button
               type="submit"
               disabled={submitting}
-              className="rounded-xl bg-[#7C4DFF] px-6 py-3 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-60"
+              className="rounded-xl bg-[#2541F5] px-6 py-3 text-sm font-black text-white shadow-md shadow-[#2541F5]/25 transition hover:bg-[#6B3FE0] disabled:opacity-60"
             >
               {submitting ? "יוצר..." : "צור בעל עסק"}
             </button>

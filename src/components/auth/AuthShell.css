@@ -22,7 +22,7 @@
   background:
     radial-gradient(720px 420px at 8% 12%, rgba(243, 237, 255, 0.95), transparent 68%),
     radial-gradient(680px 400px at 92% 8%, rgba(234, 244, 255, 0.95), transparent 70%),
-    radial-gradient(560px 360px at 70% 92%, rgba(124, 58, 237, 0.08), transparent 72%),
+    radial-gradient(560px 360px at 70% 92%, rgba(37, 65, 245, 0.08), transparent 72%),
     #f8faff;
   background-size: 140% 140%;
   animation: authGradient 28s ease-in-out infinite;
@@ -31,7 +31,7 @@
 .auth-stage__grid {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(124, 58, 237, 0.16) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(37, 65, 245, 0.16) 1px, transparent 1px);
   background-size: 22px 22px;
   mask-image: radial-gradient(circle at 50% 45%, #000 20%, transparent 78%);
   opacity: 0.45;
@@ -107,7 +107,7 @@
 
 .auth-card {
   border: 1px solid rgba(17, 24, 39, 0.08);
-  border-radius: 28px;
+  border-radius: 8px;
   background: #ffffff;
   box-shadow:
     0 1px 0 rgba(255, 255, 255, 0.8) inset,
@@ -122,7 +122,7 @@
 
 .auth-card button.bg-white:hover {
   transform: translateY(-1px);
-  border-color: rgba(124, 58, 237, 0.35);
+  border-color: rgba(37, 65, 245, 0.35);
   box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
 }
 
@@ -260,8 +260,8 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   width: 100%;
   height: 50px;
   border: 0;
-  border-radius: 10px;
-  background: linear-gradient(90deg, #2541F5 0%, #2541F5 100%);
+  border-radius: 6px;
+  background: #2541F5;
   color: #fff;
   font: inherit;
   font-size: 1.05rem;
@@ -367,7 +367,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   height: 0.45rem;
   border-radius: 999px;
   background: #2541F5;
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.15);
+  box-shadow: 0 0 0 4px rgba(37, 65, 245, 0.15);
 }
 
 .auth-card__body {
@@ -395,7 +395,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
 
 .auth-card input:focus {
   border-color: rgba(109, 40, 217, 0.85);
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.16);
+  box-shadow: 0 0 0 4px rgba(37, 65, 245, 0.16);
 }
 
 .auth-card .relative:focus-within svg {
@@ -412,7 +412,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.22) inset,
     0 12px 28px rgba(99, 102, 241, 0.42),
-    0 0 24px rgba(124, 58, 237, 0.28);
+    0 0 24px rgba(37, 65, 245, 0.28);
 }
 
 .auth-primary-btn:hover:not(:disabled) {
@@ -784,7 +784,7 @@ body:has(.auth-stage--centered) .bizuply-a11y-trigger {
   width: calc(33.33% - 0.2rem);
   border-radius: 999px;
   background: #ffffff;
-  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.18);
+  box-shadow: 0 6px 16px rgba(37, 65, 245, 0.18);
   animation: authStatus 16s linear infinite;
 }
 

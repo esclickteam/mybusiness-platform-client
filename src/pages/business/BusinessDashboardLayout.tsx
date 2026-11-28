@@ -540,7 +540,7 @@ export default function BusinessDashboardLayout() {
       <AiProvider>
         <div
           dir={layoutDir}
-          className="bx-shell min-h-screen w-full bg-[#F4F1FA] text-[#21172F]"
+          className="bx-shell min-h-screen w-full bg-[#F5F7FB] text-[#111932]"
         >
           <BizDialogHost />
           {showTopBanner ? (
@@ -613,7 +613,7 @@ export default function BusinessDashboardLayout() {
               type="button"
               aria-label={t("common.closeMenu")}
               onClick={() => setShowSidebar(false)}
-              className="fixed inset-0 z-40 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 backdrop-blur-sm"
+              className="fixed inset-0 z-40 bg-[#111932]/40"
             />
           )}
 
@@ -622,10 +622,10 @@ export default function BusinessDashboardLayout() {
               ref={sidebarRef}
               className={`
                 fixed z-50 flex flex-col overflow-hidden
-                bg-[#48218B]
-                shadow-[8px_0_30px_rgba(26,11,51,0.12)]
+                border-[#E0E6F0] bg-white
+                shadow-[1px_0_0_rgba(17,25,50,0.04)]
                 transition-[width,transform] duration-300 ease-in-out
-                ${isRtl ? "right-0 border-l border-[#48218B]" : "left-0 border-r border-[#48218B]"}
+                ${isRtl ? "right-0 border-l" : "left-0 border-r"}
                 ${
                   isMobile
                     ? showSidebar
@@ -644,7 +644,7 @@ export default function BusinessDashboardLayout() {
             >
               <div
                 className={`
-                  relative flex shrink-0 items-center border-b border-[#e7e3f5]
+                  relative flex shrink-0 items-center border-b border-[#E0E6F0]
                   bg-white
                   ${
                     sidebarCollapsed && !isMobile
@@ -712,11 +712,9 @@ export default function BusinessDashboardLayout() {
                         : t("businessNav.collapseSidebar", "Collapse sidebar")
                     }
                     className="
-                      flex h-7 w-7 shrink-0 items-center justify-center rounded-none
-                      border border-[#e7e3f5] bg-white text-[#21172F]
-                      shadow-[0_2px_8px_rgba(99,102,241,0.06)]
-                      transition hover:border-sky-200 hover:bg-white
-                      hover:text-sky-600
+                      flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px]
+                      border border-[#E0E6F0] bg-white text-[#111932]
+                      transition hover:border-[#2541F5] hover:text-[#2541F5]
                     "
                   >
                     {sidebarCollapsed ? (
@@ -771,7 +769,7 @@ export default function BusinessDashboardLayout() {
             <div
               className="
                 fixed top-0 z-[35] flex h-10 items-center justify-between
-                gap-3 border border-violet-200/80 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-4 text-sm text-white
+                gap-3 border-b border-[#E0E6F0] bg-white px-4 text-sm text-[#111932]
               "
               style={{
                 left: isMobile ? 0 : isRtl ? 0 : sidebarWidth,
@@ -785,8 +783,8 @@ export default function BusinessDashboardLayout() {
                 type="button"
                 onClick={handleBackToAdmin}
                 className="
-                  shrink-0 rounded-none bg-white/15 px-3 py-1 text-xs font-bold
-                  transition hover:bg-white/25
+                  shrink-0 rounded-[6px] border border-[#E0E6F0] bg-[#F5F7FB] px-3 py-1 text-xs font-semibold text-[#111932]
+                  transition hover:border-[#2541F5] hover:text-[#2541F5]
                 "
               >
                 {t("layout.backToAdmin")}
@@ -797,9 +795,8 @@ export default function BusinessDashboardLayout() {
           {!isWebsiteFullScreen && (
             <header
               className="
-                fixed z-30 flex h-[4.5rem] items-center justify-between
-                border-b border-[#e7e3f5] bg-white px-4
-                shadow-[0_10px_30px_rgba(50,16,100,0.04)]
+                fixed z-30 flex h-14 items-center justify-between
+                border-b border-[#E0E6F0] bg-white px-4
                 transition-all duration-300 lg:px-6
               "
               style={{
@@ -816,7 +813,7 @@ export default function BusinessDashboardLayout() {
                     onClick={() => setShowSidebar((value) => !value)}
                     className="
                       flex h-10 w-10 items-center justify-center rounded-none
-                      border border-[#e7e3f5] bg-white text-[#21172F]
+                      border border-[#e7e3f5] bg-white text-[#111932]
                       shadow-sm transition hover:bg-slate-50
                     "
                   >
@@ -825,14 +822,14 @@ export default function BusinessDashboardLayout() {
                 )}
 
                 {isGuidedDemoActive() ? (
-                    <span className="rounded-none bg-[#F7F6FC] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#5B21B6]">
+                    <span className="rounded-[6px] bg-[#EEF2FF] px-2 py-0.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#2541F5]">
                     {t("leftover.guided.demoBadge", "DEMO")}
                   </span>
                 ) : null}
                 <GuidedDemoResetControl />
                 {apiPortal ? (
                   <span
-                    className="inline-flex shrink-0 items-center gap-1.5 rounded-none border border-[#e7e3f5] bg-[#F7F6FC] px-2.5 py-1 text-xs font-black text-[#5B21B6]"
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-[6px] border border-[#E0E6F0] bg-[#F5F7FB] px-2.5 py-1 text-xs font-black text-[#111932]"
                     data-testid="wa-api-portal-badge"
                   >
                     <MessageCircle size={14} aria-hidden />
@@ -840,7 +837,7 @@ export default function BusinessDashboardLayout() {
                   </span>
                 ) : null}
                 <div className="hidden min-w-0 sm:block">
-                  <span className="block truncate text-lg font-black tracking-[-0.03em] text-[#21172F]">
+                  <span className="block truncate text-sm font-semibold tracking-[-0.01em] text-[#111932]">
                     {isInvistimoAdmin
                       ? INVISTIMO_ADMIN_LABEL
                       : t("common.hello", {
@@ -848,7 +845,7 @@ export default function BusinessDashboardLayout() {
                         })}
                   </span>
                   {isAdmin && (
-                    <span className="ms-2 rounded-none bg-[#F7F6FC] px-2 py-0.5 text-xs font-bold text-[#5B21B6]">
+                    <span className="ms-2 rounded-[6px] bg-[#EEF2FF] px-2 py-0.5 text-xs font-bold text-[#2541F5]">
                       {t("common.admin")}
                     </span>
                   )}
@@ -866,9 +863,9 @@ export default function BusinessDashboardLayout() {
                     type="button"
                     onClick={handleLogout}
                     className="
-                      rounded-none border border-[#5B21B6] bg-[#5B21B6] px-4 py-2.5
-                      text-sm font-bold text-white transition
-                      hover:bg-[#48218B]
+                      rounded-[6px] border border-[#E0E6F0] bg-white px-3 py-2
+                      text-sm font-semibold text-[#111932] transition
+                      hover:border-[#2541F5] hover:text-[#2541F5]
                     "
                   >
                     {t("common.logOut")}
@@ -880,16 +877,16 @@ export default function BusinessDashboardLayout() {
 
           <main
             className={[
-              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#F4F1FA] transition-[padding] duration-300",
+              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#F5F7FB] transition-[padding] duration-300",
               isWebsiteFullScreen
                 ? showTopBanner
                   ? "pt-14"
                   : "pt-0"
                 : isAdmin
-                  ? "pt-[112px]"
+                  ? "pt-24"
                   : showTopBanner
-                    ? "pt-[120px]"
-                    : "pt-[4.5rem]",
+                    ? "pt-[112px]"
+                    : "pt-14",
               // Lets the last portal actions scroll clear of the floating assistant launcher.
               apiPortal && !isWebsiteFullScreen ? "pb-28" : "",
             ].join(" ")}

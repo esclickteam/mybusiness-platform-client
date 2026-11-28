@@ -203,8 +203,8 @@ body {
 
 /* selected (card highlight) */
 .radio-option input[type="radio"]:checked + label::before {
-  background: #5b4cf5;
-  border-color: #5b4cf5;
+  background: #2541F5;
+  border-color: #2541F5;
 }
 
 .radio-option:has(input[type="radio"]:checked) {
@@ -228,7 +228,7 @@ body {
   width: 100%;
   height: 58px;
 
-  background: #5b4cf5;
+  background: #2541F5;
   color: #fff;
 
   font-size: 18px;
@@ -248,7 +248,7 @@ body {
 }
 
 .register-button:hover {
-  background: #4b3de0;
+  background: #1c32c4;
   transform: translateY(-1px);
   box-shadow: 0 18px 46px rgba(75, 61, 224, 0.28);
 }
@@ -282,7 +282,7 @@ body {
 }
 
 .login-link a {
-  color: #5b4cf5;
+  color: #2541F5;
   font-weight: 800;
   text-decoration: none;
 }

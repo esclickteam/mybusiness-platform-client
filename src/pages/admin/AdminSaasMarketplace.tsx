@@ -441,7 +441,7 @@ export default function AdminSaasMarketplace() {
               ))}
             </div>
             <div className="flex gap-2">
-              <button className="rounded-2xl bg-[#7C4DFF] px-4 py-3 text-sm font-black text-white" type="submit">
+              <button className="rounded-2xl bg-[#2541F5] px-4 py-3 text-sm font-black text-white" type="submit">
                 שמירה
               </button>
               <button type="button" className="rounded-2xl border px-4 py-3 text-sm font-bold" onClick={() => setDraft(null)}>
